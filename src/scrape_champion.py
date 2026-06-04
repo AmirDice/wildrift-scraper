@@ -296,6 +296,21 @@ def main() -> int:
                 swipe_scale=args.strip_swipe_scale,
                 swipe_duration_ms=args.strip_swipe_duration_ms,
             )
+            # If no champions detected at all, the CHAMPION AND LANE tap probably
+            # missed — we're likely still on the OVERVIEW tab (profile may have
+            # been mid-transition). Re-tap the tab and try once more.
+            if not found:
+                print(f"  no champs in strip; retrying CHAMPION AND LANE tap")
+                client.tap(*champ_and_lane_tap, jitter_px=args.tap_jitter_px)
+                jittered_sleep(args.step_wait, args.time_jitter_ms)
+                target_wr, found, swipes_done, img = find_target_in_strip(
+                    client,
+                    args.target,
+                    max_swipes=args.max_strip_swipes,
+                    swipe_scale=args.strip_swipe_scale,
+                    swipe_duration_ms=args.strip_swipe_duration_ms,
+                )
+
             if args.save_screenshots:
                 path = data_dir / f"run_rank_{rank:03d}.png"
                 cv2.imwrite(str(path), img)
