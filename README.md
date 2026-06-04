@@ -89,10 +89,26 @@ Grab a frame from the device and save it (for OCR tuning, region selection, etc.
 python -m src.screenshot data/leaderboard_ahri.png
 ```
 
+## Region picker (find OCR crop coords visually)
+
+Instead of eyeballing pixel coordinates, drag a rectangle around the text you
+want to OCR and the tool prints the `--crop` string:
+
+```powershell
+python -m src.region_picker data\leaderboard_sample.png
+# or from a live device:
+python -m src.region_picker --device 127.0.0.1:7555
+```
+
+Controls: click-drag to draw a rectangle, `o` runs OCR on it immediately,
+`c` reprints the crop string, `r` refreshes the screenshot (device mode),
+`q` quits.
+
 ## OCR tuning
 
 `src/ocr.py` reads winrate-style text. Tune it against a saved screenshot by
-specifying a crop region (`x,y,w,h` in device pixels):
+specifying a crop region (`x,y,w,h` in device pixels) — easiest to find with
+`src.region_picker` above:
 
 ```powershell
 python -m src.ocr data/leaderboard_ahri.png --crop 980,310,140,40
@@ -127,7 +143,8 @@ Tesseract binary discovery order:
 wildrift-scraper/
 ├── src/
 │   ├── adb_client.py        # subprocess wrapper around `adb`
-│   ├── coordinate_mapper.py # interactive UI coord tool
+│   ├── coordinate_mapper.py # interactive UI coord tool (single points)
+│   ├── region_picker.py     # drag-to-pick rectangles for OCR crop coords
 │   ├── screenshot.py        # grab + save a screenshot
 │   ├── ocr.py               # winrate OCR + tuning CLI
 │   └── storage.py           # CSV writer

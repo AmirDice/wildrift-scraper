@@ -27,11 +27,10 @@ import cv2
 import numpy as np
 
 from .adb_client import ADBClient, ADBError
+from .display import compute_fit_scale
 
 
 WINDOW_NAME = "wildrift coord mapper  |  click=record  u=undo  r=refresh  s=save  q=quit"
-MAX_DISPLAY_W = 1600
-MAX_DISPLAY_H = 900
 
 
 @dataclass
@@ -42,12 +41,6 @@ class MapperState:
     scale: float = 1.0
     dirty: bool = False
     pending_click: tuple[int, int] | None = None  # in original image coords
-
-
-def compute_scale(img: np.ndarray) -> float:
-    h, w = img.shape[:2]
-    scale = min(MAX_DISPLAY_W / w, MAX_DISPLAY_H / h, 1.0)
-    return scale
 
 
 def render(state: MapperState) -> np.ndarray:
@@ -145,7 +138,7 @@ def main() -> int:
         print(f"loaded {len(existing)} existing point(s) from {args.output}")
 
     state = MapperState(image=img, points=existing, order=list(existing.keys()))
-    state.scale = compute_scale(img)
+    state.scale = compute_fit_scale(img)
     if state.scale != 1.0:
         print(f"display scaled to {state.scale:.2f}x (device is {img.shape[1]}x{img.shape[0]})")
 
@@ -194,7 +187,7 @@ def main() -> int:
         elif key == ord("r"):
             try:
                 state.image = client.screenshot()
-                state.scale = compute_scale(state.image)
+                state.scale = compute_fit_scale(state.image)
                 print("  refreshed screenshot")
             except ADBError as e:
                 print(f"  refresh failed: {e}")

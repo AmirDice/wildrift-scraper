@@ -65,7 +65,13 @@ WINRATE_TESSERACT_CONFIG = (
     "-c tessedit_char_whitelist=0123456789.% "
 )
 
+# General-purpose config for reading mixed text in a region (champion names,
+# labels, numbers). PSM 6 = "uniform block of text". No whitelist.
+GENERAL_TESSERACT_CONFIG = "--oem 3 --psm 6"
+
 WINRATE_PATTERN = re.compile(r"(\d{1,3})(?:[.,](\d{1,2}))?\s*%?")
+# Matches "57.8%" or "100%" anywhere in OCR output, with optional spaces.
+PERCENT_PATTERN = re.compile(r"(\d{1,3}(?:[.,]\d{1,2})?)\s*%")
 
 
 @dataclass
@@ -73,6 +79,16 @@ class OCRResult:
     text: str
     confidence: float  # mean Tesseract confidence in [0, 100], or -1 if unknown
     image: np.ndarray  # the preprocessed image actually fed to Tesseract
+
+
+@dataclass
+class OCRWord:
+    text: str
+    x: int       # center x in preprocessed-image coords
+    y: int       # center y in preprocessed-image coords
+    w: int
+    h: int
+    confidence: float
 
 
 def preprocess(img: np.ndarray, scale: float = 3.0, invert: bool = False) -> np.ndarray:
@@ -150,6 +166,112 @@ def read_winrate(img: np.ndarray) -> tuple[float | None, OCRResult]:
     return parse_winrate(result.text), result
 
 
+def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[OCRWord]:
+    """Run OCR and return per-word data with bounding boxes.
+
+    Tries both threshold polarities (like read_text) and returns whichever set
+    of words had higher mean confidence.
+    """
+    best: tuple[float, list[OCRWord]] | None = None
+    for invert in (False, True):
+        pre = preprocess(img, invert=invert)
+        data = pytesseract.image_to_data(
+            pre, config=config, output_type=pytesseract.Output.DICT
+        )
+        words: list[OCRWord] = []
+        confs: list[float] = []
+        n = len(data.get("text", []))
+        for i in range(n):
+            text = (data["text"][i] or "").strip()
+            if not text:
+                continue
+            try:
+                conf = float(data["conf"][i])
+            except (TypeError, ValueError):
+                conf = -1.0
+            x, y = data["left"][i], data["top"][i]
+            w, h = data["width"][i], data["height"][i]
+            words.append(OCRWord(
+                text=text,
+                x=x + w // 2,
+                y=y + h // 2,
+                w=w,
+                h=h,
+                confidence=conf,
+            ))
+            if conf >= 0:
+                confs.append(conf)
+        mean = sum(confs) / len(confs) if confs else -1.0
+        if best is None or mean > best[0]:
+            best = (mean, words)
+    assert best is not None
+    return best[1]
+
+
+def find_champion_winrates(
+    image: np.ndarray,
+    region: tuple[int, int, int, int],
+    champions: list[str] | None = None,
+) -> dict[str, float]:
+    """OCR a region containing one or more champion tiles and return a dict
+    mapping canonical champion name -> winrate.
+
+    Pairs each champion-name word with the percentage word that is nearest in
+    x-position (same column = same tile).
+    """
+    from . import champions as champ_module
+
+    champ_module_local = champ_module
+    if champions is None:
+        champions = champ_module_local.CHAMPIONS
+
+    x, y, w, h = region
+    crop = image[y:y + h, x:x + w]
+    words = read_words(crop, GENERAL_TESSERACT_CONFIG)
+    if not words:
+        return {}
+
+    # Find champion-name matches (greedy left-to-right, allowing multi-word names).
+    name_hits: list[tuple[str, int]] = []  # (canonical_name, x_center)
+    i = 0
+    max_words = champ_module_local.MAX_WORD_COUNT
+    while i < len(words):
+        matched = False
+        for span in range(min(max_words, len(words) - i), 0, -1):
+            tokens = [words[i + k].text for k in range(span)]
+            canonical = champ_module_local.match(tokens)
+            if canonical is not None:
+                xs = [words[i + k].x for k in range(span)]
+                name_hits.append((canonical, sum(xs) // span))
+                i += span
+                matched = True
+                break
+        if not matched:
+            i += 1
+
+    # Find percentage matches.
+    pct_hits: list[tuple[float, int]] = []  # (value, x_center)
+    for word in words:
+        m = PERCENT_PATTERN.fullmatch(word.text)
+        if not m:
+            continue
+        try:
+            value = float(m.group(1).replace(",", "."))
+        except ValueError:
+            continue
+        if 0 <= value <= 100:
+            pct_hits.append((value, word.x))
+
+    # Pair each name with the percentage at the closest x.
+    result: dict[str, float] = {}
+    for name, nx in name_hits:
+        if not pct_hits:
+            break
+        value, _px = min(pct_hits, key=lambda p: abs(p[1] - nx))
+        result[name] = value
+    return result
+
+
 def _parse_crop(s: str) -> tuple[int, int, int, int]:
     parts = [int(p) for p in s.split(",")]
     if len(parts) != 4:
@@ -166,7 +288,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--mode", choices=("winrate", "text"), default="winrate",
-        help="winrate: also parse a percentage from the result",
+        help="winrate: digits/percent whitelist + parse %. text: general OCR (names, labels, etc).",
     )
     parser.add_argument(
         "--debug", action="store_true",
@@ -193,7 +315,7 @@ def main() -> int:
         print(f"confidence : {result.confidence:.1f}")
         print(f"winrate    : {value}")
     else:
-        result = read_text(img)
+        result = read_text(img, GENERAL_TESSERACT_CONFIG)
         print(f"raw text   : {result.text!r}")
         print(f"confidence : {result.confidence:.1f}")
 
