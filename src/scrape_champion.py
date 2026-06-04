@@ -167,29 +167,54 @@ def main() -> int:
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
         time.sleep(args.step_wait + args.scroll_wait)
 
+    def filter_consistent(
+        raw: dict[int, tuple[int, int, int]],
+    ) -> dict[int, tuple[int, int, int]]:
+        """Return the largest subset where rank deltas match slot deltas."""
+        if len(raw) <= 1:
+            return raw
+        items = sorted(raw.items())
+        best: list[tuple[int, tuple[int, int, int]]] = []
+        for anchor_slot, (anchor_rank, _, _) in items:
+            cluster = [(s, v) for s, v in items if v[0] == anchor_rank + (s - anchor_slot)]
+            if len(cluster) > len(best):
+                best = cluster
+        return dict(best)
+
+    def find_target_entry(
+        visible: dict[int, tuple[int, int, int]], target_rank: int,
+    ) -> tuple[int, int, int] | None:
+        """Return (slot, y_top, y_bot) for target_rank — either directly
+        detected or inferred from neighbors. y_top/y_bot are estimated for
+        inferred cases. Returns None if target can't be located on-screen."""
+        for slot, (rank, yt, yb) in visible.items():
+            if rank == target_rank:
+                return (slot, yt, yb)
+        if len(visible) >= 2:
+            ref_slot = min(visible.keys())
+            ref_rank, ref_yt, _ = visible[ref_slot]
+            inferred_slot = ref_slot + (target_rank - ref_rank)
+            if 0 <= inferred_slot < ROWS_PER_PAGE:
+                est_yt = ref_yt + int(round((inferred_slot - ref_slot) * row_pitch))
+                return (inferred_slot, est_yt, est_yt + 30)
+        return None
+
     def locate_target_rank(target_rank: int, max_attempts: int = 6) -> int | None:
-        """Per-rank OCR with bounding-box safe-zone check.
-
-        For each attempt:
-          1. OCR all visible badges (with y_top/y_bot bounding boxes).
-          2. If target rank is detected at any slot AND its badge is fully in
-             the safe zone [SCREEN_2_SAFE_Y_TOP, SCREEN_2_SAFE_Y_BOTTOM] →
-             return that slot.
-          3. If target is detected but partially clipped at top or bottom →
-             pixel-precise micro-swipe to push it into the safe zone.
-          4. If target not detected → scroll forward or back based on which
-             ranks are visible.
-        Returns the slot index to tap, or None if exhausted.
-        """
+        """Per-rank OCR + bounding-box safe-zone check, with consistency
+        filtering and consecutive-rank inference."""
         for attempt in range(max_attempts):
-            img = client.screenshot()
-            visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
-
-            target_entry: tuple[int, int, int] | None = None  # (slot, yt, yb)
-            for slot, (rank, yt, yb) in visible.items():
-                if rank == target_rank:
-                    target_entry = (slot, yt, yb)
+            # OCR with retries: discard inconsistent detections, wait briefly
+            # if list still settling.
+            visible: dict[int, tuple[int, int, int]] = {}
+            for ocr_try in range(3):
+                img = client.screenshot()
+                raw = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
+                visible = filter_consistent(raw)
+                if len(visible) >= 2 or target_rank in {v[0] for v in visible.values()}:
                     break
+                time.sleep(0.5)
+
+            target_entry = find_target_entry(visible, target_rank)
 
             if target_entry is not None:
                 slot, y_top, y_bot = target_entry
@@ -197,41 +222,42 @@ def main() -> int:
                 if SCREEN_2_SAFE_Y_TOP <= y_top and y_bot <= SCREEN_2_SAFE_Y_BOTTOM:
                     print(f"  locate[{attempt}]: visible={{{vis_str}}}  -> rank {target_rank} at slot {slot}, y=[{y_top},{y_bot}] OK")
                     return slot
-                # Partial visibility → micro-swipe by the exact pixel deficit
+                # Partial visibility -> micro-swipe by exact pixel deficit
                 if y_top < SCREEN_2_SAFE_Y_TOP:
                     deficit_px = SCREEN_2_SAFE_Y_TOP - y_top + 5
-                    rows = -deficit_px / row_pitch  # swipe back
-                    print(f"  locate[{attempt}]: rank {target_rank} y_top={y_top} < {SCREEN_2_SAFE_Y_TOP}; swipe back {rows:+.2f}r")
-                else:  # y_bot > SCREEN_2_SAFE_Y_BOTTOM
+                    rows = -deficit_px / row_pitch
+                    print(f"  locate[{attempt}]: rank {target_rank} at slot {slot}, y_top={y_top}<{SCREEN_2_SAFE_Y_TOP}; back {rows:+.2f}r")
+                else:
                     deficit_px = y_bot - SCREEN_2_SAFE_Y_BOTTOM + 5
-                    rows = deficit_px / row_pitch  # swipe forward
-                    print(f"  locate[{attempt}]: rank {target_rank} y_bot={y_bot} > {SCREEN_2_SAFE_Y_BOTTOM}; swipe forward {rows:+.2f}r")
+                    rows = deficit_px / row_pitch
+                    print(f"  locate[{attempt}]: rank {target_rank} at slot {slot}, y_bot={y_bot}>{SCREEN_2_SAFE_Y_BOTTOM}; fwd {rows:+.2f}r")
                 do_swipe(rows)
                 continue
 
-            # Target not directly seen — decide which way to scroll
+            # Target not seen at all; cross-page navigation needs a full page swipe
+            # (sub-page swipes can get snapped back by Wild Rift's UI).
             if not visible:
-                print(f"  locate[{attempt}]: OCR empty; scrolling forward")
+                print(f"  locate[{attempt}]: OCR empty; scrolling forward one page")
                 scroll_to_next_page()
                 continue
             visible_ranks = [v[0] for v in visible.values()]
-            min_v = min(visible_ranks)
-            max_v = max(visible_ranks)
+            min_v, max_v = min(visible_ranks), max(visible_ranks)
+            target_page = (target_rank - 1) // ROWS_PER_PAGE
+            max_v_page = (max_v - 1) // ROWS_PER_PAGE
+            min_v_page = (min_v - 1) // ROWS_PER_PAGE
             vis_str = ", ".join(f"s{s}=r{v[0]}" for s, v in sorted(visible.items()))
-            if target_rank < min_v:
-                rows_back = min_v - target_rank
-                print(f"  locate[{attempt}]: target {target_rank} < min_visible={min_v}; swipe back ~{rows_back}r ({vis_str})")
-                do_swipe(-rows_back)
+            if target_page > max_v_page:
+                print(f"  locate[{attempt}]: target {target_rank} on later page than visible ({vis_str}); page-scroll forward")
+                scroll_to_next_page()
+            elif target_page < min_v_page:
+                print(f"  locate[{attempt}]: target {target_rank} on earlier page than visible ({vis_str}); swipe back one page")
+                do_swipe(-ROWS_PER_PAGE)
             else:
-                rows_fwd = target_rank - max_v
-                print(f"  locate[{attempt}]: target {target_rank} > max_visible={max_v}; scrolling forward ~{rows_fwd}r ({vis_str})")
-                if rows_fwd >= ROWS_PER_PAGE:
-                    scroll_to_next_page()
-                else:
-                    do_swipe(rows_fwd)
+                # Same page but target not visible AND not inferrable from < 2 slots.
+                # Try a small nudge to dislodge any in-progress animation.
+                print(f"  locate[{attempt}]: target {target_rank} same page as visible but not detected ({vis_str}); nudging")
+                do_swipe(0.3)
 
-        # Out of attempts — best-effort fall back to the slot where target_rank
-        # would naturally land if it were detected; otherwise return None.
         print(f"  locate: could not bring rank {target_rank} into safe zone after {max_attempts} attempts")
         return None
 
