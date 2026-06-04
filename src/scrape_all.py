@@ -37,7 +37,7 @@ from pathlib import Path
 
 import cv2
 
-from .adb_client import ADBClient, ADBError
+from .adb_client import ADBClient, ADBError, jittered_sleep
 from .config import (
     ROWS_PER_PAGE,
     SCREEN_2_CHAMP_NAME_REGION,
@@ -46,6 +46,7 @@ from .config import (
 )
 from .ocr import find_champion_winrates, read_champion_name
 from .storage import CSVWriter, LeaderboardRow
+from .strip import find_target_in_strip
 
 
 def derive_pitch(points: dict[str, tuple[int, int]], base_key: str) -> tuple[int, int, float, str]:
@@ -75,8 +76,13 @@ def main() -> int:
     parser.add_argument("--step-wait", type=float, default=2.0)
     parser.add_argument("--scroll-wait", type=float, default=1.5)
     parser.add_argument("--swipe-scale", type=float, default=0.8)
-    parser.add_argument("--swipe-duration-ms", type=int, default=1000)
+    parser.add_argument("--swipe-duration-ms", type=int, default=1500)
     parser.add_argument("--reset-every", type=int, default=6, help="Wild Rift resets the screen-2 scroll after this many profile views")
+    parser.add_argument("--max-strip-swipes", type=int, default=3)
+    parser.add_argument("--strip-swipe-scale", type=float, default=0.7)
+    parser.add_argument("--strip-swipe-duration-ms", type=int, default=800)
+    parser.add_argument("--tap-jitter-px", type=int, default=8)
+    parser.add_argument("--time-jitter-ms", type=int, default=200)
     parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"))
     parser.add_argument("--save-screenshots", action="store_true")
     args = parser.parse_args()
@@ -164,7 +170,7 @@ def main() -> int:
         end_y = max(50, start_y - distance_px)
         print(f"    swipe -> ({rank_1_x}, {start_y}) -> ({rank_1_x}, {end_y})  [{args.swipe_duration_ms}ms]")
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
-        time.sleep(args.step_wait + args.scroll_wait)
+        jittered_sleep(args.step_wait + args.scroll_wait, args.time_jitter_ms)
 
     # NOTE: this version assumes args.champions <= ROWS_PER_PAGE. Scrolling
     # screen 1 (for more champions than fit on one screen) is not implemented
@@ -180,8 +186,8 @@ def main() -> int:
     for champ_slot in range(args.champions):
         cx, cy = champ_tap(champ_slot)
         print(f"\n========== champion slot {champ_slot + 1}: tap ({cx}, {cy}) ==========")
-        client.tap(cx, cy)
-        time.sleep(args.step_wait)
+        client.tap(cx, cy, jitter_px=args.tap_jitter_px)
+        jittered_sleep(args.step_wait, args.time_jitter_ms)
 
         # Identify which champion we just entered by OCRing the label
         screen2_img = client.screenshot()
@@ -211,24 +217,26 @@ def main() -> int:
                 slot = (rank - 1) % ROWS_PER_PAGE
                 px, py = player_slot_tap(slot)
                 print(f"  rank {rank} (page {current_page + 1}, slot {slot}): tap ({px}, {py})")
-                client.tap(px, py)
-                time.sleep(args.step_wait)
-                client.tap(*view_profile_tap)
-                time.sleep(args.step_wait)
-                client.tap(*champ_and_lane_tap)
-                time.sleep(args.step_wait)
+                client.tap(px, py, jitter_px=args.tap_jitter_px)
+                jittered_sleep(args.step_wait, args.time_jitter_ms)
+                client.tap(*view_profile_tap, jitter_px=args.tap_jitter_px)
+                jittered_sleep(args.step_wait, args.time_jitter_ms)
+                client.tap(*champ_and_lane_tap, jitter_px=args.tap_jitter_px)
+                jittered_sleep(args.step_wait, args.time_jitter_ms)
 
-                img = client.screenshot()
+                target_wr, found, swipes_done, img = find_target_in_strip(
+                    client,
+                    champ_name,
+                    max_swipes=args.max_strip_swipes,
+                    swipe_scale=args.strip_swipe_scale,
+                    swipe_duration_ms=args.strip_swipe_duration_ms,
+                )
                 if args.save_screenshots:
                     cv2.imwrite(str(data_dir / f"run_{champ_name}_rank_{rank:03d}.png"), img)
 
-                found = find_champion_winrates(img, SCREEN_5_OCR_REGION)
-                target_wr = next(
-                    (wr for c, wr in found.items() if c.lower() == champ_name.lower()),
-                    None,
-                )
                 visible = ", ".join(found.keys()) if found else "(none)"
-                print(f"    OCR visible : {visible}")
+                swipe_note = f" (after {swipes_done} swipe{'s' if swipes_done != 1 else ''})" if swipes_done else ""
+                print(f"    OCR visible : {visible}{swipe_note}")
                 print(f"    {champ_name} winrate : {target_wr}")
 
                 writer.write(LeaderboardRow(
@@ -240,8 +248,8 @@ def main() -> int:
                 if target_wr is not None:
                     total_success += 1
 
-                client.tap(*s5_back)
-                time.sleep(args.step_wait)
+                client.tap(*s5_back, jitter_px=args.tap_jitter_px)
+                jittered_sleep(args.step_wait, args.time_jitter_ms)
 
                 profiles_since_reset += 1
                 if profiles_since_reset >= args.reset_every:
@@ -256,8 +264,8 @@ def main() -> int:
 
         # Back to screen 1 for the next champion
         print(f"  tap screen 2 back -> ({s2_back[0]}, {s2_back[1]})")
-        client.tap(*s2_back)
-        time.sleep(args.step_wait)
+        client.tap(*s2_back, jitter_px=args.tap_jitter_px)
+        jittered_sleep(args.step_wait, args.time_jitter_ms)
 
     print(f"\ndone. {total_success}/{total_attempts} winrates parsed across {args.champions} champion(s). CSV -> {args.output}")
     return 0

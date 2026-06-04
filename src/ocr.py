@@ -208,6 +208,64 @@ def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[
     return best[1]
 
 
+_RANK_BADGE_CONFIGS = (
+    "--oem 3 --psm 7 -c tessedit_char_whitelist=0123456789",
+    "--oem 3 --psm 8 -c tessedit_char_whitelist=0123456789",
+    "--oem 3 --psm 10 -c tessedit_char_whitelist=0123456789",
+    "--oem 3 --psm 13 -c tessedit_char_whitelist=0123456789",
+)
+
+
+def read_rank_badge(
+    image: np.ndarray,
+    slot_idx: int,
+    rank_1_y: int,
+    row_pitch: float,
+    badge_x_range: tuple[int, int],
+    band_half_height: int = 45,
+) -> int | None:
+    """OCR the rank-number badge at the given slot. Tries multiple PSMs
+    and both threshold polarities since banner styles vary by rank.
+    Returns the rank number, or None if no digit was detected.
+
+    NOTE: rank 1 has a stylized gold trophy badge that does not OCR
+    reliably. Skip verification when expecting rank 1 at slot 0."""
+    import re
+
+    cy = int(round(rank_1_y + slot_idx * row_pitch))
+    x0, x1 = badge_x_range
+    crop = image[max(0, cy - band_half_height): cy + band_half_height, x0:x1]
+    if crop.size == 0:
+        return None
+    for invert in (False, True):
+        pre = preprocess(crop, invert=invert)
+        for cfg in _RANK_BADGE_CONFIGS:
+            text = pytesseract.image_to_string(pre, config=cfg).strip()
+            match = re.search(r"\d+", text)
+            if match:
+                try:
+                    return int(match.group())
+                except ValueError:
+                    continue
+    return None
+
+
+def read_all_visible_ranks(
+    image: np.ndarray,
+    rank_1_y: int,
+    row_pitch: float,
+    badge_x_range: tuple[int, int],
+    num_slots: int = 5,
+) -> dict[int, int]:
+    """Return {slot_idx: rank} for every slot whose badge OCR'd successfully."""
+    out: dict[int, int] = {}
+    for slot in range(num_slots):
+        r = read_rank_badge(image, slot, rank_1_y, row_pitch, badge_x_range)
+        if r is not None:
+            out[slot] = r
+    return out
+
+
 def read_champion_name(image: np.ndarray, region: tuple[int, int, int, int]) -> str | None:
     """OCR a region containing a single champion-name label (e.g. "AATROX")
     and return the canonical champion name. Returns None if no match."""

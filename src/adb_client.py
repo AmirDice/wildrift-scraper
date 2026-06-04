@@ -1,11 +1,22 @@
 """Thin wrapper around the `adb` CLI for screenshots and input events."""
 from __future__ import annotations
 
+import random
 import subprocess
+import time
 from dataclasses import dataclass
 
 import cv2
 import numpy as np
+
+
+def jittered_sleep(seconds: float, jitter_ms: int = 0) -> None:
+    """time.sleep with optional uniform jitter in milliseconds. Clamps to >=0.05s."""
+    if jitter_ms > 0:
+        delta = random.uniform(-jitter_ms, jitter_ms) / 1000.0
+    else:
+        delta = 0.0
+    time.sleep(max(0.05, seconds + delta))
 
 
 class ADBError(RuntimeError):
@@ -36,7 +47,13 @@ class ADBClient:
             raise ADBError("Failed to decode screenshot PNG")
         return img
 
-    def tap(self, x: int, y: int) -> None:
+    def tap(self, x: int, y: int, jitter_px: int = 0) -> None:
+        """Tap at (x, y). If jitter_px > 0, randomizes the actual tap point
+        within a uniform [-jitter_px, +jitter_px] box around (x, y). Helps
+        avoid pixel-perfect-repeat behavioral fingerprinting."""
+        if jitter_px > 0:
+            x += random.randint(-jitter_px, jitter_px)
+            y += random.randint(-jitter_px, jitter_px)
         self._run(["shell", "input", "tap", str(x), str(y)])
 
     def back(self) -> None:

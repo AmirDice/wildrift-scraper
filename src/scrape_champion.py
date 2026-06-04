@@ -26,10 +26,16 @@ from pathlib import Path
 
 import cv2
 
-from .adb_client import ADBClient, ADBError
-from .config import ROWS_PER_PAGE, SCREEN_5_OCR_REGION, load_screen_points
-from .ocr import find_champion_winrates
+from .adb_client import ADBClient, ADBError, jittered_sleep
+from .config import (
+    ROWS_PER_PAGE,
+    SCREEN_2_BADGE_X_RANGE,
+    SCREEN_5_OCR_REGION,
+    load_screen_points,
+)
+from .ocr import find_champion_winrates, read_all_visible_ranks
 from .storage import CSVWriter, LeaderboardRow
+from .strip import find_target_in_strip
 
 
 def main() -> int:
@@ -42,9 +48,14 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"), help="CSV file to append to")
     parser.add_argument("--save-screenshots", action="store_true", help="Save the screen 5 screenshot for each rank")
     parser.add_argument("--swipe-scale", type=float, default=0.8, help="Multiplier on the per-page swipe distance (tune if scroll under/over-shoots)")
-    parser.add_argument("--swipe-duration-ms", type=int, default=1000, help="Swipe gesture duration in ms (longer = more controlled, less fling)")
+    parser.add_argument("--swipe-duration-ms", type=int, default=1500, help="Swipe gesture duration in ms (longer = more controlled, less fling)")
     parser.add_argument("--scroll-wait", type=float, default=1.5, help="Extra seconds to wait after a scroll for the list to settle")
-    parser.add_argument("--reset-every", type=int, default=6, help="Wild Rift resets the scroll position after this many profile views; bot re-scrolls when reached")
+    parser.add_argument("--max-strip-swipes", type=int, default=3, help="If target champion isn't in the first 4 tiles on screen 5, swipe the strip up to N times to find it")
+    parser.add_argument("--strip-swipe-scale", type=float, default=0.7, help="Scale on screen-5 strip swipe distance")
+    parser.add_argument("--strip-swipe-duration-ms", type=int, default=800, help="Screen-5 strip swipe duration")
+    parser.add_argument("--max-scroll-attempts", type=int, default=4, help="Per-rank scroll budget — if OCR can't bring target rank on-screen in this many tries, skip the rank")
+    parser.add_argument("--tap-jitter-px", type=int, default=8, help="Random offset (in pixels) added to each tap. Helps avoid pixel-perfect repeat behavior. Set 0 to disable.")
+    parser.add_argument("--time-jitter-ms", type=int, default=200, help="Random ms added/subtracted from each step_wait. Set 0 to disable.")
     args = parser.parse_args()
 
     # Load all 5 screens' tap points
@@ -122,69 +133,135 @@ def main() -> int:
 
     # screen 1 -> screen 2 (once per champion)
     print(f"enter champion: tap ({champ_tap[0]}, {champ_tap[1]})")
-    client.tap(*champ_tap)
-    time.sleep(args.step_wait)
+    client.tap(*champ_tap, jitter_px=args.tap_jitter_px)
+    jittered_sleep(args.step_wait, args.time_jitter_ms)
+
+    def do_swipe(rows: float) -> None:
+        """Swipe up by `rows` row-pitches. Negative `rows` = swipe DOWN
+        (scroll back to earlier ranks)."""
+        if rows >= 0:
+            start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
+            end_y = max(50, int(round(start_y - rows * row_pitch * args.swipe_scale)))
+        else:
+            start_y = rank_1_y
+            end_y = min(840, int(round(start_y + abs(rows) * row_pitch * args.swipe_scale)))
+        client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
+        jittered_sleep(args.step_wait + args.scroll_wait, args.time_jitter_ms)
 
     def scroll_to_next_page() -> None:
-        """Swipe up on screen 2 so the next ROWS_PER_PAGE ranks come into view.
-
-        Anchors the swipe inside the visible list — starts at the last visible
-        rank's row position, drags upward past the first rank's position. This
-        keeps the touch inside the scrollable container (avoids landing on the
-        fixed self-stats footer below the list).
-        """
-        # Last visible row position
+        """Swipe up so the next ROWS_PER_PAGE ranks come into view."""
         start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
-        # Drag distance: ROWS_PER_PAGE * pitch (so list scrolls by ~5 rows)
         distance_px = int(round(ROWS_PER_PAGE * row_pitch * args.swipe_scale))
-        end_y = max(50, start_y - distance_px)  # clamp so it stays on-screen
+        end_y = max(50, start_y - distance_px)
         print(f"  swipe scroll      -> ({rank_1_x}, {start_y}) -> ({rank_1_x}, {end_y})  [{args.swipe_duration_ms}ms]")
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
-        time.sleep(args.step_wait + args.scroll_wait)
+        jittered_sleep(args.step_wait + args.scroll_wait, args.time_jitter_ms)
+
+    def find_rank_slot(visible: dict[int, int], target: int) -> int | None:
+        """Return the slot index that contains `target` rank.
+
+        If `target` is in `visible.values()`, return its slot directly.
+        Otherwise infer from any visible slot, assuming consecutive ranks
+        (slot N = ref_rank + (N - ref_slot)). Returns None if target can't
+        be inferred to be on-screen.
+        """
+        if not visible:
+            return None
+        if target in visible.values():
+            return next(s for s, r in visible.items() if r == target)
+        # Infer using the lowest-slot detection as reference (most reliable
+        # since rank 1 trophy doesn't OCR, but slots 1..4 usually do).
+        ref_slot = min(visible.keys())
+        ref_rank = visible[ref_slot]
+        target_slot = ref_slot + (target - ref_rank)
+        if 0 <= target_slot < ROWS_PER_PAGE:
+            return target_slot
+        return None
+
+    def locate_target_rank(target: int, max_scrolls: int = 4) -> int | None:
+        """Scroll/swipe screen 2 until `target` is visible. Returns the slot
+        index where target lives, or None if we couldn't bring it on-screen
+        within max_scrolls attempts. Self-correcting via OCR — no oscillation
+        loop, because we only scroll when target is genuinely off-screen."""
+        for attempt in range(max_scrolls + 1):
+            img = client.screenshot()
+            visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
+            slot = find_rank_slot(visible, target)
+            if slot is not None:
+                vis_str = ", ".join(f"s{s}=r{r}" for s, r in sorted(visible.items()))
+                print(f"  visible: {{{vis_str}}}  -> rank {target} at slot {slot}")
+                return slot
+            if attempt >= max_scrolls:
+                print(f"  could not locate rank {target} after {attempt} scroll(s); visible={visible}")
+                return None
+            # Decide direction. If we can't read any badge AND target>1,
+            # assume we need to scroll forward.
+            if not visible:
+                if target == 1:
+                    print(f"  no badges read; assuming we're on page 1 (rank 1 = slot 0)")
+                    return 0  # initial state, rank 1 = gold trophy, doesn't OCR
+                print(f"  no badges read; scrolling forward")
+                scroll_to_next_page()
+                continue
+            min_visible = min(visible.values())
+            max_visible = max(visible.values())
+            if target < min_visible:
+                rows_back = min_visible - target
+                print(f"  target {target} below visible (min={min_visible}); swipe back ~{rows_back}r")
+                do_swipe(-rows_back)
+            else:  # target > max_visible
+                rows_fwd = target - max_visible
+                print(f"  target {target} above visible (max={max_visible}); swipe forward ~{rows_fwd}r")
+                if rows_fwd >= ROWS_PER_PAGE:
+                    scroll_to_next_page()
+                else:
+                    do_swipe(rows_fwd)
+        return None
 
     successes = 0
-    current_page = 0  # which page (0-indexed) screen 2 is showing
     profiles_since_reset = 0
 
     for rank in range(1, args.n + 1):
-        target_page = (rank - 1) // ROWS_PER_PAGE
-        # Scroll forward as many times as needed to land on the target page
-        while current_page < target_page:
-            print(f"\n--- scrolling from page {current_page + 1} to {current_page + 2} ---")
-            scroll_to_next_page()
-            current_page += 1
-            if args.save_screenshots:
-                img = client.screenshot()
-                cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_pre_scroll_p{current_page + 1}.png"), img)
+        print(f"\nrank {rank}:")
+        slot = locate_target_rank(rank, max_scrolls=args.max_scroll_attempts)
+        if slot is None:
+            print(f"  skipping rank {rank} (not found)")
+            writer.write(LeaderboardRow(
+                champion=args.target,
+                rank=rank,
+                player_name="",
+                winrate=None,
+            ))
+            continue
 
         try:
-            slot = (rank - 1) % ROWS_PER_PAGE
             px, py = slot_tap(slot)
-            print(f"\nrank {rank} (page {current_page + 1}, slot {slot}):")
-            print(f"  tap player row    -> ({px}, {py})")
-            client.tap(px, py)
-            time.sleep(args.step_wait)
+            print(f"  tap player row    -> ({px}, {py})  [slot {slot}]")
+            client.tap(px, py, jitter_px=args.tap_jitter_px)
+            jittered_sleep(args.step_wait, args.time_jitter_ms)
 
             print(f"  tap view-profile  -> ({view_profile_tap[0]}, {view_profile_tap[1]})")
-            client.tap(*view_profile_tap)
-            time.sleep(args.step_wait)
+            client.tap(*view_profile_tap, jitter_px=args.tap_jitter_px)
+            jittered_sleep(args.step_wait, args.time_jitter_ms)
 
             print(f"  tap champ-and-lane-> ({champ_and_lane_tap[0]}, {champ_and_lane_tap[1]})")
-            client.tap(*champ_and_lane_tap)
-            time.sleep(args.step_wait)
+            client.tap(*champ_and_lane_tap, jitter_px=args.tap_jitter_px)
+            jittered_sleep(args.step_wait, args.time_jitter_ms)
 
-            img = client.screenshot()
+            target_wr, found, swipes_done, img = find_target_in_strip(
+                client,
+                args.target,
+                max_swipes=args.max_strip_swipes,
+                swipe_scale=args.strip_swipe_scale,
+                swipe_duration_ms=args.strip_swipe_duration_ms,
+            )
             if args.save_screenshots:
                 path = data_dir / f"run_rank_{rank:03d}.png"
                 cv2.imwrite(str(path), img)
 
-            found = find_champion_winrates(img, SCREEN_5_OCR_REGION)
-            target_wr = next(
-                (wr for c, wr in found.items() if c.lower() == args.target.lower()),
-                None,
-            )
             visible = ", ".join(found.keys()) if found else "(none)"
-            print(f"  OCR visible       : {visible}")
+            swipe_note = f" (after {swipes_done} swipe{'s' if swipes_done != 1 else ''})" if swipes_done else ""
+            print(f"  OCR visible       : {visible}{swipe_note}")
             print(f"  {args.target} winrate : {target_wr}")
 
             writer.write(LeaderboardRow(
@@ -197,14 +274,12 @@ def main() -> int:
                 successes += 1
 
             print(f"  tap back          -> ({back_tap[0]}, {back_tap[1]})")
-            client.tap(*back_tap)
-            time.sleep(args.step_wait)
+            client.tap(*back_tap, jitter_px=args.tap_jitter_px)
+            jittered_sleep(args.step_wait, args.time_jitter_ms)
 
-            profiles_since_reset += 1
-            if profiles_since_reset >= args.reset_every:
-                print(f"  [Wild Rift resets after {args.reset_every} profile views — assuming list is back at page 1]")
-                current_page = 0
-                profiles_since_reset = 0
+            # No reset bookkeeping needed — next iteration OCRs to find the
+            # next target rank's slot, automatically handling Wild Rift's
+            # reset-to-page-1 behavior.
         except Exception:
             print(f"\nrank {rank} crashed:")
             traceback.print_exc()
