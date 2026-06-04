@@ -28,12 +28,15 @@ import cv2
 
 from .adb_client import ADBClient, ADBError, jittered_sleep
 from .config import (
+    CALIBRATION_FILE,
     ROWS_PER_PAGE,
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_2_SAFE_Y_BOTTOM,
     SCREEN_2_SAFE_Y_TOP,
     SCREEN_5_OCR_REGION,
+    load_calibration,
     load_screen_points,
+    save_calibration,
 )
 from .ocr import find_champion_winrates, read_all_visible_ranks
 from .storage import CSVWriter, LeaderboardRow
@@ -59,6 +62,7 @@ def main() -> int:
     parser.add_argument("--reset-every", type=int, default=6, help="Wild Rift resets the scroll position after this many profile views; bot tracks this and re-scrolls accordingly")
     parser.add_argument("--max-align-adjustments", type=int, default=3, help="Max micro-swipes to align the page-top rank into the safe y-zone after a page scroll")
     parser.add_argument("--no-learn-alignment", action="store_true", help="Disable caching of the first alignment correction; re-OCR on every page boundary")
+    parser.add_argument("--recalibrate", action="store_true", help="Ignore any persisted calibration and re-learn it from scratch this run")
     parser.add_argument("--tap-jitter-px", type=int, default=8, help="Random offset (in pixels) added to each tap. Helps avoid pixel-perfect repeat behavior. Set 0 to disable.")
     parser.add_argument("--time-jitter-ms", type=int, default=200, help="Random ms added/subtracted from each step_wait. Set 0 to disable.")
     args = parser.parse_args()
@@ -164,8 +168,13 @@ def main() -> int:
 
     # Cached correction (in row pitches) learned during the first successful
     # alignment. On subsequent page scrolls we apply this directly instead of
-    # re-OCR'ing. None until learned.
+    # re-OCR'ing. Loaded from disk if present; saved on first learn.
     learned: dict[str, float | None] = {"correction_rows": None}
+    if not args.recalibrate:
+        cal = load_calibration()
+        if "screen_2_post_scroll_correction_rows" in cal:
+            learned["correction_rows"] = float(cal["screen_2_post_scroll_correction_rows"])
+            print(f"loaded calibration: post-scroll correction = {learned['correction_rows']:+.3f}r (from {CALIBRATION_FILE.name})")
 
     def align_slot_0_to(target_rank: int) -> bool:
         """After a page scroll, ensure `target_rank`'s badge sits at slot 0
@@ -225,7 +234,8 @@ def main() -> int:
                 # Persist what we learned (only on first successful calibration)
                 if not args.no_learn_alignment and learned["correction_rows"] is None:
                     learned["correction_rows"] = accumulated_correction
-                    print(f"  [calibration learned: {accumulated_correction:+.3f}r post-scroll correction — will skip OCR alignment on subsequent pages]")
+                    save_calibration({"screen_2_post_scroll_correction_rows": accumulated_correction})
+                    print(f"  [calibration learned: {accumulated_correction:+.3f}r — saved to {CALIBRATION_FILE.name}; no OCR on subsequent runs]")
                 return True
 
             if attempt >= args.max_align_adjustments:
