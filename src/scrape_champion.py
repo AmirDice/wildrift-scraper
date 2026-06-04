@@ -255,24 +255,24 @@ def main() -> int:
         target_slot = (rank - 1) % ROWS_PER_PAGE
         print(f"\nrank {rank} (page {target_page + 1}, slot {target_slot}):")
 
-        # Page-scroll if not on the right page (e.g. first time, or after reset)
+        # Page-scroll if not on the right page (first time, or after reset).
+        # Apply the cached correction after EACH page scroll — so the
+        # post-scroll slot layout is the same whether we're targeting slot 0
+        # or any other slot. Critical for handling resets that fire mid-page.
         while current_page < target_page:
             print(f"  --- scrolling from page {current_page + 1} to {current_page + 2} ---")
             scroll_to_next_page()
             current_page += 1
-
-        # Alignment check ONLY on the first rank of a freshly-arrived page.
-        # No verification for ranks 7, 8, 9, 10 (mid-page) — we trust slot pitch.
-        if target_slot == 0 and target_page > 0:
             cached = learned["correction_rows"]
-            if cached is not None and not args.no_learn_alignment:
-                if abs(cached) > 0.03:
-                    print(f"  applying cached correction: {cached:+.3f}r (no OCR)")
-                    do_swipe(cached)
-                else:
-                    print(f"  cached correction is ~0; no adjustment needed")
-            else:
-                align_slot_0_to(rank)
+            if cached is not None and not args.no_learn_alignment and abs(cached) > 0.03:
+                print(f"  applying cached correction: {cached:+.3f}r (no OCR)")
+                do_swipe(cached)
+
+        # OCR alignment runs ONLY to learn the correction the first time —
+        # only for first-rank-of-page (rank 6, 11, 16, ...) and only if we
+        # don't already have a cached value.
+        if target_slot == 0 and target_page > 0 and (learned["correction_rows"] is None or args.no_learn_alignment):
+            align_slot_0_to(rank)
 
         try:
             slot = target_slot
