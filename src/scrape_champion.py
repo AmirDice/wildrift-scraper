@@ -28,15 +28,12 @@ import cv2
 
 from .adb_client import ADBClient, ADBError
 from .config import (
-    CALIBRATION_FILE,
     ROWS_PER_PAGE,
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_2_SAFE_Y_BOTTOM,
     SCREEN_2_SAFE_Y_TOP,
     SCREEN_5_OCR_REGION,
-    load_calibration,
     load_screen_points,
-    save_calibration,
 )
 from .ocr import find_champion_winrates, read_all_visible_ranks
 from .storage import CSVWriter, LeaderboardRow
@@ -59,10 +56,6 @@ def main() -> int:
     parser.add_argument("--strip-swipe-scale", type=float, default=0.7, help="Scale on screen-5 strip swipe distance")
     parser.add_argument("--strip-swipe-duration-ms", type=int, default=800, help="Screen-5 strip swipe duration")
     parser.add_argument("--max-scroll-attempts", type=int, default=4, help="Per-rank scroll budget — if OCR can't bring target rank on-screen in this many tries, skip the rank")
-    parser.add_argument("--reset-every", type=int, default=6, help="Wild Rift resets the scroll position after this many profile views; bot tracks this and re-scrolls accordingly")
-    parser.add_argument("--max-align-adjustments", type=int, default=3, help="Max micro-swipes to align the page-top rank into the safe y-zone after a page scroll")
-    parser.add_argument("--no-learn-alignment", action="store_true", help="Disable caching of the first alignment correction; re-OCR on every page boundary")
-    parser.add_argument("--recalibrate", action="store_true", help="Ignore any persisted calibration and re-learn it from scratch this run")
     args = parser.parse_args()
 
     # Load all 5 screens' tap points
@@ -174,169 +167,87 @@ def main() -> int:
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
         time.sleep(args.step_wait + args.scroll_wait)
 
-    # Cached correction (in row pitches) learned during the first successful
-    # alignment. On subsequent page scrolls we apply this directly instead of
-    # re-OCR'ing. Loaded from disk if present; saved on first learn.
-    learned: dict[str, float | None] = {"correction_rows": None}
-    if not args.recalibrate:
-        cal = load_calibration()
-        if "screen_2_post_scroll_correction_rows" in cal:
-            learned["correction_rows"] = float(cal["screen_2_post_scroll_correction_rows"])
-            print(f"loaded calibration: post-scroll correction = {learned['correction_rows']:+.3f}r (from {CALIBRATION_FILE.name})")
+    def locate_target_rank(target_rank: int, max_attempts: int = 6) -> int | None:
+        """Per-rank OCR with bounding-box safe-zone check.
 
-    def align_slot_0_to(target_rank: int) -> bool:
-        """After a page scroll, ensure `target_rank`'s badge sits at slot 0
-        with bbox_top close to SCREEN_2_SAFE_Y_TOP. Micro-swipes by the exact
-        pixel deficit to push it into place. Returns True if aligned, False
-        if max attempts exhausted.
-
-        Tracks the cumulative correction applied across attempts; on first
-        successful alignment, stores that into `learned` so subsequent page
-        scrolls can apply the same correction directly without OCR.
-
-        Only run after a fresh page scroll — never per-rank.
+        For each attempt:
+          1. OCR all visible badges (with y_top/y_bot bounding boxes).
+          2. If target rank is detected at any slot AND its badge is fully in
+             the safe zone [SCREEN_2_SAFE_Y_TOP, SCREEN_2_SAFE_Y_BOTTOM] →
+             return that slot.
+          3. If target is detected but partially clipped at top or bottom →
+             pixel-precise micro-swipe to push it into the safe zone.
+          4. If target not detected → scroll forward or back based on which
+             ranks are visible.
+        Returns the slot index to tap, or None if exhausted.
         """
-        # Acceptable range for the top of slot 0's digit bbox.
-        # Spec: page-top rank (6, 11, 16, ...) should have y_top == 170.
-        # Allow a tight window around it; adjustments aim for 170 exactly.
-        SLOT_0_TOP_LO = SCREEN_2_SAFE_Y_TOP - 5    # 165
-        SLOT_0_TOP_HI = SCREEN_2_SAFE_Y_TOP + 10   # 180
-        SLOT_0_TOP_TARGET = SCREEN_2_SAFE_Y_TOP    # 170 (aim point)
+        for attempt in range(max_attempts):
+            img = client.screenshot()
+            visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
 
-        accumulated_correction = 0.0
-
-        def filter_consistent(
-            raw: dict[int, tuple[int, int, int]],
-        ) -> dict[int, tuple[int, int, int]]:
-            """Return the largest subset where ranks form a consecutive
-            sequence (slot_delta == rank_delta). Tesseract sometimes misreads
-            digits — e.g. {s3=r7, s4=r10} can't both be right because the slot
-            spacing is +1 but the rank spacing is +3. Drop those."""
-            if len(raw) <= 1:
-                return raw
-            items = sorted(raw.items())
-            best: list[tuple[int, tuple[int, int, int]]] = []
-            for anchor_slot, (anchor_rank, _, _) in items:
-                cluster = [
-                    (s, v) for s, v in items
-                    if v[0] == anchor_rank + (s - anchor_slot)
-                ]
-                if len(cluster) > len(best):
-                    best = cluster
-            return dict(best)
-
-        for attempt in range(args.max_align_adjustments + 1):
-            # OCR with retries — the list can be still settling right after a
-            # page scroll (blurry/moving badges) OR Tesseract can misread one
-            # of the digits and produce an inconsistent set. Retry until we
-            # have at least 2 detections that form a consecutive sequence,
-            # or the target rank itself is visible.
-            visible: dict[int, tuple[int, int, int]] = {}
-            for ocr_try in range(4):
-                img = client.screenshot()
-                raw_visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
-                visible = filter_consistent(raw_visible)
-                target_seen = target_rank in {v[0] for v in visible.values()}
-                if len(visible) >= 2 or target_seen:
-                    break
-                if ocr_try == 0:
-                    if not raw_visible:
-                        print(f"  align[{attempt}]: OCR empty; waiting for list to settle")
-                    elif raw_visible != visible:
-                        dropped = {k: v[0] for k, v in raw_visible.items() if k not in visible}
-                        print(f"  align[{attempt}]: dropping inconsistent detections {dropped}; retrying")
-                    else:
-                        print(f"  align[{attempt}]: only {len(visible)} detection(s); retrying")
-                time.sleep(0.6)
-
-            # Find target's actual y position
-            actual: tuple[int, int, int] | None = None  # (slot, y_top, y_bot)
+            target_entry: tuple[int, int, int] | None = None  # (slot, yt, yb)
             for slot, (rank, yt, yb) in visible.items():
                 if rank == target_rank:
-                    actual = (slot, yt, yb)
+                    target_entry = (slot, yt, yb)
                     break
-            if actual is None:
-                # Infer position from a visible neighbor (assume consecutive ranks)
-                if not visible:
-                    if attempt >= args.max_align_adjustments:
-                        print(f"  align: OCR still empty after {attempt} attempts; giving up")
-                        return False
-                    print(f"  align[{attempt}]: still no OCR; trying a tiny down-swipe to nudge the list")
-                    do_swipe(-0.05)
-                    continue
-                ref_slot = min(visible.keys())
-                ref_rank, ref_yt, _ = visible[ref_slot]
-                inferred_slot = ref_slot + (target_rank - ref_rank)
-                if 0 <= inferred_slot < ROWS_PER_PAGE:
-                    est_yt = ref_yt + int(round((inferred_slot - ref_slot) * row_pitch))
-                    actual = (inferred_slot, est_yt, est_yt + 35)
+
+            if target_entry is not None:
+                slot, y_top, y_bot = target_entry
+                vis_str = ", ".join(f"s{s}=r{v[0]}(y={v[1]})" for s, v in sorted(visible.items()))
+                if SCREEN_2_SAFE_Y_TOP <= y_top and y_bot <= SCREEN_2_SAFE_Y_BOTTOM:
+                    print(f"  locate[{attempt}]: visible={{{vis_str}}}  -> rank {target_rank} at slot {slot}, y=[{y_top},{y_bot}] OK")
+                    return slot
+                # Partial visibility → micro-swipe by the exact pixel deficit
+                if y_top < SCREEN_2_SAFE_Y_TOP:
+                    deficit_px = SCREEN_2_SAFE_Y_TOP - y_top + 5
+                    rows = -deficit_px / row_pitch  # swipe back
+                    print(f"  locate[{attempt}]: rank {target_rank} y_top={y_top} < {SCREEN_2_SAFE_Y_TOP}; swipe back {rows:+.2f}r")
+                else:  # y_bot > SCREEN_2_SAFE_Y_BOTTOM
+                    deficit_px = y_bot - SCREEN_2_SAFE_Y_BOTTOM + 5
+                    rows = deficit_px / row_pitch  # swipe forward
+                    print(f"  locate[{attempt}]: rank {target_rank} y_bot={y_bot} > {SCREEN_2_SAFE_Y_BOTTOM}; swipe forward {rows:+.2f}r")
+                do_swipe(rows)
+                continue
+
+            # Target not directly seen — decide which way to scroll
+            if not visible:
+                print(f"  locate[{attempt}]: OCR empty; scrolling forward")
+                scroll_to_next_page()
+                continue
+            visible_ranks = [v[0] for v in visible.values()]
+            min_v = min(visible_ranks)
+            max_v = max(visible_ranks)
+            vis_str = ", ".join(f"s{s}=r{v[0]}" for s, v in sorted(visible.items()))
+            if target_rank < min_v:
+                rows_back = min_v - target_rank
+                print(f"  locate[{attempt}]: target {target_rank} < min_visible={min_v}; swipe back ~{rows_back}r ({vis_str})")
+                do_swipe(-rows_back)
+            else:
+                rows_fwd = target_rank - max_v
+                print(f"  locate[{attempt}]: target {target_rank} > max_visible={max_v}; scrolling forward ~{rows_fwd}r ({vis_str})")
+                if rows_fwd >= ROWS_PER_PAGE:
+                    scroll_to_next_page()
                 else:
-                    print(f"  align[{attempt}]: target rank {target_rank} off-screen; visible={[v[0] for v in visible.values()]}")
-                    if attempt >= args.max_align_adjustments:
-                        return False
-                    # Try a coarse page swipe in the right direction
-                    visible_ranks_only = [v[0] for v in visible.values()]
-                    if target_rank > max(visible_ranks_only):
-                        scroll_to_next_page()
-                    else:
-                        do_swipe(-(min(visible_ranks_only) - target_rank))
-                    continue
+                    do_swipe(rows_fwd)
 
-            slot, y_top, y_bot = actual
-            vis_str = ", ".join(f"s{s}=r{v[0]}(y={v[1]})" for s, v in sorted(visible.items()))
-            if slot == 0 and SLOT_0_TOP_LO <= y_top <= SLOT_0_TOP_HI:
-                print(f"  align[{attempt}]: visible={{{vis_str}}}  -> rank {target_rank} at slot 0, y_top={y_top} OK")
-                # Persist what we learned (only on first successful calibration)
-                if not args.no_learn_alignment and learned["correction_rows"] is None:
-                    learned["correction_rows"] = accumulated_correction
-                    save_calibration({"screen_2_post_scroll_correction_rows": accumulated_correction})
-                    print(f"  [calibration learned: {accumulated_correction:+.3f}r — saved to {CALIBRATION_FILE.name}; no OCR on subsequent runs]")
-                return True
-
-            if attempt >= args.max_align_adjustments:
-                print(f"  align: stopped after {attempt} adjustments (slot {slot}, y_top={y_top}); tapping anyway")
-                return False
-
-            # Compute pixel deficit and swipe to correct. Aim is y_top=170.
-            actual_y_top_at_slot_0 = y_top - int(round(slot * row_pitch))
-            deficit_px = actual_y_top_at_slot_0 - SLOT_0_TOP_TARGET
-            # deficit_px > 0  -> slot 0 currently shows something whose y_top is below 170,
-            #                    meaning we undershot the page scroll. Swipe forward.
-            # deficit_px < 0  -> slot 0's content is above 170, we overshot. Swipe back.
-            rows = deficit_px / row_pitch
-            print(f"  align[{attempt}]: visible={{{vis_str}}}  rank {target_rank} at slot {slot}, "
-                  f"effective y_top@s0={actual_y_top_at_slot_0}, deficit={deficit_px:+d}px ({rows:+.2f}r)")
-            do_swipe(rows)
-            accumulated_correction += rows
-        return False
+        # Out of attempts — best-effort fall back to the slot where target_rank
+        # would naturally land if it were detected; otherwise return None.
+        print(f"  locate: could not bring rank {target_rank} into safe zone after {max_attempts} attempts")
+        return None
 
     successes = 0
-    current_page = 0  # which screen-2 page (0-indexed) is currently visible
-    profiles_since_reset = 0
 
     for rank in range(1, args.n + 1):
-        target_page = (rank - 1) // ROWS_PER_PAGE
-        target_slot = (rank - 1) % ROWS_PER_PAGE
-        print(f"\nrank {rank} (page {target_page + 1}, slot {target_slot}):")
-
-        # Page-scroll if not on the right page (first time, or after reset).
-        # Apply cached correction after each scroll. OCR alignment runs only
-        # on the very first time, to learn the correction.
-        while current_page < target_page:
-            print(f"  --- scrolling from page {current_page + 1} to {current_page + 2} ---")
-            scroll_to_next_page()
-            current_page += 1
-            cached = learned["correction_rows"]
-            if cached is not None and not args.no_learn_alignment and abs(cached) > 0.03:
-                print(f"  applying cached correction: {cached:+.3f}r")
-                do_swipe(cached)
-            if learned["correction_rows"] is None or args.no_learn_alignment:
-                first_rank_of_page = current_page * ROWS_PER_PAGE + 1
-                print(f"  running OCR alignment (no cache yet)")
-                align_slot_0_to(first_rank_of_page)
+        print(f"\nrank {rank}:")
+        slot = locate_target_rank(rank)
+        if slot is None:
+            print(f"  skipping rank {rank} (could not locate)")
+            writer.write(LeaderboardRow(
+                champion=args.target, rank=rank, player_name="", winrate=None,
+            ))
+            continue
 
         try:
-            slot = target_slot
             px, py = slot_tap(slot)
             print(f"  tap player row    -> ({px}, {py})  [slot {slot}]")
             client.tap(px, py)
@@ -387,12 +298,9 @@ def main() -> int:
             print(f"  tap back          -> ({back_tap[0]}, {back_tap[1]})")
             client.tap(*back_tap)
             time.sleep(args.step_wait)
-
-            profiles_since_reset += 1
-            if profiles_since_reset >= args.reset_every:
-                print(f"  [Wild Rift resets list after {args.reset_every} profile views — current_page = 0]")
-                current_page = 0
-                profiles_since_reset = 0
+            # locate_target_rank handles all scroll state via OCR each iteration,
+            # so a Wild Rift list reset just means the next iteration's OCR
+            # reads ranks 1-5 and scrolls back forward to wherever it needs.
         except Exception:
             print(f"\nrank {rank} crashed:")
             traceback.print_exc()
