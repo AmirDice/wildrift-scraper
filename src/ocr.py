@@ -208,6 +208,24 @@ def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[
     return best[1]
 
 
+def read_champion_name(image: np.ndarray, region: tuple[int, int, int, int]) -> str | None:
+    """OCR a region containing a single champion-name label (e.g. "AATROX")
+    and return the canonical champion name. Returns None if no match."""
+    from . import champions as champ_module
+
+    x, y, w, h = region
+    crop = image[y:y + h, x:x + w]
+    result = read_text(crop, GENERAL_TESSERACT_CONFIG)
+    tokens = [t for t in result.text.split() if t.strip()]
+    # Try longest spans first (handles "Master Yi", "Twisted Fate", etc.)
+    for span in range(min(champ_module.MAX_WORD_COUNT, len(tokens)), 0, -1):
+        for start in range(len(tokens) - span + 1):
+            canonical = champ_module.match(tokens[start:start + span])
+            if canonical is not None:
+                return canonical
+    return None
+
+
 def find_champion_winrates(
     image: np.ndarray,
     region: tuple[int, int, int, int],

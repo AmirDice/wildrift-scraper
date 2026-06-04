@@ -10,6 +10,13 @@ COORDS_DIR = Path(__file__).resolve().parent.parent / "coords"
 # Format: (x, y, w, h) in device-native pixels.
 SCREEN_5_OCR_REGION: tuple[int, int, int, int] = (573, 601, 909, 167)
 
+# OCR region for the big champion-name label at lower-left of screen 2
+# (e.g. "AATROX") — used to identify which champion we're currently on.
+SCREEN_2_CHAMP_NAME_REGION: tuple[int, int, int, int] = (100, 700, 240, 60)
+
+# How many player rows fit on screen 2 without scrolling.
+ROWS_PER_PAGE = 5
+
 
 def load_screen_points(n: int) -> dict[str, tuple[int, int]]:
     """Return name -> (x, y) for coords/screen_N.json."""

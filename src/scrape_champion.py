@@ -27,7 +27,7 @@ from pathlib import Path
 import cv2
 
 from .adb_client import ADBClient, ADBError
-from .config import SCREEN_5_OCR_REGION, load_screen_points
+from .config import ROWS_PER_PAGE, SCREEN_5_OCR_REGION, load_screen_points
 from .ocr import find_champion_winrates
 from .storage import CSVWriter, LeaderboardRow
 
@@ -41,6 +41,10 @@ def main() -> int:
     parser.add_argument("--step-wait", type=float, default=2.0, help="Seconds to wait after each tap")
     parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"), help="CSV file to append to")
     parser.add_argument("--save-screenshots", action="store_true", help="Save the screen 5 screenshot for each rank")
+    parser.add_argument("--swipe-scale", type=float, default=0.8, help="Multiplier on the per-page swipe distance (tune if scroll under/over-shoots)")
+    parser.add_argument("--swipe-duration-ms", type=int, default=1000, help="Swipe gesture duration in ms (longer = more controlled, less fling)")
+    parser.add_argument("--scroll-wait", type=float, default=1.5, help="Extra seconds to wait after a scroll for the list to settle")
+    parser.add_argument("--reset-every", type=int, default=6, help="Wild Rift resets the scroll position after this many profile views; bot re-scrolls when reached")
     args = parser.parse_args()
 
     # Load all 5 screens' tap points
@@ -92,13 +96,15 @@ def main() -> int:
     champ_and_lane_tap = s4["aatrox"]     # screen 4 -> screen 5
     back_tap = s5["back"]                 # screen 5 -> screen 2
 
-    def player_tap(rank: int) -> tuple[int, int]:
-        return (rank_1_x, int(round(rank_1_y + (rank - 1) * row_pitch)))
+    def slot_tap(slot: int) -> tuple[int, int]:
+        """Tap position for the Nth visible row (slot 0 = topmost)."""
+        return (rank_1_x, int(round(rank_1_y + slot * row_pitch)))
 
     print(f"target champion : {args.target}")
     print(f"ranks to scrape : 1..{args.n}")
     print(f"row pitch       : {row_pitch:.1f}px  ({pitch_source})")
-    print(f"player tap ys   : {[player_tap(r)[1] for r in range(1, args.n + 1)]}")
+    print(f"rows per page   : {ROWS_PER_PAGE}")
+    print(f"slot tap ys     : {[slot_tap(s)[1] for s in range(ROWS_PER_PAGE)]}")
     print(f"CSV output      : {args.output}")
     print()
 
@@ -119,11 +125,42 @@ def main() -> int:
     client.tap(*champ_tap)
     time.sleep(args.step_wait)
 
+    def scroll_to_next_page() -> None:
+        """Swipe up on screen 2 so the next ROWS_PER_PAGE ranks come into view.
+
+        Anchors the swipe inside the visible list — starts at the last visible
+        rank's row position, drags upward past the first rank's position. This
+        keeps the touch inside the scrollable container (avoids landing on the
+        fixed self-stats footer below the list).
+        """
+        # Last visible row position
+        start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
+        # Drag distance: ROWS_PER_PAGE * pitch (so list scrolls by ~5 rows)
+        distance_px = int(round(ROWS_PER_PAGE * row_pitch * args.swipe_scale))
+        end_y = max(50, start_y - distance_px)  # clamp so it stays on-screen
+        print(f"  swipe scroll      -> ({rank_1_x}, {start_y}) -> ({rank_1_x}, {end_y})  [{args.swipe_duration_ms}ms]")
+        client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
+        time.sleep(args.step_wait + args.scroll_wait)
+
     successes = 0
+    current_page = 0  # which page (0-indexed) screen 2 is showing
+    profiles_since_reset = 0
+
     for rank in range(1, args.n + 1):
+        target_page = (rank - 1) // ROWS_PER_PAGE
+        # Scroll forward as many times as needed to land on the target page
+        while current_page < target_page:
+            print(f"\n--- scrolling from page {current_page + 1} to {current_page + 2} ---")
+            scroll_to_next_page()
+            current_page += 1
+            if args.save_screenshots:
+                img = client.screenshot()
+                cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_pre_scroll_p{current_page + 1}.png"), img)
+
         try:
-            px, py = player_tap(rank)
-            print(f"\nrank {rank}:")
+            slot = (rank - 1) % ROWS_PER_PAGE
+            px, py = slot_tap(slot)
+            print(f"\nrank {rank} (page {current_page + 1}, slot {slot}):")
             print(f"  tap player row    -> ({px}, {py})")
             client.tap(px, py)
             time.sleep(args.step_wait)
@@ -153,7 +190,7 @@ def main() -> int:
             writer.write(LeaderboardRow(
                 champion=args.target,
                 rank=rank,
-                player_name="",  # TODO: OCR from screen 2 or profile header
+                player_name="",
                 winrate=target_wr,
             ))
             if target_wr is not None:
@@ -162,11 +199,17 @@ def main() -> int:
             print(f"  tap back          -> ({back_tap[0]}, {back_tap[1]})")
             client.tap(*back_tap)
             time.sleep(args.step_wait)
+
+            profiles_since_reset += 1
+            if profiles_since_reset >= args.reset_every:
+                print(f"  [Wild Rift resets after {args.reset_every} profile views — assuming list is back at page 1]")
+                current_page = 0
+                profiles_since_reset = 0
         except Exception:
             print(f"\nrank {rank} crashed:")
             traceback.print_exc()
             print("aborting loop")
-            break
+            return 1
 
     print(f"\ndone. {successes}/{args.n} winrates parsed. CSV -> {args.output}")
     return 0
