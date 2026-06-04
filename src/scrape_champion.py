@@ -47,7 +47,6 @@ def main() -> int:
     parser.add_argument("--device", default="127.0.0.1:7555")
     parser.add_argument("--no-connect", action="store_true")
     parser.add_argument("--step-wait", type=float, default=2.0, help="Seconds to wait after each tap")
-    parser.add_argument("--profile-load-wait", type=float, default=1.5, help="Extra seconds (added to step-wait) after the view-profile tap, while the full profile loads")
     parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"), help="CSV file to append to")
     parser.add_argument("--save-screenshots", action="store_true", help="Save the screen 5 screenshot for each rank")
     parser.add_argument("--swipe-scale", type=float, default=0.8, help="Multiplier on the per-page swipe distance (tune if scroll under/over-shoots)")
@@ -284,10 +283,13 @@ def main() -> int:
 
             print(f"  tap view-profile  -> ({view_profile_tap[0]}, {view_profile_tap[1]})")
             client.tap(*view_profile_tap, jitter_px=args.tap_jitter_px)
-            # Profile page is heavier than other transitions — give it extra time.
-            jittered_sleep(args.step_wait + args.profile_load_wait, args.time_jitter_ms)
+            jittered_sleep(args.step_wait, args.time_jitter_ms)
 
-            print(f"  tap champ-and-lane-> ({champ_and_lane_tap[0]}, {champ_and_lane_tap[1]})")
+            # Double-tap CHAMPION AND LANE — first tap can be eaten by a
+            # mid-transition profile, second tap reliably lands the tab.
+            print(f"  tap champ-and-lane (x2) -> ({champ_and_lane_tap[0]}, {champ_and_lane_tap[1]})")
+            client.tap(*champ_and_lane_tap, jitter_px=args.tap_jitter_px)
+            jittered_sleep(0.4, 0)
             client.tap(*champ_and_lane_tap, jitter_px=args.tap_jitter_px)
             jittered_sleep(args.step_wait, args.time_jitter_ms)
 
