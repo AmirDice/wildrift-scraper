@@ -223,30 +223,47 @@ def read_rank_badge(
     row_pitch: float,
     badge_x_range: tuple[int, int],
     band_half_height: int = 45,
-) -> int | None:
-    """OCR the rank-number badge at the given slot. Tries multiple PSMs
-    and both threshold polarities since banner styles vary by rank.
-    Returns the rank number, or None if no digit was detected.
+) -> tuple[int, int, int] | None:
+    """OCR the rank-number badge at the given slot.
 
-    NOTE: rank 1 has a stylized gold trophy badge that does not OCR
-    reliably. Skip verification when expecting rank 1 at slot 0."""
-    import re
+    Returns (rank, y_top, y_bottom) of the detected digit in original image
+    coordinates, or None if nothing parseable was found. y_top/y_bottom give
+    the actual bounding box of the digit on screen — used by the scroll
+    safety check to detect partial visibility.
 
+    Tries multiple PSMs and both threshold polarities since banner styles
+    vary by rank. Rank 1 has a stylized gold trophy that does not OCR.
+    """
     cy = int(round(rank_1_y + slot_idx * row_pitch))
     x0, x1 = badge_x_range
-    crop = image[max(0, cy - band_half_height): cy + band_half_height, x0:x1]
+    y_start = max(0, cy - band_half_height)
+    crop = image[y_start: cy + band_half_height, x0:x1]
     if crop.size == 0:
         return None
+
     for invert in (False, True):
         pre = preprocess(crop, invert=invert)
+        # preprocess() upscales the image; recover the y scale factor so we
+        # can map detected bounding boxes back to original image coords.
+        scale_y = pre.shape[0] / max(1, crop.shape[0])
         for cfg in _RANK_BADGE_CONFIGS:
-            text = pytesseract.image_to_string(pre, config=cfg).strip()
-            match = re.search(r"\d+", text)
-            if match:
+            data = pytesseract.image_to_data(
+                pre, config=cfg, output_type=pytesseract.Output.DICT
+            )
+            n = len(data.get("text", []))
+            for i in range(n):
+                text = (data["text"][i] or "").strip()
+                if not text or not text.isdigit():
+                    continue
                 try:
-                    return int(match.group())
+                    rank = int(text)
                 except ValueError:
                     continue
+                y_top_us = data["top"][i]
+                y_bot_us = y_top_us + data["height"][i]
+                y_top = y_start + int(round(y_top_us / scale_y))
+                y_bot = y_start + int(round(y_bot_us / scale_y))
+                return (rank, y_top, y_bot)
     return None
 
 
@@ -256,9 +273,10 @@ def read_all_visible_ranks(
     row_pitch: float,
     badge_x_range: tuple[int, int],
     num_slots: int = 5,
-) -> dict[int, int]:
-    """Return {slot_idx: rank} for every slot whose badge OCR'd successfully."""
-    out: dict[int, int] = {}
+) -> dict[int, tuple[int, int, int]]:
+    """Return {slot_idx: (rank, y_top, y_bottom)} for every slot whose badge
+    OCR'd successfully. y values are in original image coordinates."""
+    out: dict[int, tuple[int, int, int]] = {}
     for slot in range(num_slots):
         r = read_rank_badge(image, slot, rank_1_y, row_pitch, badge_x_range)
         if r is not None:

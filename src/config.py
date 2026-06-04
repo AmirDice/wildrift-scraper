@@ -29,6 +29,14 @@ SCREEN_5_STRIP_RIGHT_X: int = _x + _w - 30
 # row pitch.
 SCREEN_2_BADGE_X_RANGE: tuple[int, int] = (575, 695)
 
+# Safe-zone y-range on screen 2 — any rank badge whose top y is below this
+# minimum (closer to the top of the screen) is partially cut off; any badge
+# whose bottom y exceeds the maximum is partially cut off at the bottom.
+# When a target badge isn't inside this zone, the bot does a micro-swipe to
+# correct.
+SCREEN_2_SAFE_Y_TOP: int = 170
+SCREEN_2_SAFE_Y_BOTTOM: int = 710
+
 
 def load_screen_points(n: int) -> dict[str, tuple[int, int]]:
     """Return name -> (x, y) for coords/screen_N.json."""
