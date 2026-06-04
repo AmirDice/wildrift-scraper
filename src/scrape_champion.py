@@ -145,14 +145,24 @@ def main() -> int:
 
     def do_swipe(rows: float) -> None:
         """Swipe up by `rows` row-pitches. Negative `rows` = swipe DOWN
-        (scroll back to earlier ranks)."""
+        (scroll back to earlier ranks).
+
+        Duration scales with distance so velocity stays roughly constant:
+        a 0.2-row micro-adjustment uses ~150ms (not 1500ms), otherwise the
+        finger moves too slowly for Android to register a scroll — it gets
+        interpreted as a held tap and the screen doesn't move at all.
+        """
         if rows >= 0:
             start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
             end_y = max(50, int(round(start_y - rows * row_pitch * args.swipe_scale)))
         else:
             start_y = rank_1_y
             end_y = min(840, int(round(start_y + abs(rows) * row_pitch * args.swipe_scale)))
-        client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
+        distance_px = abs(start_y - end_y)
+        ref_distance = ROWS_PER_PAGE * row_pitch * args.swipe_scale
+        # Same velocity as the full-page scroll, but never below 150ms.
+        duration = max(150, int(round(args.swipe_duration_ms * distance_px / max(1, ref_distance))))
+        client.swipe(rank_1_x, start_y, rank_1_x, end_y, duration)
         time.sleep(args.step_wait + args.scroll_wait)
 
     def scroll_to_next_page() -> None:
