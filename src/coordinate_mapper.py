@@ -12,7 +12,8 @@ Controls (focus must be on the image window):
     q / ESC     -> quit (prompts to save if there are unsaved changes)
 
 Run:
-    python -m src.coordinate_mapper                       # defaults
+    python -m src.coordinate_mapper                                   # live device, default output
+    python -m src.coordinate_mapper --image data/1_champion_leaderboard.png --output coords/screen_1.json
     python -m src.coordinate_mapper --device 127.0.0.1:7555 --output coords/ui_map.json
 """
 from __future__ import annotations
@@ -114,24 +115,31 @@ def load_existing(output: Path) -> dict[str, tuple[int, int]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--device", default="127.0.0.1:7555", help="ADB device address")
+    parser.add_argument("--device", default="127.0.0.1:7555", help="ADB device address (ignored if --image is given)")
+    parser.add_argument("--image", type=Path, default=None, help="Map points on a saved screenshot instead of grabbing live")
     parser.add_argument("--output", default="coords/ui_map.json", type=Path, help="JSON file to read/write")
     parser.add_argument("--no-connect", action="store_true", help="Skip 'adb connect' (device already attached)")
     args = parser.parse_args()
 
-    client = ADBClient(device=args.device)
-    if not args.no_connect:
+    if args.image is not None:
+        img = cv2.imread(str(args.image))
+        if img is None:
+            print(f"error: could not read {args.image}", file=sys.stderr)
+            return 1
+        client = None
+    else:
+        client = ADBClient(device=args.device)
+        if not args.no_connect:
+            try:
+                client.connect()
+            except ADBError as e:
+                print(f"error: {e}", file=sys.stderr)
+                return 1
         try:
-            client.connect()
+            img = client.screenshot()
         except ADBError as e:
             print(f"error: {e}", file=sys.stderr)
             return 1
-
-    try:
-        img = client.screenshot()
-    except ADBError as e:
-        print(f"error: {e}", file=sys.stderr)
-        return 1
 
     existing = load_existing(args.output)
     if existing:
@@ -185,12 +193,15 @@ def main() -> int:
             else:
                 print("  nothing to undo")
         elif key == ord("r"):
-            try:
-                state.image = client.screenshot()
-                state.scale = compute_fit_scale(state.image)
-                print("  refreshed screenshot")
-            except ADBError as e:
-                print(f"  refresh failed: {e}")
+            if client is None:
+                print("  refresh only works in live device mode")
+            else:
+                try:
+                    state.image = client.screenshot()
+                    state.scale = compute_fit_scale(state.image)
+                    print("  refreshed screenshot")
+                except ADBError as e:
+                    print(f"  refresh failed: {e}")
 
     cv2.destroyAllWindows()
     return 0

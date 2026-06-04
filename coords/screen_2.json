@@ -1,0 +1,21 @@
+{
+  "device": "127.0.0.1:7555",
+  "resolution": {
+    "width": 1600,
+    "height": 900
+  },
+  "points": {
+    "aatrox": {
+      "x": 782,
+      "y": 208
+    },
+    "player_row_2": {
+      "x": 774,
+      "y": 331
+    },
+    "player_row_5": {
+      "x": 916,
+      "y": 673
+    }
+  }
+}

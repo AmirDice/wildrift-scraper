@@ -1,0 +1,13 @@
+{
+  "device": "127.0.0.1:7555",
+  "resolution": {
+    "width": 1600,
+    "height": 900
+  },
+  "points": {
+    "aatrox": {
+      "x": 597,
+      "y": 860
+    }
+  }
+}

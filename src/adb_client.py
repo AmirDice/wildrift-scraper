@@ -39,6 +39,10 @@ class ADBClient:
     def tap(self, x: int, y: int) -> None:
         self._run(["shell", "input", "tap", str(x), str(y)])
 
+    def back(self) -> None:
+        """Press the Android system back key (KEYCODE_BACK)."""
+        self._run(["shell", "input", "keyevent", "4"])
+
     def swipe(self, x1: int, y1: int, x2: int, y2: int, duration_ms: int = 300) -> None:
         self._run([
             "shell", "input", "swipe",
