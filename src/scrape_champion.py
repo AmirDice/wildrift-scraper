@@ -196,9 +196,12 @@ def main() -> int:
 
         Only run after a fresh page scroll — never per-rank.
         """
-        # Acceptable range for the top of slot 0's digit bbox
+        # Acceptable range for the top of slot 0's digit bbox.
+        # Spec: page-top rank (6, 11, 16, ...) should have y_top == 170.
+        # Allow a tight window around it; adjustments aim for 170 exactly.
         SLOT_0_TOP_LO = SCREEN_2_SAFE_Y_TOP - 5    # 165
-        SLOT_0_TOP_HI = SCREEN_2_SAFE_Y_TOP + 25   # 195
+        SLOT_0_TOP_HI = SCREEN_2_SAFE_Y_TOP + 10   # 180
+        SLOT_0_TOP_TARGET = SCREEN_2_SAFE_Y_TOP    # 170 (aim point)
 
         accumulated_correction = 0.0
 
@@ -250,13 +253,12 @@ def main() -> int:
                 print(f"  align: stopped after {attempt} adjustments (slot {slot}, y_top={y_top}); tapping anyway")
                 return False
 
-            # Compute pixel deficit and swipe to correct
-            target_y_top = (SLOT_0_TOP_LO + SLOT_0_TOP_HI) // 2  # aim for 180
+            # Compute pixel deficit and swipe to correct. Aim is y_top=170.
             actual_y_top_at_slot_0 = y_top - int(round(slot * row_pitch))
-            deficit_px = actual_y_top_at_slot_0 - target_y_top
-            # deficit_px > 0  -> slot 0 currently shows something whose y_top is below 180,
+            deficit_px = actual_y_top_at_slot_0 - SLOT_0_TOP_TARGET
+            # deficit_px > 0  -> slot 0 currently shows something whose y_top is below 170,
             #                    meaning we undershot the page scroll. Swipe forward.
-            # deficit_px < 0  -> slot 0's content is above 180, we overshot. Swipe back.
+            # deficit_px < 0  -> slot 0's content is above 170, we overshot. Swipe back.
             rows = deficit_px / row_pitch
             print(f"  align[{attempt}]: visible={{{vis_str}}}  rank {target_rank} at slot {slot}, "
                   f"effective y_top@s0={actual_y_top_at_slot_0}, deficit={deficit_px:+d}px ({rows:+.2f}r)")
