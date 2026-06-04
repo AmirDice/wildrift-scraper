@@ -206,8 +206,18 @@ def main() -> int:
         accumulated_correction = 0.0
 
         for attempt in range(args.max_align_adjustments + 1):
-            img = client.screenshot()
-            visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
+            # OCR with retries — the list can still be settling right after a
+            # page scroll, in which case the first screenshot has blurry/moving
+            # badges and OCR returns empty. Wait and retry briefly.
+            visible: dict[int, tuple[int, int, int]] = {}
+            for ocr_try in range(4):
+                img = client.screenshot()
+                visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
+                if visible:
+                    break
+                if ocr_try == 0:
+                    print(f"  align[{attempt}]: OCR empty; waiting for list to settle")
+                time.sleep(0.6)
 
             # Find target's actual y position
             actual: tuple[int, int, int] | None = None  # (slot, y_top, y_bot)
@@ -218,8 +228,12 @@ def main() -> int:
             if actual is None:
                 # Infer position from a visible neighbor (assume consecutive ranks)
                 if not visible:
-                    print(f"  align: no OCR; assuming OK")
-                    return True
+                    if attempt >= args.max_align_adjustments:
+                        print(f"  align: OCR still empty after {attempt} attempts; giving up")
+                        return False
+                    print(f"  align[{attempt}]: still no OCR; trying a tiny down-swipe to nudge the list")
+                    do_swipe(-0.05)
+                    continue
                 ref_slot = min(visible.keys())
                 ref_rank, ref_yt, _ = visible[ref_slot]
                 inferred_slot = ref_slot + (target_rank - ref_rank)
