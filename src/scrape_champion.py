@@ -58,6 +58,7 @@ def main() -> int:
     parser.add_argument("--max-scroll-attempts", type=int, default=4, help="Per-rank scroll budget — if OCR can't bring target rank on-screen in this many tries, skip the rank")
     parser.add_argument("--reset-every", type=int, default=6, help="Wild Rift resets the scroll position after this many profile views; bot tracks this and re-scrolls accordingly")
     parser.add_argument("--max-align-adjustments", type=int, default=3, help="Max micro-swipes to align the page-top rank into the safe y-zone after a page scroll")
+    parser.add_argument("--no-learn-alignment", action="store_true", help="Disable caching of the first alignment correction; re-OCR on every page boundary")
     parser.add_argument("--tap-jitter-px", type=int, default=8, help="Random offset (in pixels) added to each tap. Helps avoid pixel-perfect repeat behavior. Set 0 to disable.")
     parser.add_argument("--time-jitter-ms", type=int, default=200, help="Random ms added/subtracted from each step_wait. Set 0 to disable.")
     args = parser.parse_args()
@@ -161,17 +162,28 @@ def main() -> int:
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
         jittered_sleep(args.step_wait + args.scroll_wait, args.time_jitter_ms)
 
+    # Cached correction (in row pitches) learned during the first successful
+    # alignment. On subsequent page scrolls we apply this directly instead of
+    # re-OCR'ing. None until learned.
+    learned: dict[str, float | None] = {"correction_rows": None}
+
     def align_slot_0_to(target_rank: int) -> bool:
         """After a page scroll, ensure `target_rank`'s badge sits at slot 0
         with bbox_top close to SCREEN_2_SAFE_Y_TOP. Micro-swipes by the exact
         pixel deficit to push it into place. Returns True if aligned, False
         if max attempts exhausted.
 
+        Tracks the cumulative correction applied across attempts; on first
+        successful alignment, stores that into `learned` so subsequent page
+        scrolls can apply the same correction directly without OCR.
+
         Only run after a fresh page scroll — never per-rank.
         """
         # Acceptable range for the top of slot 0's digit bbox
         SLOT_0_TOP_LO = SCREEN_2_SAFE_Y_TOP - 5    # 165
         SLOT_0_TOP_HI = SCREEN_2_SAFE_Y_TOP + 25   # 195
+
+        accumulated_correction = 0.0
 
         for attempt in range(args.max_align_adjustments + 1):
             img = client.screenshot()
@@ -210,6 +222,10 @@ def main() -> int:
             vis_str = ", ".join(f"s{s}=r{v[0]}(y={v[1]})" for s, v in sorted(visible.items()))
             if slot == 0 and SLOT_0_TOP_LO <= y_top <= SLOT_0_TOP_HI:
                 print(f"  align[{attempt}]: visible={{{vis_str}}}  -> rank {target_rank} at slot 0, y_top={y_top} OK")
+                # Persist what we learned (only on first successful calibration)
+                if not args.no_learn_alignment and learned["correction_rows"] is None:
+                    learned["correction_rows"] = accumulated_correction
+                    print(f"  [calibration learned: {accumulated_correction:+.3f}r post-scroll correction — will skip OCR alignment on subsequent pages]")
                 return True
 
             if attempt >= args.max_align_adjustments:
@@ -227,6 +243,7 @@ def main() -> int:
             print(f"  align[{attempt}]: visible={{{vis_str}}}  rank {target_rank} at slot {slot}, "
                   f"effective y_top@s0={actual_y_top_at_slot_0}, deficit={deficit_px:+d}px ({rows:+.2f}r)")
             do_swipe(rows)
+            accumulated_correction += rows
         return False
 
     successes = 0
@@ -247,7 +264,15 @@ def main() -> int:
         # Alignment check ONLY on the first rank of a freshly-arrived page.
         # No verification for ranks 7, 8, 9, 10 (mid-page) — we trust slot pitch.
         if target_slot == 0 and target_page > 0:
-            align_slot_0_to(rank)
+            cached = learned["correction_rows"]
+            if cached is not None and not args.no_learn_alignment:
+                if abs(cached) > 0.03:
+                    print(f"  applying cached correction: {cached:+.3f}r (no OCR)")
+                    do_swipe(cached)
+                else:
+                    print(f"  cached correction is ~0; no adjustment needed")
+            else:
+                align_slot_0_to(rank)
 
         try:
             slot = target_slot
