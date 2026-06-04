@@ -56,6 +56,8 @@ def main() -> int:
     parser.add_argument("--strip-swipe-scale", type=float, default=0.7, help="Scale on screen-5 strip swipe distance")
     parser.add_argument("--strip-swipe-duration-ms", type=int, default=800, help="Screen-5 strip swipe duration")
     parser.add_argument("--max-scroll-attempts", type=int, default=4, help="Per-rank scroll budget — if OCR can't bring target rank on-screen in this many tries, skip the rank")
+    parser.add_argument("--reset-every", type=int, default=6, help="Wild Rift resets the scroll position after this many profile views; bot tracks this and re-scrolls accordingly")
+    parser.add_argument("--max-align-adjustments", type=int, default=3, help="Max micro-swipes to align the page-top rank into the safe y-zone after a page scroll")
     parser.add_argument("--tap-jitter-px", type=int, default=8, help="Random offset (in pixels) added to each tap. Helps avoid pixel-perfect repeat behavior. Set 0 to disable.")
     parser.add_argument("--time-jitter-ms", type=int, default=200, help="Random ms added/subtracted from each step_wait. Set 0 to disable.")
     args = parser.parse_args()
@@ -159,112 +161,96 @@ def main() -> int:
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
         jittered_sleep(args.step_wait + args.scroll_wait, args.time_jitter_ms)
 
-    def find_rank_entry(
-        visible: dict[int, tuple[int, int, int]], target: int
-    ) -> tuple[int, int, int, int] | None:
-        """Return (slot, rank, y_top, y_bot) for the visible entry matching
-        target. If target isn't in the visible set, try to *infer* its slot
-        from neighbors assuming consecutive ranks; in that case y_top/y_bot
-        come from the inferred slot's expected position."""
-        if not visible:
-            return None
-        for slot, (rank, yt, yb) in visible.items():
-            if rank == target:
-                return (slot, rank, yt, yb)
-        # Infer from lowest detected slot
-        ref_slot = min(visible.keys())
-        ref_rank, _, _ = visible[ref_slot]
-        inferred_slot = ref_slot + (target - ref_rank)
-        if 0 <= inferred_slot < ROWS_PER_PAGE:
-            # Estimate y from slot position; mark as inferred
-            est_cy = int(round(rank_1_y + inferred_slot * row_pitch))
-            return (inferred_slot, target, est_cy - 35, est_cy + 35)
-        return None
+    def align_slot_0_to(target_rank: int) -> bool:
+        """After a page scroll, ensure `target_rank`'s badge sits at slot 0
+        with bbox_top close to SCREEN_2_SAFE_Y_TOP. Micro-swipes by the exact
+        pixel deficit to push it into place. Returns True if aligned, False
+        if max attempts exhausted.
 
-    def locate_target_rank(target: int, max_scrolls: int = 4) -> int | None:
-        """Scroll/swipe screen 2 until `target` is visible AND fully in the
-        safe y-zone [SAFE_Y_TOP, SAFE_Y_BOTTOM]. Returns the slot index where
-        target lives, or None if we couldn't bring it fully on-screen within
-        max_scrolls attempts.
-
-        Two corrections happen here:
-          - Off-screen: target rank isn't visible at all → page scroll
-          - Partial visibility: target's badge top<SAFE_Y_TOP (cut off at top,
-            scroll back) or badge bottom>SAFE_Y_BOTTOM (cut off at bottom,
-            scroll forward) → micro-swipe by the exact pixel deficit.
+        Only run after a fresh page scroll — never per-rank.
         """
-        for attempt in range(max_scrolls + 1):
+        # Acceptable range for the top of slot 0's digit bbox
+        SLOT_0_TOP_LO = SCREEN_2_SAFE_Y_TOP - 5    # 165
+        SLOT_0_TOP_HI = SCREEN_2_SAFE_Y_TOP + 25   # 195
+
+        for attempt in range(args.max_align_adjustments + 1):
             img = client.screenshot()
             visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
-            entry = find_rank_entry(visible, target)
 
-            if entry is not None:
-                slot, rank, y_top, y_bot = entry
-                vis_str = ", ".join(f"s{s}=r{v[0]}(y={v[1]}..{v[2]})" for s, v in sorted(visible.items()))
-                # Safe-zone check
-                if y_top >= SCREEN_2_SAFE_Y_TOP and y_bot <= SCREEN_2_SAFE_Y_BOTTOM:
-                    print(f"  visible: {{{vis_str}}}  -> rank {target} at slot {slot}, y=[{y_top},{y_bot}] OK")
-                    return slot
-                if attempt >= max_scrolls:
-                    print(f"  rank {target} y=[{y_top},{y_bot}] partial after {attempt} scrolls; tapping anyway")
-                    return slot
-                # Partial visibility — micro-adjust
-                if y_top < SCREEN_2_SAFE_Y_TOP:
-                    deficit_px = SCREEN_2_SAFE_Y_TOP - y_top + 10
-                    rows = deficit_px / row_pitch
-                    print(f"  rank {target} y_top={y_top} < {SCREEN_2_SAFE_Y_TOP}; swipe back {rows:.2f}r")
-                    do_swipe(-rows)
-                else:  # y_bot > SCREEN_2_SAFE_Y_BOTTOM
-                    deficit_px = y_bot - SCREEN_2_SAFE_Y_BOTTOM + 10
-                    rows = deficit_px / row_pitch
-                    print(f"  rank {target} y_bot={y_bot} > {SCREEN_2_SAFE_Y_BOTTOM}; swipe forward {rows:.2f}r")
-                    do_swipe(rows)
-                continue
-
-            # Target not visible at all
-            if attempt >= max_scrolls:
-                print(f"  could not locate rank {target} after {attempt} scroll(s); visible={list(visible.values())}")
-                return None
-            if not visible:
-                if target == 1:
-                    print(f"  no badges read; assuming initial state (rank 1 = slot 0 gold trophy)")
-                    return 0
-                print(f"  no badges read; scrolling forward")
-                scroll_to_next_page()
-                continue
-            visible_ranks = [v[0] for v in visible.values()]
-            min_v = min(visible_ranks)
-            max_v = max(visible_ranks)
-            if target < min_v:
-                rows_back = min_v - target
-                print(f"  target {target} below visible (min={min_v}); swipe back ~{rows_back}r")
-                do_swipe(-rows_back)
-            else:  # target > max_v
-                rows_fwd = target - max_v
-                print(f"  target {target} above visible (max={max_v}); swipe forward ~{rows_fwd}r")
-                if rows_fwd >= ROWS_PER_PAGE:
-                    scroll_to_next_page()
+            # Find target's actual y position
+            actual: tuple[int, int, int] | None = None  # (slot, y_top, y_bot)
+            for slot, (rank, yt, yb) in visible.items():
+                if rank == target_rank:
+                    actual = (slot, yt, yb)
+                    break
+            if actual is None:
+                # Infer position from a visible neighbor (assume consecutive ranks)
+                if not visible:
+                    print(f"  align: no OCR; assuming OK")
+                    return True
+                ref_slot = min(visible.keys())
+                ref_rank, ref_yt, _ = visible[ref_slot]
+                inferred_slot = ref_slot + (target_rank - ref_rank)
+                if 0 <= inferred_slot < ROWS_PER_PAGE:
+                    est_yt = ref_yt + int(round((inferred_slot - ref_slot) * row_pitch))
+                    actual = (inferred_slot, est_yt, est_yt + 35)
                 else:
-                    do_swipe(rows_fwd)
-        return None
+                    print(f"  align[{attempt}]: target rank {target_rank} off-screen; visible={[v[0] for v in visible.values()]}")
+                    if attempt >= args.max_align_adjustments:
+                        return False
+                    # Try a coarse page swipe in the right direction
+                    visible_ranks_only = [v[0] for v in visible.values()]
+                    if target_rank > max(visible_ranks_only):
+                        scroll_to_next_page()
+                    else:
+                        do_swipe(-(min(visible_ranks_only) - target_rank))
+                    continue
+
+            slot, y_top, y_bot = actual
+            vis_str = ", ".join(f"s{s}=r{v[0]}(y={v[1]})" for s, v in sorted(visible.items()))
+            if slot == 0 and SLOT_0_TOP_LO <= y_top <= SLOT_0_TOP_HI:
+                print(f"  align[{attempt}]: visible={{{vis_str}}}  -> rank {target_rank} at slot 0, y_top={y_top} OK")
+                return True
+
+            if attempt >= args.max_align_adjustments:
+                print(f"  align: stopped after {attempt} adjustments (slot {slot}, y_top={y_top}); tapping anyway")
+                return False
+
+            # Compute pixel deficit and swipe to correct
+            target_y_top = (SLOT_0_TOP_LO + SLOT_0_TOP_HI) // 2  # aim for 180
+            actual_y_top_at_slot_0 = y_top - int(round(slot * row_pitch))
+            deficit_px = actual_y_top_at_slot_0 - target_y_top
+            # deficit_px > 0  -> slot 0 currently shows something whose y_top is below 180,
+            #                    meaning we undershot the page scroll. Swipe forward.
+            # deficit_px < 0  -> slot 0's content is above 180, we overshot. Swipe back.
+            rows = deficit_px / row_pitch
+            print(f"  align[{attempt}]: visible={{{vis_str}}}  rank {target_rank} at slot {slot}, "
+                  f"effective y_top@s0={actual_y_top_at_slot_0}, deficit={deficit_px:+d}px ({rows:+.2f}r)")
+            do_swipe(rows)
+        return False
 
     successes = 0
+    current_page = 0  # which screen-2 page (0-indexed) is currently visible
     profiles_since_reset = 0
 
     for rank in range(1, args.n + 1):
-        print(f"\nrank {rank}:")
-        slot = locate_target_rank(rank, max_scrolls=args.max_scroll_attempts)
-        if slot is None:
-            print(f"  skipping rank {rank} (not found)")
-            writer.write(LeaderboardRow(
-                champion=args.target,
-                rank=rank,
-                player_name="",
-                winrate=None,
-            ))
-            continue
+        target_page = (rank - 1) // ROWS_PER_PAGE
+        target_slot = (rank - 1) % ROWS_PER_PAGE
+        print(f"\nrank {rank} (page {target_page + 1}, slot {target_slot}):")
+
+        # Page-scroll if not on the right page (e.g. first time, or after reset)
+        while current_page < target_page:
+            print(f"  --- scrolling from page {current_page + 1} to {current_page + 2} ---")
+            scroll_to_next_page()
+            current_page += 1
+
+        # Alignment check ONLY on the first rank of a freshly-arrived page.
+        # No verification for ranks 7, 8, 9, 10 (mid-page) — we trust slot pitch.
+        if target_slot == 0 and target_page > 0:
+            align_slot_0_to(rank)
 
         try:
+            slot = target_slot
             px, py = slot_tap(slot)
             print(f"  tap player row    -> ({px}, {py})  [slot {slot}]")
             client.tap(px, py, jitter_px=args.tap_jitter_px)
@@ -307,9 +293,11 @@ def main() -> int:
             client.tap(*back_tap, jitter_px=args.tap_jitter_px)
             jittered_sleep(args.step_wait, args.time_jitter_ms)
 
-            # No reset bookkeeping needed — next iteration OCRs to find the
-            # next target rank's slot, automatically handling Wild Rift's
-            # reset-to-page-1 behavior.
+            profiles_since_reset += 1
+            if profiles_since_reset >= args.reset_every:
+                print(f"  [Wild Rift resets list after {args.reset_every} profile views — current_page = 0]")
+                current_page = 0
+                profiles_since_reset = 0
         except Exception:
             print(f"\nrank {rank} crashed:")
             traceback.print_exc()
