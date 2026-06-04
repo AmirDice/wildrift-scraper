@@ -26,7 +26,7 @@ from pathlib import Path
 
 import cv2
 
-from .adb_client import ADBClient, ADBError, jittered_sleep
+from .adb_client import ADBClient, ADBError
 from .config import (
     CALIBRATION_FILE,
     ROWS_PER_PAGE,
@@ -63,8 +63,6 @@ def main() -> int:
     parser.add_argument("--max-align-adjustments", type=int, default=3, help="Max micro-swipes to align the page-top rank into the safe y-zone after a page scroll")
     parser.add_argument("--no-learn-alignment", action="store_true", help="Disable caching of the first alignment correction; re-OCR on every page boundary")
     parser.add_argument("--recalibrate", action="store_true", help="Ignore any persisted calibration and re-learn it from scratch this run")
-    parser.add_argument("--tap-jitter-px", type=int, default=8, help="Random offset (in pixels) added to each tap. Helps avoid pixel-perfect repeat behavior. Set 0 to disable.")
-    parser.add_argument("--time-jitter-ms", type=int, default=200, help="Random ms added/subtracted from each step_wait. Set 0 to disable.")
     args = parser.parse_args()
 
     # Load all 5 screens' tap points
@@ -142,8 +140,8 @@ def main() -> int:
 
     # screen 1 -> screen 2 (once per champion)
     print(f"enter champion: tap ({champ_tap[0]}, {champ_tap[1]})")
-    client.tap(*champ_tap, jitter_px=args.tap_jitter_px)
-    jittered_sleep(args.step_wait, args.time_jitter_ms)
+    client.tap(*champ_tap)
+    time.sleep(args.step_wait)
 
     def do_swipe(rows: float) -> None:
         """Swipe up by `rows` row-pitches. Negative `rows` = swipe DOWN
@@ -155,7 +153,7 @@ def main() -> int:
             start_y = rank_1_y
             end_y = min(840, int(round(start_y + abs(rows) * row_pitch * args.swipe_scale)))
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
-        jittered_sleep(args.step_wait + args.scroll_wait, args.time_jitter_ms)
+        time.sleep(args.step_wait + args.scroll_wait)
 
     def scroll_to_next_page() -> None:
         """Swipe up so the next ROWS_PER_PAGE ranks come into view."""
@@ -164,7 +162,7 @@ def main() -> int:
         end_y = max(50, start_y - distance_px)
         print(f"  swipe scroll      -> ({rank_1_x}, {start_y}) -> ({rank_1_x}, {end_y})  [{args.swipe_duration_ms}ms]")
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
-        jittered_sleep(args.step_wait + args.scroll_wait, args.time_jitter_ms)
+        time.sleep(args.step_wait + args.scroll_wait)
 
     # Cached correction (in row pitches) learned during the first successful
     # alignment. On subsequent page scrolls we apply this directly instead of
@@ -288,20 +286,20 @@ def main() -> int:
             slot = target_slot
             px, py = slot_tap(slot)
             print(f"  tap player row    -> ({px}, {py})  [slot {slot}]")
-            client.tap(px, py, jitter_px=args.tap_jitter_px)
-            jittered_sleep(args.step_wait, args.time_jitter_ms)
+            client.tap(px, py)
+            time.sleep(args.step_wait)
 
             print(f"  tap view-profile  -> ({view_profile_tap[0]}, {view_profile_tap[1]})")
-            client.tap(*view_profile_tap, jitter_px=args.tap_jitter_px)
-            jittered_sleep(args.step_wait, args.time_jitter_ms)
+            client.tap(*view_profile_tap)
+            time.sleep(args.step_wait)
 
             # Double-tap CHAMPION AND LANE — first tap can be eaten by a
             # mid-transition profile, second tap reliably lands the tab.
             print(f"  tap champ-and-lane (x2) -> ({champ_and_lane_tap[0]}, {champ_and_lane_tap[1]})")
-            client.tap(*champ_and_lane_tap, jitter_px=args.tap_jitter_px)
-            jittered_sleep(0.4, 0)
-            client.tap(*champ_and_lane_tap, jitter_px=args.tap_jitter_px)
-            jittered_sleep(args.step_wait, args.time_jitter_ms)
+            client.tap(*champ_and_lane_tap)
+            time.sleep(0.4)
+            client.tap(*champ_and_lane_tap)
+            time.sleep(args.step_wait)
 
             target_wr, found, swipes_done, img = find_target_in_strip(
                 client,
@@ -330,8 +328,8 @@ def main() -> int:
                 successes += 1
 
             print(f"  tap back          -> ({back_tap[0]}, {back_tap[1]})")
-            client.tap(*back_tap, jitter_px=args.tap_jitter_px)
-            jittered_sleep(args.step_wait, args.time_jitter_ms)
+            client.tap(*back_tap)
+            time.sleep(args.step_wait)
 
             profiles_since_reset += 1
             if profiles_since_reset >= args.reset_every:
