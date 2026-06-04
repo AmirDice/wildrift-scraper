@@ -36,8 +36,21 @@ class ADBClient:
             raise ADBError("Failed to decode screenshot PNG")
         return img
 
-    def tap(self, x: int, y: int) -> None:
-        self._run(["shell", "input", "tap", str(x), str(y)])
+    def tap(self, x: int, y: int, hold_ms: int = 100) -> None:
+        """Tap at (x, y), held for `hold_ms` milliseconds.
+
+        Implemented as a zero-distance swipe (`input swipe x y x y hold_ms`),
+        which is more reliable than `input tap` because Android UIs sometimes
+        silently drop the bare instantaneous tap during screen transitions.
+        Set hold_ms=0 to use the original `input tap`.
+        """
+        if hold_ms > 0:
+            self._run([
+                "shell", "input", "swipe",
+                str(x), str(y), str(x), str(y), str(hold_ms),
+            ])
+        else:
+            self._run(["shell", "input", "tap", str(x), str(y)])
 
     def back(self) -> None:
         """Press the Android system back key (KEYCODE_BACK)."""

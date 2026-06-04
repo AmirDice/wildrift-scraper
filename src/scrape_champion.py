@@ -295,11 +295,15 @@ def main() -> int:
 
             # Double-tap CHAMPION AND LANE — first tap can be eaten by a
             # mid-transition profile, second tap reliably lands the tab.
+            if args.save_screenshots:
+                cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_pre_cnl.png"), client.screenshot())
             print(f"  tap champ-and-lane (x2) -> ({champ_and_lane_tap[0]}, {champ_and_lane_tap[1]})")
             client.tap(*champ_and_lane_tap)
             time.sleep(0.4)
             client.tap(*champ_and_lane_tap)
             time.sleep(args.step_wait)
+            if args.save_screenshots:
+                cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_post_cnl.png"), client.screenshot())
 
             target_wr, found, swipes_done, img = find_target_in_strip(
                 client,
