@@ -234,29 +234,29 @@ def main() -> int:
                 do_swipe(rows)
                 continue
 
-            # Target not seen at all; cross-page navigation needs a full page swipe
-            # (sub-page swipes can get snapped back by Wild Rift's UI).
+            # Target not seen at all. Compare directly to min/max visible rank.
+            # Always use full page swipes for cross-batch navigation — partial
+            # swipes can be inconsistent and OCR can misread a "10" as "4",
+            # tricking the bot into thinking the list didn't move.
             if not visible:
                 print(f"  locate[{attempt}]: OCR empty; scrolling forward one page")
                 scroll_to_next_page()
                 continue
             visible_ranks = [v[0] for v in visible.values()]
             min_v, max_v = min(visible_ranks), max(visible_ranks)
-            target_page = (target_rank - 1) // ROWS_PER_PAGE
-            max_v_page = (max_v - 1) // ROWS_PER_PAGE
-            min_v_page = (min_v - 1) // ROWS_PER_PAGE
             vis_str = ", ".join(f"s{s}=r{v[0]}" for s, v in sorted(visible.items()))
-            if target_page > max_v_page:
-                print(f"  locate[{attempt}]: target {target_rank} on later page than visible ({vis_str}); page-scroll forward")
-                scroll_to_next_page()
-            elif target_page < min_v_page:
-                print(f"  locate[{attempt}]: target {target_rank} on earlier page than visible ({vis_str}); swipe back one page")
+            if target_rank < min_v:
+                gap = min_v - target_rank
+                print(f"  locate[{attempt}]: target {target_rank} < min_visible={min_v} ({vis_str}); swipe back one page")
                 do_swipe(-ROWS_PER_PAGE)
+            elif target_rank > max_v:
+                gap = target_rank - max_v
+                print(f"  locate[{attempt}]: target {target_rank} > max_visible={max_v} ({vis_str}); page-scroll forward")
+                scroll_to_next_page()
             else:
-                # Same page but target not visible AND not inferrable from < 2 slots.
-                # Try a small nudge to dislodge any in-progress animation.
-                print(f"  locate[{attempt}]: target {target_rank} same page as visible but not detected ({vis_str}); nudging")
-                do_swipe(0.3)
+                # In range but not detected — OCR noise. Wait + retry next loop.
+                print(f"  locate[{attempt}]: target {target_rank} in visible range [{min_v},{max_v}] but not detected ({vis_str}); waiting")
+                time.sleep(0.5)
 
         print(f"  locate: could not bring rank {target_rank} into safe zone after {max_attempts} attempts")
         return None
