@@ -267,6 +267,10 @@ def main() -> int:
     successes = 0
     current_page = 0  # which screen-2 page (0-indexed) is currently visible
     profiles_since_reset = 0
+    # Set whenever a Wild Rift list-reset just happened. On the next page
+    # scroll we do a full OCR alignment instead of trusting the cache — the
+    # post-reset re-scroll lands slightly differently from normal scrolls.
+    needs_realign = False
 
     for rank in range(1, args.n + 1):
         target_page = (rank - 1) // ROWS_PER_PAGE
@@ -283,14 +287,16 @@ def main() -> int:
             current_page += 1
             cached = learned["correction_rows"]
             if cached is not None and not args.no_learn_alignment and abs(cached) > 0.03:
-                print(f"  applying cached correction: {cached:+.3f}r (no OCR)")
+                print(f"  applying cached correction: {cached:+.3f}r")
                 do_swipe(cached)
-
-        # OCR alignment runs ONLY to learn the correction the first time —
-        # only for first-rank-of-page (rank 6, 11, 16, ...) and only if we
-        # don't already have a cached value.
-        if target_slot == 0 and target_page > 0 and (learned["correction_rows"] is None or args.no_learn_alignment):
-            align_slot_0_to(rank)
+            # Full OCR realignment if we're recovering from a reset, OR if
+            # we haven't learned the correction yet (first run, no cached file).
+            first_rank_of_page = current_page * ROWS_PER_PAGE + 1
+            if needs_realign or learned["correction_rows"] is None or args.no_learn_alignment:
+                reason = "post-reset re-verify" if needs_realign else "no cache yet"
+                print(f"  running OCR alignment ({reason})")
+                align_slot_0_to(first_rank_of_page)
+                needs_realign = False
 
         try:
             slot = target_slot
@@ -350,6 +356,7 @@ def main() -> int:
                 print(f"  [Wild Rift resets list after {args.reset_every} profile views — current_page = 0]")
                 current_page = 0
                 profiles_since_reset = 0
+                needs_realign = True  # post-reset scroll may differ; re-OCR next page
         except Exception:
             print(f"\nrank {rank} crashed:")
             traceback.print_exc()
