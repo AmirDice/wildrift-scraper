@@ -205,18 +205,48 @@ def main() -> int:
 
         accumulated_correction = 0.0
 
+        def filter_consistent(
+            raw: dict[int, tuple[int, int, int]],
+        ) -> dict[int, tuple[int, int, int]]:
+            """Return the largest subset where ranks form a consecutive
+            sequence (slot_delta == rank_delta). Tesseract sometimes misreads
+            digits — e.g. {s3=r7, s4=r10} can't both be right because the slot
+            spacing is +1 but the rank spacing is +3. Drop those."""
+            if len(raw) <= 1:
+                return raw
+            items = sorted(raw.items())
+            best: list[tuple[int, tuple[int, int, int]]] = []
+            for anchor_slot, (anchor_rank, _, _) in items:
+                cluster = [
+                    (s, v) for s, v in items
+                    if v[0] == anchor_rank + (s - anchor_slot)
+                ]
+                if len(cluster) > len(best):
+                    best = cluster
+            return dict(best)
+
         for attempt in range(args.max_align_adjustments + 1):
-            # OCR with retries — the list can still be settling right after a
-            # page scroll, in which case the first screenshot has blurry/moving
-            # badges and OCR returns empty. Wait and retry briefly.
+            # OCR with retries — the list can be still settling right after a
+            # page scroll (blurry/moving badges) OR Tesseract can misread one
+            # of the digits and produce an inconsistent set. Retry until we
+            # have at least 2 detections that form a consecutive sequence,
+            # or the target rank itself is visible.
             visible: dict[int, tuple[int, int, int]] = {}
             for ocr_try in range(4):
                 img = client.screenshot()
-                visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
-                if visible:
+                raw_visible = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
+                visible = filter_consistent(raw_visible)
+                target_seen = target_rank in {v[0] for v in visible.values()}
+                if len(visible) >= 2 or target_seen:
                     break
                 if ocr_try == 0:
-                    print(f"  align[{attempt}]: OCR empty; waiting for list to settle")
+                    if not raw_visible:
+                        print(f"  align[{attempt}]: OCR empty; waiting for list to settle")
+                    elif raw_visible != visible:
+                        dropped = {k: v[0] for k, v in raw_visible.items() if k not in visible}
+                        print(f"  align[{attempt}]: dropping inconsistent detections {dropped}; retrying")
+                    else:
+                        print(f"  align[{attempt}]: only {len(visible)} detection(s); retrying")
                 time.sleep(0.6)
 
             # Find target's actual y position
