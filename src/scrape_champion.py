@@ -1,20 +1,25 @@
 """Scrape top-N players' winrates for one champion and write to CSV.
 
-Prereq: in MuMu, you are on screen 1 (CHAMPION tab of the Leaderboard) with
-your target champion visible in the row that `coords/screen_1.json`'s tap
-point hits. Ranks 1..N must be visible on screen 2 without scrolling
-(true for N <= ~6 on a 1600x900 device).
+Architecture (post-Gemini refactor):
+    1. Enter the champion's leaderboard (screen 1 -> screen 2).
+    2. Take a screenshot. Send to Gemini -> [{rank, player_name, score}, ...].
+    3. For each new (player_name, score) pair we haven't seen, tap into their
+       profile, OCR the Aatrox winrate on screen 5, tap back. Record the row.
+    4. Scroll screen 2 forward one page; repeat.
+    5. Stop when target_n unique players collected, or several consecutive
+       page scrolls return zero new players (bottom of leaderboard reached).
 
-Pipeline per rank:
-    tap player row -> screen 3 (popup)
-    tap view-profile -> screen 4 (profile OVERVIEW)
-    tap CHAMPION AND LANE -> screen 5
-    OCR the champion-tile strip, look up target winrate
-    tap back chevron -> screen 2 (Aatrox leaderboard)
+Wild Rift's periodic list reset is now harmless — when the list snaps back to
+ranks 1..5, Gemini reports them, we see them in the seen-set, and skip
+straight to the next scroll without scraping duplicates.
+
+Prereq:
+    - GEMINI_API_KEY env var set (see src/gemini_ocr.py)
+    - In MuMu, on screen 1 (CHAMPION tab) with target champion at the mapped
+      row position (coords/screen_1.json).
 
 Run:
-    python -m src.scrape_champion --target Aatrox --n 5
-    python -m src.scrape_champion --target Aatrox --n 5 --save-screenshots
+    python -m src.scrape_champion --target Aatrox --n 20 --save-screenshots
 """
 from __future__ import annotations
 
@@ -27,15 +32,8 @@ from pathlib import Path
 import cv2
 
 from .adb_client import ADBClient, ADBError
-from .config import (
-    ROWS_PER_PAGE,
-    SCREEN_2_BADGE_X_RANGE,
-    SCREEN_2_SAFE_Y_BOTTOM,
-    SCREEN_2_SAFE_Y_TOP,
-    SCREEN_5_OCR_REGION,
-    load_screen_points,
-)
-from .ocr import find_champion_winrates, read_all_visible_ranks
+from .config import ROWS_PER_PAGE, load_screen_points
+from .gemini_ocr import read_leaderboard
 from .storage import CSVWriter, LeaderboardRow
 from .strip import find_target_in_strip
 
@@ -43,22 +41,23 @@ from .strip import find_target_in_strip
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--target", default="Aatrox", help="Champion to look up on each player's profile")
-    parser.add_argument("--n", type=int, default=5, help="Number of top players to scrape (rank 1..N)")
+    parser.add_argument("--n", type=int, default=20, help="Number of unique players to scrape")
     parser.add_argument("--device", default="127.0.0.1:7555")
     parser.add_argument("--no-connect", action="store_true")
     parser.add_argument("--step-wait", type=float, default=2.0, help="Seconds to wait after each tap")
     parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"), help="CSV file to append to")
     parser.add_argument("--save-screenshots", action="store_true", help="Save the screen 5 screenshot for each rank")
-    parser.add_argument("--swipe-scale", type=float, default=0.8, help="Multiplier on the per-page swipe distance (tune if scroll under/over-shoots)")
-    parser.add_argument("--swipe-duration-ms", type=int, default=1500, help="Swipe gesture duration in ms (longer = more controlled, less fling)")
+    parser.add_argument("--swipe-scale", type=float, default=0.8, help="Multiplier on the per-page swipe distance")
+    parser.add_argument("--swipe-duration-ms", type=int, default=1500, help="Page-scroll swipe duration")
     parser.add_argument("--scroll-wait", type=float, default=1.5, help="Extra seconds to wait after a scroll for the list to settle")
-    parser.add_argument("--max-strip-swipes", type=int, default=3, help="If target champion isn't in the first 4 tiles on screen 5, swipe the strip up to N times to find it")
-    parser.add_argument("--strip-swipe-scale", type=float, default=0.7, help="Scale on screen-5 strip swipe distance")
-    parser.add_argument("--strip-swipe-duration-ms", type=int, default=800, help="Screen-5 strip swipe duration")
-    parser.add_argument("--max-scroll-attempts", type=int, default=4, help="Per-rank scroll budget — if OCR can't bring target rank on-screen in this many tries, skip the rank")
+    parser.add_argument("--max-strip-swipes", type=int, default=3, help="If target champion isn't in the first 4 tiles on screen 5, swipe the strip up to N times")
+    parser.add_argument("--strip-swipe-scale", type=float, default=0.7)
+    parser.add_argument("--strip-swipe-duration-ms", type=int, default=800)
+    parser.add_argument("--gemini-model", default="gemini-2.5-flash-lite", help="Gemini model for leaderboard OCR")
+    parser.add_argument("--stop-after-empty-pages", type=int, default=3, help="Stop after this many consecutive scrolls return no new players")
+    parser.add_argument("--max-pages", type=int, default=80, help="Hard cap on screen-2 scrolls (safety against infinite loops)")
     args = parser.parse_args()
 
-    # Load all 5 screens' tap points
     try:
         s1 = load_screen_points(1)
         s2 = load_screen_points(2)
@@ -69,53 +68,46 @@ def main() -> int:
         print(f"error: missing coord file: {e}", file=sys.stderr)
         return 1
 
-    # Derive screen-2 row pitch. The 1->2 delta is larger than the
-    # steady-state 2->3, 3->4, ... pitch because of header padding on row 1.
-    # If the user mapped a deeper row (player_row_5 or player_row_3), use that
-    # for a more accurate pitch.
     if "aatrox" not in s2:
         print("error: screen_2.json needs 'aatrox' (rank 1 tap)", file=sys.stderr)
         return 1
     rank_1_x, rank_1_y = s2["aatrox"]
 
-    pitch_source: str
     if "player_row_5" in s2:
-        _, rank_5_y = s2["player_row_5"]
-        row_pitch = (rank_5_y - rank_1_y) / 4
+        _, deep_y = s2["player_row_5"]
+        row_pitch = (deep_y - rank_1_y) / 4
         pitch_source = "rank 1 -> rank 5"
     elif "player_row_3" in s2:
-        _, rank_3_y = s2["player_row_3"]
-        row_pitch = (rank_3_y - rank_1_y) / 2
+        _, deep_y = s2["player_row_3"]
+        row_pitch = (deep_y - rank_1_y) / 2
         pitch_source = "rank 1 -> rank 3"
     elif "player_row_2" in s2:
-        _, rank_2_y = s2["player_row_2"]
-        row_pitch = rank_2_y - rank_1_y
-        pitch_source = "rank 1 -> rank 2 (may be inflated by header padding)"
+        _, deep_y = s2["player_row_2"]
+        row_pitch = deep_y - rank_1_y
+        pitch_source = "rank 1 -> rank 2"
     else:
-        print("error: screen_2.json needs at least one of 'player_row_2', 'player_row_3', 'player_row_5'", file=sys.stderr)
+        print("error: screen_2.json needs at least one of 'player_row_2/3/5'", file=sys.stderr)
         return 1
     if row_pitch <= 0:
         print(f"error: invalid row pitch {row_pitch}", file=sys.stderr)
         return 1
 
     if "back" not in s5:
-        print("error: screen_5.json needs a 'back' point (top-left chevron)", file=sys.stderr)
+        print("error: screen_5.json needs a 'back' point", file=sys.stderr)
         return 1
 
-    champ_tap = s1["aatrox"]              # screen 1 -> screen 2
-    view_profile_tap = s3["aatrox"]       # screen 3 -> screen 4
-    champ_and_lane_tap = s4["aatrox"]     # screen 4 -> screen 5
-    back_tap = s5["back"]                 # screen 5 -> screen 2
+    champ_tap = s1["aatrox"]
+    view_profile_tap = s3["aatrox"]
+    champ_and_lane_tap = s4["aatrox"]
+    back_tap = s5["back"]
 
     def slot_tap(slot: int) -> tuple[int, int]:
-        """Tap position for the Nth visible row (slot 0 = topmost)."""
         return (rank_1_x, int(round(rank_1_y + slot * row_pitch)))
 
     print(f"target champion : {args.target}")
-    print(f"ranks to scrape : 1..{args.n}")
+    print(f"target N        : {args.n} unique players")
     print(f"row pitch       : {row_pitch:.1f}px  ({pitch_source})")
-    print(f"rows per page   : {ROWS_PER_PAGE}")
-    print(f"slot tap ys     : {[slot_tap(s)[1] for s in range(ROWS_PER_PAGE)]}")
+    print(f"gemini model    : {args.gemini_model}")
     print(f"CSV output      : {args.output}")
     print()
 
@@ -136,204 +128,134 @@ def main() -> int:
     client.tap(*champ_tap)
     time.sleep(args.step_wait)
 
-    def do_swipe(rows: float) -> None:
-        """Swipe up by `rows` row-pitches. Negative `rows` = swipe DOWN
-        (scroll back to earlier ranks).
-
-        Duration scales with distance so velocity stays roughly constant:
-        a 0.2-row micro-adjustment uses ~150ms (not 1500ms), otherwise the
-        finger moves too slowly for Android to register a scroll — it gets
-        interpreted as a held tap and the screen doesn't move at all.
-        """
-        if rows >= 0:
-            start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
-            end_y = max(50, int(round(start_y - rows * row_pitch * args.swipe_scale)))
-        else:
-            start_y = rank_1_y
-            end_y = min(840, int(round(start_y + abs(rows) * row_pitch * args.swipe_scale)))
-        distance_px = abs(start_y - end_y)
-        ref_distance = ROWS_PER_PAGE * row_pitch * args.swipe_scale
-        # Same velocity as the full-page scroll, but never below 150ms.
-        duration = max(150, int(round(args.swipe_duration_ms * distance_px / max(1, ref_distance))))
-        client.swipe(rank_1_x, start_y, rank_1_x, end_y, duration)
-        time.sleep(args.step_wait + args.scroll_wait)
-
     def scroll_to_next_page() -> None:
-        """Swipe up so the next ROWS_PER_PAGE ranks come into view."""
         start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
         distance_px = int(round(ROWS_PER_PAGE * row_pitch * args.swipe_scale))
         end_y = max(50, start_y - distance_px)
-        print(f"  swipe scroll      -> ({rank_1_x}, {start_y}) -> ({rank_1_x}, {end_y})  [{args.swipe_duration_ms}ms]")
+        print(f"  swipe scroll      -> ({rank_1_x}, {start_y}) -> ({rank_1_x}, {end_y})")
         client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
         time.sleep(args.step_wait + args.scroll_wait)
 
-    def filter_consistent(
-        raw: dict[int, tuple[int, int, int]],
-    ) -> dict[int, tuple[int, int, int]]:
-        """Return the largest subset where rank deltas match slot deltas."""
-        if len(raw) <= 1:
-            return raw
-        items = sorted(raw.items())
-        best: list[tuple[int, tuple[int, int, int]]] = []
-        for anchor_slot, (anchor_rank, _, _) in items:
-            cluster = [(s, v) for s, v in items if v[0] == anchor_rank + (s - anchor_slot)]
-            if len(cluster) > len(best):
-                best = cluster
-        return dict(best)
+    def scrape_one_player(rank: int, player_name: str, score: int | None, slot: int) -> float | None:
+        """Tap chain into the player's profile, OCR winrate, tap back."""
+        px, py = slot_tap(slot)
+        print(f"  rank {rank} ({player_name}, score={score}) at slot {slot}: tap ({px}, {py})")
+        client.tap(px, py)
+        time.sleep(args.step_wait)
 
-    def find_target_entry(
-        visible: dict[int, tuple[int, int, int]], target_rank: int,
-    ) -> tuple[int, int, int] | None:
-        """Return (slot, y_top, y_bot) for target_rank — either directly
-        detected or inferred from neighbors. y_top/y_bot are estimated for
-        inferred cases. Returns None if target can't be located on-screen."""
-        for slot, (rank, yt, yb) in visible.items():
-            if rank == target_rank:
-                return (slot, yt, yb)
-        if len(visible) >= 2:
-            ref_slot = min(visible.keys())
-            ref_rank, ref_yt, _ = visible[ref_slot]
-            inferred_slot = ref_slot + (target_rank - ref_rank)
-            if 0 <= inferred_slot < ROWS_PER_PAGE:
-                est_yt = ref_yt + int(round((inferred_slot - ref_slot) * row_pitch))
-                return (inferred_slot, est_yt, est_yt + 30)
-        return None
+        client.tap(*view_profile_tap)
+        time.sleep(args.step_wait)
 
-    def locate_target_rank(target_rank: int, max_attempts: int = 6) -> int | None:
-        """Per-rank OCR + bounding-box safe-zone check, with consistency
-        filtering and consecutive-rank inference."""
-        for attempt in range(max_attempts):
-            # OCR with retries: discard inconsistent detections, wait briefly
-            # if list still settling.
-            visible: dict[int, tuple[int, int, int]] = {}
-            for ocr_try in range(3):
-                img = client.screenshot()
-                raw = read_all_visible_ranks(img, rank_1_y, row_pitch, SCREEN_2_BADGE_X_RANGE)
-                visible = filter_consistent(raw)
-                if len(visible) >= 2 or target_rank in {v[0] for v in visible.values()}:
-                    break
-                time.sleep(0.5)
+        if args.save_screenshots:
+            cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_pre_cnl.png"), client.screenshot())
+        # Double-tap CHAMPION AND LANE — first tap can miss during transition
+        client.tap(*champ_and_lane_tap)
+        time.sleep(0.4)
+        client.tap(*champ_and_lane_tap)
+        time.sleep(args.step_wait)
 
-            target_entry = find_target_entry(visible, target_rank)
+        target_wr, found, swipes_done, img = find_target_in_strip(
+            client,
+            args.target,
+            max_swipes=args.max_strip_swipes,
+            swipe_scale=args.strip_swipe_scale,
+            swipe_duration_ms=args.strip_swipe_duration_ms,
+        )
+        if args.save_screenshots:
+            cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}.png"), img)
 
-            if target_entry is not None:
-                slot, y_top, y_bot = target_entry
-                vis_str = ", ".join(f"s{s}=r{v[0]}(y={v[1]})" for s, v in sorted(visible.items()))
-                if SCREEN_2_SAFE_Y_TOP <= y_top and y_bot <= SCREEN_2_SAFE_Y_BOTTOM:
-                    print(f"  locate[{attempt}]: visible={{{vis_str}}}  -> rank {target_rank} at slot {slot}, y=[{y_top},{y_bot}] OK")
-                    return slot
-                # Partial visibility -> micro-swipe by exact pixel deficit
-                if y_top < SCREEN_2_SAFE_Y_TOP:
-                    deficit_px = SCREEN_2_SAFE_Y_TOP - y_top + 5
-                    rows = -deficit_px / row_pitch
-                    print(f"  locate[{attempt}]: rank {target_rank} at slot {slot}, y_top={y_top}<{SCREEN_2_SAFE_Y_TOP}; back {rows:+.2f}r")
-                else:
-                    deficit_px = y_bot - SCREEN_2_SAFE_Y_BOTTOM + 5
-                    rows = deficit_px / row_pitch
-                    print(f"  locate[{attempt}]: rank {target_rank} at slot {slot}, y_bot={y_bot}>{SCREEN_2_SAFE_Y_BOTTOM}; fwd {rows:+.2f}r")
-                do_swipe(rows)
-                continue
+        vis = ", ".join(found.keys()) if found else "(none)"
+        swipe_note = f" (after {swipes_done} swipe{'s' if swipes_done != 1 else ''})" if swipes_done else ""
+        print(f"    strip OCR : {vis}{swipe_note}")
+        print(f"    {args.target} winrate : {target_wr}")
 
-            # Target not seen at all. Compare directly to min/max visible rank.
-            # Always use full page swipes for cross-batch navigation — partial
-            # swipes can be inconsistent and OCR can misread a "10" as "4",
-            # tricking the bot into thinking the list didn't move.
-            if not visible:
-                print(f"  locate[{attempt}]: OCR empty; scrolling forward one page")
-                scroll_to_next_page()
-                continue
-            visible_ranks = [v[0] for v in visible.values()]
-            min_v, max_v = min(visible_ranks), max(visible_ranks)
-            vis_str = ", ".join(f"s{s}=r{v[0]}" for s, v in sorted(visible.items()))
-            if target_rank < min_v:
-                gap = min_v - target_rank
-                print(f"  locate[{attempt}]: target {target_rank} < min_visible={min_v} ({vis_str}); swipe back one page")
-                do_swipe(-ROWS_PER_PAGE)
-            elif target_rank > max_v:
-                gap = target_rank - max_v
-                print(f"  locate[{attempt}]: target {target_rank} > max_visible={max_v} ({vis_str}); page-scroll forward")
-                scroll_to_next_page()
-            else:
-                # In range but not detected — OCR noise. Wait + retry next loop.
-                print(f"  locate[{attempt}]: target {target_rank} in visible range [{min_v},{max_v}] but not detected ({vis_str}); waiting")
-                time.sleep(0.5)
+        client.tap(*back_tap)
+        time.sleep(args.step_wait)
+        return target_wr
 
-        print(f"  locate: could not bring rank {target_rank} into safe zone after {max_attempts} attempts")
-        return None
-
+    seen: set[tuple[str, int | None]] = set()
     successes = 0
+    consecutive_empty_pages = 0
+    page_count = 0
 
-    for rank in range(1, args.n + 1):
-        print(f"\nrank {rank}:")
-        slot = locate_target_rank(rank)
-        if slot is None:
-            print(f"  skipping rank {rank} (could not locate)")
-            writer.write(LeaderboardRow(
-                champion=args.target, rank=rank, player_name="", winrate=None,
-            ))
+    while len(seen) < args.n and page_count < args.max_pages:
+        page_count += 1
+        print(f"\n=== page {page_count}  (collected {len(seen)}/{args.n}) ===")
+
+        # Read the visible leaderboard via Gemini
+        img = client.screenshot()
+        if args.save_screenshots:
+            cv2.imwrite(str(data_dir / f"run_p{page_count:03d}_screen2.png"), img)
+        try:
+            rows = read_leaderboard(img, model=args.gemini_model)
+        except RuntimeError as e:
+            print(f"  gemini error: {e}; scrolling and retrying")
+            scroll_to_next_page()
             continue
 
+        if not rows:
+            print(f"  gemini returned 0 rows; scrolling forward")
+            scroll_to_next_page()
+            consecutive_empty_pages += 1
+            if consecutive_empty_pages >= args.stop_after_empty_pages:
+                print(f"  {consecutive_empty_pages} consecutive empty pages; assuming bottom of list")
+                break
+            continue
+
+        rows.sort(key=lambda r: r.rank)
+        min_visible_rank = rows[0].rank
+        rank_summary = ", ".join(f"r{r.rank}={r.player_name}" for r in rows)
+        print(f"  visible: {rank_summary}")
+
+        new_on_this_page = 0
         try:
-            px, py = slot_tap(slot)
-            print(f"  tap player row    -> ({px}, {py})  [slot {slot}]")
-            client.tap(px, py)
-            time.sleep(args.step_wait)
+            for row in rows:
+                key = (row.player_name, row.score)
+                if key in seen:
+                    continue
+                if row.rank > args.n:
+                    # Past our target N; don't bother scraping
+                    seen.add(key)
+                    continue
 
-            print(f"  tap view-profile  -> ({view_profile_tap[0]}, {view_profile_tap[1]})")
-            client.tap(*view_profile_tap)
-            time.sleep(args.step_wait)
+                slot = row.rank - min_visible_rank
+                if not (0 <= slot < ROWS_PER_PAGE):
+                    print(f"    skipping rank {row.rank}: derived slot {slot} out of range")
+                    continue
 
-            # Double-tap CHAMPION AND LANE — first tap can be eaten by a
-            # mid-transition profile, second tap reliably lands the tab.
-            if args.save_screenshots:
-                cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_pre_cnl.png"), client.screenshot())
-            print(f"  tap champ-and-lane (x2) -> ({champ_and_lane_tap[0]}, {champ_and_lane_tap[1]})")
-            client.tap(*champ_and_lane_tap)
-            time.sleep(0.4)
-            client.tap(*champ_and_lane_tap)
-            time.sleep(args.step_wait)
-            if args.save_screenshots:
-                cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_post_cnl.png"), client.screenshot())
+                winrate = scrape_one_player(row.rank, row.player_name, row.score, slot)
+                seen.add(key)
+                new_on_this_page += 1
+                writer.write(LeaderboardRow(
+                    champion=args.target,
+                    rank=row.rank,
+                    player_name=row.player_name,
+                    score=row.score,
+                    winrate=winrate,
+                ))
+                if winrate is not None:
+                    successes += 1
 
-            target_wr, found, swipes_done, img = find_target_in_strip(
-                client,
-                args.target,
-                max_swipes=args.max_strip_swipes,
-                swipe_scale=args.strip_swipe_scale,
-                swipe_duration_ms=args.strip_swipe_duration_ms,
-            )
-
-            if args.save_screenshots:
-                path = data_dir / f"run_rank_{rank:03d}.png"
-                cv2.imwrite(str(path), img)
-
-            visible = ", ".join(found.keys()) if found else "(none)"
-            swipe_note = f" (after {swipes_done} swipe{'s' if swipes_done != 1 else ''})" if swipes_done else ""
-            print(f"  OCR visible       : {visible}{swipe_note}")
-            print(f"  {args.target} winrate : {target_wr}")
-
-            writer.write(LeaderboardRow(
-                champion=args.target,
-                rank=rank,
-                player_name="",
-                winrate=target_wr,
-            ))
-            if target_wr is not None:
-                successes += 1
-
-            print(f"  tap back          -> ({back_tap[0]}, {back_tap[1]})")
-            client.tap(*back_tap)
-            time.sleep(args.step_wait)
-            # locate_target_rank handles all scroll state via OCR each iteration,
-            # so a Wild Rift list reset just means the next iteration's OCR
-            # reads ranks 1-5 and scrolls back forward to wherever it needs.
+                if len(seen) >= args.n:
+                    break
         except Exception:
-            print(f"\nrank {rank} crashed:")
+            print("  exception in per-player loop:")
             traceback.print_exc()
-            print("aborting loop")
-            return 1
+            print("  continuing to next page")
 
-    print(f"\ndone. {successes}/{args.n} winrates parsed. CSV -> {args.output}")
+        if new_on_this_page == 0:
+            consecutive_empty_pages += 1
+            print(f"  no new players on this page ({consecutive_empty_pages}/{args.stop_after_empty_pages} consecutive)")
+            if consecutive_empty_pages >= args.stop_after_empty_pages:
+                print(f"  bottom of leaderboard (or list keeps resetting); stopping")
+                break
+        else:
+            consecutive_empty_pages = 0
+
+        if len(seen) < args.n:
+            scroll_to_next_page()
+
+    print(f"\ndone. {successes} winrates parsed out of {len(seen)} unique players seen. CSV -> {args.output}")
     return 0
 
 
