@@ -61,7 +61,7 @@ def _extract_json(text: str) -> str:
     return text.strip()
 
 
-def read_leaderboard(image: np.ndarray, model: str = "gemini-1.5-flash") -> list[LeaderboardRow]:
+def read_leaderboard(image: np.ndarray, model: str = "gemini-2.5-flash-lite") -> list[LeaderboardRow]:
     """Send `image` to Gemini and return the parsed rows.
 
     Raises RuntimeError if the API key is missing or the response can't be
@@ -120,7 +120,7 @@ def read_leaderboard(image: np.ndarray, model: str = "gemini-1.5-flash") -> list
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("image", type=Path)
-    parser.add_argument("--model", default="gemini-1.5-flash", help="Gemini model name")
+    parser.add_argument("--model", default="gemini-2.5-flash-lite", help="Gemini model name")
     args = parser.parse_args()
 
     img = cv2.imread(str(args.image))
