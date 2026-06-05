@@ -32,11 +32,16 @@ This is a screenshot of a Wild Rift leaderboard screen.
 For each player row that's visible (the rows with rank numbers 1, 2, 3, etc.
 on the left), extract:
   - rank: the rank number (integer)
-  - player_name: the full player name as displayed (preserve any non-ASCII
-    characters exactly)
+  - player_name: ONLY the player's main display name on the first line.
+    Do NOT include any server tag, region code, or text that appears on a
+    separate line below the name. Preserve non-ASCII characters exactly.
+    No newlines in this field.
   - score: the numeric score on the right, as an integer (strip commas)
 
 Do NOT include the user's own bottom self-row (the one without a numeric rank).
+If this screenshot is NOT a per-champion leaderboard with ranked player rows
+(for example, it's the list of all champions, a player's profile page, or
+some other screen), respond with an empty JSON array: []
 
 Respond ONLY with a JSON array. No prose, no markdown fences. Example:
 [{"rank": 1, "player_name": "对家亡Akaza", "score": 21302},
@@ -107,13 +112,15 @@ def read_leaderboard(image: np.ndarray, model: str = "gemini-2.5-flash-lite") ->
     rows: list[LeaderboardRow] = []
     for item in data:
         try:
+            # Strip any newlines / extra whitespace — Gemini sometimes
+            # concatenates the server tag onto the name with a \n.
+            name = str(item["player_name"]).split("\n", 1)[0].strip()
             rows.append(LeaderboardRow(
                 rank=int(item["rank"]),
-                player_name=str(item["player_name"]),
+                player_name=name,
                 score=int(item["score"]) if item.get("score") is not None else None,
             ))
         except (KeyError, ValueError, TypeError):
-            # Skip malformed entries silently — Gemini is usually consistent
             continue
     rows.sort(key=lambda r: r.rank)
     return rows

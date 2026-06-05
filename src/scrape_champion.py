@@ -207,8 +207,14 @@ def main() -> int:
             continue
 
         if not rows:
-            print(f"  gemini returned 0 rows; scrolling forward")
-            scroll_to_next_page()
+            # Gemini returns [] when the screen isn't a per-champion leaderboard.
+            # Most common cause: a failed scrape chain ended up on screen 1
+            # (champion list) instead of screen 2. Re-tap the champion row to
+            # navigate back into the leaderboard rather than scrolling, which
+            # would be destructive on the champion-list screen.
+            print(f"  gemini returned 0 rows; not on leaderboard, re-tapping champion row")
+            client.tap(*champ_tap)
+            time.sleep(args.step_wait)
             consecutive_no_progress += 1
             if consecutive_no_progress >= args.stop_after_empty_pages:
                 print(f"  stopping (consecutive no-progress)")
