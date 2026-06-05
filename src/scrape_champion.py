@@ -173,7 +173,12 @@ def main() -> int:
         time.sleep(args.step_wait)
         return target_wr
 
-    seen: set[tuple[str, int | None]] = set()
+    # Dedup by score (int) alone. Gemini's Chinese-character recognition is
+    # not consistent across calls — the same player can come back as
+    # "討厭它Akaza" one iteration and "對厭亡Akaza" the next, breaking name-
+    # based dedup. Scores are precise integers and effectively unique per
+    # player on a champion leaderboard, so they're the stable key.
+    seen: set[int] = set()
     successes = 0
     consecutive_no_progress = 0  # iterations in a row with no new scrape
     iteration = 0
@@ -215,15 +220,16 @@ def main() -> int:
         rank_summary = ", ".join(f"r{r.rank}={r.player_name}" for r in rows)
 
         # Find the first new player whose slot is in range.
+        # Skip rows where Gemini couldn't parse a score — re-read next iter.
         next_row = None
         next_slot = -1
         for row in rows:
-            key = (row.player_name, row.score)
-            if key in seen:
+            if row.score is None:
+                continue
+            if row.score in seen:
                 continue
             if row.rank > args.n:
-                # Past our target N; mark seen so we don't waste time on it.
-                seen.add(key)
+                seen.add(row.score)  # mark past-target so we don't waste time
                 continue
             slot = row.rank - min_visible_rank
             if 0 <= slot < ROWS_PER_PAGE:
@@ -252,7 +258,7 @@ def main() -> int:
             print("  continuing")
             continue
 
-        seen.add((next_row.player_name, next_row.score))
+        seen.add(next_row.score)  # next_row.score is guaranteed non-None here
         writer.write(LeaderboardRow(
             champion=args.target,
             rank=next_row.rank,
