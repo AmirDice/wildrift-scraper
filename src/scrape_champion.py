@@ -58,6 +58,7 @@ def main() -> int:
     parser.add_argument("--max-pages", type=int, default=80, help="Hard cap on screen-2 scrolls (safety against infinite loops)")
     parser.add_argument("--max-retries-per-player", type=int, default=3, help="If a profile scrape fails (player_row/view-profile/champ-and-lane tap missed), retry up to this many times before giving up on that player")
     parser.add_argument("--score-drift-threshold", type=int, default=2000, help="If a later Gemini read returns a rank-1 score that differs from the first read by more than this many points, treat it as 'we're on the wrong leaderboard' and recover")
+    parser.add_argument("--manual-scroll", action="store_true", help="Disable automatic scrolling and the auto-enter-champion tap at start. Bot pauses and asks YOU to scroll/navigate, then press Enter. Use when Wild Rift's scroll/reset behavior is too unpredictable for the auto-pilot.")
     args = parser.parse_args()
 
     try:
@@ -125,10 +126,20 @@ def main() -> int:
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
 
-    # screen 1 -> screen 2 (once per champion)
-    print(f"enter champion: tap ({champ_tap[0]}, {champ_tap[1]})")
-    client.tap(*champ_tap)
-    time.sleep(args.step_wait)
+    if args.manual_scroll:
+        print(
+            "MANUAL-SCROLL MODE\n"
+            f"  - Open Wild Rift in MuMu, navigate to {args.target}'s leaderboard (screen 2).\n"
+            "  - You scroll/navigate. The bot only does the per-player tap chain.\n"
+            "  - Between batches, scroll the leaderboard yourself, then press Enter.\n"
+            "  - If a tap chain ends up off-screen, the bot will ask you to navigate back."
+        )
+        input("\nPress Enter when you're on the leaderboard and ready to start...")
+    else:
+        # screen 1 -> screen 2 (once per champion)
+        print(f"enter champion: tap ({champ_tap[0]}, {champ_tap[1]})")
+        client.tap(*champ_tap)
+        time.sleep(args.step_wait)
 
     def scroll_to_next_page() -> None:
         start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
@@ -210,7 +221,11 @@ def main() -> int:
         try:
             rows = read_leaderboard(img, model=args.gemini_model)
         except RuntimeError as e:
-            print(f"  gemini error: {e}; scrolling forward")
+            print(f"  gemini error: {e}")
+            if args.manual_scroll:
+                input(f"  Press Enter to retry (or Ctrl-C to abort): ")
+                continue
+            print(f"  scrolling forward")
             scroll_to_next_page()
             consecutive_no_progress += 1
             if consecutive_no_progress >= args.stop_after_empty_pages:
@@ -221,9 +236,12 @@ def main() -> int:
         if not rows:
             # Gemini returns [] when the screen isn't a per-champion leaderboard.
             # Most common cause: a failed scrape chain ended up on screen 1
-            # (champion list) instead of screen 2. Re-tap the champion row to
-            # navigate back into the leaderboard rather than scrolling, which
-            # would be destructive on the champion-list screen.
+            # (champion list) or some other screen instead of screen 2.
+            if args.manual_scroll:
+                print(f"  gemini returned 0 rows (not on leaderboard).")
+                input(f"  Navigate back to {args.target}'s leaderboard, then press Enter: ")
+                consecutive_no_progress = 0  # user gave us a fresh state
+                continue
             print(f"  gemini returned 0 rows; not on leaderboard, re-tapping champion row")
             client.tap(*champ_tap)
             time.sleep(args.step_wait)
@@ -248,8 +266,12 @@ def main() -> int:
                 print(
                     f"  rank-1 score drift: expected ~{first_rank_1_score}, "
                     f"got {rank_1.score} (Δ={rank_1.score - first_rank_1_score:+d}); "
-                    f"probably wrong champion's leaderboard, recovering"
+                    f"probably wrong champion's leaderboard"
                 )
+                if args.manual_scroll:
+                    input(f"  Navigate back to {args.target}'s leaderboard, then press Enter: ")
+                    consecutive_no_progress = 0
+                    continue
                 client.tap(*back_tap)
                 time.sleep(args.step_wait)
                 client.tap(*champ_tap)
@@ -282,6 +304,11 @@ def main() -> int:
                 break
 
         if next_row is None:
+            if args.manual_scroll:
+                print(f"  visible: {rank_summary} — all already scraped.")
+                input(f"  Scroll the leaderboard to reveal new ranks, then press Enter: ")
+                consecutive_no_progress = 0  # user gave us fresh state
+                continue
             print(f"  visible: {rank_summary} — all already scraped; scrolling forward")
             consecutive_no_progress += 1
             if consecutive_no_progress >= args.stop_after_empty_pages:
