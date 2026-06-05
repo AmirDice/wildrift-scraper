@@ -6,7 +6,7 @@ global leaderboards). Gemini 1.5 Flash handles both, fast and cheap
 (~$0.0001 per screenshot at current pricing).
 
 Setup:
-    pip install google-generativeai
+    pip install google-genai
     set GEMINI_API_KEY=<your key>     (PowerShell: $env:GEMINI_API_KEY = "...")
 
 Run as a CLI to sanity-check before wiring it into the scraper:
@@ -75,24 +75,26 @@ def read_leaderboard(image: np.ndarray, model: str = "gemini-2.5-flash-lite") ->
         )
 
     try:
-        import google.generativeai as genai
+        from google import genai
+        from google.genai import types
     except ImportError as e:
         raise RuntimeError(
-            "google-generativeai not installed. Run: pip install google-generativeai"
+            "google-genai not installed. Run: pip install google-genai"
         ) from e
-
-    genai.configure(api_key=api_key)
 
     # Encode the BGR image as JPEG (smaller payload than PNG)
     ok, buf = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, 90])
     if not ok:
         raise RuntimeError("Failed to JPEG-encode image")
 
-    model_obj = genai.GenerativeModel(model)
-    response = model_obj.generate_content([
-        PROMPT,
-        {"mime_type": "image/jpeg", "data": bytes(buf)},
-    ])
+    client = genai.Client(api_key=api_key)
+    response = client.models.generate_content(
+        model=model,
+        contents=[
+            PROMPT,
+            types.Part.from_bytes(data=bytes(buf), mime_type="image/jpeg"),
+        ],
+    )
 
     raw = _extract_json(response.text or "")
     try:

@@ -175,85 +175,94 @@ def main() -> int:
 
     seen: set[tuple[str, int | None]] = set()
     successes = 0
-    consecutive_empty_pages = 0
-    page_count = 0
+    consecutive_no_progress = 0  # iterations in a row with no new scrape
+    iteration = 0
 
-    while len(seen) < args.n and page_count < args.max_pages:
-        page_count += 1
-        print(f"\n=== page {page_count}  (collected {len(seen)}/{args.n}) ===")
+    # Each iteration: re-read leaderboard, find first new player on screen,
+    # scrape it. We do NOT batch a whole page — Wild Rift can reset the list
+    # to ranks 1..5 between any two profile views, which would invalidate any
+    # cached layout. Re-reading every loop keeps us honest at the cost of one
+    # extra Gemini call per scrape (~$0.00021 = a fraction of a cent).
+    while len(seen) < args.n and iteration < args.max_pages:
+        iteration += 1
+        print(f"\n=== iter {iteration}  (collected {len(seen)}/{args.n}) ===")
 
-        # Read the visible leaderboard via Gemini
         img = client.screenshot()
         if args.save_screenshots:
-            cv2.imwrite(str(data_dir / f"run_p{page_count:03d}_screen2.png"), img)
+            cv2.imwrite(str(data_dir / f"run_i{iteration:03d}_screen2.png"), img)
         try:
             rows = read_leaderboard(img, model=args.gemini_model)
         except RuntimeError as e:
-            print(f"  gemini error: {e}; scrolling and retrying")
+            print(f"  gemini error: {e}; scrolling forward")
             scroll_to_next_page()
+            consecutive_no_progress += 1
+            if consecutive_no_progress >= args.stop_after_empty_pages:
+                print(f"  stopping (consecutive no-progress)")
+                break
             continue
 
         if not rows:
             print(f"  gemini returned 0 rows; scrolling forward")
             scroll_to_next_page()
-            consecutive_empty_pages += 1
-            if consecutive_empty_pages >= args.stop_after_empty_pages:
-                print(f"  {consecutive_empty_pages} consecutive empty pages; assuming bottom of list")
+            consecutive_no_progress += 1
+            if consecutive_no_progress >= args.stop_after_empty_pages:
+                print(f"  stopping (consecutive no-progress)")
                 break
             continue
 
         rows.sort(key=lambda r: r.rank)
         min_visible_rank = rows[0].rank
         rank_summary = ", ".join(f"r{r.rank}={r.player_name}" for r in rows)
+
+        # Find the first new player whose slot is in range.
+        next_row = None
+        next_slot = -1
+        for row in rows:
+            key = (row.player_name, row.score)
+            if key in seen:
+                continue
+            if row.rank > args.n:
+                # Past our target N; mark seen so we don't waste time on it.
+                seen.add(key)
+                continue
+            slot = row.rank - min_visible_rank
+            if 0 <= slot < ROWS_PER_PAGE:
+                next_row = row
+                next_slot = slot
+                break
+
+        if next_row is None:
+            print(f"  visible: {rank_summary} — all already scraped; scrolling forward")
+            consecutive_no_progress += 1
+            if consecutive_no_progress >= args.stop_after_empty_pages:
+                print(f"  stopping (consecutive no-progress = {consecutive_no_progress})")
+                break
+            scroll_to_next_page()
+            continue
+
         print(f"  visible: {rank_summary}")
 
-        new_on_this_page = 0
         try:
-            for row in rows:
-                key = (row.player_name, row.score)
-                if key in seen:
-                    continue
-                if row.rank > args.n:
-                    # Past our target N; don't bother scraping
-                    seen.add(key)
-                    continue
-
-                slot = row.rank - min_visible_rank
-                if not (0 <= slot < ROWS_PER_PAGE):
-                    print(f"    skipping rank {row.rank}: derived slot {slot} out of range")
-                    continue
-
-                winrate = scrape_one_player(row.rank, row.player_name, row.score, slot)
-                seen.add(key)
-                new_on_this_page += 1
-                writer.write(LeaderboardRow(
-                    champion=args.target,
-                    rank=row.rank,
-                    player_name=row.player_name,
-                    score=row.score,
-                    winrate=winrate,
-                ))
-                if winrate is not None:
-                    successes += 1
-
-                if len(seen) >= args.n:
-                    break
+            winrate = scrape_one_player(
+                next_row.rank, next_row.player_name, next_row.score, next_slot,
+            )
         except Exception:
-            print("  exception in per-player loop:")
+            print(f"  exception scraping rank {next_row.rank}:")
             traceback.print_exc()
-            print("  continuing to next page")
+            print("  continuing")
+            continue
 
-        if new_on_this_page == 0:
-            consecutive_empty_pages += 1
-            print(f"  no new players on this page ({consecutive_empty_pages}/{args.stop_after_empty_pages} consecutive)")
-            if consecutive_empty_pages >= args.stop_after_empty_pages:
-                print(f"  bottom of leaderboard (or list keeps resetting); stopping")
-                break
-        else:
-            consecutive_empty_pages = 0
-
-        if len(seen) < args.n:
-            scroll_to_next_page()
+        seen.add((next_row.player_name, next_row.score))
+        writer.write(LeaderboardRow(
+            champion=args.target,
+            rank=next_row.rank,
+            player_name=next_row.player_name,
+            score=next_row.score,
+            winrate=winrate,
+        ))
+        if winrate is not None:
+            successes += 1
+        consecutive_no_progress = 0
 
     print(f"\ndone. {successes} winrates parsed out of {len(seen)} unique players seen. CSV -> {args.output}")
     return 0
