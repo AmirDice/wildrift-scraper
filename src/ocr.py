@@ -166,9 +166,10 @@ def read_winrate(img: np.ndarray) -> tuple[float | None, OCRResult]:
     return parse_winrate(result.text), result
 
 
-# Pattern for a champion-mastery score on screen 5 (e.g. "19,076" or "100000"):
-# either a comma-grouped integer or a 4+ digit run.
-_SCORE_PATTERN = re.compile(r"^(\d{1,3}(?:,\d{3})+|\d{4,})$")
+# Pattern for an integer value on screen 5 — either a comma-grouped integer
+# like "19,076" or a 3+ digit run like "638" (small games counts). 1-2 digit
+# integers are excluded as noise.
+_SCORE_PATTERN = re.compile(r"^(\d{1,3}(?:,\d{3})+|\d{3,})$")
 
 
 def find_target_data(
@@ -176,14 +177,13 @@ def find_target_data(
     region: tuple[int, int, int, int],
     target: str,
     tile_half_width_px: int = 220,
-) -> tuple[float | None, int | None]:
-    """OCR screen 5's champion-tile strip and return (winrate, mastery_score)
+) -> tuple[float | None, int | None, int | None]:
+    """OCR screen 5's champion-tile strip and return (winrate, score, games)
     for the `target` champion's tile. Each return value is None if not found.
 
-    The mastery score is the integer printed just below the champion name in
-    the "Highest Achieved:" line. Within a tile the vertical order is:
-        NAME -> "Highest Achieved:" -> <score> -> "Games:" <n> -> "Win Rate:" <pct>
-    So the score is the first integer directly below the name (smallest y-delta).
+    Within a tile the vertical order is:
+        NAME -> "Highest Achieved:" -> <score> -> "Games:" <games> -> "Win Rate:" <pct>
+    So sorting integer detections by y ascending: 1st = score, 2nd = games.
 
     `tile_half_width_px` is in *preprocessed* (upscaled) coordinates — it's a
     permissive bound to keep the search inside the target tile and out of
@@ -229,7 +229,7 @@ def find_target_data(
             i += 1
 
     if name_x is None or name_y is None:
-        return (None, None)
+        return (None, None, None)
 
     # Winrate: closest percentage (any y) to name_x.
     winrate: float | None = None
@@ -249,11 +249,11 @@ def find_target_data(
             best_pct_dist = dist
             winrate = value
 
-    # Score: smallest y > name_y, within tile width of name_x, value in
-    # [1000, 10_000_000]. Excludes the "Games:" count (which is below the
-    # score and so has a larger y-delta from name).
-    score: int | None = None
-    best_score_dy = float("inf")
+    # All integer candidates below name, within the tile's x-band.
+    # Bounds [100, 10_000_000] cover both small games counts and very
+    # high mastery scores while excluding noise like single-digit numbers
+    # or scrap from neighboring tiles' percentages.
+    candidates: list[tuple[int, int]] = []  # (y, value)
     for word in words:
         if not _SCORE_PATTERN.match(word.text):
             continue
@@ -261,18 +261,19 @@ def find_target_data(
             value = int(word.text.replace(",", ""))
         except ValueError:
             continue
-        if not (1000 <= value <= 10_000_000):
+        if not (100 <= value <= 10_000_000):
             continue
         if word.y <= name_y:
             continue
         if abs(word.x - name_x) > tile_half_width_px:
             continue
-        dy = word.y - name_y
-        if dy < best_score_dy:
-            best_score_dy = dy
-            score = value
+        candidates.append((word.y, value))
 
-    return (winrate, score)
+    candidates.sort()
+    score = candidates[0][1] if len(candidates) >= 1 else None
+    games = candidates[1][1] if len(candidates) >= 2 else None
+
+    return (winrate, score, games)
 
 
 def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[OCRWord]:

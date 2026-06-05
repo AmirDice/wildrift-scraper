@@ -28,21 +28,22 @@ def find_target_in_strip(
     swipe_scale: float = 0.7,
     swipe_duration_ms: int = 800,
     wait_after_swipe: float = 1.2,
-) -> tuple[float | None, int | None, dict[str, float], int, np.ndarray]:
-    """Look for `target` champion on screen 5 and return its (winrate, score),
-    swiping the strip right-to-left up to `max_swipes` times if not found.
+) -> tuple[float | None, int | None, int | None, dict[str, float], int, np.ndarray]:
+    """Look for `target` champion on screen 5 and return its
+    (winrate, score, games), swiping the strip right-to-left up to
+    `max_swipes` times if not found.
 
-    Returns: (winrate_or_None, score_or_None, last_found_dict,
-    num_swipes_performed, last_image). Stops early when a swipe reveals no new
-    champions (end of strip reached).
+    Returns: (winrate, score, games, last_found_dict, num_swipes, last_image).
+    Each of winrate/score/games may be None if not found. Stops early when a
+    swipe reveals no new champions (end of strip reached).
     """
     target_lower = target.lower()
 
     img = client.screenshot()
     found = find_champion_winrates(img, SCREEN_5_OCR_REGION)
     if any(c.lower() == target_lower for c in found.keys()):
-        wr, score = find_target_data(img, SCREEN_5_OCR_REGION, target)
-        return wr, score, found, 0, img
+        wr, score, games = find_target_data(img, SCREEN_5_OCR_REGION, target)
+        return wr, score, games, found, 0, img
 
     seen: set[str] = {c.lower() for c in found.keys()}
     swipes_done = 0
@@ -58,8 +59,8 @@ def find_target_in_strip(
         img = client.screenshot()
         found = find_champion_winrates(img, SCREEN_5_OCR_REGION)
         if any(c.lower() == target_lower for c in found.keys()):
-            wr, score = find_target_data(img, SCREEN_5_OCR_REGION, target)
-            return wr, score, found, swipes_done, img
+            wr, score, games = find_target_data(img, SCREEN_5_OCR_REGION, target)
+            return wr, score, games, found, swipes_done, img
 
         # End-of-strip detection: if this swipe revealed nothing new, stop.
         current = {c.lower() for c in found.keys()}
@@ -67,4 +68,4 @@ def find_target_in_strip(
             break
         seen |= current
 
-    return None, None, found, swipes_done, img
+    return None, None, None, found, swipes_done, img

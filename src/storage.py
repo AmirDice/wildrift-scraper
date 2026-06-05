@@ -5,9 +5,10 @@ Designed to survive crashes/restarts so the scraper can checkpoint as it goes.
 
 Schema (one row per leaderboard entry):
 
-    champion, rank, player_name, score, winrate, captured_at
+    champion, rank, player_name, score, games, winrate, captured_at
 
-`score` is the champion mastery score shown on the leaderboard row.
+`score` is the champion mastery score ("Highest Achieved").
+`games` is the games played count.
 `captured_at` is an ISO-8601 UTC timestamp.
 """
 from __future__ import annotations
@@ -19,7 +20,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-FIELDNAMES = ["champion", "rank", "player_name", "score", "winrate", "captured_at"]
+FIELDNAMES = ["champion", "rank", "player_name", "score", "games", "winrate", "captured_at"]
 
 
 @dataclass
@@ -29,6 +30,7 @@ class LeaderboardRow:
     player_name: str
     winrate: float | None
     score: int | None = None
+    games: int | None = None
     captured_at: str = ""
 
     def __post_init__(self) -> None:

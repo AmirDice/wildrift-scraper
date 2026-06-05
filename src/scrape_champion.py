@@ -156,8 +156,8 @@ def main() -> int:
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
 
-    def scrape_one_player(rank: int, slot: int) -> tuple[float | None, int | None]:
-        """Tap chain into the slot's player profile, OCR (winrate, score), back."""
+    def scrape_one_player(rank: int, slot: int) -> tuple[float | None, int | None, int | None]:
+        """Tap chain into the slot's player profile, OCR (winrate, score, games), back."""
         px, py = slot_tap_coords(slot)
         print(f"  rank {rank} (slot {slot}): tap player ({px}, {py})")
         client.tap(px, py)
@@ -174,7 +174,7 @@ def main() -> int:
         client.tap(*champ_and_lane_tap)
         time.sleep(args.step_wait)
 
-        winrate, score, found, swipes_done, img = find_target_in_strip(
+        winrate, score, games, found, swipes_done, img = find_target_in_strip(
             client,
             args.target,
             max_swipes=args.max_strip_swipes,
@@ -186,11 +186,11 @@ def main() -> int:
         vis = ", ".join(found.keys()) if found else "(none)"
         swipe_note = f" (after {swipes_done} swipe{'s' if swipes_done != 1 else ''})" if swipes_done else ""
         print(f"    strip OCR : {vis}{swipe_note}")
-        print(f"    winrate   : {winrate}  score: {score}")
+        print(f"    winrate={winrate}  score={score}  games={games}")
 
         client.tap(*back_tap)
         time.sleep(args.step_wait)
-        return winrate, score
+        return winrate, score, games
 
     print(f"Open MuMu, scroll the leaderboard so rank {args.start_rank} is at slot 0 (top).")
     input("Press Enter when ready to start: ")
@@ -214,13 +214,14 @@ def main() -> int:
                 # Retry the tap chain up to N times if it fails
                 winrate: float | None = None
                 score: int | None = None
+                games: int | None = None
                 for attempt in range(1, args.max_retries_per_player + 1):
                     try:
-                        winrate, score = scrape_one_player(current_rank, slot)
+                        winrate, score, games = scrape_one_player(current_rank, slot)
                     except Exception:
                         print(f"  exception at rank {current_rank}:")
                         traceback.print_exc()
-                        winrate, score = None, None
+                        winrate, score, games = None, None, None
                     if winrate is not None:
                         break
                     if attempt < args.max_retries_per_player:
@@ -233,6 +234,7 @@ def main() -> int:
                     rank=current_rank,
                     player_name="",
                     score=score,
+                    games=games,
                     winrate=winrate,
                 ))
                 if winrate is not None:
