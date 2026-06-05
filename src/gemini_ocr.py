@@ -27,21 +27,30 @@ import numpy as np
 
 
 PROMPT = """\
-This is a screenshot of a Wild Rift leaderboard screen.
+This is a screenshot of a Wild Rift screen. Only extract player data if
+you can confirm ALL of the following:
 
-For each player row that's visible (the rows with rank numbers 1, 2, 3, etc.
-on the left), extract:
+1. There is a SINGLE champion's name and large portrait/bust prominently
+   shown at the BOTTOM-LEFT of the screen (e.g. "AATROX" with the
+   champion's artwork).
+2. The list shows ranked PLAYER rows (different player avatars per row,
+   with numeric ranks 1, 2, 3, ...).
+3. Every visible ranked row is for the SAME champion (the one shown at
+   bottom-left). The list is NOT a list of different champions.
+
+If ANY of these fails — for example each row shows a DIFFERENT champion
+icon (that's the global champion list, NOT a per-champion leaderboard),
+or it's a player's profile page, main menu, champion select, etc. —
+respond with an empty JSON array: []
+
+If the conditions are met, for each ranked PLAYER row, extract:
   - rank: the rank number (integer)
   - player_name: ONLY the player's main display name on the first line.
-    Do NOT include any server tag, region code, or text that appears on a
-    separate line below the name. Preserve non-ASCII characters exactly.
-    No newlines in this field.
+    Do NOT include any server tag, region code, or text on a separate
+    line. Preserve non-ASCII characters exactly. No newlines.
   - score: the numeric score on the right, as an integer (strip commas)
 
-Do NOT include the user's own bottom self-row (the one without a numeric rank).
-If this screenshot is NOT a per-champion leaderboard with ranked player rows
-(for example, it's the list of all champions, a player's profile page, or
-some other screen), respond with an empty JSON array: []
+Do NOT include the user's own self-row at the bottom (no numeric rank).
 
 Respond ONLY with a JSON array. No prose, no markdown fences. Example:
 [{"rank": 1, "player_name": "对家亡Akaza", "score": 21302},

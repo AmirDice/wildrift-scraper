@@ -57,6 +57,7 @@ def main() -> int:
     parser.add_argument("--stop-after-empty-pages", type=int, default=3, help="Stop after this many consecutive scrolls return no new players")
     parser.add_argument("--max-pages", type=int, default=80, help="Hard cap on screen-2 scrolls (safety against infinite loops)")
     parser.add_argument("--max-retries-per-player", type=int, default=3, help="If a profile scrape fails (player_row/view-profile/champ-and-lane tap missed), retry up to this many times before giving up on that player")
+    parser.add_argument("--score-drift-threshold", type=int, default=2000, help="If a later Gemini read returns a rank-1 score that differs from the first read by more than this many points, treat it as 'we're on the wrong leaderboard' and recover")
     args = parser.parse_args()
 
     try:
@@ -174,6 +175,12 @@ def main() -> int:
         time.sleep(args.step_wait)
         return target_wr
 
+    # First successful read's rank-1 score; later reads should be within
+    # --score-drift-threshold of this. If not, we're probably on a different
+    # champion's leaderboard (e.g. a failed back-tap dropped us on screen 1
+    # then we tapped a different champion row by accident).
+    first_rank_1_score: int | None = None
+
     # Dedup by score (int) alone. Gemini's non-ASCII name recognition jitters
     # across calls (same player comes back with slightly different characters),
     # so name keys looked novel every iteration. Scores are precise integers,
@@ -227,6 +234,32 @@ def main() -> int:
             continue
 
         rows.sort(key=lambda r: r.rank)
+
+        # Sanity check: rank-1 score should be stable across iterations.
+        # If we suddenly see a wildly different score, we're on the wrong
+        # leaderboard (e.g. a stray tap landed on the champion list and
+        # opened a different champion). Recover by backing out + re-tapping.
+        rank_1 = next((r for r in rows if r.rank == 1 and r.score is not None), None)
+        if rank_1 is not None:
+            if first_rank_1_score is None:
+                first_rank_1_score = rank_1.score
+                print(f"  reference rank-1 score: {first_rank_1_score}")
+            elif abs(rank_1.score - first_rank_1_score) > args.score_drift_threshold:
+                print(
+                    f"  rank-1 score drift: expected ~{first_rank_1_score}, "
+                    f"got {rank_1.score} (Δ={rank_1.score - first_rank_1_score:+d}); "
+                    f"probably wrong champion's leaderboard, recovering"
+                )
+                client.tap(*back_tap)
+                time.sleep(args.step_wait)
+                client.tap(*champ_tap)
+                time.sleep(args.step_wait)
+                consecutive_no_progress += 1
+                if consecutive_no_progress >= args.stop_after_empty_pages:
+                    print(f"  stopping (sanity check kept failing)")
+                    break
+                continue
+
         min_visible_rank = rows[0].rank
         rank_summary = ", ".join(f"r{r.rank}={r.player_name}" for r in rows)
 
