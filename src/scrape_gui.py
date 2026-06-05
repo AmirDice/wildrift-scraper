@@ -32,6 +32,7 @@ from typing import Any
 import cv2
 
 from .adb_client import ADBClient, ADBError
+from .champions import CHAMPIONS
 from .config import ROWS_PER_PAGE, load_screen_points
 from .storage import CSVWriter, LeaderboardRow
 from .strip import find_target_in_strip
@@ -51,6 +52,7 @@ class Scraper:
         self.args = args
         self.cmd_q = cmd_q
         self.status_q = status_q
+        self.target = args.target  # mutable — can be changed mid-session via 'target:NAME'
         self.current_rank = args.start_rank
         self.successes = 0
         self.stop = False
@@ -149,7 +151,7 @@ class Scraper:
             time.sleep(args.step_wait)
             winrate, score, games, found, swipes_done, img = find_target_in_strip(
                 client,
-                args.target,
+                self.target,
                 max_swipes=args.max_strip_swipes,
                 swipe_scale=args.strip_swipe_scale,
                 swipe_duration_ms=args.strip_swipe_duration_ms,
@@ -160,11 +162,12 @@ class Scraper:
             time.sleep(args.step_wait)
             return winrate, score, games
 
-        end_rank = args.start_rank + args.n - 1
+        def end_rank() -> int:
+            return self.args.start_rank + self.args.n - 1
 
-        self.emit(kind="ready", current_rank=self.current_rank, end_rank=end_rank)
+        self.emit(kind="ready", target=self.target, current_rank=self.current_rank, end_rank=end_rank())
 
-        while not self.stop and self.current_rank <= end_rank:
+        while not self.stop and self.current_rank <= end_rank():
             cmd = self.wait_for_cmd()
             if cmd is None or cmd == "stop":
                 self.stop = True
@@ -175,18 +178,31 @@ class Scraper:
                 continue
             if cmd == "resume":
                 continue
+            if cmd.startswith("target:"):
+                new_target = cmd.split(":", 1)[1].strip()
+                if new_target:
+                    self.target = new_target
+                    self.current_rank = self.args.start_rank
+                    self.successes = 0
+                    self.emit(
+                        kind="target_changed",
+                        target=self.target,
+                        current_rank=self.current_rank,
+                        end_rank=end_rank(),
+                    )
+                continue
             if cmd != "next":
                 continue
 
             batch_start = self.current_rank
-            self.emit(kind="batch_start", rank=batch_start)
+            self.emit(kind="batch_start", rank=batch_start, target=self.target)
             for slot in range(ROWS_PER_PAGE):
-                if self.current_rank > end_rank or self.stop:
+                if self.current_rank > end_rank() or self.stop:
                     break
                 self.check_for_pause()
                 if self.stop:
                     break
-                self.emit(kind="scraping", rank=self.current_rank, slot=slot)
+                self.emit(kind="scraping", rank=self.current_rank, slot=slot, target=self.target)
                 winrate: float | None = None
                 score: int | None = None
                 games: int | None = None
@@ -199,7 +215,7 @@ class Scraper:
                     if winrate is not None:
                         break
                 writer.write(LeaderboardRow(
-                    champion=args.target,
+                    champion=self.target,
                     rank=self.current_rank,
                     player_name="",
                     score=score,
@@ -218,7 +234,7 @@ class Scraper:
                 )
                 self.current_rank += 1
 
-            self.emit(kind="batch_done", current_rank=self.current_rank, end_rank=end_rank)
+            self.emit(kind="batch_done", current_rank=self.current_rank, end_rank=end_rank(), target=self.target)
 
         self.emit(kind="done", successes=self.successes, total=self.current_rank - args.start_rank)
 
@@ -229,8 +245,8 @@ def build_gui(args, cmd_q: "queue.Queue[str]", status_q: "queue.Queue[dict[str, 
     root = tk.Tk()
     root.title("WR Scraper")
     root.attributes("-topmost", True)
-    root.geometry("280x230+50+50")
-    root.minsize(260, 220)
+    root.geometry("300x340+50+50")
+    root.minsize(280, 330)
 
     style = ttk.Style()
     try:
@@ -238,14 +254,33 @@ def build_gui(args, cmd_q: "queue.Queue[str]", status_q: "queue.Queue[dict[str, 
     except tk.TclError:
         pass
 
-    target_var = tk.StringVar(value=f"Champion: {args.target}")
+    target_var = tk.StringVar(value=f"Target: {args.target}")
     rank_var = tk.StringVar(value="Current rank: —")
     last_var = tk.StringVar(value="Last scrape: —")
     state_var = tk.StringVar(value="Connecting…")
+    selector_var = tk.StringVar(value=args.target)
 
-    ttk.Label(root, textvariable=target_var, anchor="center").pack(fill="x", padx=8, pady=(8, 0))
+    ttk.Label(root, textvariable=target_var, anchor="center", font=("TkDefaultFont", 10, "bold")).pack(fill="x", padx=8, pady=(8, 0))
     ttk.Label(root, textvariable=rank_var, anchor="center").pack(fill="x", padx=8)
     ttk.Label(root, textvariable=last_var, anchor="center", foreground="#1a6b1a").pack(fill="x", padx=8, pady=(0, 4))
+
+    # Champion picker + Switch button
+    picker_frame = ttk.Frame(root)
+    picker_frame.pack(fill="x", padx=8, pady=(4, 2))
+    ttk.Label(picker_frame, text="Next champion:").pack(side="left")
+    picker = ttk.Combobox(
+        picker_frame, textvariable=selector_var, values=sorted(CHAMPIONS), width=14, state="readonly",
+    )
+    picker.pack(side="right", fill="x", expand=True)
+
+    def switch_target() -> None:
+        new = selector_var.get().strip()
+        if not new:
+            return
+        cmd_q.put(f"target:{new}")
+
+    btn_switch = ttk.Button(root, text="Switch target", command=switch_target)
+    btn_switch.pack(fill="x", padx=8, pady=(0, 6))
 
     btn_next = ttk.Button(root, text="Scrape next 5", command=lambda: cmd_q.put("next"))
     btn_next.pack(fill="x", padx=8, pady=(4, 2))
@@ -262,7 +297,7 @@ def build_gui(args, cmd_q: "queue.Queue[str]", status_q: "queue.Queue[dict[str, 
     btn_stop = ttk.Button(root, text="Stop", command=lambda: (cmd_q.put("stop"), root.after(500, root.destroy)))
     btn_stop.pack(fill="x", padx=8, pady=(2, 4))
 
-    ttk.Label(root, textvariable=state_var, anchor="center", foreground="#444").pack(fill="x", padx=8, pady=(4, 8))
+    ttk.Label(root, textvariable=state_var, anchor="center", foreground="#444", wraplength=280, justify="center").pack(fill="x", padx=8, pady=(4, 8))
 
     def poll() -> None:
         try:
@@ -271,7 +306,19 @@ def build_gui(args, cmd_q: "queue.Queue[str]", status_q: "queue.Queue[dict[str, 
                 kind = msg.get("kind")
                 if kind == "ready":
                     state_var.set("Ready. Scroll to the starting rank, then click 'Scrape next 5'.")
+                    target_var.set(f"Target: {msg.get('target', args.target)}")
                     rank_var.set(f"Current rank: {msg['current_rank']} / {msg['end_rank']}")
+                    btn_next.state(["!disabled"])
+                    btn_pause.state(["disabled"])
+                    btn_resume.state(["disabled"])
+                elif kind == "target_changed":
+                    target_var.set(f"Target: {msg['target']}")
+                    rank_var.set(f"Current rank: {msg['current_rank']} / {msg['end_rank']}")
+                    last_var.set("Last scrape: —")
+                    state_var.set(
+                        f"Target switched to {msg['target']}. Navigate Wild Rift to that champion's "
+                        "leaderboard and scroll to the starting rank, then click 'Scrape next 5'."
+                    )
                     btn_next.state(["!disabled"])
                     btn_pause.state(["disabled"])
                     btn_resume.state(["disabled"])

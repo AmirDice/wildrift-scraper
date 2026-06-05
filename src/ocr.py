@@ -176,19 +176,23 @@ def find_target_data(
     image: np.ndarray,
     region: tuple[int, int, int, int],
     target: str,
-    tile_half_width_px: int = 220,
+    tile_half_width_px: int = 180,
 ) -> tuple[float | None, int | None, int | None]:
     """OCR screen 5's champion-tile strip and return (winrate, score, games)
-    for the `target` champion's tile. Each return value is None if not found.
+    for the `target` champion's tile, and ONLY that tile's tile. The returned
+    score and games belong to `target`, never to a neighboring tile.
 
     Within a tile the vertical order is:
         NAME -> "Highest Achieved:" -> <score> -> "Games:" <games> -> "Win Rate:" <pct>
-    So sorting integer detections by y ascending: 1st = score, 2nd = games.
+    So we anchor on the target champion-name word's position, then take only
+    integers that are (a) below that y-position and (b) within
+    tile_half_width_px of its x-position. The first such integer (smallest y)
+    is the mastery score, the second is the games count.
 
-    `tile_half_width_px` is in *preprocessed* (upscaled) coordinates — it's a
-    permissive bound to keep the search inside the target tile and out of
-    neighboring tiles. The default works for a 4-tiles-visible strip in a
-    1600x900 frame, accounting for the ~3x upscale in `preprocess()`.
+    `tile_half_width_px` is in *preprocessed* (upscaled) coordinates. In a
+    standard 1600x900 frame with the 909px OCR region and 4 visible tiles,
+    each tile is ~227px wide in original / ~680px upscaled — so 180 keeps
+    us safely inside the target tile (about half a tile-width).
     """
     from . import champions as champ_module
 
