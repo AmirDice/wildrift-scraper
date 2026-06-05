@@ -36,13 +36,15 @@ class ADBClient:
             raise ADBError("Failed to decode screenshot PNG")
         return img
 
-    def tap(self, x: int, y: int, hold_ms: int = 100) -> None:
+    def tap(self, x: int, y: int, hold_ms: int = 200) -> None:
         """Tap at (x, y), held for `hold_ms` milliseconds.
 
         Implemented as a zero-distance swipe (`input swipe x y x y hold_ms`),
         which is more reliable than `input tap` because Android UIs sometimes
-        silently drop the bare instantaneous tap during screen transitions.
-        Set hold_ms=0 to use the original `input tap`.
+        silently drop sub-100ms taps during screen transitions. A 200ms hold
+        is well within "tap" gesture range (Android long-press threshold is
+        500ms) and gives Wild Rift's animation-settling logic time to accept
+        the input. Set hold_ms=0 to use the original `input tap`.
         """
         if hold_ms > 0:
             self._run([
