@@ -1,29 +1,26 @@
-"""Scrape top-N players' winrates for one champion and write to CSV.
+"""Manual-scroll scraper.
 
-Architecture (post-Gemini refactor):
-    1. Enter the champion's leaderboard (screen 1 -> screen 2).
-    2. Take a screenshot. Send to Gemini -> [{rank, player_name, score}, ...].
-    3. For each new (player_name, score) pair we haven't seen, tap into their
-       profile, OCR the Aatrox winrate on screen 5, tap back. Record the row.
-    4. Scroll screen 2 forward one page; repeat.
-    5. Stop when target_n unique players collected, or several consecutive
-       page scrolls return zero new players (bottom of leaderboard reached).
+You scroll Wild Rift's leaderboard yourself; the bot only does the per-player
+tap chain (player row -> view profile -> CHAMPION AND LANE -> OCR -> back).
+After each batch of 5 it asks you to scroll and press Enter for the next 5.
 
-Wild Rift's periodic list reset is now harmless — when the list snaps back to
-ranks 1..5, Gemini reports them, we see them in the seen-set, and skip
-straight to the next scroll without scraping duplicates.
+No Gemini, no auto-scroll, no reset recovery. The mastery score AND winrate
+are both extracted from the screen-5 champion strip (via Tesseract); the
+leaderboard "score" column isn't read at all.
 
-Prereq:
-    - GEMINI_API_KEY env var set (see src/gemini_ocr.py)
-    - In MuMu, on screen 1 (CHAMPION tab) with target champion at the mapped
-      row position (coords/screen_1.json).
+Pause: press the `p` key at any time. The bot finishes the current player
+tap chain, then waits for you to press Enter to resume.
+
+Prereq: In MuMu, you are on screen 2 (the champion's leaderboard) with rank
+--start-rank visible at slot 0 (the topmost row).
 
 Run:
-    python -m src.scrape_champion --target Aatrox --n 20 --save-screenshots
+    python -m src.scrape_champion --target Aatrox --n 200 --start-rank 1
 """
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 import traceback
@@ -33,36 +30,71 @@ import cv2
 
 from .adb_client import ADBClient, ADBError
 from .config import ROWS_PER_PAGE, load_screen_points
-from .gemini_ocr import read_leaderboard
 from .storage import CSVWriter, LeaderboardRow
 from .strip import find_target_in_strip
 
 
+# Non-blocking keyboard polling for the pause feature. Windows has msvcrt
+# built in; on Unix we fall through to no-op (pause is just not available).
+if os.name == "nt":
+    import msvcrt
+
+    def _key_pressed() -> str | None:
+        if msvcrt.kbhit():
+            ch = msvcrt.getch()
+            try:
+                return ch.decode("utf-8", errors="ignore").lower()
+            except Exception:
+                return ""
+        return None
+
+    def _drain_keys() -> None:
+        while msvcrt.kbhit():
+            msvcrt.getch()
+else:
+    def _key_pressed() -> str | None:
+        return None
+
+    def _drain_keys() -> None:
+        return None
+
+
+def _check_for_pause() -> bool:
+    """Returns True if the user has pressed 'p' since the last check."""
+    while True:
+        k = _key_pressed()
+        if k is None:
+            return False
+        if k == "p":
+            return True
+        # Some other key — drain and keep looking
+
+
+def _handle_pause() -> None:
+    print("\n=== PAUSED ===  (fix Wild Rift state, then press Enter to resume)")
+    _drain_keys()
+    input()
+    _drain_keys()
+    print("=== RESUMED ===\n")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--target", default="Aatrox", help="Champion to look up on each player's profile")
-    parser.add_argument("--n", type=int, default=20, help="Number of unique players to scrape")
+    parser.add_argument("--target", default="Aatrox", help="Champion whose winrate to look up on each player's profile")
+    parser.add_argument("--n", type=int, default=20, help="Total number of ranks to scrape (starting at --start-rank)")
+    parser.add_argument("--start-rank", type=int, default=1, help="First rank to scrape (must be at slot 0 of screen 2 when you press Enter)")
     parser.add_argument("--device", default="127.0.0.1:7555")
     parser.add_argument("--no-connect", action="store_true")
     parser.add_argument("--step-wait", type=float, default=2.0, help="Seconds to wait after each tap")
     parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"), help="CSV file to append to")
     parser.add_argument("--save-screenshots", action="store_true", help="Save the screen 5 screenshot for each rank")
-    parser.add_argument("--swipe-scale", type=float, default=0.8, help="Multiplier on the per-page swipe distance")
-    parser.add_argument("--swipe-duration-ms", type=int, default=1500, help="Page-scroll swipe duration")
-    parser.add_argument("--scroll-wait", type=float, default=1.5, help="Extra seconds to wait after a scroll for the list to settle")
-    parser.add_argument("--max-strip-swipes", type=int, default=3, help="If target champion isn't in the first 4 tiles on screen 5, swipe the strip up to N times")
+    parser.add_argument("--max-strip-swipes", type=int, default=3, help="If the target champion isn't in the first 4 visible tiles, swipe the strip up to N times")
     parser.add_argument("--strip-swipe-scale", type=float, default=0.7)
     parser.add_argument("--strip-swipe-duration-ms", type=int, default=800)
-    parser.add_argument("--gemini-model", default="gemini-2.5-flash-lite", help="Gemini model for leaderboard OCR")
-    parser.add_argument("--stop-after-empty-pages", type=int, default=3, help="Stop after this many consecutive scrolls return no new players")
-    parser.add_argument("--max-pages", type=int, default=80, help="Hard cap on screen-2 scrolls (safety against infinite loops)")
-    parser.add_argument("--max-retries-per-player", type=int, default=3, help="If a profile scrape fails (player_row/view-profile/champ-and-lane tap missed), retry up to this many times before giving up on that player")
-    parser.add_argument("--score-drift-threshold", type=int, default=2000, help="If a later Gemini read returns a rank-1 score that differs from the first read by more than this many points, treat it as 'we're on the wrong leaderboard' and recover")
-    parser.add_argument("--manual-scroll", action="store_true", help="Disable automatic scrolling and the auto-enter-champion tap at start. Bot pauses and asks YOU to scroll/navigate, then press Enter. Use when Wild Rift's scroll/reset behavior is too unpredictable for the auto-pilot.")
+    parser.add_argument("--max-retries-per-player", type=int, default=3, help="If a tap chain fails (winrate not found), retry up to this many times before recording None and moving on")
     args = parser.parse_args()
 
     try:
-        s1 = load_screen_points(1)
         s2 = load_screen_points(2)
         s3 = load_screen_points(3)
         s4 = load_screen_points(4)
@@ -72,7 +104,7 @@ def main() -> int:
         return 1
 
     if "aatrox" not in s2:
-        print("error: screen_2.json needs 'aatrox' (rank 1 tap)", file=sys.stderr)
+        print("error: screen_2.json needs 'aatrox' (rank 1 tap point)", file=sys.stderr)
         return 1
     rank_1_x, rank_1_y = s2["aatrox"]
 
@@ -89,29 +121,27 @@ def main() -> int:
         row_pitch = deep_y - rank_1_y
         pitch_source = "rank 1 -> rank 2"
     else:
-        print("error: screen_2.json needs at least one of 'player_row_2/3/5'", file=sys.stderr)
+        print("error: screen_2.json needs player_row_2/3/5", file=sys.stderr)
         return 1
     if row_pitch <= 0:
         print(f"error: invalid row pitch {row_pitch}", file=sys.stderr)
         return 1
-
     if "back" not in s5:
         print("error: screen_5.json needs a 'back' point", file=sys.stderr)
         return 1
 
-    champ_tap = s1["aatrox"]
     view_profile_tap = s3["aatrox"]
     champ_and_lane_tap = s4["aatrox"]
     back_tap = s5["back"]
 
-    def slot_tap(slot: int) -> tuple[int, int]:
+    def slot_tap_coords(slot: int) -> tuple[int, int]:
         return (rank_1_x, int(round(rank_1_y + slot * row_pitch)))
 
     print(f"target champion : {args.target}")
-    print(f"target N        : {args.n} unique players")
+    print(f"ranks           : {args.start_rank} .. {args.start_rank + args.n - 1}  ({args.n} players)")
     print(f"row pitch       : {row_pitch:.1f}px  ({pitch_source})")
-    print(f"gemini model    : {args.gemini_model}")
     print(f"CSV output      : {args.output}")
+    print(f"pause           : press 'p' (then Enter at the prompt to resume)")
     print()
 
     client = ADBClient(device=args.device)
@@ -126,33 +156,10 @@ def main() -> int:
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
 
-    if args.manual_scroll:
-        print(
-            "MANUAL-SCROLL MODE\n"
-            f"  - Open Wild Rift in MuMu, navigate to {args.target}'s leaderboard (screen 2).\n"
-            "  - You scroll/navigate. The bot only does the per-player tap chain.\n"
-            "  - Between batches, scroll the leaderboard yourself, then press Enter.\n"
-            "  - If a tap chain ends up off-screen, the bot will ask you to navigate back."
-        )
-        input("\nPress Enter when you're on the leaderboard and ready to start...")
-    else:
-        # screen 1 -> screen 2 (once per champion)
-        print(f"enter champion: tap ({champ_tap[0]}, {champ_tap[1]})")
-        client.tap(*champ_tap)
-        time.sleep(args.step_wait)
-
-    def scroll_to_next_page() -> None:
-        start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
-        distance_px = int(round(ROWS_PER_PAGE * row_pitch * args.swipe_scale))
-        end_y = max(50, start_y - distance_px)
-        print(f"  swipe scroll      -> ({rank_1_x}, {start_y}) -> ({rank_1_x}, {end_y})")
-        client.swipe(rank_1_x, start_y, rank_1_x, end_y, args.swipe_duration_ms)
-        time.sleep(args.step_wait + args.scroll_wait)
-
-    def scrape_one_player(rank: int, player_name: str, score: int | None, slot: int) -> float | None:
-        """Tap chain into the player's profile, OCR winrate, tap back."""
-        px, py = slot_tap(slot)
-        print(f"  rank {rank} ({player_name}, score={score}) at slot {slot}: tap ({px}, {py})")
+    def scrape_one_player(rank: int, slot: int) -> tuple[float | None, int | None]:
+        """Tap chain into the slot's player profile, OCR (winrate, score), back."""
+        px, py = slot_tap_coords(slot)
+        print(f"  rank {rank} (slot {slot}): tap player ({px}, {py})")
         client.tap(px, py)
         time.sleep(args.step_wait)
 
@@ -161,13 +168,13 @@ def main() -> int:
 
         if args.save_screenshots:
             cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_pre_cnl.png"), client.screenshot())
-        # Double-tap CHAMPION AND LANE — first tap can miss during transition
+        # Double-tap CHAMPION AND LANE — first one can be eaten by a transition.
         client.tap(*champ_and_lane_tap)
         time.sleep(0.4)
         client.tap(*champ_and_lane_tap)
         time.sleep(args.step_wait)
 
-        target_wr, found, swipes_done, img = find_target_in_strip(
+        winrate, score, found, swipes_done, img = find_target_in_strip(
             client,
             args.target,
             max_swipes=args.max_strip_swipes,
@@ -176,192 +183,76 @@ def main() -> int:
         )
         if args.save_screenshots:
             cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}.png"), img)
-
         vis = ", ".join(found.keys()) if found else "(none)"
         swipe_note = f" (after {swipes_done} swipe{'s' if swipes_done != 1 else ''})" if swipes_done else ""
         print(f"    strip OCR : {vis}{swipe_note}")
-        print(f"    {args.target} winrate : {target_wr}")
+        print(f"    winrate   : {winrate}  score: {score}")
 
         client.tap(*back_tap)
         time.sleep(args.step_wait)
-        return target_wr
+        return winrate, score
 
-    # First successful read's rank-1 score; later reads should be within
-    # --score-drift-threshold of this. If not, we're probably on a different
-    # champion's leaderboard (e.g. a failed back-tap dropped us on screen 1
-    # then we tapped a different champion row by accident).
-    first_rank_1_score: int | None = None
+    print(f"Open MuMu, scroll the leaderboard so rank {args.start_rank} is at slot 0 (top).")
+    input("Press Enter when ready to start: ")
 
-    # Dedup by score (int) alone. Gemini's non-ASCII name recognition jitters
-    # across calls (same player comes back with slightly different characters),
-    # so name keys looked novel every iteration. Scores are precise integers,
-    # effectively unique per player on a champion leaderboard - stable key.
-    seen: set[int] = set()
-    # Per-player attempt counter. Only mark a player "seen" after a successful
-    # scrape OR after we've exhausted --max-retries-per-player tries. This way
-    # a failed tap chain (e.g. player row tap missed) doesn't permanently lose
-    # us the player - we just retry next iteration.
-    attempts: dict[int, int] = {}
+    end_rank = args.start_rank + args.n - 1
+    current_rank = args.start_rank
     successes = 0
-    consecutive_no_progress = 0  # iterations in a row with no new scrape
-    iteration = 0
 
-    # Each iteration: re-read leaderboard, find first new player on screen,
-    # scrape it. We do NOT batch a whole page — Wild Rift can reset the list
-    # to ranks 1..5 between any two profile views, which would invalidate any
-    # cached layout. Re-reading every loop keeps us honest at the cost of one
-    # extra Gemini call per scrape (~$0.00021 = a fraction of a cent).
-    while len(seen) < args.n and iteration < args.max_pages:
-        iteration += 1
-        print(f"\n=== iter {iteration}  (collected {len(seen)}/{args.n}) ===")
-
-        img = client.screenshot()
-        if args.save_screenshots:
-            cv2.imwrite(str(data_dir / f"run_i{iteration:03d}_screen2.png"), img)
-        try:
-            rows = read_leaderboard(img, model=args.gemini_model)
-        except RuntimeError as e:
-            print(f"  gemini error: {e}")
-            if args.manual_scroll:
-                input(f"  Press Enter to retry (or Ctrl-C to abort): ")
-                continue
-            print(f"  scrolling forward")
-            scroll_to_next_page()
-            consecutive_no_progress += 1
-            if consecutive_no_progress >= args.stop_after_empty_pages:
-                print(f"  stopping (consecutive no-progress)")
-                break
-            continue
-
-        if not rows:
-            # Gemini returns [] when the screen isn't a per-champion leaderboard.
-            # Most common cause: a failed scrape chain ended up on screen 1
-            # (champion list) or some other screen instead of screen 2.
-            if args.manual_scroll:
-                print(f"  gemini returned 0 rows (not on leaderboard).")
-                input(f"  Navigate back to {args.target}'s leaderboard, then press Enter: ")
-                consecutive_no_progress = 0  # user gave us a fresh state
-                continue
-            print(f"  gemini returned 0 rows; not on leaderboard, re-tapping champion row")
-            client.tap(*champ_tap)
-            time.sleep(args.step_wait)
-            consecutive_no_progress += 1
-            if consecutive_no_progress >= args.stop_after_empty_pages:
-                print(f"  stopping (consecutive no-progress)")
-                break
-            continue
-
-        rows.sort(key=lambda r: r.rank)
-
-        # Sanity check: rank-1 score should be stable across iterations.
-        # If we suddenly see a wildly different score, we're on the wrong
-        # leaderboard (e.g. a stray tap landed on the champion list and
-        # opened a different champion). Recover by backing out + re-tapping.
-        rank_1 = next((r for r in rows if r.rank == 1 and r.score is not None), None)
-        if rank_1 is not None:
-            if first_rank_1_score is None:
-                first_rank_1_score = rank_1.score
-                print(f"  reference rank-1 score: {first_rank_1_score}")
-            elif abs(rank_1.score - first_rank_1_score) > args.score_drift_threshold:
-                print(
-                    f"  rank-1 score drift: expected ~{first_rank_1_score}, "
-                    f"got {rank_1.score} (Δ={rank_1.score - first_rank_1_score:+d}); "
-                    f"probably wrong champion's leaderboard"
-                )
-                if args.manual_scroll:
-                    input(f"  Navigate back to {args.target}'s leaderboard, then press Enter: ")
-                    consecutive_no_progress = 0
-                    continue
-                client.tap(*back_tap)
-                time.sleep(args.step_wait)
-                client.tap(*champ_tap)
-                time.sleep(args.step_wait)
-                consecutive_no_progress += 1
-                if consecutive_no_progress >= args.stop_after_empty_pages:
-                    print(f"  stopping (sanity check kept failing)")
+    try:
+        while current_rank <= end_rank:
+            print(f"\n=== batch starting at rank {current_rank} ===")
+            ranks_in_batch = 0
+            for slot in range(ROWS_PER_PAGE):
+                if current_rank > end_rank:
                     break
-                continue
 
-        min_visible_rank = rows[0].rank
-        rank_summary = ", ".join(f"r{r.rank}={r.player_name}" for r in rows)
+                # Pause check between players
+                if _check_for_pause():
+                    _handle_pause()
 
-        # Find the first new player whose slot is in range.
-        # Skip rows where Gemini couldn't parse a score — re-read next iter.
-        next_row = None
-        next_slot = -1
-        for row in rows:
-            if row.score is None:
-                continue
-            if row.score in seen:
-                continue
-            if row.rank > args.n:
-                seen.add(row.score)  # mark past-target so we don't waste time
-                continue
-            slot = row.rank - min_visible_rank
-            if 0 <= slot < ROWS_PER_PAGE:
-                next_row = row
-                next_slot = slot
-                break
+                # Retry the tap chain up to N times if it fails
+                winrate: float | None = None
+                score: int | None = None
+                for attempt in range(1, args.max_retries_per_player + 1):
+                    try:
+                        winrate, score = scrape_one_player(current_rank, slot)
+                    except Exception:
+                        print(f"  exception at rank {current_rank}:")
+                        traceback.print_exc()
+                        winrate, score = None, None
+                    if winrate is not None:
+                        break
+                    if attempt < args.max_retries_per_player:
+                        print(f"  attempt {attempt}/{args.max_retries_per_player} failed; retrying")
+                    else:
+                        print(f"  giving up on rank {current_rank} after {attempt} attempts")
 
-        if next_row is None:
-            if args.manual_scroll:
-                print(f"  visible: {rank_summary} — all already scraped.")
-                input(f"  Scroll the leaderboard to reveal new ranks, then press Enter: ")
-                consecutive_no_progress = 0  # user gave us fresh state
-                continue
-            print(f"  visible: {rank_summary} — all already scraped; scrolling forward")
-            consecutive_no_progress += 1
-            if consecutive_no_progress >= args.stop_after_empty_pages:
-                print(f"  stopping (consecutive no-progress = {consecutive_no_progress})")
-                break
-            scroll_to_next_page()
-            continue
-
-        print(f"  visible: {rank_summary}")
-
-        try:
-            winrate = scrape_one_player(
-                next_row.rank, next_row.player_name, next_row.score, next_slot,
-            )
-        except Exception:
-            print(f"  exception scraping rank {next_row.rank}:")
-            traceback.print_exc()
-            print("  continuing")
-            continue
-
-        score_key = next_row.score  # guaranteed non-None
-        if winrate is not None:
-            # Real success — record + dedup
-            seen.add(score_key)
-            writer.write(LeaderboardRow(
-                champion=args.target,
-                rank=next_row.rank,
-                player_name=next_row.player_name,
-                score=score_key,
-                winrate=winrate,
-            ))
-            successes += 1
-            consecutive_no_progress = 0
-        else:
-            # Profile didn't open or the strip OCR couldn't find target.
-            # Bump the per-player retry counter; only give up once we've
-            # exhausted --max-retries-per-player attempts.
-            attempts[score_key] = attempts.get(score_key, 0) + 1
-            if attempts[score_key] >= args.max_retries_per_player:
-                print(f"  rank {next_row.rank} ({next_row.player_name}) failed {attempts[score_key]}x; giving up and writing None")
-                seen.add(score_key)
                 writer.write(LeaderboardRow(
                     champion=args.target,
-                    rank=next_row.rank,
-                    player_name=next_row.player_name,
-                    score=score_key,
-                    winrate=None,
+                    rank=current_rank,
+                    player_name="",
+                    score=score,
+                    winrate=winrate,
                 ))
-                consecutive_no_progress = 0  # we made a decision; that counts
-            else:
-                print(f"  rank {next_row.rank} ({next_row.player_name}) failed (attempt {attempts[score_key]}/{args.max_retries_per_player}); will retry next iter")
+                if winrate is not None:
+                    successes += 1
+                ranks_in_batch += 1
+                current_rank += 1
 
-    print(f"\ndone. {successes} winrates parsed out of {len(seen)} unique players seen. CSV -> {args.output}")
+            # Batch complete — ask user to scroll (or pause)
+            if current_rank > end_rank:
+                break
+            next_batch_start = current_rank
+            next_batch_end = min(current_rank + ROWS_PER_PAGE - 1, end_rank)
+            print(f"\n=== batch done. Next: ranks {next_batch_start}-{next_batch_end} ===")
+            response = input("  Scroll the leaderboard so this batch's first rank is at slot 0, then press Enter (or 'p' Enter to pause now): ").strip().lower()
+            if response.startswith("p"):
+                _handle_pause()
+    except KeyboardInterrupt:
+        print("\n^C — stopping at user request")
+
+    print(f"\ndone. {successes}/{current_rank - args.start_rank} winrates parsed. CSV -> {args.output}")
     return 0
 
 

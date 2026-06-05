@@ -166,6 +166,115 @@ def read_winrate(img: np.ndarray) -> tuple[float | None, OCRResult]:
     return parse_winrate(result.text), result
 
 
+# Pattern for a champion-mastery score on screen 5 (e.g. "19,076" or "100000"):
+# either a comma-grouped integer or a 4+ digit run.
+_SCORE_PATTERN = re.compile(r"^(\d{1,3}(?:,\d{3})+|\d{4,})$")
+
+
+def find_target_data(
+    image: np.ndarray,
+    region: tuple[int, int, int, int],
+    target: str,
+    tile_half_width_px: int = 220,
+) -> tuple[float | None, int | None]:
+    """OCR screen 5's champion-tile strip and return (winrate, mastery_score)
+    for the `target` champion's tile. Each return value is None if not found.
+
+    The mastery score is the integer printed just below the champion name in
+    the "Highest Achieved:" line. Within a tile the vertical order is:
+        NAME -> "Highest Achieved:" -> <score> -> "Games:" <n> -> "Win Rate:" <pct>
+    So the score is the first integer directly below the name (smallest y-delta).
+
+    `tile_half_width_px` is in *preprocessed* (upscaled) coordinates — it's a
+    permissive bound to keep the search inside the target tile and out of
+    neighboring tiles. The default works for a 4-tiles-visible strip in a
+    1600x900 frame, accounting for the ~3x upscale in `preprocess()`.
+    """
+    from . import champions as champ_module
+
+    x, y, w, h = region
+    crop = image[y:y + h, x:x + w]
+    if crop.size == 0:
+        return (None, None)
+
+    words = read_words(crop, GENERAL_TESSERACT_CONFIG)
+    if not words:
+        return (None, None)
+
+    target_lower = target.lower()
+    max_word_count = champ_module.MAX_WORD_COUNT
+
+    # Find the target champion's name position (could be multi-word like
+    # "Master Yi"). Pick the FIRST occurrence reading left-to-right.
+    name_x: int | None = None
+    name_y: int | None = None
+    i = 0
+    while i < len(words) and name_x is None:
+        matched = False
+        for span in range(min(max_word_count, len(words) - i), 0, -1):
+            tokens = [words[i + k].text for k in range(span)]
+            canonical = champ_module.match(tokens)
+            if canonical is not None and canonical.lower() == target_lower:
+                xs = [words[i + k].x for k in range(span)]
+                ys = [words[i + k].y for k in range(span)]
+                name_x = sum(xs) // span
+                name_y = sum(ys) // span
+                matched = True
+                break
+            elif canonical is not None:
+                i += span
+                matched = True
+                break
+        if not matched:
+            i += 1
+
+    if name_x is None or name_y is None:
+        return (None, None)
+
+    # Winrate: closest percentage (any y) to name_x.
+    winrate: float | None = None
+    best_pct_dist = float("inf")
+    for word in words:
+        m = PERCENT_PATTERN.fullmatch(word.text)
+        if not m:
+            continue
+        try:
+            value = float(m.group(1).replace(",", "."))
+        except ValueError:
+            continue
+        if not (0 <= value <= 100):
+            continue
+        dist = abs(word.x - name_x)
+        if dist < best_pct_dist:
+            best_pct_dist = dist
+            winrate = value
+
+    # Score: smallest y > name_y, within tile width of name_x, value in
+    # [1000, 10_000_000]. Excludes the "Games:" count (which is below the
+    # score and so has a larger y-delta from name).
+    score: int | None = None
+    best_score_dy = float("inf")
+    for word in words:
+        if not _SCORE_PATTERN.match(word.text):
+            continue
+        try:
+            value = int(word.text.replace(",", ""))
+        except ValueError:
+            continue
+        if not (1000 <= value <= 10_000_000):
+            continue
+        if word.y <= name_y:
+            continue
+        if abs(word.x - name_x) > tile_half_width_px:
+            continue
+        dy = word.y - name_y
+        if dy < best_score_dy:
+            best_score_dy = dy
+            score = value
+
+    return (winrate, score)
+
+
 def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[OCRWord]:
     """Run OCR and return per-word data with bounding boxes.
 

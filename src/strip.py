@@ -17,7 +17,7 @@ from .config import (
     SCREEN_5_STRIP_LEFT_X,
     SCREEN_5_STRIP_RIGHT_X,
 )
-from .ocr import find_champion_winrates
+from .ocr import find_champion_winrates, find_target_data
 
 
 def find_target_in_strip(
@@ -28,23 +28,21 @@ def find_target_in_strip(
     swipe_scale: float = 0.7,
     swipe_duration_ms: int = 800,
     wait_after_swipe: float = 1.2,
-) -> tuple[float | None, dict[str, float], int, np.ndarray]:
-    """Look for `target` champion's winrate on screen 5, swiping the strip
-    right-to-left up to `max_swipes` times if not found.
+) -> tuple[float | None, int | None, dict[str, float], int, np.ndarray]:
+    """Look for `target` champion on screen 5 and return its (winrate, score),
+    swiping the strip right-to-left up to `max_swipes` times if not found.
 
-    Returns: (winrate_or_None, last_found_dict, num_swipes_performed, last_image).
-    Stops early when a swipe reveals no new champions (end of strip reached).
+    Returns: (winrate_or_None, score_or_None, last_found_dict,
+    num_swipes_performed, last_image). Stops early when a swipe reveals no new
+    champions (end of strip reached).
     """
     target_lower = target.lower()
 
-    def lookup(found: dict[str, float]) -> float | None:
-        return next((wr for c, wr in found.items() if c.lower() == target_lower), None)
-
     img = client.screenshot()
     found = find_champion_winrates(img, SCREEN_5_OCR_REGION)
-    wr = lookup(found)
-    if wr is not None:
-        return wr, found, 0, img
+    if any(c.lower() == target_lower for c in found.keys()):
+        wr, score = find_target_data(img, SCREEN_5_OCR_REGION, target)
+        return wr, score, found, 0, img
 
     seen: set[str] = {c.lower() for c in found.keys()}
     swipes_done = 0
@@ -59,9 +57,9 @@ def find_target_in_strip(
 
         img = client.screenshot()
         found = find_champion_winrates(img, SCREEN_5_OCR_REGION)
-        wr = lookup(found)
-        if wr is not None:
-            return wr, found, swipes_done, img
+        if any(c.lower() == target_lower for c in found.keys()):
+            wr, score = find_target_data(img, SCREEN_5_OCR_REGION, target)
+            return wr, score, found, swipes_done, img
 
         # End-of-strip detection: if this swipe revealed nothing new, stop.
         current = {c.lower() for c in found.keys()}
@@ -69,4 +67,4 @@ def find_target_in_strip(
             break
         seen |= current
 
-    return None, found, swipes_done, img
+    return None, None, found, swipes_done, img
