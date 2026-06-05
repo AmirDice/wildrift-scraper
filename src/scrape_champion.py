@@ -56,6 +56,7 @@ def main() -> int:
     parser.add_argument("--gemini-model", default="gemini-2.5-flash-lite", help="Gemini model for leaderboard OCR")
     parser.add_argument("--stop-after-empty-pages", type=int, default=3, help="Stop after this many consecutive scrolls return no new players")
     parser.add_argument("--max-pages", type=int, default=80, help="Hard cap on screen-2 scrolls (safety against infinite loops)")
+    parser.add_argument("--max-retries-per-player", type=int, default=3, help="If a profile scrape fails (player_row/view-profile/champ-and-lane tap missed), retry up to this many times before giving up on that player")
     args = parser.parse_args()
 
     try:
@@ -173,12 +174,16 @@ def main() -> int:
         time.sleep(args.step_wait)
         return target_wr
 
-    # Dedup by score (int) alone. Gemini's Chinese-character recognition is
-    # not consistent across calls — the same player can come back as
-    # "討厭它Akaza" one iteration and "對厭亡Akaza" the next, breaking name-
-    # based dedup. Scores are precise integers and effectively unique per
-    # player on a champion leaderboard, so they're the stable key.
+    # Dedup by score (int) alone. Gemini's non-ASCII name recognition jitters
+    # across calls (same player comes back with slightly different characters),
+    # so name keys looked novel every iteration. Scores are precise integers,
+    # effectively unique per player on a champion leaderboard - stable key.
     seen: set[int] = set()
+    # Per-player attempt counter. Only mark a player "seen" after a successful
+    # scrape OR after we've exhausted --max-retries-per-player tries. This way
+    # a failed tap chain (e.g. player row tap missed) doesn't permanently lose
+    # us the player - we just retry next iteration.
+    attempts: dict[int, int] = {}
     successes = 0
     consecutive_no_progress = 0  # iterations in a row with no new scrape
     iteration = 0
@@ -264,17 +269,37 @@ def main() -> int:
             print("  continuing")
             continue
 
-        seen.add(next_row.score)  # next_row.score is guaranteed non-None here
-        writer.write(LeaderboardRow(
-            champion=args.target,
-            rank=next_row.rank,
-            player_name=next_row.player_name,
-            score=next_row.score,
-            winrate=winrate,
-        ))
+        score_key = next_row.score  # guaranteed non-None
         if winrate is not None:
+            # Real success — record + dedup
+            seen.add(score_key)
+            writer.write(LeaderboardRow(
+                champion=args.target,
+                rank=next_row.rank,
+                player_name=next_row.player_name,
+                score=score_key,
+                winrate=winrate,
+            ))
             successes += 1
-        consecutive_no_progress = 0
+            consecutive_no_progress = 0
+        else:
+            # Profile didn't open or the strip OCR couldn't find target.
+            # Bump the per-player retry counter; only give up once we've
+            # exhausted --max-retries-per-player attempts.
+            attempts[score_key] = attempts.get(score_key, 0) + 1
+            if attempts[score_key] >= args.max_retries_per_player:
+                print(f"  rank {next_row.rank} ({next_row.player_name}) failed {attempts[score_key]}x; giving up and writing None")
+                seen.add(score_key)
+                writer.write(LeaderboardRow(
+                    champion=args.target,
+                    rank=next_row.rank,
+                    player_name=next_row.player_name,
+                    score=score_key,
+                    winrate=None,
+                ))
+                consecutive_no_progress = 0  # we made a decision; that counts
+            else:
+                print(f"  rank {next_row.rank} ({next_row.player_name}) failed (attempt {attempts[score_key]}/{args.max_retries_per_player}); will retry next iter")
 
     print(f"\ndone. {successes} winrates parsed out of {len(seen)} unique players seen. CSV -> {args.output}")
     return 0
