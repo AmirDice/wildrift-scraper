@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WrTrueMeta.gg — Wild Rift Meta Tracker</title>
+<meta name="description" content="The official EU top champion win rates for Wild Rift, built from the top 100 players of every champion. Launching soon.">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:title" content="WrTrueMeta.gg — Wild Rift Meta Tracker">
+<meta property="og:description" content="The official EU top champion win rates, built from the top 100 players of every champion.">
+<meta property="og:image" content="/landing_bg.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" href="logo.png?v=2">
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #070b18;
+    --accent: #4a90ff;
+    --text: #e6ecff;
+    --muted: #8a92a8;
+    --border: #1f2940;
+    --card: #121a30;
+    --green: #5ec88c;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: var(--text);
+    background:
+      linear-gradient(180deg,
+        rgba(7,11,24,0.45) 0%,
+        rgba(7,11,24,0.75) 50%,
+        rgba(7,11,24,0.95) 100%),
+      url('landing_bg.jpg') no-repeat center center / cover,
+      var(--bg);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem 1.25rem;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .container { max-width: 740px; width: 100%; }
+
+  .logo {
+    height: 170px; width: auto;
+    margin-bottom: 2.5rem;
+    filter: drop-shadow(0 6px 22px rgba(0,0,0,0.7));
+  }
+
+  .eyebrow {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  }
+  h1 .accent { color: var(--accent); }
+
+  .lead {
+    font-size: clamp(1rem, 2.2vw, 1.18rem);
+    color: rgba(230, 236, 255, 0.94);
+    margin: 0 auto 2.5rem;
+    max-width: 620px;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.65);
+  }
+  .pill {
+    display: inline-block;
+    background: rgba(74,144,255,0.18);
+    color: var(--accent);
+    border: 1px solid rgba(74,144,255,0.35);
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.8em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+  }
+  @media (max-width: 560px) { .features { grid-template-columns: 1fr; } }
+  .feature {
+    background: rgba(18, 26, 48, 0.65);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .feature-title {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+  .feature-desc {
+    font-size: 0.94rem;
+    color: rgba(230, 236, 255, 0.85);
+    line-height: 1.45;
+  }
+
+  .status {
+    display: inline-flex; align-items: center; gap: 0.65rem;
+    background: rgba(46, 138, 90, 0.18);
+    border: 1px solid rgba(46, 138, 90, 0.45);
+    color: var(--green);
+    padding: 0.65rem 1.4rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+  }
+  .status::before {
+    content: "";
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.55; transform: scale(0.9); }
+    50%      { opacity: 1;    transform: scale(1.1); }
+  }
+
+  footer {
+    margin-top: 3.25rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.65;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <main class="container">
+    <img src="logo.png?v=2" alt="WrTrueMeta.gg" class="logo" />
+
+    <div class="eyebrow">Launching Soon</div>
+
+    <h1>The <span class="accent">Wild Rift</span> Meta, decoded.</h1>
+
+    <p class="lead">
+      Real win rates from the <span class="pill">top 100</span> players of every champion across
+      <span class="pill">EU</span> &mdash; pulled straight from in-game leaderboards, not guessed
+      from public match samples. Refreshed <span class="pill">twice a month</span>.
+    </p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-title">Live Tier List</div>
+        <div class="feature-desc">S+ to D ranks driven by mean WR of each champ's top players. Filter by role &amp; one-click PNG export with logo.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">Player Leaderboards</div>
+        <div class="feature-desc">Top 100 mastery players per champion with full stats, sortable by rank, mastery, WR or games.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">Best-Player Score</div>
+        <div class="feature-desc">Bayesian-adjusted skill rating &mdash; fair across game volume, so a 5-game smurf can't beat a 500-game main.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">Pick of the Patch</div>
+        <div class="feature-desc">The single highest mean win rate champion right now, with pickrate share and tier context.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">Role Averages</div>
+        <div class="feature-desc">Mean WR per role &mdash; Baron, Jungle, Mid, Dragon, Support &mdash; so you can compare lane meta strength.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">Off-Meta Gems</div>
+        <div class="feature-desc">Champions with strong WR but lower-than-median pickrate &mdash; the under-the-radar power picks.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">Season Countdown</div>
+        <div class="feature-desc">Live "days remaining" and patch progress bar &mdash; know when the current ranked split ends and the next patch lands.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">New Skin &amp; Champion</div>
+        <div class="feature-desc">What dropped this patch &mdash; featured new champion release and the skin highlight.</div>
+      </div>
+    </div>
+
+    <div class="status">Collecting data &middot; site goes live shortly</div>
+
+    <footer>
+      Not affiliated with Riot Games. League of Legends &amp; Wild Rift are &copy; Riot Games, Inc.<br/>
+      Champion artwork via <a href="https://developer.riotgames.com/docs/lol#data-dragon" target="_blank" rel="noopener">DDragon</a>.
+    </footer>
+  </main>
+</body>
+</html>

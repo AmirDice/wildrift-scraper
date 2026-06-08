@@ -1,0 +1,5 @@
+# Catch-all: any URL serves the coming-soon page without changing the URL.
+# Cloudflare Pages syntax: "from to status".
+# 200 = rewrite (browser address bar untouched); change to 302 if you'd
+# rather all paths visibly redirect to /.
+/*    /index.html    200
