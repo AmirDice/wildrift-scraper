@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WrTrueMeta.gg — Wild Rift Meta Tracker</title>
-<meta name="description" content="The official EU top champion win rates for Wild Rift, built from the top 100 players of every champion. Launching soon.">
+<meta name="description" content="The official EU top champion win rates for Wild Rift, built from the top 50 players of every champion. Launching soon.">
 
 <!-- Open Graph / Twitter -->
 <meta property="og:title" content="WrTrueMeta.gg — Wild Rift Meta Tracker">
-<meta property="og:description" content="The official EU top champion win rates, built from the top 100 players of every champion.">
+<meta property="og:description" content="The official EU top champion win rates, built from the top 50 players of every champion.">
 <meta property="og:image" content="/landing_bg.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -160,6 +160,60 @@
     50%      { opacity: 1;    transform: scale(1.1); }
   }
 
+  /* --- Launch countdown + data-collection progress --- */
+  .launch {
+    margin: 0 auto 2.5rem;
+    max-width: 620px;
+    background: rgba(18, 26, 48, 0.55);
+    border: 1px solid rgba(74,144,255,0.25);
+    border-radius: 16px;
+    padding: 1.5rem 1.6rem 1.6rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .countdown-label {
+    color: var(--accent);
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 0.9rem;
+  }
+  .countdown { display: flex; justify-content: center; gap: 0.7rem; margin-bottom: 1.4rem; }
+  .cd-box {
+    background: rgba(7,11,24,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 0.7rem 0;
+    flex: 1; min-width: 64px; max-width: 100px;
+  }
+  .cd-num {
+    font-size: 2.1rem; font-weight: 800; line-height: 1; color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-lbl {
+    font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-top: 0.45rem; font-weight: 600;
+  }
+  @media (max-width: 480px) {
+    .cd-num { font-size: 1.55rem; } .cd-box { min-width: 56px; }
+  }
+  .progress-block { text-align: left; }
+  .progress-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 0.5rem;
+  }
+  .progress-head .ph-label { color: rgba(230,236,255,0.85); font-size: 0.85rem; font-weight: 600; }
+  .progress-head .ph-pct { color: var(--accent); font-size: 1.1rem; font-weight: 800; }
+  .progress-track {
+    height: 10px; background: rgba(255,255,255,0.07);
+    border-radius: 999px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; width: 0; border-radius: 999px;
+    background: linear-gradient(90deg, #4a90ff, #7aaaff);
+    box-shadow: 0 0 12px rgba(74,144,255,0.5);
+    transition: width 1.4s ease;
+  }
+
   footer {
     margin-top: 3.25rem;
     color: var(--muted);
@@ -180,10 +234,27 @@
     <h1>The <span class="accent">Wild Rift</span> Meta, decoded.</h1>
 
     <p class="lead">
-      Real win rates from the <span class="pill">top 100</span> players of every champion across
+      Real win rates from the <span class="pill">top 50</span> players of every champion across
       <span class="pill">EU</span> &mdash; pulled straight from in-game leaderboards, not guessed
       from public match samples. Refreshed <span class="pill">twice a month</span>.
     </p>
+
+    <div class="launch">
+      <div class="countdown-label" id="countdown-label">Launching Sunday</div>
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><div class="cd-num" id="cd-days">00</div><div class="cd-lbl">Days</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-hours">00</div><div class="cd-lbl">Hours</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-mins">00</div><div class="cd-lbl">Minutes</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-secs">00</div><div class="cd-lbl">Seconds</div></div>
+      </div>
+      <div class="progress-block">
+        <div class="progress-head">
+          <span class="ph-label">Champion data collected</span>
+          <span class="ph-pct" id="progress-pct">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </div>
 
     <div class="features">
       <div class="feature">
@@ -192,7 +263,7 @@
       </div>
       <div class="feature">
         <div class="feature-title">Player Leaderboards</div>
-        <div class="feature-desc">Top 100 mastery players per champion with full stats, sortable by rank, mastery, WR or games.</div>
+        <div class="feature-desc">Top 50 mastery players per champion with full stats, sortable by rank, mastery, WR or games.</div>
       </div>
       <div class="feature">
         <div class="feature-title">Best-Player Score</div>
@@ -227,5 +298,43 @@
       Champion artwork via <a href="https://developer.riotgames.com/docs/lol#data-dragon" target="_blank" rel="noopener">DDragon</a>.
     </footer>
   </main>
+
+  <script>
+    // ---- Update COLLECTED as you scrape more champions (drives the bar %) ----
+    const COLLECTED = 88;
+    const TOTAL = 138;
+    // Launch target (UTC). Month is 0-indexed, so 5 = June -> Sun, Jun 14 2026.
+    const LAUNCH = new Date(Date.UTC(2026, 5, 14, 18, 0, 0));
+
+    // Progress bar — shows the percentage only (no raw champion counts).
+    const pct = Math.round(COLLECTED / TOTAL * 100);
+    document.getElementById('progress-pct').textContent = pct + '%';
+    requestAnimationFrame(function () {
+      document.getElementById('progress-fill').style.width = pct + '%';
+    });
+
+    // Launch date label, e.g. "Launching Sunday, June 14"
+    const wd = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][LAUNCH.getUTCDay()];
+    const mo = ['January','February','March','April','May','June','July','August',
+                'September','October','November','December'][LAUNCH.getUTCMonth()];
+    document.getElementById('countdown-label').textContent =
+      'Launching ' + wd + ', ' + mo + ' ' + LAUNCH.getUTCDate();
+
+    // Live countdown
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      let diff = Math.max(0, LAUNCH.getTime() - Date.now());
+      const d = Math.floor(diff / 86400000); diff -= d * 86400000;
+      const h = Math.floor(diff / 3600000);  diff -= h * 3600000;
+      const m = Math.floor(diff / 60000);     diff -= m * 60000;
+      const s = Math.floor(diff / 1000);
+      document.getElementById('cd-days').textContent  = pad(d);
+      document.getElementById('cd-hours').textContent = pad(h);
+      document.getElementById('cd-mins').textContent  = pad(m);
+      document.getElementById('cd-secs').textContent  = pad(s);
+    }
+    tick();
+    setInterval(tick, 1000);
+  </script>
 </body>
 </html>
