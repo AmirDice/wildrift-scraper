@@ -3,17 +3,74 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WrTrueMeta.gg — Wild Rift Meta Tracker</title>
-<meta name="description" content="The official EU top champion win rates for Wild Rift, built from the top 50 players of every champion. Launching soon.">
 
-<!-- Open Graph / Twitter -->
-<meta property="og:title" content="WrTrueMeta.gg — Wild Rift Meta Tracker">
-<meta property="og:description" content="The official EU top champion win rates, built from the top 50 players of every champion.">
-<meta property="og:image" content="/landing_bg.jpg">
+<!-- Primary SEO -->
+<title>Wild Rift Tier List & Meta Tracker | WrTrueMeta</title>
+<meta name="description" content="Real Wild Rift win rates from the top 50 players of every champion. Tier list, leaderboards, best players, role &amp; class meta — updated twice a month. EU live, NA coming soon.">
+<meta name="keywords" content="Wild Rift tier list, Wild Rift meta, Wild Rift win rates, Wild Rift champion stats, Wild Rift best champions, Wild Rift leaderboard, WR meta, WR tier list, Wild Rift EU, Wild Rift NA, Wild Rift S21, FLAT OUT PATCH">
+<meta name="author" content="WrTrueMeta">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://wrtruemeta.com/">
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="WrTrueMeta">
+<meta property="og:title" content="Wild Rift Tier List & Meta Tracker | WrTrueMeta">
+<meta property="og:description" content="Real Wild Rift win rates from the top 50 players of every champion. Tier list, leaderboards, best players, role &amp; class meta — updated twice a month.">
+<meta property="og:image" content="https://wrtruemeta.com/landing_bg.jpg">
+<meta property="og:image:width" content="1920">
+<meta property="og:image:height" content="1080">
+<meta property="og:url" content="https://wrtruemeta.com/">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+<meta property="og:locale" content="en_US">
 
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Wild Rift Tier List & Meta Tracker | WrTrueMeta">
+<meta name="twitter:description" content="Real Wild Rift win rates from the top 50 players of every champion. Tier list, leaderboards, best players, role &amp; class meta.">
+<meta name="twitter:image" content="https://wrtruemeta.com/landing_bg.jpg">
+
+<!-- Theme + icon -->
+<meta name="theme-color" content="#070b18">
 <link rel="icon" type="image/png" href="logo.png?v=2">
+<link rel="apple-touch-icon" href="logo.png?v=2">
+
+<!-- Structured data: WebSite + Organization for richer Google results -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://wrtruemeta.com/#website",
+      "url": "https://wrtruemeta.com/",
+      "name": "WrTrueMeta",
+      "description": "Real Wild Rift win rates from the top 50 players of every champion.",
+      "inLanguage": "en"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://wrtruemeta.com/#org",
+      "name": "WrTrueMeta",
+      "url": "https://wrtruemeta.com/",
+      "logo": "https://wrtruemeta.com/logo.png",
+      "description": "Wild Rift meta tracker built from real top-50 player win rates per champion."
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://wrtruemeta.com/#webapp",
+      "name": "WrTrueMeta — Wild Rift Tier List & Meta Tracker",
+      "url": "https://wrtruemeta.com/",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  ]
+}
+</script>
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -227,16 +284,17 @@
 </head>
 <body>
   <main class="container">
-    <img src="logo.png?v=2" alt="WrTrueMeta.gg" class="logo" />
+    <img src="logo.png?v=2" alt="WrTrueMeta.com" class="logo" />
 
     <div class="eyebrow">Launching Soon</div>
 
-    <h1>The <span class="accent">Wild Rift</span> Meta, decoded.</h1>
+    <h1>The <span class="accent">Wild Rift</span> Tier List &amp; Meta Tracker</h1>
 
     <p class="lead">
-      Real win rates from the <span class="pill">top 50</span> players of every champion across
+      Real Wild Rift win rates from the <span class="pill">top 50</span> players of every champion across
       <span class="pill">EU</span> &mdash; pulled straight from in-game leaderboards, not guessed
-      from public match samples. Refreshed <span class="pill">twice a month</span>.
+      from public match samples. Tier list, leaderboards, best players, and role meta &mdash;
+      refreshed <span class="pill">twice a month</span>. <span class="pill">NA</span> coming next.
     </p>
 
     <div class="launch">
@@ -291,9 +349,10 @@
       </div>
     </div>
 
-    <div class="status">Collecting data &middot; site goes live shortly</div>
+    <div class="status">Data collection complete &middot; site goes live 7pm Monday, June 15</div>
 
     <footer>
+      Questions or feedback? DM <strong style="color:var(--accent);">@generalthr4gg</strong> on Discord.<br/>
       Not affiliated with Riot Games. League of Legends &amp; Wild Rift are &copy; Riot Games, Inc.<br/>
       Champion artwork via <a href="https://developer.riotgames.com/docs/lol#data-dragon" target="_blank" rel="noopener">DDragon</a>.
     </footer>
@@ -301,10 +360,11 @@
 
   <script>
     // ---- Update COLLECTED as you scrape more champions (drives the bar %) ----
-    const COLLECTED = 88;
+    const COLLECTED = 138;
     const TOTAL = 138;
-    // Launch target (UTC). Month is 0-indexed, so 5 = June -> Sun, Jun 14 2026.
-    const LAUNCH = new Date(Date.UTC(2026, 5, 14, 18, 0, 0));
+    // Launch target (UTC). Month is 0-indexed, so 5 = June -> Mon, Jun 15 2026
+    // at 18:00 UTC = 7pm UK / BST.
+    const LAUNCH = new Date(Date.UTC(2026, 5, 15, 18, 0, 0));
 
     // Progress bar — shows the percentage only (no raw champion counts).
     const pct = Math.round(COLLECTED / TOTAL * 100);
