@@ -24,8 +24,11 @@ _STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 def _current_ref() -> str:
     """Return a ref jsDelivr will accept: the current commit SHA when running
-    from a git checkout, or the `main` branch as a fallback."""
-    # Streamlit Cloud sets this — use the deployment commit directly.
+    from a git checkout, or the `main` branch as a fallback.
+
+    Every failure mode (no git binary, no .git dir, sandbox blocked, slow
+    subprocess, anything else) silently falls back to `main` so import of
+    this module can never crash the app boot."""
     sha = os.environ.get("STREAMLIT_COMMIT_HASH") or os.environ.get("GIT_COMMIT")
     if sha:
         return sha
@@ -37,7 +40,7 @@ def _current_ref() -> str:
         )
         if out.returncode == 0 and out.stdout.strip():
             return out.stdout.strip()
-    except (FileNotFoundError, subprocess.TimeoutExpired):
+    except Exception:  # noqa: BLE001 — import-time helper, must not raise
         pass
     return "main"
 
