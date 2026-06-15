@@ -40,7 +40,7 @@ header[data-testid="stHeader"] { background: transparent; }
 .stApp {
     background:
       linear-gradient(180deg, rgba(7,11,24,0.42) 0%, rgba(7,11,24,0.62) 100%),
-      url('/app/static/page_bg.jpg') no-repeat center center / cover fixed,
+      url('__PAGE_BG__') no-repeat center center / cover fixed,
       radial-gradient(circle at 18% -10%, rgba(74,144,255,0.12), transparent 55%),
       radial-gradient(circle at 82% 110%, rgba(74,144,255,0.08), transparent 55%),
       var(--bg);
@@ -1555,8 +1555,13 @@ img { max-width: 100%; height: auto; }
 
 
 def inject_css() -> None:
-    """Drop the WRTrueMeta theme into the current page."""
-    st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+    """Drop the WRTrueMeta theme into the current page.
+
+    Resolves the page-background sentinel against the live CDN URL so
+    the asset loads under any deployment environment.
+    """
+    from web.local_assets import page_bg
+    st.markdown(CUSTOM_CSS.replace("__PAGE_BG__", page_bg()), unsafe_allow_html=True)
 
 
 def top_nav(active: str = "Home", champions: list[str] | None = None) -> None:

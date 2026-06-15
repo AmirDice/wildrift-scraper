@@ -1,38 +1,60 @@
-"""URLs for images bundled with the app (served by Streamlit's built-in
-static file server).
+"""URLs for images bundled with the app.
 
-Requires `.streamlit/config.toml`:
-    [server]
-    enableStaticServing = true
-
-Files placed in `<project-root>/static/` are served at `app/static/<name>`.
+Streamlit Cloud's built-in static file server (`enableStaticServing`) is
+unreliable on hosted deploys behind a custom domain: the `/app/static/...`
+path is intercepted before it reaches Streamlit, depending on the proxy
+config. To sidestep that entirely we serve assets from jsDelivr's GitHub
+CDN, which fronts the same files we've committed to GitHub. Pros:
+  - Works locally and on every Streamlit Cloud config
+  - CDN-cached globally
+  - Cache-busted via the git commit SHA so updates propagate quickly
 """
 from __future__ import annotations
 
+import os
+import subprocess
 from pathlib import Path
 
 
-_STATIC_BASE = "/app/static"
+# Public GitHub repo serving as the asset source.
+_GH_OWNER = "AmirDice"
+_GH_REPO = "wildrift-scraper"
 _STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 
-def static_url(filename: str) -> str:
-    """Return the served URL for a file in `<project-root>/static/`.
-
-    Uses a leading slash so the URL resolves the same way from the landing
-    page `/` and from sub-pages like `/Leaderboard`.
-
-    Appends `?v=<mtime>` as a cache-buster so swapping out an asset (e.g.
-    a new logo with the same filename) actually picks up in the browser
-    instead of being served from disk cache for hours.
-    """
-    file_path = _STATIC_DIR / filename
-    version = ""
+def _current_ref() -> str:
+    """Return a ref jsDelivr will accept: the current commit SHA when running
+    from a git checkout, or the `main` branch as a fallback."""
+    # Streamlit Cloud sets this — use the deployment commit directly.
+    sha = os.environ.get("STREAMLIT_COMMIT_HASH") or os.environ.get("GIT_COMMIT")
+    if sha:
+        return sha
     try:
-        version = f"?v={int(file_path.stat().st_mtime)}"
-    except FileNotFoundError:
+        out = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=_STATIC_DIR.parent,
+            capture_output=True, text=True, timeout=2, check=False,
+        )
+        if out.returncode == 0 and out.stdout.strip():
+            return out.stdout.strip()
+    except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
-    return f"{_STATIC_BASE}/{filename}{version}"
+    return "main"
+
+
+_REF = _current_ref()
+_CDN_BASE = f"https://cdn.jsdelivr.net/gh/{_GH_OWNER}/{_GH_REPO}@{_REF}/static"
+
+
+def static_url(filename: str) -> str:
+    """Return the CDN URL for a file in `<project-root>/static/`.
+
+    Resolves to `https://cdn.jsdelivr.net/gh/<owner>/<repo>@<ref>/static/<file>`
+    which works identically locally, on Streamlit Cloud, and behind any
+    custom-domain proxy. The pinned ref means caching is automatic — a new
+    commit gets a new URL.
+    """
+    return f"{_CDN_BASE}/{filename}"
 
 
 # --- Named backgrounds (filenames in <project-root>/static/) -----------
