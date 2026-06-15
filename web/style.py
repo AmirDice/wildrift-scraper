@@ -29,6 +29,23 @@ CUSTOM_CSS = """
 
 /* Hide Streamlit chrome */
 #MainMenu, footer { visibility: hidden; }
+
+/* Hide the bottom-right "Hosted with Streamlit" badge + deployer-name link.
+   The selectors cover several Streamlit versions (the class names changed
+   in 1.30+ and the data-testid set was renamed again in 1.36+). */
+[data-testid="stStatusWidget"],
+[data-testid="stConnectionStatus"],
+[data-testid="stViewerBadge"],
+[data-testid="stDecoration"],
+.viewerBadge_link__1S137,
+.viewerBadge_container__1QSob,
+.styles_viewerBadge__1yB5_,
+.stDeployButton,
+footer[class*="viewerBadge"],
+a[href*="streamlit.io/cloud"],
+a[href*="share.streamlit.io"] {
+    display: none !important;
+}
 header[data-testid="stHeader"] { background: transparent; }
 
 /* App background — pre-blurred Wild Rift art with a LIGHT dark overlay so
