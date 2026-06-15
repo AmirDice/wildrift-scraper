@@ -3,398 +3,305 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Primary SEO -->
-<title>Wildrift Tier List & Meta Tracker — League of Legends Wildrift | WrTrueMeta</title>
-<meta name="description" content="Real League of Legends Wildrift win rates from the top 50 players of every champion. Wild Rift tier list, leaderboards, best players, role &amp; class meta — updated twice a month. EU live, NA coming soon.">
-<meta name="keywords" content="Wildrift tier list, Wild Rift tier list, League of Legends Wildrift tier list, LoL Wildrift tier list, Wildrift meta, Wild Rift meta, Wildrift win rates, Wildrift champion stats, best Wildrift champions, Wildrift leaderboard, WR meta, WR tier list, Wildrift EU, Wild Rift EU, Wildrift NA, Wildrift S21, FLAT OUT PATCH">
+<title>WrTrueMeta — Wildrift Tier List, Win Rates &amp; Meta Tracker | League of Legends Wildrift</title>
+<meta name="description" content="Real League of Legends Wildrift win rates from the top 50 players on every champion. Wildrift tier list, leaderboards, best players, role &amp; class meta — updated twice a month. EU live.">
+<meta name="keywords" content="Wildrift tier list, Wild Rift tier list, League of Legends Wildrift, LoL Wildrift, Wildrift meta, Wildrift win rates, Wildrift champion stats, best Wildrift champions, Wildrift leaderboard, WR meta, Wildrift EU, Wildrift S21">
 <meta name="author" content="WrTrueMeta">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://wrtruemeta.com/">
-
-<!-- Open Graph -->
 <meta property="og:site_name" content="WrTrueMeta">
-<meta property="og:title" content="Wildrift Tier List & Meta Tracker — League of Legends Wildrift | WrTrueMeta">
-<meta property="og:description" content="Real League of Legends Wildrift win rates from the top 50 players of every champion. Wild Rift tier list, leaderboards, best players, role &amp; class meta — updated twice a month.">
+<meta property="og:title" content="WrTrueMeta — Wildrift Tier List, Win Rates &amp; Meta Tracker">
+<meta property="og:description" content="Real League of Legends Wildrift win rates from the top 50 players on every champion. Tier list, leaderboards, best players.">
 <meta property="og:image" content="https://wrtruemeta.com/landing_bg.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1080">
 <meta property="og:url" content="https://wrtruemeta.com/">
 <meta property="og:type" content="website">
-<meta property="og:locale" content="en_US">
-
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Wildrift Tier List & Meta Tracker — League of Legends Wildrift | WrTrueMeta">
-<meta name="twitter:description" content="Real League of Legends Wildrift win rates from the top 50 players of every champion. Wild Rift tier list, leaderboards, best players, role &amp; class meta.">
+<meta name="twitter:title" content="WrTrueMeta — Wildrift Tier List &amp; Meta Tracker">
+<meta name="twitter:description" content="Real Wildrift win rates from the top 50 players of every champion. Tier list, leaderboards, best players.">
 <meta name="twitter:image" content="https://wrtruemeta.com/landing_bg.jpg">
-
-<!-- Theme + icon -->
 <meta name="theme-color" content="#070b18">
-<link rel="icon" type="image/png" href="logo.png?v=2">
-<link rel="apple-touch-icon" href="logo.png?v=2">
-
-<!-- Structured data: WebSite + Organization for richer Google results -->
+<link rel="icon" type="image/png" href="/logo.png?v=2">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": "https://wrtruemeta.com/#website",
-      "url": "https://wrtruemeta.com/",
-      "name": "WrTrueMeta",
-      "description": "Real Wild Rift win rates from the top 50 players of every champion.",
-      "inLanguage": "en"
-    },
-    {
-      "@type": "Organization",
-      "@id": "https://wrtruemeta.com/#org",
-      "name": "WrTrueMeta",
-      "url": "https://wrtruemeta.com/",
-      "logo": "https://wrtruemeta.com/logo.png",
-      "description": "Wild Rift meta tracker built from real top-50 player win rates per champion."
-    },
-    {
-      "@type": "WebApplication",
-      "@id": "https://wrtruemeta.com/#webapp",
-      "name": "WrTrueMeta — Wild Rift Tier List & Meta Tracker",
-      "url": "https://wrtruemeta.com/",
-      "applicationCategory": "GameApplication",
-      "operatingSystem": "Web",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    }
-  ]
+  "@type": "WebSite",
+  "@id": "https://wrtruemeta.com/#website",
+  "url": "https://wrtruemeta.com/",
+  "name": "WrTrueMeta",
+  "description": "Wildrift tier list and meta tracker built from real top-50 player data."
 }
 </script>
-
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #070b18;
-    --accent: #4a90ff;
-    --text: #e6ecff;
-    --muted: #8a92a8;
-    --border: #1f2940;
-    --card: #121a30;
-    --green: #5ec88c;
-  }
-  html { height: 100%; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                 Oxygen, Ubuntu, Cantarell, sans-serif;
-    color: var(--text);
-    background:
-      linear-gradient(180deg,
-        rgba(7,11,24,0.45) 0%,
-        rgba(7,11,24,0.75) 50%,
-        rgba(7,11,24,0.95) 100%),
-      url('landing_bg.jpg') no-repeat center center / cover,
-      var(--bg);
-    background-attachment: fixed;
-    /* Natural top-aligned scroll. Generous top/bottom padding gives the
-       content room to breathe; on viewports tall enough the auto top
-       margin on .container pushes it down so it feels centered. The
-       previous `justify-content: center` was clipping the headline + logo
-       off the top of the viewport on small screens. */
-    min-height: 100vh;
-    padding: 2.5rem 1.25rem 3rem;
-    text-align: center;
-    line-height: 1.5;
-    margin: 0;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #070b18; --card: #121a30; --card-2: #1a2240;
+  --border: rgba(255,255,255,0.07); --text: #e6ecff; --muted: #8a92a8;
+  --accent: #4a90ff; --gold: #ffd76e;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text); line-height: 1.55;
+  background:
+    radial-gradient(circle at 15% -10%, rgba(74,144,255,0.12), transparent 55%),
+    radial-gradient(circle at 85% 110%, rgba(74,144,255,0.08), transparent 55%),
+    var(--bg);
+  min-height: 100vh;
+}
+.page { max-width: 1180px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
 
-  .container {
-    max-width: 740px;
-    width: 100%;
-    margin: 0 auto;
-  }
+/* Header / nav */
+.hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 2.5rem; padding: 0.4rem 0.5rem;
+}
+.brand img { height: 64px; width: auto; display: block; filter: drop-shadow(0 3px 10px rgba(0,0,0,0.6)); }
+.hdr-nav { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.hdr-nav a {
+  color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 600;
+  padding: 0.55rem 0.95rem; border-radius: 9px; transition: color 0.15s, background 0.15s;
+}
+.hdr-nav a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+.hdr-nav .hdr-cta {
+  background: var(--accent); color: #fff; padding: 0.55rem 1.1rem;
+}
+.hdr-nav .hdr-cta:hover { background: #5fa0ff; color: #fff; }
 
-  .logo {
-    /* Scales between 96px on phones and 170px on desktop — keeps the new
-       emblem-style logo from eating half the screen on narrow viewports. */
-    height: clamp(96px, 18vw, 170px);
-    width: auto;
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 6px 22px rgba(0,0,0,0.7));
-  }
+/* Hero */
+.hero { text-align: center; padding: 2rem 0 2.5rem; }
+.eyebrow {
+  color: var(--accent); font-size: 0.78rem; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1.25rem;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em;
+  line-height: 1.08; margin: 0 auto 1.25rem; max-width: 880px;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero p.lead {
+  color: rgba(230, 236, 255, 0.9); font-size: clamp(1rem, 2vw, 1.15rem);
+  max-width: 720px; margin: 0 auto 2rem; line-height: 1.55;
+}
+.hero-cta {
+  display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.85rem 1.5rem; border-radius: 11px; font-weight: 700;
+  font-size: 1rem; text-decoration: none; transition: transform 0.15s, background 0.15s;
+}
+.btn.primary { background: var(--accent); color: #fff; box-shadow: 0 8px 24px rgba(74,144,255,0.3); }
+.btn.primary:hover { background: #5fa0ff; transform: translateY(-2px); }
+.btn.ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid rgba(255,255,255,0.12); }
+.btn.ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+.hero-meta { color: var(--muted); font-size: 0.92rem; }
+.hero-meta strong { color: var(--text); }
 
-  .eyebrow {
-    color: var(--accent);
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    margin-bottom: 1.25rem;
-  }
+/* Teaser cards */
+.teaser-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem; margin-bottom: 3rem;
+}
+.teaser-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%), rgba(12,18,38,0.62);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.25rem 1.4rem; text-decoration: none; color: var(--text);
+  transition: border-color 0.18s, transform 0.18s;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+.teaser-card:hover { border-color: rgba(74,144,255,0.4); transform: translateY(-2px); }
+.teaser-tag {
+  color: var(--muted); font-size: 0.66rem; font-weight: 800;
+  letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.8rem;
+}
+.teaser-row { display: flex; align-items: center; gap: 0.9rem; }
+.teaser-row img { border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); }
+.teaser-name { font-weight: 700; font-size: 1.1rem; }
+.teaser-val { font-size: 1.5rem; font-weight: 800; line-height: 1.1; margin-top: 0.1rem; }
+.teaser-val.accent { color: var(--accent); }
+.teaser-val.gold { color: var(--gold); }
+.teaser-sub { color: var(--muted); font-size: 0.72rem; margin-top: 0.15rem; }
 
-  h1 {
-    font-size: clamp(1.8rem, 4.6vw, 3.2rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin: 0 0 1.5rem;
-    text-shadow: 0 4px 24px rgba(0,0,0,0.6);
-  }
-  h1 .accent { color: var(--accent); }
+/* Explore section */
+.explore { margin-bottom: 3.5rem; }
+.explore h2, .why h2 {
+  font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800;
+  text-align: center; margin-bottom: 1.5rem; letter-spacing: -0.01em;
+}
+.explore h2 .accent, .why h2 .accent { color: var(--accent); }
+.explore-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.9rem;
+}
+.explore-card {
+  background: rgba(12,18,38,0.55); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.25rem 1.2rem; text-decoration: none; color: var(--text);
+  transition: border-color 0.18s, transform 0.18s;
+}
+.explore-card:hover { border-color: rgba(74,144,255,0.4); transform: translateY(-2px); }
+.explore-icon { color: var(--accent); font-size: 1.3rem; margin-bottom: 0.5rem; }
+.explore-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem; }
+.explore-title .soon {
+  display: inline-block; background: rgba(212,166,74,0.15); color: var(--gold);
+  border: 1px solid rgba(212,166,74,0.4);
+  font-size: 0.6rem; padding: 0.05rem 0.4rem; border-radius: 999px;
+  font-weight: 700; vertical-align: middle; margin-left: 0.3rem; letter-spacing: 0.05em;
+}
+.explore-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
 
-  .lead {
-    font-size: clamp(0.95rem, 2.1vw, 1.15rem);
-    color: rgba(230, 236, 255, 0.94);
-    margin: 0 auto 2.25rem;
-    max-width: 620px;
-    text-shadow: 0 2px 14px rgba(0,0,0,0.65);
-  }
-  .pill {
-    display: inline-block;
-    background: rgba(74,144,255,0.18);
-    color: var(--accent);
-    border: 1px solid rgba(74,144,255,0.35);
-    padding: 0.1rem 0.55rem;
-    border-radius: 999px;
-    font-size: 0.8em;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    vertical-align: middle;
-  }
+/* Why section */
+.why { margin-bottom: 3rem; }
+.why-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.why-h { color: var(--accent); font-weight: 800; font-size: 1rem; margin-bottom: 0.4rem; letter-spacing: 0.01em; }
+.why-grid p { color: rgba(230,236,255,0.82); font-size: 0.92rem; line-height: 1.6; }
 
-  .features {
-    display: grid;
-    /* 2 columns on small desktop / tablet, 1 on phones. We have 8 cards
-       so 2 wide gives a clean 4-row block. */
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.85rem;
-    margin-bottom: 2.25rem;
-    text-align: left;
-  }
-  @media (max-width: 560px) { .features { grid-template-columns: 1fr; } }
-  .feature {
-    background: rgba(18, 26, 48, 0.65);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1rem 1.1rem;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-  .feature-title {
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 0.35rem;
-  }
-  .feature-desc {
-    font-size: 0.94rem;
-    color: rgba(230, 236, 255, 0.85);
-    line-height: 1.45;
-  }
+/* Footer */
+.ftr {
+  color: var(--muted); font-size: 0.78rem; text-align: center;
+  padding-top: 2rem; line-height: 1.7;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.ftr a { color: var(--accent); text-decoration: none; }
 
-  .status {
-    display: inline-flex; align-items: center; gap: 0.65rem;
-    background: rgba(46, 138, 90, 0.18);
-    border: 1px solid rgba(46, 138, 90, 0.45);
-    color: var(--green);
-    padding: 0.65rem 1.4rem;
-    border-radius: 999px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    backdrop-filter: blur(8px);
-  }
-  .status::before {
-    content: "";
-    width: 9px; height: 9px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 10px var(--green);
-    animation: pulse 1.8s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.55; transform: scale(0.9); }
-    50%      { opacity: 1;    transform: scale(1.1); }
-  }
+/* Responsive */
+@media (max-width: 900px) {
+  .teaser-grid { grid-template-columns: 1fr; }
+  .explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .why-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+}
+@media (max-width: 600px) {
+  .page { padding: 1rem 0.65rem 3rem; }
+  .hdr { flex-wrap: wrap; gap: 0.75rem; }
+  .brand img { height: 52px; }
+  .hdr-nav a { padding: 0.4rem 0.7rem; font-size: 0.85rem; }
+  .hero { padding: 1rem 0 1.5rem; }
+  .hero-cta { flex-direction: column; align-items: stretch; }
+  .btn { justify-content: center; }
+  .explore-grid { grid-template-columns: 1fr; }
+}
 
-  /* --- Launch countdown + data-collection progress --- */
-  .launch {
-    margin: 0 auto 2.5rem;
-    max-width: 620px;
-    background: rgba(18, 26, 48, 0.55);
-    border: 1px solid rgba(74,144,255,0.25);
-    border-radius: 16px;
-    padding: 1.5rem 1.6rem 1.6rem;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  .countdown-label {
-    color: var(--accent);
-    font-size: 0.78rem; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    margin-bottom: 0.9rem;
-  }
-  .countdown { display: flex; justify-content: center; gap: 0.7rem; margin-bottom: 1.4rem; }
-  .cd-box {
-    background: rgba(7,11,24,0.6);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 0.7rem 0;
-    flex: 1; min-width: 64px; max-width: 100px;
-  }
-  .cd-num {
-    font-size: 2.1rem; font-weight: 800; line-height: 1; color: #fff;
-    font-variant-numeric: tabular-nums;
-  }
-  .cd-lbl {
-    font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted); margin-top: 0.45rem; font-weight: 600;
-  }
-  @media (max-width: 480px) {
-    .cd-num { font-size: 1.55rem; } .cd-box { min-width: 56px; }
-  }
-  .progress-block { text-align: left; }
-  .progress-head {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-bottom: 0.5rem;
-  }
-  .progress-head .ph-label { color: rgba(230,236,255,0.85); font-size: 0.85rem; font-weight: 600; }
-  .progress-head .ph-pct { color: var(--accent); font-size: 1.1rem; font-weight: 800; }
-  .progress-track {
-    height: 10px; background: rgba(255,255,255,0.07);
-    border-radius: 999px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; width: 0; border-radius: 999px;
-    background: linear-gradient(90deg, #4a90ff, #7aaaff);
-    box-shadow: 0 0 12px rgba(74,144,255,0.5);
-    transition: width 1.4s ease;
-  }
-
-  footer {
-    margin-top: 3.25rem;
-    color: var(--muted);
-    font-size: 0.78rem;
-    line-height: 1.65;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.7);
-  }
-  footer a { color: var(--accent); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
-  <main class="container">
-    <img src="logo.png?v=2" alt="WrTrueMeta.com" class="logo" />
+<div class="page">
+  <header class="hdr">
+    <a class="brand" href="/" rel="home"><img src="/logo.png?v=2" alt="WrTrueMeta — Wildrift meta tracker" /></a>
+    <nav class="hdr-nav">
+      <a href="/tier-list">Tier List</a>
+      <a href="/champions">Champions</a>
+      <a href="/builds">Builds</a>
+      <a class="hdr-cta" href="https://app.wrtruemeta.com">Open App &rarr;</a>
+    </nav>
+  </header>
 
-    <div class="eyebrow">Launching Soon</div>
-
-    <h1>The <span class="accent">Wild Rift</span> Tier List &amp; Meta Tracker</h1>
-
+  <section class="hero">
+    <div class="eyebrow">EU Top 50 Player Data &middot; Updated June 15, 2026</div>
+    <h1>The <span class="accent">Wildrift</span> tier list built from real top-50 player win rates.</h1>
     <p class="lead">
-      Real Wild Rift win rates from the <span class="pill">top 50</span> players of every champion across
-      <span class="pill">EU</span> &mdash; pulled straight from in-game leaderboards, not guessed
-      from public match samples. Tier list, leaderboards, best players, and role meta &mdash;
-      refreshed <span class="pill">twice a month</span>. <span class="pill">NA</span> coming next.
+      Every <strong>League of Legends Wildrift</strong> champion ranked by the
+      games-weighted win rate of their elite players. No opinions, no aggregated
+      averages &mdash; just the actual climbers, with Bayesian-shrunk stats so
+      one lucky game can&rsquo;t skew a champion&rsquo;s tier.
     </p>
+    <div class="hero-cta">
+      <a class="btn primary" href="/tier-list">Open the Wildrift Tier List &rarr;</a>
+      <a class="btn ghost" href="https://app.wrtruemeta.com">Live interactive app &rarr;</a>
+    </div>
+    <div class="hero-meta">
+      <strong>138</strong> champions tracked &nbsp;&middot;&nbsp;
+      <strong>7,356</strong> top-50 player records &nbsp;&middot;&nbsp;
+      <strong>214</strong> multi-champion mains identified
+    </div>
+  </section>
 
-    <div class="launch">
-      <div class="countdown-label" id="countdown-label">Launching Sunday</div>
-      <div class="countdown" id="countdown">
-        <div class="cd-box"><div class="cd-num" id="cd-days">00</div><div class="cd-lbl">Days</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-hours">00</div><div class="cd-lbl">Hours</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-mins">00</div><div class="cd-lbl">Minutes</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-secs">00</div><div class="cd-lbl">Seconds</div></div>
-      </div>
-      <div class="progress-block">
-        <div class="progress-head">
-          <span class="ph-label">Champion data collected</span>
-          <span class="ph-pct" id="progress-pct">0%</span>
+  <section class="teaser-grid">
+    <a class="teaser-card" href="/champions/hecarim">
+      <div class="teaser-tag">Top Pick This Patch</div>
+      <div class="teaser-row">
+        <img src="https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Hecarim.png" alt="Hecarim" loading="lazy" width="56" height="56" />
+        <div>
+          <div class="teaser-name">Hecarim</div>
+          <div class="teaser-val accent">64.2%</div>
+          <div class="teaser-sub">games-weighted win rate</div>
         </div>
-        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </a>
+    <a class="teaser-card" href="/champions/sona">
+      <div class="teaser-tag">Highest Skill Ceiling</div>
+      <div class="teaser-row">
+        <img src="https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Sona.png" alt="Sona" loading="lazy" width="56" height="56" />
+        <div>
+          <div class="teaser-name">Sona</div>
+          <div class="teaser-val gold">41.4pts</div>
+          <div class="teaser-sub">ceiling vs. average top-50</div>
+        </div>
+      </div>
+    </a>
+    <a class="teaser-card" href="/champions/pantheon">
+      <div class="teaser-tag">Best OTP Champion</div>
+      <div class="teaser-row">
+        <img src="https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Pantheon.png" alt="Pantheon" loading="lazy" width="56" height="56" />
+        <div>
+          <div class="teaser-name">Pantheon</div>
+          <div class="teaser-val accent">62.4%</div>
+          <div class="teaser-sub">one-trick win rate</div>
+        </div>
+      </div>
+    </a>
+  </section>
+
+  <section class="explore">
+    <h2>Explore <span class="accent">League of Legends Wildrift</span> meta</h2>
+    <div class="explore-grid">
+      <a class="explore-card" href="/tier-list">
+        <div class="explore-icon">&#9650;</div>
+        <div class="explore-title">Tier List</div>
+        <div class="explore-desc">GOD to Ass tiers built from real top-50 player win rates. Filter by role with adaptive cutoffs.</div>
+      </a>
+      <a class="explore-card" href="/champions">
+        <div class="explore-icon">&#10070;</div>
+        <div class="explore-title">All Champions</div>
+        <div class="explore-desc">Every Wildrift champion with full stats, best player, and a per-champion landing page.</div>
+      </a>
+      <a class="explore-card" href="/builds">
+        <div class="explore-icon">&#9881;</div>
+        <div class="explore-title">Builds <span class="soon">soon</span></div>
+        <div class="explore-desc">Items, runes, and skill order pulled directly from each champion&rsquo;s rank-1 EU player.</div>
+      </a>
+      <a class="explore-card" href="https://app.wrtruemeta.com">
+        <div class="explore-icon">&#9889;</div>
+        <div class="explore-title">Live App</div>
+        <div class="explore-desc">Sortable leaderboards, methodology, season countdown, and interactive PNG tier-list export.</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="why">
+    <h2>Why WrTrueMeta is different</h2>
+    <div class="why-grid">
+      <div>
+        <div class="why-h">Real player data, not aggregates</div>
+        <p>Every win rate comes from the actual top 50 EU players on the champion &mdash; their tracked games, scraped from the live game. Most Wildrift sites pool everyone, which means a feeding silver Jinx drags her ranking down. We don&rsquo;t.</p>
+      </div>
+      <div>
+        <div class="why-h">Bayesian shrinkage</div>
+        <p>Small-sample win rates get pulled toward each champion&rsquo;s prior, so a 10-game 70% smurf doesn&rsquo;t outrank a 400-game 59% main. The methodology is explained in full on the app.</p>
+      </div>
+      <div>
+        <div class="why-h">Honest about uncertainty</div>
+        <p>Every page shows sample sizes. Champions with few scraped players are flagged. The confidence-adjusted win rate uses the Wilson lower bound, so &ldquo;best player&rdquo; means demonstrably best, not luckily best.</p>
       </div>
     </div>
+  </section>
 
-    <div class="features">
-      <div class="feature">
-        <div class="feature-title">Live Tier List</div>
-        <div class="feature-desc">S+ to D ranks driven by mean WR of each champ's top players. Filter by role &amp; one-click PNG export with logo.</div>
-      </div>
-      <div class="feature">
-        <div class="feature-title">Player Leaderboards</div>
-        <div class="feature-desc">Top 50 mastery players per champion with full stats, sortable by rank, mastery, WR or games.</div>
-      </div>
-      <div class="feature">
-        <div class="feature-title">Best-Player Score</div>
-        <div class="feature-desc">Bayesian-adjusted skill rating &mdash; fair across game volume, so a 5-game smurf can't beat a 500-game main.</div>
-      </div>
-      <div class="feature">
-        <div class="feature-title">Pick of the Patch</div>
-        <div class="feature-desc">The single highest mean win rate champion right now, with pickrate share and tier context.</div>
-      </div>
-      <div class="feature">
-        <div class="feature-title">Role Averages</div>
-        <div class="feature-desc">Mean WR per role &mdash; Baron, Jungle, Mid, Dragon, Support &mdash; so you can compare lane meta strength.</div>
-      </div>
-      <div class="feature">
-        <div class="feature-title">Off-Meta Gems</div>
-        <div class="feature-desc">Champions with strong WR but lower-than-median pickrate &mdash; the under-the-radar power picks.</div>
-      </div>
-      <div class="feature">
-        <div class="feature-title">Season Countdown</div>
-        <div class="feature-desc">Live "days remaining" and patch progress bar &mdash; know when the current ranked split ends and the next patch lands.</div>
-      </div>
-      <div class="feature">
-        <div class="feature-title">New Skin &amp; Champion</div>
-        <div class="feature-desc">What dropped this patch &mdash; featured new champion release and the skin highlight.</div>
-      </div>
-    </div>
-
-    <div class="status">Data collection complete &middot; site goes live 7pm Monday, June 15</div>
-
-    <footer>
-      Questions or feedback? DM <strong style="color:var(--accent);">@generalthr4gg</strong> on Discord.<br/>
-      Not affiliated with Riot Games. League of Legends &amp; Wild Rift are &copy; Riot Games, Inc.<br/>
-      Champion artwork via <a href="https://developer.riotgames.com/docs/lol#data-dragon" target="_blank" rel="noopener">DDragon</a>.
-    </footer>
-  </main>
-
-  <script>
-    // ---- Update COLLECTED as you scrape more champions (drives the bar %) ----
-    const COLLECTED = 138;
-    const TOTAL = 138;
-    // Launch target (UTC). Month is 0-indexed, so 5 = June -> Mon, Jun 15 2026
-    // at 18:00 UTC = 7pm UK / BST.
-    const LAUNCH = new Date(Date.UTC(2026, 5, 15, 18, 0, 0));
-
-    // Progress bar — shows the percentage only (no raw champion counts).
-    const pct = Math.round(COLLECTED / TOTAL * 100);
-    document.getElementById('progress-pct').textContent = pct + '%';
-    requestAnimationFrame(function () {
-      document.getElementById('progress-fill').style.width = pct + '%';
-    });
-
-    // Launch date label, e.g. "Launching Sunday, June 14"
-    const wd = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][LAUNCH.getUTCDay()];
-    const mo = ['January','February','March','April','May','June','July','August',
-                'September','October','November','December'][LAUNCH.getUTCMonth()];
-    document.getElementById('countdown-label').textContent =
-      'Launching ' + wd + ', ' + mo + ' ' + LAUNCH.getUTCDate();
-
-    // Live countdown
-    function pad(n) { return String(n).padStart(2, '0'); }
-    function tick() {
-      let diff = Math.max(0, LAUNCH.getTime() - Date.now());
-      const d = Math.floor(diff / 86400000); diff -= d * 86400000;
-      const h = Math.floor(diff / 3600000);  diff -= h * 3600000;
-      const m = Math.floor(diff / 60000);     diff -= m * 60000;
-      const s = Math.floor(diff / 1000);
-      document.getElementById('cd-days').textContent  = pad(d);
-      document.getElementById('cd-hours').textContent = pad(h);
-      document.getElementById('cd-mins').textContent  = pad(m);
-      document.getElementById('cd-secs').textContent  = pad(s);
-    }
-    tick();
-    setInterval(tick, 1000);
-  </script>
+  <footer class="ftr">
+    Questions or feedback? DM <strong style="color:var(--accent);">@generalthr4gg</strong> on Discord.<br/>
+    Not affiliated with Riot Games. League of Legends &amp; Wildrift are &copy; Riot Games, Inc.<br/>
+    Champion artwork via <a href="https://developer.riotgames.com/docs/lol#data-dragon" target="_blank" rel="noopener">DDragon</a>.
+  </footer>
+</div>
 </body>
 </html>

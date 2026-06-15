@@ -4,9 +4,12 @@ __pycache__/
 venv/
 .env
 
-data/*.csv
+# Block all scraper-debug images / backup snapshots, but allow the live
+# leaderboard CSV — the deployed Streamlit app reads from it directly.
 data/*.png
 data/*.jpg
+data/*.csv.bak
+!data/winrates.csv
 !data/.gitkeep
 
 .vscode/

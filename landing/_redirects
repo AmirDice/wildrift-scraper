@@ -1,5 +1,17 @@
-# Catch-all: any URL serves the coming-soon page without changing the URL.
-# Cloudflare Pages syntax: "from to status".
-# 200 = rewrite (browser address bar untouched); change to 302 if you'd
-# rather all paths visibly redirect to /.
-/*    /index.html    200
+# Cloudflare Pages routing.
+# Syntax: "from to status".
+#
+# Cloudflare Pages auto-serves clean URLs from .html files, so:
+#   /tier-list         -> tier-list.html
+#   /champions/aatrox  -> champions/aatrox.html
+#   /builds            -> builds.html
+#   /champions         -> champions.html
+#   /                  -> index.html
+# No explicit rules needed for any of those.
+
+# Legacy redirects: the original coming-soon launch sent everyone to /, so
+# any links shared with deep paths during that period need a soft landing.
+# (These are safe no-ops once those paths actually exist as real pages.)
+
+# 404 -> the homepage. Cleaner than a generic Cloudflare error page.
+/*    /index.html    404

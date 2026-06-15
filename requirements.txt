@@ -1,3 +1,11 @@
+# --- Web app deps (needed by Streamlit Cloud deploy) ---
+streamlit>=1.36.0
+pandas>=2.2.0
+pillow>=10.0.0
+requests>=2.31.0
+
+# --- Scraper-only deps (not used by the deployed app, but kept here so
+#     the scraper runs from the same checkout on dev machines) ---
 opencv-python>=4.9.0
 numpy>=1.26.0
 pytesseract>=0.3.10
