@@ -1590,72 +1590,14 @@ img { max-width: 100%; height: auto; }
 """
 
 
-_CHROME_KILLER_JS = """
-<script>
-(function () {
-  // We're inside an iframe Streamlit creates for components.v1.html, so reach
-  // up to the parent document where the actual Streamlit chrome lives.
-  const doc = window.parent && window.parent.document ? window.parent.document : document;
-
-  const KILL = [
-    '[data-testid="stStatusWidget"]',
-    '[data-testid="stConnectionStatus"]',
-    '[data-testid="stToolbar"]',
-    '[data-testid="stToolbarActions"]',
-    '[data-testid="stMainMenu"]',
-    '[data-testid="stDeployButton"]',
-    '[data-testid="stViewerBadge"]',
-    '[data-testid="stDecoration"]',
-    '[class*="viewerBadge"]',
-    '[class*="ViewerBadge"]',
-    '[class*="profileContainer"]',
-    '[class*="stStatusWidget"]',
-    '#MainMenu',
-  ];
-
-  function nuke() {
-    try {
-      for (const sel of KILL) {
-        doc.querySelectorAll(sel).forEach(el => el.remove());
-      }
-      // Any anchor in the page chrome that links to streamlit's own domains:
-      doc.querySelectorAll('a[href*="streamlit.io"], a[href*="share.streamlit.io"]').forEach(a => {
-        // Don't accidentally kill the user's own links that mention streamlit
-        if (a.closest('header, footer') || (a.textContent || '').trim().length < 40) {
-          a.remove();
-        }
-      });
-    } catch (e) { /* cross-origin or DOM not ready — try again on next tick */ }
-  }
-
-  nuke();
-  // Streamlit re-renders aggressively on interaction. Re-nuke on every DOM
-  // change to the parent body, plus a 500ms safety net for racy mounts.
-  try {
-    const obs = new MutationObserver(nuke);
-    obs.observe(doc.body || doc.documentElement, { childList: true, subtree: true });
-  } catch (e) {}
-  setInterval(nuke, 500);
-})();
-</script>
-"""
-
-
 def inject_css() -> None:
-    """Drop the WRTrueMeta theme + chrome-hider into the current page.
+    """Drop the WRTrueMeta theme into the current page.
 
-    Two injections:
-      1. CUSTOM_CSS via st.markdown — the theme + as-many-selector-variants
-         as we know for the Streamlit badge/toolbar.
-      2. _CHROME_KILLER_JS via st.components.v1.html — st.markdown strips
-         <script> tags, so the JS that actually deletes the badge from the
-         parent DOM has to go through the components API.
+    Resolves the page-background sentinel against the live CDN URL so
+    the asset loads under any deployment environment.
     """
-    from streamlit.components.v1 import html as _components_html
     from web.local_assets import page_bg
     st.markdown(CUSTOM_CSS.replace("__PAGE_BG__", page_bg()), unsafe_allow_html=True)
-    # height=0 keeps the iframe invisible — its only job is to run the script.
-    _components_html(_CHROME_KILLER_JS, height=0, width=0)
 
 
 def top_nav(active: str = "Home", champions: list[str] | None = None) -> None:
