@@ -14,3 +14,7 @@ data/*.csv.bak
 
 .vscode/
 .idea/
+
+# Dev scratch — screenshots and one-off images used while building the app.
+# Real production assets live under static/ (served by Streamlit).
+images/

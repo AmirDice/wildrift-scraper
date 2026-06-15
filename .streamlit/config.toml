@@ -1,0 +1,11 @@
+[server]
+# Serve any files placed in <project-root>/static/ at the URL `app/static/<filename>`.
+# Used by web/local_assets.py for the hero / skins / team-comps background images.
+enableStaticServing = true
+
+[theme]
+base = "dark"
+primaryColor = "#4a90ff"
+backgroundColor = "#070b18"
+secondaryBackgroundColor = "#121a30"
+textColor = "#e6ecff"
