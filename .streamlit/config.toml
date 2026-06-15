@@ -3,6 +3,14 @@
 # Used by web/local_assets.py for the hero / skins / team-comps background images.
 enableStaticServing = true
 
+[client]
+# "minimal" hides the hamburger menu's "View source on GitHub" / "Report bug" /
+# "Get help" links for non-owner visitors. (App owners still see the full menu
+# when logged into Streamlit Cloud with the deploy account.) Reduces the
+# casual discoverability of the source repo — note the repo is still public
+# on GitHub by virtue of being deployed on the free tier.
+toolbarMode = "minimal"
+
 [theme]
 base = "dark"
 primaryColor = "#4a90ff"
