@@ -91,7 +91,7 @@ def _render_champion_li(c: dict) -> str:
         title_attr += f', ceiling {c["ceiling"]:.1f}%'
     return (
         f'<li class="champ" title="{title_attr}">'
-        f'<a href="https://wrtruemeta.com/Leaderboard?champion={escape(c["champion"])}" '
+        f'<a href="https://wrtruemeta.streamlit.app/Leaderboard?champion={escape(c["champion"])}" '
         f'rel="bookmark">'
         f'<div class="champ-icon{" diff-hard" if c["is_hard"] else ""}">'
         f'<img src="{icon}" alt="{name} Wild Rift icon" loading="lazy" width="56" height="56" />'
@@ -131,7 +131,7 @@ def _json_ld(summary: pd.DataFrame, updated: str) -> str:
             "@type": "ListItem",
             "position": i,
             "name": str(r["champion"]),
-            "url": f"https://wrtruemeta.com/Leaderboard?champion={r['champion']}",
+            "url": f"https://wrtruemeta.streamlit.app/Leaderboard?champion={r['champion']}",
         })
         if i >= 50:
             break  # Google rarely cares past the top 50
@@ -441,7 +441,7 @@ TEMPLATE = """<!doctype html>
     </a>
     <nav>
       <a href="/">Home</a>
-      <a href="https://wrtruemeta.com/Tier_List">Live tier list</a>
+      <a href="https://wrtruemeta.streamlit.app/Tier_List">Live tier list</a>
     </nav>
   </header>
 
@@ -491,7 +491,7 @@ TEMPLATE = """<!doctype html>
   <section class="cta">
     <h2 style="font-size:1.4rem; margin-bottom:0.4rem;">Want the live interactive tier list?</h2>
     <p style="color:rgba(230,236,255,0.85);">Filter by role, save as a PNG, see per-champion leaderboards.</p>
-    <a href="https://wrtruemeta.com/Tier_List">Open the live tier list &rarr;</a>
+    <a href="https://wrtruemeta.streamlit.app/Tier_List">Open the live tier list &rarr;</a>
   </section>
 
   <footer class="site">
@@ -815,9 +815,10 @@ section.block.builds { background: linear-gradient(135deg, rgba(212,166,74,0.12)
     <a href="/" rel="home"><img src="/logo.png?v=2" alt="WrTrueMeta logo" /></a>
     <nav>
       <a href="/">Home</a>
-      <a href="/tier-list">Tier List</a>
-      <a href="/champions">Champions</a>
-      <a href="/builds">Builds</a>
+      <a href="https://wrtruemeta.streamlit.app/Tier_List">Tier List</a>
+      <a href="https://wrtruemeta.streamlit.app/Champions">Champions</a>
+      <a href="https://wrtruemeta.streamlit.app/Leaderboard">Leaderboards</a>
+      <a class="open-app" href="https://wrtruemeta.streamlit.app" style="color:var(--accent);">Open App &rarr;</a>
     </nav>
   </header>
 
@@ -874,7 +875,7 @@ section.block.builds { background: linear-gradient(135deg, rgba(212,166,74,0.12)
   <div class="cta">
     <h2 style="font-size:1.25rem; margin-bottom:0.4rem;">Want the live {name} leaderboard?</h2>
     <p style="color:rgba(230,236,255,0.85);">See the full top 50 {name} players, their win rates, mastery, and games played.</p>
-    <a href="https://wrtruemeta.com/Leaderboard?champion={name}">Open the live {name} leaderboard &rarr;</a>
+    <a href="https://wrtruemeta.streamlit.app/Leaderboard?champion={name}">Open the live {name} leaderboard &rarr;</a>
   </div>
 
   <footer class="site">
@@ -927,8 +928,9 @@ INDEX_TEMPLATE = """<!doctype html>
     <a href="/" rel="home"><img src="/logo.png?v=2" alt="WrTrueMeta logo" /></a>
     <nav>
       <a href="/">Home</a>
-      <a href="/tier-list">Tier List</a>
-      <a href="/builds">Builds</a>
+      <a href="https://wrtruemeta.streamlit.app/Tier_List">Tier List</a>
+      <a href="https://wrtruemeta.streamlit.app/Leaderboard">Leaderboards</a>
+      <a href="https://wrtruemeta.streamlit.app" style="color:var(--accent);">Open App &rarr;</a>
     </nav>
   </header>
 
@@ -984,8 +986,9 @@ section.block ul { padding-left: 1.5rem; }
     <a href="/" rel="home"><img src="/logo.png?v=2" alt="WrTrueMeta logo" /></a>
     <nav>
       <a href="/">Home</a>
-      <a href="/tier-list">Tier List</a>
-      <a href="/champions">Champions</a>
+      <a href="https://wrtruemeta.streamlit.app/Tier_List">Tier List</a>
+      <a href="https://wrtruemeta.streamlit.app/Champions">Champions</a>
+      <a href="https://wrtruemeta.streamlit.app" style="color:var(--accent);">Open App &rarr;</a>
     </nav>
   </header>
 
@@ -1271,10 +1274,10 @@ img { max-width: 100%; height: auto; }
   <header class="hdr">
     <a class="brand" href="/" rel="home"><img src="/logo.png?v=2" alt="WrTrueMeta — Wildrift meta tracker" /></a>
     <nav class="hdr-nav">
-      <a href="/tier-list">Tier List</a>
-      <a href="/champions">Champions</a>
-      <a href="/builds">Builds</a>
-      <a class="hdr-cta" href="https://app.wrtruemeta.com">Open App &rarr;</a>
+      <a href="https://wrtruemeta.streamlit.app/Tier_List">Tier List</a>
+      <a href="https://wrtruemeta.streamlit.app/Champions">Champions</a>
+      <a href="https://wrtruemeta.streamlit.app/Leaderboard">Leaderboards</a>
+      <a class="hdr-cta" href="https://wrtruemeta.streamlit.app">Open App &rarr;</a>
     </nav>
   </header>
 
@@ -1288,8 +1291,8 @@ img { max-width: 100%; height: auto; }
       one lucky game can&rsquo;t skew a champion&rsquo;s tier.
     </p>
     <div class="hero-cta">
-      <a class="btn primary" href="/tier-list">Open the Wildrift Tier List &rarr;</a>
-      <a class="btn ghost" href="https://app.wrtruemeta.com">Live interactive app &rarr;</a>
+      <a class="btn primary" href="https://wrtruemeta.streamlit.app">Open the Live App &rarr;</a>
+      <a class="btn ghost" href="https://wrtruemeta.streamlit.app/Tier_List">Jump to Tier List &rarr;</a>
     </div>
     <div class="hero-meta">
       <strong>{n_champs}</strong> champions tracked &nbsp;&middot;&nbsp;
@@ -1299,7 +1302,7 @@ img { max-width: 100%; height: auto; }
   </section>
 
   <section class="teaser-grid">
-    <a class="teaser-card" href="/champions/{top_pick_slug}">
+    <a class="teaser-card" href="https://wrtruemeta.streamlit.app/Leaderboard?champion={top_pick}">
       <div class="teaser-tag">Top Pick This Patch</div>
       <div class="teaser-row">
         <img src="{top_pick_icon}" alt="{top_pick}" loading="lazy" width="56" height="56" />
@@ -1310,7 +1313,7 @@ img { max-width: 100%; height: auto; }
         </div>
       </div>
     </a>
-    <a class="teaser-card" href="/champions/{spread_slug}">
+    <a class="teaser-card" href="https://wrtruemeta.streamlit.app/Leaderboard?champion={spread_name}">
       <div class="teaser-tag">Highest Skill Ceiling</div>
       <div class="teaser-row">
         <img src="{spread_icon}" alt="{spread_name}" loading="lazy" width="56" height="56" />
@@ -1321,7 +1324,7 @@ img { max-width: 100%; height: auto; }
         </div>
       </div>
     </a>
-    <a class="teaser-card" href="/champions/{otp_slug}">
+    <a class="teaser-card" href="https://wrtruemeta.streamlit.app/Leaderboard?champion={otp_name}">
       <div class="teaser-tag">Best OTP Champion</div>
       <div class="teaser-row">
         <img src="{otp_icon}" alt="{otp_name}" loading="lazy" width="56" height="56" />
@@ -1337,25 +1340,25 @@ img { max-width: 100%; height: auto; }
   <section class="explore">
     <h2>Explore <span class="accent">League of Legends Wildrift</span> meta</h2>
     <div class="explore-grid">
-      <a class="explore-card" href="/tier-list">
+      <a class="explore-card" href="https://wrtruemeta.streamlit.app/Tier_List">
         <div class="explore-icon">&#9650;</div>
         <div class="explore-title">Tier List</div>
         <div class="explore-desc">GOD to Ass tiers built from real top-50 player win rates. Filter by role with adaptive cutoffs.</div>
       </a>
-      <a class="explore-card" href="/champions">
+      <a class="explore-card" href="https://wrtruemeta.streamlit.app/Champions">
         <div class="explore-icon">&#10070;</div>
         <div class="explore-title">All Champions</div>
         <div class="explore-desc">Every Wildrift champion with full stats, best player, and a per-champion landing page.</div>
       </a>
-      <a class="explore-card" href="/builds">
-        <div class="explore-icon">&#9881;</div>
-        <div class="explore-title">Builds <span class="soon">soon</span></div>
-        <div class="explore-desc">Items, runes, and skill order pulled directly from each champion&rsquo;s rank-1 EU player.</div>
+      <a class="explore-card" href="https://wrtruemeta.streamlit.app/Leaderboard">
+        <div class="explore-icon">&#10084;</div>
+        <div class="explore-title">Leaderboards</div>
+        <div class="explore-desc">Top 50 EU players for every champion, sortable by rank, mastery, win rate, or games.</div>
       </a>
-      <a class="explore-card" href="https://app.wrtruemeta.com">
+      <a class="explore-card" href="https://wrtruemeta.streamlit.app/Methodology">
         <div class="explore-icon">&#9889;</div>
-        <div class="explore-title">Live App</div>
-        <div class="explore-desc">Sortable leaderboards, methodology, season countdown, and interactive PNG tier-list export.</div>
+        <div class="explore-title">Methodology</div>
+        <div class="explore-desc">How the confidence-adjusted win rates, Bayesian shrinkage, and Wilson best-player scores actually work.</div>
       </a>
     </div>
   </section>
