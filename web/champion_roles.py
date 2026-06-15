@@ -32,7 +32,7 @@ _JUNGLE: frozenset[str] = frozenset({
     "Amumu", "Diana", "Ekko", "Evelynn", "Fiddlesticks", "Fizz", "Gragas",
     "Graves", "Hecarim", "Jarvan IV", "Kayn", "Kha'Zix", "Kindred", "Lee Sin",
     "Lillia", "Master Yi", "Nidalee", "Nilah", "Nocturne", "Nunu & Willump",
-    "Olaf", "Pantheon", "Rammus", "Rengar", "Shyvana", "Talon",
+    "Pantheon", "Rammus", "Rengar", "Shyvana", "Talon",
     "Vi", "Viego", "Warwick", "Xin Zhao",
 })
 

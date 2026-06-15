@@ -80,6 +80,12 @@ _LOCAL_SPLASH_KEYS: dict[str, str] = {
 }
 
 
+def _local_champion_asset(filename: str) -> str:
+    """CDN URL for a champion asset bundled under static/champions/."""
+    from web.local_assets import static_url
+    return static_url(f"champions/{filename}")
+
+
 def icon_url(name: str, version: str = DDRAGON_VERSION) -> str:
     """Square face icon (PNG). ~120x120, good for circle avatars and table cells.
 
@@ -88,7 +94,7 @@ def icon_url(name: str, version: str = DDRAGON_VERSION) -> str:
     """
     key = to_ddragon_key(name)
     if key in _LOCAL_ICON_KEYS:
-        return f"/app/static/champions/{key}.png"
+        return _local_champion_asset(f"{key}.png")
     return f"{_CDN_BASE}/{version}/img/champion/{key}.png"
 
 
@@ -105,7 +111,7 @@ def splash_url(name: str, skin_id: int = 0) -> str:
     """
     key = to_ddragon_key(name)
     if key in _LOCAL_SPLASH_KEYS:
-        return f"/app/static/champions/{_LOCAL_SPLASH_KEYS[key]}"
+        return _local_champion_asset(_LOCAL_SPLASH_KEYS[key])
     if key in _LOCAL_ICON_KEYS:
-        return f"/app/static/champions/{key}.png"
+        return _local_champion_asset(f"{key}.png")
     return f"{_CDN_BASE}/img/champion/loading/{key}_{skin_id}.jpg"
