@@ -1264,7 +1264,12 @@ header[data-testid="stHeader"] { background: transparent; }
 .wr-table-wrap {
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 14px;
-    overflow: hidden;
+    /* Horizontal scroll on narrow viewports — overflow-y hidden keeps the
+       rounded corners clean. The scrollable-rows variant below overrides
+       overflow-y for inner-scroll. */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     background:
         linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%),
         rgba(12, 18, 38, 0.55);
@@ -1272,7 +1277,25 @@ header[data-testid="stHeader"] { background: transparent; }
     -webkit-backdrop-filter: blur(14px) saturate(120%);
     box-shadow: 0 6px 24px rgba(0,0,0,0.25);
 }
-.wr-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+/* A visible scrollbar so users see the table is scrollable. Webkit-only
+   styling but covers iOS Safari + Chrome (which is most mobile traffic). */
+.wr-table-wrap::-webkit-scrollbar { height: 8px; }
+.wr-table-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
+.wr-table-wrap::-webkit-scrollbar-thumb {
+    background: rgba(74,144,255,0.35);
+    border-radius: 4px;
+}
+.wr-table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(74,144,255,0.55); }
+.wr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+/* Mobile-only: force the table to stay readable instead of crushing the
+   columns. The wrapper's overflow-x:auto then gives a horizontal scrollbar. */
+@media (max-width: 768px) {
+    .wr-table { min-width: 720px; }
+}
 /* Scrollable variant — fixed height shows ~5 rows, scroll for the rest.
    Header stays pinned via sticky positioning. */
 .wr-table-scroll {
