@@ -71,31 +71,35 @@ header[data-testid="stHeader"] { background: transparent; }
    Landing page injects its own .stApp bg AFTER inject_css() so its hero
    treatment wins via later cascade. */
 .stApp {
-    /* Gradients overlay the fixed pseudo-element bg below. Image is in
-       .stApp::before so mobile Safari doesn't clip it to viewport. */
     background:
       linear-gradient(180deg, rgba(7,11,24,0.42) 0%, rgba(7,11,24,0.62) 100%),
+      url('__PAGE_BG__') no-repeat center center / cover fixed,
       radial-gradient(circle at 18% -10%, rgba(74,144,255,0.12), transparent 55%),
       radial-gradient(circle at 82% 110%, rgba(74,144,255,0.08), transparent 55%),
       var(--bg);
     color: var(--text);
-    position: relative;
-    isolation: isolate;
 }
-/* The actual page-art image lives in a position:fixed pseudo-element so
-   it ALWAYS covers the viewport on every device (iOS Safari, Android
-   Chrome, desktop) regardless of scroll height. background-attachment:
-   fixed was iffy on mobile; this technique is rock solid. */
-.stApp::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-image: url('__PAGE_BG__');
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
-    pointer-events: none;
+/* Mobile: background-attachment:fixed clips to viewport on iOS. Switch the
+   image to a non-fixed scroll attachment and put it on the html element
+   instead — html spans the full document, so the image covers everything.
+   Desktop keeps the original fixed-attachment parallax. */
+@media (max-width: 1024px), (hover: none) {
+    .stApp {
+        background:
+          linear-gradient(180deg, rgba(7,11,24,0.42) 0%, rgba(7,11,24,0.55) 100%),
+          radial-gradient(circle at 18% -10%, rgba(74,144,255,0.12), transparent 55%),
+          radial-gradient(circle at 82% 110%, rgba(74,144,255,0.08), transparent 55%),
+          transparent;
+    }
+    html {
+        background-image: url('__PAGE_BG__');
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        background-attachment: scroll;
+        background-color: var(--bg);
+        min-height: 100vh;
+    }
 }
 /* Headings sit directly on the page bg (cards have their own glass), so
    add a subtle text shadow for legibility now that the overlay is lighter. */
