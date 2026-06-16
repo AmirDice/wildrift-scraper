@@ -1261,6 +1261,32 @@ header[data-testid="stHeader"] { background: transparent; }
 }
 
 /* --- Custom data table (replaces st.dataframe) --- */
+/* Outer container holds the swipe hint + the scrollable table wrap.
+   Hint is hidden on desktop, shown on mobile so users know they can
+   scroll horizontally. */
+.wr-table-outer { position: relative; }
+.wr-table-hint {
+    display: none;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.4rem;
+    background: rgba(74,144,255,0.08);
+    border: 1px solid rgba(74,144,255,0.18);
+    border-radius: 8px;
+}
+.wr-table-hint span { display: inline-block; animation: swipe-bounce 1.8s ease-in-out infinite; }
+@keyframes swipe-bounce {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(6px); }
+}
+@media (max-width: 768px) {
+    .wr-table-hint { display: block; }
+}
+
 .wr-table-wrap {
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 14px;

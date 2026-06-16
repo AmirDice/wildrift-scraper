@@ -263,8 +263,16 @@ def render_table(columns: list[Col], rows: list[dict], *, highlight_top: int = 3
         )
         body += f'<tr class="{rcls}">{tds}</tr>'
     wrap_cls = "wr-table-wrap wr-table-scroll" if scroll else "wr-table-wrap"
+    # The hint div appears only on mobile (CSS-controlled) and tells users
+    # they can swipe horizontally. Sits outside .wr-table-wrap so it doesn't
+    # scroll with the table content.
     return (
+        '<div class="wr-table-outer">'
+        '<div class="wr-table-hint" aria-hidden="true">'
+        '<span>&larr; swipe to see all columns &rarr;</span>'
+        '</div>'
         f'<div class="{wrap_cls}"><table class="wr-table">'
         f'<thead><tr>{head}</tr></thead><tbody>{body}</tbody>'
         '</table></div>'
+        '</div>'
     )
