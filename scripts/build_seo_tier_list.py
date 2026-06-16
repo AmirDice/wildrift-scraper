@@ -1036,7 +1036,6 @@ def build_homepage(df, summary) -> str:
     """
     from web.data_loader import (
         pick_of_the_patch as _potp,
-        skill_spread as _spread,
         multi_champion_mains as _mm,
     )
 
@@ -1050,11 +1049,12 @@ def build_homepage(df, summary) -> str:
     top_pick = potp["champion"] if potp else "—"
     top_pick_wr = f"{potp['weighted_winrate']:.1f}%" if potp else "—"
 
-    spread = _spread(df, summary)
-    spread = spread[spread["n_players"] >= 20]
-    top_spread = spread.iloc[0] if not spread.empty else None
-    spread_name = str(top_spread["champion"]) if top_spread is not None else "—"
-    spread_val = f"{top_spread['skill_spread']:.1f}pts" if top_spread is not None else "—"
+    # Lowest win rate (with enough data to be credible — drop tiny pools).
+    low_pool = summary[summary["weighted_winrate"].notna() & (summary["n_players"] >= 20)]
+    low_pool = low_pool.sort_values("weighted_winrate", ascending=True)
+    low_row = low_pool.iloc[0] if not low_pool.empty else None
+    low_name = str(low_row["champion"]) if low_row is not None else "—"
+    low_wr = f"{low_row['weighted_winrate']:.1f}%" if low_row is not None else "—"
 
     best_otp_df = summary[summary["is_otp"]].sort_values("weighted_winrate", ascending=False)
     best_otp_name = str(best_otp_df.iloc[0]["champion"]) if not best_otp_df.empty else "—"
@@ -1071,10 +1071,10 @@ def build_homepage(df, summary) -> str:
         "top_pick_slug": champion_to_slug(top_pick) if potp else "",
         "top_pick_wr": top_pick_wr,
         "top_pick_icon": icon_url(top_pick) if potp else "",
-        "spread_name": escape(spread_name),
-        "spread_slug": champion_to_slug(spread_name) if top_spread is not None else "",
-        "spread_val": spread_val,
-        "spread_icon": icon_url(spread_name) if top_spread is not None else "",
+        "low_name": escape(low_name),
+        "low_slug": champion_to_slug(low_name) if low_row is not None else "",
+        "low_wr": low_wr,
+        "low_icon": icon_url(low_name) if low_row is not None else "",
         "otp_name": escape(best_otp_name),
         "otp_slug": champion_to_slug(best_otp_name) if not best_otp_df.empty else "",
         "otp_wr": best_otp_wr,
@@ -1246,6 +1246,7 @@ body {
 .teaser-val { font-size: 1.5rem; font-weight: 800; line-height: 1.1; margin-top: 0.1rem; }
 .teaser-val.accent { color: var(--accent); }
 .teaser-val.gold { color: var(--gold); }
+.teaser-val.bad { color: #ff7a7a; }
 .teaser-sub { color: var(--muted); font-size: 0.72rem; margin-top: 0.15rem; }
 
 /* Explore section */
@@ -1383,14 +1384,14 @@ img { max-width: 100%; height: auto; }
         </div>
       </div>
     </a>
-    <a class="teaser-card" href="https://wrtruemeta.streamlit.app/Leaderboard?champion={spread_name}">
-      <div class="teaser-tag">Highest Skill Ceiling</div>
+    <a class="teaser-card" href="https://wrtruemeta.streamlit.app/Leaderboard?champion={low_name}">
+      <div class="teaser-tag">Lowest Win Rate</div>
       <div class="teaser-row">
-        <img src="{spread_icon}" alt="{spread_name}" loading="lazy" width="56" height="56" />
+        <img src="{low_icon}" alt="{low_name}" loading="lazy" width="56" height="56" />
         <div>
-          <div class="teaser-name">{spread_name}</div>
-          <div class="teaser-val gold">{spread_val}</div>
-          <div class="teaser-sub">ceiling vs. average top-50</div>
+          <div class="teaser-name">{low_name}</div>
+          <div class="teaser-val bad">{low_wr}</div>
+          <div class="teaser-sub">struggling at high elo</div>
         </div>
       </div>
     </a>

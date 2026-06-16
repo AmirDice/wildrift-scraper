@@ -1612,7 +1612,7 @@ h1 { letter-spacing: -0.02em; }
     .tier-champ-icon { width: 38px; height: 38px; }
     .tier-champ-icon img { width: 38px; height: 38px; }
     .tier-champ .champ-name { font-size: 0.6rem; }
-    .tier-champ .champ-wr { display: none; }
+    .tier-champ .champ-wr { font-size: 0.58rem; line-height: 1; }
 
     /* Cards */
     .wr-card { padding: 0.85rem 0.9rem; border-radius: 11px; }
