@@ -830,6 +830,13 @@ header[data-testid="stHeader"] { background: transparent; }
     grid-template-columns: 36px 1fr;
 }
 
+/* Variant used by the Multi-Champion Mains card — no rank cell, but keeps
+   icon + name + metric. Without this override the icon would land in the
+   28px rank slot and the name would be jammed into the 36px icon slot. */
+.insight-card.mains .insight-row {
+    grid-template-columns: 36px 1fr auto;
+}
+
 /* ---- "View more" expander on insight cards ---- */
 .insight-more {
     margin-top: 0.5rem;

@@ -634,7 +634,7 @@ if not df.empty:
     if not top_mains:
         top_mains = '<div style="color:var(--muted);font-size:0.9rem;padding:0.5rem 0;">Not enough overlap yet.</div>'
     mains_card = (
-        '<div class="insight-card">'
+        '<div class="insight-card mains">'
         '  <div class="insight-card-title">Multi-Champion Mains</div>'
         f'  {top_mains}{mains_more}'
         '</div>'
