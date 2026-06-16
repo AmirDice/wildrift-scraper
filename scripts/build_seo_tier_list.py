@@ -1153,6 +1153,45 @@ body {
 }
 .hdr-nav .hdr-cta:hover { background: #5fa0ff; color: #fff; }
 
+/* Mobile nav — hidden on desktop, takes over the right side at narrow widths */
+.hdr-mobile { display: none; align-items: center; gap: 0.5rem; }
+.hdr-mobile .hdr-cta {
+  background: var(--accent); color: #fff; padding: 0.55rem 0.95rem;
+  border-radius: 9px; font-weight: 700; font-size: 0.88rem; text-decoration: none;
+}
+.hdr-menu { position: relative; }
+.hdr-menu summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: background 0.15s, border-color 0.15s;
+}
+.hdr-menu summary::-webkit-details-marker { display: none; }
+.hdr-menu summary:hover { background: rgba(255,255,255,0.1); border-color: rgba(74,144,255,0.4); }
+.hdr-menu[open] summary { background: rgba(74,144,255,0.12); border-color: rgba(74,144,255,0.45); color: var(--accent); }
+.hdr-menu-panel {
+  position: absolute; right: 0; top: calc(100% + 0.5rem);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.4rem;
+  min-width: 200px;
+  display: flex; flex-direction: column; gap: 0.15rem;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+  z-index: 100;
+}
+.hdr-menu-panel a {
+  padding: 0.7rem 0.9rem; border-radius: 8px;
+  color: var(--text); text-decoration: none;
+  font-weight: 600; font-size: 0.95rem;
+  transition: background 0.15s, color 0.15s;
+}
+.hdr-menu-panel a:hover { background: rgba(74,144,255,0.1); color: var(--accent); }
+
 /* Hero */
 .hero { text-align: center; padding: 2rem 0 2.5rem; }
 .eyebrow {
@@ -1255,11 +1294,20 @@ body {
   .explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .why-grid { grid-template-columns: 1fr; gap: 1.25rem; }
 }
+/* Swap to the mobile nav at narrow viewports — the desktop pill-row of 4
+   links was wrapping/cramping below 720px and there was no affordance to
+   indicate the extra items were even there. */
+@media (max-width: 720px) {
+  .hdr-nav { display: none; }
+  .hdr-mobile { display: flex; }
+}
+
 @media (max-width: 600px) {
   .page { padding: 1rem 0.65rem 3rem; }
-  .hdr { flex-wrap: wrap; gap: 0.75rem; }
+  .hdr { gap: 0.75rem; padding: 0.4rem 0.25rem; }
   .brand img { height: 52px; }
-  .hdr-nav a { padding: 0.4rem 0.7rem; font-size: 0.85rem; }
+  .hdr-mobile .hdr-cta { padding: 0.5rem 0.8rem; font-size: 0.82rem; }
+  .hdr-menu summary { width: 38px; height: 38px; }
   .hero { padding: 1rem 0 1.5rem; }
   .hero-cta { flex-direction: column; align-items: stretch; }
   .btn { justify-content: center; }
@@ -1273,12 +1321,34 @@ img { max-width: 100%; height: auto; }
 <div class="page">
   <header class="hdr">
     <a class="brand" href="/" rel="home"><img src="/logo.png?v=2" alt="WrTrueMeta — Wildrift meta tracker" /></a>
+
+    <!-- Desktop nav (hidden on mobile) -->
     <nav class="hdr-nav">
       <a href="https://wrtruemeta.streamlit.app/Tier_List">Tier List</a>
       <a href="https://wrtruemeta.streamlit.app/Champions">Champions</a>
       <a href="https://wrtruemeta.streamlit.app/Leaderboard">Leaderboards</a>
       <a class="hdr-cta" href="https://wrtruemeta.streamlit.app">Open App &rarr;</a>
     </nav>
+
+    <!-- Mobile nav: keep primary CTA visible, drop everything else into a hamburger -->
+    <div class="hdr-mobile">
+      <a class="hdr-cta" href="https://wrtruemeta.streamlit.app">Open App &rarr;</a>
+      <details class="hdr-menu">
+        <summary aria-label="Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </summary>
+        <div class="hdr-menu-panel">
+          <a href="https://wrtruemeta.streamlit.app/Tier_List">Tier List</a>
+          <a href="https://wrtruemeta.streamlit.app/Champions">Champions</a>
+          <a href="https://wrtruemeta.streamlit.app/Leaderboard">Leaderboards</a>
+          <a href="https://wrtruemeta.streamlit.app/Methodology">Methodology</a>
+        </div>
+      </details>
+    </div>
   </header>
 
   <section class="hero">
