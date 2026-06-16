@@ -124,6 +124,42 @@ header[data-testid="stHeader"] { background: transparent; }
 }
 .brand-accent { color: var(--accent); }
 
+/* Mobile hamburger — hidden on desktop, revealed below 720px (rules in
+   the responsive section). Native <details>/<summary> = no JS required. */
+.wr-nav-mobile { display: none; position: relative; flex-shrink: 0; }
+.wr-nav-mobile summary {
+    list-style: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s;
+}
+.wr-nav-mobile summary::-webkit-details-marker { display: none; }
+.wr-nav-mobile summary:hover { background: rgba(255,255,255,0.1); border-color: rgba(74,144,255,0.4); }
+.wr-nav-mobile[open] summary { background: rgba(74,144,255,0.12); border-color: rgba(74,144,255,0.45); color: var(--accent); }
+.wr-nav-mobile-panel {
+    position: absolute; right: 0; top: calc(100% + 0.5rem);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.4rem;
+    min-width: 200px;
+    display: flex; flex-direction: column; gap: 0.15rem;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+    z-index: 1000;
+}
+.wr-nav-mobile-panel a {
+    padding: 0.7rem 0.9rem; border-radius: 8px;
+    color: var(--text); text-decoration: none;
+    font-weight: 600; font-size: 0.95rem;
+    transition: background 0.15s, color 0.15s;
+}
+.wr-nav-mobile-panel a:hover,
+.wr-nav-mobile-panel a.active { background: rgba(74,144,255,0.12); color: var(--accent); }
+
 .wr-nav-links { display: flex; gap: 0.3rem; flex: 1; justify-content: center; }
 .wr-nav-links a {
     position: relative;
@@ -1449,23 +1485,19 @@ h1 { letter-spacing: -0.02em; }
     /* Layout: shrink container padding so cards don't crush against screen */
     .main .block-container { padding-left: 0.65rem; padding-right: 0.65rem; }
 
-    /* Top nav: wraps and shrinks; search shrinks; brand smaller */
+    /* Top nav: brand + compact search + hamburger. The inline nav-links row
+       (which previously scrolled horizontally with no affordance for the
+       hidden items) is now hidden and replaced by the hamburger reveal. */
     .wr-nav {
-        flex-wrap: wrap; gap: 0.6rem;
+        gap: 0.5rem;
         padding: 0.35rem 0.75rem;
         margin: -0.5rem -0.5rem 1rem;
     }
-    .brand { height: 62px; }
-    .brand img { height: 56px; }
-    .wr-nav-links {
-        order: 3; width: 100%; justify-content: flex-start;
-        gap: 0.1rem; overflow-x: auto; -webkit-overflow-scrolling: touch;
-        flex-wrap: nowrap; padding-bottom: 0.15rem;
-    }
-    .wr-nav-links a {
-        font-size: 0.82rem; padding: 0.4rem 0.7rem; flex-shrink: 0;
-    }
-    .wr-nav .champ-search { width: auto; flex: 1; }
+    .brand { height: 56px; }
+    .brand img { height: 50px; }
+    .wr-nav-links { display: none; }
+    .wr-nav-mobile { display: block; }
+    .wr-nav .champ-search { width: auto; flex: 1; min-width: 0; }
     .wr-nav .champ-search input { font-size: 0.82rem; padding: 0.45rem 0.5rem; }
     .wr-nav .champ-search button { padding: 0 0.85rem; font-size: 0.78rem; }
 
@@ -1533,10 +1565,12 @@ h1 { letter-spacing: -0.02em; }
     .hero p { font-size: 0.92rem; line-height: 1.45; }
     .hero p .pill { font-size: 0.7rem; padding: 0.05rem 0.4rem; }
 
-    /* Nav: hide nav-link text after brand — just keep search */
-    .wr-nav-links a { font-size: 0.78rem; padding: 0.35rem 0.55rem; }
-    .brand img { height: 46px; }
-    .brand { height: 52px; }
+    /* Phone: keep brand compact, shrink the hamburger + search a touch */
+    .brand img { height: 44px; }
+    .brand { height: 50px; }
+    .wr-nav-mobile summary { width: 36px; height: 36px; }
+    .wr-nav .champ-search input { font-size: 0.78rem; padding: 0.4rem 0.45rem; }
+    .wr-nav .champ-search button { padding: 0 0.7rem; font-size: 0.74rem; }
 
     /* Spotlight: stack everything vertically */
     .spotlight-card { padding: 1rem 0.9rem; min-height: auto; }
@@ -1628,6 +1662,12 @@ def top_nav(active: str = "Home", champions: list[str] | None = None) -> None:
         'stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle>'
         '<line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>'
     )
+    # Mobile menu — same 5 links inside a <details> hamburger. Streamlit's
+    # markdown renders <details>/<summary> natively, no JS required.
+    mobile_links_html = "".join(
+        f'<a href="{href}" target="_self" class="{ "active" if name == active else "" }">{name}</a>'
+        for name, href in items
+    )
     st.markdown(
         f"""
         <div class="wr-nav">
@@ -1640,6 +1680,16 @@ def top_nav(active: str = "Home", champions: list[str] | None = None) -> None:
             <datalist id="nav-champ-datalist">{options_html}</datalist>
             <button type="submit">Find</button>
           </form>
+          <details class="wr-nav-mobile">
+            <summary aria-label="Menu">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </summary>
+            <div class="wr-nav-mobile-panel">{mobile_links_html}</div>
+          </details>
         </div>
         """,
         unsafe_allow_html=True,
