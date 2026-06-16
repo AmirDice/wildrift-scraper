@@ -79,6 +79,21 @@ header[data-testid="stHeader"] { background: transparent; }
       var(--bg);
     color: var(--text);
 }
+/* iOS Safari (and some Android browsers) render background-attachment:fixed
+   buggily — the image is clipped to the initial viewport and the rest of
+   the scroll shows a hole. Force scroll-attachment on mobile so the bg
+   always covers the full document. Desktop keeps the parallax effect. */
+@media (max-width: 1024px), (hover: none) {
+    .stApp {
+        background:
+          linear-gradient(180deg, rgba(7,11,24,0.42) 0%, rgba(7,11,24,0.62) 100%),
+          url('__PAGE_BG__') no-repeat center top / cover,
+          radial-gradient(circle at 18% -10%, rgba(74,144,255,0.12), transparent 55%),
+          radial-gradient(circle at 82% 110%, rgba(74,144,255,0.08), transparent 55%),
+          var(--bg);
+        background-attachment: scroll;
+    }
+}
 /* Headings sit directly on the page bg (cards have their own glass), so
    add a subtle text shadow for legibility now that the overlay is lighter. */
 .main h1, .main h2, .main h3 {
