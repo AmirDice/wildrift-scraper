@@ -71,28 +71,31 @@ header[data-testid="stHeader"] { background: transparent; }
    Landing page injects its own .stApp bg AFTER inject_css() so its hero
    treatment wins via later cascade. */
 .stApp {
+    /* Gradients overlay the fixed pseudo-element bg below. Image is in
+       .stApp::before so mobile Safari doesn't clip it to viewport. */
     background:
       linear-gradient(180deg, rgba(7,11,24,0.42) 0%, rgba(7,11,24,0.62) 100%),
-      url('__PAGE_BG__') no-repeat center center / cover fixed,
       radial-gradient(circle at 18% -10%, rgba(74,144,255,0.12), transparent 55%),
       radial-gradient(circle at 82% 110%, rgba(74,144,255,0.08), transparent 55%),
       var(--bg);
     color: var(--text);
+    position: relative;
+    isolation: isolate;
 }
-/* iOS Safari (and some Android browsers) render background-attachment:fixed
-   buggily — the image is clipped to the initial viewport and the rest of
-   the scroll shows a hole. Force scroll-attachment on mobile so the bg
-   always covers the full document. Desktop keeps the parallax effect. */
-@media (max-width: 1024px), (hover: none) {
-    .stApp {
-        background:
-          linear-gradient(180deg, rgba(7,11,24,0.42) 0%, rgba(7,11,24,0.62) 100%),
-          url('__PAGE_BG__') no-repeat center top / cover,
-          radial-gradient(circle at 18% -10%, rgba(74,144,255,0.12), transparent 55%),
-          radial-gradient(circle at 82% 110%, rgba(74,144,255,0.08), transparent 55%),
-          var(--bg);
-        background-attachment: scroll;
-    }
+/* The actual page-art image lives in a position:fixed pseudo-element so
+   it ALWAYS covers the viewport on every device (iOS Safari, Android
+   Chrome, desktop) regardless of scroll height. background-attachment:
+   fixed was iffy on mobile; this technique is rock solid. */
+.stApp::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('__PAGE_BG__');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    pointer-events: none;
 }
 /* Headings sit directly on the page bg (cards have their own glass), so
    add a subtle text shadow for legibility now that the overlay is lighter. */
@@ -516,6 +519,18 @@ header[data-testid="stHeader"] { background: transparent; }
 .row .score { color: var(--text); font-weight: 700; min-width: 80px; text-align: right; }
 .row .score::before { content: "◆ "; color: var(--accent); }
 
+/* Mobile: shrink the row so the GOD/S/A tier pill at the right edge doesn't
+   get clipped. Smaller gaps + min-widths give the columns room to breathe. */
+@media (max-width: 768px) {
+    .row { grid-template-columns: 32px 32px 1fr auto auto; gap: 0.5rem; padding: 0.55rem 0.4rem; }
+    .row .name { min-width: 0; overflow-wrap: anywhere; }
+    .row .avatar { width: 30px; height: 30px; }
+    .row .wr { min-width: 56px; font-size: 0.85rem; }
+    .row .pick { min-width: 0; font-size: 0.78rem; }
+    .row .score { min-width: 0; font-size: 0.82rem; }
+    .row .rank.r-1, .row .rank.r-2, .row .rank.r-3 { font-size: 1.15rem; }
+}
+
 /* --- Leaderboard splash card with Ken-Burns bg + stats overlay --- */
 .splash-card {
     width: 100%;
@@ -744,6 +759,16 @@ header[data-testid="stHeader"] { background: transparent; }
 }
 @media (max-width: 900px) { .insights-grid { grid-template-columns: 1fr; } }
 
+/* 2-column variant used for the 4-card blocks (2x2 grid). Splits into
+   one column on phones. */
+.insights-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+@media (max-width: 700px) { .insights-grid-2 { grid-template-columns: 1fr; } }
+
 .insight-card {
     background:
         linear-gradient(180deg, rgba(255,255,255,0.025) 0%, transparent 100%),
@@ -861,7 +886,13 @@ header[data-testid="stHeader"] { background: transparent; }
 }
 .insight-row .name {
     font-weight: 600; font-size: 0.92rem;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    /* Allow long player names (Multi-Champion Mains) to wrap onto a second
+       line instead of truncating with an ellipsis. min-width:0 is needed
+       so the name column can actually shrink inside its grid track. */
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.25;
 }
 .insight-row .metric {
     color: var(--accent);

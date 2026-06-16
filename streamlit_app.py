@@ -553,19 +553,7 @@ if not df.empty:
     bot_wr   = summary[summary["weighted_winrate"].notna()].sort_values("weighted_winrate", ascending=True)
     off_meta = off_meta_picks(df)
 
-    st.markdown(
-        f"""
-        <div class="insights-grid">
-          {_insight_card("Highest Win Rate", top_wr, "weighted_winrate", fmt_pct, metric_class="")}
-          {_insight_card("Lowest Win Rate",  bot_wr, "weighted_winrate", fmt_pct, metric_class="down")}
-          {_insight_card("Strong Off-Meta",  off_meta, "weighted_winrate", fmt_pct, metric_class="gold")}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     # --- Most/Least played + funniest names row -----------------------
-    most_played  = summary.sort_values("total_games", ascending=False)
     least_played = summary[summary["total_games"] > 0].sort_values("total_games", ascending=True)
 
     # Funniest names card (distinct format — player names, not champions).
@@ -600,49 +588,18 @@ if not df.empty:
         '</div>'
     )
 
-    st.markdown(
-        f"""
-        <div class="insights-grid">
-          {_insight_card("Most Played",    most_played,  "total_games",  fmt_int, metric_class="muted")}
-          {_insight_card("Least Played",   least_played, "total_games",  fmt_int, metric_class="muted")}
-          {funny_card}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # --- Beginner-friendly / Best OTP champs / Most contested ---------
-    # Easy-to-play yet effective: low difficulty (<=4) sorted by win rate.
+    # --- Data prep for all cards (rendered below in 4 + chart + 4 + chart + 3) -
     beginners = summary[summary["difficulty"] <= 4].sort_values(
         "weighted_winrate", ascending=False)
-    # Best OTP champs: among OTP-flagged champions (algorithmic + community
-    # known), the highest-WR picks. Answers "if I want to one-trick, which
-    # OTP champion is strongest right now?"
     best_otp = summary[summary["is_otp"]].sort_values(
         "weighted_winrate", ascending=False)
-    # Deepest talent pools: highest median mastery = most contested / popular.
     contested = summary[summary["median_mastery"].notna()].sort_values(
         "median_mastery", ascending=False)
-
-    st.markdown(
-        f"""
-        <div class="insights-grid">
-          {_insight_card("Best for Beginners", beginners, "weighted_winrate", fmt_pct, metric_class="")}
-          {_insight_card("Best OTP Champs",    best_otp,  "weighted_winrate", fmt_pct, metric_class="gold")}
-          {_insight_card("Most Contested",     contested, "median_mastery", lambda v: f"{int(round(v)):,}", metric_class="muted")}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # --- Skill expression / Most consistent / Multi-champion mains ---
     spread = skill_spread(df, summary)
-    spread = spread[spread["n_players"] >= 20]  # cut tiny pools
+    spread = spread[spread["n_players"] >= 20]
     consistent = summary[
         summary["winrate_std"].notna() & (summary["n_players"] >= 20)
     ].sort_values("winrate_std", ascending=True)
-
-    # Multi-champion mains: top-50 on 3+ champions = genuinely-elite mechanics.
     mains = multi_champion_mains(df, min_champions=3)
 
     def _mains_row(m: dict) -> str:
@@ -683,12 +640,14 @@ if not df.empty:
         '</div>'
     )
 
+    # --- First 4-card block: top-line meta + climbing picks ----------
     st.markdown(
         f"""
-        <div class="insights-grid">
-          {_insight_card("Skill Expression", spread,     "skill_spread", lambda v: f"{v:.1f} pts", metric_class="gold")}
-          {_insight_card("Most Consistent",  consistent, "winrate_std",  lambda v: f"&plusmn;{v:.1f}", metric_class="muted")}
-          {mains_card}
+        <div class="insights-grid-2">
+          {_insight_card("Highest Win Rate",   top_wr,    "weighted_winrate", fmt_pct, metric_class="")}
+          {_insight_card("Lowest Win Rate",    bot_wr,    "weighted_winrate", fmt_pct, metric_class="down")}
+          {_insight_card("Best OTP Champs",    best_otp,  "weighted_winrate", fmt_pct, metric_class="gold")}
+          {_insight_card("Best for Beginners", beginners, "weighted_winrate", fmt_pct, metric_class="")}
         </div>
         """,
         unsafe_allow_html=True,
@@ -735,6 +694,19 @@ if not df.empty:
             unsafe_allow_html=True,
         )
 
+    # --- Second 4-card block: depth + skill stats ---------------------
+    st.markdown(
+        f"""
+        <div class="insights-grid-2">
+          {_insight_card("Most Contested",     contested,  "median_mastery",   lambda v: f"{int(round(v)):,}", metric_class="muted")}
+          {_insight_card("Skill Expression",   spread,     "skill_spread",     lambda v: f"{v:.1f} pts", metric_class="gold")}
+          {_insight_card("Most Consistent",    consistent, "winrate_std",      lambda v: f"&plusmn;{v:.1f}", metric_class="muted")}
+          {mains_card}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     # --- Win rate by difficulty bucket ---------------------------------
     diff_rows = winrate_by_difficulty(summary)
     if diff_rows:
@@ -779,6 +751,18 @@ if not df.empty:
             """,
             unsafe_allow_html=True,
         )
+
+    # --- Final 3-card block: discovery + fun -------------------------
+    st.markdown(
+        f"""
+        <div class="insights-grid">
+          {_insight_card("Strong Off-Meta",  off_meta,     "weighted_winrate", fmt_pct, metric_class="gold")}
+          {funny_card}
+          {_insight_card("Least Played",     least_played, "total_games",      fmt_int, metric_class="muted")}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # --- Footer info ---------------------------------------------------------
 st.write("")
