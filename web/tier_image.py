@@ -52,7 +52,7 @@ _GRID_LINE = (255, 255, 255, 16)
 _S = 2
 _W = 1280 * _S
 _PAD = 36 * _S
-_HEADER_H = 190 * _S
+_HEADER_H = 220 * _S
 _FOOTER_H = 96 * _S
 _RADIUS = 16 * _S
 
@@ -222,11 +222,18 @@ def render_tier_list_png(
 
     title_font = _font(64 * _S, bold=True)
     sub_font = _font(30 * _S, bold=False)
-    title_y = _HEADER_H // 2 - 44 * _S
+    sub_font_sm = _font(24 * _S, bold=True)
+    title_y = _HEADER_H // 2 - 60 * _S
     draw.text((title_x, title_y), "Champion Tier List", font=title_font, fill=_TEXT)
-    default_sub = "EU  ·  Top 50 players per champion  ·  Win rate sorted"
-    draw.text((title_x, title_y + 72 * _S), subtitle or default_sub,
+    # Methodology — ALWAYS visible so anyone screenshotting the tier list
+    # knows where the numbers come from.
+    methodology = "Winrates are based on top 50 players average per champion"
+    draw.text((title_x, title_y + 72 * _S), methodology,
               font=sub_font, fill=_MUTED)
+    # Filter / context line (e.g. "Filter: Jungle") — only when provided.
+    if subtitle:
+        draw.text((title_x, title_y + 112 * _S), subtitle,
+                  font=sub_font_sm, fill=_ACCENT)
 
     # Right-aligned URL
     url_font = _font(32 * _S, bold=True)
