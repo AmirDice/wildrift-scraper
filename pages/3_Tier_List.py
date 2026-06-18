@@ -23,7 +23,6 @@ from web.data_loader import (
     tier_order,
 )
 from web.style import inject_css, top_nav
-from web.tier_image import render_tier_list_png
 
 
 st.set_page_config(
@@ -62,10 +61,8 @@ if summary.empty:
     st.stop()
 
 # --- Role filter --------------------------------------------------------
-filter_col, dl_col = st.columns([3, 1])
-with filter_col:
-    role_options = ["All roles", *ROLES]
-    role_filter = st.selectbox("Filter by role", role_options, index=0)
+role_options = ["All roles", *ROLES]
+role_filter = st.selectbox("Filter by role", role_options, index=0)
 
 
 # Apply role filter
@@ -99,33 +96,12 @@ for _, row in summary.sort_values("weighted_winrate", ascending=False).iterrows(
     ))
 
 
-# --- Save-as-image button ----------------------------------------------
-def _build_filename() -> str:
-    role_part = role_filter.lower().replace(" ", "_") if role_filter != "All roles" else "all"
-    return f"wrtruemeta_tier_list_{role_part}.png"
-
-
-with dl_col:
-    st.write("")  # vertical alignment with the selectbox
-    if st.button("Generate downloadable image", use_container_width=True):
-        subtitle = (
-            f"Filter: {role_filter}"
-            if role_filter != "All roles"
-            else "All champions"
-        )
-        with st.spinner("Rendering..."):
-            png_bytes = render_tier_list_png(buckets, subtitle=subtitle)
-        st.session_state["_tier_image"] = png_bytes
-        st.session_state["_tier_image_name"] = _build_filename()
-
-    if "_tier_image" in st.session_state:
-        st.download_button(
-            "Download PNG",
-            data=st.session_state["_tier_image"],
-            file_name=st.session_state.get("_tier_image_name", "wrtruemeta_tier_list.png"),
-            mime="image/png",
-            use_container_width=True,
-        )
+# --- PNG export temporarily disabled ------------------------------------
+# The downloadable-image feature is parked: a 6-tier list renders as a very
+# tall image (~1280x2700), which always displays scaled-down/tiny when shared.
+# Fixing it needs a wider, horizontal-first redesign with capped tier-block
+# heights — revisit post-launch. The renderer lives in web/tier_image.py
+# (render_tier_list_png) and can be re-wired here when redesigned.
 
 
 # --- Render the tier grid ----------------------------------------------
