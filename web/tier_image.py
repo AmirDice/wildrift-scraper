@@ -51,27 +51,27 @@ _GRID_LINE = (255, 255, 255, 16)
 # Layout — 2x supersampled, downscaled on save for crisp output.
 _S = 2
 _W = 1280 * _S
-_PAD = 36 * _S
-_HEADER_H = 220 * _S
-_FOOTER_H = 96 * _S
+_PAD = 40 * _S
+_HEADER_H = 260 * _S
+_FOOTER_H = 110 * _S
 _RADIUS = 16 * _S
 
-_TIER_LABEL_W = 170 * _S
+_TIER_LABEL_W = 200 * _S
 _GAP_LABEL_STRIP = 16 * _S
-_STRIP_PAD = 22 * _S
+_STRIP_PAD = 26 * _S
 
 # Champion item dimensions inside the strip
-_ICON_SIZE = 88 * _S
-_ITEM_W = _ICON_SIZE + 36 * _S        # room for a short name centred under the icon
+_ICON_SIZE = 100 * _S
+_ITEM_W = _ICON_SIZE + 48 * _S        # room for a short name centred under the icon
 _ITEM_GAP_X = 18 * _S
-_NAME_GAP = 12 * _S
-_NAME_H = 26 * _S
+_NAME_GAP = 14 * _S
+_NAME_H = 36 * _S
 _WR_GAP = 4 * _S
-_WR_H = 22 * _S
+_WR_H = 30 * _S
 _ITEM_H = _ICON_SIZE + _NAME_GAP + _NAME_H + _WR_GAP + _WR_H
 
 _TIER_LABEL_HEIGHT = _ITEM_H + 2 * _STRIP_PAD   # row height matches a single-row strip
-_LOGO_HEIGHT = 100 * _S
+_LOGO_HEIGHT = 130 * _S
 
 
 # ----- font helpers ----------------------------------------------------
@@ -220,26 +220,26 @@ def render_tier_list_png(
         img.paste(logo, (_PAD, (_HEADER_H - _LOGO_HEIGHT) // 2), logo)
         title_x = _PAD + logo.width + 26 * _S
 
-    title_font = _font(64 * _S, bold=True)
-    sub_font = _font(30 * _S, bold=False)
-    sub_font_sm = _font(24 * _S, bold=True)
-    title_y = _HEADER_H // 2 - 60 * _S
+    title_font = _font(96 * _S, bold=True)
+    sub_font = _font(34 * _S, bold=False)
+    sub_font_sm = _font(30 * _S, bold=True)
+    title_y = _HEADER_H // 2 - 76 * _S
     draw.text((title_x, title_y), "Champion Tier List", font=title_font, fill=_TEXT)
     # Methodology — ALWAYS visible so anyone screenshotting the tier list
     # knows where the numbers come from.
     methodology = "Winrates are based on top 50 players average per champion"
-    draw.text((title_x, title_y + 72 * _S), methodology,
+    draw.text((title_x, title_y + 102 * _S), methodology,
               font=sub_font, fill=_MUTED)
     # Filter / context line (e.g. "Filter: Jungle") — only when provided.
     if subtitle:
-        draw.text((title_x, title_y + 112 * _S), subtitle,
+        draw.text((title_x, title_y + 146 * _S), subtitle,
                   font=sub_font_sm, fill=_ACCENT)
 
     # Right-aligned URL
-    url_font = _font(32 * _S, bold=True)
+    url_font = _font(38 * _S, bold=True)
     url_text = "wrtruemeta.com"
     ub = draw.textbbox((0, 0), url_text, font=url_font)
-    draw.text((_W - _PAD - (ub[2] - ub[0]), _HEADER_H // 2 - 16 * _S),
+    draw.text((_W - _PAD - (ub[2] - ub[0]), _HEADER_H // 2 - 19 * _S),
               url_text, font=url_font, fill=_ACCENT)
 
     # Hairline under the header
@@ -247,11 +247,11 @@ def render_tier_list_png(
               fill=_BORDER, width=1)
 
     # ---- Tier rows ----
-    label_font = _font(84 * _S, bold=True)
-    label_font_sm = _font(60 * _S, bold=True)
-    name_font = _font(22 * _S, bold=True)
-    wr_font = _font(20 * _S, bold=False)
-    empty_font = _font(28 * _S, bold=False)
+    label_font = _font(120 * _S, bold=True)
+    label_font_sm = _font(86 * _S, bold=True)
+    name_font = _font(30 * _S, bold=True)
+    wr_font = _font(26 * _S, bold=False)
+    empty_font = _font(34 * _S, bold=False)
     circle_mask = _circle_mask(_ICON_SIZE)
 
     y = _HEADER_H + 10 * _S
@@ -295,7 +295,7 @@ def render_tier_list_png(
         else:
             start_x = sx0 + (sx1 - sx0 - row_width) // 2
 
-        otp_badge_font = _font(15 * _S, bold=True)
+        otp_badge_font = _font(20 * _S, bold=True)
         for i, (name, wr, is_otp, is_hard) in enumerate(champs):
             col_idx = i % cols_now
             row_idx = i // cols_now
@@ -356,10 +356,10 @@ def render_tier_list_png(
     # ---- Footer ----
     fy = total_h - _FOOTER_H
     draw.line((_PAD, fy, _W - _PAD, fy), fill=_BORDER, width=1)
-    foot_font = _font(30 * _S, bold=True)
+    foot_font = _font(38 * _S, bold=True)
     draw.text((_PAD, fy + 25 * _S), "wrtruemeta.com",
               font=foot_font, fill=_ACCENT)
-    foot_sub = _font(22 * _S, bold=False)
+    foot_sub = _font(28 * _S, bold=False)
     note = "Wild Rift Meta Tracker  ·  Updated twice a month"
     fb = draw.textbbox((0, 0), note, font=foot_sub)
     draw.text((_W - _PAD - (fb[2] - fb[0]), fy + 30 * _S),
