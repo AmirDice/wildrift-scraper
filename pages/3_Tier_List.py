@@ -18,6 +18,7 @@ from web.data_loader import (
     assign_tier,
     assign_tier_relative,
     champion_summary,
+    data_collected_on,
     get_champions,
     load_leaderboard,
     tier_order,
@@ -47,6 +48,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.markdown(notice_bar([TOP50_NOTICE, GAP_NOTICE]), unsafe_allow_html=True)
+
+_collected = data_collected_on(df)
+if _collected:
+    st.markdown(
+        f'<p style="color:var(--muted);font-size:0.82rem;margin:-0.25rem 0 0.75rem;">'
+        f'Data collected {_collected}</p>',
+        unsafe_allow_html=True,
+    )
 
 if df.empty:
     st.info(

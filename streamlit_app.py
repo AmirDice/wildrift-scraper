@@ -74,14 +74,22 @@ top_nav(active="Home", champions=ALL_CHAMPIONS)
 
 # --- Hero (no search bar — search lives in the nav; the space below is
 # --- used for the four at-a-glance stat widgets instead) -----------------
+from web.data_loader import data_collected_on as _collected_on
+_collected = _collected_on(df)
+_collected_html = (
+    f'<div style="color:var(--muted);font-size:0.85rem;margin-top:0.4rem;">'
+    f'Data collected {_collected}</div>'
+    if _collected else ""
+)
 st.markdown(
-    """
+    f"""
     <div class="hero" style="padding-bottom: 0.5rem;">
       <h1>Wild Rift <span class="accent">Meta</span> Tracker</h1>
       <p>
         The official <span class="pill">EU</span> top champion win rates &mdash;
         built from the <span class="pill">top 50</span> players of every champion.
       </p>
+      {_collected_html}
     </div>
     """,
     unsafe_allow_html=True,

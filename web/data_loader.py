@@ -234,6 +234,21 @@ def get_champions(df: pd.DataFrame) -> list[str]:
     return sorted(df["champion"].dropna().unique().tolist())
 
 
+def data_collected_on(df: pd.DataFrame) -> str | None:
+    """Human-readable date the leaderboard snapshot was scraped.
+
+    Uses the latest `captured_at` timestamp in the data (the most recent
+    scrape pass). Returns e.g. "June 13, 2026", or None if unavailable.
+    """
+    if df.empty or "captured_at" not in df.columns:
+        return None
+    caps = pd.to_datetime(df["captured_at"], errors="coerce", utc=True).dropna()
+    if caps.empty:
+        return None
+    d = caps.max()
+    return f"{d.strftime('%B')} {d.day}, {d.year}"
+
+
 # Tier cutoffs are calibrated for the GAMES-WEIGHTED top-50 winrate, which
 # clusters roughly 55-65% in practice once smurf inflation is stripped out.
 # Bands tightened so the bottom actually populates instead of leaving Ass
