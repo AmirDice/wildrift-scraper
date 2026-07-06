@@ -22,7 +22,8 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "news.json"
-NEWS_URL = "https://wildrift.leagueoflegends.com/en-gb/news/"
+OFFICIAL_BASE = "https://wildrift.leagueoflegends.com"
+NEWS_URL = f"{OFFICIAL_BASE}/en-gb/news/"
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 
 
@@ -35,7 +36,10 @@ def _text(html_or_str) -> str:
 def _url(action) -> str | None:
     if isinstance(action, dict):
         payload = action.get("payload") or {}
-        return payload.get("url") or action.get("url")
+        u = payload.get("url") or action.get("url")
+        if u and u.startswith("/"):  # relative article link -> absolute official URL
+            u = OFFICIAL_BASE + u
+        return u
     return None
 
 
