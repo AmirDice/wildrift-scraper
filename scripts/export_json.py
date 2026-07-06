@@ -12,6 +12,7 @@ Run after each scrape:
 from __future__ import annotations
 
 import json
+from datetime import date, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -41,10 +42,41 @@ PLAYERS_OUT = ROOT / "web-next" / "public" / "players.json"
 TOP_N = 50
 
 
+HISTORY = ROOT / "data" / "history" / "eu"
+
+
 def _slug(name: str) -> str:
     import re
     s = name.lower().replace("&", "and").replace("'", "")
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+
+def _snapshot_date(collected_on: str | None) -> str:
+    """Parse 'June 13, 2026' -> '2026-06-13'; fall back to today."""
+    if collected_on:
+        for fmt in ("%B %d, %Y", "%b %d, %Y"):
+            try:
+                return datetime.strptime(collected_on, fmt).date().isoformat()
+            except ValueError:
+                pass
+    return date.today().isoformat()
+
+
+def _save_snapshot(champions: list[dict], collected_on: str | None) -> None:
+    """Write a dated, raw-win-rate snapshot so we can chart patch-over-patch later.
+    Keyed by data date, so re-running on the same scrape overwrites (idempotent)."""
+    HISTORY.mkdir(parents=True, exist_ok=True)
+    d = _snapshot_date(collected_on)
+    snap = {
+        "date": d,
+        "region": "eu",
+        "champions": {
+            c["slug"]: {"wr": c["wr"], "tier": c["tier"]}
+            for c in champions if c.get("wr") is not None
+        },
+    }
+    (HISTORY / f"{d}.json").write_text(json.dumps(snap, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"  snapshot: data/history/eu/{d}.json ({len(snap['champions'])} champions)")
 
 
 def _f(v, ndigits: int = 1):
@@ -211,6 +243,9 @@ def build() -> dict:
     # gap identical while making the numbers read like a normal tier list.
     # Player-level metrics (best player, top mastery, the leaderboard) stay raw —
     # those are explicit "this player's actual record" contexts.
+    # Snapshot raw (pre-centering) win rates for patch-over-patch history.
+    _save_snapshot(champions, data_collected_on(df))
+
     # Shift only the champion *average* (wr, meanWr). maxWr is the ceiling — a
     # single best player's real win rate — and stays raw like the best-player stat.
     valid = [c["wr"] for c in champions if c["wr"] is not None]

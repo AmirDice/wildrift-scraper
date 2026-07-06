@@ -1,0 +1,1844 @@
+{
+  "hecarim": {
+    "weak": [
+      "master-yi",
+      "kindred",
+      "graves"
+    ],
+    "strong": [
+      "taliyah",
+      "aatrox"
+    ]
+  },
+  "taliyah": {
+    "weak": [
+      "syndra",
+      "zed",
+      "orianna",
+      "rammus",
+      "hecarim"
+    ],
+    "strong": []
+  },
+  "nidalee": {
+    "weak": [
+      "master-yi",
+      "rengar",
+      "galio"
+    ],
+    "strong": [
+      "amumu",
+      "camille"
+    ]
+  },
+  "amumu": {
+    "weak": [
+      "lillia",
+      "nocturne",
+      "nidalee"
+    ],
+    "strong": [
+      "pantheon",
+      "rammus",
+      "viego",
+      "warwick",
+      "gragas",
+      "vi",
+      "fizz",
+      "nilah",
+      "tryndamere",
+      "ekko",
+      "jarvan-iv",
+      "graves"
+    ]
+  },
+  "shyvana": {
+    "weak": [
+      "rammus",
+      "lillia",
+      "master-yi"
+    ],
+    "strong": [
+      "nautilus",
+      "xin-zhao"
+    ]
+  },
+  "pantheon": {
+    "weak": [
+      "tryndamere",
+      "rammus",
+      "amumu"
+    ],
+    "strong": []
+  },
+  "ksante": {
+    "weak": [
+      "ambessa",
+      "vayne",
+      "garen"
+    ],
+    "strong": []
+  },
+  "rammus": {
+    "weak": [
+      "amumu",
+      "lillia",
+      "nunu-and-willump"
+    ],
+    "strong": [
+      "taliyah",
+      "shyvana",
+      "pantheon",
+      "viego",
+      "khazix",
+      "zed",
+      "ambessa",
+      "nilah",
+      "kindred",
+      "rengar",
+      "master-yi",
+      "lee-sin",
+      "tryndamere",
+      "xin-zhao",
+      "poppy",
+      "yone",
+      "riven",
+      "nocturne",
+      "jarvan-iv",
+      "wukong",
+      "kayn",
+      "graves"
+    ]
+  },
+  "lillia": {
+    "weak": [
+      "evelynn",
+      "vi",
+      "master-yi"
+    ],
+    "strong": [
+      "amumu",
+      "shyvana",
+      "rammus",
+      "olaf",
+      "gragas",
+      "kindred",
+      "lee-sin",
+      "ekko",
+      "aatrox",
+      "volibear",
+      "wukong"
+    ]
+  },
+  "smolder": {
+    "weak": [
+      "draven",
+      "lucian",
+      "caitlyn",
+      "syndra",
+      "ahri",
+      "fizz"
+    ],
+    "strong": [
+      "miss-fortune",
+      "varus",
+      "sivir"
+    ]
+  },
+  "aurora": {
+    "weak": [
+      "vex",
+      "zed",
+      "irelia"
+    ],
+    "strong": [
+      "kennen"
+    ]
+  },
+  "olaf": {
+    "weak": [
+      "kindred",
+      "lillia",
+      "master-yi",
+      "fiora",
+      "tryndamere",
+      "irelia"
+    ],
+    "strong": [
+      "warwick"
+    ]
+  },
+  "senna": {
+    "weak": [
+      "blitzcrank",
+      "pyke",
+      "nautilus"
+    ],
+    "strong": [
+      "lulu",
+      "galio",
+      "bard",
+      "janna",
+      "braum"
+    ]
+  },
+  "viego": {
+    "weak": [
+      "rammus",
+      "amumu",
+      "warwick"
+    ],
+    "strong": [
+      "master-yi",
+      "camille",
+      "nocturne"
+    ]
+  },
+  "khazix": {
+    "weak": [
+      "rammus",
+      "kindred",
+      "master-yi"
+    ],
+    "strong": [
+      "nilah"
+    ]
+  },
+  "evelynn": {
+    "weak": [
+      "rengar",
+      "twisted-fate",
+      "lee-sin"
+    ],
+    "strong": [
+      "lillia",
+      "master-yi",
+      "yone",
+      "volibear"
+    ]
+  },
+  "vayne": {
+    "weak": [
+      "caitlyn",
+      "ashe",
+      "draven"
+    ],
+    "strong": [
+      "ksante",
+      "kogmaw",
+      "ornn",
+      "varus",
+      "xayah",
+      "urgot",
+      "garen",
+      "sivir"
+    ]
+  },
+  "warwick": {
+    "weak": [
+      "amumu",
+      "olaf",
+      "kindred",
+      "jax",
+      "teemo"
+    ],
+    "strong": [
+      "viego",
+      "vi",
+      "wukong"
+    ]
+  },
+  "nami": {
+    "weak": [
+      "pyke",
+      "blitzcrank",
+      "braum"
+    ],
+    "strong": [
+      "soraka",
+      "galio",
+      "bard",
+      "karma",
+      "zyra",
+      "lux",
+      "thresh"
+    ]
+  },
+  "kogmaw": {
+    "weak": [
+      "ashe",
+      "caitlyn",
+      "vayne"
+    ],
+    "strong": [
+      "draven",
+      "zeri",
+      "lucian",
+      "kaisa",
+      "jinx",
+      "corki",
+      "samira",
+      "kalista",
+      "tristana",
+      "xayah",
+      "sivir"
+    ]
+  },
+  "draven": {
+    "weak": [
+      "caitlyn",
+      "samira",
+      "kogmaw"
+    ],
+    "strong": [
+      "smolder",
+      "vayne",
+      "ezreal",
+      "kaisa",
+      "jhin",
+      "ashe",
+      "tristana"
+    ]
+  },
+  "jayce": {
+    "weak": [
+      "syndra",
+      "galio",
+      "irelia",
+      "malphite",
+      "ornn"
+    ],
+    "strong": [
+      "kassadin",
+      "darius"
+    ]
+  },
+  "nunu-and-willump": {
+    "weak": [],
+    "strong": [
+      "rammus"
+    ]
+  },
+  "zed": {
+    "weak": [
+      "lissandra",
+      "yasuo",
+      "vex",
+      "rammus",
+      "master-yi",
+      "kindred"
+    ],
+    "strong": [
+      "taliyah",
+      "aurora",
+      "kassadin",
+      "norra",
+      "aurelion-sol",
+      "yone",
+      "morgana",
+      "heimerdinger",
+      "brand",
+      "viktor",
+      "katarina",
+      "seraphine",
+      "ziggs"
+    ]
+  },
+  "kassadin": {
+    "weak": [
+      "zed",
+      "yasuo",
+      "jayce"
+    ],
+    "strong": [
+      "ryze",
+      "gragas",
+      "kennen",
+      "norra",
+      "vladimir",
+      "syndra",
+      "morgana",
+      "veigar",
+      "viktor",
+      "velkoz",
+      "lissandra",
+      "lux"
+    ]
+  },
+  "ryze": {
+    "weak": [
+      "kassadin",
+      "viktor",
+      "syndra",
+      "aatrox",
+      "yasuo",
+      "renekton"
+    ],
+    "strong": [
+      "kayle",
+      "teemo"
+    ]
+  },
+  "gragas": {
+    "weak": [
+      "galio",
+      "vex",
+      "kassadin",
+      "amumu",
+      "nocturne",
+      "lillia"
+    ],
+    "strong": []
+  },
+  "kennen": {
+    "weak": [
+      "gnar",
+      "nasus",
+      "wukong",
+      "kassadin",
+      "aurora",
+      "swain"
+    ],
+    "strong": []
+  },
+  "vi": {
+    "weak": [
+      "kindred",
+      "amumu",
+      "warwick"
+    ],
+    "strong": [
+      "lillia",
+      "riven"
+    ]
+  },
+  "ambessa": {
+    "weak": [
+      "renekton",
+      "malphite",
+      "irelia",
+      "rammus",
+      "poppy"
+    ],
+    "strong": [
+      "ksante",
+      "poppy",
+      "singed",
+      "aatrox",
+      "rumble",
+      "akali"
+    ]
+  },
+  "nasus": {
+    "weak": [
+      "garen",
+      "camille",
+      "wukong"
+    ],
+    "strong": [
+      "kennen",
+      "kayle",
+      "tryndamere",
+      "vladimir"
+    ]
+  },
+  "fizz": {
+    "weak": [
+      "galio",
+      "lissandra",
+      "vex",
+      "master-yi",
+      "riven",
+      "amumu"
+    ],
+    "strong": [
+      "smolder",
+      "velkoz",
+      "zyra"
+    ]
+  },
+  "nilah": {
+    "weak": [
+      "rammus",
+      "amumu",
+      "khazix"
+    ],
+    "strong": []
+  },
+  "kindred": {
+    "weak": [
+      "rammus",
+      "xin-zhao",
+      "lillia"
+    ],
+    "strong": [
+      "hecarim",
+      "olaf",
+      "khazix",
+      "warwick",
+      "zed",
+      "vi",
+      "rengar",
+      "ekko",
+      "yone",
+      "aatrox",
+      "diana",
+      "talon",
+      "volibear",
+      "kayn"
+    ]
+  },
+  "nautilus": {
+    "weak": [
+      "bard",
+      "janna",
+      "morgana",
+      "master-yi",
+      "xin-zhao",
+      "shyvana",
+      "irelia",
+      "renekton",
+      "dr-mundo"
+    ],
+    "strong": [
+      "senna",
+      "rakan",
+      "yuumi"
+    ]
+  },
+  "ezreal": {
+    "weak": [
+      "draven",
+      "miss-fortune",
+      "samira"
+    ],
+    "strong": [
+      "caitlyn"
+    ]
+  },
+  "rengar": {
+    "weak": [
+      "kindred",
+      "rammus",
+      "master-yi"
+    ],
+    "strong": [
+      "nidalee",
+      "evelynn",
+      "talon"
+    ]
+  },
+  "twisted-fate": {
+    "weak": [
+      "syndra",
+      "morgana",
+      "mel"
+    ],
+    "strong": [
+      "evelynn",
+      "akali"
+    ]
+  },
+  "zeri": {
+    "weak": [
+      "kogmaw",
+      "caitlyn",
+      "lucian"
+    ],
+    "strong": []
+  },
+  "lucian": {
+    "weak": [
+      "caitlyn",
+      "kogmaw",
+      "ashe"
+    ],
+    "strong": [
+      "smolder",
+      "zeri",
+      "jhin",
+      "ashe"
+    ]
+  },
+  "master-yi": {
+    "weak": [
+      "rammus",
+      "viego",
+      "evelynn"
+    ],
+    "strong": [
+      "hecarim",
+      "nidalee",
+      "shyvana",
+      "lillia",
+      "olaf",
+      "khazix",
+      "zed",
+      "fizz",
+      "nautilus",
+      "rengar",
+      "tryndamere",
+      "xin-zhao",
+      "poppy",
+      "morgana",
+      "diana",
+      "nocturne",
+      "jarvan-iv",
+      "kayn"
+    ]
+  },
+  "kaisa": {
+    "weak": [
+      "caitlyn",
+      "draven",
+      "kogmaw"
+    ],
+    "strong": []
+  },
+  "fiddlesticks": {
+    "weak": [
+      "nocturne",
+      "aatrox",
+      "alistar"
+    ],
+    "strong": []
+  },
+  "jinx": {
+    "weak": [
+      "jhin",
+      "miss-fortune",
+      "kogmaw"
+    ],
+    "strong": []
+  },
+  "orianna": {
+    "weak": [
+      "irelia",
+      "yasuo",
+      "syndra"
+    ],
+    "strong": [
+      "taliyah",
+      "vladimir",
+      "teemo",
+      "ahri",
+      "swain"
+    ]
+  },
+  "pyke": {
+    "weak": [
+      "braum",
+      "maokai",
+      "soraka"
+    ],
+    "strong": [
+      "senna",
+      "nami",
+      "sona",
+      "zilean",
+      "brand",
+      "karma",
+      "seraphine",
+      "lux"
+    ]
+  },
+  "lee-sin": {
+    "weak": [
+      "rammus",
+      "lillia",
+      "nocturne"
+    ],
+    "strong": [
+      "evelynn",
+      "camille",
+      "talon",
+      "riven"
+    ]
+  },
+  "kayle": {
+    "weak": [
+      "syndra",
+      "viktor",
+      "ryze",
+      "malphite",
+      "teemo",
+      "nasus"
+    ],
+    "strong": []
+  },
+  "tryndamere": {
+    "weak": [
+      "rammus",
+      "master-yi",
+      "amumu",
+      "malphite",
+      "teemo",
+      "nasus"
+    ],
+    "strong": [
+      "pantheon",
+      "olaf",
+      "gwen"
+    ]
+  },
+  "norra": {
+    "weak": [
+      "kassadin",
+      "zed",
+      "yasuo"
+    ],
+    "strong": []
+  },
+  "vladimir": {
+    "weak": [
+      "orianna",
+      "kassadin",
+      "viktor",
+      "nasus",
+      "aatrox",
+      "dr-mundo"
+    ],
+    "strong": [
+      "irelia"
+    ]
+  },
+  "sona": {
+    "weak": [
+      "blitzcrank",
+      "pyke",
+      "bard"
+    ],
+    "strong": [
+      "milio",
+      "janna"
+    ]
+  },
+  "xin-zhao": {
+    "weak": [
+      "rammus",
+      "shyvana",
+      "master-yi"
+    ],
+    "strong": [
+      "kindred",
+      "nautilus"
+    ]
+  },
+  "lulu": {
+    "weak": [
+      "blitzcrank",
+      "senna",
+      "bard"
+    ],
+    "strong": []
+  },
+  "syndra": {
+    "weak": [
+      "irelia",
+      "yasuo",
+      "kassadin"
+    ],
+    "strong": [
+      "taliyah",
+      "smolder",
+      "jayce",
+      "ryze",
+      "twisted-fate",
+      "orianna",
+      "kayle",
+      "annie",
+      "teemo",
+      "mel",
+      "ahri",
+      "swain",
+      "veigar",
+      "brand"
+    ]
+  },
+  "jax": {
+    "weak": [
+      "poppy",
+      "teemo",
+      "rumble"
+    ],
+    "strong": [
+      "warwick",
+      "volibear"
+    ]
+  },
+  "sett": {
+    "weak": [
+      "renekton",
+      "mordekaiser",
+      "aatrox"
+    ],
+    "strong": []
+  },
+  "aurelion-sol": {
+    "weak": [
+      "yone",
+      "zed",
+      "yasuo"
+    ],
+    "strong": []
+  },
+  "poppy": {
+    "weak": [
+      "ambessa",
+      "teemo",
+      "mordekaiser",
+      "master-yi",
+      "nocturne",
+      "rammus"
+    ],
+    "strong": [
+      "ambessa",
+      "jax",
+      "fiora",
+      "irelia"
+    ]
+  },
+  "gwen": {
+    "weak": [
+      "fiora",
+      "tryndamere",
+      "riven"
+    ],
+    "strong": [
+      "dr-mundo",
+      "sion",
+      "malphite"
+    ]
+  },
+  "yasuo": {
+    "weak": [
+      "teemo",
+      "vex",
+      "irelia",
+      "renekton",
+      "malphite",
+      "darius"
+    ],
+    "strong": [
+      "zed",
+      "kassadin",
+      "ryze",
+      "orianna",
+      "norra",
+      "syndra",
+      "aurelion-sol",
+      "zoe",
+      "heimerdinger",
+      "akshan",
+      "zyra",
+      "seraphine",
+      "lux",
+      "ziggs"
+    ]
+  },
+  "leona": {
+    "weak": [
+      "galio",
+      "morgana",
+      "janna"
+    ],
+    "strong": [
+      "maokai",
+      "blitzcrank"
+    ]
+  },
+  "corki": {
+    "weak": [
+      "kogmaw",
+      "miss-fortune",
+      "caitlyn"
+    ],
+    "strong": []
+  },
+  "ekko": {
+    "weak": [
+      "vex",
+      "irelia",
+      "lissandra",
+      "kindred",
+      "lillia",
+      "amumu"
+    ],
+    "strong": []
+  },
+  "soraka": {
+    "weak": [
+      "blitzcrank",
+      "nami",
+      "bard"
+    ],
+    "strong": [
+      "pyke",
+      "morgana"
+    ]
+  },
+  "galio": {
+    "weak": [
+      "morgana",
+      "ahri",
+      "swain",
+      "senna",
+      "nami",
+      "karma"
+    ],
+    "strong": [
+      "nidalee",
+      "jayce",
+      "gragas",
+      "fizz",
+      "leona",
+      "diana",
+      "irelia",
+      "vex",
+      "maokai",
+      "rakan",
+      "lissandra"
+    ]
+  },
+  "yone": {
+    "weak": [
+      "ahri",
+      "vex",
+      "zed",
+      "rammus",
+      "kindred",
+      "evelynn",
+      "renekton",
+      "malphite",
+      "teemo"
+    ],
+    "strong": [
+      "aurelion-sol",
+      "mel",
+      "viktor",
+      "velkoz",
+      "ziggs"
+    ]
+  },
+  "morgana": {
+    "weak": [
+      "soraka",
+      "karma",
+      "zyra",
+      "zed",
+      "ahri",
+      "kassadin",
+      "master-yi",
+      "nocturne"
+    ],
+    "strong": [
+      "nautilus",
+      "twisted-fate",
+      "leona",
+      "galio",
+      "zoe",
+      "lissandra",
+      "blitzcrank"
+    ]
+  },
+  "gnar": {
+    "weak": [
+      "irelia",
+      "malphite",
+      "ornn"
+    ],
+    "strong": [
+      "kennen",
+      "shen",
+      "maokai",
+      "renekton"
+    ]
+  },
+  "annie": {
+    "weak": [
+      "syndra",
+      "lissandra",
+      "viktor"
+    ],
+    "strong": []
+  },
+  "teemo": {
+    "weak": [
+      "ryze",
+      "rumble",
+      "wukong",
+      "orianna",
+      "syndra"
+    ],
+    "strong": [
+      "warwick",
+      "kayle",
+      "tryndamere",
+      "jax",
+      "poppy",
+      "yasuo",
+      "yone",
+      "volibear",
+      "renekton"
+    ]
+  },
+  "singed": {
+    "weak": [
+      "ambessa",
+      "fiora",
+      "camille"
+    ],
+    "strong": []
+  },
+  "zoe": {
+    "weak": [
+      "morgana",
+      "yasuo",
+      "irelia"
+    ],
+    "strong": []
+  },
+  "camille": {
+    "weak": [
+      "malphite",
+      "fiora",
+      "mordekaiser",
+      "lee-sin",
+      "viego",
+      "nidalee"
+    ],
+    "strong": [
+      "nasus",
+      "singed",
+      "ornn",
+      "maokai",
+      "garen"
+    ]
+  },
+  "mel": {
+    "weak": [
+      "irelia",
+      "yone",
+      "syndra"
+    ],
+    "strong": [
+      "twisted-fate"
+    ]
+  },
+  "ornn": {
+    "weak": [
+      "fiora",
+      "camille",
+      "shen",
+      "vayne",
+      "braum",
+      "varus"
+    ],
+    "strong": [
+      "jayce",
+      "gnar",
+      "rumble"
+    ]
+  },
+  "jhin": {
+    "weak": [
+      "draven",
+      "ashe",
+      "lucian"
+    ],
+    "strong": [
+      "jinx",
+      "miss-fortune"
+    ]
+  },
+  "aatrox": {
+    "weak": [
+      "fiora",
+      "irelia",
+      "ambessa",
+      "kindred",
+      "lillia",
+      "hecarim"
+    ],
+    "strong": [
+      "ryze",
+      "fiddlesticks",
+      "vladimir",
+      "sett",
+      "graves",
+      "akali"
+    ]
+  },
+  "fiora": {
+    "weak": [
+      "rumble",
+      "malphite",
+      "poppy"
+    ],
+    "strong": [
+      "olaf",
+      "gwen",
+      "singed",
+      "camille",
+      "ornn",
+      "aatrox",
+      "shen",
+      "mordekaiser",
+      "volibear",
+      "maokai",
+      "dr-mundo",
+      "urgot",
+      "sion"
+    ]
+  },
+  "ahri": {
+    "weak": [
+      "akali",
+      "syndra",
+      "orianna"
+    ],
+    "strong": [
+      "smolder",
+      "galio",
+      "yone",
+      "morgana"
+    ]
+  },
+  "heimerdinger": {
+    "weak": [
+      "zed",
+      "yasuo",
+      "irelia"
+    ],
+    "strong": []
+  },
+  "diana": {
+    "weak": [
+      "vex",
+      "galio",
+      "irelia",
+      "master-yi",
+      "kindred",
+      "mordekaiser"
+    ],
+    "strong": []
+  },
+  "talon": {
+    "weak": [
+      "irelia",
+      "renekton",
+      "malphite",
+      "rengar",
+      "kindred",
+      "lee-sin"
+    ],
+    "strong": []
+  },
+  "swain": {
+    "weak": [
+      "brand",
+      "syndra",
+      "orianna",
+      "zyra",
+      "lux"
+    ],
+    "strong": [
+      "kennen",
+      "galio"
+    ]
+  },
+  "riven": {
+    "weak": [
+      "renekton",
+      "darius",
+      "wukong",
+      "rammus",
+      "lee-sin",
+      "vi"
+    ],
+    "strong": [
+      "fizz",
+      "gwen",
+      "dr-mundo"
+    ]
+  },
+  "shen": {
+    "weak": [
+      "fiora",
+      "renekton",
+      "gnar"
+    ],
+    "strong": [
+      "ornn"
+    ]
+  },
+  "veigar": {
+    "weak": [
+      "syndra",
+      "viktor",
+      "kassadin"
+    ],
+    "strong": [
+      "vex",
+      "akali"
+    ]
+  },
+  "mordekaiser": {
+    "weak": [
+      "fiora",
+      "irelia",
+      "rumble"
+    ],
+    "strong": [
+      "sett",
+      "poppy",
+      "camille",
+      "diana",
+      "wukong",
+      "urgot",
+      "renekton",
+      "malphite"
+    ]
+  },
+  "nocturne": {
+    "weak": [
+      "rammus",
+      "master-yi",
+      "viego"
+    ],
+    "strong": [
+      "amumu",
+      "gragas",
+      "fiddlesticks",
+      "lee-sin",
+      "poppy",
+      "morgana"
+    ]
+  },
+  "milio": {
+    "weak": [
+      "blitzcrank",
+      "sona",
+      "bard"
+    ],
+    "strong": []
+  },
+  "irelia": {
+    "weak": [
+      "malphite",
+      "wukong",
+      "poppy",
+      "vladimir",
+      "vex",
+      "galio"
+    ],
+    "strong": [
+      "aurora",
+      "olaf",
+      "jayce",
+      "ambessa",
+      "nautilus",
+      "orianna",
+      "syndra",
+      "yasuo",
+      "ekko",
+      "gnar",
+      "zoe",
+      "mel",
+      "aatrox",
+      "heimerdinger",
+      "diana",
+      "talon",
+      "mordekaiser",
+      "akshan",
+      "zyra",
+      "seraphine",
+      "lux"
+    ]
+  },
+  "samira": {
+    "weak": [
+      "kogmaw",
+      "miss-fortune",
+      "caitlyn"
+    ],
+    "strong": [
+      "draven",
+      "ezreal",
+      "twitch"
+    ]
+  },
+  "volibear": {
+    "weak": [
+      "lillia",
+      "evelynn",
+      "kindred",
+      "fiora",
+      "teemo",
+      "jax"
+    ],
+    "strong": []
+  },
+  "ashe": {
+    "weak": [
+      "caitlyn",
+      "draven",
+      "lucian"
+    ],
+    "strong": [
+      "vayne",
+      "kogmaw",
+      "lucian",
+      "jhin",
+      "kalista",
+      "twitch",
+      "alistar"
+    ]
+  },
+  "zilean": {
+    "weak": [
+      "maokai",
+      "rell",
+      "pyke"
+    ],
+    "strong": [
+      "bard",
+      "braum"
+    ]
+  },
+  "darius": {
+    "weak": [
+      "wukong",
+      "malphite",
+      "jayce"
+    ],
+    "strong": [
+      "yasuo",
+      "riven"
+    ]
+  },
+  "brand": {
+    "weak": [
+      "syndra",
+      "zed",
+      "lux",
+      "braum",
+      "pyke",
+      "maokai"
+    ],
+    "strong": [
+      "swain"
+    ]
+  },
+  "kalista": {
+    "weak": [
+      "ashe",
+      "kogmaw",
+      "caitlyn"
+    ],
+    "strong": []
+  },
+  "vex": {
+    "weak": [
+      "lissandra",
+      "galio",
+      "veigar"
+    ],
+    "strong": [
+      "aurora",
+      "zed",
+      "gragas",
+      "fizz",
+      "yasuo",
+      "ekko",
+      "yone",
+      "diana",
+      "irelia",
+      "akshan",
+      "katarina"
+    ]
+  },
+  "bard": {
+    "weak": [
+      "nami",
+      "senna",
+      "zilean"
+    ],
+    "strong": [
+      "nautilus",
+      "sona",
+      "lulu",
+      "soraka",
+      "milio",
+      "karma",
+      "braum"
+    ]
+  },
+  "miss-fortune": {
+    "weak": [
+      "smolder",
+      "jhin",
+      "caitlyn"
+    ],
+    "strong": [
+      "ezreal",
+      "jinx",
+      "corki",
+      "samira",
+      "varus",
+      "caitlyn"
+    ]
+  },
+  "jarvan-iv": {
+    "weak": [
+      "rammus",
+      "master-yi",
+      "amumu"
+    ],
+    "strong": []
+  },
+  "maokai": {
+    "weak": [
+      "galio",
+      "braum",
+      "leona",
+      "fiora",
+      "camille",
+      "gnar"
+    ],
+    "strong": [
+      "pyke",
+      "zilean",
+      "brand"
+    ]
+  },
+  "viktor": {
+    "weak": [
+      "zed",
+      "yone",
+      "kassadin"
+    ],
+    "strong": [
+      "ryze",
+      "kayle",
+      "vladimir",
+      "annie",
+      "veigar"
+    ]
+  },
+  "varus": {
+    "weak": [
+      "smolder",
+      "miss-fortune",
+      "vayne"
+    ],
+    "strong": [
+      "ornn"
+    ]
+  },
+  "tristana": {
+    "weak": [
+      "kogmaw",
+      "caitlyn",
+      "draven"
+    ],
+    "strong": []
+  },
+  "velkoz": {
+    "weak": [
+      "yone",
+      "fizz",
+      "kassadin"
+    ],
+    "strong": []
+  },
+  "twitch": {
+    "weak": [
+      "ashe",
+      "samira",
+      "caitlyn"
+    ],
+    "strong": []
+  },
+  "dr-mundo": {
+    "weak": [
+      "riven",
+      "gwen",
+      "fiora"
+    ],
+    "strong": [
+      "nautilus",
+      "vladimir"
+    ]
+  },
+  "rakan": {
+    "weak": [
+      "galio",
+      "rell",
+      "nautilus"
+    ],
+    "strong": [
+      "zyra"
+    ]
+  },
+  "xayah": {
+    "weak": [
+      "caitlyn",
+      "vayne",
+      "kogmaw"
+    ],
+    "strong": []
+  },
+  "wukong": {
+    "weak": [
+      "rammus",
+      "lillia",
+      "warwick",
+      "malphite",
+      "mordekaiser",
+      "renekton"
+    ],
+    "strong": [
+      "kennen",
+      "nasus",
+      "teemo",
+      "riven",
+      "irelia",
+      "darius"
+    ]
+  },
+  "alistar": {
+    "weak": [
+      "janna",
+      "zyra",
+      "ashe"
+    ],
+    "strong": [
+      "fiddlesticks",
+      "rell",
+      "yuumi"
+    ]
+  },
+  "akshan": {
+    "weak": [
+      "yasuo",
+      "vex",
+      "irelia"
+    ],
+    "strong": []
+  },
+  "kayn": {
+    "weak": [
+      "master-yi",
+      "kindred",
+      "rammus"
+    ],
+    "strong": []
+  },
+  "lissandra": {
+    "weak": [
+      "morgana",
+      "kassadin",
+      "galio"
+    ],
+    "strong": [
+      "zed",
+      "fizz",
+      "ekko",
+      "annie",
+      "vex",
+      "katarina",
+      "akali"
+    ]
+  },
+  "urgot": {
+    "weak": [
+      "mordekaiser",
+      "fiora",
+      "vayne"
+    ],
+    "strong": []
+  },
+  "garen": {
+    "weak": [
+      "vayne",
+      "rumble",
+      "camille"
+    ],
+    "strong": [
+      "ksante",
+      "nasus"
+    ]
+  },
+  "renekton": {
+    "weak": [
+      "gnar",
+      "teemo",
+      "mordekaiser"
+    ],
+    "strong": [
+      "ryze",
+      "ambessa",
+      "nautilus",
+      "sett",
+      "yasuo",
+      "yone",
+      "talon",
+      "riven",
+      "shen",
+      "wukong",
+      "sion",
+      "rumble",
+      "akali"
+    ]
+  },
+  "rell": {
+    "weak": [
+      "janna",
+      "alistar",
+      "braum"
+    ],
+    "strong": [
+      "zilean",
+      "rakan"
+    ]
+  },
+  "karma": {
+    "weak": [
+      "pyke",
+      "nami",
+      "bard"
+    ],
+    "strong": [
+      "galio",
+      "morgana",
+      "zyra",
+      "lux"
+    ]
+  },
+  "graves": {
+    "weak": [
+      "rammus",
+      "amumu",
+      "aatrox"
+    ],
+    "strong": [
+      "hecarim"
+    ]
+  },
+  "katarina": {
+    "weak": [
+      "vex",
+      "zed",
+      "lissandra"
+    ],
+    "strong": []
+  },
+  "sion": {
+    "weak": [
+      "renekton",
+      "fiora",
+      "gwen"
+    ],
+    "strong": []
+  },
+  "zyra": {
+    "weak": [
+      "karma",
+      "rakan",
+      "nami",
+      "yasuo",
+      "fizz",
+      "irelia"
+    ],
+    "strong": [
+      "morgana",
+      "swain",
+      "alistar",
+      "thresh"
+    ]
+  },
+  "blitzcrank": {
+    "weak": [
+      "leona",
+      "braum",
+      "morgana"
+    ],
+    "strong": [
+      "senna",
+      "nami",
+      "sona",
+      "lulu",
+      "soraka",
+      "milio",
+      "seraphine",
+      "janna"
+    ]
+  },
+  "malphite": {
+    "weak": [
+      "rumble",
+      "mordekaiser",
+      "gwen"
+    ],
+    "strong": [
+      "jayce",
+      "ambessa",
+      "kayle",
+      "tryndamere",
+      "yasuo",
+      "yone",
+      "gnar",
+      "camille",
+      "fiora",
+      "talon",
+      "irelia",
+      "darius",
+      "wukong"
+    ]
+  },
+  "caitlyn": {
+    "weak": [
+      "sivir",
+      "ezreal",
+      "miss-fortune"
+    ],
+    "strong": [
+      "smolder",
+      "vayne",
+      "kogmaw",
+      "draven",
+      "zeri",
+      "lucian",
+      "kaisa",
+      "corki",
+      "samira",
+      "ashe",
+      "kalista",
+      "miss-fortune",
+      "tristana",
+      "twitch",
+      "xayah"
+    ]
+  },
+  "rumble": {
+    "weak": [
+      "renekton",
+      "ornn",
+      "ambessa"
+    ],
+    "strong": [
+      "jax",
+      "teemo",
+      "fiora",
+      "mordekaiser",
+      "garen",
+      "malphite"
+    ]
+  },
+  "seraphine": {
+    "weak": [
+      "pyke",
+      "braum",
+      "blitzcrank",
+      "yasuo",
+      "zed",
+      "irelia"
+    ],
+    "strong": []
+  },
+  "yuumi": {
+    "weak": [
+      "nautilus",
+      "thresh",
+      "alistar"
+    ],
+    "strong": []
+  },
+  "akali": {
+    "weak": [
+      "veigar",
+      "lissandra",
+      "twisted-fate",
+      "ambessa",
+      "renekton",
+      "aatrox"
+    ],
+    "strong": [
+      "ahri"
+    ]
+  },
+  "lux": {
+    "weak": [
+      "pyke",
+      "nami",
+      "karma",
+      "irelia",
+      "kassadin",
+      "yasuo"
+    ],
+    "strong": [
+      "swain",
+      "brand",
+      "thresh"
+    ]
+  },
+  "janna": {
+    "weak": [
+      "blitzcrank",
+      "senna",
+      "sona"
+    ],
+    "strong": [
+      "nautilus",
+      "leona",
+      "alistar",
+      "rell"
+    ]
+  },
+  "braum": {
+    "weak": [
+      "senna",
+      "bard",
+      "zilean"
+    ],
+    "strong": [
+      "nami",
+      "pyke",
+      "ornn",
+      "brand",
+      "maokai",
+      "rell",
+      "blitzcrank",
+      "seraphine"
+    ]
+  },
+  "ziggs": {
+    "weak": [
+      "yasuo",
+      "zed",
+      "yone"
+    ],
+    "strong": []
+  },
+  "sivir": {
+    "weak": [
+      "kogmaw",
+      "smolder",
+      "vayne"
+    ],
+    "strong": [
+      "caitlyn"
+    ]
+  },
+  "thresh": {
+    "weak": [
+      "zyra",
+      "nami",
+      "lux"
+    ],
+    "strong": [
+      "yuumi"
+    ]
+  }
+}

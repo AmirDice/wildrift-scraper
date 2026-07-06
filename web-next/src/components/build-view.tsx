@@ -87,8 +87,8 @@ function Runes({ build }: { build: Build }) {
 }
 
 const VARIANT_LABEL: Record<string, string> = {
-  balanced: "Balanced", damage: "⚡ Damage", oneshot: "⚡ One-shot", burst: "⚡ Burst",
-  crit: "Crit", tanky: "🛡 Tanky", battlemage: "Battlemage", utility: "Utility", poke: "Poke",
+  balanced: "Balanced", damage: "Damage", oneshot: "One-shot", burst: "Burst",
+  crit: "Crit", tanky: "Tanky", battlemage: "Battlemage", utility: "Utility", poke: "Poke",
 };
 const VARIANT_ACTIVE: Record<string, string> = {
   balanced: "bg-accent/20 text-accent", damage: "bg-bad/20 text-bad",

@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/tier-list", label: "Tier List" },
   { href: "/champions", label: "Champions" },
   { href: "/global", label: "Global" },
+  { href: "/compare", label: "Compare" },
   { href: "/build", label: "Builds", badge: "beta" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },

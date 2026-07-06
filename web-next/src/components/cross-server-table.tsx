@@ -24,6 +24,14 @@ const avg = (r: Row) => (r.euWr + r.cnWr) / 2;
 const gap = (r: Row) => Math.abs(r.euWr - r.cnWr);
 const bothStrong = (r: Row) => r.euWr >= 50 && r.cnWr >= 50;
 
+function Check({ className = "" }: { className?: string }) {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
 export function CrossServerTable({ rows, roles }: { rows: Row[]; roles: string[] }) {
   const [role, setRole] = useState("All roles");
   const [onlyBoth, setOnlyBoth] = useState(false);
@@ -71,11 +79,11 @@ export function CrossServerTable({ rows, roles }: { rows: Row[]; roles: string[]
         </div>
         <button
           onClick={() => setOnlyBoth((v) => !v)}
-          className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
+          className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
             onlyBoth ? "bg-emerald-400/20 text-emerald-300" : "glass glass-hover text-muted"
           }`}
         >
-          ✓ Strong on both
+          <Check /> Strong on both
         </button>
       </div>
 
@@ -130,7 +138,11 @@ export function CrossServerTable({ rows, roles }: { rows: Row[]; roles: string[]
                         className={`h-8 w-8 rounded-full object-cover ${r.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/10"}`}
                       />
                       <span className="font-medium">{r.name}</span>
-                      {both && <span className="text-emerald-300" title="Strong on both servers">✓</span>}
+                      {both && (
+                        <span className="text-emerald-300" title="Strong on both servers">
+                          <Check />
+                        </span>
+                      )}
                     </Link>
                   </td>
                   <td className="px-3 py-2.5 text-muted">{r.role}</td>

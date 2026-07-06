@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getChampion, getChampions, championsInRole, tierText } from "@/lib/data";
+import { getChampion, getChampions, championsInRole, tierText, type Champion } from "@/lib/data";
 import { getCnBySlug } from "@/lib/cn";
+import { getMatchups } from "@/lib/counters";
 import { Container, TierChip, ChampionAvatar, Card } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -32,6 +33,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   if (!c) notFound();
 
   const cn = getCnBySlug(c.slug);
+  const { strong, weak } = getMatchups(c.slug);
 
   const related = championsInRole(c.role)
     .filter((x) => x.slug !== c.slug)
@@ -107,6 +109,14 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           </p>
         </Card>
 
+        {/* Strong / weak against */}
+        {(strong.length > 0 || weak.length > 0) && (
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <Matchups title={`${c.name} is strong against`} accent="text-accent" champions={strong} />
+            <Matchups title={`${c.name} is weak against`} accent="text-bad" champions={weak} />
+          </div>
+        )}
+
         {/* Win rate by region */}
         <Card className="mt-6 p-6">
           <h2 className="text-lg font-semibold">Win rate by region</h2>
@@ -174,6 +184,40 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         )}
       </Container>
     </>
+  );
+}
+
+function Matchups({
+  title,
+  accent,
+  champions,
+}: {
+  title: string;
+  accent: string;
+  champions: Champion[];
+}) {
+  return (
+    <Card className="p-5">
+      <h2 className={`text-sm font-semibold ${accent}`}>{title}</h2>
+      {champions.length === 0 ? (
+        <p className="mt-3 text-sm text-muted">No clear matchups tracked yet.</p>
+      ) : (
+        <div className="mt-3 flex flex-wrap gap-3">
+          {champions.slice(0, 8).map((m) => (
+            <Link
+              key={m.slug}
+              href={`/champions/${m.slug}`}
+              className="group flex w-[52px] flex-col items-center gap-1 text-center"
+            >
+              <ChampionAvatar champion={m} size={44} showBadges={false} />
+              <span className="w-full truncate text-[0.65rem] text-muted transition group-hover:text-text">
+                {m.name}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </Card>
   );
 }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { site, getChampions } from "@/lib/data";
 import { getCnChampions, cnRoles, CN_META } from "@/lib/cn";
 import { Container } from "@/components/ui";
@@ -15,7 +16,20 @@ export default function TierListPage() {
   const champions = getChampions();
   return (
     <Container className="py-12">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Tier List</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Tier List</h1>
+        <Link
+          href="/consistency"
+          className="glass glass-hover inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium text-accent"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <rect x="3" y="12" width="4" height="8" rx="1" />
+            <rect x="10" y="7" width="4" height="13" rx="1" />
+            <rect x="17" y="3" width="4" height="17" rx="1" />
+          </svg>
+          Consistency chart
+        </Link>
+      </div>
       <p className="mt-2 max-w-2xl text-muted">
         Champions ranked by the confidence-adjusted win rate of their top 50 players. Filter by
         role for role-specific tiers.

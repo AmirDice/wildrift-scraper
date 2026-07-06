@@ -145,6 +145,22 @@ def main() -> None:
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)} ({len(champs)} champions, date {date})")
 
+    # dated snapshot (highest bracket) for patch-over-patch history
+    from datetime import datetime as _dt
+    snap_date = (_dt.strptime(date, "%Y%m%d").date().isoformat()
+                 if date and len(date) == 8 and date.isdigit() else (date or "unknown"))
+    hist = ROOT / "data" / "history" / "cn"
+    hist.mkdir(parents=True, exist_ok=True)
+    snap_champs = {}
+    for c in champs.values():
+        e = c["byBracket"].get(DEFAULT_BRACKET)
+        if e:
+            snap_champs[c["slug"]] = {"wr": e["winRate"], "pick": e["pickRate"], "ban": e["banRate"]}
+    (hist / f"{snap_date}.json").write_text(
+        json.dumps({"date": snap_date, "region": "cn", "champions": snap_champs},
+                   ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"  snapshot: data/history/cn/{snap_date}.json ({len(snap_champs)} champions)")
+
 
 if __name__ == "__main__":
     main()

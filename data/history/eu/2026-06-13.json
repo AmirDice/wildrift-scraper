@@ -1,0 +1,558 @@
+{
+  "date": "2026-06-13",
+  "region": "eu",
+  "champions": {
+    "hecarim": {
+      "wr": 64.2,
+      "tier": "GOD"
+    },
+    "taliyah": {
+      "wr": 63.7,
+      "tier": "GOD"
+    },
+    "nidalee": {
+      "wr": 63.6,
+      "tier": "GOD"
+    },
+    "amumu": {
+      "wr": 63.0,
+      "tier": "S"
+    },
+    "shyvana": {
+      "wr": 62.9,
+      "tier": "S"
+    },
+    "pantheon": {
+      "wr": 62.4,
+      "tier": "S"
+    },
+    "ksante": {
+      "wr": 62.2,
+      "tier": "S"
+    },
+    "rammus": {
+      "wr": 62.0,
+      "tier": "S"
+    },
+    "lillia": {
+      "wr": 61.5,
+      "tier": "S"
+    },
+    "smolder": {
+      "wr": 61.4,
+      "tier": "S"
+    },
+    "aurora": {
+      "wr": 61.4,
+      "tier": "S"
+    },
+    "olaf": {
+      "wr": 61.4,
+      "tier": "S"
+    },
+    "senna": {
+      "wr": 61.1,
+      "tier": "S"
+    },
+    "viego": {
+      "wr": 61.1,
+      "tier": "S"
+    },
+    "khazix": {
+      "wr": 60.7,
+      "tier": "A"
+    },
+    "evelynn": {
+      "wr": 60.6,
+      "tier": "A"
+    },
+    "vayne": {
+      "wr": 60.5,
+      "tier": "A"
+    },
+    "warwick": {
+      "wr": 60.4,
+      "tier": "A"
+    },
+    "nami": {
+      "wr": 60.4,
+      "tier": "A"
+    },
+    "kogmaw": {
+      "wr": 60.2,
+      "tier": "A"
+    },
+    "draven": {
+      "wr": 60.2,
+      "tier": "A"
+    },
+    "jayce": {
+      "wr": 60.2,
+      "tier": "A"
+    },
+    "nunu-and-willump": {
+      "wr": 60.1,
+      "tier": "A"
+    },
+    "zed": {
+      "wr": 60.1,
+      "tier": "A"
+    },
+    "kassadin": {
+      "wr": 60.0,
+      "tier": "A"
+    },
+    "ryze": {
+      "wr": 59.8,
+      "tier": "A"
+    },
+    "gragas": {
+      "wr": 59.7,
+      "tier": "A"
+    },
+    "kennen": {
+      "wr": 59.7,
+      "tier": "A"
+    },
+    "vi": {
+      "wr": 59.7,
+      "tier": "A"
+    },
+    "ambessa": {
+      "wr": 59.6,
+      "tier": "A"
+    },
+    "nasus": {
+      "wr": 59.6,
+      "tier": "A"
+    },
+    "fizz": {
+      "wr": 59.6,
+      "tier": "A"
+    },
+    "nilah": {
+      "wr": 59.6,
+      "tier": "A"
+    },
+    "kindred": {
+      "wr": 59.6,
+      "tier": "A"
+    },
+    "nautilus": {
+      "wr": 59.6,
+      "tier": "A"
+    },
+    "ezreal": {
+      "wr": 59.5,
+      "tier": "A"
+    },
+    "rengar": {
+      "wr": 59.5,
+      "tier": "A"
+    },
+    "twisted-fate": {
+      "wr": 59.4,
+      "tier": "A"
+    },
+    "zeri": {
+      "wr": 59.3,
+      "tier": "A"
+    },
+    "lucian": {
+      "wr": 59.3,
+      "tier": "A"
+    },
+    "master-yi": {
+      "wr": 59.2,
+      "tier": "A"
+    },
+    "kaisa": {
+      "wr": 59.2,
+      "tier": "A"
+    },
+    "fiddlesticks": {
+      "wr": 59.0,
+      "tier": "B"
+    },
+    "jinx": {
+      "wr": 58.9,
+      "tier": "B"
+    },
+    "orianna": {
+      "wr": 58.8,
+      "tier": "B"
+    },
+    "pyke": {
+      "wr": 58.8,
+      "tier": "B"
+    },
+    "lee-sin": {
+      "wr": 58.8,
+      "tier": "B"
+    },
+    "kayle": {
+      "wr": 58.7,
+      "tier": "B"
+    },
+    "tryndamere": {
+      "wr": 58.7,
+      "tier": "B"
+    },
+    "norra": {
+      "wr": 58.7,
+      "tier": "B"
+    },
+    "vladimir": {
+      "wr": 58.6,
+      "tier": "B"
+    },
+    "sona": {
+      "wr": 58.6,
+      "tier": "B"
+    },
+    "xin-zhao": {
+      "wr": 58.5,
+      "tier": "B"
+    },
+    "lulu": {
+      "wr": 58.5,
+      "tier": "B"
+    },
+    "syndra": {
+      "wr": 58.5,
+      "tier": "B"
+    },
+    "jax": {
+      "wr": 58.4,
+      "tier": "B"
+    },
+    "sett": {
+      "wr": 58.4,
+      "tier": "B"
+    },
+    "aurelion-sol": {
+      "wr": 58.4,
+      "tier": "B"
+    },
+    "poppy": {
+      "wr": 58.4,
+      "tier": "B"
+    },
+    "gwen": {
+      "wr": 58.4,
+      "tier": "B"
+    },
+    "yasuo": {
+      "wr": 58.3,
+      "tier": "B"
+    },
+    "leona": {
+      "wr": 58.3,
+      "tier": "B"
+    },
+    "corki": {
+      "wr": 58.3,
+      "tier": "B"
+    },
+    "ekko": {
+      "wr": 58.3,
+      "tier": "B"
+    },
+    "soraka": {
+      "wr": 58.2,
+      "tier": "B"
+    },
+    "galio": {
+      "wr": 58.1,
+      "tier": "B"
+    },
+    "yone": {
+      "wr": 58.1,
+      "tier": "B"
+    },
+    "morgana": {
+      "wr": 58.1,
+      "tier": "B"
+    },
+    "gnar": {
+      "wr": 58.1,
+      "tier": "B"
+    },
+    "annie": {
+      "wr": 58.0,
+      "tier": "B"
+    },
+    "teemo": {
+      "wr": 58.0,
+      "tier": "B"
+    },
+    "singed": {
+      "wr": 58.0,
+      "tier": "B"
+    },
+    "zoe": {
+      "wr": 58.0,
+      "tier": "B"
+    },
+    "camille": {
+      "wr": 57.9,
+      "tier": "B"
+    },
+    "mel": {
+      "wr": 57.9,
+      "tier": "B"
+    },
+    "ornn": {
+      "wr": 57.9,
+      "tier": "B"
+    },
+    "jhin": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "aatrox": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "fiora": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "ahri": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "heimerdinger": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "diana": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "talon": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "swain": {
+      "wr": 57.8,
+      "tier": "B"
+    },
+    "riven": {
+      "wr": 57.7,
+      "tier": "B"
+    },
+    "shen": {
+      "wr": 57.6,
+      "tier": "B"
+    },
+    "veigar": {
+      "wr": 57.6,
+      "tier": "B"
+    },
+    "mordekaiser": {
+      "wr": 57.6,
+      "tier": "B"
+    },
+    "nocturne": {
+      "wr": 57.6,
+      "tier": "B"
+    },
+    "milio": {
+      "wr": 57.6,
+      "tier": "B"
+    },
+    "irelia": {
+      "wr": 57.5,
+      "tier": "B"
+    },
+    "samira": {
+      "wr": 57.5,
+      "tier": "B"
+    },
+    "volibear": {
+      "wr": 57.4,
+      "tier": "B"
+    },
+    "ashe": {
+      "wr": 57.4,
+      "tier": "B"
+    },
+    "zilean": {
+      "wr": 57.3,
+      "tier": "B"
+    },
+    "darius": {
+      "wr": 57.3,
+      "tier": "B"
+    },
+    "brand": {
+      "wr": 57.2,
+      "tier": "B"
+    },
+    "kalista": {
+      "wr": 57.2,
+      "tier": "B"
+    },
+    "vex": {
+      "wr": 57.0,
+      "tier": "B"
+    },
+    "bard": {
+      "wr": 57.0,
+      "tier": "C"
+    },
+    "miss-fortune": {
+      "wr": 56.9,
+      "tier": "C"
+    },
+    "jarvan-iv": {
+      "wr": 56.9,
+      "tier": "C"
+    },
+    "maokai": {
+      "wr": 56.9,
+      "tier": "C"
+    },
+    "viktor": {
+      "wr": 56.8,
+      "tier": "C"
+    },
+    "varus": {
+      "wr": 56.8,
+      "tier": "C"
+    },
+    "tristana": {
+      "wr": 56.8,
+      "tier": "C"
+    },
+    "velkoz": {
+      "wr": 56.8,
+      "tier": "C"
+    },
+    "twitch": {
+      "wr": 56.6,
+      "tier": "C"
+    },
+    "dr-mundo": {
+      "wr": 56.5,
+      "tier": "C"
+    },
+    "rakan": {
+      "wr": 56.5,
+      "tier": "C"
+    },
+    "xayah": {
+      "wr": 56.5,
+      "tier": "C"
+    },
+    "wukong": {
+      "wr": 56.4,
+      "tier": "C"
+    },
+    "alistar": {
+      "wr": 56.4,
+      "tier": "C"
+    },
+    "akshan": {
+      "wr": 56.4,
+      "tier": "C"
+    },
+    "kayn": {
+      "wr": 56.3,
+      "tier": "C"
+    },
+    "lissandra": {
+      "wr": 56.3,
+      "tier": "C"
+    },
+    "urgot": {
+      "wr": 56.3,
+      "tier": "C"
+    },
+    "garen": {
+      "wr": 56.3,
+      "tier": "C"
+    },
+    "renekton": {
+      "wr": 56.3,
+      "tier": "C"
+    },
+    "rell": {
+      "wr": 56.1,
+      "tier": "C"
+    },
+    "karma": {
+      "wr": 56.1,
+      "tier": "C"
+    },
+    "graves": {
+      "wr": 56.0,
+      "tier": "C"
+    },
+    "katarina": {
+      "wr": 56.0,
+      "tier": "C"
+    },
+    "sion": {
+      "wr": 56.0,
+      "tier": "C"
+    },
+    "zyra": {
+      "wr": 56.0,
+      "tier": "C"
+    },
+    "blitzcrank": {
+      "wr": 56.0,
+      "tier": "Ass"
+    },
+    "malphite": {
+      "wr": 56.0,
+      "tier": "Ass"
+    },
+    "caitlyn": {
+      "wr": 55.9,
+      "tier": "Ass"
+    },
+    "rumble": {
+      "wr": 55.7,
+      "tier": "Ass"
+    },
+    "seraphine": {
+      "wr": 55.7,
+      "tier": "Ass"
+    },
+    "yuumi": {
+      "wr": 55.7,
+      "tier": "Ass"
+    },
+    "akali": {
+      "wr": 55.7,
+      "tier": "Ass"
+    },
+    "lux": {
+      "wr": 55.5,
+      "tier": "Ass"
+    },
+    "janna": {
+      "wr": 55.4,
+      "tier": "Ass"
+    },
+    "braum": {
+      "wr": 55.3,
+      "tier": "Ass"
+    },
+    "ziggs": {
+      "wr": 55.2,
+      "tier": "Ass"
+    },
+    "sivir": {
+      "wr": 55.2,
+      "tier": "Ass"
+    },
+    "thresh": {
+      "wr": 54.7,
+      "tier": "Ass"
+    }
+  }
+}
