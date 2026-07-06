@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { site, getChampions } from "@/lib/data";
+import { getCnChampions, cnRoles, CN_META } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 
@@ -25,8 +26,8 @@ export default function TierListPage() {
 
       <div className="mt-5 grid gap-2 sm:grid-cols-2">
         <Notice>
-          Every win rate is above 50% — these are each champion&rsquo;s <strong className="text-text">top-50 mains</strong>.
-          Read the gap between champions, not the raw number.
+          Win rates are shown <strong className="text-text">relative to the average champion</strong> (50% = average),
+          since these are each champion&rsquo;s top-50 mains. Read the gap between champions.
         </Notice>
         <Notice>
           A higher win rate means that champion&rsquo;s average top player <strong className="text-text">carries more games</strong> —
@@ -35,7 +36,13 @@ export default function TierListPage() {
       </div>
 
       <div className="mt-8">
-        <TierListView champions={champions} roles={site.roles} />
+        <TierListView
+          champions={champions}
+          roles={site.roles}
+          cnChampions={getCnChampions()}
+          cnRoles={cnRoles()}
+          cnMeta={CN_META}
+        />
       </div>
     </Container>
   );

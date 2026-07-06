@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { TierChip } from "@/components/ui";
 import { ChampionCombobox } from "@/components/champion-combobox";
+import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 
 export type SlimChampion = {
   name: string;
@@ -32,6 +33,7 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
   const [data, setData] = useState<Record<string, Row[]> | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("r");
   const [dir, setDir] = useState<"asc" | "desc">("asc");
+  const [region, setRegion] = useState<Region>("EU");
 
   useEffect(() => {
     const param = new URLSearchParams(window.location.search).get("champion");
@@ -67,6 +69,15 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
 
   return (
     <div>
+      {/* Region — CN has no per-player leaderboard data, so only EU / NA here */}
+      <div className="mb-5">
+        <RegionToggle region={region} onChange={setRegion} regions={["EU", "NA"] as const} />
+      </div>
+
+      {region !== "EU" ? (
+        <RegionComingSoon region={region} />
+      ) : (
+      <>
       {/* Champion search */}
       <div className="mb-5 sm:max-w-sm">
         <ChampionCombobox
@@ -183,6 +194,8 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
             </tbody>
           </table>
         </div>
+      )}
+      </>
       )}
     </div>
   );

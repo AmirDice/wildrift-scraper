@@ -1,0 +1,20 @@
+{
+  "_note": "Damage-relevant numeric models of runes, from data/runes.json descriptions. levelRange [lo,hi] interpolates over levels 1->15. bonusAd folds into total AD; burstProc = one-time damage in the combo (flat + adRatio*bonusAD + apRatio*AP); onHit = per-auto bonus; ampPct = % combo damage amp. PoC scope: Graves-relevant runes.",
+  "keystones": {
+    "Electrocute":  {"burstProc": {"baseRange": [40, 194], "adRatio": 0.35, "apRatio": 0.20, "type": "physical"}},
+    "Conqueror":    {"bonusAdPerStackRange": [3, 7], "burstStacks": 3, "fullStacks": 6, "adaptive": true},
+    "Dark Harvest": {"burstProc": {"flat": 40, "type": "physical", "condition": "targetBelow50"}},
+    "First Strike": {"ampPct": 0.07, "ampType": "true"}
+  },
+  "minors": {
+    "Brutal":            {"onHit": {"flat": 6, "adRatio": 0.08, "type": "physical"}},
+    "Sudden Impact":     {"burstProc": {"baseRange": [10, 80], "type": "true"}},
+    "Eyeball Collector": {"bonusAdAtStacks": 16},
+    "Absolute Focus":    {"bonusAdRange": [2, 20], "requiresHealthy": true},
+    "Coup de Grace":     {"ampPct": 0.08, "note": "vs targets <40% HP (approx: applied to kill combo)"},
+    "Last Stand":        {"ampSelfLowPct": 0.09, "note": "only when YOU are <60% HP — 0 for burst-from-full"},
+    "Relentless Hunter": {},
+    "Triumph":           {},
+    "Legend: Bloodline": {}
+  }
+}

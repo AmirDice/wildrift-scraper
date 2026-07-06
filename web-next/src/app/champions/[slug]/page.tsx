@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getChampion, getChampions, championsInRole, tierText } from "@/lib/data";
+import { getCnBySlug } from "@/lib/cn";
 import { Container, TierChip, ChampionAvatar, Card } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -29,6 +30,8 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const { slug } = await props.params;
   const c = getChampion(slug);
   if (!c) notFound();
+
+  const cn = getCnBySlug(c.slug);
 
   const related = championsInRole(c.role)
     .filter((x) => x.slug !== c.slug)
@@ -91,15 +94,38 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           <h2 className="text-lg font-semibold">{c.name} win rate &amp; tier</h2>
           <p className="mt-2 text-muted">
             {c.name} is currently <span className="font-medium text-text">{c.tier} tier</span> in
-            EU Wild Rift, with a games-weighted win rate of{" "}
-            <span className="font-medium text-accent">{c.wr.toFixed(1)}%</span> across the top 50
-            players. The highest-WR top-50 player sits at{" "}
+            EU Wild Rift. Its win rate is shown{" "}
+            <span className="font-medium text-text">relative to the average champion</span> (50% =
+            average), currently{" "}
+            <span className="font-medium text-accent">{c.wr.toFixed(1)}%</span> — these are each
+            champion&rsquo;s top-50 mains, so we centre the scale to make the gap between champions
+            readable. The best {c.name} main still peaks at{" "}
             <span className="font-medium text-gold">
               {c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "—"}
-            </span>
-            . These are elite specialists, so every win rate is above 50% — the signal is the gap
-            between champions, not the absolute number.
+            </span>{" "}
+            (a real win rate).
           </p>
+        </Card>
+
+        {/* Win rate by region */}
+        <Card className="mt-6 p-6">
+          <h2 className="text-lg font-semibold">Win rate by region</h2>
+          <p className="mt-1 text-sm text-muted">
+            Same 50%-centred scale across servers, so you can compare regions directly.
+          </p>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <RegionStat label="EU" wr={c.wr} sub={`${c.tier} tier · top 50`} />
+            {cn ? (
+              <RegionStat
+                label="CN"
+                wr={cn.wr}
+                sub={`${cn.role} · ${cn.cnPickRate.toFixed(1)}% pick · Apex`}
+              />
+            ) : (
+              <RegionStat label="CN" />
+            )}
+            <RegionStat label="NA" />
+          </div>
         </Card>
 
         {/* Best player */}
@@ -148,5 +174,25 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         )}
       </Container>
     </>
+  );
+}
+
+function RegionStat({ label, wr, sub }: { label: string; wr?: number; sub?: string }) {
+  if (wr == null) {
+    return (
+      <div className="glass rounded-xl p-4 text-center">
+        <div className="text-xs font-bold uppercase tracking-wide text-faint">{label}</div>
+        <div className="mt-2 text-sm text-faint">soon</div>
+      </div>
+    );
+  }
+  return (
+    <div className="glass rounded-xl p-4 text-center">
+      <div className="text-xs font-bold uppercase tracking-wide text-faint">{label}</div>
+      <div className={`mt-1.5 text-2xl font-semibold ${wr >= 50 ? "text-accent" : "text-muted"}`}>
+        {wr.toFixed(1)}%
+      </div>
+      {sub && <div className="mt-0.5 text-[0.7rem] leading-tight text-muted">{sub}</div>}
+    </div>
   );
 }

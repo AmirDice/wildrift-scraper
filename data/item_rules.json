@@ -1,0 +1,16 @@
+{
+  "_note": "Wild Rift item build-legality rules. mutexGroups: you may build AT MOST ONE item from each group. Since Patch 7.0, items sharing a named UNIQUE passive (or in a listed incompatible group) are HARD mutually-exclusive in-game — you cannot equip two. Groups below are (a) derived from shared 'UNIQUE - <NAME>' tags in data/items.json and (b) confirmed by the official Patch 7.0 notes. slots: a champion has 6 item slots, one of which is Boots (which holds one Enchantment).",
+  "_sources": [
+    "Patch 7.0 notes: items with the same named passive / listed incompatible combos are mutually exclusive (Spellblade, Lifeline, mana line, etc.)",
+    "Derived from UNIQUE passive names in our scraped item text",
+    "Armor-penetration group confirmed by player (in-game)"
+  ],
+  "slots": {"items": 5, "boots": 1, "enchantment": 1},
+  "mutexGroups": {
+    "armor-penetration": ["seryldas-grudge", "lord-dominiks-regard", "black-cleaver", "mortal-reminder"],
+    "spellblade":        ["trinity-force", "lich-bane", "divine-sunderer", "essence-reaver", "iceborn-gauntlet"],
+    "lifeline":          ["steraks-gage", "mantle-of-the-twelfth-hour", "maw-of-malmortius"],
+    "mana-awe":          ["manamune", "archangels-staff", "winters-approach"],
+    "momentum":          ["youmuus-ghostblade", "dead-mans-plate"]
+  }
+}

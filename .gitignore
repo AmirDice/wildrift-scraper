@@ -18,3 +18,6 @@ data/*.csv.bak
 # Dev scratch — screenshots and one-off images used while building the app.
 # Real production assets live under static/ (served by Streamlit).
 images/
+
+# scraper raw-HTML cache
+data/wrf_cache/

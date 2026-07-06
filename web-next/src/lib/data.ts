@@ -83,6 +83,8 @@ export interface Site {
   roles: string[];
   nChampions: number;
   nPlayers: number;
+  /** Champion win rates are shifted by this so the pool average reads 50%. */
+  wrOffset: number;
   champions: Champion[];
   metaBreakdown: MetaClass[];
   winrateByDifficulty: DiffBucket[];

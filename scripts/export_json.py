@@ -205,11 +205,27 @@ def build() -> dict:
         if len(top_mastery) >= 8:
             break
 
+    # Center the champion win-rate figures on 50% (relative to the pool average).
+    # These are each champion's top-50 mains, so raw win rates all sit above 50%
+    # and people keep asking why. A constant shift keeps every tier, ordering and
+    # gap identical while making the numbers read like a normal tier list.
+    # Player-level metrics (best player, top mastery, the leaderboard) stay raw —
+    # those are explicit "this player's actual record" contexts.
+    # Shift only the champion *average* (wr, meanWr). maxWr is the ceiling — a
+    # single best player's real win rate — and stays raw like the best-player stat.
+    valid = [c["wr"] for c in champions if c["wr"] is not None]
+    wr_offset = round(50 - sum(valid) / len(valid), 1) if valid else 0.0
+    for c in champions:
+        for k in ("wr", "meanWr"):
+            if c.get(k) is not None:
+                c[k] = round(c[k] + wr_offset, 1)
+
     return {
         "collectedOn": data_collected_on(df),
         "roles": list(ROLES),
         "nChampions": len(champions),
         "nPlayers": int(len(df)),
+        "wrOffset": wr_offset,
         "champions": champions,
         "metaBreakdown": meta,
         "winrateByDifficulty": by_diff,

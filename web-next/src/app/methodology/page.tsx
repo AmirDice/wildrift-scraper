@@ -21,12 +21,15 @@ export default function MethodologyPage() {
       </p>
 
       <div className="mt-8 flex max-w-3xl flex-col gap-5">
-        <Section title="Why every win rate is above 50%">
+        <Section title="Win rate shown relative to the average champion">
           We read the <strong className="text-text">top 50 players</strong> of each champion
-          straight from the in-game leaderboard. These are mains at the highest level, so none of
-          them has a losing record on the champion. The useful signal is the{" "}
-          <strong className="text-text">gap between champions</strong>, not the raw number — a
-          champion at 64% is meaningfully stronger at the top than one at 56%.
+          straight from the in-game leaderboard. These are mains at the highest level, so the raw
+          win rates all sit above 50% — which reads oddly on a tier list. So we{" "}
+          <strong className="text-text">centre the scale</strong>: the pool average becomes 50%, and
+          a champion above or below that is above or below the average champion. Nothing about the
+          ranking changes — it&rsquo;s a constant shift that just makes the{" "}
+          <strong className="text-text">gap between champions</strong> easy to read. (A champion&rsquo;s
+          best individual main, shown as the ceiling, stays a real win rate.)
         </Section>
 
         <Section title="Confidence-adjusted win rate (Bayesian shrinkage)">

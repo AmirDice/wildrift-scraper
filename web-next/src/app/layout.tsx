@@ -7,32 +7,32 @@ import { Analytics } from "@vercel/analytics/next";
 export const metadata: Metadata = {
   metadataBase: new URL("https://wrtruemeta.com"),
   title: {
-    default: "WrTrueMeta — Wildrift Tier List, Win Rates & Meta Tracker",
+    default: "WrTrueMeta — Wild Rift Tier List, Win Rates & Meta Tracker",
     template: "%s | WrTrueMeta",
   },
   description:
-    "Real League of Legends Wildrift win rates from the top 50 players on every champion. Tier list, leaderboards, best players, role & class meta — updated twice a month.",
+    "Real League of Legends Wild Rift win rates from the top 50 players on every champion. Tier list, leaderboards, best players, role & class meta — updated twice a month.",
   keywords: [
-    "Wildrift tier list",
     "Wild Rift tier list",
-    "League of Legends Wildrift",
-    "Wildrift meta",
-    "Wildrift win rates",
-    "Wildrift champions",
+    "Wild Rift tier list",
+    "League of Legends Wild Rift",
+    "Wild Rift meta",
+    "Wild Rift win rates",
+    "Wild Rift champions",
   ],
   openGraph: {
     type: "website",
     siteName: "WrTrueMeta",
     url: "https://wrtruemeta.com",
-    title: "WrTrueMeta — Wildrift Tier List, Win Rates & Meta Tracker",
+    title: "WrTrueMeta — Wild Rift Tier List, Win Rates & Meta Tracker",
     description:
-      "Real League of Legends Wildrift win rates from the top 50 players on every champion.",
+      "Real League of Legends Wild Rift win rates from the top 50 players on every champion.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WrTrueMeta — Wildrift Tier List & Meta Tracker",
+    title: "WrTrueMeta — Wild Rift Tier List & Meta Tracker",
     description:
-      "Real Wildrift win rates from the top 50 players of every champion.",
+      "Real Wild Rift win rates from the top 50 players of every champion.",
   },
   robots: { index: true, follow: true },
 };

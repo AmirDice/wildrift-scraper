@@ -1,0 +1,2645 @@
+[
+  {
+    "id": 44,
+    "slug": "abyssal-mask",
+    "name": "Abyssal Mask",
+    "category": "Defense",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 55.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNMAKE: Curse enemy champions within 600 units, reducing their magic resist by 5 + 1.2% Bonus Health, up to 25. For each enemy champion cursed, gain 9 bonus Magic Resist."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/abyssal-mask.png"
+  },
+  {
+    "id": 46,
+    "slug": "archangels-staff",
+    "name": "Archangel's Staff",
+    "category": "Magic",
+    "cost": 3000,
+    "stats": {
+      "mana": {
+        "value": 500.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 35.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - AWE: Grants bonus Ability Power equal to 1% maximum mana. Refunds 25% of mana spent. UNIQUE - MANA CHARGE: Grants a charge every 3.3 seconds, up to 3 charges. Each mana expenditure consumes a charge and grants +18 mana, up to a maximum of 700 mana. Transforms into Seraph's Embrace at +700 Mana. Limited to 1 AWE item."
+    ],
+    "tags": [
+      "mana"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/archangels-staff.png"
+  },
+  {
+    "id": 47,
+    "slug": "ardent-censer",
+    "name": "Ardent Censer",
+    "category": "Support",
+    "cost": 2700,
+    "stats": {
+      "hp": {
+        "value": 250.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 35.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "- 50% Mana Regen UNIQUE - CENSER: When you heal or shield an allied champion other than yourself, their attacks deal 16~30 bonus magic damage for 6s. This damage can Critically Strike."
+    ],
+    "tags": [
+      "mana",
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/ardent-censer.png"
+  },
+  {
+    "id": 49,
+    "slug": "awakened-soulstealer",
+    "name": "Awakened Soulstealer",
+    "category": "Magic",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 150.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 65.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "Unique Passive - Soul Hunt: +15 magical penetration Unique Passive - Wandering Soul: Every time you take down an enemy champion within 3 seconds of damaging them, your ability cooldowns are reduced by 25%. You steal 10% of their base Movement Speed for 10 seconds and 50% of their Ability Haste until they respawn. Ability Haste stolen this way stacks."
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/awakened-soulstealer.png"
+  },
+  {
+    "id": 50,
+    "slug": "black-cleaver",
+    "name": "Black Cleaver",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - SUNDER: Dealing physical damage to a champion reduces their Armor by 6% for 6 seconds, stacking up to 5 times for 30% reduction. UNIQUE - RAGE: Gain 20 Movement Speed when you deal physical damage, and gain 40 Movement Speed when moving toward enemy champions with 5 Sunder stacks. Ranged champions gain halved values."
+    ],
+    "tags": [
+      "armorShred",
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png"
+  },
+  {
+    "id": 51,
+    "slug": "blade-of-the-ruined-king",
+    "name": "Blade of the Ruined King",
+    "category": "Physical",
+    "cost": 3200,
+    "stats": {
+      "ad": {
+        "value": 25.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 35.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - THIRST: +10% Omni Vamp UNIQUE - RUINED STRIKES: Basic attacks deal (10% Melee / 8.5% Ranged) of target's current health bonus physical damage. Deals a minimum of 15 damage, and against monsters deals a maximum of 60 damage. UNIQUE - DRAIN: Hitting a champion with 3 basic attacks or abilities deals 30 - 100 (based on level) magic damage and steals 25% of their movement speed for 3 seconds. (60 second cooldown)"
+    ],
+    "tags": [
+      "mobility",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png"
+  },
+  {
+    "id": 52,
+    "slug": "bloodthirster",
+    "name": "Bloodthirster",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 250.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 55.0,
+        "percent": false
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - BLOODY: +8% Physical Vamp, Attacks that Critically Strike gain an additional 4% Physical Vamp."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/bloodthirster.png"
+  },
+  {
+    "id": 53,
+    "slug": "dead-mans-plate",
+    "name": "Dead Man's Plate",
+    "category": "Defense",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 350.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 70.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - RELENTLESS:  +5% movement speed UNIQUE - MOMENTUM: Moving builds Momentum, granting up to 40 Move Speed at 100 stacks. Attacking removes all Momentum. Stacks decay when movement is impaired. UNIQUE - CRUSHING BLOW:  Attacks deal up to 100 bonus magic damage based on Momentum removed. Melee attacks with max Momentum slow by 75% for 1 second."
+    ],
+    "tags": [
+      "mobility",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/dead-mans-plate.png"
+  },
+  {
+    "id": 54,
+    "slug": "deaths-dance",
+    "name": "Death's Dance",
+    "category": "Physical",
+    "cost": 3100,
+    "stats": {
+      "armor": {
+        "value": 40.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 35.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Cauterize: 27% of all physical and magic damage received (12% for ranged champions) is dealt to you over 3 seconds as true damage instead. UNIQUE - Dance: Champion takedowns cleanse Cauterize's remaining damage pool and restores 8% of your maximum health over 2 seconds."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/deaths-dance.png"
+  },
+  {
+    "id": 55,
+    "slug": "duskblade-of-draktharr",
+    "name": "Duskblade of Draktharr",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "ad": {
+        "value": 55.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - RAZOR: +18 armor penetration UNIQUE - NIGHTSTALKER: First basic attack against an enemy champion causes 60 - 160 bonus physical damage and slows enemies by 99% for 0.35 seconds. Cooldown will be refreshed when an enemy has been taken down."
+    ],
+    "tags": [
+      "lethality",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/duskblade-of-draktharr.png"
+  },
+  {
+    "id": 58,
+    "slug": "guardian-angel",
+    "name": "Guardian Angel",
+    "category": "Defense",
+    "cost": 3400,
+    "stats": {
+      "armor": {
+        "value": 40.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - RESURRECT: Upon taking lethal damage, resurrects and restores 50% of base health and 30% of maximum mana after 4 seconds of stasis. (210 second cooldown)"
+    ],
+    "tags": [
+      "mana",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/guardian-angel.png"
+  },
+  {
+    "id": 59,
+    "slug": "harmonic-echo",
+    "name": "Harmonic Echo",
+    "category": "Support",
+    "cost": 2700,
+    "stats": {
+      "hp": {
+        "value": 100.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 300.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 50.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "- 50% Mana Regen UNIQUE - HARMONIC ECHO: Moving and casting abilities builds Harmony. At 100 Harmony your next healing or shielding ability on an ally other than yourself restores 120 - 180 (+15% AP) health to your target. If the target's Health is below 30%, healing potency is increased to 150% of the original."
+    ],
+    "tags": [
+      "mana",
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/harmonic-echo.png"
+  },
+  {
+    "id": 61,
+    "slug": "iceborn-gauntlet",
+    "name": "Iceborn Gauntlet",
+    "category": "Defense",
+    "cost": 3100,
+    "stats": {
+      "hp": {
+        "value": 250.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 50.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 250.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 25.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - SPELLBLADE: After using an ability, your next basic attack within 10 seconds deals 100% base AD bonus physical damage + 25% bonus armor on-hit. It also deals 100% base AD physical damage to enemies surrounding the target and creates an icy zone for 2 seconds, which slows enemies within by 30%. The zone has a radius of 180 (+55% bonus armor) units. The damage is reduced against structures. (1.5 second cooldown which begins after using the empowered attack)."
+    ],
+    "tags": [
+      "mana",
+      "onHit",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/iceborn-gauntlet.png"
+  },
+  {
+    "id": 62,
+    "slug": "infinity-edge",
+    "name": "Infinity Edge",
+    "category": "Physical",
+    "cost": 3400,
+    "stats": {
+      "ad": {
+        "value": 65.0,
+        "percent": false
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - INFINITY: Critical strikes deal 205% damage instead of 175%. UNIQUE - Limit Break: When your total Critical Rate gain from items exceeds 100%, every 1% excess Critical Rate grants 0.6% Critical Strike Damage."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/infinity-edge.png"
+  },
+  {
+    "id": 63,
+    "slug": "infinity-orb",
+    "name": "Infinity Orb",
+    "category": "Magic",
+    "cost": 2900,
+    "stats": {
+      "ap": {
+        "value": 80.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "Destiny: 5% Movement Speed Balance: 15 Magic Penetration Inevitable Demise: Abilities and empowered attacks Critically Strike for 20% bonus damage against enemies below 35% Health. Thunderfall: When an enemy champion dies within 3 second(s) of you applying Inevitable Demise to them, a lightning bolt strikes at the spot where they died, dealing magic damage equal to 50-75 plus 10% Ability Power to nearby enemies."
+    ],
+    "tags": [
+      "magicPen",
+      "mobility",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/infinity-orb.png"
+  },
+  {
+    "id": 64,
+    "slug": "liandrys-torment",
+    "name": "Liandry's Torment",
+    "category": "Magic",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 250.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 75.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - TORMENT:  Damaging abilities or empowered attacks deal 0.6% - 3%(+ 0.005% AP) of enemy's max Health as bonus magic damage each second, over 3 seconds."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/liandrys-torment.png"
+  },
+  {
+    "id": 65,
+    "slug": "lich-bane",
+    "name": "Lich Bane",
+    "category": "Magic",
+    "cost": 2800,
+    "stats": {
+      "ap": {
+        "value": 80.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - SPELLBLADE: After using an ability, your next basic attack within 10 seconds deals 75% base AD (+ 50% AP) bonus magic damage on-hit. (1.5 second cooldown which begins after using the empowered attack) UNIQUE - BANE: +5% movement speed"
+    ],
+    "tags": [
+      "mana",
+      "mobility",
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/lich-bane.png"
+  },
+  {
+    "id": 66,
+    "slug": "ludens-echo",
+    "name": "Luden's Echo",
+    "category": "Magic",
+    "cost": 2900,
+    "stats": {
+      "mana": {
+        "value": 300.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 85.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - DISCORDIC ECHO: Moving and casting abilities builds Discord. At 100 Discord your next damaging ability deals 110 (+10% AP) bonus magic damage to your target and up to 3 nearby enemies."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/ludens-echo.png"
+  },
+  {
+    "id": 67,
+    "slug": "manamune",
+    "name": "Manamune",
+    "category": "Physical",
+    "cost": 2700,
+    "stats": {
+      "ad": {
+        "value": 25.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 300.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - AWE: Grants bonus attack damage equal to 1.5% maximum mana. Refunds 15% of mana spent. UNIQUE - MANA CHARGE: Grants a charge every 3.3 seconds, up to 3 charges. Each basic attack on-hit or mana expenditure consumes a charge and grants +18 mana, up to a maximum of 700 mana. Transforms into Muramana at +700 mana. Limited to 1 AWE item."
+    ],
+    "tags": [
+      "mana",
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/manamune.png"
+  },
+  {
+    "id": 68,
+    "slug": "maw-of-malmortius",
+    "name": "Maw of Malmortius",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "mr": {
+        "value": 45.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 55.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Lifeline: Upon taking Magic Damage that would reduce your health to below 35%, gain 10% Omnivamp until the end of combat and a magic shield that absorbs (220 -530 Magic Damage) for 3s."
+    ],
+    "tags": [
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/maw-of-malmortius.png"
+  },
+  {
+    "id": 69,
+    "slug": "morellonomicon",
+    "name": "Morellonomicon",
+    "category": "Magic",
+    "cost": 2600,
+    "stats": {
+      "hp": {
+        "value": 150.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 70.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - AFFLICTION: Dealing magic damage to enemy champions inflicts 50% Grievous Wounds for 3 seconds."
+    ],
+    "tags": [
+      "antiHeal"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/morellonomicon.png"
+  },
+  {
+    "id": 70,
+    "slug": "mortal-reminder",
+    "name": "Mortal Reminder",
+    "category": "Physical",
+    "cost": 3300,
+    "stats": {
+      "ad": {
+        "value": 25.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 15.0,
+        "percent": true
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - LAST WHISPER: +30% Armor Penetration, Attacks that Critically Strike gain an additional 6% Armor Penetration. UNIQUE - Sepsis: Dealing physical damage to enemy champions applies 50% Grievous Wounds for 3 seconds."
+    ],
+    "tags": [
+      "antiHeal",
+      "lethality"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/mortal-reminder.png"
+  },
+  {
+    "id": 72,
+    "slug": "nashors-tooth",
+    "name": "Nashor's Tooth",
+    "category": "Physical",
+    "cost": 2800,
+    "stats": {
+      "attackSpeed": {
+        "value": 40.0,
+        "percent": true
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Magic Fang: Gain 25 Attack Damage or 50 Ability Power (Adaptive). UNIQUE - Gnaw: When the basic attack hits the enemy champion, it will cause 15 (+20% Bonus Attack Damage +30% Ability Power) Adaptive Damage."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/nashors-tooth.png"
+  },
+  {
+    "id": 73,
+    "slug": "phantom-dancer",
+    "name": "Phantom Dancer",
+    "category": "Physical",
+    "cost": 2900,
+    "stats": {
+      "ad": {
+        "value": 20.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 40.0,
+        "percent": true
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - SPECTRAL WALTZ: Gain 25% Attack Speed and 7% Bonus Movement Speed for 6s for when your attack hits a champion, not stackable. (10s Cooldown) When your attack hits a champion the cooldown is reduced by 1s. UNIQUE - Shadowwalk: +5% Movement Speed."
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/phantom-dancer.png"
+  },
+  {
+    "id": 75,
+    "slug": "rabadons-deathcap",
+    "name": "Rabadon's Deathcap",
+    "category": "Magic",
+    "cost": 3400,
+    "stats": {
+      "ap": {
+        "value": 100.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - OVERKILL: Increases ability power by 20 - 45 % (based on level)."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/rabadons-deathcap.png"
+  },
+  {
+    "id": 76,
+    "slug": "randuins-omen",
+    "name": "Randuin's Omen",
+    "category": "Defense",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 75.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Countercurrent:  Gain a stack of Countercurrent when Critically Struck. Each Stack of Countercurrent grants 5% Movement Speed and 5% Slow Resist, Max 4 stacks. UNIQUE - Resilience: Critical Strikes deal 30% less damage to you."
+    ],
+    "tags": [
+      "mobility",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png"
+  },
+  {
+    "id": 78,
+    "slug": "rod-of-ages",
+    "name": "Rod of Ages",
+    "category": "Magic",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 250.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 300.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 60.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - ETERNITY: Restore mana equal to 15% of damage taken from champions. Restore health equal to 20% of mana spent, up to 25 health per cast, while toggle abilities can heal for up to 25 per second. UNIQUE - VETERAN: Each stack provides 25 Health, 10 Mana, and 6 Ability power, stacking 1 every 35 seconds. Max of 10 stacks, providing 250 Health, 100 Mana, and 60 Ability Power. This item gains 20 health, 10 mana and 6 ability power every 45 seconds, up to 10 times, for a maximum of 200 health, 100 mana and 60 ability power."
+    ],
+    "tags": [
+      "burn",
+      "mana",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/rod-of-ages.png"
+  },
+  {
+    "id": 79,
+    "slug": "runaans-hurricane",
+    "name": "Runaan's Hurricane",
+    "category": "Physical",
+    "cost": 2900,
+    "stats": {
+      "attackSpeed": {
+        "value": 35.0,
+        "percent": true
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - Wind Blade: Attacks deal 60% bonus physical damage on-hit against targets. UNIQUE - Wind's Fury: Attacks strike 2 additional nearby enemies, each dealing 60% Attack Damage. These strikes can Critically Strike and trigger on-hit effects."
+    ],
+    "tags": [
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/runaans-hurricane.png"
+  },
+  {
+    "id": 80,
+    "slug": "rylais-crystal-scepter",
+    "name": "Rylai's Crystal Scepter",
+    "category": "Magic",
+    "cost": 2700,
+    "stats": {
+      "hp": {
+        "value": 300.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 65.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - ICY: Damaging active abilities slow enemies by 30% for 0.75 seconds."
+    ],
+    "tags": [
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/rylais-crystal-scepter.png"
+  },
+  {
+    "id": 84,
+    "slug": "steraks-gage",
+    "name": "Sterak's Gage",
+    "category": "Defense",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - STERAK'S FURY: Triggering LIFELINE increases size and grants 30% Tenacity for 3 seconds. UNIQUE - LIFELINE: If you would take damage that would reduce maximum health below 35%, you first gain a shield that absorbs 75% of your bonus health that decays over 3 seconds. (90 second cooldown) Can only be purchased on melee champions."
+    ],
+    "tags": [
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png"
+  },
+  {
+    "id": 85,
+    "slug": "sunfire-aegis",
+    "name": "Sunfire Aegis",
+    "category": "Defense",
+    "cost": 2900,
+    "stats": {
+      "hp": {
+        "value": 425.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 20.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - IMMOLATE: Deals 16-25 magic damage +0.8% bonus HP per second to nearby enemies. Damaging champions or epic monsters with Immolate increases its damage by 11% for 5s, stacking up to 4 times. Immolate deals 15% bonus damage to minions and monsters. UNIQUE - FLAME TOUCH: At max Immolate Stacks, attacks burn enemies around you for 50% of Immolate's damage over 3 seconds. Immolate deals 170% - 250% damage to minions and deals 130% damage to jungle monsters."
+    ],
+    "tags": [
+      "burn"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/sunfire-aegis.png"
+  },
+  {
+    "id": 86,
+    "slug": "thornmail",
+    "name": "Thornmail",
+    "category": "Defense",
+    "cost": 2700,
+    "stats": {
+      "hp": {
+        "value": 200.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 75.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - THORNS:  When Struck by an attack, deal 20 + 6% Bonus Armor + 2% Bonus Health  Magic Damage to the attacker. UNIQUE - ENTWINE: Apply Grievous Wounds to enemy champions for 3s when struck by their attacks or dealing damage to them."
+    ],
+    "tags": [
+      "antiHeal",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/thornmail.png"
+  },
+  {
+    "id": 87,
+    "slug": "trinity-force",
+    "name": "Trinity Force",
+    "category": "Physical",
+    "cost": 3333,
+    "stats": {
+      "hp": {
+        "value": 333.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 30.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 30.0,
+        "percent": true
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - FERVOR: +5% movement speed UNIQUE - SPELLBLADE: After using an ability, your next basic attack within 10 seconds deals 200% base AD bonus physical damage on-hit. (1.5 second cooldown which begins after using the empowered attack) UNIQUE - Valor: Basic attacks (on-hit) grant +(20 Melee / 10 Ranged) flat movement speed for 2 seconds. Bonuses do not stack."
+    ],
+    "tags": [
+      "mana",
+      "mobility",
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/trinity-force.png"
+  },
+  {
+    "id": 90,
+    "slug": "warmogs-armor",
+    "name": "Warmog's Armor",
+    "category": "Defense",
+    "cost": 2850,
+    "stats": {
+      "hp": {
+        "value": 700.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - WARMOG'S HEART: If you have at least 950 bonus health, regenerate 3.5% maximum health per second if you haven't taken damage with the last 5 seconds. UNIQUE - BLESSED: Increases all healing and shielding effects on you by 30%."
+    ],
+    "tags": [
+      "burn",
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/warmogs-armor.png"
+  },
+  {
+    "id": 91,
+    "slug": "winters-approach",
+    "name": "Winter's Approach",
+    "category": "Defense",
+    "cost": 2600,
+    "stats": {
+      "hp": {
+        "value": 350.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 500.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - AWE: Grants Ability Haste equal to 1% maximum mana. Refunds 15% of mana spent. UNIQUE - MANA CHARGE: Increases max Mana by 12 every attack, when Mana is spent or when taking damage from champions, epic monsters, or towers. Triggers up to 3.3 times every 10 seconds. Transforms into Fimbulwinter Fimbulwinter at +700 mana. Limited to 1 AWE item."
+    ],
+    "tags": [
+      "mana",
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/winters-approach.png"
+  },
+  {
+    "id": 92,
+    "slug": "youmuus-ghostblade",
+    "name": "Youmuu's Ghostblade",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "ad": {
+        "value": 55.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - SLICE: +15 armor penetration UNIQUE - MOMENTUM: Moving builds Momentum, granting a maximum of 40 bonus movement speed at 100 stacks. Attacking removes all Momentum. Momentum decays while movement is impaired. UNIQUE - SPECTRAL HASTE: Basic attacks that expend maximum Momentum grant 25% bonus attack speed for 4 seconds."
+    ],
+    "tags": [
+      "lethality",
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/youmuus-ghostblade.png"
+  },
+  {
+    "id": 93,
+    "slug": "zekes-convergence",
+    "name": "Zeke's Convergence",
+    "category": "Support",
+    "cost": 2700,
+    "stats": {
+      "hp": {
+        "value": 350.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 40.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 150.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - HARBINGER: Casting your Ultimate surrounds you with a blizzard for 10 seconds. The blizzard deals a maximum of 320 – 600 damage, slows nearby enemies by 25%, and leaves a trail behind you. Allied champions on the trail gain 40 bonus Movement Speed for 1 second. (30s cooldown)"
+    ],
+    "tags": [
+      "mobility",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/zekes-convergence.png"
+  },
+  {
+    "id": 96,
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "category": "Boots",
+    "cost": 900,
+    "stats": {
+      "ad": {
+        "value": 10.0,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Conversion: +7% Omnivamp. Limited to 1 Boots item."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/gluttonous-greaves.png"
+  },
+  {
+    "id": 97,
+    "slug": "ionian-boots-of-lucidity",
+    "name": "Ionian Boots of Lucidity",
+    "category": "Boots",
+    "cost": 900,
+    "stats": {
+      "hp": {
+        "value": 100.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "- 50% Mana Regen UNIQUE - SUMMONED: Reduces summoner spell cooldowns by 15%. Limited to 1 Boots item."
+    ],
+    "tags": [
+      "mana"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/ionian-boots-of-lucidity.png"
+  },
+  {
+    "id": 98,
+    "slug": "mercurys-treads",
+    "name": "Mercury's Treads",
+    "category": "Boots",
+    "cost": 900,
+    "stats": {
+      "hp": {
+        "value": 200.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 20.0,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "+50% Health Regen Limited to 1 Boots item."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/mercurys-treads.png"
+  },
+  {
+    "id": 99,
+    "slug": "plated-steelcaps",
+    "name": "Plated Steelcaps",
+    "category": "Boots",
+    "cost": 900,
+    "stats": {
+      "hp": {
+        "value": 150.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 20.0,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "+50% Health Regen Limited to 1 Boots item."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png"
+  },
+  {
+    "id": 100,
+    "slug": "gargoyle",
+    "name": "Gargoyle",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "UNIQUE - STONEPLATE:  Gain a base shield that absorbs damage equal to 15% of max Health. Every 1 bonus Armor or Magic Resist you have increases the shield by 0.1%, up to 28% . For every enemy nearby, gain an additional shield that absorbs damage equal to 5% of max Health. Every 1 bonus Armor or Magic Resist you have increases the shield by 0.1%, up to 10%, capped at 3 enemies. Limited to 1 Boots enchantment."
+    ],
+    "tags": [
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/gargoyle.png"
+  },
+  {
+    "id": 101,
+    "slug": "glorious",
+    "name": "Glorious",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "UNIQUE - GLORY: Gain 30% bonus movement speed for 4 seconds, increasing to 75% towards enemy champions or turrets. After 4 seconds or upon reaching an enemy champion emit a shockwave that slows enemy champions in range by 60% for 2s and grants 20% Tenacity and 20% Slow Resist for 3s. Limited to 1 Boots enchantment."
+    ],
+    "tags": [
+      "mobility",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/glorious.png"
+  },
+  {
+    "id": 102,
+    "slug": "locket",
+    "name": "Locket",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "UNIQUE - LOCKET: Shield yourself and all nearby allied champions from 60 - 330 (based on level) damage for 2.5 seconds. (60 second cooldown) Limited to 1 Boots enchantment."
+    ],
+    "tags": [
+      "shield"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/locket.png"
+  },
+  {
+    "id": 103,
+    "slug": "protobelt",
+    "name": "Protobelt",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "UNIQUE - PROTOBELT: Dash forward and unleash a cone of missiles that deal 70 (based on level) magic damage. If champions or monsters are hit by more than one missile, the additional missiles deal only 7 damage. Upon hitting the target, reduce the target's Magic Resist by 12% for 3s. After Cast, gain 20% Movement Speed that decays over 3s. (50 second cooldown) Limited to 1 Boots enchantment."
+    ],
+    "tags": [
+      "mobility",
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/protobelt.png"
+  },
+  {
+    "id": 104,
+    "slug": "quicksilver",
+    "name": "Quicksilver",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "UNIQUE - QUICKSILVER: Grants immunity to Crown Control effects for 0.25 seconds  and grants 30% Tenacity and 30% Slow Resistance for 1.5 seconds. (70 second cooldown) Limited to 1 Boots enchantment."
+    ],
+    "tags": [
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/quicksilver.png"
+  },
+  {
+    "id": 107,
+    "slug": "stasis",
+    "name": "Stasis",
+    "category": "Enchantment",
+    "cost": 1000,
+    "stats": {},
+    "passives": [
+      "UNIQUE - STASIS: Put yourself in stasis for 2.5 seconds, rendering yourself untargetable and invulnerable for the duration but becoming unable to move, declare basic attacks, cast abilities or item actives, or use any summoner spells during this time. (120 second cooldown) Limited to 1 Boots enchantment."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/stasis.png"
+  },
+  {
+    "id": 109,
+    "slug": "force-of-nature",
+    "name": "Force of Nature",
+    "category": "Defense",
+    "cost": 2750,
+    "stats": {
+      "hp": {
+        "value": 350.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 60.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Storm: +5% Movement Speed UNIQUE - Absorb: When receiving skill damage, you can get a 7-second firmness layer, which can be stacked up to 4 times; dealing damage to champions can refresh the duration of the layer. At 6 stacks, gain 10% movement speed and reduce all magic damage taken by 25%."
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/force-of-nature.png"
+  },
+  {
+    "id": 110,
+    "slug": "frozen-heart",
+    "name": "Frozen Heart",
+    "category": "Defense",
+    "cost": 2700,
+    "stats": {
+      "armor": {
+        "value": 80.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 200.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 25.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Winter's Caress: Basic attacks and magic damage caused by you or inflicted upon you will apply stacks of Chill to the enemy champion for 3 seconds. Each stack of Chill slows enemy attack speed by 9%, up to a maximum of 4 stacks or 36% Attack Speed reduction. Each individual ability has a 3 second cooldown on applying Chill stacks."
+    ],
+    "tags": [
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/frozen-heart.png"
+  },
+  {
+    "id": 113,
+    "slug": "essence-reaver",
+    "name": "Essence Reaver",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "ad": {
+        "value": 35.0,
+        "percent": false
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Mana Siphon: Attacks restore 3% missing Mana on-hit. UNIQUE - Spellblade: Casting an ability generates a Spellblade charge (max 3 charges) that lasts up to 10s. Hitting an enemy with an attack consumes a charge, dealing 90% base Attack Damage as physical damage and granting 40 Movement Speed for 2s, This Bonus damage can Critically Strike. Each ability generates only one charge per 2s."
+    ],
+    "tags": [
+      "mana",
+      "mobility",
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/essence-reaver.png"
+  },
+  {
+    "id": 114,
+    "slug": "navori-quickblades",
+    "name": "Navori Quickblades",
+    "category": "Physical",
+    "cost": 2800,
+    "stats": {
+      "attackSpeed": {
+        "value": 45.0,
+        "percent": true
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      },
+      "moveSpeed": {
+        "value": 5.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Deft Strikes: Attacks reduce the remaining cooldowns of your basic abilities by 15%."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/navori-quickblades.png"
+  },
+  {
+    "id": 117,
+    "slug": "seryldas-grudge",
+    "name": "Serylda's Grudge",
+    "category": "Physical",
+    "cost": 3200,
+    "stats": {
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - LAST WHISPER: +33% armor penetration. UNIQUE - ICY: Damaging active abilities and empowered attacks slow enemies by 30% for 1 second. UNIQUE - FROSTBITE: Apply Frostbite to enemies slowed by Icy for 6s, at 3 Frostbite stacks, all stacks are consumed to apply bleed on target, dealing (10+2 ~ 30 + 40% bonus Attack Damage) over 2s, also applies Grievous Wounds for 3s. (5s Cooldown)"
+    ],
+    "tags": [
+      "antiHeal",
+      "lethality",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/seryldas-grudge.png"
+  },
+  {
+    "id": 118,
+    "slug": "staff-of-flowing-water",
+    "name": "Staff of Flowing Water",
+    "category": "Support",
+    "cost": 2600,
+    "stats": {
+      "hp": {
+        "value": 100.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 45.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "- 50% Mana Regen UNIQUE - Rapids: Healing or shielding an ally grants you both 10 Ability Haste and 20 - 40 Ability Power (based on target's level) for 6 seconds."
+    ],
+    "tags": [
+      "mana",
+      "mobility",
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/staff-of-flowing-water.png"
+  },
+  {
+    "id": 121,
+    "slug": "wits-end",
+    "name": "Wit's End",
+    "category": "Physical",
+    "cost": 2800,
+    "stats": {
+      "mr": {
+        "value": 45.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 45.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - At Wit's End: Basic attacks deal 10 - 55 (based on level) bonus magic damage on-hit. While below 50% health, dealing damage to an enemy champion heals you for (Melee:100% / Ranged: 66%) of this effect's post-mitigation damage."
+    ],
+    "tags": [
+      "onHit",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/wits-end.png"
+  },
+  {
+    "id": 123,
+    "slug": "edge-of-night",
+    "name": "Edge of Night",
+    "category": "Physical",
+    "cost": 3150,
+    "stats": {
+      "hp": {
+        "value": 250.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 50.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE PASSIVE - Annul: Grants a spell shield that blocks the next enemy ability. PASSIVE - Gouge: +8 Armor Penetration."
+    ],
+    "tags": [
+      "lethality",
+      "shield"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/edge-of-night.png"
+  },
+  {
+    "id": 126,
+    "slug": "divine-sunderer",
+    "name": "Divine Sunderer",
+    "category": "Physical",
+    "cost": 3400,
+    "stats": {
+      "hp": {
+        "value": 425.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 25.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 25.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE PASSIVE - SPELLBLADE: After using an ability, your next attack within 10 seconds will deal 10% of target's maximum health as bonus physical damage (7% if the attack is ranged). If the target is a champion, heal for 6% of the target's maximum health (2.5% if the attack is ranged). (1.5 second Cooldown) Damage is reduced vs structures."
+    ],
+    "tags": [
+      "mana",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/divine-sunderer.png"
+  },
+  {
+    "id": 127,
+    "slug": "hullbreaker",
+    "name": "Hullbreaker",
+    "category": "Physical",
+    "cost": 3100,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 50.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - SET SAIL: +5% Movement Speed. UNIQUE - BOARDING PARTY: Nearby allied siege and super minions gain 20~130 Armor and 10~120 Magic Resist (25% if you are a ranged champion) UNIQUE - SKIPPER: Every 4th attack against champions and epic monsters deals bonus physical damage equal to 160% base Attack Damage + 5% max Health (ranged champions deal 40% of the damage), increased to 240% Attack Damage + 9% Max Health Bonus as Physical Damage against structures (ranged champions deal 40% of the damage)."
+    ],
+    "tags": [
+      "mobility",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/hullbreaker.png"
+  },
+  {
+    "id": 130,
+    "slug": "veil",
+    "name": "Veil",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "Grant nearby ally champions a 3s spell shield that blocks the next hostile ability (60s Cooldown)"
+    ],
+    "tags": [
+      "shield"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/veil.png"
+  },
+  {
+    "id": 131,
+    "slug": "riftmaker",
+    "name": "Riftmaker",
+    "category": "Magic",
+    "cost": 3200,
+    "stats": {
+      "hp": {
+        "value": 150.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 80.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - Assimilation: +11% Magic Vamp. UNIQUE - Void Corruption: When in combat with champions, gain 1 stack of Corruption every 1 second. Each Stack of Corruption increases your Magic Damage Dealt by 2.5%. At maximum stacks, the additional damage provided by Corruption becomes true damage."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/riftmaker.png"
+  },
+  {
+    "id": 140,
+    "slug": "imperial-mandate",
+    "name": "Imperial Mandate",
+    "category": "Support",
+    "cost": 2500,
+    "stats": {
+      "hp": {
+        "value": 200.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Coordinated Fire: Abilities that slow or immobilize a champion deal 47 - 75 (based on level) bonus magic damage and marks them for 4 seconds (6s cooldown per champion). Ally champion damage detonates the mark, dealing an additional 94 - 150 (based on ally level) magic damage and granting you both 20% Move speed for 2 seconds."
+    ],
+    "tags": [
+      "mobility",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/imperial-mandate.png"
+  },
+  {
+    "id": 141,
+    "slug": "cosmic-drive",
+    "name": "Cosmic Drive",
+    "category": "Magic",
+    "cost": 2800,
+    "stats": {
+      "ap": {
+        "value": 75.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 30.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "HYPERDRIVE: +5% Movement Speed SPELLWEAVER: Damaging active abilities and empowered attacks on an enemy champion grant (30 + 70% Haste) Movement Speed decaying over 2 seconds. Subsequent triggers of Spellweaver from different sources refresh the buff duration and reset the movement speed value to the maximum. Each source has a 1s cooldown."
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/cosmic-drive.png"
+  },
+  {
+    "id": 142,
+    "slug": "serpents-fang",
+    "name": "Serpent's Fang",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "ad": {
+        "value": 50.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Armor penetration: 15 Shield Reaver: Dealing damage to an enemy champion reduces any shields they gain for 3s. Melee champions apply (10% of bonus Attack Damage + 40)% shield reduction, capped at 60%; while ranged champions apply (10% of bonus Attack Damage + 25)% shield reduction, capped at 45%. When you damage an enemy who is unaffected by Shield Reaver, all shields on them are reduced by the same values."
+    ],
+    "tags": [
+      "lethality",
+      "shield"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/serpents-fang.png"
+  },
+  {
+    "id": 143,
+    "slug": "horizon-focus",
+    "name": "Horizon Focus",
+    "category": "Magic",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 150.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 80.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "Passive - Hypershot: Damaging an enemy champion with an ability from 600 units away reveals them for 8 seconds and increases damage dealt to them by 9%. Passive - Focus: When Hypershot is triggered, reveals all enemy champions within 1200 units of the target for 3 seconds. ( 12 seconds cooldown)"
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/horizon-focus.png"
+  },
+  {
+    "id": 144,
+    "slug": "lord-dominiks-regard",
+    "name": "Lord Dominik's Regard",
+    "category": "Physical",
+    "cost": 3300,
+    "stats": {
+      "ad": {
+        "value": 25.0,
+        "percent": false
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      },
+      "physicalPen": {
+        "value": 36.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "PASSIVE - GIANT SLAYER: Deal bonus damage based on the enemy champion's bonus Health, up to 12% bonus damage when the enemy champion has 1200 bonus Health."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png"
+  },
+  {
+    "id": 145,
+    "slug": "dawnshroud",
+    "name": "Dawnshroud",
+    "category": "Defense",
+    "cost": 2700,
+    "stats": {
+      "hp": {
+        "value": 250.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 50.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 30.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Dawnbringer: When you immobilize a champion or are immobilized, damage and reveal all nearby enemy champions for 3 seconds, dealing 40 + 2.5% bonus health, as magic damage, increase your Armor and Magic Resistance by 20 (3 second cooldown)."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/dawnshroud.png"
+  },
+  {
+    "id": 146,
+    "slug": "mantle-of-the-twelfth-hour",
+    "name": "Mantle of the Twelfth Hour",
+    "category": "Defense",
+    "cost": 2900,
+    "stats": {
+      "hp": {
+        "value": 200.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 40.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 40.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - LIFELINE: Damage that puts you under 35% Health grants bonus max Health equal to 180 + 45% bonus Health over 3 seconds, and provides 50% Slow Resist and 30 Movement Speed for 3 seconds. (90s cooldown)"
+    ],
+    "tags": [
+      "mobility",
+      "slow",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/mantle-of-the-twelfth-hour.png"
+  },
+  {
+    "id": 147,
+    "slug": "amaranths-twinguard",
+    "name": "Amaranth's Twinguard",
+    "category": "Defense",
+    "cost": 3100,
+    "stats": {
+      "armor": {
+        "value": 60.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 60.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - ENDURANCE: While in combat with enemy champions, gain a stack of Endurance each second. When you reach 5 stacks of Endurance, gain 20% size, 20% tenacity, and increase your armor and magic resistance by 30% until you leave combat with champions."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/amaranths-twinguard.png"
+  },
+  {
+    "id": 149,
+    "slug": "searing-crown",
+    "name": "Searing Crown",
+    "category": "Defense",
+    "cost": 2700,
+    "stats": {
+      "hp": {
+        "value": 300.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 50.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - FIERY TOUCH: When the basic attack or skill deals damage, it burns the target for 3 seconds, causing magic damage equal to 1.4% of the target's maximum HP per second (when used by a ranged Champion, the damage is reduced to 0.8%). Deals 150% damage to minions and monsters. Deals up to 125 damage to jungle monsters."
+    ],
+    "tags": [
+      "burn"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/searing-crown.png"
+  },
+  {
+    "id": 153,
+    "slug": "the-collector",
+    "name": "The Collector",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "ad": {
+        "value": 45.0,
+        "percent": false
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - Killer: +10 Armor Penetration. UNIQUE - Death and Taxes: Dealing damage that would leave an enemy champion below (4%+2% Critical Rate) executes them, permanently increasing the max health percentage execution threshold by 0.1%."
+    ],
+    "tags": [
+      "lethality",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/the-collector.png"
+  },
+  {
+    "id": 156,
+    "slug": "boots-of-mana",
+    "name": "Boots of Mana",
+    "category": "Boots",
+    "cost": 900,
+    "stats": {
+      "ap": {
+        "value": 15.0,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "+100% Mana Regeneration UNIQUE -  Magic Break: +8 Magic penetration. UNIQUE - Big Bully: Attacks and active abilities deal 18 bonus physical damage to minions. UNIQUE - Equilibrium: Champions without Mana gain 50% Base Health Regen."
+    ],
+    "tags": [
+      "magicPen",
+      "mana",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/boots-of-mana.png"
+  },
+  {
+    "id": 157,
+    "slug": "boots-of-dynamism",
+    "name": "Boots of Dynamism",
+    "category": "Boots",
+    "cost": 900,
+    "stats": {
+      "ad": {
+        "value": 10.0,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Strike: +8 Armor penetration."
+    ],
+    "tags": [
+      "lethality"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/boots-of-dynamism.png"
+  },
+  {
+    "id": 158,
+    "slug": "berserkers-greaves",
+    "name": "Berserker's Greaves",
+    "category": "Boots",
+    "cost": 900,
+    "stats": {
+      "attackSpeed": {
+        "value": 25.0,
+        "percent": true
+      },
+      "moveSpeed": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Blessed Blade: Attacks restore 10 Health on hit."
+    ],
+    "tags": [
+      "onHit",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/berserkers-greaves.png"
+  },
+  {
+    "id": 162,
+    "slug": "magnetic-blaster",
+    "name": "Magnetic Blaster",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "ad": {
+        "value": 25.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 25.0,
+        "percent": true
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "Fervor: +5% Movement Speed. Energized: Moving and attacking will generate an Energized Attack. Power Blitz:  Energized Attacks gain 100 range (50 range for melee attacks), deal 40-100 bonus magic damage, and grant 60 Movement Speed for 0.75s. This Damage bounces up to 5 enemies and can Critically Strike. (Deals 50% - 80% damage against minions.)"
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/magnetic-blaster.png"
+  },
+  {
+    "id": 164,
+    "slug": "chempunk-chainsword",
+    "name": "Chempunk Chainsword",
+    "category": "Physical",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 45.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Punishment: Dealing physical damage to enemy champions applies 50% Grievous Wounds for 3 seconds."
+    ],
+    "tags": [
+      "antiHeal"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/chempunk-chainsword.png"
+  },
+  {
+    "id": 166,
+    "slug": "oceanids-trident",
+    "name": "Oceanid's Trident",
+    "category": "Magic",
+    "cost": 2600,
+    "stats": {
+      "hp": {
+        "value": 200.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 75.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "Lethal Weapon: Dealing ability damage to an enemy champion reduces any shields they gain for 3s (Area of effect abilities apply 5% of bonus Ability Power + 25% shield reduction, capped at 45%; while single target abilities apply 5% of bonus Ability Power + 40% shield reduction, capped at 60%). When you damage an enemy who is unaffected by Lethal Weapon, all shields on them are reduced by the same values."
+    ],
+    "tags": [
+      "shield"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/oceanids-trident.png"
+  },
+  {
+    "id": 167,
+    "slug": "crown-of-the-shattered-queen",
+    "name": "Crown of the Shattered Queen",
+    "category": "Magic",
+    "cost": 3000,
+    "stats": {
+      "mana": {
+        "value": 200.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 60.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "Safeguard: Grant a spell shield that blocks the next enemy ability. When the shield is broken, reduce incoming damage by 40% for 1s (40s cooldown). Poise: Ability Power increases by 20 while Safeguarded. Dealing magic damage to enemy champions using an active ability reduces Safeguard's cooldown by 4 seconds."
+    ],
+    "tags": [
+      "shield"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/crown-of-the-shattered-queen.png"
+  },
+  {
+    "id": 168,
+    "slug": "spear-of-shojin",
+    "name": "Spear of Shojin",
+    "category": "Physical",
+    "cost": 3100,
+    "stats": {
+      "hp": {
+        "value": 450.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Unique - Dragonforce: Gain 20 Basic Ability Haste. Unique - Focused Will: Dealing damage to monsters or enemies with abilities increases your champion’s ability and passive damage by 3% for 6s. (Stacks 4 times)"
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/spear-of-shojin.png"
+  },
+  {
+    "id": 169,
+    "slug": "titanic-hydra",
+    "name": "Titanic Hydra",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 450.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Cleave: Every 1.75 seconds, your next attack deals bonus physical damage equal to 25 + 3% bonus Health (also applies to turrets), creating a shockwave (550 range) that deals physical damage equal to 80 + 10% bonus Health to enemies behind the target. (Ranged champions deal 75% of the damage.)"
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/titanic-hydra.png"
+  },
+  {
+    "id": 170,
+    "slug": "heartsteel",
+    "name": "Heartsteel",
+    "category": "Defense",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 700.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "UNIQUE - Colossal Consumption: While within 700 units of an enemy champion, charges for 2.5 seconds before dealing a huge strike against the enemy champion. This charged attack deals bonus physical damage equal to 140 + 3.5% of maximum Health, and grants maximum Health equal to 15% of the damage dealt. The charge for each target has a 20-second cooldown."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/heartsteel.png"
+  },
+  {
+    "id": 173,
+    "slug": "terminus",
+    "name": "Terminus",
+    "category": "Physical",
+    "cost": 3300,
+    "stats": {
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 30.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "Shadow: Attacks deal 35 bonus magic damage on-hit. Juxtaposition: Alternate between Light and Dark on-hits when attacking. Light attacks grant 5-8 Armor and Magic Resist for 5 seconds on hit. Dark attacks grant 10% Armor Pen and Magic Pen for 5 seconds on hit. The upper limit of armor and magic penetration rates is 40% when equipped. Each on-hit effect stacks up to 3 times."
+    ],
+    "tags": [
+      "magicPen",
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/terminus.png"
+  },
+  {
+    "id": 184,
+    "slug": "sundered-sky",
+    "name": "Sundered Sky",
+    "category": "Physical",
+    "cost": 2900,
+    "stats": {
+      "hp": {
+        "value": 350.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Lightshield Strike - The first attack against an enemy champion Critically Strikes (6s cooldown per target), dealing 160% damage and restoring Health (equal to 125% of base Attack Damage + 6% of missing Health) to you."
+    ],
+    "tags": [
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/sundered-sky.png"
+  },
+  {
+    "id": 185,
+    "slug": "eclipse",
+    "name": "Eclipse",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "ad": {
+        "value": 65.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Ever Rising Moon - Hitting an enemy champion with 2 separate attacks or abilities within 1.8 seconds deals bonus physical damage equal to 7% of the target's Max Health (3% for ranged champions), and grants you a shield that absorbs damage equal to 140 + 35% bonus Attack Damage (70 + 18% bonus Attack Damage for ranged champions) for 2 seconds. (6s cooldown)"
+    ],
+    "tags": [
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/eclipse.png"
+  },
+  {
+    "id": 186,
+    "slug": "psychic-projector",
+    "name": "Psychic Projector",
+    "category": "Magic",
+    "cost": 3100,
+    "stats": {
+      "hp": {
+        "value": 300.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 60.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Conversion - Gain Ability Power equal to 3.5% of bonus Health. Projection - When you have at least 950 Bonus Health, gain 20% Ability Power as Armor and 10% Ability Power as Magic Resist. (max bonuses reached at 400 Ability Power)"
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/psychic-projector.png"
+  },
+  {
+    "id": 188,
+    "slug": "redemption",
+    "name": "Redemption",
+    "category": "Support",
+    "cost": 2600,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "mana": {
+        "value": 300.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Eternity: Restore Mana equal to 15% of the damage taken from champions. When consuming Mana, restore health equal to  20% of mana consumed. Every cast restores Maximum 15 Health.",
+      "Salvation: Every 8s, restore (40 + 7% Bonus Health) health to all allied champions within 350 units. If there are no allied champions within range, the effect is not triggered."
+    ],
+    "tags": [
+      "mana",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/redemption.png"
+  },
+  {
+    "id": 193,
+    "slug": "kaenic-rookern",
+    "name": "Kaenic Rookern",
+    "category": "Defense",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 350.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 75.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Magebane - After not taking magic damage for 12 seconds, gain a magic shield that absorbs damage (equal to 70-180+10% of max Health)."
+    ],
+    "tags": [
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/kaenic-rookern.png"
+  },
+  {
+    "id": 195,
+    "slug": "yordle-trap",
+    "name": "Yordle Trap",
+    "category": "Support",
+    "cost": 2500,
+    "stats": {
+      "hp": {
+        "value": 350.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Catcher - After applying crowd control effects that displace the enemy, gain 30% Movement Speed for 3 seconds and mark the target, reducing their Armor and Magic Resist by 5-12 for 8 seconds. If the target dies while they are marked, you and nearby allies gain 200-240 bonus gold in total. The bonus gold can only be earned once every 10 seconds."
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/yordle-trap.png"
+  },
+  {
+    "id": 196,
+    "slug": "dream-maker",
+    "name": "Dream Maker",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "Gain a Blue Dream Bubble and a Purple Dream Bubble every 6s. Granting an ally active heals or shields blows both Dream Bubbles to them, empowering them for 3s.. Both Dream Bubbles grant their next hit 15~90 bonus Magic Damage and 15%~30% Movement Speed for 3s."
+    ],
+    "tags": [
+      "mobility",
+      "shield",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/dream-maker.png"
+  },
+  {
+    "id": 197,
+    "slug": "malignance",
+    "name": "Malignance",
+    "category": "Magic",
+    "cost": 2900,
+    "stats": {
+      "mana": {
+        "value": 400.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 80.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "SCORN: Your ultimate abilities gain 20 Ability Haste. HATEFOG: Damaging a champion with your ultimate burns the ground beneath them for 3s, dealing magic damage equal to 60 plus 5% Ability Power per second and reducing their Magic Resist by 10. Burn radius increases with damage, reaching maximum radius at 800 damage."
+    ],
+    "tags": [
+      "burn",
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/malignance.png"
+  },
+  {
+    "id": 198,
+    "slug": "bandle-fantasy",
+    "name": "Bandle Fantasy",
+    "category": "Magic",
+    "cost": 3000,
+    "stats": {
+      "mana": {
+        "value": 300.0,
+        "percent": false
+      },
+      "ap": {
+        "value": 85.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 20.0,
+        "percent": false
+      },
+      "magicPen": {
+        "value": 7.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "FLAMEBLOSSOM: Damaging an enemy champion with an active ability spawns a trap at their feet. After a brief delay, the trap deals magic damage equal to 105 plus 15% Ability Power to enemies in it (8s cooldown per target). If a target is hit by more than one trap set by the same champion within a short duration, traps after the first deal only 20% damage."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/bandle-fantasy.png"
+  },
+  {
+    "id": 209,
+    "slug": "soul-transfer",
+    "name": "Soul Transfer",
+    "category": "Physical",
+    "cost": 3200,
+    "stats": {
+      "ad": {
+        "value": 25.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 30.0,
+        "percent": true
+      },
+      "crit": {
+        "value": 25.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "UNIQUE - SHADOW DANCE: When your attack Critically Strikes an enemy champion or an epic monster, summon a clone that lasts 4s to attack nearby enemies, the clone inherits 20% of your Attack Damage and additionally gains 30% of your Critical Rate as Attack speed. Up to two clones can exist at one time. When your attack Critically Strikes an enemy champion or an epic monster, summon a clone that lasts 4s to attack nearby enemies, the clone inherits 25% of your Attack Damage and additionally gains 30% of your Crit. If a clone moves more than 600 units away from you, it will disappear early."
+    ],
+    "tags": [],
+    "icon": "https://www.wildriftfire.com/images/items/soul-transfer.png"
+  },
+  {
+    "id": 210,
+    "slug": "stridebreaker",
+    "name": "Stridebreaker",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "ACTIVE - BREAKING SHOCKWAVE: Activate to dash a short distance, dealing 120% Attack Damage as Physical Damage to nearby enemies and slowing them by 30% for 3s. (35s Cooldown)"
+    ],
+    "tags": [
+      "mobility",
+      "slow"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/stridebreaker.png"
+  },
+  {
+    "id": 211,
+    "slug": "goredrinker",
+    "name": "Goredrinker",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "ACTIVE - THIRSTING SLASH: Deal 230% Base Attack Damage as physical damage to nearby enemies. Restore Health equal to (20% Attack Damage + 12% missing Health) for each enemy champion hit. (15s Cooldown)"
+    ],
+    "tags": [
+      "onHit",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/goredrinker.png"
+  },
+  {
+    "id": 212,
+    "slug": "galeforce",
+    "name": "Galeforce",
+    "category": "Enchantment",
+    "cost": 500,
+    "stats": {},
+    "passives": [
+      "ACTIVE - CLOUDBURST:  Dash in a target direction and fire 3 missiles at the lowest Health Enemy near your destination, prioritizing champions. Deal 40~120 (+ 35% bonus attack damage) as physical damage. (50s Cooldown)"
+    ],
+    "tags": [
+      "mobility",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/galeforce.png"
+  },
+  {
+    "id": 213,
+    "slug": "radiant-virtue",
+    "name": "Radiant Virtue",
+    "category": "Support",
+    "cost": 2850,
+    "stats": {
+      "hp": {
+        "value": 300.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 45.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "Guiding Light: Upon Casting your ultimate ability, you Transcend, increasing your Max Health by 10% for 6s. While Transcended, you and allied champions within 1200 units of you heal for 2.5% of your max Health per second over the duration (60s Cooldown). ( Heals reduced by 50% for ranged champions)"
+    ],
+    "tags": [
+      "burn",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/radiant-virtue.png"
+  },
+  {
+    "id": 214,
+    "slug": "guinsoos-rageblade",
+    "name": "Guinsoo's Rageblade",
+    "category": "Physical",
+    "cost": 3100,
+    "stats": {
+      "attackSpeed": {
+        "value": 30.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "SURGE: +5% Movement Speed CHAOS: Gain 25 AD or 50 AP (Adaptive). WRATH: Attacks deal 30% Bonus Magic Damage but no longer Critically Strike. For every 1% Critical Rate gained from items, your magic damage increases by 1.5, up to a max increase of 75. (reached at 50% item Critical Rate) SEETHING STRIKE: Attacks grant 8% Attack Speed, stacking up to 4 times for a maximum of 32% Attack Speed. While fully stacked, every 3 attacks applies on-hit effects an additional time."
+    ],
+    "tags": [
+      "mobility",
+      "onHit"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/guinsoos-rageblade.png"
+  },
+  {
+    "id": 215,
+    "slug": "hollow-radiance",
+    "name": "Hollow Radiance",
+    "category": "Defense",
+    "cost": 2800,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "IMMOLATE: While in combat, deal Magic Damage equal to (20 ~ 30 + 1% Bonus Health) per second for 5s. Deals 125% Damage against monsters and 200% Damage against minions. DESOLATE: Killing a neutral monster or an enemy deals Magic Damage equal to (30 + 2% Bonus Health) in an area around them."
+    ],
+    "tags": [
+      "burn",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/hollow-radiance.png"
+  },
+  {
+    "id": 216,
+    "slug": "kraken-slayer",
+    "name": "Kraken Slayer",
+    "category": "Physical",
+    "cost": 2800,
+    "stats": {
+      "ad": {
+        "value": 40.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 30.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "CLOUD STRIKE: +5% Movement Speed BRING IT DOWN: Every third attack deals 120~160 (based on level) (110~150 (based on level) for ranged champions) bonus physical damage, based on the target’s missing Health, up to a maximum of 70% increased damage."
+    ],
+    "tags": [
+      "mobility",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/kraken-slayer.png"
+  },
+  {
+    "id": 217,
+    "slug": "knights-vow",
+    "name": "Knight's Vow",
+    "category": "Support",
+    "cost": 2600,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "SACRIFICE: When your Worthy ally is nearby, 12% of the damage they take is redirected to you, and you are healed for 10% of the damage they deal to champions.",
+      "PLEDGE: When you buy the item, you can designate an ally champion who is Worthy. (You can re-designate another champion by selling and repurchasing the item)"
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/knights-vow.png"
+  },
+  {
+    "id": 218,
+    "slug": "overlords-bloodmail",
+    "name": "Overlord's Bloodmail",
+    "category": "Physical",
+    "cost": 3200,
+    "stats": {
+      "hp": {
+        "value": 450.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 30.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "TYRANNY: Gain Attack Damage equal to 2.5% of your bonus Health. RETRIBUTION: Gain up to 9% increased Attack Damage based on your missing Health. Reaches the maximum value when below 30% Health."
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/overlords-bloodmail.png"
+  },
+  {
+    "id": 219,
+    "slug": "unending-despair",
+    "name": "Unending Despair",
+    "category": "Defense",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 200.0,
+        "percent": false
+      },
+      "armor": {
+        "value": 45.0,
+        "percent": false
+      },
+      "mr": {
+        "value": 45.0,
+        "percent": false
+      }
+    },
+    "passives": [
+      "ANGUISH: While in combat with champions, every 4 seconds deal magic damage equal to 3% of your maximum Health to nearby enemy champions, and heal yourself for 250% of the damage dealt, Anguish is not affected by item Ability Haste."
+    ],
+    "tags": [
+      "mobility",
+      "sustain"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/unending-despair.png"
+  },
+  {
+    "id": 220,
+    "slug": "experimental-hexplate",
+    "name": "Experimental Hexplate",
+    "category": "Physical",
+    "cost": 3000,
+    "stats": {
+      "hp": {
+        "value": 400.0,
+        "percent": false
+      },
+      "ad": {
+        "value": 35.0,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 20.0,
+        "percent": true
+      }
+    },
+    "passives": [
+      "HEXCHARGED: Gain 20 Ultimate Ability Haste. OVERDRIVE: After casting the ultimate ability, gain 40% (20% for ranged) Attack Speed and 20% (10% for ranged) Move Speed for 8 seconds. (30 second cooldown)"
+    ],
+    "tags": [
+      "mobility"
+    ],
+    "icon": "https://www.wildriftfire.com/images/items/experimental-hexplate.png"
+  }
+]

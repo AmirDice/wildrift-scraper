@@ -1,0 +1,1390 @@
+{
+  "abyssal-mask": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.2,
+      "assassin": 0.0,
+      "burst-mage": 0.3,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Aura reduces enemy MR, grants self MR, scales with bonus health."
+  },
+  "archangels-staff": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 1.0,
+      "tank": 0.0,
+      "enchanter": 0.4
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Mana scaling AP, mana sustain, transforms into powerful shield."
+  },
+  "ardent-censer": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Empowers allied attacks with bonus magic damage after healing/shielding."
+  },
+  "awakened-soulstealer": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 1.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Takedowns reduce cooldowns, steal movement speed and ability haste."
+  },
+  "black-cleaver": {
+    "passiveValue": {
+      "crit-adc": 0.5,
+      "bruiser": 1.0,
+      "assassin": 0.7,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Stacks armor shred on physical damage, grants movement speed for chasing."
+  },
+  "blade-of-the-ruined-king": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 1.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc",
+      "bruiser"
+    ],
+    "note": "Current health damage on-hit, omnivamp, and movement speed steal."
+  },
+  "bloodthirster": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.3,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "High physical vamp, significantly increased by critical strikes."
+  },
+  "dead-mans-plate": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Grants movement speed, burst damage, and a powerful slow on attack."
+  },
+  "deaths-dance": {
+    "passiveValue": {
+      "crit-adc": 0.4,
+      "bruiser": 1.0,
+      "assassin": 0.8,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Defers incoming damage, heals significantly on champion takedowns."
+  },
+  "duskblade-of-draktharr": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 1.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin"
+    ],
+    "note": "Burst damage and slow on first attack, resets on takedowns."
+  },
+  "guardian-angel": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.9,
+      "assassin": 0.9,
+      "burst-mage": 0.5,
+      "tank": 0.4,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc",
+      "assassin"
+    ],
+    "note": "Grants a second life upon taking lethal damage."
+  },
+  "harmonic-echo": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Empowers next heal/shield with bonus health, amplified on low health."
+  },
+  "iceborn-gauntlet": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.2,
+      "burst-mage": 0.0,
+      "tank": 0.9,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "On-hit damage, area slow, and armor scaling for tankiness and utility."
+  },
+  "infinity-edge": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Significantly amplifies critical strike damage, core for crit builds."
+  },
+  "infinity-orb": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.0,
+      "enchanter": 0.3
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Critically strikes low health enemies, grants movement speed and magic penetration."
+  },
+  "liandrys-torment": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.8,
+      "tank": 0.0,
+      "enchanter": 0.4
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Deals max health damage over time, good against high health targets."
+  },
+  "lich-bane": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.0,
+      "enchanter": 0.3
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Amplifies auto-attacks with AP scaling magic damage after abilities."
+  },
+  "ludens-echo": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 1.0,
+      "tank": 0.0,
+      "enchanter": 0.5
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Provides bonus splash magic damage on abilities, enhancing burst and waveclear."
+  },
+  "manamune": {
+    "passiveValue": {
+      "crit-adc": 0.8,
+      "bruiser": 0.8,
+      "assassin": 0.9,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.3
+    },
+    "coreFor": [
+      "crit-adc",
+      "bruiser",
+      "assassin"
+    ],
+    "note": "Scales AD with mana, provides mana sustain, transforms into Muramana."
+  },
+  "maw-of-malmortius": {
+    "passiveValue": {
+      "crit-adc": 0.5,
+      "bruiser": 0.9,
+      "assassin": 0.6,
+      "burst-mage": 0.0,
+      "tank": 0.4,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Provides a magic damage shield and omnivamp when taking magic burst."
+  },
+  "morellonomicon": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.0,
+      "enchanter": 0.9
+    },
+    "coreFor": [
+      "burst-mage",
+      "enchanter"
+    ],
+    "note": "Applies Grievous Wounds with magic damage, crucial for anti-healing."
+  },
+  "mortal-reminder": {
+    "passiveValue": {
+      "crit-adc": 0.9,
+      "bruiser": 0.6,
+      "assassin": 0.9,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc",
+      "assassin"
+    ],
+    "note": "Provides armor penetration and applies Grievous Wounds with physical damage."
+  },
+  "nashors-tooth": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.0,
+      "enchanter": 0.3
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Adds adaptive on-hit damage to basic attacks, scaling with AP/AD."
+  },
+  "phantom-dancer": {
+    "passiveValue": {
+      "crit-adc": 0.9,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Grants bonus attack speed and movement speed on hitting champions."
+  },
+  "rabadons-deathcap": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 1.0,
+      "tank": 0.0,
+      "enchanter": 0.6
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Significantly amplifies ability power, crucial for burst mages."
+  },
+  "randuins-omen": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.2
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Reduces incoming critical strike damage, provides movement speed."
+  },
+  "rod-of-ages": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.4,
+      "assassin": 0.0,
+      "burst-mage": 0.8,
+      "tank": 0.3,
+      "enchanter": 0.6
+    },
+    "coreFor": [],
+    "note": "Provides scaling stats and sustain for health and mana."
+  },
+  "runaans-hurricane": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.3,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Grants AoE attacks and on-hit damage, essential for crit ADCs."
+  },
+  "rylais-crystal-scepter": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.3,
+      "assassin": 0.0,
+      "burst-mage": 0.7,
+      "tank": 0.4,
+      "enchanter": 0.6
+    },
+    "coreFor": [],
+    "note": "Applies a slow to enemies hit by damaging abilities."
+  },
+  "steraks-gage": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 1.0,
+      "assassin": 0.4,
+      "burst-mage": 0.0,
+      "tank": 0.7,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Grants a life-saving shield and tenacity for melee champions."
+  },
+  "sunfire-aegis": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Deals consistent area magic damage, enhances wave clear and jungle."
+  },
+  "thornmail": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Reflects damage and applies Grievous Wounds to attackers."
+  },
+  "trinity-force": {
+    "passiveValue": {
+      "crit-adc": 0.5,
+      "bruiser": 1.0,
+      "assassin": 0.6,
+      "burst-mage": 0.0,
+      "tank": 0.3,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Empowers basic attacks after abilities, grants movement speed."
+  },
+  "warmogs-armor": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.6,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Provides massive out-of-combat health regeneration and self-healing."
+  },
+  "winters-approach": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.8,
+      "assassin": 0.0,
+      "burst-mage": 0.3,
+      "tank": 0.9,
+      "enchanter": 0.4
+    },
+    "coreFor": [],
+    "note": "Provides massive mana, mana sustain, and transforms into a shield item."
+  },
+  "youmuus-ghostblade": {
+    "passiveValue": {
+      "crit-adc": 0.4,
+      "bruiser": 0.5,
+      "assassin": 1.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin"
+    ],
+    "note": "Grants armor penetration and burst movement speed for assassinations."
+  },
+  "zekes-convergence": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.5,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Ultimate casts blizzard, slowing enemies and granting allied movement speed."
+  },
+  "gluttonous-greaves": {
+    "passiveValue": {
+      "crit-adc": 0.3,
+      "bruiser": 1.0,
+      "assassin": 1.0,
+      "burst-mage": 0.5,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser",
+      "assassin"
+    ],
+    "note": "Provides crucial omnivamp for sustain from all damage sources."
+  },
+  "ionian-boots-of-lucidity": {
+    "passiveValue": {
+      "crit-adc": 0.2,
+      "bruiser": 0.7,
+      "assassin": 1.0,
+      "burst-mage": 1.0,
+      "tank": 0.7,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "assassin",
+      "burst-mage",
+      "enchanter"
+    ],
+    "note": "Reduces summoner spell cooldowns, enabling more frequent plays."
+  },
+  "mercurys-treads": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "Provides minor health regeneration."
+  },
+  "plated-steelcaps": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "Provides minor health regeneration."
+  },
+  "gargoyle": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.9,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Massive shield for engaging or surviving burst, scales with defenses."
+  },
+  "glorious": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 1.0,
+      "assassin": 0.5,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser",
+      "tank"
+    ],
+    "note": "Grants movement speed for engage, then slows enemies and grants tenacity."
+  },
+  "locket": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.6,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Shields self and nearby allied champions from incoming damage."
+  },
+  "protobelt": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.4,
+      "assassin": 1.0,
+      "burst-mage": 1.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin",
+      "burst-mage"
+    ],
+    "note": "Dash, burst damage, and magic resist reduction for targets."
+  },
+  "quicksilver": {
+    "passiveValue": {
+      "crit-adc": 0.9,
+      "bruiser": 0.9,
+      "assassin": 0.9,
+      "burst-mage": 0.9,
+      "tank": 0.9,
+      "enchanter": 0.9
+    },
+    "coreFor": [],
+    "note": "Cleanses crowd control, granting temporary tenacity and slow resistance."
+  },
+  "stasis": {
+    "passiveValue": {
+      "crit-adc": 0.9,
+      "bruiser": 0.9,
+      "assassin": 0.9,
+      "burst-mage": 0.9,
+      "tank": 0.9,
+      "enchanter": 0.9
+    },
+    "coreFor": [],
+    "note": "Renders user untargetable and invulnerable, but unable to act."
+  },
+  "force-of-nature": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 1.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser",
+      "tank"
+    ],
+    "note": "Grants movement speed and reduces magic damage taken against AP threats."
+  },
+  "frozen-heart": {
+    "passiveValue": {
+      "crit-adc": 0.5,
+      "bruiser": 0.4,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.3
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Significantly reduces enemy attack speed, crucial for tanking physical damage."
+  },
+  "essence-reaver": {
+    "passiveValue": {
+      "crit-adc": 0.9,
+      "bruiser": 0.3,
+      "assassin": 0.6,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Mana sustain and crit-scaling Spellblade damage for ability-reliant ADCs."
+  },
+  "navori-quickblades": {
+    "passiveValue": {
+      "crit-adc": 0.9,
+      "bruiser": 0.4,
+      "assassin": 0.1,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Attacks reduce basic ability cooldowns, enabling more frequent spell usage."
+  },
+  "seryldas-grudge": {
+    "passiveValue": {
+      "crit-adc": 0.7,
+      "bruiser": 0.8,
+      "assassin": 0.9,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin"
+    ],
+    "note": "Armor penetration, ability slow, and grievous wounds for damage and utility."
+  },
+  "staff-of-flowing-water": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Boosts ally and self AP/AH after healing or shielding."
+  },
+  "wits-end": {
+    "passiveValue": {
+      "crit-adc": 0.7,
+      "bruiser": 0.8,
+      "assassin": 0.2,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "On-hit magic damage and healing, especially effective against magic damage."
+  },
+  "edge-of-night": {
+    "passiveValue": {
+      "crit-adc": 0.2,
+      "bruiser": 0.4,
+      "assassin": 0.9,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin"
+    ],
+    "note": "Spell shield for safe engagement and armor penetration for burst."
+  },
+  "divine-sunderer": {
+    "passiveValue": {
+      "crit-adc": 0.3,
+      "bruiser": 1.0,
+      "assassin": 0.5,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Max health damage and healing on-hit after abilities, core for bruisers."
+  },
+  "hullbreaker": {
+    "passiveValue": {
+      "crit-adc": 0.2,
+      "bruiser": 1.0,
+      "assassin": 0.1,
+      "burst-mage": 0.0,
+      "tank": 0.6,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Empowers minions and deals bonus damage to structures for split-pushing."
+  },
+  "veil": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Grants a spell shield to nearby allies, crucial defensive utility."
+  },
+  "riftmaker": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Magic vamp and true damage conversion for sustained magic damage output."
+  },
+  "imperial-mandate": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.6,
+      "tank": 0.3,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Amplifies ally damage and grants movement speed on CC application."
+  },
+  "cosmic-drive": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.2,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.0,
+      "enchanter": 0.5
+    },
+    "coreFor": [],
+    "note": "Grants significant burst movement speed for mages to kite and chase."
+  },
+  "serpents-fang": {
+    "passiveValue": {
+      "crit-adc": 0.8,
+      "bruiser": 0.7,
+      "assassin": 1.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin"
+    ],
+    "note": "Crucial for bursting shielded targets, especially for assassins and ADCs."
+  },
+  "horizon-focus": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.0,
+      "enchanter": 0.4
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Amplifies long-range ability damage and provides crucial vision for mages."
+  },
+  "lord-dominiks-regard": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.7,
+      "assassin": 0.4,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Significantly increases damage against high-health targets, crucial for ADCs."
+  },
+  "dawnshroud": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.5,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.4
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Synergizes perfectly with CC, providing damage, vision, and resistances for tanks."
+  },
+  "mantle-of-the-twelfth-hour": {
+    "passiveValue": {
+      "crit-adc": 0.2,
+      "bruiser": 1.0,
+      "assassin": 0.1,
+      "burst-mage": 0.0,
+      "tank": 0.8,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Grants burst health, slow resist, and movement speed when critically low."
+  },
+  "amaranths-twinguard": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.8,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Provides massive scaling resistances and tenacity in extended champion combat."
+  },
+  "searing-crown": {
+    "passiveValue": {
+      "crit-adc": 0.2,
+      "bruiser": 0.8,
+      "assassin": 0.1,
+      "burst-mage": 0.2,
+      "tank": 1.0,
+      "enchanter": 0.1
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Provides consistent max HP magic damage burn, great for tanks/bruisers."
+  },
+  "the-collector": {
+    "passiveValue": {
+      "crit-adc": 0.8,
+      "bruiser": 0.1,
+      "assassin": 1.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin"
+    ],
+    "note": "Executes low-health enemies, ensuring kills and providing armor penetration."
+  },
+  "boots-of-mana": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.2,
+      "assassin": 0.0,
+      "burst-mage": 1.0,
+      "tank": 0.3,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "burst-mage",
+      "enchanter"
+    ],
+    "note": "Provides crucial mana regeneration and magic penetration for spellcasters."
+  },
+  "boots-of-dynamism": {
+    "passiveValue": {
+      "crit-adc": 0.7,
+      "bruiser": 0.7,
+      "assassin": 1.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "assassin"
+    ],
+    "note": "Grants essential flat armor penetration for physical damage dealers."
+  },
+  "berserkers-greaves": {
+    "passiveValue": {
+      "crit-adc": 0.8,
+      "bruiser": 0.4,
+      "assassin": 0.1,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Provides valuable early attack-based health sustain for auto-attackers."
+  },
+  "magnetic-blaster": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.2,
+      "assassin": 0.1,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Energized attacks with crit, range, bounce, and movement speed."
+  },
+  "chempunk-chainsword": {
+    "passiveValue": {
+      "crit-adc": 0.6,
+      "bruiser": 0.9,
+      "assassin": 0.7,
+      "burst-mage": 0.0,
+      "tank": 0.1,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "Applies Grievous Wounds with physical damage."
+  },
+  "oceanids-trident": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.1,
+      "enchanter": 0.1
+    },
+    "coreFor": [],
+    "note": "Reduces enemy shields with ability damage, scales with AP."
+  },
+  "crown-of-the-shattered-queen": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.9,
+      "tank": 0.1,
+      "enchanter": 0.1
+    },
+    "coreFor": [],
+    "note": "Spell shield, damage reduction, and AP for mages."
+  },
+  "spear-of-shojin": {
+    "passiveValue": {
+      "crit-adc": 0.1,
+      "bruiser": 0.9,
+      "assassin": 0.9,
+      "burst-mage": 0.9,
+      "tank": 0.2,
+      "enchanter": 0.1
+    },
+    "coreFor": [],
+    "note": "Ability haste and stacking ability/passive damage amplification."
+  },
+  "titanic-hydra": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.9,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.6,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "On-hit and AoE damage scaling with bonus health."
+  },
+  "heartsteel": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.8,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Charged attack deals max health damage and grants permanent max health."
+  },
+  "terminus": {
+    "passiveValue": {
+      "crit-adc": 0.9,
+      "bruiser": 0.9,
+      "assassin": 0.1,
+      "burst-mage": 0.0,
+      "tank": 0.1,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "On-hit magic damage, alternating resistances and penetration on attacks."
+  },
+  "sundered-sky": {
+    "passiveValue": {
+      "crit-adc": 0.2,
+      "bruiser": 0.9,
+      "assassin": 0.8,
+      "burst-mage": 0.0,
+      "tank": 0.1,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "First attack crits and heals, strong for trades and sustain."
+  },
+  "eclipse": {
+    "passiveValue": {
+      "crit-adc": 0.2,
+      "bruiser": 0.9,
+      "assassin": 0.9,
+      "burst-mage": 0.0,
+      "tank": 0.1,
+      "enchanter": 0.0
+    },
+    "coreFor": [],
+    "note": "Max health damage and shield on quick consecutive hits."
+  },
+  "psychic-projector": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.1,
+      "assassin": 0.0,
+      "burst-mage": 0.2,
+      "tank": 0.9,
+      "enchanter": 0.1
+    },
+    "coreFor": [],
+    "note": "Converts bonus health to AP, then AP to resistances."
+  },
+  "redemption": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.1,
+      "assassin": 0.0,
+      "burst-mage": 0.1,
+      "tank": 0.6,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Mana/health sustain and periodic AoE heal for allies."
+  },
+  "kaenic-rookern": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.3
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Provides a significant magic damage shield, scaling with max health."
+  },
+  "yordle-trap": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.4,
+      "assassin": 0.0,
+      "burst-mage": 0.4,
+      "tank": 0.8,
+      "enchanter": 0.7
+    },
+    "coreFor": [],
+    "note": "Grants movement speed, armor/MR shred, and bonus gold on displacement."
+  },
+  "dream-maker": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 1.0
+    },
+    "coreFor": [
+      "enchanter"
+    ],
+    "note": "Empowers allies with bonus damage and movement speed after healing/shielding."
+  },
+  "malignance": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 1.0,
+      "tank": 0.2,
+      "enchanter": 0.4
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Grants ultimate ability haste, burn damage, and magic resist shred."
+  },
+  "bandle-fantasy": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 1.0,
+      "tank": 0.0,
+      "enchanter": 0.2
+    },
+    "coreFor": [
+      "burst-mage"
+    ],
+    "note": "Spawns damaging traps on ability hit, adding burst damage."
+  },
+  "soul-transfer": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Summons damaging clones on critical strikes, scaling with AD and crit."
+  },
+  "stridebreaker": {
+    "passiveValue": {
+      "crit-adc": 0.6,
+      "bruiser": 1.0,
+      "assassin": 0.7,
+      "burst-mage": 0.0,
+      "tank": 0.4,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Active dash, damage, and slow for gap closing and target access."
+  },
+  "goredrinker": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 1.0,
+      "assassin": 0.5,
+      "burst-mage": 0.0,
+      "tank": 0.3,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Active AoE damage and significant health restoration based on missing health."
+  },
+  "galeforce": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.4,
+      "assassin": 0.9,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc",
+      "assassin"
+    ],
+    "note": "Active dash for mobility and burst damage to low health enemies."
+  },
+  "radiant-virtue": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.4
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Ultimate cast grants max health and heals nearby allies based on max health."
+  },
+  "guinsoos-rageblade": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.5,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "Converts crit chance to on-hit magic damage and grants phantom hit."
+  },
+  "hollow-radiance": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Deals sustained AoE magic damage in combat, scaling with bonus health."
+  },
+  "kraken-slayer": {
+    "passiveValue": {
+      "crit-adc": 1.0,
+      "bruiser": 0.4,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "crit-adc"
+    ],
+    "note": "On-hit damage and movement speed for sustained auto-attackers."
+  },
+  "knights-vow": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.1,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.6,
+      "enchanter": 0.3
+    },
+    "coreFor": [],
+    "note": "Redirects damage from an ally, providing protection and minor healing."
+  },
+  "overlords-bloodmail": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 1.0,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 0.1,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Converts bonus health to AD and grants more AD when low health."
+  },
+  "unending-despair": {
+    "passiveValue": {
+      "crit-adc": 0.0,
+      "bruiser": 0.7,
+      "assassin": 0.0,
+      "burst-mage": 0.0,
+      "tank": 1.0,
+      "enchanter": 0.0
+    },
+    "coreFor": [
+      "tank"
+    ],
+    "note": "Deals health-scaling damage and provides significant healing in sustained combat."
+  },
+  "experimental-hexplate": {
+    "passiveValue": {
+      "crit-adc": 0.8,
+      "bruiser": 1.0,
+      "assassin": 0.9,
+      "burst-mage": 0.3,
+      "tank": 0.7,
+      "enchanter": 0.3
+    },
+    "coreFor": [
+      "bruiser"
+    ],
+    "note": "Grants ultimate haste and a powerful post-ultimate attack/move speed steroid."
+  }
+}

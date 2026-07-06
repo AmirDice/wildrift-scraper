@@ -7,9 +7,19 @@ import { useState } from "react";
 const LINKS = [
   { href: "/tier-list", label: "Tier List" },
   { href: "/champions", label: "Champions" },
+  { href: "/global", label: "Global" },
+  { href: "/build", label: "Builds", badge: "beta" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },
 ];
+
+function BetaBadge() {
+  return (
+    <span className="rounded bg-accent/20 px-1 py-0.5 text-[0.55rem] font-bold uppercase leading-none tracking-wide text-accent">
+      beta
+    </span>
+  );
+}
 
 function Wordmark() {
   return (
@@ -41,13 +51,14 @@ export function SiteNav() {
             <Link
               key={l.href}
               href={l.href}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
                 isActive(l.href)
                   ? "text-text bg-white/[0.06]"
                   : "text-muted hover:text-text hover:bg-white/[0.04]"
               }`}
             >
               {l.label}
+              {l.badge === "beta" && <BetaBadge />}
             </Link>
           ))}
         </div>
@@ -83,13 +94,14 @@ export function SiteNav() {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className={`rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                   isActive(l.href)
                     ? "text-accent bg-accent/10"
                     : "text-muted hover:text-text hover:bg-white/[0.04]"
                 }`}
               >
                 {l.label}
+                {l.badge === "beta" && <BetaBadge />}
               </Link>
             ))}
           </div>

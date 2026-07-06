@@ -1,0 +1,38 @@
+{
+  "_note": "Structured ability damage formulas, transcribed from the scraped ability text (data/champions_wr.json). base[] is per-rank base damage; ad/ap are per-rank ratios (scalar = same every rank). This is the ground-truth math the damage engine uses. PoC: Graves only.",
+  "Graves": {
+    "abilities": {
+      "Q": {
+        "name": "End of the Line",
+        "maxRank": 4,
+        "instances": [
+          {"base": [70, 90, 110, 130], "ad": [0.80, 0.80, 0.80, 0.80], "type": "physical"},
+          {"base": [80, 130, 180, 230], "ad": [1.10, 1.30, 1.50, 1.70], "type": "physical"}
+        ]
+      },
+      "W": {
+        "name": "Smoke Screen",
+        "maxRank": 4,
+        "instances": [
+          {"base": [60, 125, 190, 255], "ap": [0.60, 0.60, 0.60, 0.60], "type": "magic"}
+        ]
+      },
+      "R": {
+        "name": "Collateral Damage",
+        "maxRank": 3,
+        "instances": [
+          {"base": [300, 450, 600], "ad": [1.50, 1.50, 1.50], "type": "physical"},
+          {"base": [200, 320, 440], "ad": [1.20, 1.20, 1.20], "type": "physical"}
+        ]
+      }
+    },
+    "auto": {
+      "note": "New Destiny: 4 bullets, 72% AD + 24% AD per extra bullet. Point-blank (all 4 hit) = 72 + 3*24 = 144% AD.",
+      "adRatio": 1.44,
+      "type": "physical",
+      "canCrit": true
+    },
+    "combo": ["Q", "auto", "R"],
+    "abilityLevels": {"Q": 4, "R": 3}
+  }
+}

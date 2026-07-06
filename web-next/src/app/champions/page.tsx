@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { site, getChampions } from "@/lib/data";
+import { getCnChampions, cnRoles, CN_META } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { ChampionsExplorer } from "@/components/champions-explorer";
 
@@ -19,7 +20,13 @@ export default function ChampionsPage() {
         Every champion tracked on EU, ranked by top-50 player win rates.
       </p>
       <div className="mt-8">
-        <ChampionsExplorer champions={champions} roles={site.roles} />
+        <ChampionsExplorer
+          champions={champions}
+          roles={site.roles}
+          cnChampions={getCnChampions()}
+          cnRoles={cnRoles()}
+          cnMeta={CN_META}
+        />
       </div>
     </Container>
   );

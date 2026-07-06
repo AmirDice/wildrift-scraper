@@ -1,0 +1,251 @@
+"""Scrape Wild Rift champion base stats + abilities from wildriftfire guides.
+
+Each champion has a guide at /guide/{slug}. That single page contains:
+  - base stats  (.wf-champion__about__stats, via data-base / data-increase)
+  - all 5 abilities (.statsBlock.abilities) with cooldowns, base damage,
+    scaling ratios (+75% AD) and damage types (physical / magic / true).
+
+From the ability text we derive the champion's *damage profile* and mechanic
+tags, which the build optimizer uses to know what stats/items/runes fit:
+  - primaryDamage: physical | magic         (item damage-type gating)
+  - scalesWith:    {ad, ap, bonusAd, maxHp, attackSpeed}
+  - tags:          {dash, cc, shield, heal, onHit}
+
+Slugs come from the homepage's /guide/{slug} links.
+
+Output: data/champions_wr.json
+Raw pages cache under data/wrf_cache/.
+
+Run:
+    python -m scripts.scrape_champions
+    python -m scripts.scrape_champions --limit 5
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import time
+from pathlib import Path
+
+import requests
+from bs4 import BeautifulSoup
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "data" / "champions_wr.json"
+CACHE = ROOT / "data" / "wrf_cache"
+BASE = "https://www.wildriftfire.com"
+DELAY = 0.5
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "Referer": f"{BASE}/",
+}
+
+STAT_LABELS = {
+    "Health": "hp",
+    "Health Reg. (5s)": "hpRegen",
+    "Armor": "armor",
+    "Magic Res.": "mr",
+    "Move Speed": "moveSpeed",
+    "Attack Dmg.": "ad",
+    "Attack Spd.": "attackSpeed",
+}
+
+
+def fetch(url: str, cache_key: str) -> str:
+    CACHE.mkdir(parents=True, exist_ok=True)
+    cached = CACHE / cache_key
+    if cached.exists():
+        return cached.read_text(encoding="utf-8")
+    for attempt in range(3):
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=25)
+            r.raise_for_status()
+            cached.write_text(r.text, encoding="utf-8")
+            time.sleep(DELAY)
+            return r.text
+        except requests.RequestException:
+            if attempt == 2:
+                raise
+            time.sleep(1.5 * (attempt + 1))
+    return ""
+
+
+def champion_slugs() -> list[str]:
+    html = fetch(f"{BASE}/", "home.html")
+    slugs = sorted(set(re.findall(r"/guide/([a-z0-9\-]+)", html)))
+    return slugs
+
+
+def _base_stats(soup: BeautifulSoup) -> dict:
+    out = {}
+    for block in soup.select(".statsBlock.champion .statsBlock__block"):
+        name_el = block.select_one(".name")
+        val_el = block.select_one(".value")
+        if not name_el or not val_el:
+            continue
+        label = name_el.get_text(strip=True)
+        key = STAT_LABELS.get(label)
+        if not key:
+            continue
+        base = val_el.get("data-base")
+        inc = val_el.get("data-increase")
+        try:
+            base_f = float(base)
+            inc_f = float(inc) if inc is not None else 0.0
+        except (TypeError, ValueError):
+            continue
+        out[key] = {
+            "base": base_f,
+            "perLevel": inc_f,
+            "lvl15": round(base_f + inc_f * 14, 1),
+        }
+    return out
+
+
+def _analyse_ability(text: str) -> dict:
+    t = text.lower()
+    dtypes = []
+    for dt in ("physical damage", "magic damage", "true damage"):
+        if dt in t:
+            dtypes.append(dt.split()[0])  # physical / magic / true
+    scales = set()
+    if re.search(r"%\s*ad\b", t) or "bonus ad" in t:
+        scales.add("ad")
+    if "bonus ad" in t:
+        scales.add("bonusAd")
+    if re.search(r"%\s*ap\b", t) or "ability power" in t:
+        scales.add("ap")
+    if "maximum health" in t or "max health" in t or "maximum hp" in t:
+        scales.add("maxHp")
+    if "attack speed" in t:
+        scales.add("attackSpeed")
+    tags = set()
+    if any(k in t for k in ("dash", "blink", "leap", "lunge", "vault", "teleport", "charge")):
+        tags.add("dash")
+    if any(k in t for k in ("stun", "root", "snare", "slow", "knock", "taunt", "charm",
+                            "fear", "suppress", "airborne", "immobiliz", "pull", "grab")):
+        tags.add("cc")
+    if "shield" in t:
+        tags.add("shield")
+    if any(k in t for k in ("heal", "restore", "lifesteal", "life steal", "vamp")):
+        tags.add("heal")
+    if any(k in t for k in ("on-hit", "on hit", "basic attack", "next attack",
+                            "empowered attack", "next basic")):
+        tags.add("onHit")
+    return {"damageTypes": dtypes, "scales": sorted(scales), "tags": sorted(tags)}
+
+
+def _abilities(soup: BeautifulSoup) -> list[dict]:
+    out = []
+    # some pages (e.g. Kayn) render two transform forms = 10 blocks; keep base 5.
+    for block in soup.select(".statsBlock.abilities .statsBlock__block")[:5]:
+        name_el = block.select_one(".upper .name")
+        if not name_el:
+            continue
+        slot_el = name_el.select_one("span")
+        slot = slot_el.get_text(strip=True) if slot_el else ""
+        name = name_el.get_text(" ", strip=True)
+        if slot:
+            name = name.replace(slot, "", 1).strip()
+        cds = [s.get_text(strip=True) for s in block.select(".cooldown span")]
+        text = " ".join(p.get_text(" ", strip=True) for p in block.select(".lower p"))
+        an = _analyse_ability(text)
+        out.append({
+            "slot": slot,             # P / 1 / 2 / 3 / 4
+            "name": name,
+            "cooldowns": cds,
+            "text": text,
+            **an,
+        })
+    return out
+
+
+def _derive_profile(abilities: list[dict], base_stats: dict) -> dict:
+    phys = magic = 0
+    scales: set[str] = set()
+    tags: set[str] = set()
+    for a in abilities:
+        for d in a["damageTypes"]:
+            if d == "physical":
+                phys += 1
+            elif d == "magic":
+                magic += 1
+        scales.update(a["scales"])
+        tags.update(a["tags"])
+    # base AD scaling counts toward physical identity
+    primary = "physical" if phys >= magic else "magic"
+    return {
+        "primaryDamage": primary,
+        "physicalAbilities": phys,
+        "magicAbilities": magic,
+        "scalesWith": sorted(scales),
+        "mechanics": sorted(tags),
+    }
+
+
+# pages whose displayed name differs from the champion (transform forms, etc.)
+SLUG_NAME_OVERRIDES = {"kayn": "Kayn"}
+
+
+def _name_from_page(soup: BeautifulSoup, slug: str) -> str:
+    if slug in SLUG_NAME_OVERRIDES:
+        return SLUG_NAME_OVERRIDES[slug]
+    h2 = soup.select_one(".statsBlock.champion h2")
+    if h2:
+        # h2 reads "Level 1 <Champion> Stats" — drop the leading "Level N".
+        m = re.search(r"Level\s*\d+\s+(.+?)\s+Stats", h2.get_text(" ", strip=True))
+        if m:
+            return m.group(1).strip()
+    return slug.replace("-", " ").title()
+
+
+def parse_champion(slug: str) -> dict | None:
+    html = fetch(f"{BASE}/guide/{slug}", f"guide_{slug}.html")
+    soup = BeautifulSoup(html, "html.parser")
+    abilities = _abilities(soup)
+    if not abilities:
+        return None
+    base_stats = _base_stats(soup)
+    profile = _derive_profile(abilities, base_stats)
+    return {
+        "slug": slug,
+        "name": _name_from_page(soup, slug),
+        "baseStats": base_stats,
+        **profile,
+        "abilities": abilities,
+    }
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit", type=int, default=0)
+    args = ap.parse_args()
+
+    slugs = champion_slugs()
+    if args.limit:
+        slugs = slugs[: args.limit]
+    print(f"found {len(slugs)} champion slugs")
+
+    champs = []
+    for i, slug in enumerate(slugs, 1):
+        try:
+            c = parse_champion(slug)
+        except Exception as e:  # noqa: BLE001
+            print(f"  ! {slug} failed: {e}")
+            continue
+        if c:
+            champs.append(c)
+            print(f"  [{i}/{len(slugs)}] {c['name']:16} {c['primaryDamage']:8} "
+                  f"scales={c['scalesWith']} mech={c['mechanics']}")
+        else:
+            print(f"  [{i}/{len(slugs)}] {slug}: no abilities parsed (skipped)")
+
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps(champs, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\nwrote {OUT.relative_to(ROOT)} ({len(champs)} champions, {OUT.stat().st_size/1024:.0f} KB)")
+
+
+if __name__ == "__main__":
+    main()

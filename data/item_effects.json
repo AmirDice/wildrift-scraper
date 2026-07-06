@@ -1,0 +1,15 @@
+{
+  "_note": "Damage-relevant numeric models of item stats + passives, from data/items.json. Only fields the damage engine uses. ad=flat AD; crit=crit chance; critMult=crit damage multiplier (base 1.75); flatPen=flat armor pen (lethality); pctPen=% armor pen; armorShredPct=% armor reduction; procMaxHpPct=on-combo bonus = % target max HP (physical); firstHit=one-time bonus physical on first attack; giantSlayer=max % bonus dmg vs high-bonus-HP; executePct=execute threshold. PoC: Graves item pool.",
+  "youmuus-ghostblade":     {"ad": 55, "flatPen": 15},
+  "eclipse":                {"ad": 65, "procMaxHpPct": 0.03, "procType": "physical"},
+  "seryldas-grudge":        {"ad": 40, "pctPen": 0.33},
+  "the-collector":          {"ad": 45, "crit": 0.25, "flatPen": 10, "executePct": 0.04},
+  "infinity-edge":          {"ad": 65, "crit": 0.25, "critMult": 2.05},
+  "duskblade-of-draktharr": {"ad": 55, "flatPen": 18, "firstHit": 160},
+  "black-cleaver":          {"ad": 40, "armorShredPct": 0.30},
+  "deaths-dance":           {"ad": 35},
+  "lord-dominiks-regard":   {"ad": 25, "crit": 0.25, "pctPen": 0.36, "giantSlayer": 0.12},
+  "edge-of-night":          {"ad": 50, "flatPen": 8},
+  "bloodthirster":          {"ad": 55, "crit": 0.25},
+  "eclipse-note":           "ranged Graves proc = 3% (7% melee)"
+}
