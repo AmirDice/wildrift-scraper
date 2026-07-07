@@ -174,7 +174,7 @@ export function BuildView({ data }: { data: ChampionBuilds }) {
                   <div key={s.slug} className="flex items-center gap-2.5 text-sm">
                     <ItemIcon src={s.icon} alt={s.name} size={30} />
                     <span className="font-medium">{s.name}</span>
-                    {s.when && <span className="text-xs text-muted">— {s.when}</span>}
+                    {s.when && <span className="text-xs text-muted">· {s.when}</span>}
                   </div>
                 ))}
               </div>

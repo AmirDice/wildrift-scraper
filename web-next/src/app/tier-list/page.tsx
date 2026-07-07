@@ -6,7 +6,7 @@ import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 
 export const metadata: Metadata = {
-  title: "Wild Rift Tier List — EU Top 50 Player Win Rates",
+  title: "Wild Rift Tier List | EU Top 50 Player Win Rates",
   description:
     "The Wild Rift tier list ranked by real top-50 EU player win rates. Filter by role. GOD to Ass tiers, updated twice a month.",
   alternates: { canonical: "/tier-list" },
@@ -44,7 +44,7 @@ export default function TierListPage() {
           since these are each champion&rsquo;s top-50 mains. Read the gap between champions.
         </Notice>
         <Notice>
-          A higher win rate means that champion&rsquo;s average top player <strong className="text-text">carries more games</strong> —
+          A higher win rate means that champion&rsquo;s average top player <strong className="text-text">carries more games</strong>,
           often down to difficulty, not that the champion is weak (e.g. Lee Sin).
         </Notice>
       </div>

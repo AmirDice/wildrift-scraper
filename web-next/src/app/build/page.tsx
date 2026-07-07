@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Container } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Build Optimizer — Coming Soon | Wild Rift Builds & Runes",
+  title: "Build Optimizer (Coming Soon) | Wild Rift Builds & Runes",
   description:
-    "A per-champion Wild Rift build & rune optimizer is on the way — balanced and max-burst one-shot builds with item order, situational swaps, and item-exclusivity rules.",
+    "A per-champion Wild Rift build & rune optimizer is on the way: balanced and max-burst one-shot builds with item order, situational swaps, and item-exclusivity rules.",
   alternates: { canonical: "/build" },
 };
 
@@ -18,7 +18,7 @@ export default function BuildIndex() {
         </span>
         <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Build Optimizer</h1>
         <p className="mt-4 text-muted">
-          We&rsquo;re building a per-champion build &amp; rune optimizer — a{" "}
+          We&rsquo;re building a per-champion build &amp; rune optimizer: a{" "}
           <span className="text-accent">balanced</span> build and a{" "}
           <span className="text-bad">max-burst one-shot</span> build for every champion, with item
           order, rune pages, situational swaps, and Riot&rsquo;s item-exclusivity rules enforced.

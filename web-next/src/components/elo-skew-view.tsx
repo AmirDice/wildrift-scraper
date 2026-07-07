@@ -77,12 +77,12 @@ export function EloSkewView({ rows, roles }: { rows: SkewRow[]; roles: string[] 
         {mode === "climbing" ? (
           <>
             High-skill specialists: their win rate <span className="text-emerald-300">climbs</span> from
-            the whole ladder up to Sovereign. Rewarding to master, but expect a rough start.
+            the whole ladder up to Challenger+. Rewarding to master, but expect a rough start.
           </>
         ) : (
           <>
             Low-elo stompers: strong across the ladder but they{" "}
-            <span className="text-rose-300">fall off</span> against Sovereign-level play. Great to climb
+            <span className="text-rose-300">fall off</span> against Challenger+ play. Great to climb
             with, less so at the top.
           </>
         )}
@@ -114,9 +114,9 @@ export function EloSkewView({ rows, roles }: { rows: SkewRow[]; roles: string[] 
             <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
               <th className="w-12 px-3 py-3 text-center font-semibold">#</th>
               <th className="px-3 py-3 text-left font-semibold">Champion</th>
-              <th className="px-3 py-3 text-center font-semibold">All → Sovereign</th>
+              <th className="px-3 py-3 text-center font-semibold">All → Challenger+</th>
               <th className="px-3 py-3 text-right font-semibold">All ranks</th>
-              <th className="px-3 py-3 text-right font-semibold">Sovereign</th>
+              <th className="px-3 py-3 text-right font-semibold">Challenger+</th>
               <th className="px-3 py-3 text-right font-semibold">Skew</th>
             </tr>
           </thead>

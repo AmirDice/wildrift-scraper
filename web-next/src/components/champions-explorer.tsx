@@ -89,7 +89,7 @@ export function ChampionsExplorer({
         <>
           {isCN && (
             <p className="mb-4 text-sm text-muted">
-              Official China server data ({cnMeta.bracket}, highest rank) — win, pick &amp; ban
+              Official China server data ({cnMeta.bracket}, highest rank): win, pick &amp; ban
               rates.
               {cnMeta.date
                 ? ` Updated ${cnMeta.date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")}.`
@@ -221,16 +221,16 @@ export function ChampionsExplorer({
                     ) : (
                       <>
                         <td className="px-3 py-2.5 text-right text-gold">
-                          {c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "—"}
+                          {c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "-"}
                         </td>
                         <td className="px-3 py-2.5 text-right text-muted">
-                          {c.totalGames != null ? c.totalGames.toLocaleString() : "—"}
+                          {c.totalGames != null ? c.totalGames.toLocaleString() : "-"}
                         </td>
                         <td className="px-3 py-2.5 text-right text-muted">
-                          {c.maxScore != null ? c.maxScore.toLocaleString() : "—"}
+                          {c.maxScore != null ? c.maxScore.toLocaleString() : "-"}
                         </td>
                         <td className="max-w-[160px] truncate px-3 py-2.5 text-muted">
-                          {c.topPlayer ?? "—"}
+                          {c.topPlayer ?? "-"}
                         </td>
                       </>
                     )}

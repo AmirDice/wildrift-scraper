@@ -6,9 +6,9 @@ import { Container } from "@/components/ui";
 import { CrossServerTable, type Row } from "@/components/cross-server-table";
 
 export const metadata: Metadata = {
-  title: "Global Win Rates — EU vs CN Cross-Server Meta",
+  title: "Global Win Rates | EU vs CN Cross-Server Meta",
   description:
-    "Compare Wild Rift champion win rates across servers (EU vs China). Champions strong on every server are the safest, genuinely strong picks — filter to those with one click.",
+    "Compare Wild Rift champion win rates across servers (EU vs China). Champions strong on every server are the safest, genuinely strong picks; filter to those with one click.",
   alternates: { canonical: "/global" },
 };
 
@@ -37,7 +37,7 @@ export default function GlobalPage() {
         Every champion&rsquo;s win rate on <span className="text-text">EU</span> (top-50 mains) and{" "}
         <span className="text-text">CN</span> ({CN_META.bracket}), on the same 50%-centred scale.
         Champions strong on <span className="text-emerald-300">both servers</span> are the safest
-        picks — a big <span className="text-text">Gap</span> means a champion is server-specific
+        picks. A big <span className="text-text">Gap</span> means a champion is server-specific
         (meta or playstyle), not universally strong.
       </p>
 

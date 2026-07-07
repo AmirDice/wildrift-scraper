@@ -4,7 +4,7 @@ import { Container } from "@/components/ui";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
 
 export const metadata: Metadata = {
-  title: "Wild Rift Leaderboards — Top 50 Players per Champion",
+  title: "Wild Rift Leaderboards | Top 50 Players per Champion",
   description:
     "The top 50 EU players on every Wild Rift champion, with their win rate, games and mastery. Sortable by rank, win rate, games or mastery.",
   alternates: { canonical: "/leaderboard" },

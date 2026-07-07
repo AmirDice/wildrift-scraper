@@ -69,7 +69,7 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
 
   return (
     <div>
-      {/* Region — CN has no per-player leaderboard data, so only EU / NA here */}
+      {/* Region: CN has no per-player leaderboard data, so only EU / NA here */}
       <div className="mb-5">
         <RegionToggle region={region} onChange={setRegion} regions={["EU", "NA"] as const} />
       </div>
@@ -183,13 +183,13 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
                   </td>
                   <td className="max-w-[220px] truncate px-3 py-2.5 font-medium">{row.p}</td>
                   <td className="px-3 py-2.5 text-right font-semibold text-accent">
-                    {row.w != null ? `${row.w.toFixed(1)}%` : "—"}
+                    {row.w != null ? `${row.w.toFixed(1)}%` : "-"}
                   </td>
                   <td className="px-3 py-2.5 text-right text-muted">
-                    {row.g != null ? row.g.toLocaleString() : "—"}
+                    {row.g != null ? row.g.toLocaleString() : "-"}
                   </td>
                   <td className="px-3 py-2.5 text-right text-muted">
-                    {row.s != null ? row.s.toLocaleString() : "—"}
+                    {row.s != null ? row.s.toLocaleString() : "-"}
                   </td>
                 </tr>
               ))}

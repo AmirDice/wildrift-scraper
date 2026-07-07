@@ -4,7 +4,7 @@ import { Container } from "@/components/ui";
 import { WinrateScatter } from "@/components/winrate-scatter";
 
 export const metadata: Metadata = {
-  title: "Consistency & Skill Ceiling — Wild Rift Meta Chart",
+  title: "Consistency & Skill Ceiling | Wild Rift Meta Chart",
   description:
     "Every Wild Rift champion plotted by win rate vs skill ceiling. Spot the reliably-strong picks, and the high-variance champions that only pay off with mastery.",
   alternates: { canonical: "/consistency" },

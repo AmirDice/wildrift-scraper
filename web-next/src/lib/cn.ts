@@ -1,8 +1,9 @@
 import cnData from "@/data/cn.json";
 import { getChampion, getChampions, type Champion } from "@/lib/data";
 
-/** Which rank bracket to surface. "4" = 峡谷之巅 (Sovereign) — the highest rank. */
-const BRACKET = "4";
+/** Which rank bracket to surface. "3" = Challenger and above (includes Sovereign),
+ *  a larger and steadier top-elo sample than the Sovereign tier alone. */
+const BRACKET = "3";
 
 interface CnEntry {
   winRate: number;

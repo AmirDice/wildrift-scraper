@@ -5,7 +5,7 @@ import { Container } from "@/components/ui";
 import { ChampionsExplorer } from "@/components/champions-explorer";
 
 export const metadata: Metadata = {
-  title: "Wild Rift Champions — Stats & Win Rates",
+  title: "Wild Rift Champions | Stats & Win Rates",
   description:
     "Every Wild Rift champion ranked by real EU top-50 player win rates. Search and filter by role, then open a champion for full stats and its best player.",
   alternates: { canonical: "/champions" },

@@ -76,7 +76,7 @@ export function MetaGapView({ rows, roles }: { rows: GapRow[]; roles: string[] }
       <p className="mb-4 max-w-2xl text-sm text-muted">
         {mode === "rising" ? (
           <>
-            Champions China&apos;s top elo (峡谷之巅) rates far above where EU has them — and are
+            Champions China&apos;s top elo (Challenger+) rates far above where EU has them, and are
             actively picked or banned there. China&apos;s highest bracket tends to run ahead of the
             West, so these are the picks worth learning early.
           </>

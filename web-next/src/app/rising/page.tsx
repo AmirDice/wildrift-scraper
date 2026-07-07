@@ -7,9 +7,9 @@ import { Container } from "@/components/ui";
 import { MetaGapView, type GapRow } from "@/components/meta-gap-view";
 
 export const metadata: Metadata = {
-  title: "Rising Picks — What China Is Playing Before the West",
+  title: "Rising Picks | What China Is Playing Before the West",
   description:
-    "Wild Rift champions China's top elo (峡谷之巅) rates far higher than EU does — a leading indicator of the meta. Plus the champions EU overrates that fall off against high-skill play.",
+    "Wild Rift champions China's top elo (Challenger+) rates far higher than EU does, a leading indicator of the meta. Plus the champions EU overrates that fall off against high-skill play.",
   alternates: { canonical: "/rising" },
 };
 
@@ -35,7 +35,7 @@ export default function RisingPage() {
       <p className="mt-2 max-w-2xl text-muted">
         Where China&rsquo;s top elo (<span className="text-text">{CN_META.bracket}</span>) disagrees
         with EU. Because the highest CN bracket runs ahead of the West, a champion much stronger
-        there is often <span className="text-text">rising</span> — worth learning before it hits your
+        there is often <span className="text-text">rising</span>, worth learning before it hits your
         server. The reverse flags picks EU <span className="text-text">overrates</span>.
       </p>
 
@@ -47,7 +47,7 @@ export default function RisingPage() {
         <p>
           Each win rate is measured against its own server&rsquo;s average (EU is 50%-centred, CN on
           its own mean), so the gap isn&rsquo;t skewed by one server running hotter. &ldquo;Contest&rdquo;
-          is CN pick% + ban% — how much the top bracket prioritises the champion.
+          is CN pick% + ban%, how much the top bracket prioritises the champion.
         </p>
         <p>
           Prefer the raw side-by-side numbers? See the{" "}

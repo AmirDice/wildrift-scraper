@@ -5,10 +5,10 @@
     "0": "All ranks",
     "1": "Diamond+",
     "2": "Master+",
-    "3": "Challenger",
+    "3": "Challenger+",
     "4": "Sovereign"
   },
-  "defaultBracket": "4",
+  "defaultBracket": "3",
   "nChampions": 137,
   "champions": [
     {

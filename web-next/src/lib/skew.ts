@@ -3,19 +3,19 @@ import { getChampion, type Champion } from "@/lib/data";
 
 /**
  * Elo skew: how a champion's win rate moves from the whole ladder up to China's
- * top bracket (峡谷之巅 / Sovereign). Champions that climb are high-skill specialists;
- * champions that fall off are low-elo stompers that get punished by better play.
+ * top bracket (Challenger+, i.e. Challenger and above). Champions that climb are
+ * high-skill specialists; champions that fall off are low-elo stompers that get
+ * punished by better play.
  *
- * CN publishes win/pick/ban for five cumulative brackets, from "All ranks" up to
- * "Sovereign" — the perfect axis for this since it's a real skill gradient.
+ * CN publishes win/pick/ban across cumulative rank brackets, from "All ranks" up
+ * to Challenger+, giving a real skill gradient to plot against.
  */
 
 export const BRACKETS = [
   { key: "0", label: "All ranks", short: "All" },
   { key: "1", label: "Diamond+", short: "D+" },
   { key: "2", label: "Master+", short: "M+" },
-  { key: "3", label: "Challenger", short: "Chall" },
-  { key: "4", label: "Sovereign", short: "Sov" },
+  { key: "3", label: "Challenger+", short: "Chal+" },
 ] as const;
 
 export interface BracketPoint {
@@ -29,9 +29,9 @@ export interface BracketPoint {
 
 export interface EloSkew {
   champion: Champion;
-  curve: BracketPoint[]; // one point per bracket, All ranks → Sovereign
+  curve: BracketPoint[]; // one point per bracket, All ranks up to Challenger+
   low: number; // win rate at "All ranks"
-  high: number; // win rate at "Sovereign"
+  high: number; // win rate at "Challenger+"
   skew: number; // high - low; >0 scales with elo, <0 falls off
   climbing: boolean; // meaningfully better in higher elo
   stomper: boolean; // meaningfully worse in higher elo
@@ -61,9 +61,9 @@ export function getEloSkews(): EloSkew[] {
     const eu = getChampion(c.slug);
     if (!eu) continue;
     if (!BRACKETS.every((b) => c.byBracket[b.key])) continue; // need the full curve
-    // Skip flex picks whose CN lane isn't the same across every bracket (e.g. Olaf
-    // reads Jungle in low brackets but Baron at Sovereign) — a mixed-lane curve would
-    // give a misleading skew. Their apex/tier data is still correct elsewhere.
+    // Skip flex picks whose CN lane isn't the same across every bracket, since a
+    // mixed-lane curve would give a misleading skew. Their tier data stays correct
+    // elsewhere.
     if (new Set(BRACKETS.map((b) => c.byBracket[b.key].position)).size > 1) continue;
     const curve: BracketPoint[] = BRACKETS.map((b) => {
       const e = c.byBracket[b.key];
@@ -78,21 +78,21 @@ export function getEloSkews(): EloSkew[] {
       low,
       high,
       skew,
-      climbing: skew >= 2,
-      stomper: skew <= -2,
+      climbing: skew >= 1.5,
+      stomper: skew <= -1.5,
     });
   }
   _cache = out.sort((a, b) => b.skew - a.skew);
   return _cache;
 }
 
-/** High-skill specialists — best in the hands of top players. */
+/** High-skill specialists: best in the hands of top players. */
 export function climbingPicks(limit?: number): EloSkew[] {
   const r = getEloSkews().filter((s) => s.climbing);
   return limit ? r.slice(0, limit) : r;
 }
 
-/** Low-elo stompers — strong to climb with, fall off up top. */
+/** Low-elo stompers: strong to climb with, weaker up top. */
 export function stomperPicks(limit?: number): EloSkew[] {
   const r = getEloSkews()
     .filter((s) => s.stomper)

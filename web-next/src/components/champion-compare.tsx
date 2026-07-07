@@ -144,7 +144,7 @@ export function ChampionCompare({ champions, cn, counters }: { champions: Champi
             <div className="my-4 text-center">
               <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-faint">Head-to-head · </span>
               <span className="text-lg font-bold" style={{ color: A_COLOR }}>{verdict.aw}</span>
-              <span className="mx-2 text-faint">—</span>
+              <span className="mx-2 text-faint">·</span>
               <span className="text-lg font-bold" style={{ color: B_COLOR }}>{verdict.bw}</span>
               <span className="ml-1.5 text-[0.7rem] text-muted">stats won</span>
             </div>
@@ -181,11 +181,11 @@ export function ChampionCompare({ champions, cn, counters }: { champions: Champi
                   <div key={s.label}>
                     <div className="mb-1 flex items-center justify-between text-xs">
                       <span className="font-semibold" style={{ color: va >= vb ? A_COLOR : "var(--color-muted)" }}>
-                        {s.get(a, cnA) != null ? s.get(a, cnA)!.toFixed(1) : "—"}
+                        {s.get(a, cnA) != null ? s.get(a, cnA)!.toFixed(1) : "-"}
                       </span>
                       <span className="text-faint">{s.label}</span>
                       <span className="font-semibold" style={{ color: vb >= va ? B_COLOR : "var(--color-muted)" }}>
-                        {s.get(b, cnB) != null ? s.get(b, cnB)!.toFixed(1) : "—"}
+                        {s.get(b, cnB) != null ? s.get(b, cnB)!.toFixed(1) : "-"}
                       </span>
                     </div>
                     <div className="flex h-2 overflow-hidden rounded-full bg-white/[0.06]">
@@ -203,7 +203,7 @@ export function ChampionCompare({ champions, cn, counters }: { champions: Champi
                 { label: "Role", a: a.role, b: b.role },
                 { label: "Class", a: a.class, b: b.class },
                 { label: "Difficulty", a: a.difficultyLabel, b: b.difficultyLabel },
-                { label: "Best player", a: a.bestPlayer?.player ?? "—", b: b.bestPlayer?.player ?? "—" },
+                { label: "Best player", a: a.bestPlayer?.player ?? "-", b: b.bestPlayer?.player ?? "-" },
               ].map((r) => (
                 <div key={r.label} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-2">
                   <span className="text-right text-muted">{r.a}</span>

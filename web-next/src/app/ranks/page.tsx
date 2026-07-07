@@ -7,9 +7,9 @@ import { Container } from "@/components/ui";
 import { EloSkewView, type SkewRow } from "@/components/elo-skew-view";
 
 export const metadata: Metadata = {
-  title: "Win Rate by Rank — Low Elo vs High Elo Wild Rift Champions",
+  title: "Win Rate by Rank | Low Elo vs High Elo Wild Rift Champions",
   description:
-    "How Wild Rift champion win rates change from the whole ladder up to China's Sovereign bracket. Find high-skill specialists that scale with elo and low-elo stompers that fall off at the top.",
+    "How Wild Rift champion win rates change from the whole ladder up to China's Challenger+ bracket. Find high-skill specialists that scale with elo and low-elo stompers that fall off at the top.",
   alternates: { canonical: "/ranks" },
 };
 
@@ -36,7 +36,7 @@ export default function RanksPage() {
         <span className="text-text">{CN_META.bracket}</span>. That skill gradient shows which
         champions <span className="text-emerald-300">scale with elo</span> (high-skill specialists)
         and which <span className="text-rose-300">fall off</span> against better players (low-elo
-        stompers) — so you can pick what actually works at <em>your</em> rank.
+        stompers), so you can pick what actually works at <em>your</em> rank.
       </p>
 
       <div className="mt-8">
@@ -45,9 +45,9 @@ export default function RanksPage() {
 
       <div className="mt-8 max-w-2xl space-y-2 text-xs text-faint">
         <p>
-          The sparkline runs All ranks → Diamond+ → Master+ → Challenger → Sovereign. Skew is the
-          Sovereign win rate minus the All-ranks win rate: positive means the champion gets stronger
-          the higher you climb.
+          The sparkline runs All ranks → Diamond+ → Master+ → Challenger+ (Challenger and above).
+          Skew is the Challenger+ win rate minus the All-ranks win rate: positive means the champion
+          gets stronger the higher you climb.
         </p>
         <p>
           Want the cross-server view instead? See{" "}

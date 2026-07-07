@@ -53,7 +53,7 @@ export default function HomePage() {
             <br className="hidden sm:block" /> in Wild Rift.
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted">
-            We rank every champion by the real win rates of its 50 best players —
+            We rank every champion by the real win rates of its 50 best players,
             confidence-adjusted, so hype and lucky streaks never make the cut. Just who&rsquo;s
             genuinely carrying the patch.
           </p>
@@ -68,7 +68,7 @@ export default function HomePage() {
           <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
             <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-              NA win rates — coming soon
+              NA win rates · coming soon
             </span>
             <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
               Expanding to top 200 players next update
@@ -136,7 +136,7 @@ export default function HomePage() {
                     <p className="text-xs text-muted">{m.champion}</p>
                   </div>
                   <span className="text-right text-sm font-semibold text-muted">
-                    {m.score != null ? m.score.toLocaleString() : "—"}
+                    {m.score != null ? m.score.toLocaleString() : "-"}
                   </span>
                 </Link>
               ))}
@@ -173,7 +173,7 @@ export default function HomePage() {
       <Container className="py-6">
         <SectionHeading
           title="Across all servers"
-          subtitle="Combined EU + CN — who's genuinely strong everywhere"
+          subtitle="Combined EU + CN · who's genuinely strong everywhere"
           href="/global"
           linkLabel="Cross-server comparison"
         />
@@ -207,18 +207,18 @@ export default function HomePage() {
         </div>
       </Container>
 
-      {/* The meta gap — CN top elo vs EU */}
+      {/* The meta gap: CN top elo vs EU */}
       <Container className="py-6">
         <SectionHeading
           title="The meta gap"
-          subtitle="Where China's top elo (峡谷之巅) disagrees with EU — often a patch ahead"
+          subtitle="Where China's top elo (Challenger+) disagrees with EU, often a patch ahead"
           href="/rising"
           linkLabel="Full meta gap"
         />
         <div className="grid gap-4 md:grid-cols-2">
           <InsightCard
             title="Rising in China"
-            subtitle="Rated far higher in CN top elo — learn early"
+            subtitle="Rated far higher in CN top elo · learn early"
             href="/rising"
             items={rising.map((g) => ({
               icon: g.champion.icon,
@@ -245,18 +245,18 @@ export default function HomePage() {
         </div>
       </Container>
 
-      {/* By rank — CN skill brackets */}
+      {/* By rank: CN skill brackets */}
       <Container className="py-6">
         <SectionHeading
           title="By rank"
-          subtitle="How champions scale from the whole ladder up to China's Sovereign bracket"
+          subtitle="How champions scale from the whole ladder up to China's Challenger+ bracket"
           href="/ranks"
           linkLabel="Win rate by rank"
         />
         <div className="grid gap-4 md:grid-cols-2">
           <InsightCard
             title="Scales with elo"
-            subtitle="High-skill specialists — better the higher you climb"
+            subtitle="High-skill specialists · better the higher you climb"
             href="/ranks"
             items={climbing.map((s) => ({
               icon: s.champion.icon,
@@ -296,7 +296,7 @@ export default function HomePage() {
       {/* Players */}
       <Container className="py-12">
         <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard href="/leaderboard" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "—", metricClass: "text-muted" }))} />
+          <InsightCard href="/leaderboard" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "-", metricClass: "text-muted" }))} />
           <InsightCard href="/leaderboard" title="Funniest names" subtitle="Spotted in the top 50, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player }))} />
         </div>
       </Container>
@@ -322,8 +322,8 @@ function FeaturedChampion({ c }: { c: Champion }) {
         </div>
         <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
           <Stat label="Win rate" value={`${c.wr.toFixed(1)}%`} className="text-accent" />
-          <Stat label="Ceiling" value={c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "—"} className="text-gold" />
-          <Stat label="Median games" value={c.medianGames != null ? c.medianGames.toLocaleString() : "—"} />
+          <Stat label="Ceiling" value={c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "-"} className="text-gold" />
+          <Stat label="Median games" value={c.medianGames != null ? c.medianGames.toLocaleString() : "-"} />
           {c.bestPlayer && (
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">Best player</p>

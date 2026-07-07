@@ -34,7 +34,7 @@ export function SeasonCard() {
       }}
     >
       <div className="grid gap-6 p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-7">
-        {/* Left — season progress */}
+        {/* Left: season progress */}
         <div>
           <div className="flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.18em]" style={{ color: WARM }}>
             <span className="h-2 w-2 rounded-full" style={{ background: WARM, boxShadow: `0 0 8px ${WARM}` }} />
@@ -48,13 +48,13 @@ export function SeasonCard() {
             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${WARM}, #8fb8ff)` }} />
           </div>
           <p className="mt-2.5 text-xs text-muted">
-            <strong className="text-text">{daysLeft ?? "—"}</strong> days left
+            <strong className="text-text">{daysLeft ?? "-"}</strong> days left
             <span className="mx-2 text-faint">·</span>ends {endsAt}
             <span className="mx-2 text-faint">·</span>{pct.toFixed(0)}% complete
           </p>
         </div>
 
-        {/* Right — new champion + skin */}
+        {/* Right: new champion + skin */}
         <div className="flex flex-col gap-2.5">
           <FeatureRow label="New champion" badge="#4f8dff" img={NEW_CHAMPION.icon} name={NEW_CHAMPION.name} round />
           <FeatureRow label="New skin" badge="#eef2fb" img={NEW_SKIN.img} name={NEW_SKIN.name} />

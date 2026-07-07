@@ -1,7 +1,7 @@
 "use client";
 
 export const REGIONS = ["EU", "NA", "CN"] as const;
-/** "Global" is not a server — it's the combined EU+CN view (tier list only). */
+/** "Global" is not a server; it's the combined EU+CN view (tier list only). */
 export type Region = (typeof REGIONS)[number] | "Global";
 
 /** Regions/views we currently have data for. Add "NA" here when collected. */
@@ -48,7 +48,7 @@ export function RegionComingSoon({ region }: { region: Region }) {
       <p className="text-lg font-semibold">{region} data is coming soon</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted">
         We&rsquo;re currently tracking <span className="text-text">EU</span>. {region} win rates and
-        leaderboards are on the way — check back after an upcoming update.
+        leaderboards are on the way, check back after an upcoming update.
       </p>
     </div>
   );

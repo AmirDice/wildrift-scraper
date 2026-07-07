@@ -2,23 +2,23 @@ import { getChampions, type Champion } from "@/lib/data";
 import { getCnBySlug, getCnChampions } from "@/lib/cn";
 
 /**
- * Cross-server "meta gap": where China's top elo (峡谷之巅 / Sovereign) disagrees with
- * the EU tracker. CN's highest bracket usually runs a patch or two ahead of the
- * West, so champions much stronger in CN than EU are a leading indicator — and
+ * Cross-server "meta gap": where China's top elo (Challenger+) disagrees with
+ * the EU tracker. CN's high bracket usually runs a patch or two ahead of the
+ * West, so champions much stronger in CN than EU are a leading indicator, while
  * champions the reverse way are ones EU still overrates.
  *
  * Both win rates are compared against their OWN server's average so the gap is
- * unbiased: EU is already 50%-centered, CN Sovereign sits a touch above 50, so we
- * center CN on its own pool mean.
+ * unbiased: EU is already 50%-centered, CN Challenger+ sits a touch above 50, so
+ * we center CN on its own pool mean.
  */
 export interface MetaGap {
   champion: Champion; // EU-shaped champion (name/slug/icon/role/class)
   euWr: number; // EU win rate (50%-centered)
-  cnWr: number; // CN Sovereign win rate (raw official)
+  cnWr: number; // CN Challenger+ win rate (raw official)
   euEdge: number; // euWr - 50
   cnEdge: number; // cnWr - CN pool mean
   gap: number; // cnEdge - euEdge; >0 => stronger in China's top elo
-  contest: number; // CN pick% + ban% — how much Sovereign prioritises it
+  contest: number; // CN pick% + ban%: how much Challenger+ prioritises it
   cnPick: number;
   cnBan: number;
   euTier: string;
@@ -28,7 +28,7 @@ export interface MetaGap {
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
-/** Average CN Sovereign win rate across champions present on both servers. */
+/** Average CN Challenger+ win rate across champions present on both servers. */
 function cnMean(): number {
   const wrs = getCnChampions().map((c) => c.wr);
   return wrs.reduce((a, b) => a + b, 0) / (wrs.length || 1);

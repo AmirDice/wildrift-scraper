@@ -7,11 +7,11 @@ import { Analytics } from "@vercel/analytics/next";
 export const metadata: Metadata = {
   metadataBase: new URL("https://wrtruemeta.com"),
   title: {
-    default: "WrTrueMeta — Wild Rift Tier List, Win Rates & Meta Tracker",
+    default: "WrTrueMeta | Wild Rift Tier List, Win Rates & Meta Tracker",
     template: "%s | WrTrueMeta",
   },
   description:
-    "Real League of Legends Wild Rift win rates from the top 50 players on every champion. Tier list, leaderboards, best players, role & class meta — updated twice a month.",
+    "Real League of Legends Wild Rift win rates from the top 50 players on every champion. Tier list, leaderboards, best players, role & class meta, updated twice a month.",
   keywords: [
     "Wild Rift tier list",
     "Wild Rift tier list",
@@ -24,13 +24,13 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "WrTrueMeta",
     url: "https://wrtruemeta.com",
-    title: "WrTrueMeta — Wild Rift Tier List, Win Rates & Meta Tracker",
+    title: "WrTrueMeta | Wild Rift Tier List, Win Rates & Meta Tracker",
     description:
       "Real League of Legends Wild Rift win rates from the top 50 players on every champion.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WrTrueMeta — Wild Rift Tier List & Meta Tracker",
+    title: "WrTrueMeta | Wild Rift Tier List & Meta Tracker",
     description:
       "Real Wild Rift win rates from the top 50 players of every champion.",
   },
@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="flex min-h-full flex-col">
-        {/* Ambient fixed background — dimmed Ionia art gives the frosted glass
+        {/* Ambient fixed background: dimmed Ionia art gives the frosted glass
             something to refract without overpowering the minimal dark theme. */}
         <div
           aria-hidden

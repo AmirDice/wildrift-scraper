@@ -3,7 +3,7 @@ import { site } from "@/lib/data";
 import { Container, Card } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Methodology — How WrTrueMeta Calculates Win Rates",
+  title: "Methodology | How WrTrueMeta Calculates Win Rates",
   description:
     "How WrTrueMeta turns the top 50 players of every Wild Rift champion into a fair tier list: Bayesian shrinkage, Wilson best-player scores, and adaptive games floors.",
   alternates: { canonical: "/methodology" },
@@ -24,10 +24,10 @@ export default function MethodologyPage() {
         <Section title="Win rate shown relative to the average champion">
           We read the <strong className="text-text">top 50 players</strong> of each champion
           straight from the in-game leaderboard. These are mains at the highest level, so the raw
-          win rates all sit above 50% — which reads oddly on a tier list. So we{" "}
+          win rates all sit above 50%, which reads oddly on a tier list. So we{" "}
           <strong className="text-text">centre the scale</strong>: the pool average becomes 50%, and
           a champion above or below that is above or below the average champion. Nothing about the
-          ranking changes — it&rsquo;s a constant shift that just makes the{" "}
+          ranking changes; it&rsquo;s a constant shift that just makes the{" "}
           <strong className="text-text">gap between champions</strong> easy to read. (A champion&rsquo;s
           best individual main, shown as the ceiling, stays a real win rate.)
         </Section>
@@ -48,7 +48,7 @@ export default function MethodologyPage() {
 
         <Section title="Best player (Wilson lower bound)">
           &ldquo;Best&rdquo; means demonstrably best, not luckily best. We rank each champion&rsquo;s
-          players by the Wilson score lower bound — the conservative end of the 95% confidence
+          players by the Wilson score lower bound, the conservative end of the 95% confidence
           interval for their true win rate. A 3-game 100% run scores low (huge uncertainty); a
           134-game 67% main scores high (tight interval).
         </Section>

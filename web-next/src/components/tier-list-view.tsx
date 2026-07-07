@@ -67,7 +67,7 @@ export function TierListView({
           )}
           {isGlobal && (
             <p className="mb-5 text-sm text-muted">
-              Combined <span className="text-text">EU + CN</span> ranking — the champions strongest
+              Combined <span className="text-text">EU + CN</span> ranking of the champions strongest
               across both servers. See the full{" "}
               <Link href="/global" className="text-accent hover:underline">
                 side-by-side comparison
@@ -109,7 +109,7 @@ export function TierListView({
                         key={c.slug}
                         href={`/champions/${c.slug}`}
                         className="group flex w-[60px] flex-col items-center text-center transition sm:w-[68px]"
-                        title={`${c.name} — ${c.wr.toFixed(1)}% WR`}
+                        title={`${c.name} · ${c.wr.toFixed(1)}% WR`}
                       >
                         <span className="transition group-hover:-translate-y-0.5">
                           <ChampionAvatar champion={c} size={52} />
@@ -132,13 +132,13 @@ export function TierListView({
           <div className="glass mt-6 rounded-xl p-4 text-sm text-muted">
             {isCN ? (
               <p>
-                <span className="font-medium text-text">CN tier cutoffs</span> — whole-ladder win
+                <span className="font-medium text-text">CN tier cutoffs</span>: whole-ladder win
                 rates centre on 50%, so tiers use a China-specific scale. GOD 53.5%+ · S 52–53.5% ·
                 A 50.8–52% · B 49.5–50.8% · C 48–49.5% · Ass under 48%.
               </p>
             ) : isGlobal ? (
               <p>
-                <span className="font-medium text-text">Global cutoffs</span> — the average of the
+                <span className="font-medium text-text">Global cutoffs</span>: the average of the
                 EU and CN win rates (both 50%-centred). GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B
                 49.5–50.8% · C 48–49.5% · Ass under 48%.
               </p>
@@ -148,8 +148,8 @@ export function TierListView({
                 const c = (n: number) => (n + o).toFixed(1);
                 return (
                   <p>
-                    <span className="font-medium text-text">Win rate shown relative to average</span>{" "}
-                    — every champion here is carried by its top-50 mains, so the pool naturally sits
+                    <span className="font-medium text-text">Win rate shown relative to average</span>:{" "}
+                    every champion here is carried by its top-50 mains, so the pool naturally sits
                     high; we centre it so 50% = the average champion and you can read the gap at a
                     glance. Tier cutoffs: GOD {c(63)}%+ · S {c(61)}–{c(63)}% · A {c(59)}–{c(61)}% · B{" "}
                     {c(57)}–{c(59)}% · C {c(56)}–{c(57)}% · Ass under {c(56)}%.
@@ -158,7 +158,7 @@ export function TierListView({
               })()
             ) : (
               <p>
-                <span className="font-medium text-text">Percentile cutoffs within {role}</span> — a
+                <span className="font-medium text-text">Percentile cutoffs within {role}</span>: a
                 single role&rsquo;s win-rate range is narrower than the whole pool, so tiers adapt to
                 keep every tier populated.
               </p>

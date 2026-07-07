@@ -125,7 +125,7 @@ export function WinrateScatter({ champions }: { champions: Champion[] }) {
 
         {/* axis labels */}
         <text x={(M.l + W - M.r) / 2} y={H - 8} textAnchor="middle" className="fill-muted" fontSize="12">
-          Win rate (relative — 50% = average champion)
+          Win rate (relative: 50% = average champion)
         </text>
         <text
           transform={`translate(16 ${(M.t + H - M.b) / 2}) rotate(-90)`}

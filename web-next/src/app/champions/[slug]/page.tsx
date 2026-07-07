@@ -45,8 +45,8 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const stats = [
     { label: "Tier", value: c.tier, cls: tierText[c.tier] },
     { label: "Win rate", value: `${c.wr.toFixed(1)}%`, cls: "text-accent" },
-    { label: "Ceiling WR", value: c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "—", cls: "text-gold" },
-    { label: "Median games", value: c.medianGames != null ? c.medianGames.toLocaleString() : "—", cls: "" },
+    { label: "Ceiling WR", value: c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "-", cls: "text-gold" },
+    { label: "Median games", value: c.medianGames != null ? c.medianGames.toLocaleString() : "-", cls: "" },
   ];
 
   return (
@@ -102,11 +102,11 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
             EU Wild Rift. Its win rate is shown{" "}
             <span className="font-medium text-text">relative to the average champion</span> (50% =
             average), currently{" "}
-            <span className="font-medium text-accent">{c.wr.toFixed(1)}%</span> — these are each
+            <span className="font-medium text-accent">{c.wr.toFixed(1)}%</span>. These are each
             champion&rsquo;s top-50 mains, so we centre the scale to make the gap between champions
             readable. The best {c.name} main still peaks at{" "}
             <span className="font-medium text-gold">
-              {c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "—"}
+              {c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "-"}
             </span>{" "}
             (a real win rate).
           </p>
@@ -132,7 +132,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               <RegionStat
                 label="CN"
                 wr={cn.wr}
-                sub={`${cn.role} · ${cn.cnPickRate.toFixed(1)}% pick · Sovereign`}
+                sub={`${cn.role} · ${cn.cnPickRate.toFixed(1)}% pick · Challenger+`}
               />
             ) : (
               <RegionStat label="CN" />
@@ -160,7 +160,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               </Link>
             </div>
             <p className="mt-1 text-sm text-muted">
-              How {c.name} performs from the whole ladder up to China&rsquo;s Sovereign bracket.
+              How {c.name} performs from the whole ladder up to China&rsquo;s Challenger+ bracket.
             </p>
             <div className="mt-4 flex justify-center">
               <BracketCurve curve={skew.curve} skew={skew.skew} labeled width={460} height={150} className="h-auto w-full max-w-[460px]" />
@@ -169,15 +169,15 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               {skew.climbing ? (
                 <>
                   {c.name} <span className="font-medium text-emerald-300">gains {skew.skew.toFixed(1)} win rate</span>{" "}
-                  from all ranks to Sovereign — a high-skill pick that rewards mastery.
+                  from all ranks to Challenger+, a high-skill pick that rewards mastery.
                 </>
               ) : skew.stomper ? (
                 <>
                   {c.name} <span className="font-medium text-rose-300">loses {Math.abs(skew.skew).toFixed(1)} win rate</span>{" "}
-                  against Sovereign-level play — great for climbing, less so at the very top.
+                  against Challenger+ play, great for climbing, less so at the very top.
                 </>
               ) : (
-                <>{c.name} holds a steady win rate across every rank — a reliable, elo-agnostic pick.</>
+                <>{c.name} holds a steady win rate across every rank, a reliable, elo-agnostic pick.</>
               )}
             </p>
           </Card>
@@ -195,7 +195,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               <span className="font-medium text-accent">
                 {c.bestPlayer.confidence_wr != null
                   ? `${c.bestPlayer.confidence_wr.toFixed(1)}%`
-                  : "—"}
+                  : "-"}
               </span>
               . This uses the Wilson lower bound, so it favours proven high-volume performance over
               a lucky streak.

@@ -16,9 +16,9 @@ type Article = {
 const NEWS = newsData as unknown as { source: string; articles: Article[] };
 
 export const metadata: Metadata = {
-  title: "Wild Rift News — Latest Patches, Champions & Updates",
+  title: "Wild Rift News | Latest Patches, Champions & Updates",
   description:
-    "The latest League of Legends: Wild Rift news — new champions, patch notes, skins and game updates, straight from the official source.",
+    "The latest League of Legends: Wild Rift news: new champions, patch notes, skins and game updates, straight from the official source.",
   alternates: { canonical: "/news" },
 };
 
@@ -33,7 +33,7 @@ export default function NewsPage() {
     <Container className="py-12">
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Wild Rift News</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        The latest patches, champions and updates — pulled from the official Wild Rift site. Tap any
+        The latest patches, champions and updates, pulled from the official Wild Rift site. Tap any
         story to read it in full.
       </p>
 
