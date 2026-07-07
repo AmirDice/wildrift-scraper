@@ -102,14 +102,16 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
                 href={`/champions/${champ.slug}`}
                 className="inline-flex items-center gap-3 transition hover:opacity-90"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={champ.icon}
-                  alt=""
-                  width={44}
-                  height={44}
-                  className={`h-11 w-11 rounded-full ${champ.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/15"}`}
-                />
+                <span className={`h-11 w-11 shrink-0 overflow-hidden rounded-full ${champ.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/15"}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={champ.icon}
+                    alt=""
+                    width={44}
+                    height={44}
+                    className="h-full w-full scale-[1.12] object-cover"
+                  />
+                </span>
                 <span>
                   <span className="block text-xl font-semibold leading-tight">{champ.name}</span>
                   <span className="block text-xs text-muted">

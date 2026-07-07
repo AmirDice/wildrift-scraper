@@ -17,8 +17,8 @@ export default function ConsistencyPage() {
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Consistency &amp; Skill Ceiling</h1>
       <p className="mt-2 max-w-2xl text-muted">
         Every champion by <span className="text-text">win rate</span> (how strong) and{" "}
-        <span className="text-text">skill ceiling</span> (how much the best main out-performs the
-        average). <span className="text-accent">Bottom-right</span> = reliably strong;{" "}
+        <span className="text-text">skill ceiling</span> (how much a champion&rsquo;s top mains
+        out-perform the average). <span className="text-accent">Bottom-right</span> = reliably strong;{" "}
         <span className="text-gold">top-right</span> = strong but rewards mastery (e.g. Lee Sin);
         the higher a champion sits, the more its win rate depends on the player. Hover any dot.
       </p>

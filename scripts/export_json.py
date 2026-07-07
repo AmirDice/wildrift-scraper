@@ -255,6 +255,19 @@ def build() -> dict:
             if c.get(k) is not None:
                 c[k] = round(c[k] + wr_offset, 1)
 
+    # The class / role / difficulty aggregates are (games-weighted) averages of
+    # the same champion win rates, so shift them by the same offset — otherwise a
+    # class average would read ~62% next to a #1 champion at ~56% on one page.
+    for m in meta:
+        if m["wr"] is not None:
+            m["wr"] = round(m["wr"] + wr_offset, 1)
+    for d in by_diff:
+        if d["wr"] is not None:
+            d["wr"] = round(d["wr"] + wr_offset, 1)
+    for st in role_strength.values():
+        if st["wr"] is not None:
+            st["wr"] = round(st["wr"] + wr_offset, 1)
+
     return {
         "collectedOn": data_collected_on(df),
         "roles": list(ROLES),

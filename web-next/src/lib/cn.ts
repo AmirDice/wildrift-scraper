@@ -1,7 +1,7 @@
 import cnData from "@/data/cn.json";
-import { getChampion, type Champion } from "@/lib/data";
+import { getChampion, getChampions, type Champion } from "@/lib/data";
 
-/** Which rank bracket to surface. "4" = 峡谷之巅 (Apex) — the highest rank. */
+/** Which rank bracket to surface. "4" = 峡谷之巅 (Sovereign) — the highest rank. */
 const BRACKET = "4";
 
 interface CnEntry {
@@ -91,4 +91,33 @@ let _bySlug: Map<string, CnChampion> | null = null;
 export function getCnBySlug(slug: string): CnChampion | undefined {
   if (!_bySlug) _bySlug = new Map(getCnChampions().map((c) => [c.slug, c]));
   return _bySlug.get(slug);
+}
+
+/** Combined-server tier from the average of the two (50%-centered) win rates. */
+export function globalTier(wr: number): string {
+  if (wr >= 53.5) return "GOD";
+  if (wr >= 52) return "S";
+  if (wr >= 50.8) return "A";
+  if (wr >= 49.5) return "B";
+  if (wr >= 48) return "C";
+  return "Ass";
+}
+
+/** Champion objects with wr = combined EU+CN score and a global tier. */
+export function getGlobalChampions(): Champion[] {
+  const out: Champion[] = [];
+  for (const eu of getChampions()) {
+    const cn = getCnBySlug(eu.slug);
+    if (!cn) continue;
+    const g = Math.round(((eu.wr + cn.wr) / 2) * 10) / 10;
+    const tier = globalTier(g);
+    out.push({ ...eu, wr: g, tier, tierRole: tier });
+  }
+  return out.sort((a, b) => b.wr - a.wr);
+}
+
+export function globalRoles(): string[] {
+  const order = ["Baron", "Jungle", "Mid", "Dragon", "Support"];
+  const present = new Set(getGlobalChampions().map((c) => c.role));
+  return order.filter((r) => present.has(r));
 }

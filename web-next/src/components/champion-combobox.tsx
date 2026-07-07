@@ -89,15 +89,17 @@ export function ChampionCombobox({
                   active === i ? "bg-white/[0.06]" : ""
                 }`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={c.icon}
-                  alt=""
-                  width={28}
-                  height={28}
-                  loading="lazy"
-                  className="h-7 w-7 rounded-full ring-1 ring-white/10"
-                />
+                <span className="h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={c.icon}
+                    alt=""
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                    className="h-full w-full scale-[1.12] object-cover"
+                  />
+                </span>
                 <span className="text-sm font-medium">{c.name}</span>
               </button>
             </li>

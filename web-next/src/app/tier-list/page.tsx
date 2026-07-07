@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site, getChampions } from "@/lib/data";
-import { getCnChampions, cnRoles, CN_META } from "@/lib/cn";
+import { getCnChampions, cnRoles, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 
@@ -56,6 +56,8 @@ export default function TierListPage() {
           cnChampions={getCnChampions()}
           cnRoles={cnRoles()}
           cnMeta={CN_META}
+          globalChampions={getGlobalChampions()}
+          globalRoles={globalRoles()}
         />
       </div>
     </Container>

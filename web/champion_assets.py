@@ -20,6 +20,24 @@ DDRAGON_VERSION = "16.11.1"
 
 _CDN_BASE = "https://ddragon.leagueoflegends.com/cdn"
 
+# Official Wild Rift head icons (slug -> url), preferred over ddragon's PC art
+# which is often out of date vs Wild Rift. Built by scripts/scrape_wr_icons.py.
+import json as _json
+from pathlib import Path as _Path
+
+_WR_ICONS: dict[str, str] = {}
+try:
+    _p = _Path(__file__).resolve().parent.parent / "data" / "wr_icons.json"
+    if _p.exists():
+        _WR_ICONS = _json.loads(_p.read_text(encoding="utf-8"))
+except Exception:  # pragma: no cover - icons just fall back to ddragon
+    _WR_ICONS = {}
+
+
+def _wr_slug(name: str) -> str:
+    s = name.lower().replace("&", "and").replace("'", "")
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
 # Explicit overrides for names that don't follow the simple
 # "strip non-alphanum + TitleCase each word" rule. Keys are lowercased
 # display names; values are the DDragon filename keys.
@@ -92,6 +110,9 @@ def icon_url(name: str, version: str = DDRAGON_VERSION) -> str:
     Falls back to a locally-bundled icon (served from static/champions/) for
     champions DDragon doesn't host yet — see `_LOCAL_ICON_KEYS`.
     """
+    wr = _WR_ICONS.get(_wr_slug(name))
+    if wr:
+        return wr
     key = to_ddragon_key(name)
     if key in _LOCAL_ICON_KEYS:
         return _local_champion_asset(f"{key}.png")

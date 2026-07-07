@@ -1,10 +1,11 @@
 "use client";
 
 export const REGIONS = ["EU", "NA", "CN"] as const;
-export type Region = (typeof REGIONS)[number];
+/** "Global" is not a server — it's the combined EU+CN view (tier list only). */
+export type Region = (typeof REGIONS)[number] | "Global";
 
-/** Regions we currently have data for. Add "NA" here when collected. */
-export const REGIONS_WITH_DATA: Region[] = ["EU", "CN"];
+/** Regions/views we currently have data for. Add "NA" here when collected. */
+export const REGIONS_WITH_DATA: Region[] = ["EU", "CN", "Global"];
 
 export function RegionToggle({
   region,

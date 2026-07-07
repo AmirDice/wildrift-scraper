@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { getChampions, site } from "@/lib/data";
 import { getCnBySlug, CN_META } from "@/lib/cn";
+import Link from "next/link";
 import { Container } from "@/components/ui";
 import { CrossServerTable, type Row } from "@/components/cross-server-table";
-import { GlobalTierList } from "@/components/global-tier-list";
 
 export const metadata: Metadata = {
   title: "Global Win Rates — EU vs CN Cross-Server Meta",
@@ -41,16 +41,15 @@ export default function GlobalPage() {
         (meta or playstyle), not universally strong.
       </p>
 
-      <h2 className="mt-9 text-xl font-semibold tracking-tight">Global tier list</h2>
-      <p className="mt-1 text-sm text-muted">
-        Ranked by combined EU + CN win rate — the champions strongest across both servers.
+      <p className="mt-3 text-sm text-muted">
+        Looking for the combined ranking as tiers? See the{" "}
+        <Link href="/tier-list" className="text-accent hover:underline">
+          Global tier list
+        </Link>{" "}
+        (the &ldquo;Global&rdquo; toggle on the tier list).
       </p>
-      <div className="mt-5">
-        <GlobalTierList rows={rows} />
-      </div>
 
-      <h2 className="mt-10 text-xl font-semibold tracking-tight">All champions, side by side</h2>
-      <div className="mt-5">
+      <div className="mt-6">
         <CrossServerTable rows={rows} roles={site.roles} />
       </div>
 

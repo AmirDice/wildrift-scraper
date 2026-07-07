@@ -129,14 +129,16 @@ export function CrossServerTable({ rows, roles }: { rows: Row[]; roles: string[]
                       href={`/champions/${r.slug}`}
                       className="flex items-center gap-2.5 transition hover:text-accent"
                     >
-                      <img
-                        src={r.icon}
-                        alt=""
-                        width={32}
-                        height={32}
-                        loading="lazy"
-                        className={`h-8 w-8 rounded-full object-cover ${r.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/10"}`}
-                      />
+                      <span className={`h-8 w-8 shrink-0 overflow-hidden rounded-full ${r.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/10"}`}>
+                        <img
+                          src={r.icon}
+                          alt=""
+                          width={32}
+                          height={32}
+                          loading="lazy"
+                          className="h-full w-full scale-[1.12] object-cover"
+                        />
+                      </span>
                       <span className="font-medium">{r.name}</span>
                       {both && (
                         <span className="text-emerald-300" title="Strong on both servers">

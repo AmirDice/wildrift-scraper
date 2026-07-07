@@ -7,7 +7,7 @@ statistics via two JSON endpoints used by its 国服数据 page:
   rank data:  https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2
 
 The rank data is keyed by rank bracket (0-4: Diamond+ / Master+ / Challenger /
-Apex …) then by position (1-5: top/jungle/mid/bot/support). Each entry has
+Sovereign …) then by position (1-5: top/jungle/mid/bot/support). Each entry has
 win_rate_percent, appear_rate_percent (pick), forbid_rate_percent (ban) and
 strength_level (tier). This is official, daily, high-elo data — a real CN source
 to sit alongside our EU top-50 dataset.
@@ -32,6 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "web-next" / "src" / "data" / "site.json"
 NAME_MAP = ROOT / "data" / "cn_hero_map.json"
 OUT = ROOT / "data" / "cn_winrates.json"
+WEB_OUT = ROOT / "web-next" / "src" / "data" / "cn.json"  # what the frontend reads
 
 HERO_LIST_URL = "https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js"
 RANK_URL = "https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2"
@@ -39,9 +40,9 @@ HEADERS = {"User-Agent": "Mozilla/5.0", "Referer": "https://lolm.qq.com/"}
 
 # bracket keys verified against the site's rank tabs (钻石/大师/王者/峡谷之巅)
 BRACKET_LABELS = {
-    "0": "All ranks", "1": "Diamond+", "2": "Master+", "3": "Challenger", "4": "Apex",
+    "0": "All ranks", "1": "Diamond+", "2": "Master+", "3": "Challenger", "4": "Sovereign",
 }
-DEFAULT_BRACKET = "4"  # 峡谷之巅 — highest rank
+DEFAULT_BRACKET = "4"  # 峡谷之巅 (Sovereign) — highest rank
 # position codes verified empirically against the champion pools per lane
 POSITION_LABELS = {"1": "Mid", "2": "Baron", "3": "Dragon", "4": "Support", "5": "Jungle"}
 
@@ -101,7 +102,9 @@ def build_name_map(cn_names: dict[str, str], english: list[str]) -> dict[str, st
 
 
 def main() -> None:
-    english = [c["name"] for c in json.loads(SITE.read_text(encoding="utf-8"))["champions"]]
+    site_champs = json.loads(SITE.read_text(encoding="utf-8"))["champions"]
+    english = [c["name"] for c in site_champs]
+    eu_role = {c["name"]: c["role"] for c in site_champs}  # align CN lane to EU role
     cn_names = fetch_hero_list()
     rank = fetch_rank()
     hero_map = build_name_map(cn_names, english)
@@ -121,7 +124,6 @@ def main() -> None:
                     "name": en, "slug": _slug(en), "heroId": hid,
                     "cnName": cn_names.get(hid, ""), "byBracket": {},
                 })
-                bb = rec["byBracket"].setdefault(bracket, None)
                 pick = float(e["appear_rate_percent"])
                 cand = {
                     "winRate": float(e["win_rate_percent"]),
@@ -130,8 +132,20 @@ def main() -> None:
                     "strength": int(e["strength_level"]),
                     "position": POSITION_LABELS.get(pos, pos),
                 }
-                # keep the champion's primary lane in this bracket (highest pick rate)
-                if bb is None or pick > bb["pickRate"]:
+                # Align the CN lane to the champion's EU role so cross-server stats
+                # compare like-for-like (e.g. Olaf is Baron on EU but most-picked
+                # Jungle in CN — we want his Baron win rate). The EU-role lane always
+                # wins over a more-picked lane; ties fall back to highest pick rate.
+                target = eu_role.get(en)
+                stored = rec["byBracket"].get(bracket)
+                cand_match = cand["position"] == target
+                if stored is None:
+                    take = True
+                elif cand_match != (stored["position"] == target):
+                    take = cand_match
+                else:
+                    take = pick > stored["pickRate"]
+                if take:
                     rec["byBracket"][bracket] = cand
 
     out = {
@@ -142,8 +156,10 @@ def main() -> None:
         "nChampions": len(champs),
         "champions": sorted(champs.values(), key=lambda c: c["name"]),
     }
-    OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"wrote {OUT.relative_to(ROOT)} ({len(champs)} champions, date {date})")
+    payload = json.dumps(out, ensure_ascii=False, indent=2)
+    OUT.write_text(payload, encoding="utf-8")
+    WEB_OUT.write_text(payload, encoding="utf-8")  # keep the frontend copy in sync
+    print(f"wrote {OUT.relative_to(ROOT)} + {WEB_OUT.relative_to(ROOT)} ({len(champs)} champions, date {date})")
 
     # dated snapshot (highest bracket) for patch-over-patch history
     from datetime import datetime as _dt

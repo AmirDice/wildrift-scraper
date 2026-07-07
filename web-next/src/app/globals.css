@@ -76,3 +76,69 @@ body {
 .tx-b   { color: #5b9dff; }
 .tx-c   { color: #9aa2b6; }
 .tx-ass { color: #6a7286; }
+
+/* ── Wild Rift theming: hextech cursor + gold scrollbar ─────────────────────
+   Cursors are inline SVG arrows (gold by default, hextech-blue over anything
+   clickable). Hotspot sits on the arrow tip (4,3). Falls back to the native
+   arrow/pointer on browsers that reject SVG cursors or on touch devices. */
+:root {
+  --cursor-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffe9a8'/%3E%3Cstop offset='1' stop-color='%23c8912f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M4 3 L4 23 L9 18.7 L12.6 26.5 L15.2 25.4 L11.6 17.8 L18 17.8 Z' fill='url(%23g)' stroke='%232a1c00' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 4 3;
+  --cursor-blue: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23cfe2ff'/%3E%3Cstop offset='1' stop-color='%232f6fd9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M4 3 L4 23 L9 18.7 L12.6 26.5 L15.2 25.4 L11.6 17.8 L18 17.8 Z' fill='url(%23b)' stroke='%230b1a33' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 4 3;
+}
+
+@media (pointer: fine) {
+  html,
+  body {
+    cursor: var(--cursor-gold), auto;
+  }
+  a,
+  button,
+  summary,
+  label[for],
+  select,
+  [role="button"],
+  [role="tab"],
+  .cursor-pointer {
+    cursor: var(--cursor-blue), pointer;
+  }
+  input,
+  textarea,
+  [contenteditable="true"] {
+    cursor: text;
+  }
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
+/* Gold hextech scrollbar. Chromium/Safari get the rich gradient rail via the
+   ::-webkit-scrollbar pseudo-elements; Firefox gets a thin gold bar via the
+   standard properties. These are scoped apart because Chromium ignores the
+   ::-webkit-scrollbar styling whenever scrollbar-color is also set. */
+@supports (not selector(::-webkit-scrollbar)) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #c8912f transparent;
+  }
+}
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ffd76e, #c8912f 60%, #9a6a1f);
+  border-radius: 999px;
+  border: 3px solid var(--color-bg);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ffe49a, #d9a23e 60%, #b07d28);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

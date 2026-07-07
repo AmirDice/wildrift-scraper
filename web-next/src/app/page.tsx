@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { site, getChampions, type Champion } from "@/lib/data";
+import { getGlobalChampions } from "@/lib/cn";
+import { risingPicks, overratedInEu } from "@/lib/gap";
+import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/components/ui";
 import { HomeSearch } from "@/components/home-search";
 import { SeasonCard } from "@/components/season-card";
@@ -8,6 +11,16 @@ export default function HomePage() {
   const champions = getChampions();
   const bySlug = new Map(champions.map((c) => [c.slug, c]));
   const ranked = champions.filter((c) => (c.nPlayers ?? 0) >= 20);
+
+  const globalChamps = getGlobalChampions();
+  const globalBest = globalChamps.slice(0, 5);
+  const globalWorst = [...globalChamps].slice(-5).reverse();
+
+  const rising = risingPicks(5);
+  const overrated = overratedInEu(5);
+
+  const climbing = climbingPicks(5);
+  const stompers = stomperPicks(5);
 
   const featured = champions[0];
   const topPick = champions[0];
@@ -115,7 +128,9 @@ export default function HomePage() {
                 <Link key={`${m.player}-${i}`} href={`/leaderboard?champion=${encodeURIComponent(m.champion)}`} className="flex items-center gap-4 px-4 py-3 transition hover:bg-white/[0.03]">
                   <span className="w-5 text-center text-sm font-semibold text-faint">{i + 1}</span>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={m.icon} alt="" width={36} height={36} loading="lazy" className="h-9 w-9 rounded-full ring-1 ring-white/10" />
+                  <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
+                    <img src={m.icon} alt="" width={36} height={36} loading="lazy" className="h-full w-full scale-[1.12] object-cover" />
+                  </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium">{m.player}</p>
                     <p className="text-xs text-muted">{m.champion}</p>
@@ -134,7 +149,13 @@ export default function HomePage() {
       <Container className="py-12">
         <div className="grid gap-6 lg:grid-cols-2">
           <BarCard title="Meta by class" subtitle="Avg win rate of each class's top 5 picks" rows={site.metaBreakdown.map((m) => ({ label: m.class, wr: m.wr }))} />
-          <BarCard title="Win rate by difficulty" subtitle="Does mechanical difficulty actually pay off?" rows={site.winrateByDifficulty.map((d) => ({ label: d.difficulty, wr: d.wr }))} />
+          <BarCard
+            title="Win rate by role"
+            subtitle="Strength of each role's top meta picks"
+            rows={Object.entries(site.roleStrength)
+              .sort((a, b) => b[1].wr - a[1].wr)
+              .map(([role, s]) => ({ label: role, wr: s.wr }))}
+          />
         </div>
       </Container>
 
@@ -142,9 +163,123 @@ export default function HomePage() {
       <Container className="py-6">
         <SectionHeading title="Win rates" subtitle="Best, worst, and under-the-radar" />
         <div className="grid gap-4 md:grid-cols-3">
-          <InsightCard title="Highest win rate" items={highestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-accent" }))} />
-          <InsightCard title="Lowest win rate" items={lowestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-bad" }))} />
-          <InsightCard title="Strong off-meta" subtitle="High WR, lower pick rate" items={offMeta.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+          <InsightCard href="/champions" title="Highest win rate" items={highestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-accent" }))} />
+          <InsightCard href="/champions" title="Lowest win rate" items={lowestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-bad" }))} />
+          <InsightCard href="/champions" title="Strong off-meta" subtitle="High WR, lower pick rate" items={offMeta.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+        </div>
+      </Container>
+
+      {/* Across all servers */}
+      <Container className="py-6">
+        <SectionHeading
+          title="Across all servers"
+          subtitle="Combined EU + CN — who's genuinely strong everywhere"
+          href="/global"
+          linkLabel="Cross-server comparison"
+        />
+        <div className="grid gap-4 md:grid-cols-2">
+          <InsightCard
+            title="Strongest globally"
+            subtitle="Highest combined EU + CN win rate"
+            href="/tier-list"
+            items={globalBest.map((c) => ({
+              icon: c.icon,
+              name: c.name,
+              sub: c.role,
+              href: `/champions/${c.slug}`,
+              metric: `${c.wr.toFixed(1)}%`,
+              metricClass: "text-accent",
+            }))}
+          />
+          <InsightCard
+            title="Weakest globally"
+            subtitle="Lowest combined EU + CN win rate"
+            href="/tier-list"
+            items={globalWorst.map((c) => ({
+              icon: c.icon,
+              name: c.name,
+              sub: c.role,
+              href: `/champions/${c.slug}`,
+              metric: `${c.wr.toFixed(1)}%`,
+              metricClass: "text-bad",
+            }))}
+          />
+        </div>
+      </Container>
+
+      {/* The meta gap — CN top elo vs EU */}
+      <Container className="py-6">
+        <SectionHeading
+          title="The meta gap"
+          subtitle="Where China's top elo (峡谷之巅) disagrees with EU — often a patch ahead"
+          href="/rising"
+          linkLabel="Full meta gap"
+        />
+        <div className="grid gap-4 md:grid-cols-2">
+          <InsightCard
+            title="Rising in China"
+            subtitle="Rated far higher in CN top elo — learn early"
+            href="/rising"
+            items={rising.map((g) => ({
+              icon: g.champion.icon,
+              name: g.champion.name,
+              sub: `${g.champion.role} · CN ${g.cnWr.toFixed(1)}% vs EU ${g.euWr.toFixed(1)}%`,
+              href: `/champions/${g.champion.slug}`,
+              metric: `+${g.gap.toFixed(1)}`,
+              metricClass: "text-emerald-300",
+            }))}
+          />
+          <InsightCard
+            title="Overrated in EU"
+            subtitle="EU rates them above China's best players"
+            href="/rising"
+            items={overrated.map((g) => ({
+              icon: g.champion.icon,
+              name: g.champion.name,
+              sub: `${g.champion.role} · EU ${g.euWr.toFixed(1)}% vs CN ${g.cnWr.toFixed(1)}%`,
+              href: `/champions/${g.champion.slug}`,
+              metric: `−${Math.abs(g.gap).toFixed(1)}`,
+              metricClass: "text-rose-300",
+            }))}
+          />
+        </div>
+      </Container>
+
+      {/* By rank — CN skill brackets */}
+      <Container className="py-6">
+        <SectionHeading
+          title="By rank"
+          subtitle="How champions scale from the whole ladder up to China's Sovereign bracket"
+          href="/ranks"
+          linkLabel="Win rate by rank"
+        />
+        <div className="grid gap-4 md:grid-cols-2">
+          <InsightCard
+            title="Scales with elo"
+            subtitle="High-skill specialists — better the higher you climb"
+            href="/ranks"
+            items={climbing.map((s) => ({
+              icon: s.champion.icon,
+              name: s.champion.name,
+              sub: `${s.champion.role} · ${s.low.toFixed(1)}% → ${s.high.toFixed(1)}%`,
+              href: `/champions/${s.champion.slug}`,
+              metric: `+${s.skew.toFixed(1)}`,
+              metricClass: "text-emerald-300",
+            }))}
+          />
+          <InsightCard
+            title="Low-elo stompers"
+            subtitle="Strong to climb with, fall off at the top"
+            href="/ranks"
+            items={stompers.map((s) => ({
+              icon: s.champion.icon,
+              name: s.champion.name,
+              sub: `${s.champion.role} · ${s.low.toFixed(1)}% → ${s.high.toFixed(1)}%`,
+              href: `/champions/${s.champion.slug}`,
+              metric: `−${Math.abs(s.skew).toFixed(1)}`,
+              metricClass: "text-rose-300",
+            }))}
+          />
         </div>
       </Container>
 
@@ -152,17 +287,17 @@ export default function HomePage() {
       <Container className="py-6">
         <SectionHeading title="Champion insights" subtitle="Cut the data a few different ways" />
         <div className="grid gap-4 md:grid-cols-3">
-          <InsightCard title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
-          <InsightCard title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
-          <InsightCard title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
+          <InsightCard href="/champions" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+          <InsightCard href="/consistency" title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
+          <InsightCard href="/consistency" title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
         </div>
       </Container>
 
       {/* Players */}
       <Container className="py-12">
         <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "—", metricClass: "text-muted" }))} />
-          <InsightCard title="Funniest names" subtitle="Spotted in the top 50, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player }))} />
+          <InsightCard href="/leaderboard" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "—", metricClass: "text-muted" }))} />
+          <InsightCard href="/leaderboard" title="Funniest names" subtitle="Spotted in the top 50, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player }))} />
         </div>
       </Container>
     </>
@@ -222,7 +357,9 @@ function StatCard({ label, value, sub, avatarSrc, valueClass = "", href }: { lab
       <div className="mt-3 flex items-center gap-2.5">
         {avatarSrc && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={avatarSrc} alt="" width={32} height={32} loading="lazy" className="h-8 w-8 rounded-full ring-1 ring-white/10" />
+          <span className="h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
+            <img src={avatarSrc} alt="" width={32} height={32} loading="lazy" className="h-full w-full scale-[1.12] object-cover" />
+          </span>
         )}
         <span className={`truncate text-xl font-semibold ${valueClass}`}>{value}</span>
       </div>
@@ -261,18 +398,30 @@ function BarCard({ title, subtitle, rows }: { title: string; subtitle?: string; 
 
 type InsightItem = { icon?: string; name: string; sub?: string; metric?: string; metricClass?: string; href?: string };
 
-function InsightCard({ title, subtitle, items }: { title: string; subtitle?: string; items: InsightItem[] }) {
+function InsightCard({
+  title,
+  subtitle,
+  items,
+  href,
+}: {
+  title: string;
+  subtitle?: string;
+  items: InsightItem[];
+  href?: string;
+}) {
   return (
-    <Card className="p-5">
+    <Card className="flex flex-col p-5">
       <h3 className="font-semibold">{title}</h3>
       {subtitle && <p className="mt-0.5 text-xs text-muted">{subtitle}</p>}
-      <div className="mt-3 flex flex-col">
+      <div className="mt-3 flex flex-1 flex-col">
         {items.map((it, i) => {
           const row = (
             <div className="flex items-center gap-3 py-2">
               {it.icon ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={it.icon} alt="" width={28} height={28} loading="lazy" className="h-7 w-7 rounded-full ring-1 ring-white/10" />
+                <span className="h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
+                  <img src={it.icon} alt="" width={28} height={28} loading="lazy" className="h-full w-full scale-[1.12] object-cover" />
+                </span>
               ) : (
                 <span className="h-7 w-7 shrink-0 rounded-full bg-white/[0.06]" />
               )}
@@ -290,6 +439,14 @@ function InsightCard({ title, subtitle, items }: { title: string; subtitle?: str
           );
         })}
       </div>
+      {href && (
+        <Link
+          href={href}
+          className="mt-3 border-t border-line/60 pt-3 text-sm font-medium text-accent transition hover:opacity-80"
+        >
+          View more →
+        </Link>
+      )}
     </Card>
   );
 }

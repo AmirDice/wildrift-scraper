@@ -4,6 +4,8 @@ import { site } from "@/lib/data";
 const FOOTER_LINKS = [
   { href: "/tier-list", label: "Tier List" },
   { href: "/global", label: "Global" },
+  { href: "/rising", label: "Rising Picks" },
+  { href: "/ranks", label: "Win Rate by Rank" },
   { href: "/compare", label: "Compare" },
   { href: "/consistency", label: "Consistency" },
   { href: "/build", label: "Builds" },

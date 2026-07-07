@@ -785,19 +785,27 @@ def funny_names(df: pd.DataFrame, limit: int = 3) -> list[dict]:
     return out
 
 
+SKILL_CEILING_QUANTILE = 0.90
+
+
 def skill_spread(df: pd.DataFrame, summary: pd.DataFrame) -> pd.DataFrame:
     """Summary with a `skill_spread` column = ceiling - weighted WR.
 
-    The ceiling is the max WR among top-50 players who have at least
-    `SHRINKAGE_C` games, so a one-off 100% from a 5-game sample doesn't
-    inflate the spread. High spread = high skill expression (Yasuo / Lee Sin
-    energy); low spread = champion floors near its ceiling (Garen). Sorted
-    by spread desc."""
+    The ceiling is the 90th-percentile WR among top-50 players who have at
+    least `SHRINKAGE_C` games. Using p90 rather than the raw max is deliberate:
+    a single boosted/smurf account at 100% shouldn't define a champion's
+    ceiling (that flagged easy enchanters like Sona/Soraka as "high skill").
+    p90 measures how the champion's *strongest cohort* performs, which is what
+    "skill expression" actually means. High spread = high skill expression
+    (Yasuo / Lee Sin / Kha'Zix energy); low spread = champion floors near its
+    ceiling (Garen). Sorted by spread desc."""
     if summary.empty or df.empty:
         return summary
     pool = df[df["rank"] <= TOP_N_PLAYERS].copy()
     qualified = pool[pool["games"].fillna(0) >= SHRINKAGE_C]
-    ceiling = qualified.groupby("champion", as_index=False)["winrate"].max()
+    ceiling = qualified.groupby("champion", as_index=False)["winrate"].quantile(
+        SKILL_CEILING_QUANTILE
+    )
     ceiling = ceiling.rename(columns={"winrate": "ceiling_qualified"})
     out = summary.merge(ceiling, on="champion", how="left")
     # Fall back to max_winrate when nobody clears the games gate (niche champs).

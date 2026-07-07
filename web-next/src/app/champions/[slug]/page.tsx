@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { getChampion, getChampions, championsInRole, tierText, type Champion } from "@/lib/data";
 import { getCnBySlug } from "@/lib/cn";
 import { getMatchups } from "@/lib/counters";
+import { getSkewBySlug } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, Card } from "@/components/ui";
+import { BracketCurve } from "@/components/bracket-curve";
 
 export function generateStaticParams() {
   return getChampions().map((c) => ({ slug: c.slug }));
@@ -33,6 +35,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   if (!c) notFound();
 
   const cn = getCnBySlug(c.slug);
+  const skew = getSkewBySlug(c.slug);
   const { strong, weak } = getMatchups(c.slug);
 
   const related = championsInRole(c.role)
@@ -129,7 +132,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               <RegionStat
                 label="CN"
                 wr={cn.wr}
-                sub={`${cn.role} · ${cn.cnPickRate.toFixed(1)}% pick · Apex`}
+                sub={`${cn.role} · ${cn.cnPickRate.toFixed(1)}% pick · Sovereign`}
               />
             ) : (
               <RegionStat label="CN" />
@@ -137,6 +140,48 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
             <RegionStat label="NA" />
           </div>
         </Card>
+
+        {/* Win rate by rank (CN skill brackets) */}
+        {skew && (
+          <Card className="mt-6 p-6">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-lg font-semibold">{c.name} win rate by rank</h2>
+              <Link
+                href="/ranks"
+                className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  skew.climbing
+                    ? "bg-emerald-400/15 text-emerald-300"
+                    : skew.stomper
+                      ? "bg-rose-400/15 text-rose-300"
+                      : "bg-white/10 text-muted"
+                }`}
+              >
+                {skew.climbing ? "Scales with elo" : skew.stomper ? "Falls off up top" : "Stable across ranks"}
+              </Link>
+            </div>
+            <p className="mt-1 text-sm text-muted">
+              How {c.name} performs from the whole ladder up to China&rsquo;s Sovereign bracket.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <BracketCurve curve={skew.curve} skew={skew.skew} labeled width={460} height={150} className="h-auto w-full max-w-[460px]" />
+            </div>
+            <p className="mt-3 text-sm text-muted">
+              {skew.climbing ? (
+                <>
+                  {c.name} <span className="font-medium text-emerald-300">gains {skew.skew.toFixed(1)} win rate</span>{" "}
+                  from all ranks to Sovereign — a high-skill pick that rewards mastery.
+                </>
+              ) : skew.stomper ? (
+                <>
+                  {c.name} <span className="font-medium text-rose-300">loses {Math.abs(skew.skew).toFixed(1)} win rate</span>{" "}
+                  against Sovereign-level play — great for climbing, less so at the very top.
+                </>
+              ) : (
+                <>{c.name} holds a steady win rate across every rank — a reliable, elo-agnostic pick.</>
+              )}
+            </p>
+          </Card>
+        )}
 
         {/* Best player */}
         <Card className="mt-6 p-6">

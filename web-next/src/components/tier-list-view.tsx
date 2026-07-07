@@ -13,19 +13,24 @@ export function TierListView({
   cnChampions,
   cnRoles,
   cnMeta,
+  globalChampions,
+  globalRoles,
 }: {
   champions: Champion[];
   roles: string[];
   cnChampions: Champion[];
   cnRoles: string[];
   cnMeta: { source: string; date: string | null; bracket: string };
+  globalChampions: Champion[];
+  globalRoles: string[];
 }) {
   const [role, setRole] = useState<string>("All roles");
   const [region, setRegion] = useState<Region>("EU");
 
   const isCN = region === "CN";
-  const activeChampions = isCN ? cnChampions : champions;
-  const activeRoles = isCN ? cnRoles : roles;
+  const isGlobal = region === "Global";
+  const activeChampions = isCN ? cnChampions : isGlobal ? globalChampions : champions;
+  const activeRoles = isCN ? cnRoles : isGlobal ? globalRoles : roles;
   const options = ["All roles", ...activeRoles];
 
   const buckets = useMemo(() => {
@@ -41,16 +46,11 @@ export function TierListView({
     return map;
   }, [role, activeChampions, options]);
 
-  const changeRegion = (r: Region) => {
-    setRegion(r);
-    setRole("All roles");
-  };
-
   return (
     <div>
       {/* Region */}
       <div className="mb-5">
-        <RegionToggle region={region} onChange={changeRegion} />
+        <RegionToggle region={region} onChange={setRegion} regions={["EU", "CN", "Global", "NA"]} />
       </div>
 
       {region === "NA" ? (
@@ -63,6 +63,16 @@ export function TierListView({
               <span className="text-text">{cnMeta.bracket}</span> (highest rank)
               {cnMeta.date ? ` · updated ${cnMeta.date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")}` : ""}
               . Source: lolm.qq.com.
+            </p>
+          )}
+          {isGlobal && (
+            <p className="mb-5 text-sm text-muted">
+              Combined <span className="text-text">EU + CN</span> ranking — the champions strongest
+              across both servers. See the full{" "}
+              <Link href="/global" className="text-accent hover:underline">
+                side-by-side comparison
+              </Link>
+              .
             </p>
           )}
 
@@ -125,6 +135,12 @@ export function TierListView({
                 <span className="font-medium text-text">CN tier cutoffs</span> — whole-ladder win
                 rates centre on 50%, so tiers use a China-specific scale. GOD 53.5%+ · S 52–53.5% ·
                 A 50.8–52% · B 49.5–50.8% · C 48–49.5% · Ass under 48%.
+              </p>
+            ) : isGlobal ? (
+              <p>
+                <span className="font-medium text-text">Global cutoffs</span> — the average of the
+                EU and CN win rates (both 50%-centred). GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B
+                49.5–50.8% · C 48–49.5% · Ass under 48%.
               </p>
             ) : role === "All roles" ? (
               (() => {

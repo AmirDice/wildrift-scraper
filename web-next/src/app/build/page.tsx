@@ -1,57 +1,46 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildChampions } from "@/lib/builds";
-import { Container, ChampionAvatar } from "@/components/ui";
+import { Container } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Build Optimizer — Best Wild Rift Builds & Runes",
+  title: "Build Optimizer — Coming Soon | Wild Rift Builds & Runes",
   description:
-    "Optimized Wild Rift builds and rune pages per champion — balanced and max-burst one-shot builds with item order and situational swaps.",
+    "A per-champion Wild Rift build & rune optimizer is on the way — balanced and max-burst one-shot builds with item order, situational swaps, and item-exclusivity rules.",
   alternates: { canonical: "/build" },
 };
 
 export default function BuildIndex() {
-  const champs = buildChampions();
   return (
-    <Container className="py-12">
-      <div className="flex items-center gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Build Optimizer</h1>
-        <span className="rounded-md bg-accent/20 px-2 py-1 text-xs font-bold uppercase tracking-wide text-accent">
-          Beta
+    <Container className="py-20">
+      <div className="mx-auto max-w-xl text-center">
+        <span className="inline-block rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
+          Coming soon
         </span>
-      </div>
-      <p className="mt-2 max-w-2xl text-muted">
-        Optimized builds &amp; runes per champion — a <span className="text-accent">balanced</span>{" "}
-        build and a <span className="text-bad">max-burst one-shot</span> build, with item order,
-        rune pages, and situational swaps. Item-exclusivity rules enforced.
-      </p>
-
-      {champs.length === 0 ? (
-        <p className="mt-8 text-muted">Builds are being generated…</p>
-      ) : (
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {champs.map(({ slug, champion, builds }) => (
-            <Link
-              key={slug}
-              href={`/build/${slug}`}
-              className="glass glass-hover flex items-center gap-3 rounded-xl p-3"
-            >
-              <ChampionAvatar champion={champion} size={48} />
-              <div className="min-w-0">
-                <div className="truncate font-semibold">{champion.name}</div>
-                <div className="truncate text-xs text-muted">
-                  {champion.role} · {builds.damageProfile}
-                </div>
-              </div>
-            </Link>
-          ))}
+        <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Build Optimizer</h1>
+        <p className="mt-4 text-muted">
+          We&rsquo;re building a per-champion build &amp; rune optimizer — a{" "}
+          <span className="text-accent">balanced</span> build and a{" "}
+          <span className="text-bad">max-burst one-shot</span> build for every champion, with item
+          order, rune pages, situational swaps, and Riot&rsquo;s item-exclusivity rules enforced.
+        </p>
+        <p className="mt-3 text-sm text-faint">
+          Landing with the next patch. In the meantime, explore the tier list and champion data.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link
+            href="/tier-list"
+            className="rounded-xl bg-accent px-5 py-2.5 font-semibold text-[#07121f] transition hover:brightness-110"
+          >
+            View the tier list
+          </Link>
+          <Link
+            href="/champions"
+            className="glass glass-hover rounded-xl px-5 py-2.5 font-semibold text-text"
+          >
+            Browse champions
+          </Link>
         </div>
-      )}
-
-      <p className="mt-8 text-xs text-faint">
-        {champs.length} champion{champs.length === 1 ? "" : "s"} with optimized builds. More coming
-        as the roster is processed.
-      </p>
+      </div>
     </Container>
   );
 }

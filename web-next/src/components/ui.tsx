@@ -38,15 +38,17 @@ export function ChampionAvatar({
     : "ring-1 ring-white/10";
   const img = (
     <span className="relative inline-block" style={{ width: size, height: size }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={champion.icon}
-        alt={`${champion.name} Wild Rift icon`}
-        width={size}
-        height={size}
-        loading="lazy"
-        className={`h-full w-full rounded-full object-cover ${ring}`}
-      />
+      <span className={`block h-full w-full overflow-hidden rounded-full ${ring}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={champion.icon}
+          alt={`${champion.name} Wild Rift icon`}
+          width={size}
+          height={size}
+          loading="lazy"
+          className="h-full w-full scale-[1.12] object-cover"
+        />
+      </span>
       {showBadges && champion.isOtp && (
         <span className="absolute -right-1 -top-1 rounded bg-gradient-to-br from-orange-400 to-orange-600 px-1 text-[9px] font-bold leading-tight text-white shadow">
           OTP

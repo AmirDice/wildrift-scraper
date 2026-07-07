@@ -7,17 +7,18 @@ import { useState } from "react";
 const LINKS = [
   { href: "/tier-list", label: "Tier List" },
   { href: "/champions", label: "Champions" },
-  { href: "/global", label: "Global" },
+  { href: "/rising", label: "Rising" },
+  { href: "/ranks", label: "Ranks" },
   { href: "/compare", label: "Compare" },
-  { href: "/build", label: "Builds", badge: "beta" },
+  { href: "/build", label: "Builds", badge: "soon" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },
 ];
 
-function BetaBadge() {
+function NavBadge({ text }: { text: string }) {
   return (
     <span className="rounded bg-accent/20 px-1 py-0.5 text-[0.55rem] font-bold uppercase leading-none tracking-wide text-accent">
-      beta
+      {text}
     </span>
   );
 }
@@ -59,7 +60,7 @@ export function SiteNav() {
               }`}
             >
               {l.label}
-              {l.badge === "beta" && <BetaBadge />}
+              {l.badge && <NavBadge text={l.badge} />}
             </Link>
           ))}
         </div>
@@ -102,7 +103,7 @@ export function SiteNav() {
                 }`}
               >
                 {l.label}
-                {l.badge === "beta" && <BetaBadge />}
+                {l.badge && <NavBadge text={l.badge} />}
               </Link>
             ))}
           </div>

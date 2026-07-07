@@ -41,7 +41,7 @@ export function WinrateScatter({ champions }: { champions: Champion[] }) {
 
   const { sx, sy, medY, yMax } = geom;
   const xTicks = [46, 48, 50, 52, 54, 56].filter((t) => t >= geom.xMin && t <= geom.xMax);
-  const yTicks = [0, 10, 20, 30, 40].filter((t) => t <= yMax);
+  const yTicks = [0, 4, 8, 12, 16, 20, 24].filter((t) => t <= yMax);
   const hoveredPt = pts.find((p) => p.c.slug === hover);
 
   return (
@@ -133,7 +133,7 @@ export function WinrateScatter({ champions }: { champions: Champion[] }) {
           className="fill-muted"
           fontSize="12"
         >
-          Skill ceiling (best main − average)
+          Skill ceiling (top mains − average)
         </text>
       </svg>
 
