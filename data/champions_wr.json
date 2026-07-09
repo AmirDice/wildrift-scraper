@@ -187,11 +187,12 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 1,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap"
     ],
     "mechanics": [
+      "cc",
       "dash",
       "heal"
     ],
@@ -218,10 +219,17 @@
           "7",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Ahri sends out and pulls back her orb, dealing 40 / 75 / 110 / 145 ( +45% AP ) magic damage on the way out and 40 / 75 / 110 / 145 ( +45% AP ) true damage on the way back.",
+        "damageTypes": [
+          "magic",
+          "true"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -232,9 +240,13 @@
           "6",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Ahri gains 45% movement speed and releases three fox-fires, that lock onto and attack nearby enemies for 45 / 80 / 115 / 150 ( +35% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -246,10 +258,16 @@
           "12",
           "12"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Ahri blows a kiss that does 60 / 100 / 140 / 180 ( +50% AP ) magic damage and charms an enemy it encounters, instantly stopping movement abilities and causing them to walk harmlessly towards her.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -314,13 +332,14 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 4,
     "scalesWith": [
       "ad",
       "ap",
       "bonusAd"
     ],
     "mechanics": [
+      "cc",
       "dash",
       "heal",
       "onHit"
@@ -352,10 +371,17 @@
           "2",
           "2"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Akali throws out five kunai, dealing 35 / 70 / 105 / 140 ( +65% AD +60% AP ) magic damage and slowing by 50% at maximum range for 0.5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -366,7 +392,7 @@
           "16",
           "15"
         ],
-        "text": "",
+        "text": "Akali drops a cover of smoke and briefly gains 35% / 40% / 45% / 50% Movement Speed and grants 100 Energy. While inside the shroud, Akali becomes invisible. Attacking or using abilities will briefly reveal her.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -380,10 +406,17 @@
           "15",
           "15"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Akali flips backward and fires a shuriken forward, dealing 3 0 / 60 / 90 / 120 ( +25% AD +30% AP ) magic damage . The first enemy or smoke cloud hit is marked. Re-casting dashes to the marked target, dealing 70 / 120 / 170 / 220 ( +50% AD +80% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "dash"
+        ]
       },
       {
         "slot": "4",
@@ -450,24 +483,32 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 3,
-    "magicAbilities": 0,
+    "physicalAbilities": 4,
+    "magicAbilities": 1,
     "scalesWith": [
       "ad"
     ],
     "mechanics": [
       "heal",
-      "onHit"
+      "onHit",
+      "shield"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Dirty Fighting",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Every three hits from attacks and abilities deal bonus 25 magic damage . Against champions, also gain a shield that absorbs 40 ( +40% AD ) damage for a few seconds. After launching an attack, Akshan will fire a second shot that deals 26 ( 50% AD ) physical damage . The shot can be cancelled to gain bonus decaying movement speed.",
+        "damageTypes": [
+          "physical",
+          "magic"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "shield"
+        ]
       },
       {
         "slot": "1",
@@ -496,7 +537,7 @@
           "6",
           "2"
         ],
-        "text": "",
+        "text": "Passive: Enemies that kill allied champions become Scoundrels for a duration. When Akshan takes down a Scoundrel, he gains bonus gold and revives the allies slain. Active: Become camouflaged for a few seconds and gain bonus 80% / 90% / 100% / 110% movement speed towards Scoundrels. Always camouflaged when Akshan is near terrain or in brushes. Gain 2% missing mana regen per second when chasing Scoundrels.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -582,13 +623,16 @@
         "lvl15": 1.0
       }
     },
-    "primaryDamage": "physical",
+    "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 0,
-    "scalesWith": [],
+    "magicAbilities": 3,
+    "scalesWith": [
+      "ap"
+    ],
     "mechanics": [
       "cc",
-      "heal"
+      "heal",
+      "onHit"
     ],
     "abilities": [
       {
@@ -612,9 +656,13 @@
           "10",
           "9"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Alistar smashes the ground, dealing 60 / 110 / 160 / 210 ( +50% AP ) magic damage to nearby enemies and tossing them into the air for 1 second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -626,10 +674,16 @@
           "11",
           "9"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Alistar rams a target with his head, dealing 50 / 120 / 190 / 260 ( +60% AP ) magic damage and knocking the target back. May also target turrets to deal 75% damage.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "3",
@@ -640,10 +694,17 @@
           "11",
           "10"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Deals 100 / 150 / 200 / 250 ( +40% AP ) magic damage to nearby enemies over 5 seconds. If Trample damages an enemy champion 5 times, Alistar's next attack within 5 seconds, againts an enemy champion, is empowered to deal an aditional 40 magic damage and stuns for 1 second. Only one stack can be gained per tick.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "onHit"
+        ]
       },
       {
         "slot": "4",
@@ -653,7 +714,7 @@
           "65",
           "55"
         ],
-        "text": "",
+        "text": "Alistar lets out a wild roar, removing all crowd control effects and gain 55% / 65% / 75% damage reduction for 7 seconds.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -870,23 +931,31 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 1,
-    "magicAbilities": 2,
+    "magicAbilities": 5,
     "scalesWith": [
-      "ap"
+      "ap",
+      "maxHp"
     ],
     "mechanics": [
       "cc",
-      "dash"
+      "dash",
+      "heal",
+      "onHit"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Cursed Touch",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
+        "text": "Amumu's basic attacks Curse his enemies, causing them to take bonus 10% true damage from incoming magic damage.",
+        "damageTypes": [
+          "magic",
+          "true"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "onHit"
+        ]
       },
       {
         "slot": "1",
@@ -918,10 +987,17 @@
           "1",
           "1"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Amumu begins weeping to deal 25 / 30 / 35 / 40 magic damage + 1.2% / 1.5% / 1.8% / 2.1% ( +0.4% AP) of their maximum Health to nearby enemies every second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap",
+          "maxHp"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "3",
@@ -952,9 +1028,13 @@
           "95",
           "85"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Amumu entangles surrounding enemy units in bandages, applying his Curse, dealing 150 / 250 / 350 ( +70% AP ) magic damage and rendering them unable to attack or move for 1.5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       }
     ]
@@ -1001,23 +1081,26 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 1,
+    "magicAbilities": 3,
     "scalesWith": [
       "ap",
       "attackSpeed"
     ],
     "mechanics": [
-      "cc"
+      "cc",
+      "shield"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Pyromania",
         "cooldowns": [],
-        "text": "",
+        "text": "After casting 4 abilities, the next offensive ability stuns enemies hit for 1 second.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "1",
@@ -1028,9 +1111,13 @@
           "4",
           "4"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Annie hurls a Mana infused fireball, dealing 80 / 130 / 180 / 230 ( +85% AP ) magic damage in a small area and refunding the Mana cost and half its cooldown if it destroys the target.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -1042,9 +1129,13 @@
           "8",
           "8"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Annie casts a blazing cone of fire, dealing 70 / 130 / 190 / 250 ( +70% AP ) magic damage to all enemies in the area.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -1056,10 +1147,14 @@
           "14",
           "14"
         ],
-        "text": "",
+        "text": "Annie shields herself and Tibbers , absorbing 50 / 100 / 150 / 200 ( +40% AP ) damage and gaining 25% / 30% / 33% / 40% movement speed. Speed bonus decays after 3 seconds.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "shield"
+        ]
       },
       {
         "slot": "4",
@@ -1155,7 +1250,7 @@
           "0",
           "0"
         ],
-        "text": "Passive : Attacks grant a Focus stack for 4 seconds. At 4 stacks, she can cast this ability  Active : Gain 20% / 30% / 40% / 50% Attack Speed for 6 seconds. While active, her attack is transformed into a flurry of arrows, dealing 115% / 120% / 125% / 130% physical damage .",
+        "text": "Passive : Attacks grant a Focus stack for 4 seconds. At 4 stacks, she can cast this ability Active : Gain 20% / 30% / 40% / 50% Attack Speed for 6 seconds. While active, her attack is transformed into a flurry of arrows, dealing 115% / 120% / 125% / 130% physical damage .",
         "damageTypes": [
           "physical"
         ],
@@ -1193,7 +1288,7 @@
           "35",
           "30"
         ],
-        "text": "Ashe fires a hawk spirit that grants vision of enemies along its path.  Re-cast : Explodes the hawk, granting vision of the area around it for 5 seconds. Units caught in the initial explosion are revealed for 5 seconds.",
+        "text": "Ashe fires a hawk spirit that grants vision of enemies along its path. Re-cast : Explodes the hawk, granting vision of the area around it for 5 seconds. Units caught in the initial explosion are revealed for 5 seconds.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -1206,7 +1301,7 @@
           "70",
           "60"
         ],
-        "text": "Ashe launches a crystal arrow of ice that sunts the first champion hit and deals 200 / 350 / 500 ( +40% AP ) magic damage to all nearby enemies. The stun lasts between 1.5 to 3.5 seconds, increasing with the distance of the arrow's flight.  Re-cast : Hold and drag to steer the arrow's flight path. The arrow can only deviate from its original launch angle by a fixed amount. Tap the cancel button to stop steering.",
+        "text": "Ashe launches a crystal arrow of ice that sunts the first champion hit and deals 200 / 350 / 500 ( +40% AP ) magic damage to all nearby enemies. The stun lasts between 1.5 to 3.5 seconds, increasing with the distance of the arrow's flight. Re-cast : Hold and drag to steer the arrow's flight path. The arrow can only deviate from its original launch angle by a fixed amount. Tap the cancel button to stop steering.",
         "damageTypes": [
           "magic"
         ],
@@ -1627,7 +1722,7 @@
           "16",
           "14"
         ],
-        "text": "Opens a one-way corridor through nearby terrain for 10 seconds. Both allied and enemy champions nearby can use the corridor by tapping the turret button. Allies travel 50% faster than enemies. ",
+        "text": "Opens a one-way corridor through nearby terrain for 10 seconds. Both allied and enemy champions nearby can use the corridor by tapping the turret button. Allies travel 50% faster than enemies.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -1640,7 +1735,7 @@
           "65",
           "55"
         ],
-        "text": "",
+        "text": "Hurls magical protective energy  to an area, placing all units and structures within into stasis for 2.5 seconds. While in stasis, they are invulnerable, untargetable, and unable to act.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -1688,23 +1783,30 @@
       }
     },
     "primaryDamage": "magic",
-    "physicalAbilities": 0,
-    "magicAbilities": 1,
+    "physicalAbilities": 1,
+    "magicAbilities": 2,
     "scalesWith": [
+      "ad",
       "ap"
     ],
     "mechanics": [
-      "cc"
+      "cc",
+      "heal",
+      "onHit",
+      "shield"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Mana Barrier",
         "cooldowns": [],
-        "text": "",
+        "text": "Blitzcrank gains a shield that absorbs 90 ( 30% Mana ) damage for 10 seconds upon falling below 35% Health.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal",
+          "shield"
+        ]
       },
       {
         "slot": "1",
@@ -1715,10 +1817,16 @@
           "16",
           "15"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Blitzcrank fires his right hand to deal 110 / 175 / 240 / 305 ( +100% AP ) magic damage and pull the target back to Blitzcrank.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -1745,10 +1853,17 @@
           "6",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Empowers his next attack to crtically strike for 105 ( 180% / 200% / 220% / 240% AD ) physical damage and knock up the target.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc",
+          "onHit"
+        ]
       },
       {
         "slot": "4",
@@ -1758,7 +1873,7 @@
           "35",
           "15"
         ],
-        "text": "Passive: While Static Field is off cooldown, attacks mark enemies to deal 40 / 80 / 120 ( +15% AP ) magic damage after 1 second.  Active: Deals 275 / 400 / 525 ( +80% AP ) magic damage to nearby enemies and silences them for 0.5 seconds.",
+        "text": "Passive: While Static Field is off cooldown, attacks mark enemies to deal 40 / 80 / 120 ( +15% AP ) magic damage after 1 second. Active: Deals 275 / 400 / 525 ( +80% AP ) magic damage to nearby enemies and silences them for 0.5 seconds.",
         "damageTypes": [
           "magic"
         ],
@@ -1811,7 +1926,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap",
       "maxHp"
@@ -1846,10 +1961,16 @@
           "6",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Brand launches a ball of fire forward that deals 80 / 120 / 160 / 200 ( +55% AP ) magic damage to the first enemy it hits. If the target is ablaze, the target will be stunned for 1.75 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -1860,9 +1981,13 @@
           "9",
           "8"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "After a short delay, Brand creates a pillar of flame at a target area, dealing 70 / 120 / 170 / 220 ( +55% AP ) magic damage to enemy units within the area. Units that are ablaze take 30% additional damage.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -1874,9 +1999,13 @@
           "9",
           "8"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Brand sets the target enemy aflame which also spreads to all enemies near them, dealing 60 / 90 / 120 / 150 ( +45% AP ) magic damage . When a target is ablaze, Conflagration's spread radius is doubled.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -1887,7 +2016,7 @@
           "65",
           "60"
         ],
-        "text": "Releases a torrent of flame that bounces up to 5 times between enemies or himself, each bounce dealing 100 / 200 / 300 ( +30% AP ) magic damage .  Blaze : Pyroclasm briefly slows by 30% / 40% / 50% if the target is ablaze. Bounces attempt to max stack Blaze on champions.",
+        "text": "Releases a torrent of flame that bounces up to 5 times between enemies or himself, each bounce dealing 100 / 200 / 300 ( +30% AP ) magic damage . Blaze : Pyroclasm briefly slows by 30% / 40% / 50% if the target is ablaze. Bounces attempt to max stack Blaze on champions.",
         "damageTypes": [
           "magic"
         ],
@@ -1940,20 +2069,32 @@
         "lvl15": 1.0
       }
     },
-    "primaryDamage": "physical",
+    "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 0,
-    "scalesWith": [],
-    "mechanics": [],
+    "magicAbilities": 3,
+    "scalesWith": [
+      "ap"
+    ],
+    "mechanics": [
+      "cc",
+      "dash",
+      "onHit",
+      "shield"
+    ],
     "abilities": [
       {
         "slot": "P",
         "name": "Concussive Blows",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
+        "text": "Braum's basic attacks apply Concussive Blows. Once the first stack is applied, ally basic attacks also stack Concussive Blows. Upon reaching 4 stacks, the target is stunned for 1.25 - 1.75 seconds and takes 45 magic damage . For the next 8 seconds they cannot receive new stacks, but take bonus 9 magic damage from Braum's attacks.",
+        "damageTypes": [
+          "magic"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc",
+          "onHit"
+        ]
       },
       {
         "slot": "1",
@@ -1964,10 +2105,14 @@
           "7",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
+        "text": "Lauches ice that deals 60 / 120 / 180 / 240 ( +3% HP ) magic damage and slows the enemy hit by 70% for 2 seconds. Applies a stack of Concussive Blows.",
+        "damageTypes": [
+          "magic"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -1978,10 +2123,12 @@
           "9",
           "8"
         ],
-        "text": "",
+        "text": "Leaps to an ally. Braum and the ally gain 10 / 15 / 20 / 25 (+10% / 12% / 14% / 16% Armor) Armor and 10 / 15 / 20 / 25 (+10% / 12% / 14% / 16% MR) Magic Resist for 3 seconds on arrival.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "dash"
+        ]
       },
       {
         "slot": "3",
@@ -1992,10 +2139,12 @@
           "12",
           "10"
         ],
-        "text": "",
+        "text": "Raises his shield, intercepting projectiles for 4 seconds. Braum negates the first instance of damage wichever direction he faces and takes 35% / 40% / 45% / 50% reduced damage afterwards. Braum gains 15% Movement Speed while his shield is raised.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "shield"
+        ]
       },
       {
         "slot": "4",
@@ -2005,10 +2154,17 @@
           "70",
           "65"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Slams the ground and opens a fissure, dealing 150 / 250 / 350 ( +60% AP ) magic damage and knocking up enemies for 1 second. The fissure slows enemies by 40% / 50% / 60% and lasts for 4 seconds. After the first enemy champion hit, subsequent enemies are knock up for 0.25 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "onHit"
+        ]
       }
     ]
   },
@@ -2053,10 +2209,11 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 2,
-    "magicAbilities": 0,
+    "physicalAbilities": 3,
+    "magicAbilities": 1,
     "scalesWith": [
       "ad",
+      "ap",
       "bonusAd"
     ],
     "mechanics": [
@@ -2086,9 +2243,13 @@
           "7",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Fires a narrow piercing bullet that deals 60 / 110 / 160 / 210 ( + 125% / 140% / 155% / 170% AD ) physical damage . Hitting an enemy expands the bullet, but reduces subsequent damage by 40% . Always deals full damage to trapped or netted enemies.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
         "tags": []
       },
       {
@@ -2116,10 +2277,16 @@
           "12",
           "10"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Launchest a net, knocking Caitly backwards. The net deals 70 / 120 / 170 / 220 ( +80% AP ) magic damage and slows by 50% for 1.5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -2185,7 +2352,7 @@
     },
     "primaryDamage": "physical",
     "physicalAbilities": 3,
-    "magicAbilities": 1,
+    "magicAbilities": 2,
     "scalesWith": [
       "ad",
       "attackSpeed",
@@ -2203,7 +2370,7 @@
         "slot": "P",
         "name": "Adaptive Defenses",
         "cooldowns": [],
-        "text": "Attacking an enemy champion grants a shield that absorbs 130 physical / magic damage ( 20% HP ) for 2 seconds. The shield type is based on the type of damage the attacked target deals. ",
+        "text": "Attacking an enemy champion grants a shield that absorbs 130 physical / magic damage ( 20% HP ) for 2 seconds. The shield type is based on the type of damage the attacked target deals.",
         "damageTypes": [
           "magic"
         ],
@@ -2283,10 +2450,16 @@
           "80",
           "70"
         ],
-        "text": "",
-        "damageTypes": [],
+        "text": "Leap to enemy champion, dealing 30 magic damage + 15% / 20% / 25% of their current Health, knocking away other enemies and creating an inescapable zone for 2 seconds. Hextech Ultimatum ends when Camille leaves the zone.",
+        "damageTypes": [
+          "magic"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc",
+          "dash",
+          "heal"
+        ]
       }
     ]
   },
@@ -2330,20 +2503,25 @@
         "lvl15": 1.0
       }
     },
-    "primaryDamage": "physical",
+    "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 0,
+    "magicAbilities": 1,
     "scalesWith": [],
-    "mechanics": [],
+    "mechanics": [
+      "cc",
+      "heal"
+    ],
     "abilities": [
       {
         "slot": "P",
         "name": "Carnivore",
         "cooldowns": [],
-        "text": "",
+        "text": "Whenever Cho'Gath kills a unit, he recovers 40 - 82 (based on level) Health.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -2353,10 +2531,12 @@
           "",
           ""
         ],
-        "text": "",
+        "text": "Ruptures the ground at target location, popping enemy units into the air, dealing damage and slowing them.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -2366,8 +2546,10 @@
           "",
           ""
         ],
-        "text": "",
-        "damageTypes": [],
+        "text": "Cho'Gath unleashes a terrible scream at enemies in a cone, dealing magic damage and Silencing enemies for a few seconds.",
+        "damageTypes": [
+          "magic"
+        ],
         "scales": [],
         "tags": []
       },
@@ -2379,7 +2561,7 @@
           "",
           ""
         ],
-        "text": "",
+        "text": "Cho'gath's attacks passively release deadly spines, dealing damage to all enemy units in front of him.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -2392,10 +2574,12 @@
           "",
           ""
         ],
-        "text": "",
+        "text": "Devours an enemy unit, killng champions at low health and most minions instantly.  Every successful Feast increases Cho'Gath's health. Maximum 6 growths.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       }
     ]
   },
@@ -2441,9 +2625,10 @@
     },
     "primaryDamage": "physical",
     "physicalAbilities": 2,
-    "magicAbilities": 0,
+    "magicAbilities": 2,
     "scalesWith": [
       "ad",
+      "ap",
       "bonusAd"
     ],
     "mechanics": [
@@ -2471,9 +2656,15 @@
           "7",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Fires a bomb, dealing 65 / 125 / 185 / 245 ( +125% bonus AD +80% AP ) magic damage and granting vision over the area.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap",
+          "bonusAd"
+        ],
         "tags": []
       },
       {
@@ -2485,9 +2676,15 @@
           "14",
           "12"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Flies a short distance, leaving a burning trail for 2.5 seconds. The trail burns enemies in it for 60 ( +60% bonus AD +60% AP ) magic damage per second, dealing up to 150 / 250 / 350 / 450 magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap",
+          "bonusAd"
+        ],
         "tags": []
       },
       {
@@ -2583,7 +2780,8 @@
     "mechanics": [
       "cc",
       "dash",
-      "heal"
+      "heal",
+      "onHit"
     ],
     "abilities": [
       {
@@ -2629,10 +2827,15 @@
           "6",
           "6"
         ],
-        "text": "",
+        "text": "Empowers his next attack for 8 seconds to deal an additional 30% / 40% / 50% / 60% AD and slows by 90% for 1 second.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc",
+          "onHit"
+        ]
       },
       {
         "slot": "3",
@@ -2713,7 +2916,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 4,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap",
       "attackSpeed"
@@ -2750,9 +2953,13 @@
           "6",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Unleashes an arcing bolt of energy that deals 60 / 105 / 150 / 195 ( +70% AP ) magic damage and applies Moonlight for 3 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -2860,7 +3067,9 @@
     "primaryDamage": "magic",
     "physicalAbilities": 1,
     "magicAbilities": 2,
-    "scalesWith": [],
+    "scalesWith": [
+      "maxHp"
+    ],
     "mechanics": [
       "cc",
       "dash",
@@ -2872,10 +3081,15 @@
         "slot": "P",
         "name": "Goes Where He Pleases",
         "cooldowns": [],
-        "text": "",
+        "text": "Resists the first immobilizing effect, losing 3% current Health instead and dropping a Chemical Canister nearby. Retrieving the Canister reduces cooldown by 10 seconds and heals Dr. Mundo for 4% of his maximul Health (40 second CD). Regenerates 1% of his maximum Health ever 5 seconds. Enemy champions destroy the Canister if they reach it first.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "maxHp"
+        ],
+        "tags": [
+          "cc",
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -2943,10 +3157,14 @@
           "65",
           "60"
         ],
-        "text": "",
+        "text": "Dr. Mundo's base Health is increased by 25% / 30% / 35% of his missing Health. He also gains Attack Damage ( 4% / 5.5% / 7% bonus HP ), 15% / 25% / 35% Movement Speed for 10 seconds and heals 15% / 35% / 55% of his maximum Health over the duration.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "maxHp"
+        ],
+        "tags": [
+          "heal"
+        ]
       }
     ]
   },
@@ -2991,7 +3209,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 2,
+    "physicalAbilities": 3,
     "magicAbilities": 0,
     "scalesWith": [
       "ad",
@@ -2999,6 +3217,7 @@
       "bonusAd"
     ],
     "mechanics": [
+      "cc",
       "onHit"
     ],
     "abilities": [
@@ -3057,10 +3276,16 @@
           "13",
           "12"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Throws his axes, dealing 75 / 120 / 165 / 210 ( +50% AD ) physical damage and knocking enemies aside, slowing them by 25% / 30% / 35% / 40% for 2 seconds.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -3123,12 +3348,13 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 4,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap"
     ],
     "mechanics": [
       "cc",
+      "dash",
       "heal",
       "onHit",
       "shield"
@@ -3199,10 +3425,17 @@
           "8",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Dashes in a taget direction. Ekko's next attack within 3 seconds gains 250 range and causes Ekko to blink to his target and deal an additional 60 / 90 / 120 / 150 ( +40% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "dash",
+          "onHit"
+        ]
       },
       {
         "slot": "4",
@@ -3267,7 +3500,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ap",
       "maxHp"
@@ -3359,10 +3592,16 @@
           "75",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Evelynn briefly goes untargetable and decimates the area in front of her before warping backwards a long distance. Deals 150 / 260 / 370 ( +75% AP ) magic damage , increased to 230% to enemy champions below 35% Health.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "heal"
+        ]
       }
     ]
   },
@@ -3407,21 +3646,27 @@
       }
     },
     "primaryDamage": "magic",
-    "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "physicalAbilities": 1,
+    "magicAbilities": 3,
     "scalesWith": [
       "ad",
-      "ap"
+      "ap",
+      "attackSpeed"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "dash",
+      "onHit"
+    ],
     "abilities": [
       {
         "slot": "P",
         "name": "Rising Spell Force",
         "cooldowns": [],
-        "text": "",
+        "text": "Gains 13% Attack Speed for 8 seconds when hitting abilities, stacking up to 4 times.",
         "damageTypes": [],
-        "scales": [],
+        "scales": [
+          "attackSpeed"
+        ],
         "tags": []
       },
       {
@@ -3433,10 +3678,17 @@
           "3",
           "3"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a bolt, dealing 50 / 85 / 120 / 155 ( +135% AD +30% AP ) physical damage . Hitting a target reduces Ezreal's other ability cooldowns by 1.5 seconds. Applies on-hit effects .",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "onHit"
+        ]
       },
       {
         "slot": "2",
@@ -3466,10 +3718,17 @@
           "17",
           "14"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Blinks to taget location and fires a bolt, dealing 80 / 145 / 210 / 275 ( +50% AD +75% AP ) magic damage . Prioritizes enemies hit by Essence Flux , then the nearest enemy.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "dash"
+        ]
       },
       {
         "slot": "4",
@@ -3533,12 +3792,13 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap"
     ],
     "mechanics": [
       "cc",
+      "dash",
       "heal"
     ],
     "abilities": [
@@ -3546,10 +3806,12 @@
         "slot": "P",
         "name": "A Harmless Scarecrow",
         "cooldowns": [],
-        "text": "",
+        "text": "After a champion takedown, summons a Scarecrow Effigy for 3 seconds. The Effigy automatically tracks the nearest enemy champion, detonating upon reaching them or when its duration ends to fear all enemy champions nearby.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "1",
@@ -3600,10 +3862,16 @@
           "7",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Slashes the target location with its scythe, dealing 70 / 120 / 170 / 220 ( +50% AP ) magic damage to enemies within the area and slowing them by 35% / 40% / 45% / 50% for 1.25 seconds. Enemies in the center are silenced.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -3613,10 +3881,16 @@
           "80",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Channels for 1.5 seconds, then blinks to the target location and summons Crowstorm, dealing 30 / 50 / 70 ( +20% AP ) magic damage every 0.25 seconds to nearby enemies for 5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "dash"
+        ]
       }
     ]
   },
@@ -3661,7 +3935,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 1,
+    "physicalAbilities": 2,
     "magicAbilities": 1,
     "scalesWith": [
       "ad",
@@ -3746,10 +4020,16 @@
           "7",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Empowers the next 2 attacks with 60% Attack Speed . The first attack applies a 30% slow for 1 second, but cannot critically strike. The second attack will aways critically strike for 170% / 180% / 190% / 200% physical damage .",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "attackSpeed"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -3815,9 +4095,10 @@
       }
     },
     "primaryDamage": "magic",
-    "physicalAbilities": 0,
-    "magicAbilities": 4,
+    "physicalAbilities": 1,
+    "magicAbilities": 5,
     "scalesWith": [
+      "ad",
       "ap"
     ],
     "mechanics": [
@@ -3848,10 +4129,19 @@
           "7",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Dashes through target enemy, dealing 20 / 40 / 60 / 80 ( +60% AP ) magic damage + 58 physical damage ( 100% AD ) and applying on-hit effects.",
+        "damageTypes": [
+          "physical",
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "dash",
+          "onHit"
+        ]
       },
       {
         "slot": "2",
@@ -4205,7 +4495,7 @@
           "65",
           "60"
         ],
-        "text": "Calls forth the might of Demacia to execute an enemy champion, dealing 150 / 250 / 350 +15% ( +0.12% AD ) true damage of the target's missing health. Nearby enemies take 75 +7.5% ( +0.06% AD ) true damage of their missing health.  When casting Demacian Justice and the target dies, moves out of range, becomes untargetable, or activates Zhonya's Hourglass or Guardian Angel, the mana cost will be refunded and go on a 5 second cooldown. Deals a max of 600 damage to epic monsters.",
+        "text": "Calls forth the might of Demacia to execute an enemy champion, dealing 150 / 250 / 350 +15% ( +0.12% AD ) true damage of the target's missing health. Nearby enemies take 75 +7.5% ( +0.06% AD ) true damage of their missing health. When casting Demacian Justice and the target dies, moves out of range, becomes untargetable, or activates Zhonya's Hourglass or Guardian Angel, the mana cost will be refunded and go on a 5 second cooldown. Deals a max of 600 damage to epic monsters.",
         "damageTypes": [
           "true"
         ],
@@ -4419,7 +4709,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap",
       "maxHp"
@@ -4435,10 +4725,12 @@
         "slot": "P",
         "name": "Happy Hour",
         "cooldowns": [],
-        "text": "",
+        "text": "Casting an ability restores 46 ( 8.5% max HP ) Health .",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -4511,10 +4803,16 @@
           "70",
           "55"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Hurls a potent cask that explodes when it lands, dealing 200 / 300 / 400 ( +70% AP ) magic damage and knocking enemies away from the explosion's center. The cask has a fixed travel time.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       }
     ]
   },
@@ -4855,7 +5153,7 @@
     },
     "primaryDamage": "physical",
     "physicalAbilities": 2,
-    "magicAbilities": 1,
+    "magicAbilities": 2,
     "scalesWith": [
       "ad",
       "ap",
@@ -4872,7 +5170,7 @@
         "slot": "P",
         "name": "Warpath",
         "cooldowns": [],
-        "text": "",
+        "text": "Hecarim gains 0 = (12% bonus MS) Attack Damage .",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -4950,10 +5248,17 @@
           "85",
           "70"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Hecarim summons spectral riders and charges forward, dealing 150 / 250 / 350 ( +100% AP ) magic damage . Hecarim unleashes a shockwave at the end of the charge that Fears for between 0.75 to 1.5 seconds, increased by charge distance.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "dash"
+        ]
       }
     ]
   },
@@ -5014,7 +5319,7 @@
         "slot": "P",
         "name": "Hextech Affinity",
         "cooldowns": [],
-        "text": "",
+        "text": "Gains 20% Movement Speed while near allied turrets and turrets deployed by Heimerdinger.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -5302,17 +5607,24 @@
         "lvl15": 0.8
       }
     },
-    "primaryDamage": "physical",
+    "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 0,
-    "scalesWith": [],
-    "mechanics": [],
+    "magicAbilities": 2,
+    "scalesWith": [
+      "ap"
+    ],
+    "mechanics": [
+      "cc",
+      "dash",
+      "heal",
+      "shield"
+    ],
     "abilities": [
       {
         "slot": "P",
         "name": "Tailwind",
         "cooldowns": [],
-        "text": "",
+        "text": "Passively gain 5 % Movement Speed . Nearby allied champions also gain this bonus.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -5326,10 +5638,17 @@
           "1",
           "1"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Charges up for 0.75 seconds and summons a powerful whirlwind that deals 50 / 90 / 130 / 170 ( +50% AP ) magic damage and knocks up enemies in its path. The whirlwind always reaches its destination in 0.5 seconds. This ability's charges are stored once every 14 seconds, up to a maximum of 2 charges.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "dash"
+        ]
       },
       {
         "slot": "2",
@@ -5340,9 +5659,13 @@
           "8",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Gains 10% / 15% / 20% / 25% Movement Speed for 2 seconds. The wind spirit automatically searches for the nearest 3 campions within range, granting Movement Speed bonuses to allies and dealing 50 / 90 / 130 / 170 ( 50% AP + 20% bonus MS ) magic damage to enemies.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -5354,10 +5677,14 @@
           "12",
           "10"
         ],
-        "text": "",
+        "text": "Blesses herself and the allied champion with the lowers Hp with a shield that absorbs 65 / 90 / 115 / 140 ( +45% AP ) damage and grants 10 / 20 / 30 / 40 ( +10% AP ) Attack Damage while it holds. Lasts for 3 seconds. If there is a turret within range, applies a shield to the turret as well.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "shield"
+        ]
       },
       {
         "slot": "4",
@@ -5367,10 +5694,15 @@
           "75",
           "70"
         ],
-        "text": "",
+        "text": "Calls forth mighty winds of salvation to knock back surrounding enemies and restore 50 / 100 / 150 ( +30% AP ) Health to nearby allies each second for 3 seconds.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "heal"
+        ]
       }
     ]
   },
@@ -5415,7 +5747,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 2,
+    "physicalAbilities": 3,
     "magicAbilities": 1,
     "scalesWith": [
       "ad",
@@ -5435,10 +5767,14 @@
         "slot": "P",
         "name": "Martial Cadence",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
+        "text": "The first attack against an enemy deals 8% physical damage of their curren Health (5 second cooldown per unique enemy).",
+        "damageTypes": [
+          "physical"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -5568,6 +5904,7 @@
     "scalesWith": [
       "ad",
       "ap",
+      "attackSpeed",
       "bonusAd"
     ],
     "mechanics": [
@@ -5580,9 +5917,11 @@
         "slot": "P",
         "name": "Relentless Assault",
         "cooldowns": [],
-        "text": "",
+        "text": "Attacks against champions and minions grant 6% - 20% Attack Speed for 3 seconds. (Max 5 stacks.)",
         "damageTypes": [],
-        "scales": [],
+        "scales": [
+          "attackSpeed"
+        ],
         "tags": []
       },
       {
@@ -5730,7 +6069,7 @@
         "slot": "P",
         "name": "Hextech Capacitor",
         "cooldowns": [],
-        "text": "",
+        "text": "Transforming between the Mercury Hammer and Mercury Cannon grants 30 Movement Speed for 1.25 seconds.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -5868,7 +6207,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 2,
+    "physicalAbilities": 4,
     "magicAbilities": 1,
     "scalesWith": [
       "ad",
@@ -5905,9 +6244,14 @@
           "6",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Launches a magical cartridge at an enemy, dealing 45 / 80 / 115 / 150 ( +35% / 45% / 55% / 65% AD +60% AP ) physical damage before bouncing to a nearby target that has not yet been hit. It can hit up to 4 targets and gains 44% damage each time it kills.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -5919,10 +6263,17 @@
           "12",
           "12"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a long range shot that stops on the first champion hit, dealing 60 / 100 / 140 / 180 ( +40% AD ) physical damage to it, and 75% of that damage to minions and monsters hit along the way. If the target champion was struck by Jhin, Jhin's allies, or Lotus Traps within the last 4 seconds, they are rooted for 1.25 / 1.5 / 1.75 / 2 seconds and Jhin gaines Movement Speed as though he had crit them.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc",
+          "onHit"
+        ]
       },
       {
         "slot": "3",
@@ -6009,7 +6360,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 1,
+    "physicalAbilities": 2,
     "magicAbilities": 1,
     "scalesWith": [
       "ad",
@@ -6061,10 +6412,16 @@
           "6",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a shock blast that deals 10 / 80 / 150 / 220 ( +160% AD ) physical damage to the first enemy hit, granting vision of it and slowing it by 30% / 40% / 50% / 60% for 2 seconds.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "3",
@@ -6161,7 +6518,8 @@
       "cc",
       "dash",
       "heal",
-      "onHit"
+      "onHit",
+      "shield"
     ],
     "abilities": [
       {
@@ -6248,10 +6606,16 @@
           "70",
           "60"
         ],
-        "text": "",
+        "text": "Dash to a location near an enemy champion marked by Plasma , gaining a shield that aborbs 75 / 100 / 125 ( +100% / 150% / 200% AD +75% AP ) damage for 2 seconds.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "dash",
+          "shield"
+        ]
       }
     ]
   },
@@ -6448,6 +6812,7 @@
     ],
     "mechanics": [
       "cc",
+      "onHit",
       "shield"
     ],
     "abilities": [
@@ -6455,10 +6820,12 @@
         "slot": "P",
         "name": "Mantra",
         "cooldowns": [],
-        "text": "",
+        "text": "Every ability cast grants Karma a stack of Mantra. At 3 stacks, she enters a Mantra State, enchancing her next basic ability.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "onHit"
+        ]
       },
       {
         "slot": "1",
@@ -6581,24 +6948,32 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap"
     ],
     "mechanics": [
       "cc",
+      "dash",
       "heal",
-      "onHit"
+      "onHit",
+      "shield"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Void Stone",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Gains a shield that aborbs 50 ( +30% AP ) magic damage for 1.5 seconds when casting an ability near a visible enemy champion.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "shield"
+        ]
       },
       {
         "slot": "1",
@@ -6609,9 +6984,13 @@
           "8",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Fires an orb that deals 80 / 145 / 210 / 275 ( +80% AP ) magic damage and silences the first enemy hit for 1 second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -6663,10 +7042,16 @@
           "4",
           "2"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Blinks to target location and deals 80 / 100 / 120 ( +30% AP +1.5% Mana ) magic damage to nearby enemies. The next Riftwalk cast within 12 seconds deals 50% increased damage and costs 200% additional mana (Stacks 3 times).",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "dash"
+        ]
       }
     ]
   },
@@ -6765,7 +7150,7 @@
           "12",
           "11"
         ],
-        "text": "",
+        "text": "Tosses a Dagger in the air and hastes Katarina by 50% / 60% / 70% / 80% .",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -6855,7 +7240,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ad",
       "ap",
@@ -6863,6 +7248,7 @@
       "bonusAd"
     ],
     "mechanics": [
+      "cc",
       "heal",
       "onHit"
     ],
@@ -6888,10 +7274,17 @@
           "9",
           "8"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Launches a celestial sword, dealing 70 / 120 / 170 / 220 ( +60% AD +50% AP ) magic damage . Enemies hit are slowed by 26% / 34% / 42% / 50% for 2 seconds and their armor and magic resist is reduced by 20% for 4 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -6902,10 +7295,14 @@
           "14",
           "14"
         ],
-        "text": "",
+        "text": "Heals herself and an allied champion for 95 / 125 / 155 / 185 ( +40% AP ) and grants them 25% / 30% / 35% / 40% ( +0.08% AP ) Movement Speed for 2 seconds.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "3",
@@ -7136,23 +7533,27 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ad",
       "ap",
       "attackSpeed",
       "bonusAd"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "cc"
+    ],
     "abilities": [
       {
         "slot": "P",
         "name": "Mark of the Storm",
         "cooldowns": [],
-        "text": "",
+        "text": "Hitting enemies with abilities places a Mark of the storm on them for 6 seconds. At 3 stacks, the enemy is tunned for 1.25 seconds and Kennen gains 25 Energy . Stunning an enemy multiple times within 6 seconds reduces the stun duration to 0.5 seconds.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "1",
@@ -7163,9 +7564,13 @@
           "5",
           "4"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Throws a shuriken, dealing 75 / 140 / 205 / 270 ( +75% AP ) magic damage to the first enemy hit.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -7567,7 +7972,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 4,
     "scalesWith": [
       "ad",
       "ap",
@@ -7576,6 +7981,7 @@
       "maxHp"
     ],
     "mechanics": [
+      "cc",
       "heal"
     ],
     "abilities": [
@@ -7583,8 +7989,10 @@
         "slot": "P",
         "name": "Icathian Surprise",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
+        "text": "Icathian Gift : Can continue to move and gain 10% Movement Speed for 4 seconds after dying. The Movement Speed bonus increases to 50% over the duration. Explodes when the effect ends, dealing 105 ( +35 ) true damage to nearby enemies.",
+        "damageTypes": [
+          "true"
+        ],
         "scales": [],
         "tags": []
       },
@@ -7597,9 +8005,13 @@
           "6",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Vomits a corrosive projective that deals 90 / 150 / 210 / 270 ( +65% AP ) magic damage and shreds 20% / 24% / 28% / 32% Armor and Magic Resist for 4 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -7632,10 +8044,16 @@
           "11",
           "11"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Spits bile, dealing 80 / 130 / 180 / 230 ( +55% AP ) magic damage and leaving a trail of ooze for 3.5 seconds. Enemies in the ooze are slowed by 45% / 50% / 55% / 60% .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -7859,6 +8277,7 @@
     "scalesWith": [
       "ad",
       "ap",
+      "attackSpeed",
       "bonusAd",
       "maxHp"
     ],
@@ -7873,10 +8292,14 @@
         "slot": "P",
         "name": "Flurry",
         "cooldowns": [],
-        "text": "",
+        "text": "Lee Sin's Abilities grant him 40% Attack Speed for 2 attacks within 3 seconds. The first attack restores 20 energy and the second restores half of that amount.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "attackSpeed"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -8007,7 +8430,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap"
     ],
@@ -8021,8 +8444,10 @@
         "slot": "P",
         "name": "Sunlight",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
+        "text": "Abilities apply Sunlight for 1.5 seconds. Other allied champions consume Sunlight when damaging enemies, dealing 34 bonus magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
         "scales": [],
         "tags": []
       },
@@ -8035,10 +8460,17 @@
           "5",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Empowers the next attack to stun for 1 second and deal 15 / 50 / 85 /120 ( +30% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "onHit"
+        ]
       },
       {
         "slot": "2",
@@ -8088,10 +8520,16 @@
           "45",
           "35"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Calls down a beam of light, dealing 150 / 225 / 300 ( +80% AP ) magic damage and slowing by 80% for 1.75 seconds. Enemies in the center are stunned instead of slowed.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       }
     ]
   },
@@ -8137,7 +8575,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 4,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap",
       "maxHp"
@@ -8209,10 +8647,16 @@
           "15",
           "15"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Lillia lobs a swirlseed overhead, dealing 70 / 105 / 140 / 175 ( +45% AP ) magic damage where it lands and revealing Slowing them by 40% for 3 seconds. If no enemies are hit the seed rolls until it hits an enemy or collides with terrain.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -8277,7 +8721,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap"
     ],
@@ -8311,10 +8755,16 @@
           "5",
           "4"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Throws a spear of ice that shatters when it hits an enemy, dealing 70 / 110 / 150 / 190 ( +70% AP ) magic damage and slowing the target by 20% / 25% / 30% / 35% for 1.5 seconds. Enemies behind the target take the same damage and are also slowed.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -8325,10 +8775,16 @@
           "8",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Creates an ice field, rooting enemies within for 1.25 / 1.35 / 1.45 / 1.55 seconds and dealing 55 / 100 / 145 / 190 ( +55% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "3",
@@ -8413,7 +8869,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 2,
+    "physicalAbilities": 3,
     "magicAbilities": 2,
     "scalesWith": [
       "ad",
@@ -8455,9 +8911,13 @@
           "6",
           "5"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Shoots a bolt of piercing light through an enemy unit, damaging enemies in a line for 80 / 125 / 170 / 215 ( +65% / 85% / 105% / 125% AD ) physical damage .",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
         "tags": []
       },
       {
@@ -8556,12 +9016,14 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ap",
       "attackSpeed"
     ],
     "mechanics": [
+      "cc",
+      "heal",
       "shield"
     ],
     "abilities": [
@@ -8587,10 +9049,16 @@
           "7",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Lulu and Pix each fire a piercing bolt that deals 50 / 85 / 120 / 155 ( +30% AP ) magic damage tot the first enemy hit and 70% damage to additional enemies. Enemies hit are slowed by 80% , decaying over the next 2 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -8637,10 +9105,15 @@
           "70",
           "60"
         ],
-        "text": "",
+        "text": "Enlarges an ally champion, knocking nearby enemies into the air for 0.75 seconds. For the next 7 seconds, the ally champion gains 250 / 400 / 55 0 ( +50% AP ) bonus Health and slows nearby enemies by 30% .",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "heal"
+        ]
       }
     ]
   },
@@ -8828,22 +9301,32 @@
         "lvl15": 1.0
       }
     },
-    "primaryDamage": "physical",
+    "primaryDamage": "magic",
     "physicalAbilities": 1,
-    "magicAbilities": 0,
+    "magicAbilities": 3,
     "scalesWith": [
-      "ap"
+      "ap",
+      "attackSpeed",
+      "maxHp"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "cc",
+      "dash",
+      "shield"
+    ],
     "abilities": [
       {
         "slot": "P",
         "name": "Granite Shield",
         "cooldowns": [],
-        "text": "",
+        "text": "Shield 72 ( 11% maximum HP ) damage after not taking damage for 8 seconds.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "maxHp"
+        ],
+        "tags": [
+          "shield"
+        ]
       },
       {
         "slot": "1",
@@ -8854,10 +9337,16 @@
           "8",
           "8"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Launches a shard that deals 70 / 130 / 190 / 250 ( +45% AP ) magic damage , slowing the target by 15% / 20% / 25% / 30% , and hasting Malphite by 15% for 3 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -8886,9 +9375,14 @@
           "7",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Slams the ground, dealing 60 / 110 / 160 / 210 ( +45% AP +45% Armor ) magic damage to nearby enemies and reducing their attack speed by 35% / 40% / 45% / 50% for 3 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap",
+          "attackSpeed"
+        ],
         "tags": []
       },
       {
@@ -8899,10 +9393,17 @@
           "70",
           "65"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Charges to the target area, dealing 200 / 300 / 400 ( +90% AP ) magic damage and knocking up nearby enemies for 1.5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "dash"
+        ]
       }
     ]
   },
@@ -8948,7 +9449,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap",
       "maxHp"
@@ -9044,10 +9545,16 @@
           "75",
           "70"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Summons a slow-moving colossal wave of brambles, dealing 175 / 250 / 325 ( +65% AP ) magic damage and rooting enemies hit for 0.8 seconds. Root duration increases with distance traveled by the brambles. Hitting an enemy champion with this ability grants Maokai 40% / 50% / 60% Movement Speed , which decays over 2 seconds. Hitting a new target refreshes this duration.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       }
     ]
   },
@@ -9092,7 +9599,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 1,
+    "physicalAbilities": 2,
     "magicAbilities": 0,
     "scalesWith": [
       "ad",
@@ -9109,9 +9616,13 @@
         "slot": "P",
         "name": "Double Strike",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Every 4th consecutive attack strikes twice for 78 ( 150% AD ) physical damage .",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
         "tags": []
       },
       {
@@ -9519,7 +10030,7 @@
     },
     "primaryDamage": "physical",
     "physicalAbilities": 3,
-    "magicAbilities": 0,
+    "magicAbilities": 1,
     "scalesWith": [
       "ad",
       "ap",
@@ -9527,6 +10038,7 @@
       "bonusAd"
     ],
     "mechanics": [
+      "cc",
       "onHit"
     ],
     "abilities": [
@@ -9590,10 +10102,16 @@
           "11",
           "10"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Rains down bullets on an area for 2 seconds, dealing 15 / 20 / 25 / 30 ( +10% AP ) magic damage every quarter second and slowing enemies by 30% / 40% / 50% / 60% .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -9657,12 +10175,15 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 1,
+    "magicAbilities": 3,
     "scalesWith": [
+      "ad",
       "ap",
+      "bonusAd",
       "maxHp"
     ],
     "mechanics": [
+      "cc",
       "heal",
       "shield"
     ],
@@ -9692,9 +10213,15 @@
           "5",
           "4"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Smashes the ground with Nightfall to deal 80 / 110 / 140 / 170 ( +70% AP +120% bonus AD ) magic damage . Damage is increased by 45% / 50% / 55% / 60% bonus AD when the ability hits only one enemy.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap",
+          "bonusAd"
+        ],
         "tags": []
       },
       {
@@ -9723,10 +10250,16 @@
           "12",
           "10"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Pulls the enemy toward him, dealing 60 / 80 / 100 / 120 ( +55% AP ) magic damage and slowing them by 30% for 1 second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -9785,24 +10318,27 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap",
       "maxHp"
     ],
     "mechanics": [
       "cc",
-      "heal"
+      "heal",
+      "shield"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Soul Siphon",
         "cooldowns": [],
-        "text": "",
+        "text": "Morgana heals for 20% of the damage dealt with abilities agains champions, large minions and large monsters.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -9813,10 +10349,16 @@
           "9",
           "9"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a bolt of dark energy, rooting the first enemy hit for 2 / 2.25 / 2.5 / 2.75 seconds and dealing 80 / 160 / 240 / 320 ( +90% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -9847,10 +10389,16 @@
           "11",
           "10"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Places a barrier around an allied champion for 5 seconds, absorbing 70 / 150 / 230 / 310 ( +50% AP ) magic damage and blocking disables while the shield holds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "shield"
+        ]
       },
       {
         "slot": "4",
@@ -9917,7 +10465,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap"
     ],
@@ -9930,9 +10478,11 @@
         "slot": "P",
         "name": "Surging Tides",
         "cooldowns": [],
-        "text": "",
+        "text": "Allied champions touched by Nami's abilities gain 65 ( +20% AP ) Movement Speed for 1.5 seconds.",
         "damageTypes": [],
-        "scales": [],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -9944,10 +10494,16 @@
           "10",
           "9"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a bubble, dealing 75 / 145 / 215 / 285 ( +50% AP ) magic damage and knocking up for 1.5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "2",
@@ -9978,10 +10534,16 @@
           "11",
           "11"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Empowers an allied champion's next 3 attacks for 6 seconds to deal an additional 25 / 45 / 65 / 85 ( +20% AP ) magic damage and slow by 15% / 20% / 25% / 30% ( +0.05% AP ) for 1 second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -10044,9 +10606,9 @@
         "lvl15": 1.0
       }
     },
-    "primaryDamage": "physical",
+    "primaryDamage": "magic",
     "physicalAbilities": 1,
-    "magicAbilities": 1,
+    "magicAbilities": 2,
     "scalesWith": [
       "ap",
       "attackSpeed"
@@ -10061,10 +10623,12 @@
         "slot": "P",
         "name": "Soul Eater",
         "cooldowns": [],
-        "text": "",
+        "text": "Gains 6% / 12% / 18% / 24% Physical Vamp .",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -10111,9 +10675,13 @@
           "12",
           "12"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Creates a flaming zone, dealing 55 / 110 / 165 / 220 ( +40% AP ) magic damage . The zone persists for 5 seconds, dealing 11 / 22 / 33 / 44 ( +12% AP ) magic damage over time and reducing Armor by 20% / 25% / 30% / 35% .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -10179,12 +10747,13 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 1,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap"
     ],
     "mechanics": [
       "cc",
+      "dash",
       "shield"
     ],
     "abilities": [
@@ -10269,10 +10838,17 @@
           "60",
           "50"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Nautilus fires a depth charge towards an enemy champion, dealing 150 / 275 / 400 ( +70% AP ) magic damage , Knocking them Up and Stunning them for 1 / 1.5 / 2 seconds. Other enemies hit by the depth charge are also Knocked Up and Stunned and take 125 / 175 / 225 ( +40% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "dash"
+        ]
       }
     ]
   },
@@ -10348,7 +10924,7 @@
           "5",
           "5"
         ],
-        "text": "Javelin Toss : Throws her javelin, dealing 90 / 120 / 150 / 180 ( +50% AP ) magic damage , increased to 225 / 300 / 375 / 450 ( +125% AP ) magic damage based on distance flown. Takedown : Nidalee's next attack deals 10 / 45 / 80 / 115 ( +75% AD +40% AP ) magic damage , increased by 1.25% per 1% of the target's missing Health . If the enemy is Hunted , deals 30% increased damage. ",
+        "text": "Javelin Toss : Throws her javelin, dealing 90 / 120 / 150 / 180 ( +50% AP ) magic damage , increased to 225 / 300 / 375 / 450 ( +125% AP ) magic damage based on distance flown. Takedown : Nidalee's next attack deals 10 / 45 / 80 / 115 ( +75% AD +40% AP ) magic damage , increased by 1.25% per 1% of the target's missing Health . If the enemy is Hunted , deals 30% increased damage.",
         "damageTypes": [
           "magic"
         ],
@@ -10463,7 +11039,7 @@
     },
     "primaryDamage": "physical",
     "physicalAbilities": 3,
-    "magicAbilities": 0,
+    "magicAbilities": 1,
     "scalesWith": [
       "ad",
       "attackSpeed"
@@ -10480,10 +11056,13 @@
         "slot": "P",
         "name": "Joy Unending",
         "cooldowns": [],
-        "text": "",
+        "text": "After an attack crits, Nilah heals herself for 20% of the damage dealt. Excess healing is converted into an equivalent amount of shield that lasts 6 seconds.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal",
+          "shield"
+        ]
       },
       {
         "slot": "1",
@@ -10513,8 +11092,10 @@
           "19",
           "18"
         ],
-        "text": "",
-        "damageTypes": [],
+        "text": "Nilah evelops herself in mist for 1.75 seconds, during wich she gains 15% / 20% / 25% / 30% Movement Speed , reduces incoming magic damage taken by 25% and becomes immune to non-tower attacks. If there are allied champions nearby, the nearest allied champion gains the same effects, and the duration of the effects Nilah gained is extended by 1 second.",
+        "damageTypes": [
+          "magic"
+        ],
         "scales": [],
         "tags": []
       },
@@ -11059,22 +11640,29 @@
     "physicalAbilities": 1,
     "magicAbilities": 0,
     "scalesWith": [
-      "ad"
+      "ad",
+      "attackSpeed"
     ],
     "mechanics": [
       "cc",
       "dash",
-      "onHit"
+      "heal",
+      "onHit",
+      "shield"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Berserker Rage",
         "cooldowns": [],
-        "text": "",
+        "text": "Gain up to 70% - 110% (based on level) attack speed and 15% - 30% (based on level) physical vamp based on missing health, maxing out at 70% missing health.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "attackSpeed"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -11105,10 +11693,15 @@
           "13",
           "12"
         ],
-        "text": "",
+        "text": "Olaf gains 35% / 50% / 65% / 80% Attack Speed for 4 seconds and grants himself a shield that absorbs 35 / 70 / 105 / 140 ( +15% missing health ) for 2.5 seconds with an amount that is capped at 70% of missing health.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "attackSpeed"
+        ],
+        "tags": [
+          "heal",
+          "shield"
+        ]
       },
       {
         "slot": "3",
@@ -11191,7 +11784,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 4,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap"
     ],
@@ -11279,9 +11872,13 @@
           "65",
           "55"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Commands the Ball to unleash a shockwave, dealing 250 / 350 / 450 ( +85% AP ) magic damage and launching nearby enemies toward the Ball after a brief delay.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       }
     ]
@@ -11492,10 +12089,12 @@
         "slot": "P",
         "name": "Mortal Will",
         "cooldowns": [],
-        "text": "",
+        "text": "After 5 attacks or abilities Pantheon's next basic ability is enhanced.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "onHit"
+        ]
       },
       {
         "slot": "1",
@@ -11848,7 +12447,7 @@
           "10",
           "9"
         ],
-        "text": "",
+        "text": "Becomes camouflaged for 5 seconds and gains 40% (+200% lethality) Movement Speed that decays over the duration.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -11938,11 +12537,12 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 1,
+    "magicAbilities": 3,
     "scalesWith": [
       "ap"
     ],
     "mechanics": [
+      "cc",
       "dash",
       "heal",
       "shield"
@@ -11992,10 +12592,17 @@
           "12",
           "10"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Dashes to a location. Upon arrival Rakan leaps into the air, dealing 70 / 135 / 200 / 265 ( +45% AP ) magic damage and knocking up enemies for 1 second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "dash"
+        ]
       },
       {
         "slot": "3",
@@ -12023,10 +12630,16 @@
           "70",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Gains 60% Movement Speed for 4 seconds. Touching enemies deals 100 / 200 / 300 ( +50% AP ) magic damage and charms them for 1 / 1.25 / 1.5 seconds. This may only occur once per unit. The first champion charmed grants Rakan 75% decaying Movement Speed .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       }
     ]
   },
@@ -12074,7 +12687,8 @@
     "physicalAbilities": 0,
     "magicAbilities": 3,
     "scalesWith": [
-      "ap"
+      "ap",
+      "attackSpeed"
     ],
     "mechanics": [
       "cc"
@@ -12134,10 +12748,14 @@
           "13",
           "12"
         ],
-        "text": "",
+        "text": "Taunts an enemy champion or monster for 1.25 / 1.5 / 1.75 / 2 seconds and gain 35% / 45% / 55% / 65% Attack Speed decaying over 5 seconds.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "attackSpeed"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -12361,9 +12979,10 @@
     },
     "primaryDamage": "physical",
     "physicalAbilities": 3,
-    "magicAbilities": 0,
+    "magicAbilities": 1,
     "scalesWith": [
       "ad",
+      "ap",
       "bonusAd"
     ],
     "mechanics": [
@@ -12457,9 +13076,13 @@
           "70",
           "65"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Gain 20 Fury and 300 / 575 / 750 Heath for 12 seconds. Every second after casting, gain 5 fury and deal 70 / 120 / 170 ( +20% AP ) magic damage to nearby enemies.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       }
     ]
@@ -12601,10 +13224,12 @@
           "75",
           "65"
         ],
-        "text": "",
+        "text": "Gains 40% / 50% / 60% Movement Speed and reveals the nearest enemy champion for 12 / 14 / 16 seconds. Rengar becomes camouflaged after 1 second and can leap without being in brush. Leaping to an enemy champion shreds the target's armor by 16 / 24 / 32 for 4 seconds.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "dash"
+        ]
       }
     ]
   },
@@ -12649,7 +13274,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 3,
+    "physicalAbilities": 4,
     "magicAbilities": 0,
     "scalesWith": [
       "ad"
@@ -12665,7 +13290,7 @@
         "slot": "P",
         "name": "Runic Blade",
         "cooldowns": [],
-        "text": "Abilities charge Riven's blade up to 3 times. Attacks expend charges to deal 21 bonus physical damage ( 22% - 50% AD ) Bonus damage to monsters and structures is reduced to 65% . ",
+        "text": "Abilities charge Riven's blade up to 3 times. Attacks expend charges to deal 21 bonus physical damage ( 22% - 50% AD ) Bonus damage to monsters and structures is reduced to 65% .",
         "damageTypes": [
           "physical"
         ],
@@ -12705,10 +13330,16 @@
           "8",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Stun nearby enemies for 0.75 seconds, dealing 55 / 95 / 135 / 175 ( +100% AD ) physical damage .",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "3",
@@ -12792,7 +13423,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap",
       "attackSpeed",
@@ -12892,10 +13523,16 @@
           "70",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Launches a line of rockets that creates a burning trail on the ground on impact, dealing 700 / 1050 / 1400 ( +200% AP ) magic damage and slowing enemies in the trail by 45% over 5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       }
     ]
   },
@@ -12954,9 +13591,11 @@
         "slot": "P",
         "name": "Arcane Mastery",
         "cooldowns": [],
-        "text": "",
+        "text": "Gains 0% max Mana ( 10% AP ). Ryze's abilities deal additional damage based on his bonus Mana .",
         "damageTypes": [],
-        "scales": [],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -13076,7 +13715,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 2,
+    "physicalAbilities": 3,
     "magicAbilities": 1,
     "scalesWith": [
       "ad",
@@ -13122,9 +13761,13 @@
           "18",
           "16"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Samira slashes around her 0.75 seconds, damaging enemies twice for 20 / 40 / 60 / 80 ( +80% AD ) physical damage each and destroying enemy missiles that enter the area.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
         "tags": []
       },
       {
@@ -13208,7 +13851,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 1,
+    "physicalAbilities": 4,
     "magicAbilities": 0,
     "scalesWith": [
       "ad",
@@ -13218,17 +13861,22 @@
     "mechanics": [
       "cc",
       "heal",
-      "onHit"
+      "onHit",
+      "shield"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Absolution",
         "cooldowns": [],
-        "text": " Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 15% Critical Chance.",
-        "damageTypes": [],
+        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1.2% of their current health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 15% Critical Chance.",
+        "damageTypes": [
+          "physical"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -13263,10 +13911,16 @@
           "11",
           "11"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Sends forth a wave of Black Mist, dealing 90 / 155 / 220 / 285 ( +70% AD ) physical damage to the first enemy hit. After 1 second delay the target and other nearby enemies are Rooted for 1.3 / 1.6 / 1.9 / 2.2 seconds.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "3",
@@ -13290,10 +13944,17 @@
           "80",
           "75"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a global wave that shields ally champions from 120 / 160 / 200 ( +40% AP + 4 per Mist) damage for 3 seconds, while dealing 250 / 375 / 500 ( +120% AD +50% AP ) physical damage and applies Mist to enemy champions caught in the center.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "shield"
+        ]
       }
     ]
   },
@@ -13486,7 +14147,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 4,
+    "physicalAbilities": 5,
     "magicAbilities": 0,
     "scalesWith": [
       "ad",
@@ -13586,10 +14247,17 @@
           "65",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Grabs an enemy champion and suppresses them as he carries them forward, then slams them into the ground, dealing 200 / 300 / 400 ( +100% AD ) + 35% / 45% / 55% bonus Health physical damage to surrounding enemies and Slowing them by 99% for 1 second. Enemies take less damage the further they are from where Sett lands.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc",
+          "heal"
+        ]
       }
     ]
   },
@@ -13633,8 +14301,8 @@
         "lvl15": 1.0
       }
     },
-    "primaryDamage": "magic",
-    "physicalAbilities": 0,
+    "primaryDamage": "physical",
+    "physicalAbilities": 1,
     "magicAbilities": 1,
     "scalesWith": [
       "ap",
@@ -13691,7 +14359,7 @@
           "14",
           "12"
         ],
-        "text": "",
+        "text": "Sends the Spirit Blade to an allied champion, creatng a zone that blocks enemy attacks for 1.75 seconds.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -13705,10 +14373,15 @@
           "12",
           "10"
         ],
-        "text": "",
-        "damageTypes": [],
+        "text": "Dashes forward, dealing 60 / 90 / 120 / 150 ( +15% HP ) physical damage to enemy champions and monsters, taunting them for 1.5 seconds.",
+        "damageTypes": [
+          "physical"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc",
+          "dash"
+        ]
       },
       {
         "slot": "4",
@@ -13922,7 +14595,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap",
       "maxHp"
@@ -13952,9 +14625,13 @@
           "1",
           "1"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Toggle : Lay a poisonous trail that deals 20 / 28 / 36 / 44 ( +30% AP ) magic damage per second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -14233,7 +14910,7 @@
         "slot": "P",
         "name": "Fleet of Foot",
         "cooldowns": [],
-        "text": "",
+        "text": "Gains 31 Movement Speed for 1.5 seconds after dealing damage to an enemy champion with an attack or ability.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -14352,9 +15029,9 @@
         "lvl15": 1.0
       }
     },
-    "primaryDamage": "physical",
+    "primaryDamage": "magic",
     "physicalAbilities": 2,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ad",
       "ap",
@@ -14365,7 +15042,8 @@
     "mechanics": [
       "cc",
       "dash",
-      "heal"
+      "heal",
+      "shield"
     ],
     "abilities": [
       {
@@ -14416,10 +15094,19 @@
           "7",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Immediately gains a shield that absorbs damage equal to 8% max Health for 2.5 seconds and triggers an earthquake that deals 50 / 70 / 90 / 110 ( +80% AP ) magic damage and slows nearby enemies by 25% for 1 second.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap",
+          "maxHp"
+        ],
+        "tags": [
+          "cc",
+          "heal",
+          "shield"
+        ]
       },
       {
         "slot": "3",
@@ -14825,10 +15512,12 @@
         "slot": "P",
         "name": "Salvation",
         "cooldowns": [],
-        "text": "",
+        "text": "Soraka gains 100% Movement Speed when moving toward allied champions below 35% Health.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -14898,10 +15587,14 @@
           "80",
           "75"
         ],
-        "text": "",
+        "text": "Heals all allied champions for 150 / 225 / 300 ( +45% AP ), increased by 50% if the ally is below 35% Health.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "heal"
+        ]
       }
     ]
   },
@@ -15255,7 +15948,7 @@
         "slot": "P",
         "name": "Rock Surfing",
         "cooldowns": [],
-        "text": "",
+        "text": "Gains 5% / 10% / 20% / 35% Movement Speed while out of combat and near a wall.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -15289,10 +15982,12 @@
           "9",
           "7"
         ],
-        "text": "",
+        "text": "Causes an area of ground to erupt, knocking enemies in the area in the chosen direction after a brief delay.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "3",
@@ -15520,7 +16215,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ap",
       "attackSpeed"
@@ -15534,9 +16229,13 @@
         "slot": "P",
         "name": "Toxic Shot",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Attacks deal 8 - 36 ( +20% AP ) bonus magic damage on impact and an additional 8 - 50 ( +9% AP ) magic damage each second for 4 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -15799,10 +16498,11 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 1,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ad",
       "ap",
+      "attackSpeed",
       "bonusAd"
     ],
     "mechanics": [
@@ -15814,10 +16514,12 @@
         "slot": "P",
         "name": "Draw a Bead",
         "cooldowns": [],
-        "text": "",
+        "text": "Increases the range of attacks, Explosive Charge , and Buster Shot by 10 per level.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "dash"
+        ]
       },
       {
         "slot": "1",
@@ -15828,9 +16530,11 @@
           "15",
           "14"
         ],
-        "text": "",
+        "text": "Gain 50% / 75% / 100% / 125% bonus Attack Speed for 7 seconds.",
         "damageTypes": [],
-        "scales": [],
+        "scales": [
+          "attackSpeed"
+        ],
         "tags": []
       },
       {
@@ -15885,10 +16589,16 @@
           "65",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a massive cannonball at an enemy, dealing 350 / 450 / 550 ( +100% AP ) magic damage and knocking them back.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       }
     ]
   },
@@ -16071,7 +16781,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ad",
       "ap",
@@ -16088,7 +16798,7 @@
         "slot": "P",
         "name": "Loaded Dice",
         "cooldowns": [],
-        "text": "",
+        "text": "Gain 1 to 9 bonus gold upon killing a unit.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -16102,9 +16812,13 @@
           "6",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Throws three cards, dealing 60 / 120 / 180 / 240 ( +70% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -16341,7 +17055,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 3,
+    "physicalAbilities": 5,
     "magicAbilities": 0,
     "scalesWith": [
       "ad",
@@ -16349,8 +17063,10 @@
     ],
     "mechanics": [
       "cc",
+      "dash",
       "heal",
-      "onHit"
+      "onHit",
+      "shield"
     ],
     "abilities": [
       {
@@ -16378,10 +17094,17 @@
           "9",
           "8"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires an explosive charge that deals 40 / 95 / 150 / 205 ( +70% AD ) physical damage and slows by 45% / 50% / 55% / 60% for 1.25 seconds.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc",
+          "dash"
+        ]
       },
       {
         "slot": "2",
@@ -16413,10 +17136,18 @@
           "13",
           "12"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Gain a shield that absorbs 70 / 100 / 130 / 160 ( +150% AD +15 bonus HP ) damage for 4 seconds and charges forward, dealing 90 / 130 / 170 / 210 ( +100% AD ) physical damage and stunnng them for 1.5 seconds. Flings the first enemy champion over him and knocks non-champions aside.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc",
+          "dash",
+          "shield"
+        ]
       },
       {
         "slot": "4",
@@ -16635,7 +17366,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 1,
+    "physicalAbilities": 2,
     "magicAbilities": 0,
     "scalesWith": [
       "ad",
@@ -16643,6 +17374,7 @@
       "maxHp"
     ],
     "mechanics": [
+      "cc",
       "dash",
       "heal",
       "onHit"
@@ -16708,10 +17440,16 @@
           "15",
           "12"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Fires a bolt that deals 50 / 80 / 110 / 140 ( +55% AD ) physical damage and knocks back. If enemies are knocked into a wall, they take an additional 105 / 145 / 185 / 225 ( +75% AD ) physical damage and are stunned for 1.5 seconds.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -16770,7 +17508,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ap"
     ],
@@ -16799,9 +17537,13 @@
           "5",
           "4"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Veigar unleashes a bolt of dark energy, dealing 65 / 125 / 185 / 245 ( +55% / 60% / 65% / 70% AP ) magic damage to the first two enemies hit.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -17437,9 +18179,12 @@
           "8",
           "6"
         ],
-        "text": "",
+        "text": "Sends forth a specter to haunt the first terrain hit with Black Mist for 6 seconds. While inside the Black Mist, Viego becomes camouflaged and gains 25% / 30% / 35% / 40% Movement Speed ( +0.04% AP ) and 45% / 50% / 55% / 60% Attack Speed .",
         "damageTypes": [],
-        "scales": [],
+        "scales": [
+          "ap",
+          "attackSpeed"
+        ],
         "tags": []
       },
       {
@@ -17647,7 +18392,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap",
       "maxHp"
@@ -17662,10 +18407,14 @@
         "slot": "P",
         "name": "Crimson Pact",
         "cooldowns": [],
-        "text": "",
+        "text": "Gains Ability Power equal to 4.5% of Health and Bonus Health equal to 140% Ability Power . (Both effects do not mutually stack)",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -17696,10 +18445,15 @@
           "19",
           "16"
         ],
-        "text": "",
-        "damageTypes": [],
+        "text": "Sinks into a blood pool, becoming untargetable for 2 seconds. Also gains 27.5% bonus Movement Speed that gradually decays over 1 second. While the blood pool is active, enemies within the blood pool take 20 / 40 / 60 / 80 ( +2% of Maximul Health ) magic damage every 0.5 seconds and are slowed by 40% . Also restores Health equal to 15% of the damage dealt.",
+        "damageTypes": [
+          "magic"
+        ],
         "scales": [],
-        "tags": []
+        "tags": [
+          "cc",
+          "heal"
+        ]
       },
       {
         "slot": "3",
@@ -17950,7 +18704,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ad",
       "ap",
@@ -18048,10 +18802,20 @@
           "70",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Warwick leaps a huge distance that scales with his Move Speed , 2.5 seconds within landing his next basic attack will be empowered. If the empowered basic attack hit target successfully, he leaps to the target, dealing damage while suppressing the target. He attacks that champion 4 times over the duration, applying On-Hit effects and dealing 125 / 300 / 475 ( + 167% bonus AD ) magic damage . Warwick restores 100% of all damage dealt during the channel as Health .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "bonusAd"
+        ],
+        "tags": [
+          "cc",
+          "dash",
+          "heal",
+          "onHit"
+        ]
       }
     ]
   },
@@ -18169,7 +18933,7 @@
           "8",
           "8"
         ],
-        "text": "Moves toward a target while sending clones to 2 additional enemies nearby, dealing 70 / 110 / 150 / 190 ( +80% bonus AD ) physical damage to each enemy. After hitting the targeted enemy, Wukong gains 25% / 35% / 45% / 55% Attack Speed for 4 seconds. ",
+        "text": "Moves toward a target while sending clones to 2 additional enemies nearby, dealing 70 / 110 / 150 / 190 ( +80% bonus AD ) physical damage to each enemy. After hitting the targeted enemy, Wukong gains 25% / 35% / 45% / 55% Attack Speed for 4 seconds.",
         "damageTypes": [
           "physical"
         ],
@@ -18244,7 +19008,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 1,
+    "physicalAbilities": 3,
     "magicAbilities": 0,
     "scalesWith": [
       "ad",
@@ -18276,9 +19040,14 @@
           "8",
           "7"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Throws two daggers dealing 50 / 75 / 100 / 125 ( +50% bonus AD ) physical damage each and leaving two Feathers . Targets hit after the first take 50% damage.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad",
+          "bonusAd"
+        ],
         "tags": []
       },
       {
@@ -18326,10 +19095,17 @@
           "70",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Leaps into the air, becoming untargetable and throwing out a fan of daggers wich deal 125 / 250 / 375 ( +100% bonus AD ) physical damage and leave behind a line of Feathers . Can move while in the air.",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad",
+          "bonusAd"
+        ],
+        "tags": [
+          "dash"
+        ]
       }
     ]
   },
@@ -18374,7 +19150,7 @@
       }
     },
     "primaryDamage": "physical",
-    "physicalAbilities": 3,
+    "physicalAbilities": 4,
     "magicAbilities": 1,
     "scalesWith": [
       "ad",
@@ -18394,10 +19170,17 @@
         "slot": "P",
         "name": "Determination",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Every third attack deals an additional 13 ( 22% AD ) physical damage and heals for 13 ( +10% AD +40% AP ).",
+        "damageTypes": [
+          "physical"
+        ],
+        "scales": [
+          "ad",
+          "ap"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -18590,7 +19373,7 @@
           "18",
           "18"
         ],
-        "text": "",
+        "text": "Creates a 300 / 400 / 500 / 600 unit wall that blocks all enemy projectiles for 4 seconds.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -18682,7 +19465,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 1,
-    "magicAbilities": 2,
+    "magicAbilities": 3,
     "scalesWith": [
       "ad",
       "attackSpeed",
@@ -18782,10 +19565,18 @@
           "70",
           "60"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Strikes all enemies along a path for 200 / 350 / 500 ( +80% AD ) physical and magic damage , teleport behind the last champion hit and knocking them towards Yone.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad"
+        ],
+        "tags": [
+          "cc",
+          "dash",
+          "onHit"
+        ]
       }
     ]
   },
@@ -19113,14 +19904,16 @@
     },
     "primaryDamage": "physical",
     "physicalAbilities": 3,
-    "magicAbilities": 0,
+    "magicAbilities": 1,
     "scalesWith": [
       "ad",
-      "bonusAd"
+      "bonusAd",
+      "maxHp"
     ],
     "mechanics": [
       "cc",
       "dash",
+      "heal",
       "onHit"
     ],
     "abilities": [
@@ -19128,10 +19921,16 @@
         "slot": "P",
         "name": "Contempt for the Weak",
         "cooldowns": [],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Zed's attacks against enemies below 50% Health deal bonus 7% magic damage of their maximum Health. (10 second cooldown per unique enemy).",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "maxHp"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "1",
@@ -19411,7 +20210,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 5,
     "scalesWith": [
       "ap"
     ],
@@ -19425,7 +20224,7 @@
         "slot": "P",
         "name": "Short Fuse",
         "cooldowns": [],
-        "text": "Passive : all of Ziggs' abilities can deal 24% damage to turrets. Empower Bouncing Bomb to deal 17 + 3 per level ( +15% AP ) additional magic damage and 32% damage to turrets. Short Fuse's cooldown is reduced by 4 seconds when Ziggs casts an ability. ",
+        "text": "Passive : all of Ziggs' abilities can deal 24% damage to turrets. Empower Bouncing Bomb to deal 17 + 3 per level ( +15% AP ) additional magic damage and 32% damage to turrets. Short Fuse's cooldown is reduced by 4 seconds when Ziggs casts an ability.",
         "damageTypes": [
           "magic"
         ],
@@ -19443,9 +20242,13 @@
           "4",
           "4"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Throws a bouncing bomb that deals 70 / 135 / 200 / 265 ( +65% AP ) magic damage .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -19498,9 +20301,13 @@
           "75",
           "65"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Deploys the Mega Inferno Bomb to deal 270 / 375 / 480 ( +85% AP ) magic damage to enemies in the blast zone .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       }
     ]
@@ -19554,6 +20361,7 @@
     "mechanics": [
       "cc",
       "dash",
+      "heal",
       "shield"
     ],
     "abilities": [
@@ -19561,7 +20369,7 @@
         "slot": "P",
         "name": "Time in a Bottle",
         "cooldowns": [],
-        "text": "",
+        "text": "Stores time as Experience at a rate of 20 / 50 / 80 XP per 5 seconds. Zilean can grant this Experience to the nearest allied champion when he has enough to complete their next level up by tapping the minion button. Doing so gives Zilean the same amount of Experience. Experience can only be imparted to allies who can level up. If Zilean takes damage or is crown controlled while imparting Experience, the process will be interrupted.",
         "damageTypes": [],
         "scales": [],
         "tags": []
@@ -19614,10 +20422,14 @@
           "25",
           "25"
         ],
-        "text": "",
+        "text": "Creates a time-bending force field for 2.5 seconds. While within the force field, enemy champions are slowed by 20% / 25% / 30% / 35% ( +5% AP ) and projectiles by 80% .",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "4",
@@ -19627,10 +20439,15 @@
           "85",
           "70"
         ],
-        "text": "",
+        "text": "Places a protective time rune that lasts 5 seconds on himself or an allied champion. If the rune bearer takes lethal damage during this time, they teleport back in time and become untargetable for 3 seconds before they are revived and healed for 600 / 850 / 1000 ( +200% AP ) Health . If the rune bearer does not trigger the rune's revival effect, 10% of Chronoshift's cooldown will be refunded.",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "dash",
+          "heal"
+        ]
       }
     ]
   },
@@ -19682,6 +20499,7 @@
     ],
     "mechanics": [
       "cc",
+      "dash",
       "onHit"
     ],
     "abilities": [
@@ -19764,10 +20582,12 @@
           "8",
           "5"
         ],
-        "text": "",
+        "text": "Zoe teleports to a nearby position for 1 second. Afterwards, she teleports back. Zoe can use Abilities and attack, but can't move during this time.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "dash"
+        ]
       }
     ]
   },
@@ -19813,7 +20633,7 @@
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 3,
+    "magicAbilities": 4,
     "scalesWith": [
       "ap",
       "attackSpeed"
@@ -19848,9 +20668,13 @@
           "7",
           "6"
         ],
-        "text": "",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Vines spread and burst into spines, dealing 60 / 115 / 170 / 225 ( +60% AP ) magic damage and sprouting 1 Thorn Spitter .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": []
       },
       {
@@ -19862,10 +20686,14 @@
           "14",
           "12"
         ],
-        "text": "",
+        "text": "Nearby Thorn Spitters become enraged, resetting their duration and gaining 35% / 40% / 45% / 60% Health and 50% Attack Speed .",
         "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "attackSpeed"
+        ],
+        "tags": [
+          "heal"
+        ]
       },
       {
         "slot": "3",

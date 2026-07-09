@@ -1,20 +1,97 @@
 {
-  "_note": "Damage-relevant numeric models of runes, from data/runes.json descriptions. levelRange [lo,hi] interpolates over levels 1->15. bonusAd folds into total AD; burstProc = one-time damage in the combo (flat + adRatio*bonusAD + apRatio*AP); onHit = per-auto bonus; ampPct = % combo damage amp. PoC scope: Graves-relevant runes.",
-  "keystones": {
-    "Electrocute":  {"burstProc": {"baseRange": [40, 194], "adRatio": 0.35, "apRatio": 0.20, "type": "physical"}},
-    "Conqueror":    {"bonusAdPerStackRange": [3, 7], "burstStacks": 3, "fullStacks": 6, "adaptive": true},
-    "Dark Harvest": {"burstProc": {"flat": 40, "type": "physical", "condition": "targetBelow50"}},
-    "First Strike": {"ampPct": 0.07, "ampType": "true"}
+ "_note": "Damage-relevant numeric models of runes, from data/runes.json descriptions. levelRange [lo,hi] interpolates over levels 1->15. bonusAd folds into total AD; burstProc = one-time damage in the combo (flat + adRatio*bonusAD + apRatio*AP); onHit = per-auto bonus; ampPct = % combo damage amp. PoC scope: Graves-relevant runes.",
+ "keystones": {
+  "Electrocute": {
+   "burstProc": {
+    "baseRange": [
+     40,
+     194
+    ],
+    "adRatio": 0.35,
+    "apRatio": 0.2,
+    "type": "physical"
+   }
   },
-  "minors": {
-    "Brutal":            {"onHit": {"flat": 6, "adRatio": 0.08, "type": "physical"}},
-    "Sudden Impact":     {"burstProc": {"baseRange": [10, 80], "type": "true"}},
-    "Eyeball Collector": {"bonusAdAtStacks": 16},
-    "Absolute Focus":    {"bonusAdRange": [2, 20], "requiresHealthy": true},
-    "Coup de Grace":     {"ampPct": 0.08, "note": "vs targets <40% HP (approx: applied to kill combo)"},
-    "Last Stand":        {"ampSelfLowPct": 0.09, "note": "only when YOU are <60% HP — 0 for burst-from-full"},
-    "Relentless Hunter": {},
-    "Triumph":           {},
-    "Legend: Bloodline": {}
+  "Conqueror": {
+   "bonusAdPerStackRange": [
+    3,
+    7
+   ],
+   "burstStacks": 3,
+   "fullStacks": 6,
+   "adaptive": true
+  },
+  "Dark Harvest": {
+   "burstProc": {
+    "flat": 40,
+    "type": "physical",
+    "condition": "targetBelow50"
+   }
+  },
+  "First Strike": {
+   "ampPct": 0.07,
+   "ampType": "true"
+  },
+  "Phase Rush": {
+   "msPctAvg": 24,
+   "hasteFlat": 25,
+   "_why": "melee 40%/60% MS + 25 haste on 3-hit proc; ~60% fight uptime of the 40% roll"
   }
+ },
+ "minors": {
+  "Brutal": {
+   "onHit": {
+    "flat": 6,
+    "adRatio": 0.08,
+    "type": "physical"
+   }
+  },
+  "Sudden Impact": {
+   "burstProc": {
+    "baseRange": [
+     10,
+     80
+    ],
+    "type": "true"
+   }
+  },
+  "Eyeball Collector": {
+   "bonusAdAtStacks": 16
+  },
+  "Absolute Focus": {
+   "bonusAdRange": [
+    2,
+    20
+   ],
+   "requiresHealthy": true
+  },
+  "Coup de Grace": {
+   "ampPct": 0.08,
+   "note": "vs targets <40% HP (approx: applied to kill combo)"
+  },
+  "Last Stand": {
+   "ampSelfLowPct": 0.09,
+   "note": "only when YOU are <60% HP — 0 for burst-from-full"
+  },
+  "Relentless Hunter": {},
+  "Triumph": {},
+  "Legend: Bloodline": {},
+  "Celerity": {
+   "msPctAvg": 2,
+   "msAmpPct": 7,
+   "_why": "2% MS; all MS bonuses on you increased 7%"
+  },
+  "Nimbus Cloak": {
+   "msPctAvg": 12,
+   "_why": "10-40% MS for 3s on summoner cast; avg fight uptime approximation"
+  },
+  "Transcendence": {
+   "hasteFlat": 12,
+   "_why": "6 haste at lvl1 + 6 at lvl5"
+  },
+  "Gathering Storm": {
+   "bonusAdAtStacks": 16,
+   "_why": "scaling AD by game time, ~15min value (8 ad x2? use 16 approximation)"
+  }
+ }
 }

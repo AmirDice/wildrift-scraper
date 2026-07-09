@@ -1,0 +1,6058 @@
+{
+  "Aatrox": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding (Build 2nd)",
+        "items": [
+          "spear-of-shojin",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Burst Damage",
+        "items": [
+          "spear-of-shojin",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "spear-of-shojin",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stridebreaker",
+          "quicksilver"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "goredrinker",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Ahri": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "infinity-orb",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "infinity-orb",
+          "morellonomicon"
+        ]
+      }
+    ]
+  },
+  "Akali": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Akshan": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "bloodthirster",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Assassins",
+        "items": [
+          "bloodthirster",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Alistar": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "amaranths-twinguard",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Ambessa": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "guardian-angel",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "goredrinker",
+          "quicksilver"
+        ]
+      },
+      {
+        "when": "vs Shielding (Build 2nd)",
+        "items": [
+          "guardian-angel",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Amumu": {
+    "skillOrder": {
+      "1": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Annie": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "infinity-orb",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Ashe": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "guardian-angel",
+          "blade-of-the-ruined-king"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Aurelion Sol": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "riftmaker",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "riftmaker",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Aurora": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Tanks",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "liandrys-torment"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      }
+    ]
+  },
+  "Bard": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Blitzcrank": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "frozen-heart",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "frozen-heart",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Brand": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      }
+    ]
+  },
+  "Braum": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "force-of-nature",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "force-of-nature",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Caitlyn": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "bloodthirster",
+          "blade-of-the-ruined-king"
+        ]
+      },
+      {
+        "when": "vs Assassins",
+        "items": [
+          "bloodthirster",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Camille": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Tanks",
+        "items": [
+          "amaranths-twinguard",
+          "blade-of-the-ruined-king"
+        ]
+      },
+      {
+        "when": "vs Shielding (Build 2nd)",
+        "items": [
+          "amaranths-twinguard",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Corki": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Assassins",
+        "items": [
+          "bloodthirster",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Darius": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "force-of-nature",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "force-of-nature",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "protobelt",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Diana": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Dr. Mundo": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "sunfire-aegis",
+          "hollow-radiance"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Draven": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Assassins",
+        "items": [
+          "infinity-edge",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Ekko": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "riftmaker",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "riftmaker",
+          "crown-of-the-shattered-queen"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "protobelt",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Evelynn": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Ezreal": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "blade-of-the-ruined-king",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "blade-of-the-ruined-king",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Fiddlesticks": {
+    "skillOrder": {
+      "1": [
+        4,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "malignance",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "malignance",
+          "morellonomicon"
+        ]
+      }
+    ]
+  },
+  "Fiora": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Tanks",
+        "items": [
+          "amaranths-twinguard",
+          "blade-of-the-ruined-king"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "amaranths-twinguard",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "goredrinker",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Fizz": {
+    "skillOrder": {
+      "1": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "riftmaker",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "riftmaker",
+          "crown-of-the-shattered-queen"
+        ]
+      }
+    ]
+  },
+  "Galio": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "kaenic-rookern",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "kaenic-rookern",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Garen": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "spear-of-shojin",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "spear-of-shojin",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Gnar": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "For Split Pushing (Build 2nd)",
+        "items": [
+          "guardian-angel",
+          "hullbreaker"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Gragas": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "lich-bane",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "lich-bane",
+          "crown-of-the-shattered-queen"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Graves": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "infinity-edge",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "infinity-edge",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Gwen": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "infinity-orb",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Hecarim": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "spear-of-shojin",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "glorious",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Heimerdinger": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      }
+    ]
+  },
+  "Irelia": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "wits-end"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Janna": {
+    "skillOrder": {
+      "1": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Jarvan IV": {
+    "skillOrder": {
+      "1": [
+        2,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "amaranths-twinguard",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Jax": {
+    "skillOrder": {
+      "1": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "gargoyle",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Jayce": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        5,
+        8,
+        9
+      ],
+      "2": [
+        3,
+        6,
+        7,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "youmuus-ghostblade",
+          "serpents-fang"
+        ]
+      }
+    ]
+  },
+  "Jhin": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Assassins",
+        "items": [
+          "bloodthirster",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Jinx": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Kai'Sa": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Kalista": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Burst Damage",
+        "items": [
+          "amaranths-twinguard",
+          "guardian-angel"
+        ]
+      }
+    ]
+  },
+  "Karma": {
+    "skillOrder": {
+      "1": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "frozen-heart",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "frozen-heart",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Kassadin": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "malignance",
+          "crown-of-the-shattered-queen"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "malignance",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Katarina": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Kayle": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "lich-bane",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "lich-bane",
+          "liandrys-torment"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "lich-bane",
+          "crown-of-the-shattered-queen"
+        ]
+      }
+    ]
+  },
+  "Kayn": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Kennen": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Kha'Zix": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Kindred": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      }
+    ]
+  },
+  "Kog'Maw": {
+    "skillOrder": {
+      "1": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "K'Sante": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "mantle-of-the-twelfth-hour",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "mantle-of-the-twelfth-hour",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Lee Sin": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Leona": {
+    "skillOrder": {
+      "1": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "amaranths-twinguard",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "amaranths-twinguard",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Lillia": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "liandrys-torment",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "liandrys-torment",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Lissandra": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      }
+    ]
+  },
+  "Lucian": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Burst Damage",
+        "items": [
+          "bloodthirster",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Lulu": {
+    "skillOrder": {
+      "1": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "frozen-heart"
+        ]
+      }
+    ]
+  },
+  "Lux": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Malphite": {
+    "skillOrder": {
+      "1": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "zekes-convergence",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Maokai": {
+    "skillOrder": {
+      "1": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "force-of-nature",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "force-of-nature",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Master Yi": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "wits-end"
+        ]
+      }
+    ]
+  },
+  "Mel": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Milio": {
+    "skillOrder": {
+      "1": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Miss Fortune": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Mordekaiser": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Morgana": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "riftmaker",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "riftmaker",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Nami": {
+    "skillOrder": {
+      "1": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      }
+    ]
+  },
+  "Nasus": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "frozen-heart",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "gargoyle",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Nautilus": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "For More Snowball Potential",
+        "items": [
+          "zekes-convergence",
+          "yordle-trap"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "force-of-nature",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "force-of-nature",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      }
+    ]
+  },
+  "Nidalee": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Nilah": {
+    "skillOrder": {
+      "1": [
+        2,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Nocturne": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        4,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Norra": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "horizon-focus",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Nunu & Willump": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Olaf": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "steraks-gage",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "steraks-gage",
+          "force-of-nature"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Orianna": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "liandrys-torment"
+        ]
+      }
+    ]
+  },
+  "Ornn": {
+    "skillOrder": {
+      "1": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "amaranths-twinguard",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "amaranths-twinguard",
+          "frozen-heart"
+        ]
+      }
+    ]
+  },
+  "Pantheon": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "seryldas-grudge",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Poppy": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "frozen-heart",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Pyke": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "For More Mobility",
+        "items": [
+          "stasis",
+          "protobelt"
+        ]
+      }
+    ]
+  },
+  "Rakan": {
+    "skillOrder": {
+      "1": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "abyssal-mask",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "abyssal-mask",
+          "randuins-omen"
+        ]
+      }
+    ]
+  },
+  "Rammus": {
+    "skillOrder": {
+      "1": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "dawnshroud",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "dawnshroud",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Rell": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "amaranths-twinguard",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "amaranths-twinguard",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Renekton": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Rengar": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "guardian-angel",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "guardian-angel",
+          "blade-of-the-ruined-king"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Riven": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "deaths-dance",
+          "serpents-fang"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "goredrinker",
+          "quicksilver"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Rumble": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Ryze": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "infinity-orb",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "infinity-orb",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Samira": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Senna": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Seraphine": {
+    "skillOrder": {
+      "1": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "staff-of-flowing-water",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "locket",
+          "veil"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "lich-bane",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "lich-bane",
+          "liandrys-torment"
+        ]
+      }
+    ]
+  },
+  "Sett": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Shen": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "sunfire-aegis",
+          "hollow-radiance"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "dawnshroud",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Shyvana": {
+    "skillOrder": {
+      "1": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "force-of-nature",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "force-of-nature",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "force-of-nature",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Singed": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "protobelt",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Sion": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "sunfire-aegis",
+          "hollow-radiance"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "amaranths-twinguard",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Sivir": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "infinity-edge",
+          "black-cleaver"
+        ]
+      },
+      {
+        "when": "vs Burst Damage",
+        "items": [
+          "infinity-edge",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "infinity-edge",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Skarner": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "force-of-nature",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "force-of-nature",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "force-of-nature",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Smolder": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Sona": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "staff-of-flowing-water",
+          "crown-of-the-shattered-queen"
+        ]
+      }
+    ]
+  },
+  "Soraka": {
+    "skillOrder": {
+      "1": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Swain": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Syndra": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "liandrys-torment"
+        ]
+      }
+    ]
+  },
+  "Taliyah": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "liandrys-torment"
+        ]
+      }
+    ]
+  },
+  "Talon": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Teemo": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Thresh": {
+    "skillOrder": {
+      "1": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "amaranths-twinguard",
+          "thornmail"
+        ]
+      },
+      {
+        "when": "vs Critical Strike Damage",
+        "items": [
+          "amaranths-twinguard",
+          "randuins-omen"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "amaranths-twinguard",
+          "frozen-heart"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Tristana": {
+    "skillOrder": {
+      "1": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Burst Damage",
+        "items": [
+          "infinity-edge",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Tank",
+        "items": [
+          "infinity-edge",
+          "blade-of-the-ruined-king"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "infinity-edge",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Tryndamere": {
+    "skillOrder": {
+      "1": [
+        2,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        4,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "guardian-angel",
+          "serpents-fang"
+        ]
+      }
+    ]
+  },
+  "Twisted Fate": {
+    "skillOrder": {
+      "1": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "awakened-soulstealer",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "awakened-soulstealer",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Twitch": {
+    "skillOrder": {
+      "1": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Urgot": {
+    "skillOrder": {
+      "1": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Varus": {
+    "skillOrder": {
+      "1": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Vayne": {
+    "skillOrder": {
+      "1": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Veigar": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Vel'Koz": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "awakened-soulstealer",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "awakened-soulstealer",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "awakened-soulstealer",
+          "liandrys-torment"
+        ]
+      }
+    ]
+  },
+  "Vex": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Vi": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Tanks",
+        "items": [
+          "guardian-angel",
+          "blade-of-the-ruined-king"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "guardian-angel",
+          "serpents-fang"
+        ]
+      }
+    ]
+  },
+  "Viego": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        4,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Viktor": {
+    "skillOrder": {
+      "1": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "liandrys-torment"
+        ]
+      }
+    ]
+  },
+  "Vladimir": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "riftmaker",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "infinity-orb",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Volibear": {
+    "skillOrder": {
+      "1": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      },
+      {
+        "when": "vs Attack Speed",
+        "items": [
+          "force-of-nature",
+          "frozen-heart"
+        ]
+      }
+    ]
+  },
+  "Warwick": {
+    "skillOrder": {
+      "1": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        4,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "goredrinker",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Wukong": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stridebreaker",
+          "quicksilver"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "plated-steelcaps",
+          "mercurys-treads"
+        ]
+      }
+    ]
+  },
+  "Xayah": {
+    "skillOrder": {
+      "1": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Burst Damage",
+        "items": [
+          "infinity-edge",
+          "guardian-angel"
+        ]
+      },
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "infinity-edge",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Xin Zhao": {
+    "skillOrder": {
+      "1": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "goredrinker",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Yasuo": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "galeforce",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Yone": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Ability Power",
+        "items": [
+          "guardian-angel",
+          "maw-of-malmortius"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Yuumi": {
+    "skillOrder": {
+      "1": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        4,
+        7,
+        10,
+        11
+      ],
+      "3": [
+        2,
+        3,
+        6,
+        8
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": []
+  },
+  "Zed": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Zeri": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "lord-dominiks-regard",
+          "mortal-reminder"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "stasis",
+          "quicksilver"
+        ]
+      }
+    ]
+  },
+  "Ziggs": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Tanks",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "liandrys-torment"
+        ]
+      }
+    ]
+  },
+  "Zilean": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "3": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Shielding",
+        "items": [
+          "crown-of-the-shattered-queen",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Zoe": {
+    "skillOrder": {
+      "1": [
+        1,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        2,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "awakened-soulstealer",
+          "oceanids-trident"
+        ]
+      }
+    ]
+  },
+  "Zyra": {
+    "skillOrder": {
+      "1": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "2": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "3": [
+        1,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Healing",
+        "items": [
+          "rabadons-deathcap",
+          "morellonomicon"
+        ]
+      },
+      {
+        "when": "vs Healing",
+        "items": [
+          "awakened-soulstealer",
+          "morellonomicon"
+        ]
+      }
+    ]
+  }
+}

@@ -150,7 +150,10 @@ def _abilities(soup: BeautifulSoup) -> list[dict]:
         if slot:
             name = name.replace(slot, "", 1).strip()
         cds = [s.get_text(strip=True) for s in block.select(".cooldown span")]
-        text = " ".join(p.get_text(" ", strip=True) for p in block.select(".lower p"))
+        # Some abilities wrap the description in <p> tags, others put text straight
+        # in the .lower div (e.g. Hecarim's Warpath) — take the whole node's text.
+        lower = block.select_one(".lower")
+        text = lower.get_text(" ", strip=True) if lower else ""
         an = _analyse_ability(text)
         out.append({
             "slot": slot,             # P / 1 / 2 / 3 / 4

@@ -1,6 +1,12 @@
 {
   "Graves": {
-    "damageProfile": "physical-burst",
+    "synergyNotes": [
+      "Passive fires multiple bullets, making each crit extremely valuable (6 bullets, 130% damage each). Crit chance directly multiplies DPS.",
+      "Each bullet hit reduces Quickdraw cooldown by 0.5s, so attack speed indirectly boosts mobility and armor stacking.",
+      "True Grit armor stacks reward sustained combat; tanky items like Death's Dance and Maw amplify survivability.",
+      "High AD ratios on Q and R make lethality and AD items very effective for burst."
+    ],
+    "damageProfile": "crit / ad-bruiser / lethality",
     "canOneshot": true,
     "variants": [
       "crit",
@@ -9,42 +15,45 @@
     ],
     "builds": {
       "crit": {
-        "summary": "Maximizes Graves's shotgun crit potential for devastating close-range burst and sustained damage, offering strong scaling into the mid-game.",
+        "summary": "Stack crit chance and damage with Infinity Edge to maximize passive bullet damage. High attack speed reduces reload and E cooldown.",
         "coreBuild": [
+          {
+            "slug": "lord-dominiks-regard",
+            "name": "Lord Dominik's Regard",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
+            "reason": "Armor penetration and giant slayer vs tanks.",
+            "core": true
+          },
+          {
+            "slug": "youmuus-ghostblade",
+            "name": "Youmuu's Ghostblade",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/youmuus-ghostblade.png",
+            "reason": "Lethality and movespeed for quick ganks.",
+            "core": true
+          },
           {
             "slug": "the-collector",
             "name": "The Collector",
             "cost": 3000,
             "icon": "https://www.wildriftfire.com/images/items/the-collector.png",
-            "reason": "Early AD, crit, and execute for snowballing and securing kills."
+            "reason": "Executes low HP enemies, synergy with burst from crits.",
+            "core": true
           },
           {
             "slug": "infinity-edge",
             "name": "Infinity Edge",
             "cost": 3400,
             "icon": "https://www.wildriftfire.com/images/items/infinity-edge.png",
-            "reason": "Massive critical strike damage amplification, core for crit builds."
+            "reason": "Increases crit damage by 250%, essential for crit build."
           },
           {
-            "slug": "phantom-dancer",
-            "name": "Phantom Dancer",
-            "cost": 2900,
-            "icon": "https://www.wildriftfire.com/images/items/phantom-dancer.png",
-            "reason": "Crit chance, attack speed, and movement speed for kiting and chasing."
-          },
-          {
-            "slug": "bloodthirster",
-            "name": "Bloodthirster",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/bloodthirster.png",
-            "reason": "High AD, crit, and physical vamp for sustain in fights."
-          },
-          {
-            "slug": "lord-dominiks-regard",
-            "name": "Lord Dominik's Regard",
-            "cost": 3300,
-            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
-            "reason": "Armor penetration and bonus damage against high HP targets."
+            "slug": "edge-of-night",
+            "name": "Edge of Night",
+            "cost": 3150,
+            "icon": "https://www.wildriftfire.com/images/items/edge-of-night.png",
+            "reason": "Spell shield prevents CC, allows uninterrupted damage."
           }
         ],
         "boots": {
@@ -52,14 +61,14 @@
           "name": "Berserker's Greaves",
           "cost": 900,
           "icon": "https://www.wildriftfire.com/images/items/berserkers-greaves.png",
-          "reason": "Increased attack speed for faster reloads and sustained DPS."
+          "reason": "Attack speed for faster reload and E resets."
         },
         "enchantment": {
           "slug": "galeforce",
           "name": "Galeforce",
           "cost": 500,
           "icon": "https://www.wildriftfire.com/images/items/galeforce.png",
-          "reason": "Provides burst damage and a crucial dash for mobility or finishing."
+          "reason": "Extra dash and burst for finishing."
         },
         "situational": [
           {
@@ -67,683 +76,27 @@
             "name": "Mortal Reminder",
             "cost": 3300,
             "icon": "https://www.wildriftfire.com/images/items/mortal-reminder.png",
-            "when": "vs heavy healing compositions."
+            "when": "vs heavy healing"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungler."
+          },
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Universal blink for safety/playmaking."
           }
         ],
         "runes": {
           "keystone": {
-            "name": "Fleet Footwork",
-            "slug": "fleet-footwork",
-            "icon": "https://www.wildriftfire.com/images/runes/fleet-footwork.png",
-            "reason": "Sustain, kiting, and movement speed for a marksman."
-          },
-          "primaryTree": "Precision",
-          "treeMinors": [
-            {
-              "name": "Brutal",
-              "slug": "brutal",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/brutal.png",
-              "reason": "Strong early game damage for jungle clear and ganks."
-            },
-            {
-              "name": "Legend: Alacrity",
-              "slug": "legend-alacrity",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/legend-alacrity.png",
-              "reason": "Increased attack speed for faster reloads and DPS."
-            },
-            {
-              "name": "Coup de Grace",
-              "slug": "coup-de-grace",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
-              "reason": "Execute damage to finish off low-health enemies."
-            }
-          ],
-          "flexMinor": {
-            "name": "Overgrowth",
-            "slug": "overgrowth",
-            "tree": "Resolve",
-            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-            "reason": "Scales maximum HP, strong for junglers."
-          }
-        }
-      },
-      "balanced": {
-        "summary": "Provides a mix of damage, armor shred, and survivability, allowing Graves to sustain in fights while dealing consistent physical damage.",
-        "coreBuild": [
-          {
-            "slug": "black-cleaver",
-            "name": "Black Cleaver",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
-            "reason": "Early AD, HP, ability haste, and armor shred for sustained damage."
-          },
-          {
-            "slug": "divine-sunderer",
-            "name": "Divine Sunderer",
-            "cost": 3400,
-            "icon": "https://www.wildriftfire.com/images/items/divine-sunderer.png",
-            "reason": "Max health spellblade damage, sustain, HP, and ability haste."
-          },
-          {
-            "slug": "deaths-dance",
-            "name": "Death's Dance",
-            "cost": 3100,
-            "icon": "https://www.wildriftfire.com/images/items/deaths-dance.png",
-            "reason": "Survivability against physical damage, AD, and ability haste."
-          },
-          {
-            "slug": "steraks-gage",
-            "name": "Sterak's Gage",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png",
-            "reason": "Lifeline shield and HP for general survivability in fights."
-          },
-          {
-            "slug": "blade-of-the-ruined-king",
-            "name": "Blade of the Ruined King",
-            "cost": 3200,
-            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
-            "reason": "Sustained damage, attack speed, and omnivamp for dueling."
-          }
-        ],
-        "boots": {
-          "slug": "plated-steelcaps",
-          "name": "Plated Steelcaps",
-          "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
-          "reason": "Reduces incoming physical damage, strong against AD threats."
-        },
-        "enchantment": {
-          "slug": "quicksilver",
-          "name": "Quicksilver",
-          "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/quicksilver.png",
-          "reason": "Removes crowd control, essential for a mobile marksman."
-        },
-        "situational": [
-          {
-            "slug": "maw-of-malmortius",
-            "name": "Maw of Malmortius",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/maw-of-malmortius.png",
-            "when": "vs heavy AP burst damage."
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Conqueror",
-            "slug": "conqueror",
-            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
-            "reason": "Sustained damage and healing in extended fights."
-          },
-          "primaryTree": "Resolve",
-          "treeMinors": [
-            {
-              "name": "Bone Plating",
-              "slug": "bone-plating",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/bone-plating.png",
-              "reason": "Reduces incoming burst damage from enemies."
-            },
-            {
-              "name": "Overgrowth",
-              "slug": "overgrowth",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-              "reason": "Scales maximum HP, strong for junglers."
-            },
-            {
-              "name": "Second Wind",
-              "slug": "second-wind",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/second-wind.png",
-              "reason": "Sustain against poke and trade damage."
-            }
-          ],
-          "flexMinor": {
-            "name": "Brutal",
-            "slug": "brutal",
-            "tree": "Precision",
-            "icon": "https://www.wildriftfire.com/images/runes/brutal.png",
-            "reason": "Boosts early game damage for jungle clear."
-          }
-        }
-      },
-      "damage": {
-        "summary": "Focuses on raw AD and armor penetration to maximize Graves's burst damage against squishy targets, enabling quick eliminations.",
-        "coreBuild": [
-          {
-            "slug": "youmuus-ghostblade",
-            "name": "Youmuu's Ghostblade",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/youmuus-ghostblade.png",
-            "reason": "Early AD, armor penetration, and movement speed for ganks."
-          },
-          {
-            "slug": "duskblade-of-draktharr",
-            "name": "Duskblade of Draktharr",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/duskblade-of-draktharr.png",
-            "reason": "High AD, armor penetration, and burst damage on first hit."
-          },
-          {
-            "slug": "seryldas-grudge",
-            "name": "Serylda's Grudge",
-            "cost": 3200,
-            "icon": "https://www.wildriftfire.com/images/items/seryldas-grudge.png",
-            "reason": "Strong armor penetration and a slow for kiting and chasing."
-          },
-          {
-            "slug": "eclipse",
-            "name": "Eclipse",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/eclipse.png",
-            "reason": "Burst damage, max health damage, and a shield for dueling."
-          },
-          {
-            "slug": "the-collector",
-            "name": "The Collector",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/the-collector.png",
-            "reason": "AD, crit, armor penetration, and execute for finishing targets."
-          }
-        ],
-        "boots": {
-          "slug": "boots-of-dynamism",
-          "name": "Boots of Dynamism",
-          "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/boots-of-dynamism.png",
-          "reason": "Grants bonus armor penetration for increased damage."
-        },
-        "enchantment": {
-          "slug": "galeforce",
-          "name": "Galeforce",
-          "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/galeforce.png",
-          "reason": "Provides burst damage and a crucial dash for mobility or finishing."
-        },
-        "situational": [
-          {
-            "slug": "serpents-fang",
-            "name": "Serpent's Fang",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/serpents-fang.png",
-            "when": "vs shield-heavy enemy compositions."
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Electrocute",
-            "slug": "electrocute",
-            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
-            "reason": "High burst damage for quick target elimination."
-          },
-          "primaryTree": "Domination",
-          "treeMinors": [
-            {
-              "name": "Sudden Impact",
-              "slug": "sudden-impact",
-              "tree": "Domination",
-              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
-              "reason": "Bonus penetration after using Quickdraw dash."
-            },
-            {
-              "name": "Eyeball Collector",
-              "slug": "eyeball-collector",
-              "tree": "Domination",
-              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
-              "reason": "Scales attack damage as you get takedowns."
-            },
-            {
-              "name": "Relentless Hunter",
-              "slug": "relentless-hunter",
-              "tree": "Domination",
-              "icon": "https://www.wildriftfire.com/images/runes/relentless-hunter.png",
-              "reason": "Increased out-of-combat movement speed for jungle presence."
-            }
-          ],
-          "flexMinor": {
-            "name": "Overgrowth",
-            "slug": "overgrowth",
-            "tree": "Resolve",
-            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-            "reason": "Scales maximum HP, strong for junglers."
-          }
-        }
-      }
-    },
-    "name": "Graves",
-    "class": "Marksman",
-    "role": "Jungle"
-  },
-  "Hecarim": {
-    "damageProfile": "AD Bruiser / Skirmisher",
-    "canOneshot": true,
-    "variants": [
-      "balanced",
-      "tanky",
-      "damage"
-    ],
-    "builds": {
-      "balanced": {
-        "summary": "This build provides a strong balance of damage, mobility, and survivability, allowing Hecarim to engage effectively and sustain through fights. It leverages his movement speed for extra damage.",
-        "coreBuild": [
-          {
-            "slug": "trinity-force",
-            "name": "Trinity Force",
-            "cost": 3333,
-            "icon": "https://www.wildriftfire.com/images/items/trinity-force.png",
-            "reason": "Core item for bruisers; grants AD, HP, AS, AH, MS, and Spellblade for burst."
-          },
-          {
-            "slug": "black-cleaver",
-            "name": "Black Cleaver",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
-            "reason": "Provides HP, AD, AH, and armor shred, boosting team's physical damage and Hecarim's MS."
-          },
-          {
-            "slug": "steraks-gage",
-            "name": "Sterak's Gage",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png",
-            "reason": "Massive shield and tenacity from Lifeline, crucial for surviving burst in teamfights."
-          },
-          {
-            "slug": "dead-mans-plate",
-            "name": "Dead Man's Plate",
-            "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/dead-mans-plate.png",
-            "reason": "Grants HP, Armor, and Momentum for bonus MS, enhancing Hecarim's passive and engage."
-          },
-          {
-            "slug": "force-of-nature",
-            "name": "Force of Nature",
-            "cost": 2750,
-            "icon": "https://www.wildriftfire.com/images/items/force-of-nature.png",
-            "reason": "Offers HP, MR, and bonus MS, essential for countering magic damage threats and boosting passive."
-          }
-        ],
-        "boots": {
-          "slug": "gluttonous-greaves",
-          "name": "Gluttonous Greaves",
-          "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/gluttonous-greaves.png",
-          "reason": "Omnivamp provides crucial sustain for jungle clear and skirmishes."
-        },
-        "enchantment": {
-          "slug": "glorious",
-          "name": "Glorious",
-          "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/glorious.png",
-          "reason": "Enhances Hecarim's engage range and speed, making ganks and initiations more potent."
-        },
-        "situational": [
-          {
-            "slug": "chempunk-chainsword",
-            "name": "Chempunk Chainsword",
-            "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/chempunk-chainsword.png",
-            "when": "vs high healing enemies"
-          },
-          {
-            "slug": "deaths-dance",
-            "name": "Death's Dance",
-            "cost": 3100,
-            "icon": "https://www.wildriftfire.com/images/items/deaths-dance.png",
-            "when": "vs high physical damage burst"
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Conqueror",
-            "slug": "conqueror",
-            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
-            "reason": "Grants stacking AD and Omnivamp for sustained damage and healing in extended fights."
-          },
-          "primaryTree": "Resolve",
-          "treeMinors": [
-            {
-              "name": "Overgrowth",
-              "slug": "overgrowth",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-              "reason": "Increases max HP, scaling with jungle monster kills."
-            },
-            {
-              "name": "Bone Plating",
-              "slug": "bone-plating",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/bone-plating.png",
-              "reason": "Reduces incoming burst damage after engaging."
-            },
-            {
-              "name": "Second Wind",
-              "slug": "second-wind",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/second-wind.png",
-              "reason": "Provides sustain after taking damage from champions."
-            }
-          ],
-          "flexMinor": {
-            "name": "Sudden Impact",
-            "slug": "sudden-impact",
-            "tree": "Domination",
-            "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
-            "reason": "Grants Lethality and Magic Pen after using a dash or blink."
-          }
-        }
-      },
-      "tanky": {
-        "summary": "This build focuses on making Hecarim an unkillable frontline initiator, soaking damage while still providing significant threat through max health damage and consistent area-of-effect damage.",
-        "coreBuild": [
-          {
-            "slug": "divine-sunderer",
-            "name": "Divine Sunderer",
-            "cost": 3400,
-            "icon": "https://www.wildriftfire.com/images/items/divine-sunderer.png",
-            "reason": "Provides HP, AD, AH, and max health Spellblade damage for a tanky threat."
-          },
-          {
-            "slug": "sunfire-aegis",
-            "name": "Sunfire Aegis",
-            "cost": 2900,
-            "icon": "https://www.wildriftfire.com/images/items/sunfire-aegis.png",
-            "reason": "Grants HP, Armor, AH, and consistent AoE magic damage for jungle and fights."
-          },
-          {
-            "slug": "dead-mans-plate",
-            "name": "Dead Man's Plate",
-            "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/dead-mans-plate.png",
-            "reason": "Offers HP, Armor, and Momentum for bonus MS, enhancing Hecarim's passive and mobility."
-          },
-          {
-            "slug": "force-of-nature",
-            "name": "Force of Nature",
-            "cost": 2750,
-            "icon": "https://www.wildriftfire.com/images/items/force-of-nature.png",
-            "reason": "Provides HP, MR, and stacking MS, crucial for countering AP threats and mobility."
-          },
-          {
-            "slug": "warmogs-armor",
-            "name": "Warmog's Armor",
-            "cost": 2850,
-            "icon": "https://www.wildriftfire.com/images/items/warmogs-armor.png",
-            "reason": "Massive HP and out-of-combat regeneration, making Hecarim incredibly durable."
-          }
-        ],
-        "boots": {
-          "slug": "plated-steelcaps",
-          "name": "Plated Steelcaps",
-          "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
-          "reason": "Reduces damage from basic attacks, strong against AD-heavy teams."
-        },
-        "enchantment": {
-          "slug": "gargoyle",
-          "name": "Gargoyle",
-          "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/gargoyle.png",
-          "reason": "Grants a massive shield in teamfights, significantly increasing survivability."
-        },
-        "situational": [
-          {
-            "slug": "thornmail",
-            "name": "Thornmail",
-            "cost": 2700,
-            "icon": "https://www.wildriftfire.com/images/items/thornmail.png",
-            "when": "vs high AD auto-attackers and healing"
-          },
-          {
-            "slug": "randuins-omen",
-            "name": "Randuin's Omen",
-            "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
-            "when": "vs high crit damage dealers"
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Grasp of the Undying",
-            "slug": "grasp-of-the-undying",
-            "icon": "https://www.wildriftfire.com/images/runes/grasp-of-the-undying.png",
-            "reason": "Grants bonus HP and sustain in combat, enhancing tankiness."
-          },
-          "primaryTree": "Resolve",
-          "treeMinors": [
-            {
-              "name": "Overgrowth",
-              "slug": "overgrowth",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-              "reason": "Increases max HP, scaling with jungle monster kills."
-            },
-            {
-              "name": "Bone Plating",
-              "slug": "bone-plating",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/bone-plating.png",
-              "reason": "Reduces incoming burst damage after engaging."
-            },
-            {
-              "name": "Unshakeable",
-              "slug": "unshakeable",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/unshakeable.png",
-              "reason": "Provides Tenacity and Slow Resist, reducing CC duration."
-            }
-          ],
-          "flexMinor": {
-            "name": "Triumph",
-            "slug": "triumph",
-            "tree": "Precision",
-            "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
-            "reason": "Provides health regeneration and bonus damage on takedowns."
-          }
-        }
-      },
-      "damage": {
-        "summary": "This build maximizes Hecarim's burst damage and assassination potential, focusing on high AD, armor penetration, and movement speed to quickly eliminate squishy targets.",
-        "coreBuild": [
-          {
-            "slug": "youmuus-ghostblade",
-            "name": "Youmuu's Ghostblade",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/youmuus-ghostblade.png",
-            "reason": "High AD, AH, Armor Pen, and Momentum for burst mobility and passive synergy."
-          },
-          {
-            "slug": "duskblade-of-draktharr",
-            "name": "Duskblade of Draktharr",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/duskblade-of-draktharr.png",
-            "reason": "Provides high AD, AH, Armor Pen, and Nightstalker for burst and slow on first hit."
-          },
-          {
-            "slug": "seryldas-grudge",
-            "name": "Serylda's Grudge",
-            "cost": 3200,
-            "icon": "https://www.wildriftfire.com/images/items/seryldas-grudge.png",
-            "reason": "Grants AD, AH, high Armor Pen, and a slow on abilities, enhancing burst and CC."
-          },
-          {
-            "slug": "eclipse",
-            "name": "Eclipse",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/eclipse.png",
-            "reason": "Offers high AD, AH, and Ever Rising Moon for max health damage burst and a shield."
-          },
-          {
-            "slug": "experimental-hexplate",
-            "name": "Experimental Hexplate",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/experimental-hexplate.png",
-            "reason": "HP, AD, AS, Ultimate Haste, and Overdrive for AS/MS after ult, perfect for engages."
-          }
-        ],
-        "boots": {
-          "slug": "boots-of-dynamism",
-          "name": "Boots of Dynamism",
-          "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/boots-of-dynamism.png",
-          "reason": "Provides AD and Armor Penetration, directly boosting Hecarim's damage output."
-        },
-        "enchantment": {
-          "slug": "stridebreaker",
-          "name": "Stridebreaker",
-          "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/stridebreaker.png",
-          "reason": "Active dash with physical damage and a slow, adding to burst and target access."
-        },
-        "situational": [
-          {
-            "slug": "the-collector",
-            "name": "The Collector",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/the-collector.png",
-            "when": "vs squishy targets for execution"
-          },
-          {
-            "slug": "serpents-fang",
-            "name": "Serpent's Fang",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/serpents-fang.png",
-            "when": "vs shield-heavy compositions"
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Electrocute",
-            "slug": "electrocute",
-            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
-            "reason": "Provides significant burst damage after hitting an enemy with 3 separate attacks/abilities."
-          },
-          "primaryTree": "Domination",
-          "treeMinors": [
-            {
-              "name": "Sudden Impact",
-              "slug": "sudden-impact",
-              "tree": "Domination",
-              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
-              "reason": "Grants Lethality and Magic Pen after using a dash or blink."
-            },
-            {
-              "name": "Eyeball Collector",
-              "slug": "eyeball-collector",
-              "tree": "Domination",
-              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
-              "reason": "Increases AD upon champion takedowns, scaling damage."
-            },
-            {
-              "name": "Relentless Hunter",
-              "slug": "relentless-hunter",
-              "tree": "Domination",
-              "icon": "https://www.wildriftfire.com/images/runes/relentless-hunter.png",
-              "reason": "Grants out-of-combat movement speed, enhancing ganks and rotations."
-            }
-          ],
-          "flexMinor": {
-            "name": "Coup de Grace",
-            "slug": "coup-de-grace",
-            "tree": "Precision",
-            "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
-            "reason": "Deals bonus damage to low-health enemies, aiding in executions."
-          }
-        }
-      }
-    },
-    "name": "Hecarim",
-    "class": "Bruiser",
-    "role": "Jungle"
-  },
-  "Xin Zhao": {
-    "damageProfile": "AD Bruiser / On-hit",
-    "canOneshot": false,
-    "variants": [
-      "balanced",
-      "tanky",
-      "damage"
-    ],
-    "builds": {
-      "balanced": {
-        "summary": "A versatile build offering strong dueling, sustained damage, and crucial survivability for teamfights and engages.",
-        "coreBuild": [
-          {
-            "slug": "divine-sunderer",
-            "name": "Divine Sunderer",
-            "cost": 3400,
-            "icon": "https://www.wildriftfire.com/images/items/divine-sunderer.png",
-            "reason": "Max HP damage, sustain, ability haste, and spellblade for dueling."
-          },
-          {
-            "slug": "blade-of-the-ruined-king",
-            "name": "Blade of the Ruined King",
-            "cost": 3200,
-            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
-            "reason": "On-hit damage, attack speed, and omnivamp for strong dueling and sustain."
-          },
-          {
-            "slug": "deaths-dance",
-            "name": "Death's Dance",
-            "cost": 3100,
-            "icon": "https://www.wildriftfire.com/images/items/deaths-dance.png",
-            "reason": "Damage mitigation, AD, ability haste, and healing on takedowns for survivability."
-          },
-          {
-            "slug": "black-cleaver",
-            "name": "Black Cleaver",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
-            "reason": "Armor shred, HP, AD, and ability haste for sustained damage against tanks."
-          },
-          {
-            "slug": "steraks-gage",
-            "name": "Sterak's Gage",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png",
-            "reason": "Massive shield and tenacity for surviving burst in critical moments."
-          }
-        ],
-        "boots": {
-          "slug": "plated-steelcaps",
-          "name": "Plated Steelcaps",
-          "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
-          "reason": "Reduces incoming physical damage from auto-attacks."
-        },
-        "enchantment": {
-          "slug": "quicksilver",
-          "name": "Quicksilver",
-          "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/quicksilver.png",
-          "reason": "Cleanses crowd control, crucial for Xin Zhao's engages."
-        },
-        "situational": [
-          {
-            "slug": "chempunk-chainsword",
-            "name": "Chempunk Chainsword",
-            "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/chempunk-chainsword.png",
-            "when": "vs high healing enemy compositions."
-          },
-          {
-            "slug": "maw-of-malmortius",
-            "name": "Maw of Malmortius",
-            "cost": 3000,
-            "icon": "https://www.wildriftfire.com/images/items/maw-of-malmortius.png",
-            "when": "vs heavy AP burst damage (replaces Sterak's Gage)."
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Conqueror",
-            "slug": "conqueror",
-            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
-            "reason": "Grants bonus AD and omnivamp for sustained fights."
+            "name": "Lethal Tempo",
+            "slug": "lethal-tempo",
+            "icon": "https://www.wildriftfire.com/images/runes/lethal-tempo.png",
+            "reason": "Attack speed stacking and bonus range for kiting."
           },
           "primaryTree": "Precision",
           "treeMinors": [
@@ -752,84 +105,124 @@
               "slug": "triumph",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
-              "reason": "Restores health on takedowns, good for snowballing."
+              "reason": "Heal on takedown for sustain."
             },
             {
               "name": "Legend: Alacrity",
               "slug": "legend-alacrity",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/legend-alacrity.png",
-              "reason": "Increases attack speed for faster on-hit procs."
+              "reason": "Bonus attack speed."
             },
             {
-              "name": "Last Stand",
-              "slug": "last-stand",
+              "name": "Coup de Grace",
+              "slug": "coup-de-grace",
               "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/last-stand.png",
-              "reason": "Deals more damage when Xin Zhao is low on health."
+              "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
+              "reason": "Execute low-health enemies."
             }
           ],
           "flexMinor": {
-            "name": "Overgrowth",
-            "slug": "overgrowth",
-            "tree": "Resolve",
-            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-            "reason": "Gains bonus HP from jungle monsters and minions."
+            "name": "Sudden Impact",
+            "slug": "sudden-impact",
+            "tree": "Domination",
+            "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+            "reason": "Bonus damage after E dash."
           }
+        },
+        "engine": {
+          "burst3": 4013,
+          "dps8": 1026,
+          "ttk": 2.0,
+          "ehp": 5138,
+          "sustain": 100,
+          "ad": 348,
+          "ap": 0,
+          "hp": 2702,
+          "scoreFull": 143.9,
+          "scoreMid": 105.2,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 120.7
+        },
+        "searched": {
+          "combos": 1572,
+          "poolSize": 14,
+          "pool": [
+            "lord-dominiks-regard",
+            "youmuus-ghostblade",
+            "the-collector",
+            "infinity-edge",
+            "edge-of-night",
+            "phantom-dancer",
+            "essence-reaver",
+            "navori-quickblades",
+            "bloodthirster",
+            "kraken-slayer",
+            "deaths-dance",
+            "chempunk-chainsword",
+            "seryldas-grudge",
+            "mantle-of-the-twelfth-hour"
+          ],
+          "engineScore": 120.7,
+          "llmBaseline": 120.7
         }
       },
-      "tanky": {
-        "summary": "A frontline build focusing on maximum survivability and disruption, allowing Xin Zhao to absorb damage while still providing CC and some damage.",
+      "balanced": {
+        "summary": "Bruiser build with armor stacking, damage reduction, and sustain. Safe and versatile for teamfights.",
         "coreBuild": [
           {
-            "slug": "heartsteel",
-            "name": "Heartsteel",
-            "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/heartsteel.png",
-            "reason": "Massive HP, ability haste, and scaling damage from Colossal Consumption."
+            "slug": "blade-of-the-ruined-king",
+            "name": "Blade of the Ruined King",
+            "cost": 3200,
+            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
+            "reason": "Sustain and tank shred from pellets.",
+            "core": true
           },
           {
-            "slug": "divine-sunderer",
-            "name": "Divine Sunderer",
+            "slug": "lord-dominiks-regard",
+            "name": "Lord Dominik's Regard",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
+            "reason": "Armor pen shreds tanks; synergizes with Graves' shotgun hits.",
+            "core": true
+          },
+          {
+            "slug": "trinity-force",
+            "name": "Trinity Force",
+            "cost": 3333,
+            "icon": "https://www.wildriftfire.com/images/items/trinity-force.png",
+            "reason": "Sheen procs after each ability to burst."
+          },
+          {
+            "slug": "infinity-edge",
+            "name": "Infinity Edge",
             "cost": 3400,
-            "icon": "https://www.wildriftfire.com/images/items/divine-sunderer.png",
-            "reason": "Max HP damage, sustain, and ability haste for a damage threat."
+            "icon": "https://www.wildriftfire.com/images/items/infinity-edge.png",
+            "reason": "Critical damage synergy with buckshot autos."
           },
           {
-            "slug": "dead-mans-plate",
-            "name": "Dead Man's Plate",
+            "slug": "wits-end",
+            "name": "Wit's End",
             "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/dead-mans-plate.png",
-            "reason": "HP, armor, and movement speed for engaging and sticking to targets."
-          },
-          {
-            "slug": "amaranths-twinguard",
-            "name": "Amaranth's Twinguard",
-            "cost": 3100,
-            "icon": "https://www.wildriftfire.com/images/items/amaranths-twinguard.png",
-            "reason": "High mixed resistances, tenacity, and size for frontline presence."
-          },
-          {
-            "slug": "thornmail",
-            "name": "Thornmail",
-            "cost": 2700,
-            "icon": "https://www.wildriftfire.com/images/items/thornmail.png",
-            "reason": "Armor, HP, and applies Grievous Wounds against healing."
+            "icon": "https://www.wildriftfire.com/images/items/wits-end.png",
+            "reason": "Attack speed, MR, and on-hit magic damage.",
+            "core": true
           }
         ],
         "boots": {
-          "slug": "mercurys-treads",
-          "name": "Mercury's Treads",
+          "slug": "plated-steelcaps",
+          "name": "Plated Steelcaps",
           "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/mercurys-treads.png",
-          "reason": "Reduces magic damage and provides tenacity against CC."
+          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
+          "reason": "Armor vs auto-attackers; helpful against AD junglers."
         },
         "enchantment": {
-          "slug": "gargoyle",
-          "name": "Gargoyle",
-          "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/gargoyle.png",
-          "reason": "Provides a large shield for surviving burst damage."
+          "slug": "stasis",
+          "name": "Stasis",
+          "cost": 1000,
+          "icon": "https://www.wildriftfire.com/images/items/stasis.png",
+          "reason": "Survive burst and wait for cooldowns."
         },
         "situational": [
           {
@@ -837,108 +230,160 @@
             "name": "Force of Nature",
             "cost": 2750,
             "icon": "https://www.wildriftfire.com/images/items/force-of-nature.png",
-            "when": "vs heavy magic damage compositions."
+            "when": "vs heavy AP teams"
           },
           {
             "slug": "randuins-omen",
             "name": "Randuin's Omen",
             "cost": 2800,
             "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
-            "when": "vs multiple critical strike reliant enemies."
+            "when": "vs crit-based ADCs"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungler."
+          },
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Versatile blink for engage or escape."
           }
         ],
         "runes": {
           "keystone": {
-            "name": "Grasp of the Undying",
-            "slug": "grasp-of-the-undying",
-            "icon": "https://www.wildriftfire.com/images/runes/grasp-of-the-undying.png",
-            "reason": "Grants bonus HP, sustain, and empowered attacks."
+            "name": "Conqueror",
+            "slug": "conqueror",
+            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
+            "reason": "Stacks quickly with multiple bullets; adaptive damage and true damage."
           },
-          "primaryTree": "Resolve",
+          "primaryTree": "Precision",
           "treeMinors": [
             {
-              "name": "Font of Life",
-              "slug": "font-of-life",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/font-of-life.png",
-              "reason": "Heals allies when Xin Zhao applies crowd control."
+              "name": "Triumph",
+              "slug": "triumph",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+              "reason": "Heal and move speed on takedown."
             },
             {
-              "name": "Overgrowth",
-              "slug": "overgrowth",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-              "reason": "Gains bonus HP from jungle monsters and minions."
+              "name": "Legend: Bloodline",
+              "slug": "legend-bloodline",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/legend-bloodline.png",
+              "reason": "Omnivamp for sustain in extended fights."
             },
             {
-              "name": "Unshakeable",
-              "slug": "unshakeable",
-              "tree": "Resolve",
-              "icon": "https://www.wildriftfire.com/images/runes/unshakeable.png",
-              "reason": "Increases tenacity and slow resist for frontline."
+              "name": "Last Stand",
+              "slug": "last-stand",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/last-stand.png",
+              "reason": "More damage when low, synergizes with durability."
             }
           ],
           "flexMinor": {
-            "name": "Triumph",
-            "slug": "triumph",
-            "tree": "Precision",
-            "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
-            "reason": "Restores health on takedowns, good for surviving."
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "Scales HP from jungle clears; extra tankiness."
           }
+        },
+        "engine": {
+          "burst3": 3561,
+          "dps8": 1195,
+          "ttk": 2.0,
+          "ehp": 6611,
+          "sustain": 1211,
+          "ad": 274,
+          "ap": 0,
+          "hp": 2935,
+          "scoreFull": 143.7,
+          "scoreMid": 93.6,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 113.6
+        },
+        "searched": {
+          "combos": 1350,
+          "poolSize": 14,
+          "pool": [
+            "blade-of-the-ruined-king",
+            "lord-dominiks-regard",
+            "trinity-force",
+            "the-collector",
+            "navori-quickblades",
+            "infinity-edge",
+            "bloodthirster",
+            "phantom-dancer",
+            "youmuus-ghostblade",
+            "edge-of-night",
+            "deaths-dance",
+            "wits-end",
+            "steraks-gage",
+            "black-cleaver"
+          ],
+          "engineScore": 113.6,
+          "llmBaseline": 110.0
         }
       },
       "damage": {
-        "summary": "An aggressive build maximizing Xin Zhao's burst and sustained damage through attack speed and on-hit effects, aiming for quick eliminations.",
+        "summary": "Full lethality build for maximum burst on Q and auto attacks. Aim to one-shot squishies.",
         "coreBuild": [
-          {
-            "slug": "kraken-slayer",
-            "name": "Kraken Slayer",
-            "cost": 2800,
-            "icon": "https://www.wildriftfire.com/images/items/kraken-slayer.png",
-            "reason": "Bonus physical damage on every third attack, great for jungle clear and dueling."
-          },
           {
             "slug": "blade-of-the-ruined-king",
             "name": "Blade of the Ruined King",
             "cost": 3200,
             "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
-            "reason": "On-hit damage, attack speed, and omnivamp for dueling power."
+            "reason": "Sustain and tank shred from pellets.",
+            "core": true
           },
           {
-            "slug": "trinity-force",
-            "name": "Trinity Force",
-            "cost": 3333,
-            "icon": "https://www.wildriftfire.com/images/items/trinity-force.png",
-            "reason": "AD, AS, AH, MS, and strong Spellblade for burst and sustained damage."
+            "slug": "lord-dominiks-regard",
+            "name": "Lord Dominik's Regard",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
+            "reason": "Armor pen for shredding tanks.",
+            "core": true
           },
           {
-            "slug": "seryldas-grudge",
-            "name": "Serylda's Grudge",
-            "cost": 3200,
-            "icon": "https://www.wildriftfire.com/images/items/seryldas-grudge.png",
-            "reason": "Armor penetration and a potent slow for sticking to targets."
+            "slug": "phantom-dancer",
+            "name": "Phantom Dancer",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/phantom-dancer.png",
+            "reason": "Attack speed and shield for sustained fights."
           },
           {
-            "slug": "deaths-dance",
-            "name": "Death's Dance",
-            "cost": 3100,
-            "icon": "https://www.wildriftfire.com/images/items/deaths-dance.png",
-            "reason": "Damage mitigation, AD, ability haste, and healing on takedowns."
+            "slug": "infinity-edge",
+            "name": "Infinity Edge",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/infinity-edge.png",
+            "reason": "Amplifies crit damage for massive burst.",
+            "core": true
+          },
+          {
+            "slug": "navori-quickblades",
+            "name": "Navori Quickblades",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/navori-quickblades.png",
+            "reason": "Reduces cooldowns on attacks for more E and Q."
           }
         ],
         "boots": {
-          "slug": "berserkers-greaves",
-          "name": "Berserker's Greaves",
+          "slug": "boots-of-dynamism",
+          "name": "Boots of Dynamism",
           "cost": 900,
-          "icon": "https://www.wildriftfire.com/images/items/berserkers-greaves.png",
-          "reason": "Provides maximum attack speed for faster on-hit procs."
+          "icon": "https://www.wildriftfire.com/images/items/boots-of-dynamism.png",
+          "reason": "Flat armor pen to complement lethality."
         },
         "enchantment": {
-          "slug": "protobelt",
-          "name": "Protobelt",
+          "slug": "galeforce",
+          "name": "Galeforce",
           "cost": 500,
-          "icon": "https://www.wildriftfire.com/images/items/protobelt.png",
-          "reason": "Adds burst damage and a short dash for gap closing."
+          "icon": "https://www.wildriftfire.com/images/items/galeforce.png",
+          "reason": "Extra dash to gap close or dodge; scales with AD."
         },
         "situational": [
           {
@@ -946,14 +391,1030 @@
             "name": "Mortal Reminder",
             "cost": 3300,
             "icon": "https://www.wildriftfire.com/images/items/mortal-reminder.png",
-            "when": "vs high healing enemy compositions (replaces Serylda's Grudge)."
+            "when": "enemy has high healing and armor"
+          },
+          {
+            "slug": "guardian-angel",
+            "name": "Guardian Angel",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/guardian-angel.png",
+            "when": "vs assassins or need safety"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungler."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Extra true damage and grievous wounds for kills."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Electrocute",
+            "slug": "electrocute",
+            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
+            "reason": "Procs on auto+Q+auto for burst; scales with lethality."
+          },
+          "primaryTree": "Domination",
+          "treeMinors": [
+            {
+              "name": "Sudden Impact",
+              "slug": "sudden-impact",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+              "reason": "True damage after dash (Quickdraw)."
+            },
+            {
+              "name": "Eyeball Collector",
+              "slug": "eyeball-collector",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
+              "reason": "Bonus AD from takedowns."
+            },
+            {
+              "name": "Ingenious Hunter",
+              "slug": "ingenious-hunter",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/ingenious-hunter.png",
+              "reason": "Reduces cooldowns on item actives (Duskblade, Youmuu's, etc.)."
+            }
+          ],
+          "flexMinor": {
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "Scales HP from jungle clears; minor survivability."
+          }
+        },
+        "engine": {
+          "burst3": 3670,
+          "dps8": 1370,
+          "ttk": 2.0,
+          "ehp": 4662,
+          "sustain": 1096,
+          "ad": 269,
+          "ap": 0,
+          "hp": 2452,
+          "scoreFull": 165.4,
+          "scoreMid": 100.4,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 126.4
+        },
+        "searched": {
+          "combos": 1260,
+          "poolSize": 14,
+          "pool": [
+            "blade-of-the-ruined-king",
+            "lord-dominiks-regard",
+            "phantom-dancer",
+            "infinity-edge",
+            "navori-quickblades",
+            "bloodthirster",
+            "the-collector",
+            "youmuus-ghostblade",
+            "kraken-slayer",
+            "seryldas-grudge",
+            "black-cleaver",
+            "deaths-dance",
+            "edge-of-night",
+            "steraks-gage"
+          ],
+          "engineScore": 126.4,
+          "llmBaseline": 126.4
+        }
+      }
+    },
+    "name": "Graves",
+    "class": "Marksman",
+    "role": "Jungle"
+  },
+  "Hecarim": {
+    "synergyNotes": [
+      "Bonus movement speed converts to AD via passive; prioritize MS items and runes.",
+      "Short cooldown on Rampage (Q) makes ability haste and on-hit effects very efficient.",
+      "Mana management needed for Q spam; Manamune or Essence Reaver recommended.",
+      "Spellblade items (Trinity Force, Divine Sunderer) synergize with Q reset and E empowered auto."
+    ],
+    "damageProfile": "AD bruiser",
+    "canOneshot": false,
+    "variants": [
+      "balanced",
+      "tanky",
+      "damage"
+    ],
+    "builds": {
+      "balanced": {
+        "summary": "Standard bruiser Hecarim with Trinity Force, Dead Man's Plate, and Sterak's Gage for a mix of damage, mobility, and durability.",
+        "coreBuild": [
+          {
+            "slug": "blade-of-the-ruined-king",
+            "name": "Blade of the Ruined King",
+            "cost": 3200,
+            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
+            "reason": "Movement speed steal slows enemies and boosts passive damage."
+          },
+          {
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
+            "reason": "Armor shred amplifies physical damage from skills and teammates.",
+            "core": true
+          },
+          {
+            "slug": "steraks-gage",
+            "name": "Sterak's Gage",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png",
+            "reason": "Lifeline shield, HP, AD; tenacity.",
+            "core": true
+          },
+          {
+            "slug": "spear-of-shojin",
+            "name": "Spear of Shojin",
+            "cost": 3100,
+            "icon": "https://www.wildriftfire.com/images/items/spear-of-shojin.png",
+            "reason": "Ability haste for frequent spell casts and ult resets."
+          },
+          {
+            "slug": "force-of-nature",
+            "name": "Force of Nature",
+            "cost": 2750,
+            "icon": "https://www.wildriftfire.com/images/items/force-of-nature.png",
+            "reason": "Movement speed and magic resist enhance durability and chase potential."
+          }
+        ],
+        "boots": {
+          "slug": "mercurys-treads",
+          "name": "Mercury's Treads",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/mercurys-treads.png",
+          "reason": "Tenacity vs CC."
+        },
+        "enchantment": {
+          "slug": "gargoyle",
+          "name": "Gargoyle",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/gargoyle.png",
+          "reason": "Teamfight shield."
+        },
+        "situational": [
+          {
+            "slug": "randuins-omen",
+            "name": "Randuin's Omen",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
+            "when": "vs heavy AD."
+          },
+          {
+            "slug": "maw-of-malmortius",
+            "name": "Maw of Malmortius",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/maw-of-malmortius.png",
+            "when": "vs heavy AP."
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Jungler mandatory."
+          },
+          {
+            "name": "Ghost",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerHaste.png",
+            "reason": "MS synergy with passive."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Conqueror",
+            "slug": "conqueror",
+            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
+            "reason": "Stacks on Q, gives adaptive damage and healing."
+          },
+          "primaryTree": "Precision",
+          "treeMinors": [
+            {
+              "name": "Triumph",
+              "slug": "triumph",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+              "reason": "Heal and gold on takedown."
+            },
+            {
+              "name": "Legend: Tenacity",
+              "slug": "legend-tenacity",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
+              "reason": "Tenacity vs CC."
+            },
+            {
+              "name": "Coup de Grace",
+              "slug": "coup-de-grace",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
+              "reason": "Bonus damage to low HP."
+            }
+          ],
+          "flexMinor": {
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "Scaling HP from jungle."
+          }
+        },
+        "engine": {
+          "burst3": 1433,
+          "dps8": 464,
+          "ttk": 4.5,
+          "ehp": 13826,
+          "sustain": 371,
+          "ad": 249,
+          "ap": 0,
+          "hp": 4110,
+          "scoreFull": 119.8,
+          "scoreMid": 82.1,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 97.2
+        },
+        "searched": {
+          "combos": 1218,
+          "poolSize": 14,
+          "pool": [
+            "trinity-force",
+            "steraks-gage",
+            "edge-of-night",
+            "youmuus-ghostblade",
+            "seryldas-grudge",
+            "manamune",
+            "spear-of-shojin",
+            "black-cleaver",
+            "dead-mans-plate",
+            "force-of-nature",
+            "deaths-dance",
+            "cosmic-drive",
+            "blade-of-the-ruined-king",
+            "sundered-sky"
+          ],
+          "engineScore": 104.7,
+          "llmBaseline": 89.2
+        }
+      },
+      "tanky": {
+        "summary": "Frontline Hecarim with Sunfire Aegis, Dead Man's Plate, and Force of Nature for high durability and mobility.",
+        "coreBuild": [
+          {
+            "slug": "kaenic-rookern",
+            "name": "Kaenic Rookern",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/kaenic-rookern.png",
+            "reason": "Magic shield prevents burst before ult engage.",
+            "core": true
+          },
+          {
+            "slug": "steraks-gage",
+            "name": "Sterak's Gage",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png",
+            "reason": "Lifeline shield, HP, tenacity.",
+            "core": true
+          },
+          {
+            "slug": "randuins-omen",
+            "name": "Randuin's Omen",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
+            "reason": "Armor and slow attackers' crits.",
+            "core": true
+          },
+          {
+            "slug": "heartsteel",
+            "name": "Heartsteel",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/heartsteel.png",
+            "reason": "Health stacking and burst proc fit his diving style."
+          },
+          {
+            "slug": "unending-despair",
+            "name": "Unending Despair",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/unending-despair.png",
+            "reason": "Damage and heal sustain in extended engagements."
+          }
+        ],
+        "boots": {
+          "slug": "mercurys-treads",
+          "name": "Mercury's Treads",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/mercurys-treads.png",
+          "reason": "Tenacity vs CC."
+        },
+        "enchantment": {
+          "slug": "gargoyle",
+          "name": "Gargoyle",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/gargoyle.png",
+          "reason": "Teamfight shield."
+        },
+        "situational": [
+          {
+            "slug": "thornmail",
+            "name": "Thornmail",
+            "cost": 2700,
+            "icon": "https://www.wildriftfire.com/images/items/thornmail.png",
+            "when": "vs heavy AD."
+          },
+          {
+            "slug": "abyssal-mask",
+            "name": "Abyssal Mask",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/abyssal-mask.png",
+            "when": "vs heavy AP."
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Jungler mandatory."
+          },
+          {
+            "name": "Ghost",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerHaste.png",
+            "reason": "MS synergy with passive."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Phase Rush",
+            "slug": "phase-rush",
+            "icon": "https://www.wildriftfire.com/images/runes/phase-rush.png",
+            "reason": "MS, slow resist, ability haste."
+          },
+          "primaryTree": "Sorcery",
+          "treeMinors": [
+            {
+              "name": "Nimbus Cloak",
+              "slug": "nimbus-cloak",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/nimbus-cloak.png",
+              "reason": "MS on Ghost."
+            },
+            {
+              "name": "Celerity",
+              "slug": "celerity",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/celerity.png",
+              "reason": "MS and MS efficiency."
+            },
+            {
+              "name": "Gathering Storm",
+              "slug": "gathering-storm",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/gathering-storm.png",
+              "reason": "Scaling AD."
+            }
+          ],
+          "flexMinor": {
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "Scaling HP from jungle."
+          }
+        },
+        "engine": {
+          "burst3": 893,
+          "dps8": 167,
+          "ttk": null,
+          "ehp": 23628,
+          "sustain": 200,
+          "ad": 154,
+          "ap": 0,
+          "hp": 4560,
+          "scoreFull": 228.7,
+          "scoreMid": 177.4,
+          "goldMid": 12750,
+          "itemsMid": 5,
+          "score": 197.9
+        },
+        "searched": {
+          "combos": 2002,
+          "poolSize": 14,
+          "pool": [
+            "abyssal-mask",
+            "steraks-gage",
+            "randuins-omen",
+            "heartsteel",
+            "kaenic-rookern",
+            "dead-mans-plate",
+            "force-of-nature",
+            "iceborn-gauntlet",
+            "sunfire-aegis",
+            "thornmail",
+            "warmogs-armor",
+            "titanic-hydra",
+            "unending-despair",
+            "frozen-heart"
+          ],
+          "engineScore": 197.9,
+          "llmBaseline": 198.1
+        }
+      },
+      "damage": {
+        "summary": "A maximum damage build leveraging movespeed and lethality to amplify passive AD and Q crits. Ghostblade and Trinity provide immense MS, while Serylda's adds slow.",
+        "coreBuild": [
+          {
+            "slug": "trinity-force",
+            "name": "Trinity Force",
+            "cost": 3333,
+            "icon": "https://www.wildriftfire.com/images/items/trinity-force.png",
+            "reason": "MS, spellblade, attack speed.",
+            "core": true
+          },
+          {
+            "slug": "blade-of-the-ruined-king",
+            "name": "Blade of the Ruined King",
+            "cost": 3200,
+            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
+            "reason": "Attack speed and on-hit slow burst.",
+            "core": true
+          },
+          {
+            "slug": "lord-dominiks-regard",
+            "name": "Lord Dominik's Regard",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
+            "reason": "Armor pen shreds tanks building armor.",
+            "core": true
+          },
+          {
+            "slug": "phantom-dancer",
+            "name": "Phantom Dancer",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/phantom-dancer.png",
+            "reason": "Attack speed and ghosting for charges."
+          },
+          {
+            "slug": "infinity-edge",
+            "name": "Infinity Edge",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/infinity-edge.png",
+            "reason": "Amplifies critical damage on Q and auto-attacks."
+          }
+        ],
+        "boots": {
+          "slug": "ionian-boots-of-lucidity",
+          "name": "Ionian Boots of Lucidity",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/ionian-boots-of-lucidity.png",
+          "reason": "Haste for lower Q cooldown."
+        },
+        "enchantment": {
+          "slug": "glorious",
+          "name": "Glorious",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/glorious.png",
+          "reason": "Active MS burst for engage or escape."
+        },
+        "situational": [
+          {
+            "slug": "edge-of-night",
+            "name": "Edge of Night",
+            "cost": 3150,
+            "icon": "https://www.wildriftfire.com/images/items/edge-of-night.png",
+            "when": "vs heavy CC or pick comps"
+          },
+          {
+            "slug": "guardian-angel",
+            "name": "Guardian Angel",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/guardian-angel.png",
+            "when": "vs burst and need revive"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungler."
+          },
+          {
+            "name": "Ghost",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerHaste.png",
+            "reason": "Maximizes passive AD, chase."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Phase Rush",
+            "slug": "phase-rush",
+            "icon": "https://www.wildriftfire.com/images/runes/phase-rush.png",
+            "reason": "Bonus MS and slow resist after combo."
+          },
+          "primaryTree": "Sorcery",
+          "treeMinors": [
+            {
+              "name": "Nimbus Cloak",
+              "slug": "nimbus-cloak",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/nimbus-cloak.png",
+              "reason": "MS after ghost for more AD."
+            },
+            {
+              "name": "Celerity",
+              "slug": "celerity",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/celerity.png",
+              "reason": "Amplifies MS and passive AD."
+            },
+            {
+              "name": "Transcendence",
+              "slug": "transcendence",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/transcendence.png",
+              "reason": "Ability haste for Q spam."
+            }
+          ],
+          "flexMinor": {
+            "name": "Sudden Impact",
+            "slug": "sudden-impact",
+            "tree": "Domination",
+            "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+            "reason": "True damage after dash (E or ult)."
+          }
+        },
+        "engine": {
+          "burst3": 2087,
+          "dps8": 1078,
+          "ttk": 3.75,
+          "ehp": 5783,
+          "sustain": 862,
+          "ad": 308,
+          "ap": 0,
+          "hp": 2743,
+          "scoreFull": 137.7,
+          "scoreMid": 85.6,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 106.4
+        },
+        "searched": {
+          "combos": 1782,
+          "poolSize": 14,
+          "pool": [
+            "trinity-force",
+            "blade-of-the-ruined-king",
+            "lord-dominiks-regard",
+            "phantom-dancer",
+            "infinity-edge",
+            "youmuus-ghostblade",
+            "spear-of-shojin",
+            "manamune",
+            "seryldas-grudge",
+            "the-collector",
+            "eclipse",
+            "navori-quickblades",
+            "sundered-sky",
+            "deaths-dance"
+          ],
+          "engineScore": 106.4,
+          "llmBaseline": 106.4
+        }
+      }
+    },
+    "name": "Hecarim",
+    "class": "Bruiser",
+    "role": "Jungle"
+  },
+  "Xin Zhao": {
+    "synergyNotes": [
+      "Attack speed multiplicatively amplifies passive heal/damage and Q cooldown reduction per auto.",
+      "Spellblade items sync with Q's 3-empowered-attack pattern for repeated procs.",
+      "E provides massive AS steroid on dash, making on-hit and AS items efficient.",
+      "Ult deals max health damage and blocks ranged poke, rewarding HP stacking and tenacity."
+    ],
+    "damageProfile": "on-hit bruiser with mixed AD/AP",
+    "canOneshot": false,
+    "variants": [
+      "balanced",
+      "tanky",
+      "damage"
+    ],
+    "builds": {
+      "balanced": {
+        "summary": "Standard bruiser with Trinity Force core, Black Cleaver shred, Sterak's survivability, and Death's Dance mitigation. Adaptable with situational tank items.",
+        "coreBuild": [
+          {
+            "slug": "blade-of-the-ruined-king",
+            "name": "Blade of the Ruined King",
+            "cost": 3200,
+            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
+            "reason": "Attack speed and on-hit with passive.",
+            "core": true
+          },
+          {
+            "slug": "titanic-hydra",
+            "name": "Titanic Hydra",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/titanic-hydra.png",
+            "reason": "HP and splash damage for groups.",
+            "core": true
+          },
+          {
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
+            "reason": "Armor shred synergizes with his three-hit combo."
+          },
+          {
+            "slug": "trinity-force",
+            "name": "Trinity Force",
+            "cost": 3333,
+            "icon": "https://www.wildriftfire.com/images/items/trinity-force.png",
+            "reason": "Synergizes with Q and passive for burst and mobility."
           },
           {
             "slug": "wits-end",
             "name": "Wit's End",
             "cost": 2800,
             "icon": "https://www.wildriftfire.com/images/items/wits-end.png",
-            "when": "vs heavy magic damage, providing MR, AS, and on-hit magic damage."
+            "reason": "Attack speed and on-hit magic damage boost DPS.",
+            "core": true
+          }
+        ],
+        "boots": {
+          "slug": "plated-steelcaps",
+          "name": "Plated Steelcaps",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
+          "reason": "Armor vs auto-attack heavy comps."
+        },
+        "enchantment": {
+          "slug": "stasis",
+          "name": "Stasis",
+          "cost": 1000,
+          "icon": "https://www.wildriftfire.com/images/items/stasis.png",
+          "reason": "Survive burst, wait for allies."
+        },
+        "situational": [
+          {
+            "slug": "maw-of-malmortius",
+            "name": "Maw of Malmortius",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/maw-of-malmortius.png",
+            "when": "vs heavy magic damage"
+          },
+          {
+            "slug": "randuins-omen",
+            "name": "Randuin's Omen",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
+            "when": "vs crit-based ADCs"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungler."
+          },
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Versatile gap close/escape."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Conqueror",
+            "slug": "conqueror",
+            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
+            "reason": "Stacks fast with Q, gives AD and healing."
+          },
+          "primaryTree": "Precision",
+          "treeMinors": [
+            {
+              "name": "Triumph",
+              "slug": "triumph",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+              "reason": "Heal on takedown, great for dives."
+            },
+            {
+              "name": "Legend: Alacrity",
+              "slug": "legend-alacrity",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/legend-alacrity.png",
+              "reason": "Free AS scaling."
+            },
+            {
+              "name": "Coup de Grace",
+              "slug": "coup-de-grace",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
+              "reason": "Execute damage on low HP."
+            }
+          ],
+          "flexMinor": {
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "HP scaling from jungle monsters."
+          }
+        },
+        "engine": {
+          "burst3": 2675,
+          "dps8": 1330,
+          "ttk": 2.75,
+          "ehp": 8012,
+          "sustain": 1334,
+          "ad": 274,
+          "ap": 0,
+          "hp": 3703,
+          "scoreFull": 163.6,
+          "scoreMid": 105.8,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 128.9
+        },
+        "searched": {
+          "combos": 1218,
+          "poolSize": 14,
+          "pool": [
+            "blade-of-the-ruined-king",
+            "titanic-hydra",
+            "trinity-force",
+            "seryldas-grudge",
+            "kraken-slayer",
+            "spear-of-shojin",
+            "deaths-dance",
+            "steraks-gage",
+            "black-cleaver",
+            "wits-end",
+            "sundered-sky",
+            "navori-quickblades",
+            "force-of-nature",
+            "mantle-of-the-twelfth-hour"
+          ],
+          "engineScore": 128.8,
+          "llmBaseline": 123.8
+        }
+      },
+      "tanky": {
+        "summary": "Frontline with Divine Sunderer max-%HP damage, Sunfire burn, and steraks; unkillable with resists.",
+        "coreBuild": [
+          {
+            "slug": "kaenic-rookern",
+            "name": "Kaenic Rookern",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/kaenic-rookern.png",
+            "reason": "Magic shield counters burst AP threats.",
+            "core": true
+          },
+          {
+            "slug": "steraks-gage",
+            "name": "Sterak's Gage",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png",
+            "reason": "Shield and tenacity for survivability.",
+            "core": true
+          },
+          {
+            "slug": "randuins-omen",
+            "name": "Randuin's Omen",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
+            "reason": "Armor and crit reduction vs auto-attackers.",
+            "core": true
+          },
+          {
+            "slug": "heartsteel",
+            "name": "Heartsteel",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/heartsteel.png",
+            "reason": "Bonus max HP for tankiness, procs on attacks."
+          },
+          {
+            "slug": "unending-despair",
+            "name": "Unending Despair",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/unending-despair.png",
+            "reason": "AoE damage and heal around Xin Zhao."
+          }
+        ],
+        "boots": {
+          "slug": "mercurys-treads",
+          "name": "Mercury's Treads",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/mercurys-treads.png",
+          "reason": "Tenacity vs CC, MR for magic threats."
+        },
+        "enchantment": {
+          "slug": "glorious",
+          "name": "Glorious",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/glorious.png",
+          "reason": "Engage speed boost and slow for team."
+        },
+        "situational": [
+          {
+            "slug": "thornmail",
+            "name": "Thornmail",
+            "cost": 2700,
+            "icon": "https://www.wildriftfire.com/images/items/thornmail.png",
+            "when": "vs heavy AD auto-attackers."
+          },
+          {
+            "slug": "warmogs-armor",
+            "name": "Warmog's Armor",
+            "cost": 2850,
+            "icon": "https://www.wildriftfire.com/images/items/warmogs-armor.png",
+            "when": "vs poke comps for sustain between fights."
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungler."
+          },
+          {
+            "name": "Ghost",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerHaste.png",
+            "reason": "Stick to enemies during ultimate."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Grasp of the Undying",
+            "slug": "grasp-of-the-undying",
+            "icon": "https://www.wildriftfire.com/images/runes/grasp-of-the-undying.png",
+            "reason": "Sustained dueling, max HP damage and heal."
+          },
+          "primaryTree": "Resolve",
+          "treeMinors": [
+            {
+              "name": "Overgrowth",
+              "slug": "overgrowth",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+              "reason": "Free HP from jungle, massive later."
+            },
+            {
+              "name": "Bone Plating",
+              "slug": "bone-plating",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/bone-plating.png",
+              "reason": "Block burst from champions."
+            },
+            {
+              "name": "Perseverance",
+              "slug": "perseverance",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/perseverance.png",
+              "reason": "Tenacity + resists while immobilized."
+            }
+          ],
+          "flexMinor": {
+            "name": "Legend: Tenacity",
+            "slug": "legend-tenacity",
+            "tree": "Precision",
+            "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
+            "reason": "More tenacity to reduce CC duration."
+          }
+        },
+        "engine": {
+          "burst3": 751,
+          "dps8": 215,
+          "ttk": 10.0,
+          "ehp": 23546,
+          "sustain": 257,
+          "ad": 118,
+          "ap": 0,
+          "hp": 4620,
+          "scoreFull": 230.6,
+          "scoreMid": 178.5,
+          "goldMid": 12750,
+          "itemsMid": 5,
+          "score": 199.3
+        },
+        "searched": {
+          "combos": 1812,
+          "poolSize": 14,
+          "pool": [
+            "kaenic-rookern",
+            "steraks-gage",
+            "randuins-omen",
+            "heartsteel",
+            "unending-despair",
+            "titanic-hydra",
+            "sunfire-aegis",
+            "dead-mans-plate",
+            "force-of-nature",
+            "thornmail",
+            "black-cleaver",
+            "divine-sunderer",
+            "warmogs-armor",
+            "overlords-bloodmail"
+          ],
+          "engineScore": 199.3,
+          "llmBaseline": 199.3
+        }
+      },
+      "damage": {
+        "summary": "Maximum attack speed on-hit build with Guinsoo's doubling on-hit effects, BoRK for %HP damage, and Wit's End for MR shred and healing.",
+        "coreBuild": [
+          {
+            "slug": "blade-of-the-ruined-king",
+            "name": "Blade of the Ruined King",
+            "cost": 3200,
+            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
+            "reason": "On-hit %HP damage, slow, and omnivamp.",
+            "core": true
+          },
+          {
+            "slug": "titanic-hydra",
+            "name": "Titanic Hydra",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/titanic-hydra.png",
+            "reason": "Cleave damage and bonus HP for damage scaling.",
+            "core": true
+          },
+          {
+            "slug": "lord-dominiks-regard",
+            "name": "Lord Dominik's Regard",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
+            "reason": "Armor penetration for dealing with tanky targets."
+          },
+          {
+            "slug": "kraken-slayer",
+            "name": "Kraken Slayer",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/kraken-slayer.png",
+            "reason": "Every third attack deals bonus physical damage scaling with missing HP."
+          },
+          {
+            "slug": "wits-end",
+            "name": "Wit's End",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/wits-end.png",
+            "reason": "Attack speed and magic on-hit for mixed damage."
+          }
+        ],
+        "boots": {
+          "slug": "berserkers-greaves",
+          "name": "Berserker's Greaves",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/berserkers-greaves.png",
+          "reason": "Attack speed for faster on-hit procs."
+        },
+        "enchantment": {
+          "slug": "protobelt",
+          "name": "Protobelt",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/protobelt.png",
+          "reason": "Dash and MR shred for assassination."
+        },
+        "situational": [
+          {
+            "slug": "mortal-reminder",
+            "name": "Mortal Reminder",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/mortal-reminder.png",
+            "when": "vs healing enemies"
+          },
+          {
+            "slug": "guardian-angel",
+            "name": "Guardian Angel",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/guardian-angel.png",
+            "when": "vs burst damage"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungler."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Kill pressure and grievous wounds."
           }
         ],
         "runes": {
@@ -961,7 +1422,7 @@
             "name": "Lethal Tempo",
             "slug": "lethal-tempo",
             "icon": "https://www.wildriftfire.com/images/runes/lethal-tempo.png",
-            "reason": "Massive attack speed for extended fights and on-hit damage."
+            "reason": "Massive attack speed and bonus range at max stacks."
           },
           "primaryTree": "Precision",
           "treeMinors": [
@@ -970,35 +1431,1918 @@
               "slug": "brutal",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/brutal.png",
-              "reason": "Bonus AD and armor penetration for early game damage."
+              "reason": "Early game AD."
             },
             {
               "name": "Legend: Alacrity",
               "slug": "legend-alacrity",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/legend-alacrity.png",
-              "reason": "Increases attack speed for faster on-hit procs."
+              "reason": "More attack speed."
             },
             {
               "name": "Coup de Grace",
               "slug": "coup-de-grace",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
-              "reason": "Deals increased damage to low health enemies."
+              "reason": "Execute low HP enemies."
             }
           ],
           "flexMinor": {
-            "name": "Sudden Impact",
-            "slug": "sudden-impact",
-            "tree": "Domination",
-            "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
-            "reason": "Lethality and magic penetration after using a dash."
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "HP from jungle for survivability."
           }
+        },
+        "engine": {
+          "burst3": 2463,
+          "dps8": 1376,
+          "ttk": 2.75,
+          "ehp": 5821,
+          "sustain": 1576,
+          "ad": 248,
+          "ap": 0,
+          "hp": 2820,
+          "scoreFull": 171.0,
+          "scoreMid": 115.2,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 137.5
+        },
+        "searched": {
+          "combos": 980,
+          "poolSize": 14,
+          "pool": [
+            "blade-of-the-ruined-king",
+            "titanic-hydra",
+            "seryldas-grudge",
+            "kraken-slayer",
+            "navori-quickblades",
+            "trinity-force",
+            "black-cleaver",
+            "steraks-gage",
+            "deaths-dance",
+            "wits-end",
+            "edge-of-night",
+            "spear-of-shojin",
+            "lord-dominiks-regard",
+            "sundered-sky"
+          ],
+          "engineScore": 144.3,
+          "llmBaseline": 130.9
         }
       }
     },
     "name": "Xin Zhao",
     "class": "Bruiser",
+    "role": "Jungle"
+  },
+  "Annie": {
+    "synergyNotes": [
+      "Pyromania (P) requires 4 ability casts for a stun, making Ability Haste crucial for frequent CC and damage.",
+      "All offensive abilities (Q, W, R) and Molten Shield (3) scale highly with Ability Power, making AP the primary damage and utility stat.",
+      "Disintegrate (Q) refunds mana on kill, but overall mana sustain is important for continuous ability spam.",
+      "Tibbers (R) provides significant burst and sustained damage, scaling directly with Annie's Ability Power."
+    ],
+    "damageProfile": "AP Burst Mage",
+    "canOneshot": true,
+    "variants": [
+      "burst",
+      "balanced",
+      "battlemage"
+    ],
+    "builds": {
+      "burst": {
+        "summary": "This build maximizes Annie's raw AP and magic penetration to one-shot squishy targets with her full combo, focusing on immediate impact.",
+        "coreBuild": [
+          {
+            "slug": "rabadons-deathcap",
+            "name": "Rabadon's Deathcap",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/rabadons-deathcap.png",
+            "reason": "Massive AP amplification, essential for maximizing burst damage.",
+            "core": true
+          },
+          {
+            "slug": "infinity-orb",
+            "name": "Infinity Orb",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/infinity-orb.png",
+            "reason": "AP, magic pen, and critical strike against low-health targets for finishing power.",
+            "core": true
+          },
+          {
+            "slug": "horizon-focus",
+            "name": "Horizon Focus",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/horizon-focus.png",
+            "reason": "Procs on stun, boosting burst damage.",
+            "core": true
+          },
+          {
+            "slug": "malignance",
+            "name": "Malignance",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/malignance.png",
+            "reason": "Ultimate Haste and a burn zone from Tibbers, enhancing her primary burst tool."
+          },
+          {
+            "slug": "bandle-fantasy",
+            "name": "Bandle Fantasy",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/bandle-fantasy.png",
+            "reason": "Increases burst damage and survivability with shield."
+          }
+        ],
+        "boots": {
+          "slug": "boots-of-mana",
+          "name": "Boots of Mana",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/boots-of-mana.png",
+          "reason": "AP and Magic Penetration for increased damage output."
+        },
+        "enchantment": {
+          "slug": "protobelt",
+          "name": "Protobelt",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/protobelt.png",
+          "reason": "Extra burst, gap close, and AoE damage for combo extension."
+        },
+        "situational": [
+          {
+            "slug": "morellonomicon",
+            "name": "Morellonomicon",
+            "cost": 2600,
+            "icon": "https://www.wildriftfire.com/images/items/morellonomicon.png",
+            "when": "vs high healing enemies"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for engagement, escape, and repositioning."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Secures kills and applies Grievous Wounds."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Electrocute",
+            "slug": "electrocute",
+            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
+            "reason": "Easily procced by Annie's combo for significant burst damage."
+          },
+          "primaryTree": "Sorcery",
+          "treeMinors": [
+            {
+              "name": "Manaflow Band",
+              "slug": "manaflow-band",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/manaflow-band.png",
+              "reason": "Increases max mana for sustained ability usage."
+            },
+            {
+              "name": "Scorch",
+              "slug": "scorch",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/scorch.png",
+              "reason": "Adds extra burn damage to abilities for burst."
+            },
+            {
+              "name": "Gathering Storm",
+              "slug": "gathering-storm",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/gathering-storm.png",
+              "reason": "Scales AP into the late game, enhancing burst potential."
+            }
+          ],
+          "flexMinor": {
+            "name": "Eyeball Collector",
+            "slug": "eyeball-collector",
+            "tree": "Domination",
+            "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
+            "reason": "Gains bonus AP from champion takedowns."
+          }
+        },
+        "engine": {
+          "burst3": 5384,
+          "dps8": 816,
+          "ttk": 1.0,
+          "ehp": 4074,
+          "sustain": 0,
+          "ad": 112,
+          "ap": 440,
+          "hp": 2430,
+          "scoreFull": 186.1,
+          "scoreMid": 130.4,
+          "goldMid": 11250,
+          "itemsMid": 4,
+          "score": 152.7
+        },
+        "searched": {
+          "combos": 2002,
+          "poolSize": 14,
+          "pool": [
+            "rabadons-deathcap",
+            "infinity-orb",
+            "horizon-focus",
+            "malignance",
+            "bandle-fantasy",
+            "ludens-echo",
+            "lich-bane",
+            "archangels-staff",
+            "spear-of-shojin",
+            "cosmic-drive",
+            "awakened-soulstealer",
+            "crown-of-the-shattered-queen",
+            "rylais-crystal-scepter",
+            "liandrys-torment"
+          ],
+          "engineScore": 152.7,
+          "llmBaseline": 152.7
+        }
+      },
+      "balanced": {
+        "summary": "A versatile build offering strong AP damage with added survivability and utility, making it a safe and reliable choice for most matchups.",
+        "coreBuild": [
+          {
+            "slug": "abyssal-mask",
+            "name": "Abyssal Mask",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/abyssal-mask.png",
+            "reason": "Amplifies magic damage to nearby enemies.",
+            "core": true
+          },
+          {
+            "slug": "rod-of-ages",
+            "name": "Rod of Ages",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/rod-of-ages.png",
+            "reason": "Provides AP, HP, and Mana, scaling over time for sustain."
+          },
+          {
+            "slug": "rabadons-deathcap",
+            "name": "Rabadon's Deathcap",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/rabadons-deathcap.png",
+            "reason": "Crucial for maximizing AP and overall damage output.",
+            "core": true
+          },
+          {
+            "slug": "malignance",
+            "name": "Malignance",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/malignance.png",
+            "reason": "Haste and mana sustain her spell spam.",
+            "core": true
+          },
+          {
+            "slug": "infinity-orb",
+            "name": "Infinity Orb",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/infinity-orb.png",
+            "reason": "Execution damage ensures finishing off low HP targets."
+          }
+        ],
+        "boots": {
+          "slug": "ionian-boots-of-lucidity",
+          "name": "Ionian Boots of Lucidity",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/ionian-boots-of-lucidity.png",
+          "reason": "Ability Haste and lower summoner spell cooldowns."
+        },
+        "enchantment": {
+          "slug": "stasis",
+          "name": "Stasis",
+          "cost": 1000,
+          "icon": "https://www.wildriftfire.com/images/items/stasis.png",
+          "reason": "Invulnerability to survive burst or bait enemy abilities."
+        },
+        "situational": [
+          {
+            "slug": "morellonomicon",
+            "name": "Morellonomicon",
+            "cost": 2600,
+            "icon": "https://www.wildriftfire.com/images/items/morellonomicon.png",
+            "when": "vs high healing enemies"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for engagement, escape, and repositioning."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Secures kills and applies Grievous Wounds."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Phase Rush",
+            "slug": "phase-rush",
+            "icon": "https://www.wildriftfire.com/images/runes/phase-rush.png",
+            "reason": "Grants movement speed and haste after hitting 3 abilities, aiding kiting/repositioning."
+          },
+          "primaryTree": "Sorcery",
+          "treeMinors": [
+            {
+              "name": "Manaflow Band",
+              "slug": "manaflow-band",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/manaflow-band.png",
+              "reason": "Increases max mana for sustained ability usage."
+            },
+            {
+              "name": "Transcendence",
+              "slug": "transcendence",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/transcendence.png",
+              "reason": "Provides bonus Ability Haste at key levels."
+            },
+            {
+              "name": "Celerity",
+              "slug": "celerity",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/celerity.png",
+              "reason": "Amplifies movement speed from Phase Rush and Molten Shield."
+            }
+          ],
+          "flexMinor": {
+            "name": "Nullifying Orb",
+            "slug": "nullifying-orb",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/nullifying-orb.png",
+            "reason": "Provides a magic shield when low, enhancing survivability."
+          }
+        },
+        "engine": {
+          "burst3": 4098,
+          "dps8": 779,
+          "ttk": 1.5,
+          "ehp": 6370,
+          "sustain": 0,
+          "ad": 80,
+          "ap": 380,
+          "hp": 3230,
+          "scoreFull": 101.5,
+          "scoreMid": 65.4,
+          "goldMid": 11250,
+          "itemsMid": 4,
+          "score": 79.8
+        },
+        "searched": {
+          "combos": 1210,
+          "poolSize": 14,
+          "pool": [
+            "abyssal-mask",
+            "rod-of-ages",
+            "rabadons-deathcap",
+            "malignance",
+            "infinity-orb",
+            "ludens-echo",
+            "liandrys-torment",
+            "horizon-focus",
+            "cosmic-drive",
+            "archangels-staff",
+            "crown-of-the-shattered-queen",
+            "rylais-crystal-scepter",
+            "edge-of-night",
+            "force-of-nature"
+          ],
+          "engineScore": 79.8,
+          "llmBaseline": 79.8
+        }
+      },
+      "battlemage": {
+        "summary": "This build transforms Annie into a sustained damage dealer with increased durability and healing, allowing her to thrive in longer teamfights.",
+        "coreBuild": [
+          {
+            "slug": "rod-of-ages",
+            "name": "Rod of Ages",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/rod-of-ages.png",
+            "reason": "Provides HP, AP, Mana, and sustain, scaling well for extended fights.",
+            "core": true
+          },
+          {
+            "slug": "rabadons-deathcap",
+            "name": "Rabadon's Deathcap",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/rabadons-deathcap.png",
+            "reason": "Massive AP multiplier for all skills.",
+            "core": true
+          },
+          {
+            "slug": "infinity-orb",
+            "name": "Infinity Orb",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/infinity-orb.png",
+            "reason": "Crits low HP enemies for execute.",
+            "core": true
+          },
+          {
+            "slug": "malignance",
+            "name": "Malignance",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/malignance.png",
+            "reason": "Haste and mana for sustained fights."
+          },
+          {
+            "slug": "horizon-focus",
+            "name": "Horizon Focus",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/horizon-focus.png",
+            "reason": "Reveals and damages distant enemies, aiding her range."
+          }
+        ],
+        "boots": {
+          "slug": "mercurys-treads",
+          "name": "Mercury's Treads",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/mercurys-treads.png",
+          "reason": "MR and Tenacity to survive CC and magic damage in sustained fights."
+        },
+        "enchantment": {
+          "slug": "gargoyle",
+          "name": "Gargoyle",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/gargoyle.png",
+          "reason": "Massive shield when low, allowing survival of burst and continued draining."
+        },
+        "situational": [
+          {
+            "slug": "morellonomicon",
+            "name": "Morellonomicon",
+            "cost": 2600,
+            "icon": "https://www.wildriftfire.com/images/items/morellonomicon.png",
+            "when": "vs high healing enemies"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for engagement, escape, and repositioning."
+          },
+          {
+            "name": "Exhaust",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerExhaust.png",
+            "reason": "Reduces enemy damage, helping Annie win extended duels."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Conqueror",
+            "slug": "conqueror",
+            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
+            "reason": "Grants AP and Magic Vamp in combat, scaling for sustained fights."
+          },
+          "primaryTree": "Resolve",
+          "treeMinors": [
+            {
+              "name": "Font of Life",
+              "slug": "font-of-life",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/font-of-life.png",
+              "reason": "Heals Annie and allies when she applies CC."
+            },
+            {
+              "name": "Second Wind",
+              "slug": "second-wind",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/second-wind.png",
+              "reason": "Health regeneration, especially after taking damage."
+            },
+            {
+              "name": "Overgrowth",
+              "slug": "overgrowth",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+              "reason": "Stacks bonus HP over the game, increasing durability."
+            }
+          ],
+          "flexMinor": {
+            "name": "Legend: Bloodline",
+            "slug": "legend-bloodline",
+            "tree": "Precision",
+            "icon": "https://www.wildriftfire.com/images/runes/legend-bloodline.png",
+            "reason": "Provides additional Omnivamp for more sustain."
+          }
+        },
+        "engine": {
+          "burst3": 4927,
+          "dps8": 781,
+          "ttk": 1.5,
+          "ehp": 5527,
+          "sustain": 0,
+          "ad": 101,
+          "ap": 460,
+          "hp": 3080,
+          "scoreFull": 95.9,
+          "scoreMid": 65.0,
+          "goldMid": 11250,
+          "itemsMid": 4,
+          "score": 77.4
+        },
+        "searched": {
+          "combos": 2002,
+          "poolSize": 14,
+          "pool": [
+            "rod-of-ages",
+            "rabadons-deathcap",
+            "infinity-orb",
+            "malignance",
+            "horizon-focus",
+            "liandrys-torment",
+            "rylais-crystal-scepter",
+            "cosmic-drive",
+            "riftmaker",
+            "abyssal-mask",
+            "crown-of-the-shattered-queen",
+            "archangels-staff",
+            "oceanids-trident",
+            "psychic-projector"
+          ],
+          "engineScore": 77.4,
+          "llmBaseline": 77.4
+        }
+      }
+    },
+    "name": "Annie",
+    "class": "Mage",
+    "role": "Mid"
+  },
+  "Malphite": {
+    "synergyNotes": [
+      "Granite Shield (P) scales with 11% maximum HP, making Max HP stacking highly efficient for survivability.",
+      "Thunderclap (2) passive gains bonus Armor from existing Armor, and its active, along with Ground Slam (3), scales with both AP and Armor for damage.",
+      "All active abilities (Q, E, R) scale with AP, with Unstoppable Force (R) having a very high 90% AP ratio for burst.",
+      "Seismic Shard (1) provides Malphite with movement speed, which can be amplified by certain items and runes."
+    ],
+    "damageProfile": "magic-burst / ap-tank",
+    "canOneshot": true,
+    "variants": [
+      "tanky",
+      "damage"
+    ],
+    "builds": {
+      "tanky": {
+        "summary": "This build focuses on maximizing Malphite's natural tankiness through high HP and resistances, providing strong frontline presence and disruptive CC while dealing sustained magic damage.",
+        "coreBuild": [
+          {
+            "slug": "kaenic-rookern",
+            "name": "Kaenic Rookern",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/kaenic-rookern.png",
+            "reason": "Shields against AP burst, complements passive shield.",
+            "core": true
+          },
+          {
+            "slug": "steraks-gage",
+            "name": "Sterak's Gage",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/steraks-gage.png",
+            "reason": "Shield on low HP; works with Malphite's durable frontline.",
+            "core": true
+          },
+          {
+            "slug": "randuins-omen",
+            "name": "Randuin's Omen",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
+            "reason": "Reduces attack speed and crit vs. AD carries.",
+            "core": true
+          },
+          {
+            "slug": "heartsteel",
+            "name": "Heartsteel",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/heartsteel.png",
+            "reason": "HP stacking synergy; amplifies shield and damage."
+          },
+          {
+            "slug": "abyssal-mask",
+            "name": "Abyssal Mask",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/abyssal-mask.png",
+            "reason": "Amplifies magic damage of Q and E, grants survivability."
+          }
+        ],
+        "boots": {
+          "slug": "plated-steelcaps",
+          "name": "Plated Steelcaps",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
+          "reason": "Reduces basic attack damage, strong against AD-heavy teams."
+        },
+        "enchantment": {
+          "slug": "gargoyle",
+          "name": "Gargoyle",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/gargoyle.png",
+          "reason": "Provides a massive shield based on max HP and resistances for diving and surviving burst."
+        },
+        "situational": [
+          {
+            "slug": "iceborn-gauntlet",
+            "name": "Iceborn Gauntlet",
+            "cost": 3100,
+            "icon": "https://www.wildriftfire.com/images/items/iceborn-gauntlet.png",
+            "when": "vs AD heavy comps for more CC and spellblade damage (spellblade group)"
+          },
+          {
+            "slug": "dead-mans-plate",
+            "name": "Dead Man's Plate",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/dead-mans-plate.png",
+            "when": "for more Armor, HP, and movement speed to stick to targets (momentum group)"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for engaging with R or escaping dangerous situations."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Secures kills in lane and applies Grievous Wounds for kill pressure."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Grasp of the Undying",
+            "slug": "grasp-of-the-undying",
+            "icon": "https://www.wildriftfire.com/images/runes/grasp-of-the-undying.png",
+            "reason": "Provides sustain in lane and scales Malphite's Max HP for more tankiness."
+          },
+          "primaryTree": "Resolve",
+          "treeMinors": [
+            {
+              "name": "Overgrowth",
+              "slug": "overgrowth",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+              "reason": "Permanently increases Max Health, synergizing with P and Heartsteel."
+            },
+            {
+              "name": "Unshakeable",
+              "slug": "unshakeable",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/unshakeable.png",
+              "reason": "Grants bonus Armor/MR, increasing with nearby enemies for frontline presence."
+            },
+            {
+              "name": "Revitalize",
+              "slug": "revitalize",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/revitalize.png",
+              "reason": "Amplifies Malphite's shield (P) and any healing received."
+            }
+          ],
+          "flexMinor": {
+            "name": "Triumph",
+            "slug": "triumph",
+            "tree": "Precision",
+            "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+            "reason": "Restores health and mana on takedowns, improving teamfight sustain."
+          }
+        },
+        "engine": {
+          "burst3": 994,
+          "dps8": 177,
+          "ttk": null,
+          "ehp": 21817,
+          "sustain": 212,
+          "ad": 100,
+          "ap": 0,
+          "hp": 4770,
+          "scoreFull": 212.4,
+          "scoreMid": 127.9,
+          "goldMid": 10500,
+          "itemsMid": 4,
+          "score": 161.7
+        },
+        "searched": {
+          "combos": 2002,
+          "poolSize": 14,
+          "pool": [
+            "kaenic-rookern",
+            "steraks-gage",
+            "randuins-omen",
+            "heartsteel",
+            "abyssal-mask",
+            "sunfire-aegis",
+            "thornmail",
+            "frozen-heart",
+            "force-of-nature",
+            "dead-mans-plate",
+            "iceborn-gauntlet",
+            "warmogs-armor",
+            "unending-despair",
+            "amaranths-twinguard"
+          ],
+          "engineScore": 161.7,
+          "llmBaseline": 161.7
+        }
+      },
+      "damage": {
+        "summary": "This build maximizes Malphite's AP scalings, turning him into a potent magic burst assassin capable of one-shotting squishy targets with his ultimate combo.",
+        "coreBuild": [
+          {
+            "slug": "rabadons-deathcap",
+            "name": "Rabadon's Deathcap",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/rabadons-deathcap.png",
+            "reason": "Massive Ability Power boost, crucial for maximizing burst damage.",
+            "core": true
+          },
+          {
+            "slug": "infinity-orb",
+            "name": "Infinity Orb",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/infinity-orb.png",
+            "reason": "High AP, Magic Penetration, and bonus damage against low-health targets.",
+            "core": true
+          },
+          {
+            "slug": "malignance",
+            "name": "Malignance",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/malignance.png",
+            "reason": "Ultimate Haste and a powerful burn zone after R, perfect for burst initiation.",
+            "core": true
+          },
+          {
+            "slug": "horizon-focus",
+            "name": "Horizon Focus",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/horizon-focus.png",
+            "reason": "Q/E slow triggers bonus damage on abilities."
+          },
+          {
+            "slug": "ludens-echo",
+            "name": "Luden's Echo",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/ludens-echo.png",
+            "reason": "Adds burst magic damage to Q and ult."
+          }
+        ],
+        "boots": {
+          "slug": "boots-of-mana",
+          "name": "Boots of Mana",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/boots-of-mana.png",
+          "reason": "Provides AP, Magic Penetration, and mana regeneration for sustained ability use."
+        },
+        "enchantment": {
+          "slug": "protobelt",
+          "name": "Protobelt",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/protobelt.png",
+          "reason": "Adds extra mobility for engagement and a burst of magic damage."
+        },
+        "situational": [
+          {
+            "slug": "horizon-focus",
+            "name": "Horizon Focus",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/horizon-focus.png",
+            "when": "for increased damage on abilities from range and target revelation"
+          },
+          {
+            "slug": "morellonomicon",
+            "name": "Morellonomicon",
+            "cost": 2600,
+            "icon": "https://www.wildriftfire.com/images/items/morellonomicon.png",
+            "when": "against teams with significant healing to apply Grievous Wounds"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for surprise ultimate engages or escaping danger."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Ensures kill secures and applies Grievous Wounds for burst."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Electrocute",
+            "slug": "electrocute",
+            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
+            "reason": "Provides significant burst damage on a 3-hit combo, easily procced by Malphite."
+          },
+          "primaryTree": "Domination",
+          "treeMinors": [
+            {
+              "name": "Sudden Impact",
+              "slug": "sudden-impact",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+              "reason": "Grants bonus true damage after using Unstoppable Force (R)."
+            },
+            {
+              "name": "Eyeball Collector",
+              "slug": "eyeball-collector",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
+              "reason": "Increases Ability Power with champion takedowns, aiding snowballing."
+            },
+            {
+              "name": "Tyrant",
+              "slug": "tyrant",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/tyrant.png",
+              "reason": "Deals bonus adaptive damage to low-health enemies, enhancing burst."
+            }
+          ],
+          "flexMinor": {
+            "name": "Absolute Focus",
+            "slug": "absolute-focus",
+            "tree": "Sorcery",
+            "icon": "https://www.wildriftfire.com/images/runes/absolute-focus.png",
+            "reason": "Grants bonus AP when healthy, maximizing initial burst damage on engage."
+          }
+        },
+        "engine": {
+          "burst3": 3586,
+          "dps8": 682,
+          "ttk": 2.0,
+          "ehp": 4702,
+          "sustain": 0,
+          "ad": 136,
+          "ap": 440,
+          "hp": 2520,
+          "scoreFull": 89.9,
+          "scoreMid": 58.0,
+          "goldMid": 10500,
+          "itemsMid": 4,
+          "score": 70.8
+        },
+        "searched": {
+          "combos": 2002,
+          "poolSize": 14,
+          "pool": [
+            "rabadons-deathcap",
+            "infinity-orb",
+            "malignance",
+            "horizon-focus",
+            "ludens-echo",
+            "liandrys-torment",
+            "rylais-crystal-scepter",
+            "cosmic-drive",
+            "riftmaker",
+            "crown-of-the-shattered-queen",
+            "psychic-projector",
+            "abyssal-mask",
+            "archangels-staff",
+            "rod-of-ages"
+          ],
+          "engineScore": 70.8,
+          "llmBaseline": 70.8
+        }
+      }
+    },
+    "name": "Malphite",
+    "class": "Tank",
+    "role": "Baron"
+  },
+  "Soraka": {
+    "synergyNotes": [
+      "AP scales all abilities, especially Astral Infusion (W) for healing/shielding (55% AP heal, 70% AP shield).",
+      "Starcall (Q) and Equinox (E) provide magic damage and CC (slow, silence, root), benefiting from AP and Magic Penetration.",
+      "Ability Haste is crucial for frequent healing, shielding, and CC application across the kit.",
+      "Salvation (P) grants burst Movement Speed towards low-health allies, making MS items valuable for positioning."
+    ],
+    "damageProfile": "ap-enchanter",
+    "canOneshot": false,
+    "variants": [
+      "utility",
+      "poke"
+    ],
+    "builds": {
+      "utility": {
+        "summary": "This build maximizes Soraka's healing, shielding, and team utility, ensuring allies stay alive and empowered in fights.",
+        "coreBuild": [
+          {
+            "slug": "abyssal-mask",
+            "name": "Abyssal Mask",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/abyssal-mask.png",
+            "reason": "Amplifies magic damage from Q and E shredding MR.",
+            "core": true
+          },
+          {
+            "slug": "randuins-omen",
+            "name": "Randuin's Omen",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/randuins-omen.png",
+            "reason": "Survivability vs physical burst; active slow helps peel.",
+            "core": true
+          },
+          {
+            "slug": "force-of-nature",
+            "name": "Force of Nature",
+            "cost": 2750,
+            "icon": "https://www.wildriftfire.com/images/items/force-of-nature.png",
+            "reason": "Increases survivability vs AP with movespeed and resist."
+          },
+          {
+            "slug": "ardent-censer",
+            "name": "Ardent Censer",
+            "cost": 2700,
+            "icon": "https://www.wildriftfire.com/images/items/ardent-censer.png",
+            "reason": "Boosts healing; grants attack speed to healed allies."
+          },
+          {
+            "slug": "rod-of-ages",
+            "name": "Rod of Ages",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/rod-of-ages.png",
+            "reason": "Scales AP and health for bigger heals and durability.",
+            "core": true
+          }
+        ],
+        "boots": {
+          "slug": "ionian-boots-of-lucidity",
+          "name": "Ionian Boots of Lucidity",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/ionian-boots-of-lucidity.png",
+          "reason": "Reduces ability and summoner spell cooldowns for high uptime."
+        },
+        "enchantment": {
+          "slug": "locket",
+          "name": "Locket",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/locket.png",
+          "reason": "Provides a crucial team-wide shield for burst defense."
+        },
+        "situational": [
+          {
+            "slug": "morellonomicon",
+            "name": "Morellonomicon",
+            "cost": 2600,
+            "icon": "https://www.wildriftfire.com/images/items/morellonomicon.png",
+            "when": "vs heavy healing compositions (e.g., Aatrox, Dr. Mundo)."
+          },
+          {
+            "slug": "zekes-convergence",
+            "name": "Zeke's Convergence",
+            "cost": 2700,
+            "icon": "https://www.wildriftfire.com/images/items/zekes-convergence.png",
+            "when": "if your ADC is auto-attack heavy and you need more defense."
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Heal",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerHeal.png",
+            "reason": "Burst heal and movement speed for self and ally."
+          },
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for positioning, escapes, and playmaking."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Aery",
+            "slug": "aery",
+            "icon": "https://www.wildriftfire.com/images/runes/aery.png",
+            "reason": "Provides both poke damage and shields to allies with abilities."
+          },
+          "primaryTree": "Resolve",
+          "treeMinors": [
+            {
+              "name": "Revitalize",
+              "slug": "revitalize",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/revitalize.png",
+              "reason": "Amplifies healing and shielding, especially on low-health allies."
+            },
+            {
+              "name": "Font of Life",
+              "slug": "font-of-life",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/font-of-life.png",
+              "reason": "Heals allies when Soraka's abilities hit enemy champions."
+            },
+            {
+              "name": "Second Wind",
+              "slug": "second-wind",
+              "tree": "Resolve",
+              "icon": "https://www.wildriftfire.com/images/runes/second-wind.png",
+              "reason": "Sustains Soraka in lane after taking damage from enemies."
+            }
+          ],
+          "flexMinor": {
+            "name": "Manaflow Band",
+            "slug": "manaflow-band",
+            "tree": "Sorcery",
+            "icon": "https://www.wildriftfire.com/images/runes/manaflow-band.png",
+            "reason": "Increases max mana, addressing Soraka's mana consumption."
+          }
+        },
+        "engine": {
+          "burst3": 672,
+          "dps8": 126,
+          "ttk": null,
+          "ehp": 10927,
+          "sustain": 0,
+          "ad": 80,
+          "ap": 155,
+          "hp": 4148,
+          "scoreFull": 125.7,
+          "scoreMid": 74.5,
+          "goldMid": 8250,
+          "itemsMid": 3,
+          "score": 95.0
+        },
+        "searched": {
+          "combos": 1246,
+          "poolSize": 14,
+          "pool": [
+            "abyssal-mask",
+            "randuins-omen",
+            "force-of-nature",
+            "ardent-censer",
+            "imperial-mandate",
+            "staff-of-flowing-water",
+            "harmonic-echo",
+            "redemption",
+            "frozen-heart",
+            "winters-approach",
+            "rod-of-ages",
+            "knights-vow",
+            "zekes-convergence",
+            "radiant-virtue"
+          ],
+          "engineScore": 95.0,
+          "llmBaseline": 92.1
+        }
+      },
+      "poke": {
+        "summary": "This build focuses on maximizing Soraka's damage output from Starcall and Equinox to chip down enemies before teamfights.",
+        "coreBuild": [
+          {
+            "slug": "rabadons-deathcap",
+            "name": "Rabadon's Deathcap",
+            "cost": 3400,
+            "icon": "https://www.wildriftfire.com/images/items/rabadons-deathcap.png",
+            "reason": "Massive AP boost for amplified damage on Q and E.",
+            "core": true
+          },
+          {
+            "slug": "infinity-orb",
+            "name": "Infinity Orb",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/infinity-orb.png",
+            "reason": "Enhances damage against low-health targets, securing kills.",
+            "core": true
+          },
+          {
+            "slug": "horizon-focus",
+            "name": "Horizon Focus",
+            "cost": 2800,
+            "icon": "https://www.wildriftfire.com/images/items/horizon-focus.png",
+            "reason": "Q slow triggers bonus magic damage."
+          },
+          {
+            "slug": "malignance",
+            "name": "Malignance",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/malignance.png",
+            "reason": "Ultimate haste for global heals; burn after ultimate.",
+            "core": true
+          },
+          {
+            "slug": "bandle-fantasy",
+            "name": "Bandle Fantasy",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/bandle-fantasy.png",
+            "reason": "Amplifies poke damage; cooldown reduction for more spells."
+          }
+        ],
+        "boots": {
+          "slug": "boots-of-mana",
+          "name": "Boots of Mana",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/boots-of-mana.png",
+          "reason": "Grants AP and magic penetration for increased damage."
+        },
+        "enchantment": {
+          "slug": "protobelt",
+          "name": "Protobelt",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/protobelt.png",
+          "reason": "Provides extra burst damage and mobility for aggressive plays."
+        },
+        "situational": [
+          {
+            "slug": "liandrys-torment",
+            "name": "Liandry's Torment",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/liandrys-torment.png",
+            "when": "vs tankier compositions for sustained burn damage."
+          },
+          {
+            "slug": "awakened-soulstealer",
+            "name": "Awakened Soulstealer",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/awakened-soulstealer.png",
+            "when": "if frequently securing takedowns for ability cooldown reduction."
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Adds kill pressure and grievous wounds in lane."
+          },
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for positioning, escapes, and playmaking."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Arcane Comet",
+            "slug": "arcane-comet",
+            "icon": "https://www.wildriftfire.com/images/runes/arcane-comet.png",
+            "reason": "Hurls a comet for additional damage when abilities hit champions."
+          },
+          "primaryTree": "Sorcery",
+          "treeMinors": [
+            {
+              "name": "Scorch",
+              "slug": "scorch",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/scorch.png",
+              "reason": "Adds bonus magic damage to abilities every 8 seconds."
+            },
+            {
+              "name": "Manaflow Band",
+              "slug": "manaflow-band",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/manaflow-band.png",
+              "reason": "Increases max mana, essential for sustained poke."
+            },
+            {
+              "name": "Gathering Storm",
+              "slug": "gathering-storm",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/gathering-storm.png",
+              "reason": "Scales AP over time, boosting late-game poke damage."
+            }
+          ],
+          "flexMinor": {
+            "name": "Cheap Shot",
+            "slug": "cheap-shot",
+            "tree": "Domination",
+            "icon": "https://www.wildriftfire.com/images/runes/cheap-shot.png",
+            "reason": "Deals bonus true damage to enemies impaired by Q/E."
+          }
+        },
+        "engine": {
+          "burst3": 2448,
+          "dps8": 604,
+          "ttk": 2.75,
+          "ehp": 3873,
+          "sustain": 0,
+          "ad": 96,
+          "ap": 440,
+          "hp": 2348,
+          "scoreFull": 86.6,
+          "scoreMid": 51.5,
+          "goldMid": 8250,
+          "itemsMid": 3,
+          "score": 65.5
+        },
+        "searched": {
+          "combos": 2002,
+          "poolSize": 14,
+          "pool": [
+            "rabadons-deathcap",
+            "infinity-orb",
+            "horizon-focus",
+            "rod-of-ages",
+            "ludens-echo",
+            "archangels-staff",
+            "imperial-mandate",
+            "liandrys-torment",
+            "rylais-crystal-scepter",
+            "cosmic-drive",
+            "spear-of-shojin",
+            "malignance",
+            "bandle-fantasy",
+            "crown-of-the-shattered-queen"
+          ],
+          "engineScore": 65.5,
+          "llmBaseline": 63.9
+        }
+      }
+    },
+    "name": "Soraka",
+    "class": "Enchanter",
+    "role": "Support"
+  },
+  "Zed": {
+    "synergyNotes": [
+      "Zed's ultimate, Death Mark, amplifies all damage dealt during its duration, making high burst damage and armor penetration critical for maximizing its execute potential.",
+      "His primary damage abilities (Razor Shuriken, Shadow Slash) scale heavily with bonus AD, making flat AD and armor penetration highly efficient stats.",
+      "Living Shadow and Shadow Slash cooldowns are crucial for combo execution and energy management, benefiting greatly from Ability Haste.",
+      "Contempt for the Weak (P) is an on-hit max-health magic damage execute, encouraging basic attacks on low-health targets to finish them."
+    ],
+    "damageProfile": "AD Assassin",
+    "canOneshot": true,
+    "variants": [
+      "balanced",
+      "oneshot"
+    ],
+    "builds": {
+      "balanced": {
+        "summary": "A standard build focusing on core assassin damage, mobility, and some utility to ensure consistent threat and survivability in teamfights.",
+        "coreBuild": [
+          {
+            "slug": "blade-of-the-ruined-king",
+            "name": "Blade of the Ruined King",
+            "cost": 3200,
+            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
+            "reason": "Boosts auto damage and sustain vs high HP targets.",
+            "core": true
+          },
+          {
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
+            "reason": "Shreds armor with multi-hit Q and E rotations.",
+            "core": true
+          },
+          {
+            "slug": "phantom-dancer",
+            "name": "Phantom Dancer",
+            "cost": 2900,
+            "icon": "https://www.wildriftfire.com/images/items/phantom-dancer.png",
+            "reason": "Attack speed + crit; shield for surviving duels."
+          },
+          {
+            "slug": "spear-of-shojin",
+            "name": "Spear of Shojin",
+            "cost": 3100,
+            "icon": "https://www.wildriftfire.com/images/items/spear-of-shojin.png",
+            "reason": "Reduces cooldowns for sustained assassination."
+          },
+          {
+            "slug": "deaths-dance",
+            "name": "Death's Dance",
+            "cost": 3100,
+            "icon": "https://www.wildriftfire.com/images/items/deaths-dance.png",
+            "reason": "Damage delay + heal on takedown sustain fights.",
+            "core": true
+          }
+        ],
+        "boots": {
+          "slug": "plated-steelcaps",
+          "name": "Plated Steelcaps",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
+          "reason": "Reduces physical damage, good against AD threats."
+        },
+        "enchantment": {
+          "slug": "stasis",
+          "name": "Stasis",
+          "cost": 1000,
+          "icon": "https://www.wildriftfire.com/images/items/stasis.png",
+          "reason": "Untargetability to survive after combo or dodge critical abilities."
+        },
+        "situational": [
+          {
+            "slug": "maw-of-malmortius",
+            "name": "Maw of Malmortius",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/maw-of-malmortius.png",
+            "when": "vs heavy AP burst"
+          },
+          {
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
+            "when": "vs multiple tanks/bruisers"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for engagement, escape, and outplay."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Increases kill pressure and applies grievous wounds."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Electrocute",
+            "slug": "electrocute",
+            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
+            "reason": "High burst damage, easily procced by Zed's combos."
+          },
+          "primaryTree": "Domination",
+          "treeMinors": [
+            {
+              "name": "Sudden Impact",
+              "slug": "sudden-impact",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+              "reason": "Bonus true damage after dash (W, R) for burst."
+            },
+            {
+              "name": "Eyeball Collector",
+              "slug": "eyeball-collector",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
+              "reason": "Scaling AD for snowballing after takedowns."
+            },
+            {
+              "name": "Tyrant",
+              "slug": "tyrant",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/tyrant.png",
+              "reason": "Bonus adaptive damage to low-health targets, synergizes with P and R."
+            }
+          ],
+          "flexMinor": {
+            "name": "Triumph",
+            "slug": "triumph",
+            "tree": "Precision",
+            "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+            "reason": "Health/energy restore on takedowns for sustain in fights."
+          }
+        },
+        "engine": {
+          "burst3": 2346,
+          "dps8": 740,
+          "ttk": 4.25,
+          "ehp": 7932,
+          "sustain": 592,
+          "ad": 296,
+          "ap": 0,
+          "hp": 3370,
+          "scoreFull": 109.7,
+          "scoreMid": 75.7,
+          "goldMid": 11250,
+          "itemsMid": 4,
+          "score": 89.3
+        },
+        "searched": {
+          "combos": 948,
+          "poolSize": 14,
+          "pool": [
+            "blade-of-the-ruined-king",
+            "black-cleaver",
+            "duskblade-of-draktharr",
+            "spear-of-shojin",
+            "youmuus-ghostblade",
+            "edge-of-night",
+            "deaths-dance",
+            "seryldas-grudge",
+            "the-collector",
+            "lord-dominiks-regard",
+            "chempunk-chainsword",
+            "eclipse",
+            "phantom-dancer",
+            "mantle-of-the-twelfth-hour"
+          ],
+          "engineScore": 87.3,
+          "llmBaseline": 88.1
+        }
+      },
+      "oneshot": {
+        "summary": "Maximizes burst damage to delete a single priority target as quickly as possible, often sacrificing some utility or survivability for raw damage output.",
+        "coreBuild": [
+          {
+            "slug": "duskblade-of-draktharr",
+            "name": "Duskblade of Draktharr",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/duskblade-of-draktharr.png",
+            "reason": "High AD, armor pen, and burst damage for assassinations.",
+            "core": true
+          },
+          {
+            "slug": "lord-dominiks-regard",
+            "name": "Lord Dominik's Regard",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
+            "reason": "Armor pen for squishies and tanks alike.",
+            "core": true
+          },
+          {
+            "slug": "youmuus-ghostblade",
+            "name": "Youmuu's Ghostblade",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/youmuus-ghostblade.png",
+            "reason": "Early AD, armor pen, and mobility for quick target access.",
+            "core": true
+          },
+          {
+            "slug": "the-collector",
+            "name": "The Collector",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/the-collector.png",
+            "reason": "Executes low HP enemies after combo."
+          },
+          {
+            "slug": "eclipse",
+            "name": "Eclipse",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/eclipse.png",
+            "reason": "Shield and bonus damage boost survivability and burst."
+          }
+        ],
+        "boots": {
+          "slug": "boots-of-dynamism",
+          "name": "Boots of Dynamism",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/boots-of-dynamism.png",
+          "reason": "AD and armor penetration for maximum burst."
+        },
+        "enchantment": {
+          "slug": "protobelt",
+          "name": "Protobelt",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/protobelt.png",
+          "reason": "Additional dash and burst damage for target access/kill combo."
+        },
+        "situational": [
+          {
+            "slug": "serpents-fang",
+            "name": "Serpent's Fang",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/serpents-fang.png",
+            "when": "vs shield-heavy champions"
+          },
+          {
+            "slug": "mortal-reminder",
+            "name": "Mortal Reminder",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/mortal-reminder.png",
+            "when": "vs high healing targets"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Essential for engagement, escape, and outplay."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "Increases kill pressure and applies grievous wounds."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Dark Harvest",
+            "slug": "dark-harvest",
+            "icon": "https://www.wildriftfire.com/images/runes/dark-harvest.png",
+            "reason": "Amplifies execute damage, scales with takedowns, synergizes with P and R."
+          },
+          "primaryTree": "Domination",
+          "treeMinors": [
+            {
+              "name": "Sudden Impact",
+              "slug": "sudden-impact",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+              "reason": "Bonus true damage after dash (W, R) for burst."
+            },
+            {
+              "name": "Eyeball Collector",
+              "slug": "eyeball-collector",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
+              "reason": "Scaling AD for snowballing after takedowns."
+            },
+            {
+              "name": "Tyrant",
+              "slug": "tyrant",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/tyrant.png",
+              "reason": "Bonus adaptive damage to low-health targets, synergizes with P and R."
+            }
+          ],
+          "flexMinor": {
+            "name": "Coup de Grace",
+            "slug": "coup-de-grace",
+            "tree": "Precision",
+            "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
+            "reason": "Bonus damage to low-health targets for execute."
+          }
+        },
+        "engine": {
+          "burst3": 3712,
+          "dps8": 773,
+          "ttk": 2.25,
+          "ehp": 4685,
+          "sustain": 0,
+          "ad": 391,
+          "ap": 0,
+          "hp": 2370,
+          "scoreFull": 145.9,
+          "scoreMid": 102.9,
+          "goldMid": 11250,
+          "itemsMid": 4,
+          "score": 120.1
+        },
+        "searched": {
+          "combos": 1260,
+          "poolSize": 14,
+          "pool": [
+            "duskblade-of-draktharr",
+            "lord-dominiks-regard",
+            "youmuus-ghostblade",
+            "the-collector",
+            "eclipse",
+            "edge-of-night",
+            "seryldas-grudge",
+            "deaths-dance",
+            "bloodthirster",
+            "spear-of-shojin",
+            "chempunk-chainsword",
+            "steraks-gage",
+            "black-cleaver",
+            "blade-of-the-ruined-king"
+          ],
+          "engineScore": 120.1,
+          "llmBaseline": 120.1
+        }
+      }
+    },
+    "name": "Zed",
+    "class": "Assassin",
+    "role": "Mid"
+  },
+  "Pantheon": {
+    "synergyNotes": [
+      "Passive Mortal Will enhances Q,W,E after 5 hits; ability haste and AS speed up passive cycling.",
+      "Q tap refunds 60% CD on champ hit; short CD enables spellblade (Divine Sunderer/Eclipse) and Manamune stacking.",
+      "Q crits below 35% HP; crit chance from items like The Collector amplifies execute threshold.",
+      "W empowered strike hits 3 times, applying on-hit effects (BotRK, Wit's End) and stacking passive fast."
+    ],
+    "damageProfile": "lethality-bruiser",
+    "canOneshot": true,
+    "variants": [
+      "balanced",
+      "oneshot"
+    ],
+    "builds": {
+      "balanced": {
+        "summary": "Fighter build with sustain, shred, and safety; good for extended fights and objective control.",
+        "coreBuild": [
+          {
+            "slug": "trinity-force",
+            "name": "Trinity Force",
+            "cost": 3333,
+            "icon": "https://www.wildriftfire.com/images/items/trinity-force.png",
+            "reason": "Sheen proc and movement aid W stun combos.",
+            "core": true
+          },
+          {
+            "slug": "blade-of-the-ruined-king",
+            "name": "Blade of the Ruined King",
+            "cost": 3200,
+            "icon": "https://www.wildriftfire.com/images/items/blade-of-the-ruined-king.png",
+            "reason": "On-hit healing and %HP damage with W's triple hit.",
+            "core": true
+          },
+          {
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/black-cleaver.png",
+            "reason": "Armor shred, HP, haste; synergizes with physical damage.",
+            "core": true
+          },
+          {
+            "slug": "spear-of-shojin",
+            "name": "Spear of Shojin",
+            "cost": 3100,
+            "icon": "https://www.wildriftfire.com/images/items/spear-of-shojin.png",
+            "reason": "Ability haste and on-hit cdr for spamming W stun."
+          },
+          {
+            "slug": "deaths-dance",
+            "name": "Death's Dance",
+            "cost": 3100,
+            "icon": "https://www.wildriftfire.com/images/items/deaths-dance.png",
+            "reason": "Mitigates burst and heals on takedowns for brawling."
+          }
+        ],
+        "boots": {
+          "slug": "plated-steelcaps",
+          "name": "Plated Steelcaps",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/plated-steelcaps.png",
+          "reason": "Armor vs auto-attackers; default defensive."
+        },
+        "enchantment": {
+          "slug": "stasis",
+          "name": "Stasis",
+          "cost": 1000,
+          "icon": "https://www.wildriftfire.com/images/items/stasis.png",
+          "reason": "Invulnerability to avoid burst or reposition."
+        },
+        "situational": [
+          {
+            "slug": "maw-of-malmortius",
+            "name": "Maw of Malmortius",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/maw-of-malmortius.png",
+            "when": "vs heavy AP"
+          },
+          {
+            "slug": "thornmail",
+            "name": "Thornmail",
+            "cost": 2700,
+            "icon": "https://www.wildriftfire.com/images/items/thornmail.png",
+            "when": "vs AD healers"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungle."
+          },
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Gap close or escape."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Conqueror",
+            "slug": "conqueror",
+            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
+            "reason": "Stacking AD and healing for extended fights."
+          },
+          "primaryTree": "Precision",
+          "treeMinors": [
+            {
+              "name": "Triumph",
+              "slug": "triumph",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+              "reason": "Heal and gold on takedowns."
+            },
+            {
+              "name": "Legend: Tenacity",
+              "slug": "legend-tenacity",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
+              "reason": "CC reduction for diving."
+            },
+            {
+              "name": "Coup de Grace",
+              "slug": "coup-de-grace",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
+              "reason": "Execute synergy with Q."
+            }
+          ],
+          "flexMinor": {
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "Free HP from jungle camps."
+          }
+        },
+        "engine": {
+          "burst3": 2281,
+          "dps8": 865,
+          "ttk": 3.25,
+          "ehp": 8691,
+          "sustain": 692,
+          "ad": 297,
+          "ap": 0,
+          "hp": 3703,
+          "scoreFull": 125.8,
+          "scoreMid": 85.9,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 101.9
+        },
+        "searched": {
+          "combos": 948,
+          "poolSize": 14,
+          "pool": [
+            "trinity-force",
+            "blade-of-the-ruined-king",
+            "black-cleaver",
+            "eclipse",
+            "youmuus-ghostblade",
+            "spear-of-shojin",
+            "seryldas-grudge",
+            "deaths-dance",
+            "edge-of-night",
+            "the-collector",
+            "chempunk-chainsword",
+            "lord-dominiks-regard",
+            "sundered-sky",
+            "mantle-of-the-twelfth-hour"
+          ],
+          "engineScore": 101.9,
+          "llmBaseline": 100.7
+        }
+      },
+      "oneshot": {
+        "summary": "Maximum burst with lethality and crit execute; deletes squishies instantly.",
+        "coreBuild": [
+          {
+            "slug": "duskblade-of-draktharr",
+            "name": "Duskblade of Draktharr",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/duskblade-of-draktharr.png",
+            "reason": "Lethality and Nightstalker burst; invis after kills.",
+            "core": true
+          },
+          {
+            "slug": "lord-dominiks-regard",
+            "name": "Lord Dominik's Regard",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/lord-dominiks-regard.png",
+            "reason": "Armor pen ensures Q and E delete squishies.",
+            "core": true
+          },
+          {
+            "slug": "youmuus-ghostblade",
+            "name": "Youmuu's Ghostblade",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/youmuus-ghostblade.png",
+            "reason": "Lethality, movespeed, and out-of-combat speed for roams.",
+            "core": true
+          },
+          {
+            "slug": "the-collector",
+            "name": "The Collector",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/the-collector.png",
+            "reason": "Execute low health targets after burst."
+          },
+          {
+            "slug": "edge-of-night",
+            "name": "Edge of Night",
+            "cost": 3150,
+            "icon": "https://www.wildriftfire.com/images/items/edge-of-night.png",
+            "reason": "Spell shield blocks first CC to ensure engage."
+          }
+        ],
+        "boots": {
+          "slug": "ionian-boots-of-lucidity",
+          "name": "Ionian Boots of Lucidity",
+          "cost": 900,
+          "icon": "https://www.wildriftfire.com/images/items/ionian-boots-of-lucidity.png",
+          "reason": "Haste for more ability rotations."
+        },
+        "enchantment": {
+          "slug": "protobelt",
+          "name": "Protobelt",
+          "cost": 500,
+          "icon": "https://www.wildriftfire.com/images/items/protobelt.png",
+          "reason": "Gap close and magic pen for burst."
+        },
+        "situational": [
+          {
+            "slug": "mortal-reminder",
+            "name": "Mortal Reminder",
+            "cost": 3300,
+            "icon": "https://www.wildriftfire.com/images/items/mortal-reminder.png",
+            "when": "vs healing enemies (replaces Serylda's)"
+          },
+          {
+            "slug": "serpents-fang",
+            "name": "Serpent's Fang",
+            "cost": 3000,
+            "icon": "https://www.wildriftfire.com/images/items/serpents-fang.png",
+            "when": "vs shield-heavy teams"
+          }
+        ],
+        "summoners": [
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Mandatory for jungle."
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png",
+            "reason": "True damage and heal cut for kills."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Electrocute",
+            "slug": "electrocute",
+            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
+            "reason": "Extra burst on combo (W+auto+Q)."
+          },
+          "primaryTree": "Domination",
+          "treeMinors": [
+            {
+              "name": "Sudden Impact",
+              "slug": "sudden-impact",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+              "reason": "True damage after W dash."
+            },
+            {
+              "name": "Eyeball Collector",
+              "slug": "eyeball-collector",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png",
+              "reason": "Stacking AD from takedowns."
+            },
+            {
+              "name": "Relentless Hunter",
+              "slug": "relentless-hunter",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/relentless-hunter.png",
+              "reason": "Out-of-combat speed for ganks."
+            }
+          ],
+          "flexMinor": {
+            "name": "Coup de Grace",
+            "slug": "coup-de-grace",
+            "tree": "Precision",
+            "icon": "https://www.wildriftfire.com/images/runes/coup-de-grace.png",
+            "reason": "Execute synergy with Q and Collector."
+          }
+        },
+        "engine": {
+          "burst3": 3793,
+          "dps8": 711,
+          "ttk": 2.0,
+          "ehp": 5056,
+          "sustain": 0,
+          "ad": 352,
+          "ap": 0,
+          "hp": 2720,
+          "scoreFull": 149.5,
+          "scoreMid": 108.5,
+          "goldMid": 12750,
+          "itemsMid": 4,
+          "score": 124.9
+        },
+        "searched": {
+          "combos": 1260,
+          "poolSize": 14,
+          "pool": [
+            "duskblade-of-draktharr",
+            "lord-dominiks-regard",
+            "youmuus-ghostblade",
+            "the-collector",
+            "edge-of-night",
+            "eclipse",
+            "seryldas-grudge",
+            "spear-of-shojin",
+            "deaths-dance",
+            "steraks-gage",
+            "sundered-sky",
+            "chempunk-chainsword",
+            "mantle-of-the-twelfth-hour",
+            "navori-quickblades"
+          ],
+          "engineScore": 124.9,
+          "llmBaseline": 124.9
+        }
+      }
+    },
+    "name": "Pantheon",
+    "class": "Assassin",
     "role": "Jungle"
   }
 }

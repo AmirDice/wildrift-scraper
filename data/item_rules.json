@@ -5,12 +5,48 @@
     "Derived from UNIQUE passive names in our scraped item text",
     "Armor-penetration group confirmed by player (in-game)"
   ],
-  "slots": {"items": 5, "boots": 1, "enchantment": 1},
+  "slots": {
+    "items": 5,
+    "boots": 1,
+    "enchantment": 1
+  },
   "mutexGroups": {
-    "armor-penetration": ["seryldas-grudge", "lord-dominiks-regard", "black-cleaver", "mortal-reminder"],
-    "spellblade":        ["trinity-force", "lich-bane", "divine-sunderer", "essence-reaver", "iceborn-gauntlet"],
-    "lifeline":          ["steraks-gage", "mantle-of-the-twelfth-hour", "maw-of-malmortius"],
-    "mana-awe":          ["manamune", "archangels-staff", "winters-approach"],
-    "momentum":          ["youmuus-ghostblade", "dead-mans-plate"]
+    "armor-penetration": [
+      "seryldas-grudge",
+      "lord-dominiks-regard",
+      "black-cleaver",
+      "mortal-reminder"
+    ],
+    "spellblade": [
+      "trinity-force",
+      "lich-bane",
+      "divine-sunderer",
+      "essence-reaver",
+      "iceborn-gauntlet"
+    ],
+    "lifeline": [
+      "steraks-gage",
+      "mantle-of-the-twelfth-hour",
+      "maw-of-malmortius"
+    ],
+    "mana-awe": [
+      "manamune",
+      "archangels-staff",
+      "winters-approach"
+    ],
+    "momentum": [
+      "youmuus-ghostblade",
+      "dead-mans-plate"
+    ]
+  },
+  "situationalOnly": {
+    "_note": "Reactive items whose value depends on the ENEMY comp (anti-heal, cleanse, anti-shield, revive, anti-burst). Never part of the main 5-item build or core; only offered as situational swaps.",
+    "slugs": [
+      "guardian-angel",
+      "maw-of-malmortius",
+      "serpents-fang",
+      "mortal-reminder",
+      "morellonomicon"
+    ]
   }
 }

@@ -24,14 +24,26 @@ function BuildOrder({ build }: { build: Build }) {
   return (
     <div className="flex flex-col gap-2.5">
       {build.coreBuild.map((it, i) => (
-        <div key={it.slug} className="glass flex items-center gap-3 rounded-xl p-2.5">
+        <div
+          key={it.slug}
+          className={`glass flex items-center gap-3 rounded-xl p-2.5 ${
+            it.core ? "ring-1 ring-gold/50" : ""
+          }`}
+        >
           <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-xs font-bold text-accent">
             {i + 1}
           </span>
           <ItemIcon src={it.icon} alt={it.name} />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
-              <span className="truncate font-semibold">{it.name}</span>
+              <span className="flex min-w-0 items-baseline gap-2">
+                <span className="truncate font-semibold">{it.name}</span>
+                {it.core && (
+                  <span className="shrink-0 rounded bg-gold/20 px-1 py-0.5 text-[0.55rem] font-bold uppercase tracking-wide text-gold">
+                    core
+                  </span>
+                )}
+              </span>
               <span className="shrink-0 text-xs font-medium text-gold">{it.cost.toLocaleString()}g</span>
             </div>
             {it.reason && <p className="mt-0.5 text-xs leading-snug text-muted">{it.reason}</p>}
@@ -86,6 +98,15 @@ function Runes({ build }: { build: Build }) {
   );
 }
 
+function EngineChip({ label, value, cls }: { label: string; value: string; cls: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] px-2 py-1">
+      <span className="text-faint">{label}</span>
+      <span className={`font-semibold ${cls}`}>{value}</span>
+    </span>
+  );
+}
+
 const VARIANT_LABEL: Record<string, string> = {
   balanced: "Balanced", damage: "Damage", oneshot: "One-shot", burst: "Burst",
   crit: "Crit", tanky: "Tanky", battlemage: "Battlemage", utility: "Utility", poke: "Poke",
@@ -131,7 +152,43 @@ export function BuildView({ data }: { data: ChampionBuilds }) {
         {data.canOneshot && BURST_VARIANTS.has(tab) && (
           <span className="rounded-md bg-bad/15 px-2 py-1 font-medium text-bad">can one-shot squishies</span>
         )}
+        {(build.summoners ?? []).map((s) => (
+          <span key={s.name} className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] px-2 py-1 font-medium" title={s.reason}>
+            <img src={s.icon} alt="" width={16} height={16} className="h-4 w-4 rounded" />
+            {s.name}
+          </span>
+        ))}
       </div>
+
+      {build.engine && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Engine</span>
+          <EngineChip label="3s burst" value={build.engine.burst3.toLocaleString()} cls="text-bad" />
+          <EngineChip label="DPS (8s)" value={build.engine.dps8.toLocaleString()} cls="text-accent" />
+          <EngineChip label="Kill squishy" value={build.engine.ttk != null ? `${build.engine.ttk.toFixed(2)}s` : ">12s"} cls="text-gold" />
+          <EngineChip label="EHP" value={build.engine.ehp.toLocaleString()} cls="text-emerald-300" />
+          {build.engine.sustain > 0 && <EngineChip label="Sustain" value={build.engine.sustain.toLocaleString()} cls="text-emerald-300" />}
+          {build.engine.scoreMid != null && (
+            <EngineChip
+              label={`@15min (${build.engine.itemsMid ?? "?"} items)`}
+              value={String(build.engine.scoreMid)}
+              cls="text-gold"
+            />
+          )}
+          <EngineChip label="Fight score" value={String(build.engine.score)} cls="text-text" />
+        </div>
+      )}
+
+      {(data.synergyNotes ?? []).length > 0 && (
+        <div className="glass mt-4 max-w-2xl rounded-xl border-l-2 border-accent/60 p-3.5">
+          <p className="text-[0.65rem] font-bold uppercase tracking-wide text-accent">Why this works</p>
+          <ul className="mt-1.5 flex flex-col gap-1">
+            {data.synergyNotes!.map((n) => (
+              <li key={n} className="text-xs leading-relaxed text-muted">{n}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
         {/* items */}

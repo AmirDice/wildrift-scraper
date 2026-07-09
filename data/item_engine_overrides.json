@@ -1,0 +1,11 @@
+{
+  "_note": "Hand-curated engine effects merged OVER item_engine.json at load. For high-impact passives the extractor skipped or that need judgment calls. Every number is taken from the scraped passive text in data/items.json; approximations are documented per entry.",
+  "spear-of-shojin": {"abilityAmpPct": 12, "_why": "Focused Will 3% x 4 stacks (spam kits hold max stacks)"},
+  "infinity-edge": {"critMult": 2.05, "_why": "INFINITY: crits deal 205% instead of 175%"},
+  "steraks-gage": {"shieldPctBonusHp": 75, "_why": "LIFELINE: shield = 75% bonus HP, once per fight"},
+  "maw-of-malmortius": {"shieldFlat": 300, "_why": "lifeline-style magic shield; flat approximation"},
+  "deaths-dance": {"drPct": 12, "_why": "Cauterize defers 27% over 3s + takedown cleanse; modeled as ~12% effective DR"},
+  "guardian-angel": {"shieldPctMaxHp": 40, "_why": "revive ~= 40% max HP of effective HP, once"},
+  "dead-mans-plate": {"onHitFlatMagic": 0, "_why": "momentum proc is once-per-engage, not per auto; drop the per-auto overcount, keep its ms in extractor output"},
+  "wits-end": {"omnivampPct": 0, "healOnHitFlat": 15, "_why": "extractor misread 'heals 100% of THIS passive's damage below half HP' as omnivamp; ~15/hit conditional heal instead"}
+}
