@@ -1,0 +1,77 @@
+{
+  "_note": "Minor-rune slot structure per tree: a rune page takes exactly ONE minor from each of the 3 slots of the primary tree. The flex minor is not slot-tied.",
+  "trees": {
+    "Domination": {
+      "1": [
+        "Cheap Shot",
+        "Sudden Impact",
+        "Empowered Attack"
+      ],
+      "2": [
+        "Chain Assault",
+        "Tyrant",
+        "Hubris"
+      ],
+      "3": [
+        "Eyeball Collector",
+        "Ingenious Hunter",
+        "Relentless Hunter",
+        "Zombie Ward"
+      ]
+    },
+    "Precision": {
+      "1": [
+        "Brutal",
+        "Triumph",
+        "Battle Zeal"
+      ],
+      "2": [
+        "Last Stand",
+        "Cut Down",
+        "Coup de Grace"
+      ],
+      "3": [
+        "Legend: Alacrity",
+        "Legend: Tenacity",
+        "Legend: Bloodline"
+      ]
+    },
+    "Resolve": {
+      "1": [
+        "Unshakeable",
+        "Demolish",
+        "Font of Life",
+        "Courage of the Colossus"
+      ],
+      "2": [
+        "Second Wind",
+        "Nullifying Orb",
+        "Bone Plating"
+      ],
+      "3": [
+        "Overgrowth",
+        "Revitalize",
+        "Perseverance"
+      ]
+    },
+    "Sorcery": {
+      "1": [
+        "Axiom Arcanist",
+        "Manaflow Band",
+        "Botanist",
+        "Hextech Flashtraption"
+      ],
+      "2": [
+        "Transcendence",
+        "Celerity",
+        "Absolute Focus"
+      ],
+      "3": [
+        "Nimbus Cloak",
+        "Gathering Storm",
+        "Scorch",
+        "Ixtali Seedjar"
+      ]
+    }
+  }
+}

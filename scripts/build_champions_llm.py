@@ -62,6 +62,16 @@ _RULES_EARLY = json.loads(RULES.read_text(encoding="utf-8")) if RULES.exists() e
 # Reactive anti-comp items: allowed in situational swaps, never in the core build.
 SITUATIONAL_ONLY = set((_RULES_EARLY.get("situationalOnly") or {}).get("slugs") or [])
 
+# Minor-rune slot structure: a page takes exactly ONE minor from each of the
+# primary tree's 3 slots. The flex minor is not slot-tied.
+_SLOTS_PATH = ROOT / "data" / "rune_slots.json"
+RUNE_SLOTS = (json.loads(_SLOTS_PATH.read_text(encoding="utf-8")) if _SLOTS_PATH.exists() else {}).get("trees", {})
+SLOT_OF: dict[str, int] = {}
+for _tree, _slots in RUNE_SLOTS.items():
+    for _s, _names in _slots.items():
+        for _n in _names:
+            SLOT_OF[_n] = int(_s)
+
 # --- per-class build variants ---------------------------------------------
 VARIANT_SETS = {
     "Assassin":  ["balanced", "oneshot"],
@@ -74,10 +84,10 @@ VARIANT_SETS = {
 DEFAULT_VARIANTS = ["balanced", "damage"]
 
 VARIANT_DESC = {
-    "balanced":   "damage with some survivability — the safe default",
+    "balanced":   "damage with some survivability (1-2 bruiser/defensive items, never glass, never tanky)",
     "oneshot":    "maximum burst to instantly delete a priority target",
-    "damage":     "maximum damage for this champion's kit (lethality / on-hit / AD as fits)",
-    "tanky":      "frontline build prioritising survivability while staying a real threat",
+    "damage":     "full damage for this champion's kit; AT MOST one bruiser survivability item, never a tank item",
+    "tanky":      "frontline build with 2-3 tank items plus damage (full tank is only for Tank-class champions)",
     "crit":       "crit-based build stacking crit chance + crit damage",
     "burst":      "AP burst build to one-shot squishies",
     "battlemage": "sustained AP damage / drain-tank build",
@@ -137,15 +147,20 @@ SYSTEM = (
     "- Account for the champion's damage type and ability scalings (AD/AP/on-hit/crit/"
     "max-health/attack-speed) and per-level base stats.\n"
     "- Each variant is 5 items + 1 boots (+1 boot enchantment) + exactly 2 summoner spells.\n"
-    "- SUMMONERS: junglers MUST take Smite; non-junglers must NOT. Pick the second spell "
-    "for the kit and variant (Ghost for run-you-down fighters, Ignite for kill-lane "
-    "assassins, Heal/Barrier for marksmen, Exhaust/Cleanse as matchup calls).\n"
+    "- SUMMONERS: junglers MUST take Smite; non-junglers must NOT. For junglers the "
+    "DEFAULT second spell is Flash — only swap it for Ghost/Ignite when the kit clearly "
+    "wants it (e.g. Ghost on a run-you-down fighter like Hecarim). Laners: Ignite for "
+    "kill-lane assassins, Heal/Barrier for marksmen, Exhaust/Cleanse as matchup calls.\n"
     "- ITEM-EXCLUSIVITY: you may build AT MOST ONE item from each mutex group given. "
     "Never put two items from the same group in one build.\n"
     "- REACTIVE ITEMS (Guardian Angel, Maw, Serpent's Fang, anti-heal items...) answer "
     "a specific enemy comp: they belong in situational swaps ONLY, never the core build.\n"
     "- Wild Rift rune page = 1 keystone + 3 minors from ONE tree + 1 flex from any tree. "
-    "Read the rune EFFECTS given and pick for synergy, not popularity.\n"
+    "SLOTS: the 3 tree minors must come one from each of the tree's 3 slots (shown in "
+    "the pool) — two minors from the same slot is ILLEGAL. The flex is not slot-tied. "
+    "Read the rune EFFECTS given and pick for synergy, not popularity. For glass-cannon "
+    "builds (no defensive items), Overgrowth as the flex is a solid default when no "
+    "better synergy exists — but it is not mandatory.\n"
     "- You may ONLY use items/runes/summoners from the provided pools (exact slug/name). "
     "Never invent.\n"
     "- Be decisive: the BEST option per variant, not a menu."
@@ -166,10 +181,11 @@ def _item_pool(items: list[dict]) -> str:
     for it in items:
         stats = ", ".join(f"{k} {v['value']}{'%' if v['percent'] else ''}"
                           for k, v in it["stats"].items()) or "no stats"
-        # Full-ish passive text: clipping at 180 chars used to cut tooltips
-        # mid-mechanic (Manamune's Muramana transform, Shojin's stack cap),
-        # leaving the model blind to exactly the synergies that matter.
-        passive = _clip(" ".join(it["passives"]) or "(no passive)", 340)
+        # FULL passive text: clipping (180, then 340) kept cutting tooltips
+        # mid-mechanic (Manamune's transform, Guinsoo's stacks, Iceborn's field),
+        # leaving the model blind to exactly the synergies that matter. 650
+        # covers the longest tooltip; the token cost is trivial.
+        passive = _clip(" ".join(it["passives"]) or "(no passive)", 650)
         by_cat.setdefault(it["category"], []).append(
             f'  {it["slug"]} | {it["name"]} | {it["cost"]}g | {stats} | {passive}')
     order = ["Physical", "Magic", "Defense", "Support", "Boots", "Enchantment"]
@@ -177,18 +193,29 @@ def _item_pool(items: list[dict]) -> str:
 
 
 def _rune_pool(runes: list[dict]) -> str:
-    """Keystones + minors WITH their effect text, so the model can actually
-    reason about synergies (e.g. Phase Rush move speed with Hecarim's Warpath)
-    instead of guessing from names."""
-    ks = [f'  {r["name"]}: {_clip(r.get("description", ""), 150)}'
+    """Keystones + minors WITH their FULL effect text and SLOT numbers, so the
+    model can reason about synergies AND respect the one-minor-per-slot rule.
+    No meaningful clipping: 44/53 rune tooltips exceeded the old 110/150-char
+    clips, silently hiding stack counts and conditions (Manamune-bug class)."""
+    ks = [f'  {r["name"]}: {_clip(r.get("description", ""), 650)}'
           for r in runes if r["type"] == "Keystone"]
-    by_tree: dict[str, list[str]] = {}
+    by_tree_slot: dict[str, dict[int, list[str]]] = {}
     for r in runes:
         if r["type"] == "Minor":
-            by_tree.setdefault(r.get("tree", "?"), []).append(
-                f'  {r["name"]}: {_clip(r.get("description", ""), 110)}')
-    minors = "\n".join(f"[{t}]\n" + "\n".join(ns) for t, ns in by_tree.items())
-    return "Keystones:\n" + "\n".join(ks) + "\nMinor runes by tree:\n" + minors
+            slot = SLOT_OF.get(r["name"], 0)
+            by_tree_slot.setdefault(r.get("tree", "?"), {}).setdefault(slot, []).append(
+                f'    {r["name"]}: {_clip(r.get("description", ""), 650)}')
+    blocks = []
+    for t, slots in by_tree_slot.items():
+        lines = [f"[{t}]"]
+        for s in sorted(slots):
+            lines.append(f"  slot {s}:" if s else "  (unslotted):")
+            lines += slots[s]
+        blocks.append("\n".join(lines))
+    return ("Keystones:\n" + "\n".join(ks)
+            + "\nMinor runes by tree and SLOT (pick ONE minor from each of the "
+              "primary tree's 3 slots; the flex minor may be any minor from any tree):\n"
+            + "\n".join(blocks))
 
 
 def _mutex_block(rules: dict, items_by_slug: dict) -> str:
@@ -203,10 +230,15 @@ def _champion_block(c: dict, champ_class: str, role: str) -> str:
     bs = c.get("baseStats", {})
     def lvl(k):
         s = bs.get(k)
-        return f"{s['base']}->{s['lvl15']}" if s else "?"
+        # base -> lvl15 with the explicit per-level growth, so the model can
+        # reason about scaling (a champion with huge HP/level needs less bought HP)
+        return f"{s['base']}->{s['lvl15']} (+{s['perLevel']}/lvl)" if s else "?"
     stat_line = (f"HP {lvl('hp')}, AD {lvl('ad')}, AS {lvl('attackSpeed')}, "
                  f"Armor {lvl('armor')}, MR {lvl('mr')}, MS {bs.get('moveSpeed',{}).get('base','?')}")
-    abils = "\n".join(f"  [{a['slot']}] {a['name']}: {_clip(a['text'], 420)}"
+    # FULL ability text: the old 420-char clip truncated 159 abilities across 90
+    # champions (Kindred's passive is 1090 chars) — the exact synergy-critical
+    # passages the model must reason over.
+    abils = "\n".join(f"  [{a['slot']}] {a['name']}: {_clip(a['text'], 1100)}"
                       for a in c.get("abilities", []))
     return (f"CHAMPION: {c['name']}  (class {champ_class}, role {role})\n"
             f"Base stats (lvl1->lvl15): {stat_line}\n"
@@ -279,11 +311,17 @@ def _kit_hints(c: dict) -> list[str]:
     return hints[:4]
 
 
+THREATS = ["vs Tanks", "vs AP", "vs AD", "vs Healing", "vs Shields", "vs CC", "vs Crit", "vs Poke"]
+
+
 def _schema(variants: list[str]) -> str:
     build_shape = (
         '{"summary":"1-2 sentences","coreBuild":[{"slug":"...","reason":"<=14 words"}],'
         ' "boots":{"slug":"...","reason":"..."},"enchantment":{"slug":"...","reason":"..."},'
-        ' "situational":[{"slug":"...","when":"vs ... "}],'
+        ' "situational":[{"slug":"...","vs":"one of ' + "|".join(THREATS) + '",'
+        '"replaces":"<coreBuild slug this swaps out>"}],'
+        ' "situationalRunes":[{"name":"...","vs":"e.g. vs Assassins|vs Tanks|vs Poke",'
+        '"replaces":"<rune name in the page>"}],'
         ' "summoners":[{"name":"...","reason":"<=8 words"},{"name":"...","reason":"<=8 words"}],'
         ' "runes":{"keystone":{"name":"...","reason":"..."},'
         '"primaryTree":"Domination|Resolve|Precision|Sorcery",'
@@ -292,8 +330,9 @@ def _schema(variants: list[str]) -> str:
     vlines = "\n".join(f'    "{v}": {build_shape}   // {VARIANT_DESC[v]}' for v in variants)
     return (
         "coreBuild = 5 items IN BUILD ORDER (index 0 rushed first). treeMinors = exactly 3 "
-        "from primaryTree; flexMinor = 1 from any tree. situational = 1-2 swaps. "
-        "summoners = exactly 2 distinct spells.\n"
+        "from primaryTree; flexMinor = 1 from any tree. situational = 3-5 swaps covering "
+        "DISTINCT threats (vs Tanks / vs AP / vs Healing / vs Shields / vs CC ...), each "
+        "naming the coreBuild slug it replaces. summoners = exactly 2 distinct spells.\n"
         "Return ONLY this JSON object (synergyNotes FIRST — the builds must follow from them):\n{\n"
         '  "synergyNotes": ["2-4 short bullets: the kit\'s strongest passive/ability <-> '
         'item/rune interactions"],\n'
@@ -428,13 +467,26 @@ def _validate(rec, variants, item_by_slug, rune_by_name, mutex,
         else:
             err.append(f"{label}: missing boot enchantment")
         situ = []
+        core_slugs_now = set(slugs)
         for e in bd.get("situational") or []:
             b = ok_item(e.get("slug"), f"{label} situational", forbid=())
-            if b:
-                b["when"] = e.get("when", "")
-                situ.append(b)
-        if not situ:
-            warn.append(f"{label}: no situational swaps")
+            if not b:
+                continue
+            vs = e.get("vs") or e.get("when") or ""
+            if vs and not vs.lower().startswith("vs"):
+                vs = f"vs {vs}"
+            b["when"] = vs
+            rep = e.get("replaces")
+            if rep:
+                rep_it = item_by_slug.get(rep) or item_canon.get(_canon(rep))
+                if rep_it and rep_it["slug"] in core_slugs_now:
+                    b["replaces"] = rep_it["slug"]
+                else:
+                    warn.append(f"{label}: situational {b['slug']} replaces "
+                                f"'{rep}' which is not in the core build")
+            situ.append(b)
+        if len(situ) < 3:
+            warn.append(f"{label}: only {len(situ)} situational swaps (want 3-5 threats)")
 
         # Summoner spells: exactly 2 distinct known spells; junglers must take
         # Smite, everyone else must not.
@@ -474,14 +526,36 @@ def _validate(rec, variants, item_by_slug, rune_by_name, mutex,
         for tm in tmins:
             if primary and tm["tree"] != primary:
                 err.append(f"{label}: minor {tm['name']} is {tm['tree']}, not {primary}")
+        # slot legality: exactly one minor from each of the tree's 3 slots
+        slots = sorted(SLOT_OF.get(t["name"], 0) for t in tmins)
+        if len(tmins) == 3 and slots != [1, 2, 3]:
+            named = ", ".join(f"{t['name']}(slot {SLOT_OF.get(t['name'], '?')})" for t in tmins)
+            err.append(f"{label}: tree minors must be one per slot 1/2/3 — got {named}")
         flex = rune_entry(rin.get("flexMinor") or {}, f"{label} flex") if (rin.get("flexMinor") or {}).get("name") else None
         if not flex:
             err.append(f"{label}: missing flex minor")
         elif flex["name"] in {t["name"] for t in tmins}:
             err.append(f"{label}: flex minor duplicates a tree minor ({flex['name']})")
+
+        # situational rune swaps (vs Assassins / vs Tanks / ...), validated names
+        page_names = {t["name"] for t in tmins} | ({flex["name"]} if flex else set()) \
+            | ({ks["name"]} if ks else set())
+        situ_runes = []
+        for e in bd.get("situationalRunes") or []:
+            r = ok_rune(e.get("name"))
+            if not r:
+                warn.append(f"{label}: unknown situational rune '{e.get('name')}'")
+                continue
+            entry = {"name": r["name"], "slug": r["slug"], "icon": r["icon"],
+                     "when": e.get("vs") or e.get("when") or ""}
+            rep = e.get("replaces")
+            if rep and ok_rune(rep) and ok_rune(rep)["name"] in page_names:
+                entry["replaces"] = ok_rune(rep)["name"]
+            situ_runes.append(entry)
         return {
             "summary": bd.get("summary", ""),
             "coreBuild": core, "boots": boots, "enchantment": ench, "situational": situ,
+            "situationalRunes": situ_runes,
             "summoners": sums,
             "runes": {
                 "keystone": ({"name": ks["name"], "slug": ks["slug"], "icon": ks["icon"],
@@ -811,7 +885,7 @@ def main() -> None:
         if name in ENGINE_FORMULAS:  # deterministic fight metrics per variant
             for v, bd in (clean.get("builds") or {}).items():
                 try:
-                    bd["engine"] = score_build(name, bd, v, role)
+                    bd["engine"] = score_build(name, bd, v, role, curve=True)
                 except Exception:  # noqa: BLE001
                     pass
         if err:

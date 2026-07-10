@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { buildChampions } from "@/lib/builds";
 import { BuildView } from "@/components/build-view";
+import { BuildDial } from "@/components/build-dial";
+import { BuildCustomizer } from "@/components/build-customizer";
 import { Container, ChampionAvatar, TierChip } from "@/components/ui";
 
 // Local review page for the build optimizer while /build is "coming soon".
@@ -44,7 +46,15 @@ export default function BuildPreviewPage() {
                 </p>
               </div>
             </div>
+            {(builds.dial ?? []).length > 0 && (
+              <div className="mb-6">
+                <BuildDial dial={builds.dial!} />
+              </div>
+            )}
             <BuildView data={builds} />
+            <div className="mt-6">
+              <BuildCustomizer name={champion.name} data={builds} />
+            </div>
           </section>
         ))}
       </div>

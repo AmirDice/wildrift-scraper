@@ -36,6 +36,20 @@
    "msPctAvg": 24,
    "hasteFlat": 25,
    "_why": "melee 40%/60% MS + 25 haste on 3-hit proc; ~60% fight uptime of the 40% roll"
+  },
+  "Grasp of the Undying": {
+   "procTargetMaxHpPct": 3.3,
+   "procEverySec": 5,
+   "_why": "4-stack auto deals % target max HP; ~1 proc per ~5s of combat (7.2 value 3.3)"
+  },
+  "Lethal Tempo": {
+   "asPctAvg": 40,
+   "_why": "melee 8-16%/stack x6; ramping needs 6 hits, ~40% avg over a real fight"
+  },
+  "Fleet Footwork": {
+   "msPctAvg": 4,
+   "healPerProc": 60,
+   "_why": "energized heal + MS; modest avg-uptime modeling"
   }
  },
  "minors": {
@@ -92,6 +106,26 @@
   "Gathering Storm": {
    "bonusAdAtStacks": 16,
    "_why": "scaling AD by game time, ~15min value (8 ad x2? use 16 approximation)"
+  },
+  "Legend: Alacrity": {
+   "asPctAvg": 20,
+   "_why": "20% AS at max stacks"
+  },
+  "Overgrowth": {
+   "hpFlat": 210,
+   "_why": "3 HP/stack, ~60 stacks by mid-game + 3% max HP at 30 stacks approximated flat"
+  },
+  "Bone Plating": {
+   "drPct": 5,
+   "_why": "blocks 3 champion hits per trigger; ~5% effective DR over a fight"
+  },
+  "Second Wind": {
+   "healPerSec": 10,
+   "_why": "6+2% missing over 5s after damage, doubled melee; ~10/s in-fight avg"
+  },
+  "Revitalize": {
+   "healShieldAmpPct": 10,
+   "_why": "5% heal/shield amp, +10% under 40% HP; avg 10%"
   }
  }
 }

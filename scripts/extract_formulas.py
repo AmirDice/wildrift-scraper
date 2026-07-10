@@ -62,14 +62,84 @@ SYSTEM = (
     "empowered/crit/conditional upgrade): model the DEFAULT/always-available version "
     "normally and add \"alt\": true to every alternative component so the engine "
     "doesn't double-count one cast.\n"
+    "- MECHANICS: also report kit-level mechanics that change how items work, using "
+    "ONLY these kinds:\n"
+    "    reload          — ammo/magazine system limiting basic attacks (params: magazine)\n"
+    "    fixedAttackSpeed— attack speed does NOT speed up this champion's attacks\n"
+    "    doubleShot      — attacks fire an extra shot under a condition (params: secondShotPct)\n"
+    "    everyNHit       — every Nth attack is empowered (params: n)\n"
+    "    noResource      — champion uses no mana (energy, rage, none): mana items useless\n"
+    "    transform       — possession/transform states the engine cannot model\n"
+    "  Each mechanic MUST include \"evidence\": a short VERBATIM quote from the tooltip "
+    "text proving it. No evidence = the mechanic will be rejected. Do not invent "
+    "mechanics the text does not describe.\n"
     "- Return ONLY the JSON object."
 )
+
+MECHANIC_KINDS = {"reload", "fixedAttackSpeed", "doubleShot", "everyNHit",
+                  "noResource", "transform"}
+
+# --- Tier-2 knowledge questionnaire -----------------------------------------
+# Tooltips describe mechanics qualitatively ("Attack Speed reduces reload time
+# slightly") but omit the numbers a simulator needs. This pass asks the LLM's
+# GAME KNOWLEDGE for those parameters only. It cannot introduce new mechanics
+# (evidence-grounded Tier 1 owns that); every answer is clamped to sanity
+# bounds and stored with source="llm-knowledge" so assumptions stay auditable.
+KNOWLEDGE_SYSTEM = (
+    "You are a Wild Rift (mobile) expert. Answer a short questionnaire about ONE "
+    "champion's mechanics from your knowledge of the actual game. Wild Rift often "
+    "differs from PC League — answer for WILD RIFT. If unsure, use null.\n"
+    'Return ONLY JSON: {"asEfficiency": 0.0-1.0 (how much this champion benefits '
+    "from attack speed items vs a normal marksman; 1.0 = fully, lower for reload/"
+    "fixed-AS/caster kits), \"reloadSeconds\": seconds to reload if the kit has an "
+    'ammo system else null, "resource": "mana"|"energy"|"none", '
+    '"abilitiesCanCrit": true|false, "confidence": "high"|"medium"|"low"}'
+)
+
+
+def knowledge_call(key: str, champ: dict) -> dict:
+    abils = "\n".join(f"[{a['slot']}] {a['name']}: {a['text'][:200]}"
+                      for a in champ["abilities"])
+    body = {"model": MODEL,
+            "messages": [{"role": "system", "content": KNOWLEDGE_SYSTEM},
+                         {"role": "user", "content": f"CHAMPION: {champ['name']}\n{abils}"}],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.1, "max_tokens": 4000, "stream": False}
+    headers = {"Authorization": f"Bearer {key}"}
+    for attempt in range(4):
+        r = requests.post(DEEPSEEK_URL, json=body, headers=headers, timeout=180)
+        if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
+            time.sleep(3 * (attempt + 1))
+            continue
+        if not r.ok:
+            raise RuntimeError(f"deepseek {r.status_code}")
+        return json.loads(r.json()["choices"][0]["message"]["content"])
+    return {}
+
+
+def _clamp_knowledge(raw: dict) -> dict:
+    out: dict = {"source": "llm-knowledge"}
+    eff = raw.get("asEfficiency")
+    if isinstance(eff, (int, float)):
+        out["asEfficiency"] = max(0.2, min(1.0, float(eff)))
+    rs = raw.get("reloadSeconds")
+    if isinstance(rs, (int, float)):
+        out["reloadSeconds"] = max(0.5, min(3.0, float(rs)))
+    if raw.get("resource") in ("mana", "energy", "none"):
+        out["resource"] = raw["resource"]
+    if isinstance(raw.get("abilitiesCanCrit"), bool):
+        out["abilitiesCanCrit"] = raw["abilitiesCanCrit"]
+    if raw.get("confidence") in ("high", "medium", "low"):
+        out["confidence"] = raw["confidence"]
+    return out
 
 SCHEMA = (
     'Return ONLY this JSON object:\n'
     '{"abilities": {"P": {"damage": [...], "steroids": [...], "defensive": [...], '
     '"unmodeled": [...]}, "1": {...}, "2": {...}, "3": {...}, "4": {...}},\n'
-    ' "combo": ["slot or auto", ...]}\n'
+    ' "combo": ["slot or auto", ...],\n'
+    ' "mechanics": [{"kind":"reload|fixedAttackSpeed|doubleShot|everyNHit|noResource|transform",'
+    '"evidence":"verbatim tooltip quote","magazine":N,"secondShotPct":N,"n":N}]}\n'
     "combo = this champion's standard all-in burst sequence as slots, e.g. "
     '["3","1","auto","4","auto","1"] (4-10 actions, "auto" for basic attacks). '
     "This is the one field based on how the champion is actually played, not the tooltip."
@@ -195,6 +265,36 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
              if str(a) == "auto" or str(a) in by_slot]
     if 4 <= len(combo) <= 12:
         out["combo"] = combo
+
+    # Kit mechanics: grounded by EVIDENCE — the quoted text must literally appear
+    # in the kit tooltips (whitespace-normalized), the mechanics analog of the
+    # number-grounding rule. Numeric params must also pass number grounding.
+    full_text = " ".join(" ".join((a.get("text") or "").split())
+                         for a in champ["abilities"]).lower()
+    all_nums = _numbers_in(" ".join(a.get("text") or "" for a in champ["abilities"]))
+    mechanics = []
+    for m in raw.get("mechanics") or []:
+        kind = m.get("kind")
+        ev = " ".join(str(m.get("evidence") or "").split()).lower()
+        if kind not in MECHANIC_KINDS:
+            continue
+        if len(ev) < 8 or ev not in full_text:
+            issues.append(f"mechanic {kind}: evidence not found in kit text")
+            continue
+        entry: dict = {"kind": kind, "evidence": m.get("evidence")}
+        for p in ("magazine", "secondShotPct", "n"):
+            v = m.get(p)
+            if isinstance(v, (int, float)) and _norm_num(float(v)) in all_nums:
+                entry[p] = v
+        mechanics.append(entry)
+    if mechanics:
+        out["mechanics"] = mechanics
+
+    # Tier-2 knowledge parameters (bounded, labeled, non-authoritative)
+    try:
+        out["knowledge"] = _clamp_knowledge(knowledge_call(key, champ))
+    except Exception:  # noqa: BLE001 — knowledge is optional
+        pass
     return out, issues
 
 
