@@ -6,6 +6,7 @@ import type { Champion } from "@/lib/data";
 import { TIER_ORDER, tierClass, site } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
+import { moverBySlug, MOVERS_META } from "@/lib/movers";
 
 export function TierListView({
   champions,
@@ -104,24 +105,40 @@ export function TierListView({
                     {t}
                   </div>
                   <div className="glass flex flex-1 flex-wrap content-center gap-3 rounded-xl p-3 sm:gap-4 sm:p-4">
-                    {champs.map((c) => (
-                      <Link
-                        key={c.slug}
-                        href={`/champions/${c.slug}`}
-                        className="group flex w-[60px] flex-col items-center text-center transition sm:w-[68px]"
-                        title={`${c.name} · ${c.wr.toFixed(1)}% WR`}
-                      >
-                        <span className="transition group-hover:-translate-y-0.5">
-                          <ChampionAvatar champion={c} size={52} />
-                        </span>
-                        <span className="mt-1.5 w-full truncate text-[0.7rem] font-medium leading-tight">
-                          {c.name}
-                        </span>
-                        <span className="text-[0.7rem] font-semibold text-accent">
-                          {c.wr.toFixed(1)}%
-                        </span>
-                      </Link>
-                    ))}
+                    {champs.map((c) => {
+                      const mv = moverBySlug(c.slug);
+                      const up = mv && mv.delta > 0;
+                      return (
+                        <Link
+                          key={c.slug}
+                          href={`/champions/${c.slug}`}
+                          className="group flex w-[60px] flex-col items-center text-center transition sm:w-[68px]"
+                          title={mv
+                            ? `${c.name} · ${c.wr.toFixed(1)}% WR · patch ${MOVERS_META.patch}: ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
+                            : `${c.name} · ${c.wr.toFixed(1)}% WR`}
+                        >
+                          <span className="relative transition group-hover:-translate-y-0.5">
+                            <ChampionAvatar champion={c} size={52} />
+                            {mv && Math.abs(mv.delta) >= 1 && (
+                              <span className={`absolute -right-1.5 -top-1 rounded-full px-1 text-[0.55rem] font-bold text-white ring-1 ring-black/30 ${up ? "bg-emerald-500" : "bg-bad"}`}>
+                                {up ? "▲" : "▼"}
+                              </span>
+                            )}
+                          </span>
+                          <span className="mt-1.5 w-full truncate text-[0.7rem] font-medium leading-tight">
+                            {c.name}
+                          </span>
+                          <span className="text-[0.7rem] font-semibold text-accent">
+                            {c.wr.toFixed(1)}%
+                            {mv && Math.abs(mv.delta) >= 1 && (
+                              <span className={`ml-1 ${up ? "text-emerald-400" : "text-bad"}`}>
+                                {up ? "+" : ""}{mv.delta}
+                              </span>
+                            )}
+                          </span>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               );
