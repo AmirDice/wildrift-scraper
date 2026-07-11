@@ -40,15 +40,15 @@ ANCHORS = [
     (0.30, 1, 3, 2, 4, "tanky"),
     (0.10, 2, 4, 3, 5, "tanky"),
 ]
-DAMAGE_LIKE = ("damage", "oneshot", "burst", "crit", "poke")
-TANK_LIKE = ("tanky",)
+DAMAGE_LIKE = ("damage", "dps", "oneshot", "burst", "crit", "antitank", "poke")
+TANK_LIKE = ("tanky", "survivability")
 
 
 def style_for(name: str, rec: dict) -> dict:
     """Grounded auto-vs-ability classification, measured on the champion's
     highest-damage build (that's where the playstyle shows most clearly)."""
     builds = rec.get("builds") or {}
-    key = next((k for k in ("damage", "crit", "oneshot", "burst", "balanced", "poke")
+    key = next((k for k in ("damage", "dps", "crit", "oneshot", "burst", "standard", "balanced", "poke")
                 if k in builds), next(iter(builds), None))
     if not key:
         return attack_profile(name)
@@ -58,7 +58,8 @@ def style_for(name: str, rec: dict) -> dict:
 
 def _nearest_variant(rec: dict, kind: str) -> tuple[str, dict] | None:
     builds = rec.get("builds") or {}
-    prefs = {"damage": DAMAGE_LIKE, "tanky": TANK_LIKE, "balanced": ("balanced", "battlemage", "utility")}[kind]
+    prefs = {"damage": DAMAGE_LIKE, "tanky": TANK_LIKE,
+             "balanced": ("standard", "balanced", "sustained", "battlemage", "utility")}[kind]
     for v in prefs:
         if v in builds:
             return v, builds[v]

@@ -73,27 +73,74 @@ for _tree, _slots in RUNE_SLOTS.items():
             SLOT_OF[_n] = int(_s)
 
 # --- per-class build variants ---------------------------------------------
+# Base preset set per class. "standard" (the best all-around build for a typical
+# game) is always first; the rest are the champion-adaptive leans. Some presets
+# are appended only when the kit can actually pull them off (see variants_for).
 VARIANT_SETS = {
-    "Assassin":  ["balanced", "oneshot"],
-    "Bruiser":   ["balanced", "tanky", "damage"],
-    "Marksman":  ["crit", "balanced", "damage"],
-    "Mage":      ["burst", "balanced", "battlemage"],
-    "Tank":      ["tanky", "damage"],
-    "Enchanter": ["utility", "poke"],
+    "Assassin":  ["standard", "oneshot"],
+    "Bruiser":   ["standard", "damage", "tanky"],
+    "Fighter":   ["standard", "damage", "tanky"],
+    "Marksman":  ["standard", "dps", "survivability"],
+    "Mage":      ["standard", "burst"],
+    "Tank":      ["standard", "tanky"],
+    "Enchanter": ["standard", "utility"],
 }
-DEFAULT_VARIANTS = ["balanced", "damage"]
+DEFAULT_VARIANTS = ["standard", "damage"]
 
 VARIANT_DESC = {
-    "balanced":   "damage with some survivability (1-2 bruiser/defensive items, never glass, never tanky)",
+    "standard":   "the BEST all-around build for a typical game; it adapts to the champion "
+                  "(near-full damage for Zed, a bruiser mix for Hecarim, near-full tank for Ornn) "
+                  "by maximising overall performance, NOT a fixed offense/defense split",
     "oneshot":    "maximum burst to instantly delete a priority target",
-    "damage":     "full damage for this champion's kit; AT MOST one bruiser survivability item, never a tank item",
-    "tanky":      "frontline build with 2-3 tank items plus damage (full tank is only for Tank-class champions)",
+    "damage":     "full damage for this champion's kit; at most one survivability item",
+    "dps":        "sustained auto-attack damage per second for extended fights",
+    "survivability": "defensive marksman build to survive dives and assassins while staying useful",
+    "antitank":   "anti-tank build with %max-HP and armor/magic penetration to melt the frontline",
+    "burst":      "burst build to one-shot squishies (only when the kit can truly burst)",
+    "poke":       "poke-damage build for chipping enemies before fights",
+    "sustained":  "sustained / drain damage build for longer trades",
+    "tanky":      "frontline build with 2-3 tank items plus damage (full tank only for Tank-class)",
     "crit":       "crit-based build stacking crit chance + crit damage",
-    "burst":      "AP burst build to one-shot squishies",
     "battlemage": "sustained AP damage / drain-tank build",
     "utility":    "team-support build maximising heal / shield / CC uptime",
-    "poke":       "poke-damage build for chipping enemies before fights",
 }
+
+
+def _can_burst(name: str) -> bool:
+    """True if the champion can meaningfully delete a squishy in a short combo.
+    Builds a generic glass set matching its damage type and checks 3s burst."""
+    from web.fight_engine import resolve_stats, rotation, target_squishy, stat_usability
+    u = stat_usability(name)
+    if u.get("ap", 0) >= 0.9:
+        items = ["rabadons-deathcap", "shadowflame", "void-staff", "ludens-echo", "sorcerers-boots"]
+    else:
+        items = ["infinity-edge", "the-collector", "youmuus-ghostblade", "lord-dominiks-regard", "berserkers-greaves"]
+    try:
+        st = resolve_stats(name, 13, items, [])
+        burst = rotation(name, st, target_squishy(13), 3.0, 13)["total"]
+        return burst >= target_squishy(13)["hp"] * 0.85
+    except Exception:
+        return False
+
+
+def variants_for(name: str, champ_class: str) -> list[str]:
+    """Class preset set plus the 'if applicable' leans the kit can pull off."""
+    base = list(VARIANT_SETS.get(champ_class, DEFAULT_VARIANTS))
+    burst_ok = _can_burst(name)
+    if champ_class in ("Bruiser", "Fighter", "Tank") and burst_ok and "damage" not in base:
+        base.append("damage")           # tanks that can trade durability for damage
+    if champ_class in ("Bruiser", "Fighter", "Marksman") and burst_ok and "burst" not in base:
+        base.append("burst")            # e.g. Lucian can burst, Jinx cannot
+    if champ_class == "Marksman":
+        base.append("antitank")         # any ADC can itemise %HP / armor pen
+    if champ_class in ("Mage", "Enchanter"):
+        base.append("poke")             # ranged casters can poke
+    # de-dupe, preserve order
+    seen, out = set(), []
+    for v in base:
+        if v not in seen:
+            seen.add(v); out.append(v)
+    return out
 
 # role -> extra rune guidance
 ROLE_RUNE_HINTS = {
@@ -799,7 +846,7 @@ def main() -> None:
     for i, c in enumerate(todo, 1):
         name = c["name"]
         champ_class, role = class_role(name)
-        variants = VARIANT_SETS.get(champ_class, DEFAULT_VARIANTS)
+        variants = variants_for(name, champ_class)
         cblock = _champion_block(c, champ_class or "?", role or "?")
         kit_flags = _kit_hints(c)
         prompt = build_prompt(cblock, item_pool, rune_pool, mutex_block, variants, role, kit_flags)

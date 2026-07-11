@@ -33,7 +33,7 @@ from pathlib import Path
 from scripts.build_champions_llm import (LLM, SLOT_OF, _champion_block, _extract_json,
                                          _kit_hints)
 from web.fight_engine import (FORMULAS, ITEMS, RUNE_ENGINE, RUNE_FX, _build_lists,
-                              attack_profile, build_curve, score_items)
+                              attack_profile, build_curve, score_items, stat_usability)
 
 ROOT = Path(__file__).resolve().parent.parent
 BUILDS = ROOT / "data" / "champion_builds.json"
@@ -63,10 +63,14 @@ CORE_FREQ = 0.6
 # never glass but never tanky, and tanky runs 2-3 tank items — full 4-5 tank is
 # reserved for actual Tank-class champions.
 IDENTITY_BOUNDS = {
+    # Standard is UNBOUNDED: no forced tank/defensive count. It lets the kit and
+    # the overall-performance score decide the mix (glass, bruiser or tank).
+    "standard": (0, 5, 0, 5),
     "oneshot": (0, 0, 0, 1), "burst": (0, 0, 0, 1), "crit": (0, 0, 0, 1),
-    "poke": (0, 0, 0, 1), "damage": (0, 0, 0, 1),
+    "poke": (0, 0, 0, 1), "damage": (0, 0, 0, 1), "dps": (0, 0, 0, 1),
+    "antitank": (0, 0, 0, 1), "sustained": (0, 1, 0, 2),
     "balanced": (0, 1, 1, 2), "battlemage": (0, 1, 0, 2),
-    "tanky": (2, 3, 3, 4), "utility": (0, 2, 0, 3),
+    "survivability": (0, 3, 2, 4), "tanky": (2, 3, 3, 4), "utility": (0, 2, 0, 3),
 }
 TANKY_FULL_TANK = (3, 5, 4, 5)  # tanky bounds for Tank-class champions
 
@@ -129,8 +133,15 @@ def propose_pool(llm: LLM, champ: dict, champ_class: str, role: str,
     prof = attack_profile(champ["name"], current)
     style_line = (f"ATTACK STYLE (engine-measured): {prof['style']} — "
                   f"build around {prof['buildHint']}.")
+    u = stat_usability(champ["name"])
+    usable = [s for s in ("ad", "ap", "attackSpeed", "crit") if u.get(s, 0) >= 0.5]
+    wasted = [s for s in ("ad", "ap", "attackSpeed", "crit") if u.get(s, 0) < 0.5]
+    scaling_line = (f"USABLE OFFENSE (from kit scaling, not class): uses {', '.join(usable) or 'none'}; "
+                    f"wastes {', '.join(wasted) or 'none'}. Do not shortlist items whose main offensive "
+                    f"stat is wasted (their damage stat is dead weight); prefer usable-offense, ability "
+                    f"haste, HP and resist items. Class does not restrict items — kit scaling does.")
     prompt = (f"{_champion_block(champ, champ_class, role)}\n\nKIT FLAGS:\n{flags}\n\n"
-              f"{style_line}\n\n"
+              f"{style_line}\n{scaling_line}\n\n"
               f"VARIANT: {variant}\nCurrent build (keep these in the pool): {current}\n\n"
               f"ITEM POOL:\n{pool_txt}\n\n"
               f"Shortlist exactly {POOL_SIZE} slugs.")

@@ -18,6 +18,79 @@ const RANGED_CLASSES = new Set(["Marksman", "Mage", "Enchanter"]);
 const AUTO_GATED_RUNES = new Set(["Empowerment", "Lethal Tempo"]);
 const REF_BURST = 2400, REF_DPS = 700, REF_DEF = 7000;
 const BURSTY = new Set(["oneshot", "burst", "poke", "crit"]);
+
+// Gold efficiency model (mirrors Python fight_engine). Passive value is priced
+// through the battle score, not here — a strong passive can still justify a
+// stat-inefficient item. FinalScore = BattleScore * efficiency**ALPHA.
+const STAT_GOLD: Record<string, number> = {
+  ad: 35, ap: 21.75, abilityHaste: 26.7, hp: 2.67, armor: 20, mr: 20,
+  attackSpeed: 30, crit: 40, magicPen: 41.7, physicalPen: 41.7, lethality: 50,
+  mana: 1.4, moveSpeed: 13,
+};
+const EFFICIENCY_ALPHA = 0.5;
+
+/** How much of each offensive stat a champion's kit can use (0..1), from its
+ *  ability ratios and scaling — not its class. Mirrors Python stat_usability. */
+function statUsability(name: string): Record<string, number> {
+  const champ = DATA.champions[name] ?? {};
+  const scales = new Set<string>(champ.scalesWith ?? []);
+  const mechs = new Set<string>(champ.mechanics ?? []);
+  const ratioStats = new Set<string>();
+  for (const ab of Object.values<any>(DATA.formulas[name]?.abilities ?? {}))
+    for (const c of ab.damage ?? [])
+      for (const r of c.ratios ?? []) ratioStats.add(r.stat);
+  const hasAp = ratioStats.has("ap") || scales.has("ap");
+  const hasAd = ratioStats.has("ad") || ratioStats.has("bonusAd") || scales.has("ad") || scales.has("bonusAd");
+  const autos = scales.has("attackSpeed") || mechs.has("onHit") || champ.primaryDamage === "physical";
+  const apUse = hasAp ? 1 : 0.05;
+  const adUse = hasAd ? 1 : autos ? 0.35 : 0.05;
+  const asUse = autos ? 1 : 0.15;
+  const critUse = autos && (hasAd || scales.has("crit") || champ.primaryDamage === "physical") ? 1 : 0;
+  return { ad: adUse, ap: apUse, attackSpeed: asUse, crit: critUse, magicPen: apUse, physicalPen: adUse, lethality: adUse };
+}
+
+/** Per-champion usefulness (0..1) of every item stat, for gold efficiency. */
+/** (needs_mobility, has_dash). Short-range / committed champs — any melee, plus
+ *  auto-attack marksmen like Graves/Lucian — need MS to reposition and stick;
+ *  ranged casters keep their distance. Mirrors Python _mobility_profile. */
+function mobilityProfile(name: string): [boolean, boolean] {
+  const champ = DATA.champions[name] ?? {};
+  const mechs = new Set<string>(champ.mechanics ?? []);
+  const cls = champ.class ?? "";
+  const melee = !RANGED_CLASSES.has(cls);
+  const autoMarksman = cls === "Marksman" || mechs.has("onHit") || (champ.scalesWith ?? []).includes("attackSpeed");
+  const rangedCaster = cls === "Mage" || cls === "Enchanter";
+  return [(melee || autoMarksman) && !rangedCaster, mechs.has("dash")];
+}
+
+function statWeights(name: string): Record<string, number> {
+  const u = statUsability(name);
+  const noResource = (DATA.formulas[name]?.mechanics ?? []).some((m: any) => m.kind === "noResource");
+  const [mobile, hasDash] = mobilityProfile(name);
+  return {
+    ad: u.ad, ap: u.ap, attackSpeed: u.attackSpeed, crit: u.crit,
+    magicPen: u.ap, physicalPen: u.ad, lethality: u.ad,
+    abilityHaste: hasDash ? 0.9 : 0.85, hp: 0.8, armor: 0.75, mr: 0.75,
+    mana: noResource ? 0 : 0.35, moveSpeed: mobile ? 0.75 : 0.45,
+  };
+}
+
+/** Fraction of a build's raw-stat gold that the champion's kit can use. */
+function buildEfficiency(name: string, itemSlugs: string[]): number {
+  const w = statWeights(name);
+  let useful = 0, total = 0;
+  for (const s of itemSlugs) {
+    const stats = DATA.items[s]?.stats ?? {};
+    for (const k of Object.keys(stats)) {
+      if (STAT_GOLD[k] == null) continue;
+      const v = stats[k]?.value ?? stats[k] ?? 0;
+      const gold = STAT_GOLD[k] * v;
+      total += gold;
+      useful += gold * (w[k] ?? 0.5);
+    }
+  }
+  return total > 0 ? useful / total : 1;
+}
 const VARIANT_WEIGHTS: Record<string, [number, number]> = {
   oneshot: [0.85, 0.15], burst: [0.8, 0.2], damage: [0.7, 0.3],
   crit: [0.7, 0.3], poke: [0.7, 0.3], battlemage: [0.55, 0.45],
@@ -283,9 +356,11 @@ function mults(st: any, target: any): [number, number] {
   return [100 / (100 + Math.max(armor, 0)), 100 / (100 + Math.max(mr, 0))];
 }
 
-function autoUptime(name: string, window: number): number {
+function autoUptime(name: string, window: number, st?: any): number {
   if (window <= 4) return 1;
-  return RANGED_CLASSES.has(DATA.champions[name]?.class ?? "") ? 1 : MELEE_AUTO_UPTIME;
+  if (RANGED_CLASSES.has(DATA.champions[name]?.class ?? "")) return 1;
+  // move speed lets a melee stick to its target -> more attacks land
+  return st ? Math.min(0.93, MELEE_AUTO_UPTIME + (st.bonusMs ?? 0) * 0.0016) : MELEE_AUTO_UPTIME;
 }
 
 // Side outputs from the most recent rotation() call, read synchronously right
@@ -443,7 +518,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     const ampA = 1 + st.abilityAmp;
     for (const c of dmgComps) { const cd2 = compDmg(c, rank) * casts * ampA; addT(c.type, cd2); total += cd2; }
   }
-  const nAutos = Math.max(1, Math.floor(window * st.as * autoUptime(name, window)));
+  const nAutos = Math.max(1, Math.floor(window * st.as * autoUptime(name, window, st)));
   const dAutos = doAutos(nAutos);
   total += dAutos;
   autoDmg += dAutos;
@@ -504,6 +579,46 @@ export function attackProfile(name: string, items: string[], runes: string[],
     asEfficiency: ase ?? null, dataQuality: quality, buildHint: STYLE_HINT_TS[style] };
 }
 
+// Early-game weighting (mirrors Python): score a build across purchase stages,
+// weighted toward the first 2-3 items that decide Wild Rift games.
+const STAGE_PLAN: [number | null, number][] = [[3, 0.35], [4, 0.4], [null, 0.25]];
+const PREFIX_LEVELS_TS = [8, 10, 12, 13, 14, 15];
+
+function buildOrder(items: string[]): string[] {
+  const o = [...items];
+  return o.length >= 2 ? [o[0], o[o.length - 1], ...o.slice(1, -1)] : o;
+}
+
+function valueAt(name: string, items: string[], runes: string[], variant: string, level: number): number {
+  const st = resolveStats(name, level, items, runes);
+  if (!st) return 0;
+  const burst3 = rotation(name, st, targetSquishy(level), 3, level);
+  const dps8 = rotation(name, st, TARGET_BRUISER, 8, level) / 8;
+  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
+  shield *= 1 + st.healShieldAmp;
+  const mixed = 0.5 * 100 / (100 + st.armor) + 0.5 * 100 / (100 + st.mr);
+  const ehp = (st.hp + shield) / mixed / (st.dr < 1 ? 1 - st.dr : 1);
+  const sustain = st.vamp * dps8 * 8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp);
+  let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
+  wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
+  const off = BURSTY.has(variant) ? burst3 / REF_BURST : dps8 / REF_DPS;
+  const deff = (ehp + 0.5 * sustain) / REF_DEF;
+  return 100 * (wOff * off + (1 - wOff) * deff) * Math.pow(buildEfficiency(name, items), EFFICIENCY_ALPHA);
+}
+
+function stagedScore(name: string, items: string[], runes: string[], variant: string): number {
+  const order = buildOrder(items);
+  let acc = 0, tw = 0;
+  for (const [n, w] of STAGE_PLAN) {
+    const prefix = n === null ? order : order.slice(0, Math.min(n, order.length));
+    if (!prefix.length) continue;
+    const lvl = PREFIX_LEVELS_TS[Math.min(prefix.length - 1, PREFIX_LEVELS_TS.length - 1)];
+    acc += w * valueAt(name, prefix, runes, variant, lvl);
+    tw += w;
+  }
+  return tw ? acc / tw : 0;
+}
+
 export function liveMetrics(name: string, items: string[], runes: string[],
                             variant: string, level = 15): LiveMetrics | null {
   const st = resolveStats(name, level, items, runes);
@@ -532,11 +647,8 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     attackSpeed: Math.round(st.as * 100) / 100, haste: Math.round(st.haste),
     crit: Math.round(st.crit * 100), mana: Math.round(st.mana) };
 
-  let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
-  wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
-  const off = BURSTY.has(variant) ? m.burst3 / REF_BURST : m.dps8 / REF_DPS;
-  const deff = (m.ehp + 0.5 * m.sustain) / REF_DEF;
-  const score = Math.round(1000 * (wOff * off + (1 - wOff) * deff)) / 10;
+  // build-quality score is early-game-weighted across purchase stages
+  const score = Math.round(stagedScore(name, items, runes, variant) * 10) / 10;
   return { ...m, score };
 }
 
@@ -826,6 +938,130 @@ export function monteCarloCompare(
     if (mine < theirs) wins++;
   }
   return { a, b, winRateA: Math.round(1000 * wins / trials) / 10 };
+}
+
+// ---- Engine-scored counter swaps vs a specific enemy comp ----
+
+export interface CompScore {
+  ttkCarry: number | null; // seconds to kill the enemy carry
+  ehpVsComp: number;       // effective HP weighted by the enemy's AD/AP split
+  score: number;           // combined, defense-leaning (counters are defensive)
+}
+
+export interface CompTarget { name: string; hp: number; armor: number; mr: number; bonusHp: number; }
+
+/** Score a build against a specific enemy comp: how fast it kills their carry
+ *  and how much effective HP it has versus their actual damage mix. */
+export function scoreVsComp(name: string, items: string[], runes: string[],
+                            opts: { carry: CompTarget; adShare: number; apShare: number; level?: number }): CompScore {
+  const { carry, adShare, apShare, level = 15 } = opts;
+  const st = resolveStats(name, level, items, runes);
+  if (!st) return { ttkCarry: null, ehpVsComp: 0, score: 0 };
+  const need = carry.hp * (1 - st.execute);
+  let ttk: number | null = null;
+  for (let t = 0.25; t <= 15; t += 0.25) {
+    if (rotation(name, st, carry, t, level) >= need) { ttk = Math.round(t * 100) / 100; break; }
+  }
+  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
+  shield *= 1 + st.healShieldAmp;
+  const physTaken = 100 / (100 + st.armor), magicTaken = 100 / (100 + st.mr);
+  const taken = adShare * physTaken + apShare * magicTaken || 1;
+  const dr = st.dr < 1 ? st.dr : 0.99;
+  const ehpVsComp = Math.round((st.hp + shield) / taken / (1 - dr));
+  const off = ttk ? REF_TTK / ttk : 0;
+  const def = ehpVsComp / REF_DEF;
+  return { ttkCarry: ttk, ehpVsComp, score: Math.round(1000 * (0.45 * off + 0.55 * def)) / 10 };
+}
+
+export interface CounterSwap {
+  add: string; addName: string; remove: string; removeName: string;
+  before: number; after: number; delta: number;
+  ehpBefore: number; ehpAfter: number;
+  ttkBefore: number | null; ttkAfter: number | null;
+}
+
+/** Best single item swap from a candidate counter pool: which counter to add and
+ *  which current item it should replace, judged by the vs-comp score. Boots swap
+ *  only for boots. Returns null when no candidate beats the current build. */
+export function bestCounterSwap(name: string, items: string[], runes: string[],
+                                candidates: string[],
+                                opts: { carry: CompTarget; adShare: number; apShare: number; level?: number; protect?: string[] }): CounterSwap | null {
+  const base = scoreVsComp(name, items, runes, opts);
+  const meta = new Map(engineItems().map((i) => [i.slug, i]));
+  const isBoots = (s: string) => meta.get(s)?.category === "Boots";
+  const protect = new Set(opts.protect ?? []);
+  let best: CounterSwap | null = null;
+  for (const add of candidates) {
+    if (items.includes(add) || !meta.has(add)) continue;
+    for (const remove of items) {
+      if (protect.has(remove)) continue; // never replace a core item
+      if (isBoots(remove) !== isBoots(add)) continue;
+      const next = items.map((s) => (s === remove ? add : s));
+      if (buildIssues(next).length) continue;
+      const s = scoreVsComp(name, next, runes, opts);
+      const delta = Math.round((s.score - base.score) * 10) / 10;
+      if (!best || delta > best.delta) {
+        best = {
+          add, addName: meta.get(add)?.name ?? add,
+          remove, removeName: meta.get(remove)?.name ?? remove,
+          before: base.score, after: s.score, delta,
+          ehpBefore: base.ehpVsComp, ehpAfter: s.ehpVsComp,
+          ttkBefore: base.ttkCarry, ttkAfter: s.ttkCarry,
+        };
+      }
+    }
+  }
+  return best && best.delta > 0.1 ? best : null;
+}
+
+export interface AbilityInfo {
+  slot: string; name: string; rank: number; dmg: number; type: string; scaling: string;
+}
+
+const STAT_LABEL: Record<string, string> = {
+  ad: "AD", bonusAd: "bonus AD", ap: "AP", ownMaxHp: "max HP", ownBonusHp: "bonus HP",
+  targetMaxHp: "target max HP", targetCurrentHp: "target HP", targetMissingHp: "missing HP",
+  armor: "armor", mr: "MR", bonusMs: "bonus MS",
+};
+
+/** Per-ability damage and scaling at a given level, with the current build's
+ *  stats — for the customizer's ability panel. Damage is raw (pre-mitigation). */
+export function abilityBreakdown(name: string, items: string[], runes: string[], level: number): AbilityInfo[] {
+  const st = resolveStats(name, level, items, runes);
+  if (!st) return [];
+  const f = DATA.formulas[name]?.abilities ?? {};
+  const so = DATA.champions[name]?.skillOrder ?? {};
+  const src: Record<string, number> = {
+    ad: st.ad, bonusAd: st.bonusAd, ap: st.ap, ownMaxHp: st.hp, ownBonusHp: st.bonusHp,
+    armor: st.armor, mr: st.mr, bonusMs: st.bonusMs,
+    targetMaxHp: 0, targetCurrentHp: 0, targetMissingHp: 0,
+  };
+  const out: AbilityInfo[] = [];
+  for (const slot of Object.keys(f).sort()) {
+    const ab = f[slot];
+    const comps = (ab.damage ?? []).filter((c: any) => !c.alt && c.when !== "per auto");
+    if (!comps.length) continue;
+    const levelsTaken = (so[slot] ?? []).filter((lv: number) => lv <= level).length;
+    const rank = so[slot] ? Math.max(0, levelsTaken - 1)
+      : slot === "4" ? (level >= 13 ? 2 : level >= 9 ? 1 : 0)
+      : Math.min(3, Math.max(0, Math.floor((level - 1) / 3)));
+    if (so[slot] && levelsTaken === 0) continue; // not yet learned
+    let dmg = 0; const scale = new Set<string>();
+    for (const c of comps) {
+      let val = rankVal(c.base, rank);
+      if (c.when === "dot total" && c.durationS) val *= c.durationS;
+      for (const r of c.ratios ?? []) {
+        const pct = rankVal(r.pct ?? 0, rank);
+        if (!pct) continue;
+        val += (pct / 100) * (src[r.stat] ?? 0);
+        scale.add(`${Math.round(pct)}% ${STAT_LABEL[r.stat] ?? r.stat}`);
+      }
+      val *= Math.max(1, Math.floor(rankVal(c.hits ?? 1, rank)) || 1);
+      dmg += val;
+    }
+    out.push({ slot, name: ab.name ?? slot, rank: rank + 1, dmg: Math.round(dmg), type: comps[0].type, scaling: [...scale].join(" + ") });
+  }
+  return out;
 }
 
 /** Legality check for custom builds: mutex groups + duplicates. */

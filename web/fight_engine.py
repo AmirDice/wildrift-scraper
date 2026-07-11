@@ -92,9 +92,16 @@ def target_profiles(level: int) -> dict:
 # offense/defense weights per build variant: the "kill fast vs live to kill
 # more" dial. Tunable — this is the experiment knob.
 VARIANT_WEIGHTS = {
-    "oneshot": (0.85, 0.15), "burst": (0.80, 0.20), "damage": (0.70, 0.30),
-    "crit": (0.70, 0.30), "poke": (0.70, 0.30), "battlemage": (0.55, 0.45),
-    "balanced": (0.55, 0.45), "tanky": (0.30, 0.70), "utility": (0.25, 0.75),
+    # Standard is the champion's best all-around build for a typical game: a
+    # damage-leaning overall score (~45% damage, 30% survival, 25% utility/
+    # mobility folded in) with NO forced offense/defense split, so it adapts to
+    # the kit (glass for Zed, bruiser for Hecarim, tank for Ornn).
+    "standard": (0.60, 0.40),
+    "oneshot": (0.85, 0.15), "burst": (0.80, 0.20), "damage": (0.72, 0.28),
+    "dps": (0.72, 0.28), "antitank": (0.70, 0.30), "crit": (0.70, 0.30),
+    "poke": (0.70, 0.30), "sustained": (0.60, 0.40), "battlemage": (0.55, 0.45),
+    "balanced": (0.55, 0.45), "survivability": (0.35, 0.65),
+    "tanky": (0.30, 0.70), "utility": (0.25, 0.75),
 }
 # offense normalization: burst-flavoured variants score on the 3s all-in,
 # sustained ones on 8s DPS.
@@ -444,11 +451,32 @@ CHAMP_CLASS: dict[str, str] = {c["name"]: c.get("class", "")
                                for c in _SITE.get("champions", [])}
 
 
-def _auto_uptime(name: str, window: float) -> float:
+def _mobility_profile(name: str) -> tuple[bool, bool]:
+    """(needs_mobility, has_dash). A champion is mobility-reliant when it must
+    fight at short / committed range with no safe poke: any melee, plus
+    auto-attack marksmen (Graves, Lucian) who must stay in attack range. Ranged
+    casters (mages, enchanters) keep their distance, so they value it less."""
+    champ = CHAMPS.get(name, {})
+    mechs = set(champ.get("mechanics") or [])
+    cls = CHAMP_CLASS.get(name, "")
+    melee = cls not in RANGED_CLASSES
+    auto_marksman = cls == "Marksman" or "onHit" in mechs or "attackSpeed" in (champ.get("scalesWith") or [])
+    ranged_caster = cls in ("Mage", "Enchanter")
+    needs_mobility = (melee or auto_marksman) and not ranged_caster
+    return needs_mobility, "dash" in mechs
+
+
+def _auto_uptime(name: str, window: float, st: dict | None = None) -> float:
     if window <= 4.0:  # a burst combo happens at point blank either way
         return 1.0
     cls = CHAMP_CLASS.get(name, "")
-    return 1.0 if cls in RANGED_CLASSES else MELEE_AUTO_UPTIME
+    if cls in RANGED_CLASSES:
+        return 1.0
+    up = MELEE_AUTO_UPTIME
+    # move speed lets a melee stick to its target -> more attacks land.
+    if st is not None:
+        up = min(0.93, up + st.get("bonusMs", 0.0) * 0.0016)
+    return up
 
 
 def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, comp_dmg):
@@ -632,7 +660,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         total += d
 
     # autos
-    n_autos = max(1, int(window * st["as"] * _auto_uptime(name, window)))
+    n_autos = max(1, int(window * st["as"] * _auto_uptime(name, window, st)))
     a_phys, a_magic, a_true = _auto_split(st, target, phys_m, magic_m, giant,
                                           crit_ev, per_auto_comps, comp_dmg)
     dsm = st.get("doubleShotMult", 1.0)
@@ -796,6 +824,87 @@ def fight_score(m: dict, variant: str, name: str = "",
     off = (m["burst3"] / REF_BURST) if variant in BURSTY else (m["dps8"] / REF_DPS)
     deff = (m["ehp"] + 0.5 * m["sustain"]) / REF_DEF
     return round(100 * (w_off * off + w_def * deff), 1)
+
+
+# Approx Wild Rift gold per unit of every purchasable stat, so an item's raw
+# stats can be priced. Passive value is NOT priced here — it flows through the
+# battle score, which is exactly what lets a strong passive justify a
+# stat-inefficient item (Sterak's on a mage, Shojin's amp, etc.).
+STAT_GOLD = {
+    "ad": 35.0, "ap": 21.75, "abilityHaste": 26.7, "hp": 2.67,
+    "armor": 20.0, "mr": 20.0, "attackSpeed": 30.0, "crit": 40.0,
+    "magicPen": 41.7, "physicalPen": 41.7, "lethality": 50.0,
+    "mana": 1.4, "moveSpeed": 13.0,
+}
+# FinalScore = BattleScore * efficiency**ALPHA. Small alpha => an efficient item
+# is barely touched, an inefficient one is nudged down but can still win on
+# combat value. Never a ban.
+EFFICIENCY_ALPHA = 0.5
+
+
+def stat_usability(name: str) -> dict:
+    """How much of each OFFENSIVE stat a champion's kit can use (0..1), from its
+    ability ratios and scaling — NOT its class. An AP caster uses AP fully but
+    AD only as far as it auto-attacks; an ADC is the reverse."""
+    champ = CHAMPS.get(name, {})
+    scales = set(champ.get("scalesWith") or [])
+    mechs = set(champ.get("mechanics") or [])
+    ratio_stats = set()
+    for ab in (FORMULAS.get(name, {}).get("abilities") or {}).values():
+        for c in ab.get("damage") or []:
+            for r in c.get("ratios") or []:
+                ratio_stats.add(r.get("stat"))
+    has_ap = "ap" in ratio_stats or "ap" in scales
+    has_ad = any(s in ratio_stats for s in ("ad", "bonusAd")) or any(s in scales for s in ("ad", "bonusAd"))
+    autos = "attackSpeed" in scales or "onHit" in mechs or champ.get("primaryDamage") == "physical"
+    ap_use = 1.0 if has_ap else 0.05
+    ad_use = 1.0 if has_ad else (0.35 if autos else 0.05)  # AD only feeds autos w/o AD ratios
+    as_use = 1.0 if autos else 0.15
+    crit_use = 1.0 if (autos and (has_ad or "crit" in scales or champ.get("primaryDamage") == "physical")) else 0.0
+    return {"ad": ad_use, "ap": ap_use, "attackSpeed": as_use, "crit": crit_use,
+            "magicPen": ap_use, "physicalPen": ad_use, "lethality": ad_use}
+
+
+def stat_weights(name: str) -> dict:
+    """Per-champion usefulness (0..1) of EVERY item stat, for gold efficiency.
+
+    Offensive stats come from kit scaling (stat_usability). Defensive stats keep
+    a high universal weight — survival is real value on any champion, so this
+    never punishes Guardian Angel / Sterak's / Randuin's. Haste helps everyone's
+    abilities; mana is dead on resourceless kits."""
+    u = stat_usability(name)
+    champ = CHAMPS.get(name, {})
+    mechs = set(champ.get("mechanics") or [])
+    no_resource = any(m.get("kind") == "noResource"
+                      for m in FORMULAS.get(name, {}).get("mechanics") or [])
+    mobile, has_dash = _mobility_profile(name)
+    # short-range / committed champs (melee, or auto-attack marksmen like Graves,
+    # Lucian) live in danger and need move speed to reposition, kite and stick.
+    # Dash champs also value ability haste highly (more dashes = more mobility).
+    ms_w = 0.75 if mobile else 0.45
+    haste_w = 0.9 if has_dash else 0.85
+    return {
+        "ad": u["ad"], "ap": u["ap"], "attackSpeed": u["attackSpeed"], "crit": u["crit"],
+        "magicPen": u["ap"], "physicalPen": u["ad"], "lethality": u["ad"],
+        "abilityHaste": haste_w, "hp": 0.8, "armor": 0.75, "mr": 0.75,
+        "mana": 0.0 if no_resource else 0.35, "moveSpeed": ms_w,
+    }
+
+
+def build_efficiency(name: str, item_slugs: list[str]) -> float:
+    """Fraction of a build's raw-stat gold that the champion's kit can use."""
+    w = stat_weights(name)
+    useful = total = 0.0
+    for s in item_slugs:
+        for k, v in ((ITEMS.get(s) or {}).get("stats") or {}).items():
+            g = STAT_GOLD.get(k)
+            if g is None:
+                continue
+            val = v.get("value", 0) if isinstance(v, dict) else v
+            gold = g * (val or 0)
+            total += gold
+            useful += gold * w.get(k, 0.5)
+    return (useful / total) if total > 0 else 1.0
 
 
 def _ttk(name: str, st: dict, target: dict, level: int, cap: float = 15.0) -> float | None:
@@ -1089,6 +1198,45 @@ def _build_lists(bd: dict) -> tuple[list[str], list[str]]:
 # Nth purchase (boots is the 2nd). Used for the gold/prefix curve.
 PREFIX_LEVELS = [8, 10, 12, 13, 14, 15]
 
+# Wild Rift is a fast game (15-20 min): the first drag/herald land at 6:00 and
+# the first 2-3 items usually decide fights, so a build's value is weighted
+# toward its early-mid power, not the full 6-item late game. Each stage is a
+# number of purchases (boots counts) in build order and its weight.
+EARLY_GAME_WEIGHTING = True
+STAGE_PLAN = [(3, 0.35), (4, 0.40), (None, 0.25)]  # (purchases, weight); None = full
+
+
+def _build_order(items: list[str]) -> list[str]:
+    """Item list in purchase order (boots bought 2nd), matching affordable()."""
+    order = list(items)
+    if len(order) >= 2:
+        order = [order[0], order[-1]] + order[1:-1]
+    return order
+
+
+def _value(name: str, item_slugs: list[str], runes: list[str], variant: str,
+           level: int, weights, fast: bool) -> float:
+    """Battle score at a level, scaled by gold efficiency."""
+    m = metrics(name, item_slugs, runes, level, fast=fast)
+    eff = build_efficiency(name, [s for s in item_slugs if s in ITEMS])
+    return fight_score(m, variant, name, weights) * (eff ** EFFICIENCY_ALPHA)
+
+
+def _staged_score(name: str, items: list[str], runes: list[str], variant: str,
+                  weights, fast: bool) -> float:
+    """Early-game-weighted value: score the build at successive purchase stages
+    and weight toward the first items that decide WR games."""
+    order = _build_order(items)
+    acc = tw = 0.0
+    for n, w in STAGE_PLAN:
+        prefix = order if n is None else order[:min(n, len(order))]
+        if not prefix:
+            continue
+        lvl = PREFIX_LEVELS[min(len(prefix) - 1, len(PREFIX_LEVELS) - 1)]
+        acc += w * _value(name, prefix, runes, variant, lvl, weights, fast)
+        tw += w
+    return acc / tw if tw else 0.0
+
 
 def score_items(name: str, items: list[str], runes: list[str], variant: str,
                 role: str = "", fast: bool = False,
@@ -1096,10 +1244,9 @@ def score_items(name: str, items: list[str], runes: list[str], variant: str,
                 gold: float | None = None, level: int | None = None) -> dict:
     """Score an ordered item list (last slot = boots).
 
-    Default: UNLIMITED gold — the full build at level 15 (gold caps limited
-    build flexibility; the user can set a budget explicitly instead). When
-    `gold` is given, only the affordable prefix (in build order) is scored, at
-    a level matching that stage of the game."""
+    Default: the early-game-weighted value across purchase stages (WR's first
+    2-3 items decide games), reported alongside the full level-15 stats. When
+    `gold` is given, only the affordable prefix is scored at that stage."""
     scored_items = items
     lvl = level or FULL_LEVEL
     if gold is not None:
@@ -1108,7 +1255,15 @@ def score_items(name: str, items: list[str], runes: list[str], variant: str,
 
     m = metrics(name, scored_items, runes, lvl, fast=fast)
     out = dict(m)
-    out["score"] = fight_score(m, variant, name, weights)
+    # gold efficiency: scale the battle score by how much of the build's stat
+    # gold the kit actually uses. An AP champ's AD items lose value, but a strong
+    # passive still wins through the battle score. Identity via scaling, not class.
+    eff = build_efficiency(name, [s for s in scored_items if s in ITEMS])
+    if gold is None and level is None and EARLY_GAME_WEIGHTING:
+        out["score"] = round(_staged_score(name, items, runes, variant, weights, fast), 1)
+    else:
+        out["score"] = round(fight_score(m, variant, name, weights) * (eff ** EFFICIENCY_ALPHA), 1)
+    out["efficiency"] = round(eff, 3)
     out["level"] = lvl
     if gold is not None:
         out["gold"] = int(gold)

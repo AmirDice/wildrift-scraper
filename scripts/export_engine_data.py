@@ -17,6 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web-next" / "src" / "data" / "engine.json"
+ROSTER_OUT = ROOT / "web-next" / "src" / "data" / "roster.json"
 
 
 def _load(name: str):
@@ -58,6 +59,8 @@ def main() -> None:
                 "baseStats": c.get("baseStats", {}),
                 "mechanics": c.get("mechanics", []),
                 "class": champ_class.get(c["name"], ""),
+                "primaryDamage": c.get("primaryDamage", ""),
+                "scalesWith": c.get("scalesWith", []),
                 "skillOrder": (guide.get(c["name"]) or {}).get("skillOrder", {}),
                 # precomputed in Python (needs full ability text) for TS parity
                 "kitShift": kit_adjust(c["name"]),
@@ -87,6 +90,28 @@ def main() -> None:
     print(f"wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size/1024:.0f} KB, "
           f"{len(out['champions'])} champions, {len(out['items'])} items, "
           f"{len(out['runes'])} runes)")
+
+    # Full-roster threat data for the enemy-team optimizer: every champion the
+    # enemy could pick, with the fields needed to derive a threat profile and a
+    # real defensive target (damage type, kit mechanics, class, base stats).
+    site_meta = {c["name"]: c for c in site.get("champions", [])}
+    roster = {}
+    for c in champs_all:
+        name = c["name"]
+        meta = site_meta.get(name, {})
+        bs = c.get("baseStats", {})
+        roster[name] = {
+            "slug": c["slug"], "name": name,
+            "class": meta.get("class", ""), "role": meta.get("role", ""),
+            "icon": meta.get("icon", ""),
+            "primaryDamage": c.get("primaryDamage", ""),
+            "scalesWith": c.get("scalesWith", []),
+            "mechanics": c.get("mechanics", []),
+            "baseStats": {k: bs.get(k, {}) for k in ("hp", "armor", "mr", "ad")},
+        }
+    ROSTER_OUT.write_text(json.dumps(roster, ensure_ascii=False), encoding="utf-8")
+    print(f"wrote {ROSTER_OUT.relative_to(ROOT)} ({ROSTER_OUT.stat().st_size/1024:.0f} KB, "
+          f"{len(roster)} champions)")
 
 
 if __name__ == "__main__":

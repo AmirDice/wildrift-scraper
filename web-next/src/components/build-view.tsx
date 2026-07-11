@@ -8,7 +8,7 @@ import { buildGold } from "@/lib/builds";
 
 /** Hover (desktop) / tap (mobile) tooltip. All item & rune explanations live
  *  here so the build itself stays a clean icon strip. */
-function Tip({ tip, children }: { tip: React.ReactNode; children: React.ReactNode }) {
+export function Tip({ tip, children }: { tip: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <span
@@ -95,16 +95,21 @@ function RuneTile({ r, size = 34, label }: { r: Rune; size?: number; label?: str
 }
 
 const VARIANT_LABEL: Record<string, string> = {
-  balanced: "Balanced", damage: "Damage", oneshot: "One-shot", burst: "Burst",
-  crit: "Crit", tanky: "Tanky", battlemage: "Battlemage", utility: "Utility", poke: "Poke",
+  standard: "Standard", balanced: "Standard", damage: "Damage", dps: "DPS",
+  oneshot: "One-shot", burst: "Burst", crit: "Crit", antitank: "Anti-Tank",
+  survivability: "Survivability", tanky: "Tanky", sustained: "Sustained",
+  battlemage: "Sustained", utility: "Utility", poke: "Poke",
 };
 const VARIANT_ACTIVE: Record<string, string> = {
-  balanced: "bg-accent/20 text-accent", damage: "bg-bad/20 text-bad",
+  standard: "bg-accent/20 text-accent", balanced: "bg-accent/20 text-accent",
+  damage: "bg-bad/20 text-bad", dps: "bg-bad/20 text-bad",
   oneshot: "bg-bad/20 text-bad", burst: "bg-bad/20 text-bad", crit: "bg-gold/20 text-gold",
-  tanky: "bg-blue-400/20 text-blue-300", battlemage: "bg-accent/20 text-accent",
+  antitank: "bg-orange-400/20 text-orange-300",
+  survivability: "bg-blue-400/20 text-blue-300", tanky: "bg-blue-400/20 text-blue-300",
+  sustained: "bg-accent/20 text-accent", battlemage: "bg-accent/20 text-accent",
   utility: "bg-emerald-400/20 text-emerald-300", poke: "bg-gold/20 text-gold",
 };
-const BURST_VARIANTS = new Set(["damage", "oneshot", "burst"]);
+const BURST_VARIANTS = new Set(["damage", "oneshot", "burst", "dps", "standard"]);
 
 const STYLE_META: Record<string, { label: string; cls: string }> = {
   "basic-attack": { label: "Basic attacker", cls: "bg-gold/15 text-gold" },
@@ -143,7 +148,7 @@ function StyleBadge({ style }: { style: AttackStyle }) {
 export function BuildView({ data }: { data: ChampionBuilds }) {
   const variants = data.variants?.length ? data.variants : Object.keys(data.builds);
   const [tab, setTab] = useState<string>(
-    variants.includes("balanced") ? "balanced" : variants[0]
+    variants.find((v) => v === "standard" || v === "balanced") ?? variants[0]
   );
   const build: Build | undefined = data.builds[tab];
   if (!build) return null;
@@ -340,10 +345,12 @@ function SubHead({ children }: { children: React.ReactNode }) {
 /** Full multi-dimensional simulator readout: damage composition, TTK across
  *  target types, gold efficiency, mitigation and real-fight friction. */
 export function SimReadout({ a }: { a: import("@/lib/builds").BuildAnalysis }) {
+  // Damage-type colour convention: physical = orange/red (armor), magic =
+  // blue/purple (magic resist), true = white (unmitigable).
   const typeSeg = [
-    { label: "Physical", v: a.byTypePct.physical, cls: "bg-gold" },
-    { label: "Magic", v: a.byTypePct.magic, cls: "bg-accent" },
-    { label: "True", v: a.byTypePct.true, cls: "bg-white/70" },
+    { label: "Physical", v: a.byTypePct.physical, cls: "bg-orange-500", text: "text-orange-400" },
+    { label: "Magic", v: a.byTypePct.magic, cls: "bg-violet-500", text: "text-violet-400" },
+    { label: "True", v: a.byTypePct.true, cls: "bg-white", text: "text-white" },
   ].filter((s) => s.v > 0);
   const srcTotal = Math.max(1, a.bySource.auto + a.bySource.ability);
   const autoPct = Math.round((a.bySource.auto / srcTotal) * 100);
@@ -379,8 +386,8 @@ export function SimReadout({ a }: { a: import("@/lib/builds").BuildAnalysis }) {
               <div key={s.label} className={s.cls} style={{ width: `${s.v}%` }} title={`${s.label} ${s.v}%`} />
             ))}
           </div>
-          <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[0.65rem] text-muted">
-            {typeSeg.map((s) => <span key={s.label}>{s.label} {s.v}%</span>)}
+          <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[0.65rem]">
+            {typeSeg.map((s) => <span key={s.label} className={s.text}>{s.label} {s.v}%</span>)}
           </div>
         </div>
         <div>

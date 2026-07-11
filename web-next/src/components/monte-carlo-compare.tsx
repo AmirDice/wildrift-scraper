@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { monteCarlo, monteCarloCompare, type MonteCarloResult, type MonteCarloCompare } from "@/lib/engine";
 
 const TARGETS: { key: string; label: string }[] = [
@@ -9,8 +9,10 @@ const TARGETS: { key: string; label: string }[] = [
   { key: "tank", label: "Tank" },
 ];
 
-/** Mini histogram of TTK samples with a mean marker. */
-function Histogram({ r, color, span }: { r: MonteCarloResult; color: string; span: [number, number] }) {
+/** Histogram of kill-times: x = seconds to kill (left = faster), bar height =
+ *  how many of the simulated fights landed in that time bucket; the line marks
+ *  the average. Shared x-axis so two builds can be compared directly. */
+function Histogram({ r, color, span, showAxis }: { r: MonteCarloResult; color: string; span: [number, number]; showAxis?: boolean }) {
   const [lo, hi] = span;
   const bins = 14;
   const width = (hi - lo) / bins || 1;
@@ -21,14 +23,26 @@ function Histogram({ r, color, span }: { r: MonteCarloResult; color: string; spa
   }
   const peak = Math.max(1, ...counts);
   const meanPct = ((r.meanTtk - lo) / (hi - lo || 1)) * 100;
+  const clampedMean = Math.min(100, Math.max(0, meanPct));
   return (
     <div>
-      <div className="relative flex h-16 items-end gap-[2px]">
+      <div className="relative flex h-16 items-end gap-[2px]" title="Taller bar = more fights killed in that time">
         {counts.map((c, i) => (
           <div key={i} className={`flex-1 rounded-sm ${color}`} style={{ height: `${(c / peak) * 100}%`, opacity: 0.85 }} />
         ))}
-        <div className="absolute inset-y-0 w-px bg-white/70" style={{ left: `${Math.min(100, Math.max(0, meanPct))}%` }} />
+        {/* average marker */}
+        <div className="absolute inset-y-0 w-px bg-white" style={{ left: `${clampedMean}%` }} />
+        <div className="absolute -top-1 -translate-x-1/2 rounded bg-white px-1 text-[0.55rem] font-bold text-black" style={{ left: `${clampedMean}%` }}>
+          avg {r.meanTtk.toFixed(1)}s
+        </div>
       </div>
+      {showAxis && (
+        <div className="mt-1 flex justify-between text-[0.55rem] text-faint">
+          <span>← faster · {lo.toFixed(1)}s</span>
+          <span>seconds to kill</span>
+          <span>{hi.toFixed(1)}s · slower →</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -61,6 +75,8 @@ export function MonteCarloComparePanel({
   const [res, setRes] = useState<MonteCarloCompare | null>(null);
   const [solo, setSolo] = useState<MonteCarloResult | null>(null);
   const [running, setRunning] = useState(false);
+  const mounted = useRef(true);
+  useEffect(() => () => { mounted.current = false; }, []);
 
   // only a head-to-head when the build actually differs from the recommended
   const edited = current.items.join(",") !== base.items.join(",")
@@ -70,6 +86,7 @@ export function MonteCarloComparePanel({
     setRunning(true);
     // defer so the button can show its running state before the sync compute
     setTimeout(() => {
+      if (!mounted.current) return;
       if (edited) {
         setRes(monteCarloCompare({ name, ...current }, { name, ...base }, { targetKind, trials: 400 }));
         setSolo(null);
@@ -126,7 +143,11 @@ export function MonteCarloComparePanel({
             </div>
           </div>
 
-          {/* distributions */}
+          <p className="mb-2 text-center text-[0.65rem] text-muted">
+            Each build fought a {TARGETS.find((t) => t.key === targetKind)?.label} {res.a.trials} times with random crits, misses and timing.
+            Bars show how often the kill took a given time — <span className="text-text">a bar pile further left means faster kills</span>.
+          </p>
+          {/* distributions on a shared axis */}
           <div className="space-y-3">
             <div>
               <DistLine label={currentLabel} r={res.a} cls="text-accent" />
@@ -134,12 +155,9 @@ export function MonteCarloComparePanel({
             </div>
             <div>
               <DistLine label={baseLabel} r={res.b} cls="text-gold" />
-              <Histogram r={res.b} color="bg-gold" span={span} />
+              <Histogram r={res.b} color="bg-gold" span={span} showAxis />
             </div>
           </div>
-          <p className="mt-2 text-center text-[0.65rem] text-faint">
-            Time to kill a {TARGETS.find((t) => t.key === targetKind)?.label} · {res.a.trials} randomized fights · vertical line = mean
-          </p>
         </div>
       )}
 
@@ -152,10 +170,13 @@ export function MonteCarloComparePanel({
               {" · "}95% of fights land {solo.ci95[0].toFixed(2)}–{solo.ci95[1].toFixed(2)}s
             </div>
           </div>
+          <p className="mb-2 text-center text-[0.65rem] text-muted">
+            {solo.trials} fights with random crits, misses and timing. Bars show how often the kill took a given time.
+          </p>
           <DistLine label="This build" r={solo} cls="text-gold" />
-          <Histogram r={solo} color="bg-gold" span={span} />
+          <Histogram r={solo} color="bg-gold" span={span} showAxis />
           <p className="mt-2 text-center text-[0.65rem] text-faint">
-            {solo.trials} randomized fights (crit rolls, misses, timing jitter) · edit an item or rune to race your version against this build.
+            Edit an item or rune to race your version against this build.
           </p>
         </div>
       )}
