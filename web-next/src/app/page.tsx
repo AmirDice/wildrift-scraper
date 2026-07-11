@@ -6,6 +6,7 @@ import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/components/ui";
 import { HomeSearch } from "@/components/home-search";
 import { SeasonCard } from "@/components/season-card";
+import { MoversHighlight } from "@/components/movers-highlight";
 
 export default function HomePage() {
   const champions = getChampions();
@@ -93,6 +94,11 @@ export default function HomePage() {
       {/* Season countdown */}
       <Container className="py-6">
         <SeasonCard />
+      </Container>
+
+      {/* Biggest winners & losers this patch */}
+      <Container className="py-2">
+        <MoversHighlight />
       </Container>
 
       {/* Featured champion */}

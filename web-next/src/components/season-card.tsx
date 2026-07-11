@@ -1,14 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // --- Edit these each patch/season ---------------------------------------
-const SEASON_NUM = "21";
-const SEASON_TITLE = "FLAT OUT PATCH";
-const SEASON_START = new Date("2026-04-22T00:00:00Z");
-const SEASON_END = new Date("2026-07-09T00:00:00Z");
-const NEW_CHAMPION = { name: "Skarner", icon: "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Skarner.png" };
-const NEW_SKIN = { name: "Ashen Knight Samira", img: "/ashensamira.png" };
+const SEASON_NUM = "22";
+const SEASON_TITLE = "Feast On";
+const PATCH = "7.2";
+const SEASON_START = new Date("2026-07-09T00:00:00Z");
+const SEASON_END = new Date("2026-10-09T00:00:00Z"); // ~3 month season
+const NEW_CHAMPION = { name: "Yunara", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Yunara_0.jpg" };
 // ------------------------------------------------------------------------
 
 const WARM = "#4f8dff";
@@ -40,9 +41,10 @@ export function SeasonCard() {
             <span className="h-2 w-2 rounded-full" style={{ background: WARM, boxShadow: `0 0 8px ${WARM}` }} />
             Season in progress
           </div>
-          <div className="mt-3 flex items-baseline gap-3">
+          <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span className="text-5xl font-black leading-none" style={{ color: WARM }}>{SEASON_NUM}</span>
             <span className="text-xl font-semibold tracking-tight">{SEASON_TITLE}</span>
+            <span className="rounded-md bg-white/[0.08] px-2 py-0.5 text-xs font-bold text-muted">Patch {PATCH}</span>
           </div>
           <div className="mt-4 h-1.5 w-full max-w-lg overflow-hidden rounded-full bg-white/[0.08]">
             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${WARM}, #8fb8ff)` }} />
@@ -57,7 +59,9 @@ export function SeasonCard() {
         {/* Right: new champion + skin */}
         <div className="flex flex-col gap-2.5">
           <FeatureRow label="New champion" badge="#4f8dff" img={NEW_CHAMPION.icon} name={NEW_CHAMPION.name} round />
-          <FeatureRow label="New skin" badge="#eef2fb" img={NEW_SKIN.img} name={NEW_SKIN.name} />
+          <Link href="/recap" className="flex items-center gap-2 self-start rounded-full border border-line bg-white/[0.05] py-1 pl-3 pr-3.5 transition hover:border-accent/50">
+            <span className="text-sm font-semibold text-accent">Biggest winners &amp; losers →</span>
+          </Link>
         </div>
       </div>
     </div>
@@ -81,6 +85,7 @@ function FeatureRow({ label, badge, img, name, round = false }: { label: string;
           width={26}
           height={26}
           loading="lazy"
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
           className={`h-[26px] w-[26px] object-cover ring-1 ring-white/10 ${round ? "rounded-full" : "rounded-md"}`}
         />
         <span className="whitespace-nowrap text-sm font-semibold">{name}</span>

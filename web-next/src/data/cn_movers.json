@@ -1,0 +1,1088 @@
+{
+ "beforeDate": "20260706",
+ "afterDate": "20260710",
+ "patch": "7.2",
+ "scope": "Global · EU + China",
+ "champions": [
+  {
+   "slug": "zyra",
+   "name": "Zyra",
+   "oldWr": 49.65,
+   "newWr": 56.09,
+   "delta": 6.44,
+   "pickRate": 6.28
+  },
+  {
+   "slug": "pyke",
+   "name": "Pyke",
+   "oldWr": 49.08,
+   "newWr": 51.73,
+   "delta": 2.65,
+   "pickRate": 4.27
+  },
+  {
+   "slug": "zoe",
+   "name": "Zoe",
+   "oldWr": 47.89,
+   "newWr": 50.48,
+   "delta": 2.59,
+   "pickRate": 2.01
+  },
+  {
+   "slug": "nidalee",
+   "name": "Nidalee",
+   "oldWr": 53.25,
+   "newWr": 55.55,
+   "delta": 2.3,
+   "pickRate": 5.4
+  },
+  {
+   "slug": "senna",
+   "name": "Senna",
+   "oldWr": 51.65,
+   "newWr": 53.74,
+   "delta": 2.09,
+   "pickRate": 3.39
+  },
+  {
+   "slug": "yone",
+   "name": "Yone",
+   "oldWr": 49.69,
+   "newWr": 51.7,
+   "delta": 2.01,
+   "pickRate": 6.84
+  },
+  {
+   "slug": "sona",
+   "name": "Sona",
+   "oldWr": 51.0,
+   "newWr": 52.95,
+   "delta": 1.95,
+   "pickRate": 7.37
+  },
+  {
+   "slug": "rengar",
+   "name": "Rengar",
+   "oldWr": 49.36,
+   "newWr": 51.25,
+   "delta": 1.89,
+   "pickRate": 2.48
+  },
+  {
+   "slug": "rakan",
+   "name": "Rakan",
+   "oldWr": 48.83,
+   "newWr": 50.56,
+   "delta": 1.73,
+   "pickRate": 3.27
+  },
+  {
+   "slug": "pantheon",
+   "name": "Pantheon",
+   "oldWr": 52.45,
+   "newWr": 54.16,
+   "delta": 1.71,
+   "pickRate": 6.23
+  },
+  {
+   "slug": "jax",
+   "name": "Jax",
+   "oldWr": 48.91,
+   "newWr": 50.62,
+   "delta": 1.71,
+   "pickRate": 3.71
+  },
+  {
+   "slug": "camille",
+   "name": "Camille",
+   "oldWr": 49.36,
+   "newWr": 51.05,
+   "delta": 1.69,
+   "pickRate": 3.5
+  },
+  {
+   "slug": "samira",
+   "name": "Samira",
+   "oldWr": 48.78,
+   "newWr": 50.41,
+   "delta": 1.63,
+   "pickRate": 8.6
+  },
+  {
+   "slug": "heimerdinger",
+   "name": "Heimerdinger",
+   "oldWr": 49.16,
+   "newWr": 50.78,
+   "delta": 1.62,
+   "pickRate": 1.11
+  },
+  {
+   "slug": "kayn",
+   "name": "Kayn",
+   "oldWr": 49.02,
+   "newWr": 50.62,
+   "delta": 1.6,
+   "pickRate": 4.18
+  },
+  {
+   "slug": "talon",
+   "name": "Talon",
+   "oldWr": 49.11,
+   "newWr": 50.7,
+   "delta": 1.59,
+   "pickRate": 3.34
+  },
+  {
+   "slug": "annie",
+   "name": "Annie",
+   "oldWr": 49.34,
+   "newWr": 50.89,
+   "delta": 1.55,
+   "pickRate": 2.73
+  },
+  {
+   "slug": "irelia",
+   "name": "Irelia",
+   "oldWr": 49.22,
+   "newWr": 50.76,
+   "delta": 1.54,
+   "pickRate": 3.03
+  },
+  {
+   "slug": "ezreal",
+   "name": "Ezreal",
+   "oldWr": 50.74,
+   "newWr": 52.27,
+   "delta": 1.53,
+   "pickRate": 12.93
+  },
+  {
+   "slug": "lissandra",
+   "name": "Lissandra",
+   "oldWr": 48.74,
+   "newWr": 50.17,
+   "delta": 1.43,
+   "pickRate": 5.54
+  },
+  {
+   "slug": "hecarim",
+   "name": "Hecarim",
+   "oldWr": 53.13,
+   "newWr": 54.46,
+   "delta": 1.33,
+   "pickRate": 7.34
+  },
+  {
+   "slug": "kindred",
+   "name": "Kindred",
+   "oldWr": 50.06,
+   "newWr": 51.36,
+   "delta": 1.3,
+   "pickRate": 2.08
+  },
+  {
+   "slug": "zeri",
+   "name": "Zeri",
+   "oldWr": 50.56,
+   "newWr": 51.84,
+   "delta": 1.28,
+   "pickRate": 2.14
+  },
+  {
+   "slug": "olaf",
+   "name": "Olaf",
+   "oldWr": 51.69,
+   "newWr": 52.95,
+   "delta": 1.26,
+   "pickRate": 1.17
+  },
+  {
+   "slug": "fiora",
+   "name": "Fiora",
+   "oldWr": 48.12,
+   "newWr": 49.33,
+   "delta": 1.21,
+   "pickRate": 2.07
+  },
+  {
+   "slug": "nasus",
+   "name": "Nasus",
+   "oldWr": 50.31,
+   "newWr": 51.49,
+   "delta": 1.18,
+   "pickRate": 7.29
+  },
+  {
+   "slug": "draven",
+   "name": "Draven",
+   "oldWr": 50.29,
+   "newWr": 51.43,
+   "delta": 1.14,
+   "pickRate": 6.31
+  },
+  {
+   "slug": "riven",
+   "name": "Riven",
+   "oldWr": 48.51,
+   "newWr": 49.52,
+   "delta": 1.01,
+   "pickRate": 2.17
+  },
+  {
+   "slug": "zilean",
+   "name": "Zilean",
+   "oldWr": 50.11,
+   "newWr": 51.09,
+   "delta": 0.98,
+   "pickRate": 1.99
+  },
+  {
+   "slug": "singed",
+   "name": "Singed",
+   "oldWr": 50.52,
+   "newWr": 51.47,
+   "delta": 0.95,
+   "pickRate": 1.78
+  },
+  {
+   "slug": "smolder",
+   "name": "Smolder",
+   "oldWr": 52.55,
+   "newWr": 53.47,
+   "delta": 0.92,
+   "pickRate": 13.74
+  },
+  {
+   "slug": "jayce",
+   "name": "Jayce",
+   "oldWr": 50.98,
+   "newWr": 51.9,
+   "delta": 0.92,
+   "pickRate": 3.71
+  },
+  {
+   "slug": "alistar",
+   "name": "Alistar",
+   "oldWr": 48.81,
+   "newWr": 49.66,
+   "delta": 0.85,
+   "pickRate": 4.73
+  },
+  {
+   "slug": "gnar",
+   "name": "Gnar",
+   "oldWr": 49.61,
+   "newWr": 50.44,
+   "delta": 0.83,
+   "pickRate": 3.92
+  },
+  {
+   "slug": "twitch",
+   "name": "Twitch",
+   "oldWr": 48.41,
+   "newWr": 49.22,
+   "delta": 0.81,
+   "pickRate": 3.62
+  },
+  {
+   "slug": "katarina",
+   "name": "Katarina",
+   "oldWr": 47.25,
+   "newWr": 48.05,
+   "delta": 0.8,
+   "pickRate": 2.76
+  },
+  {
+   "slug": "orianna",
+   "name": "Orianna",
+   "oldWr": 50.45,
+   "newWr": 51.2,
+   "delta": 0.75,
+   "pickRate": 5.12
+  },
+  {
+   "slug": "volibear",
+   "name": "Volibear",
+   "oldWr": 49.3,
+   "newWr": 50.0,
+   "delta": 0.7,
+   "pickRate": 4.83
+  },
+  {
+   "slug": "kayle",
+   "name": "Kayle",
+   "oldWr": 51.16,
+   "newWr": 51.82,
+   "delta": 0.66,
+   "pickRate": 1.75
+  },
+  {
+   "slug": "warwick",
+   "name": "Warwick",
+   "oldWr": 51.94,
+   "newWr": 52.59,
+   "delta": 0.65,
+   "pickRate": 5.52
+  },
+  {
+   "slug": "khazix",
+   "name": "Kha'Zix",
+   "oldWr": 49.95,
+   "newWr": 50.57,
+   "delta": 0.62,
+   "pickRate": 3.65
+  },
+  {
+   "slug": "tryndamere",
+   "name": "Tryndamere",
+   "oldWr": 49.75,
+   "newWr": 50.36,
+   "delta": 0.61,
+   "pickRate": 2.02
+  },
+  {
+   "slug": "kassadin",
+   "name": "Kassadin",
+   "oldWr": 51.69,
+   "newWr": 52.28,
+   "delta": 0.59,
+   "pickRate": 3.84
+  },
+  {
+   "slug": "darius",
+   "name": "Darius",
+   "oldWr": 48.65,
+   "newWr": 49.23,
+   "delta": 0.58,
+   "pickRate": 18.56
+  },
+  {
+   "slug": "malphite",
+   "name": "Malphite",
+   "oldWr": 49.53,
+   "newWr": 50.08,
+   "delta": 0.55,
+   "pickRate": 4.76
+  },
+  {
+   "slug": "xin-zhao",
+   "name": "Xin Zhao",
+   "oldWr": 50.05,
+   "newWr": 50.59,
+   "delta": 0.54,
+   "pickRate": 7.92
+  },
+  {
+   "slug": "lucian",
+   "name": "Lucian",
+   "oldWr": 50.0,
+   "newWr": 50.52,
+   "delta": 0.52,
+   "pickRate": 7.05
+  },
+  {
+   "slug": "nautilus",
+   "name": "Nautilus",
+   "oldWr": 50.01,
+   "newWr": 50.52,
+   "delta": 0.51,
+   "pickRate": 7.1
+  },
+  {
+   "slug": "vayne",
+   "name": "Vayne",
+   "oldWr": 51.01,
+   "newWr": 51.5,
+   "delta": 0.49,
+   "pickRate": 10.04
+  },
+  {
+   "slug": "swain",
+   "name": "Swain",
+   "oldWr": 50.23,
+   "newWr": 50.66,
+   "delta": 0.43,
+   "pickRate": 4.72
+  },
+  {
+   "slug": "tristana",
+   "name": "Tristana",
+   "oldWr": 48.4,
+   "newWr": 48.82,
+   "delta": 0.42,
+   "pickRate": 3.17
+  },
+  {
+   "slug": "ashe",
+   "name": "Ashe",
+   "oldWr": 49.96,
+   "newWr": 50.36,
+   "delta": 0.4,
+   "pickRate": 4.21
+  },
+  {
+   "slug": "ornn",
+   "name": "Ornn",
+   "oldWr": 50.01,
+   "newWr": 50.39,
+   "delta": 0.38,
+   "pickRate": 2.52
+  },
+  {
+   "slug": "gwen",
+   "name": "Gwen",
+   "oldWr": 49.25,
+   "newWr": 49.61,
+   "delta": 0.36,
+   "pickRate": 2.12
+  },
+  {
+   "slug": "ryze",
+   "name": "Ryze",
+   "oldWr": 51.73,
+   "newWr": 52.08,
+   "delta": 0.35,
+   "pickRate": 10.07
+  },
+  {
+   "slug": "varus",
+   "name": "Varus",
+   "oldWr": 49.61,
+   "newWr": 49.95,
+   "delta": 0.34,
+   "pickRate": 10.47
+  },
+  {
+   "slug": "corki",
+   "name": "Corki",
+   "oldWr": 49.82,
+   "newWr": 50.15,
+   "delta": 0.33,
+   "pickRate": 1.31
+  },
+  {
+   "slug": "renekton",
+   "name": "Renekton",
+   "oldWr": 48.73,
+   "newWr": 49.05,
+   "delta": 0.32,
+   "pickRate": 7.4
+  },
+  {
+   "slug": "urgot",
+   "name": "Urgot",
+   "oldWr": 48.91,
+   "newWr": 49.14,
+   "delta": 0.23,
+   "pickRate": 3.18
+  },
+  {
+   "slug": "shen",
+   "name": "Shen",
+   "oldWr": 50.89,
+   "newWr": 51.11,
+   "delta": 0.22,
+   "pickRate": 2.07
+  },
+  {
+   "slug": "nami",
+   "name": "Nami",
+   "oldWr": 51.34,
+   "newWr": 51.51,
+   "delta": 0.17,
+   "pickRate": 8.45
+  },
+  {
+   "slug": "kalista",
+   "name": "Kalista",
+   "oldWr": 49.46,
+   "newWr": 49.63,
+   "delta": 0.17,
+   "pickRate": 3.5
+  },
+  {
+   "slug": "aatrox",
+   "name": "Aatrox",
+   "oldWr": 49.28,
+   "newWr": 49.41,
+   "delta": 0.13,
+   "pickRate": 8.9
+  },
+  {
+   "slug": "twisted-fate",
+   "name": "Twisted Fate",
+   "oldWr": 51.41,
+   "newWr": 51.5,
+   "delta": 0.09,
+   "pickRate": 6.46
+  },
+  {
+   "slug": "zed",
+   "name": "Zed",
+   "oldWr": 50.96,
+   "newWr": 51.02,
+   "delta": 0.06,
+   "pickRate": 4.6
+  },
+  {
+   "slug": "leona",
+   "name": "Leona",
+   "oldWr": 50.78,
+   "newWr": 50.84,
+   "delta": 0.06,
+   "pickRate": 7.46
+  },
+  {
+   "slug": "janna",
+   "name": "Janna",
+   "oldWr": 48.46,
+   "newWr": 48.52,
+   "delta": 0.06,
+   "pickRate": 2.07
+  },
+  {
+   "slug": "jarvan-iv",
+   "name": "Jarvan IV",
+   "oldWr": 50.17,
+   "newWr": 50.22,
+   "delta": 0.05,
+   "pickRate": 6.68
+  },
+  {
+   "slug": "miss-fortune",
+   "name": "Miss Fortune",
+   "oldWr": 50.17,
+   "newWr": 50.16,
+   "delta": -0.01,
+   "pickRate": 11.16
+  },
+  {
+   "slug": "galio",
+   "name": "Galio",
+   "oldWr": 50.51,
+   "newWr": 50.48,
+   "delta": -0.03,
+   "pickRate": 10.46
+  },
+  {
+   "slug": "vi",
+   "name": "Vi",
+   "oldWr": 51.42,
+   "newWr": 51.37,
+   "delta": -0.05,
+   "pickRate": 7.68
+  },
+  {
+   "slug": "ambessa",
+   "name": "Ambessa",
+   "oldWr": 51.77,
+   "newWr": 51.72,
+   "delta": -0.05,
+   "pickRate": 5.66
+  },
+  {
+   "slug": "jinx",
+   "name": "Jinx",
+   "oldWr": 49.71,
+   "newWr": 49.66,
+   "delta": -0.05,
+   "pickRate": 5.97
+  },
+  {
+   "slug": "ahri",
+   "name": "Ahri",
+   "oldWr": 50.55,
+   "newWr": 50.5,
+   "delta": -0.05,
+   "pickRate": 6.29
+  },
+  {
+   "slug": "poppy",
+   "name": "Poppy",
+   "oldWr": 50.45,
+   "newWr": 50.39,
+   "delta": -0.06,
+   "pickRate": 3.27
+  },
+  {
+   "slug": "thresh",
+   "name": "Thresh",
+   "oldWr": 49.21,
+   "newWr": 49.14,
+   "delta": -0.07,
+   "pickRate": 16.53
+  },
+  {
+   "slug": "aurelion-sol",
+   "name": "Aurelion Sol",
+   "oldWr": 50.55,
+   "newWr": 50.41,
+   "delta": -0.14,
+   "pickRate": 7.51
+  },
+  {
+   "slug": "seraphine",
+   "name": "Seraphine",
+   "oldWr": 48.98,
+   "newWr": 48.83,
+   "delta": -0.15,
+   "pickRate": 8.47
+  },
+  {
+   "slug": "sivir",
+   "name": "Sivir",
+   "oldWr": 48.5,
+   "newWr": 48.3,
+   "delta": -0.2,
+   "pickRate": 2.72
+  },
+  {
+   "slug": "kaisa",
+   "name": "Kai'Sa",
+   "oldWr": 49.72,
+   "newWr": 49.5,
+   "delta": -0.22,
+   "pickRate": 18.62
+  },
+  {
+   "slug": "rumble",
+   "name": "Rumble",
+   "oldWr": 49.11,
+   "newWr": 48.89,
+   "delta": -0.22,
+   "pickRate": 3.24
+  },
+  {
+   "slug": "blitzcrank",
+   "name": "Blitzcrank",
+   "oldWr": 48.76,
+   "newWr": 48.53,
+   "delta": -0.23,
+   "pickRate": 6.77
+  },
+  {
+   "slug": "taliyah",
+   "name": "Taliyah",
+   "oldWr": 53.22,
+   "newWr": 52.95,
+   "delta": -0.27,
+   "pickRate": 4.46
+  },
+  {
+   "slug": "jhin",
+   "name": "Jhin",
+   "oldWr": 50.55,
+   "newWr": 50.26,
+   "delta": -0.29,
+   "pickRate": 13.92
+  },
+  {
+   "slug": "nocturne",
+   "name": "Nocturne",
+   "oldWr": 50.12,
+   "newWr": 49.81,
+   "delta": -0.31,
+   "pickRate": 6.01
+  },
+  {
+   "slug": "kennen",
+   "name": "Kennen",
+   "oldWr": 52.22,
+   "newWr": 51.9,
+   "delta": -0.32,
+   "pickRate": 2.13
+  },
+  {
+   "slug": "velkoz",
+   "name": "Vel'Koz",
+   "oldWr": 48.91,
+   "newWr": 48.58,
+   "delta": -0.33,
+   "pickRate": 2.11
+  },
+  {
+   "slug": "caitlyn",
+   "name": "Caitlyn",
+   "oldWr": 48.34,
+   "newWr": 47.96,
+   "delta": -0.38,
+   "pickRate": 11.22
+  },
+  {
+   "slug": "dr-mundo",
+   "name": "Dr. Mundo",
+   "oldWr": 49.3,
+   "newWr": 48.91,
+   "delta": -0.39,
+   "pickRate": 4.73
+  },
+  {
+   "slug": "lee-sin",
+   "name": "Lee Sin",
+   "oldWr": 48.67,
+   "newWr": 48.25,
+   "delta": -0.42,
+   "pickRate": 12.49
+  },
+  {
+   "slug": "soraka",
+   "name": "Soraka",
+   "oldWr": 50.63,
+   "newWr": 50.21,
+   "delta": -0.42,
+   "pickRate": 4.55
+  },
+  {
+   "slug": "akali",
+   "name": "Akali",
+   "oldWr": 46.38,
+   "newWr": 45.95,
+   "delta": -0.43,
+   "pickRate": 4.29
+  },
+  {
+   "slug": "maokai",
+   "name": "Maokai",
+   "oldWr": 50.03,
+   "newWr": 49.58,
+   "delta": -0.45,
+   "pickRate": 4.83
+  },
+  {
+   "slug": "graves",
+   "name": "Graves",
+   "oldWr": 48.47,
+   "newWr": 48.02,
+   "delta": -0.45,
+   "pickRate": 5.98
+  },
+  {
+   "slug": "braum",
+   "name": "Braum",
+   "oldWr": 49.28,
+   "newWr": 48.81,
+   "delta": -0.47,
+   "pickRate": 3.26
+  },
+  {
+   "slug": "lulu",
+   "name": "Lulu",
+   "oldWr": 49.95,
+   "newWr": 49.41,
+   "delta": -0.54,
+   "pickRate": 18.52
+  },
+  {
+   "slug": "morgana",
+   "name": "Morgana",
+   "oldWr": 50.67,
+   "newWr": 50.11,
+   "delta": -0.56,
+   "pickRate": 4.4
+  },
+  {
+   "slug": "rammus",
+   "name": "Rammus",
+   "oldWr": 54.2,
+   "newWr": 53.63,
+   "delta": -0.57,
+   "pickRate": 4.25
+  },
+  {
+   "slug": "karma",
+   "name": "Karma",
+   "oldWr": 49.16,
+   "newWr": 48.52,
+   "delta": -0.64,
+   "pickRate": 5.94
+  },
+  {
+   "slug": "garen",
+   "name": "Garen",
+   "oldWr": 49.61,
+   "newWr": 48.96,
+   "delta": -0.65,
+   "pickRate": 13.7
+  },
+  {
+   "slug": "master-yi",
+   "name": "Master Yi",
+   "oldWr": 50.77,
+   "newWr": 50.1,
+   "delta": -0.67,
+   "pickRate": 11.18
+  },
+  {
+   "slug": "syndra",
+   "name": "Syndra",
+   "oldWr": 49.67,
+   "newWr": 49.0,
+   "delta": -0.67,
+   "pickRate": 5.46
+  },
+  {
+   "slug": "vex",
+   "name": "Vex",
+   "oldWr": 49.03,
+   "newWr": 48.34,
+   "delta": -0.69,
+   "pickRate": 2.35
+  },
+  {
+   "slug": "kogmaw",
+   "name": "Kog'Maw",
+   "oldWr": 51.7,
+   "newWr": 51.0,
+   "delta": -0.7,
+   "pickRate": 2.88
+  },
+  {
+   "slug": "wukong",
+   "name": "Wukong",
+   "oldWr": 50.47,
+   "newWr": 49.77,
+   "delta": -0.7,
+   "pickRate": 2.5
+  },
+  {
+   "slug": "fiddlesticks",
+   "name": "Fiddlesticks",
+   "oldWr": 52.07,
+   "newWr": 51.36,
+   "delta": -0.71,
+   "pickRate": 4.41
+  },
+  {
+   "slug": "teemo",
+   "name": "Teemo",
+   "oldWr": 51.55,
+   "newWr": 50.81,
+   "delta": -0.74,
+   "pickRate": 2.53
+  },
+  {
+   "slug": "shyvana",
+   "name": "Shyvana",
+   "oldWr": 53.39,
+   "newWr": 52.57,
+   "delta": -0.82,
+   "pickRate": 7.18
+  },
+  {
+   "slug": "xayah",
+   "name": "Xayah",
+   "oldWr": 49.73,
+   "newWr": 48.91,
+   "delta": -0.82,
+   "pickRate": 6.32
+  },
+  {
+   "slug": "nunu-and-willump",
+   "name": "Nunu & Willump",
+   "oldWr": 53.46,
+   "newWr": 52.58,
+   "delta": -0.88,
+   "pickRate": 2.61
+  },
+  {
+   "slug": "brand",
+   "name": "Brand",
+   "oldWr": 50.55,
+   "newWr": 49.58,
+   "delta": -0.97,
+   "pickRate": 8.17
+  },
+  {
+   "slug": "viego",
+   "name": "Viego",
+   "oldWr": 51.21,
+   "newWr": 50.2,
+   "delta": -1.01,
+   "pickRate": 6.87
+  },
+  {
+   "slug": "mordekaiser",
+   "name": "Mordekaiser",
+   "oldWr": 49.55,
+   "newWr": 48.51,
+   "delta": -1.04,
+   "pickRate": 7.99
+  },
+  {
+   "slug": "gragas",
+   "name": "Gragas",
+   "oldWr": 50.52,
+   "newWr": 49.45,
+   "delta": -1.07,
+   "pickRate": 1.26
+  },
+  {
+   "slug": "yasuo",
+   "name": "Yasuo",
+   "oldWr": 49.13,
+   "newWr": 48.05,
+   "delta": -1.08,
+   "pickRate": 9.7
+  },
+  {
+   "slug": "norra",
+   "name": "Norra",
+   "oldWr": 50.34,
+   "newWr": 49.25,
+   "delta": -1.09,
+   "pickRate": 1.78
+  },
+  {
+   "slug": "diana",
+   "name": "Diana",
+   "oldWr": 50.53,
+   "newWr": 49.4,
+   "delta": -1.13,
+   "pickRate": 6.09
+  },
+  {
+   "slug": "viktor",
+   "name": "Viktor",
+   "oldWr": 50.14,
+   "newWr": 48.97,
+   "delta": -1.17,
+   "pickRate": 4.18
+  },
+  {
+   "slug": "sett",
+   "name": "Sett",
+   "oldWr": 50.56,
+   "newWr": 49.33,
+   "delta": -1.23,
+   "pickRate": 14.67
+  },
+  {
+   "slug": "ziggs",
+   "name": "Ziggs",
+   "oldWr": 48.05,
+   "newWr": 46.81,
+   "delta": -1.24,
+   "pickRate": 3.99
+  },
+  {
+   "slug": "rell",
+   "name": "Rell",
+   "oldWr": 49.77,
+   "newWr": 48.33,
+   "delta": -1.44,
+   "pickRate": 4.7
+  },
+  {
+   "slug": "lux",
+   "name": "Lux",
+   "oldWr": 49.15,
+   "newWr": 47.69,
+   "delta": -1.46,
+   "pickRate": 4.68
+  },
+  {
+   "slug": "evelynn",
+   "name": "Evelynn",
+   "oldWr": 51.88,
+   "newWr": 50.41,
+   "delta": -1.47,
+   "pickRate": 5.27
+  },
+  {
+   "slug": "milio",
+   "name": "Milio",
+   "oldWr": 49.96,
+   "newWr": 48.46,
+   "delta": -1.5,
+   "pickRate": 8.11
+  },
+  {
+   "slug": "sion",
+   "name": "Sion",
+   "oldWr": 50.06,
+   "newWr": 48.48,
+   "delta": -1.58,
+   "pickRate": 8.16
+  },
+  {
+   "slug": "vladimir",
+   "name": "Vladimir",
+   "oldWr": 49.71,
+   "newWr": 48.03,
+   "delta": -1.68,
+   "pickRate": 5.2
+  },
+  {
+   "slug": "yuumi",
+   "name": "Yuumi",
+   "oldWr": 46.72,
+   "newWr": 45.04,
+   "delta": -1.68,
+   "pickRate": 14.62
+  },
+  {
+   "slug": "veigar",
+   "name": "Veigar",
+   "oldWr": 50.17,
+   "newWr": 48.4,
+   "delta": -1.77,
+   "pickRate": 5.62
+  },
+  {
+   "slug": "aurora",
+   "name": "Aurora",
+   "oldWr": 51.61,
+   "newWr": 49.69,
+   "delta": -1.92,
+   "pickRate": 4.31
+  },
+  {
+   "slug": "fizz",
+   "name": "Fizz",
+   "oldWr": 50.98,
+   "newWr": 49.05,
+   "delta": -1.93,
+   "pickRate": 4.46
+  },
+  {
+   "slug": "amumu",
+   "name": "Amumu",
+   "oldWr": 55.72,
+   "newWr": 53.64,
+   "delta": -2.08,
+   "pickRate": 2.34
+  },
+  {
+   "slug": "ksante",
+   "name": "K'Sante",
+   "oldWr": 52.67,
+   "newWr": 50.53,
+   "delta": -2.14,
+   "pickRate": 12.67
+  },
+  {
+   "slug": "mel",
+   "name": "Mel",
+   "oldWr": 49.11,
+   "newWr": 46.75,
+   "delta": -2.36,
+   "pickRate": 10.31
+  },
+  {
+   "slug": "ekko",
+   "name": "Ekko",
+   "oldWr": 49.82,
+   "newWr": 47.41,
+   "delta": -2.41,
+   "pickRate": 5.26
+  },
+  {
+   "slug": "lillia",
+   "name": "Lillia",
+   "oldWr": 54.18,
+   "newWr": 50.55,
+   "delta": -3.63,
+   "pickRate": 4.76
+  }
+ ]
+}

@@ -1,9 +1,9 @@
 import cnData from "@/data/cn.json";
 import { getChampion, getChampions, type Champion } from "@/lib/data";
 
-/** Which rank bracket to surface. "3" = Challenger and above (includes Sovereign),
- *  a larger and steadier top-elo sample than the Sovereign tier alone. */
-const BRACKET = "3";
+/** Which rank bracket to surface. The CN source now only publishes a steady
+ *  "Diamond and above" sample, stored as bracket "0". */
+const BRACKET = "0";
 
 interface CnEntry {
   winRate: number;
