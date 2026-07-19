@@ -80,7 +80,11 @@ VARIANT_SETS = {
     "Assassin":  ["standard", "oneshot"],
     "Bruiser":   ["standard", "damage", "tanky"],
     "Fighter":   ["standard", "damage", "tanky"],
-    "Marksman":  ["standard", "dps", "survivability"],
+    # No "survivability" for marksmen: on an ADC it collapses into a worse
+    # "standard" (standard already weighs survival at 40% and adapts to the
+    # kit), so it produced a duplicate build with a different label. It stays on
+    # ENCHANTERS, where "protect support + survive" is a genuinely distinct job.
+    "Marksman":  ["standard", "dps", "crit"],
     "Mage":      ["standard", "burst"],
     "Tank":      ["standard", "tanky"],
     "Enchanter": ["standard", "utility"],
@@ -94,7 +98,8 @@ VARIANT_DESC = {
     "oneshot":    "maximum burst to instantly delete a priority target",
     "damage":     "full damage for this champion's kit; at most one survivability item",
     "dps":        "sustained auto-attack damage per second for extended fights",
-    "survivability": "defensive marksman build to survive dives and assassins while staying useful",
+    "survivability": "protect-support build that also survives dives, for enchanters whose "
+                     "job is keeping allies alive rather than dealing damage",
     "antitank":   "anti-tank build with %max-HP and armor/magic penetration to melt the frontline",
     "burst":      "burst build to one-shot squishies (only when the kit can truly burst)",
     "poke":       "poke-damage build for chipping enemies before fights",
@@ -123,18 +128,38 @@ def _can_burst(name: str) -> bool:
         return False
 
 
-def variants_for(name: str, champ_class: str) -> list[str]:
-    """Class preset set plus the 'if applicable' leans the kit can pull off."""
-    base = list(VARIANT_SETS.get(champ_class, DEFAULT_VARIANTS))
+def variants_for(name: str, champ_class: str, role: str = "") -> list[str]:
+    """Preset set for a champion: class AND role decide it (a Mage bot-lane and a
+    Mage support want different builds), plus the leans the kit can pull off."""
     burst_ok = _can_burst(name)
-    if champ_class in ("Bruiser", "Fighter", "Tank") and burst_ok and "damage" not in base:
-        base.append("damage")           # tanks that can trade durability for damage
-    if champ_class in ("Bruiser", "Fighter", "Marksman") and burst_ok and "burst" not in base:
-        base.append("burst")            # e.g. Lucian can burst, Jinx cannot
-    if champ_class == "Marksman":
-        base.append("antitank")         # any ADC can itemise %HP / armor pen
-    if champ_class in ("Mage", "Enchanter"):
-        base.append("poke")             # ranged casters can poke
+    support = role == "Support"
+
+    if support and champ_class == "Enchanter":
+        # Protect supports (Lulu, Soraka, Milio): their job is keeping allies
+        # alive, so no damage build. Full support, or support + survivability.
+        base = ["standard", "utility", "survivability"]
+        if burst_ok:
+            base.append("poke")         # outliers with real damage (e.g. Nami)
+    elif support and champ_class == "Tank":
+        # Support tanks (Nautilus, Leona): frontline, but several can go AP/bruiser.
+        base = ["standard", "tanky", "damage"]
+    elif support and champ_class in ("Mage", "Marksman"):
+        # Carry supports (Lux, Seraphine, Senna): they do want damage, but still
+        # need a support option and a way to survive.
+        base = ["standard", "damage", "survivability", "utility"]
+        if burst_ok:
+            base.append("burst")
+    else:
+        base = list(VARIANT_SETS.get(champ_class, DEFAULT_VARIANTS))
+        # every tank can trade some durability for damage (AP or bruiser)
+        if champ_class == "Tank" and "damage" not in base:
+            base.append("damage")
+        if champ_class in ("Bruiser", "Fighter", "Marksman") and burst_ok and "burst" not in base:
+            base.append("burst")        # e.g. Lucian can burst, Jinx cannot
+        if champ_class == "Marksman":
+            base.append("antitank")     # any ADC can itemise %HP / armor pen
+        if champ_class in ("Mage", "Enchanter"):
+            base.append("poke")         # ranged casters can poke
     # de-dupe, preserve order
     seen, out = set(), []
     for v in base:
@@ -144,9 +169,14 @@ def variants_for(name: str, champ_class: str) -> list[str]:
 
 # role -> extra rune guidance
 ROLE_RUNE_HINTS = {
-    "Jungle": "This is a JUNGLER: Overgrowth (Resolve) is very strong for junglers "
-              "(scales HP off monster kills) — strongly favour it as a tree minor or flex "
-              "unless a clearly better option fits this champion.",
+    # Overgrowth is a legitimate jungle option, not a default. "Strongly favour
+    # it" put it in essentially every page, including damage builds where its
+    # flat HP does nothing for the build's job. State the fact, let the model
+    # decide.
+    "Jungle": "This is a JUNGLER: Overgrowth (Resolve) stacks HP off monster kills, so "
+              "it scales well with jungle farm. Consider it for durable builds; do NOT "
+              "default to it on damage or glass builds, where HP does not serve the "
+              "build's job.",
 }
 
 # Champions with a scraped kit but no site entry yet (no EU leaderboard data),
@@ -193,11 +223,23 @@ SYSTEM = (
     "items and a realistic build order (item 1 is rushed first). Don't plan for 40-minute games.\n"
     "- Account for the champion's damage type and ability scalings (AD/AP/on-hit/crit/"
     "max-health/attack-speed) and per-level base stats.\n"
-    "- Each variant is 5 items + 1 boots (+1 boot enchantment) + exactly 2 summoner spells.\n"
+    "- Each variant is 5 items + 1 boots + exactly 2 summoner spells. There is NO boot "
+    "enchantment: patch 7.2 removed enchantments and tied active effects to champion "
+    "classes instead, so actives (Locket, Zhonya's, Quicksilver Sash, Stridebreaker) are "
+    "ordinary items you pick in the 5 slots.\n"
+    "- BOOTS ARE A REAL PICK, not an afterthought. Choose the TIER-2 boots whose stats AND "
+    "passive fit this champion and this build, exactly as you would an item: Mercury's "
+    "Treads into heavy CC, Plated Steelcaps into attack-damage comps, Boots of Dynamism or "
+    "Boots of Mana when the penetration suits your damage type, Ionian for cooldowns. Each "
+    "upgrades into its tier-3 version at 10:00, so the tier-2 you choose decides the "
+    "tier-3 you end on. The engine does NOT model tenacity, so this call is yours.\n"
     "- SUMMONERS: junglers MUST take Smite; non-junglers must NOT. For junglers the "
-    "DEFAULT second spell is Flash — only swap it for Ghost/Ignite when the kit clearly "
-    "wants it (e.g. Ghost on a run-you-down fighter like Hecarim). Laners: Ignite for "
-    "kill-lane assassins, Heal/Barrier for marksmen, Exhaust/Cleanse as matchup calls.\n"
+    "JUNGLERS take Smite + Flash. That is the normal pairing on EVERY jungle build, "
+    "including damage variants: Smite is mandatory and Flash is the default partner. "
+    "Only replace Flash with Ghost when the kit is a run-you-down fighter (Hecarim). "
+    "Do NOT give a jungler Ignite just because the build is damage-oriented.\n"
+    "Laners: Flash is the default second spell; Ignite for kill-lane assassins, "
+    "Heal/Barrier for marksmen, Exhaust/Cleanse as matchup calls.\n"
     "- ITEM-EXCLUSIVITY: you may build AT MOST ONE item from each mutex group given. "
     "Never put two items from the same group in one build.\n"
     "- REACTIVE ITEMS (Guardian Angel, Maw, Serpent's Fang, anti-heal items...) answer "
@@ -205,9 +247,8 @@ SYSTEM = (
     "- Wild Rift rune page = 1 keystone + 3 minors from ONE tree + 1 flex from any tree. "
     "SLOTS: the 3 tree minors must come one from each of the tree's 3 slots (shown in "
     "the pool) — two minors from the same slot is ILLEGAL. The flex is not slot-tied. "
-    "Read the rune EFFECTS given and pick for synergy, not popularity. For glass-cannon "
-    "builds (no defensive items), Overgrowth as the flex is a solid default when no "
-    "better synergy exists — but it is not mandatory.\n"
+    "Read the rune EFFECTS given and pick for synergy, not popularity. Do NOT fall back "
+    "on one habitual flex rune: pick the flex that serves THIS build's job.\n"
     "- You may ONLY use items/runes/summoners from the provided pools (exact slug/name). "
     "Never invent.\n"
     "- Be decisive: the BEST option per variant, not a menu."
@@ -235,7 +276,7 @@ def _item_pool(items: list[dict]) -> str:
         passive = _clip(" ".join(it["passives"]) or "(no passive)", 650)
         by_cat.setdefault(it["category"], []).append(
             f'  {it["slug"]} | {it["name"]} | {it["cost"]}g | {stats} | {passive}')
-    order = ["Physical", "Magic", "Defense", "Support", "Boots", "Enchantment"]
+    order = ["Physical", "Magic", "Defense", "Support", "Active", "Boots"]
     return "\n".join(f"[{c}]\n" + "\n".join(by_cat[c]) for c in order if c in by_cat)
 
 
@@ -364,7 +405,7 @@ THREATS = ["vs Tanks", "vs AP", "vs AD", "vs Healing", "vs Shields", "vs CC", "v
 def _schema(variants: list[str]) -> str:
     build_shape = (
         '{"summary":"1-2 sentences","coreBuild":[{"slug":"...","reason":"<=14 words"}],'
-        ' "boots":{"slug":"...","reason":"..."},"enchantment":{"slug":"...","reason":"..."},'
+        ' "boots":{"slug":"...","reason":"..."},'
         ' "situational":[{"slug":"...","vs":"one of ' + "|".join(THREATS) + '",'
         '"replaces":"<coreBuild slug this swaps out>"}],'
         ' "situationalRunes":[{"name":"...","vs":"e.g. vs Assassins|vs Tanks|vs Poke",'
@@ -507,12 +548,15 @@ def _validate(rec, variants, item_by_slug, rune_by_name, mutex,
             boots["reason"] = boots_in.get("reason", "")
         else:
             err.append(f"{label}: missing boots")
-        ench_in = bd.get("enchantment") or {}
-        ench = ok_item(ench_in.get("slug"), f"{label} enchant", cat="Enchantment") if ench_in.get("slug") else None
-        if ench:
-            ench["reason"] = ench_in.get("reason", "")
-        else:
-            err.append(f"{label}: missing boot enchantment")
+        # Boot enchantments no longer exist. Patch 7.2 dissolved them into
+        # class-restricted ACTIVE items and tier-3 boots ("active effects are now
+        # tied to champion classes"), so data/items.json has zero Enchantment
+        # items and this slot is unsatisfiable: it failed every champion with
+        # "missing boot enchantment". The actives it used to cover (Locket,
+        # Stasis, Quicksilver, Protobelt) are ordinary items in the pool now.
+        # Kept as an always-null field because the frontend already renders it
+        # conditionally (BuildItem | null).
+        ench = None
         situ = []
         core_slugs_now = set(slugs)
         for e in bd.get("situational") or []:
@@ -846,7 +890,7 @@ def main() -> None:
     for i, c in enumerate(todo, 1):
         name = c["name"]
         champ_class, role = class_role(name)
-        variants = variants_for(name, champ_class)
+        variants = variants_for(name, champ_class, role)
         cblock = _champion_block(c, champ_class or "?", role or "?")
         kit_flags = _kit_hints(c)
         prompt = build_prompt(cblock, item_pool, rune_pool, mutex_block, variants, role, kit_flags)
@@ -918,10 +962,11 @@ def main() -> None:
         while err and rounds < REPAIR_ATTEMPTS:
             rounds += 1
             print(f"    repair {rounds}/{REPAIR_ATTEMPTS}: {len(err)} errors — {err[:3]}")
-            text = llm.generate([prompt, _repair_prompt(raw, err)], 0.3)
             try:
+                text = llm.generate([prompt, _repair_prompt(raw, err)], 0.3)
                 raw = _extract_json(text)
-            except Exception:  # noqa: BLE001
+            except Exception as e:  # noqa: BLE001 -- network hiccup / unparseable
+                print(f"    repair aborted ({e}) — shipping best-so-far")
                 break
             clean, err, warn = _validate(raw, variants, item_by_slug, rune_by_name,
                                          mutex, c.get("scalesWith"), role)

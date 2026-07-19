@@ -40,7 +40,7 @@ import cv2
 from .adb_client import ADBClient, ADBError
 from .config import (
     ROWS_PER_PAGE,
-    SCREEN_2_CHAMP_NAME_REGION,
+    SCREEN_2_LABEL_REGION,
     SCREEN_5_OCR_REGION,
     load_screen_points,
 )
@@ -192,7 +192,7 @@ def main() -> int:
         if args.save_screenshots:
             cv2.imwrite(str(data_dir / f"run_champ_{champ_slot + 1}_screen2.png"), screen2_img)
 
-        champ_name = read_champion_name(screen2_img, SCREEN_2_CHAMP_NAME_REGION)
+        champ_name = read_champion_name(screen2_img, SCREEN_2_LABEL_REGION)
         if champ_name is None:
             print("  WARNING: could not OCR champion name; using slot index")
             champ_name = f"slot_{champ_slot + 1}"

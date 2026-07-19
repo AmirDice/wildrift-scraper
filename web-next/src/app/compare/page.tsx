@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getChampions } from "@/lib/data";
 import { getCnBySlug } from "@/lib/cn";
+import { getChampionDetails } from "@/lib/champion-details";
 import countersData from "@/data/counters.json";
 import { Container } from "@/components/ui";
 import { ChampionCompare } from "@/components/champion-compare";
@@ -17,9 +18,16 @@ export const metadata: Metadata = {
 export default function ComparePage() {
   const champions = getChampions();
   const cn: Record<string, { wr: number; pick: number; ban: number; tier: string }> = {};
+  const baseStats: Record<string, Record<string, number>> = {};
   for (const c of champions) {
     const e = getCnBySlug(c.slug);
     if (e) cn[c.slug] = { wr: e.wr, pick: e.cnPickRate, ban: e.cnBanRate, tier: e.tier };
+    const d = getChampionDetails(c.slug);
+    if (d) {
+      const s: Record<string, number> = {};
+      for (const [k, v] of Object.entries(d.baseStats)) s[k] = v.lvl15 ?? v.base + v.perLevel * 14;
+      baseStats[c.slug] = s;
+    }
   }
 
   return (
@@ -27,10 +35,10 @@ export default function ComparePage() {
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Compare Champions</h1>
       <p className="mt-2 max-w-2xl text-muted">
         Pick two champions for a full head-to-head: win rates across servers, a stat radar, the
-        direct matchup, and every number side by side.
+        direct matchup, level-15 base stats, and every number side by side.
       </p>
       <div className="mt-8">
-        <ChampionCompare champions={champions} cn={cn} counters={COUNTERS} />
+        <ChampionCompare champions={champions} cn={cn} counters={COUNTERS} baseStats={baseStats} />
       </div>
     </Container>
   );

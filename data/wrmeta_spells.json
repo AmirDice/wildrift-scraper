@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Flash",
+    "slug": "flash",
+    "tagline": "Cooldown:",
+    "image": "/items/flash.webp",
+    "description": "Teleport a short distance forward or towards the aimed direction. 150s"
+  },
+  {
+    "name": "Ghost",
+    "slug": "ghost",
+    "tagline": "Cooldown:",
+    "image": "/items/ghost.webp",
+    "description": "Gain a large burst of movement speed, that decays to 25% bonus movement speed for 8 seconds. With each takedown, Ghost's duration is extended by 6 seconds, refreshing its effects, up to the original amount. 90s"
+  },
+  {
+    "name": "Heal",
+    "slug": "heal",
+    "tagline": "Cooldown:",
+    "image": "/items/heal.webp",
+    "description": "Restore 110 Health (110–400 based on level) to you and the most wounded nearby ally champion, and grants both of you 30% bonus Movement Speed for 2 seconds. Healing is halved for champions recently affected by Heal. 100s"
+  },
+  {
+    "name": "Barrier",
+    "slug": "barrier",
+    "tagline": "Cooldown:",
+    "image": "/items/barrier.webp",
+    "description": "Gain a shield that absorbs 120 (120–560 based on level) damage for 2.5 seconds. 100s"
+  },
+  {
+    "name": "Ignite",
+    "slug": "ignite",
+    "tagline": "Cooldown:",
+    "image": "/items/ignite.webp",
+    "description": "Ignites target enemy champion, dealing 72 true damage (72–380 based on level) over 5 and applying 60% Grievous Wounds for the duration. Grievous Wound reduces the effectiveness of Healing and Regeneration effects. 100s"
+  },
+  {
+    "name": "Exhaust",
+    "slug": "exhaust",
+    "tagline": "Cooldown:",
+    "image": "/items/exhaust.webp",
+    "description": "Exhausts target enemy champion, reducing their Movement Speed by 35% and their damage dealt by 40% for 2.5 seconds. 100s"
+  },
+  {
+    "name": "Smite",
+    "slug": "smite",
+    "tagline": "Cooldown:",
+    "image": "/items/smite.webp",
+    "description": "Deal 600 true damage to monsters, epic monsters or enemy minions. Smiting a monster restore 127 Health (70 + 10% [hp]). Smite upgrades to Chilling Smite after 3 uses."
+  },
+  {
+    "name": "Chilling Smite",
+    "slug": "chilling-smite",
+    "tagline": "Cooldown:",
+    "image": "/items/chilling-smite.png",
+    "description": "Deal 1000 true damage to a large or epic monster or minion. Smiting monsters restore 152 Health (70 + 10% [hp]). Against champions: Deal 40 true damage to enemy Champions and steals 25% of their Movement Speed for 2 seconds. 10s"
+  },
+  {
+    "name": "Cleanse",
+    "slug": "cleanse",
+    "tagline": "Cooldown:",
+    "image": "/items/cleanse.webp",
+    "description": "Removes disables (including spell debuffs) affecting your champion and grants immunity to disables for 0.25 seconds. 110s"
+  },
+  {
+    "name": "Teleport",
+    "slug": "teleport",
+    "tagline": "Cooldown:",
+    "image": "/items/teleport.jpg",
+    "description": "After channeling for 3.5 seconds, teleport your champion to an allied champion, structure, or ward (excludes areas in range of enemy inhibitors). You can only teleport to structures during the first 6 minutes of the game. 150s"
+  }
+]

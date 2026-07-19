@@ -67,11 +67,20 @@ function statWeights(name: string): Record<string, number> {
   const u = statUsability(name);
   const noResource = (DATA.formulas[name]?.mechanics ?? []).some((m: any) => m.kind === "noResource");
   const [mobile, hasDash] = mobilityProfile(name);
+  let hasteW = hasDash ? 0.9 : 0.85;
+  let manaW = noResource ? 0 : 0.35;
+  // Behaviour model (A3): high spell-cast champs value ability haste and mana
+  // more (Manamune/Shojin on Hecarim). Emergent from the metric, no rule.
+  const cast = DATA.formulas[name]?.behavior?.spellCastRate;
+  if (typeof cast === "number") {
+    hasteW = Math.min(1, hasteW + 0.15 * (cast - 0.5));
+    if (!noResource) manaW = Math.min(0.7, manaW + 0.5 * Math.max(0, cast - 0.4));
+  }
   return {
     ad: u.ad, ap: u.ap, attackSpeed: u.attackSpeed, crit: u.crit,
     magicPen: u.ap, physicalPen: u.ad, lethality: u.ad,
-    abilityHaste: hasDash ? 0.9 : 0.85, hp: 0.8, armor: 0.75, mr: 0.75,
-    mana: noResource ? 0 : 0.35, moveSpeed: mobile ? 0.75 : 0.45,
+    abilityHaste: hasteW, hp: 0.8, armor: 0.75, mr: 0.75,
+    mana: manaW, moveSpeed: mobile ? 0.75 : 0.45,
   };
 }
 
@@ -581,7 +590,7 @@ export function attackProfile(name: string, items: string[], runes: string[],
 
 // Early-game weighting (mirrors Python): score a build across purchase stages,
 // weighted toward the first 2-3 items that decide Wild Rift games.
-const STAGE_PLAN: [number | null, number][] = [[3, 0.35], [4, 0.4], [null, 0.25]];
+const STAGE_PLAN: [number | null, number][] = [[1, 0.10], [2, 0.30], [3, 0.35], [4, 0.15], [5, 0.07], [6, 0.03]];
 const PREFIX_LEVELS_TS = [8, 10, 12, 13, 14, 15];
 
 function buildOrder(items: string[]): string[] {
@@ -1075,6 +1084,18 @@ export function buildIssues(items: string[]): string[] {
       out.push(`${hit.map((s) => DATA.items[s]?.name ?? s).join(" + ")} share the '${gname}' passive`);
   }
   return out;
+}
+
+export interface ChampionBehavior {
+  spellCastRate?: number; fightFrequency?: number; tradeFrequency?: number;
+  objectiveDamage?: number; waveclear?: number; jungleClear?: number;
+  roamFrequency?: number; avgFightLength?: number; confidence?: string;
+}
+
+/** The A3 behaviour model for a champion (0..1 per metric), or null. */
+export function championBehavior(name: string): ChampionBehavior | null {
+  const b = DATA.formulas[name]?.behavior;
+  return b ? (b as ChampionBehavior) : null;
 }
 
 export function engineChampions(): string[] {

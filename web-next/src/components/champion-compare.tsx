@@ -10,9 +10,20 @@ import { ChampionCombobox } from "@/components/champion-combobox";
 
 type CnStat = { wr: number; pick: number; ban: number; tier: string };
 type Counters = Record<string, { weak: string[]; strong: string[] }>;
+type BaseStatMap = Record<string, Record<string, number>>;
 
 const A_COLOR = "#4f8dff";
 const B_COLOR = "#ffd76e";
+
+/** Level-15 base combat stats compared head-to-head. */
+const BASE_STATS: { key: string; label: string; dp?: number }[] = [
+  { key: "hp", label: "Health" },
+  { key: "ad", label: "Attack Damage" },
+  { key: "armor", label: "Armor" },
+  { key: "mr", label: "Magic Resist" },
+  { key: "attackSpeed", label: "Attack Speed", dp: 3 },
+  { key: "moveSpeed", label: "Move Speed" },
+];
 
 /** numeric stats shown as diverging bars + fed into the radar */
 const STATS: { label: string; short: string; get: (c: Champion, cn?: CnStat) => number | null; radar: boolean }[] = [
@@ -91,7 +102,7 @@ function Radar({ a, b, cnA, cnB, pcts }: { a: Champion; b: Champion; cnA?: CnSta
   );
 }
 
-export function ChampionCompare({ champions, cn, counters }: { champions: Champion[]; cn: Record<string, CnStat>; counters: Counters }) {
+export function ChampionCompare({ champions, cn, counters, baseStats }: { champions: Champion[]; cn: Record<string, CnStat>; counters: Counters; baseStats: BaseStatMap }) {
   const options = useMemo(() => [...champions].sort((x, y) => x.name.localeCompare(y.name)).map((c) => ({ name: c.name, slug: c.slug, icon: c.icon })), [champions]);
   const bySlug = useMemo(() => new Map(champions.map((c) => [c.slug, c])), [champions]);
   const pcts = useMemo(
@@ -213,6 +224,38 @@ export function ChampionCompare({ champions, cn, counters }: { champions: Champi
               ))}
             </div>
           </div>
+
+          {/* Base stats at level 15 */}
+          {(baseStats[a.slug] || baseStats[b.slug]) && (
+            <div className="glass rounded-2xl p-5">
+              <p className="mb-4 text-center text-[0.65rem] font-semibold uppercase tracking-wide text-faint">
+                Base stats · level 15
+              </p>
+              <div className="flex flex-col gap-3.5">
+                {BASE_STATS.map((s) => {
+                  const va = baseStats[a.slug]?.[s.key];
+                  const vb = baseStats[b.slug]?.[s.key];
+                  const na = va ?? 0, nb = vb ?? 0;
+                  const total = na + nb || 1;
+                  const aShare = (na / total) * 100;
+                  const fmt = (v?: number) => (v == null ? "-" : s.dp ? v.toFixed(s.dp) : Math.round(v).toLocaleString());
+                  return (
+                    <div key={s.key}>
+                      <div className="mb-1 flex items-center justify-between text-xs">
+                        <span className="font-semibold" style={{ color: na >= nb ? A_COLOR : "var(--color-muted)" }}>{fmt(va)}</span>
+                        <span className="text-faint">{s.label}</span>
+                        <span className="font-semibold" style={{ color: nb >= na ? B_COLOR : "var(--color-muted)" }}>{fmt(vb)}</span>
+                      </div>
+                      <div className="flex h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                        <div style={{ width: `${aShare}%`, background: A_COLOR, opacity: 0.85 }} />
+                        <div style={{ width: `${100 - aShare}%`, background: B_COLOR, opacity: 0.85 }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="glass mt-6 rounded-2xl p-10 text-center text-muted">Pick two champions to compare.</div>

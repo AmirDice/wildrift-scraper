@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
-import { tierClass } from "@/lib/data";
+import { tierClass, tierLabel } from "@/lib/data";
 
 export function Container({
   children,
@@ -17,7 +17,7 @@ export function TierChip({ tier, className = "" }: { tier: string; className?: s
     <span
       className={`inline-grid place-items-center rounded-md px-2 py-0.5 text-xs font-bold tracking-wide ${tierClass[tier] ?? "tier-c"} ${className}`}
     >
-      {tier}
+      {tierLabel(tier)}
     </span>
   );
 }

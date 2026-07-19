@@ -1,0 +1,23 @@
+{
+  "Nidalee": [
+    "Pounce base damage: 65/100/135/170 -> 55/90/125/160",
+    "Aspect of the Cougar: bonus Armor/MR AP ratio 3% -> 2.5%"
+  ],
+  "Warwick": [
+    "Eternal Hunger: bonus AD ratio 20% -> 15%",
+    "Jaws of the Beast: 90% AP -> 85% AP"
+  ],
+  "Skarner": [
+    "Shattered Earth/Upheaval: max health damage 10% -> 11%",
+    "Seismic Bastion: cooldown 9/8/7/6 -> 8/7/6/5; shield ratio 8% -> 10%",
+    "Ixtal's Impact: cooldown 20/18/16/14 -> 18/16/14/12"
+  ],
+  "Senna": [
+    "Absolution: current health damage 1.2%-12% -> 1%-10%",
+    "Dawning Shadow: shield 40% AP + 4/stack -> 50% AP + 2.5/stack"
+  ],
+  "Yuumi": [
+    "Zoomies: mana cost 80/90/100/110 -> 65/75/85/95",
+    "Final Chapter: base healing 20/30/40 -> 20/35/50"
+  ]
+}

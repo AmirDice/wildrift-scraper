@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
+import { ToolsCta } from "@/components/tools-cta";
+import { FeatureBanner } from "@/components/feature-banner";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
@@ -60,8 +62,10 @@ export default function RootLayout({
               "linear-gradient(180deg, rgba(7,10,18,0.84), rgba(7,10,18,0.94)), radial-gradient(70% 55% at 50% 0%, rgba(79,141,255,0.12), transparent 70%)",
           }}
         />
+        <FeatureBanner />
         <SiteNav />
         <main className="flex-1">{children}</main>
+        <ToolsCta />
         <SiteFooter />
         <Analytics />
       </body>

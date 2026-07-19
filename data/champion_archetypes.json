@@ -1,0 +1,82 @@
+{
+  "Ambessa": {
+    "archetype": "weaver",
+    "reason": "Passive enhances next attack after ability use, creating a cast-auto loop that synergizes with Sheen items.",
+    "autoShare": 0.5
+  },
+  "Annie": {
+    "archetype": "spellcaster",
+    "reason": "Primary damage comes from abilities (Q, W, R); autos are filler and not mechanistically enhanced.",
+    "autoShare": 0.5
+  },
+  "Diana": {
+    "archetype": "weaver",
+    "reason": "Passive grants attack speed and bonus damage on third hit after casting abilities, encouraging ability-auto weaving.",
+    "autoShare": 0.5
+  },
+  "Graves": {
+    "archetype": "autoattacker",
+    "reason": "Sustained damage relies on basic attacks (shotgun autos with reload mechanic); abilities are utility or burst.",
+    "autoShare": 0.5
+  },
+  "Gwen": {
+    "archetype": "onhitcaster",
+    "reason": "Abilities (Q, R) explicitly apply her on-hit passive, making on-hit items like Nashor's Tooth core.",
+    "autoShare": 0.5
+  },
+  "Hecarim": {
+    "archetype": "weaver",
+    "reason": "E empowers next auto after cast, and Q/W are frequently weaved with autos, making Sheen items effective.",
+    "autoShare": 0.5
+  },
+  "Lucian": {
+    "archetype": "weaver",
+    "reason": "Passive fires two shots after each ability, perfectly fitting the cast-auto rhythm for Sheen procs.",
+    "autoShare": 0.5
+  },
+  "Lulu": {
+    "archetype": "spellcaster",
+    "reason": "Damage is dealt through abilities (Q, Pix's bolts) and supporting allies; autos are negligible in damage.",
+    "autoShare": 0.5
+  },
+  "Malphite": {
+    "archetype": "spellcaster",
+    "reason": "Abilities (Q, W, E, R) deal primary damage; autos are filler.",
+    "autoShare": 0.5
+  },
+  "Pantheon": {
+    "archetype": "spellcaster",
+    "reason": "Comet Spear, Shield Vault, and Aegis Assault deliver damage; autos are supplementary.",
+    "autoShare": 0.5
+  },
+  "Sett": {
+    "archetype": "weaver",
+    "reason": "Passive and Q empower autos, encouraging ability-auto weave with Sheen synergy.",
+    "autoShare": 0.5
+  },
+  "Soraka": {
+    "archetype": "spellcaster",
+    "reason": "Starcall and Equinox are main damage; autos are negligible.",
+    "autoShare": 0.5
+  },
+  "Viego": {
+    "archetype": "autoattacker",
+    "reason": "Damage relies on auto attacks enhanced by Q passive and on-hit builds.",
+    "autoShare": 0.5
+  },
+  "Xin Zhao": {
+    "archetype": "autoattacker",
+    "reason": "Passive and Q empower autos; abilities are gap closers or steroids.",
+    "autoShare": 0.5
+  },
+  "Zed": {
+    "archetype": "spellcaster",
+    "reason": "Razor Shuriken, Shadow Slash, and Death Mark are primary damage sources.",
+    "autoShare": 0.5
+  },
+  "Ziggs": {
+    "archetype": "spellcaster",
+    "reason": "Bouncing Bomb, Satchel Charge, and Mega Inferno Bomb deliver burst; autos are filler.",
+    "autoShare": 0.5
+  }
+}

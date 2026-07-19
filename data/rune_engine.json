@@ -3,11 +3,81 @@
     "burstProcFlat": {
       "lvlRange": [
         40,
-        194
+        210
       ]
     },
-    "burstProcAdRatio": 35,
-    "burstProcApRatio": 20
+    "burstProcAdRatio": 10,
+    "burstProcApRatio": 5,
+    "burstProcType": "magic"
+  },
+  "Dark Harvest": {
+    "burstProcFlat": 35,
+    "burstProcAdRatio": 10,
+    "burstProcApRatio": 5,
+    "burstProcType": "magic"
+  },
+  "Empowerment": {
+    "burstProcFlat": {
+      "lvlRange": [
+        40,
+        165
+      ]
+    },
+    "ampPct": 8,
+    "burstProcType": "magic"
+  },
+  "Lethal Tempo": {},
+  "Fleet Footwork": {
+    "healFlat": {
+      "lvlRange": [
+        15,
+        110
+      ]
+    }
+  },
+  "Conqueror": {
+    "adaptiveAd": {
+      "lvlRange": [
+        18,
+        30
+      ]
+    },
+    "adaptiveAp": {
+      "lvlRange": [
+        24,
+        48
+      ]
+    },
+    "healPct": 9,
+    "bonusAd": {
+      "lvlRange": [
+        18,
+        30
+      ]
+    },
+    "bonusAp": {
+      "lvlRange": [
+        24,
+        48
+      ]
+    }
+  },
+  "Grasp of the Undying": {},
+  "Guardian": {
+    "shieldFlat": {
+      "lvlRange": [
+        40,
+        165
+      ]
+    },
+    "shieldPctBonusHp": 6,
+    "shieldApRatio": 15,
+    "allyShieldFlat": {
+      "lvlRange": [
+        40,
+        165
+      ]
+    }
   },
   "Aery": {
     "burstProcFlat": {
@@ -16,77 +86,42 @@
         70
       ]
     },
-    "burstProcAdRatio": 20,
-    "burstProcApRatio": 10
-  },
-  "Conqueror": {
-    "bonusAd": {
+    "burstProcAdRatio": 10,
+    "burstProcApRatio": 5,
+    "burstProcType": "magic",
+    "shieldFlat": {
       "lvlRange": [
-        12,
-        36
-      ]
-    },
-    "bonusAp": {
-      "lvlRange": [
-        18,
-        54
+        25,
+        120
       ]
     }
   },
-  "Fleet Footwork": {},
-  "Grasp of the Undying": {},
-  "Font of Life": {},
-  "Brutal": {},
-  "Gathering Storm": {},
-  "Triumph": {},
-  "Manaflow Band": {},
-  "Phase Rush": {},
-  "Bone Plating": {},
-  "Second Wind": {},
-  "Lethal Tempo": {},
-  "Cut Down": {
-    "ampPct": 8
-  },
-  "Scorch": {
+  "Arcane Comet": {
     "burstProcFlat": {
       "lvlRange": [
-        21,
-        49
+        15,
+        100
       ]
     },
+    "burstProcAdRatio": 10,
+    "burstProcApRatio": 5,
     "burstProcType": "magic"
   },
-  "Demolish": {},
-  "Nimbus Cloak": {},
-  "Nullifying Orb": {},
-  "Sudden Impact": {
-    "burstProcFlat": {
-      "lvlRange": [
-        10,
-        80
-      ]
-    },
-    "burstProcType": "true"
-  },
-  "Transcendence": {},
-  "Perseverance": {
-    "armorFlat": {
-      "lvlRange": [
-        15,
-        25
-      ]
-    },
-    "mrFlat": {
-      "lvlRange": [
-        15,
-        25
-      ]
-    }
+  "Phase Rush": {
+    "hasteFlat": 10
   },
   "First Strike": {
     "ampPct": 7
   },
-  "Eyeball Collector": {},
+  "Ice Overlord": {
+    "burstProcFlat": {
+      "lvlRange": [
+        15,
+        100
+      ]
+    },
+    "burstProcType": "magic"
+  },
   "Cheap Shot": {
     "burstProcFlat": {
       "lvlRange": [
@@ -96,15 +131,76 @@
     },
     "burstProcType": "true"
   },
-  "Ingenious Hunter": {},
-  "Zombie Ward": {},
-  "Last Stand": {
-    "ampPct": {
+  "Sudden Impact": {
+    "burstProcFlat": {
       "lvlRange": [
-        5,
-        11
+        15,
+        65
       ]
-    }
+    },
+    "burstProcType": "true"
+  },
+  "Empowered Attack": {
+    "burstProcFlat": {
+      "lvlRange": [
+        20,
+        60
+      ]
+    },
+    "burstProcType": "magic"
+  },
+  "Chain Assault": {
+    "burstProcFlat": {
+      "lvlRange": [
+        12,
+        38
+      ]
+    },
+    "burstProcAdRatio": 3,
+    "burstProcApRatio": 1.5,
+    "burstProcType": "magic"
+  },
+  "Tyrant": {
+    "burstProcFlat": {
+      "lvlRange": [
+        20,
+        70
+      ]
+    },
+    "burstProcAdRatio": 6,
+    "burstProcApRatio": 3,
+    "burstProcType": "magic"
+  },
+  "Hubris": {
+    "adaptiveAd": 5,
+    "adaptiveAp": 5
+  },
+  "Eyeball Collector": {
+    "adaptiveAd": 12,
+    "adaptiveAp": 24
+  },
+  "Ingenious Hunter": {
+    "itemHasteFlat": 45
+  },
+  "Relentless Hunter": {},
+  "Zombie Ward": {
+    "adaptiveAd": 15,
+    "adaptiveAp": 30
+  },
+  "Brutal": {
+    "onHitFlat": 5,
+    "onHitAdRatio": 6,
+    "onHitApRatio": 3
+  },
+  "Triumph": {},
+  "Battle Zeal": {
+    "abilityAmpPct": 4.2
+  },
+  "Last Stand": {
+    "ampPct": 11
+  },
+  "Cut Down": {
+    "ampPct": 6.57
   },
   "Coup de Grace": {
     "ampPct": 8
@@ -112,75 +208,68 @@
   "Legend: Alacrity": {},
   "Legend: Tenacity": {},
   "Legend: Bloodline": {},
-  "Overgrowth": {},
-  "Revitalize": {},
-  "Hextech Flashtraption": {},
-  "Empowered Attack": {
-    "burstProcFlat": {
-      "lvlRange": [
-        35,
-        50
-      ]
-    },
+  "Demolish": {
+    "burstProcFlat": 100,
     "burstProcType": "physical"
   },
-  "Courage of the Colossus": {},
-  "Empowerment": {
-    "burstProcFlat": {
+  "Font of Life": {
+    "healPctMaxHp": 1.3,
+    "healApRatio": 6.5,
+    "allyHealPctMaxHp": 1.5
+  },
+  "Courage of the Colossus": {
+    "shieldFlat": {
+      "lvlRange": [
+        25,
+        45
+      ]
+    },
+    "shieldPctMaxHp": 1
+  },
+  "Unshakeable": {
+    "armorPct": 9,
+    "mrPct": 9
+  },
+  "Second Wind": {},
+  "Nullifying Orb": {
+    "shieldFlat": {
       "lvlRange": [
         60,
-        200
+        180
       ]
-    },
-    "ampPct": 9
+    }
   },
-  "Arcane Comet": {
-    "burstProcFlat": {
+  "Bone Plating": {},
+  "Overgrowth": {
+    "hpFlat": 90
+  },
+  "Revitalize": {},
+  "Perseverance": {
+    "armorFlat": {
       "lvlRange": [
-        18,
-        95
+        10,
+        15
       ]
     },
-    "burstProcAdRatio": 35,
-    "burstProcApRatio": 20,
-    "burstProcType": "magic"
+    "mrFlat": {
+      "lvlRange": [
+        10,
+        15
+      ]
+    }
   },
-  "Ixtali Seedjar": {},
-  "Dark Harvest": {
-    "burstProcFlat": 40,
-    "burstProcAdRatio": 25,
-    "burstProcApRatio": 15
+  "Axiom Arcanist": {
+    "ultAmpPct": 10
+  },
+  "Manaflow Band": {
+    "manaFlat": 300
+  },
+  "Botanist": {},
+  "Hextech Flashtraption": {},
+  "Transcendence": {
+    "hasteFlat": 10
   },
   "Celerity": {},
-  "Axiom Arcanist": {},
-  "Tyrant": {
-    "burstProcFlat": {
-      "lvlRange": [
-        30,
-        50
-      ]
-    },
-    "burstProcAdRatio": 7.5,
-    "burstProcApRatio": 3.5
-  },
-  "Chain Assault": {
-    "burstProcFlat": {
-      "lvlRange": [
-        20,
-        35
-      ]
-    },
-    "burstProcAdRatio": 5,
-    "burstProcApRatio": 2.5
-  },
-  "Unshakeable": {},
-  "Ice Overlord": {},
-  "Battle Zeal": {},
-  "Botanist": {},
-  "Hubris": {
-    "adaptiveAd": 5,
-    "adaptiveAp": 5
-  },
   "Absolute Focus": {
     "adaptiveAd": {
       "lvlRange": [
@@ -195,6 +284,19 @@
       ]
     }
   },
-  "Guardian": {},
-  "Relentless Hunter": {}
+  "Scorch": {
+    "burstProcFlat": {
+      "lvlRange": [
+        21,
+        49
+      ]
+    },
+    "burstProcType": "magic"
+  },
+  "Nimbus Cloak": {},
+  "Gathering Storm": {
+    "adaptiveAd": 14,
+    "adaptiveAp": 28
+  },
+  "Ixtali Seedjar": {}
 }

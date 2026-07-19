@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { site, getChampions, type Champion } from "@/lib/data";
+import { site, getChampions, tierLabel, type Champion } from "@/lib/data";
+import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { getGlobalChampions } from "@/lib/cn";
 import { risingPicks, overratedInEu } from "@/lib/gap";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
@@ -68,6 +69,9 @@ export default function HomePage() {
           </div>
           <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> EU · live now
+            </span>
             <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
               NA win rates · coming soon
             </span>
@@ -80,6 +84,61 @@ export default function HomePage() {
           </p>
         </Container>
       </section>
+
+      {/* Flagship slot right under the hero for the products we most want people
+          to find. The build tools take it once they launch; until then it
+          leads with the new Meta Report. */}
+      <Container className="py-10">
+        <div className="grid gap-4 md:grid-cols-2">
+          {BUILD_TOOLS_LIVE ? (
+            <>
+              <FlagshipTool
+                href="/counter"
+                badge="new"
+                badgeClass="bg-emerald-400/20 text-emerald-300"
+                title="Counter Builder"
+                desc="Pick your champion and the enemy team, get a build, runes and item order shaped to beat exactly who you are facing."
+                cta="Build against your enemies"
+                accent="text-emerald-300"
+                ring="hover:border-emerald-400/40"
+              />
+              <FlagshipTool
+                href="/build"
+                badge="new"
+                badgeClass="bg-accent/20 text-accent"
+                title="Build Optimizer"
+                desc="Optimal items and runes for every champion, scored by a full fight simulation. No enemy team needed, just the best build on paper."
+                cta="Open the optimizer"
+                accent="text-accent"
+                ring="hover:border-accent/40"
+              />
+            </>
+          ) : (
+            <>
+              <FlagshipTool
+                href="/meta"
+                badge="new"
+                badgeClass="bg-emerald-400/20 text-emerald-300"
+                title="Meta Report"
+                desc="The whole meta in one place: tier splits, win rate by class and role, and an interactive win-rate-vs-popularity map of every champion."
+                cta="Explore the charts"
+                accent="text-emerald-300"
+                ring="hover:border-emerald-400/40"
+              />
+              <FlagshipTool
+                href="/tier-list"
+                badge="live"
+                badgeClass="bg-accent/20 text-accent"
+                title="Tier List"
+                desc="Every champion ranked by the real win rates of its 50 best players, confidence-adjusted so hype and lucky streaks never make the cut."
+                cta="View the tier list"
+                accent="text-accent"
+                ring="hover:border-accent/40"
+              />
+            </>
+          )}
+        </div>
+      </Container>
 
       {/* Stat cards */}
       <Container className="py-12">
@@ -153,6 +212,7 @@ export default function HomePage() {
 
       {/* Meta charts */}
       <Container className="py-12">
+        <SectionHeading title="Meta at a glance" subtitle="Win rate by class and role" href="/meta" linkLabel="Full meta report" />
         <div className="grid gap-6 lg:grid-cols-2">
           <BarCard title="Meta by class" subtitle="Avg win rate of each class's top 5 picks" rows={site.metaBreakdown.map((m) => ({ label: m.class, wr: m.wr }))} />
           <BarCard
@@ -310,6 +370,28 @@ export default function HomePage() {
   );
 }
 
+function FlagshipTool({
+  href, badge, badgeClass, title, desc, cta, accent, ring,
+}: {
+  href: string; badge: string; badgeClass: string; title: string; desc: string; cta: string; accent: string; ring: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`group glass glass-hover flex flex-col rounded-2xl border border-line p-6 transition ${ring}`}
+    >
+      <div className="flex items-center gap-2">
+        <h3 className="text-xl font-semibold">{title}</h3>
+        <span className={`rounded px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide ${badgeClass}`}>{badge}</span>
+      </div>
+      <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{desc}</p>
+      <span className={`mt-4 inline-flex items-center gap-1 text-sm font-semibold ${accent}`}>
+        {cta} <span className="transition-transform group-hover:translate-x-0.5">→</span>
+      </span>
+    </Link>
+  );
+}
+
 function FeaturedChampion({ c }: { c: Champion }) {
   return (
     <Link href={`/champions/${c.slug}`} className="group relative block min-h-[260px] overflow-hidden rounded-2xl border border-line">
@@ -319,7 +401,7 @@ function FeaturedChampion({ c }: { c: Champion }) {
       <div className="relative flex h-full flex-col justify-between gap-6 p-6 sm:p-8">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-            Featured · {c.tier} tier
+            Featured · {tierLabel(c.tier)} tier
           </p>
           <h3 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{c.name}</h3>
           <p className="mt-1 text-muted">

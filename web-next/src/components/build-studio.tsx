@@ -2,17 +2,19 @@
 
 import { useMemo, useState } from "react";
 import { buildChampions, buildGold, type Build } from "@/lib/builds";
-import { liveMetrics, analyzeBuild } from "@/lib/engine";
+import { liveMetrics, analyzeBuild, championBehavior } from "@/lib/engine";
 import { SimReadout, Tip } from "@/components/build-view";
 import { BuildDial } from "@/components/build-dial";
 import { BuildCustomizer } from "@/components/build-customizer";
-import { EnemyOptimizer } from "@/components/enemy-optimizer";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { FirstVisitGuide } from "@/components/first-visit-guide";
+import { EnemyBuildAdvisor, Sparkles } from "@/components/enemy-build";
 
 /* eslint-disable @next/next/no-img-element */
 
-const TABS = ["Build", "Analysis", "Customize", "vs Enemy"] as const;
+// "vs Enemy" moved to its own /counter page (the LLM advisor). The default
+// build view is deliberately enemy-agnostic: standard/crit/dps/etc only.
+const TABS = ["Build", "Analysis", "Customize"] as const;
 type Tab = (typeof TABS)[number];
 
 const VARIANT_LABEL: Record<string, string> = {
@@ -23,6 +25,15 @@ const VARIANT_LABEL: Record<string, string> = {
 };
 const STYLE_LABEL: Record<string, string> = {
   "basic-attack": "Basic attacker", "ability-caster": "Ability caster", hybrid: "Hybrid",
+};
+
+/** Mechanical archetype: HOW the kit delivers damage, which steers itemization
+ *  (a weaver's cast-auto-cast rhythm makes Spellblade items core; an on-hit
+ *  caster's abilities trigger on-hit items). Assigned per champion by
+ *  scripts/assign_archetypes.py. */
+const ARCHETYPE_LABEL: Record<string, string> = {
+  spellcaster: "Spell-caster", autoattacker: "Auto-attacker",
+  weaver: "Weaver", onhitcaster: "On-hit caster",
 };
 
 function itemsRunes(b: Build) {
@@ -47,6 +58,7 @@ export function BuildStudio() {
   const [slug, setSlug] = useState(champs[0]?.slug ?? "");
   const [tab, setTab] = useState<Tab>("Build");
   const [level, setLevel] = useState(15);
+  const [aiOpen, setAiOpen] = useState(false);
   const [champQuery, setChampQuery] = useState("");
 
   const rec = champs.find((c) => c.slug === slug) ?? champs[0];
@@ -112,6 +124,11 @@ export function BuildStudio() {
                   <span className="cursor-pointer rounded-md bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">{STYLE_LABEL[style.style]}</span>
                 </Tip>
               )}
+              {(builds as any).archetype?.archetype && (
+                <Tip tip={<><span className="font-bold">{ARCHETYPE_LABEL[(builds as any).archetype.archetype] ?? (builds as any).archetype.archetype}</span>{(builds as any).archetype.reason && <span className="mt-1 block text-muted">{(builds as any).archetype.reason}</span>}</>}>
+                  <span className="cursor-pointer rounded-md bg-gold/15 px-2 py-0.5 text-xs font-semibold text-gold">{ARCHETYPE_LABEL[(builds as any).archetype.archetype] ?? (builds as any).archetype.archetype}</span>
+                </Tip>
+              )}
             </div>
             <p className="text-sm text-muted">{builds.class} · {builds.role} · {builds.damageProfile}</p>
           </div>
@@ -132,10 +149,11 @@ export function BuildStudio() {
       </div>
 
       <div className="mt-4">
-        {tab === "Build" && <BuildTab {...{ builds, variants, variant, setVariant, build, m }} />}
-        {tab === "Analysis" && <AnalysisTab {...{ analysis, m: analysisM, level, setLevel }} />}
+        {tab === "Build" && (
+          <BuildTab {...{ builds, variants, variant, setVariant, build, m, name, aiOpen, setAiOpen }} />
+        )}
+        {tab === "Analysis" && <AnalysisTab {...{ analysis, m: analysisM, level, setLevel, name }} />}
         {tab === "Customize" && <BuildCustomizer name={name} data={builds} />}
-        {tab === "vs Enemy" && <EnemyOptimizer />}
       </div>
     </div>
   );
@@ -153,19 +171,59 @@ function LevelSlider({ level, setLevel }: { level: number; setLevel: (n: number)
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-function BuildTab({ builds, variants, variant, setVariant, build, m }: any) {
+/** A boots tile in the build order, badged with its tier. Patch 7.2 turned the
+ *  tier-3 boot into a real purchase (2000-2200g, unlocked at 10:00), so the
+ *  order has to show WHICH boot you hold and WHEN it upgrades. */
+function BootTile({ it, tier, note }: { it: any; tier?: string; note?: string }) {
+  return (
+    <Tip
+      tip={
+        <>
+          <span className="font-bold">{it.name}</span>
+          <span className="text-gold"> · {(it.cost || 0).toLocaleString()}g</span>
+          {note && <span className="mt-1 block text-accent">{note}</span>}
+        </>
+      }
+    >
+      <span className="relative cursor-pointer">
+        <img src={it.icon} alt={it.name} width={40} height={40} className="rounded-lg ring-1 ring-white/10" />
+        {tier && (
+          <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded bg-[#0e1322] px-1 text-[0.55rem] font-bold uppercase leading-tight text-faint ring-1 ring-line">
+            {tier}
+          </span>
+        )}
+      </span>
+    </Tip>
+  );
+}
+
+function BuildTab({ builds, variants, variant, setVariant, build, m, name, aiOpen, setAiOpen }: any) {
   return (
     <div className="flex flex-col gap-4">
-      {/* variant pills */}
-      <div className="flex flex-wrap gap-1.5">
+      {/* variant pills + the AI "generate my build" button, sat right next to
+          the toggles so the user does not miss it. This studio build is enemy-
+          agnostic (hideEnemies): it is a personal build, not a counter build. */}
+      <div className="flex flex-wrap items-center gap-1.5">
         {variants.map((v: string) => (
           <button key={v} onClick={() => setVariant(v)}
                   className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${v === variant ? "bg-accent/20 text-accent" : "bg-white/[0.04] text-muted hover:text-text"}`}>
             {VARIANT_LABEL[v] ?? v}
           </button>
         ))}
+        <button onClick={() => setAiOpen((o: boolean) => !o)}
+                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold transition ${aiOpen ? "bg-accent/20 text-accent" : "bg-accent text-black hover:opacity-90"}`}>
+          {!aiOpen && <Sparkles />}
+          {aiOpen ? "Hide builder" : "Generate my build"}
+        </button>
         <span className="ml-auto self-center rounded-md bg-gold/10 px-2 py-1 text-xs font-semibold text-gold">~{buildGold(build).toLocaleString()}g</span>
       </div>
+
+      {aiOpen && (
+        <div className="rounded-2xl border border-dashed border-line p-4">
+          <p className="mb-3 text-xs text-muted">Generate a custom {name} build, tuned to your playstyle.</p>
+          <EnemyBuildAdvisor presetChampion={name} hideEnemies />
+        </div>
+      )}
 
       {/* headline stats */}
       {m && (
@@ -179,19 +237,33 @@ function BuildTab({ builds, variants, variant, setVariant, build, m }: any) {
 
       {/* the build: items */}
       <div className="glass rounded-2xl p-4">
-        <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Build order <span className="normal-case text-faint/60">· tap for details</span></p>
+        <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Build order <span className="normal-case text-faint/60">· tap for details{build.bootsEarly ? " · T2 boots first, T3 upgrade at 10:00" : ""}</span></p>
+        {/* Boots sit IN the order, not appended after it: 7.2 made tier 3 a real
+            2000-2200g purchase unlocked at 10:00, so you buy tier 2 first and
+            upgrade a couple of items later. */}
         <div className="flex flex-wrap items-center gap-2.5">
+          {build.bootsEarly && (
+            <BootTile it={build.bootsEarly} tier="T2" />
+          )}
           {build.coreBuild.map((it: any, i: number) => (
-            <Tip key={it.slug} tip={<><span className="font-bold">{it.name}</span><span className="text-gold"> · {it.cost.toLocaleString()}g</span>{it.core && <span className="ml-1 rounded bg-gold/20 px-1 text-[0.6rem] font-bold uppercase text-gold">core</span>}{it.reason && <span className="mt-1 block text-muted">{it.reason}</span>}</>}>
-              <span className="relative cursor-pointer">
-                <img src={it.icon} alt={it.name} width={46} height={46} className={`rounded-lg ${it.core ? "ring-2 ring-gold" : "ring-1 ring-white/10"}`} />
-                <span className="absolute -left-1.5 -top-1.5 grid h-4.5 w-4.5 min-h-[18px] min-w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{i + 1}</span>
-              </span>
-            </Tip>
+            <span key={it.slug} className="inline-flex items-center gap-2.5">
+              <Tip tip={<><span className="font-bold">{it.name}</span><span className="text-gold"> · {it.cost.toLocaleString()}g</span>{it.core && <span className="ml-1 rounded bg-gold/20 px-1 text-[0.6rem] font-bold uppercase text-gold">core</span>}{it.reason && <span className="mt-1 block text-muted">{it.reason}</span>}</>}>
+                <span className="relative cursor-pointer">
+                  <img src={it.icon} alt={it.name} width={46} height={46} className={`rounded-lg ${it.core ? "ring-2 ring-gold" : "ring-1 ring-white/10"}`} />
+                  <span className="absolute -left-1.5 -top-1.5 grid h-4.5 w-4.5 min-h-[18px] min-w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{i + 1}</span>
+                </span>
+              </Tip>
+              {build.boots && build.bootsEarly && build.bootsUpgradeAfter === i + 1 && (
+                <BootTile it={build.boots} tier="T3" note={`Upgrade from ${build.bootsEarly.name} after item ${i + 1} (unlocks at 10:00)`} />
+              )}
+            </span>
           ))}
-          {(build.boots || build.enchantment) && <span className="mx-0.5 text-faint">+</span>}
-          {build.boots && (
-            <Tip tip={<span className="font-bold">{build.boots.name}</span>}><img src={build.boots.icon} alt={build.boots.name} width={40} height={40} className="cursor-pointer rounded-lg ring-1 ring-white/10" /></Tip>
+          {/* no tier-3 for these boots: show them once, at the end */}
+          {build.boots && !build.bootsEarly && (
+            <>
+              <span className="mx-0.5 text-faint">+</span>
+              <BootTile it={build.boots} />
+            </>
           )}
         </div>
 
@@ -228,11 +300,44 @@ function analysisWin(build: any): number | undefined {
   return build?.analysis?.winScore;
 }
 
-function AnalysisTab({ analysis, m, level, setLevel }: any) {
+const BEHAVIOR_ROWS: { key: string; label: string }[] = [
+  { key: "spellCastRate", label: "Spell cast rate" },
+  { key: "fightFrequency", label: "Fight frequency" },
+  { key: "tradeFrequency", label: "Trade frequency" },
+  { key: "avgFightLength", label: "Fight length" },
+  { key: "objectiveDamage", label: "Objective damage" },
+  { key: "waveclear", label: "Waveclear" },
+  { key: "jungleClear", label: "Jungle clear" },
+  { key: "roamFrequency", label: "Roam frequency" },
+];
+
+function BehaviorPanel({ name }: { name: string }) {
+  const b = championBehavior(name);
+  if (!b) return null;
+  const stars = (v?: number) => "★★★★★".slice(0, Math.round((v ?? 0) * 5)).padEnd(5, "☆");
+  return (
+    <div className="glass rounded-2xl p-4">
+      <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
+        Playstyle profile <span className="normal-case text-faint/60">· how {name} plays, drives item value</span>
+      </p>
+      <div className="grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
+        {BEHAVIOR_ROWS.filter((r) => (b as any)[r.key] != null).map((r) => (
+          <div key={r.key} className="flex items-center justify-between text-sm">
+            <span className="text-muted">{r.label}</span>
+            <span className="tracking-widest text-gold">{stars((b as any)[r.key])}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AnalysisTab({ analysis, m, level, setLevel, name }: any) {
   return (
     <div className="flex flex-col gap-4">
       <LevelSlider level={level} setLevel={setLevel} />
       {analysis && <SimReadout a={analysis} />}
+      <BehaviorPanel name={name} />
       {/* base stats */}
       {m && (
         <div className="glass rounded-2xl p-4">

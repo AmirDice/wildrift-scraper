@@ -9,6 +9,7 @@ const FOOTER_LINKS = [
   { href: "/compare", label: "Compare" },
   { href: "/consistency", label: "Consistency" },
   { href: "/build", label: "Builds" },
+  { href: "/items", label: "Items" },
   { href: "/news", label: "News" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },

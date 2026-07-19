@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+# Force the path to resolve absolutely relative to this file's location on disk.
+# This prevents background threads and GUIs from looking in the wrong execution directory.
 COORDS_DIR = Path(__file__).resolve().parent.parent / "coords"
 
 # Persistent calibration file. Stores values learned at runtime so subsequent
@@ -16,7 +18,7 @@ def load_calibration() -> dict[str, float]:
     if not CALIBRATION_FILE.exists():
         return {}
     try:
-        return json.loads(CALIBRATION_FILE.read_text())
+        return json.loads(CALIBRATION_FILE.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return {}
 
@@ -26,15 +28,35 @@ def save_calibration(data: dict[str, float]) -> None:
     existing = load_calibration()
     existing.update(data)
     CALIBRATION_FILE.parent.mkdir(parents=True, exist_ok=True)
-    CALIBRATION_FILE.write_text(json.dumps(existing, indent=2))
+    CALIBRATION_FILE.write_text(json.dumps(existing, indent=2), encoding="utf-8")
 
-# OCR crop region for the champion-tiles strip on screen 5 (CHAMPION AND LANE).
+# OCR crop region for the champion-tiles strip on screen 5.
 # Format: (x, y, w, h) in device-native pixels.
-SCREEN_5_OCR_REGION: tuple[int, int, int, int] = (573, 601, 909, 167)
+# History:
+#   - (573, 601, 909, 167) on the 1600x900 emulator (CHAMPION AND LANE default tab)
+#   - (779, 729, 1367, 192) on the 2340x1080 phone (CHAMPION AND LANE default tab)
+#   - (779, 729, 1561, 201) on the 2340x1080 phone after switching to the
+#     RECENT tab — the layout is wider so tiles span more horizontally.
+SCREEN_5_OCR_REGION: tuple[int, int, int, int] = (779, 729, 1561, 201)
+
+# Player-name OCR on screen 2 (the leaderboard). The name appears in a
+# fixed position relative to each row, so we crop using the row's mapped
+# y plus a fixed offset/height. Tune by mapping the name rect for row 1
+# (rank 1) with `python -m src.region_picker`. The printed --crop is
+# (x, y, w, h); plug them in here.
+#
+# Phone (2340x1080) example from row 1 with player_row_1.y = 246:
+#   region (1341, 196, 345, 53)
+#   -> X range:  (1341, 1341+345) = (1341, 1686)
+#   -> Y offset: 196 - 246 = -50 (name top sits 50px above row tap-y)
+#   -> Height:   53
+SCREEN_2_NAME_X_RANGE: tuple[int, int] = (1341, 1686)
+SCREEN_2_NAME_Y_OFFSET: int = -50
+SCREEN_2_NAME_HEIGHT: int = 53
 
 # OCR region for the big champion-name label at lower-left of screen 2
-# (e.g. "AATROX") — used to identify which champion we're currently on.
-SCREEN_2_CHAMP_NAME_REGION: tuple[int, int, int, int] = (100, 700, 240, 60)
+# (e.g. "AATROX") used to verify the bot didn't open the wrong leaderboard page.
+SCREEN_2_LABEL_REGION: tuple[int, int, int, int] = (90, 890, 240, 60)
 
 # How many player rows fit on screen 2 without scrolling.
 ROWS_PER_PAGE = 5
@@ -61,13 +83,28 @@ SCREEN_2_SAFE_Y_BOTTOM: int = 710
 
 
 def load_screen_points(n: int) -> dict[str, tuple[int, int]]:
-    """Return name -> (x, y) for coords/screen_N.json."""
+    """Return name -> (x, y) coordinates for screen N with robust absolute pathing."""
     path = COORDS_DIR / f"screen_{n}.json"
-    data = json.loads(path.read_text())
-    return {name: (p["x"], p["y"]) for name, p in data["points"].items()}
+
+    if not path.exists():
+        print(f"\n❌ [CRITICAL CONFIG ERROR] Layout configuration file missing!")
+        print(f"👉 Looked at absolute path: {path}")
+        print("💡 Please verify that your JSON calibration profiles exist in your 'coords/' directory.\n")
+        raise FileNotFoundError(f"Missing coordinate calibration map: {path}")
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return {name: (p["x"], p["y"]) for name, p in data["points"].items()}
+    except Exception as e:
+        print(f"\n❌ [CRITICAL READ ERROR] Failed parsing JSON contents at {path}")
+        print(f"👉 System Error: {e}\n")
+        raise
 
 
 def first_point(points: dict[str, tuple[int, int]]) -> tuple[str, int, int]:
-    """Return (name, x, y) of the first entry in the dict (insertion order)."""
+    """Return (name, x, y) of the first entry in a coordinates dict (insertion order)."""
+    if not points:
+        raise ValueError("Cannot extract coordinates from an empty points dictionary.")
     name, (x, y) = next(iter(points.items()))
     return name, x, y

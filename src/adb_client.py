@@ -17,9 +17,35 @@ class ADBClient:
     device: str = "127.0.0.1:7555"
 
     def connect(self) -> None:
-        out = self._run(["connect", self.device], use_device=False)
-        if "connected" not in out.lower() and "already" not in out.lower():
-            raise ADBError(f"adb connect failed: {out.strip()}")
+        # Only TCP/IP devices (IP:port form, e.g. 127.0.0.1:7555) need an
+        # explicit `adb connect`. USB-attached phones are already attached;
+        # we just verify they show up in `adb devices`.
+        if ":" in self.device:
+            out = self._run(["connect", self.device], use_device=False)
+            if "connected" not in out.lower() and "already" not in out.lower():
+                raise ADBError(f"adb connect failed: {out.strip()}")
+            return
+        # USB serial — verify it's listed and authorized.
+        out = self._run(["devices"], use_device=False)
+        listed = False
+        unauthorized = False
+        for line in out.splitlines():
+            if line.startswith(self.device + "\t") or line.startswith(self.device + " "):
+                listed = True
+                if "unauthorized" in line:
+                    unauthorized = True
+                break
+        if not listed:
+            raise ADBError(
+                f"USB device '{self.device}' not found in `adb devices`. "
+                "Plug it in, accept the 'Trust this computer' prompt on the phone, "
+                "and run `adb devices` to confirm it appears."
+            )
+        if unauthorized:
+            raise ADBError(
+                f"USB device '{self.device}' is unauthorized. "
+                "Look at the phone screen and tap 'Allow' on the USB-debugging prompt."
+            )
 
     def screenshot(self) -> np.ndarray:
         """Grab a screenshot from the device and return it as a BGR numpy array."""

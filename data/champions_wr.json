@@ -159,6 +159,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 37.0,
+        "lvl15": 953.0
+      },
+      "manaRegen": {
+        "base": 18.0,
+        "perLevel": 1.0,
+        "lvl15": 32.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -303,6 +313,16 @@
         "base": 10.0,
         "perLevel": 1.0,
         "lvl15": 24.0
+      },
+      "mana": {
+        "base": 200.0,
+        "perLevel": 0.0,
+        "lvl15": 200.0
+      },
+      "manaRegen": {
+        "base": 50.0,
+        "perLevel": 0.0,
+        "lvl15": 50.0
       },
       "armor": {
         "base": 34.0,
@@ -456,6 +476,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 5.0,
@@ -597,6 +627,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 52.0,
         "perLevel": 4.0,
@@ -734,6 +774,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 200.0,
+        "perLevel": 0.0,
+        "lvl15": 200.0
+      },
+      "manaRegen": {
+        "base": 50.0,
+        "perLevel": 0.0,
+        "lvl15": 50.0
       },
       "armor": {
         "base": 43.0,
@@ -903,6 +953,16 @@
         "perLevel": 1.0,
         "lvl15": 113.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 49.0,
+        "lvl15": 1076.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 4.0,
@@ -1053,6 +1113,16 @@
         "perLevel": 0.0,
         "lvl15": 8.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 43.0,
+        "lvl15": 1037.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -1192,6 +1262,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 30.0,
+        "lvl15": 765.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 4.0,
@@ -1328,6 +1408,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 43.0,
+        "lvl15": 1037.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
       },
       "armor": {
         "base": 34.0,
@@ -1475,6 +1565,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 37.0,
+        "lvl15": 938.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -1620,6 +1720,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 5.0,
@@ -1755,6 +1865,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 300.0,
+        "perLevel": 31.0,
+        "lvl15": 734.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 49.0,
@@ -1897,6 +2017,16 @@
         "base": 8.0,
         "perLevel": 0.0,
         "lvl15": 8.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 37.0,
+        "lvl15": 953.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 34.0,
@@ -2043,6 +2173,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 52.0,
         "perLevel": 4.0,
@@ -2181,6 +2321,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 35.0,
@@ -2323,6 +2473,16 @@
         "base": 11.0,
         "perLevel": 1.0,
         "lvl15": 25.0
+      },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 25.0,
+        "lvl15": 740.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 46.0,
@@ -2477,6 +2637,16 @@
         "perLevel": 0.0,
         "lvl15": 9.0
       },
+      "mana": {
+        "base": 272.0,
+        "perLevel": 40.0,
+        "lvl15": 832.0
+      },
+      "manaRegen": {
+        "base": 7.0,
+        "perLevel": 0.0,
+        "lvl15": 7.0
+      },
       "armor": {
         "base": 29.0,
         "perLevel": 4.0,
@@ -2596,6 +2766,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 50.0,
+        "lvl15": 1135.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
       },
       "armor": {
         "base": 35.0,
@@ -2744,6 +2924,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
       "armor": {
         "base": 52.0,
         "perLevel": 4.0,
@@ -2887,6 +3077,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 31.0,
+        "lvl15": 869.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 40.0,
@@ -3182,6 +3382,16 @@
         "perLevel": 9.0,
         "lvl15": 134.0
       },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 49.0,
+        "lvl15": 1166.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 5.0,
@@ -3319,6 +3529,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 43.0,
+        "lvl15": 992.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 40.0,
@@ -3472,6 +3692,16 @@
         "perLevel": 1.0,
         "lvl15": 25.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 45.0,
         "perLevel": 5.0,
@@ -3619,6 +3849,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 5.0,
@@ -3764,6 +4004,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 37.0,
+        "lvl15": 938.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -3904,6 +4154,16 @@
         "lvl15": 2330.0
       },
       "hpRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
+      "mana": {
+        "base": 300.0,
+        "perLevel": 37.0,
+        "lvl15": 818.0
+      },
+      "manaRegen": {
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
@@ -4068,6 +4328,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 18.0,
+        "perLevel": 1.0,
+        "lvl15": 32.0
+      },
       "armor": {
         "base": 30.0,
         "perLevel": 5.0,
@@ -4219,6 +4489,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 25.0,
+        "lvl15": 785.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 40.0,
@@ -4681,6 +4961,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 43.0,
+        "lvl15": 992.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 4.0,
@@ -4830,6 +5120,16 @@
         "perLevel": 1.0,
         "lvl15": 25.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 4.0,
@@ -4975,6 +5275,16 @@
         "base": 11.0,
         "perLevel": 1.0,
         "lvl15": 25.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 52.0,
@@ -5124,6 +5434,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 43.0,
+        "lvl15": 982.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 46.0,
@@ -5276,6 +5596,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 45.0,
+        "lvl15": 1050.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 5.0,
@@ -5424,6 +5754,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 25.0,
+        "lvl15": 695.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 46.0,
@@ -5581,6 +5921,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 43.0,
+        "lvl15": 1037.0
+      },
+      "manaRegen": {
+        "base": 21.0,
+        "perLevel": 1.0,
+        "lvl15": 35.0
+      },
       "armor": {
         "base": 45.0,
         "perLevel": 4.0,
@@ -5716,6 +6066,16 @@
         "lvl15": 2370.0
       },
       "hpRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 31.0,
+        "lvl15": 824.0
+      },
+      "manaRegen": {
         "base": 12.0,
         "perLevel": 1.0,
         "lvl15": 26.0
@@ -5872,6 +6232,16 @@
         "perLevel": 1.0,
         "lvl15": 26.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 43.0,
+        "lvl15": 992.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 4.0,
@@ -6021,6 +6391,16 @@
         "base": 10.0,
         "perLevel": 1.0,
         "lvl15": 24.0
+      },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 43.0,
+        "lvl15": 1022.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 46.0,
@@ -6180,6 +6560,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 43.0,
+        "lvl15": 992.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 4.0,
@@ -6333,6 +6723,16 @@
         "perLevel": 0.0,
         "lvl15": 8.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 5.0,
@@ -6479,6 +6879,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 31.0,
+        "lvl15": 869.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 35.0,
@@ -6633,6 +7043,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 37.0,
+        "lvl15": 858.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -6778,6 +7198,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 43.0,
+        "lvl15": 992.0
+      },
+      "manaRegen": {
+        "base": 21.0,
+        "perLevel": 1.0,
+        "lvl15": 35.0
+      },
       "armor": {
         "base": 37.0,
         "perLevel": 5.0,
@@ -6919,6 +7349,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 49.0,
+        "lvl15": 1166.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 30.0,
@@ -7211,6 +7651,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 16.0,
+        "perLevel": 1.0,
+        "lvl15": 30.0
       },
       "armor": {
         "base": 37.0,
@@ -7505,6 +7955,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 200.0,
+        "perLevel": 0.0,
+        "lvl15": 200.0
+      },
+      "manaRegen": {
+        "base": 50.0,
+        "perLevel": 0.0,
+        "lvl15": 50.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 5.0,
@@ -7644,6 +8104,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 40.0,
@@ -7791,6 +8261,16 @@
         "base": 14.0,
         "perLevel": 1.0,
         "lvl15": 28.0
+      },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 30.0,
+        "lvl15": 760.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 37.0,
@@ -7944,6 +8424,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -8092,6 +8582,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 46.0,
@@ -8244,6 +8744,16 @@
         "base": 11.0,
         "perLevel": 1.0,
         "lvl15": 25.0
+      },
+      "mana": {
+        "base": 200.0,
+        "perLevel": 0.0,
+        "lvl15": 200.0
+      },
+      "manaRegen": {
+        "base": 50.0,
+        "perLevel": 0.0,
+        "lvl15": 50.0
       },
       "armor": {
         "base": 46.0,
@@ -8402,6 +8912,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 31.0,
+        "lvl15": 824.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 55.0,
         "perLevel": 4.0,
@@ -8546,6 +9066,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 37.0,
+        "lvl15": 938.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
       },
       "armor": {
         "base": 40.0,
@@ -8692,6 +9222,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 37.0,
+        "lvl15": 978.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
       },
       "armor": {
         "base": 34.0,
@@ -8842,6 +9382,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 5.0,
@@ -8988,6 +9538,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 43.0,
+        "lvl15": 1082.0
+      },
+      "manaRegen": {
+        "base": 21.0,
+        "perLevel": 1.0,
+        "lvl15": 35.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 4.0,
@@ -9130,6 +9690,16 @@
         "base": 8.0,
         "perLevel": 0.0,
         "lvl15": 8.0
+      },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 37.0,
+        "lvl15": 998.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
       },
       "armor": {
         "base": 34.0,
@@ -9274,6 +9844,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 49.0,
@@ -9420,6 +10000,16 @@
         "base": 10.0,
         "perLevel": 1.0,
         "lvl15": 24.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 45.0,
+        "lvl15": 1010.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 49.0,
@@ -9572,6 +10162,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 4.0,
@@ -9712,6 +10312,16 @@
         "base": 8.0,
         "perLevel": 0.0,
         "lvl15": 8.0
+      },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 37.0,
+        "lvl15": 998.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
       },
       "armor": {
         "base": 30.0,
@@ -9855,6 +10465,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 45.0,
+        "lvl15": 1050.0
+      },
+      "manaRegen": {
+        "base": 20.0,
+        "perLevel": 1.0,
+        "lvl15": 34.0
       },
       "armor": {
         "base": 34.0,
@@ -10001,6 +10621,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 50.0,
+        "lvl15": 1120.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 34.0,
@@ -10290,6 +10920,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 37.0,
+        "lvl15": 953.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 37.0,
         "perLevel": 4.0,
@@ -10437,6 +11077,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 18.0,
+        "perLevel": 1.0,
+        "lvl15": 32.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 4.0,
@@ -10580,6 +11230,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 4.0,
@@ -10718,6 +11378,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 43.0,
+        "lvl15": 992.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 46.0,
@@ -10866,6 +11536,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 37.0,
+        "lvl15": 938.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 5.0,
@@ -10946,7 +11626,7 @@
           "10",
           "9"
         ],
-        "text": "Bushwhack : Places an invisible trap for 10 seconds, When an enemy walks over it, they are revealed and dealt 10 / 20 / 30 / 40 ( +4% AP ) magic damage per second for 4 seconds. 4 traps may be active at once. Pounce : Pounces toward a target location, dealing 65 / 100 / 135 / 170 ( +40% bonus AD +25% AP ) magic damage to enemies in the area she lands. Killing an enemy in Cougar Form or using this ability on a Hunted target reduces its cooldown to 2.75 / 2.25 / 1.75 / 1.25 seconds.",
+        "text": "Bushwhack : Places an invisible trap for 10 seconds, When an enemy walks over it, they are revealed and dealt 10 / 20 / 30 / 40 ( +4% AP ) magic damage per second for 4 seconds. 4 traps may be active at once. Pounce : Pounces toward a target location, dealing 55 / 90 / 125 / 160 ( +40% bonus AD +25% AP ) magic damage to enemies in the area she lands. Killing an enemy in Cougar Form or using this ability on a Hunted target reduces its cooldown to 2.75 / 2.25 / 1.75 / 1.25 seconds.",
         "damageTypes": [
           "magic"
         ],
@@ -10988,7 +11668,7 @@
           "3",
           "3"
         ],
-        "text": "Passive : - While in Human Form , applying Hunted refreshes this ability's cooldown. - While in Cougar Form , Nidalee's basic ability damage scales with this ability's rank, and she gains 2 ( +3% AP ) bonus Armor and Magic Resist . Human Form (Active) : Transforms into Cougar Form, gaining melee attacks and replacing her active abilities. Cougar Form (Active) : Transforms into Human Form, gaining ranged attacks and replacing her active abilities.",
+        "text": "Passive : - While in Human Form , applying Hunted refreshes this ability's cooldown. - While in Cougar Form , Nidalee's basic ability damage scales with this ability's rank, and she gains 2 ( +2.5% AP ) bonus Armor and Magic Resist . Human Form (Active) : Transforms into Cougar Form, gaining melee attacks and replacing her active abilities. Cougar Form (Active) : Transforms into Human Form, gaining ranged attacks and replacing her active abilities.",
         "damageTypes": [],
         "scales": [
           "ap"
@@ -11007,6 +11687,16 @@
         "lvl15": 2392.0
       },
       "hpRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
+      },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 37.0,
+        "lvl15": 858.0
+      },
+      "manaRegen": {
         "base": 10.0,
         "perLevel": 1.0,
         "lvl15": 24.0
@@ -11157,6 +11847,16 @@
         "perLevel": 1.0,
         "lvl15": 24.0
       },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 43.0,
         "perLevel": 4.0,
@@ -11305,6 +12005,16 @@
         "base": 10.0,
         "perLevel": 1.0,
         "lvl15": 24.0
+      },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 37.0,
+        "lvl15": 978.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
       },
       "armor": {
         "base": 34.0,
@@ -11459,6 +12169,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 3.0,
@@ -11610,6 +12330,16 @@
         "perLevel": 10.0,
         "lvl15": 152.0
       },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 25.0,
+        "lvl15": 690.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 3.0,
@@ -11756,6 +12486,16 @@
         "perLevel": 0.0,
         "lvl15": 8.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 43.0,
+        "lvl15": 1037.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 28.0,
         "perLevel": 4.0,
@@ -11893,6 +12633,16 @@
         "lvl15": 2400.0
       },
       "hpRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 45.0,
+        "lvl15": 1010.0
+      },
+      "manaRegen": {
         "base": 12.0,
         "perLevel": 1.0,
         "lvl15": 26.0
@@ -12043,6 +12793,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 25.0,
+        "lvl15": 770.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 52.0,
@@ -12197,6 +12957,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 30.0,
+        "lvl15": 800.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 46.0,
@@ -12362,6 +13132,16 @@
         "perLevel": 0.0,
         "lvl15": 11.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 43.0,
+        "lvl15": 1037.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 50.0,
         "perLevel": 5.0,
@@ -12508,6 +13288,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 43.0,
+        "lvl15": 1037.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 49.0,
@@ -12657,6 +13447,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 49.0,
         "perLevel": 4.0,
@@ -12791,6 +13591,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 30.0,
+        "lvl15": 800.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
       },
       "armor": {
         "base": 46.0,
@@ -13550,6 +14360,16 @@
         "perLevel": 1.0,
         "lvl15": 26.0
       },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 45.0,
+        "lvl15": 970.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 5.0,
@@ -13688,6 +14508,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 5.0,
@@ -13824,6 +14654,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 49.0,
+        "lvl15": 1031.0
+      },
+      "manaRegen": {
+        "base": 21.0,
+        "perLevel": 1.0,
+        "lvl15": 35.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 4.0,
@@ -13869,7 +14709,7 @@
         "slot": "P",
         "name": "Absolution",
         "cooldowns": [],
-        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1.2% of their current health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 15% Critical Chance.",
+        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1% of their current health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 15% Critical Chance.",
         "damageTypes": [
           "physical"
         ],
@@ -13944,7 +14784,7 @@
           "80",
           "75"
         ],
-        "text": "Fires a global wave that shields ally champions from 120 / 160 / 200 ( +40% AP + 4 per Mist) damage for 3 seconds, while dealing 250 / 375 / 500 ( +120% AD +50% AP ) physical damage and applies Mist to enemy champions caught in the center.",
+        "text": "Fires a global wave that shields ally champions from 120 / 160 / 200 ( +50% AP + 2.5 per Mist) damage for 3 seconds, while dealing 250 / 375 / 500 ( +120% AD +50% AP ) physical damage and applies Mist to enemy champions caught in the center.",
         "damageTypes": [
           "physical"
         ],
@@ -13971,6 +14811,16 @@
         "base": 8.0,
         "perLevel": 0.0,
         "lvl15": 8.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 37.0,
+        "lvl15": 953.0
+      },
+      "manaRegen": {
+        "base": 16.0,
+        "perLevel": 1.0,
+        "lvl15": 30.0
       },
       "armor": {
         "base": 34.0,
@@ -14275,6 +15125,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 200.0,
+        "perLevel": 0.0,
+        "lvl15": 200.0
+      },
+      "manaRegen": {
+        "base": 50.0,
+        "perLevel": 0.0,
+        "lvl15": 50.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 3.0,
@@ -14567,6 +15427,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 4.0,
@@ -14710,6 +15580,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
       },
       "armor": {
         "base": 46.0,
@@ -14867,6 +15747,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 45.0,
+        "lvl15": 970.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -15003,6 +15893,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 4.0,
@@ -15070,7 +15970,7 @@
           "4",
           "3"
         ],
-        "text": "First Cast : Grabs a boulder, empowering his next 3 attacks to gain 25% / 30% / 35% / 40% Attack Speed and deal 15 / 30 / 45 / 60 ( +100% bonus AD +4% bonus Health ) physical damage to nearby enemies. The third attack deals an additional 10% of the target's max Health as physical damage and slows by 45% for 1 second. Recast (Upheaval) : Ends this ability and throws the boulder in a target direction. The boulder explodes on the first enemy hit, dealing 15 / 30 / 45 / 60 ( +100% bonus AD +4% bonus Health ) + 9% of the target's max Health as physical damage to them and nearby enemies and slowing them by 40% for 1 second. Percent Health damage to monsters from the first attack and Upheaval is capped at 200 / 250 / 300 / 350 ( +100% bonus AD +4% bonus Health ). The first two attacks deal 100% damage to structures. The third attack and Upheaval deal 200% damage to structures.",
+        "text": "First Cast : Grabs a boulder, empowering his next 3 attacks to gain 25% / 30% / 35% / 40% Attack Speed and deal 15 / 30 / 45 / 60 ( +100% bonus AD +4% bonus Health ) physical damage to nearby enemies. The third attack deals an additional 11% of the target's max Health as physical damage and slows by 45% for 1 second. Recast (Upheaval) : Ends this ability and throws the boulder in a target direction. The boulder explodes on the first enemy hit, dealing 15 / 30 / 45 / 60 ( +100% bonus AD +4% bonus Health ) + 9% of the target's max Health as physical damage to them and nearby enemies and slowing them by 40% for 1 second. Percent Health damage to monsters from the first attack and Upheaval is capped at 200 / 250 / 300 / 350 ( +100% bonus AD +4% bonus Health ). The first two attacks deal 100% damage to structures. The third attack and Upheaval deal 200% damage to structures.",
         "damageTypes": [
           "physical"
         ],
@@ -15089,12 +15989,12 @@
         "slot": "2",
         "name": "Seismic Bastion",
         "cooldowns": [
-          "9",
           "8",
           "7",
-          "6"
+          "6",
+          "5"
         ],
-        "text": "Immediately gains a shield that absorbs damage equal to 8% max Health for 2.5 seconds and triggers an earthquake that deals 50 / 70 / 90 / 110 ( +80% AP ) magic damage and slows nearby enemies by 25% for 1 second.",
+        "text": "Immediately gains a shield that absorbs damage equal to 10% max Health for 2.5 seconds and triggers an earthquake that deals 50 / 70 / 90 / 110 ( +80% AP ) magic damage and slows nearby enemies by 25% for 1 second.",
         "damageTypes": [
           "magic"
         ],
@@ -15112,10 +16012,10 @@
         "slot": "3",
         "name": "Ixtal's Impact",
         "cooldowns": [
-          "20",
           "18",
           "16",
-          "14"
+          "14",
+          "12"
         ],
         "text": "First cast : charges in a target direction, ignoring terrain; If he runs into an enemy champion or large monster, he drags them along for the rest of his charge; Colliding into a wall with an enemy in tow deals 60 / 90 / 120 / 150 ( +120% bonus AD +6% max Health ) physical damage to the enemy and stuns them for 1.5 seconds. Recast : Ends his charge early. Colliding into a wall with an enemy in tow reduces Ixtal's Impact's cooldown by 35% .",
         "damageTypes": [
@@ -15166,6 +16066,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
       },
       "armor": {
         "base": 34.0,
@@ -15325,6 +16235,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 37.0,
+        "lvl15": 863.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 3.0,
@@ -15470,6 +16390,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 49.0,
+        "lvl15": 1031.0
+      },
+      "manaRegen": {
+        "base": 18.0,
+        "perLevel": 1.0,
+        "lvl15": 32.0
+      },
       "armor": {
         "base": 37.0,
         "perLevel": 4.0,
@@ -15611,6 +16541,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 30.0,
+        "lvl15": 880.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 40.0,
@@ -15760,6 +16700,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -15907,6 +16857,16 @@
         "perLevel": 0.0,
         "lvl15": 8.0
       },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 37.0,
+        "lvl15": 978.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -16040,6 +17000,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 31.0,
+        "lvl15": 894.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 40.0,
@@ -16187,6 +17157,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 18.0,
+        "perLevel": 1.0,
+        "lvl15": 32.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -16323,6 +17303,16 @@
         "base": 11.0,
         "perLevel": 1.0,
         "lvl15": 25.0
+      },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 31.0,
+        "lvl15": 869.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 34.0,
@@ -16469,6 +17459,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 300.0,
+        "perLevel": 31.0,
+        "lvl15": 734.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 35.0,
@@ -16753,6 +17753,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -16894,6 +17904,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 37.0,
+        "lvl15": 858.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 4.0,
@@ -17027,6 +18047,16 @@
         "base": 10.0,
         "perLevel": 1.0,
         "lvl15": 24.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 46.0,
@@ -17186,6 +18216,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 25.0,
+        "lvl15": 740.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 35.0,
         "perLevel": 4.0,
@@ -17339,6 +18379,16 @@
         "perLevel": 0.0,
         "lvl15": 8.0
       },
+      "mana": {
+        "base": 300.0,
+        "perLevel": 31.0,
+        "lvl15": 734.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
       "armor": {
         "base": 31.0,
         "perLevel": 4.0,
@@ -17480,6 +18530,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 37.0,
+        "lvl15": 998.0
+      },
+      "manaRegen": {
+        "base": 16.0,
+        "perLevel": 1.0,
+        "lvl15": 30.0
+      },
       "armor": {
         "base": 37.0,
         "perLevel": 4.0,
@@ -17614,6 +18674,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 30.0,
+        "lvl15": 900.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
       },
       "armor": {
         "base": 37.0,
@@ -17765,6 +18835,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 37.0,
+        "lvl15": 998.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -17914,6 +18994,16 @@
         "base": 11.0,
         "perLevel": 1.0,
         "lvl15": 25.0
+      },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 37.0,
+        "lvl15": 908.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 46.0,
@@ -18225,6 +19315,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 37.0,
+        "lvl15": 978.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -18513,6 +19613,16 @@
         "perLevel": 1.0,
         "lvl15": 23.0
       },
+      "mana": {
+        "base": 390.0,
+        "perLevel": 49.0,
+        "lvl15": 1076.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 4.0,
@@ -18676,6 +19786,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 340.0,
+        "perLevel": 37.0,
+        "lvl15": 858.0
+      },
+      "manaRegen": {
+        "base": 16.0,
+        "perLevel": 1.0,
+        "lvl15": 30.0
+      },
       "armor": {
         "base": 46.0,
         "perLevel": 4.0,
@@ -18723,7 +19843,7 @@
         "slot": "P",
         "name": "Eternal Hunger",
         "cooldowns": [],
-        "text": "Attacks deal an additional 12 - 46 ( +20% bonus AD +10% AP ) magic damage on hit. While below 50% health , heal for 100% of the damage dealt .",
+        "text": "Attacks deal an additional 12 - 46 ( +15% bonus AD +10% AP ) magic damage on hit. While below 50% health , heal for 100% of the damage dealt .",
         "damageTypes": [
           "magic"
         ],
@@ -18746,7 +19866,7 @@
           "6",
           "6"
         ],
-        "text": "Lunges forward and bites the target enemy, dealing 70 ( 120% AD + 90% AP ) magic damage + 6% / 7% / 8% / 9% of the target's max health and healing for 42.5% / 55% / 67.5% / 80% of damage dealt. Drag : Warwick leaps behind targets and follows their movement. The bonus damage is capped at 100 / 125 / 150 / 175 against monsters. Deal 50% extra damage to minions and restores 50% of cooldown when killing minions.",
+        "text": "Lunges forward and bites the target enemy, dealing 70 ( 120% AD + 85% AP ) magic damage + 6% / 7% / 8% / 9% of the target's max health and healing for 42.5% / 55% / 67.5% / 80% of damage dealt. Drag : Warwick leaps behind targets and follows their movement. The bonus damage is capped at 100 / 125 / 150 / 175 against monsters. Deal 50% extra damage to minions and restores 50% of cooldown when killing minions.",
         "damageTypes": [
           "magic"
         ],
@@ -18832,6 +19952,16 @@
         "base": 12.0,
         "perLevel": 1.0,
         "lvl15": 26.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
       },
       "armor": {
         "base": 40.0,
@@ -18981,6 +20111,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 31.0,
+        "lvl15": 869.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 4.0,
@@ -19122,6 +20262,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 31.0,
+        "lvl15": 779.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 46.0,
@@ -19287,6 +20437,16 @@
         "base": 12.0,
         "perLevel": 1.0,
         "lvl15": 26.0
+      },
+      "mana": {
+        "base": 100.0,
+        "perLevel": 0.0,
+        "lvl15": 100.0
+      },
+      "manaRegen": {
+        "base": 0.0,
+        "perLevel": 0.0,
+        "lvl15": 0.0
       },
       "armor": {
         "base": 40.0,
@@ -19724,6 +20884,16 @@
         "perLevel": 1.0,
         "lvl15": 25.0
       },
+      "mana": {
+        "base": 435.0,
+        "perLevel": 37.0,
+        "lvl15": 953.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
       "armor": {
         "base": 40.0,
         "perLevel": 3.0,
@@ -19847,7 +21017,7 @@
           "75",
           "65"
         ],
-        "text": "Channels for 3.5 seconds, launching 7 magical waves : While Attached , hold and drag the ability button to steer the waves. Against enemies (per wave) : Deals 80 / 100 / 120 ( +15% AP ) magic damage . Slows by 10% for 1.25 seconds, increased by 10% per wave hit. On allied champions (per wave ): Restores 20 / 30 / 4 0 ( +5% AP ) Health . Excess healing is converted into a shield instead. Best Friend Bonus : For her Best Friend , the heal is increased to 26 / 39 / 52 ( +8% AP ) Health . Wave Damage Stacks : Waves after the first deal 20 / 30 / 40 ( +5% AP ) magic damage . Yuumi can move and cast You and Me! and Zoomies while channeling.",
+        "text": "Channels for 3.5 seconds, launching 7 magical waves : While Attached , hold and drag the ability button to steer the waves. Against enemies (per wave) : Deals 80 / 100 / 120 ( +15% AP ) magic damage . Slows by 10% for 1.25 seconds, increased by 10% per wave hit. On allied champions (per wave ): Restores 20 / 35 / 50 ( +5% AP ) Health . Excess healing is converted into a shield instead. Best Friend Bonus : For her Best Friend , the heal is increased to 26 / 39 / 52 ( +8% AP ) Health . Wave Damage Stacks : Waves after the first deal 20 / 30 / 40 ( +5% AP ) magic damage . Yuumi can move and cast You and Me! and Zoomies while channeling.",
         "damageTypes": [
           "magic"
         ],
@@ -19875,6 +21045,16 @@
         "base": 9.0,
         "perLevel": 1.0,
         "lvl15": 23.0
+      },
+      "mana": {
+        "base": 200.0,
+        "perLevel": 0.0,
+        "lvl15": 200.0
+      },
+      "manaRegen": {
+        "base": 50.0,
+        "perLevel": 0.0,
+        "lvl15": 50.0
       },
       "armor": {
         "base": 40.0,
@@ -20023,6 +21203,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 380.0,
+        "perLevel": 37.0,
+        "lvl15": 898.0
+      },
+      "manaRegen": {
+        "base": 10.0,
+        "perLevel": 1.0,
+        "lvl15": 24.0
       },
       "armor": {
         "base": 31.0,
@@ -20182,6 +21372,16 @@
         "perLevel": 1.0,
         "lvl15": 22.0
       },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 31.0,
+        "lvl15": 894.0
+      },
+      "manaRegen": {
+        "base": 16.0,
+        "perLevel": 1.0,
+        "lvl15": 30.0
+      },
       "armor": {
         "base": 34.0,
         "perLevel": 4.0,
@@ -20326,6 +21526,16 @@
         "perLevel": 1.0,
         "lvl15": 20.0
       },
+      "mana": {
+        "base": 460.0,
+        "perLevel": 37.0,
+        "lvl15": 978.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
+      },
       "armor": {
         "base": 45.0,
         "perLevel": 4.0,
@@ -20464,6 +21674,16 @@
         "base": 8.0,
         "perLevel": 1.0,
         "lvl15": 22.0
+      },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 37.0,
+        "lvl15": 938.0
+      },
+      "manaRegen": {
+        "base": 12.0,
+        "perLevel": 1.0,
+        "lvl15": 26.0
       },
       "armor": {
         "base": 34.0,
@@ -20604,6 +21824,16 @@
         "base": 6.0,
         "perLevel": 1.0,
         "lvl15": 20.0
+      },
+      "mana": {
+        "base": 420.0,
+        "perLevel": 37.0,
+        "lvl15": 938.0
+      },
+      "manaRegen": {
+        "base": 14.0,
+        "perLevel": 1.0,
+        "lvl15": 28.0
       },
       "armor": {
         "base": 37.0,

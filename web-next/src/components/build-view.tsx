@@ -31,10 +31,16 @@ function ItemTile({
   it,
   n,
   size = 46,
+  badge,
+  note,
 }: {
   it: BuildItem;
   n?: number;
   size?: number;
+  /** Small corner label, e.g. the boot tier ("T2" / "T3"). */
+  badge?: string;
+  /** Extra tooltip line, e.g. when the tier-3 upgrade is bought. */
+  note?: string;
 }) {
   return (
     <Tip
@@ -43,6 +49,7 @@ function ItemTile({
           <span className="font-bold">{it.name}</span>
           <span className="text-gold"> · {it.cost.toLocaleString()}g</span>
           {it.core && <span className="ml-1 rounded bg-gold/20 px-1 text-[0.6rem] font-bold uppercase text-gold">core</span>}
+          {note && <span className="mt-1 block text-accent">{note}</span>}
           {it.reason && <span className="mt-1 block text-muted">{it.reason}</span>}
         </>
       }
@@ -60,6 +67,11 @@ function ItemTile({
         {n != null && (
           <span className="absolute -left-1.5 -top-1.5 grid h-4.5 w-4.5 min-h-[18px] min-w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">
             {n}
+          </span>
+        )}
+        {badge && (
+          <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded bg-[#0e1322] px-1 text-[0.55rem] font-bold uppercase leading-tight text-faint ring-1 ring-line">
+            {badge}
           </span>
         )}
       </span>
@@ -229,14 +241,41 @@ export function BuildView({ data }: { data: ChampionBuilds }) {
           {/* build order: pure icon strip, everything else in tooltips */}
           <div className="glass rounded-2xl p-4">
             <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
-              Build order <span className="normal-case text-faint/70">· core items first · hover or tap</span>
+              Build order{" "}
+              <span className="normal-case text-faint/70">
+                · core items first · hover or tap
+                {build.bootsEarly ? " · T2 boots first, T3 upgrade at 10:00" : ""}
+              </span>
             </p>
+            {/* Boots sit IN the order, not appended after it: patch 7.2 made
+                tier 3 a real 2000-2200g purchase unlocked at 10:00, so you buy
+                tier 2 first and upgrade a couple of items later. */}
             <div className="flex flex-wrap items-center gap-2.5">
+              {build.bootsEarly && (
+                <ItemTile it={build.bootsEarly} size={40} badge="T2" />
+              )}
               {build.coreBuild.map((it, i) => (
-                <ItemTile key={it.slug} it={it} n={i + 1} />
+                <span key={it.slug} className="inline-flex items-center gap-2.5">
+                  <ItemTile it={it} n={i + 1} />
+                  {build.boots && build.bootsEarly && build.bootsUpgradeAfter === i + 1 && (
+                    <ItemTile
+                      it={build.boots}
+                      size={40}
+                      badge="T3"
+                      note={`Upgrade from ${build.bootsEarly.name} after your ${
+                        i + 1
+                      }${i + 1 === 1 ? "st" : i + 1 === 2 ? "nd" : i + 1 === 3 ? "rd" : "th"} item (unlocks at 10:00)`}
+                    />
+                  )}
+                </span>
               ))}
-              {(build.boots || build.enchantment) && <span className="mx-0.5 text-faint">+</span>}
-              {build.boots && <ItemTile it={build.boots} size={40} />}
+              {/* no tier-3 for these boots: show them once, at the end */}
+              {build.boots && !build.bootsEarly && (
+                <>
+                  <span className="mx-0.5 text-faint">+</span>
+                  <ItemTile it={build.boots} size={40} />
+                </>
+              )}
               {build.enchantment && <ItemTile it={build.enchantment} size={40} />}
             </div>
           </div>

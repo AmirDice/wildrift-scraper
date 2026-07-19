@@ -401,20 +401,27 @@
       "P": {
         "name": "Drakehound’s Step",
         "cooldowns": [],
-        "damage": [],
-        "steroids": [
+        "damage": [
           {
-            "stat": "attackSpeed",
-            "pct": 50,
-            "note": "next attack after Feint"
+            "name": "Drakehound's Step",
+            "type": "physical",
+            "base": [
+              5
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 25
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
           }
         ],
+        "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Feint: dash after casting ability",
-          "Stacks up to 3 times",
-          "Scales with champion level (base 5-40)",
-          "P/Drakehound's Step: ungrounded ['base 7.5']"
+          "damage scales from 5 to 40 per champion level; restores 50 Energy; stacks up to 3 times"
         ]
       },
       "1": {
@@ -439,11 +446,22 @@
               {
                 "stat": "bonusAd",
                 "pct": 30
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": [
+                  2,
+                  2.5,
+                  3,
+                  3.5
+                ]
               }
-            ]
+            ],
+            "hits": 1,
+            "when": "once per target"
           },
           {
-            "name": "Cunning Sweep Edge",
+            "name": "Cunning Sweep (Edge)",
             "type": "physical",
             "base": [
               60,
@@ -455,12 +473,23 @@
               {
                 "stat": "bonusAd",
                 "pct": 60
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
               }
             ],
+            "hits": 1,
+            "when": "once per target",
             "alt": true
           },
           {
-            "name": "Sundering Slam Primary",
+            "name": "Sundering Slam (First)",
             "type": "physical",
             "base": [
               70,
@@ -472,11 +501,23 @@
               {
                 "stat": "bonusAd",
                 "pct": 90
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
               }
-            ]
+            ],
+            "hits": 1,
+            "when": "once per target",
+            "alt": true
           },
           {
-            "name": "Sundering Slam Secondary",
+            "name": "Sundering Slam (Others)",
             "type": "physical",
             "base": [
               35,
@@ -488,14 +529,26 @@
               {
                 "stat": "bonusAd",
                 "pct": 45
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": [
+                  2,
+                  2.5,
+                  3,
+                  3.5
+                ]
               }
-            ]
+            ],
+            "hits": 1,
+            "when": "once per target",
+            "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Also deals % max health damage: 2/2.5/3/3.5% (+0.02% per bonus AD) for non-edge, double for edge; Sundering Slam similar: 4/5/6/7% (+0.04% per bonus AD) primary, half secondary"
+          "max health damage also scales with 0.02%/0.04% bonus AD (edge/first) and 0.02% (others); recast mechanic not modeled"
         ]
       },
       "2": {
@@ -521,10 +574,12 @@
                 "stat": "bonusAd",
                 "pct": 80
               }
-            ]
+            ],
+            "hits": 1,
+            "when": "once per target"
           },
           {
-            "name": "Repudiation Enhanced Shockwave",
+            "name": "Repudiation Empowered Shockwave",
             "type": "physical",
             "base": [
               105,
@@ -538,6 +593,8 @@
                 "pct": 120
               }
             ],
+            "hits": 1,
+            "when": "once per target",
             "alt": true
           }
         ],
@@ -557,8 +614,7 @@
           }
         ],
         "unmodeled": [
-          "Shield base 50-330 (scales with level)",
-          "Blocks crowd control for 0.5s"
+          "shield base 50-330 over ranks; blocks CC for 0.5s; shield duration 1.5s"
         ]
       },
       "3": {
@@ -582,17 +638,22 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 50
+                "pct": [
+                  50,
+                  60,
+                  70,
+                  80
+                ]
               }
-            ]
+            ],
+            "hits": 1,
+            "when": "once per target"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Bonus AD ratio increases per rank (50-80%)",
-          "Slow 99% decaying over 1s",
-          "Recast after Drakehound's Step"
+          "99% slow decaying over 1s; recast mechanic after dash not modeled"
         ]
       },
       "4": {
@@ -605,7 +666,7 @@
         ],
         "damage": [
           {
-            "name": "Public Execution Slam",
+            "name": "Public Execution",
             "type": "physical",
             "base": [
               200,
@@ -625,41 +686,66 @@
                 "stat": "targetMissingHp",
                 "pct": 20
               }
-            ]
+            ],
+            "hits": 1,
+            "when": "once per target"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive: gains 10/20/30% Armor Pen",
-          "Active: heal for 12.5/15/17.5% of damage dealt (25% from minions, 40% from monsters)",
-          "Damage reduction 30/40/50%",
-          "Suppress and stun",
-          "Cooldown refund if miss"
+          "passive heal 12.5%/15%/17.5% of ability damage (reduced vs minions/monsters); active: suppress 1s, damage reduction 30%/40%/50%, unstoppable, stun 0.4s; 35% cooldown refund if miss"
         ]
       }
     },
     "combo": [
-      "4",
+      "3",
+      "auto",
       "1",
       "auto",
       "1",
+      "auto",
       "2",
-      "3",
-      "auto"
+      "auto",
+      "4"
     ],
     "mechanics": [
       {
         "kind": "noResource",
         "evidence": "restores 50 Energy"
+      },
+      {
+        "kind": "reload",
+        "evidence": "Stacks up to 3 times.",
+        "magazine": 3
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.2,
+      "asEfficiency": 0.5,
       "resource": "energy",
       "abilitiesCanCrit": false,
       "confidence": "medium"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 0.6,
+      "tradeFrequency": 0.8,
+      "objectiveDamage": 0.4,
+      "waveclear": 0.6,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.4,
+      "avgFightLength": 0.6,
+      "confidence": "medium",
+      "derived": {
+        "spellCastRate": 0.24,
+        "avgFightLength": 0.13
+      },
+      "flags": [
+        "spellCastRate",
+        "avgFightLength"
+      ]
     }
   },
   "Diana": {
@@ -687,7 +773,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "bonus attack speed on ability cast (amount not specified in tooltip)"
+          "Passive grants bonus basic attack speed on ability cast for 4 seconds, amount not specified."
         ]
       },
       "1": {
@@ -769,7 +855,7 @@
           }
         ],
         "unmodeled": [
-          "shield increased by additional 50/70/90/110 (+40% AP) if third sphere detonates"
+          "Shield increased by the same amount if the third sphere detonates."
         ]
       },
       "3": {
@@ -802,9 +888,7 @@
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "cooldown reduced to 0.5s if removes Moonlight"
-        ]
+        "unmodeled": []
       },
       "4": {
         "name": "Moonfall",
@@ -815,24 +899,7 @@
         ],
         "damage": [
           {
-            "name": "Moonfall Glow (instant)",
-            "type": "magic",
-            "base": [
-              100,
-              160,
-              220
-            ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 40
-              }
-            ],
-            "hits": 1,
-            "when": "per cast"
-          },
-          {
-            "name": "Moonfall Glow (full charge)",
+            "name": "Moonfall Glow (Full Charge)",
             "type": "magic",
             "base": [
               200,
@@ -846,18 +913,38 @@
               }
             ],
             "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Moonfall Glow (Min Charge)",
+            "type": "magic",
+            "base": [
+              100,
+              160,
+              220
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 40
+              }
+            ],
+            "hits": 1,
             "when": "per cast",
             "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "Slows targets by 20% for 2 seconds."
+        ]
       }
     },
     "combo": [
       "1",
       "3",
+      "auto",
       "2",
       "auto",
       "4",
@@ -866,16 +953,34 @@
     "mechanics": [
       {
         "kind": "everyNHit",
-        "evidence": "Every third attack",
-        "n": 3
+        "params": {
+          "n": 3
+        },
+        "source": "llm-knowledge"
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.3,
+      "asEfficiency": 0.2,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 1.0,
+      "tradeFrequency": 0.4,
+      "objectiveDamage": 0.8,
+      "waveclear": 0.8,
+      "jungleClear": 1.0,
+      "roamFrequency": 1.0,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.39,
+        "avgFightLength": 0.4
+      }
     }
   },
   "Graves": {
@@ -883,13 +988,28 @@
       "P": {
         "name": "New Destiny",
         "cooldowns": [],
-        "damage": [],
+        "damage": [
+          {
+            "name": "New Destiny (non-crit)",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 432
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Reload mechanic, knockback on non-champions.",
-          "P/New Destiny (non-critical): ungrounded ['base 0']",
-          "P/New Destiny (critical): ungrounded ['base 0']"
+          "Structures only take 75% damage. Buckshot knockback on non-champions.",
+          "P/New Destiny (crit): ungrounded ['ratio 960%']"
         ]
       },
       "1": {
@@ -902,7 +1022,7 @@
         ],
         "damage": [
           {
-            "name": "End of the Line - initial",
+            "name": "End of the Line - Initial",
             "type": "physical",
             "base": [
               70,
@@ -917,11 +1037,10 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           },
           {
-            "name": "End of the Line - detonation",
+            "name": "End of the Line - Detonation",
             "type": "physical",
             "base": [
               80,
@@ -933,17 +1052,29 @@
               {
                 "stat": "ad",
                 "pct": 110
+              },
+              {
+                "stat": "ad",
+                "pct": 130
+              },
+              {
+                "stat": "ad",
+                "pct": 150
+              },
+              {
+                "stat": "ad",
+                "pct": 170
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false,
-            "unmodeled": "Ratio increases per rank: 110%/130%/150%/170% AD. Detonates in 0.25s if hits terrain. 110% damage vs monsters."
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "Deals 110% damage against monsters. Detonation time 1s (0.25s if hits terrain)."
+        ]
       },
       "2": {
         "name": "Smoke Screen",
@@ -955,7 +1086,7 @@
         ],
         "damage": [
           {
-            "name": "Smoke Screen - initial impact",
+            "name": "Smoke Screen",
             "type": "magic",
             "base": [
               60,
@@ -970,14 +1101,13 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Cloud lasts 4s, enemies inside cannot see outside. Slow 50% for 0.5s."
+          "Creates smoke cloud for 4s that blocks vision. Initial impact also slows 50% for 0.5s."
         ]
       },
       "3": {
@@ -993,17 +1123,17 @@
           {
             "stat": "armor",
             "flat": [
-              13,
-              18,
-              23,
-              28
+              78,
+              108,
+              138,
+              168
             ],
-            "note": "Stacks up to 6 times. Each stack grants this armor. Dashing towards enemy champion grants 2 stacks. Refreshes on damaging non-minions."
+            "note": "Max stacks (6) of True Grit."
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Dash reloads one shell. Each bullet hit reduces cooldown by 0.5s."
+          "Dashes, reloads one shell. Dashing towards champion grants 2 stacks. Each bullet hit reduces cooldown by 0.5s."
         ]
       },
       "4": {
@@ -1015,7 +1145,7 @@
         ],
         "damage": [
           {
-            "name": "Collateral Damage - shell impact",
+            "name": "Collateral Damage - Initial",
             "type": "physical",
             "base": [
               300,
@@ -1029,11 +1159,10 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           },
           {
-            "name": "Collateral Damage - cone explosion",
+            "name": "Collateral Damage - Explosion",
             "type": "physical",
             "base": [
               200,
@@ -1047,39 +1176,63 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false,
-            "unmodeled": "Cone deals damage to enemies other than initial target. Shell impact target does not take cone damage."
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Knocks Graves back from recoil."
+          "Initial hit and explosion are mutually exclusive on the same target. Graves knocked back."
         ]
       }
     },
     "combo": [
-      "1",
-      "auto",
       "3",
       "auto",
-      "4"
+      "1",
+      "auto",
+      "4",
+      "auto"
     ],
     "mechanics": [
       {
         "kind": "reload",
-        "evidence": "Graves must reload when he runs out of ammo.",
+        "evidence": "Double Barrel : Graves must reload when he runs out of ammo.",
         "magazine": 2
+      },
+      {
+        "kind": "multiShot",
+        "shots": 4,
+        "damagePerShotPct": 40,
+        "source": "llm-knowledge"
+      },
+      {
+        "kind": "noResource",
+        "source": "llm-knowledge"
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.6,
-      "reloadSeconds": 0.75,
+      "asEfficiency": 0.7,
       "resource": "mana",
       "abilitiesCanCrit": false,
-      "confidence": "medium"
+      "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.6,
+      "fightFrequency": 0.8,
+      "tradeFrequency": 0.4,
+      "objectiveDamage": 0.8,
+      "waveclear": 0.6,
+      "jungleClear": 0.8,
+      "roamFrequency": 0.8,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.15,
+        "avgFightLength": 0.31
+      }
     }
   },
   "Gwen": {
@@ -1087,11 +1240,27 @@
       "P": {
         "name": "Thousand Cuts",
         "cooldowns": [],
-        "damage": [],
+        "damage": [
+          {
+            "name": "Thousand Cuts",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 1
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive: On-hit deals 1% (+0.005% AP) target max health magic damage, heals for 70% of damage (cap 12 +7% AP), monster cap 2+3% AP."
+          "AP ratio increases %max health damage by 0.005% per AP; heal is 70% of damage to champions, capped at 12 (+7% AP)"
         ]
       },
       "1": {
@@ -1104,7 +1273,7 @@
         ],
         "damage": [
           {
-            "name": "Snip (normal)",
+            "name": "Snip Snip! Regular",
             "type": "magic",
             "base": [
               14,
@@ -1118,11 +1287,11 @@
                 "pct": 7
               }
             ],
-            "hits": 1,
+            "hits": 5,
             "when": "per cast"
           },
           {
-            "name": "Snip (final)",
+            "name": "Snip Snip! Final",
             "type": "magic",
             "base": [
               70,
@@ -1138,12 +1307,50 @@
             ],
             "hits": 1,
             "when": "per cast"
+          },
+          {
+            "name": "Snip Snip! Regular Center",
+            "type": "true",
+            "base": [
+              14,
+              18,
+              22,
+              26
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 7
+              }
+            ],
+            "hits": 5,
+            "when": "per cast",
+            "alt": true
+          },
+          {
+            "name": "Snip Snip! Final Center",
+            "type": "true",
+            "base": [
+              70,
+              90,
+              110,
+              130
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 35
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Number of normal snips depends on stacks (max 4). Center deals true damage and applies passive. Damage to monsters: 105%."
+          "Passive: gains 1 stack per attack hit (max 4, lasts 6s); center applies Thousand Cuts"
         ]
       },
       "2": {
@@ -1155,7 +1362,8 @@
           14.0
         ],
         "damage": [],
-        "steroids": [
+        "steroids": [],
+        "defensive": [
           {
             "stat": "armor",
             "flat": [
@@ -1187,9 +1395,8 @@
             ]
           }
         ],
-        "defensive": [],
         "unmodeled": [
-          "Summons mist for 4s, makes Gwen untargetable to enemies outside."
+          "Makes Gwen untargetable to enemies outside while inside for 4s"
         ]
       },
       "3": {
@@ -1202,7 +1409,7 @@
         ],
         "damage": [
           {
-            "name": "Enhanced Attack",
+            "name": "Skip 'n Slash Enhanced Auto",
             "type": "magic",
             "base": [
               10
@@ -1220,17 +1427,12 @@
         "steroids": [
           {
             "stat": "attackSpeed",
-            "pct": [
-              20,
-              40,
-              60,
-              80
-            ]
+            "pct": 20
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Dash, enhances attacks for 4s: +100 range, first enhanced attack on champion/minion refunds 50% cooldown."
+          "First enhanced attack on champion/minion refunds 50% cooldown; range increase not modeled"
         ]
       },
       "4": {
@@ -1242,7 +1444,7 @@
         ],
         "damage": [
           {
-            "name": "Needlework First Cast",
+            "name": "Needlework First",
             "type": "magic",
             "base": [
               35,
@@ -1259,7 +1461,7 @@
             "when": "per cast"
           },
           {
-            "name": "Needlework Second Cast",
+            "name": "Needlework Second",
             "type": "magic",
             "base": [
               90,
@@ -1272,11 +1474,11 @@
                 "pct": 24
               }
             ],
-            "hits": 3,
+            "hits": 1,
             "when": "per cast"
           },
           {
-            "name": "Needlework Third Cast",
+            "name": "Needlework Third",
             "type": "magic",
             "base": [
               150,
@@ -1289,14 +1491,14 @@
                 "pct": 40
               }
             ],
-            "hits": 5,
+            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "First cast slows 35/40/45% for 1.5s, applies passive. Can recast twice."
+          "First cast applies Thousand Cuts; slows 35-45% for 1.5s"
         ]
       }
     },
@@ -1304,18 +1506,33 @@
       "3",
       "auto",
       "1",
-      "4",
       "auto",
       "4",
-      "auto",
+      "4",
       "4"
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.5,
+      "asEfficiency": 0.8,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 0.6,
+      "tradeFrequency": 0.8,
+      "objectiveDamage": 0.8,
+      "waveclear": 0.6,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.4,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.39,
+        "avgFightLength": 0.61
+      }
     }
   },
   "Hecarim": {
@@ -1365,7 +1582,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Full charge against champion/large monster critically strikes for 120% damage and grants 30% MS decaying over 3s; next Rampage within 8s deals 120% damage."
+          "full charge on champion/large monster deals 120% damage and grants 30% MS decaying over 3s; empowered next Rampage deals 120% damage"
         ]
       },
       "2": {
@@ -1393,10 +1610,11 @@
               }
             ],
             "hits": 8,
-            "when": "dot total"
+            "when": "per cast"
           }
         ],
-        "steroids": [
+        "steroids": [],
+        "defensive": [
           {
             "stat": "armor",
             "flat": [
@@ -1416,9 +1634,8 @@
             ]
           }
         ],
-        "defensive": [],
         "unmodeled": [
-          "Heals for 5 (+1% bonus HP) per enemy hit per tick; also heals for 20% of damage dealt + 0.02% bonus AD, reduced vs minions/monsters and capped at 90 health."
+          "heals per enemy hit: 5 + 1% bonus HP; also heals 20% of damage dealt + 0.02% bonus AD (reduced vs minions, capped at 90)"
         ]
       },
       "3": {
@@ -1446,19 +1663,19 @@
               }
             ],
             "hits": 1,
-            "when": "per cast"
+            "when": "per auto"
           }
         ],
         "steroids": [
           {
             "stat": "moveSpeed",
-            "flat": 25,
+            "pct": 25,
             "note": "increases to 55% over 4s"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Dash and knockback; remaining duration paused during Onslaught of Shadows."
+          "dash and knockback"
         ]
       },
       "4": {
@@ -1490,16 +1707,16 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Fears for 0.75-1.5s based on charge distance."
+          "fear duration 0.75-1.5s based on charge distance"
         ]
       }
     },
     "combo": [
       "3",
-      "4",
+      "1",
       "2",
-      "1",
-      "1",
+      "4",
+      "auto",
       "1"
     ],
     "knowledge": {
@@ -1507,7 +1724,26 @@
       "asEfficiency": 0.4,
       "resource": "mana",
       "abilitiesCanCrit": false,
-      "confidence": "medium"
+      "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 1.0,
+      "fightFrequency": 1.0,
+      "tradeFrequency": 0.8,
+      "objectiveDamage": 0.8,
+      "waveclear": 0.8,
+      "jungleClear": 1.0,
+      "roamFrequency": 1.0,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.24,
+        "avgFightLength": 0.18
+      },
+      "flags": [
+        "spellCastRate"
+      ]
     }
   },
   "Lucian": {
@@ -1517,9 +1753,26 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Vigilance bonus",
+            "name": "Lightslinger Second Shot",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 35
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          },
+          {
+            "name": "Vigilance Bonus Damage",
             "type": "magic",
-            "base": 20,
+            "base": [
+              20
+            ],
             "ratios": [
               {
                 "stat": "ad",
@@ -1533,8 +1786,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Second shot's AD ratio scales to 50% and 65% at higher levels. Vigilance triggers on heal/shield or immobilize, applies to next two attacks (stacks up to 4).",
-          "P/Lightslinger second shot: ungrounded ['base 0', 'base 0', 'base 0']"
+          "Second shot damage scales to 50% and 65% AD at higher levels; Vigilance triggers on next two attacks after heal/shield/immobilize."
         ]
       },
       "1": {
@@ -1568,7 +1820,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "AD ratio scales: 65/85/105/125% per rank."
+          "AD ratio scales with rank: 65%/85%/105%/125%."
         ]
       },
       "2": {
@@ -1599,21 +1851,10 @@
             "when": "per cast"
           }
         ],
-        "steroids": [
-          {
-            "stat": "moveSpeed",
-            "flat": [
-              65,
-              70,
-              75,
-              80
-            ],
-            "note": "for 1 second when Lucian or ally damages marked enemy"
-          }
-        ],
+        "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Marks enemy for 6 seconds; when marked enemy damaged, grants MS and Vigilance."
+          "Marked enemies grant movespeed when damaged; triggers Vigilance."
         ]
       },
       "3": {
@@ -1628,7 +1869,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Cooldown reduced by 1s (2s on champs) on Lightslinger hits."
+          "Dash; cooldown reduced by 1s on hitting enemy with Lightslinger (2s for champions)."
         ]
       },
       "4": {
@@ -1657,25 +1898,23 @@
                 "pct": 10
               }
             ],
-            "hits": [
-              22,
-              26,
-              30
-            ],
+            "hits": 22,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Fires over 3 seconds; minions take 200% damage; can cancel with recast; can use Relentless Pursuit during."
+          "Bullets per rank: 22/26/30; minions take 200% damage."
         ]
       }
     },
     "combo": [
-      "2",
-      "auto",
       "1",
+      "auto",
+      "3",
+      "auto",
+      "2",
       "auto",
       "4",
       "auto"
@@ -1689,10 +1928,26 @@
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.7,
+      "asEfficiency": 0.75,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "medium"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 0.6,
+      "tradeFrequency": 0.8,
+      "objectiveDamage": 0.8,
+      "waveclear": 0.6,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.4,
+      "avgFightLength": 0.6,
+      "confidence": "medium",
+      "derived": {
+        "spellCastRate": 0.39,
+        "avgFightLength": 0.75
+      }
     }
   },
   "Lulu": {
@@ -1702,7 +1957,7 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Pix Bolts (Lulu attacks)",
+            "name": "Pix, Faerie Companion",
             "type": "magic",
             "base": [
               6
@@ -1713,14 +1968,14 @@
                 "pct": 15
               }
             ],
-            "hits": 1,
+            "hits": 3,
             "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Pix deals 6 (+6 per level) total magic damage; attachment mechanics not modeled; when attached to ally, Pix aids ally attacks instead."
+          "base damage increases by 6 per champion level; bolts can be blocked"
         ]
       },
       "1": {
@@ -1733,7 +1988,7 @@
         ],
         "damage": [
           {
-            "name": "Glitterlance Bolt",
+            "name": "Glitterlance",
             "type": "magic",
             "base": [
               50,
@@ -1754,7 +2009,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Each bolt deals damage to first enemy hit and 70% to subsequent; slow 80% decaying 2s."
+          "bolts deal 70% damage to subsequent enemies hit; slow 80% decaying over 2s"
         ]
       },
       "2": {
@@ -1769,23 +2024,25 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 5,
+            "pct": 20,
             "from": "ap",
-            "note": "move speed bonus also scales with AP"
+            "pctFromStat": 5,
+            "note": "on ally"
           },
           {
             "stat": "attackSpeed",
-            "pct": [
+            "flat": [
               25,
               30,
               35,
               40
-            ]
+            ],
+            "note": "on ally"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Polymorph on enemy (disable, slow 60 flat) for 1/1.25/1.5/1.75s; Pix attaches for 5s; durations scale with rank."
+          "on enemy: polymorph for 1/1.25/1.5/1.75s, slow 60, reveal"
         ]
       },
       "3": {
@@ -1798,7 +2055,7 @@
         ],
         "damage": [
           {
-            "name": "Help, Pix! (enemy)",
+            "name": "Help, Pix!",
             "type": "magic",
             "base": [
               80,
@@ -1813,32 +2070,14 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": true
+            "when": "per cast"
           }
         ],
         "steroids": [],
-        "defensive": [
-          {
-            "kind": "shield",
-            "base": [
-              60,
-              100,
-              140,
-              180
-            ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 60
-              }
-            ],
-            "durationS": 2.5,
-            "alt": true
-          }
-        ],
+        "defensive": [],
         "unmodeled": [
-          "Pix attaches for 5s; true sight on enemy."
+          "grants True Sight on enemy",
+          "3: bad type None"
         ]
       },
       "4": {
@@ -1850,43 +2089,51 @@
         ],
         "damage": [],
         "steroids": [],
-        "defensive": [
-          {
-            "kind": "shield",
-            "base": [
-              250,
-              400,
-              550
-            ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 50
-              }
-            ],
-            "durationS": 7,
-            "note": "grants bonus max health (not absorbing damage); also slows nearby enemies 30%"
-          }
-        ],
+        "defensive": [],
         "unmodeled": [
-          "knockup nearby enemies 0.75s; slow aura 30%"
+          "grants bonus max health 250/400/550 (+50% AP) for 7s; knocks up nearby enemies for 0.75s; slows nearby enemies by 30%"
         ]
       }
     },
     "combo": [
-      "1",
       "3",
+      "1",
       "auto",
-      "2",
-      "auto",
-      "4"
+      "auto"
+    ],
+    "mechanics": [
+      {
+        "kind": "multiShot",
+        "shots": 3,
+        "damagePerShotPct": 33.33,
+        "source": "llm-knowledge"
+      }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.3,
+      "asEfficiency": 0.2,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 0.6,
+      "tradeFrequency": 0.8,
+      "objectiveDamage": 0.2,
+      "waveclear": 0.2,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.6,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.24,
+        "avgFightLength": 0.4
+      },
+      "flags": [
+        "spellCastRate"
+      ]
     }
   },
   "Malphite": {
@@ -1911,7 +2158,7 @@
           }
         ],
         "unmodeled": [
-          "Shield activates after not taking damage for 8 seconds."
+          "shield activates after 8s without taking damage"
         ]
       },
       "1": {
@@ -1945,12 +2192,13 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 15
+            "pct": 15,
+            "note": "for 3 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Slows target by 15-30% for 3 seconds."
+          "slow target by 15-30% for 3s"
         ]
       },
       "2": {
@@ -1961,25 +2209,65 @@
           8.0,
           7.0
         ],
-        "damage": [],
+        "damage": [
+          {
+            "name": "Thunderclap Cone",
+            "type": "physical",
+            "base": [
+              10,
+              20,
+              30,
+              40
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 20
+              },
+              {
+                "stat": "armor",
+                "pct": 20
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          },
+          {
+            "name": "Thunderclap First Attack Bonus",
+            "type": "physical",
+            "base": [
+              40,
+              60,
+              80,
+              100
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 40
+              },
+              {
+                "stat": "armor",
+                "pct": 40
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "note": "only on first auto after activation"
+          }
+        ],
         "steroids": [
           {
             "stat": "armor",
-            "flat": 8
-          },
-          {
-            "stat": "armor",
-            "pct": [
-              25,
-              30,
-              35,
-              40
-            ]
+            "flat": [
+              8
+            ],
+            "note": "plus 25-40% total armor per rank (not modeled)"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Active: For 6s, attacks deal 10-40 (+20%AP+20%Armor) physical damage in a cone. First attack also deals 40-100 (+40%AP+40%Armor) bonus physical damage."
+          "passive armor increases by percentage of total armor; active cone damage lasts 6s"
         ]
       },
       "3": {
@@ -2017,7 +2305,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Reduces attack speed by 35-50% for 3 seconds."
+          "reduces attack speed of enemies by 35-50% for 3s"
         ]
       },
       "4": {
@@ -2049,15 +2337,15 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Knocks up for 1.5 seconds."
+          "knocks up enemies for 1.5s"
         ]
       }
     },
     "combo": [
-      "2",
       "4",
       "3",
       "1",
+      "2",
       "auto"
     ],
     "knowledge": {
@@ -2066,6 +2354,22 @@
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.4,
+      "fightFrequency": 0.4,
+      "tradeFrequency": 0.6,
+      "objectiveDamage": 0.2,
+      "waveclear": 0.4,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.4,
+      "avgFightLength": 0.4,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.52,
+        "avgFightLength": 0.36
+      }
     }
   },
   "Pantheon": {
@@ -2105,8 +2409,7 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           },
           {
             "name": "Comet Spear Charge",
@@ -2128,7 +2431,7 @@
             "alt": true
           },
           {
-            "name": "Comet Spear Charge Critical",
+            "name": "Comet Spear Charge Crit",
             "type": "physical",
             "base": [
               120,
@@ -2147,11 +2450,9 @@
             "alt": true
           },
           {
-            "name": "Mortal Will Additional",
+            "name": "Mortal Will Comet Spear",
             "type": "physical",
-            "base": [
-              30
-            ],
+            "base": 30,
             "ratios": [
               {
                 "stat": "ad",
@@ -2166,7 +2467,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Charge cast deals 50% less damage to subsequent targets; critical hit only below 35% health; damage to minions reduced 20%; deals 110% damage to monsters."
+          "Damage to minions reduced 20%, deals 110% to monsters. Charge: subsequent targets take 50% less damage."
         ]
       },
       "2": {
@@ -2194,22 +2495,19 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           },
           {
-            "name": "Mortal Will Empowered Attack",
+            "name": "Mortal Will Shield Vault",
             "type": "physical",
-            "base": [
-              87
-            ],
+            "base": 87,
             "ratios": [
               {
                 "stat": "ad",
                 "pct": 135
               }
             ],
-            "hits": 3,
+            "hits": 1,
             "when": "per cast",
             "alt": true
           }
@@ -2217,7 +2515,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Mortal Will empowered attack strikes 3 times."
+          "Stuns for 1 second."
         ]
       },
       "3": {
@@ -2232,9 +2530,7 @@
           {
             "name": "Aegis Assault Initial",
             "type": "physical",
-            "base": [
-              64
-            ],
+            "base": 64,
             "ratios": [
               {
                 "stat": "ad",
@@ -2242,8 +2538,7 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           },
           {
             "name": "Aegis Assault Slam",
@@ -2261,22 +2556,19 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           }
         ],
         "steroids": [
           {
             "stat": "moveSpeed",
             "pct": 60,
-            "note": "Mortal Will: gains 60% Move Speed for 2.5 seconds after slam"
+            "alt": true
           }
         ],
-        "defensive": [
-          "Blocks all non-tower damage from a direction for 1.5 seconds."
-        ],
+        "defensive": [],
         "unmodeled": [
-          "Slowed by up to 50% when moving away from blocking direction; recast to end early; damage to minions reduced 50%."
+          "Blocks all non-tower damage from a direction for 1.5s. Recast to end early. Slowed by up to 50% moving away. Damage to minions reduced 50%."
         ]
       },
       "4": {
@@ -2290,13 +2582,10 @@
           {
             "name": "Grand Starfall Spear",
             "type": "physical",
-            "base": [
-              30
-            ],
+            "base": 30,
             "ratios": [],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           },
           {
             "name": "Grand Starfall Crash",
@@ -2313,24 +2602,22 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": false
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Spear damage includes Comet Spear damage (unmodeled); landing damage decreased up to 50% at edges; instantly readies Mortal Will; passive: gains 10%/20%/30% armor penetration."
+          "Passive: gains 10/20/30% armor penetration. Active: spear throw slows 50% for 2s, crash damage decreased by up to 50% at edges. Instantly readies Mortal Will."
         ]
       }
     },
     "combo": [
+      "4",
       "2",
       "1",
       "auto",
-      "3",
-      "auto",
-      "4"
+      "3"
     ],
     "knowledge": {
       "source": "llm-knowledge",
@@ -2338,6 +2625,25 @@
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 1.0,
+      "tradeFrequency": 0.4,
+      "objectiveDamage": 0.4,
+      "waveclear": 0.6,
+      "jungleClear": 0.6,
+      "roamFrequency": 1.0,
+      "avgFightLength": 0.2,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.33,
+        "avgFightLength": 0.18
+      },
+      "flags": [
+        "spellCastRate"
+      ]
     }
   },
   "Sett": {
@@ -2347,7 +2653,7 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Pit Grit Right Punch",
+            "name": "Right Punch Bonus",
             "type": "physical",
             "base": [
               9
@@ -2365,7 +2671,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "passive health regen based on missing health; right punch speed 8x; reset condition"
+          "right punch bonus damage scales with champion level",
+          "bonus health regen based on missing health"
         ]
       },
       "1": {
@@ -2390,14 +2697,10 @@
               {
                 "stat": "targetMaxHp",
                 "pct": 1
-              },
-              {
-                "stat": "ad",
-                "pct": 0.025
               }
             ],
             "hits": 2,
-            "when": "per auto"
+            "when": "per cast"
           }
         ],
         "steroids": [
@@ -2408,7 +2711,8 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "movement speed towards enemy champions only; damage capped at 100 against monsters; AD ratio varies per rank (0.01/0.015/0.02/0.025); empowers next two attacks only"
+          "additional 0.01%/0.015%/0.02%/0.025% AD of target max health per rank",
+          "movement speed toward enemy champions for 1.5s"
         ]
       },
       "2": {
@@ -2419,43 +2723,11 @@
           13.0,
           12.0
         ],
-        "damage": [
-          {
-            "name": "Haymaker Center",
-            "type": "true",
-            "base": [
-              80,
-              105,
-              130,
-              155
-            ],
-            "ratios": [
-              {
-                "stat": "ownMaxHp",
-                "pct": 50
-              }
-            ],
-            "hits": 1,
-            "when": "per cast"
-          }
-        ],
+        "damage": [],
         "steroids": [],
-        "defensive": [
-          {
-            "kind": "shield",
-            "base": [
-              0
-            ],
-            "ratios": [
-              {
-                "stat": "ownMaxHp",
-                "pct": 50
-              }
-            ]
-          }
-        ],
+        "defensive": [],
         "unmodeled": [
-          "non-center physical damage; Grit storage mechanic; shield decays over 3s; damage formula includes 25% (+0.275% AD) Grit consumed"
+          "Passive: stores damage taken as Grit (max 305 or 50% max HP). Active: gains shield equal to Grit consumed. Damage: base 80/105/130/155 + 25% Grit consumed + (0.275% AD)*Grit consumed true damage (center) or physical (edge). Damage falloff with distance."
         ]
       },
       "3": {
@@ -2489,7 +2761,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "slow 50% for 0.5s; conditional stun if grabbed enemies from both sides"
+          "slow by 50% for 0.5s, conditional stun if both sides grabbed"
         ]
       },
       "4": {
@@ -2512,10 +2784,6 @@
               {
                 "stat": "ad",
                 "pct": 100
-              },
-              {
-                "stat": "ownBonusHp",
-                "pct": 55
               }
             ],
             "hits": 1,
@@ -2525,24 +2793,50 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "suppression on grabbed target; slow 99% for 1s; damage falloff with distance"
+          "+35%/45%/55% bonus health damage per rank",
+          "damage reduces with distance from landing point",
+          "suppresses target",
+          "99% slow for 1s"
         ]
       }
     },
     "combo": [
-      "4",
       "3",
       "1",
       "auto",
       "auto",
-      "2"
+      "2",
+      "4"
+    ],
+    "mechanics": [
+      {
+        "kind": "everyNHit",
+        "evidence": "Sett's Attacks alternate between left and right punches.",
+        "n": 2
+      }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.6,
+      "asEfficiency": 0.3,
       "resource": "none",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.6,
+      "fightFrequency": 0.6,
+      "tradeFrequency": 0.8,
+      "objectiveDamage": 0.4,
+      "waveclear": 0.6,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.2,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.39,
+        "avgFightLength": 0.19
+      }
     }
   },
   "Soraka": {
@@ -2606,12 +2900,12 @@
               }
             ],
             "durationS": 2.5,
-            "note": "Rejuvenation, triggered on hitting enemy champion"
+            "when": "dot total"
           }
         ],
         "unmodeled": [
-          "Stacking: After healing any ally champion 3 times, Starcall is empowered. Cooldown reduced on hitting enemy champions.",
-          "1/Empowered Starcall: ungrounded ['base 84', 'base 154', 'base 224', 'base 294']"
+          "Slow 30% for 2 seconds. Cooldown reduced when hitting enemy champions. Empowered after healing 3 allies: larger area.",
+          "1/Starcall Empowered: ungrounded ['base 294']"
         ]
       },
       "2": {
@@ -2654,13 +2948,10 @@
                 "pct": 70
               }
             ],
-            "alt": true,
-            "note": "Shield only from excess healing, capped at these values."
+            "note": "Excess healing converted to shield"
           }
         ],
-        "unmodeled": [
-          "Excess healing converted to shield; shield max per rank."
-        ]
+        "unmodeled": []
       },
       "3": {
         "name": "Equinox",
@@ -2672,7 +2963,7 @@
         ],
         "damage": [
           {
-            "name": "Equinox Initial",
+            "name": "Equinox",
             "type": "magic",
             "base": [
               70,
@@ -2686,32 +2977,14 @@
                 "pct": 40
               }
             ],
-            "hits": 1,
-            "when": "per cast"
-          },
-          {
-            "name": "Equinox Expire",
-            "type": "magic",
-            "base": [
-              70,
-              120,
-              170,
-              220
-            ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 40
-              }
-            ],
-            "hits": 1,
+            "hits": 2,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Silence on initial hit; root on expire (duration per rank: 1.25/1.5/1.75/2s)."
+          "Silences enemies on first hit; roots for 1.25/1.5/1.75/2 seconds on second hit."
         ]
       },
       "4": {
@@ -2737,22 +3010,6 @@
                 "pct": 45
               }
             ]
-          },
-          {
-            "kind": "heal",
-            "base": [
-              225,
-              337.5,
-              450
-            ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 45
-              }
-            ],
-            "alt": true,
-            "note": "If target ally is below 35% Health."
           }
         ],
         "unmodeled": [
@@ -2760,18 +3017,31 @@
         ]
       }
     },
-    "combo": [
-      "3",
-      "1",
-      "auto",
-      "1"
-    ],
     "knowledge": {
       "source": "llm-knowledge",
       "asEfficiency": 0.2,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 0.6,
+      "tradeFrequency": 0.6,
+      "objectiveDamage": 0.2,
+      "waveclear": 0.4,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.4,
+      "avgFightLength": 0.8,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.52,
+        "avgFightLength": 0.25
+      },
+      "flags": [
+        "avgFightLength"
+      ]
     }
   },
   "Viego": {
@@ -2781,9 +3051,23 @@
         "cooldowns": [],
         "damage": [],
         "steroids": [],
-        "defensive": [],
+        "defensive": [
+          {
+            "kind": "heal",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 7
+              }
+            ],
+            "unmodeled": "Also heals for additional 2% + 4% bonus AD + 2% AP +5% bonus AS of target's max health (total 7% + 2% + scaling) during Possession."
+          }
+        ],
         "unmodeled": [
-          "Possession: Possesses enemy souls, gains free Heartbreaker, 10% MS toward enemies, untargetable, uses enemy abilities, heals for 7% (2 + 4% bonus AD + 2% AP +5 bonus AS) of target's max HP."
+          "Possession mechanic: becomes untargetable, gains free cast of Heartbreaker, gains 10% MS toward enemies, gains access to possessed champion's basic abilities, attacks and items. Cannot use possessed champion's enchantment item actives."
         ]
       },
       "1": {
@@ -2796,7 +3080,30 @@
         ],
         "damage": [
           {
-            "name": "Active stab",
+            "name": "Passive On-Hit",
+            "type": "physical",
+            "base": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetCurrentHp",
+                "pct": [
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          },
+          {
+            "name": "Active",
             "type": "physical",
             "base": [
               20,
@@ -2812,16 +3119,37 @@
             ],
             "hits": 1,
             "when": "per cast",
-            "unmodeled": "AD ratio scales with crit rate: 1+0.5% bonus crit; cast time scales with AS"
+            "unmodeled": "Damage multiplied by (1 + 0.5% bonus Crit rate)"
+          },
+          {
+            "name": "Double Strike",
+            "type": "physical",
+            "base": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 15
+              },
+              {
+                "stat": "ap",
+                "pct": 15
+              }
+            ],
+            "hits": 2,
+            "when": "per auto",
+            "alt": true,
+            "unmodeled": "Triggers after damaging an enemy with an ability. Heals for 135% of damage dealt."
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive bonuses kept during Possession",
-          "Heal from double strike is 135% of damage dealt",
-          "1/Passive on-hit current HP: ungrounded ['base 0', 'base 0', 'base 0', 'base 0']",
-          "1/Double strike bonus hit: ungrounded ['base 0', 'base 0', 'base 0', 'base 0']"
+          "Cast time reduces with Attack Speed."
         ]
       },
       "2": {
@@ -2849,13 +3177,14 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "unmodeled": "Stuns for 0.4-1.25s based on charge; self slow 10% while charging"
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "Slows self by 10% during charge. Stun duration 0.4-1.25s based on charge time."
+        ]
       },
       "3": {
         "name": "Harrowed Path",
@@ -2870,31 +3199,26 @@
           {
             "stat": "moveSpeed",
             "pct": [
-              0.25,
-              0.3,
-              0.35,
-              0.4
+              25,
+              30,
+              35,
+              40
             ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 0.04
-              }
-            ]
+            "unmodeled": "Also gains +0.04% MS per AP"
           },
           {
             "stat": "attackSpeed",
             "pct": [
-              0.45,
-              0.5,
-              0.55,
-              0.6
+              45,
+              50,
+              55,
+              60
             ]
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Camouflage while in Black Mist"
+          "Camouflage while in Black Mist."
         ]
       },
       "4": {
@@ -2904,12 +3228,71 @@
           75.0,
           60.0
         ],
-        "damage": [],
+        "damage": [
+          {
+            "name": "AOE Base",
+            "type": "physical",
+            "base": [
+              0,
+              0,
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 110
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "unmodeled": "Multiplied by (1 + 0.5 crit rate). Range: 110%-210% AD; higher damage at closer range."
+          },
+          {
+            "name": "AOE Max",
+            "type": "physical",
+            "base": [
+              0,
+              0,
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 210
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true,
+            "unmodeled": "Alternate version for melee range."
+          },
+          {
+            "name": "Missing Health",
+            "type": "physical",
+            "base": [
+              0,
+              0,
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMissingHp",
+                "pct": [
+                  14,
+                  17,
+                  20
+                ]
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "unmodeled": "Also gains +6% bonus AD added to the missing health percentage. Targets lowest % HP enemy champion. Slows by 99% for 0.25s and knocks back nearby enemies."
+          }
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "AOE: 110%-210% AD * (1+0.5 crit rate) physical damage to all champions in area",
-          "Single target: 14%/17%/20% (+6% bonus AD) of target's missing Health physical damage, 99% slow 0.25s, knockback"
+          "Teleports to target location."
         ]
       }
     },
@@ -2918,14 +3301,37 @@
       "2",
       "1",
       "auto",
-      "4"
+      "4",
+      "auto"
+    ],
+    "mechanics": [
+      {
+        "kind": "transform",
+        "evidence": "Viego can channel for 1 second to Possess them for 10 seconds. During Possession: - Becomes untargetable - Gains a free cast of Heartbreaker - Gains 10% Movement Speed when moving toward enemy champions - Gains access to the Possessed champion's basic abilities, attacks and items - Heals for 7% ( 2 + 4% bonus AD + 2% AP +5 bonus AS ) of the target's max Health Viego cannot use the Possessed champion's enchantment item actives."
+      }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.8,
-      "resource": "mana",
+      "asEfficiency": 0.7,
+      "resource": "none",
       "abilitiesCanCrit": false,
       "confidence": "medium"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 1.0,
+      "tradeFrequency": 0.4,
+      "objectiveDamage": 0.6,
+      "waveclear": 0.6,
+      "jungleClear": 0.8,
+      "roamFrequency": 1.0,
+      "avgFightLength": 0.6,
+      "confidence": "medium",
+      "derived": {
+        "spellCastRate": 0.7,
+        "avgFightLength": 0.69
+      }
     }
   },
   "Xin Zhao": {
@@ -2946,7 +3352,6 @@
                 "pct": 22
               }
             ],
-            "hits": 1,
             "when": "per auto"
           }
         ],
@@ -2995,15 +3400,13 @@
                 "pct": 40
               }
             ],
-            "hits": 1,
             "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Third hit knocks up for 0.75s",
-          "Each hit reduces cooldowns of other abilities by 1s"
+          "Empowers next three attacks; third attack knocks up; each attack reduces other ability cooldowns by 1s."
         ]
       },
       "2": {
@@ -3016,7 +3419,7 @@
         ],
         "damage": [
           {
-            "name": "Wind Becomes Lightning - Slash",
+            "name": "Wind Becomes Lightning Slash",
             "type": "physical",
             "base": [
               40,
@@ -3030,11 +3433,10 @@
                 "pct": 50
               }
             ],
-            "hits": 1,
             "when": "per cast"
           },
           {
-            "name": "Wind Becomes Lightning - Thrust",
+            "name": "Wind Becomes Lightning Thrust",
             "type": "physical",
             "base": [
               40,
@@ -3048,18 +3450,13 @@
                 "pct": 75
               }
             ],
-            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "First hit slows by 50% for 1.5s",
-          "Second hit slows by 50% for 1.5s",
-          "Challenges furthest enemy champion or large monster for 3.5s",
-          "Deals 50% damage to minions",
-          "Cast time reduced by Attack Speed"
+          "Each hit slows 50% for 1.5s; furthest champion or large monster hit becomes Challenged for 3.5s; deals 50% damage to minions; Attack Speed reduces cast time."
         ]
       },
       "3": {
@@ -3086,7 +3483,6 @@
                 "pct": 80
               }
             ],
-            "hits": 1,
             "when": "per cast"
           }
         ],
@@ -3099,13 +3495,12 @@
               60,
               67.5
             ],
-            "note": "for 5 seconds"
+            "note": "Duration: 5 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Slows by 30% for 0.5s",
-          "Cast range increased against Challenged targets"
+          "Slows enemies hit by 30% for 0.5s; increased cast range against Challenged targets."
         ]
       },
       "4": {
@@ -3117,7 +3512,7 @@
         ],
         "damage": [
           {
-            "name": "Crescent Guard - Base",
+            "name": "Crescent Guard",
             "type": "physical",
             "base": [
               75,
@@ -3132,26 +3527,24 @@
               {
                 "stat": "ap",
                 "pct": 80
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": 15
               }
             ],
-            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive: The last champion hit by an attack or Audacious Charge is Challenged",
-          "Knocks back all enemies except the Challenged one",
-          "Blocks damage from far away enemies for 5s",
-          "Deals 600 max damage against monsters",
-          "4/Crescent Guard - MaxHP: ungrounded ['base 0']"
+          "Knocks back all enemies except Challenged one; blocks damage from far away enemies for 5s; deals max 600 damage to monsters. Passive: Last champion hit by attack or Audacious Charge becomes Challenged."
         ]
       }
     },
     "combo": [
       "3",
-      "auto",
       "1",
       "auto",
       "auto",
@@ -3162,15 +3555,31 @@
     "mechanics": [
       {
         "kind": "everyNHit",
-        "evidence": "Every third attack deals an additional 13 ( 22% AD ) physical damage and heals for 13 ( +10% AD +40% AP )."
+        "evidence": "Every third attack deals an additional 13 ( 22% AD ) physical damage"
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.8,
+      "asEfficiency": 0.7,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 0.8,
+      "fightFrequency": 1.0,
+      "tradeFrequency": 0.4,
+      "objectiveDamage": 0.6,
+      "waveclear": 0.6,
+      "jungleClear": 0.8,
+      "roamFrequency": 1.0,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.48,
+        "avgFightLength": 0.68
+      }
     }
   },
   "Ziggs": {
@@ -3178,27 +3587,11 @@
       "P": {
         "name": "Short Fuse",
         "cooldowns": [],
-        "damage": [
-          {
-            "name": "Short Fuse",
-            "type": "magic",
-            "base": [
-              17
-            ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 15
-              }
-            ],
-            "hits": 1,
-            "when": "per auto"
-          }
-        ],
+        "damage": [],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Base damage increases by 3 per level. All abilities deal 24% damage to turrets. Cooldown reduced by 4s on ability cast."
+          "Abilities deal 24% damage to turrets; Short Fuse cooldown reduced by 4s on ability cast; empowers Bouncing Bomb to deal 17+3 per level (+15%AP) additional magic damage and 32% damage to turrets"
         ]
       },
       "1": {
@@ -3225,7 +3618,8 @@
                 "pct": 65
               }
             ],
-            "hits": 1
+            "hits": 1,
+            "when": "per cast"
           }
         ],
         "steroids": [],
@@ -3256,13 +3650,14 @@
                 "pct": 50
               }
             ],
-            "hits": 1
+            "hits": 1,
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Also knocks back Ziggs and enemies; damages turrets and demolishes if below 20/22.5/25/27.5% health."
+          "Demolishes turrets below 20%/22.5%/25%/27.5% health"
         ]
       },
       "3": {
@@ -3289,13 +3684,14 @@
                 "pct": 35
               }
             ],
-            "hits": 1
+            "hits": 1,
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Each mine deals damage; subsequent mines deal 40% damage. Slows by 35-50% for 2 seconds. Mines last 5 seconds."
+          "Multiple mines, subsequent mines deal 40% damage; number of mines unspecified; slow 35%/40%/45%/50% for 2s"
         ]
       },
       "4": {
@@ -3320,7 +3716,2460 @@
                 "pct": 85
               }
             ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": []
+      }
+    },
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    },
+    "behavior": {
+      "source": "llm-knowledge",
+      "spellCastRate": 1.0,
+      "fightFrequency": 0.4,
+      "tradeFrequency": 0.8,
+      "objectiveDamage": 1.0,
+      "waveclear": 1.0,
+      "jungleClear": 0.4,
+      "roamFrequency": 0.4,
+      "avgFightLength": 0.6,
+      "confidence": "high",
+      "derived": {
+        "spellCastRate": 0.24,
+        "avgFightLength": 0.39
+      },
+      "flags": [
+        "spellCastRate"
+      ]
+    }
+  },
+  "Akali": {
+    "abilities": {
+      "P": {
+        "name": "Assassin's Mark",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Assassin's Mark",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 60
+              },
+              {
+                "stat": "ap",
+                "pct": 65
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": 30,
+            "note": "while moving toward ring or toward enemies after crossing"
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "bonus magic damage also includes 25 + 12 per level flat base; crossing ring reveals ring and empowers next attack with +100 range"
+        ]
+      },
+      "1": {
+        "name": "Five Point Strike",
+        "cooldowns": [
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "damage": [
+          {
+            "name": "Five Point Strike",
+            "type": "magic",
+            "base": [
+              35,
+              70,
+              105,
+              140
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 65
+              },
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "slows by 50% at maximum range for 0.5 seconds"
+        ]
+      },
+      "2": {
+        "name": "Twilight Shroud",
+        "cooldowns": [
+          18.0,
+          17.0,
+          16.0,
+          15.0
+        ],
+        "damage": [],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": [
+              35,
+              40,
+              45,
+              50
+            ],
+            "note": "briefly on cast"
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "drops smoke shroud; becomes invisible inside; grants 100 Energy; attacking or using abilities briefly reveals"
+        ]
+      },
+      "3": {
+        "name": "Shuriken Flip",
+        "cooldowns": [
+          15.0,
+          15.0,
+          15.0,
+          15.0
+        ],
+        "damage": [
+          {
+            "name": "Shuriken Flip - Throw",
+            "type": "magic",
+            "base": [
+              30,
+              60,
+              90,
+              120
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 25
+              },
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Shuriken Flip - Dash",
+            "type": "magic",
+            "base": [
+              70,
+              120,
+              170,
+              220
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 50
+              },
+              {
+                "stat": "ap",
+                "pct": 80
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "first enemy or smoke cloud hit is marked; recast dashes to marked target"
+        ]
+      },
+      "4": {
+        "name": "Perfect Execution",
+        "cooldowns": [
+          85.0,
+          65.0,
+          45.0
+        ],
+        "damage": [
+          {
+            "name": "Perfect Execution - Dash",
+            "type": "magic",
+            "base": [
+              80,
+              200,
+              320
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 50
+              },
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Perfect Execution - Recast",
+            "type": "magic",
+            "base": [
+              70
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true,
+            "note": "damage scales with missing health up to 210 (+90% AP) at below 35% health"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "recast can be used after 2.5 seconds; deals max damage to enemies below 35% health"
+        ]
+      }
+    },
+    "combo": [
+      "4",
+      "3",
+      "1",
+      "auto",
+      "3",
+      "4"
+    ],
+    "mechanics": [
+      {
+        "kind": "noResource",
+        "evidence": "grants 100 Energy"
+      }
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "energy",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Akshan": {
+    "abilities": {
+      "P": {
+        "name": "Dirty Fighting",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Dirty Fighting Three-Hit Passive",
+            "type": "magic",
+            "base": [
+              25
+            ],
+            "ratios": [],
+            "hits": 1,
+            "when": "per auto"
+          },
+          {
+            "name": "Second Shot",
+            "type": "physical",
+            "base": [
+              26
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 50
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
+        "steroids": [],
+        "defensive": [
+          {
+            "kind": "shield",
+            "base": [
+              40
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 40
+              }
+            ]
+          }
+        ],
+        "unmodeled": [
+          "Cancel second shot for decaying move speed"
+        ]
+      },
+      "1": {
+        "name": "Avengerang",
+        "cooldowns": [
+          8.0,
+          7.0,
+          6.0,
+          5.0
+        ],
+        "damage": [
+          {
+            "name": "Avengerang",
+            "type": "physical",
+            "base": [
+              10,
+              40,
+              70,
+              100
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 85
+              }
+            ],
+            "hits": 2,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Reveals and grants vision; on hitting champion, gains decaying move speed; damage to minions reduced"
+        ]
+      },
+      "2": {
+        "name": "Going Rogue",
+        "cooldowns": [
+          14.0,
+          10.0,
+          6.0,
+          2.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Scoundrel revive mechanic; camouflage; move speed towards Scoundrels; mana regen"
+        ]
+      },
+      "3": {
+        "name": "Heroic Swing",
+        "cooldowns": [
+          18.0,
+          16.0,
+          14.0,
+          12.0
+        ],
+        "damage": [
+          {
+            "name": "Heroic Swing",
+            "type": "physical",
+            "base": [
+              30,
+              70,
+              110,
+              150
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 15
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Multiple shots with on-hit at 25% and crit; cooldown reset on takedown"
+        ]
+      },
+      "4": {
+        "name": "Comeuppance",
+        "cooldowns": [
+          65.0,
+          60.0,
+          55.0
+        ],
+        "damage": [
+          {
+            "name": "Comeuppance",
+            "type": "physical",
+            "base": [
+              20,
+              30,
+              40
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 10
+              }
+            ],
+            "hits": 3,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Missing health scaling up to 80/120/160 (+40% AD); crit rate scaling; executes minions"
+        ]
+      }
+    },
+    "combo": [
+      "3",
+      "auto",
+      "1",
+      "auto",
+      "4"
+    ],
+    "mechanics": [
+      {
+        "kind": "everyNHit",
+        "n": 3,
+        "source": "llm-knowledge"
+      }
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 1.0,
+      "resource": "mana",
+      "abilitiesCanCrit": true,
+      "confidence": "high"
+    }
+  },
+  "Alistar": {
+    "abilities": {
+      "P": {
+        "name": "Triumphant Roar",
+        "cooldowns": [],
+        "damage": [],
+        "steroids": [],
+        "defensive": [
+          {
+            "kind": "heal",
+            "base": [
+              27
+            ],
+            "ratios": []
+          },
+          {
+            "kind": "heal",
+            "base": [
+              54
+            ],
+            "ratios": []
+          }
+        ],
+        "unmodeled": [
+          "Cooldown reduction on knockup/stun. Heal triggers on damage taken."
+        ]
+      },
+      "1": {
+        "name": "Pulverize",
+        "cooldowns": [
+          14.0,
+          12.0,
+          10.0,
+          9.0
+        ],
+        "damage": [
+          {
+            "name": "Pulverize",
+            "type": "magic",
+            "base": [
+              60,
+              110,
+              160,
+              210
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 50
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Knockup for 1s, triggers passive CDR."
+        ]
+      },
+      "2": {
+        "name": "Headbutt",
+        "cooldowns": [
+          14.0,
+          12.0,
+          11.0,
+          9.0
+        ],
+        "damage": [
+          {
+            "name": "Headbutt",
+            "type": "magic",
+            "base": [
+              50,
+              120,
+              190,
+              260
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Knockback, can target turrets for 75% damage."
+        ]
+      },
+      "3": {
+        "name": "Trample",
+        "cooldowns": [
+          12.0,
+          11.0,
+          11.0,
+          10.0
+        ],
+        "damage": [
+          {
+            "name": "Trample DoT",
+            "type": "magic",
+            "base": [
+              100,
+              150,
+              200,
+              250
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 40
+              }
+            ],
+            "hits": 1,
+            "when": "dot total",
+            "durationS": 5
+          },
+          {
+            "name": "Trample Empowered Auto",
+            "type": "magic",
+            "base": [
+              40
+            ],
+            "ratios": [],
+            "hits": 1,
+            "when": "per auto",
+            "note": "Only after 5 Trample hits on champion"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Stun on empowered auto"
+        ]
+      },
+      "4": {
+        "name": "Unbreakable Will",
+        "cooldowns": [
+          75.0,
+          65.0,
+          55.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [
+          {
+            "kind": "damageReduction",
+            "base": [
+              55,
+              65,
+              75
+            ],
+            "durationS": 7
+          }
+        ],
+        "unmodeled": [
+          "Removes CC on cast."
+        ]
+      }
+    },
+    "combo": [
+      "2",
+      "1",
+      "auto",
+      "3",
+      "auto"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Amumu": {
+    "abilities": {
+      "P": {
+        "name": "Cursed Touch",
+        "cooldowns": [],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Basic attacks curse enemies, causing them to take 10% bonus true damage from incoming magic damage."
+        ]
+      },
+      "1": {
+        "name": "Bandage Toss",
+        "cooldowns": [
+          13.0,
+          12.0,
+          12.0,
+          11.0
+        ],
+        "damage": [
+          {
+            "type": "magic",
+            "base": [
+              60,
+              95,
+              130,
+              165
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 70
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Stores up to 2 charges, recharge time 13/12.5/12/11.5 seconds each."
+        ]
+      },
+      "2": {
+        "name": "Despair",
+        "cooldowns": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Deals 25/30/35/40 + 1.2%/1.5%/1.8%/2.1% (+0.4% AP) of target max health magic damage per second to nearby enemies."
+        ]
+      },
+      "3": {
+        "name": "Tantrum",
+        "cooldowns": [
+          9.0,
+          8.0,
+          7.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "type": "magic",
+            "base": [
+              90,
+              120,
+              150,
+              180
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 50
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Passive: reduces physical damage by 1/3/5/7 + 4% armor + 4% MR. Active: slows by 10% for 0.5s. Cooldown reduced by 0.5s when hit."
+        ]
+      },
+      "4": {
+        "name": "Curse of the Sad Mummy",
+        "cooldowns": [
+          105.0,
+          95.0,
+          85.0
+        ],
+        "damage": [
+          {
+            "type": "magic",
+            "base": [
+              150,
+              250,
+              350
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 70
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Applies passive curse."
+        ]
+      }
+    },
+    "combo": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "auto"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.3,
+      "reloadSeconds": 3.0,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "medium"
+    }
+  },
+  "Annie": {
+    "abilities": {
+      "P": {
+        "name": "Pyromania",
+        "cooldowns": [],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "After casting 4 abilities, next offensive ability stuns enemies hit for 1 second."
+        ]
+      },
+      "1": {
+        "name": "Disintegrate",
+        "cooldowns": [
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "damage": [
+          {
+            "name": "Disintegrate",
+            "type": "magic",
+            "base": [
+              80,
+              130,
+              180,
+              230
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 85
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Refunds mana and halves cooldown if destroys target."
+        ]
+      },
+      "2": {
+        "name": "Incinerate",
+        "cooldowns": [
+          8.0,
+          8.0,
+          8.0,
+          8.0
+        ],
+        "damage": [
+          {
+            "name": "Incinerate",
+            "type": "magic",
+            "base": [
+              70,
+              130,
+              190,
+              250
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 70
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": []
+      },
+      "3": {
+        "name": "Molten Shield",
+        "cooldowns": [
+          14.0,
+          14.0,
+          14.0,
+          14.0
+        ],
+        "damage": [],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": [
+              25,
+              30,
+              33,
+              40
+            ],
+            "note": "decays over 3 seconds"
+          }
+        ],
+        "defensive": [
+          {
+            "kind": "shield",
+            "base": [
+              50,
+              100,
+              150,
+              200
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 40
+              }
+            ]
+          }
+        ],
+        "unmodeled": []
+      },
+      "4": {
+        "name": "Summon: Tibbers",
+        "cooldowns": [
+          70.0,
+          65.0,
+          60.0
+        ],
+        "damage": [
+          {
+            "name": "Summon Tibbers",
+            "type": "magic",
+            "base": [
+              130,
+              230,
+              330
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Tibbers Pounce",
+            "type": "magic",
+            "base": [
+              110,
+              150,
+              190
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Tibbers lasts 20s; enrages when summoned/pounces/Annie dies; reactivate after 2s; pounce airbornes target for 1s."
+        ]
+      }
+    },
+    "combo": [
+      "3",
+      "4",
+      "2",
+      "1",
+      "4"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Ashe": {
+    "abilities": {
+      "P": {
+        "name": "Frost Shot",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Frost Shot",
+            "type": "physical",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 110
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Crit chance is converted to increased damage; crit damage stat scales the bonus."
+        ]
+      },
+      "1": {
+        "name": "Ranger's Focus",
+        "cooldowns": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "damage": [
+          {
+            "name": "Ranger's Focus Flurry (Rank1)",
+            "type": "physical",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 115
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          },
+          {
+            "name": "Ranger's Focus Flurry (Rank2)",
+            "type": "physical",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 120
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          },
+          {
+            "name": "Ranger's Focus Flurry (Rank3)",
+            "type": "physical",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 125
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          },
+          {
+            "name": "Ranger's Focus Flurry (Rank4)",
+            "type": "physical",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 130
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          }
+        ],
+        "steroids": [
+          {
+            "stat": "attackSpeed",
+            "flat": [
+              20,
+              30,
+              40,
+              50
+            ]
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "Focus stacking mechanic: attacks grant a stack for 4 seconds, at 4 stacks can cast active."
+        ]
+      },
+      "2": {
+        "name": "Volley",
+        "cooldowns": [
+          16.0,
+          14.0,
+          11.0,
+          9.0
+        ],
+        "damage": [
+          {
+            "name": "Volley Arrow (Rank1)",
+            "type": "physical",
+            "base": [
+              20
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 115
+              }
+            ],
+            "hits": 5,
+            "when": "per cast"
+          },
+          {
+            "name": "Volley Arrow (Rank2)",
+            "type": "physical",
+            "base": [
+              35
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 115
+              }
+            ],
+            "hits": 7,
+            "when": "per cast"
+          },
+          {
+            "name": "Volley Arrow (Rank3)",
+            "type": "physical",
+            "base": [
+              50
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 115
+              }
+            ],
+            "hits": 9,
+            "when": "per cast"
+          },
+          {
+            "name": "Volley Arrow (Rank4)",
+            "type": "physical",
+            "base": [
+              65
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 115
+              }
+            ],
+            "hits": 11,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Also applies a critical slow from Frost Shot."
+        ]
+      },
+      "3": {
+        "name": "Hawkshot",
+        "cooldowns": [
+          45.0,
+          40.0,
+          35.0,
+          30.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Provides vision and reveals enemies; no damage."
+        ]
+      },
+      "4": {
+        "name": "Enchanted Crystal Arrow",
+        "cooldowns": [
+          80.0,
+          70.0,
+          60.0
+        ],
+        "damage": [
+          {
+            "name": "Enchanted Crystal Arrow",
+            "type": "magic",
+            "base": [
+              200,
+              350,
+              500
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 40
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Stuns first champion hit; stun duration 1.5-3.5s based on distance; re-cast to steer."
+        ]
+      }
+    },
+    "combo": [
+      "2",
+      "1",
+      "auto",
+      "4",
+      "auto"
+    ],
+    "mechanics": [
+      {
+        "kind": "multiShot",
+        "shots": 5,
+        "damagePerShotPct": 40,
+        "source": "llm-knowledge"
+      }
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.85,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Aurelion Sol": {
+    "abilities": {
+      "P": {
+        "name": "Cosmic Creator",
+        "cooldowns": [],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Stardust stacks empower abilities: Breath of Light bursts deal bonus magic damage equal to 2.5% of Stardust stacks of target's max HP; Astral Flight max flight distance increased by 62.5% of Stardust stacks; Singularity impact area increased by 5% of Stardust stacks and execution threshold by 2.1% of Stardust stacks; Falling Star/The Skies Descend impact area increased by 15% of Stardust stacks."
+        ]
+      },
+      "1": {
+        "name": "Breath of Light",
+        "cooldowns": [
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "damage": [
+          {
+            "name": "Breath of Light Continuous",
+            "type": "magic",
+            "base": [
+              58,
+              53,
+              88,
+              103
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "when": "dot total",
+            "durationS": 3.25,
             "hits": 1
+          },
+          {
+            "name": "Breath of Light Burst",
+            "type": "magic",
+            "base": [
+              70,
+              80,
+              90,
+              100
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 35
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": 0
+              }
+            ],
+            "when": "per cast",
+            "hits": 3
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Deals 50% damage to nearby enemies. Stardust gain on champion hit. Stardust scaling on burst max HP damage (0% base + 3% per Stardust stack). At max level, duration infinite. Interruption within 0.25s causes 1s cooldown."
+        ]
+      },
+      "2": {
+        "name": "Astral Flight",
+        "cooldowns": [
+          17.0,
+          16.0,
+          15.0,
+          14.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "While flying, Breath of Light has no cooldown or max channel duration and deals 115/120/125/130% more damage. Flight speed: 300 + 100 MS. If a champion is killed within 3s of taking damage from Aurelion Sol, 90% of this ability's cooldown is refunded."
+        ]
+      },
+      "3": {
+        "name": "Singularity",
+        "cooldowns": [
+          11.0,
+          11.0,
+          11.0,
+          11.0
+        ],
+        "damage": [
+          {
+            "name": "Singularity",
+            "type": "magic",
+            "base": [
+              20,
+              27.5,
+              35,
+              42.5
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 15
+              }
+            ],
+            "when": "dot total",
+            "durationS": 5,
+            "hits": 1
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Execute threshold: enemies in center die instantly when health below 5% (5 + 2.6% of Stardust stacks). Stardust gain per second or on kill."
+        ]
+      },
+      "4": {
+        "name": "Falling Star/ The Skies Descend",
+        "cooldowns": [
+          80.0,
+          75.0,
+          70.0
+        ],
+        "damage": [
+          {
+            "name": "Falling Star",
+            "type": "magic",
+            "base": [
+              150,
+              250,
+              350
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 65
+              }
+            ],
+            "when": "per cast",
+            "hits": 1
+          },
+          {
+            "name": "The Skies Descend Main",
+            "type": "magic",
+            "base": [
+              188,
+              313,
+              438
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 65
+              }
+            ],
+            "when": "per cast",
+            "hits": 1,
+            "alt": true
+          },
+          {
+            "name": "The Skies Descend Shockwave",
+            "type": "magic",
+            "base": [
+              150,
+              250,
+              350
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 65
+              }
+            ],
+            "when": "per cast",
+            "hits": 1,
+            "alt": true,
+            "note": "Only hits enemy champions and epic monsters"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Falling Star stuns for 1s. The Skies Descend knocks up for 1s and slows by 50% for 1s. Stardust gain on champion hit for Falling Star."
+        ]
+      }
+    },
+    "combo": [
+      "3",
+      "4",
+      "2",
+      "1"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Aurora": {
+    "abilities": {
+      "P": {
+        "name": "Spirit Abjuration",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Spirit Abjuration",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 2.5
+              },
+              {
+                "stat": "ap",
+                "pct": 2
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Heal per second (1-18 + 2% AP) for 4s, max 4 spirits; triggers every 3 hits"
+        ]
+      },
+      "1": {
+        "name": "Twofold Hex",
+        "cooldowns": [
+          8.0,
+          7.0,
+          7.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Twofold Hex First",
+            "type": "magic",
+            "base": [
+              35,
+              65,
+              95,
+              125
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Twofold Hex Recast",
+            "type": "magic",
+            "base": [
+              35,
+              65,
+              95,
+              125
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "unmodeled": "Deals up to 50% bonus damage based on target's missing health; damage beyond first hit reduced by 20%; deals 40% damage to minions and monsters"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": []
+      },
+      "2": {
+        "name": "Across the Veil",
+        "cooldowns": [
+          21.0,
+          20.0,
+          19.0,
+          18.0
+        ],
+        "damage": [],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": [
+              25,
+              30,
+              35,
+              40
+            ],
+            "note": "Grants Realm Hopper and invisibility for 1/1.2/1.4/1.6s; takedown resets cooldown"
+          }
+        ],
+        "defensive": [],
+        "unmodeled": []
+      },
+      "3": {
+        "name": "The Weirding",
+        "cooldowns": [
+          13.0,
+          12.0,
+          11.0,
+          10.0
+        ],
+        "damage": [
+          {
+            "name": "The Weirding",
+            "type": "magic",
+            "base": [
+              75,
+              125,
+              175,
+              225
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 65
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Slows enemies by 80% decaying over 1 second; Aurora hops backward"
+        ]
+      },
+      "4": {
+        "name": "Between Worlds",
+        "cooldowns": [
+          100.0,
+          90.0,
+          80.0
+        ],
+        "damage": [
+          {
+            "name": "Between Worlds",
+            "type": "magic",
+            "base": [
+              150,
+              250,
+              350
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 50
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Slows enemies hit by 30% for 2s; area lasts 2.5/3.25/4s; recast ends early"
+        ]
+      }
+    },
+    "combo": [
+      "1",
+      "3",
+      "1",
+      "4",
+      "auto"
+    ],
+    "mechanics": [
+      {
+        "kind": "everyNHit",
+        "evidence": "Damaging an enemy 3 times with abilities or attacks exorcises them",
+        "n": 3
+      }
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "medium"
+    }
+  },
+  "Bard": {
+    "abilities": {
+      "P": {
+        "name": "Traveler's Call",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Meep Empowered Attack",
+            "type": "magic",
+            "base": [
+              35
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 40
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": 24,
+            "note": "out of combat, stacks up to 150%"
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "Additional 12 bonus magic damage per 3 chimes; slows enemies by 25% for 1s at 3 chimes; area damage at 9 and 27 chimes; meep spawns every 7s; chime bonuses scale with chimes collected; empowered attack only when meep is available."
+        ]
+      },
+      "1": {
+        "name": "Cosmic Binding",
+        "cooldowns": [
+          10.0,
+          9.0,
+          8.0,
+          7.0
+        ],
+        "damage": [
+          {
+            "name": "Cosmic Binding",
+            "type": "magic",
+            "base": [
+              80,
+              130,
+              180,
+              230
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 80
+              }
+            ],
+            "hits": 2,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Slows first enemy by 60% for 1.1/1.3/1.5/1.7s; stuns both enemies if second hits wall or enemy."
+        ]
+      },
+      "2": {
+        "name": "Caretaker's Shrine",
+        "cooldowns": [
+          15.0,
+          15.0,
+          15.0,
+          15.0
+        ],
+        "damage": [],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": [
+              22.5,
+              25,
+              27.5,
+              30
+            ],
+            "note": "+0.05% AP added to movement speed percentage"
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "Heal: minimum 50/80/110/140 (+30% AP), maximum 100/160/220/280 (+60% AP) after 5s; has 2 charges, max 3 active shrines; enemy destroys shrine."
+        ]
+      },
+      "3": {
+        "name": "Magical Journey",
+        "cooldowns": [
+          19.0,
+          17.0,
+          16.0,
+          14.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Opens a one-way corridor through terrain for 10s; allies travel 50% faster."
+        ]
+      },
+      "4": {
+        "name": "Tempered Fate",
+        "cooldowns": [
+          75.0,
+          65.0,
+          55.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Places all units in area into stasis for 2.5s; invulnerable and untargetable."
+        ]
+      }
+    },
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.3,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "medium"
+    }
+  },
+  "Blitzcrank": {
+    "abilities": {
+      "P": {
+        "name": "Mana Barrier",
+        "cooldowns": [],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Mana Barrier: shield that absorbs 90 + 30% Mana damage when below 35% health. Mana-based shield not modeled."
+        ]
+      },
+      "1": {
+        "name": "Rocket Grab",
+        "cooldowns": [
+          18.0,
+          17.0,
+          16.0,
+          15.0
+        ],
+        "damage": [
+          {
+            "name": "Rocket Grab",
+            "type": "magic",
+            "base": [
+              110,
+              175,
+              240,
+              305
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 100
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "pull effect"
+        ]
+      },
+      "2": {
+        "name": "Overdrive",
+        "cooldowns": [
+          10.0,
+          10.0,
+          10.0,
+          10.0
+        ],
+        "damage": [],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "flat": [
+              35,
+              40,
+              45,
+              50
+            ],
+            "note": "decays to 10% over 2.5s"
+          },
+          {
+            "stat": "moveSpeed",
+            "flat": [
+              140,
+              150,
+              160,
+              170
+            ],
+            "note": "decays over 1.5s",
+            "alt": true
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "decaying movement speed; slow after ends (33% or 99% if recast)"
+        ]
+      },
+      "3": {
+        "name": "Power Fist",
+        "cooldowns": [
+          8.0,
+          7.0,
+          6.0,
+          5.0
+        ],
+        "damage": [
+          {
+            "name": "Power Fist",
+            "type": "physical",
+            "base": [
+              105,
+              105,
+              105,
+              105
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": [
+                  180,
+                  200,
+                  220,
+                  240
+                ]
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "knock up"
+        ]
+      },
+      "4": {
+        "name": "Static Field",
+        "cooldowns": [
+          55.0,
+          35.0,
+          15.0
+        ],
+        "damage": [
+          {
+            "name": "Static Field Passive",
+            "type": "magic",
+            "base": [
+              40,
+              80,
+              120
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 15
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          },
+          {
+            "name": "Static Field Active",
+            "type": "magic",
+            "base": [
+              275,
+              400,
+              525
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 80
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "passive only when ult off cooldown; silence effect on active"
+        ]
+      }
+    },
+    "combo": [
+      "1",
+      "3",
+      "4",
+      "auto"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Brand": {
+    "abilities": {
+      "P": {
+        "name": "Blaze",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Blaze Burn",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 3
+              }
+            ],
+            "hits": 1,
+            "when": "dot total",
+            "durationS": 4
+          },
+          {
+            "name": "Blaze Detonation",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 10
+              },
+              {
+                "stat": "ap",
+                "pct": 0.02
+              }
+            ],
+            "hits": 1,
+            "when": "once per target"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "detonation cannot stack again on same target within 4s"
+        ]
+      },
+      "1": {
+        "name": "Sear",
+        "cooldowns": [
+          7.0,
+          7.0,
+          6.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Sear",
+            "type": "magic",
+            "base": [
+              80,
+              120,
+              160,
+              200
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 55
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "stuns ablaze targets for 1.75s"
+        ]
+      },
+      "2": {
+        "name": "Pillar of Flame",
+        "cooldowns": [
+          10.0,
+          9.0,
+          9.0,
+          8.0
+        ],
+        "damage": [
+          {
+            "name": "Pillar of Flame",
+            "type": "magic",
+            "base": [
+              70,
+              120,
+              170,
+              220
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 55
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "30% bonus damage against ablaze targets"
+        ]
+      },
+      "3": {
+        "name": "Conflagration",
+        "cooldowns": [
+          11.0,
+          10.0,
+          9.0,
+          8.0
+        ],
+        "damage": [
+          {
+            "name": "Conflagration",
+            "type": "magic",
+            "base": [
+              60,
+              90,
+              120,
+              150
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 45
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "spread radius doubled if target ablaze"
+        ]
+      },
+      "4": {
+        "name": "Pyroclasm",
+        "cooldowns": [
+          70.0,
+          65.0,
+          60.0
+        ],
+        "damage": [
+          {
+            "name": "Pyroclasm",
+            "type": "magic",
+            "base": [
+              100,
+              200,
+              300
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 6,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "slows ablaze targets by 30/40/50%"
+        ]
+      }
+    },
+    "combo": [
+      "3",
+      "1",
+      "2",
+      "4"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Braum": {
+    "abilities": {
+      "P": {
+        "name": "Concussive Blows",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Concussive Blows Proc",
+            "type": "magic",
+            "base": [
+              45
+            ],
+            "when": "once per target"
+          },
+          {
+            "name": "Concussive Blows Bonus",
+            "type": "magic",
+            "base": [
+              9
+            ],
+            "when": "per auto"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "stacking mechanic with 8-second cooldown per target"
+        ]
+      },
+      "1": {
+        "name": "Winter's Bite",
+        "cooldowns": [
+          9.0,
+          8.0,
+          7.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Winter's Bite",
+            "type": "magic",
+            "base": [
+              60,
+              120,
+              180,
+              240
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 3
+              }
+            ],
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "applies a stack of Concussive Blows"
+        ]
+      },
+      "2": {
+        "name": "Stand Behind Me",
+        "cooldowns": [
+          11.0,
+          10.0,
+          9.0,
+          8.0
+        ],
+        "damage": [],
+        "steroids": [
+          {
+            "stat": "armor",
+            "flat": [
+              10,
+              15,
+              20,
+              25
+            ]
+          },
+          {
+            "stat": "mr",
+            "flat": [
+              10,
+              15,
+              20,
+              25
+            ]
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "also grants same to leaped ally and includes percentage scaling per rank: armor 10/12/14/16% of Braum's armor, MR same"
+        ]
+      },
+      "3": {
+        "name": "Unbreakable",
+        "cooldowns": [
+          16.0,
+          14.0,
+          12.0,
+          10.0
+        ],
+        "damage": [],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": 15
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "raises shield for 4s, negates first instance of damage, then reduces damage by 35/40/45/50% for the duration"
+        ]
+      },
+      "4": {
+        "name": "Glacial Fissure",
+        "cooldowns": [
+          75.0,
+          70.0,
+          65.0
+        ],
+        "damage": [
+          {
+            "name": "Glacial Fissure",
+            "type": "magic",
+            "base": [
+              150,
+              250,
+              350
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "first enemy champion hit knocked up for 1s, subsequent for 0.25s; fissure slows by 40/50/60% for 4s"
+        ]
+      }
+    },
+    "combo": [
+      "4",
+      "1",
+      "auto",
+      "auto",
+      "auto"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.2,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Caitlyn": {
+    "abilities": {
+      "P": {
+        "name": "Headshot",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Headshot",
+            "type": "physical",
+            "base": [
+              27
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 50
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "note": "Also deals 125% of critical chance as bonus physical damage (unmodeled). Base may scale with level."
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Headshot also triggered on trapped/netted enemies regardless of stacks. Brush reduces attacks between headshots to 3."
+        ]
+      },
+      "1": {
+        "name": "Piltover Peacemaker",
+        "cooldowns": [
+          9.0,
+          8.0,
+          7.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Piltover Peacemaker",
+            "type": "physical",
+            "base": [
+              60,
+              110,
+              160,
+              210
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 125
+              },
+              {
+                "stat": "ad",
+                "pct": 140
+              },
+              {
+                "stat": "ad",
+                "pct": 155
+              },
+              {
+                "stat": "ad",
+                "pct": 170
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "note": "Subsequent enemies take 40% reduced damage; full damage to trapped/netted."
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Piercing projectile with damage falloff."
+        ]
+      },
+      "2": {
+        "name": "Yordle Snap Trap",
+        "cooldowns": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Trap: immobilizes 1.5s, reveals, max active 2/3/4/5, charge time 27/22/17/12s."
+        ]
+      },
+      "3": {
+        "name": "90 Caliber Net",
+        "cooldowns": [
+          16.0,
+          14.0,
+          12.0,
+          10.0
+        ],
+        "damage": [
+          {
+            "name": "90 Caliber Net",
+            "type": "magic",
+            "base": [
+              70,
+              120,
+              170,
+              220
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 80
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Knocks Caitlyn backward. Slows enemy by 50% for 1.5s."
+        ]
+      },
+      "4": {
+        "name": "Ace in the Hole",
+        "cooldowns": [
+          65.0,
+          55.0,
+          45.0
+        ],
+        "damage": [
+          {
+            "name": "Ace in the Hole",
+            "type": "physical",
+            "base": [
+              200,
+              375,
+              550
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 200
+              },
+              {
+                "stat": "targetMissingHp",
+                "pct": 20
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "note": "Reveals target for 1.5s. Bullet can be intercepted by other champions."
           }
         ],
         "steroids": [],
@@ -3329,15 +6178,548 @@
       }
     },
     "combo": [
+      "2",
       "1",
       "3",
-      "4",
-      "1"
+      "auto",
+      "4"
+    ],
+    "mechanics": [
+      {
+        "kind": "everyNHit",
+        "evidence": "Every 6 attacks fires a Headshot",
+        "n": 6
+      }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.2,
+      "asEfficiency": 0.8,
       "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Camille": {
+    "abilities": {
+      "P": {
+        "name": "Adaptive Defenses",
+        "cooldowns": [],
+        "damage": [],
+        "steroids": [],
+        "defensive": [
+          {
+            "kind": "shield",
+            "base": [
+              130
+            ],
+            "ratios": [
+              {
+                "stat": "ownMaxHp",
+                "pct": 20
+              }
+            ],
+            "when": "per auto"
+          }
+        ],
+        "unmodeled": [
+          "shield type adapts to enemy damage type"
+        ]
+      },
+      "1": {
+        "name": "Precision Protocol",
+        "cooldowns": [
+          9.0,
+          8.0,
+          7.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Precision Protocol",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 130
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          },
+          {
+            "name": "Precision Protocol",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 140
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          },
+          {
+            "name": "Precision Protocol",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 150
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          },
+          {
+            "name": "Precision Protocol",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 160
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "alt": true
+          }
+        ],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": 25,
+            "durationS": 1.5,
+            "when": "per auto"
+          }
+        ],
+        "defensive": [],
+        "unmodeled": []
+      },
+      "2": {
+        "name": "Tactical Sweep",
+        "cooldowns": [
+          15.0,
+          13.0,
+          11.0,
+          9.0
+        ],
+        "damage": [
+          {
+            "name": "Tactical Sweep Flat",
+            "type": "physical",
+            "base": [
+              100,
+              130,
+              160,
+              190
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 110
+              }
+            ],
+            "hits": 1,
+            "when": "once per target"
+          },
+          {
+            "name": "Tactical Sweep MaxHp",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 3
+              }
+            ],
+            "hits": 1,
+            "when": "once per target",
+            "alt": true
+          },
+          {
+            "name": "Tactical Sweep MaxHp",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 5
+              }
+            ],
+            "hits": 1,
+            "when": "once per target",
+            "alt": true
+          },
+          {
+            "name": "Tactical Sweep MaxHp",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 7
+              }
+            ],
+            "hits": 1,
+            "when": "once per target",
+            "alt": true
+          },
+          {
+            "name": "Tactical Sweep MaxHp",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 9
+              }
+            ],
+            "hits": 1,
+            "when": "once per target",
+            "alt": true
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "outer half slows 80% decaying over 2s; heals 80% dmg to champs; 95% dmg to monsters"
+        ]
+      },
+      "3": {
+        "name": "Hookshot",
+        "cooldowns": [
+          22.0,
+          20.0,
+          18.0,
+          16.0
+        ],
+        "damage": [
+          {
+            "name": "Hookshot Dash",
+            "type": "physical",
+            "base": [
+              60,
+              110,
+              160,
+              210
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 75
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [
+          {
+            "stat": "attackSpeed",
+            "pct": 50,
+            "durationS": 5,
+            "when": "per cast",
+            "alt": true
+          },
+          {
+            "stat": "attackSpeed",
+            "pct": 60,
+            "durationS": 5,
+            "when": "per cast",
+            "alt": true
+          },
+          {
+            "stat": "attackSpeed",
+            "pct": 70,
+            "durationS": 5,
+            "when": "per cast",
+            "alt": true
+          },
+          {
+            "stat": "attackSpeed",
+            "pct": 80,
+            "durationS": 5,
+            "when": "per cast",
+            "alt": true
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "stuns 0.75s if dash hits; cooldown reduced by 5s if hits champion"
+        ]
+      },
+      "4": {
+        "name": "Hextech Ultimatum",
+        "cooldowns": [
+          90.0,
+          80.0,
+          70.0
+        ],
+        "damage": [
+          {
+            "name": "Hextech Ultimatum Flat",
+            "type": "magic",
+            "base": [
+              30
+            ],
+            "ratios": [],
+            "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Hextech Ultimatum CurrentHp",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetCurrentHp",
+                "pct": 15
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true
+          },
+          {
+            "name": "Hextech Ultimatum CurrentHp",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetCurrentHp",
+                "pct": 20
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true
+          },
+          {
+            "name": "Hextech Ultimatum CurrentHp",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetCurrentHp",
+                "pct": 25
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "knocks away other enemies; creates zone for 2s; ends when Camille leaves"
+        ]
+      }
+    },
+    "combo": [
+      "3",
+      "auto",
+      "1",
+      "auto",
+      "2",
+      "4",
+      "auto"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.6,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
+    }
+  },
+  "Zed": {
+    "abilities": {
+      "P": {
+        "name": "Contempt for the Weak",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Contempt for the Weak",
+            "type": "magic",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 7
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "condition: enemy below 50% Health, 10s cooldown per unique enemy"
+        ]
+      },
+      "1": {
+        "name": "Razor Shuriken",
+        "cooldowns": [
+          6.0,
+          6.0,
+          6.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Razor Shuriken",
+            "type": "physical",
+            "base": [
+              70,
+              120,
+              170,
+              220
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 110
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "secondary damage to other enemies: 49/84/119/154 (+77% bonus AD) physical; deals 80% damage to monsters"
+        ]
+      },
+      "2": {
+        "name": "Living Shadow",
+        "cooldowns": [
+          17.0,
+          16.0,
+          15.0,
+          14.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Passive: energy gain when hitting same enemy twice with abilities. Active: places shadow for 4.5s, reactivate to swap."
+        ]
+      },
+      "3": {
+        "name": "Shadow Slash",
+        "cooldowns": [
+          5.0,
+          4.0,
+          4.0,
+          3.0
+        ],
+        "damage": [
+          {
+            "name": "Shadow Slash",
+            "type": "physical",
+            "base": [
+              65,
+              95,
+              125,
+              155
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 70
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "slow 25-40% for 1.5s; secondary slashes deal 50% damage and increase slow; each enemy hit reduces W cooldown by 2s; deals 60% damage to monsters"
+        ]
+      },
+      "4": {
+        "name": "Death Mark",
+        "cooldowns": [
+          85.0,
+          65.0,
+          45.0
+        ],
+        "damage": [
+          {
+            "name": "Death Mark initial",
+            "type": "physical",
+            "base": [
+              60
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 100
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "after 2.8s, mark triggers dealing 30/42.5/55% of all damage dealt to target during mark as physical damage. Leaves shadow; reactivate to swap."
+        ]
+      }
+    },
+    "combo": [
+      "4",
+      "3",
+      "1",
+      "auto"
+    ],
+    "mechanics": [
+      {
+        "kind": "noResource",
+        "evidence": "Zed gains 40 / 45 / 50 / 55 Energy"
+      }
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.3,
+      "resource": "energy",
       "abilitiesCanCrit": false,
       "confidence": "high"
     }

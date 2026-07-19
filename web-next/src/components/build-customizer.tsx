@@ -28,6 +28,8 @@ function fromBuild(b: Build): { items: string[]; boots: string; runes: RunePick 
 }
 
 const EMPTY_STATE = { items: [] as string[], boots: "", runes: { keystone: "", tree: "", minors: ["", "", ""] as [string, string, string], flex: "" } };
+// Wild Rift minor-rune paths. Keystone is chosen independently of these.
+const TREES = ["Domination", "Precision", "Resolve", "Sorcery"] as const;
 
 export function BuildCustomizer({ name, data }: { name: string; data: ChampionBuilds }) {
   const variants = data.variants?.length ? data.variants : Object.keys(data.builds);
@@ -35,7 +37,13 @@ export function BuildCustomizer({ name, data }: { name: string; data: ChampionBu
   const base = data.builds[variant];
   // start EMPTY: the sandbox shows the champion's bare base stats, and every
   // item/rune the user adds shows its delta. "Start from" loads a variant.
-  const [state, setState] = useState(EMPTY_STATE);
+  // The minor TREE is seeded from the current build, else the tree-minor slots
+  // filter on tree === "" and show nothing (the reported bug). In Wild Rift the
+  // keystone is independent of the minor path, so the tree is its own control.
+  const [state, setState] = useState(() => ({
+    ...EMPTY_STATE,
+    runes: { ...EMPTY_STATE.runes, tree: base?.runes.primaryTree || "Precision" },
+  }));
   const [level, setLevel] = useState(15);
   const [picker, setPicker] = useState<{ kind: "item" | "boots" | "keystone" | "minor" | "flex"; idx?: number } | null>(null);
   const [query, setQuery] = useState("");
@@ -89,10 +97,9 @@ export function BuildCustomizer({ name, data }: { name: string; data: ChampionBu
     setState((s) => {
       const r = { ...s.runes };
       if (picker?.kind === "keystone") {
+        // WR keystones are NOT tied to a tree (the scrape tags them all
+        // "Keystone"), so picking one must not touch the minor path.
         r.keystone = rn;
-        // the keystone defines the primary tree; switching trees resets minors
-        const tree = runeMeta.get(rn)?.tree;
-        if (rn && tree && tree !== r.tree) { r.tree = tree; r.minors = ["", "", ""]; }
       } else if (picker?.kind === "flex") r.flex = rn;
       else if (picker?.kind === "minor") {
         const minors = [...r.minors] as RunePick["minors"];
@@ -123,10 +130,13 @@ export function BuildCustomizer({ name, data }: { name: string; data: ChampionBu
       return allRunes.filter((r) => r.type === "Keystone" && r.name.toLowerCase().includes(q));
     if (picker.kind === "flex")
       return allRunes.filter((r) => r.type === "Minor" && r.name.toLowerCase().includes(q));
-    // tree minor: same tree, correct slot
+    // tree minor: correct slot, constrained to the chosen tree (all trees if
+    // none set, so the picker is never empty).
+    const slot = (picker.idx ?? 0) + 1;
     return allRunes.filter(
-      (r) => r.type === "Minor" && r.tree === state.runes.tree
-        && r.slot === (picker.idx ?? 0) + 1 && r.name.toLowerCase().includes(q));
+      (r) => r.type === "Minor" && r.slot === slot
+        && (!state.runes.tree || r.tree === state.runes.tree)
+        && r.name.toLowerCase().includes(q));
   }, [picker, query, allItems, allRunes, state.runes.tree]);
 
   const Tile = ({ icon, label, onClick, size = 40, round = false }: {
@@ -195,6 +205,15 @@ export function BuildCustomizer({ name, data }: { name: string; data: ChampionBu
         <span className="mx-1 h-8 w-px bg-line" />
         <Tile icon={runeMeta.get(state.runes.keystone)?.icon} label={state.runes.keystone || "keystone"}
               size={40} round onClick={() => { setPicker({ kind: "keystone" }); setQuery(""); }} />
+        {/* minor path selector: switching resets the 3 minors */}
+        <select
+          value={state.runes.tree}
+          onChange={(e) => setState((s) => ({ ...s, runes: { ...s.runes, tree: e.target.value, minors: ["", "", ""] } }))}
+          className="rounded-lg border border-line bg-white/[0.04] px-1.5 py-1 text-xs outline-none"
+          title="Minor rune path"
+        >
+          {TREES.map((t) => <option key={t} value={t}>{t}</option>)}
+        </select>
         {state.runes.minors.map((rn, i) => (
           <Tile key={`${rn}-${i}`} icon={runeMeta.get(rn)?.icon} label={rn || `slot ${i + 1}`}
                 size={32} round onClick={() => { setPicker({ kind: "minor", idx: i }); setQuery(""); }} />

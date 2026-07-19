@@ -133,7 +133,14 @@ export interface BuildAnalysis {
 export interface Build {
   summary: string;
   coreBuild: BuildItem[];
+  /** The tier-3 boot the finished build wears. */
   boots: BuildItem | null;
+  /** The tier-2 you buy first, upgraded into `boots` later. Null when the boot
+   *  has no tier-3 (patch 7.2 unlocks the upgrade at 10:00). */
+  bootsEarly?: BuildItem | null;
+  /** How many core items are bought before the tier-3 upgrade. */
+  bootsUpgradeAfter?: number | null;
+  /** Boot enchantments were removed in patch 7.2; always null on new builds. */
   enchantment: BuildItem | null;
   situational: BuildItem[];
   situationalRunes?: SituationalRune[];

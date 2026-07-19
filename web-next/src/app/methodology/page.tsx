@@ -54,9 +54,9 @@ export default function MethodologyPage() {
         </Section>
 
         <Section title="Tiers">
-          Champions are bucketed GOD · S · A · B · C · Ass by their confidence-adjusted win rate.
+          Champions are bucketed GOD · S · A · B · C · L by their confidence-adjusted win rate.
           The all-roles list uses fixed cutoffs (GOD 63%+, S 61–63%, A 59–61%, B 57–59%, C
-          56–57%, Ass under 56%). When you filter to a single role, a role&rsquo;s narrower win-rate
+          56–57%, L under 56%). When you filter to a single role, a role&rsquo;s narrower win-rate
           range means we switch to percentile cutoffs so every tier stays populated.
         </Section>
 

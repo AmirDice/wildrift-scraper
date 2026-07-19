@@ -142,3 +142,10 @@ body {
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* Sheen sweep for the top feature banner: a light band travels across to catch
+   the eye without being distracting. */
+@keyframes sheen {
+  0% { transform: translateX(0) skewX(-20deg); }
+  55%, 100% { transform: translateX(500%) skewX(-20deg); }
+}

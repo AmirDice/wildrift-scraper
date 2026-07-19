@@ -32,7 +32,7 @@ export default function ConsistencyPage() {
           ["A", "#4f8dff"],
           ["B", "#8aa0c0"],
           ["C", "#6b7890"],
-          ["Ass", "#ff6a6a"],
+          ["L", "#ff6a6a"],
         ].map(([t, col]) => (
           <span key={t} className="inline-flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: col }} />

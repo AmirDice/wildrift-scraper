@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
-import { TIER_ORDER, tierClass, site } from "@/lib/data";
+import { TIER_ORDER, tierClass, tierLabel, site } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 import { moverBySlug, MOVERS_META } from "@/lib/movers";
@@ -102,7 +102,7 @@ export function TierListView({
                   <div
                     className={`grid w-16 shrink-0 place-items-center rounded-xl text-2xl font-black sm:w-20 ${tierClass[t]}`}
                   >
-                    {t}
+                    {tierLabel(t)}
                   </div>
                   <div className="glass flex flex-1 flex-wrap content-center gap-3 rounded-xl p-3 sm:gap-4 sm:p-4">
                     {champs.map((c) => {
@@ -151,13 +151,13 @@ export function TierListView({
               <p>
                 <span className="font-medium text-text">CN tier cutoffs</span>: whole-ladder win
                 rates centre on 50%, so tiers use a China-specific scale. GOD 53.5%+ · S 52–53.5% ·
-                A 50.8–52% · B 49.5–50.8% · C 48–49.5% · Ass under 48%.
+                A 50.8–52% · B 49.5–50.8% · C 48–49.5% · L under 48%.
               </p>
             ) : isGlobal ? (
               <p>
                 <span className="font-medium text-text">Global cutoffs</span>: the average of the
                 EU and CN win rates (both 50%-centred). GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B
-                49.5–50.8% · C 48–49.5% · Ass under 48%.
+                49.5–50.8% · C 48–49.5% · L under 48%.
               </p>
             ) : role === "All roles" ? (
               (() => {
@@ -169,7 +169,7 @@ export function TierListView({
                     every champion here is carried by its top-50 mains, so the pool naturally sits
                     high; we centre it so 50% = the average champion and you can read the gap at a
                     glance. Tier cutoffs: GOD {c(63)}%+ · S {c(61)}–{c(63)}% · A {c(59)}–{c(61)}% · B{" "}
-                    {c(57)}–{c(59)}% · C {c(56)}–{c(57)}% · Ass under {c(56)}%.
+                    {c(57)}–{c(59)}% · C {c(56)}–{c(57)}% · L under {c(56)}%.
                   </p>
                 );
               })()

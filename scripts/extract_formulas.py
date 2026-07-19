@@ -23,6 +23,7 @@ import argparse
 import json
 import os
 import re
+from itertools import combinations
 import time
 from pathlib import Path
 
@@ -46,7 +47,11 @@ SYSTEM = (
     "- damage components: {\"name\":\"...\",\"type\":\"physical|magic|true\","
     "\"base\":[per-rank numbers, single number if flat],"
     "\"ratios\":[{\"stat\":one of " + str(RATIO_STATS) + ",\"pct\":number (110 for 110%)}],"
-    "\"hits\":N (default 1; e.g. 3-hit ability = 3, per-bullet abilities use bullets),"
+    "\"hits\":N (default 1; e.g. 3-hit ability = 3, per-bullet abilities use bullets). "
+    "If the NUMBER OF HITS scales with stacks/charges, use the MAX-STACK count: Gwen's "
+    "'snips twice, snipping an extra time for each stack consumed (max 4)' is 5 regular "
+    "snips (hits=5) plus 1 final snip (hits=1) — NOT hits=1. Modelling one snip makes her "
+    "primary ability look 5x weaker than it is,"
     "\"when\":\"per cast|per auto|once per target|dot total\"}\n"
     "- For DoTs give the TOTAL damage over the duration if stated per-tick x duration; "
     "if only per-second is stated, set when='dot total' and base = per-second value with "
@@ -57,7 +62,12 @@ SYSTEM = (
     "- shields/heals: {\"kind\":\"shield|heal\",\"base\":[...],\"ratios\":[...]}\n"
     "- Anything you cannot express (clones, transformations, stacking mechanics, "
     "conditional executes) -> put a short string in \"unmodeled\". Do NOT force it.\n"
-    "- Empowered/enhanced basic attacks are damage components with when='per auto'.\n"
+    "- ON-HIT DAMAGE IS CRITICAL: any damage added to basic attacks MUST be a damage "
+    "component with when='per auto' — this includes ALWAYS-ON passives (e.g. 'basic "
+    "attacks deal 1% of target max health'), empowered/enhanced attacks, and per-bullet "
+    "shotgun/multi-shot attacks. NEVER put on-hit damage in \"unmodeled\": without it the "
+    "simulator thinks attack speed and crit are worthless for this champion. Use base 0 "
+    "with ratios when the damage is purely a ratio (e.g. %target max health).\n"
     "- MUTUALLY EXCLUSIVE versions of one ability (tap vs charged cast, normal vs "
     "empowered/crit/conditional upgrade): model the DEFAULT/always-available version "
     "normally and add \"alt\": true to every alternative component so the engine "
@@ -77,7 +87,91 @@ SYSTEM = (
 )
 
 MECHANIC_KINDS = {"reload", "fixedAttackSpeed", "doubleShot", "everyNHit",
-                  "noResource", "transform"}
+                  "noResource", "transform", "multiShot"}
+
+# --- Core-mechanic questionnaire --------------------------------------------
+# The evidence-grounded pass is non-deterministic: it has dropped Graves' reload
+# between runs, and tooltips never spell out pellet counts. This asks the LLM's
+# GAME KNOWLEDGE for the champion's defining, simulator-relevant mechanics. It
+# only FILLS GAPS — anything the grounded pass found wins — and is labelled
+# source="llm-knowledge" so assumptions stay auditable.
+CORE_MECHANIC_SYSTEM = (
+    "You are a Wild Rift (mobile) expert. Name the CORE mechanics of ONE champion "
+    "that a DAMAGE SIMULATOR must model. Answer for WILD RIFT, not PC League.\n"
+    "Use ONLY these kinds:\n"
+    "  reload           — ammo/magazine limits basic attacks (params: magazine)\n"
+    "  multiShot        — ONE basic attack fires several projectiles/pellets "
+    "(params: shots, damagePerShotPct = each pellet's % of a normal attack)\n"
+    "  fixedAttackSpeed — attack speed does NOT speed up this champion's attacks\n"
+    "  doubleShot       — attacks fire an extra shot (params: secondShotPct)\n"
+    "  everyNHit        — every Nth attack is empowered (params: n)\n"
+    "  noResource       — uses no mana (energy/rage/none)\n"
+    "Only list mechanics this champion ACTUALLY has; most champions have none. "
+    'Return ONLY JSON: {"mechanics":[{"kind":"...","...params":N}],'
+    '"confidence":"high|medium|low"}'
+)
+
+
+def core_mechanics_call(key: str, champ: dict) -> list[dict]:
+    abils = "\n".join(f"[{a['slot']}] {a['name']}: {(a.get('text') or '')[:200]}"
+                      for a in champ.get("abilities", []))
+    body = {"model": MODEL,
+            "messages": [{"role": "system", "content": CORE_MECHANIC_SYSTEM},
+                         {"role": "user", "content": f"CHAMPION: {champ['name']}\n{abils}"}],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.1, "max_tokens": 8000, "stream": False}
+    headers = {"Authorization": f"Bearer {key}"}
+    for attempt in range(3):
+        r = requests.post(DEEPSEEK_URL, json=body, headers=headers, timeout=180)
+        if r.status_code in (429, 500, 502, 503, 504) and attempt < 2:
+            time.sleep(3 * (attempt + 1))
+            continue
+        if not r.ok:
+            raise RuntimeError(f"deepseek {r.status_code}")
+        raw = json.loads(r.json()["choices"][0]["message"]["content"])
+        out = []
+        for m in raw.get("mechanics") or []:
+            if isinstance(m, dict) and m.get("kind") in MECHANIC_KINDS:
+                m["source"] = "llm-knowledge"
+                out.append(m)
+        return out
+    return []
+
+
+def merge_core_mechanics(grounded: list[dict], known: list[dict]) -> list[dict]:
+    """Grounded (tooltip-evidenced) mechanics win; knowledge only fills gaps."""
+    have = {m.get("kind") for m in grounded}
+    return grounded + [m for m in known if m.get("kind") not in have]
+
+
+# The extraction is a dice roll: a bad run once modelled Gwen's 4-snip Q as ONE
+# snip, which under-counted her AP scaling so badly the engine priced her as an
+# AD champion. This guard simulates the freshly extracted kit and checks it still
+# reproduces the champion's independently-scraped primaryDamage. Cheap, and it
+# catches the whole class of silent under-extraction.
+DAMAGE_TYPE_MIN_SHARE = 0.45
+
+
+def _damage_type_ok(name: str, rec: dict, champ: dict) -> bool:
+    primary = champ.get("primaryDamage")
+    if primary not in ("magic", "physical"):
+        return True
+    try:
+        import web.fight_engine as fe
+        prev = fe.FORMULAS.get(name)
+        fe.FORMULAS[name] = rec  # simulate the candidate extraction
+        try:
+            st = fe.resolve_stats(name, 13, [], [])
+            r = fe.rotation(name, st, fe.TARGETS["bruiser"], 8.0, 13)
+            share = r["byType"].get(primary, 0.0) / (r["total"] or 1.0)
+        finally:
+            if prev is None:
+                fe.FORMULAS.pop(name, None)
+            else:
+                fe.FORMULAS[name] = prev
+        return share >= DAMAGE_TYPE_MIN_SHARE
+    except Exception:  # noqa: BLE001 — never block extraction on the guard
+        return True
 
 # --- Tier-2 knowledge questionnaire -----------------------------------------
 # Tooltips describe mechanics qualitatively ("Attack Speed reduces reload time
@@ -166,18 +260,59 @@ def _norm_num(x: float) -> str:
     return str(int(x)) if float(x) == int(x) else str(x).rstrip("0").rstrip(".")
 
 
+def _derivable(v: float, allowed: set[str]) -> bool:
+    """Is `v` justified by the ability text?
+
+    Verbatim-only was too strict and it contradicted our own prompt. A
+    multi-hit ability's total IS the thing the engine needs, and it is never
+    printed: Gwen's Snip Snip reads "snips twice, +1 per stack (max 4)... each
+    snip 14/18/22/26, final snip 70/90/110/130", so one cast at max stacks is
+    5*14 + 70 = 140. The model computed 140/180/220/260 correctly and the filter
+    deleted all four for not appearing literally -- leaving her PRIMARY damage
+    ability modelled as dealing nothing, which is why an AP bruiser priced AD
+    (0.88) above AP (0.64).
+
+    So accept a value the text DERIVES: verbatim, a sum of listed numbers, a
+    listed number times a small integer (N hits), or n*a + b (N hits plus a
+    different final hit). Anything else is still rejected as invented.
+    """
+    if _norm_num(v) in allowed:
+        return True
+    nums = sorted({float(x) for x in allowed})
+    for a in nums:                                  # 5 snips of 14
+        for k in range(2, 11):
+            if abs(a * k - v) < 1e-6:
+                return True
+            for b in nums:                          # 5 snips of 14 + a 70 final
+                if abs(a * k + b - v) < 1e-6:
+                    return True
+    for r in (2, 3):                                # plain sums
+        for combo in combinations(nums, r):
+            if abs(sum(combo) - v) < 1e-6:
+                return True
+    return False
+
+
 def _grounded(comp: dict, allowed: set[str]) -> list[str]:
-    """Return the extracted numbers that do NOT appear in the source text."""
+    """Return the extracted numbers the source text cannot justify.
+
+    Zero asserts nothing — a component with base 0 is simply pure-ratio damage
+    (an on-hit passive, a shotgun pellet), so it needs no evidence. Requiring a
+    verbatim "0" silently deleted real kit mechanics."""
     bad = []
     base = comp.get("base")
     if base is not None:
         for b in (base if isinstance(base, list) else [base]):
-            if _norm_num(float(b)) not in allowed:
+            if float(b) == 0:
+                continue
+            if not _derivable(float(b), allowed):
                 bad.append(f"base {b}")
     for r in comp.get("ratios") or []:
         p = r.get("pct")
         for pv in (p if isinstance(p, list) else [p]):
-            if pv is not None and _norm_num(float(pv)) not in allowed:
+            if pv is None or float(pv) == 0:
+                continue
+            if not _derivable(float(pv), allowed):
                 bad.append(f"ratio {pv}%")
     return bad
 
@@ -236,7 +371,22 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
         allowed = _numbers_in(src.get("text", ""))
         damage, dropped = [], []
         for comp in ab.get("damage") or []:
-            bad = _grounded(comp, allowed)
+            # Strip an ungrounded RATIO instead of discarding the whole
+            # component. One bad ratio used to delete the entire ability: Gwen's
+            # passive reads "1% (+0.005% AP) of target max Health", the model
+            # wrote the AP ratio as 0.5%, and her ENTIRE on-hit passive vanished
+            # along with the perfectly good 1% max-HP ratio. Losing one scaling
+            # is a small error; losing the ability is a large one.
+            ratios = comp.get("ratios") or []
+            if ratios:
+                keep = [r for r in ratios
+                        if not _grounded({"ratios": [r]}, allowed)]
+                if len(keep) != len(ratios):
+                    lost = [r.get("stat") for r in ratios if r not in keep]
+                    dropped.append(f"{slot}/{comp.get('name','?')}: dropped "
+                                   f"ungrounded ratio(s) {lost}, kept the rest")
+                    comp = {**comp, "ratios": keep}
+            bad = _grounded(comp, allowed)   # base still has to hold up
             if bad:
                 dropped.append(f"{slot}/{comp.get('name','?')}: ungrounded {bad}")
                 continue
@@ -287,6 +437,14 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
             if isinstance(v, (int, float)) and _norm_num(float(v)) in all_nums:
                 entry[p] = v
         mechanics.append(entry)
+
+    # Core mechanics from game knowledge fill what the evidence pass missed
+    # (tooltips omit pellet counts, and the grounded pass is non-deterministic —
+    # it has silently dropped Graves' reload between runs). Grounded always wins.
+    try:
+        mechanics = merge_core_mechanics(mechanics, core_mechanics_call(key, champ))
+    except Exception:  # noqa: BLE001 — knowledge is optional
+        pass
     if mechanics:
         out["mechanics"] = mechanics
 
@@ -320,15 +478,29 @@ def main() -> None:
 
     for i, c in enumerate(todo, 1):
         try:
-            rec, issues = extract(c, key)
-            n_direct = sum(len(a["damage"]) for a in rec["abilities"].values())
-            if n_direct == 0:  # bad roll: a kit with zero damage components
+            rec, issues, ok = None, [], False
+            for _try in range(3):  # LLM extraction is a dice roll; validate each
                 rec, issues = extract(c, key)
+                n_direct = sum(len(a["damage"]) for a in rec["abilities"].values())
+                if n_direct == 0:      # bad roll: a kit with zero damage
+                    continue
+                if _damage_type_ok(c["name"], rec, c):
+                    ok = True
+                    break
+            if not ok:
+                issues.append("damage type contradicts primaryDamage after 3 tries")
         except Exception as e:  # noqa: BLE001
             print(f"  ! {c['name']}: {e}")
             continue
+        if rec is None:
+            continue
         n_dmg = sum(len(a["damage"]) for a in rec["abilities"].values())
         n_un = sum(len(a["unmodeled"]) for a in rec["abilities"].values())
+        # preserve blocks this pass doesn't produce (e.g. the behaviour model from
+        # scripts.extract_behavior) — a plain overwrite silently wiped them.
+        for _keep in ("behavior",):
+            if _keep in cache.get(c["name"], {}) and _keep not in rec:
+                rec[_keep] = cache[c["name"]][_keep]
         cache[c["name"]] = rec
         OUT.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
         flag = f"  ({n_un} unmodeled)" if n_un else ""

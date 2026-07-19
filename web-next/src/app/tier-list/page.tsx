@@ -8,7 +8,7 @@ import { TierListView } from "@/components/tier-list-view";
 export const metadata: Metadata = {
   title: "Wild Rift Tier List | EU Top 50 Player Win Rates",
   description:
-    "The Wild Rift tier list ranked by real top-50 EU player win rates. Filter by role. GOD to Ass tiers, updated twice a month.",
+    "The Wild Rift tier list ranked by real top-50 EU player win rates. Filter by role. GOD to L tiers, updated twice a month.",
   alternates: { canonical: "/tier-list" },
 };
 

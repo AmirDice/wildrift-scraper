@@ -1,195 +1,9 @@
 {
-  "abyssal-mask": {},
-  "archangels-staff": {},
-  "ardent-censer": {},
-  "awakened-soulstealer": {},
-  "black-cleaver": {
-    "armorShredPct": 30,
-    "msFlat": 20
+  "bloodthirster": {
+    "physVampPct": 12
   },
-  "blade-of-the-ruined-king": {
-    "omnivampPct": 10,
-    "onHitPctCurrentHp": 10,
-    "burstProcFlat": {
-      "lvlRange": [
-        30,
-        100
-      ]
-    }
-  },
-  "bloodthirster": {},
-  "dead-mans-plate": {
-    "msPct": 5,
-    "msFlat": 40,
-    "onHitFlatMagic": 100
-  },
-  "deaths-dance": {},
-  "duskblade-of-draktharr": {
-    "flatPen": 18,
-    "firstHit": {
-      "lvlRange": [
-        60,
-        160
-      ]
-    }
-  },
-  "guardian-angel": {},
-  "harmonic-echo": {},
-  "iceborn-gauntlet": {
-    "spellbladeBaseAdPct": 100
-  },
-  "infinity-edge": {},
-  "infinity-orb": {
-    "msPct": 5,
-    "flatPen": 15,
-    "damageAmpPct": 20,
-    "burstProcApPct": 10
-  },
-  "liandrys-torment": {},
-  "lich-bane": {
-    "spellbladeBaseAdPct": 75,
-    "msPct": 5
-  },
-  "ludens-echo": {
-    "burstProcFlat": 110,
-    "burstProcApPct": 10
-  },
-  "manamune": {
-    "adFromManaPct": 1.5
-  },
-  "maw-of-malmortius": {
-    "omnivampPct": 10
-  },
-  "morellonomicon": {},
-  "mortal-reminder": {},
-  "nashors-tooth": {
-    "onHitFlatMagic": 15,
-    "apFlatPassive": 50
-  },
-  "phantom-dancer": {},
-  "rabadons-deathcap": {
-    "abilityAmpPct": {
-      "lvlRange": [
-        20,
-        45
-      ]
-    }
-  },
-  "randuins-omen": {},
-  "rod-of-ages": {
-    "hpFlatPassive": 200,
-    "apFlatPassive": 60
-  },
-  "runaans-hurricane": {},
-  "rylais-crystal-scepter": {},
-  "steraks-gage": {},
-  "sunfire-aegis": {
-    "dotDps": {
-      "lvlRange": [
-        16,
-        25
-      ]
-    }
-  },
-  "thornmail": {
-    "burstProcFlat": 20
-  },
-  "trinity-force": {
-    "spellbladeBaseAdPct": 200,
-    "msPct": 5,
-    "msFlat": 20
-  },
-  "warmogs-armor": {},
-  "winters-approach": {},
-  "youmuus-ghostblade": {
-    "flatPen": 15,
-    "msFlat": 40
-  },
-  "zekes-convergence": {},
-  "gluttonous-greaves": {
-    "omnivampPct": 7
-  },
-  "ionian-boots-of-lucidity": {},
-  "mercurys-treads": {},
-  "plated-steelcaps": {},
-  "gargoyle": {},
-  "glorious": {},
-  "locket": {},
-  "protobelt": {},
-  "quicksilver": {},
-  "stasis": {},
-  "force-of-nature": {},
-  "frozen-heart": {},
-  "essence-reaver": {
-    "spellbladeBaseAdPct": 90
-  },
-  "navori-quickblades": {},
-  "seryldas-grudge": {
-    "pctPen": 33
-  },
-  "staff-of-flowing-water": {
-    "hasteFlatPassive": 10,
-    "apFlatPassive": {
-      "lvlRange": [
-        20,
-        40
-      ]
-    }
-  },
-  "wits-end": {
-    "onHitFlatMagic": {
-      "lvlRange": [
-        10,
-        55
-      ]
-    },
-    "omnivampPct": 100
-  },
-  "edge-of-night": {
-    "flatPen": 8
-  },
-  "divine-sunderer": {
-    "spellbladePctMaxHp": 10
-  },
-  "hullbreaker": {
-    "msPct": 5,
-    "procMaxHpPct": 5
-  },
-  "veil": {},
-  "riftmaker": {
-    "omnivampPct": 11
-  },
-  "imperial-mandate": {},
-  "cosmic-drive": {
-    "msPct": 5
-  },
-  "serpents-fang": {
-    "flatPen": 15
-  },
-  "horizon-focus": {
-    "damageAmpPct": 9
-  },
-  "lord-dominiks-regard": {
-    "giantSlayerPct": 12
-  },
-  "dawnshroud": {
-    "burstProcFlat": 40
-  },
-  "mantle-of-the-twelfth-hour": {},
-  "amaranths-twinguard": {},
-  "searing-crown": {
-    "onHitPctMaxHp": 1.4
-  },
-  "the-collector": {
-    "flatPen": 10,
-    "executePct": 4
-  },
-  "boots-of-mana": {},
-  "boots-of-dynamism": {
-    "flatPen": 8
-  },
-  "berserkers-greaves": {
-    "healOnHitFlat": 10
+  "guardian-angel": {
+    "reviveHpPct": 50
   },
   "magnetic-blaster": {
     "msPct": 5,
@@ -200,37 +14,342 @@
       ]
     }
   },
-  "chempunk-chainsword": {},
-  "oceanids-trident": {},
-  "crown-of-the-shattered-queen": {
-    "apFlatPassive": 20
+  "blade-of-the-ruined-king": {
+    "omnivampPct": 10,
+    "onHitPctCurrentHp": 8.5,
+    "onHitPctCurrentHpRanged": 7,
+    "burstProcFlat": {
+      "lvlRange": [
+        30,
+        100
+      ]
+    }
   },
+  "runaans-hurricane": {
+    "extraBolts": 2,
+    "extraBoltAdPct": 55,
+    "onHitFlatPhys": 15
+  },
+  "youmuus-ghostblade": {
+    "flatPen": 15,
+    "msFlat": 50,
+    "asPctPassive": 25
+  },
+  "duskblade-of-draktharr": {
+    "flatPen": 18,
+    "firstHit": {
+      "lvlRange": [
+        60,
+        160
+      ]
+    }
+  },
+  "infinity-edge": {
+    "critMult": 2.05,
+    "critDamagePerExcessCrit": 0.6
+  },
+  "mortal-reminder": {
+    "pctPen": 36,
+    "grievousWoundsPct": 50
+  },
+  "black-cleaver": {
+    "armorShredPct": 30,
+    "msFlat": 40
+  },
+  "manamune": {
+    "adFromManaPct": 1.5
+  },
+  "muramana": {
+    "adFromManaPct": 2
+  },
+  "trinity-force": {
+    "msPct": 5,
+    "spellbladeBaseAdPct": 200,
+    "msFlat": 20
+  },
+  "maw-of-malmortius": {
+    "shieldFlat": {
+      "lvlRange": [
+        220,
+        530
+      ]
+    },
+    "omnivampPct": 10
+  },
+  "deaths-dance": {},
+  "phantom-dancer": {
+    "asPctPassive": 25,
+    "msPct": 5
+  },
+  "nashors-tooth": {
+    "adaptiveAdFlat": 25,
+    "adaptiveApFlat": 50,
+    "onHitFlatMagic": 15,
+    "onHitFlatPhys": 15
+  },
+  "wits-end": {
+    "onHitFlatMagic": {
+      "lvlRange": [
+        10,
+        55
+      ]
+    }
+  },
+  "essence-reaver": {
+    "burstProcFlat": 70,
+    "msFlat": 40
+  },
+  "seryldas-grudge": {
+    "pctPen": 33,
+    "grievousWoundsPct": 50,
+    "burstProcFlat": {
+      "lvlRange": [
+        6,
+        20
+      ]
+    }
+  },
+  "navori-quickblades": {
+    "cdRefundPctPerAuto": 15
+  },
+  "edge-of-night": {
+    "flatPen": 8
+  },
+  "divine-sunderer": {
+    "spellbladePctMaxHp": 10
+  },
+  "serpents-fang": {
+    "flatPen": 15
+  },
+  "chempunk-chainsword": {
+    "grievousWoundsPct": 50
+  },
+  "the-collector": {
+    "flatPen": 10,
+    "executePct": 4
+  },
+  "steraks-gage": {},
   "spear-of-shojin": {
-    "hasteFlatPassive": 20
+    "hasteFlatPassive": 20,
+    "abilityAmpPct": 12
   },
   "titanic-hydra": {
-    "onHitFlatPhys": 25,
-    "onHitPctMaxHp": 3,
-    "burstProcFlat": 80,
-    "procMaxHpPct": 10
-  },
-  "heartsteel": {
-    "burstProcFlat": 140,
-    "procMaxHpPct": 3.5,
-    "omnivampPct": 15
+    "cleaveFlat": 25,
+    "cleavePctBonusHp": 3
   },
   "terminus": {
-    "onHitFlatMagic": 35
+    "onHitFlatMagic": 35,
+    "pctPen": 33,
+    "mrShredPct": 33
   },
-  "sundered-sky": {},
+  "sundered-sky": {
+    "critMult": 1.6
+  },
   "eclipse": {
     "procMaxHpPct": 7,
     "shieldFlat": 140
   },
-  "psychic-projector": {
-    "apFromBonusHpPct": 3.5
+  "soul-transfer": {},
+  "hullbreaker": {
+    "msPct": 5,
+    "everyNthAttack": 4,
+    "everyNthBaseAdPct": 160,
+    "everyNthPctMaxHp": 5,
+    "everyNthRangedMult": 40
   },
-  "redemption": {},
+  "guinsoos-rageblade": {
+    "msPct": 5,
+    "adaptiveAdFlat": 25,
+    "adaptiveApFlat": 50,
+    "onHitFlatMagic": 105,
+    "asPctPassive": 32,
+    "everyNthAttack": 3
+  },
+  "kraken-slayer": {
+    "msPct": 5,
+    "everyNthAttack": 3,
+    "burstProcFlat": {
+      "lvlRange": [
+        120,
+        160
+      ]
+    }
+  },
+  "overlords-bloodmail": {
+    "damageAmpPct": 9
+  },
+  "experimental-hexplate": {
+    "asPctPassive": 40,
+    "msPct": 20,
+    "hasteFlatPassive": 20
+  },
+  "lord-dominiks-regard": {
+    "giantSlayerPct": 15
+  },
+  "stridebreaker": {
+    "msFlat": 20
+  },
+  "goredrinker": {
+    "omnivampPct": 8
+  },
+  "galeforce": {
+    "burstProcFlat": {
+      "lvlRange": [
+        40,
+        125
+      ]
+    }
+  },
+  "mercurial-scimitar": {},
+  "ludens-echo": {
+    "burstProcFlat": 110,
+    "burstProcApPct": 10
+  },
+  "morellonomicon": {
+    "grievousWoundsPct": 50
+  },
+  "rabadons-deathcap": {
+    "apAmpPct": 30
+  },
+  "rylais-crystal-scepter": {},
+  "liandrys-torment": {
+    "procMaxHpPct": 2,
+    "damageAmpPct": 6
+  },
+  "rod-of-ages": {
+    "hpFlatPassive": 150,
+    "apFlatPassive": 40
+  },
+  "lich-bane": {
+    "spellbladeBaseAdPct": 75,
+    "spellbladeApPct": 45
+  },
+  "archangels-staff": {
+    "apFromManaPct": 1
+  },
+  "seraphs-embrace": {
+    "apFromManaPct": 2
+  },
+  "infinity-orb": {
+    "damageAmpPct": 20
+  },
+  "oceanids-trident": {},
+  "cosmic-drive": {
+    "msFlat": 30
+  },
+  "riftmaker": {
+    "damageAmpPct": 8,
+    "omnivampPct": 10,
+    "apFromBonusHpPct": 2
+  },
+  "horizon-focus": {
+    "damageAmpPct": 10
+  },
+  "malignance": {
+    "hasteFlatPassive": 20,
+    "dotDps": 60,
+    "mrShredFlat": 10
+  },
+  "blackfire-torch": {
+    "dotDps": 20,
+    "apAmpPct": 4
+  },
+  "dusk-and-dawn": {
+    "spellbladeBaseAdPct": 75,
+    "spellbladeApPct": 10,
+    "spellbladeMagic": 1
+  },
+  "stormsurge": {
+    "burstProcFlat": 125,
+    "burstProcApPct": 10,
+    "msPct": 25
+  },
+  "void-staff": {},
+  "cryptbloom": {
+    "allyHealFlat": 100
+  },
+  "bloodletters-curse": {
+    "mrShredPct": 30
+  },
+  "banshees-veil": {},
+  "hextech-roketbelt": {
+    "burstProcFlat": 100,
+    "burstProcApPct": 10
+  },
+  "zhonyas-hourglass": {},
+  "redemption": {
+    "allyHealFlat": {
+      "lvlRange": [
+        150,
+        350
+      ]
+    },
+    "procMaxHpPct": 10
+  },
+  "sunfire-aegis": {
+    "dotDps": {
+      "lvlRange": [
+        16,
+        25
+      ]
+    },
+    "damageAmpPct": 30
+  },
+  "randuins-omen": {
+    "msPct": 20
+  },
+  "thornmail": {
+    "grievousWoundsPct": 50,
+    "burstProcFlat": 20
+  },
+  "warmogs-armor": {
+    "healShieldAmpPct": 30
+  },
+  "iceborn-gauntlet": {
+    "spellbladeBaseAdPct": 100
+  },
+  "dead-mans-plate": {
+    "msPct": 5,
+    "msFlat": 40,
+    "burstProcFlat": 100,
+    "onHitFlatMagic": 100
+  },
+  "zekes-convergence": {
+    "burstProcFlat": {
+      "lvlRange": [
+        320,
+        600
+      ]
+    }
+  },
+  "winters-approach": {
+    "hpFromManaPct": 8
+  },
+  "fimbulwinter": {
+    "hpFromManaPct": 10,
+    "shieldFlat": {
+      "lvlRange": [
+        90,
+        180
+      ]
+    }
+  },
+  "force-of-nature": {
+    "msPct": 10
+  },
+  "frozen-heart": {},
+  "dawnshroud": {
+    "burstProcFlat": 40
+  },
+  "amaranths-twinguard": {},
+  "mantle-of-the-twelfth-hour": {
+    "msFlat": 30
+  },
+  "searing-crown": {},
+  "heartsteel": {
+    "burstProcFlat": 140,
+    "procMaxHpPct": 3.5
+  },
   "kaenic-rookern": {
     "shieldFlat": {
       "lvlRange": [
@@ -240,45 +359,180 @@
     },
     "shieldPctMaxHp": 10
   },
-  "yordle-trap": {},
-  "dream-maker": {
-    "onHitFlatMagic": {
+  "yordle-trap": {
+    "mrShredFlat": {
+      "lvlRange": [
+        5,
+        12
+      ]
+    },
+    "msPct": 10
+  },
+  "radiant-virtue": {},
+  "abyssal-mask": {
+    "mrShredFlat": 5
+  },
+  "hollow-radiance": {
+    "dotDps": {
+      "lvlRange": [
+        20,
+        30
+      ]
+    },
+    "burstProcFlat": 30
+  },
+  "knights-vow": {
+    "dotDps": {
+      "lvlRange": [
+        20,
+        30
+      ]
+    },
+    "burstProcFlat": 30
+  },
+  "unending-despair": {
+    "procMaxHpPct": 3
+  },
+  "gargoyle-stoneplate": {
+    "shieldFlat": 100
+  },
+  "bulwark-of-the-mountain": {
+    "hpFlatPassive": 250,
+    "adaptiveAdFlat": 20,
+    "adaptiveApFlat": 40,
+    "msPct": 30
+  },
+  "black-mist-scythe": {
+    "hpFlatPassive": 250,
+    "adaptiveAdFlat": 34,
+    "adaptiveApFlat": 68,
+    "msPct": 30
+  },
+  "ardent-censer": {
+    "allyAsPct": {
       "lvlRange": [
         15,
-        90
+        34
+      ]
+    },
+    "allyOnHitFlatMagic": {
+      "lvlRange": [
+        16,
+        22
       ]
     }
   },
-  "malignance": {
-    "hasteFlatPassive": 20,
-    "dotDps": 60
-  },
-  "bandle-fantasy": {
-    "burstProcFlat": 105,
-    "burstProcApPct": 15
-  },
-  "soul-transfer": {},
-  "stridebreaker": {},
-  "goredrinker": {},
-  "galeforce": {},
-  "radiant-virtue": {},
-  "guinsoos-rageblade": {},
-  "hollow-radiance": {},
-  "kraken-slayer": {
-    "msPct": 5,
-    "burstProcFlat": {
+  "harmonic-echo": {
+    "allyHealFlat": {
       "lvlRange": [
-        120,
+        100,
         160
       ]
     }
   },
-  "knights-vow": {},
-  "overlords-bloodmail": {},
-  "unending-despair": {
-    "procMaxHpPct": 3
+  "staff-of-flowing-water": {
+    "allyApFlat": {
+      "lvlRange": [
+        30,
+        50
+      ]
+    },
+    "hasteFlatPassive": 15,
+    "apFlatPassive": 50
   },
-  "experimental-hexplate": {
-    "hasteFlatPassive": 20
+  "imperial-mandate": {
+    "burstProcFlat": {
+      "lvlRange": [
+        47,
+        75
+      ]
+    },
+    "allyProcFlat": {
+      "lvlRange": [
+        94,
+        150
+      ]
+    },
+    "allyMsPct": 20,
+    "msPct": 20
+  },
+  "mikaels-blessing": {
+    "allyHealFlat": {
+      "lvlRange": [
+        150,
+        250
+      ]
+    }
+  },
+  "locket-of-the-iron-solari": {
+    "shieldFlat": {
+      "lvlRange": [
+        250,
+        370
+      ]
+    },
+    "allyShieldFlat": {
+      "lvlRange": [
+        250,
+        370
+      ]
+    }
+  },
+  "shurelyas-battlesong": {
+    "allyMsPct": 30
+  },
+  "quicksilver-sash": {},
+  "seekers-armguard": {},
+  "gluttonous-greaves": {
+    "adaptiveAdFlat": 12,
+    "adaptiveApFlat": 20,
+    "omnivampPct": 10
+  },
+  "berserkers-greaves": {
+    "healOnHitFlat": 10
+  },
+  "mercurys-treads": {},
+  "plated-steelcaps": {},
+  "ionian-boots-of-lucidity": {
+    "hastePctPassive": 15
+  },
+  "boots-of-mana": {},
+  "boots-of-dynamism": {},
+  "immortal-treds": {
+    "adaptiveAdFlat": 12,
+    "adaptiveApFlat": 20,
+    "omnivampPct": 10,
+    "damageAmpPct": 5,
+    "healShieldAmpPct": 12
+  },
+  "gunmetal-greaves": {
+    "msPct": 15,
+    "healOnHitFlat": 12
+  },
+  "chainlaced-crushers": {
+    "shieldFlat": {
+      "lvlRange": [
+        10,
+        120
+      ]
+    },
+    "shieldPctMaxHp": 5
+  },
+  "armored-advance": {
+    "shieldFlat": {
+      "lvlRange": [
+        10,
+        140
+      ]
+    },
+    "shieldPctMaxHp": 8
+  },
+  "crimson-lucidity": {
+    "hastePctPassive": 20,
+    "msPct": 10
+  },
+  "spellslingers-shoes": {},
+  "armorcrusher-boots": {
+    "msFlat": 20
   }
 }

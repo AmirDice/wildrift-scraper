@@ -166,44 +166,67 @@ def read_winrate(img: np.ndarray) -> tuple[float | None, OCRResult]:
     return parse_winrate(result.text), result
 
 
-# Pattern for an integer value on screen 5 — either a comma-grouped integer
-# like "19,076" or a 3+ digit run like "638" (small games counts). 1-2 digit
-# integers are excluded as noise.
+# Pattern for the mastery SCORE on screen 5 — either a comma-grouped integer
+# like "19,076" or a 3+ digit run like "638". 1-2 digit numbers are excluded
+# as noise (score values are always big).
 _SCORE_PATTERN = re.compile(r"^(\d{1,3}(?:,\d{3})+|\d{3,})$")
+
+# Pattern for the GAMES count — any 1-5 digit integer or comma-grouped one.
+# On the RECENT tab games counts are often single/double digits (the player
+# played 12 games this period), so this is intentionally looser than
+# _SCORE_PATTERN. The 5-digit cap avoids grabbing chunks of the score.
+_GAMES_PATTERN = re.compile(r"^(\d{1,3}(?:,\d{3})?|\d{1,5})$")
 
 
 def find_target_data(
     image: np.ndarray,
     region: tuple[int, int, int, int],
     target: str,
-    tile_half_width_px: int = 180,
+    tile_half_width_px: int | None = None,
 ) -> tuple[float | None, int | None, int | None]:
     """OCR screen 5's champion-tile strip and return (winrate, score, games)
-    for the `target` champion's tile, and ONLY that tile's tile. The returned
-    score and games belong to `target`, never to a neighboring tile.
+    for the `target` champion's tile, and ONLY that tile. The returned score
+    and games belong to `target`, never to a neighboring tile.
 
-    Within a tile the vertical order is:
-        NAME -> "Highest Achieved:" -> <score> -> "Games:" <games> -> "Win Rate:" <pct>
-    So we anchor on the target champion-name word's position, then take only
-    integers that are (a) below that y-position and (b) within
+    Within a tile the vertical order is (CHAMPION AND LANE tab):
+        NAME -> "Highest Achieved" -> <score> -> "Games" -> <games> -> "Win Rate" -> <pct>
+
+    On the RECENT tab the label changes to "Season highest" (and a few text
+    positions shift because of character count) but the vertical ordering is
+    still score-above-games-above-winrate, so the anchoring logic is the same.
+
+    Strategy: anchor on the target champion-name word's position, then take
+    only integers that are (a) below that y-position and (b) within
     tile_half_width_px of its x-position. The first such integer (smallest y)
     is the mastery score, the second is the games count.
 
-    `tile_half_width_px` is in *preprocessed* (upscaled) coordinates. In a
-    standard 1600x900 frame with the 909px OCR region and 4 visible tiles,
-    each tile is ~227px wide in original / ~680px upscaled — so 180 keeps
-    us safely inside the target tile (about half a tile-width).
+    `tile_half_width_px` is in *preprocessed* (upscaled, scale=3.0)
+    coordinates. When None (default), it is auto-derived from the OCR region
+    width assuming 4 visible tiles: a tile is region_w/4 in original / ~3x
+    upscaled, and we use ~80% of half-tile to stay comfortably inside our
+    tile while excluding neighbors. Concrete defaults:
+        emulator (region_w=909):  ~273   (was hardcoded 180)
+        phone CHAMPION_LANE (1367): ~410
+        phone RECENT (1561):       ~468
     """
     from . import champions as champ_module
 
     x, y, w, h = region
     crop = image[y:y + h, x:x + w]
     if crop.size == 0:
-        return (None, None)
+        return (None, None, None)
+
+    # Auto-derive tile-half-width if caller didn't specify one. Formula:
+    #     tile_w_original  = region_w / 4   (4 visible tiles)
+    #     half_tile_upscaled = tile_w_original * scale / 2  (scale = 3.0)
+    #     allowance        = 80% of half-tile, then capped at the tile center
+    # The result scales correctly with whichever phone/emulator layout we hit.
+    if tile_half_width_px is None:
+        tile_half_width_px = int((w / 4) * 3.0 * 0.5 * 0.8)
 
     words = read_words(crop, GENERAL_TESSERACT_CONFIG)
     if not words:
-        return (None, None)
+        return (None, None, None)
 
     target_lower = target.lower()
     max_word_count = champ_module.MAX_WORD_COUNT
@@ -235,8 +258,10 @@ def find_target_data(
     if name_x is None or name_y is None:
         return (None, None, None)
 
-    # Winrate: closest percentage (any y) to name_x.
+    # Winrate: closest percentage (any y) to name_x. Also remember the y
+    # of the in-tile percent so we can clip the games search above it.
     winrate: float | None = None
+    pct_y_in_tile: int | None = None
     best_pct_dist = float("inf")
     for word in words:
         m = PERCENT_PATTERN.fullmatch(word.text)
@@ -252,12 +277,21 @@ def find_target_data(
         if dist < best_pct_dist:
             best_pct_dist = dist
             winrate = value
+        # In-tile percent: any percent within tile_half_width of the name
+        # x, below the name. Track the topmost such percent.
+        if (
+            word.y > name_y
+            and abs(word.x - name_x) <= tile_half_width_px
+            and (pct_y_in_tile is None or word.y < pct_y_in_tile)
+        ):
+            pct_y_in_tile = word.y
 
-    # All integer candidates below name, within the tile's x-band.
-    # Bounds [100, 10_000_000] cover both small games counts and very
-    # high mastery scores while excluding noise like single-digit numbers
-    # or scrap from neighboring tiles' percentages.
-    candidates: list[tuple[int, int]] = []  # (y, value)
+    # SCORE pass: tight pattern + high lower bound. Mastery scores are
+    # always large numbers, so this comfortably excludes stray digits and
+    # mis-OCR'd percents.
+    score: int | None = None
+    score_y: int | None = None
+    score_candidates: list[tuple[int, int]] = []  # (y, value)
     for word in words:
         if not _SCORE_PATTERN.match(word.text):
             continue
@@ -265,17 +299,49 @@ def find_target_data(
             value = int(word.text.replace(",", ""))
         except ValueError:
             continue
-        if not (100 <= value <= 10_000_000):
+        if not (500 <= value <= 10_000_000):
             continue
         if word.y <= name_y:
             continue
         if abs(word.x - name_x) > tile_half_width_px:
             continue
-        candidates.append((word.y, value))
+        score_candidates.append((word.y, value))
+    score_candidates.sort()
+    if score_candidates:
+        score_y, score = score_candidates[0]
 
-    candidates.sort()
-    score = candidates[0][1] if len(candidates) >= 1 else None
-    games = candidates[1][1] if len(candidates) >= 2 else None
+    # GAMES pass: looser pattern (1+ digit) bounded between the score's y
+    # and the percent's y, so we don't grab the winrate digits if Tesseract
+    # dropped the % sign. This fixes the RECENT-tab case where a player
+    # has fewer than 100 games and the old single-pass logic excluded
+    # them as "noise".
+    games: int | None = None
+    if score_y is not None:
+        games_candidates: list[tuple[int, int]] = []
+        for word in words:
+            if not _GAMES_PATTERN.match(word.text):
+                continue
+            try:
+                value = int(word.text.replace(",", ""))
+            except ValueError:
+                continue
+            if not (1 <= value <= 100_000):
+                continue
+            if word.y <= score_y:
+                continue
+            if pct_y_in_tile is not None and word.y >= pct_y_in_tile:
+                continue
+            if abs(word.x - name_x) > tile_half_width_px:
+                continue
+            # Defence in depth: skip values that *look* like a winrate
+            # whose '%' was dropped by OCR. Anything <= 100 sitting close
+            # to the in-tile percent's y (when we couldn't find one) is
+            # suspicious, but we can't tell reliably without an anchor;
+            # the score_y / pct_y_in_tile sandwich is the real guard here.
+            games_candidates.append((word.y, value))
+        games_candidates.sort()
+        if games_candidates:
+            games = games_candidates[0][1]
 
     return (winrate, score, games)
 
@@ -396,6 +462,25 @@ def read_all_visible_ranks(
         if r is not None:
             out[slot] = r
     return out
+
+
+def read_player_name(image: np.ndarray, region: tuple[int, int, int, int]) -> str | None:
+    """OCR a region containing a player's display name (e.g. shown at the
+    top of screen 5). Returns the cleaned-up string (whitespace collapsed,
+    leading/trailing junk stripped), or None if OCR returned nothing.
+
+    Unlike read_champion_name, this doesn't try to match against any list —
+    it just gives back whatever Tesseract saw. The returned text may contain
+    non-ASCII characters (Chinese/Korean etc.) since we use the general
+    PSM-6 config without any character whitelist.
+    """
+    x, y, w, h = region
+    crop = image[y:y + h, x:x + w]
+    if crop.size == 0:
+        return None
+    result = read_text(crop, GENERAL_TESSERACT_CONFIG)
+    text = " ".join(result.text.split()).strip()
+    return text or None
 
 
 def read_champion_name(image: np.ndarray, region: tuple[int, int, int, int]) -> str | None:

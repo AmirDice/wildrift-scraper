@@ -45,6 +45,13 @@ HEADERS = {
 STAT_LABELS = {
     "Health": "hp",
     "Health Reg. (5s)": "hpRegen",
+    # Mana was missing from this map, not from the source: the page has carried
+    # data-base/data-increase for it all along. Its absence is why the engine
+    # assumed a flat 500 base mana for every champion, which mispriced every
+    # mana item (Muramana grants AD = % of MAX MANA) and made mana-hungry kits
+    # indistinguishable from mana-light ones.
+    "Mana": "mana",
+    "Mana Reg. (5s)": "manaRegen",
     "Armor": "armor",
     "Magic Res.": "mr",
     "Move Speed": "moveSpeed",

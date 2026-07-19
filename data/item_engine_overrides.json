@@ -1,11 +1,63 @@
 {
   "_note": "Hand-curated engine effects merged OVER item_engine.json at load. For high-impact passives the extractor skipped or that need judgment calls. Every number is taken from the scraped passive text in data/items.json; approximations are documented per entry.",
-  "spear-of-shojin": {"abilityAmpPct": 12, "_why": "Focused Will 3% x 4 stacks (spam kits hold max stacks)"},
-  "infinity-edge": {"critMult": 2.05, "_why": "INFINITY: crits deal 205% instead of 175%"},
-  "steraks-gage": {"shieldPctBonusHp": 75, "_why": "LIFELINE: shield = 75% bonus HP, once per fight"},
-  "maw-of-malmortius": {"shieldFlat": 300, "_why": "lifeline-style magic shield; flat approximation"},
-  "deaths-dance": {"drPct": 12, "_why": "Cauterize defers 27% over 3s + takedown cleanse; modeled as ~12% effective DR"},
-  "guardian-angel": {"shieldPctMaxHp": 40, "_why": "revive ~= 40% max HP of effective HP, once"},
-  "dead-mans-plate": {"onHitFlatMagic": 0, "_why": "momentum proc is once-per-engage, not per auto; drop the per-auto overcount, keep its ms in extractor output"},
-  "wits-end": {"omnivampPct": 0, "healOnHitFlat": 15, "_why": "extractor misread 'heals 100% of THIS passive's damage below half HP' as omnivamp; ~15/hit conditional heal instead"}
+  "spear-of-shojin": {
+    "abilityAmpPct": 12,
+    "_why": "Focused Will 3% x 4 stacks (spam kits hold max stacks)"
+  },
+  "infinity-edge": {
+    "critMult": 2.05,
+    "_why": "INFINITY: crits deal 205% instead of 175%"
+  },
+  "steraks-gage": {
+    "shieldPctBonusHp": 75,
+    "_why": "LIFELINE: shield = 75% bonus HP, once per fight"
+  },
+  "maw-of-malmortius": {
+    "shieldFlat": 300,
+    "_why": "lifeline-style magic shield; flat approximation"
+  },
+  "deaths-dance": {
+    "drPct": 12,
+    "_why": "Cauterize defers 27% over 3s + takedown cleanse; modeled as ~12% effective DR"
+  },
+  "dead-mans-plate": {
+    "onHitFlatMagic": 0,
+    "_why": "momentum proc is once-per-engage, not per auto; drop the per-auto overcount, keep its ms in extractor output"
+  },
+  "wits-end": {
+    "omnivampPct": 0,
+    "healOnHitFlat": 15,
+    "_why": "extractor misread 'heals 100% of THIS passive's damage below half HP' as omnivamp; ~15/hit conditional heal instead"
+  },
+  "essence-reaver": {
+    "spellbladeBaseAdPct": 70,
+    "_why": "wr-meta writes 'dealing 70 bonus <ad icon>' with the % dropped, so the extractor reads a flat 70 proc. Patch 7.2a is explicit: 'Spellblade damage: 90% -> 70% base AD'."
+  },
+  "sunfire-aegis": {
+    "damageAmpPct": 0,
+    "dotDps": {
+      "lvlRange": [
+        21,
+        33
+      ]
+    },
+    "_why": "Extractor read Immolate's '+5% per stack x6' self-ramp as damageAmpPct 30 (+30% ALL damage on a 2900g tank item -- why it was in 25% of builds). The ramp only amplifies the burn: dotDps 16-25 * 1.3 = 21-33, amp zeroed."
+  },
+  "divine-sunderer": {
+    "spellbladePctMaxHp": 10,
+    "spellbladePctMaxHpRanged": 7,
+    "_why": "Tooltip is 10% melee / 7% ranged of target max HP; extraction stored only the melee 10, overcharging every ranged champion."
+  },
+  "terminus": {
+    "rampAttacks": 6,
+    "_why_ramp": "Light/Dark ALTERNATE, so 3 Dark (pen) stacks need 6 attacks; pen/shred were modelled at max from second zero, a big reason Terminus sat in 18 of 48 builds."
+  },
+  "guinsoos-rageblade": {
+    "rampAttacks": 4,
+    "_why_ramp": "Seething Strike stacks per attack, max 4: the 32% AS is not there from second zero."
+  },
+  "black-cleaver": {
+    "rampAttacks": 5,
+    "_why_ramp": "Sunder stacks per physical hit, 5 to reach 30% shred."
+  }
 }

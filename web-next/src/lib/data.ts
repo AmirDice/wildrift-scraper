@@ -101,6 +101,14 @@ export const site = siteData as Site;
 export const TIER_ORDER = ["GOD", "S", "A", "B", "C", "Ass"] as const;
 export type Tier = (typeof TIER_ORDER)[number];
 
+// The bottom bucket is stored as "Ass" (its internal key, set by the Python
+// pipeline and cn.ts). User-facing text shows "L" instead -- always render a
+// tier through tierLabel() rather than printing the raw key.
+export const TIER_LABEL: Record<string, string> = {
+  GOD: "GOD", S: "S", A: "A", B: "B", C: "C", Ass: "L",
+};
+export const tierLabel = (tier: string): string => TIER_LABEL[tier] ?? tier;
+
 export const tierClass: Record<string, string> = {
   GOD: "tier-god",
   S: "tier-s",

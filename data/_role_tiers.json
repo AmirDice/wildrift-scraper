@@ -1,0 +1,840 @@
+{
+  "Baron": [
+    {
+      "name": "K'Sante",
+      "wr": 62.2,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Olaf",
+      "wr": 61.4,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Jayce",
+      "wr": 60.2,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Ambessa",
+      "wr": 59.6,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Nasus",
+      "wr": 59.6,
+      "tier": "S",
+      "otp": true
+    },
+    {
+      "name": "Kayle",
+      "wr": 58.7,
+      "tier": "S",
+      "otp": true
+    },
+    {
+      "name": "Tryndamere",
+      "wr": 58.7,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Jax",
+      "wr": 58.4,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Sett",
+      "wr": 58.4,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Poppy",
+      "wr": 58.4,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Gwen",
+      "wr": 58.4,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Yone",
+      "wr": 58.1,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Gnar",
+      "wr": 58.1,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Teemo",
+      "wr": 58.0,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Singed",
+      "wr": 58.0,
+      "tier": "A",
+      "otp": true
+    },
+    {
+      "name": "Camille",
+      "wr": 57.9,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Ornn",
+      "wr": 57.9,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Aatrox",
+      "wr": 57.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Fiora",
+      "wr": 57.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Riven",
+      "wr": 57.7,
+      "tier": "B",
+      "otp": true
+    },
+    {
+      "name": "Shen",
+      "wr": 57.6,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Mordekaiser",
+      "wr": 57.6,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Irelia",
+      "wr": 57.5,
+      "tier": "B",
+      "otp": true
+    },
+    {
+      "name": "Volibear",
+      "wr": 57.4,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Darius",
+      "wr": 57.3,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Dr. Mundo",
+      "wr": 56.5,
+      "tier": "C",
+      "otp": true
+    },
+    {
+      "name": "Wukong",
+      "wr": 56.4,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Urgot",
+      "wr": 56.3,
+      "tier": "C",
+      "otp": true
+    },
+    {
+      "name": "Garen",
+      "wr": 56.3,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Renekton",
+      "wr": 56.3,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Sion",
+      "wr": 56.0,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Malphite",
+      "wr": 56.0,
+      "tier": "Ass",
+      "otp": false
+    },
+    {
+      "name": "Rumble",
+      "wr": 55.7,
+      "tier": "Ass",
+      "otp": false
+    }
+  ],
+  "Jungle": [
+    {
+      "name": "Hecarim",
+      "wr": 64.2,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Nidalee",
+      "wr": 63.6,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Amumu",
+      "wr": 63.0,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Shyvana",
+      "wr": 62.9,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Pantheon",
+      "wr": 62.4,
+      "tier": "S",
+      "otp": true
+    },
+    {
+      "name": "Rammus",
+      "wr": 62.0,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Lillia",
+      "wr": 61.5,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Viego",
+      "wr": 61.1,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Kha'Zix",
+      "wr": 60.7,
+      "tier": "A",
+      "otp": true
+    },
+    {
+      "name": "Evelynn",
+      "wr": 60.6,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Warwick",
+      "wr": 60.4,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Nunu & Willump",
+      "wr": 60.1,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Gragas",
+      "wr": 59.7,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Vi",
+      "wr": 59.7,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Fizz",
+      "wr": 59.6,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Nilah",
+      "wr": 59.6,
+      "tier": "B",
+      "otp": true
+    },
+    {
+      "name": "Kindred",
+      "wr": 59.6,
+      "tier": "B",
+      "otp": true
+    },
+    {
+      "name": "Rengar",
+      "wr": 59.5,
+      "tier": "B",
+      "otp": true
+    },
+    {
+      "name": "Master Yi",
+      "wr": 59.2,
+      "tier": "B",
+      "otp": true
+    },
+    {
+      "name": "Fiddlesticks",
+      "wr": 59.0,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Lee Sin",
+      "wr": 58.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Xin Zhao",
+      "wr": 58.5,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Ekko",
+      "wr": 58.3,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Diana",
+      "wr": 57.8,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Talon",
+      "wr": 57.8,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Nocturne",
+      "wr": 57.6,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Jarvan IV",
+      "wr": 56.9,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Kayn",
+      "wr": 56.3,
+      "tier": "Ass",
+      "otp": false
+    },
+    {
+      "name": "Graves",
+      "wr": 56.0,
+      "tier": "Ass",
+      "otp": true
+    }
+  ],
+  "Mid": [
+    {
+      "name": "Taliyah",
+      "wr": 63.7,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Aurora",
+      "wr": 61.4,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Zed",
+      "wr": 60.1,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Kassadin",
+      "wr": 60.0,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Ryze",
+      "wr": 59.8,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Kennen",
+      "wr": 59.7,
+      "tier": "S",
+      "otp": true
+    },
+    {
+      "name": "Twisted Fate",
+      "wr": 59.4,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Orianna",
+      "wr": 58.8,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Norra",
+      "wr": 58.7,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Vladimir",
+      "wr": 58.6,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Syndra",
+      "wr": 58.5,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Aurelion Sol",
+      "wr": 58.4,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Yasuo",
+      "wr": 58.3,
+      "tier": "A",
+      "otp": true
+    },
+    {
+      "name": "Galio",
+      "wr": 58.1,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Morgana",
+      "wr": 58.1,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Annie",
+      "wr": 58.0,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Zoe",
+      "wr": 58.0,
+      "tier": "A",
+      "otp": true
+    },
+    {
+      "name": "Mel",
+      "wr": 57.9,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Ahri",
+      "wr": 57.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Heimerdinger",
+      "wr": 57.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Swain",
+      "wr": 57.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Veigar",
+      "wr": 57.6,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Brand",
+      "wr": 57.2,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Vex",
+      "wr": 57.0,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Viktor",
+      "wr": 56.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Vel'Koz",
+      "wr": 56.8,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Akshan",
+      "wr": 56.4,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Lissandra",
+      "wr": 56.3,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Katarina",
+      "wr": 56.0,
+      "tier": "C",
+      "otp": true
+    },
+    {
+      "name": "Zyra",
+      "wr": 56.0,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Akali",
+      "wr": 55.7,
+      "tier": "C",
+      "otp": true
+    },
+    {
+      "name": "Lux",
+      "wr": 55.5,
+      "tier": "Ass",
+      "otp": false
+    },
+    {
+      "name": "Ziggs",
+      "wr": 55.2,
+      "tier": "Ass",
+      "otp": false
+    }
+  ],
+  "Dragon": [
+    {
+      "name": "Smolder",
+      "wr": 61.4,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Vayne",
+      "wr": 60.5,
+      "tier": "GOD",
+      "otp": true
+    },
+    {
+      "name": "Kog'Maw",
+      "wr": 60.2,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Draven",
+      "wr": 60.2,
+      "tier": "S",
+      "otp": true
+    },
+    {
+      "name": "Ezreal",
+      "wr": 59.5,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Zeri",
+      "wr": 59.3,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Lucian",
+      "wr": 59.3,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Kai'Sa",
+      "wr": 59.2,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Jinx",
+      "wr": 58.9,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Corki",
+      "wr": 58.3,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Jhin",
+      "wr": 57.8,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Samira",
+      "wr": 57.5,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Ashe",
+      "wr": 57.4,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Kalista",
+      "wr": 57.2,
+      "tier": "B",
+      "otp": true
+    },
+    {
+      "name": "Miss Fortune",
+      "wr": 56.9,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Varus",
+      "wr": 56.8,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Tristana",
+      "wr": 56.8,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Twitch",
+      "wr": 56.6,
+      "tier": "C",
+      "otp": true
+    },
+    {
+      "name": "Xayah",
+      "wr": 56.5,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Caitlyn",
+      "wr": 55.9,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Sivir",
+      "wr": 55.2,
+      "tier": "Ass",
+      "otp": false
+    }
+  ],
+  "Support": [
+    {
+      "name": "Senna",
+      "wr": 61.1,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Nami",
+      "wr": 60.4,
+      "tier": "GOD",
+      "otp": false
+    },
+    {
+      "name": "Nautilus",
+      "wr": 59.6,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Pyke",
+      "wr": 58.8,
+      "tier": "S",
+      "otp": true
+    },
+    {
+      "name": "Sona",
+      "wr": 58.6,
+      "tier": "S",
+      "otp": true
+    },
+    {
+      "name": "Lulu",
+      "wr": 58.5,
+      "tier": "S",
+      "otp": false
+    },
+    {
+      "name": "Leona",
+      "wr": 58.3,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Soraka",
+      "wr": 58.2,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Milio",
+      "wr": 57.6,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Zilean",
+      "wr": 57.3,
+      "tier": "A",
+      "otp": false
+    },
+    {
+      "name": "Bard",
+      "wr": 57.0,
+      "tier": "A",
+      "otp": true
+    },
+    {
+      "name": "Maokai",
+      "wr": 56.9,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Rakan",
+      "wr": 56.5,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Alistar",
+      "wr": 56.4,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Rell",
+      "wr": 56.1,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Karma",
+      "wr": 56.1,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Blitzcrank",
+      "wr": 56.0,
+      "tier": "B",
+      "otp": false
+    },
+    {
+      "name": "Seraphine",
+      "wr": 55.7,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Yuumi",
+      "wr": 55.7,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Janna",
+      "wr": 55.4,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Braum",
+      "wr": 55.3,
+      "tier": "C",
+      "otp": false
+    },
+    {
+      "name": "Thresh",
+      "wr": 54.7,
+      "tier": "Ass",
+      "otp": false
+    }
+  ]
+}

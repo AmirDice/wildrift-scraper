@@ -1,26 +1,15 @@
-"""Manual-scroll scraper.
+"""Manual-scroll scraper with automated UI reset recovery.
 
-You scroll Wild Rift's leaderboard yourself; the bot only does the per-player
-tap chain (player row -> view profile -> CHAMPION AND LANE -> OCR -> back).
-After each batch of 5 it asks you to scroll and press Enter for the next 5.
-
-No Gemini, no auto-scroll, no reset recovery. The mastery score AND winrate
-are both extracted from the screen-5 champion strip (via Tesseract); the
-leaderboard "score" column isn't read at all.
-
-Pause: press the `p` key at any time. The bot finishes the current player
-tap chain, then waits for you to press Enter to resume.
-
-Prereq: In MuMu, you are on screen 2 (the champion's leaderboard) with rank
---start-rank visible at slot 0 (the topmost row).
-
-Run:
-    python -m src.scrape_champion --target Aatrox --n 200 --start-rank 1
+You scroll Wild Rift's leaderboard yourself or let the automated macro catch up
+when the UI aggressively snaps back to ranks 1-5. The bot handles the per-player
+tap chain safely by checking the rank badge via quick local Tesseract OCR before
+clicking any row.
 """
 from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 import time
 import traceback
@@ -29,120 +18,74 @@ from pathlib import Path
 import cv2
 
 from .adb_client import ADBClient, ADBError
-from .config import ROWS_PER_PAGE, load_screen_points
+from .config import (
+    ROWS_PER_PAGE, 
+    load_screen_points, 
+    SCREEN_2_BADGE_X_RANGE, 
+    SCREEN_2_SAFE_Y_TOP, 
+    SCREEN_2_SAFE_Y_BOTTOM
+)
 from .storage import CSVWriter, LeaderboardRow
 from .strip import find_target_in_strip
+from .ocr import read_text
 
-
-# Non-blocking keyboard polling for the pause feature. Windows has msvcrt
-# built in; on Unix we fall through to no-op (pause is just not available).
+# Non-blocking keyboard polling for the pause feature on Windows.
 if os.name == "nt":
     import msvcrt
 
     def _key_pressed() -> str | None:
         if msvcrt.kbhit():
             ch = msvcrt.getch()
+            if ch in (b"\x00", b"\xe0"):  # Function keys
+                msvcrt.getch()
+                return None
             try:
-                return ch.decode("utf-8", errors="ignore").lower()
-            except Exception:
-                return ""
+                return ch.decode("utf-8").lower()
+            except UnicodeDecodeError:
+                return None
         return None
-
-    def _drain_keys() -> None:
-        while msvcrt.kbhit():
-            msvcrt.getch()
 else:
     def _key_pressed() -> str | None:
         return None
 
-    def _drain_keys() -> None:
-        return None
 
+def recover_scroll_position(
+    client: ADBClient,
+    target_x: int,
+    rank_1_y: int,
+    row_pitch: float,
+) -> None:
+    """Do ONE controlled page scroll forward (~5 rows). The caller re-verifies
+    via OCR after this returns and calls recover again if more scroll is needed.
 
-def _check_for_pause() -> bool:
-    """Returns True if the user has pressed 'p' since the last check."""
-    while True:
-        k = _key_pressed()
-        if k is None:
-            return False
-        if k == "p":
-            return True
-        # Some other key — drain and keep looking
-
-
-def _handle_pause() -> None:
-    print("\n=== PAUSED ===  (fix Wild Rift state, then press Enter to resume)")
-    _drain_keys()
-    input()
-    _drain_keys()
-    print("=== RESUMED ===\n")
+    Uses the proven swipe params from when full automation was working:
+        - swipe scale 0.85 of one page worth of pitch
+        - 1500ms duration (slow enough to be a controlled drag, not a fling)
+        - 2s settle wait so the list animation finishes before OCR reads
+    """
+    start_y = int(round(rank_1_y + (ROWS_PER_PAGE - 1) * row_pitch))
+    distance_px = int(round(ROWS_PER_PAGE * row_pitch * 0.85))
+    end_y = max(50, start_y - distance_px)
+    print(f"  [RECOVERY] page-scrolling: ({target_x}, {start_y}) -> ({target_x}, {end_y}) [1500ms]")
+    client.swipe(target_x, start_y, target_x, end_y, duration_ms=1500)
+    time.sleep(2.0)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--target", default="Aatrox", help="Champion whose winrate to look up on each player's profile")
-    parser.add_argument("--n", type=int, default=20, help="Total number of ranks to scrape (starting at --start-rank)")
-    parser.add_argument("--start-rank", type=int, default=1, help="First rank to scrape (must be at slot 0 of screen 2 when you press Enter)")
+    parser.add_argument("--target", default="Aatrox")
+    parser.add_argument("--n", type=int, default=200)
+    parser.add_argument("--start-rank", type=int, default=1)
     parser.add_argument("--device", default="127.0.0.1:7555")
     parser.add_argument("--no-connect", action="store_true")
-    parser.add_argument("--step-wait", type=float, default=2.0, help="Seconds to wait after each tap")
-    parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"), help="CSV file to append to")
-    parser.add_argument("--save-screenshots", action="store_true", help="Save the screen 5 screenshot for each rank")
-    parser.add_argument("--max-strip-swipes", type=int, default=3, help="If the target champion isn't in the first 4 visible tiles, swipe the strip up to N times")
+    parser.add_argument("--step-wait", type=float, default=2.0)
+    parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"))
+    parser.add_argument("--save-screenshots", action="store_true")
+    parser.add_argument("--max-strip-swipes", type=int, default=3)
     parser.add_argument("--strip-swipe-scale", type=float, default=0.7)
     parser.add_argument("--strip-swipe-duration-ms", type=int, default=800)
-    parser.add_argument("--max-retries-per-player", type=int, default=3, help="If a tap chain fails (winrate not found), retry up to this many times before recording None and moving on")
+    parser.add_argument("--max-retries-per-player", type=int, default=3)
     args = parser.parse_args()
-
-    try:
-        s2 = load_screen_points(2)
-        s3 = load_screen_points(3)
-        s4 = load_screen_points(4)
-        s5 = load_screen_points(5)
-    except FileNotFoundError as e:
-        print(f"error: missing coord file: {e}", file=sys.stderr)
-        return 1
-
-    if "aatrox" not in s2:
-        print("error: screen_2.json needs 'aatrox' (rank 1 tap point)", file=sys.stderr)
-        return 1
-    rank_1_x, rank_1_y = s2["aatrox"]
-
-    if "player_row_5" in s2:
-        _, deep_y = s2["player_row_5"]
-        row_pitch = (deep_y - rank_1_y) / 4
-        pitch_source = "rank 1 -> rank 5"
-    elif "player_row_3" in s2:
-        _, deep_y = s2["player_row_3"]
-        row_pitch = (deep_y - rank_1_y) / 2
-        pitch_source = "rank 1 -> rank 3"
-    elif "player_row_2" in s2:
-        _, deep_y = s2["player_row_2"]
-        row_pitch = deep_y - rank_1_y
-        pitch_source = "rank 1 -> rank 2"
-    else:
-        print("error: screen_2.json needs player_row_2/3/5", file=sys.stderr)
-        return 1
-    if row_pitch <= 0:
-        print(f"error: invalid row pitch {row_pitch}", file=sys.stderr)
-        return 1
-    if "back" not in s5:
-        print("error: screen_5.json needs a 'back' point", file=sys.stderr)
-        return 1
-
-    view_profile_tap = s3["aatrox"]
-    champ_and_lane_tap = s4["aatrox"]
-    back_tap = s5["back"]
-
-    def slot_tap_coords(slot: int) -> tuple[int, int]:
-        return (rank_1_x, int(round(rank_1_y + slot * row_pitch)))
-
-    print(f"target champion : {args.target}")
-    print(f"ranks           : {args.start_rank} .. {args.start_rank + args.n - 1}  ({args.n} players)")
-    print(f"row pitch       : {row_pitch:.1f}px  ({pitch_source})")
-    print(f"CSV output      : {args.output}")
-    print(f"pause           : press 'p' (then Enter at the prompt to resume)")
-    print()
 
     client = ADBClient(device=args.device)
     if not args.no_connect:
@@ -152,105 +95,249 @@ def main() -> int:
             print(f"error: {e}", file=sys.stderr)
             return 1
 
+    s2_pts = load_screen_points(2)
+    s3_pts = load_screen_points(3)
+    s4_pts = load_screen_points(4)
+    s5_pts = load_screen_points(5)
+
+    missing = []
+    # Existing schema: rank-1 row = "aatrox", rank-2 row = "player_row_2".
+    if "aatrox" not in s2_pts: missing.append("screen_2.json:aatrox (rank 1 tap)")
+    if "player_row_2" not in s2_pts: missing.append("screen_2.json:player_row_2 (rank 2 tap, for pitch)")
+    if "aatrox" not in s3_pts: missing.append("screen_3.json:aatrox (view-profile button)")
+    if "aatrox" not in s4_pts: missing.append("screen_4.json:aatrox (CHAMPION AND LANE tab)")
+    if "back" not in s5_pts: missing.append("screen_5.json:back")
+
+    if missing:
+        print("error: missing required calibrated points:")
+        for m in missing:
+            print(f"  {m}")
+        return 1
+
+    target_x, start_y = s2_pts["aatrox"]
+    # The rank-1 row has extra header padding, so deriving pitch only from
+    # (player_row_2 - aatrox) inflates it. Prefer a wider span if mapped:
+    # player_row_5 (4 spans) -> most accurate, then player_row_3, then row_2.
+    if "player_row_5" in s2_pts:
+        _, deep_y = s2_pts["player_row_5"]
+        pitch_y = (deep_y - start_y) / 4
+        pitch_source = "rank 1 -> rank 5"
+    elif "player_row_3" in s2_pts:
+        _, deep_y = s2_pts["player_row_3"]
+        pitch_y = (deep_y - start_y) / 2
+        pitch_source = "rank 1 -> rank 3"
+    else:
+        _, y1 = s2_pts["player_row_2"]
+        pitch_y = y1 - start_y
+        pitch_source = "rank 1 -> rank 2 (may be inflated by header padding)"
+    print(f"row pitch       : {pitch_y:.1f}px  ({pitch_source})")
+
+    s3_view = s3_pts["aatrox"]
+    s4_lane = s4_pts["aatrox"]
+    s5_back = s5_pts["back"]
+
     writer = CSVWriter(args.output)
-    data_dir = Path("data")
-    data_dir.mkdir(exist_ok=True)
-
-    def scrape_one_player(rank: int, slot: int) -> tuple[float | None, int | None, int | None]:
-        """Tap chain into the slot's player profile, OCR (winrate, score, games), back."""
-        px, py = slot_tap_coords(slot)
-        print(f"  rank {rank} (slot {slot}): tap player ({px}, {py})")
-        client.tap(px, py)
-        time.sleep(args.step_wait)
-
-        client.tap(*view_profile_tap)
-        time.sleep(args.step_wait)
-
-        if args.save_screenshots:
-            cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}_pre_cnl.png"), client.screenshot())
-        # Double-tap CHAMPION AND LANE — first one can be eaten by a transition.
-        client.tap(*champ_and_lane_tap)
-        time.sleep(0.4)
-        client.tap(*champ_and_lane_tap)
-        time.sleep(args.step_wait)
-
-        winrate, score, games, found, swipes_done, img = find_target_in_strip(
-            client,
-            args.target,
-            max_swipes=args.max_strip_swipes,
-            swipe_scale=args.strip_swipe_scale,
-            swipe_duration_ms=args.strip_swipe_duration_ms,
-        )
-        if args.save_screenshots:
-            cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}.png"), img)
-        vis = ", ".join(found.keys()) if found else "(none)"
-        swipe_note = f" (after {swipes_done} swipe{'s' if swipes_done != 1 else ''})" if swipes_done else ""
-        print(f"    strip OCR : {vis}{swipe_note}")
-        print(f"    winrate={winrate}  score={score}  games={games}")
-
-        client.tap(*back_tap)
-        time.sleep(args.step_wait)
-        return winrate, score, games
-
-    print(f"Open MuMu, scroll the leaderboard so rank {args.start_rank} is at slot 0 (top).")
-    input("Press Enter when ready to start: ")
-
-    end_rank = args.start_rank + args.n - 1
     current_rank = args.start_rank
+    end_rank = args.start_rank + args.n - 1
     successes = 0
+    paused = False
+
+    def _handle_pause():
+        nonlocal paused
+        paused = True
+        print("\n=== scraper paused. Press Enter in this window to resume ===")
+        input()
+        paused = False
+        print("=== resuming ===")
+
+    print(f"starting scrape: {args.target}, ranks {current_rank} to {end_rank}")
+    print("press 'p' at any time to pause after the current player loop concludes.")
+    print("the bot auto-scrolls and auto-recovers from leaderboard snap-backs.")
+    print()
+
+    # If the guardrail keeps firing for the same rank, fall back to a manual prompt.
+    consecutive_recoveries = 0
+    MAX_AUTO_RECOVERIES = 4
 
     try:
         while current_rank <= end_rank:
-            print(f"\n=== batch starting at rank {current_rank} ===")
-            ranks_in_batch = 0
-            for slot in range(ROWS_PER_PAGE):
-                if current_rank > end_rank:
+            if _key_pressed() == "p":
+                _handle_pause()
+
+            idx = (current_rank - 1) % ROWS_PER_PAGE
+            row_y = start_y + idx * pitch_y
+
+            # --- 1. PRE-CLICK STATE VALIDATION GUARDRAIL ---
+            # Validate before EVERY tap: OCR the current slot's rank badge
+            # and check it matches `current_rank`. Recover if not.
+            # Special handling for slot 0 when current_rank>=6: rank 1's
+            # gold trophy doesn't OCR, so empty result at slot 0 isn't a
+            # signal — fall back to checking slot 1's badge instead.
+            try:
+                img_check = client.screenshot()
+
+                def _ocr_rank_at(yc: int) -> int | None:
+                    crop = img_check[
+                        int(yc - 22):int(yc + 22),
+                        SCREEN_2_BADGE_X_RANGE[0]:SCREEN_2_BADGE_X_RANGE[1],
+                    ]
+                    text = read_text(crop).text
+                    digits = re.sub(r"\D", "", text)
+                    if not digits:
+                        return None
+                    try:
+                        v = int(digits)
+                    except ValueError:
+                        return None
+                    # Sanity bounds — reject garbage OCR (e.g. score-column bleed)
+                    if 1 <= v <= 250:
+                        return v
+                    return None
+
+                detected = _ocr_rank_at(row_y)
+                needs_recovery = False
+
+                if detected is not None:
+                    if detected != current_rank:
+                        print(f"  [GUARDRAIL] expected rank {current_rank} at slot {idx}, OCR detected {detected}")
+                        needs_recovery = True
+                elif current_rank >= 6 and idx == 0:
+                    # Slot 0 OCR empty AND we're not in the initial top-5
+                    # — could be rank 1's gold trophy after a reset. Check
+                    # slot 1 (rank 2's badge is plain and OCRs reliably).
+                    slot_1_y = start_y + pitch_y
+                    det_s1 = _ocr_rank_at(slot_1_y)
+                    if det_s1 is not None and det_s1 < current_rank:
+                        print(f"  [GUARDRAIL] slot 0 didn't OCR (rank-1 trophy?), slot 1 shows rank {det_s1} but expected ~{current_rank + 1}")
+                        needs_recovery = True
+
+                if needs_recovery:
+                    consecutive_recoveries += 1
+                    if consecutive_recoveries > MAX_AUTO_RECOVERIES:
+                        print(f"  [GUARDRAIL] auto-recovery failed {consecutive_recoveries-1}x in a row.")
+                        input(f"  Manually scroll Wild Rift so rank {current_rank} is at slot 0, then press Enter: ")
+                        consecutive_recoveries = 0
+                        continue  # re-enter the loop to re-validate
+                    recover_scroll_position(client, target_x, start_y, pitch_y)
+                    continue  # re-enter the loop to re-validate after scroll
+                else:
+                    # Good: the rank we expected is at the slot we're about to tap.
+                    consecutive_recoveries = 0
+            except Exception:
+                # Non-fatal: any OCR error -> skip guardrail, continue chain
+                pass
+
+            # --- 2. RUN ORIGINAL DATA EXTRACTION FLOW ---
+            print(f"\n--- Rank {current_rank} (Slot {idx}) ---")
+            print(f"  tap player row -> ({target_x}, {row_y})")
+
+            winrate = None
+            score = None
+            games = None
+            attempt = 0
+
+            while attempt < args.max_retries_per_player:
+                attempt += 1
+                try:
+                    # Double-tap the player row — first tap is sometimes
+                    # eaten by scroll-settle animation right after a swipe.
+                    # The second tap 0.4s later either opens the popup (if
+                    # the first missed) or lands on the popup's avatar/banner
+                    # area (if the first succeeded). The avatar is non-actionable
+                    # on Wild Rift's popup so this is usually safe — but if you
+                    # see the popup being dismissed instead of the profile
+                    # opening, the second tap is hitting the dimmed background
+                    # outside the popup, and we should remove this double-tap.
+                    client.tap(target_x, row_y)
+                    time.sleep(0.4)
+                    client.tap(target_x, row_y)
+                    time.sleep(args.step_wait)
+
+                    if _key_pressed() == "p":
+                        _handle_pause()
+
+                    # Double-tap view-profile — first tap can be eaten by
+                    # the popup-appearance animation; second tap 0.4s
+                    # later reliably triggers the profile load. If the
+                    # first one already loaded the full profile, the
+                    # second tap lands at (1221, 239) on screen 4 — an
+                    # empty area of the profile header, harmless no-op.
+                    print(f"  tap view profile (x2) -> {s3_view}")
+                    client.tap(*s3_view)
+                    time.sleep(0.4)
+                    client.tap(*s3_view)
+                    time.sleep(args.step_wait)
+
+                    # Double-tap CHAMPION AND LANE — the first tap is often
+                    # eaten by the popup -> profile transition animation;
+                    # the second one ~0.4s later reliably lands on the tab.
+                    # If the first one DID register, the second is a no-op
+                    # on an already-selected tab.
+                    print(f"  tap champion and lane (x2) -> {s4_lane}")
+                    client.tap(*s4_lane)
+                    time.sleep(0.4)
+                    client.tap(*s4_lane)
+                    time.sleep(args.step_wait)
+
+                    print(f"  searching champion strip for '{args.target}'...")
+                    wr, sc, gm, _, swipes_done, last_img = find_target_in_strip(
+                        client,
+                        args.target,
+                        max_swipes=args.max_strip_swipes,
+                        swipe_scale=args.strip_swipe_scale,
+                        swipe_duration_ms=args.strip_swipe_duration_ms,
+                        wait_after_swipe=args.step_wait,
+                    )
+
+                    if wr is not None:
+                        winrate = wr
+                        score = sc
+                        games = gm
+                        print(f"    found: {winrate}% winrate over {games} games (score: {score})")
+                    else:
+                        print(f"    [failed] target '{args.target}' not found in player's catalog")
+
+                    if args.save_screenshots:
+                        out_p = Path(f"data/screenshots/{args.target.lower()}_{current_rank}.png")
+                        out_p.parent.mkdir(parents=True, exist_ok=True)
+                        cv2.imwrite(str(out_p), last_img)
+
+                    print(f"  tap screen 5 back -> {s5_back}")
+                    client.tap(*s5_back)
+                    time.sleep(args.step_wait)
                     break
 
-                # Pause check between players
-                if _check_for_pause():
-                    _handle_pause()
+                except Exception:
+                    print(f"  [exception] nested navigation chain failed on attempt {attempt}:")
+                    traceback.print_exc()
+                    print("  recovering system state via native device hardware back key sequence...")
+                    
+                    # System recovery block: issues back commands to reset application frame state back to Screen 2
+                    for _ in range(4):
+                        client.back()
+                        time.sleep(0.5)
 
-                # Retry the tap chain up to N times if it fails
-                winrate: float | None = None
-                score: int | None = None
-                games: int | None = None
-                for attempt in range(1, args.max_retries_per_player + 1):
-                    try:
-                        winrate, score, games = scrape_one_player(current_rank, slot)
-                    except Exception:
-                        print(f"  exception at rank {current_rank}:")
-                        traceback.print_exc()
-                        winrate, score, games = None, None, None
-                    if winrate is not None:
-                        break
                     if attempt < args.max_retries_per_player:
-                        print(f"  attempt {attempt}/{args.max_retries_per_player} failed; retrying")
+                        print(f"  attempt {attempt}/{args.max_retries_per_player} failed; retrying slot")
                     else:
                         print(f"  giving up on rank {current_rank} after {attempt} attempts")
 
-                writer.write(LeaderboardRow(
-                    champion=args.target,
-                    rank=current_rank,
-                    player_name="",
-                    score=score,
-                    games=games,
-                    winrate=winrate,
-                ))
-                if winrate is not None:
-                    successes += 1
-                ranks_in_batch += 1
-                current_rank += 1
+            writer.write(LeaderboardRow(
+                champion=args.target,
+                rank=current_rank,
+                player_name="",
+                score=score,
+                games=games,
+                winrate=winrate,
+            ))
+            
+            if winrate is not None:
+                successes += 1
 
-            # Batch complete — ask user to scroll (or pause)
-            if current_rank > end_rank:
-                break
-            next_batch_start = current_rank
-            next_batch_end = min(current_rank + ROWS_PER_PAGE - 1, end_rank)
-            print(f"\n=== batch done. Next: ranks {next_batch_start}-{next_batch_end} ===")
-            response = input("  Scroll the leaderboard so this batch's first rank is at slot 0, then press Enter (or 'p' Enter to pause now): ").strip().lower()
-            if response.startswith("p"):
-                _handle_pause()
+            current_rank += 1
+            # Next iteration: guardrail re-validates whatever's now visible
+            # and auto-scrolls if we just crossed a page boundary.
+
     except KeyboardInterrupt:
         print("\n^C — stopping at user request")
 

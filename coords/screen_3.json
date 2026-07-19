@@ -1,13 +1,13 @@
 {
   "device": "127.0.0.1:7555",
   "resolution": {
-    "width": 1600,
-    "height": 900
+    "width": 2340,
+    "height": 1080
   },
   "points": {
-    "aatrox": {
-      "x": 1221,
-      "y": 239
+    "profile": {
+      "x": 1678,
+      "y": 284
     }
   }
 }
