@@ -8,6 +8,7 @@ import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/com
 import { HomeSearch } from "@/components/home-search";
 import { SeasonCard } from "@/components/season-card";
 import { MoversHighlight } from "@/components/movers-highlight";
+import { Roadmap } from "@/components/roadmap";
 
 export default function HomePage() {
   const champions = getChampions();
@@ -138,6 +139,11 @@ export default function HomePage() {
             </>
           )}
         </div>
+      </Container>
+
+      {/* Roadmap + countdown */}
+      <Container className="py-6">
+        <Roadmap />
       </Container>
 
       {/* Stat cards */}

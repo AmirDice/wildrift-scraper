@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { DiscordNavLink, DISCORD_URL, DiscordIcon } from "@/components/discord";
 
 type NavItem = { href: string; label: string; badge?: string; desc?: string };
 type NavGroup = { label: string; items: NavItem[] };
@@ -172,14 +173,27 @@ export function SiteNav() {
               </Link>
             ),
           )}
+          <span className="mx-1 h-5 w-px bg-line" />
+          <DiscordNavLink />
         </div>
 
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="grid h-10 w-10 place-items-center rounded-lg text-muted transition hover:bg-white/[0.06] hover:text-text md:hidden"
-          aria-label="Toggle menu"
-          aria-expanded={open}
-        >
+        {/* mobile: Discord icon stays in the top bar so it is never buried in a menu */}
+        <div className="flex items-center gap-0.5 md:hidden">
+          <Link
+            href={DISCORD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Join the WrTrueMeta Discord"
+            className="grid h-10 w-10 place-items-center rounded-lg text-muted transition hover:bg-[#5865F2]/15 hover:text-[#98a0ff]"
+          >
+            <DiscordIcon className="h-5 w-5" />
+          </Link>
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="grid h-10 w-10 place-items-center rounded-lg text-muted transition hover:bg-white/[0.06] hover:text-text"
+            aria-label="Toggle menu"
+            aria-expanded={open}
+          >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             {open ? (
               <>
@@ -195,6 +209,7 @@ export function SiteNav() {
             )}
           </svg>
         </button>
+        </div>
       </nav>
 
       {open && (
@@ -232,6 +247,16 @@ export function SiteNav() {
                 </Link>
               ),
             )}
+            <Link
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center gap-2 rounded-lg bg-[#5865F2]/15 px-3 py-2.5 text-sm font-semibold text-[#98a0ff] transition hover:bg-[#5865F2]/25"
+            >
+              <DiscordIcon className="h-5 w-5" />
+              Join our Discord
+            </Link>
           </div>
         </div>
       )}

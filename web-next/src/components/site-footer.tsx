@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/lib/data";
+import { DiscordButton } from "@/components/discord";
 
 const FOOTER_LINKS = [
   { href: "/tier-list", label: "Tier List" },
@@ -26,9 +27,12 @@ export function SiteFooter() {
             </Link>
           ))}
         </nav>
+        <div className="mb-6 flex justify-center">
+          <DiscordButton>Join our Discord</DiscordButton>
+        </div>
         <p>
-          Questions or feedback? DM{" "}
-          <span className="font-medium text-accent">@generalthr4gg</span> on Discord.
+          Questions or feedback? Come say hi in the Discord, or DM{" "}
+          <span className="font-medium text-accent">@generalthr4gg</span>.
         </p>
         {site.collectedOn && (
           <p className="mt-1 text-faint">Data collected {site.collectedOn}.</p>
