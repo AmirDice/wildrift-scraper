@@ -8,7 +8,12 @@
     "web-next/ were the root.",
     "",
     "IMPORTANT: the project's Root Directory setting in the Vercel dashboard must",
-    "be empty (repo root) for this file to take effect."
+    "be empty (repo root) for this file to take effect.",
+    "",
+    "The Python advisor uses a built-in Vercel runtime, detected from the .py",
+    "extension. Do NOT set a `runtime` here: that field is only for community",
+    "runtimes, and an invalid value fails config validation. Python version is",
+    "Vercel's default (3.12); dependencies come from the repo-root requirements.txt."
   ],
   "framework": "nextjs",
   "buildCommand": "cd web-next && npm run build",
@@ -16,7 +21,6 @@
   "outputDirectory": "web-next/.next",
   "functions": {
     "api/advisor.py": {
-      "runtime": "python3.12",
       "maxDuration": 300,
       "memory": 1024
     }
