@@ -1,0 +1,248 @@
+"""Champion profile derivation -- the layer that replaced the coarse tags."""
+from __future__ import annotations
+
+import pytest
+
+from web.advisor import profiles
+
+
+def test_whole_roster_derives_without_crashing():
+    """141 champions, all shapes of data. A crash here takes the tool down."""
+    for name in profiles.CHAMPIONS:
+        result = profiles.profile(name, log=False)
+        assert set(result["combatProfile"]) == {
+            "basicAttackPattern", "basicAttackFrequency", "spellbladeProcReliability",
+            "repeatedOnHitReliance", "attackSpeedValue", "critValue",
+            "mobilityToDamageConversion", "healingReliance",
+        }
+        identity = result["buildIdentityProfile"]
+        assert identity["primaryBuildPath"] in {"physical", "magic", "tank", "support"}
+        assert identity["primaryCombatEngine"]
+        assert identity["mainDamageSource"]
+        assert identity["approvedBuildPaths"]
+
+
+def test_profile_fields_use_the_declared_enums():
+    levels = {"none", "low", "medium", "high"}
+    patterns = {"caster", "ability-weaving", "repeated-attacks",
+                "basic-attack-carry", "mixed"}
+    labels = {"none", "low-incidental", "low", "medium", "high", "core"}
+    for name in profiles.CHAMPIONS:
+        result = profiles.profile(name, log=False)
+        combat = result["combatProfile"]
+        assert combat["basicAttackPattern"] in patterns, name
+        for key, value in combat.items():
+            if key != "basicAttackPattern":
+                assert value in levels, f"{name}.{key}={value}"
+        for stat, label in result.get("scalingProfile", {}).items():
+            assert label in labels, f"{name}.{stat}={label}"
+
+
+class TestHecarim:
+    """The champion the rework was specified against (spec section 22)."""
+
+    @pytest.fixture(scope="class")
+    def hecarim(self):
+        return profiles.profile("Hecarim", log=False)
+
+    def test_weaves_abilities_rather_than_stacking_attacks(self, hecarim):
+        assert hecarim["combatProfile"]["basicAttackPattern"] == "ability-weaving"
+
+    def test_spellblade_is_high(self, hecarim):
+        assert hecarim["combatProfile"]["spellbladeProcReliability"] == "high"
+
+    def test_repeated_on_hit_reliance_is_low(self, hecarim):
+        """One empowered attack is not on-hit reliance. This is the whole point:
+        the old `onHit` tag forced Guinsoo's, Nashor's, Runaan's and Terminus
+        into his comparison set."""
+        assert hecarim["combatProfile"]["repeatedOnHitReliance"] == "low"
+
+    def test_attack_speed_is_not_a_requirement(self, hecarim):
+        assert hecarim["combatProfile"]["attackSpeedValue"] in ("none", "low")
+
+    def test_movement_speed_converts_to_damage(self, hecarim):
+        assert hecarim["combatProfile"]["mobilityToDamageConversion"] == "high"
+
+    def test_ad_anchors_the_build_and_ap_does_not(self, hecarim):
+        assert hecarim["scalingProfile"]["totalAD"] == "core"
+        assert hecarim["scalingProfile"]["AP"] == "low-incidental"
+        assert hecarim["buildPathStats"] == ["totalAD"]
+
+    def test_warpath_survives_as_a_structured_effect(self, hecarim):
+        """The prose is malformed; the parsed conversion is not."""
+        warpath = [e for e in hecarim["structuredEffects"] if e["ability"] == "Warpath"]
+        assert warpath == [{
+            "ability": "Warpath", "slot": "P", "effectType": "stat-conversion",
+            "outputStat": "totalAD", "ratio": 0.12, "inputStat": "movementSpeed",
+        }]
+
+    def test_malformed_ability_text_is_flagged_and_cleaned(self, hecarim):
+        assert any("zero-equals" in a for a in hecarim["abilityTextArtifacts"])
+        text = [a["text"] for a in profiles.normalized_abilities("Hecarim")
+                if a["slot"] == "P"][0]
+        assert "0 =" not in text
+        assert "12% bonus MS" in text  # meaning preserved, artifact removed
+
+
+def test_incidental_ap_is_not_a_build_path_across_ad_kits():
+    """A kit can carry a real AP ratio and still have no AP build."""
+    for name in ("Hecarim", "Xin Zhao"):
+        result = profiles.profile(name, log=False)
+        assert "AP" not in result.get("buildPathStats", [])
+
+
+def test_a_hybrid_champions_off_identity_stat_is_experimental_not_a_trusted_anchor():
+    """Issue 10: Jax is an AD champion who CAN go AP, but AP must not be a
+    trusted anchor -- only his AD anchors trusted builds, and AP is available
+    solely as a hybrid/experimental path."""
+    jax = profiles.profile("Jax", log=False)
+    assert "totalAD" in jax["buildPathStats"]
+    assert "AP" not in jax["buildPathStats"]
+    assert jax["buildPathViability"]["totalAD"] == "core"
+    assert jax["buildPathViability"]["AP"] == "hybrid_or_experimental"
+
+
+def test_an_ad_bruisers_incidental_ap_ratio_is_not_viable():
+    """Issue 7: Fiora and Irelia scrape with an AP ratio (and Irelia even
+    scrapes as primaryDamage=magic), but neither is an AP champion."""
+    for name in ("Fiora", "Irelia"):
+        p = profiles.profile(name, log=False)
+        assert profiles.build_identity(name) == "physical", name
+        assert p["buildPathViability"].get("AP") == "not_viable", name
+        # AD is the anchor.
+        anchors = p.get("buildPathStats") or []
+        assert any(s in ("totalAD", "bonusAD") for s in anchors), name
+
+
+class TestReviewedBuildIdentity:
+    def test_master_yi_is_an_on_hit_carry_not_a_lethality_caster(self):
+        profile = profiles.profile("Master Yi", log=False)
+        combat = profile["combatProfile"]
+        identity = profile["buildIdentityProfile"]
+        assert combat["basicAttackPattern"] == "repeated-attacks"
+        assert combat["repeatedOnHitReliance"] == "high"
+        assert combat["attackSpeedValue"] == "high"
+        assert identity["approvedBuildPaths"][0] == "ad-on-hit"
+        assert identity["variantRules"]["*"]["maximumLethalityItems"] == 1
+
+    def test_rammus_is_an_armor_tank_not_an_ap_bruiser(self):
+        identity = profiles.build_identity_profile("Rammus")
+        assert identity["primaryBuildPath"] == "tank"
+        assert "armor" in identity["coreStats"]
+        assert "Spiked Shell" in identity["mainDamageSource"]
+        assert profiles.alternative_path("Rammus") is None
+
+    def test_nasus_is_defined_by_q_stacks_not_incidental_ap(self):
+        identity = profiles.build_identity_profile("Nasus")
+        assert profiles.build_identity("Nasus") == "physical"
+        assert identity["primaryBuildPath"] == "physical"
+        assert "Siphoning Strike" in identity["mainDamageSource"]
+        assert identity["variantRules"]["*"]["maximumAPItems"] == 1
+
+    def test_fiora_has_only_a_reviewed_physical_crit_alternative(self):
+        identity = profiles.build_identity_profile("Fiora")
+        assert "Riposte" in identity["mainDamageSource"]
+        assert identity["forbiddenAnchors"] == ["AP"]
+        assert profiles.alternative_path("Fiora")["id"] == "crit-duelist"
+
+    def test_irelia_uses_corrected_ultimate_cooldowns(self):
+        ult = next(a for a in profiles.normalized_abilities("Irelia") if a["slot"] == "4")
+        assert ult["cooldowns"] == [70, 65, 60]
+        assert profiles._cooldown(profiles.CHAMPIONS["Irelia"]["abilities"][-1], "Irelia") == 60
+        assert any("curated cooldown correction" in row
+                   for row in profiles.ability_artifacts("Irelia"))
+
+    def test_irelia_has_no_ap_alternative(self):
+        identity = profiles.build_identity_profile("Irelia")
+        assert "passive attacks" in identity["mainDamageSource"]
+        assert profiles.alternative_path("Irelia") is None
+
+    def test_nunu_separates_tank_default_from_ap_burst_alternative(self):
+        identity = profiles.build_identity_profile("Nunu & Willump")
+        assert identity["primaryBuildPath"] == "tank"
+        assert identity["variantRules"]["*"]["minimumDefensiveItems"] == 3
+        assert profiles.alternative_path("Nunu & Willump")["id"] == "ap-burst"
+
+
+def test_an_ap_bruiser_override_keeps_magic_identity():
+    """Mordekaiser scrapes with an AD ratio but is itemised full AP; a curated
+    override protects that."""
+    assert profiles.build_identity("Mordekaiser") == "magic"
+    assert profiles.profile("Mordekaiser", log=False)["buildPathViability"]["AP"] == "core"
+
+
+def test_a_once_per_target_proc_is_not_repeated_on_hit():
+    """Issue 9: Jarvan's passive is a per-unique-enemy proc; his attack-speed
+    steroid must not make him an on-hit carry."""
+    jarvan = profiles.combat_profile("Jarvan IV")
+    assert jarvan["repeatedOnHitReliance"] == "low"
+    assert jarvan["basicAttackPattern"] != "repeated-attacks"
+
+
+def test_a_true_on_hit_marksman_is_still_high_reliance():
+    assert profiles.combat_profile("Ashe")["repeatedOnHitReliance"] == "high"
+
+
+class TestPokeEligibility:
+    """Issue 5: poke depends on repeatable ranged pressure, not class."""
+
+    def test_a_melee_assassin_classed_as_mage_is_not_poke_eligible(self):
+        e = profiles.poke_eligibility("Akali")
+        assert e["eligible"] is False
+        assert profiles.range_profile("Akali") == "melee"
+
+    def test_a_conventional_melee_diver_is_not_poke_eligible(self):
+        assert profiles.poke_eligibility("Diana")["eligible"] is False
+
+    def test_a_true_ranged_poke_mage_is_eligible(self):
+        for name in ("Ziggs", "Vel'Koz", "Lux"):
+            if name in profiles.CHAMPIONS:
+                assert profiles.poke_eligibility(name)["eligible"] is True, name
+
+    def test_akali_variants_have_no_poke_but_a_credible_replacement(self):
+        import scripts.build_champions_llm as curated
+        variants = curated.variants_for("Akali", "Mage", "Mid")
+        assert "poke" not in variants
+        assert "burst" in variants  # the credible alternative for a melee assassin
+
+    def test_the_profile_exposes_poke_eligibility(self):
+        p = profiles.profile("Akali", log=False)
+        assert p["playstyleEligibility"]["poke"]["eligible"] is False
+        assert p["rangeProfile"] == "melee"
+
+
+def test_pure_caster_has_no_crit_or_on_hit_value():
+    annie = profiles.profile("Annie", log=False)["combatProfile"]
+    assert annie["basicAttackPattern"] == "caster"
+    assert annie["critValue"] == "none"
+    assert annie["repeatedOnHitReliance"] == "none"
+
+
+def test_marksman_is_a_basic_attack_carry():
+    ashe = profiles.profile("Ashe", log=False)["combatProfile"]
+    assert ashe["basicAttackPattern"] == "basic-attack-carry"
+    assert ashe["repeatedOnHitReliance"] == "high"
+
+
+def test_curated_override_wins():
+    """Graves' reload kit does not want raw attack speed, whatever the pattern."""
+    graves = profiles.profile("Graves", log=False)["combatProfile"]
+    assert graves["basicAttackPattern"] == "basic-attack-carry"
+    assert graves["attackSpeedValue"] == "low"
+
+
+def test_stub_ability_data_is_reported_rather_than_guessed():
+    """Cho'Gath's scrape returned blurbs. Say so; do not invent scaling."""
+    artifacts = profiles.ability_artifacts("Cho'Gath")
+    assert any("numeric cooldown" in a for a in artifacts)
+
+
+def test_the_new_profile_is_far_more_selective_than_the_old_tag():
+    """The regression this rework exists to prevent: `onHit` on 60% of the
+    roster made the mandatory audit meaningless."""
+    old = sum(1 for c in profiles.CHAMPIONS.values()
+              if "onHit" in (c.get("mechanics") or []))
+    new = sum(1 for n in profiles.CHAMPIONS
+              if profiles.combat_profile(n)["repeatedOnHitReliance"] in ("medium", "high"))
+    assert old > 80
+    assert new < old / 2

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "targetPatch": "7.2a",
+  "updated": "2026-07-21",
+  "notes": "Patch-aware corrections layered over the third-party champion scrape. Official Riot deltas are preferred; exact in-game level-15 observations are marked as such.",
+  "champions": {
+    "Pantheon": {
+      "baseStats": {
+        "ad": { "base": 64, "perLevel": 3.6, "lvl15": 114.4 },
+        "mana": { "base": 420, "perLevel": 33, "lvl15": 882 },
+        "armor": { "base": 52, "perLevel": 4.7, "lvl15": 117.8 },
+        "hpRegen": { "base": 9, "perLevel": 0.7142857143, "lvl15": 19 },
+        "manaRegen": { "base": 12, "perLevel": 0.7142857143, "lvl15": 22 }
+      },
+      "statRules": {
+        "attackSpeedRatio": 0.66,
+        "passiveStats": [
+          {
+            "slot": "4",
+            "stat": "physicalPen",
+            "values": [10, 20, 30],
+            "label": "Grand Starfall passive"
+          }
+        ],
+        "cooldownVariants": {
+          "1": [
+            {
+              "label": "Charged / released",
+              "multiplier": 1,
+              "note": "Uses Comet Spear's full cooldown."
+            },
+            {
+              "label": "Tap / thrust",
+              "multiplier": 0.4,
+              "note": "Refunds 60% of Comet Spear's cooldown when it is not charged."
+            }
+          ]
+        }
+      },
+      "sources": [
+        "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-2-2a/",
+        "https://wildrift.leagueoflegends.com/en-sg/news/game-updates/wild-rift-patch-notes-2-2c/",
+        "https://wildrift.leagueoflegends.com/en-sg/news/game-updates/wild-rift-patch-notes-4-2a/",
+        "https://wildrift.leagueoflegends.com/en-sg/news/game-updates/wild-rift-patch-notes-6-2e/",
+        "in-game level-15 verification supplied 2026-07-21"
+      ]
+    },
+    "Lucian": {
+      "baseStats": {
+        "mana": { "base": 390, "perLevel": 49, "lvl15": 1076 },
+        "mr": { "base": 30, "perLevel": 1.5, "lvl15": 51 },
+        "hpRegen": { "base": 9, "perLevel": 0.8571428571, "lvl15": 21 },
+        "manaRegen": { "base": 12, "perLevel": 1.1428571429, "lvl15": 28 }
+      },
+      "sources": [
+        "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4/",
+        "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5a/",
+        "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-5-3b/",
+        "in-game level-15 verification supplied 2026-07-21"
+      ]
+    }
+  }
+}

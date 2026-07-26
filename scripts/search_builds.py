@@ -40,7 +40,15 @@ ROOT = Path(__file__).resolve().parent.parent
 BUILDS = ROOT / "data" / "champion_builds.json"
 WEB_OUT = ROOT / "web-next" / "src" / "data" / "builds.json"
 RULES = json.loads((ROOT / "data" / "item_rules.json").read_text(encoding="utf-8"))
-MUTEX = [set(g) for g in RULES.get("mutexGroups", {}).values()]
+# item_rules.json splits true legality (`hardExclusive`, each group carrying its
+# evidence) from wasteful-but-legal overlap. The old flat `mutexGroups` key is
+# still read so an older data file degrades to previous behaviour instead of
+# silently enforcing nothing.
+MUTEX = [
+    set(group["slugs"] if isinstance(group, dict) else group)
+    for name, group in (RULES.get("hardExclusive") or {}).items()
+    if not name.startswith("_")
+] or [set(g) for g in (RULES.get("mutexGroups") or {}).values()]
 RUNES_ALL = json.loads((ROOT / "data" / "runes.json").read_text(encoding="utf-8"))
 _ARCH_PATH = ROOT / "data" / "champion_archetypes.json"
 ARCHETYPES = (json.loads(_ARCH_PATH.read_text(encoding="utf-8"))

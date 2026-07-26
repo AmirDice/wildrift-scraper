@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site } from "@/lib/data";
-import { CN_META } from "@/lib/cn";
 import { getEloSkews } from "@/lib/skew";
 import { Container } from "@/components/ui";
 import { EloSkewView, type SkewRow } from "@/components/elo-skew-view";
+import { ChinaUpdated } from "@/components/tierlist-updated";
 
 export const metadata: Metadata = {
-  title: "Win Rate by Rank | Low Elo vs High Elo Wild Rift Champions",
+  title: "Win Rate by Skill Bracket | Wild Rift China Rank Data",
   description:
-    "How Wild Rift champion win rates change from the whole ladder up to China's Challenger+ bracket. Find high-skill specialists that scale with elo and low-elo stompers that fall off at the top.",
+    "Compare Wild Rift champion win rates across China's cumulative Diamond+, Master+, and Challenger samples, with CN Legendary shown as a separate solo-queue benchmark.",
   alternates: { canonical: "/ranks" },
 };
 
@@ -21,6 +21,7 @@ export default function RanksPage() {
     role: s.champion.role,
     isHard: s.champion.isHard,
     curve: s.curve,
+    legendary: s.legendary,
     low: s.low,
     high: s.high,
     skew: s.skew,
@@ -30,14 +31,17 @@ export default function RanksPage() {
 
   return (
     <Container className="py-12">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Win Rate by Rank</h1>
+      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Win Rate by Skill Bracket</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        China publishes win rates for every rank bracket, from the whole ladder up to{" "}
-        <span className="text-text">{CN_META.bracket}</span>. That skill gradient shows which
-        champions <span className="text-emerald-300">scale with elo</span> (high-skill specialists)
-        and which <span className="text-rose-300">fall off</span> against better players (low-elo
-        stompers), so you can pick what actually works at <em>your</em> rank.
+        Follow champion performance through Tencent&rsquo;s cumulative{" "}
+        <span className="text-text">Diamond+ → Master+ → Challenger</span> samples. This is a
+        skill-bracket comparison rather than isolated rank data: Diamond+ already contains the
+        higher regular ranks. CN Legendary is shown separately as a high-elo solo-queue benchmark.
       </p>
+
+      <div className="mt-4">
+        <ChinaUpdated />
+      </div>
 
       <div className="mt-8">
         <EloSkewView rows={rows} roles={site.roles} />
@@ -45,16 +49,15 @@ export default function RanksPage() {
 
       <div className="mt-8 max-w-2xl space-y-2 text-xs text-faint">
         <p>
-          The sparkline runs All ranks → Diamond+ → Master+ → Challenger+ (Challenger and above).
-          Skew is the Challenger+ win rate minus the All-ranks win rate: positive means the champion
-          gets stronger the higher you climb.
+          The sparkline runs Diamond+ → Master+ → Challenger. Change is Challenger minus Diamond+:
+          positive means the champion performs better in Tencent&rsquo;s top regular-ranked sample.
+          Legendary is a separate CN solo queue and is never treated as the next rank after Challenger.
         </p>
         <p>
           Want the cross-server view instead? See{" "}
           <Link href="/rising" className="text-accent hover:underline">
             the meta gap
-          </Link>
-          {CN_META.date ? ` · CN ${CN_META.date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")}` : ""}.
+          </Link>.
         </p>
       </div>
     </Container>

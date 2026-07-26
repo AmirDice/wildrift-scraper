@@ -6,6 +6,7 @@ import type { Champion } from "@/lib/data";
 import type { CnChampion } from "@/lib/cn";
 import { TierChip, ChampionAvatar } from "@/components/ui";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
+import { RegionUpdated } from "@/components/tierlist-updated";
 
 type SortKey =
   | "name" | "wr" | "maxWr" | "difficulty" | "totalGames" | "maxScore"
@@ -21,19 +22,21 @@ export function ChampionsExplorer({
   cnChampions,
   cnRoles,
   cnMeta,
+  euUpdated,
 }: {
   champions: Champion[];
   roles: string[];
   cnChampions: CnChampion[];
   cnRoles: string[];
   cnMeta: { source: string; date: string | null; bracket: string };
+  euUpdated?: string | null;
 }) {
   const [query, setQuery] = useState("");
   const [role, setRole] = useState("All roles");
   const [cls, setCls] = useState("All classes");
   const [sortKey, setSortKey] = useState<SortKey>("wr");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
-  const [region, setRegion] = useState<Region>("EU");
+  const [region, setRegion] = useState<Region>("CN");
 
   const isCN = region === "CN";
   const activeChampions: Champion[] = isCN ? cnChampions : champions;
@@ -80,7 +83,17 @@ export function ChampionsExplorer({
     <div>
       {/* Region */}
       <div className="mb-5">
-        <RegionToggle region={region} onChange={changeRegion} />
+        <RegionToggle region={region} onChange={changeRegion} regions={["CN", "EU", "NA"]} />
+      </div>
+
+      {region === "EU" && (
+        <p className="mb-4 max-w-2xl text-muted">
+          Every champion tracked on EU, ranked by top-50 player win rates.
+        </p>
+      )}
+
+      <div className="mb-5">
+        <RegionUpdated region={region} euDate={euUpdated} cnDate={cnMeta.date} />
       </div>
 
       {region === "NA" ? (
@@ -89,11 +102,8 @@ export function ChampionsExplorer({
         <>
           {isCN && (
             <p className="mb-4 text-sm text-muted">
-              Official China server data ({cnMeta.bracket}, highest rank): win, pick &amp; ban
+              Official China server data ({cnMeta.bracket}, top regular-ranked sample): win, pick &amp; ban
               rates.
-              {cnMeta.date
-                ? ` Updated ${cnMeta.date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")}.`
-                : ""}
             </p>
           )}
 

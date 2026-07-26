@@ -16,9 +16,6 @@ export default function ChampionsPage() {
   return (
     <Container className="py-12">
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Champions</h1>
-      <p className="mt-2 max-w-2xl text-muted">
-        Every champion tracked on EU, ranked by top-50 player win rates.
-      </p>
       <div className="mt-8">
         <ChampionsExplorer
           champions={champions}
@@ -26,6 +23,7 @@ export default function ChampionsPage() {
           cnChampions={getCnChampions()}
           cnRoles={cnRoles()}
           cnMeta={CN_META}
+          euUpdated={site.collectedOn}
         />
       </div>
     </Container>

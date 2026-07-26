@@ -1,0 +1,52 @@
+{
+  "_note": "Summoner spells are assigned deterministically in Python (web/advisor/summoners.py), not chosen by the model. They follow a small set of flat rules that do not benefit from reasoning, and leaving them to the model meant re-validating a jungler's Smite on every generation.",
+  "_precedence": [
+    "1. Jungle role -> Smite is mandatory. Partner is Ghost for the run-down list below, otherwise Flash.",
+    "2. Run-down champions (non-jungle) -> Ghost + Flash.",
+    "3. Support role -> Ignite + Flash for engage/kill supports (Tank or Assassin class), Heal + Flash for everyone else.",
+    "4. Marksman outside the jungle -> Flash + Barrier when the kit has a repositioning ability, Ghost + Flash when it does not.",
+    "5. Everything else -> Flash + Ignite."
+  ],
+  "runDownChampions": {
+    "_why": "Champions whose whole pattern is closing distance and staying on a target. Ghost is not a preference for these, it is part of how they work.",
+    "names": ["Darius", "Olaf", "Hecarim", "Nasus", "Singed", "Gwen"]
+  },
+  "marksmenWithMobility": {
+    "_why": "Curated deliberately. Both automatic detectors fail here: the champion record's `dash` mechanic tag fires on the word 'charge' (Varus' Piercing Arrow charge-up), and a stricter ability-text scan still mis-reads Jinx, whose Flame Chompers text says it interrupts enemy 'dashes'. Corki fails the opposite way -- Valkyrie reads 'Flies a short distance' and matches no movement keyword at all. Twenty-odd champions is small enough to state outright and easy to correct.",
+    "names": [
+      "Ezreal",
+      "Kai'Sa",
+      "Kalista",
+      "Lucian",
+      "Samira",
+      "Tristana",
+      "Vayne",
+      "Xayah",
+      "Zeri",
+      "Corki"
+    ],
+    "_explicitlyWithout": {
+      "Jinx": "Flame Chompers interrupts enemy dashes; Jinx has no movement ability of her own.",
+      "Varus": "Piercing Arrow charges up, it does not move him. No dash in the kit.",
+      "Ashe": "No repositioning ability.",
+      "Caitlyn": "90 Caliber Net displaces her, but it is an escape on a long cooldown rather than the in-combat repositioning Barrier assumes.",
+      "Sivir": "Movement speed steroid on the ultimate, not a dash.",
+      "Draven": "No dash.",
+      "Jhin": "No dash.",
+      "Kog'Maw": "No dash.",
+      "Miss Fortune": "No dash.",
+      "Smolder": "No dash.",
+      "Twitch": "Stealth, not a dash.",
+      "Senna": "No dash; plays Support and takes the support rule anyway.",
+      "Kayle": "No dash; plays Baron."
+    }
+  },
+  "engageSupportClasses": {
+    "_why": "The user's rule names 'tank supports' for Ignite. Assassin supports (Pyke) belong in the same bucket: they are kill-lane supports, and Heal fits them no better than it fits Leona.",
+    "classes": ["Tank", "Assassin"]
+  },
+  "default": {
+    "_why": "Not specified by the rules above. Flash plus Ignite is the standard laner pairing and keeps kill pressure, which is what a Mid or Baron laner outside the named lists usually wants. Change here if you want a different fallback.",
+    "spells": ["Flash", "Ignite"]
+  }
+}

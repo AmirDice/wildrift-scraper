@@ -58,8 +58,15 @@ export function roster(): Record<string, RosterChampion> {
 }
 
 /** All champions, sorted by name, for an enemy picker. */
+// Sorting the whole roster on every call adds up: the advisor mounts one picker
+// per enemy slot, so a single Counter Builder render asked for it six times.
+let _rosterList: RosterChampion[] | null = null;
+
 export function rosterList(): RosterChampion[] {
-  return Object.values(ROSTER).sort((a, b) => a.name.localeCompare(b.name));
+  if (!_rosterList) {
+    _rosterList = Object.values(ROSTER).sort((a, b) => a.name.localeCompare(b.name));
+  }
+  return _rosterList;
 }
 
 function stat(c: RosterChampion, k: string, level: number): number {

@@ -1,0 +1,18 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import type { Champion } from "@/lib/data";
+import { ChampionAvatar } from "@/components/ui";
+
+export function OtpChampionExplorer({ champions, roles }: { champions: Champion[]; roles: string[] }) {
+  const [query, setQuery] = useState("");
+  const [role, setRole] = useState("All roles");
+  const [specialistsOnly, setSpecialistsOnly] = useState(false);
+  const rows = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    return champions.filter((champion) => champion.otpScore != null && (!specialistsOnly || champion.isOtp) && (role === "All roles" || champion.role === role) && (!normalized || champion.name.toLowerCase().includes(normalized))).sort((left, right) => (right.otpScore ?? 0) - (left.otpScore ?? 0));
+  }, [champions, query, role, specialistsOnly]);
+
+  return <div><div className="glass grid gap-3 rounded-2xl p-4 sm:grid-cols-[1fr_180px_auto]"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search champions…" className="rounded-xl border border-line bg-black/20 px-4 py-3 text-sm outline-none placeholder:text-faint focus:border-accent/50"/><select value={role} onChange={(event) => setRole(event.target.value)} className="rounded-xl border border-line bg-[#111827] px-4 py-3 text-sm outline-none focus:border-accent/50"><option>All roles</option>{roles.map((value) => <option key={value}>{value}</option>)}</select><button type="button" aria-pressed={specialistsOnly} onClick={() => setSpecialistsOnly((value) => !value)} className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${specialistsOnly ? "bg-gold text-[#181006]" : "bg-white/[0.05] text-muted hover:text-text"}`}>OTP flagged only</button></div><div className="mt-3 flex justify-between text-xs text-muted"><span>{rows.length} champions</span><span>Highest OTP score first</span></div><div className="glass mt-3 overflow-hidden rounded-2xl border border-line"><div className="hidden grid-cols-[3rem_1fr_7rem_7rem_8rem_7rem] gap-3 border-b border-line px-5 py-3 text-[0.65rem] font-semibold uppercase tracking-wide text-faint sm:grid"><span>Rank</span><span>Champion</span><span>OTP score</span><span className="text-right">Win rate</span><span className="text-right">Median mastery</span><span className="text-right">Skill spread</span></div><div className="divide-y divide-line/60">{rows.map((champion, index) => <Link key={champion.slug} href={`/champions/${champion.slug}`} className="grid grid-cols-[2rem_2.75rem_1fr_auto] items-center gap-3 px-4 py-3 transition hover:bg-white/[0.04] sm:grid-cols-[3rem_2.75rem_1fr_7rem_7rem_8rem_7rem] sm:px-5"><span className="text-center text-sm font-semibold text-faint">{index + 1}</span><ChampionAvatar champion={champion} size={42} showBadges={false}/><span className="min-w-0"><span className="flex items-center gap-2"><strong className="truncate text-sm">{champion.name}</strong>{champion.isOtp && <span className="rounded bg-gold/15 px-1.5 py-0.5 text-[0.55rem] font-bold text-gold">OTP</span>}</span><span className="text-xs text-muted sm:hidden">{champion.role} · {champion.wr.toFixed(1)}% WR</span></span><span className="font-semibold text-gold">{champion.otpScore?.toFixed(1)}</span><span className="hidden text-right text-sm font-semibold text-accent sm:block">{champion.wr.toFixed(1)}%</span><span className="hidden text-right text-sm text-muted sm:block">{champion.medianMastery?.toLocaleString() ?? "-"}</span><span className="hidden text-right text-sm text-muted sm:block">{champion.skillSpread != null ? `+${champion.skillSpread.toFixed(1)}` : "-"}</span></Link>)}</div></div></div>;
+}

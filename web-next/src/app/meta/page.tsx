@@ -68,12 +68,12 @@ export default function MetaPage() {
 
       {/* class radar + role bars */}
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
-        <div>
+        <div id="classes" className="scroll-mt-24">
           <SectionHeading title="Win rate by class" subtitle="Average of each class's top 5 picks" />
           <Card className="flex items-center justify-center p-5 sm:p-6"><ClassRadar rows={classes} /></Card>
         </div>
-        <div>
-          <SectionHeading title="Win rate by role" subtitle="Strength of each role's meta picks" href="/ranks" linkLabel="Win rate by rank" />
+        <div id="roles" className="scroll-mt-24">
+          <SectionHeading title="Win rate by role" subtitle="Strength of each role's meta picks" href="/ranks" linkLabel="Skill-bracket trends" />
           <Card className="p-5 sm:p-6">
             <ValueBars rows={roles.map((r) => ({ label: r.role, value: r.wr }))} />
             <div className="mt-6 border-t border-line/60 pt-5">

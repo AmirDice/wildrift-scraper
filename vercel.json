@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "_comment": [
+    "The deployment root is the REPO root, not web-next/. The Next.js app lives",
+    "in web-next/ and is built by the buildCommand below; the Python advisor",
+    "function in api/ needs the data files at the repo root (champions_wr.json,",
+    "ability_formulas.json and friends), which would be outside the bundle if",
+    "web-next/ were the root.",
+    "",
+    "IMPORTANT: the project's Root Directory setting in the Vercel dashboard must",
+    "be empty (repo root) for this file to take effect."
+  ],
+  "framework": "nextjs",
+  "buildCommand": "cd web-next && npm run build",
+  "installCommand": "cd web-next && npm install",
+  "outputDirectory": "web-next/.next",
+  "functions": {
+    "api/advisor.py": {
+      "runtime": "python3.12",
+      "maxDuration": 300,
+      "memory": 1024
+    }
+  }
+}

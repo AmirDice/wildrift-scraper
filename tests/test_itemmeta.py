@@ -1,0 +1,149 @@
+"""Item metadata, the mandatory audit, and the conservative pre-filter."""
+from __future__ import annotations
+
+from web.advisor import itemmeta, profiles
+
+
+def _for(name: str, **kwargs):
+    derived = profiles.profile(name, log=False)
+    return itemmeta.filter_candidates(
+        profiles.CHAMPIONS[name], derived["combatProfile"],
+        derived.get("scalingProfile", {}), **kwargs)
+
+
+def _audit(name: str):
+    derived = profiles.profile(name, log=False)
+    return itemmeta.mandatory_audit(derived["combatProfile"],
+                                    derived.get("scalingProfile", {}))
+
+
+class TestMandatoryAudit:
+    def test_hecarim_is_audited_on_spellblade_not_on_hit_stacking(self):
+        audit = _audit("Hecarim")
+        assert "trinity-force" in audit
+        assert "guinsoos-rageblade" not in audit
+        assert "runaans-hurricane" not in audit
+        assert "nashors-tooth" not in audit
+
+    def test_a_true_on_hit_carry_is_audited_on_on_hit_items(self):
+        audit = _audit("Ashe")
+        assert "guinsoos-rageblade" in audit
+        assert "blade-of-the-ruined-king" in audit
+
+    def test_a_pure_caster_has_nothing_to_audit(self):
+        assert _audit("Annie") == []
+
+    def test_the_audit_stays_small_enough_to_be_worth_answering(self):
+        """Every entry costs an explicit verdict, so an unbounded list quietly
+        becomes the whole response."""
+        for name in profiles.CHAMPIONS:
+            assert len(_audit(name)) <= itemmeta._MAX_AUDIT_ITEMS, name
+
+
+class TestPreFilter:
+    def test_it_removes_almost_nothing(self):
+        """The filter exists to remove the impossible. If it starts trimming
+        broadly it is silently narrowing every build."""
+        kept, removed = _for("Hecarim", enemies_known=True)
+        assert len(removed) <= 3
+        assert len(kept) > 90
+
+    def test_reactive_items_are_withheld_only_without_an_enemy_team(self):
+        _, removed_unknown = _for("Hecarim", enemies_known=False)
+        withheld = {r["item"] for r in removed_unknown}
+        assert "serpents-fang" in withheld
+
+        kept_known, _ = _for("Hecarim", enemies_known=True)
+        assert "serpents-fang" in kept_known
+
+    def test_ranged_only_items_are_withheld_from_melee_champions(self):
+        kept_melee, removed = _for("Hecarim", enemies_known=True)
+        assert "runaans-hurricane" not in kept_melee
+        assert any(r["item"] == "runaans-hurricane" for r in removed)
+
+        kept_ranged, _ = _for("Ashe", enemies_known=True)
+        assert "runaans-hurricane" in kept_ranged
+
+    def test_a_requested_damage_path_filters_the_other_path(self):
+        kept, _ = _for("Annie", damage_path="ap", enemies_known=True)
+        assert "infinity-edge" not in kept
+
+    def test_every_removal_carries_a_reason(self):
+        for name in ("Hecarim", "Ashe", "Annie"):
+            _, removed = _for(name, enemies_known=False)
+            assert all(r.get("reason") for r in removed)
+
+
+class TestMetadata:
+    def test_runaans_is_ranged_only_despite_the_garbled_text(self):
+        """The item text reads 'cannot only be used by melee champions'. Either
+        way that sentence is untangled, melee cannot build it."""
+        meta = itemmeta.metadata("runaans-hurricane")
+        assert meta["meleeAllowed"] is False
+        assert meta["rangedAllowed"] is True
+
+    def test_hard_exclusive_groups_are_reflected_on_the_items(self):
+        assert "spellblade" in itemmeta.metadata("trinity-force")["exclusiveGroups"]
+        assert "armor-penetration" in itemmeta.metadata("black-cleaver")["exclusiveGroups"]
+
+    def test_terminus_is_in_the_armor_penetration_group(self):
+        """Verified in-game: it cannot be built with Black Cleaver."""
+        assert "armor-penetration" in itemmeta.metadata("terminus")["exclusiveGroups"]
+
+    def test_guardian_angel_is_late_strategic_not_reactive(self):
+        meta = itemmeta.metadata("guardian-angel")
+        assert meta["lateGameStrategic"] is True
+        assert meta["situationalTags"] == []
+
+    def test_every_pool_item_produces_metadata(self):
+        for slug in itemmeta.completed_items():
+            meta = itemmeta.metadata(slug)
+            assert meta["slug"] == slug
+            assert meta["tempoProfile"] in ("early", "early-mid", "mid-late", "late")
+
+    def test_structured_metadata_fields_are_present(self):
+        """Part 5: completionCost, activation delay, resource dependency."""
+        meta = itemmeta.metadata("trinity-force")
+        assert meta["completionCost"] == meta["cost"]
+        assert meta["activationDelay"] in ("immediate", "delayed")
+        assert meta["resourceDependency"] in ("mana", "none")
+        assert meta["tempoConfidence"] == "low"  # cost is a proxy, not proof
+
+    def test_a_stacking_item_reads_as_delayed(self):
+        """Manamune stacks its tear before it transforms -- not immediate."""
+        assert itemmeta.metadata("manamune")["activationDelay"] == "delayed"
+
+    def test_a_mana_item_reports_mana_dependency(self):
+        assert itemmeta.metadata("manamune")["resourceDependency"] == "mana"
+
+
+def _trace(champion, slugs):
+    prof = profiles.profile(champion, log=False)
+    return {t["item"]: t for t in itemmeta.item_pipeline_trace(
+        slugs, profiles.CHAMPIONS[champion], prof["combatProfile"],
+        prof.get("scalingProfile", {}))}
+
+
+class TestItemAvailability:
+    """Issues 4 & 8: Eclipse, Sundered Sky and Dusk & Dawn must REACH the model
+    for appropriate champions. Not asserting they are selected -- only that the
+    pipeline offers and honestly evaluates them."""
+
+    def test_eclipse_reaches_the_candidate_pool_for_an_ad_skirmisher(self):
+        t = _trace("Camille", ["eclipse"])["eclipse"]
+        assert t["completedNonBoots"] and t["passedPrefilter"]
+        assert t["withheldReason"] is None
+
+    def test_sundered_sky_reaches_the_pool_for_a_melee_bruiser(self):
+        t = _trace("Camille", ["sundered-sky"])["sundered-sky"]
+        assert t["passedPrefilter"] and t["withheldReason"] is None
+
+    def test_dusk_and_dawn_is_audited_for_a_spellblade_weaver(self):
+        for champ in ("Hecarim", "Jax"):
+            t = _trace(champ, ["dusk-and-dawn"])["dusk-and-dawn"]
+            assert t["inMandatoryAudit"], champ
+            assert "spellblade" in t["passiveTags"]
+
+    def test_all_three_items_are_in_the_source_pool(self):
+        for slug in ("eclipse", "sundered-sky", "dusk-and-dawn"):
+            assert slug in itemmeta.completed_items(), slug

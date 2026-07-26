@@ -5,11 +5,12 @@ import { CN_META } from "@/lib/cn";
 import { getMetaGaps } from "@/lib/gap";
 import { Container } from "@/components/ui";
 import { MetaGapView, type GapRow } from "@/components/meta-gap-view";
+import { RegionUpdated } from "@/components/tierlist-updated";
 
 export const metadata: Metadata = {
   title: "Rising Picks | What China Is Playing Before the West",
   description:
-    "Wild Rift champions China's top elo (Challenger+) rates far higher than EU does, a leading indicator of the meta. Plus the champions EU overrates that fall off against high-skill play.",
+    "Wild Rift champions China's Challenger sample rates far higher than EU does, a leading indicator of the meta. Plus the champions EU overrates that fall off against high-skill play.",
   alternates: { canonical: "/rising" },
 };
 
@@ -39,6 +40,10 @@ export default function RisingPage() {
         server. The reverse flags picks EU <span className="text-text">overrates</span>.
       </p>
 
+      <div className="mt-4">
+        <RegionUpdated region="Global" euDate={site.collectedOn} cnDate={CN_META.date} />
+      </div>
+
       <div className="mt-8">
         <MetaGapView rows={rows} roles={site.roles} />
       </div>
@@ -54,8 +59,7 @@ export default function RisingPage() {
           <Link href="/global" className="text-accent hover:underline">
             cross-server table
           </Link>
-          . EU updated {site.collectedOn ?? "recently"}
-          {CN_META.date ? ` · CN ${CN_META.date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")}` : ""}.
+          .
         </p>
       </div>
     </Container>

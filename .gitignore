@@ -21,3 +21,22 @@ images/
 
 # scraper raw-HTML cache
 data/wrf_cache/
+
+# Local scratch: prompt dumps and one-off debug scripts, never committed.
+scratch/
+.vercel
+.env*
+
+# Backup snapshots and pre-patch copies (kept locally, never committed).
+*.bak
+*.backup.json
+*.backup-*.json
+*.backup-*.py
+
+# Logs (dev server stdout/stderr, scraper runs).
+*.log
+
+# One-off debug dumps written to the repo root while testing.
+/hecarim.json
+/payload_*.json
+/prompt_dump.txt

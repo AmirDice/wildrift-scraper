@@ -125,7 +125,7 @@
     },
     "Transcendence": {
       "hasteFlat": 10,
-      "_why": "6 haste at lvl1 + 6 at lvl5",
+      "_why": "5 haste at level 1 + 5 at level 5 (Patch 7.2)",
       "_patch": [
         "7.2 hasteFlat: 12 -> 10"
       ]

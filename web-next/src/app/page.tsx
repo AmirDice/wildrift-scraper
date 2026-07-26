@@ -1,7 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { site, getChampions, tierLabel, type Champion } from "@/lib/data";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
-import { getGlobalChampions } from "@/lib/cn";
+import { getCnChampions, getGlobalChampions } from "@/lib/cn";
 import { risingPicks, overratedInEu } from "@/lib/gap";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/components/ui";
@@ -9,15 +10,31 @@ import { HomeSearch } from "@/components/home-search";
 import { SeasonCard } from "@/components/season-card";
 import { MoversHighlight } from "@/components/movers-highlight";
 import { Roadmap } from "@/components/roadmap";
+import { BuildsGeneratedCount, BuildsGeneratedPill } from "@/components/builds-counter";
+import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champion-change-ranking";
+
+// The title and description come from the root layout; the home page only has
+// to claim its own canonical so the root never competes with itself over
+// "/" vs "/?ref=..." style variants.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   const champions = getChampions();
   const bySlug = new Map(champions.map((c) => [c.slug, c]));
+  const byName = new Map(champions.map((c) => [c.name, c]));
   const ranked = champions.filter((c) => (c.nPlayers ?? 0) >= 20);
 
   const globalChamps = getGlobalChampions();
   const globalBest = globalChamps.slice(0, 5);
   const globalWorst = [...globalChamps].slice(-5).reverse();
+
+  // Legendary is Tencent's separate CN solo queue. A small pick-rate floor
+  // keeps tiny samples from dominating the homepage discovery cards.
+  const legendary = getCnChampions("4").filter((c) => c.cnPickRate >= 0.5);
+  const legendaryBest = legendary.slice(0, 5);
+  const legendaryWorst = [...legendary].sort((a, b) => a.wr - b.wr).slice(0, 5);
 
   const rising = risingPicks(5);
   const overrated = overratedInEu(5);
@@ -39,49 +56,110 @@ export default function HomePage() {
   const lowestWr = [...ranked].sort((a, b) => a.wr - b.wr).slice(0, 5);
   const offMeta = site.offMetaSlugs.map((s) => bySlug.get(s)).filter(Boolean).slice(0, 5) as Champion[];
 
-  const bestOtp = champions.filter((c) => c.isOtp).slice(0, 5);
+  // Sort before slicing. Without it this took the first five OTP-flagged
+  // champions in whatever order the source list happened to be in, so the card
+  // showed a ranking that did not match the OTP score printed beside each name
+  // -- and did not match /otp-champions, which has always sorted.
+  const bestOtp = champions
+    .filter((c) => c.isOtp && c.otpScore != null)
+    .sort((left, right) => (right.otpScore ?? 0) - (left.otpScore ?? 0))
+    .slice(0, 5);
   const skillCeiling = [...ranked].filter((c) => c.skillSpread != null).sort((a, b) => (b.skillSpread ?? 0) - (a.skillSpread ?? 0)).slice(0, 5);
   const consistent = [...ranked].filter((c) => c.winrateStd != null).sort((a, b) => (a.winrateStd ?? 99) - (b.winrateStd ?? 99)).slice(0, 5);
+  const longestUnchanged = getChampionChangeRanking(champions)
+    .filter((entry) => entry.daysSinceBalanceChange != null)
+    .slice(0, 5);
+  const adjustments = getMostAdjustedChampions(champions);
+  const mostAdjusted = adjustments.slice(0, 5);
+  const leastAdjusted = [...adjustments].reverse().slice(0, 5);
 
   return (
     <>
-      {/* Hero */}
+      {/* Hero.
+          WrTrueMeta is positioned as a build platform, not another stats site:
+          the tier list is evidence for the builds, not the product. The primary
+          call to action is therefore generating a build. While the build tools
+          are still held back (BUILD_TOOLS_LIVE), the same promise stays on the
+          page but the button points at what is actually open today. */}
       <section className="relative overflow-hidden border-b border-line">
+        {/* Reading scrim, hero only.
+            The hero is the one block of text that sits directly on the
+            background art rather than on a glass panel, and the art is now
+            unblurred: over its bright regions the smallest line drops to about
+            1.7:1, which is not readable. A soft ellipse behind the text fixes
+            exactly that, and fades out well before the edges so the sharp art
+            still frames the page. Darkening the global overlay instead would
+            have dimmed the whole site to solve one paragraph. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(78% 96% at 50% 50%, rgba(7,10,18,0.66) 0%, rgba(7,10,18,0.55) 52%, rgba(7,10,18,0.3) 78%, transparent 96%)",
+          }}
+        />
         <Container className="relative py-20 text-center sm:py-28">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-            Real EU data · Top 50 players per champion{site.collectedOn ? ` · ${site.collectedOn}` : ""}
+            Builds reasoned, not repeated
           </p>
           <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">
-            See what <span className="text-accent">actually wins</span>
-            <br className="hidden sm:block" /> in Wild Rift.
+            Build for <span className="text-accent">this game</span> - not every game.
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted">
-            We rank every champion by the real win rates of its 50 best players,
-            confidence-adjusted, so hype and lucky streaks never make the cut. Just who&rsquo;s
-            genuinely carrying the patch.
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+            Stop copying the same build every match. Generate a personalized Wild Rift build for your
+            champion, role, playstyle, and enemy team backed by current patch data and real
+            top-player win rates.
           </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium text-text">
+            {/* "AI generated" alone invites the obvious dismissal -- that
+                anyone could paste the champion into a chatbot and get this.
+                The differentiator is that the model only ever sees OUR
+                current-patch data and every build is rule-checked before anyone
+                sees it. The claims say that. */}
+            <Claim>AI-powered reasoning</Claim>
+            <Claim>Rule-checked</Claim>
+            <Claim>Explained item by item</Claim>
+          </div>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/tier-list" className="rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110">
-              View the tier list
-            </Link>
-            <Link href="/champions" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
-              Browse champions
-            </Link>
+            {BUILD_TOOLS_LIVE ? (
+              <>
+                <Link href="/build?tab=generate" className="rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110">
+                  Generate my build
+                </Link>
+                <Link href="/counter" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
+                  Counter the enemy team
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/tier-list" className="rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110">
+                  See what actually wins
+                </Link>
+                <Link href="/meta" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
+                  Read the meta report
+                </Link>
+              </>
+            )}
           </div>
           <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+            <BuildsGeneratedPill />
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> EU · live now
             </span>
             <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
               NA win rates · coming soon
             </span>
-            <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
-              Expanding to top 200 players next update
-            </span>
+            {!BUILD_TOOLS_LIVE && (
+              <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
+                Build Studio &amp; Counter Builder · launching this month
+              </span>
+            )}
           </div>
           <p className="mt-6 text-sm text-faint">
-            {site.nChampions} champions · {site.nPlayers.toLocaleString()} player records tracked
+            Every recommendation is grounded in {site.nChampions} champions and{" "}
+            {site.nPlayers.toLocaleString()} player records
+            {site.collectedOn ? `, collected ${site.collectedOn}` : ""}.
           </p>
         </Container>
       </section>
@@ -95,8 +173,10 @@ export default function HomePage() {
             <>
               <FlagshipTool
                 href="/counter"
-                badge="new"
-                badgeClass="bg-emerald-400/20 text-emerald-300"
+                badge="beta"
+                badgeClass="bg-gold/20 text-gold"
+                secondBadge="new"
+                secondBadgeClass="bg-emerald-400/20 text-emerald-300"
                 title="Counter Builder"
                 desc="Pick your champion and the enemy team, get a build, runes and item order shaped to beat exactly who you are facing."
                 cta="Build against your enemies"
@@ -105,11 +185,13 @@ export default function HomePage() {
               />
               <FlagshipTool
                 href="/build"
-                badge="new"
-                badgeClass="bg-accent/20 text-accent"
-                title="Build Optimizer"
-                desc="Optimal items and runes for every champion, scored by a full fight simulation. No enemy team needed, just the best build on paper."
-                cta="Open the optimizer"
+                badge="beta"
+                badgeClass="bg-gold/20 text-gold"
+                secondBadge="new"
+                secondBadgeClass="bg-emerald-400/20 text-emerald-300"
+                title="Build Studio"
+                desc="Generate a build for your playstyle, or craft one in the Custom Build Lab with live item, rune and ability stats."
+                cta="Open Build Studio"
                 accent="text-accent"
                 ring="hover:border-accent/40"
               />
@@ -146,13 +228,32 @@ export default function HomePage() {
         <Roadmap />
       </Container>
 
+      {/* Transparent coverage counters: these describe the current generated
+          catalogue, plus one genuinely live figure (builds players have
+          generated), which updates roughly hourly rather than on every view. */}
+      <Container className="py-6">
+        <SectionHeading title="Inside WrTrueMeta" subtitle="What the current site data and build catalogue cover" />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatCard
+            label="Builds generated"
+            value={<BuildsGeneratedCount fallback="171" />}
+            sub="by players, updated hourly"
+            href="/build"
+            valueClass="text-accent"
+          />
+          <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU performance profiles" href="/champions" />
+          <StatCard label="Items catalogued" value="117" sub="stats, passives, and costs" href="/items" valueClass="text-gold" />
+          <StatCard label="Runes & spells" value="63" sub="53 runes · 10 spells" href="/runes-spells" />
+        </div>
+      </Container>
+
       {/* Stat cards */}
       <Container className="py-12">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Current meta" value={topMetaClass.class} sub={`${topMetaClass.wr.toFixed(1)}% avg win rate`} />
+          <StatCard label="Current meta" value={topMetaClass.class} sub={`${topMetaClass.wr.toFixed(1)}% avg win rate`} href="/meta#classes" />
           <StatCard label="Top pick" value={topPick.name} sub={`${topPick.wr.toFixed(1)}% win rate`} avatarSrc={topPick.icon} valueClass="text-accent" href={`/champions/${topPick.slug}`} />
-          {strongestRole && <StatCard label="Strongest role" value={strongestRole[0]} sub={`${strongestRole[1].wr.toFixed(1)}% top picks`} />}
-          {lowest && <StatCard label="Lowest win rate" value={lowest.name} sub={`${lowest.wr.toFixed(1)}% win rate`} avatarSrc={lowest.icon} valueClass="text-bad" href={`/champions/${lowest.slug}`} />}
+          {strongestRole && <StatCard label="Strongest role" value={strongestRole[0]} sub={`${strongestRole[1].wr.toFixed(1)}% top picks`} href="/meta#roles" />}
+          {lowest && <StatCard label="Lowest win rate" value={lowest.name} sub={`${lowest.wr.toFixed(1)}% win rate`} avatarSrc={lowest.icon} valueClass="text-bad" href="/win-rates?view=lowest" />}
         </div>
       </Container>
 
@@ -235,9 +336,47 @@ export default function HomePage() {
       <Container className="py-6">
         <SectionHeading title="Win rates" subtitle="Best, worst, and under-the-radar" />
         <div className="grid gap-4 md:grid-cols-3">
-          <InsightCard href="/champions" title="Highest win rate" items={highestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-accent" }))} />
-          <InsightCard href="/champions" title="Lowest win rate" items={lowestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-bad" }))} />
-          <InsightCard href="/champions" title="Strong off-meta" subtitle="High WR, lower pick rate" items={offMeta.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+          <InsightCard href="/win-rates?view=highest" title="Highest win rate" items={highestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-accent" }))} />
+          <InsightCard href="/win-rates?view=lowest" title="Lowest win rate" items={lowestWr.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-bad" }))} />
+          <InsightCard href="/win-rates?view=off-meta" title="Strong off-meta" subtitle="High WR, lower pick rate" items={offMeta.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+        </div>
+      </Container>
+
+      {/* China Legendary solo queue */}
+      <Container className="py-6">
+        <SectionHeading
+          title="CN Legendary solo queue"
+          subtitle="The best and worst performers in China's separate solo-queue dataset"
+          href="/tier-list/china?bracket=4"
+          linkLabel="Open CN Legendary tier list"
+        />
+        <div className="grid gap-4 md:grid-cols-2">
+          <InsightCard
+            title="Best solo-queue champions"
+            subtitle="CN · Legendary · minimum 0.5% pick rate"
+            href="/tier-list/china?bracket=4"
+            items={legendaryBest.map((c) => ({
+              icon: c.icon,
+              name: c.name,
+              sub: `${c.role} · ${c.cnPickRate.toFixed(1)}% pick`,
+              href: `/champions/${c.slug}`,
+              metric: `${c.wr.toFixed(1)}%`,
+              metricClass: "text-emerald-300",
+            }))}
+          />
+          <InsightCard
+            title="Worst solo-queue champions"
+            subtitle="CN · Legendary · minimum 0.5% pick rate"
+            href="/tier-list/china?bracket=4"
+            items={legendaryWorst.map((c) => ({
+              icon: c.icon,
+              name: c.name,
+              sub: `${c.role} · ${c.cnPickRate.toFixed(1)}% pick`,
+              href: `/champions/${c.slug}`,
+              metric: `${c.wr.toFixed(1)}%`,
+              metricClass: "text-rose-300",
+            }))}
+          />
         </div>
       </Container>
 
@@ -283,7 +422,7 @@ export default function HomePage() {
       <Container className="py-6">
         <SectionHeading
           title="The meta gap"
-          subtitle="Where China's top elo (Challenger+) disagrees with EU, often a patch ahead"
+          subtitle="Where China's Challenger sample disagrees with EU, often a patch ahead"
           href="/rising"
           linkLabel="Full meta gap"
         />
@@ -320,10 +459,10 @@ export default function HomePage() {
       {/* By rank: CN skill brackets */}
       <Container className="py-6">
         <SectionHeading
-          title="By rank"
-          subtitle="How champions scale from the whole ladder up to China's Challenger+ bracket"
+          title="By skill bracket"
+          subtitle="How champions move from China's cumulative Diamond+ sample to Challenger"
           href="/ranks"
-          linkLabel="Win rate by rank"
+          linkLabel="Explore skill brackets"
         />
         <div className="grid gap-4 md:grid-cols-2">
           <InsightCard
@@ -358,28 +497,94 @@ export default function HomePage() {
       {/* Champion insights */}
       <Container className="py-6">
         <SectionHeading title="Champion insights" subtitle="Cut the data a few different ways" />
-        <div className="grid gap-4 md:grid-cols-3">
-          <InsightCard href="/champions" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <InsightCard href="/otp-champions" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.otpScore?.toFixed(1) ?? "-"}`, metricClass: "text-gold" }))} />
           <InsightCard href="/consistency" title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
           <InsightCard href="/consistency" title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
+          <InsightCard
+            href="/champion-changes"
+            title="Longest unchanged"
+            subtitle="Standard balance changes only"
+            items={longestUnchanged.map((entry) => ({
+              icon: entry.champion.icon,
+              name: entry.champion.name,
+              sub: entry.lastBalancePatch ? `Last changed in patch ${entry.lastBalancePatch}` : "No standard change recorded",
+              href: `/champions/${entry.champion.slug}`,
+              metric: `${entry.daysSinceBalanceChange!.toLocaleString()} days`,
+              metricClass: "text-gold",
+            }))}
+          />
+        </div>
+      </Container>
+
+      {/* The other end of the same data: who Riot cannot leave alone. */}
+      <Container className="py-6">
+        <SectionHeading
+          title="Most adjusted champions"
+          subtitle="Times each champion has appeared in the patch notes since we started tracking"
+          href="/champion-changes"
+          linkLabel="Full champion changes"
+        />
+        <div className="grid gap-4 md:grid-cols-2">
+          <InsightCard
+            title="Riot cannot leave them alone"
+            subtitle="Most patch-note appearances, all kinds"
+            href="/champion-changes"
+            items={mostAdjusted.map((entry) => ({
+              icon: entry.champion.icon,
+              name: entry.champion.name,
+              sub: `${entry.balanceChanges} standard balance ${entry.balanceChanges === 1 ? "change" : "changes"}${entry.lastBalancePatch ? ` · last in ${entry.lastBalancePatch}` : ""}`,
+              href: `/champions/${entry.champion.slug}`,
+              metric: `${entry.totalChanges}×`,
+              metricClass: "text-bad",
+            }))}
+          />
+          <InsightCard
+            title="Barely touched"
+            subtitle="Fewest patch-note appearances"
+            href="/champion-changes"
+            items={leastAdjusted.map((entry) => ({
+              icon: entry.champion.icon,
+              name: entry.champion.name,
+              sub: entry.totalChanges === 0
+                ? "Never changed, not once"
+                : `${entry.balanceChanges} standard balance ${entry.balanceChanges === 1 ? "change" : "changes"}`,
+              href: `/champions/${entry.champion.slug}`,
+              metric: `${entry.totalChanges}×`,
+              metricClass: "text-emerald-300",
+            }))}
+          />
         </div>
       </Container>
 
       {/* Players */}
       <Container className="py-12">
         <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard href="/leaderboard" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "-", metricClass: "text-muted" }))} />
-          <InsightCard href="/leaderboard" title="Funniest names" subtitle="Spotted in the top 50, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player }))} />
+          <InsightCard href="/leaderboard#multi-champion-mains" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, href: byName.get(m.champions[0]) ? `/leaderboard?champion=${byName.get(m.champions[0])!.slug}` : undefined, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "-", metricClass: "text-muted" }))} />
+          <InsightCard href="/leaderboard#funniest-names" title="Funniest names" subtitle="Spotted in the top 50, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player, sub: f.champion, href: byName.get(f.champion) ? `/leaderboard?champion=${byName.get(f.champion)!.slug}` : undefined }))} />
         </div>
       </Container>
     </>
   );
 }
 
+/** Hero proof point: a check mark plus a two- or three-word claim. */
+function Claim({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"
+        strokeLinecap="round" strokeLinejoin="round" aria-hidden className="text-accent">
+        <path d="m5 13 4 4L19 7" />
+      </svg>
+      {children}
+    </span>
+  );
+}
+
 function FlagshipTool({
-  href, badge, badgeClass, title, desc, cta, accent, ring,
+  href, badge, badgeClass, secondBadge, secondBadgeClass, title, desc, cta, accent, ring,
 }: {
-  href: string; badge: string; badgeClass: string; title: string; desc: string; cta: string; accent: string; ring: string;
+  href: string; badge: string; badgeClass: string; secondBadge?: string; secondBadgeClass?: string; title: string; desc: string; cta: string; accent: string; ring: string;
 }) {
   return (
     <Link
@@ -389,6 +594,9 @@ function FlagshipTool({
       <div className="flex items-center gap-2">
         <h3 className="text-xl font-semibold">{title}</h3>
         <span className={`rounded px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide ${badgeClass}`}>{badge}</span>
+        {secondBadge && (
+          <span className={`rounded px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide ${secondBadgeClass}`}>{secondBadge}</span>
+        )}
       </div>
       <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{desc}</p>
       <span className={`mt-4 inline-flex items-center gap-1 text-sm font-semibold ${accent}`}>
@@ -444,7 +652,7 @@ function Stat({ label, value, className = "" }: { label: string; value: string; 
   );
 }
 
-function StatCard({ label, value, sub, avatarSrc, valueClass = "", href }: { label: string; value: string; sub: string; avatarSrc?: string; valueClass?: string; href?: string }) {
+function StatCard({ label, value, sub, avatarSrc, valueClass = "", href }: { label: string; value: React.ReactNode; sub: string; avatarSrc?: string; valueClass?: string; href?: string }) {
   const inner = (
     <Card className="flex h-full flex-col justify-between p-5 glass-hover">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>

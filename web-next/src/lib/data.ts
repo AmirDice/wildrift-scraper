@@ -131,8 +131,14 @@ export function getChampions(): Champion[] {
   return site.champions;
 }
 
+// Built once. getChampion is called from every champion page, every matchup
+// row and every blend result, and a linear scan of 138 records per lookup is
+// the kind of cost that only shows up once the build has 140 pages in it.
+let _bySlug: Map<string, Champion> | null = null;
+
 export function getChampion(slug: string): Champion | undefined {
-  return site.champions.find((c) => c.slug === slug);
+  if (!_bySlug) _bySlug = new Map(site.champions.map((c) => [c.slug, c]));
+  return _bySlug.get(slug);
 }
 
 export function championsInRole(role: string): Champion[] {

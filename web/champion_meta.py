@@ -94,6 +94,9 @@ _META: dict[str, tuple[str, int]] = {
     "Nilah": ("Marksman", 6), "Samira": ("Marksman", 5), "Senna": ("Marksman", 6),
     "Sivir": ("Marksman", 3), "Smolder": ("Marksman", 3), "Tristana": ("Marksman", 3),
     "Twitch": ("Marksman", 3), "Varus": ("Marksman", 3), "Vayne": ("Marksman", 7),
+    # Yunara is a crit marksman whose kit converts part of her output to magic
+    # damage on-hit; she still items like an ADC.
+    "Yunara": ("Marksman", 6),
     "Xayah": ("Marksman", 5), "Zeri": ("Marksman", 5), "Kayle": ("Marksman", 6),
 
     # --- Enchanters / utility supports ---

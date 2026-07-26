@@ -1,4 +1,7 @@
 import moversData from "@/data/cn_movers.json";
+import type { CnBracketKey } from "@/lib/cn";
+
+const FALLBACK_BRACKET: CnBracketKey = "3";
 
 export interface Mover {
   slug: string;
@@ -14,7 +17,9 @@ const DATA = moversData as unknown as {
   afterDate: string;
   patch: string;
   scope: string;
+  defaultBracket?: CnBracketKey;
   champions: Mover[];
+  byBracket?: Partial<Record<CnBracketKey, Mover[]>>;
 };
 
 export const MOVERS_META = {
@@ -24,11 +29,21 @@ export const MOVERS_META = {
   after: DATA.afterDate,
 };
 
-const BY_SLUG = new Map(DATA.champions.map((m) => [m.slug, m]));
+const bracketRows = (bracket: CnBracketKey) => DATA.byBracket?.[bracket]
+  ?? (bracket === (DATA.defaultBracket ?? FALLBACK_BRACKET) ? DATA.champions : []);
+const BY_BRACKET_SLUG = new Map<CnBracketKey, Map<string, Mover>>();
 
-/** China win-rate change for a champion across the patch, or null. */
-export function moverBySlug(slug: string): Mover | null {
-  return BY_SLUG.get(slug) ?? null;
+/** China win-rate change for a champion between scrapes, or null. */
+export function moverBySlug(
+  slug: string,
+  bracket: CnBracketKey = DATA.defaultBracket ?? FALLBACK_BRACKET,
+): Mover | null {
+  let bySlug = BY_BRACKET_SLUG.get(bracket);
+  if (!bySlug) {
+    bySlug = new Map(bracketRows(bracket).map((m) => [m.slug, m]));
+    BY_BRACKET_SLUG.set(bracket, bySlug);
+  }
+  return bySlug.get(slug) ?? null;
 }
 
 /** Biggest risers, highest delta first. Optionally require a minimum pick rate

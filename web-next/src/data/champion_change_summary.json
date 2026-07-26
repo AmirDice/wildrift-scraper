@@ -1,0 +1,1256 @@
+{
+  "schemaVersion": 1,
+  "champions": {
+    "Nidalee": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 3,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.2a",
+      "lastBalanceAt": "2026-07-15T09:00:00.000Z"
+    },
+    "Warwick": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.2a",
+      "lastBalanceAt": "2026-07-15T09:00:00.000Z"
+    },
+    "Skarner": {
+      "totalChanges": 3,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 2,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.2a",
+      "lastBalanceAt": "2026-07-15T09:00:00.000Z"
+    },
+    "Senna": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.2a",
+      "lastBalanceAt": "2026-07-15T09:00:00.000Z"
+    },
+    "Yuumi": {
+      "totalChanges": 26,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 18,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.2a",
+      "lastBalanceAt": "2026-07-15T09:00:00.000Z"
+    },
+    "Bard": {
+      "totalChanges": 6,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 5,
+      "lastChangedPatch": "7.1e",
+      "lastChangedAt": "2026-05-13T09:00:00.000Z",
+      "lastBalancePatch": "7.1e",
+      "lastBalanceAt": "2026-05-13T09:00:00.000Z"
+    },
+    "Taliyah": {
+      "totalChanges": 3,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 2,
+      "lastChangedPatch": "7.1h",
+      "lastChangedAt": "2026-06-24T09:00:00.000Z",
+      "lastBalancePatch": "7.1h",
+      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+    },
+    "Rumble": {
+      "totalChanges": 7,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 3,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Olaf": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 16,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Ezreal": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 14,
+      "lastChangedPatch": "6.2h",
+      "lastChangedAt": "2025-09-17T09:00:00.000Z",
+      "lastBalancePatch": "6.2h",
+      "lastBalanceAt": "2025-09-17T09:00:00.000Z"
+    },
+    "Zyra": {
+      "totalChanges": 13,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Mel": {
+      "totalChanges": 9,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 2,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Graves": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 18,
+      "lastChangedPatch": "7.1e",
+      "lastChangedAt": "2026-05-13T09:00:00.000Z",
+      "lastBalancePatch": "7.1e",
+      "lastBalanceAt": "2026-05-13T09:00:00.000Z"
+    },
+    "Draven": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 11,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Twisted Fate": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.1e",
+      "lastChangedAt": "2026-05-13T09:00:00.000Z",
+      "lastBalancePatch": "7.1e",
+      "lastBalanceAt": "2026-05-13T09:00:00.000Z"
+    },
+    "Dr. Mundo": {
+      "totalChanges": 17,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 12,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Ambessa": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.1f",
+      "lastChangedAt": "2026-05-27T09:00:00.000Z",
+      "lastBalancePatch": "7.1f",
+      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+    },
+    "Nunu & Willump": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 7,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.1h",
+      "lastChangedAt": "2026-06-24T09:00:00.000Z",
+      "lastBalancePatch": "7.1h",
+      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+    },
+    "Cho'Gath": {
+      "totalChanges": 1,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 0,
+      "lastChangedPatch": null,
+      "lastChangedAt": null,
+      "lastBalancePatch": null,
+      "lastBalanceAt": null
+    },
+    "Diana": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.2a",
+      "lastChangedAt": "2026-07-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1g",
+      "lastBalanceAt": "2026-06-10T09:00:00.000Z"
+    },
+    "Annie": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 10,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Yasuo": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "K'Sante": {
+      "totalChanges": 2,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 2,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Kai'Sa": {
+      "totalChanges": 9,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Kayn": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Norra": {
+      "totalChanges": 6,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 5,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Syndra": {
+      "totalChanges": 9,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Orianna": {
+      "totalChanges": 13,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 10,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Fiddlesticks": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Varus": {
+      "totalChanges": 25,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 21,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Zed": {
+      "totalChanges": 27,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Darius": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Lee Sin": {
+      "totalChanges": 21,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 18,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.2",
+      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+    },
+    "Ahri": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.0c",
+      "lastBalanceAt": "2026-02-11T10:00:00.000Z"
+    },
+    "Ashe": {
+      "totalChanges": 26,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.0c",
+      "lastBalanceAt": "2026-02-11T10:00:00.000Z"
+    },
+    "Brand": {
+      "totalChanges": 9,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "6.1",
+      "lastBalanceAt": "2025-04-16T09:00:00.000Z"
+    },
+    "Garen": {
+      "totalChanges": 17,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.1e",
+      "lastBalanceAt": "2026-05-13T09:00:00.000Z"
+    },
+    "Lillia": {
+      "totalChanges": 17,
+      "modeOnlyChanges": 7,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Seraphine": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "7.1h",
+      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+    },
+    "Sion": {
+      "totalChanges": 25,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Vi": {
+      "totalChanges": 49,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.2",
+      "lastChangedAt": "2026-07-08T09:00:00.000Z",
+      "lastBalancePatch": "6.2c",
+      "lastBalanceAt": "2025-08-13T09:00:00.000Z"
+    },
+    "Yone": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Thresh": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.1h",
+      "lastChangedAt": "2026-06-24T09:00:00.000Z",
+      "lastBalancePatch": "7.1h",
+      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+    },
+    "Nautilus": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.1h",
+      "lastChangedAt": "2026-06-24T09:00:00.000Z",
+      "lastBalancePatch": "7.1h",
+      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+    },
+    "Gnar": {
+      "totalChanges": 4,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 3,
+      "lastChangedPatch": "7.1h",
+      "lastChangedAt": "2026-06-24T09:00:00.000Z",
+      "lastBalancePatch": "7.1h",
+      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+    },
+    "Sona": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.1h",
+      "lastChangedAt": "2026-06-24T09:00:00.000Z",
+      "lastBalancePatch": "7.1h",
+      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+    },
+    "Nami": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 6,
+      "lastChangedPatch": "7.1h",
+      "lastChangedAt": "2026-06-24T09:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Aurora": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 4,
+      "lastChangedPatch": "7.1g",
+      "lastChangedAt": "2026-06-10T09:00:00.000Z",
+      "lastBalancePatch": "7.1g",
+      "lastBalanceAt": "2026-06-10T09:00:00.000Z"
+    },
+    "Zoe": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.1g",
+      "lastChangedAt": "2026-06-10T09:00:00.000Z",
+      "lastBalancePatch": "7.1g",
+      "lastBalanceAt": "2026-06-10T09:00:00.000Z"
+    },
+    "Heimerdinger": {
+      "totalChanges": 6,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 5,
+      "lastChangedPatch": "7.1g",
+      "lastChangedAt": "2026-06-10T09:00:00.000Z",
+      "lastBalancePatch": "7.1g",
+      "lastBalanceAt": "2026-06-10T09:00:00.000Z"
+    },
+    "Kayle": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.1f",
+      "lastChangedAt": "2026-05-27T09:00:00.000Z",
+      "lastBalancePatch": "7.1f",
+      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+    },
+    "Gragas": {
+      "totalChanges": 22,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 21,
+      "lastChangedPatch": "7.1f",
+      "lastChangedAt": "2026-05-27T09:00:00.000Z",
+      "lastBalancePatch": "7.1f",
+      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+    },
+    "Viego": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.1f",
+      "lastChangedAt": "2026-05-27T09:00:00.000Z",
+      "lastBalancePatch": "7.1f",
+      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+    },
+    "Akshan": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.1f",
+      "lastChangedAt": "2026-05-27T09:00:00.000Z",
+      "lastBalancePatch": "7.1f",
+      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+    },
+    "Kog'Maw": {
+      "totalChanges": 2,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 2,
+      "lastChangedPatch": "7.1f",
+      "lastChangedAt": "2026-05-27T09:00:00.000Z",
+      "lastBalancePatch": "7.1f",
+      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+    },
+    "Shen": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.1f",
+      "lastChangedAt": "2026-05-27T09:00:00.000Z",
+      "lastBalancePatch": "7.1f",
+      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+    },
+    "Shyvana": {
+      "totalChanges": 26,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 19,
+      "lastChangedPatch": "7.1e",
+      "lastChangedAt": "2026-05-13T09:00:00.000Z",
+      "lastBalancePatch": "7.1e",
+      "lastBalanceAt": "2026-05-13T09:00:00.000Z"
+    },
+    "Ryze": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 4,
+      "lastChangedPatch": "7.1e",
+      "lastChangedAt": "2026-05-13T09:00:00.000Z",
+      "lastBalancePatch": "7.1e",
+      "lastBalanceAt": "2026-05-13T09:00:00.000Z"
+    },
+    "Smolder": {
+      "totalChanges": 4,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 3,
+      "lastChangedPatch": "7.1e",
+      "lastChangedAt": "2026-05-13T09:00:00.000Z",
+      "lastBalancePatch": "7.1e",
+      "lastBalanceAt": "2026-05-13T09:00:00.000Z"
+    },
+    "Sett": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.1e",
+      "lastChangedAt": "2026-05-13T09:00:00.000Z",
+      "lastBalancePatch": "6.2b",
+      "lastBalanceAt": "2025-07-30T09:00:00.000Z"
+    },
+    "Vayne": {
+      "totalChanges": 24,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 18,
+      "lastChangedPatch": "7.1d",
+      "lastChangedAt": "2026-04-28T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Urgot": {
+      "totalChanges": 13,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 10,
+      "lastChangedPatch": "7.1d",
+      "lastChangedAt": "2026-04-28T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Tristana": {
+      "totalChanges": 23,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.1d",
+      "lastChangedAt": "2026-04-28T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Vladimir": {
+      "totalChanges": 12,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.1d",
+      "lastChangedAt": "2026-04-28T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Riven": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.1d",
+      "lastChangedAt": "2026-04-28T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Sivir": {
+      "totalChanges": 6,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 5,
+      "lastChangedPatch": "7.1d",
+      "lastChangedAt": "2026-04-28T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Zeri": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.1d",
+      "lastChangedAt": "2026-04-28T09:00:00.000Z",
+      "lastBalancePatch": "7.1d",
+      "lastBalanceAt": "2026-04-28T09:00:00.000Z"
+    },
+    "Aurelion Sol": {
+      "totalChanges": 23,
+      "modeOnlyChanges": 7,
+      "balanceChanges": 13,
+      "lastChangedPatch": "6.3c",
+      "lastChangedAt": "2025-11-05T10:00:00.000Z",
+      "lastBalancePatch": "6.3c",
+      "lastBalanceAt": "2025-11-05T10:00:00.000Z"
+    },
+    "Veigar": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 10,
+      "lastChangedPatch": "6.1",
+      "lastChangedAt": "2025-04-16T09:00:00.000Z",
+      "lastBalancePatch": "6.1",
+      "lastBalanceAt": "2025-04-16T09:00:00.000Z"
+    },
+    "Leona": {
+      "totalChanges": 12,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 8,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Rammus": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Alistar": {
+      "totalChanges": 12,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 8,
+      "lastChangedPatch": "6.1b",
+      "lastChangedAt": "2025-05-21T09:00:00.000Z",
+      "lastBalancePatch": "6.1b",
+      "lastBalanceAt": "2025-05-21T09:00:00.000Z"
+    },
+    "Ziggs": {
+      "totalChanges": 25,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 19,
+      "lastChangedPatch": "7.1",
+      "lastChangedAt": "2026-04-07T09:00:00.000Z",
+      "lastBalancePatch": "7.1",
+      "lastBalanceAt": "2026-04-07T09:00:00.000Z"
+    },
+    "Miss Fortune": {
+      "totalChanges": 26,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 21,
+      "lastChangedPatch": "6.3f",
+      "lastChangedAt": "2025-12-17T10:00:00.000Z",
+      "lastBalancePatch": "6.3f",
+      "lastBalanceAt": "2025-12-17T10:00:00.000Z"
+    },
+    "Xayah": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.0d",
+      "lastChangedAt": "2026-03-04T10:00:00.000Z",
+      "lastBalancePatch": "7.0d",
+      "lastBalanceAt": "2026-03-04T10:00:00.000Z"
+    },
+    "Twitch": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Talon": {
+      "totalChanges": 17,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Fizz": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Jax": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Renekton": {
+      "totalChanges": 22,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 18,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Swain": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Teemo": {
+      "totalChanges": 13,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Amumu": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.1b",
+      "lastChangedAt": "2026-04-15T09:00:00.000Z",
+      "lastBalancePatch": "7.1b",
+      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
+    },
+    "Irelia": {
+      "totalChanges": 23,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 19,
+      "lastChangedPatch": "7.1",
+      "lastChangedAt": "2026-04-07T09:00:00.000Z",
+      "lastBalancePatch": "7.1",
+      "lastBalanceAt": "2026-04-07T09:00:00.000Z"
+    },
+    "Corki": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.1",
+      "lastChangedAt": "2026-04-07T09:00:00.000Z",
+      "lastBalancePatch": "7.1",
+      "lastBalanceAt": "2026-04-07T09:00:00.000Z"
+    },
+    "Fiora": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.1",
+      "lastChangedAt": "2026-04-07T09:00:00.000Z",
+      "lastBalancePatch": "7.1",
+      "lastBalanceAt": "2026-04-07T09:00:00.000Z"
+    },
+    "Rakan": {
+      "totalChanges": 17,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 16,
+      "lastChangedPatch": "7.1",
+      "lastChangedAt": "2026-04-07T09:00:00.000Z",
+      "lastBalancePatch": "7.1",
+      "lastBalanceAt": "2026-04-07T09:00:00.000Z"
+    },
+    "Rell": {
+      "totalChanges": 3,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 2,
+      "lastChangedPatch": "7.0f",
+      "lastChangedAt": "2026-03-18T09:00:00.000Z",
+      "lastBalancePatch": "7.0f",
+      "lastBalanceAt": "2026-03-18T09:00:00.000Z"
+    },
+    "Akali": {
+      "totalChanges": 21,
+      "modeOnlyChanges": 8,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.0f",
+      "lastChangedAt": "2026-03-18T09:00:00.000Z",
+      "lastBalancePatch": "7.0f",
+      "lastBalanceAt": "2026-03-18T09:00:00.000Z"
+    },
+    "Mordekaiser": {
+      "totalChanges": 7,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 5,
+      "lastChangedPatch": "7.0d",
+      "lastChangedAt": "2026-03-04T10:00:00.000Z",
+      "lastBalancePatch": "7.0d",
+      "lastBalanceAt": "2026-03-04T10:00:00.000Z"
+    },
+    "Hecarim": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.0d",
+      "lastChangedAt": "2026-03-04T10:00:00.000Z",
+      "lastBalancePatch": "7.0d",
+      "lastBalanceAt": "2026-03-04T10:00:00.000Z"
+    },
+    "Nasus": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 10,
+      "lastChangedPatch": "7.0c",
+      "lastChangedAt": "2026-02-11T10:00:00.000Z",
+      "lastBalancePatch": "7.0c",
+      "lastBalanceAt": "2026-02-11T10:00:00.000Z"
+    },
+    "Master Yi": {
+      "totalChanges": 17,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 16,
+      "lastChangedPatch": "7.0c",
+      "lastChangedAt": "2026-02-11T10:00:00.000Z",
+      "lastBalancePatch": "7.0c",
+      "lastBalanceAt": "2026-02-11T10:00:00.000Z"
+    },
+    "Katarina": {
+      "totalChanges": 21,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.0c",
+      "lastChangedAt": "2026-02-11T10:00:00.000Z",
+      "lastBalancePatch": "7.0c",
+      "lastBalanceAt": "2026-02-11T10:00:00.000Z"
+    },
+    "Vex": {
+      "totalChanges": 9,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.0c",
+      "lastChangedAt": "2026-02-11T10:00:00.000Z",
+      "lastBalancePatch": "7.0c",
+      "lastBalanceAt": "2026-02-11T10:00:00.000Z"
+    },
+    "Zilean": {
+      "totalChanges": 2,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 2,
+      "lastChangedPatch": "7.0a",
+      "lastChangedAt": "2026-01-28T10:00:00.000Z",
+      "lastBalancePatch": "7.0a",
+      "lastBalanceAt": "2026-01-28T10:00:00.000Z"
+    },
+    "Evelynn": {
+      "totalChanges": 21,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 15,
+      "lastChangedPatch": "6.3e",
+      "lastChangedAt": "2025-12-03T10:00:00.000Z",
+      "lastBalancePatch": "6.3e",
+      "lastBalanceAt": "2025-12-03T10:00:00.000Z"
+    },
+    "Gwen": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 11,
+      "lastChangedPatch": "6.3c",
+      "lastChangedAt": "2025-11-05T10:00:00.000Z",
+      "lastBalancePatch": "6.3c",
+      "lastBalanceAt": "2025-11-05T10:00:00.000Z"
+    },
+    "Rengar": {
+      "totalChanges": 23,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 15,
+      "lastChangedPatch": "6.1c",
+      "lastChangedAt": "2025-05-28T09:00:00.000Z",
+      "lastBalancePatch": "6.1c",
+      "lastBalanceAt": "2025-05-28T09:00:00.000Z"
+    },
+    "Morgana": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.0a",
+      "lastChangedAt": "2026-01-28T10:00:00.000Z",
+      "lastBalancePatch": "6.3e",
+      "lastBalanceAt": "2025-12-03T10:00:00.000Z"
+    },
+    "Caitlyn": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 7,
+      "lastChangedPatch": "6.3f",
+      "lastChangedAt": "2025-12-17T10:00:00.000Z",
+      "lastBalancePatch": "6.3f",
+      "lastBalanceAt": "2025-12-17T10:00:00.000Z"
+    },
+    "Jinx": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 10,
+      "lastChangedPatch": "6.3f",
+      "lastChangedAt": "2025-12-17T10:00:00.000Z",
+      "lastBalancePatch": "6.3f",
+      "lastBalanceAt": "2025-12-17T10:00:00.000Z"
+    },
+    "Kalista": {
+      "totalChanges": 12,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 8,
+      "lastChangedPatch": "6.3e",
+      "lastChangedAt": "2025-12-03T10:00:00.000Z",
+      "lastBalancePatch": "6.3e",
+      "lastBalanceAt": "2025-12-03T10:00:00.000Z"
+    },
+    "Jayce": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 11,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Lucian": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 18,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Xin Zhao": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 16,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Milio": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 5,
+      "lastChangedPatch": "6.3d",
+      "lastChangedAt": "2025-11-19T10:00:00.000Z",
+      "lastBalancePatch": "6.3d",
+      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+    },
+    "Malphite": {
+      "totalChanges": 9,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 6,
+      "lastChangedPatch": "6.3c",
+      "lastChangedAt": "2025-11-05T10:00:00.000Z",
+      "lastBalancePatch": "6.3c",
+      "lastBalanceAt": "2025-11-05T10:00:00.000Z"
+    },
+    "Nocturne": {
+      "totalChanges": 4,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 2,
+      "lastChangedPatch": "6.3c",
+      "lastChangedAt": "2025-11-05T10:00:00.000Z",
+      "lastBalancePatch": "6.3c",
+      "lastBalanceAt": "2025-11-05T10:00:00.000Z"
+    },
+    "Viktor": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 4,
+      "lastChangedPatch": "6.3c",
+      "lastChangedAt": "2025-11-05T10:00:00.000Z",
+      "lastBalancePatch": "6.3c",
+      "lastBalanceAt": "2025-11-05T10:00:00.000Z"
+    },
+    "Kha'Zix": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 11,
+      "lastChangedPatch": "6.2k",
+      "lastChangedAt": "2025-10-09T09:00:00.000Z",
+      "lastBalancePatch": "6.2k",
+      "lastBalanceAt": "2025-10-09T09:00:00.000Z"
+    },
+    "Blitzcrank": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 17,
+      "lastChangedPatch": "6.2h",
+      "lastChangedAt": "2025-09-17T09:00:00.000Z",
+      "lastBalancePatch": "6.2h",
+      "lastBalanceAt": "2025-09-17T09:00:00.000Z"
+    },
+    "Pantheon": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 15,
+      "lastChangedPatch": "6.2e",
+      "lastChangedAt": "2025-08-27T09:00:00.000Z",
+      "lastBalancePatch": "6.2e",
+      "lastBalanceAt": "2025-08-27T09:00:00.000Z"
+    },
+    "Braum": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 8,
+      "lastChangedPatch": "6.2e",
+      "lastChangedAt": "2025-08-27T09:00:00.000Z",
+      "lastBalancePatch": "6.2e",
+      "lastBalanceAt": "2025-08-27T09:00:00.000Z"
+    },
+    "Karma": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 10,
+      "lastChangedPatch": "6.2e",
+      "lastChangedAt": "2025-08-27T09:00:00.000Z",
+      "lastBalancePatch": "6.2e",
+      "lastBalanceAt": "2025-08-27T09:00:00.000Z"
+    },
+    "Lissandra": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 4,
+      "lastChangedPatch": "6.2d",
+      "lastChangedAt": "2025-08-21T09:00:00.000Z",
+      "lastBalancePatch": "6.2d",
+      "lastBalanceAt": "2025-08-21T09:00:00.000Z"
+    },
+    "Galio": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 14,
+      "lastChangedPatch": "6.2b",
+      "lastChangedAt": "2025-07-30T09:00:00.000Z",
+      "lastBalancePatch": "6.2b",
+      "lastBalanceAt": "2025-07-30T09:00:00.000Z"
+    },
+    "Singed": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 7,
+      "lastChangedPatch": "6.2b",
+      "lastChangedAt": "2025-07-30T09:00:00.000Z",
+      "lastBalancePatch": "6.2b",
+      "lastBalanceAt": "2025-07-30T09:00:00.000Z"
+    },
+    "Tryndamere": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 14,
+      "lastChangedPatch": "6.2",
+      "lastChangedAt": "2025-07-16T09:00:00.000Z",
+      "lastBalancePatch": "6.2",
+      "lastBalanceAt": "2025-07-16T09:00:00.000Z"
+    },
+    "Kindred": {
+      "totalChanges": 8,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 5,
+      "lastChangedPatch": "6.2",
+      "lastChangedAt": "2025-07-16T09:00:00.000Z",
+      "lastBalancePatch": "6.2",
+      "lastBalanceAt": "2025-07-16T09:00:00.000Z"
+    },
+    "Samira": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 14,
+      "lastChangedPatch": "6.1d",
+      "lastChangedAt": "2025-06-11T09:00:00.000Z",
+      "lastBalancePatch": "6.1d",
+      "lastBalanceAt": "2025-06-11T09:00:00.000Z"
+    },
+    "Volibear": {
+      "totalChanges": 6,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 6,
+      "lastChangedPatch": "6.1d",
+      "lastChangedAt": "2025-06-11T09:00:00.000Z",
+      "lastBalancePatch": "6.1d",
+      "lastBalanceAt": "2025-06-11T09:00:00.000Z"
+    },
+    "Poppy": {
+      "totalChanges": 2,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 1,
+      "lastChangedPatch": "6.1b",
+      "lastChangedAt": "2025-05-21T09:00:00.000Z",
+      "lastBalancePatch": "6.1b",
+      "lastBalanceAt": "2025-05-21T09:00:00.000Z"
+    },
+    "Jarvan IV": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 11,
+      "lastChangedPatch": "6.1b",
+      "lastChangedAt": "2025-05-21T09:00:00.000Z",
+      "lastBalancePatch": "6.1b",
+      "lastBalanceAt": "2025-05-21T09:00:00.000Z"
+    },
+    "Lux": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 12,
+      "lastChangedPatch": "6.1",
+      "lastChangedAt": "2025-04-16T09:00:00.000Z",
+      "lastBalancePatch": "6.1",
+      "lastBalanceAt": "2025-04-16T09:00:00.000Z"
+    },
+    "Kennen": {
+      "totalChanges": 13,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 12,
+      "lastChangedPatch": "6.1",
+      "lastChangedAt": "2025-04-16T09:00:00.000Z",
+      "lastBalancePatch": "6.1",
+      "lastBalanceAt": "2025-04-16T09:00:00.000Z"
+    },
+    "Aatrox": {
+      "totalChanges": 13,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 9,
+      "lastChangedPatch": "6.0e",
+      "lastChangedAt": "2025-04-02T09:00:00.000Z",
+      "lastBalancePatch": "6.0e",
+      "lastBalanceAt": "2025-04-02T09:00:00.000Z"
+    },
+    "Wukong": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 17,
+      "lastChangedPatch": "6.0d",
+      "lastChangedAt": "2025-03-12T16:00:00.000Z",
+      "lastBalancePatch": "6.0d",
+      "lastBalanceAt": "2025-03-12T16:00:00.000Z"
+    },
+    "Ekko": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 10,
+      "lastChangedPatch": "6.0d",
+      "lastChangedAt": "2025-03-12T16:00:00.000Z",
+      "lastBalancePatch": "6.0d",
+      "lastBalanceAt": "2025-03-12T16:00:00.000Z"
+    },
+    "Camille": {
+      "totalChanges": 24,
+      "modeOnlyChanges": 7,
+      "balanceChanges": 16,
+      "lastChangedPatch": "6.0b",
+      "lastChangedAt": "2025-01-22T17:00:00.000Z",
+      "lastBalancePatch": "6.0b",
+      "lastBalanceAt": "2025-01-22T17:00:00.000Z"
+    },
+    "Soraka": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 17,
+      "lastChangedPatch": "6.0b",
+      "lastChangedAt": "2025-01-22T17:00:00.000Z",
+      "lastBalancePatch": "6.0b",
+      "lastBalanceAt": "2025-01-22T17:00:00.000Z"
+    },
+    "Kassadin": {
+      "totalChanges": 8,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 6,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Pyke": {
+      "totalChanges": 16,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 13,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Janna": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 12,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Lulu": {
+      "totalChanges": 12,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 11,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Jhin": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 14,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Nilah": {
+      "totalChanges": 3,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 3,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Ornn": {
+      "totalChanges": 6,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 5,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    },
+    "Maokai": {
+      "totalChanges": 3,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 3,
+      "lastChangedPatch": "6.0",
+      "lastChangedAt": "2025-01-08T17:00:00.000Z",
+      "lastBalancePatch": "6.0",
+      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
+    }
+  }
+}

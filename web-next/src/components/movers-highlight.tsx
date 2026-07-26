@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getChampion } from "@/lib/data";
 import { topWinners, topLosers, MOVERS_META, type Mover } from "@/lib/movers";
+import { CURRENT_PATCH } from "@/lib/patch";
 
 /* eslint-disable @next/next/no-img-element */
 
-// Highlighted home-page section: the biggest global win-rate movers this patch.
+// Highlighted home-page section: the biggest CN Challenger movers.
 export function MoversHighlight() {
   const winners = topWinners(5);
   const losers = topLosers(5);
@@ -12,14 +13,16 @@ export function MoversHighlight() {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-accent/30 p-5 sm:p-6"
+      className="glass relative overflow-hidden rounded-2xl border border-accent/30 p-5 sm:p-6"
       style={{ background: "radial-gradient(60% 130% at 100% 0%, rgba(34,197,94,0.10), transparent 60%), radial-gradient(60% 130% at 0% 100%, rgba(239,68,68,0.10), transparent 60%), linear-gradient(110deg,#10131d,#0b0e16)" }}
     >
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-accent">Patch {MOVERS_META.patch} · biggest movers</p>
-          <h2 className="mt-1 text-xl font-black tracking-tight sm:text-2xl">Winners &amp; Losers this patch</h2>
-          <p className="mt-0.5 text-xs text-muted">{MOVERS_META.scope} win rate, patch over patch</p>
+          <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-accent">China · biggest movers</p>
+          <h2 className="mt-1 text-xl font-black tracking-tight sm:text-2xl">
+            Patch {CURRENT_PATCH || "7.2a"} Biggest Winners &amp; Losers
+          </h2>
+          <p className="mt-0.5 text-xs text-muted">{MOVERS_META.scope} win rate</p>
         </div>
         <Link href="/recap" className="rounded-lg border border-line bg-white/[0.04] px-3 py-1.5 text-sm font-semibold text-accent transition hover:border-accent/50">
           See full recap →

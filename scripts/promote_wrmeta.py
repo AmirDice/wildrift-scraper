@@ -32,15 +32,30 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 
-# their slug -> our established slug (same item, different spelling)
-ALIASES = {"dominiks-regards": "lord-dominiks-regard"}
+# Source slug -> canonical project slug. The wr-meta feed currently misspells
+# Rocketbelt and Immortal Treads, so normalize them at the promotion boundary.
+ALIASES = {
+    "dominiks-regards": "lord-dominiks-regard",
+    "hextech-roketbelt": "hextech-rocketbelt",
+    "immortal-treds": "immortal-treads",
+}
+
+NAME_FIXES = {
+    "hextech-rocketbelt": "Hextech Rocketbelt",
+    "immortal-treads": "Immortal Treads",
+}
+
+ICON_FIXES = {
+    "hextech-rocketbelt": "/items/hextech-rocketbelt.webp",
+    "immortal-treads": "/items/immortal-treads.webp",
+}
 
 # Patch 7.2: "Once the game time reaches 10:00, you can upgrade their boots into
 # the corresponding Tier 3 version." Tier 3 is not a separate purchase competing
 # for a slot: it is the same slot, later. Recorded so the optimizer can pick the
 # tier-3 boot for a finished build and still order the tier-2 as an early buy.
 BOOTS_UPGRADE = {
-    "gluttonous-greaves": "immortal-treds",
+    "gluttonous-greaves": "immortal-treads",
     "berserkers-greaves": "gunmetal-greaves",
     "mercurys-treads": "chainlaced-crushers",
     "plated-steelcaps": "armored-advance",
@@ -59,6 +74,130 @@ PRIMARY = ["Physical", "Magic", "Defense", "Support", "Boots", "Active"]
 # alone let one silently overwrite the other, so split them deterministically:
 # bare key = percent, "...Flat" = flat. The engine maps all four.
 PEN = {"physicalPen", "magicPen"}
+
+
+# The wr-meta 7.2 feed has several stale values and malformed tooltips. These
+# are transcribed from Riot's official 7.2 notes and deliberately applied
+# before scripts.apply_patch_7_2a adds the later hotfix deltas.
+#
+# Each entry may replace selected scalar stats, the purchase cost, display
+# name, and/or the complete passive list. Keeping the corrections here makes a
+# future re-promotion deterministic instead of reintroducing known bad data.
+OFFICIAL_72_OVERRIDES: dict[str, dict] = {
+    "bloodthirster": {
+        "stats": {"physicalVamp": {"value": 8.0, "percent": True}},
+    },
+    "blade-of-the-ruined-king": {
+        "stats": {"omnivamp": {"value": 10.0, "percent": True}},
+        "passives": [
+            "Thirst: [omnivamp] +10% Omni Vamp.",
+            "Ruined Strikes: Attacks deal bonus physical damage equal to 7% of the enemy's current Health [hp] on-hit. (Melee attacks deal 10%). Minion damage: 15. Max damage vs monsters: 60.",
+            "Drain: Hitting a champion with 3 attacks or abilities deals 30-100 bonus magic damage and steals 25% of their Move Speed [moveSpeed] for 2 seconds. (60s Cooldown)",
+        ],
+    },
+    "goredrinker": {
+        "stats": {"omnivamp": {"value": 8.0, "percent": True}},
+        "passives": [
+            "Thirsting Slash (Active): Deal physical damage equal to 175% Attack Damage [ad] to nearby enemies. Restore Health equal to 20% Attack Damage [ad] + 10% missing Health [hp] for each enemy champion hit. (12s cooldown)",
+        ],
+    },
+    "youmuus-ghostblade": {
+        "stats": {"physicalPenFlat": {"value": 15.0, "percent": False}},
+    },
+    "duskblade-of-draktharr": {
+        "stats": {"physicalPenFlat": {"value": 18.0, "percent": False}},
+    },
+    "mortal-reminder": {
+        "stats": {"physicalPen": {"value": 30.0, "percent": True}},
+    },
+    "seryldas-grudge": {
+        "stats": {"physicalPen": {"value": 33.0, "percent": True}},
+    },
+    "edge-of-night": {
+        "stats": {"physicalPenFlat": {"value": 8.0, "percent": False}},
+    },
+    "serpents-fang": {
+        "stats": {"physicalPenFlat": {"value": 15.0, "percent": False}},
+    },
+    "the-collector": {
+        "stats": {"physicalPenFlat": {"value": 10.0, "percent": False}},
+    },
+    "experimental-hexplate": {
+        "scopedStats": {
+            "ultimateAbilityHaste": {"value": 20.0, "percent": False},
+        },
+    },
+    "spear-of-shojin": {
+        "scopedStats": {
+            "basicAbilityHaste": {"value": 20.0, "percent": False},
+        },
+        "passives": [
+            "Dragonforce: Gain 20 Basic Ability Haste.",
+            "Focused Will: Dealing damage to monsters or enemies with abilities increases your champion’s ability and passive damage by 3% for 6s. (Stacks 4 times).",
+        ],
+    },
+    "quicksilver-sash": {
+        "stats": {"mr": {"value": 30.0, "percent": False}},
+    },
+    "seekers-armguard": {"cost": 1400},
+    "zhonyas-hourglass": {
+        "passives": [
+            "Stasis (Active): Become invulnerable and untargetable for 2.5 seconds, but unable to move, attack, cast abilities or use items. (120s Cooldown)",
+        ],
+    },
+    "shurelyas-battlesong": {
+        "stats": {"ap": {"value": 35.0, "percent": False}},
+    },
+    "malignance": {
+        "scopedStats": {
+            "ultimateAbilityHaste": {"value": 20.0, "percent": False},
+        },
+    },
+    "plated-steelcaps": {
+        "stats": {"armor": {"value": 25.0, "percent": False}},
+        "passives": [
+            "Block: Basic attacks from champions deal 6% reduced damage to you.",
+        ],
+    },
+    "gluttonous-greaves": {
+        "stats": {"omnivamp": {"value": 5.0, "percent": True}},
+    },
+    "ionian-boots-of-lucidity": {
+        "scopedStats": {
+            "summonerSpellHaste": {"value": 15.0, "percent": True},
+        },
+        "passives": ["Summoned: Gain 15% Summoner Spell Haste."],
+    },
+    "gunmetal-greaves": {
+        "passives": [
+            "Noxian Gait: Basic attacks against enemy champions grant Movement Speed (15% for melee champions / 10% for ranged champions) for 2 seconds.",
+            "Blessed Blade: Basic attacks restore 12 Health on hit.",
+        ],
+    },
+    "immortal-treads": {
+        "stats": {"omnivamp": {"value": 5.0, "percent": True}},
+    },
+    "chainlaced-crushers": {
+        "passives": [
+            "Noxian Persistence: Taking magic damage from champions grants a magic shield equal to 20-140 (based on level) + 5% of your max Health [hp]. (12s Cooldown)",
+        ],
+    },
+    "armored-advance": {
+        "passives": [
+            "Block: Basic attacks from champions deal 10% reduced damage to you.",
+            "Noxian Endurance: Taking physical damage from champions grants a physical shield equal to 20-140 (based on level) + 5% of your max Health [hp]. (12s Cooldown)",
+        ],
+    },
+    "crimson-lucidity": {
+        "scopedStats": {
+            "summonerSpellHaste": {"value": 20.0, "percent": True},
+        },
+        "passives": [
+            "Summoned: Gain 20% Summoner Spell Haste.",
+            "Noxian Haste: After damaging an enemy champion with an ability, shielding or healing an allied champion, or casting a Summoner Spell, gain Movement Speed (10% for melee champions / 8% for ranged champions) for 4 seconds. The same ability can only trigger this once every 4 seconds.",
+        ],
+    },
+}
 
 
 def stat_key(stat: str, percent: bool) -> str:
@@ -86,7 +225,9 @@ def build() -> tuple[list[dict], list[dict], list[dict], list[dict]]:
         if not (set(it["categories"]) & KEEP):
             continue                                   # component
         slug = ALIASES.get(it["slug"], it["slug"])
-        prev = old_by.get(slug)
+        # Fall back to the source slug when this promotion corrects a legacy
+        # misspelling, preserving the established numeric id and tags.
+        prev = old_by.get(slug) or old_by.get(it["slug"])
         stats = {stat_key(s["stat"], s["percent"]):
                  {"value": s["value"], "percent": s["percent"]}
                  for s in it["stats"]}
@@ -95,7 +236,7 @@ def build() -> tuple[list[dict], list[dict], list[dict], list[dict]]:
         rec = {
             "id": prev["id"] if prev else next_id,
             "slug": slug,
-            "name": prev["name"] if prev else it["name"],
+            "name": NAME_FIXES.get(slug, prev["name"] if prev else it["name"]),
             "category": primary_category(it["categories"]),
             "categories": ["Boots" if c in ("Boots2", "Boots3") else c
                            for c in it["categories"]],
@@ -105,7 +246,7 @@ def build() -> tuple[list[dict], list[dict], list[dict], list[dict]]:
             # time instead of one run-on blob, which is what it choked on.
             "passives": [f"{p['name']}: {p['text']}" for p in it["passives"]],
             "tags": (prev or {}).get("tags", []),
-            "icon": it["image"],
+            "icon": ICON_FIXES.get(slug, it["image"]),
         }
         if "Boots3" in it["categories"]:
             rec["bootsTier"] = 3
@@ -113,6 +254,17 @@ def build() -> tuple[list[dict], list[dict], list[dict], list[dict]]:
             rec["bootsTier"] = 2
             if slug in BOOTS_UPGRADE:
                 rec["upgradesTo"] = BOOTS_UPGRADE[slug]
+
+        override = OFFICIAL_72_OVERRIDES.get(slug) or {}
+        if "cost" in override:
+            rec["cost"] = override["cost"]
+        if "name" in override:
+            rec["name"] = override["name"]
+        rec["stats"].update(override.get("stats") or {})
+        if "scopedStats" in override:
+            rec["scopedStats"] = dict(override["scopedStats"])
+        if "passives" in override:
+            rec["passives"] = list(override["passives"])
         if not prev:
             next_id += 1
         rows.append(rec)

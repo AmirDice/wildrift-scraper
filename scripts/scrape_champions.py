@@ -60,10 +60,10 @@ STAT_LABELS = {
 }
 
 
-def fetch(url: str, cache_key: str) -> str:
+def fetch(url: str, cache_key: str, refresh: bool = False) -> str:
     CACHE.mkdir(parents=True, exist_ok=True)
     cached = CACHE / cache_key
-    if cached.exists():
+    if cached.exists() and not refresh:
         return cached.read_text(encoding="utf-8")
     for attempt in range(3):
         try:
@@ -211,8 +211,8 @@ def _name_from_page(soup: BeautifulSoup, slug: str) -> str:
     return slug.replace("-", " ").title()
 
 
-def parse_champion(slug: str) -> dict | None:
-    html = fetch(f"{BASE}/guide/{slug}", f"guide_{slug}.html")
+def parse_champion(slug: str, refresh: bool = False) -> dict | None:
+    html = fetch(f"{BASE}/guide/{slug}", f"guide_{slug}.html", refresh=refresh)
     soup = BeautifulSoup(html, "html.parser")
     abilities = _abilities(soup)
     if not abilities:
@@ -231,9 +231,16 @@ def parse_champion(slug: str) -> dict | None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0)
+    # Newly released champions are the usual reason to re-run this: their guide
+    # was cached back when the page still said "coming soon" (zeroed stats, no
+    # build), so --only <slug> --refresh re-fetches just those pages and merges
+    # them into the existing champions_wr.json instead of rebuilding all 140.
+    ap.add_argument("--only", default="", help="comma-separated slugs to scrape")
+    ap.add_argument("--refresh", action="store_true", help="ignore the HTML cache")
     args = ap.parse_args()
 
-    slugs = champion_slugs()
+    only = [s.strip() for s in args.only.split(",") if s.strip()]
+    slugs = only or champion_slugs()
     if args.limit:
         slugs = slugs[: args.limit]
     print(f"found {len(slugs)} champion slugs")
@@ -241,7 +248,7 @@ def main() -> None:
     champs = []
     for i, slug in enumerate(slugs, 1):
         try:
-            c = parse_champion(slug)
+            c = parse_champion(slug, refresh=args.refresh)
         except Exception as e:  # noqa: BLE001
             print(f"  ! {slug} failed: {e}")
             continue
@@ -253,6 +260,15 @@ def main() -> None:
             print(f"  [{i}/{len(slugs)}] {slug}: no abilities parsed (skipped)")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    if only and OUT.exists():
+        # Merge into the existing file, keyed by slug, so a targeted run never
+        # drops the champions it did not ask for.
+        existing = json.loads(OUT.read_text(encoding="utf-8"))
+        by_slug = {c["slug"]: c for c in existing}
+        for c in champs:
+            by_slug[c["slug"]] = c
+        champs = sorted(by_slug.values(), key=lambda c: c["slug"])
+
     OUT.write_text(json.dumps(champs, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nwrote {OUT.relative_to(ROOT)} ({len(champs)} champions, {OUT.stat().st_size/1024:.0f} KB)")
 

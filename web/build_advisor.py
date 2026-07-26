@@ -1,18 +1,26 @@
-"""LLM-first build advisor: ONE prompt in, a validated build out.
+"""LLM-first build advisor: orchestration only.
 
-The pivot (2026-07-17): the rule-based simulation engine is months from
-"perfect", so for launch the LLM is the reasoning engine and our data is its
-only knowledge. The engine is NOT discarded -- it grades the LLM's answer
-(engineScore) so every recommendation ships with an independent sanity check.
+The pivot (2026-07-17): the rule-based simulation engine is not reliable enough
+for production. The LLM is the sole build-selection and scoring authority; our
+structured champion, item and rune data is its factual knowledge. Nothing in
+this pipeline simulates combat.
 
     user: champion + role + enemy team (+ ally team)
-      -> assemble ONE prompt from our structured data:
-         champion record (measured scaling, archetype, abilities, mana),
-         full item pool, boots (+tier-3 upgrades), rune pool with slots,
-         matchups for THESE enemies, live meta stats
-      -> DeepSeek, temperature 0.1, JSON only
-      -> validate slugs / rune slots / mutex, one repair round
-      -> engine cross-score when formulas exist
+      -> DERIVE how this champion fights          web/advisor/profiles.py
+      -> FILTER only impossible items away        web/advisor/itemmeta.py
+      -> ASSEMBLE one prompt from our data        web/advisor/prompt.py
+      -> DeepSeek thinking mode, JSON only
+      -> VALIDATE legality and completeness       web/advisor/validate.py
+      -> REPAIR the broken section alone          web/advisor/repair.py
+
+This file is the orchestrator: it owns the CLI, request normalisation, the model
+call and the repair loop. The reasoning about what a champion is and what a legal
+build looks like lives in web/advisor/, so that each piece can be tested without
+an API key (see tests/).
+
+IMPORTANT: stdout carries the build JSON and nothing else --
+web-next/src/app/api/build/route.ts parses it directly. Every diagnostic goes to
+stderr. tests/test_prompt.py guards this.
 
 Run:
     python -m web.build_advisor --champion Graves --role Jungle \
@@ -24,22 +32,42 @@ import argparse
 import json
 import os
 import re
+import sys
 import time
 from pathlib import Path
 
 import requests
+
+from web.advisor import env as advisor_env
+from web.advisor import itemmeta, profiles, repair, runemeta, summoners
+from web.advisor import prompt as prompt_mod
+from web.advisor import validate as validate_mod
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-v4-flash"
-TEMPERATURE = 0.1          # near-deterministic: same inputs -> same build
+THINKING = {"type": "enabled"}
+MAX_OUTPUT_TOKENS = 384_000
+PLAYSTYLE_CONFIG_PATH = ROOT / "web-next" / "src" / "data" / "playstyles.json"
 
 
 def _load(name: str, default=None):
     p = DATA / name
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else default
+
+
+def _norm(text: str) -> str:
+    """Collapse whitespace without clipping any source mechanic or tooltip."""
+    return " ".join((text or "").split())
+
+
+# Key loading lives in web/advisor/env.py so both generators share one
+# implementation. They did not, briefly, and the curated one failed on its first
+# real run for exactly that reason.
+ENV_FILE = advisor_env.ENV_FILE
+_api_key = advisor_env.api_key
 
 
 ITEMS = {i["slug"]: i for i in _load("items.json", [])}
@@ -52,6 +80,17 @@ ITEM_RULES = _load("item_rules.json", {})
 _champs_raw = _load("champions_wr.json", [])
 CHAMPS = {c["name"]: c for c in (_champs_raw.values() if isinstance(_champs_raw, dict)
                                  else _champs_raw)}
+_CHAMPION_STAT_OVERRIDES = (_load("champion_stat_overrides.json", {}) or {}).get("champions", {})
+for _name, _override in _CHAMPION_STAT_OVERRIDES.items():
+    if _name not in CHAMPS:
+        continue
+    for _stat, _values in (_override.get("baseStats") or {}).items():
+        CHAMPS[_name].setdefault("baseStats", {})[_stat] = {
+            key: value for key, value in _values.items()
+            if key in {"base", "perLevel", "lvl15"}
+        }
+    if _override.get("statRules"):
+        CHAMPS[_name]["statRules"] = _override["statRules"]
 # class/role live in the builds file, not the raw champion scrape; fold them in
 # so the champion block and enemy block can state them.
 _BUILDS = _load("../web-next/src/data/builds.json", {}) or _load("champion_builds.json", {})
@@ -60,12 +99,42 @@ for _n, _rec in (_BUILDS or {}).items():
         CHAMPS[_n].setdefault("class", _rec.get("class", ""))
         CHAMPS[_n].setdefault("role", _rec.get("role", ""))
 
+# The pre-generated catalogue is intentionally partial. Fold the complete site
+# roster in as the fallback so every champion exposed by Build Studio validates
+# against the same class-based playstyles as the UI.
+_ROSTER = _load("../web-next/src/data/roster.json", []) or []
+for _rec in (_ROSTER.values() if isinstance(_ROSTER, dict) else _ROSTER):
+    _name = _rec.get("name")
+    if _name in CHAMPS:
+        CHAMPS[_name].setdefault("class", _rec.get("class", ""))
+        CHAMPS[_name].setdefault("role", _rec.get("role", ""))
+
+PLAYSTYLE_CONFIG = json.loads(PLAYSTYLE_CONFIG_PATH.read_text(encoding="utf-8"))
+PLAYSTYLES_BY_CLASS: dict[str, list[str]] = PLAYSTYLE_CONFIG["byClass"]
+PLAYSTYLE_OVERRIDES: dict[str, list[str]] = PLAYSTYLE_CONFIG["overrides"]
+
+
+def available_playstyles(champion: str) -> list[str]:
+    if champion in PLAYSTYLE_OVERRIDES:
+        return PLAYSTYLE_OVERRIDES[champion]
+    champ = CHAMPS.get(champion) or {}
+    styles = list(PLAYSTYLES_BY_CLASS.get(champ.get("class", ""), ["standard", "damage"]))
+    if champ.get("role") == "Support" and "utility" not in styles:
+        styles.append("utility")
+    return styles
+
 # canonical slug lookup, forgiving about case/punctuation
 def _canon(s: str) -> str:
     return re.sub(r"[^a-z0-9]", "", str(s).lower())
 
 ITEM_CANON = {_canon(s): s for s in ITEMS} | {_canon(i["name"]): s
                                              for s, i in ITEMS.items()}
+ITEM_CANON.update({
+    _canon("hextech-roketbelt"): "hextech-rocketbelt",
+    _canon("Hextech Roketbelt"): "hextech-rocketbelt",
+    _canon("immortal-treds"): "immortal-treads",
+    _canon("Immortal Treds"): "immortal-treads",
+})
 
 
 def _resolve_item(s: str) -> str | None:
@@ -90,39 +159,6 @@ RUNE_CANON = {_canon(n): n for n in RUNE_NAMES}
 # context assembly: the model knows NOTHING except what we send
 # --------------------------------------------------------------------------
 
-def _champion_block(name: str) -> str:
-    c = CHAMPS.get(name)
-    if not c:
-        raise ValueError(f"unknown champion {name!r}")
-    lines = [f"CHAMPION: {name}",
-             f"class={c.get('class','?')} primaryDamage={c.get('primaryDamage','?')} "
-             f"scalesWith={c.get('scalesWith')} mechanics={c.get('mechanics')}"]
-    arch = ARCHETYPES.get(name)
-    if arch:
-        lines.append(f"archetype={arch['archetype']} ({arch.get('reason','')})")
-    # MEASURED scaling: what each stat is actually worth to this kit, from the
-    # simulation probe. This is the blueprint's "scaling" block, but measured
-    # rather than hand-authored.
-    try:
-        from web.fight_engine import stat_weights
-        w = stat_weights(name)
-        lines.append("measuredScaling=" + json.dumps(
-            {k: round(w[k], 2) for k in
-             ("ad", "ap", "attackSpeed", "crit", "abilityHaste",
-              "physicalPen", "magicPen", "mana", "hp")}, ensure_ascii=False))
-    except Exception:  # noqa: BLE001 -- champions without formulas still work
-        pass
-    wm = WRMETA.get(name) or {}
-    for a in c.get("abilities", []):
-        mana = next((x.get("manaCosts") for x in wm.get("abilities", [])
-                     if x.get("slot") == a.get("slot")), None)
-        lines.append(f"[{a['slot']}] {a['name']}"
-                     + (f" (mana {mana})" if mana else "")
-                     + f": {(a.get('text') or '')[:220]}")
-    if wm.get("skillPriority"):
-        lines.append(f"skillPriority={wm['skillPriority']}")
-    return "\n".join(lines)
-
 
 def _enemy_block(enemies: list[str], me: str) -> str:
     if not enemies:
@@ -146,65 +182,57 @@ def _enemy_block(enemies: list[str], me: str) -> str:
     return "\n".join(out)
 
 
-def _item_pool() -> str:
-    rows = []
-    for s, it in sorted(ITEMS.items(), key=lambda kv: (kv[1]["category"], kv[0])):
-        if it["category"] == "Boots":
-            continue
-        stats = ",".join(f"{k}:{v['value']}{'%' if v['percent'] else ''}"
-                         for k, v in it["stats"].items())
-        pas = " | ".join(p[:110] for p in it["passives"][:3])
-        rows.append(f"{s} [{it['category']}] {it['cost']}g {stats} :: {pas}")
-    return "\n".join(rows)
 
 
-def _boots_pool() -> str:
-    rows = []
-    for s, it in ITEMS.items():
-        if it.get("bootsTier") == 2:
-            t3 = it.get("upgradesTo")
-            t3i = ITEMS.get(t3) or {}
-            stats3 = ",".join(f"{k}:{v['value']}" for k, v in (t3i.get("stats") or {}).items())
-            rows.append(f"{s} ({it['cost']}g) -> upgrades at 10:00 to {t3} ({stats3})")
-    return ("BOOTS (pick ONE tier-2; it upgrades to the listed tier-3 for ~1000g "
-            "after 10:00 -- usually after your 2nd item):\n" + "\n".join(rows))
 
 
-def _slot_of() -> dict[str, tuple[str, int]]:
-    """name -> (tree, slot). rune_slots.json keys slots as {"1":[...],...}."""
-    out = {}
-    for tree, slots in RUNE_SLOTS.items():
-        for idx, names in slots.items():
-            for n in names:
-                out[n] = (tree, int(idx))
-    return out
+
+DEFENSIVE_BOOTS = {"mercurys-treads", "plated-steelcaps"}
+OFFENSE_FIRST_CLASSES = {"Bruiser", "Marksman", "Assassin"}
+
+# Summoner spells, mirrored from scripts/build_champions_llm.py so the live
+# advisor and the curated generator draw from the same pool and rules. The live
+# builds did not include summoners at all; a full loadout has to.
+_DD_SPELL = "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell"
+SUMMONERS: dict[str, dict] = {
+    "Flash": {"desc": "Short-range blink. The default safety/playmaking spell.", "dd": "SummonerFlash"},
+    "Ignite": {"desc": "True damage burn + 50% Grievous Wounds. Kill pressure.", "dd": "SummonerDot"},
+    "Ghost": {"desc": "Large move speed for 6s. For champions that run enemies down.", "dd": "SummonerHaste"},
+    "Exhaust": {"desc": "Slows an enemy and cuts their damage 35%. Anti-assassin/carry.", "dd": "SummonerExhaust"},
+    "Smite": {"dd": "SummonerSmite", "desc": "Monster/objective execute. MANDATORY for the jungler."},
+    "Cleanse": {"desc": "Removes CC and lowers further CC. Into heavy lockdown.", "dd": "SummonerBoost"},
+    "Heal": {"desc": "Burst heal + move speed for you and an ally. Marksman staple.", "dd": "SummonerHeal"},
+    "Barrier": {"desc": "Self shield. Anti-burst alternative to Heal.", "dd": "SummonerBarrier"},
+}
+SUMMONER_CANON = {_canon(n): n for n in SUMMONERS}
 
 
-def _rune_pool() -> str:
-    slot_of = _slot_of()
-    rows = []
-    for r in RUNES:
-        tree, idx = slot_of.get(r["name"], (r.get("tree", "?"), "?"))
-        rows.append(f"{r['name']} [{r['type']} | {tree} slot {idx}]: "
-                    f"{(r.get('text') or '')[:130]}")
-    return ("RUNES (page = 1 keystone + 3 minors from ONE tree, one per slot, "
-            "+ 1 flex from any tree):\n" + "\n".join(rows))
+def _summoner_block(role: str) -> str:
+    rows = "\n".join(f"- {name}: {meta['desc']}" for name, meta in SUMMONERS.items())
+    rule = ("This is a JUNGLER: Smite is MANDATORY; Flash is the default partner (Ghost only for "
+            "run-down fighters like Hecarim). Never Ignite just because the build is damage."
+            if role == "Jungle" else
+            "Non-jungler: never take Smite. Flash is the default; the second is a matchup call "
+            "(Ignite for kill-lane assassins, Heal/Barrier for marksmen, Exhaust/Cleanse situationally).")
+    return "SUMMONER SPELLS (choose exactly 2 distinct):\n" + rows + "\n" + rule
 
 
-def _rules_block() -> str:
-    """Hard build-legality rules the model must respect (also enforced in validate)."""
-    mg = ITEM_RULES.get("mutexGroups") or {}
-    so = (ITEM_RULES.get("situationalOnly") or {}).get("slugs", [])
-    lines = ["BUILD RULES (hard legality -- follow exactly):",
-             "- The 5 items are all NON-boots items. Choose boots separately from the boots "
-             "list; never put a boot in the 5 items.",
-             "- Build AT MOST ONE item from each mutually-exclusive group:"]
-    for name, members in mg.items():
-        lines.append(f"    {name}: {', '.join(members)}")
-    if so:
-        lines.append("- SITUATIONAL-ONLY (reactive vs the enemy comp): never in the main 5; "
-                     "only offer these as situational swaps: " + ", ".join(so))
+def _lock_block(item_locks: list[str], boot_lock: str, rune_locks: list[str]) -> str:
+    """The player's pinned items and runes, as a hard constraint on the build."""
+    if not item_locks and not boot_lock and not rune_locks:
+        return ""
+    lines = ["LOCKED CHOICES (the build MUST include every one of these):"]
+    for slug in item_locks:
+        lines.append(f"- item {ITEMS[slug]['name']} ({slug}) must be one of the five main items")
+    if boot_lock:
+        lines.append(f"- boots {ITEMS[boot_lock]['name']} ({boot_lock}) must be the main boots")
+    for name in rune_locks:
+        lines.append(f"- rune {name} must be on the rune page (keystone if it is a keystone, "
+                     "otherwise a minor in its own slot, or the flex)")
+    lines.append("Build the strongest legal loadout that still contains all of the above. Do not "
+                 "drop a lock, and do not treat a lock as merely 'considered'.")
     return "\n".join(lines)
+
 
 
 def _meta_block(name: str) -> str:
@@ -238,44 +266,15 @@ def _meta_block(name: str) -> str:
     return ""
 
 
-SYSTEM = (
-    "You are a Challenger Wild Rift coach. Build the highest-winrate loadout for the "
-    "given champion, role and enemy team.\n"
-    "KNOWLEDGE RULES -- two tiers:\n"
-    "- GAME SENSE: use your full knowledge of this champion's mechanics, playstyle and "
-    "known synergies or anti-synergies (e.g. attack-speed runes are wasted on a "
-    "reload/magazine kit like Graves; energy champions ignore mana). Where your "
-    "knowledge and the measuredScaling data agree, trust the conclusion strongly.\n"
-    "- FACTS: item, boot and rune NAMES, stats, prices and effects come ONLY from the "
-    "provided pools -- the data given IS the current patch, and your training data "
-    "about items or patches is stale. Never invent or rename anything.\n"
-    "Method, in order: 1) analyze the champion's kit, measured scaling and archetype; "
-    "2) analyze the enemy team's damage mix and threats; 3) SCORE the item pool: pick "
-    "the ~12 most relevant items and give each a 0-100 score with a short reason; "
-    "4) choose the best FIVE items from your scored list, maximizing synergy, "
-    "respecting the champion's scaling (do not give AD items to an AP kit), and "
-    "optimizing PURCHASE ORDER for the power curve (strongest early spike first); "
-    "5) pick tier-2 boots and note the tier-3 it becomes; 6) build a LEGAL rune page "
-    "(1 keystone + 3 minors from one tree, one per slot, + 1 flex) -- cross-check the "
-    "keystone against measuredScaling and the kit: a keystone scaling a stat the kit "
-    "cannot use is a wasted keystone; 7) only after deciding, explain.\n"
-    "Return ONLY JSON:\n"
-    '{"itemScores":[{"item":"<slug>","score":0-100,"reason":"..."}],'
-    '"items":["<slug>", 5 in PURCHASE ORDER],'
-    '"boots":"<tier-2 slug>","bootsUpgrade":"<tier-3 slug>",'
-    '"runes":{"keystone":"<name>","primaryTree":"<tree>","minors":["<name>","<name>","<name>"],'
-    '"flex":"<name>"},'
-    '"situational":[{"item":"<slug>","when":"...","replaces":"<slug>"}],'
-    '"why":["3-5 short bullets"]}'
-)
-
 
 def _call(key: str, prompt: str) -> dict:
     body = {"model": MODEL,
-            "messages": [{"role": "system", "content": SYSTEM},
+            "messages": [{"role": "system", "content": prompt_mod.SYSTEM},
                          {"role": "user", "content": prompt}],
             "response_format": {"type": "json_object"},
-            "temperature": TEMPERATURE, "max_tokens": 8000, "stream": False}
+            "thinking": THINKING, "reasoning_effort": "high",
+            "temperature": 0,
+            "max_tokens": MAX_OUTPUT_TOKENS, "stream": False}
     for attempt in range(4):
         r = requests.post(DEEPSEEK_URL, json=body,
                           headers={"Authorization": f"Bearer {key}"}, timeout=240)
@@ -283,8 +282,12 @@ def _call(key: str, prompt: str) -> dict:
             time.sleep(3 * (attempt + 1))
             continue
         if not r.ok:
-            raise RuntimeError(f"deepseek {r.status_code}: {r.text[:200]}")
-        return json.loads(r.json()["choices"][0]["message"]["content"])
+            raise RuntimeError(f"deepseek {r.status_code}: {r.text}")
+        payload = r.json()
+        choice = payload["choices"][0]
+        if choice.get("finish_reason") == "length":
+            raise RuntimeError("deepseek output reached max_tokens; refusing truncated JSON")
+        return json.loads(choice["message"]["content"])
     raise RuntimeError("retries exhausted")
 
 
@@ -292,88 +295,11 @@ def _call(key: str, prompt: str) -> dict:
 # validation: the LLM reasons, but it does not get to invent
 # --------------------------------------------------------------------------
 
-def _mutex_violation(slugs: list[str]) -> str | None:
-    # rules live under "mutexGroups" (a name -> [slugs] map); build at most one
-    # from each group. (The old "mutex" key never existed, so this was a no-op.)
-    groups = ITEM_RULES.get("mutexGroups") or {}
-    for name, members in groups.items():
-        hit = [s for s in slugs if s in members]
-        if len(hit) > 1:
-            return f"mutex ({name}): {hit} cannot coexist -- keep only one"
-    return None
 
-
-# reactive items that must never sit in the main 5 (only as situational swaps)
-SITUATIONAL_ONLY = set((ITEM_RULES.get("situationalOnly") or {}).get("slugs", []))
-
-
-def validate(res: dict) -> list[str]:
-    errs = []
-    items = [_resolve_item(s) for s in (res.get("items") or [])]
-    if len(items) != 5 or None in items or len(set(items)) != 5:
-        errs.append(f"items must be 5 unique known slugs, got {res.get('items')}")
-    else:
-        res["items"] = items
-        # boots are chosen separately -- they must never occupy an item slot
-        boots_in_items = [s for s in items if ITEMS[s].get("category") == "Boots"]
-        if boots_in_items:
-            errs.append(f"the 5 items must all be NON-boots items; {boots_in_items} are boots "
-                        f"-- put boots in the 'boots' field only")
-        situ = [s for s in items if s in SITUATIONAL_ONLY]
-        if situ:
-            errs.append(f"situational-only items {situ} cannot be in the main 5 "
-                        f"-- move them to 'situational' swaps instead")
-        m = _mutex_violation(items)
-        if m:
-            errs.append(m)
-    boots = _resolve_item(res.get("boots", ""))
-    if not boots or ITEMS[boots].get("bootsTier") != 2:
-        errs.append(f"boots must be a tier-2 boots slug, got {res.get('boots')}")
-    else:
-        res["boots"] = boots
-        res["bootsUpgrade"] = ITEMS[boots].get("upgradesTo")
-    r = res.get("runes") or {}
-    ks = RUNE_CANON.get(_canon(r.get("keystone", "")))
-    minors = [RUNE_CANON.get(_canon(x)) for x in (r.get("minors") or [])]
-    flex = RUNE_CANON.get(_canon(r.get("flex", "")))
-    if not ks or None in minors or len(minors) != 3 or not flex:
-        errs.append(f"runes must use known names, got {r}")
-    else:
-        r["keystone"], r["minors"], r["flex"] = ks, minors, flex
-        tree = r.get("primaryTree", "")
-        slots = RUNE_SLOTS.get(tree) or {}
-        slot_of = {n: int(i) for i, names in slots.items() for n in names}
-        got = sorted(slot_of.get(m, 0) for m in minors)
-        if slots and got != [1, 2, 3]:
-            errs.append(f"minors must be one from EACH of the 3 {tree} slots "
-                        f"(got slots {got}); slot map: {slots}")
-    return errs
-
-
-# Playstyle steers the build without changing the pipeline: the blueprint's
-# "early/mid/late variants" and the old variant tabs, expressed as one line the
-# LLM optimizes toward. "standard" = the best all-around build.
+# Shared with the UI so the labels and champion-specific options stay aligned.
 PLAYSTYLES = {
-    "standard": "the BEST all-around build for a typical game -- adapt to the kit, "
-                "do not force a split.",
-    "damage": "maximum raw damage output for this kit (glass cannon): offense over "
-              "defense, the highest-damage 5 items the kit can actually use.",
-    "crit": "a CRIT build: 4+ of the 5 items must grant Critical Rate; no lethality.",
-    "dps": "sustained damage-per-second for extended fights, built the way THIS kit "
-           "sustains damage -- attack speed and on-hit only if the kit actually "
-           "converts them (not on reload/magazine or caster kits).",
-    "burst": "maximum BURST to delete a priority target quickly.",
-    "oneshot": "full one-shot assassin build to instantly kill a squishy.",
-    "splitpush": "a 1v1 duelist / SPLIT-PUSH build: win side-lane duels and shove/take "
-                 "towers fast (dueling sustain and tower/structure damage where the kit allows).",
-    "kiting": "a KITING build: attack-move and keep dealing damage while staying mobile "
-              "and hard to catch; survivability that keeps you attacking, not raw tank.",
-    "vamp": "a LIFESTEAL / omnivamp sustain build that heals through fights while dealing damage.",
-    "antitank": "ANTI-TANK: %max-HP and armor/magic penetration to melt the frontline.",
-    "tanky": "a bruiser/tank build that survives while staying a threat.",
-    "onhit": "ON-HIT build stacking attack speed and on-hit effects.",
-    "poke": "long-range POKE and burst from safety.",
-    "utility": "protect/utility support build; ally value over personal damage.",
+    definition["key"]: definition["prompt"]
+    for definition in PLAYSTYLE_CONFIG["definitions"]
 }
 
 # A second, orthogonal axis: HOW to optimize, independent of the playstyle.
@@ -387,51 +313,285 @@ OBJECTIVES = {
                   "casters, actives that chain into the kit), even at some raw-stat cost.",
 }
 
+# Timing is a preference, not permission to discard a champion's core synergy.
+GAME_PHASES = {
+    "balanced": "BALANCED CURVE: optimize for the full 15-20 minute Wild Rift match.",
+    "early": "EARLY-GAME CURVE: prioritize cheap first-item spikes, first objectives, "
+             "clear speed and immediate skirmish power. Do not force weak items merely "
+             "because they are cheap.",
+    "mid": "MID-GAME CURVE: maximize the two-to-three item spike around grouped fights "
+           "and major objectives, while preserving a coherent finished build.",
+    "late": "LATE-GAME CURVE: prioritize the strongest realistic finished build, scaling, "
+            "penetration and cap-aware stat conversion. Still provide a playable purchase order.",
+}
+
+# Curated: these champions have genuinely playable AD and AP item paths in Wild
+# Rift. Raw ability tags are too noisy (many champions have one incidental ratio).
+HYBRID_DAMAGE_CHAMPIONS = {
+    "Akali", "Corki", "Ezreal", "Jax", "Kai'Sa", "Katarina", "Kayle",
+    "Shyvana", "Teemo", "Twitch", "Varus", "Volibear", "Warwick",
+}
+
+DAMAGE_PATHS = {
+    "standard": "STANDARD DAMAGE PATH: choose the most practical damage profile for this game.",
+    "ad": "AD DAMAGE PATH: build a coherent Attack Damage path; do not mix in AP items unless "
+          "an individual item is indispensable and you explain why.",
+    "ap": "AP DAMAGE PATH: build a coherent Ability Power path; do not mix in AD items unless "
+          "an individual item is indispensable and you explain why.",
+    "hybrid": "HYBRID DAMAGE PATH: deliberately combine AD and AP/on-hit scaling only where the "
+              "kit converts both efficiently. Every mixed purchase must have a kit-linked reason.",
+}
+
+KAYN_FORMS = {
+    "shadow-assassin": (
+        "KAYN FORM -- SHADOW ASSASSIN (blue): optimize the actual transformed kit. "
+        "He is a burst assassin for ranged/squishy targets: his passive adds magic damage "
+        "during the opening combat window, Blade's Reach can be cast while moving, Shadow "
+        "Step has stronger roaming, and Umbral Trespass refreshes his passive. Favor fast "
+        "physical burst, penetration, mobility and short target access."
+    ),
+    "rhaast": (
+        "KAYN FORM -- RHAAST / DARKIN SLAYER (red): this OVERRIDES Shadow Assassin-specific "
+        "lines in the supplied base record. Rhaast heals for 24-38% of physical damage dealt "
+        "to champions. Reaping Slash hits twice and each hit adds target max-Health physical "
+        "damage. Blade's Reach knocks up for 1 second. Shadow Step has less movement speed and "
+        "no Shadow Assassin slow immunity. Umbral Trespass deals target max-Health physical "
+        "damage and heals from the target's max Health. Favor bruiser durability, ability "
+        "haste, sustained physical damage and healing; do not build him as blue Kayn."
+    ),
+}
+
+RISK_TOLERANCE = {
+    "low": "RISK TOLERANCE LOW: favour reliable activation and safer completion curves, "
+           "avoid highly conditional items, keep a defensive margin.",
+    "medium": "",  # the default optimisation, no extra bias
+    "high": "RISK TOLERANCE HIGH: a glassier or more execution-heavy build is acceptable if "
+            "it raises the ceiling -- but still reject mechanically incoherent items, and do "
+            "not confuse risk tolerance with off-meta randomness.",
+}
+
 
 def advise(champion: str, role: str, enemies: list[str],
            allies: list[str] | None = None, playstyle: str = "standard",
-           objective: str = "balanced") -> dict:
-    key = os.environ.get("DEEPSEEK_API_KEY", "")
+           objective: str = "balanced", mode: str = "studio",
+           game_phase: str = "balanced", damage_path: str = "standard",
+           champion_form: str = "", ahead_enemy: str = "",
+           risk_tolerance: str = "medium",
+           locked_items: list[str] | None = None,
+           locked_runes: list[str] | None = None) -> dict:
+    mode = "counter" if mode == "counter" else "studio"
+    # Legacy playstyle aliases from older saved builds. 'sustain' predates the
+    # split into damage variants; map it to the sustained-DPS preset (the app has
+    # no 'sustained_damage' id -- 'dps' is that build). Unknown ids fall through
+    # to the credibility check below.
+    playstyle = {"sustain": "dps", "sustained_damage": "dps",
+                 "glass_cannon": "oneshot"}.get(playstyle, playstyle)
+    if mode == "counter" and not enemies:
+        return {"error": "at least one enemy is required for a counter build"}
+    if mode == "counter" and playstyle == "standard":
+        playstyle = "adaptive"
+    elif mode == "studio" and playstyle == "adaptive":
+        playstyle = "standard"
+    validation_style = "standard" if playstyle == "adaptive" else playstyle
+    key = _api_key()
     if not key:
-        raise SystemExit("DEEPSEEK_API_KEY is not set")
+        raise SystemExit(
+            "DEEPSEEK_API_KEY is not set. Either export it in this shell, or put it in "
+            f"{ENV_FILE.relative_to(ROOT)} (where the web app already reads it from).")
+    allowed_styles = available_playstyles(champion)
+    if validation_style not in allowed_styles:
+        return {
+            "error": f"{playstyle!r} is not a supported preset for {champion}",
+            "availablePlaystyles": (["adaptive"] + [s for s in allowed_styles if s != "standard"]
+                                    if mode == "counter" else allowed_styles),
+        }
+    game_phase = game_phase if game_phase in GAME_PHASES else "balanced"
+    damage_path = damage_path if damage_path in DAMAGE_PATHS else "standard"
+    if damage_path != "standard" and champion not in HYBRID_DAMAGE_CHAMPIONS:
+        return {"error": f"{damage_path!r} is not a supported damage path for {champion}"}
+    if champion == "Kayn":
+        champion_form = champion_form if champion_form in KAYN_FORMS else "shadow-assassin"
+    else:
+        champion_form = ""
+    if ahead_enemy not in (enemies or []):
+        ahead_enemy = ""
     style = PLAYSTYLES.get(playstyle, PLAYSTYLES["standard"])
     obj = OBJECTIVES.get(objective, "")
-    # "standard" is defined as the best build on paper, irrespective of enemies,
-    # so it deliberately ignores the enemy team even when one is supplied.
-    if playstyle == "standard":
+    risk_tolerance = risk_tolerance if risk_tolerance in RISK_TOLERANCE else "medium"
+    risk = RISK_TOLERANCE[risk_tolerance]
+    if mode == "studio":
         enemies = []
+    enemies_known = bool(enemies)
+
+    # Derive how this champion actually fights before anything else: the item
+    # audit, the pre-filter and the boots policy all key off it.
+    champion_record = CHAMPS.get(champion) or {}
+    derived = profiles.profile(champion)
+    combat = derived["combatProfile"]
+    scaling = derived.get("scalingProfile", {})
+    kit_linked_items = itemmeta.mandatory_audit(combat, scaling)
+    pool_slugs, withheld = itemmeta.filter_candidates(
+        champion_record, combat, scaling,
+        damage_path=damage_path, enemies_known=enemies_known)
+    # Locked items are the player's explicit instruction and outrank the filter:
+    # withholding one would make the lock impossible to honour.
+    for slug in (locked_items or []):
+        resolved = _resolve_item(slug)
+        if resolved and resolved not in pool_slugs and resolved in itemmeta.completed_items():
+            pool_slugs.append(resolved)
+            withheld = [w for w in withheld if w["item"] != resolved]
+    pool_slugs.sort()
+    for entry in withheld:
+        print(f"[advisor] withheld {entry['item']}: {entry['reason']}", file=sys.stderr)
+
+    # Locks: items and runes the player pinned before generating. Resolve them
+    # against the real pools now (a lock on an unknown slug is silently dropped
+    # rather than failing the whole request), and cap them so a "locked" build is
+    # still mostly the model's -- 3 of 5 items, 2 runes.
+    locked_items = [s for s in (_resolve_item(x) for x in (locked_items or [])) if s][:3]
+    boots_locks = [s for s in locked_items if ITEMS.get(s, {}).get("category") == "Boots"]
+    item_locks = [s for s in locked_items if s not in boots_locks][:3]
+    locked_boot = boots_locks[0] if boots_locks else ""
+    locked_runes = [r for r in (RUNE_CANON.get(_canon(x)) for x in (locked_runes or [])) if r][:2]
     prompt = "\n\n".join(x for x in [
-        _champion_block(champion),
+        prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
         f"ROLE: {role}",
         f"PLAYSTYLE (build toward this): {style}",
+        # Personal optimisation contract: the chosen playstyle must actually
+        # move the weighting, not collapse back to the safe Standard build.
+        ("PERSONAL OPTIMISATION: within legality and practical champion function, optimise "
+         "toward the selected playstyle, power curve, optimisation goal and risk tolerance. "
+         "Do NOT pull the result back toward the Standard build merely because Standard would "
+         "be safer -- the player asked for this playstyle on purpose. Illegal, "
+         "resource-incompatible, or role-breaking builds are still rejected."
+         if mode == "studio" else ""),
         f"OPTIMIZE FOR: {obj}" if obj else "",
-        _enemy_block(enemies or [], champion),
-        f"ALLY TEAM: {', '.join(allies)}" if allies else "",
+        risk,
+        GAME_PHASES[game_phase],
+        DAMAGE_PATHS[damage_path],
+        KAYN_FORMS.get(champion_form, ""),
+        # Counter mode gets the structured, weighted threat picture; other modes
+        # get the plain enemy line (usually "unknown" in studio).
+        prompt_mod.enemy_threat_block(enemies, champion, WRMETA) if enemies_known
+        else _enemy_block(enemies or [], champion),
+        (f"SNOWBALL THREAT: {ahead_enemy} is ahead. If one main-build item should be "
+         "replaced to survive or shut down this specific lead, return snowballSwap with "
+         "the item to add, the main item it replaces, and the timing/condition. Return null "
+         "only when no responsible single-item swap applies. Do not rebuild solely for one "
+         "champion." if ahead_enemy else
+         "SNOWBALL THREAT: none specified; return snowballSwap as null."),
+        # Ally context (or the explicit no-allies assumption) only matters when
+        # there is an enemy team to build against.
+        prompt_mod.ally_context_block(allies) if enemies_known else (
+            f"ALLY TEAM: {', '.join(allies)}" if allies else ""),
+        # Locks: the player has pinned these and the build MUST contain them.
+        # They are a constraint on an otherwise free optimisation, so build the
+        # best loadout that still honours them -- do not just append them.
+        _lock_block(item_locks, locked_boot, locked_runes),
+        # Counter mode has the whole enemy comp in hand, so the build IS the
+        # answer to it. Asking for reactive swaps on top produces contradictory
+        # advice ("buy anti-heal vs their healing" when the comp already has the
+        # healing the build is countering) and is the top source of the
+        # needs-review flag. Tell the model plainly not to return them.
+        ("COUNTER MODE: this build already targets the exact enemy comp above, so do NOT "
+         "return any 'situational' item swaps or 'situationalRunes'. Bake every answer to "
+         "this comp into the main five items and the rune page. Return situational and "
+         "situationalRunes as empty lists. SKIP the full build evaluation: a counter build "
+         "is wanted fast, so return buildScore as null and do not spend time scoring the "
+         "eight categories. INSTEAD return a compact counterSummary that names the 2-4 "
+         "problems you chose to solve, how each item/boot/rune choice answers them, the "
+         "trade-offs you accepted, and the threats no build can fully answer. Do not imply "
+         "the build perfectly counters all five enemies. Schema: "
+         + prompt_mod.COUNTER_SUMMARY_SCHEMA if mode == "counter" else ""),
+        # With no enemy team the model's strongest failure mode is inventing
+        # one, then itemising against threats nobody mentioned.
+        "" if enemies_known else prompt_mod.UNKNOWN_ENEMY_BLOCK,
         _meta_block(champion),
-        _rules_block(),
-        _boots_pool(),
-        _rune_pool(),
-        "ITEM POOL:\n" + _item_pool(),
+        prompt_mod.audit_block(kit_linked_items, combat),
+        prompt_mod.rules_block(enemies_known, combat),
+        prompt_mod.boots_block(champion_record.get("class", ""), enemies_known),
+        runemeta.pool_text_block(),
+        prompt_mod.item_pool_block(pool_slugs),
+        prompt_mod.filtered_note(withheld),
     ] if x)
 
+    champion_class = champion_record.get("class", "")
     res = _call(key, prompt)
-    errs = validate(res)
-    if errs:  # one repair round: tell it exactly what was wrong
-        res = _call(key, prompt + "\n\nYour previous answer had ERRORS, fix them "
-                    "and return the corrected JSON only:\n- " + "\n- ".join(errs))
-        errs = validate(res)
-        if errs:
-            res["validationErrors"] = errs
 
-    # engine cross-check: grade the LLM's homework where the sim can
-    try:
-        from scripts.search_builds import score_items  # noqa: PLC0415
-        page = [res["runes"]["keystone"], *res["runes"]["minors"], res["runes"]["flex"]]
-        s = score_items(champion, res["items"] + [res.get("bootsUpgrade") or res["boots"]],
-                        page, "standard", role, fast=True)
-        res["engineScore"] = round(s["score"], 1)
-    except Exception:  # noqa: BLE001 -- no formulas for this champion yet
-        res["engineScore"] = None
+    def _check(build: dict):
+        return validate_mod.validate(
+            build, champion_class=champion_class, role=role, mode=mode,
+            enemies_known=enemies_known, required_audit_items=kit_linked_items,
+            allowed_items=pool_slugs, item_locks=item_locks, boot_lock=locked_boot,
+            rune_locks=locked_runes, resolve_item=_resolve_item,
+        )
+
+    report = _check(res)
+    # Repair the smallest thing that is wrong. A bad rune page should cost one
+    # short call, not a whole regeneration that also throws away a correct build.
+    for _ in range(repair.MAX_ATTEMPTS):
+        if report.ok:
+            break
+        # Log WHAT failed, not just which section. Without this a regeneration
+        # is invisible: you can see that it cost a second call and not why.
+        for section in report.sections():
+            for message in report.errors[section]:
+                print(f"[advisor] invalid {section}: {message}", file=sys.stderr)
+        targeted, blocking = repair.plan(report.sections())
+        if blocking or not targeted:
+            # The item selection is wrong, and everything else describes that
+            # selection -- so there is nothing worth preserving.
+            print(f"[advisor] full regeneration; unrepairable sections: {blocking}",
+                  file=sys.stderr)
+            res = _call(key, prompt + "\n\nYour previous answer had ERRORS. Fix them and "
+                        "return the corrected JSON only:\n- " + "\n- ".join(report.flat()))
+            report = _check(res)
+            continue
+        for section in targeted:
+            errors = report.errors[section]
+            print(f"[advisor] targeted repair: {section} ({len(errors)} errors)",
+                  file=sys.stderr)
+            patch = _call(key, repair.repair_prompt(section, res, errors, pool_slugs))
+            repair.apply_repair(res, section, patch)
+        report = _check(res)
+
+    # Summoners are assigned, not generated: the choice is a lookup, and asking
+    # the model for it only created a way for an otherwise good build to fail.
+    res["summoners"], summoner_reason = summoners.resolved(
+        champion, role, champion_class)
+    res["summonerReason"] = summoner_reason
+
+    # Normalised request metadata, so the frontend can show what the build was
+    # optimised for and flag any playstyle the champion could not honour. Added
+    # additively under a bumped schema version; old consumers ignore it.
+    res["schemaVersion"] = 2
+    res["requestMeta"] = {
+        "mode": mode,
+        "requestedPlaystyle": playstyle,
+        "resolvedPlaystyle": playstyle,   # a hard-invalid style errors earlier
+        "playstyleAdjustment": None,
+        "powerCurve": game_phase,
+        "optimizationGoal": objective,
+        "riskTolerance": risk_tolerance,
+        "enemyContext": "known" if enemies_known else "unknown",
+    }
+
+    for warning in report.warnings:
+        print(f"[advisor] warning: {warning}", file=sys.stderr)
+    if not report.ok:
+        res["validationErrors"] = report.flat()
+    if report.warnings:
+        res["validationWarnings"] = report.warnings
+
+    # One structured line per generation, to stderr (never stdout -- /api/build
+    # parses stdout as JSON). Enough to diagnose a bad build without storing the
+    # model's reasoning: mode, champion, what it was optimised for, and how the
+    # validation went.
+    print("[advisor] generated "
+          f"mode={mode} champion={champion!r} role={role!r} playstyle={playstyle} "
+          f"risk={risk_tolerance} enemyContext={'known' if enemies_known else 'unknown'} "
+          f"candidates={len(pool_slugs)} errors={len(report.flat())} "
+          f"warnings={len(report.warnings)} schemaVersion=2", file=sys.stderr)
     return res
 
 
@@ -443,11 +603,24 @@ def main() -> None:
     ap.add_argument("--allies", default="")
     ap.add_argument("--playstyle", default="standard")
     ap.add_argument("--objective", default="balanced")
+    ap.add_argument("--game-phase", choices=tuple(GAME_PHASES), default="balanced")
+    ap.add_argument("--damage-path", choices=tuple(DAMAGE_PATHS), default="standard")
+    ap.add_argument("--champion-form", default="")
+    ap.add_argument("--ahead-enemy", default="")
+    ap.add_argument("--mode", choices=("studio", "counter"), default="studio")
+    ap.add_argument("--risk-tolerance", choices=tuple(RISK_TOLERANCE), default="medium")
+    ap.add_argument("--locked-items", default="", help="comma-separated item slugs to pin")
+    ap.add_argument("--locked-runes", default="", help="comma-separated rune names to pin")
     args = ap.parse_args()
     res = advise(args.champion, args.role,
                  [e.strip() for e in args.enemies.split(",") if e.strip()],
                  [a.strip() for a in args.allies.split(",") if a.strip()],
-                 playstyle=args.playstyle, objective=args.objective)
+                 playstyle=args.playstyle, objective=args.objective, mode=args.mode,
+                 risk_tolerance=args.risk_tolerance,
+                 game_phase=args.game_phase, damage_path=args.damage_path,
+                 champion_form=args.champion_form, ahead_enemy=args.ahead_enemy,
+                 locked_items=[s.strip() for s in args.locked_items.split(",") if s.strip()],
+                 locked_runes=[s.strip() for s in args.locked_runes.split(",") if s.strip()])
     print(json.dumps(res, ensure_ascii=False, indent=2))
 
 

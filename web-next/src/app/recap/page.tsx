@@ -54,8 +54,8 @@ export default function RecapPage() {
 
         {/* Winners / Losers */}
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
-          <MoverColumn title="Biggest Winners" tag="Win rate surged this patch" accent="#22c55e" up movers={winners} maxAbs={maxAbs} />
-          <MoverColumn title="Biggest Losers" tag="Win rate crashed this patch" accent="#ef4444" movers={losers} maxAbs={maxAbs} />
+          <MoverColumn title="Biggest Winners" tag="Win rate rose since the last scrape" accent="#22c55e" up movers={winners} maxAbs={maxAbs} />
+          <MoverColumn title="Biggest Losers" tag="Win rate fell since the last scrape" accent="#ef4444" movers={losers} maxAbs={maxAbs} />
         </div>
 
         {/* Footer strip: new champion + context */}
@@ -68,7 +68,7 @@ export default function RecapPage() {
             </div>
           </div>
           <p className="text-xs text-muted">
-            <span className="font-semibold text-text">{winners.length + losers.length}+ champions</span> tracked patch-over-patch, EU + China combined.
+            <span className="font-semibold text-text">{winners.length + losers.length}+ champions</span> tracked between China Challenger scrapes.
             Green = rising, red = falling.
           </p>
           <p className="text-sm font-black tracking-tight text-accent">Season 22 · Feast On</p>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/data";
 import { DiscordButton } from "@/components/discord";
+import { SupportButton } from "@/components/support";
 
 const FOOTER_LINKS = [
   { href: "/tier-list", label: "Tier List" },
@@ -11,7 +12,11 @@ const FOOTER_LINKS = [
   { href: "/consistency", label: "Consistency" },
   { href: "/build", label: "Builds" },
   { href: "/items", label: "Items" },
+  { href: "/runes-spells", label: "Runes & Spells" },
+  { href: "/blog", label: "Guides" },
+  { href: "/creators", label: "Creators" },
   { href: "/news", label: "News" },
+  { href: "/changes-report", label: "Balance Report" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },
 ];
@@ -27,12 +32,25 @@ export function SiteFooter() {
             </Link>
           ))}
         </nav>
-        <div className="mb-6 flex justify-center">
+        <div className="mb-6 flex flex-wrap items-center justify-center gap-3">
           <DiscordButton>Join our Discord</DiscordButton>
+          <SupportButton>Buy me a coffee</SupportButton>
         </div>
         <p>
           Questions or feedback? Come say hi in the Discord, or DM{" "}
           <span className="font-medium text-accent">@generalthr4gg</span>.
+        </p>
+        <p className="mt-1">
+          WrTrueMeta is free and has no ads. If it helps you climb,{" "}
+          <a
+            href="https://buymeacoffee.com/wrtruemeta"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gold transition hover:opacity-80"
+          >
+            buy me a coffee
+          </a>{" "}
+          to keep the servers running.
         </p>
         {site.collectedOn && (
           <p className="mt-1 text-faint">Data collected {site.collectedOn}.</p>

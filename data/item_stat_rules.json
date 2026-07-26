@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "targetPatch": "7.2a",
+  "updated": "2026-07-21",
+  "items": {
+    "trinity-force": {
+      "always": [
+        { "stat": "moveSpeed", "value": 5, "percent": true, "label": "Fervor" }
+      ],
+      "conditional": [
+        { "label": "Valor", "detail": "Attacks grant 20 Move Speed for 2 seconds (halved for ranged champions)." }
+      ]
+    },
+    "infinity-edge": {
+      "always": [
+        { "stat": "critDamage", "set": 205, "label": "Infinity" }
+      ],
+      "conditional": [
+        { "label": "Limit Break", "detail": "Each 1% item Critical Rate above 100% converts to 0.6% Critical Damage." }
+      ]
+    },
+    "immortal-treads": {
+      "always": [
+        { "stat": "adaptive", "ad": 12, "ap": 20, "label": "Balance of Power" }
+      ],
+      "conditional": [
+        { "label": "Conversion", "detail": "Takedown participation grants 0.5% Omnivamp, up to 5% additional Omnivamp." },
+        { "label": "Now and Forever", "detail": "Above 50% Health: 5% bonus damage. Below 50% Health: 12% increased healing and shielding." }
+      ]
+    },
+    "armorcrusher-boots": {
+      "conditional": [
+        { "label": "Cloudwalker", "detail": "Gain 20 out-of-combat Move Speed." }
+      ]
+    },
+    "blade-of-the-ruined-king": {
+      "conditional": [
+        { "label": "Drain", "detail": "After 3 attacks or abilities, steal 25% of the target's Move Speed for 2 seconds." }
+      ]
+    }
+  },
+  "sources": [
+    "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
+    "https://wildrift.leagueoflegends.com/en-sg/news/game-updates/wild-rift-patch-notes-7-2a/"
+  ]
+}

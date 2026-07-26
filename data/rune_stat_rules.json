@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "targetPatch": "7.2a",
+  "updated": "2026-07-21",
+  "runes": {
+    "Transcendence": {
+      "description": "Gain 5 Ability Haste at level 1 and another 5 at level 5. At level 9, after a basic ability hits a target, reduce 8% of that ability's cooldown (8s cooldown)."
+    },
+    "Eyeball Collector": {
+      "description": "Gain 1.5 Attack Damage or 3 Ability Power after scoring a champion or epic monster takedown, stacking up to 8 times (12 Attack Damage or 24 Ability Power maximum)."
+    }
+  },
+  "sources": [
+    "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/"
+  ]
+}

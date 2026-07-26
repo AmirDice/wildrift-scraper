@@ -1,52 +1,107 @@
 {
-  "_note": "Wild Rift item build-legality rules. mutexGroups: you may build AT MOST ONE item from each group. Since Patch 7.0, items sharing a named UNIQUE passive (or in a listed incompatible group) are HARD mutually-exclusive in-game — you cannot equip two. Groups below are (a) derived from shared 'UNIQUE - <NAME>' tags in data/items.json and (b) confirmed by the official Patch 7.0 notes. slots: a champion has 6 item slots, one of which is Boots (which holds one Enchantment).",
-  "_sources": [
-    "Patch 7.0 notes: items with the same named passive / listed incompatible combos are mutually exclusive (Spellblade, Lifeline, mana line, etc.)",
-    "Derived from UNIQUE passive names in our scraped item text",
-    "Armor-penetration group confirmed by player (in-game)"
-  ],
+  "_note": "Wild Rift item build rules, split into three tiers that used to be one. The old file put everything under 'mutexGroups', which mixed things the game forbids with things that are merely inefficient, and the prompt presented all of it as 'hard legality'. That cost the model real options: a legal-but-unusual combination was rejected as illegal rather than argued against.",
+  "_tiers": {
+    "hardExclusive": "The game will not let you equip both. Building two from one group is impossible, not unwise. Validation REJECTS these.",
+    "redundancyGroups": "Legal, and normally a waste, because the effects overlap or the second item's value is mostly duplicated. Validation WARNS and requires the model to justify it; it does not reject.",
+    "situationalOnly": "Reactive items whose value depends on the enemy composition. Kept out of an unknown-enemy default build, allowed once the matchup is known.",
+    "lateGameStrategic": "Not reactive, but not a default core item either. Allowed in a default build only late and only with an explicit reason."
+  },
   "slots": {
     "items": 5,
     "boots": 1,
     "enchantment": 1
   },
-  "mutexGroups": {
-    "armor-penetration": [
-      "seryldas-grudge",
-      "lord-dominiks-regard",
-      "black-cleaver",
-      "mortal-reminder"
-    ],
-    "spellblade": [
-      "trinity-force",
-      "lich-bane",
-      "divine-sunderer",
-      "essence-reaver",
-      "iceborn-gauntlet"
-    ],
-    "lifeline": [
-      "steraks-gage",
-      "mantle-of-the-twelfth-hour",
-      "maw-of-malmortius"
-    ],
-    "mana-awe": [
-      "manamune",
-      "archangels-staff",
-      "winters-approach"
-    ],
-    "momentum": [
-      "youmuus-ghostblade",
-      "dead-mans-plate"
-    ]
+  "hardExclusive": {
+    "_evidence": "Each group either shares a named UNIQUE passive in the scraped item text, or was verified in-game by the maintainer on patch 7.2.",
+    "armor-penetration": {
+      "slugs": [
+        "black-cleaver",
+        "lord-dominiks-regard",
+        "mortal-reminder",
+        "seryldas-grudge",
+        "terminus"
+      ],
+      "evidence": "Verified in-game 2026-07-24: Black Cleaver cannot be built alongside Lord Dominik's, Mortal Reminder, Serylda's Grudge or Terminus. Note this group is LARGER than the shared-passive text suggests -- only Serylda's and Mortal Reminder print 'Last Whisper' -- so the in-game check is the authority here, not the item text."
+    },
+    "spellblade": {
+      "slugs": [
+        "trinity-force",
+        "lich-bane",
+        "divine-sunderer",
+        "essence-reaver",
+        "iceborn-gauntlet"
+      ],
+      "evidence": "All five print the named passive 'Spellblade'."
+    },
+    "lifeline": {
+      "slugs": [
+        "steraks-gage",
+        "mantle-of-the-twelfth-hour",
+        "maw-of-malmortius"
+      ],
+      "evidence": "All three print the named passive 'Lifeline'."
+    },
+    "mana-awe": {
+      "slugs": [
+        "manamune",
+        "archangels-staff",
+        "winters-approach"
+      ],
+      "evidence": "All three print the named passives 'Awe' and 'Mana Charge'."
+    },
+    "momentum": {
+      "slugs": [
+        "youmuus-ghostblade",
+        "dead-mans-plate"
+      ],
+      "evidence": "Both print the named passive 'Momentum'. Verified in-game 2026-07-24: they cannot be built together."
+    }
+  },
+  "redundancyGroups": {
+    "_note": "Legal combinations that usually waste gold. The model may build two from a group when it states why the overlap is worth paying for -- for example stacking two anti-heal sources against a comp with several healers.",
+    "grievous-wounds": {
+      "slugs": [
+        "chempunk-chainsword",
+        "morellonomicon",
+        "mortal-reminder",
+        "seryldas-grudge",
+        "thornmail"
+      ],
+      "why": "Grievous Wounds is a debuff on the target and does not stack. A second source adds only its raw stats and a wider application window, so it pays a full item price for a fraction of an effect you already have. Two can still be right against a comp with several separate healing threats you cannot cover with one application pattern -- say which threats, if so.",
+      "evidence": "Derived from the item text: these five are every completed non-boots item whose passive applies healing reduction."
+    }
   },
   "situationalOnly": {
-    "_note": "Reactive items whose value depends on the ENEMY comp (anti-heal, cleanse, anti-shield, revive, anti-burst). Never part of the main 5-item build or core; only offered as situational swaps.",
+    "_note": "Reactive items: their value comes from something the ENEMY did. With no enemy team specified there is nothing to react to, so these stay out of the default five and are offered as swaps instead.",
     "slugs": [
-      "guardian-angel",
-      "maw-of-malmortius",
       "serpents-fang",
       "mortal-reminder",
-      "morellonomicon"
+      "morellonomicon",
+      "maw-of-malmortius"
+    ]
+  },
+  "lateGameStrategic": {
+    "_note": "Reviewed 2026-07-24. Guardian Angel used to sit in situationalOnly, which forbade it from every default build. That was wrong: at 3200g it carries 45 Attack Damage and 40 Armor as real stats, so it is a genuine late purchase for a champion who dives and needs to survive the dive -- not merely an answer to an enemy composition. It is equally wrong to hand it a guaranteed fifth slot, so it is allowed only under the conditions below and must be argued for.",
+    "guardian-angel": {
+      "minPosition": 4,
+      "allowedPatterns": [
+        "ability-weaving",
+        "repeated-attacks",
+        "basic-attack-carry",
+        "mixed"
+      ],
+      "requiresJustification": true,
+      "why": "Allowed as a late purchase for divers and engage champions who convert a revive into a second engage, or who carry a large shutdown worth protecting. Never a default: if the reason is only 'it is a good item', pick something that adds damage or uptime instead."
+    }
+  },
+  "defaultStrategy": {
+    "_note": "Preferences, not rules. These bias the build in the absence of a better reason; any of them can be overridden with an explicit argument.",
+    "preferences": [
+      "Prioritise practical early and mid-game value: a 15-20 minute match rarely rewards a component that only pays off at full build.",
+      "With an unknown enemy team, prefer offensive or utility boots and list the defensive boots as situational alternatives.",
+      "With a known enemy team, defensive boots may be the main boots when the threat is severe enough -- say why survival or combat uptime beats the offensive option.",
+      "Avoid niche reactive items in a generic build; offer them as swaps with a named condition.",
+      "Avoid combinations that only pay off with perfect execution or a rare trigger."
     ]
   }
 }

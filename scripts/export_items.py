@@ -36,6 +36,9 @@ def _clean_passive(text: str) -> str:
 
 def main() -> None:
     raw = json.loads(SRC.read_text(encoding="utf-8"))
+    rules_path = ROOT / "data" / "item_stat_rules.json"
+    stat_rules = (json.loads(rules_path.read_text(encoding="utf-8")).get("items", {})
+                  if rules_path.exists() else {})
     rows = raw if isinstance(raw, list) else list(raw.values())
     out = []
     for it in rows:
@@ -48,6 +51,8 @@ def main() -> None:
             "categories": it.get("categories", []),
             "tags": it.get("tags", []),
             "stats": it.get("stats", {}),
+            "scopedStats": it.get("scopedStats", {}),
+            "statRules": stat_rules.get(it["slug"], {}),
             "passives": [_clean_passive(p) for p in (it.get("passives") or [])],
         })
     out.sort(key=lambda x: (x["category"], -x["cost"], x["name"]))

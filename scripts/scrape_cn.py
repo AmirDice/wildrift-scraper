@@ -6,8 +6,8 @@ statistics via two JSON endpoints used by its 国服数据 page:
   hero list:  https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js
   rank data:  https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2
 
-The rank data is keyed by cumulative rank bracket (0-4: Diamond+ / Master+ /
-Challenger+ / Sovereign) then by position (1-5: top/jungle/mid/bot/support). Each entry has
+The rank data is keyed by Tencent's four published filters (1-4: Diamond+ /
+Master+ / Challenger / Legendary) then by position (1-5: top/jungle/mid/bot/support). Each entry has
 win_rate_percent, appear_rate_percent (pick), forbid_rate_percent (ban) and
 strength_level (tier). This is official, daily, high-elo data — a real CN source
 to sit alongside our EU top-50 dataset.
@@ -40,10 +40,10 @@ HEADERS = {"User-Agent": "Mozilla/5.0", "Referer": "https://lolm.qq.com/"}
 
 # bracket keys verified against the site's rank tabs (钻石/大师/王者/峡谷之巅)
 BRACKET_LABELS = {
-    "0": "All ranks", "1": "Diamond+", "2": "Master+", "3": "Challenger+", "4": "Sovereign",
+    "1": "Diamond+", "2": "Master+", "3": "Challenger", "4": "Legendary",
 }
-# Challenger and above (includes Sovereign): a larger, steadier top-elo sample
-# than the Sovereign tier alone, so it's what the frontend surfaces as "highest".
+# Challenger is the default regular-ranked comparison. Legendary is a
+# separate high-elo solo queue, not a rank above Challenger.
 DEFAULT_BRACKET = "3"
 # position codes verified empirically against the champion pools per lane
 POSITION_LABELS = {"1": "Mid", "2": "Baron", "3": "Dragon", "4": "Support", "5": "Jungle"}
@@ -115,6 +115,9 @@ def main() -> None:
     # per champion: byBracket -> {wr, pick, ban, strength, position} at primary lane
     champs: dict[str, dict] = {}
     for bracket, positions in rank.items():
+        # The official frontend exposes keys 1-4 and explicitly discards key 0.
+        if bracket not in BRACKET_LABELS:
+            continue
         for pos, entries in positions.items():
             for e in entries:
                 hid = e["hero_id"]

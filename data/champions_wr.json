@@ -20745,50 +20745,64 @@
     "name": "Yunara",
     "baseStats": {
       "hp": {
-        "base": 0.0,
-        "perLevel": 0.0,
-        "lvl15": 0.0
+        "base": 600.0,
+        "perLevel": 95.0,
+        "lvl15": 1930.0
       },
       "hpRegen": {
-        "base": 0.0,
-        "perLevel": 0.0,
-        "lvl15": 0.0
+        "base": 6.0,
+        "perLevel": 1.0,
+        "lvl15": 20.0
+      },
+      "mana": {
+        "base": 345.0,
+        "perLevel": 25.0,
+        "lvl15": 695.0
+      },
+      "manaRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
       },
       "armor": {
-        "base": 0.0,
-        "perLevel": 0.0,
-        "lvl15": 0.0
+        "base": 35.0,
+        "perLevel": 4.0,
+        "lvl15": 91.0
       },
       "mr": {
-        "base": 0.0,
-        "perLevel": 0.0,
-        "lvl15": 0.0
+        "base": 30.0,
+        "perLevel": 2.0,
+        "lvl15": 58.0
       },
       "moveSpeed": {
-        "base": 0.0,
+        "base": 335.0,
         "perLevel": 0.0,
-        "lvl15": 0.0
+        "lvl15": 335.0
       },
       "ad": {
-        "base": 0.0,
-        "perLevel": 0.0,
-        "lvl15": 0.0
+        "base": 58.0,
+        "perLevel": 3.0,
+        "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.0,
-        "perLevel": 0.0,
-        "lvl15": 0.0
+        "base": 0.77,
+        "perLevel": 0.02,
+        "lvl15": 1.1
       }
     },
     "primaryDamage": "magic",
     "physicalAbilities": 1,
     "magicAbilities": 3,
     "scalesWith": [
-      "attackSpeed"
+      "ad",
+      "ap",
+      "attackSpeed",
+      "bonusAd"
     ],
     "mechanics": [
       "cc",
       "dash",
+      "heal",
       "onHit"
     ],
     "abilities": [
@@ -20796,7 +20810,7 @@
         "slot": "P",
         "name": "Vow of the First Lands",
         "cooldowns": [],
-        "text": "Yunara's critical strikes deal additional bonus magic damage.",
+        "text": "Critical Strikes deal an additional 10% (per 100 AP ) magic damage .",
         "damageTypes": [
           "magic"
         ],
@@ -20811,15 +20825,19 @@
           "0",
           "0"
         ],
-        "text": "Passive: Yunara deals magic damage on-hit and attacking grants stacks of unleash. Active: Yunara consumes her stacks of unleash and for a few seconds gains attack speed and deals additional magic damage on-hit. During this time, her attacks spread to nearby enemies dealing them physical damage.",
+        "text": "S pirit Charge (Passive) : Attacks deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage ; When not active, launching an attack grants 1 Unleash. Attacking again refreshes Unleash's duration. Max Unleash is 6. If the duration is not refreshed, Yunara loses 1 Unleash every 0.5 seconds. Spirit Unbound (Active) : On cast, consumes Unleash, gaining 22% / 35% / 47% / 60% Attack Speed for 5 seconds. Attacks are empowered during this time to: Deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage on-hit; Spread to enemies nearby the target, dealing them 18 ( 30% AD ) physical damage . Transcendent State : This ability automatically activates until Yunara exits the state. If the attack Critically Strikes, its spread damage will also Critically Strike. Damage from spread attacks is increased to 250% against minions below 30% Health.",
         "damageTypes": [
           "physical",
           "magic"
         ],
         "scales": [
+          "ad",
+          "ap",
           "attackSpeed"
         ],
         "tags": [
+          "dash",
+          "heal",
           "onHit"
         ]
       },
@@ -20827,28 +20845,35 @@
         "slot": "2",
         "name": "Arc of Judgment / Arc of Ruin",
         "cooldowns": [
-          "0",
-          "0",
-          "0"
+          "10",
+          "10",
+          "10",
+          "10"
         ],
-        "text": "Yunara lets rip a prayer bead that deals magic damage and slows for a few seconds. It deals additional magic damage per second. Transcendent State: Yunara fires a laser that deals magic damage and slows for a second.",
+        "text": "Arc of Judgment: Lets rip a spinning prayer bead in the target location, briefly granting vision of the area it travels through. The prayer bead slows enemies hit by 99% , lingering as it travels and resetting its remaining duration. When it reaches its endpoint, it lingers and expands for 1 second, regardless of whether it has hit an enemy. The initial hit deals 60 / 110 / 160 / 210 ( +85% bonus AD +50% AP ) magic damage and slows by 99% , decaying over 1.5 seconds; When lingering, the bead deals an additional 8 / 14 / 20 / 26 ( +12% bonus AD +7.5% AP ) magic damage to nearby enemies every 0.25 seconds. While Yunara is in a Transcendent State, this ability is upgraded to Arc of Ruin. Arc of Ruin : Fires a laser in the target direction that deals 160 ( +120% bonus AD +75% AP ) magic damage and slows by 99% , decaying over 1.5 seconds. Arc of Judgment deals 50% - 100% damage to minions and executes low-Health minions.",
         "damageTypes": [
           "magic"
         ],
-        "scales": [],
+        "scales": [
+          "ad",
+          "ap",
+          "bonusAd"
+        ],
         "tags": [
-          "cc"
+          "cc",
+          "heal"
         ]
       },
       {
         "slot": "3",
         "name": "Kanmei's Steps / Untouchable Shadow",
         "cooldowns": [
-          "0",
-          "0",
-          "0"
+          "9",
+          "9",
+          "9",
+          "9"
         ],
-        "text": "Yunara gains movement speed, increased when moving toward an enemy champion, that decays over a few seconds. Transcendent State: Yunara dashes in a direction.",
+        "text": "Kanmei's Steps : Gains 30% / 35% / 40% / 45% Movement Speed for 1.5 seconds, increased to 45% / 52.5% / 60% / 67.5% when moving toward a visible enemy champion nearby. While Yunara is in a Transcendent State, this ability is upgraded to Untouchable Shadow. Untouchable Shadow : Dashes in the target direction.",
         "damageTypes": [],
         "scales": [],
         "tags": [
@@ -20859,14 +20884,16 @@
         "slot": "4",
         "name": "Transcend One's Self",
         "cooldowns": [
-          "0",
-          "0",
-          "0"
+          "70",
+          "60",
+          "50"
         ],
-        "text": "Yunara enters a Transcendent State for a few seconds upgrading her basic abilities for the duration.",
+        "text": "Passive : Arc of Ruin's base damage and Untouchable Shadow's dash speed scale with this ability's level. Transcendent State (Active) : Enters a Transcendent State for 15 seconds. During this time, Yunara's basic abilities are empowered and cost no Mana. Cultivation of Spirit : Activates automatically for the duration. Arc of Judgment : Upgrades to Arc of Ruin . Its remaining cooldown reduces by 80% when Yunara enters or exits a Transcendent State. Kanmei's Steps : Upgrades to Untouchable Shadow . Its cooldown refreshes when Yunara enters or exits a Transcendent State.",
         "damageTypes": [],
         "scales": [],
-        "tags": []
+        "tags": [
+          "dash"
+        ]
       }
     ]
   },

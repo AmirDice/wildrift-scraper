@@ -1,9 +1,6 @@
 import cnData from "@/data/cn.json";
-import { getChampion, getChampions, type Champion } from "@/lib/data";
-
-/** Which rank bracket to surface. The CN source now only publishes a steady
- *  "Diamond and above" sample, stored as bracket "0". */
-const BRACKET = "0";
+import { getChampion, getChampions, tierClass, type Champion } from "@/lib/data";
+import { getNewChampion } from "@/lib/new-champions";
 
 interface CnEntry {
   winRate: number;
@@ -23,13 +20,28 @@ const CN = cnData as unknown as {
   source: string;
   date: string;
   bracketLabels: Record<string, string>;
+  defaultBracket?: string;
   champions: CnChamp[];
 };
+
+export const CN_BRACKETS = [
+  { key: "1", label: "Diamond+", short: "D+", kind: "regular" },
+  { key: "2", label: "Master+", short: "M+", kind: "regular" },
+  { key: "3", label: "Challenger", short: "Chal", kind: "regular" },
+  { key: "4", label: "Legendary", short: "Legendary", kind: "legendary" },
+] as const;
+
+export type CnBracketKey = (typeof CN_BRACKETS)[number]["key"];
+
+/** Challenger is the default standard-ranked sample. */
+export const CN_DEFAULT_BRACKET: CnBracketKey = "3";
 
 export const CN_META = {
   source: CN.source,
   date: CN.date,
-  bracket: CN.bracketLabels[BRACKET],
+  bracket: CN.bracketLabels[CN_DEFAULT_BRACKET] ?? "Challenger",
+  defaultBracket: CN_DEFAULT_BRACKET,
+  brackets: CN_BRACKETS,
 };
 
 /** CN win rates cluster near 50% (whole-ladder), so tiers use CN-specific cutoffs. */
@@ -49,19 +61,51 @@ export interface CnChampion extends Champion {
   cnBanRate: number;
 }
 
-export function getCnChampions(): CnChampion[] {
+export function getCnChampions(bracket: CnBracketKey = CN_DEFAULT_BRACKET): CnChampion[] {
   const out: CnChampion[] = [];
   for (const c of CN.champions) {
-    const e = c.byBracket[BRACKET];
+    const e = c.byBracket[bracket];
     const eu = getChampion(c.slug);
-    if (!e || !eu) continue; // CN roster is a subset of EU; skip anything unmatched
+    const newcomer = getNewChampion(c.slug);
+    if (!e || (!eu && !newcomer)) continue;
     const tier = cnTier(e.winRate);
+    const base: Champion = eu ?? {
+      name: newcomer!.name,
+      slug: newcomer!.slug,
+      role: newcomer!.role,
+      class: newcomer!.class,
+      difficulty: newcomer!.difficulty,
+      difficultyLabel: newcomer!.difficultyLabel,
+      isHard: newcomer!.difficulty >= 7,
+      wr: e.winRate,
+      meanWr: null,
+      maxWr: null,
+      winrateStd: null,
+      medianGames: null,
+      totalGames: null,
+      nPlayers: null,
+      medianMastery: null,
+      maxScore: null,
+      otpScore: null,
+      isOtp: false,
+      topPlayer: null,
+      tier,
+      tierCss: tierClass[tier],
+      tierRole: tier,
+      tierRoleCss: tierClass[tier],
+      skillSpread: null,
+      icon: newcomer!.icon,
+      splash: newcomer!.splash,
+      bestPlayer: null,
+    };
     out.push({
-      ...eu,
+      ...base,
       role: e.position,
       wr: e.winRate,
       tier,
+      tierCss: tierClass[tier],
       tierRole: tier,
+      tierRoleCss: tierClass[tier],
       isOtp: false,
       meanWr: null,
       maxWr: null,
@@ -82,16 +126,35 @@ export function getCnChampions(): CnChampion[] {
   return out.sort((a, b) => b.wr - a.wr);
 }
 
-export function cnRoles(): string[] {
+export function cnRoles(bracket: CnBracketKey = CN_DEFAULT_BRACKET): string[] {
   const order = ["Baron", "Jungle", "Mid", "Dragon", "Support"];
-  const present = new Set(getCnChampions().map((c) => c.role));
+  const present = new Set(getCnChampions(bracket).map((c) => c.role));
   return order.filter((r) => present.has(r));
 }
 
-let _bySlug: Map<string, CnChampion> | null = null;
-export function getCnBySlug(slug: string): CnChampion | undefined {
-  if (!_bySlug) _bySlug = new Map(getCnChampions().map((c) => [c.slug, c]));
-  return _bySlug.get(slug);
+export function getCnChampionsByBracket(): Record<CnBracketKey, CnChampion[]> {
+  return Object.fromEntries(
+    CN_BRACKETS.map(({ key }) => [key, getCnChampions(key)]),
+  ) as Record<CnBracketKey, CnChampion[]>;
+}
+
+export function getCnRolesByBracket(): Record<CnBracketKey, string[]> {
+  return Object.fromEntries(
+    CN_BRACKETS.map(({ key }) => [key, cnRoles(key)]),
+  ) as Record<CnBracketKey, string[]>;
+}
+
+const byBracketSlug = new Map<CnBracketKey, Map<string, CnChampion>>();
+export function getCnBySlug(
+  slug: string,
+  bracket: CnBracketKey = CN_DEFAULT_BRACKET,
+): CnChampion | undefined {
+  let bySlug = byBracketSlug.get(bracket);
+  if (!bySlug) {
+    bySlug = new Map(getCnChampions(bracket).map((c) => [c.slug, c]));
+    byBracketSlug.set(bracket, bySlug);
+  }
+  return bySlug.get(slug);
 }
 
 /** Combined-server tier from the average of the two (50%-centered) win rates. */

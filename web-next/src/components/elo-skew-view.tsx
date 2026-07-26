@@ -14,6 +14,7 @@ export type SkewRow = {
   role: string;
   isHard: boolean;
   curve: BracketPoint[];
+  legendary: BracketPoint | null;
   low: number;
   high: number;
   skew: number;
@@ -77,13 +78,12 @@ export function EloSkewView({ rows, roles }: { rows: SkewRow[]; roles: string[] 
         {mode === "climbing" ? (
           <>
             High-skill specialists: their win rate <span className="text-emerald-300">climbs</span> from
-            the whole ladder up to Challenger+. Rewarding to master, but expect a rough start.
+            the Diamond+ population to the Challenger sample.
           </>
         ) : (
           <>
             Low-elo stompers: strong across the ladder but they{" "}
-            <span className="text-rose-300">fall off</span> against Challenger+ play. Great to climb
-            with, less so at the top.
+            <span className="text-rose-300">fall off</span> in the Challenger sample.
           </>
         )}
       </p>
@@ -109,15 +109,16 @@ export function EloSkewView({ rows, roles }: { rows: SkewRow[]; roles: string[] 
       </div>
 
       <div className="glass overflow-x-auto rounded-2xl">
-        <table className="w-full min-w-[620px] border-collapse text-sm">
+        <table className="w-full min-w-[760px] border-collapse text-sm">
           <thead>
             <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
               <th className="w-12 px-3 py-3 text-center font-semibold">#</th>
               <th className="px-3 py-3 text-left font-semibold">Champion</th>
-              <th className="px-3 py-3 text-center font-semibold">All → Challenger+</th>
-              <th className="px-3 py-3 text-right font-semibold">All ranks</th>
-              <th className="px-3 py-3 text-right font-semibold">Challenger+</th>
-              <th className="px-3 py-3 text-right font-semibold">Skew</th>
+              <th className="px-3 py-3 text-center font-semibold">Diamond+ → Challenger</th>
+              <th className="px-3 py-3 text-right font-semibold">Diamond+</th>
+              <th className="px-3 py-3 text-right font-semibold">Challenger</th>
+              <th className="px-3 py-3 text-right font-semibold">Change</th>
+              <th className="px-3 py-3 text-right font-semibold">CN Legendary</th>
             </tr>
           </thead>
           <tbody>
@@ -158,6 +159,9 @@ export function EloSkewView({ rows, roles }: { rows: SkewRow[]; roles: string[] 
                 </td>
                 <td className="px-3 py-2.5 text-right">
                   <SkewBadge skew={r.skew} />
+                </td>
+                <td className={`px-3 py-2.5 text-right font-semibold ${r.legendary && r.legendary.wr >= 50 ? "text-gold" : "text-muted"}`}>
+                  {r.legendary ? `${r.legendary.wr.toFixed(1)}%` : "—"}
                 </td>
               </tr>
             ))}

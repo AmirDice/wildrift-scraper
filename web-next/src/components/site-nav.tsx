@@ -1,42 +1,57 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { useBuildToolsVisible } from "@/lib/use-build-tools";
 import { DiscordNavLink, DISCORD_URL, DiscordIcon } from "@/components/discord";
+import { SupportNavLink, BUYMEACOFFEE_URL, CoffeeIcon } from "@/components/support";
+import { AccountMenu } from "@/components/account-menu";
+import { ChampionCombobox, type ComboItem } from "@/components/champion-combobox";
 
-type NavItem = { href: string; label: string; badge?: string; desc?: string };
+type NavItem = { href: string; label: string; badge?: string; badges?: string[]; desc?: string };
 type NavGroup = { label: string; items: NavItem[] };
 type NavEntry = NavItem | NavGroup;
 
 const isGroup = (e: NavEntry): e is NavGroup => "items" in e;
 
 // The Builds menu leads with the two flagship tools when they are live; until
-// then it collapses to a flat "Items" link so nothing points at a hidden page.
-const buildsEntry: NavEntry = BUILD_TOOLS_LIVE
+// then it drops them so nothing points at a page the visitor would be bounced
+// from. `live` is per-visitor, not just per-deploy: a beta invite opens the
+// tools early, so the menu has to be built at render time rather than module
+// scope.
+const buildsEntry = (live: boolean): NavEntry => (live
   ? {
       label: "Builds",
       items: [
-        { href: "/build", label: "Build Optimizer", badge: "new", desc: "Optimal items & runes per champion" },
-        { href: "/counter", label: "Counter Builder", badge: "new", desc: "Build vs your exact enemy team" },
+        { href: "/build", label: "Build Studio", badges: ["new", "beta"], desc: "Generate by playstyle or craft with live stats" },
+        { href: "/counter", label: "Counter Builder", badges: ["new", "beta"], desc: "Build vs your exact enemy team" },
+        { href: "/albums", label: "Build Albums", badge: "new", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
+        { href: "/runes-spells", label: "Runes & Spells", badge: "new", desc: "Effects, trees, cooldowns & uses" },
       ],
     }
-  : { href: "/items", label: "Items" };
+  : {
+      label: "Builds",
+      items: [
+        { href: "/items", label: "Items", desc: "Stats, passives & costs" },
+        { href: "/runes-spells", label: "Runes & Spells", badge: "new", desc: "Effects, trees, cooldowns & uses" },
+        { href: "/albums", label: "Build Albums", badge: "new", desc: "Save builds & blend with a friend" },
+      ],
+    });
 
 // Flat links stay flat; the rest is grouped so every page has a home in the nav.
 // The data pages that used to be orphaned -- Global, Consistency, News, Patch,
 // Recap -- are all linked.
-const NAV: NavEntry[] = [
+const navEntries = (buildToolsLive: boolean): NavEntry[] => [
   { href: "/tier-list", label: "Tier List" },
   { href: "/champions", label: "Champions" },
-  buildsEntry,
+  buildsEntry(buildToolsLive),
   {
     label: "Meta",
     items: [
       { href: "/meta", label: "Meta Report", badge: "new", desc: "Charts & visualizations" },
-      { href: "/ranks", label: "Win Rate by Rank", desc: "Low elo vs high elo picks" },
+      { href: "/ranks", label: "Win Rate by Skill Bracket", desc: "Diamond+ to Challenger trends" },
       { href: "/compare", label: "Compare Champions", desc: "Two champions side by side" },
       { href: "/rising", label: "Rising Picks", desc: "What China plays before the West" },
       { href: "/global", label: "Global Win Rates", desc: "EU vs CN cross-server meta" },
@@ -47,8 +62,11 @@ const NAV: NavEntry[] = [
   {
     label: "Updates",
     items: [
+      { href: "/blog", label: "Guides", badge: "new", desc: "Best picks per role, climbing & meta reads" },
+      { href: "/creators", label: "Creators", badge: "new", desc: "Wild Rift channels still uploading" },
       { href: "/news", label: "Latest News", desc: "Patches, champions & updates" },
       { href: "/patch", label: "Patch 7.2 Breakdown", desc: "What changed this patch" },
+      { href: "/champion-changes", label: "Balance Report", badge: "new", desc: "Most changed & never changed" },
       { href: "/recap", label: "Season Recap", desc: "Season 22 in review" },
     ],
   },
@@ -58,11 +76,68 @@ const NAV: NavEntry[] = [
 function NavBadge({ text }: { text: string }) {
   const cls = text === "new"
     ? "bg-emerald-400/20 text-emerald-300"
-    : "bg-accent/20 text-accent";
+    : text === "beta"
+      ? "bg-gold/20 text-gold"
+      : "bg-accent/20 text-accent";
   return (
     <span className={`rounded px-1 py-0.5 text-[0.55rem] font-bold uppercase leading-none tracking-wide ${cls}`}>
       {text}
     </span>
+  );
+}
+
+function NavBadges({ item }: { item: NavItem }) {
+  const badges = item.badges ?? (item.badge ? [item.badge] : []);
+  return badges.map((badge) => <NavBadge key={badge} text={badge} />);
+}
+
+function SearchGlyph() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function NavSearch({ champions }: { champions: ComboItem[] }) {
+  const router = useRouter();
+  const ref = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-label="Search champions"
+        aria-expanded={open}
+        className={`grid h-10 w-10 place-items-center rounded-lg transition ${open ? "bg-white/[0.06] text-text" : "text-muted hover:bg-white/[0.06] hover:text-text"}`}
+      >
+        <SearchGlyph />
+      </button>
+      {open && (
+        <div className="fixed left-4 right-4 top-[4.5rem] z-[70] rounded-2xl border border-line bg-surface-2 p-3 shadow-2xl md:absolute md:left-auto md:right-0 md:top-full md:mt-2 md:w-80">
+          <ChampionCombobox
+            champions={champions}
+            placeholder="Search champions…"
+            onSelect={(slug) => {
+              setOpen(false);
+              router.push(`/champions/${slug}`);
+            }}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -122,7 +197,7 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
       </button>
       {open && (
         <div className="absolute right-0 top-full w-64 pt-2">
-          <div className="rounded-xl border border-line bg-[#0e1322] p-1.5 shadow-2xl">
+          <div className="glass-menu rounded-xl p-1.5">
             {group.items.map((it) => (
               <Link
                 key={it.href}
@@ -132,7 +207,7 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
               >
                 <span className="flex items-center gap-1.5 text-sm font-medium text-text">
                   {it.label}
-                  {it.badge && <NavBadge text={it.badge} />}
+                  <NavBadges item={it} />
                 </span>
                 {it.desc && <span className="mt-0.5 text-[0.7rem] text-faint">{it.desc}</span>}
               </Link>
@@ -144,15 +219,16 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
   );
 }
 
-export function SiteNav() {
+export function SiteNav({ champions }: { champions: ComboItem[] }) {
   const pathname = usePathname();
+  const NAV = navEntries(useBuildToolsVisible());
   const [open, setOpen] = useState(false);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
   const groupActive = (g: NavGroup) => g.items.some((it) => isActive(it.href));
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-bg/80 backdrop-blur-xl">
+    <header className="glass-bar sticky top-0 z-50 border-b border-line">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
         <Wordmark />
 
@@ -169,16 +245,20 @@ export function SiteNav() {
                 }`}
               >
                 {e.label}
-                {e.badge && <NavBadge text={e.badge} />}
+                <NavBadges item={e} />
               </Link>
             ),
           )}
+          <NavSearch champions={champions} />
           <span className="mx-1 h-5 w-px bg-line" />
           <DiscordNavLink />
+          <SupportNavLink />
+          <AccountMenu />
         </div>
 
         {/* mobile: Discord icon stays in the top bar so it is never buried in a menu */}
         <div className="flex items-center gap-0.5 md:hidden">
+          <NavSearch champions={champions} />
           <Link
             href={DISCORD_URL}
             target="_blank"
@@ -213,7 +293,7 @@ export function SiteNav() {
       </nav>
 
       {open && (
-        <div className="max-h-[75vh] overflow-y-auto border-t border-line bg-bg/95 px-4 py-3 md:hidden">
+        <div className="glass-bar max-h-[75vh] overflow-y-auto border-t border-line px-4 py-3 md:hidden">
           <div className="flex flex-col gap-1">
             {NAV.map((e) =>
               isGroup(e) ? (
@@ -229,7 +309,7 @@ export function SiteNav() {
                       }`}
                     >
                       {it.label}
-                      {it.badge && <NavBadge text={it.badge} />}
+                      <NavBadges item={it} />
                     </Link>
                   ))}
                 </div>
@@ -243,7 +323,7 @@ export function SiteNav() {
                   }`}
                 >
                   {e.label}
-                  {e.badge && <NavBadge text={e.badge} />}
+                  <NavBadges item={e} />
                 </Link>
               ),
             )}
@@ -257,6 +337,19 @@ export function SiteNav() {
               <DiscordIcon className="h-5 w-5" />
               Join our Discord
             </Link>
+            <Link
+              href={BUYMEACOFFEE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center gap-2 rounded-lg bg-[#FFDD00]/15 px-3 py-2.5 text-sm font-semibold text-gold transition hover:bg-[#FFDD00]/25"
+            >
+              <CoffeeIcon className="h-5 w-5" />
+              Buy me a coffee
+            </Link>
+            <div className="mt-2">
+              <AccountMenu compact />
+            </div>
           </div>
         </div>
       )}

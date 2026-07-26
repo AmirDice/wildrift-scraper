@@ -272,7 +272,7 @@
     "mrShredPct": 30
   },
   "banshees-veil": {},
-  "hextech-roketbelt": {
+  "hextech-rocketbelt": {
     "burstProcFlat": 100,
     "burstProcApPct": 10
   },
@@ -498,7 +498,7 @@
   },
   "boots-of-mana": {},
   "boots-of-dynamism": {},
-  "immortal-treds": {
+  "immortal-treads": {
     "adaptiveAdFlat": 12,
     "adaptiveApFlat": 20,
     "omnivampPct": 10,

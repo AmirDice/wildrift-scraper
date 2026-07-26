@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { TierChip } from "@/components/ui";
 import { ChampionCombobox } from "@/components/champion-combobox";
+import { BestPlayerBuild } from "@/components/best-player-build";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 
 export type SlimChampion = {
@@ -142,6 +143,10 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
           </div>
         </div>
       )}
+
+      {/* The hand-recorded build for this champion's best player, when one has
+          been entered in the admin console. Silent when it has not. */}
+      <BestPlayerBuild slug={slug} championName={champ?.name} />
 
       {/* Player table */}
       {data === null ? (

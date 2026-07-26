@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import type { AttackStyle, Build, BuildItem, ChampionBuilds, Rune } from "@/lib/builds";
-import { buildGold } from "@/lib/builds";
+import { buildGold, visibleBuildVariants } from "@/lib/builds";
 
 /* eslint-disable @next/next/no-img-element */
 
 /** Hover (desktop) / tap (mobile) tooltip. All item & rune explanations live
  *  here so the build itself stays a clean icon strip. */
-export function Tip({ tip, children }: { tip: React.ReactNode; children: React.ReactNode }) {
+export function Tip({ tip, children, wide = false }: { tip: React.ReactNode; children: React.ReactNode; wide?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <span
@@ -19,7 +19,7 @@ export function Tip({ tip, children }: { tip: React.ReactNode; children: React.R
     >
       {children}
       {open && tip && (
-        <span className="absolute bottom-full left-1/2 z-30 mb-2 w-52 -translate-x-1/2 rounded-xl border border-line bg-[#0e1322] p-2.5 text-left text-xs leading-snug text-text shadow-2xl">
+        <span className={`absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded-xl border border-line bg-[#0e1322] p-2.5 text-left text-xs leading-snug text-text shadow-2xl ${wide ? "w-72 max-w-[80vw]" : "w-52"}`}>
           {tip}
         </span>
       )}
@@ -107,10 +107,10 @@ function RuneTile({ r, size = 34, label }: { r: Rune; size?: number; label?: str
 }
 
 const VARIANT_LABEL: Record<string, string> = {
-  standard: "Standard", balanced: "Standard", damage: "Damage", dps: "DPS",
-  oneshot: "One-shot", burst: "Burst", crit: "Crit", antitank: "Anti-Tank",
-  survivability: "Survivability", tanky: "Tanky", sustained: "Sustained",
-  battlemage: "Sustained", utility: "Utility", poke: "Poke",
+  standard: "Standard", balanced: "Standard", damage: "Aggressive", dps: "Sustained DPS",
+  oneshot: "One-shot", burst: "Burst", crit: "Crit", antitank: "Anti-tank",
+  survivability: "Protective", tanky: "Durable", sustained: "Sustained",
+  battlemage: "Battlemage", utility: "Utility", poke: "Poke", offmeta: "Alternative Path",
 };
 const VARIANT_ACTIVE: Record<string, string> = {
   standard: "bg-accent/20 text-accent", balanced: "bg-accent/20 text-accent",
@@ -120,8 +120,10 @@ const VARIANT_ACTIVE: Record<string, string> = {
   survivability: "bg-blue-400/20 text-blue-300", tanky: "bg-blue-400/20 text-blue-300",
   sustained: "bg-accent/20 text-accent", battlemage: "bg-accent/20 text-accent",
   utility: "bg-emerald-400/20 text-emerald-300", poke: "bg-gold/20 text-gold",
+  offmeta: "bg-violet-400/20 text-violet-200",
 };
 const BURST_VARIANTS = new Set(["damage", "oneshot", "burst", "dps", "standard"]);
+const SHOW_RETIRED_ENGINE: boolean = false;
 
 const STYLE_META: Record<string, { label: string; cls: string }> = {
   "basic-attack": { label: "Basic attacker", cls: "bg-gold/15 text-gold" },
@@ -158,7 +160,7 @@ function StyleBadge({ style }: { style: AttackStyle }) {
 }
 
 export function BuildView({ data }: { data: ChampionBuilds }) {
-  const variants = data.variants?.length ? data.variants : Object.keys(data.builds);
+  const variants = visibleBuildVariants(data);
   const [tab, setTab] = useState<string>(
     variants.find((v) => v === "standard" || v === "balanced") ?? variants[0]
   );
@@ -188,7 +190,7 @@ export function BuildView({ data }: { data: ChampionBuilds }) {
         <span className="rounded-md bg-white/[0.06] px-2 py-1 font-medium text-gold">
           ~{buildGold(build).toLocaleString()}g
         </span>
-        {data.attackStyle && <StyleBadge style={data.attackStyle} />}
+        {/* Retired engine-derived attack-style badge. */}
         {(build.summoners ?? []).map((s) => (
           <Tip key={s.name} tip={<><span className="font-bold">{s.name}</span>{s.reason && <span className="mt-1 block text-muted">{s.reason}</span>}</>}>
             <span className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-white/[0.06] px-2 py-1 font-medium">
@@ -202,8 +204,8 @@ export function BuildView({ data }: { data: ChampionBuilds }) {
         )}
       </div>
 
-      {/* engine card FIRST: the computed verdict is the headline */}
-      {build.engine && (
+      {/* Retired simulator output is deliberately not rendered. */}
+      {build.engine && SHOW_RETIRED_ENGINE && (
         <div className="glass mt-5 rounded-2xl p-4">
           <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
             Engine · computed fight value
@@ -233,7 +235,7 @@ export function BuildView({ data }: { data: ChampionBuilds }) {
         </div>
       )}
 
-      {build.analysis && <SimReadout a={build.analysis} />}
+      {build.analysis && SHOW_RETIRED_ENGINE && <SimReadout a={build.analysis} />}
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_320px]">
         {/* left: items */}

@@ -20,6 +20,10 @@
       "crit": {
         "value": 25.0,
         "percent": true
+      },
+      "physicalVamp": {
+        "value": 8.0,
+        "percent": true
       }
     },
     "passives": [
@@ -105,11 +109,15 @@
       "attackSpeed": {
         "value": 35.0,
         "percent": true
+      },
+      "omnivamp": {
+        "value": 10.0,
+        "percent": true
       }
     },
     "passives": [
       "Thirst: [omnivamp] +10% Omni Vamp.",
-      "Ruined Strikes: Attacks deal bonus physical damage equal to 7% [ad] of the enemy's current Health [hp] on-hit. (Melee attacks deal 8.5%). Minion damage: 15. Max damage vs monsters: 60.",
+      "Ruined Strikes: Attacks deal bonus physical damage equal to 7% of the enemy's current Health [hp] on-hit. (Melee attacks deal 8.5%). Minion damage: 15. Max damage vs monsters: 60.",
       "Drain: Hitting a champion with 3 attacks or abilities deals 30-100 bonus magic damage and steals 25% of their Move Speed [moveSpeed] for 2 seconds. (60s Cooldown)"
     ],
     "tags": [
@@ -164,6 +172,10 @@
       "abilityHaste": {
         "value": 15.0,
         "percent": false
+      },
+      "physicalPenFlat": {
+        "value": 15.0,
+        "percent": false
       }
     },
     "passives": [
@@ -193,6 +205,10 @@
       },
       "abilityHaste": {
         "value": 10.0,
+        "percent": false
+      },
+      "physicalPenFlat": {
+        "value": 18.0,
         "percent": false
       }
     },
@@ -252,6 +268,10 @@
       },
       "attackSpeed": {
         "value": 15.0,
+        "percent": true
+      },
+      "physicalPen": {
+        "value": 30.0,
         "percent": true
       }
     },
@@ -603,6 +623,10 @@
       "abilityHaste": {
         "value": 15.0,
         "percent": false
+      },
+      "physicalPen": {
+        "value": 33.0,
+        "percent": true
       }
     },
     "passives": [
@@ -662,6 +686,10 @@
       },
       "ad": {
         "value": 50.0,
+        "percent": false
+      },
+      "physicalPenFlat": {
+        "value": 8.0,
         "percent": false
       }
     },
@@ -724,6 +752,10 @@
       "abilityHaste": {
         "value": 10.0,
         "percent": false
+      },
+      "physicalPenFlat": {
+        "value": 15.0,
+        "percent": false
       }
     },
     "passives": [
@@ -784,6 +816,10 @@
       "crit": {
         "value": 25.0,
         "percent": true
+      },
+      "physicalPenFlat": {
+        "value": 10.0,
+        "percent": false
       }
     },
     "passives": [
@@ -842,8 +878,14 @@
         "percent": false
       }
     },
+    "scopedStats": {
+      "basicAbilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
     "passives": [
-      "Dragonforce: [abilityHaste] +20% Ability Haste.",
+      "Dragonforce: Gain 20 Basic Ability Haste.",
       "Focused Will: Dealing damage to monsters or enemies with abilities increases your champion’s ability and passive damage by 3% for 6s. (Stacks 4 times)."
     ],
     "tags": [
@@ -1136,6 +1178,12 @@
         "percent": true
       }
     },
+    "scopedStats": {
+      "ultimateAbilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
     "passives": [
       "Hexcharged: [abilityHaste] Gain +20 Ability Haste for your ultimate ability.",
       "Overdrive: After using your ultimate ability, gain 40% Attack Speed (20% for ranged champions) and 20% Movement Speed (10% for ranged champions) for 8s. (30s Cooldown)"
@@ -1232,11 +1280,14 @@
       "abilityHaste": {
         "value": 15.0,
         "percent": false
+      },
+      "omnivamp": {
+        "value": 8.0,
+        "percent": true
       }
     },
     "passives": [
-      "Goredrink (Passive): Gain: [omnivamp] 8% Omni Vamp.",
-      "Thirsting Slash (Active): Deal 175% base AD [ad] as physical damage to nearby enemies. Restore Health equal to 20% [ad] plus 10% missing [hp] for each enemy champion hit. (12s cooldown)"
+      "Thirsting Slash (Active): Deal physical damage equal to 175% Attack Damage [ad] to nearby enemies. Restore Health equal to 20% Attack Damage [ad] + 10% missing Health [hp] for each enemy champion hit. (12s cooldown)"
     ],
     "tags": [
       "onHit",
@@ -1755,6 +1806,12 @@
         "percent": false
       }
     },
+    "scopedStats": {
+      "ultimateAbilityHaste": {
+        "value": 20.0,
+        "percent": false
+      }
+    },
     "passives": [
       "Scorn: Your Ultimate abilities gain 20 Ability Haste.",
       "Hatefog: Damaging a champion with your Ultimate burns the ground beneath them for 3 seconds, dealing magic damage equal to 60 plus 5% AP [ap] per second and reducing their Magic Resist by 10. Burn radius increases with damage, reaching maximum radius at 800 damage."
@@ -1967,8 +2024,8 @@
   },
   {
     "id": 231,
-    "slug": "hextech-roketbelt",
-    "name": "Hextech Roketbelt",
+    "slug": "hextech-rocketbelt",
+    "name": "Hextech Rocketbelt",
     "category": "Magic",
     "categories": [
       "Magic",
@@ -1993,7 +2050,7 @@
       "Protobelt (Active): Dash forward and unleash a cone of missiles, dealing 100 plus 10% [ap] magic damage. (30s Cooldown) If champions or monsters are hit by more than one missile, missiles after the first will deal only 10% damage."
     ],
     "tags": [],
-    "icon": "/items/hextech-roketbelt.webp"
+    "icon": "/items/hextech-rocketbelt.webp"
   },
   {
     "id": 232,
@@ -2017,7 +2074,7 @@
       }
     },
     "passives": [
-      "Stasis (Active): Become invulnerable and untargetable for 2.5 seconds, but unable to move, attack, cast abilities or use items. (90s Cooldown)"
+      "Stasis (Active): Become invulnerable and untargetable for 2.5 seconds, but unable to move, attack, cast abilities or use items. (120s Cooldown)"
     ],
     "tags": [],
     "icon": "/items/zhonyas-hourglass.webp"
@@ -3117,7 +3174,7 @@
     "cost": 2600,
     "stats": {
       "ap": {
-        "value": 55.0,
+        "value": 35.0,
         "percent": false
       },
       "manaRegen": {
@@ -3149,7 +3206,12 @@
       "MidTier"
     ],
     "cost": 1100,
-    "stats": {},
+    "stats": {
+      "mr": {
+        "value": 30.0,
+        "percent": false
+      }
+    },
     "passives": [
       "Quicksilver (Active): Removes all crowd control effects currently affecting you, and become immune to crowd control effects for 0.25 seconds.",
       "Perseverance (Passive): When the Quicksilver effects ends, grant 30% Tenacity and 30% Slow Resist for 1.5 seconds. (60s Cooldown) Cannot be used during knock up or knock back effects."
@@ -3166,7 +3228,7 @@
       "Active",
       "MidTier"
     ],
-    "cost": 1200,
+    "cost": 1400,
     "stats": {
       "armor": {
         "value": 20.0,
@@ -3196,6 +3258,10 @@
       "moveSpeed": {
         "value": 45.0,
         "percent": false
+      },
+      "omnivamp": {
+        "value": 5.0,
+        "percent": true
       }
     },
     "passives": [
@@ -3207,7 +3273,7 @@
     ],
     "icon": "/items/gluttonous-greaves.webp",
     "bootsTier": 2,
-    "upgradesTo": "immortal-treds"
+    "upgradesTo": "immortal-treads"
   },
   {
     "id": 158,
@@ -3289,7 +3355,7 @@
         "percent": false
       },
       "armor": {
-        "value": 20.0,
+        "value": 25.0,
         "percent": false
       },
       "moveSpeed": {
@@ -3297,7 +3363,9 @@
         "percent": false
       }
     },
-    "passives": [],
+    "passives": [
+      "Block: Basic attacks from champions deal 6% reduced damage to you."
+    ],
     "tags": [
       "sustain"
     ],
@@ -3328,8 +3396,14 @@
         "percent": false
       }
     },
+    "scopedStats": {
+      "summonerSpellHaste": {
+        "value": 15.0,
+        "percent": true
+      }
+    },
     "passives": [
-      "Summoned: Reduces spell cooldowns by 15%."
+      "Summoned: Gain 15% Summoner Spell Haste."
     ],
     "tags": [
       "mana"
@@ -3411,8 +3485,8 @@
   },
   {
     "id": 242,
-    "slug": "immortal-treds",
-    "name": "Immortal Treds",
+    "slug": "immortal-treads",
+    "name": "Immortal Treads",
     "category": "Boots",
     "categories": [
       "Boots"
@@ -3422,6 +3496,10 @@
       "moveSpeed": {
         "value": 45.0,
         "percent": false
+      },
+      "omnivamp": {
+        "value": 5.0,
+        "percent": true
       }
     },
     "passives": [
@@ -3430,7 +3508,7 @@
       "Now and Forever: When you have more than 50% Health, deal 5% bonus damage. When below 50% Health, gain 12% increased healing and shielding."
     ],
     "tags": [],
-    "icon": "/items/immortal-treds.webp",
+    "icon": "/items/immortal-treads.webp",
     "bootsTier": 3
   },
   {
@@ -3457,8 +3535,8 @@
       }
     },
     "passives": [
-      "Noxian Gait: Attacks against enemy champions grant Movement Speed (15% for melee champions / 12% for ranged champions) decaying over 2 seconds.",
-      "Blessed Blade: Attacks restore 12 Health on hit."
+      "Noxian Gait: Basic attacks against enemy champions grant Movement Speed (15% for melee champions / 10% for ranged champions) for 2 seconds.",
+      "Blessed Blade: Basic attacks restore 12 Health on hit."
     ],
     "tags": [],
     "icon": "/items/gunmetal-greaves.webp",
@@ -3492,7 +3570,7 @@
       }
     },
     "passives": [
-      "Noxian Persistence: After taking magic damage from a champion, gain a magic shield that absorbs 10-120 plus 5% max [hp] for 5s. (12s Cooldown)"
+      "Noxian Persistence: Taking magic damage from champions grants a magic shield equal to 20-140 (based on level) + 5% of your max Health [hp]. (12s Cooldown)"
     ],
     "tags": [],
     "icon": "/items/chainlaced-crushers.webp",
@@ -3522,8 +3600,8 @@
       }
     },
     "passives": [
-      "Block: Reduce damage from champion attacks by 10%.",
-      "Noxian Endurance: After taking physical damage from a champion grants a physical shield that absorbs damage equal to 10-140 plus 8% max Health [hp]. (12s Cooldown)"
+      "Block: Basic attacks from champions deal 10% reduced damage to you.",
+      "Noxian Endurance: Taking physical damage from champions grants a physical shield equal to 20-140 (based on level) + 5% of your max Health [hp]. (12s Cooldown)"
     ],
     "tags": [],
     "icon": "/items/armored-advance.webp",
@@ -3552,9 +3630,15 @@
         "percent": false
       }
     },
+    "scopedStats": {
+      "summonerSpellHaste": {
+        "value": 20.0,
+        "percent": true
+      }
+    },
     "passives": [
-      "Summoned: Reduces spell cooldown by 20%.",
-      "Noxian Haste: Healing or shielding allied champions, casting a spell, or dealing damage to enemies with abilities grants Movement Speed (10% for melee champions / 8% for ranged champions) for 4 seconds. This effect can only be triggered once every 4 seconds per ability."
+      "Summoned: Gain 20% Summoner Spell Haste.",
+      "Noxian Haste: After damaging an enemy champion with an ability, shielding or healing an allied champion, or casting a Summoner Spell, gain Movement Speed (10% for melee champions / 8% for ranged champions) for 4 seconds. The same ability can only trigger this once every 4 seconds."
     ],
     "tags": [],
     "icon": "/items/crimson-lucidity.webp",

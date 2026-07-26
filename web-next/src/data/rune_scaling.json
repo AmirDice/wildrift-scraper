@@ -1,0 +1,668 @@
+{
+  "targetPatch": "7.2",
+  "source": "data/wrmeta_runes.json",
+  "note": "Maximum modelled value of each rune: full stacks, full ramp. 'stats' fold into the stat sheet; 'effects' are quantified but are not stats.",
+  "runes": {
+    "Legend: Tenacity": {
+      "stats": [
+        {
+          "stat": "tenacity",
+          "value": 18,
+          "note": "3% base + 15% at full takedown stacks"
+        }
+      ],
+      "effects": [
+        {
+          "label": "Slow resist",
+          "value": "23%",
+          "note": "3% base + 20% at full stacks"
+        }
+      ],
+      "evidence": "additional 15% Tenacity and 20% Slow Resist"
+    },
+    "Legend: Alacrity": {
+      "stats": [
+        {
+          "stat": "attackSpeedPct",
+          "value": 21,
+          "note": "3% base + 18% at full takedown stacks"
+        }
+      ],
+      "evidence": "additional 18% Attack Speed"
+    },
+    "Legend: Bloodline": {
+      "stats": [
+        {
+          "stat": "omnivamp",
+          "value": 8,
+          "note": "1% base + 7% at full takedown stacks"
+        }
+      ],
+      "evidence": "additional 7% Omnivamp"
+    },
+    "Triumph": {
+      "effects": [
+        {
+          "label": "Takedown reset",
+          "value": "10% lost Health, 10% max Mana, 35 Move Speed",
+          "note": "on champion takedown, 2s"
+        }
+      ],
+      "evidence": "restore 10% of lost health"
+    },
+    "Brutal": {
+      "effects": [
+        {
+          "label": "On-hit damage",
+          "value": "5 + 6% bonus AD + 3% AP",
+          "note": "every attack"
+        }
+      ],
+      "evidence": "bonus adaptive damage to enemy champions"
+    },
+    "Battle Zeal": {
+      "effects": [
+        {
+          "label": "Ability damage amp",
+          "value": "4.2%",
+          "note": "1.4% per stack, 3 stacks in combat"
+        }
+      ],
+      "evidence": "1.4% stacking basic ability damage amplification"
+    },
+    "Last Stand": {
+      "effects": [
+        {
+          "label": "Damage amp",
+          "value": "up to 11%",
+          "note": "below 60% Health, max below 30%"
+        }
+      ],
+      "evidence": "deal 5-11% bonus adaptive damage"
+    },
+    "Cut Down": {
+      "effects": [
+        {
+          "label": "Damage amp",
+          "value": "6.57%",
+          "note": "vs champions above 60% Health"
+        }
+      ],
+      "evidence": "6.57% bonus adaptive damage"
+    },
+    "Coup de Grace": {
+      "effects": [
+        {
+          "label": "Damage amp",
+          "value": "8%",
+          "note": "vs champions below 40% Health"
+        }
+      ],
+      "evidence": "8% bonus adaptive damage"
+    },
+    "Overgrowth": {
+      "stats": [
+        {
+          "stat": "hp",
+          "value": 90,
+          "note": "3 Health per 3 minions, 90 by the 30-stack milestone"
+        },
+        {
+          "stat": "hpPctMax",
+          "value": 3,
+          "note": "+3% max Health at 30 stacks"
+        }
+      ],
+      "effects": [
+        {
+          "label": "Beyond 30 stacks",
+          "value": "+3 Health per 3 minions",
+          "note": "uncapped, keeps growing all game"
+        }
+      ],
+      "evidence": "permanently gain 3 max Health"
+    },
+    "Second Wind": {
+      "stats": [
+        {
+          "stat": "hpRegen",
+          "value": 5,
+          "note": "flat 5 Health every 5 seconds"
+        }
+      ],
+      "effects": [
+        {
+          "label": "After taking damage",
+          "value": "3 + 1.5% missing Health over 5s",
+          "note": "doubled for melee champions"
+        }
+      ],
+      "evidence": "Gain 5 Health"
+    },
+    "Perseverance": {
+      "stats": [
+        {
+          "stat": "tenacity",
+          "value": 10,
+          "note": "always on",
+          "alreadyGuaranteed": true
+        }
+      ],
+      "effects": [
+        {
+          "label": "While immobilised",
+          "value": "10-15 Armor and Magic Resist",
+          "note": "1.5s, refreshes"
+        }
+      ],
+      "evidence": "Gain 10% Tenacity"
+    },
+    "Unshakeable": {
+      "stats": [
+        {
+          "stat": "armorPct",
+          "value": 9,
+          "note": "3% base + 2% per nearby enemy, 3 enemies"
+        },
+        {
+          "stat": "mrPct",
+          "value": 9,
+          "note": "3% base + 2% per nearby enemy, 3 enemies"
+        }
+      ],
+      "effects": [
+        {
+          "label": "Slow resist",
+          "value": "20%",
+          "note": "only with 3 enemies nearby"
+        }
+      ],
+      "evidence": "Gain 3% Armor and Magic Resistance"
+    },
+    "Revitalize": {
+      "stats": [
+        {
+          "stat": "healShieldPower",
+          "value": 15,
+          "note": "5% base, 15% on targets below 40% Health"
+        }
+      ],
+      "evidence": "5% amplification effect when Healing or granting Shields"
+    },
+    "Bone Plating": {
+      "effects": [
+        {
+          "label": "Damage blocked",
+          "value": [
+            30,
+            60
+          ],
+          "note": "next 4 hits within 1.5s, 40s cooldown"
+        }
+      ],
+      "evidence": "deal 30-60 (based on level) less damage"
+    },
+    "Nullifying Orb": {
+      "effects": [
+        {
+          "label": "Shield",
+          "value": [
+            60,
+            180
+          ],
+          "note": "when dropping below 35% Health"
+        }
+      ],
+      "evidence": "shield that absorbs up to 60-180"
+    },
+    "Courage of the Colossus": {
+      "effects": [
+        {
+          "label": "Shield",
+          "value": [
+            25,
+            45
+          ],
+          "note": "+1% max Health, on immobilising a champion"
+        }
+      ],
+      "evidence": "absorbs up to 25-45"
+    },
+    "Font of Life": {
+      "effects": [
+        {
+          "label": "Self heal",
+          "value": "1% max Health + 5% AP",
+          "note": "130% effective if melee"
+        }
+      ],
+      "evidence": "Heal for 1% of your max"
+    },
+    "Demolish": {
+      "effects": [
+        {
+          "label": "Turret damage",
+          "value": "100 + 22% max Health",
+          "note": "at 6 charges"
+        }
+      ],
+      "evidence": "100 + 22% max Health"
+    },
+    "Eyeball Collector": {
+      "stats": [
+        {
+          "stat": "adaptive",
+          "ad": 12,
+          "ap": 24,
+          "note": "1.5 AD or 3 AP per takedown, 8 stacks"
+        }
+      ],
+      "evidence": "stacking up to 8 times"
+    },
+    "Zombie Ward": {
+      "stats": [
+        {
+          "stat": "adaptive",
+          "ad": 15,
+          "ap": 30,
+          "note": "3 AD or 6 AP per ward takedown, 5 stacks"
+        }
+      ],
+      "evidence": "max 5 stacks"
+    },
+    "Relentless Hunter": {
+      "effects": [
+        {
+          "label": "Out-of-combat Move Speed",
+          "value": "20",
+          "note": "10 base + 2 per takedown, 5 stacks"
+        }
+      ],
+      "evidence": "Gain 10 out-of-combat Movement Speed"
+    },
+    "Ingenious Hunter": {
+      "effects": [
+        {
+          "label": "Item Ability Haste",
+          "value": "45",
+          "note": "20 base + 5 per takedown, 5 stacks"
+        }
+      ],
+      "evidence": "Gains 20 Item Ability Haste"
+    },
+    "Hubris": {
+      "effects": [
+        {
+          "label": "Adaptive Force",
+          "value": "5 + 1 per kill",
+          "note": "30s after a takedown, uncapped"
+        }
+      ],
+      "evidence": "5 + 1 per champion kill"
+    },
+    "Cheap Shot": {
+      "effects": [
+        {
+          "label": "True damage",
+          "value": [
+            10,
+            45
+          ],
+          "note": "vs movement-impaired targets, 7s cooldown"
+        }
+      ],
+      "evidence": "10-45 bonus true damage"
+    },
+    "Sudden Impact": {
+      "effects": [
+        {
+          "label": "True damage",
+          "value": [
+            15,
+            65
+          ],
+          "note": "after a dash, blink or stealth exit"
+        }
+      ],
+      "evidence": "bonus 15-65 true damage"
+    },
+    "Empowered Attack": {
+      "effects": [
+        {
+          "label": "Adaptive damage",
+          "value": [
+            20,
+            60
+          ],
+          "note": "every 8s; ranged deal 80%"
+        }
+      ],
+      "evidence": "20-60 bonus adaptive damage"
+    },
+    "Chain Assault": {
+      "effects": [
+        {
+          "label": "Adaptive damage",
+          "value": [
+            12,
+            38
+          ],
+          "note": "+3% bonus AD +1.5% AP, next 2 hits"
+        }
+      ],
+      "evidence": "12-38 (based on level)"
+    },
+    "Tyrant": {
+      "effects": [
+        {
+          "label": "Adaptive damage",
+          "value": [
+            20,
+            70
+          ],
+          "note": "+6% bonus AD +3% AP, below 50% Health"
+        }
+      ],
+      "evidence": "20-70 (based on level)"
+    },
+    "Manaflow Band": {
+      "stats": [
+        {
+          "stat": "mana",
+          "value": 300,
+          "note": "30 per ability hit, capped at 300"
+        }
+      ],
+      "evidence": "up to 300 mana"
+    },
+    "Absolute Focus": {
+      "stats": [
+        {
+          "stat": "adaptive",
+          "ad": 20,
+          "ap": 30,
+          "note": "at level 15, while above 65% Health"
+        }
+      ],
+      "evidence": "bonus 2–20 Attack Damage"
+    },
+    "Gathering Storm": {
+      "stats": [
+        {
+          "stat": "adaptive",
+          "ad": 14,
+          "ap": 28,
+          "note": "fourth step, roughly 20 minutes in"
+        }
+      ],
+      "evidence": "2/5/9/14"
+    },
+    "Celerity": {
+      "stats": [
+        {
+          "stat": "moveSpeedPct",
+          "value": 2,
+          "note": "always on",
+          "alreadyGuaranteed": true
+        }
+      ],
+      "effects": [
+        {
+          "label": "Move Speed amp",
+          "value": "+7%",
+          "note": "applies to every other Move Speed bonus"
+        }
+      ],
+      "evidence": "Gain 2% Movement Speed"
+    },
+    "Transcendence": {
+      "stats": [
+        {
+          "stat": "haste",
+          "value": 10,
+          "note": "5 at level 1, 5 more at level 5",
+          "alreadyGuaranteed": true
+        }
+      ],
+      "effects": [
+        {
+          "label": "Cooldown refund",
+          "value": "8%",
+          "note": "on basic ability hit from level 9"
+        }
+      ],
+      "evidence": "gain 5 Ability Haste"
+    },
+    "Scorch": {
+      "effects": [
+        {
+          "label": "Magic damage",
+          "value": [
+            21,
+            49
+          ],
+          "note": "on ability hit, 8s cooldown"
+        }
+      ],
+      "evidence": "21-49 bonus magic damage"
+    },
+    "Nimbus Cloak": {
+      "effects": [
+        {
+          "label": "Move Speed",
+          "value": "10-40%",
+          "note": "3s after a summoner spell"
+        }
+      ],
+      "evidence": "10% - 40% movement bonus"
+    },
+    "Axiom Arcanist": {
+      "effects": [
+        {
+          "label": "Ultimate amp",
+          "value": "10%",
+          "note": "5% for area damage; 7% cooldown refund on takedown"
+        }
+      ],
+      "evidence": "ultimate ability has 10% increased damage"
+    },
+    "Lethal Tempo": {
+      "stats": [
+        {
+          "stat": "attackSpeedPct",
+          "melee": 84,
+          "ranged": 48,
+          "note": "6 stacks at level 15: 14% melee or 8% ranged per stack"
+        }
+      ],
+      "effects": [
+        {
+          "label": "At max stacks",
+          "value": "25 (melee) / 50 (ranged) Attack Distance",
+          "note": "and the Attack Speed cap is lifted"
+        }
+      ],
+      "evidence": "6-14% (Melee) or 3.5-8% (Ranged)"
+    },
+    "Conqueror": {
+      "stats": [
+        {
+          "stat": "adaptive",
+          "ad": 30,
+          "ap": 48,
+          "note": "6 stacks at level 15: 5 AD or 8 AP per stack"
+        },
+        {
+          "stat": "omnivamp",
+          "melee": 9,
+          "ranged": 5,
+          "note": "only while fully stacked"
+        }
+      ],
+      "evidence": "3-5 bonus"
+    },
+    "Dark Harvest": {
+      "effects": [
+        {
+          "label": "Soul damage",
+          "value": "35 + 11 per soul",
+          "note": "+10% bonus AD +5% AP; uncapped, 145 at 10 souls"
+        }
+      ],
+      "evidence": "increasing Dark Harvest's damage by 11"
+    },
+    "Electrocute": {
+      "effects": [
+        {
+          "label": "Burst damage",
+          "value": [
+            40,
+            210
+          ],
+          "note": "+10% bonus AD +5% AP, on a 3-hit combo"
+        }
+      ],
+      "evidence": "40-210 (based on level)"
+    },
+    "Empowerment": {
+      "effects": [
+        {
+          "label": "Adaptive damage",
+          "value": [
+            40,
+            165
+          ],
+          "note": "on a 3-attack combo"
+        },
+        {
+          "label": "Damage amp",
+          "value": "8%",
+          "note": "until you leave combat"
+        }
+      ],
+      "evidence": "amplifies your damage dealt by 8%"
+    },
+    "Grasp of the Undying": {
+      "effects": [
+        {
+          "label": "Permanent Health",
+          "value": "10 per proc",
+          "note": "uncapped; 60% weaker on ranged champions"
+        },
+        {
+          "label": "Proc",
+          "value": "3.3% max Health magic damage, 1.3% max Health heal",
+          "note": "every 3s in combat"
+        }
+      ],
+      "evidence": "Permanently health increase: 10"
+    },
+    "Phase Rush": {
+      "stats": [
+        {
+          "stat": "haste",
+          "value": 10,
+          "note": "while Phase Rush is active"
+        }
+      ],
+      "effects": [
+        {
+          "label": "Move Speed",
+          "value": "40-60% melee, 20-35% ranged",
+          "note": "3s, plus 60% slow resist"
+        }
+      ],
+      "evidence": "Ability Haste: 10"
+    },
+    "Fleet Footwork": {
+      "effects": [
+        {
+          "label": "Empowered attack",
+          "value": "40% Attack Speed",
+          "note": "at 100 energy stacks"
+        },
+        {
+          "label": "Heal",
+          "value": [
+            15,
+            110
+          ],
+          "note": "+15% bonus AD +10% AP"
+        }
+      ],
+      "evidence": "Bonus Attack Speed: 40%"
+    },
+    "First Strike": {
+      "effects": [
+        {
+          "label": "True damage amp",
+          "value": "7%",
+          "note": "3s from the opening hit, plus gold"
+        }
+      ],
+      "evidence": "7% bonus true damage"
+    },
+    "Aery": {
+      "effects": [
+        {
+          "label": "Damage or shield",
+          "value": [
+            15,
+            70
+          ],
+          "note": "shield 25-120; +10% bonus AD +5% AP"
+        }
+      ],
+      "evidence": "Damage: 15-70 (based on level)"
+    },
+    "Arcane Comet": {
+      "effects": [
+        {
+          "label": "Ability damage",
+          "value": [
+            15,
+            100
+          ],
+          "note": "+2 per previous hit, +10% bonus AD +5% AP"
+        }
+      ],
+      "evidence": "(15 to 100)"
+    },
+    "Guardian": {
+      "effects": [
+        {
+          "label": "Ally shield",
+          "value": [
+            40,
+            165
+          ],
+          "note": "+6% bonus Health +15% AP"
+        }
+      ],
+      "evidence": "Shield: 40–165"
+    },
+    "Ice Overlord": {
+      "effects": [
+        {
+          "label": "Defenses",
+          "value": "35 + 75% bonus Armor and MR",
+          "note": "2.5s after immobilising"
+        },
+        {
+          "label": "Magic damage",
+          "value": [
+            15,
+            100
+          ],
+          "note": "+5% max Health"
+        }
+      ],
+      "evidence": "35 + 75% bonus Armor and Magic Resist"
+    }
+  },
+  "unmodelled": [
+    "Botanist",
+    "Hextech Flashtraption",
+    "Ixtali Seedjar"
+  ]
+}

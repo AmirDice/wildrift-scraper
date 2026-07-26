@@ -1,0 +1,53 @@
+name: Scrape China win rates
+
+# The official China server (lolm.qq.com) publishes fresh champion win/pick/ban
+# rates daily. Every three days is enough to keep the cross-server pages honest
+# without churning the repo, and it matches how fast the CN meta actually moves.
+#
+# The job commits data/cn_winrates.json, web-next/src/data/cn.json and the dated
+# snapshot under data/history/cn/, then (optionally) pings a Vercel deploy hook
+# so the statically generated pages pick the new numbers up.
+on:
+  schedule:
+    # 06:00 UTC on the 1st, 4th, 7th ... of each month.
+    - cron: "0 6 */3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrape-cn
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scrape China win rates
+        run: node scripts/scrape_cn.mjs
+
+      - name: Commit updated data
+        id: commit
+        run: |
+          git config user.name "wrtruemeta-bot"
+          git config user.email "actions@github.com"
+          git add data/cn_winrates.json data/history/cn web-next/src/data/cn.json web-next/src/data/cn_movers.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No CN win-rate changes."
+          else
+            git commit -m "Update China win rates ($(date -u +%Y-%m-%d))"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger a redeploy
+        # Add VERCEL_DEPLOY_HOOK in the repo secrets to have the site rebuild
+        # with the new numbers. Without it the data lands on the next deploy.
+        if: steps.commit.outputs.changed == 'true' && env.HOOK != ''
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: curl -sS -X POST "$HOOK"

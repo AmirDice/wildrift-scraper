@@ -1,0 +1,206 @@
+"""Prompt assembly, and the contract that keeps /api/build alive."""
+from __future__ import annotations
+
+import io
+import json
+from contextlib import redirect_stdout
+
+import pytest
+
+from web import build_advisor as advisor
+from web.advisor import itemmeta, profiles, runemeta
+from web.advisor import prompt as prompt_mod
+
+
+def build_prompt(champion="Hecarim", role="Jungle", enemies=(), **kwargs) -> str:
+    """Assemble the real user message by intercepting the model call."""
+    captured = {}
+
+    def capture(_key, text):
+        captured["prompt"] = text
+        raise SystemExit(0)
+
+    original = advisor._call
+    advisor._call = capture
+    try:
+        advisor.advise(champion=champion, role=role, enemies=list(enemies), **kwargs)
+    except SystemExit:
+        pass
+    finally:
+        advisor._call = original
+    return captured.get("prompt", "")
+
+
+@pytest.fixture(scope="module")
+def hecarim_unknown(monkeypatch_module=None):
+    import os
+    os.environ.setdefault("DEEPSEEK_API_KEY", "test-key-not-used")
+    return build_prompt()
+
+
+@pytest.fixture(scope="module")
+def hecarim_known():
+    import os
+    os.environ.setdefault("DEEPSEEK_API_KEY", "test-key-not-used")
+    return build_prompt(enemies=["Ashe", "Master Yi", "Malphite"], mode="counter")
+
+
+class TestStdoutContract:
+    """web-next/src/app/api/build/route.ts does JSON.parse on this process's
+    stdout. Anything else printed there takes the live build tool down, which
+    makes this the highest-consequence test in the suite."""
+
+    def test_diagnostics_go_to_stderr_not_stdout(self):
+        import os
+        os.environ.setdefault("DEEPSEEK_API_KEY", "test-key-not-used")
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            build_prompt()
+        assert buffer.getvalue() == "", (
+            "the advisor wrote to stdout while assembling a prompt; /api/build "
+            f"parses stdout as JSON and would break. Got: {buffer.getvalue()[:200]!r}")
+
+    def test_profile_derivation_logs_to_stderr(self, capsys):
+        profiles.profile("Hecarim", log=True)
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert "artifact" in captured.err
+
+
+class TestSystemMessage:
+    def test_it_no_longer_claims_to_produce_the_highest_win_rate(self):
+        assert "highest-winrate loadout" not in prompt_mod.SYSTEM
+        assert "highest expected practical win rate" in prompt_mod.SYSTEM
+
+    def test_it_says_category_scores_are_estimates_not_measurements(self):
+        assert "COACH ESTIMATES" in prompt_mod.SYSTEM
+        assert "not measured or simulated" in prompt_mod.SYSTEM
+
+    def test_it_mentions_no_simulator_or_fight_engine(self):
+        lowered = prompt_mod.SYSTEM.lower()
+        assert "fight engine" not in lowered
+        assert "simulator" not in lowered
+
+    def test_it_asks_for_the_split_score_lists(self):
+        assert "candidateItemScores" in prompt_mod.SYSTEM
+        assert "mandatoryAuditScores" in prompt_mod.SYSTEM
+        assert "do NOT count toward" in prompt_mod.SYSTEM
+
+    def test_it_states_that_a_ratio_is_not_a_licence_to_itemise(self):
+        assert "does NOT make items granting that stat viable" in prompt_mod.SYSTEM
+
+    def test_it_carries_the_tie_breakers_and_both_rubrics(self):
+        assert "TIE-BREAKERS" in prompt_mod.SYSTEM
+        assert "ITEM SCORE RUBRIC" in prompt_mod.SYSTEM
+        assert "BUILD SCORE RUBRIC" in prompt_mod.SYSTEM
+
+    def test_it_preserves_the_load_bearing_old_instructions(self):
+        """Section 20: these behaviours were working and must survive."""
+        for phrase in [
+            "PURCHASE ORDER IS TIMING, NOT A RANKING",
+            "your training data",
+            "Return ONLY JSON",
+            "15-20 minutes",
+            "only after deciding, explain",
+        ]:
+            assert phrase in prompt_mod.SYSTEM, phrase
+
+
+class TestChampionBlock:
+    def test_the_profiles_reach_the_prompt(self, hecarim_unknown):
+        assert "COMBAT PROFILE" in hecarim_unknown
+        assert "SCALING PROFILE" in hecarim_unknown
+        assert "BUILD IDENTITY PROFILE" in hecarim_unknown
+        assert '"primaryCombatEngine"' in hecarim_unknown
+        assert '"approvedBuildPaths"' in hecarim_unknown
+        assert '"repeatedOnHitReliance": "low"' in hecarim_unknown
+
+    def test_system_prioritises_repeatable_damage_source_over_one_ratio(self):
+        assert "BUILD IDENTITY IS AUTHORITATIVE" in prompt_mod.SYSTEM
+        assert "isolated ability prints the largest ratio" in prompt_mod.SYSTEM
+
+    def test_build_path_viability_overrides_raw_ratio(self, hecarim_unknown):
+        assert "BUILD-PATH VIABILITY" in hecarim_unknown
+        assert '"totalAD": "core"' in hecarim_unknown
+        assert '"AP": "not_viable"' in hecarim_unknown
+
+    def test_malformed_text_is_cleaned_and_flagged(self, hecarim_unknown):
+        assert "STRUCTURED EFFECTS" in hecarim_unknown
+        assert "DATA QUALITY WARNING" in hecarim_unknown
+        # The cleaned ability line no longer carries the dead assignment.
+        warpath = [line for line in hecarim_unknown.splitlines()
+                   if line.startswith("[P] Warpath")]
+        assert warpath and "0 =" not in warpath[0]
+
+    def test_the_old_coarse_tags_are_gone(self, hecarim_unknown):
+        assert "mechanics=[" not in hecarim_unknown
+        assert "scalesWith=[" not in hecarim_unknown
+
+
+class TestRulesTiers:
+    def test_all_three_tiers_are_present_and_distinguished(self, hecarim_unknown):
+        assert "A. HARD LEGALITY" in hecarim_unknown
+        assert "B. REDUNDANCY" in hecarim_unknown
+        assert "C. DEFAULT STRATEGY" in hecarim_unknown
+        assert "Only tier A is absolute" in hecarim_unknown
+
+    def test_terminus_appears_in_the_hard_armor_penetration_group(self, hecarim_unknown):
+        line = [l for l in hecarim_unknown.splitlines()
+                if l.strip().startswith("armor-penetration:")][0]
+        for slug in ("black-cleaver", "terminus", "lord-dominiks-regard",
+                     "mortal-reminder", "seryldas-grudge"):
+            assert slug in line
+
+    def test_guardian_angel_is_late_strategic_not_forbidden(self, hecarim_unknown):
+        assert "guardian-angel is a LATE STRATEGIC option" in hecarim_unknown
+        assert "position 4 or later" in hecarim_unknown
+
+
+class TestUnknownEnemyHandling:
+    def test_the_unknown_enemy_block_appears_when_no_enemies_given(self, hecarim_unknown):
+        assert "WHEN THE ENEMY TEAM IS UNKNOWN" in hecarim_unknown
+        assert "Do not invent enemy champions" in hecarim_unknown
+
+    def test_it_is_absent_when_an_enemy_team_is_supplied(self, hecarim_known):
+        assert "WHEN THE ENEMY TEAM IS UNKNOWN" not in hecarim_known
+
+    def test_defensive_boots_are_situational_only_without_enemies(self, hecarim_unknown):
+        assert "DEFENSIVE BOOTS -- situationalBoots ONLY" in hecarim_unknown
+
+    def test_defensive_boots_may_be_main_boots_with_enemies(self, hecarim_known):
+        assert "available as MAIN boots" in hecarim_known
+
+
+class TestItemPool:
+    def test_withheld_items_are_declared_rather_than_silently_dropped(self, hecarim_unknown):
+        assert "ITEMS WITHHELD FROM THE POOL" in hecarim_unknown
+        assert "runaans-hurricane" in hecarim_unknown
+
+    def test_the_audit_is_spellblade_for_hecarim(self, hecarim_unknown):
+        assert "MANDATORY ITEM AUDIT" in hecarim_unknown
+        audit_section = hecarim_unknown.split("MANDATORY ITEM AUDIT")[1].split("\n\n")[0]
+        assert "trinity-force" in audit_section
+        assert "guinsoos-rageblade" not in audit_section
+
+    def test_the_prompt_is_not_truncated_and_carries_every_section(self, hecarim_unknown):
+        for section in ["CHAMPION: Hecarim", "ROLE: Jungle", "RULES, IN THREE TIERS",
+                        "BOOTS (pick ONE tier-2", "RUNES (page =", "ITEM POOL"]:
+            assert section in hecarim_unknown, section
+        assert len(hecarim_unknown) > 40_000
+
+    def test_summoner_spells_are_not_asked_of_the_model(self, hecarim_unknown):
+        """They are assigned in code, so the pool and the schema field are gone
+        and the model is told plainly not to pick them."""
+        assert "SUMMONER SPELLS (choose exactly 2" not in hecarim_unknown
+        assert '"summoners"' not in prompt_mod.SYSTEM
+        assert "DO NOT CHOOSE SUMMONER SPELLS" in prompt_mod.SYSTEM
+
+
+class TestRuneMetadata:
+    def test_every_rune_resolves_to_a_tree_and_slot_or_is_a_keystone(self):
+        for rune in runemeta.RUNES:
+            meta = runemeta.metadata(rune["name"])
+            assert meta["tree"], rune["name"]
+
+    def test_the_pool_block_states_the_page_rule(self):
+        assert "1 keystone + 3 minors from ONE tree" in runemeta.pool_text_block()

@@ -1,0 +1,697 @@
+{
+  "source": "data/official_patch_history.json",
+  "note": "Release patch per champion, matched from Riot's own announcement wording. Champions absent here were released before the patch history begins.",
+  "historyStartsAt": "2020-10-10",
+  "releases": {
+    "Ahri": {
+      "patch": "2.2c",
+      "releasedAt": "2021-05-12T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2c/",
+      "evidence": "utes: 4G per second (unchanged) After 8 minutes: 4 → 3G per second FREE-TO-PLAY CHAMPION ROTATION May 13 - May 19 : Akali, Braum, Darius, Diana, Evelynn, Jax, Miss Fortune, Olaf, Sona, Tristana May 20 - May 26 : Ahri, Corki, Kai'Sa, Kha'Zix"
+    },
+    "Akali": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "dels and get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, "
+    },
+    "Akshan": {
+      "patch": "3.2",
+      "releasedAt": "2022-05-11T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2/",
+      "evidence": "Gage in both the Attack and Defense sections of your shop. FREE-TO-PLAY CHAMPION ROTATION May 12 - May 18 : Alistar, Brand, Draven, Jax, Kha'zix, Leona, Lucian, Nunu & Willimp, Tryndamere, Veigar May 19 - May 25 : Akshan, Corki, Diana, Dr. "
+    },
+    "Alistar": {
+      "patch": "2.4a",
+      "releasedAt": "2021-08-18T01:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4a/",
+      "evidence": "l cost: 3000g → 3100g Combined cost: 800g → 900g FREE-TO-PLAY CHAMPION ROTATION August 19 - August 25 : Darius, Fizz, Graves, Jhin, Kai'Sa, Katarina, Leona, Olaf, Renekton, Soraka August 26 - September 1 : Ahri, Alistar, Aurelion Sol, Camil"
+    },
+    "Amumu": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": "bonus: 11.25% → 9% Movement speed bonus per stack: 3.75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leona, Lee Sin, Malphite, Orianna, Seraphine, Rakan, Teemo May 6 - May 12 : Amumu, Camille, Draven, Kat"
+    },
+    "Annie": {
+      "patch": "5.2",
+      "releasedAt": "2024-07-17T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-52/",
+      "evidence": "erience. Improved the laning guide in the champion selection section of the tutorial. Adjusted champion selection for new players from the original 5 (Ahri, Master Yi, Jinx, Seraphine, and Garen) to 3 new champions (Annie, Xin Zhao, and Mis"
+    },
+    "Ashe": {
+      "patch": "4.4b",
+      "releasedAt": "2023-11-22T17:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4b/",
+      "evidence": "40% → 50% RIOT ID CHANGES You might have heard that we are making some updates about Riot IDs starting on November 20th. Paid name changes will now be free You can now change your name every 90 days SKINS Ashen Conqueror Pantheon Releasing "
+    },
+    "Aurelion Sol": {
+      "patch": "2.2a",
+      "releasedAt": "2021-04-20T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
+      "evidence": "gic Resist 5 champions in total: 300 → 350 Armor and Magic Resist FREE-TO-PLAY CHAMPION ROTATION Apr 15 - Apr 21 : Braum, Evelynn, Fizz, Galio, Graves, Jax, Kai'Sa, Lulu, Singed, Varus Apr 22 - Apr 28 : Alistar, Aurelion Sol, Corki, Dr. Mun"
+    },
+    "Aurora": {
+      "patch": "6.3",
+      "releasedAt": "2025-10-22T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3/",
+      "evidence": "ing October 23 @ 00:01 UTC Spirit Blossom Karma Releasing October 23 @ 00:01 UTC Spirit Blossom Lee Sin Releasing October 23 @ 00:01 UTC Spirit Blossom Kindred Releasing October 23 @ 00:01 UTC Summer Party Aurora Exquisite Edition Releasing"
+    },
+    "Brand": {
+      "patch": "2.4b",
+      "releasedAt": "2021-09-01T01:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4b/",
+      "evidence": "s to the Rift and inspires a host of brisk and broiling balance updates. The Frost and Flame event is here along with two new champions that embody the rival elements. Cool off with Nunu & Willump or heat things up with Brand! Prepare for b"
+    },
+    "Braum": {
+      "patch": "2.4",
+      "releasedAt": "2021-07-27T23:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4/",
+      "evidence": "led through the in-game Settings menu Once a day, you can reroll the offerings in the Poro Store. You can also Pin any items to to prevent them from rerolled. FREE-TO-PLAY CHAMPION ROTATION July 29 - Aug 4 : Amumu, Braum, Draven, Kennen, Or"
+    },
+    "Caitlyn": {
+      "patch": "3.2b",
+      "releasedAt": "2022-06-07T23:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2b/",
+      "evidence": "5 : Fizz, Janna, Jarvan IV, Jayce, Katarina, Kennen, Morgana, Tristana, Xayah, Xin Zhao Jun 16 - Jun 22 : Darius, Ezreal, Kha'zix, Leona, Lucian, Olaf, Shen, Sona, Twisted Fate, Zed Jun 23 - Jun 29 : Akali, Alistar, Caitlyn, Draven, Graves,"
+    },
+    "Camille": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": "11.25% → 9% Movement speed bonus per stack: 3.75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leona, Lee Sin, Malphite, Orianna, Seraphine, Rakan, Teemo May 6 - May 12 : Amumu, Camille, Draven, Katarina, "
+    },
+    "Corki": {
+      "patch": "2.0",
+      "releasedAt": "2021-01-05T01:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-0/",
+      "evidence": "eatures like Party Finder, a new latency indicator, and more Our first patch of 2021 is here with some exciting changes, including a band(le) of new champions! We're introducing some of Bandle City's finest to the Rift: Corki, Kennen, Trist"
+    },
+    "Darius": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "stems to review, and having the reports helps us continue to improve our machine learning models and get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina"
+    },
+    "Diana": {
+      "patch": "2.2",
+      "releasedAt": "2021-03-28T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
+      "evidence": "ore/Google Play Store would put your Wild Rift account in the negative, you will be temporarily suspended as a precaution. Reach out to Player Support to regain access. FREE-TO-PLAY CHAMPION ROTATION Apr 1 - Apr 7 : Diana, Ezreal, Gragas, L"
+    },
+    "Dr. Mundo": {
+      "patch": "2.3",
+      "releasedAt": "2021-06-02T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3/",
+      "evidence": "is under attack” announcement will not be played as frequently if the same turret is being attacked The “turret is under attack” announc... just kidding FREE-TO-PLAY CHAMPION ROTATION Jun 3 - Jun 9 : Aurelion Sol, Dr. Mundo, Galio, Gragas, "
+    },
+    "Draven": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "d get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Ra"
+    },
+    "Ekko": {
+      "patch": "3.2",
+      "releasedAt": "2022-05-11T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2/",
+      "evidence": "Wild Rift Patch Notes 3.2 Don't blink, Patch 3.2 is here! We've been tinkering in our workshop and are bringing a whole host of updates to the Rift! Ekko is making his debut, Elemental Dragons are returning, eight new runes, the introductio"
+    },
+    "Evelynn": {
+      "patch": "2.5a",
+      "releasedAt": "2021-10-27T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5a/",
+      "evidence": "Force of Nature for context. Magic resist: 45 → 50 FREE-TO-PLAY CHAMPION ROTATION Oct 28 - Nov 3 : Amumu, Brand, Jax, Miss Fortune, Rakan, Soraka, Tryndamere, Varus, Veigar, Xin Zhao Nov 4 - Nov 10 : Akali, Corki, Evelynn, Fizz, Leona, Malp"
+    },
+    "Ezreal": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": "s per stack: 4% → 3% CLOUD DRAGON Movement speed bonus: 7.5% → 6% ELDER CLOUD DRAGON Movement speed bonus: 11.25% → 9% Movement speed bonus per stack: 3.75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leo"
+    },
+    "Fiddlesticks": {
+      "patch": "4.4",
+      "releasedAt": "2023-10-24T19:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4/",
+      "evidence": "Wild Rift Patch Notes 4.4 BOO! This patch is full of surprises! Fiddlesticks arrives on the Rift, we're celebrating our third-year anniversary, the mage update is here, and much more! Welcome to Patch 4.4! BOO! This patch is full of surpris"
+    },
+    "Fiora": {
+      "patch": "2.3",
+      "releasedAt": "2021-06-02T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3/",
+      "evidence": "d The “turret is under attack” announc... just kidding FREE-TO-PLAY CHAMPION ROTATION Jun 3 - Jun 9 : Aurelion Sol, Dr. Mundo, Galio, Gragas, Graves, Leona, Nami, Singed, Tristana, Vayne Jun 10 - Jun 16 : Amumu, Fiora, Jhin, Kennen, Lee Sin"
+    },
+    "Fizz": {
+      "patch": "2.5a",
+      "releasedAt": "2021-10-27T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5a/",
+      "evidence": "Nature for context. Magic resist: 45 → 50 FREE-TO-PLAY CHAMPION ROTATION Oct 28 - Nov 3 : Amumu, Brand, Jax, Miss Fortune, Rakan, Soraka, Tryndamere, Varus, Veigar, Xin Zhao Nov 4 - Nov 10 : Akali, Corki, Evelynn, Fizz, Leona, Malphite, Lul"
+    },
+    "Galio": {
+      "patch": "3.4",
+      "releasedAt": "2022-09-14T20:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4/",
+      "evidence": "she would always be able to use her ultimate FREE-TO-PLAY CHAMPION ROTATION Sept 15 - Sept 21 : Braum, Draven, Gragas, Lulu, Malphite, Nunu & Willump, Orianna, Samira, Sion, Twisted Fate Sept 22 - Sept 29 : Corki, Galio, Jarvan IV, Karma, K"
+    },
+    "Gnar": {
+      "patch": "6.3e",
+      "releasedAt": "2025-12-03T10:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3e/",
+      "evidence": "cember 05 @ 00:01 UTC Battle Squirrel Zeri Releasing December 05 @ 00:01 UTC Shan Hai Scrolls Fizz Releasing December 11 @ 00:01 UTC Shan Hai Scrolls Kog'Maw Releasing December 11 @ 00:01 UTC Shan Hai Scrolls Gnar Releasing December 11 @ 00"
+    },
+    "Gragas": {
+      "patch": "2.2",
+      "releasedAt": "2021-03-28T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
+      "evidence": "Store would put your Wild Rift account in the negative, you will be temporarily suspended as a precaution. Reach out to Player Support to regain access. FREE-TO-PLAY CHAMPION ROTATION Apr 1 - Apr 7 : Diana, Ezreal, Gragas, Leona, Lulu, Miss"
+    },
+    "Graves": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "review, and having the reports helps us continue to improve our machine learning models and get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphit"
+    },
+    "Gwen": {
+      "patch": "4.2",
+      "releasedAt": "2023-05-25T19:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2/",
+      "evidence": "Trail; Follow me to happiness Custom Recalls: Carbonate Escape; Fizzy Farewell All accessories will be released throughout the patch FREE-TO-PLAY CHAMPION ROTATION May 25 - May 31: Akshan, Alistar, Amumu, Braum, Gwen, Miss Fortune, Samira, "
+    },
+    "Irelia": {
+      "patch": "3.3b",
+      "releasedAt": "2022-08-17T22:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3b/",
+      "evidence": "chance to randomly crit your opponent and catch them off guard as Jayce. FREE-TO-PLAY CHAMPION ROTATION Aug 18 - Aug 24 : Brand, Evelynn, Jhin, Kennen, Lee Sin, Riven, Soraka, Thresh, Xayah, Zed Aug 25 - Aug 31 : Irelia, Kassadin, Kha'zix, "
+    },
+    "Janna": {
+      "patch": "3.3a",
+      "releasedAt": "2022-07-27T22:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3a/",
+      "evidence": "ries will be released throughout the patch. FREE-TO-PLAY CHAMPION ROTATION Jul 28 - Aug 3 : Corki, Dr. Mundo, Gragas, Graves, Kayle, Leona, Lulu, Tristana, Twisted Fate, Yasuo Aug 4 - Aug 10 : Draven, Ekko, Fiora, Janna, Kai'sa, Katarina, M"
+    },
+    "Jarvan IV": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "tter and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Rakan, Son"
+    },
+    "Jax": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "tter at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Rakan, Sona, Wukong, "
+    },
+    "Jayce": {
+      "patch": "3.0",
+      "releasedAt": "2022-01-18T22:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-0/",
+      "evidence": "lobby issues Added in the ability to hide timeline FREE-TO-PLAY CHAMPION ROTATION Jan 20 - Jan 26 : Akali, Evelynn, Morgana, Pantheon, Rakan, Rammus, Vayne, Veigar, Wukong, Xayah Jan 27 - Feb 2: Alistar, Corki, Jayce, Katarina, Kennen, Nunu"
+    },
+    "Jhin": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": "% CLOUD DRAGON Movement speed bonus: 7.5% → 6% ELDER CLOUD DRAGON Movement speed bonus: 11.25% → 9% Movement speed bonus per stack: 3.75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leona, Lee Sin, Malphi"
+    },
+    "Jinx": {
+      "patch": "2.6",
+      "releasedAt": "2021-12-02T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-6/",
+      "evidence": "blow something up since they watched Arcane? Well now, they can...kinda! When one of your friends downloads Wild Rift for the first time they will get to experience a new mission track filled with rewards themed around Jinx, who does blow s"
+    },
+    "Kai'Sa": {
+      "patch": "2.3b",
+      "releasedAt": "2021-06-30T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3b/",
+      "evidence": "Smite's tooltip now correctly reflects its mana regen property Evelynn's Ult tooltip should now reflect that it only deals bonus damage to champions FREE-TO-PLAY CHAMPION ROTATION July 1 - July 7 : Ahri, Camille, Kai'Sa, Olaf, Rakan, Renekt"
+    },
+    "Karma": {
+      "patch": "3.2",
+      "releasedAt": "2022-05-11T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2/",
+      "evidence": "your shop. FREE-TO-PLAY CHAMPION ROTATION May 12 - May 18 : Alistar, Brand, Draven, Jax, Kha'zix, Leona, Lucian, Nunu & Willimp, Tryndamere, Veigar May 19 - May 25 : Akshan, Corki, Diana, Dr. Mundo, Fiora, Kai'sa, Karma, Lee Sin, Rammus, Yu"
+    },
+    "Kassadin": {
+      "patch": "3.4c",
+      "releasedAt": "2022-11-02T21:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4c/",
+      "evidence": "easing November 4 @ 00:01 UTC FREE-TO-PLAY CHAMPION ROTATION Nov 3 - Nov 9 : Corki, Diana, Leona, Nautilus, Nunu & Willump, Pantheon, Shen, Shyvana, Veigar, Xayah Nov 10 - Nov 16 : Caitlyn, Graves, Irelia, Jarvan IV, Kassadin, Kennen, Lulu,"
+    },
+    "Katarina": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "we're taking a swing at a couple of powerful midlaners, and nerfing backdoor victories now we're starting to see organized competitive teams make frequent use of that strategy. One more thing: we're keeping an eye on Katarina's initial low "
+    },
+    "Kayle": {
+      "patch": "3.3a",
+      "releasedAt": "2022-07-27T22:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3a/",
+      "evidence": "Kassadin Recalls : A Quack Dip Emotes: Speak No Mo'; Surf's Up!; Sizzle All accessories will be released throughout the patch. FREE-TO-PLAY CHAMPION ROTATION Jul 28 - Aug 3 : Corki, Dr. Mundo, Gragas, Graves, Kayle, Leona, Lulu, Tristana, T"
+    },
+    "Kennen": {
+      "patch": "2.0",
+      "releasedAt": "2021-01-05T01:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-0/",
+      "evidence": "like Party Finder, a new latency indicator, and more Our first patch of 2021 is here with some exciting changes, including a band(le) of new champions! We're introducing some of Bandle City's finest to the Rift: Corki, Kennen, Tristana, Lul"
+    },
+    "Kha'Zix": {
+      "patch": "2.5",
+      "releasedAt": "2021-10-14T20:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5/",
+      "evidence": "ers learn more about Wild Rift earlier in their first few games FREE-TO-PLAY CHAMPION ROTATION Oct 14 - Oct 20 : Ahri, Draven, Jarvan IV, Renekton, Rengar, Riven, Senna, Sona, Xayah, Yasuo Oct 21 - Oct 27 : Camille, Kha'Zix, Lee Sin, Lucian"
+    },
+    "Kindred": {
+      "patch": "5.0c",
+      "releasedAt": "2024-03-13T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0c/",
+      "evidence": "you this patch! As well as a new champion, some new skins, and of course, our regularly scheduled balance changes. Welcome to patch 5.0c. Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS KINDRED, THE ETERNAL HUNTER"
+    },
+    "Lee Sin": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": "ON Movement speed bonus: 7.5% → 6% ELDER CLOUD DRAGON Movement speed bonus: 11.25% → 9% Movement speed bonus per stack: 3.75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leona, Lee Sin, Malphite, Orianna,"
+    },
+    "Leona": {
+      "patch": "2.2",
+      "releasedAt": "2021-03-28T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
+      "evidence": "ould put your Wild Rift account in the negative, you will be temporarily suspended as a precaution. Reach out to Player Support to regain access. FREE-TO-PLAY CHAMPION ROTATION Apr 1 - Apr 7 : Diana, Ezreal, Gragas, Leona, Lulu, Miss Fortun"
+    },
+    "Lillia": {
+      "patch": "4.2a",
+      "releasedAt": "2023-06-08T19:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2a/",
+      "evidence": "Camille, Ezreal, Gragas, Kai'Sa, Nunu & Willump, Orianna, Rengar, Soraka, Swain Jun 15 - Jun 21 : Aatrox, Fizz, Jax, Leona, Nautilus, Rammus, Samira, Tristana, Twisted Fate, Warwick Jun 22 - Jun 28 : Evelynn, Karma, Lillia, Lucian, Rakan, S"
+    },
+    "Lissandra": {
+      "patch": "5.2",
+      "releasedAt": "2024-07-17T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-52/",
+      "evidence": "What is the most exciting part of this patch for you? The new champion? The new Rift? The new Skin line? Let us know! Welcome to patch 5.2. Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS LISSANDRA, THE ICE WITCH "
+    },
+    "Lucian": {
+      "patch": "2.3b",
+      "releasedAt": "2021-06-30T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3b/",
+      "evidence": "the darkness with the Sentinels of Light in patch 2.3b, where balance changes for champions, ARAM, and more lurk within the Black Mist. Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS LUCIAN, THE PURIFIER Lucian, "
+    },
+    "Lulu": {
+      "patch": "2.0",
+      "releasedAt": "2021-01-05T01:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-0/",
+      "evidence": ", a new latency indicator, and more Our first patch of 2021 is here with some exciting changes, including a band(le) of new champions! We're introducing some of Bandle City's finest to the Rift: Corki, Kennen, Tristana, Lulu, and of course,"
+    },
+    "Malphite": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "g the reports helps us continue to improve our machine learning models and get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana,"
+    },
+    "Master Yi": {
+      "patch": "5.1c",
+      "releasedAt": "2024-06-05T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-1c/",
+      "evidence": "Lee Sin Releasing June 7 @ 00:01 UTC Duality Dragon Volibear Releasing June 7 @ 00:01 UTC Obsidian Dragon Sett Releasing June 7 @ 00:01 UTC Steel Dragon Thresh Releasing June 7 @ 00:01 UTC Zephyr Dragon Master Yi Mythic Chroma Releasing Jun"
+    },
+    "Mel": {
+      "patch": "3.2",
+      "releasedAt": "2022-05-11T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2/",
+      "evidence": "nk, Patch 3.2 is here! Ekko, along with his time-altering gizmos are clocking in and making their debut in Wild Rift! With his help, you'll be able to freeze time on your opponents and blink back to a more favorable timeline when you need a"
+    },
+    "Miss Fortune": {
+      "patch": "2.3",
+      "releasedAt": "2021-06-02T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3/",
+      "evidence": "ounc... just kidding FREE-TO-PLAY CHAMPION ROTATION Jun 3 - Jun 9 : Aurelion Sol, Dr. Mundo, Galio, Gragas, Graves, Leona, Nami, Singed, Tristana, Vayne Jun 10 - Jun 16 : Amumu, Fiora, Jhin, Kennen, Lee Sin, Lulu, Miss Fortune, Sona, Twiste"
+    },
+    "Mordekaiser": {
+      "patch": "5.2b",
+      "releasedAt": "2024-08-14T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-2b/",
+      "evidence": "Wild Rift patch Notes 5.2b The Iron Revenant has arrived! Long we have awaited, Mordekaiser has arrived on to the Hexrift! Brace yourself because it's gonna get bumpy. We have new event, new skins, and our regularly scheduled balance update"
+    },
+    "Morgana": {
+      "patch": "3.3a",
+      "releasedAt": "2022-07-27T22:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3a/",
+      "evidence": "oughout the patch. FREE-TO-PLAY CHAMPION ROTATION Jul 28 - Aug 3 : Corki, Dr. Mundo, Gragas, Graves, Kayle, Leona, Lulu, Tristana, Twisted Fate, Yasuo Aug 4 - Aug 10 : Draven, Ekko, Fiora, Janna, Kai'sa, Katarina, Morgana, Nunu & Willump, O"
+    },
+    "Nami": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "rts helps us continue to improve our machine learning models and get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, V"
+    },
+    "Nautilus": {
+      "patch": "3.2b",
+      "releasedAt": "2022-06-07T23:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2b/",
+      "evidence": "Wild Rift Patch Notes 3.2b Welcome to patch 3.2b, the first patch that the 2022 Wild Rift Icons Global Championship will be played on! Nautilus and Pyke are making their debut and we're also tackling a few champions that have been dominatin"
+    },
+    "Nidalee": {
+      "patch": "6.3",
+      "releasedAt": "2025-10-22T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3/",
+      "evidence": "ips, fanart, and more with us. You make the Rift what it is today. Now, let's dive into all the goodies the team has planned for Patch 6.3! Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS NIDALEE, THE BESTIAL HUNT"
+    },
+    "Nilah": {
+      "patch": "5.2b",
+      "releasedAt": "2024-08-14T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-2b/",
+      "evidence": "10s → 7s to activate T-Hex Mecha after taking down Baron Longer homeguard duration after activation SKINS Old God Mordekaiser Releasing August 23 @ 00:01 UTC Coven Morgana Releasing August 23 @ 00:01 UTC Coven Nilah Releasing August 23 @ 00"
+    },
+    "Nunu & Willump": {
+      "patch": "2.4b",
+      "releasedAt": "2021-09-01T01:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4b/",
+      "evidence": "nd Flame event brings two new champions to the Rift and inspires a host of brisk and broiling balance updates. The Frost and Flame event is here along with two new champions that embody the rival elements. Cool off with Nunu & Willump or he"
+    },
+    "Olaf": {
+      "patch": "2.2c",
+      "releasedAt": "2021-05-12T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2c/",
+      "evidence": "ental. Passive Gold Gain Before 8 minutes: 4G per second (unchanged) After 8 minutes: 4 → 3G per second FREE-TO-PLAY CHAMPION ROTATION May 13 - May 19 : Akali, Braum, Darius, Diana, Evelynn, Jax, Miss Fortune, Olaf, Sona, Tristana May 20 - "
+    },
+    "Orianna": {
+      "patch": "2.1",
+      "releasedAt": "2021-02-01T15:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1/",
+      "evidence": "ortive mages have between ult casts in the early game. LULU A light nerf to Lulu's mana and ult to de-enormify her laning power. Base Stats Mana: 480 → 435 (Ult) Wild Growth Cooldown: 70/60/50s → 85/70/55s ORIANNA Ori's Shockwave is availab"
+    },
+    "Pantheon": {
+      "patch": "3.1",
+      "releasedAt": "2022-03-23T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-1/",
+      "evidence": "heir friendly tap casted abilities Added a resource bar below Camille's health bar to indicate her passive's cooldown FREE-TO-PLAY CHAMPION ROTATION Mar 24 - Mar 30 : Akshan, Ezreal, Graves, Jayce, Kha'zix, Leona, Pantheon, Senna, Veigar, X"
+    },
+    "Poppy": {
+      "patch": "6.0d",
+      "releasedAt": "2025-03-12T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0d/",
+      "evidence": "Wild Rift Patch Notes 6.0d Grab your purplest pj's, your hammer, and swing into patch 6.0d with the arrivals of Pajama Guardian Lulu and Poppy! Welcome to Patch 6.0d! We hope you brought your best, purplest pair of pajamas, because it's tim"
+    },
+    "Pyke": {
+      "patch": "3.2b",
+      "releasedAt": "2022-06-07T23:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2b/",
+      "evidence": "Wild Rift Patch Notes 3.2b Welcome to patch 3.2b, the first patch that the 2022 Wild Rift Icons Global Championship will be played on! Nautilus and Pyke are making their debut and we're also tackling a few champions that have been dominatin"
+    },
+    "Rakan": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Rakan, Sona, Wukong, Xayah"
+    },
+    "Rammus": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": ".75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leona, Lee Sin, Malphite, Orianna, Seraphine, Rakan, Teemo May 6 - May 12 : Amumu, Camille, Draven, Katarina, Kennen, Lulu, Nami, Rammus, Vayne, Zed NEW NE"
+    },
+    "Renekton": {
+      "patch": "2.3b",
+      "releasedAt": "2021-06-30T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3b/",
+      "evidence": "correctly reflects its mana regen property Evelynn's Ult tooltip should now reflect that it only deals bonus damage to champions FREE-TO-PLAY CHAMPION ROTATION July 1 - July 7 : Ahri, Camille, Kai'Sa, Olaf, Rakan, Renekton, Rengar, Sona, Va"
+    },
+    "Rengar": {
+      "patch": "2.3b",
+      "releasedAt": "2021-06-30T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3b/",
+      "evidence": "reflects its mana regen property Evelynn's Ult tooltip should now reflect that it only deals bonus damage to champions FREE-TO-PLAY CHAMPION ROTATION July 1 - July 7 : Ahri, Camille, Kai'Sa, Olaf, Rakan, Renekton, Rengar, Sona, Varus, Zed J"
+    },
+    "Riven": {
+      "patch": "2.4a",
+      "releasedAt": "2021-08-18T01:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4a/",
+      "evidence": "-PLAY CHAMPION ROTATION August 19 - August 25 : Darius, Fizz, Graves, Jhin, Kai'Sa, Katarina, Leona, Olaf, Renekton, Soraka August 26 - September 1 : Ahri, Alistar, Aurelion Sol, Camille, Ezreal, Jarvan IV, Lee Sin, Riven, Thresh, Tristana "
+    },
+    "Rumble": {
+      "patch": "6.0",
+      "releasedAt": "2025-01-08T17:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
+      "evidence": "EW NEW CHAMPIONS Yordles have arrived! Thanks to the wonderful magic of Bandle City, three popular Yordle champions are joining the fray in this patch. Who says Yordles are mere squirts? They pack some serious punch! Rumble, the Mechanized "
+    },
+    "Samira": {
+      "patch": "3.4c",
+      "releasedAt": "2022-11-02T21:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4c/",
+      "evidence": "FREE-TO-PLAY CHAMPION ROTATION Nov 3 - Nov 9 : Corki, Diana, Leona, Nautilus, Nunu & Willump, Pantheon, Shen, Shyvana, Veigar, Xayah Nov 10 - Nov 16 : Caitlyn, Graves, Irelia, Jarvan IV, Kassadin, Kennen, Lulu, Rakan, Samira, Vex NEW NEW CH"
+    },
+    "Senna": {
+      "patch": "2.5",
+      "releasedAt": "2021-10-14T20:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5/",
+      "evidence": "adding Target Lock and info about jungling so new players learn more about Wild Rift earlier in their first few games FREE-TO-PLAY CHAMPION ROTATION Oct 14 - Oct 20 : Ahri, Draven, Jarvan IV, Renekton, Rengar, Riven, Senna, Sona, Xayah, Yas"
+    },
+    "Seraphine": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": "5% → 6% ELDER CLOUD DRAGON Movement speed bonus: 11.25% → 9% Movement speed bonus per stack: 3.75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leona, Lee Sin, Malphite, Orianna, Seraphine, Rakan, Teemo Ma"
+    },
+    "Sett": {
+      "patch": "4.0b",
+      "releasedAt": "2023-02-15T21:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0b/",
+      "evidence": "throughout the patch FREE-TO-PLAY CHAMPION ROTATION Feb 16 - Feb 22 : Brand, Camille, Ekko, Miss Fortune, Nautilus, Nunu & Willump, Rammus, Sona, Teemo, Vayne Feb 23 - Mar 1 : Ezreal, Fizz, Jarvan IV, Lulu, Nami, Sett, Shyvana, Veigar, Wuko"
+    },
+    "Shen": {
+      "patch": "3.2b",
+      "releasedAt": "2022-06-07T23:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2b/",
+      "evidence": "ghout the patch. FREE-TO-PLAY CHAMPION ROTATION Jun 09 - Jun 15 : Fizz, Janna, Jarvan IV, Jayce, Katarina, Kennen, Morgana, Tristana, Xayah, Xin Zhao Jun 16 - Jun 22 : Darius, Ezreal, Kha'zix, Leona, Lucian, Olaf, Shen, Sona, Twisted Fate, "
+    },
+    "Shyvana": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "lps us continue to improve our machine learning models and get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, "
+    },
+    "Singed": {
+      "patch": "2.4",
+      "releasedAt": "2021-07-27T23:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4/",
+      "evidence": "Once a day, you can reroll the offerings in the Poro Store. You can also Pin any items to to prevent them from rerolled. FREE-TO-PLAY CHAMPION ROTATION July 29 - Aug 4 : Amumu, Braum, Draven, Kennen, Orianna, Rakan, Singed, Xayah, Xin Zhao,"
+    },
+    "Sion": {
+      "patch": "3.1",
+      "releasedAt": "2022-03-23T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-1/",
+      "evidence": "of death somehow doesn't help you find your inner balance, maybe you'll find it when the map changes and the rain begins to fall on Wild Rift. Yep, Wild Rift is going Elemental! The limited game mode with our first version of Elemental Rift"
+    },
+    "Sivir": {
+      "patch": "6.0d",
+      "releasedAt": "2025-03-12T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0d/",
+      "evidence": "t of Gold Maximum stack: 99999 → 19999 SKINS Dragonmancer Jax Releasing March 13 @ 00:01 UTC Truth Dragon Yasuo Releasing March 13 @ 00:01 UTC Dragonmancer Kassadin Releasing March 13 @ 00:01 UTC Pizza Delivery Sivir Releasing March 28 @ 00"
+    },
+    "Skarner": {
+      "patch": "7.1g",
+      "releasedAt": "2026-06-10T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1g/",
+      "evidence": "Wild Rift Patch Notes 7.1g The sands are shifting... Skarner has arrived on the Rift! The sands are shifting... Skarner has arrived on the Rift! This patch brings the Crystal Vanguard's rework to Wild Rift, alongside some balance changes ai"
+    },
+    "Sona": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "ing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Rakan, Sona, Wukong, Xayah, Xin Z"
+    },
+    "Soraka": {
+      "patch": "2.2c",
+      "releasedAt": "2021-05-12T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2c/",
+      "evidence": "3G per second FREE-TO-PLAY CHAMPION ROTATION May 13 - May 19 : Akali, Braum, Darius, Diana, Evelynn, Jax, Miss Fortune, Olaf, Sona, Tristana May 20 - May 26 : Ahri, Corki, Kai'Sa, Kha'Zix, Leona, Renekton, Rengar, Soraka, Tryndamere, Twiste"
+    },
+    "Swain": {
+      "patch": "4.2a",
+      "releasedAt": "2023-06-08T19:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2a/",
+      "evidence": "m Recalls: Forces of Nature All accessories will be released throughout the patch FREE-TO-PLAY CHAMPION ROTATION Jun 08 - Jun 14 : Alistar, Camille, Ezreal, Gragas, Kai'Sa, Nunu & Willump, Orianna, Rengar, Soraka, Swain Jun 15 - Jun 21 : Aa"
+    },
+    "Syndra": {
+      "patch": "5.0",
+      "releasedAt": "2024-01-17T17:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0/",
+      "evidence": "the first patch of the year, Patch 5.0! Go do yourself a favor and run to the washroom and get some water. This is gonna be a long one. Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS SYNDRA, THE DARK SOVEREIGN Sy"
+    },
+    "Talon": {
+      "patch": "5.0A",
+      "releasedAt": "2024-01-31T17:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0a/",
+      "evidence": "nt, with a new champion, with the new event, or on Arena. That's right Arena is back! Sit down, grab a drink, and welcome to Patch 5.0A! Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS TALON, THE BLADE'S SHADOW Ta"
+    },
+    "Teemo": {
+      "patch": "2.0",
+      "releasedAt": "2021-01-05T01:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-0/",
+      "evidence": "ator, and more Our first patch of 2021 is here with some exciting changes, including a band(le) of new champions! We're introducing some of Bandle City's finest to the Rift: Corki, Kennen, Tristana, Lulu, and of course, Teemo. You can follo"
+    },
+    "Thresh": {
+      "patch": "2.3b",
+      "releasedAt": "2021-06-30T02:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3b/",
+      "evidence": "the patch. NEW NEW CHAMPIONS LUCIAN, THE PURIFIER Lucian, a Sentinel of Light, is a grim hunter of undying spirits, pursuing them relentlessly and annihilating them with his twin relic pistols. After the wraith Thresh slew his wife, Lucian "
+    },
+    "Tristana": {
+      "patch": "2.0",
+      "releasedAt": "2021-01-05T01:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-0/",
+      "evidence": "rty Finder, a new latency indicator, and more Our first patch of 2021 is here with some exciting changes, including a band(le) of new champions! We're introducing some of Bandle City's finest to the Rift: Corki, Kennen, Tristana, Lulu, and "
+    },
+    "Tryndamere": {
+      "patch": "2.2",
+      "releasedAt": "2021-03-28T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
+      "evidence": "will be temporarily suspended as a precaution. Reach out to Player Support to regain access. FREE-TO-PLAY CHAMPION ROTATION Apr 1 - Apr 7 : Diana, Ezreal, Gragas, Leona, Lulu, Miss Fortune, Olaf, Orianna, Pantheon, Tryndamere Apr 8 - Apr 14"
+    },
+    "Twisted Fate": {
+      "patch": "3.2b",
+      "releasedAt": "2022-06-07T23:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-2b/",
+      "evidence": "tch. FREE-TO-PLAY CHAMPION ROTATION Jun 09 - Jun 15 : Fizz, Janna, Jarvan IV, Jayce, Katarina, Kennen, Morgana, Tristana, Xayah, Xin Zhao Jun 16 - Jun 22 : Darius, Ezreal, Kha'zix, Leona, Lucian, Olaf, Shen, Sona, Twisted Fate, Zed Jun 23 -"
+    },
+    "Twitch": {
+      "patch": "4.1b",
+      "releasedAt": "2023-04-19T20:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1b/",
+      "evidence": "Wild Rift Patch Notes 4.1b Sneaky Sneaky—Welcome to Patch 4.1b! Twitch arrives on the Rift, Ranked S9 is here, and we're celebrating Nova Esports Icons win! Sneaky Sneaky—Welcome to Patch 4.1b! Ahoy mateys! This patch we've got lots of upda"
+    },
+    "Urgot": {
+      "patch": "5.0c",
+      "releasedAt": "2024-03-13T16:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0c/",
+      "evidence": "d SKINS Warden Nautilus Releasing March 21 @ 00:01 UTC Warring Kingdoms Jarvan IV Mythic Chroma Releasing March 21 @ 00:01 UTC Woof and Lamb Kindred Releasing March 29 @ 00:01 UTC Pajama Guardian Cosplay Urgot Releasing March 29 @ 00:01 UTC"
+    },
+    "Varus": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "o improve our machine learning models and get better and better at dealing with disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Ma"
+    },
+    "Vayne": {
+      "patch": "2.2",
+      "releasedAt": "2021-03-28T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
+      "evidence": "ss. FREE-TO-PLAY CHAMPION ROTATION Apr 1 - Apr 7 : Diana, Ezreal, Gragas, Leona, Lulu, Miss Fortune, Olaf, Orianna, Pantheon, Tryndamere Apr 8 - Apr 14 : Ahri, Amumu, Darius, Kennen, Lee Sin, Nami, Sona, Tristana, Vayne, Yasuo NEW NEW LOCAT"
+    },
+    "Veigar": {
+      "patch": "2.5a",
+      "releasedAt": "2021-10-27T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5a/",
+      "evidence": "eats. Magic resist: 45 → 50 SPIRIT VISAGE See Force of Nature for context. Magic resist: 45 → 50 FREE-TO-PLAY CHAMPION ROTATION Oct 28 - Nov 3 : Amumu, Brand, Jax, Miss Fortune, Rakan, Soraka, Tryndamere, Varus, Veigar, Xin Zhao Nov 4 - Nov"
+    },
+    "Vel'Koz": {
+      "patch": "6.2g",
+      "releasedAt": "2025-09-10T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2g/",
+      "evidence": "Wild Rift Patch Notes 6.2g We hope you've studied up on your geometry, because Vel'Koz is making his debut and we have some updates to AAA ARAM. Vel'Koz is landing on the Rift and has his eye on you! We've also got some updates to AAA ARAM,"
+    },
+    "Vex": {
+      "patch": "3.4c",
+      "releasedAt": "2022-11-02T21:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4c/",
+      "evidence": "PLAY CHAMPION ROTATION Nov 3 - Nov 9 : Corki, Diana, Leona, Nautilus, Nunu & Willump, Pantheon, Shen, Shyvana, Veigar, Xayah Nov 10 - Nov 16 : Caitlyn, Graves, Irelia, Jarvan IV, Kassadin, Kennen, Lulu, Rakan, Samira, Vex NEW NEW CHAMPIONS "
+    },
+    "Vi": {
+      "patch": "2.2b",
+      "releasedAt": "2021-04-27T04:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
+      "evidence": "t the balance changes aimed at underperforming Duo Lane carries, enchanters, and the elemental drakes. Welcome to Patch 2.2b! Reminder: content will be released throughout the patch. In case you missed it, here's a preview of some of the ne"
+    },
+    "Viego": {
+      "patch": "6.1",
+      "releasedAt": "2025-04-16T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1/",
+      "evidence": "ere damage from First Strike would awaken targets that Lillia's Lilting Lullaby had caused to fall asleep. Added a Heat icon indicator and fixed the issue where Rumble's Heat was not displayed. Fixed the issue where Viego's possession of Yo"
+    },
+    "Warwick": {
+      "patch": "3.5",
+      "releasedAt": "2022-11-16T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-5/",
+      "evidence": "in the collection and store. Added more visibility to ARAM progression in the End of Game Settlement. FREE-TO-PLAY CHAMPION ROTATION Nov 17 - Nov 23 : Kayle, Malphite, Miss Fortune, Orianna, Rengar, Soraka, Vayne, Warwick, Yuumi, Ziggs Nov "
+    },
+    "Wukong": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "th disruptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Rakan, Sona, Wukong, Xayah, Xin Zhao, Z"
+    },
+    "Xayah": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "ptive behavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Rakan, Sona, Wukong, Xayah, Xin Zhao, Zed NEW N"
+    },
+    "Xin Zhao": {
+      "patch": "2.1b",
+      "releasedAt": "2021-03-15T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1b/",
+      "evidence": "ehavior. FREE-TO-PLAY CHAMPION ROTATION Mar 18 - Mar 24 : Corki, Darius, Graves, Katarina, Malphite, Nami, Shyvana, Soraka, Varus, Ziggs Mar 25 - Mar 31 : Akali, Draven, Jarvan IV, Jax, Rakan, Sona, Wukong, Xayah, Xin Zhao, Zed NEW New CHAM"
+    },
+    "Yasuo": {
+      "patch": "2.2",
+      "releasedAt": "2021-03-28T14:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
+      "evidence": "REE-TO-PLAY CHAMPION ROTATION Apr 1 - Apr 7 : Diana, Ezreal, Gragas, Leona, Lulu, Miss Fortune, Olaf, Orianna, Pantheon, Tryndamere Apr 8 - Apr 14 : Ahri, Amumu, Darius, Kennen, Lee Sin, Nami, Sona, Tristana, Vayne, Yasuo NEW NEW LOCATIONS "
+    },
+    "Yone": {
+      "patch": "4.1b",
+      "releasedAt": "2023-04-19T20:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1b/",
+      "evidence": "e to Patch 4.1b! Twitch arrives on the Rift, Ranked S9 is here, and we're celebrating Nova Esports Icons win! Sneaky Sneaky—Welcome to Patch 4.1b! Ahoy mateys! This patch we've got lots of updates ashore in store! Everyone's favorite smelly"
+    },
+    "Yunara": {
+      "patch": "7.2",
+      "releasedAt": "2026-07-08T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
+      "evidence": "Wild Rift Patch Notes 7.2 Welcome to Patch 7.2, one of our biggest gameplay updates! Welcome to Patch 7.2! Patch 7.2 is one of our biggest updates yet. This release introduces the newest marksman, Yunara, alongside a visual update for Ahri,"
+    },
+    "Yuumi": {
+      "patch": "3.1",
+      "releasedAt": "2022-03-23T21:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-1/",
+      "evidence": "-PLAY CHAMPION ROTATION Mar 24 - Mar 30 : Akshan, Ezreal, Graves, Jayce, Kha'zix, Leona, Pantheon, Senna, Veigar, Xayah Mar 31 - Apr 6 : Brand, Galio, Kai'sa, Kennen, Lee Sin, Lucian, Lulu, Nunu & Willump, Renekton, Yuumi NEW NEW CHAMPIONS "
+    },
+    "Zed": {
+      "patch": "2.2a",
+      "releasedAt": "2021-04-20T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
+      "evidence": "ge received: 0% → 10% SHYVANA Damage dealt: 0% → 10% SONA Damage dealt: 0% → -10% Damage received: 0% → 10% TRYNDAMERE Damage dealt: 0% → 10% VAYNE Damage dealt: 0% → 5% VI Damage dealt: 0% → 10% ZED Damage dealt: 0% → 5% ZIGGS Damage dealt"
+    },
+    "Zeri": {
+      "patch": "4.1",
+      "releasedAt": "2023-03-15T19:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1/",
+      "evidence": "Diurnal Flight; Superhero away!; Flames of Justice All accessories will be released throughout the patch FREE-TO-PLAY CHAMPION ROTATION Mar 16 - Mar 22 : Draven, Graves, Leona, Rengar, Sion, Tryndamere, Yuumi, Zed, Zeri, Zoe Mar 23 - Mar 29"
+    },
+    "Ziggs": {
+      "patch": "2.2a",
+      "releasedAt": "2021-04-20T00:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
+      "evidence": "A Damage dealt: 0% → 10% SONA Damage dealt: 0% → -10% Damage received: 0% → 10% TRYNDAMERE Damage dealt: 0% → 10% VAYNE Damage dealt: 0% → 5% VI Damage dealt: 0% → 10% ZED Damage dealt: 0% → 5% ZIGGS Damage dealt: 0% → -10% Damage received:"
+    },
+    "Zilean": {
+      "patch": "6.1d",
+      "releasedAt": "2025-06-11T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1d/",
+      "evidence": "Wild Rift Patch Notes 6.1d Tick, tick, boom! Zilean makes his debut this patch, along with a new Wild Pass, Companion, and Balance Patch. Welcome to Patch 6.1d. Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS ZILE"
+    },
+    "Zoe": {
+      "patch": "4.2",
+      "releasedAt": "2023-05-25T19:30:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2/",
+      "evidence": "rbonate Escape; Fizzy Farewell All accessories will be released throughout the patch FREE-TO-PLAY CHAMPION ROTATION May 25 - May 31: Akshan, Alistar, Amumu, Braum, Gwen, Miss Fortune, Samira, Tryndamere, Xin Zhao, Zoe Jun 01 - Jun 08: Braum"
+    },
+    "Zyra": {
+      "patch": "4.4c",
+      "releasedAt": "2023-12-06T17:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4c/",
+      "evidence": "ll scream for... Patch 4.4c? We got champion adjustments, item changes, and a new skin coming your way! As always, meet you on the Rift! Reminder: content will be released throughout the patch. NEW NEW CHAMPIONS ZYRA, RISE OF THE THORNS Bor"
+    }
+  }
+}

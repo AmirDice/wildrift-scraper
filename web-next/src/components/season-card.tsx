@@ -28,7 +28,7 @@ export function SeasonCard() {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-line"
+      className="glass relative overflow-hidden rounded-2xl border border-line"
       style={{
         background:
           "radial-gradient(45% 130% at 0% 110%, rgba(79,141,255,0.14), transparent 60%), linear-gradient(110deg, #11131d, #0b0e16)",

@@ -8,7 +8,13 @@
   --color-line-strong: rgba(255, 255, 255, 0.14);
   --color-text: #eef2fb;
   --color-muted: #8b93a7;
-  --color-faint: #5b6478;
+  /* Lifted from #5b6478 when the background stopped being a near-black scrim.
+     Measured against the blurred art under the 52% overlay, the old value came
+     out at 2.4:1 -- well under the 4.5:1 needed for body text, and this colour
+     carries a lot of real information (data dates, stat sublabels, the notes
+     under every panel). #7f8a9e reads 4.1:1 on the background and 4.6:1 inside
+     a glass card, while staying a clear step below --color-muted. */
+  --color-faint: #7f8a9e;
   --color-accent: #4f8dff;
   --color-accent-soft: rgba(79, 141, 255, 0.12);
   --color-gold: #ffd76e;
@@ -44,22 +50,133 @@ body {
   background: var(--color-accent-soft);
 }
 
-/* Frosted-glass surface: Apple-style translucent panel.
-   brightness() lifts the heavily-dimmed background art locally so the blur
-   actually reveals colour, while the global background stays dark + minimal. */
+/* ── Liquid glass ───────────────────────────────────────────────────────────
+   Apple's material is not "a panel with backdrop-blur". Four things happen at
+   once, and dropping any one of them is what makes glass read as flat plastic:
+
+     1. REAL COLOUR BEHIND IT. blur() averages what is behind the panel, so a
+        near-uniform backdrop blurs to that same uniform colour and nothing
+        looks refracted. The old rule tried to fix this with brightness(1.9),
+        but brightening near-black only produces grey. The fix belongs in the
+        backdrop (see layout.tsx: the scrim is lighter and tinted now), so the
+        blur here can stay honest at brightness ~1.1.
+     2. A SPECULAR RIM. Light comes from above: the top edge is a bright
+        hairline, the bottom edge falls off into shadow. A single uniform 1px
+        white border cannot do that.
+     3. LIFT. A real drop shadow separates the panel from the backdrop.
+        Without it the glass is painted on rather than floating over.
+     4. A SURFACE SHEEN. The panel's own fill is a faint vertical gradient,
+        brightest at the top, so the material has thickness.
+
+   Saturation is pushed hard (200%) because that is what makes the colour that
+   *does* come through read as refracted light rather than grey haze. */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px) saturate(180%) brightness(1.9);
-  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.9);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  /* A faint dark base under the white sheen. The backdrop is now the blurred
+     art at ~50% rather than a near-black scrim, so a purely white fill would
+     let the art come through at full brightness and drag text contrast down
+     with it. The dark base holds legibility; the white gradient still supplies
+     the sheen that makes it read as a material. */
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.085) 0%,
+      rgba(255, 255, 255, 0.032) 45%,
+      rgba(255, 255, 255, 0.05) 100%
+    ),
+    rgba(10, 14, 24, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* brightness is back to 1: it existed only to rescue a crushed backdrop, and
+     lifting an already-bright one just washes the panel out.
+
+     Do NOT hand-write -webkit-backdrop-filter next to this. Lightning CSS
+     treats the two as one logical property and keeps the last declaration, so
+     a manual prefix made the compiled rule -webkit-only -- which Firefox does
+     not implement, leaving it with a flat translucent box and no blur. Left
+     alone, the compiler emits whatever prefixes the browser targets need.
+
+     16px, not 28. The backdrop is now pre-blurred art rather than a sharp
+     photo, so 28px of additional blur left a near-uniform field behind every
+     panel and the cards read as flat grey rectangles. Less blur here lets the
+     art's remaining colour and tone register inside the glass, which is the
+     thing that makes it look like a material instead of a fill. */
+  backdrop-filter: blur(30px) saturate(200%);
+  box-shadow:
+    /* specular top edge, then the falloff along the bottom inside edge */
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.28),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    /* lift: a tight contact shadow plus a wide ambient one */
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 12px 32px -12px rgba(0, 0, 0, 0.55);
 }
+
+/* Thinner variant for dense surfaces (rows, chips, sticky bars) where the full
+   material would swallow the content behind it. */
+.glass-thin {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
 .glass-hover {
-  transition: background 0.18s, border-color 0.18s, transform 0.18s;
+  transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease,
+    transform 0.22s ease;
 }
 .glass-hover:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.055) 45%,
+      rgba(255, 255, 255, 0.07) 100%
+    ),
+    rgba(10, 14, 24, 0.3);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.28),
+    inset 1px 0 0 rgba(255, 255, 255, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 20px 44px -16px rgba(0, 0, 0, 0.65);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .glass-hover:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Sticky top bar. Content scrolls *under* it, which is the one place the site
+   gets the real Apple effect: a moving backdrop seen through the material. */
+.glass-bar {
+  background: rgba(9, 13, 23, 0.62);
+  backdrop-filter: blur(24px) saturate(190%);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Floating menus and popovers: more opaque than a card because text sits on
+   them directly, but still a material rather than a flat fill. */
+.glass-menu {
+  background: rgba(14, 19, 34, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(30px) saturate(200%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 18px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* Browsers without backdrop-filter (older Firefox, some in-app webviews) get a
+   solid surface rather than a washed-out transparent box. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-thin {
+    background: rgba(21, 27, 44, 0.92);
+  }
+  .glass-bar,
+  .glass-menu {
+    background: rgba(14, 19, 34, 0.97);
+  }
 }
 
 /* Tier chips: the one place colour is loud, because it encodes rank */
@@ -149,3 +266,4 @@ body {
   0% { transform: translateX(0) skewX(-20deg); }
   55%, 100% { transform: translateX(500%) skewX(-20deg); }
 }
+

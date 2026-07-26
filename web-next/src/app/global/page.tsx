@@ -4,6 +4,7 @@ import { getCnBySlug, CN_META } from "@/lib/cn";
 import Link from "next/link";
 import { Container } from "@/components/ui";
 import { CrossServerTable, type Row } from "@/components/cross-server-table";
+import { RegionUpdated } from "@/components/tierlist-updated";
 
 export const metadata: Metadata = {
   title: "Global Win Rates | EU vs CN Cross-Server Meta",
@@ -41,6 +42,10 @@ export default function GlobalPage() {
         (meta or playstyle), not universally strong.
       </p>
 
+      <div className="mt-4">
+        <RegionUpdated region="Global" euDate={site.collectedOn} cnDate={CN_META.date} />
+      </div>
+
       <p className="mt-3 text-sm text-muted">
         Looking for the combined ranking as tiers? See the{" "}
         <Link href="/tier-list" className="text-accent hover:underline">
@@ -54,8 +59,7 @@ export default function GlobalPage() {
       </div>
 
       <p className="mt-6 text-xs text-faint">
-        {rows.length} champions with data on both servers. EU updated {site.collectedOn ?? "recently"}
-        {CN_META.date ? ` · CN updated ${CN_META.date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")}` : ""}.
+        {rows.length} champions with data on both servers.
       </p>
     </Container>
   );

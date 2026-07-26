@@ -1,22 +1,25 @@
 import cnData from "@/data/cn.json";
 import { getChampion, type Champion } from "@/lib/data";
+import { getCnBySlug } from "@/lib/cn";
 
 /**
- * Elo skew: how a champion's win rate moves from the whole ladder up to China's
- * top bracket (Challenger+, i.e. Challenger and above). Champions that climb are
- * high-skill specialists; champions that fall off are low-elo stompers that get
- * punished by better play.
- *
- * CN publishes win/pick/ban across cumulative rank brackets, from "All ranks" up
- * to Challenger+, giving a real skill gradient to plot against.
+ * Skill-bracket change: how a champion's win rate moves across Tencent's
+ * cumulative regular-ranked samples. These are population brackets, not
+ * isolated ranks: Diamond+ includes the higher regular ranks and Master+ does
+ * too. Legendary is retained as a separate solo-queue benchmark.
  */
 
 export const BRACKETS = [
-  { key: "0", label: "All ranks", short: "All" },
   { key: "1", label: "Diamond+", short: "D+" },
   { key: "2", label: "Master+", short: "M+" },
-  { key: "3", label: "Challenger+", short: "Chal+" },
+  { key: "3", label: "Challenger", short: "Chal" },
 ] as const;
+
+export const LEGENDARY_BRACKET = {
+  key: "4",
+  label: "Legendary",
+  short: "Legendary",
+} as const;
 
 export interface BracketPoint {
   key: string;
@@ -29,10 +32,11 @@ export interface BracketPoint {
 
 export interface EloSkew {
   champion: Champion;
-  curve: BracketPoint[]; // one point per bracket, All ranks up to Challenger+
-  low: number; // win rate at "All ranks"
-  high: number; // win rate at "Challenger+"
-  skew: number; // high - low; >0 scales with elo, <0 falls off
+  curve: BracketPoint[]; // cumulative regular-ranked samples
+  legendary: BracketPoint | null; // separate Legendary solo-queue benchmark
+  low: number; // win rate at Diamond+
+  high: number; // win rate at Challenger
+  skew: number; // Challenger - Diamond+
   climbing: boolean; // meaningfully better in higher elo
   stomper: boolean; // meaningfully worse in higher elo
 }
@@ -58,9 +62,9 @@ export function getEloSkews(): EloSkew[] {
   if (_cache) return _cache;
   const out: EloSkew[] = [];
   for (const c of CN.champions) {
-    const eu = getChampion(c.slug);
+    const eu = getChampion(c.slug) ?? getCnBySlug(c.slug);
     if (!eu) continue;
-    if (!BRACKETS.every((b) => c.byBracket[b.key])) continue; // need the full curve
+    if (!BRACKETS.every((b) => c.byBracket[b.key])) continue; // need the regular-ranked curve
     // Skip flex picks whose CN lane isn't the same across every bracket, since a
     // mixed-lane curve would give a misleading skew. Their tier data stays correct
     // elsewhere.
@@ -72,9 +76,22 @@ export function getEloSkews(): EloSkew[] {
     const low = curve[0].wr;
     const high = curve[curve.length - 1].wr;
     const skew = round1(high - low);
+    const legendaryEntry = c.byBracket[LEGENDARY_BRACKET.key];
+    const legendary = legendaryEntry
+      && legendaryEntry.position === c.byBracket[BRACKETS[0].key].position
+        ? {
+            key: LEGENDARY_BRACKET.key,
+            label: LEGENDARY_BRACKET.label,
+            short: LEGENDARY_BRACKET.short,
+            wr: legendaryEntry.winRate,
+            pick: legendaryEntry.pickRate,
+            ban: legendaryEntry.banRate,
+          }
+        : null;
     out.push({
       champion: eu,
       curve,
+      legendary,
       low,
       high,
       skew,

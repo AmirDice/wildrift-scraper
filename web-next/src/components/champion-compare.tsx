@@ -5,11 +5,15 @@ import Link from "next/link";
 import type { Champion } from "@/lib/data";
 import { TierChip } from "@/components/ui";
 import { ChampionCombobox } from "@/components/champion-combobox";
+import { PlaystyleComparison } from "@/components/playstyle-profile";
+import type { MatchupReference } from "@/lib/counters";
+import type { PlaystyleProfileData } from "@/lib/playstyle-profile";
 
 /* eslint-disable @next/next/no-img-element */
 
 type CnStat = { wr: number; pick: number; ban: number; tier: string };
-type Counters = Record<string, { weak: string[]; strong: string[] }>;
+type RawReference = string | MatchupReference;
+type Counters = Record<string, { weak: RawReference[]; strong: RawReference[] }>;
 type BaseStatMap = Record<string, Record<string, number>>;
 
 const A_COLOR = "#4f8dff";
@@ -102,7 +106,7 @@ function Radar({ a, b, cnA, cnB, pcts }: { a: Champion; b: Champion; cnA?: CnSta
   );
 }
 
-export function ChampionCompare({ champions, cn, counters, baseStats }: { champions: Champion[]; cn: Record<string, CnStat>; counters: Counters; baseStats: BaseStatMap }) {
+export function ChampionCompare({ champions, cn, counters, baseStats, playstyles }: { champions: Champion[]; cn: Record<string, CnStat>; counters: Counters; baseStats: BaseStatMap; playstyles: Record<string, PlaystyleProfileData> }) {
   const options = useMemo(() => [...champions].sort((x, y) => x.name.localeCompare(y.name)).map((c) => ({ name: c.name, slug: c.slug, icon: c.icon })), [champions]);
   const bySlug = useMemo(() => new Map(champions.map((c) => [c.slug, c])), [champions]);
   const pcts = useMemo(
@@ -131,8 +135,15 @@ export function ChampionCompare({ champions, cn, counters, baseStats }: { champi
   const matchup = useMemo(() => {
     if (!a || !b) return null;
     const ca = counters[a.slug], cb = counters[b.slug];
-    if (ca?.strong?.includes(b.slug) || cb?.weak?.includes(a.slug)) return { winner: a, loser: b };
-    if (ca?.weak?.includes(b.slug) || cb?.strong?.includes(a.slug)) return { winner: b, loser: a };
+    const find = (references: RawReference[] | undefined, slug: string) => references?.find((reference) => (typeof reference === "string" ? reference : reference.slug) === slug);
+    const reason = (reference: RawReference | undefined) => typeof reference === "string" ? "" : reference?.reason ?? "";
+    const confidence = (reference: RawReference | undefined) => typeof reference === "string" ? 60 : reference?.confidence ?? 0;
+    const aStrong = find(ca?.strong, b.slug), bWeak = find(cb?.weak, a.slug);
+    const aWeak = find(ca?.weak, b.slug), bStrong = find(cb?.strong, a.slug);
+    const aScore = confidence(aStrong) + confidence(bWeak);
+    const bScore = confidence(bStrong) + confidence(aWeak);
+    if (aScore > bScore) return { winner: a, loser: b, reason: reason(aStrong) || reason(bWeak) };
+    if (bScore > aScore) return { winner: b, loser: a, reason: reason(bStrong) || reason(aWeak) };
     return null;
   }, [a, b, counters]);
 
@@ -164,7 +175,7 @@ export function ChampionCompare({ champions, cn, counters, baseStats }: { champi
 
           {/* Matchup callout */}
           {matchup && (
-            <div className="glass flex items-center gap-3 rounded-xl border-l-2 border-accent/60 p-4 text-sm">
+            <div className="glass relative flex items-center gap-3 rounded-xl border-l-2 border-accent/60 p-4 pr-12 text-sm">
               <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-white/15">
                 <img src={matchup.winner.icon} alt="" className="h-full w-full scale-[1.12] object-cover" />
               </span>
@@ -173,7 +184,12 @@ export function ChampionCompare({ champions, cn, counters, baseStats }: { champi
                 <span className="font-semibold text-accent">strong against</span>{" "}
                 <span className="font-semibold">{matchup.loser.name}</span> in lane.
               </p>
+              {matchup.reason && <><button type="button" aria-label="Why this matchup is favored" className="peer absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full border border-line bg-bg/80 text-xs font-bold text-muted transition hover:border-accent/50 hover:text-accent focus:border-accent/50 focus:text-accent focus:outline-none">i</button><span role="tooltip" className="pointer-events-none invisible absolute right-3 top-11 z-20 w-[min(280px,calc(100vw-4rem))] rounded-lg border border-line bg-[#111827] p-3 text-xs leading-relaxed text-muted opacity-0 shadow-2xl transition peer-hover:visible peer-hover:opacity-100 peer-focus:visible peer-focus:opacity-100">{matchup.reason}</span></>}
             </div>
+          )}
+
+          {playstyles[a.slug] && playstyles[b.slug] && (
+            <PlaystyleComparison leftName={a.name} left={playstyles[a.slug]} rightName={b.name} right={playstyles[b.slug]} />
           )}
 
           {/* Diverging stat bars */}

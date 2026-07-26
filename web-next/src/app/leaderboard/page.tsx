@@ -1,17 +1,28 @@
 import type { Metadata } from "next";
 import { site, getChampions } from "@/lib/data";
-import { Container } from "@/components/ui";
+import { Container, SectionHeading } from "@/components/ui";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
 
+// This is the page the site genuinely ranks for: "wild rift leaderboard" sits
+// around position 6-8 and "wild rift leaderboard eu" around 3, where the head
+// terms (tier list, meta) are stuck in the forties. The singular "Leaderboard"
+// and the explicit EU qualifier both match how people actually search for it.
 export const metadata: Metadata = {
-  title: "Wild Rift Leaderboards | Top 50 Players per Champion",
+  title: "Wild Rift Leaderboard | Top 50 EU Players on Every Champion",
   description:
-    "The top 50 EU players on every Wild Rift champion, with their win rate, games and mastery. Sortable by rank, win rate, games or mastery.",
+    "The Wild Rift leaderboard for every champion: the top 50 ranked EU players on each one, with win rate, games played and mastery. Sort by rank, win rate, games or mastery.",
   alternates: { canonical: "/leaderboard" },
+  openGraph: {
+    title: "Wild Rift Leaderboard | Top 50 EU Players on Every Champion",
+    description:
+      "The top 50 ranked EU players on every Wild Rift champion, with win rate, games and mastery.",
+    url: "https://wrtruemeta.com/leaderboard",
+  },
 };
 
 export default function LeaderboardPage() {
-  const slim: SlimChampion[] = getChampions().map((c) => ({
+  const champions = getChampions();
+  const slim: SlimChampion[] = champions.map((c) => ({
     name: c.name,
     slug: c.slug,
     icon: c.icon,
@@ -34,9 +45,10 @@ export default function LeaderboardPage() {
           <span className="text-faint"> Data collected {site.collectedOn}.</span>
         )}
       </p>
-      <div className="mt-8">
+      <section id="players" className="mt-8 scroll-mt-24">
+        <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table" />
         <LeaderboardView champions={slim} />
-      </div>
+      </section>
     </Container>
   );
 }

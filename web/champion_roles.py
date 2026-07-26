@@ -32,7 +32,7 @@ _JUNGLE: frozenset[str] = frozenset({
     "Amumu", "Diana", "Ekko", "Evelynn", "Fiddlesticks", "Fizz", "Gragas",
     "Graves", "Hecarim", "Jarvan IV", "Kayn", "Kha'Zix", "Kindred", "Lee Sin",
     "Lillia", "Master Yi", "Nidalee", "Nilah", "Nocturne", "Nunu & Willump",
-    "Pantheon", "Rammus", "Rengar", "Shyvana", "Talon",
+    "Pantheon", "Rammus", "Rengar", "Shyvana", "Skarner", "Talon",
     "Vi", "Viego", "Warwick", "Xin Zhao",
 })
 
@@ -49,7 +49,7 @@ _DRAGON: frozenset[str] = frozenset({
     "Aphelios", "Ashe", "Caitlyn", "Corki", "Draven", "Ezreal", "Jhin",
     "Jinx", "Kai'Sa", "Kalista", "Kog'Maw", "Lucian", "Miss Fortune",
     "Samira", "Sivir", "Smolder", "Tristana", "Twitch", "Varus", "Vayne",
-    "Xayah", "Zeri",
+    "Xayah", "Yunara", "Zeri",
 })
 
 

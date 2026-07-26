@@ -11,6 +11,8 @@ export interface BuildItem {
   when?: string;
   /** For situational swaps: the coreBuild slug this item replaces. */
   replaces?: string;
+  /** Purchase position (1-5) the swap goes in at, taken from what it replaces. */
+  atPosition?: number;
   /** Engine-search verdict: this item appears in nearly every top build. */
   core?: boolean;
 }
@@ -20,8 +22,13 @@ export interface SituationalRune {
   slug: string;
   icon: string;
   when?: string;
-  /** The rune in the page this one swaps in for. */
+  /** The rune in the page, or the core item, this one swaps in for. */
   replaces?: string;
+  /** Whether `replaces` names a rune on the page or an item in the build. A
+   *  rune can make an item unnecessary (tenacity rune over a tenacity item). */
+  replacesType?: "rune" | "item";
+  /** Display name for `replaces`, since item slugs are not readable. */
+  replacesLabel?: string;
 }
 
 export interface Rune {
@@ -132,6 +139,12 @@ export interface BuildAnalysis {
 
 export interface Build {
   summary: string;
+  /** Controlled presentation label (for example "AD Bruiser"). The UI only
+   *  renders values from its allow-list; this is not the free-form champion
+   *  damage profile. */
+  pathLabel?: string;
+  /** Required before the legacy `offmeta` id is exposed as Alternative Path. */
+  alternativePathApproved?: boolean;
   coreBuild: BuildItem[];
   /** The tier-3 boot the finished build wears. */
   boots: BuildItem | null;
@@ -162,6 +175,9 @@ export interface ChampionBuilds {
   synergyNotes?: string[];
   variants: string[];
   builds: Record<string, Build>;
+  /** Record-level approval for a reviewed Alternative Path. Build-level
+   *  approval is also accepted so a single path can be reviewed in isolation. */
+  alternativePathApproved?: boolean;
   /** Precomputed playstyle-dial anchor builds (engine-searched per weighting). */
   dial?: DialAnchor[];
   /** Hard validation failures the generator couldn't repair; never ship these. */
@@ -170,6 +186,18 @@ export interface ChampionBuilds {
 }
 
 const BUILDS = buildsData as unknown as Record<string, ChampionBuilds>;
+
+export const ALTERNATIVE_BUILD_VARIANT = "offmeta";
+
+/** Hide forced-novelty legacy builds until the new generator or a reviewer has
+ *  explicitly approved that champion's secondary path. */
+export function visibleBuildVariants(data: ChampionBuilds): string[] {
+  const declared = data.variants?.length ? data.variants : Object.keys(data.builds);
+  const approved = Boolean(
+    data.alternativePathApproved || data.builds[ALTERNATIVE_BUILD_VARIANT]?.alternativePathApproved,
+  );
+  return declared.filter((variant) => variant !== ALTERNATIVE_BUILD_VARIANT || approved);
+}
 
 /** A record is shippable when the generator validated it clean (no hard errors)
  *  and every declared variant actually exists. */

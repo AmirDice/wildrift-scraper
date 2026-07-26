@@ -185,7 +185,7 @@
     "name": "Transcendence",
     "tree": "Sorcery",
     "type": "Minor",
-    "description": "Gain a bonus when reaching the following levels: -Level 1: Gain 6 Ability Haste. - Level 5: Gain an additional 6 Ability Haste. - Level 9: After a basic ability hits the target, reduce 10% of the ability's cooldown. (8s cooldown)",
+    "description": "Gain 5 Ability Haste at level 1 and another 5 at level 5. At level 9, after a basic ability hits a target, reduce 8% of that ability's cooldown (8s cooldown).",
     "icon": "https://www.wildriftfire.com/images/runes/transcendence.png"
   },
   {
@@ -212,7 +212,7 @@
     "name": "Eyeball Collector",
     "tree": "Domination",
     "type": "Minor",
-    "description": "Gain 2 Attack Damage or 4 Ability Power after scoring a champion or epic monster takedown, stacking up to 8 times.",
+    "description": "Gain 1.5 Attack Damage or 3 Ability Power after scoring a champion or epic monster takedown, stacking up to 8 times (12 Attack Damage or 24 Ability Power maximum).",
     "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png"
   },
   {

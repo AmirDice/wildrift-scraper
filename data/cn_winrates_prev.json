@@ -2,11 +2,10 @@
   "source": "lolm.qq.com (official China server data)",
   "date": "20260706",
   "bracketLabels": {
-    "0": "All ranks",
     "1": "Diamond+",
     "2": "Master+",
-    "3": "Challenger+",
-    "4": "Sovereign"
+    "3": "Challenger",
+    "4": "Legendary"
   },
   "defaultBracket": "3",
   "nChampions": 137,

@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web-next" / "src" / "data" / "engine.json"
 ROSTER_OUT = ROOT / "web-next" / "src" / "data" / "roster.json"
+STAT_RULES_OUT = ROOT / "web-next" / "src" / "data" / "stat_rules.json"
 
 
 def _load(name: str):
@@ -27,6 +28,18 @@ def _load(name: str):
 
 def main() -> None:
     champs_all = _load("champions_wr.json")
+    champion_overrides = _load("champion_stat_overrides.json").get("champions", {})
+    item_stat_rules = _load("item_stat_rules.json").get("items", {})
+    rune_stat_rules = _load("rune_stat_rules.json").get("runes", {})
+    for champion in champs_all:
+        override = champion_overrides.get(champion.get("name"), {})
+        for stat, values in override.get("baseStats", {}).items():
+            champion.setdefault("baseStats", {})[stat] = {
+                key: value for key, value in values.items()
+                if key in {"base", "perLevel", "lvl15"}
+            }
+        if override.get("statRules"):
+            champion["statRules"] = override["statRules"]
     formulas = _load("ability_formulas.json")
     items = _load("items.json")
     item_fx = _load("item_engine.json")
@@ -62,10 +75,13 @@ def main() -> None:
                 "primaryDamage": c.get("primaryDamage", ""),
                 "scalesWith": c.get("scalesWith", []),
                 "skillOrder": (guide.get(c["name"]) or {}).get("skillOrder", {}),
+                "statRules": c.get("statRules", {}),
                 # precomputed in Python (needs full ability text) for TS parity
                 "kitShift": kit_adjust(c["name"]),
             }
-            for c in champs_all if c["name"] in formulas
+            # Stats and skill ranks exist for the full roster. Structured
+            # formulas are optional and only control live damage breakdowns.
+            for c in champs_all
         },
         "formulas": formulas,
         "items": {
@@ -83,7 +99,15 @@ def main() -> None:
                         "description": r.get("description", "")}
             for r in runes
         },
-        "mutex": rules.get("mutexGroups", {}),
+        # `hardExclusive` replaced the flat `mutexGroups` map and nests the
+        # slugs alongside their evidence; fall back to the old shape so an
+        # older data file still exports something rather than nothing.
+        "mutex": {
+            name: (group["slugs"] if isinstance(group, dict) else group)
+            for name, group in (rules.get("hardExclusive")
+                                or rules.get("mutexGroups") or {}).items()
+            if not name.startswith("_")
+        },
         "situationalOnly": (rules.get("situationalOnly") or {}).get("slugs", []),
     }
     OUT.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
@@ -112,6 +136,17 @@ def main() -> None:
     ROSTER_OUT.write_text(json.dumps(roster, ensure_ascii=False), encoding="utf-8")
     print(f"wrote {ROSTER_OUT.relative_to(ROOT)} ({ROSTER_OUT.stat().st_size/1024:.0f} KB, "
           f"{len(roster)} champions)")
+
+    stat_rules = {
+        "schemaVersion": 1,
+        "targetPatch": "7.2a",
+        "champions": champion_overrides,
+        "items": item_stat_rules,
+        "runes": rune_stat_rules,
+    }
+    STAT_RULES_OUT.write_text(json.dumps(stat_rules, ensure_ascii=False, indent=2),
+                              encoding="utf-8")
+    print(f"wrote {STAT_RULES_OUT.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
