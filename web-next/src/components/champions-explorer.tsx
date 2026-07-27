@@ -23,6 +23,8 @@ export function ChampionsExplorer({
   cnRoles,
   cnMeta,
   euUpdated,
+  absent,
+  rosterSize,
 }: {
   champions: Champion[];
   roles: string[];
@@ -30,6 +32,9 @@ export function ChampionsExplorer({
   cnRoles: string[];
   cnMeta: { source: string; date: string | null; bracket: string };
   euUpdated?: string | null;
+  /** Roster champions each region has no numbers for, so the page can say so. */
+  absent?: { CN: string[]; EU: string[] };
+  rosterSize?: number;
 }) {
   const [query, setQuery] = useState("");
   const [role, setRole] = useState("All roles");
@@ -41,6 +46,7 @@ export function ChampionsExplorer({
   const isCN = region === "CN";
   const activeChampions: Champion[] = isCN ? cnChampions : champions;
   const activeRoles = isCN ? cnRoles : roles;
+  const missing = (isCN ? absent?.CN : absent?.EU) ?? [];
 
   const classes = useMemo(
     () => ["All classes", ...Array.from(new Set(activeChampions.map((c) => c.class))).sort()],
@@ -148,6 +154,21 @@ export function ChampionsExplorer({
             <p className="text-sm text-faint">{rows.length} champions</p>
             <p className="text-xs text-faint sm:hidden">swipe table →</p>
           </div>
+
+          {/* A count lower than the roster used to be unexplained, which reads
+              as missing champions rather than missing GAMES. Naming them is the
+              only honest option: there is no win rate to show for a champion
+              nobody has played in this dataset. */}
+          {missing.length > 0 && (
+            <p className="mb-3 text-xs leading-relaxed text-faint">
+              {rosterSize ? `${rosterSize} champions are in the game. ` : ""}
+              {isCN
+                ? `${missing.length} ${missing.length === 1 ? "has" : "have"} no recorded games at ${cnMeta.bracket} and ${missing.length === 1 ? "is" : "are"} not listed above: `
+                : `${missing.length} ${missing.length === 1 ? "has" : "have"} no ranked sample in this dataset yet and ${missing.length === 1 ? "is" : "are"} not listed above: `}
+              <span className="text-muted">{missing.join(", ")}</span>
+              {isCN ? ". They are usually present at other ranks." : "."}
+            </p>
+          )}
 
           {/* Table */}
           <div className="glass overflow-x-auto rounded-2xl">

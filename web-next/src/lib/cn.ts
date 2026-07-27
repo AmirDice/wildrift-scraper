@@ -126,6 +126,24 @@ export function getCnChampions(bracket: CnBracketKey = CN_DEFAULT_BRACKET): CnCh
   return out.sort((a, b) => b.wr - a.wr);
 }
 
+/**
+ * Champions the CN source has no rows for at this rank.
+ *
+ * getCnChampions drops them, because every column in the table is a number and
+ * a champion with no games has none. Dropping them silently is what made the
+ * list read "136 champions" against a 141-champion roster with no explanation,
+ * so the page names them instead. The set is rank-dependent: a champion nobody
+ * plays in Challenger usually has plenty of games lower down.
+ */
+export function cnChampionsWithoutData(
+  bracket: CnBracketKey = CN_DEFAULT_BRACKET,
+): string[] {
+  return CN.champions
+    .filter((c) => !c.byBracket[bracket])
+    .map((c) => c.name)
+    .sort((a, b) => a.localeCompare(b));
+}
+
 export function cnRoles(bracket: CnBracketKey = CN_DEFAULT_BRACKET): string[] {
   const order = ["Baron", "Jungle", "Mid", "Dragon", "Support"];
   const present = new Set(getCnChampions(bracket).map((c) => c.role));
