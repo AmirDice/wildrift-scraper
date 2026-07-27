@@ -49,7 +49,17 @@ DATA = ROOT / "data"
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-v4-flash"
 THINKING = {"type": "enabled"}
-MAX_OUTPUT_TOKENS = 384_000
+# Caps COMPLETION tokens, which include the model's reasoning, not just the
+# JSON. Measured on a full studio generation: 4,401 completion tokens, of which
+# 2,719 were reasoning, for 5,478 characters of build. This was 384,000, which
+# is ~87x the observed need and so far above any real answer that its only
+# effect was to let a runaway generation burn the entire 240s request timeout
+# before tripping the finish_reason == "length" guard below.
+#
+# 32,000 leaves roughly 7x headroom over the largest call measured -- enough
+# that reasoning_effort "high" on a counter build with a full enemy team stays
+# comfortably inside it -- while turning a runaway into a fast, explicit error.
+MAX_OUTPUT_TOKENS = 32_000
 PLAYSTYLE_CONFIG_PATH = ROOT / "web-next" / "src" / "data" / "playstyles.json"
 
 
