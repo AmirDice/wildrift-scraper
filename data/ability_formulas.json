@@ -8,7 +8,9 @@
           {
             "name": "Deathbringer Stance",
             "type": "physical",
-            "base": 0,
+            "base": [
+              0
+            ],
             "ratios": [
               {
                 "stat": "targetMaxHp",
@@ -28,7 +30,9 @@
         "defensive": [
           {
             "kind": "heal",
-            "base": 0,
+            "base": [
+              0
+            ],
             "ratios": [
               {
                 "stat": "targetMaxHp",
@@ -39,12 +43,11 @@
                   ]
                 }
               }
-            ],
-            "note": "heals for same amount as damage, reduced to 60% vs minions"
+            ]
           }
         ],
         "unmodeled": [
-          "Cooldown 24s, reduced by 3s on hit vs champion/large monster; max 50 vs monsters; heal reduced 60% vs minions"
+          "Cooldown 24s, reduced by 3s on hitting champion/large monster. Max 50 damage vs monsters. Healing reduced to 60% vs minions."
         ]
       },
       "1": {
@@ -57,7 +60,7 @@
         ],
         "damage": [
           {
-            "name": "The Darkin Blade (first cast)",
+            "name": "The Darkin Blade (First Cast)",
             "type": "physical",
             "base": [
               10,
@@ -65,12 +68,23 @@
               70,
               100
             ],
-            "ratios": [],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": [
+                  75,
+                  80,
+                  85,
+                  90
+                ]
+              }
+            ],
             "hits": 1,
             "when": "per cast"
           },
           {
-            "name": "The Darkin Blade (first cast sweetspot)",
+            "name": "The Darkin Blade (Sweetspot)",
+            "alt": true,
             "type": "physical",
             "base": [
               16,
@@ -78,18 +92,25 @@
               112,
               160
             ],
-            "ratios": [],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": [
+                  120,
+                  128,
+                  136,
+                  144
+                ]
+              }
+            ],
             "hits": 1,
-            "when": "per cast",
-            "alt": true
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Subsequent casts deal 25% more damage each (multiplicative); sweetspot knocks up for 0.25s; deals 65% damage to minions, 70% to monsters",
-          "1/The Darkin Blade (first cast): dropped ungrounded ratio(s) ['ad'], kept the rest",
-          "1/The Darkin Blade (first cast sweetspot): dropped ungrounded ratio(s) ['ad'], kept the rest"
+          "Can be recast 2 more times; each subsequent cast deals 25% more damage (multiplicative). Sweetspot knocks airborne for 0.25s. Deals 65% damage to minions, 70% to monsters."
         ]
       },
       "2": {
@@ -102,7 +123,7 @@
         ],
         "damage": [
           {
-            "name": "Infernal Chains (initial)",
+            "name": "Infernal Chains (First Hit)",
             "type": "physical",
             "base": [
               25,
@@ -110,31 +131,20 @@
               55,
               70
             ],
-            "ratios": [],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 40
+              }
+            ],
             "hits": 1,
             "when": "per cast"
-          },
-          {
-            "name": "Infernal Chains (delayed)",
-            "type": "physical",
-            "base": [
-              25,
-              40,
-              55,
-              70
-            ],
-            "ratios": [],
-            "hits": 1,
-            "when": "per cast",
-            "note": "conditional: if enemy remains in area after 1.5s"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows 25% for 1.5s; deals double damage to minions",
-          "2/Infernal Chains (initial): dropped ungrounded ratio(s) ['ad'], kept the rest",
-          "2/Infernal Chains (delayed): dropped ungrounded ratio(s) ['ad'], kept the rest"
+          "Slows by 25% for 1.5s. If champion/large monster remains in area after 1.5s, they are dragged back and take same damage again. Deals double damage to minions."
         ]
       },
       "3": {
@@ -149,7 +159,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive: gains 19%/21%/23%/25% physical vamp vs champions. Active: dash that resets auto attack; usable while casting other abilities."
+          "Active: dash forward, resets auto attack. Usable while casting other abilities. During World Ender, physical vamp increased by 50%."
         ]
       },
       "4": {
@@ -168,11 +178,20 @@
               40,
               50
             ]
+          },
+          {
+            "stat": "moveSpeed",
+            "pct": [
+              60,
+              75,
+              90
+            ],
+            "note": "decaying over 10 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Gains 25%/35%/45% increased healing; gains 60%/75%/90% decaying move speed; E physical vamp increased by 50%; duration extended 5s per takedown (max 10s); nearby minions/monsters feared on activation"
+          "Gains 25%/35%/45% increased healing. Duration extended by 5s on takedown (up to 10s extra). Nearby minions and monsters feared for 3s on activation."
         ]
       }
     },
@@ -181,16 +200,14 @@
       "3",
       "1",
       "auto",
+      "2",
       "1",
       "auto",
       "1"
     ],
     "mechanics": [
       {
-        "kind": "everyNHit",
-        "params": {
-          "n": 0
-        },
+        "kind": "noResource",
         "source": "llm-knowledge"
       }
     ],
@@ -3648,11 +3665,29 @@
       "P": {
         "name": "Short Fuse",
         "cooldowns": [],
-        "damage": [],
+        "damage": [
+          {
+            "name": "Short Fuse",
+            "type": "magic",
+            "base": {
+              "lvlRange": [
+                20,
+                62
+              ]
+            },
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 15
+              }
+            ],
+            "when": "per auto"
+          }
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive: Short Fuse empowers Bouncing Bomb (alt); abilities deal 24% damage to turrets; cooldown reduced by 4s on ability cast."
+          "Abilities deal 24% damage to turrets; passive auto deals 32% damage to turrets."
         ]
       },
       "1": {
@@ -3679,15 +3714,12 @@
                 "pct": 65
               }
             ],
-            "hits": 1
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "1/Short Fuse (Passive): dropped ungrounded ratio(s) ['ap'], kept the rest",
-          "1/Short Fuse (Passive): ungrounded ['base 20.0', 'base 62.0']"
-        ]
+        "unmodeled": []
       },
       "2": {
         "name": "Satchel Charge",
@@ -3713,13 +3745,13 @@
                 "pct": 50
               }
             ],
-            "hits": 1
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Can damage turrets and demolish below health threshold; knockback."
+          "Detonates after 4 seconds, knocks back enemies and self, damages turrets and demolishes them if below 20-27.5% health."
         ]
       },
       "3": {
@@ -3746,13 +3778,13 @@
                 "pct": 35
               }
             ],
-            "hits": 1
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Multiple mines; subsequent mines deal 40% damage; slow 35-50% for 2s; mines last 5s."
+          "Mines last 5 seconds. Enemies detonating multiple mines take 40% damage from subsequent mines. Slow by 35-50% for 2 seconds."
         ]
       },
       "4": {
@@ -3777,7 +3809,7 @@
                 "pct": 85
               }
             ],
-            "hits": 1
+            "when": "per cast"
           }
         ],
         "steroids": [],
@@ -3786,15 +3818,16 @@
       }
     },
     "combo": [
-      "2",
-      "3",
       "1",
       "auto",
-      "4"
+      "4",
+      "auto",
+      "2",
+      "auto"
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.2,
+      "asEfficiency": 0.3,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
@@ -9770,7 +9803,7 @@
           {
             "stat": "moveSpeed",
             "pct": 20,
-            "note": "near turrets"
+            "note": "while near allied turrets or own turrets"
           }
         ],
         "defensive": [],
@@ -9786,7 +9819,7 @@
         ],
         "damage": [
           {
-            "name": "Turret Shot",
+            "name": "Turret Basic Attack",
             "type": "magic",
             "base": [
               5,
@@ -9820,9 +9853,92 @@
             ],
             "hits": 1,
             "when": "per auto"
-          },
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Turret health: 110 (+8% to 50% AP), armor: 20-90 (lvl), mr: 25, can have 3 turrets, turrets become dormant at distance."
+        ]
+      },
+      "2": {
+        "name": "Hextech Micro-Rockets",
+        "cooldowns": [
+          9.0,
+          8.0,
+          7.0,
+          6.0
+        ],
+        "damage": [
           {
-            "name": "Apex Turret Shot",
+            "name": "Micro-Rockets",
+            "type": "magic",
+            "base": [
+              108,
+              153,
+              198,
+              243
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 108
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Additional rocket hits after first to same champion only deal 20% damage (accounted in total), minions take 60% damage, nearby turrets gain 20% charge per rocket hit on champion."
+        ]
+      },
+      "3": {
+        "name": "CH-2 Electron Storm Grenade",
+        "cooldowns": [
+          10.0,
+          10.0,
+          10.0,
+          10.0
+        ],
+        "damage": [
+          {
+            "name": "Electron Storm Grenade",
+            "type": "magic",
+            "base": [
+              70,
+              120,
+              170,
+              220
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Slows by 35% for 2s, center stuns for 1s, fully charges nearby turrets on champion hit."
+        ]
+      },
+      "4": {
+        "name": "UPGRADE!!!",
+        "cooldowns": [
+          75.0,
+          66.0,
+          56.0
+        ],
+        "damage": [
+          {
+            "name": "Apex Turret Basic",
             "type": "magic",
             "base": [
               80,
@@ -9840,7 +9956,7 @@
             "alt": true
           },
           {
-            "name": "Apex Turret Beam",
+            "name": "Apex Turret Max Charge",
             "type": "magic",
             "base": [
               100,
@@ -9856,70 +9972,32 @@
             "hits": 1,
             "when": "per auto",
             "alt": true
-          }
-        ],
-        "steroids": [],
-        "defensive": [],
-        "unmodeled": [
-          "Turret has Base Health: 110 (+8% to 50% AP), Base Armor 20-90 (lvl), Base Magic Resist 25; max 3 turrets; turrets become dormant if too far; Ult upgrade places Apex Turret for 10s with slow on hit"
-        ]
-      },
-      "2": {
-        "name": "Hextech Micro-Rockets",
-        "cooldowns": [
-          9.0,
-          8.0,
-          7.0,
-          6.0
-        ],
-        "damage": [],
-        "steroids": [],
-        "defensive": [],
-        "unmodeled": [
-          "Additional rockets after first deal 20% dmg vs champs/monsters, 60% to minions; turrets gain 20% charge per rocket hit; Rocket Swarm: 4 waves, rockets after first deal 25%, then further decay, full dmg to minions",
-          "2/Micro-Rockets: dropped ungrounded ratio(s) ['ap'], kept the rest",
-          "2/Micro-Rockets: ungrounded ['base 108.0', 'base 153.0', 'base 198.0', 'base 243.0']",
-          "2/Rocket Swarm: ungrounded ['base 524.0']"
-        ]
-      },
-      "3": {
-        "name": "CH-2 Electron Storm Grenade",
-        "cooldowns": [
-          10.0,
-          10.0,
-          10.0,
-          10.0
-        ],
-        "damage": [
+          },
           {
-            "name": "Grenade",
+            "name": "Rocket Swarm Total",
             "type": "magic",
-            "base": [
-              70,
-              120,
-              170,
-              220
-            ],
+            "base": 524,
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 175
               }
             ],
             "hits": 1,
-            "when": "per cast"
+            "when": "per cast",
+            "alt": true
           },
           {
-            "name": "Lightning Grenade",
+            "name": "Lightning Grenade Total",
             "type": "magic",
-            "base": 100,
+            "base": 300,
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 180
               }
             ],
-            "hits": 3,
+            "hits": 1,
             "when": "per cast",
             "alt": true
           }
@@ -9927,28 +10005,13 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows 35% for 2s, center stuns 1s; hitting champion fully charges turrets; Lightning Grenade: larger stun/slow area, slow 40%, bounces 3 times"
-        ]
-      },
-      "4": {
-        "name": "UPGRADE!!!",
-        "cooldowns": [
-          75.0,
-          66.0,
-          56.0
-        ],
-        "damage": [],
-        "steroids": [],
-        "defensive": [],
-        "unmodeled": [
-          "Active: Upgrades next basic ability as described in alt components of abilities 1,2,3; Recast cancels"
+          "Recast cancels, upgrades next basic ability (1/2/3)"
         ]
       }
     },
     "combo": [
-      "1",
-      "3",
       "4",
+      "3",
       "2",
       "auto"
     ],
@@ -16260,27 +16323,11 @@
       "P": {
         "name": "Love Tap",
         "cooldowns": [],
-        "damage": [
-          {
-            "name": "Love Tap Bonus Damage",
-            "type": "physical",
-            "base": 15,
-            "ratios": [
-              {
-                "stat": "bonusAd",
-                "pct": 70
-              }
-            ],
-            "when": "per auto",
-            "hits": 1
-          }
-        ],
+        "damage": [],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Damage amplification 6%-10.9% per level at 3 stacks",
-          "Bonus damage multiplied by (1+100% critical rate)",
-          "Deals 50% damage to minions and monsters"
+          "Love Tap: After 3 stacks, increases damage dealt to target by 6%-10.9% (+0.4% per level) and deals 15 (+70% bonus AD) physical damage (50% to minions/monsters)."
         ]
       },
       "1": {
@@ -16293,7 +16340,7 @@
         ],
         "damage": [
           {
-            "name": "Double Up First Hit",
+            "name": "Double Up - Primary",
             "type": "physical",
             "base": [
               60,
@@ -16303,7 +16350,7 @@
             ],
             "ratios": [
               {
-                "stat": "ad",
+                "stat": "bonusAd",
                 "pct": [
                   112,
                   120,
@@ -16316,18 +16363,42 @@
                 "pct": 35
               }
             ],
+            "hits": 1,
             "when": "per cast",
-            "hits": 1
+            "note": "First hit"
+          },
+          {
+            "name": "Double Up - Ricochet",
+            "type": "physical",
+            "base": [
+              60,
+              90,
+              120,
+              150
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": [
+                  112,
+                  120,
+                  128,
+                  136
+                ]
+              },
+              {
+                "stat": "ap",
+                "pct": 35
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "note": "Second hit, critically strikes for 130%/140%/150%/160% damage and applies Love Tap"
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "Second hit applies Love Tap",
-          "On-hits applied to both targets",
-          "1/Double Up Second Hit (Ricochet): dropped ungrounded ratio(s) ['ad', 'ap'], kept the rest",
-          "1/Double Up Second Hit (Ricochet): ungrounded ['base 78.0', 'base 126.0']"
-        ]
+        "unmodeled": []
       },
       "2": {
         "name": "Strut",
@@ -16342,12 +16413,22 @@
           {
             "stat": "moveSpeed",
             "flat": [
+              30,
+              35,
+              40,
+              45
+            ],
+            "note": "Passive: after 4 sec of not taking damage"
+          },
+          {
+            "stat": "moveSpeed",
+            "flat": [
               80,
               90,
               100,
               110
             ],
-            "note": "Active: full Strut movement speed for 4s"
+            "note": "Passive: after another 3 sec"
           },
           {
             "stat": "attackSpeed",
@@ -16357,13 +16438,12 @@
               75,
               90
             ],
-            "note": "Active: attack speed for 4s"
+            "note": "Active: for 4 sec"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Passive: after 4s no damage gain 30-45 MS, after 7s gain 80-110 MS",
-          "Attacking full Love Tap stacks reduces cooldown by 2s"
+          "Attacking targets with full Love Tap stacks reduces Strut's cooldown by 2 sec."
         ]
       },
       "3": {
@@ -16376,29 +16456,28 @@
         ],
         "damage": [
           {
-            "name": "Make it Rain Total",
+            "name": "Make it Rain",
             "type": "magic",
             "base": [
-              120,
-              160,
-              200,
-              240
+              15,
+              20,
+              25,
+              30
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 80
+                "pct": 10
               }
             ],
-            "when": "dot total",
-            "durationS": 2,
-            "hits": 1
+            "hits": 8,
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slow 30%/40%/50%/60% for 2 seconds"
+          "Slows enemies by 30%/40%/50%/60% for duration."
         ]
       },
       "4": {
@@ -16410,47 +16489,40 @@
         ],
         "damage": [
           {
-            "name": "Bullet Time Total",
+            "name": "Bullet Time",
             "type": "physical",
-            "base": [
-              468,
-              546,
-              624
-            ],
+            "base": 39,
             "ratios": [
               {
                 "stat": "ad",
-                "pct": [
-                  1020,
-                  1190,
-                  1360
-                ]
+                "pct": 85
               },
               {
                 "stat": "ap",
-                "pct": [
-                  240,
-                  280,
-                  320
-                ]
+                "pct": 20
               }
             ],
+            "hits": [
+              12,
+              14,
+              16
+            ],
             "when": "per cast",
-            "hits": 1
+            "note": "Each wave can critically strike for 130% damage"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Each wave can crit for 130% damage",
-          "Re-activate to cancel"
+          "Channels for 3 sec, can be recast to cancel."
         ]
       }
     },
     "combo": [
       "2",
-      "1",
       "auto",
+      "1",
+      "3",
       "4"
     ],
     "knowledge": {
@@ -17761,7 +17833,7 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Trinket",
+            "name": "Trinket Activation",
             "type": "magic",
             "base": 20,
             "ratios": [
@@ -17770,13 +17842,14 @@
                 "pct": 20
               }
             ],
-            "when": "per cast"
+            "hits": 1,
+            "when": "once per target"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Hitting champions with basic abilities reduces passive cooldown by 20% of max."
+          "Hitting champions with basic abilities reduces this ability's cooldown by 20% of the maximum cooldown."
         ]
       },
       "1": {
@@ -17789,7 +17862,7 @@
         ],
         "damage": [
           {
-            "name": "Active Bolt",
+            "name": "Memory Surge Bolt",
             "type": "magic",
             "base": [
               55,
@@ -17803,30 +17876,16 @@
                 "pct": 60
               }
             ],
-            "when": "per cast"
-          },
-          {
-            "name": "Passive Bonus to Enlarged",
-            "type": "magic",
-            "base": 0,
-            "ratios": [
-              {
-                "stat": "targetMaxHp",
-                "pct": {
-                  "lvlRange": [
-                    1,
-                    2.5
-                  ]
-                }
-              }
-            ],
+            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Charging increases damage up to 140% bonus (max 84). Fully charged activates nearby Trinkets."
+          "Passive: Deals 1% - 2.5% of target's max Health as bonus magic damage to enemies enlarged by Threads.",
+          "Damage can increase while charging up to 140% bonus (max 84 additional damage).",
+          "When fully charged, activates all nearby Trinkets to fire at first champion hit."
         ]
       },
       "2": {
@@ -17839,7 +17898,7 @@
         ],
         "damage": [
           {
-            "name": "Portal Damage",
+            "name": "Journey to Nowhere",
             "type": "magic",
             "base": [
               65,
@@ -17853,13 +17912,14 @@
                 "pct": 40
               }
             ],
+            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Banishes enemies for 2.25s, 80% slow while banished."
+          "Sends enemies to another dimension for 2.25 seconds, unable to attack or use abilities, slowed 80%."
         ]
       },
       "3": {
@@ -17872,7 +17932,7 @@
         ],
         "damage": [
           {
-            "name": "Threads Damage",
+            "name": "Threads of Homecoming",
             "type": "magic",
             "base": [
               70,
@@ -17886,13 +17946,15 @@
                 "pct": 60
               }
             ],
+            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Applies Threads (enlarged hitbox, 20% slow for 2s). Deals 115% to monsters/minions."
+          "Deals 115% damage to monsters and minions.",
+          "Applies Threads which enlarge hitbox size for 4 seconds and slow by 20% for 2 seconds."
         ]
       },
       "4": {
@@ -17904,7 +17966,7 @@
         ],
         "damage": [
           {
-            "name": "First three bolts",
+            "name": "Portalpalooza Bolt",
             "type": "magic",
             "base": [
               100,
@@ -17917,27 +17979,15 @@
                 "pct": 55
               }
             ],
-            "hits": 3,
-            "when": "per cast"
-          },
-          {
-            "name": "Fourth bolt",
-            "type": "magic",
-            "base": [
-              140,
-              196,
-              252
-            ],
-            "ratios": [],
-            "hits": 1,
+            "hits": 4,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "First enemy champion hit is slowed 80% for 0.5s.",
-          "4/Fourth bolt: dropped ungrounded ratio(s) ['ap'], kept the rest"
+          "Fourth bolt deals 40% bonus magic damage.",
+          "Each bolt slows first enemy champion by 80% for 0.5 seconds."
         ]
       }
     },
@@ -17952,7 +18002,7 @@
       "asEfficiency": 0.2,
       "resource": "mana",
       "abilitiesCanCrit": false,
-      "confidence": "medium"
+      "confidence": "high"
     }
   },
   "Nasus": {
@@ -22549,7 +22599,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Dragon Practice stacking mechanic improves Q, W, E at 25, 100, 175 stacks. Each stack grants additional effects as per ability descriptions."
+          "Hitting enemies with abilities and killing with R grants stacks that improve Q, W, E. Q: +30% magic damage at all stacks; at 25 stacks AoE; at 100 stacks sends 2 explosions dealing 50% damage each; at 175 stacks burn deals (0.025% bonus AD)% max HP true damage over 3s and executes below 6.5% max HP. W: explosions deal +55% magic damage. E: each hit deals +12% magic damage and gains an extra bolt every 65 stacks."
         ]
       },
       "1": {
@@ -22562,7 +22612,7 @@
         ],
         "damage": [
           {
-            "name": "Super Scorcher Breath Physical",
+            "name": "Super Scorcher Breath",
             "type": "physical",
             "base": [
               45,
@@ -22578,29 +22628,12 @@
             ],
             "hits": 1,
             "when": "per cast"
-          },
-          {
-            "name": "Super Scorcher Breath Magic (40% of physical base)",
-            "type": "magic",
-            "base": [
-              18,
-              32,
-              46,
-              60
-            ],
-            "ratios": [],
-            "hits": 1,
-            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Magic damage is actually 40% of total physical damage (including AD ratio).",
-          "Damage scales with Critical Rate: +7.5% per 10% crit (max 75%).",
-          "At 25 stacks: damages all enemies nearby target.",
-          "At 100 stacks: sends 2 explosions dealing 50% of ability's damage each.",
-          "At 175 stacks: burn for true damage over 3 seconds (0% base + 0.025% bonus AD per second? total 0.075%?); execute below 6.5% max HP."
+          "Base ability deals 40% magic of physical damage; passive adds 30% magic damage; at 25 stacks AoE; at 100 stacks sends 2 explosions dealing 50% each; at 175 stacks burn deals (0.025% bonus AD)% max HP true damage over 3s and execute below 6.5% max HP; scales with Crit Rate: +7.5% damage per 10% crit up to 75%; mana refund on kill once per cast."
         ]
       },
       "2": {
@@ -22613,7 +22646,7 @@
         ],
         "damage": [
           {
-            "name": "Achooo! Initial Physical",
+            "name": "Achooo! Main",
             "type": "physical",
             "base": [
               65,
@@ -22631,7 +22664,7 @@
             "when": "per cast"
           },
           {
-            "name": "Sneeze Blast Physical",
+            "name": "Sneeze Blast Explosion",
             "type": "physical",
             "base": [
               10,
@@ -22656,12 +22689,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Sneeze Blast triggers on champion hit only.",
-          "Magic damage is 55% of physical base (or total physical).",
-          "Consecutive explosions do 75% damage.",
-          "Deals 130% damage to minions and monsters.",
-          "Slow: 35% for 1.5s.",
-          "2/Sneeze Blast Magic (55% of physical base): ungrounded ['base 19.25', 'base 46.75']"
+          "Main sneeze deals 55% magic of physical; explosion deals 55% magic of explosion physical; passive adds additional 55% magic damage to explosions; each consecutive explosion does 75% damage; deals 130% damage to minions/monsters; gains 1 practice stack per champion hit."
         ]
       },
       "3": {
@@ -22674,7 +22702,7 @@
         ],
         "damage": [
           {
-            "name": "Flap, Flap, Flap Boom Physical per hit",
+            "name": "Flap, Flap, Flap Bombardment",
             "type": "physical",
             "base": [
               15,
@@ -22696,15 +22724,12 @@
           {
             "stat": "moveSpeed",
             "pct": 75,
-            "note": "gains 75% movement speed for 1.25 seconds"
+            "note": "lasts 1.25 seconds and ignores terrain"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Magic damage is 12% of physical base (or total physical).",
-          "At 65 stacks, gains an extra bolt (increases hits by 1).",
-          "Ignores terrain, prioritizes champions.",
-          "3/Flap, Flap, Flap Boom Magic per hit (12% of physical base): ungrounded ['base 1.8', 'base 2.4', 'base 3.0', 'base 3.6']"
+          "Each hit deals 12% magic of physical; passive adds additional 12% magic damage per hit; gains an extra bolt every 65 stacks (max stacks not specified); Dragon Vision grants expanded vision."
         ]
       },
       "4": {
@@ -22716,7 +22741,7 @@
         ],
         "damage": [
           {
-            "name": "MMMOOOMMMM! Outer Physical",
+            "name": "MMMOOOMMMM! Outer",
             "type": "physical",
             "base": [
               200,
@@ -22737,7 +22762,7 @@
             "when": "per cast"
           },
           {
-            "name": "MMMOOOMMMM! Center Physical",
+            "name": "MMMOOOMMMM! Center",
             "type": "physical",
             "base": [
               300,
@@ -22755,7 +22780,8 @@
               }
             ],
             "hits": 1,
-            "when": "per cast"
+            "when": "per cast",
+            "alt": true
           }
         ],
         "steroids": [],
@@ -22780,9 +22806,7 @@
           }
         ],
         "unmodeled": [
-          "Center also slows by 40% for 2 seconds.",
-          "Deals 50% damage to minions and monsters.",
-          "Heal triggers if Smolder is hit? Possibly if he hits an enemy."
+          "Outer damage is base; center damage is increased and applies 40% slow for 2s; heal triggers if he is hit (interpretation: self-heal on cast?); deals 50% damage to minions/monsters."
         ]
       }
     },
@@ -22790,12 +22814,11 @@
       "3",
       "1",
       "2",
-      "4",
-      "auto"
+      "4"
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.4,
+      "asEfficiency": 0.7,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "medium"

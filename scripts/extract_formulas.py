@@ -56,7 +56,13 @@ SYSTEM = (
     "snips (hits=5) plus 1 final snip (hits=1) — NOT hits=1. Modelling one snip makes her "
     "primary ability look 5x weaker than it is,"
     "\"when\":\"per cast|per auto|once per target|dot total\"}\n"
-    "- PER-LEVEL RANGES: a value written as a RANGE (\"8 - 36 bonus magic damage\", "
+    "- DECAYING REPEAT HITS: when an ability fires N times at one target and the "
+    "hits after the first are reduced (\"5 rockets... additional rocket hits after "
+    "the first only deal 20%\"), give the TOTAL one cast lands on a CHAMPION as the "
+    "base: 60 * (1 + 4 * 0.20) = 108, with hits=1. Do not model only the first hit "
+    "and describe the rest in unmodeled -- that is how a 5-rocket ability ends up "
+    "counted as one rocket. Ignore the separate minion/monster percentages.\n"
+    "- PER-LEVEL RANGES: a value written as a RANGE(\"8 - 36 bonus magic damage\", "
     "\"4% - 13% of the target's maximum Health\", \"30 - 240 Health\") scales with the "
     "champion's LEVEL, not with the ability's rank. Emit it as {\"lvlRange\":[low,high]} "
     "wherever a number goes -- as \"base\", or as a ratio's \"pct\". Do NOT average it "
@@ -294,6 +300,12 @@ def _derivable(v: float, allowed: set[str]) -> bool:
     than a handful of times: Miss Fortune's Bullet Time is "12 / 14 / 16 waves
     that each deal 39", Fiddlesticks' Crowstorm ticks 20 times. A cap of 10
     rejected both totals as invented and deleted two ultimates outright.
+
+    Repeat hits also DECAY, which is its own arithmetic: Heimerdinger fires
+    "5 rockets" where "additional rocket hits after the first only deal 20%",
+    so one cast is 60 * (1 + 4 * 0.20) = 108. Both 60 and 20 are in the text
+    and 108 is the only number the engine can use, but no whole multiplier
+    reaches it, so his W was extracted as dealing nothing at all.
     """
     if _norm_num(v) in allowed:
         return True
@@ -304,6 +316,12 @@ def _derivable(v: float, allowed: set[str]) -> bool:
                 return True
             for b in nums:                          # 5 snips of 14 + a 70 final
                 if abs(a * k + b - v) < 1e-6:
+                    return True
+        for p in nums:                              # 1 rocket + 4 at 20% each
+            if not 0 < p < 100:
+                continue
+            for k in range(1, 31):
+                if abs(a * (1 + k * p / 100.0) - v) < 1e-6:
                     return True
     for r in (2, 3):                                # plain sums
         for combo in combinations(nums, r):
@@ -419,6 +437,13 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
     by_slot = {a["slot"]: a for a in champ["abilities"]}
     issues: list[str] = []
     out: dict = {"abilities": {}}
+    # An ALT component is the upgraded version of an ability, and a kit
+    # describes that upgrade under the ability that grants it: Heimerdinger's
+    # Rocket Swarm belongs to his W but its numbers are printed in UPGRADE!!!.
+    # Grounding those against the W text alone rejected them as invented, so
+    # alt components are grounded against the whole kit instead. Still
+    # grounded — the number has to appear somewhere the champion's kit states.
+    kit_allowed = _numbers_in(" ".join(a.get("text") or "" for a in champ["abilities"]))
     for slot, ab in (raw.get("abilities") or {}).items():
         src = by_slot.get(slot)
         if not src:
@@ -435,16 +460,17 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
             # wrote the AP ratio as 0.5%, and her ENTIRE on-hit passive vanished
             # along with the perfectly good 1% max-HP ratio. Losing one scaling
             # is a small error; losing the ability is a large one.
+            scope = kit_allowed if comp.get("alt") else allowed
             ratios = comp.get("ratios") or []
             if ratios:
                 keep = [r for r in ratios
-                        if not _grounded({"ratios": [r]}, allowed)]
+                        if not _grounded({"ratios": [r]}, scope)]
                 if len(keep) != len(ratios):
                     lost = [r.get("stat") for r in ratios if r not in keep]
                     dropped.append(f"{slot}/{comp.get('name','?')}: dropped "
                                    f"ungrounded ratio(s) {lost}, kept the rest")
                     comp = {**comp, "ratios": keep}
-            bad = _grounded(comp, allowed)   # base still has to hold up
+            bad = _grounded(comp, scope)   # base still has to hold up
             if bad:
                 dropped.append(f"{slot}/{comp.get('name','?')}: ungrounded {bad}")
                 continue

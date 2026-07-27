@@ -286,8 +286,12 @@ def _ratios_from_formulas(champion: str) -> list[Ratio]:
                 pct = _last_number(ratio.get("pct"))
                 if not stat or pct <= 0:
                     continue
+                # hits is per-rank wherever the count scales (Miss Fortune's
+                # ult is "12 / 14 / 16 waves"), so it gets the same max-rank
+                # reading as every other rank field. int() on the raw value
+                # crashed the whole roster's profile derivation.
                 out.append(Ratio(
-                    stat=stat, pct=pct, hits=int(dmg.get("hits") or 1),
+                    stat=stat, pct=pct, hits=max(1, int(_last_number(dmg.get("hits"), 1))),
                     cooldown=cooldown, slot=slot, per_auto=per_auto, source="formulas",
                 ))
     return out
