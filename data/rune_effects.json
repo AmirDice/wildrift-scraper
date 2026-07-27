@@ -29,11 +29,16 @@
     "Dark Harvest": {
       "burstProc": {
         "flat": 35,
-        "type": "physical",
-        "condition": "targetBelow50"
+        "type": "adaptive",
+        "adRatio": 10,
+        "apRatio": 5,
+        "perSoul": 10,
+        "assumedSouls": 8,
+        "condition": "targetBelowHalfInWindow"
       },
+      "_why": "35 (+10% bonus AD / +5% AP) adaptive, +10 per soul permanently. The condition is CHECKED, not assumed: the proc only counts when the simulated rotation actually takes the target below 50% Health, which is what separates a champion who can farm souls from one who cannot. assumedSouls=8 is an ESTIMATE, not measured data -- no site publishes average souls per game. It follows the reported 4-6 souls by minute 5 carried to the 10-15 minute mark of a Wild Rift game. Stacks are linear, so halving this halves the rune's contribution.",
       "_patch": [
-        "7.2 burstProc.flat: 40 -> 35"
+        "7.2a"
       ]
     },
     "First Strike": {

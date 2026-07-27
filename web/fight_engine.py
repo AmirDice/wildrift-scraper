@@ -54,6 +54,7 @@ ENGINE_FX = _load("item_engine.json")
 for slug, fx in _load("item_engine_overrides.json").items():
     if isinstance(fx, dict):
         ENGINE_FX.setdefault(slug, {}).update({k: v for k, v in fx.items() if not k.startswith("_")})
+KIT_AMPS = (_load("kit_amps.json") or {}).get("champions", {})
 RUNE_FX = _load("rune_effects.json")
 RUNE_ENGINE = _load("rune_engine.json")  # LLM-extracted, used when not hand-curated
 # Per-ability mana costs (wr-meta, patch 7.2). Read straight from the scrape
@@ -302,6 +303,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "flatPen": 0.0, "pctPenFactors": [], "flatMagicPen": 0.0, "pctMagicPen": 0.0,
         "baseMs": bs.get("moveSpeed", {}).get("base", 330) or 330, "bonusMs": 0.0,
         "abilityAmp": 0.0, "damageAmp": 0.0, "giant": 0.0, "execute": 0.0,
+        # Procs whose condition the rotation has to verify, and ult-only amp.
+        "conditionalProcs": [], "ultAmp": 0.0,
         "spellbladeBaseAdPct": 0.0, "spellbladePctMaxHp": 0.0,
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
@@ -533,6 +536,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             # items but never here, so Battle Zeal's ramping ability damage
             # ("up to a maximum of 6%") was extracted, stored, and dropped.
             st["abilityAmp"] += g("abilityAmpPct") / 100.0
+            st["ultAmp"] += g("ultAmpPct") / 100.0
             if fx.get("burstProcFlat") or fx.get("burstProcApRatio") or fx.get("burstProcAdRatio"):
                 ragg["procs"].append((g("burstProcFlat"), g("burstProcAdRatio") / 100.0,
                                       fx.get("burstProcType", "magic")))
@@ -569,7 +573,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             ragg["onHitAdRatio"] += r["onHit"].get("adRatio", 0)
         if "burstProc" in r:
             p = r["burstProc"]
-            if p.get("condition") != "targetBelow50":
+            cond = p.get("condition")
+            if cond == "targetBelowHalfInWindow":
+                # Checked later against the simulated rotation rather than
+                # assumed: the proc is earned only if this champion's damage
+                # actually takes the target below half health.
+                flat = p.get("flat", 0) + p.get("perSoul", 0) * p.get("assumedSouls", 0)
+                st["conditionalProcs"].append(
+                    {"need": 0.5, "flat": flat, "adRatio": p.get("adRatio", 0),
+                     "apRatio": p.get("apRatio", 0), "type": p.get("type", "magic")})
+            elif cond != "targetBelow50":
                 lo, hi = p.get("baseRange", [p.get("flat", 0)] * 2)
                 ragg["procs"].append((lo + (hi - lo) * (level - 1) / 14.0,
                                       p.get("adRatio", 0), p.get("type", "physical")))
@@ -819,12 +832,83 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     total = 0.0
     auto_dmg = 0.0  # damage gated by attacking: autos + on-hit + spellblade
     by_type = {"physical": 0.0, "magic": 0.0, "true": 0.0}
+    # Damage per ability slot, so an effect that amplifies ONE ability (Axiom
+    # Arcanist's ultimate, Smolder's per-ability empowerments) has something to
+    # amplify. by_type alone cannot answer "how much of this was the ult".
+    by_slot_dmg: dict[str, float] = {}
     parts: list[tuple[str, float]] = []
     cast_log: dict[str, dict] = {}
     casts_total = 0
 
     def add_t(dtype: str, amt: float) -> None:
         by_type[dtype] = by_type.get(dtype, 0.0) + amt
+
+    def kit_amps(total_now: float) -> float:
+        """Kit amplification: a percentage bonus on damage already counted.
+
+        No per-ability formula can express these -- Amumu's Cursed Touch turns
+        his own magic damage into extra true damage, Shadow Assassin adds magic
+        to everything he does for 3 seconds. Values and the assumptions behind
+        them live in data/kit_amps.json. Called on BOTH rotation paths: the
+        short-window combo path returns early, and that is exactly the window a
+        3-second burst amp is worth the most in."""
+        added = 0.0
+        for entry in (KIT_AMPS.get(name) or {}).get("amps", []):
+            pct = _lvl_range(entry.get("pct", 0), level) / 100.0
+            if not pct:
+                continue
+            slot = entry.get("slot")
+            if slot:                                   # amplifies ONE ability
+                src = by_slot_dmg.get(slot, 0.0)
+            elif entry.get("appliesTo") == "all":
+                src = total_now
+            else:
+                src = by_type.get(entry.get("appliesTo", "magic"), 0.0)
+            # A stated duration is a real limit, not a guess: a 3s effect inside
+            # an 8s fight earns three eighths of it.
+            dur = entry.get("durationS")
+            if dur:
+                src *= min(1.0, float(dur) / max(window, 1e-9))
+            bonus = src * pct
+            if bonus:
+                parts.append((f"kit amp ({entry.get('appliesTo', slot)})", bonus))
+                add_t(entry.get("dealtAs", "magic"), bonus)
+                added += bonus
+        # Ultimate-only amplification (Axiom Arcanist): the slot breakdown is
+        # what makes this expressible at all.
+        if st["ultAmp"] and by_slot_dmg.get("4"):
+            bonus = by_slot_dmg["4"] * st["ultAmp"]
+            parts.append(("ult amp", bonus))
+            add_t("magic", bonus)
+            added += bonus
+        # Procs gated on a condition the SIMULATION can check. Dark Harvest only
+        # fires on a target below half health, so it is earned when this
+        # champion's own damage in this window gets them there -- and skipped
+        # when it does not, which is the whole difference between a kit that
+        # farms souls and one that cannot.
+        for pr in st["conditionalProcs"]:
+            # How reliably does THIS champion get the target into proc range in
+            # THIS window? Full credit once its own damage covers the threshold,
+            # tapering below it. A hard on/off would be a cliff: Zed at 48% of a
+            # squishy's health would score zero and Jhin at 52% full value, so a
+            # 4% damage change would flip a keystone on and the item search
+            # would chase that discontinuity.
+            reach = (total_now + added) / max(target["hp"] * pr["need"], 1e-9)
+            reach = min(1.0, reach)
+            if reach <= 0:
+                continue
+            dmg = (pr["flat"] + pr["adRatio"] / 100.0 * st["bonusAd"]
+                   + pr["apRatio"] / 100.0 * st["ap"])
+            # "Adaptive" follows the build's dominant stat, like every other
+            # adaptive source: magic on an AP build, physical on an AD one.
+            dtype = pr["type"]
+            if dtype == "adaptive":
+                dtype = "magic" if st["ap"] >= st["bonusAd"] else "physical"
+            dmg *= (magic_m if dtype == "magic" else phys_m) * reach
+            parts.append(("Dark Harvest", dmg))
+            add_t(dtype, dmg)
+            added += dmg
+        return added
 
     def comp_dmg(comp, rank) -> float:
         base = _scale_val(comp.get("base"), rank, level)
@@ -883,6 +967,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             for c in comps:
                 cd = comp_dmg(c, rank) * amp_a
                 add_t(c["type"], cd)
+                by_slot_dmg[slot] = by_slot_dmg.get(slot, 0.0) + cd
                 d += cd
             parts.append((f"[{slot}] {f[slot].get('name', slot)}", d))
             total += d
@@ -924,6 +1009,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             add_t("magic", d)
             total += d
         amp = 1 + st["damageAmp"]
+        total += kit_amps(total)
         return {"total": total * amp, "parts": parts, "nAutos": n_autos,
                 "autoDmg": auto_dmg * amp,
                 "byType": {k: v * amp for k, v in by_type.items()}}
@@ -954,6 +1040,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         for c in dmg_comps:
             cd = comp_dmg(c, rank) * casts * amp_a
             add_t(c["type"], cd)
+            by_slot_dmg[slot] = by_slot_dmg.get(slot, 0.0) + cd
             d += cd
         parts.append((f"[{slot}] {ab.get('name', slot)} x{casts}", d))
         total += d
@@ -1000,6 +1087,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         parts.append((f"Grasp x{procs}", d))
         add_t("magic", d)
         total += d
+
+    total += kit_amps(total)
 
     amp = 1 + st["damageAmp"]
     total *= amp

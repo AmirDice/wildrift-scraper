@@ -259,7 +259,8 @@
     }
   },
   "Axiom Arcanist": {
-    "ultAmpPct": 10
+    "ultAmpPct": 5,
+    "_why": "'Your ultimate ability has 10% increased damage ... (AoE damage is reduced to a 5% increase)'. The engine cannot tell an AoE ult from a single-target one -- a tooltip-text heuristic scored only 16/23 against ults verified by hand -- so it takes the FLOOR. This can under-credit a single-target ult but can never inflate one."
   },
   "Manaflow Band": {
     "manaFlat": 300

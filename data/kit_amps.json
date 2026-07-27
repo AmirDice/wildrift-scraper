@@ -1,0 +1,52 @@
+{
+  "_note": "Kit-level damage AMPLIFICATION: a percentage bonus on damage the engine already counts, which the per-ability formula schema cannot express. Every pct here appears verbatim in the champion's own tooltip; the only judgement is the `assumes` field, which is stated per entry so it can be argued with. Applied in web/fight_engine.rotation().",
+  "champions": {
+    "Amumu": {
+      "amps": [
+        {
+          "appliesTo": "magic",
+          "dealtAs": "true",
+          "pct": 10,
+          "why": "Cursed Touch: 'basic attacks Curse his enemies, causing them to take bonus 10% true damage from incoming magic damage'. Unconditional once an auto lands, which every Amumu rotation does."
+        }
+      ]
+    },
+    "Kayn": {
+      "amps": [
+        {
+          "appliesTo": "all",
+          "dealtAs": "magic",
+          "pct": { "lvlRange": [52, 66] },
+          "durationS": 3,
+          "why": "Shadow Assassin: 'Attacks and abilities deal an additional 52% - 66% magic damage for 3 seconds'. Scaled by the stated 3s against the fight window, so it is full value in a burst and partial over a long fight. Belongs to blue Kayn only -- Rhaast is a separate record with its own kit."
+        }
+      ]
+    },
+    "Smolder": {
+      "assumes": "Dragon Practice stacks exist by the simulated level. Wild Rift stacks far faster than PC -- a good Smolder is fully stacked by roughly 12-15 minutes -- so at level 13 the flat empowerments below are always active. Only those are modelled; the stack THRESHOLD effects are not, because the scraped tooltip says 'gains new effects at N stacks' without ever stating what those effects are worth.",
+      "amps": [
+        {
+          "slot": "1",
+          "appliesTo": "all",
+          "dealtAs": "magic",
+          "pct": 30,
+          "why": "Dragon Practice: 'Super Scorcher Breath: Deals an additional 30% magic damage'."
+        },
+        {
+          "slot": "2",
+          "appliesTo": "all",
+          "dealtAs": "magic",
+          "pct": 55,
+          "why": "Dragon Practice: 'Achooo!: Explosions deal an additional 55% magic damage'."
+        },
+        {
+          "slot": "3",
+          "appliesTo": "all",
+          "dealtAs": "magic",
+          "pct": 12,
+          "why": "Dragon Practice: 'Flap, Flap, Flap: Each hit deals an additional 12% magic damage'. The 'extra bolt every 65 stacks' is NOT modelled: bolt count would scale with a stack count we are only estimating."
+        }
+      ]
+    }
+  }
+}
