@@ -5,6 +5,7 @@ import { championsInRole, getChampions, type Champion } from "@/lib/data";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { risingPicks } from "@/lib/gap";
 import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champion-change-ranking";
+import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 
 interface ListRow {
   champion: Champion;
@@ -119,6 +120,9 @@ export function BlogBody({ blocks }: { blocks: Block[] }) {
               </blockquote>
             );
           case "cta":
+            // Posts written for the launch already point at the build tools;
+            // while those are held back the link would only redirect home.
+            if (!BUILD_TOOLS_LIVE && /^\/(build|counter)\b/.test(block.href)) return null;
             return (
               <Link
                 key={index}

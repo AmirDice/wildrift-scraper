@@ -2,6 +2,7 @@ import Link from "next/link";
 import { site } from "@/lib/data";
 import { DiscordButton } from "@/components/discord";
 import { SupportButton } from "@/components/support";
+import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 
 const FOOTER_LINKS = [
   { href: "/tier-list", label: "Tier List" },
@@ -10,6 +11,7 @@ const FOOTER_LINKS = [
   { href: "/ranks", label: "Win Rate by Rank" },
   { href: "/compare", label: "Compare" },
   { href: "/consistency", label: "Consistency" },
+  // Dropped below while the build tools are held back: /build redirects home.
   { href: "/build", label: "Builds" },
   { href: "/items", label: "Items" },
   { href: "/runes-spells", label: "Runes & Spells" },
@@ -26,7 +28,7 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-line">
       <div className="mx-auto max-w-6xl px-5 py-10 text-center text-sm leading-relaxed text-muted">
         <nav className="mb-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-          {FOOTER_LINKS.map((l) => (
+          {FOOTER_LINKS.filter((l) => BUILD_TOOLS_LIVE || l.href !== "/build").map((l) => (
             <Link key={l.href} href={l.href} className="text-muted transition hover:text-text">
               {l.label}
             </Link>

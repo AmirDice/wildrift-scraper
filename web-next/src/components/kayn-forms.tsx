@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { AbilityCard } from "@/lib/champion-details";
 import { KAYN_FORMS } from "@/lib/build-options";
+import { useBuildToolsVisible } from "@/lib/use-build-tools";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -69,11 +70,12 @@ function FormToggle({ value, onChange }: { value: FormKey; onChange: (value: For
 export function KaynFormGuide() {
   const [form, setForm] = useState<FormKey>("shadow-assassin");
   const data = FORM_DETAILS[form];
+  const buildToolsVisible = useBuildToolsVisible();
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h2 className="text-lg font-semibold">Choose Kayn&apos;s form</h2><p className="mt-1 text-sm text-muted">The form changes the kit, matchups, runes, and item priorities—not just the label.</p></div>
-        <Link href={`/build?champion=kayn&tab=generate`} className="rounded-full bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent">Generate a form build →</Link>
+        {buildToolsVisible && <Link href={`/build?champion=kayn&tab=generate`} className="rounded-full bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent">Generate a form build →</Link>}
       </div>
       <div className="mt-4 max-w-lg"><FormToggle value={form} onChange={setForm} /></div>
       <div className={`mt-4 rounded-xl border p-4 ${data.tone}`}>

@@ -233,14 +233,16 @@ export default function HomePage() {
           generated), which updates roughly hourly rather than on every view. */}
       <Container className="py-6">
         <SectionHeading title="Inside WrTrueMeta" subtitle="What the current site data and build catalogue cover" />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard
-            label="Builds generated"
-            value={<BuildsGeneratedCount fallback="171" />}
-            sub="by players, updated hourly"
-            href="/build"
-            valueClass="text-accent"
-          />
+        <div className={`grid grid-cols-2 gap-3 ${BUILD_TOOLS_LIVE ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+          {BUILD_TOOLS_LIVE && (
+            <StatCard
+              label="Builds generated"
+              value={<BuildsGeneratedCount fallback="171" />}
+              sub="by players, updated hourly"
+              href="/build"
+              valueClass="text-accent"
+            />
+          )}
           <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU performance profiles" href="/champions" />
           <StatCard label="Items catalogued" value="117" sub="stats, passives, and costs" href="/items" valueClass="text-gold" />
           <StatCard label="Runes & spells" value="63" sub="53 runes · 10 spells" href="/runes-spells" />

@@ -5,6 +5,7 @@ import { ChampionChangeList, type ChampionChangeListEntry } from "@/components/c
 import { getChampions } from "@/lib/data";
 import {getChampionChangeAge,
   getChampionChangeRanking} from "@/lib/champion-change-ranking";
+import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 
 export const metadata: Metadata = {
   title: "Champion Change History | Wild Rift",
@@ -42,27 +43,30 @@ export default function ChampionChangesPage() {
       {/* Bait for the two build tools. The site-wide CTA already sits at the
           bottom of every page, but people who came for balance history rarely
           scroll to it, so the tools also lead here at the top where the traffic
-          actually is. */}
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        <ToolPromo
-          href="/counter"
-          title="Counter Builder"
-          body="Give it your champion and the enemy team, and get a build, runes and item order tuned to beat exactly who you are facing."
-          cta="Build against your enemies"
-          accent="text-emerald-300"
-          ring="hover:border-emerald-400/40"
-          badgeClass="bg-gold/20 text-gold"
-        />
-        <ToolPromo
-          href="/build"
-          title="Build Optimizer"
-          body="Items and runes for every champion, evaluated from current patch data, purchase timing and complete kit synergy."
-          cta="Open the optimizer"
-          accent="text-accent"
-          ring="hover:border-accent/40"
-          badgeClass="bg-gold/20 text-gold"
-        />
-      </div>
+          actually is. Hidden until the tools launch: both links redirect home
+          while the flag is off. */}
+      {BUILD_TOOLS_LIVE && (
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <ToolPromo
+            href="/counter"
+            title="Counter Builder"
+            body="Give it your champion and the enemy team, and get a build, runes and item order tuned to beat exactly who you are facing."
+            cta="Build against your enemies"
+            accent="text-emerald-300"
+            ring="hover:border-emerald-400/40"
+            badgeClass="bg-gold/20 text-gold"
+          />
+          <ToolPromo
+            href="/build"
+            title="Build Optimizer"
+            body="Items and runes for every champion, evaluated from current patch data, purchase timing and complete kit synergy."
+            cta="Open the optimizer"
+            accent="text-accent"
+            ring="hover:border-accent/40"
+            badgeClass="bg-gold/20 text-gold"
+          />
+        </div>
+      )}
 
 
       <div className="mt-8">
