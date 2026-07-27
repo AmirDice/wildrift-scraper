@@ -393,11 +393,6 @@ def advise(champion: str, role: str, enemies: list[str],
     elif mode == "studio" and playstyle == "adaptive":
         playstyle = "standard"
     validation_style = "standard" if playstyle == "adaptive" else playstyle
-    key = _api_key()
-    if not key:
-        raise SystemExit(
-            "DEEPSEEK_API_KEY is not set. Either export it in this shell, or put it in "
-            f"{ENV_FILE.relative_to(ROOT)} (where the web app already reads it from).")
     allowed_styles = available_playstyles(champion)
     if validation_style not in allowed_styles:
         return {
@@ -409,6 +404,17 @@ def advise(champion: str, role: str, enemies: list[str],
     damage_path = damage_path if damage_path in DAMAGE_PATHS else "standard"
     if damage_path != "standard" and champion not in HYBRID_DAMAGE_CHAMPIONS:
         return {"error": f"{damage_path!r} is not a supported damage path for {champion}"}
+    # The key is checked AFTER the request is validated. A malformed request is
+    # malformed whether or not this deployment can reach the model, and checking
+    # in the other order made the answer depend on the environment: the same bad
+    # playstyle reported "not a supported preset" on a machine with a key and
+    # "DEEPSEEK_API_KEY is not set" on one without. CI, which has no key, is the
+    # one that caught it.
+    key = _api_key()
+    if not key:
+        raise SystemExit(
+            "DEEPSEEK_API_KEY is not set. Either export it in this shell, or put it in "
+            f"{ENV_FILE.relative_to(ROOT)} (where the web app already reads it from).")
     if champion == "Kayn":
         champion_form = champion_form if champion_form in KAYN_FORMS else "shadow-assassin"
     else:
