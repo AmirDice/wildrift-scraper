@@ -1011,6 +1011,23 @@ def kit_mechanics(champion: str) -> list[str]:
     if know.get("resource") == "none" and not any(m.get("kind") == "noResource"
                                                   for m in rec.get("mechanics") or []):
         out.append("this champion uses no mana: mana and mana-scaling items are dead stats.")
+    elif know.get("resource") == "energy":
+        # The resource field has carried "energy" all along and nothing read it,
+        # so the model was left to assume energy behaves like mana. It does not,
+        # and the difference decides an item: cooldown reduction buys far less
+        # here, because what stops an energy champion casting again is energy
+        # regeneration, not the cooldown. Ionian Boots of Lucidity on Akali was
+        # the case that exposed this -- graded a clear loss against a model that
+        # happened to avoid them.
+        said_no_mana = any(m.get("kind") == "noResource" for m in rec.get("mechanics") or [])
+        out.append(
+            ("" if said_no_mana else
+             "this champion uses ENERGY, not mana, so mana and mana-regeneration items "
+             "are dead stats. ")
+            + "ENERGY is a small fixed pool that does not grow with items and refills on "
+              "its own schedule, so cooldown reduction / ability haste is worth materially "
+              "less here than on a mana champion: what stops the next cast is energy, not "
+              "the cooldown. Do not pick an item or boot mainly for haste on this kit.")
     return out
 
 
