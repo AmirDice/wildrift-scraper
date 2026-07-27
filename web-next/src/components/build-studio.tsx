@@ -17,7 +17,7 @@ import { ChampionAvatar, TierChip } from "@/components/ui";
 import { EnemyBuildAdvisor, Sparkles, type Advice } from "@/components/enemy-build";
 import { BuildCustomizer } from "@/components/build-customizer";
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
-import { hasSimulatableKit } from "@/lib/customizer-data";
+import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
 import { BuildExplanation } from "@/components/build-explanation";
 import { BuildLikeButton } from "@/components/build-like";
@@ -201,6 +201,13 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
   // open per champion. The tab stays visible either way -- a locked tab that
   // says what is coming reads better than a tab that silently is not there.
   const recommendedOpen = recommendedBuildsLive(rec.champion.name);
+  // Two different controls, and most champions have neither: the header toggle
+  // that swaps between separately generated build sets (Kayn), and the panel
+  // toggle that re-reads stats and abilities in the transformed state.
+  const tours = tabTours({
+    formSets: forms.length > 1,
+    transforms: Boolean(ultTransform(engineName)) || Boolean(DUAL_FORM_CHAMPIONS[engineName]),
+  });
   // Comparisons expose the same curated item lists, so they follow the gate.
   const comparisonChoices = builds && recommendedOpen
     ? variants.map((key) => comparableFromBuild(key, builds.builds[key]))
@@ -230,8 +237,8 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
           already seen stays quiet. */}
       <BuildTour
         key={effectiveTab}
-        storageKey={TAB_TOURS[effectiveTab].storageKey}
-        steps={TAB_TOURS[effectiveTab].steps}
+        storageKey={tours[effectiveTab].storageKey}
+        steps={tours[effectiveTab].steps}
         label="Tour"
       />
       {/* champion search + selector strip */}
@@ -355,22 +362,26 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
 
 /** The two panels every tab shows once there is a build on screen. They are the
  *  reason to trust the rest of the page, and the tour never mentioned them. */
-const STAT_STEPS: TourStep[] = [
+const statSteps = (transforms: boolean): TourStep[] => [
   {
     target: "build-stats",
     title: "Champion stats, not item stats",
-    body: "This is the whole build resolved onto the champion at level 15: base growth, every item and the guaranteed part of the runes, with kit conversions already applied. Guaranteed is what you are certain to have when a fight starts; Fully scaled is what the loadout is worth once stacking items and ramping passives have paid off. The gap between the two is how greedy a build is.",
+    body: "This is the whole build resolved onto the champion at level 15: base growth, every item and the guaranteed part of the runes, with kit conversions already applied. Guaranteed is what you are certain to have when a fight starts; Fully scaled is what the loadout is worth once stacking items and ramping passives have paid off. The gap between the two is how greedy a build is."
+      + (transforms ? " This champion transforms, so the toggle beside it reads the stats in either state." : ""),
   },
   {
     target: "ability-values",
     title: "What your abilities actually hit for",
-    body: "Every ability recalculated against those stats -- real numbers, not ratios. Tap one for the formula, the rank it is read at, and the cooldown after haste. If a champion transforms, the toggle here switches the whole panel to the transformed kit, so you can read Mega Gnar or Rhaast rather than guessing what changes.",
+    body: "Every ability recalculated against those stats -- real numbers, not ratios. Tap one for the formula, the rank it is read at, and the cooldown after haste."
+      + (transforms
+        ? " The toggle here switches the whole panel to the transformed kit, so you can read the abilities and damage you actually get after transforming."
+        : ""),
   },
 ];
 
 /** Per-tab walkthroughs. Bump a storageKey when its tab changes shape enough
  *  that the old walkthrough would be describing controls that moved. */
-const STUDIO_TOUR: TourStep[] = [
+const studioTour = ({ formSets, transforms }: TourContext): TourStep[] => [
   {
     target: "champion-search",
     title: "Start with your champion",
@@ -386,13 +397,12 @@ const STUDIO_TOUR: TourStep[] = [
     title: "The build order, explained",
     body: "Items are shown in purchase order, with boots slotted where they actually get bought. Tap any item, rune or ability for the reasoning behind it.",
   },
-  {
+  ...(formSets ? [{
     target: "champion-form",
-    optional: true,
-    title: "Champions who transform get two builds",
-    body: "Kayn commits to Shadow Assassin or Rhaast for the rest of the game, and they want opposite items, so each form has its own build. The toggle switches everything below it: items, runes, stats and the simulated damage. Only appears for champions this applies to.",
-  },
-  ...STAT_STEPS,
+    title: "This champion gets two separate builds",
+    body: "Kayn commits to Shadow Assassin or Rhaast for the rest of the game, and they want opposite items, so each form has its own build. The toggle switches everything below it: items, runes, stats and the simulated damage.",
+  }] : []),
+  ...statSteps(transforms),
   {
     target: "generate-cta",
     title: "Nothing here fits your game?",
@@ -405,8 +415,14 @@ const STUDIO_TOUR: TourStep[] = [
   },
 ];
 
-const TAB_TOURS: Record<Tab, { storageKey: string; steps: TourStep[] }> = {
-  recommended: { storageKey: "wtm_tour_studio_v2", steps: STUDIO_TOUR },
+/** What the open champion actually puts on screen. The tour describes only
+ *  what is there: a step whose target does not exist still renders, just with
+ *  nothing highlighted, and a walkthrough pointing at a control the player
+ *  cannot see is worse than no step at all. */
+type TourContext = { formSets: boolean; transforms: boolean };
+
+const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: TourStep[] }> => ({
+  recommended: { storageKey: "wtm_tour_studio_v2", steps: studioTour(ctx) },
   generate: {
     storageKey: "wtm_tour_generate_v2",
     steps: [
@@ -436,7 +452,7 @@ const TAB_TOURS: Record<Tab, { storageKey: string; steps: TourStep[] }> = {
         title: "Generate, then read the reasoning",
         body: "You get a full item order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Save anything worth keeping to an album.",
       },
-      ...STAT_STEPS,
+      ...statSteps(ctx.transforms),
     ],
   },
   customize: {
@@ -452,7 +468,7 @@ const TAB_TOURS: Record<Tab, { storageKey: string; steps: TourStep[] }> = {
         title: "Five items, boots, and a full rune page",
         body: "Tap an empty slot to pick, tap the small cross to remove. Items, boots, keystone and the three minors all behave the same way.",
       },
-      ...STAT_STEPS,
+      ...statSteps(ctx.transforms),
       {
         target: "lab-saved",
         title: "Save what you land on",
@@ -460,7 +476,7 @@ const TAB_TOURS: Record<Tab, { storageKey: string; steps: TourStep[] }> = {
       },
     ],
   },
-};
+});
 
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
