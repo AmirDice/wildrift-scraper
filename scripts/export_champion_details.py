@@ -104,34 +104,67 @@ def _download(url: str, headers: dict | None = None) -> str | None:
 # Restricted to a named set: this is an extra network round-trip per ability,
 # and a slash in a name does not otherwise mean "two forms".
 WIKI_API = "https://wiki.leagueoflegends.com/en-us/api.php"
-WIKI_FORM_ICON_CHAMPIONS = {"Nidalee"}
+WIKI_FORM_ICON_CHAMPIONS = {"Nidalee", "Gnar", "Jayce", "Yunara"}
 # The wiki 403s the generic browser User-Agent the guide scrape uses; MediaWiki
 # asks automated clients to identify themselves and a contact, so we do.
 WIKI_HEADERS = {"User-Agent": "wrtruemeta-icon-fetch/1.0 (+https://wrtruemeta.com)"}
 
 
-def _wiki_form_icons(champion: str, halves: list[str]) -> dict[str, str]:
-    """ability half -> icon url, from the wiki's Wild Rift ability icon files."""
-    titles = "|".join(f"File:{champion} {h} WR.png" for h in halves)
-    try:
-        r = requests.get(WIKI_API, params={"action": "query", "titles": titles,
-                                           "prop": "imageinfo", "iiprop": "url",
-                                           "format": "json"},
-                         headers=WIKI_HEADERS, timeout=25)
-        r.raise_for_status()
-        pages = (r.json().get("query") or {}).get("pages") or {}
-    except (requests.RequestException, ValueError):
-        return {}
+def _norm_icon_key(title: str, champion: str) -> str:
+    """A file title reduced to just the ability name, for matching.
+
+    File naming is inconsistent across champions: Nidalee's Wild Rift art is
+    "Nidalee Javelin Toss WR.png" while Jayce only has "Jayce To the Skies!.png",
+    and the wiki's casing does not match the guide's ("To the" vs "To The").
+    Normalising both sides is what lets one lookup serve all of them."""
+    t = title.removeprefix("File:").rsplit(".", 1)[0]
+    t = t.removeprefix(champion).strip()
+    t = re.sub("(?:^| )WR(?: |$)", " ", t)   # WR variants share the PC name
+    t = re.sub(r"\s+\d+$", "", t)          # "Hyper 2" is an alternate version
+    return re.sub(r"[^a-z0-9]", "", t.lower())
+
+
+def _wiki_icon_index(champion: str) -> dict[str, str]:
+    """normalised ability name -> icon url, Wild Rift art winning when it exists."""
     out: dict[str, str] = {}
-    for page in pages.values():
-        info = (page.get("imageinfo") or [{}])[0]
-        title, url = page.get("title", ""), info.get("url")
-        if not url:
+    # PC first, then WR, so the WR entries overwrite them.
+    for cat in (f"Category:{champion} ability icons",
+                f"Category:WR {champion} ability icons"):
+        try:
+            r = requests.get(WIKI_API, params={
+                "action": "query", "list": "categorymembers", "cmtitle": cat,
+                "cmlimit": "100", "format": "json"}, headers=WIKI_HEADERS, timeout=25)
+            r.raise_for_status()
+            titles = [m["title"] for m in r.json().get("query", {})
+                      .get("categorymembers", []) if m["title"].startswith("File:")]
+        except (requests.RequestException, ValueError):
             continue
-        for h in halves:                       # match the title back to its half
-            if title == f"File:{champion} {h} WR.png":
-                out[h] = url
+        for chunk in (titles[i:i + 40] for i in range(0, len(titles), 40)):
+            try:
+                r = requests.get(WIKI_API, params={
+                    "action": "query", "titles": "|".join(chunk), "prop": "imageinfo",
+                    "iiprop": "url", "format": "json"}, headers=WIKI_HEADERS, timeout=25)
+                r.raise_for_status()
+                pages = (r.json().get("query") or {}).get("pages") or {}
+            except (requests.RequestException, ValueError):
+                continue
+            for page in pages.values():
+                url = ((page.get("imageinfo") or [{}])[0]).get("url")
+                if url:
+                    out[_norm_icon_key(page.get("title", ""), champion)] = url
     return out
+
+
+def _wiki_form_icons(champion: str, halves: list[str]) -> dict[str, str]:
+    """ability half -> icon url, for a champion whose two kits share one icon."""
+    index = _wiki_icon_index(champion)
+    out: dict[str, str] = {}
+    for h in halves:
+        url = index.get(_norm_icon_key(h, champion))
+        if url:
+            out[h] = url
+    return out
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()

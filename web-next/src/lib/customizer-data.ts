@@ -34,6 +34,9 @@ type AbilitySteroidComponent = {
   stat: string;
   pct?: RankValue;
   flat?: RankValue;
+  /** A steroid can scale off a stat as well as grant a flat amount: Olaf's
+   *  Ragnarok is "5 / 15 / 25 (+20% AD) Attack Damage". */
+  ratios?: AbilityRatio[];
   from?: string;
   pctFromStat?: number;
   note?: string;
@@ -310,11 +313,53 @@ export function customBuildIssues(items: string[]): string[] {
  * unconditional champion, item, and rune stats. It deliberately does not
  * simulate triggered passives, targets, combos, or assign a build score.
  */
+/**
+ * The self-buff a champion's ULTIMATE grants, if any.
+ *
+ * Aatrox's World Ender is +50% AD, Shyvana's Dragon's Descent +600 Health.
+ * These are real stats, but they only exist while the ult is up, so the stat
+ * sheet leaves them out -- it reports what a build gives you unconditionally.
+ * That means the transformed numbers were not visible anywhere, which is what
+ * `ultActive` exposes.
+ */
+export function ultTransform(name: string): { label: string; steroids: AbilitySteroidComponent[] } | null {
+  const ult = DATA.formulas[name]?.abilities?.["4"];
+  const steroids = (ult?.steroids ?? []).filter((s) => s && s.stat);
+  if (!steroids.length) return null;
+  return { label: ult?.name ?? "Ultimate", steroids };
+}
+
+/** Stat keys a steroid can move, mapped onto the listed stat sheet. */
+const STEROID_TO_STAT: Record<string, keyof ListedBuildStats> = {
+  ad: "ad", ap: "ap", hp: "hp", armor: "armor", mr: "mr",
+  attackSpeed: "attackSpeed", moveSpeed: "moveSpeed", critChance: "crit",
+};
+
+function applyUltSteroids(stats: ListedBuildStats, name: string, level: number): ListedBuildStats {
+  const t = ultTransform(name);
+  if (!t) return stats;
+  const out = { ...stats };
+  // Ult rank at level 13+ is 3 (ranks land at 5/9/13), so read the top rank the
+  // champion actually has rather than assuming max.
+  const rankIndex = level >= 13 ? 2 : level >= 9 ? 1 : 0;
+  for (const s of t.steroids) {
+    const key = STEROID_TO_STAT[s.stat];
+    if (!key) continue;
+    const flat = rankValue(s.flat, rankIndex, level);
+    const pct = rankValue(s.pct, rankIndex, level);
+    // A percentage steroid scales the stat it names; a flat one adds to it.
+    const current = Number(out[key]) || 0;
+    out[key] = (current + flat + (pct ? current * pct / 100 : 0)) as never;
+  }
+  return out;
+}
+
 export function listedBuildStats(
   name: string,
   itemSlugs: string[],
   level = 15,
   runeNames: string[] = [],
+  ultActive = false,
 ): ListedBuildStats | null {
   const champion = DATA.champions[name];
   if (!champion) return null;
@@ -457,7 +502,7 @@ export function listedBuildStats(
   for (const key of Object.keys(result) as (keyof ListedBuildStats)[]) {
     result[key] = Math.round(result[key] * 100) / 100;
   }
-  return result;
+  return ultActive ? applyUltSteroids(result, name, level) : result;
 }
 
 export function conditionalBuildEffects(itemSlugs: string[]): ConditionalBuildEffect[] {
@@ -537,9 +582,12 @@ export function calculatedChampionAbilities(
   itemSlugs: string[],
   runeNames: string[] = [],
   level = 15,
+  ultActive = false,
 ): CalculatedChampionAbility[] {
-  const stats = listedBuildStats(name, itemSlugs, level, runeNames);
-  const baseStats = listedBuildStats(name, [], level);
+  // With the ult up, every ability's numbers change, because the buff feeds the
+  // same AD/AP the ratios read from -- that is the whole point of showing it.
+  const stats = listedBuildStats(name, itemSlugs, level, runeNames, ultActive);
+  const baseStats = listedBuildStats(name, [], level, [], ultActive);
   const champion = DATA.champions[name];
   if (!stats || !baseStats || !champion) return [];
   const verifiedChampion = STAT_RULES.champions[name];

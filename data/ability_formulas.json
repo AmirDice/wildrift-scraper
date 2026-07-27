@@ -2850,18 +2850,12 @@
           }
         ],
         "steroids": [],
-        "defensive": [
-          {
-            "kind": "shield",
-            "base": "grit consumed",
-            "ratios": [],
-            "note": "100% of Grit consumed as shield, decays over 3 seconds. Grit stored up to 305 (50% max HP)."
-          }
-        ],
+        "defensive": [],
         "unmodeled": [
           "Plus 25% (+0.275% per AD) of Grit consumed as additional true damage.",
           "Enemies not in center take physical damage (values not specified).",
-          "Passive stores damage as Grit, decays after 4 seconds."
+          "Passive stores damage as Grit, decays after 4 seconds.",
+          "shield: 100% of Grit consumed as shield, decays over 3 seconds. Grit stored up to 305 (50% max HP)."
         ]
       },
       "3": {
@@ -4364,18 +4358,12 @@
             "base": [
               27
             ],
-            "ratios": []
-          },
-          {
-            "kind": "heal",
-            "base": [
-              54
-            ],
-            "ratios": []
+            "ratios": [],
+            "note": "self; also heals nearby allies for 54"
           }
         ],
         "unmodeled": [
-          "Cooldown reduction on knockup/stun. Heal triggers on damage taken."
+          "When Alistar takes damage; knocking up or stunning champions reduces cooldown by 10 seconds"
         ]
       },
       "1": {
@@ -4409,7 +4397,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Knockup for 1s, triggers passive CDR."
+          "tosses enemies into the air for 1 second"
         ]
       },
       "2": {
@@ -4443,7 +4431,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Knockback, can target turrets for 75% damage."
+          "knocks target back; can target turrets for 75% damage"
         ]
       },
       "3": {
@@ -4477,19 +4465,17 @@
           {
             "name": "Trample Empowered Auto",
             "type": "magic",
-            "base": [
-              40
-            ],
+            "base": 40,
             "ratios": [],
             "hits": 1,
             "when": "per auto",
-            "note": "Only after 5 Trample hits on champion"
+            "note": "after damaging an enemy champion 5 times with Trample"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Stun on empowered auto"
+          "Only one stack can be gained per tick; empowered auto stuns for 1 second"
         ]
       },
       "4": {
@@ -4500,21 +4486,19 @@
           55.0
         ],
         "damage": [],
-        "steroids": [],
-        "defensive": [
+        "steroids": [
           {
-            "kind": "damageReduction",
-            "base": [
+            "stat": "damageReduction",
+            "pct": [
               55,
               65,
               75
             ],
-            "durationS": 7
+            "note": "duration 7 seconds; also removes crowd control effects"
           }
         ],
-        "unmodeled": [
-          "Removes CC on cast."
-        ]
+        "defensive": [],
+        "unmodeled": []
       }
     },
     "combo": [
@@ -4527,7 +4511,7 @@
     "knowledge": {
       "source": "llm-knowledge",
       "asEfficiency": 0.2,
-      "resource": "mana",
+      "resource": "none",
       "abilitiesCanCrit": false,
       "confidence": "high"
     }
@@ -10277,11 +10261,20 @@
         "name": "Relentless Assault",
         "cooldowns": [],
         "damage": [],
-        "steroids": [],
+        "steroids": [
+          {
+            "stat": "attackSpeed",
+            "pct": {
+              "lvlRange": [
+                6,
+                20
+              ]
+            },
+            "note": "per stack, max 5 stacks, lasts 3s"
+          }
+        ],
         "defensive": [],
-        "unmodeled": [
-          "Attacks grant 6-20% attack speed stacking up to 5 times for 3s."
-        ]
+        "unmodeled": []
       },
       "1": {
         "name": "Leap Strike",
@@ -10340,13 +10333,14 @@
               }
             ],
             "hits": 1,
-            "when": "per auto"
+            "when": "per auto",
+            "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Deals 175% damage to monsters."
+          "Deals 175% damage to monsters"
         ]
       },
       "3": {
@@ -10382,9 +10376,15 @@
           }
         ],
         "steroids": [],
-        "defensive": [],
+        "defensive": [
+          {
+            "stat": "damageReduction",
+            "pct": 25,
+            "note": "lasts 2 seconds"
+          }
+        ],
         "unmodeled": [
-          "Dodges all attacks, 25% reduced damage from champions for 2s. Damage increased by 20% per dodge (max 100%). Re-cast to end early."
+          "Dodges all incoming attacks during stance; damage increased by 20% per dodge up to 100%"
         ]
       },
       "4": {
@@ -10396,7 +10396,7 @@
         ],
         "damage": [
           {
-            "name": "Grandmaster Passive",
+            "name": "Grandmaster-at-Arms Passive",
             "type": "magic",
             "base": [
               75,
@@ -10410,10 +10410,11 @@
               }
             ],
             "hits": 1,
-            "when": "per auto"
+            "when": "per auto",
+            "note": "every 3rd auto (becomes every 2nd during R active)"
           },
           {
-            "name": "Grandmaster Active",
+            "name": "Grandmaster-at-Arms Active",
             "type": "magic",
             "base": [
               100,
@@ -10430,32 +10431,63 @@
             "when": "per cast"
           }
         ],
-        "steroids": [],
+        "steroids": [
+          {
+            "stat": "armor",
+            "flat": [
+              30,
+              50,
+              70
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 50
+              }
+            ],
+            "note": "for hitting at least one champion, lasts 8s"
+          },
+          {
+            "stat": "mr",
+            "flat": [
+              18,
+              30,
+              42
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 30
+              }
+            ],
+            "note": "for hitting at least one champion, lasts 8s"
+          }
+        ],
         "defensive": [],
         "unmodeled": [
-          "Passive triggers every 3rd attack (every 2nd after active for 8s). Active grants armor and MR based on champions hit (30/50/70 +50% bonus AD armor, 18/30/42 +30% bonus AD MR for first; +15/20/25 armor and +9/12/15 MR per additional champion). Size +10%. Deals 110% damage to monsters."
+          "Gains additional armor and MR per extra champion hit: 15/20/25 (+10% bonus AD) armor and 9/12/15 (+6% bonus AD) MR per champion; size increases by 10%; passive becomes every 2 attacks instead; deals 110% damage to monsters"
         ]
       }
     },
     "combo": [
       "3",
-      "2",
       "1",
       "auto",
-      "4",
+      "2",
       "auto",
+      "4",
       "auto"
     ],
     "mechanics": [
       {
         "kind": "everyNHit",
-        "evidence": "with every 3 consecutive attacks",
+        "evidence": "deals an additional 75 / 130 / 185 ( +70% AP ) magic damage with every 3 consecutive attacks",
         "n": 3
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.8,
+      "asEfficiency": 0.9,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "high"
@@ -10470,33 +10502,56 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "flat": 20,
-            "note": "Mini Gnar, max 20, scales with level"
+            "flat": [
+              0,
+              20
+            ],
+            "note": "Max 20 at full Rage"
           },
           {
             "stat": "attackSpeed",
-            "pct": 90,
-            "note": "Mini Gnar, max 90%, scales with level"
+            "flat": [
+              0,
+              90
+            ],
+            "note": "Max 90% at full Rage"
+          },
+          {
+            "stat": "hp",
+            "flat": [
+              0,
+              900
+            ],
+            "note": "Mega: gains up to 900 Health"
           },
           {
             "stat": "armor",
-            "flat": 60,
-            "note": "Mega Gnar, max 60, scales with level"
+            "flat": [
+              0,
+              60
+            ],
+            "note": "Mega: gains up to 60 Armor"
           },
           {
             "stat": "mr",
-            "flat": 70,
-            "note": "Mega Gnar, max 70, scales with level"
+            "flat": [
+              0,
+              70
+            ],
+            "note": "Mega: gains up to 70 Magic Resist"
           },
           {
             "stat": "ad",
-            "flat": 50,
-            "note": "Mega Gnar, max 50, scales with level"
+            "flat": [
+              0,
+              50
+            ],
+            "note": "Mega: gains up to 50 Attack Damage"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Mini Gnar gains attack range up to 150; Mega Gnar gains health up to 900; Rage generation mechanics"
+          "Generates Rage from dealing/taking damage. At max Rage, transforms into Mega Gnar. Rage decays after 13s of no combat. Transformation lasts 15s."
         ]
       },
       "1": {
@@ -10549,7 +10604,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Boomerang returns dealing 50% damage to subsequent enemies (each once); slows; cooldown reduction on catch; Boulder toss AoE slow; Rage generation on hit"
+          "Boomerang returns dealing 50% damage to subsequent enemies (max once per enemy). Catching boomerang reduces cooldown by 40%. Boulder pick-up reduces cooldown by 70%. Slows."
         ]
       },
       "2": {
@@ -10561,6 +10616,33 @@
           17.0
         ],
         "damage": [
+          {
+            "name": "Hyper (Passive)",
+            "type": "magic",
+            "base": [
+              10,
+              20,
+              30,
+              40
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 100
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": [
+                  7,
+                  9,
+                  11,
+                  13
+                ]
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          },
           {
             "name": "Wallop",
             "type": "physical",
@@ -10584,18 +10666,19 @@
         "steroids": [
           {
             "stat": "attackSpeed",
-            "flat": [
+            "pct": [
               35,
               40,
               45,
               50
             ],
-            "note": "Mini Active, 6 seconds"
+            "duration": 6,
+            "note": "Active: gains attack speed"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Mini Passive: every third attack/ability on same enemy deals bonus magic damage: base 10/20/30/40 + 100% AP + 7/9/11/13% target max health; also grants decaying movement speed (20%); Wallop stuns for 1.25 seconds; up to 300 bonus damage to monsters"
+          "Hyper passive grants 20% decaying Movement Speed on proc. Wallop stuns for 1.25s. Hyper passive deals up to 300 dmg to monsters."
         ]
       },
       "3": {
@@ -10648,7 +10731,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Mini: bounces off units if landed on, travels further; slows target by 80% briefly; Mega: AoE damage on landing, slows enemies landed on by 80% briefly"
+          "If landing on enemy, bounces off and travels further. Slows by 80% briefly on direct hit."
         ]
       },
       "4": {
@@ -10678,41 +10761,50 @@
               }
             ],
             "hits": 1,
-            "when": "per cast"
+            "when": "per cast",
+            "alt": true
           }
         ],
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 35,
-            "note": "Mini Passive: Hyper's movement speed bonus increased to 35/50/65% per rank"
+            "pct": [
+              35,
+              50,
+              65
+            ],
+            "note": "Mini Gnar: Hyper's Movement Speed bonus increased"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "If enemy knocked into wall, damage increases by 50% and stuns instead of slowing for 1.25/1.5/1.75 seconds; slows by 45% otherwise"
+          "Mega: knocks back enemies, stuns if into wall (damage +50%). Mini: passive increases Hyper's MS."
         ]
       }
     },
     "combo": [
+      "3",
       "1",
       "2",
-      "auto",
-      "3",
       "4",
-      "2",
-      "1"
+      "auto",
+      "auto",
+      "auto"
     ],
     "mechanics": [
       {
         "kind": "transform",
-        "evidence": "his next ability transforms him into Mega Gnar for 15 seconds."
+        "evidence": "Gnar's abilities will change, and his next ability transforms him into Mega Gnar for 15 seconds."
       },
       {
         "kind": "everyNHit",
         "params": {
           "n": 3
         },
+        "source": "llm-knowledge"
+      },
+      {
+        "kind": "noResource",
         "source": "llm-knowledge"
       }
     ],
@@ -20201,7 +20293,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Fury system: abilities enhanced at 50 Fury, consume Fury. Attacks generate 5 Fury, increased by 50% below 50% HP. Out of combat, 4 Fury dissipates per second. Enhanced abilities do not generate Fury."
+          "Fury: gain 5 per auto (50% more below 50% HP), lose 4/s out of combat; 50 Fury consumed for enhanced effects."
         ]
       },
       "1": {
@@ -20229,7 +20321,8 @@
               }
             ],
             "hits": 1,
-            "when": "once per target"
+            "when": "per cast",
+            "alt": false
           },
           {
             "name": "Cull the Meek (Enhanced)",
@@ -20247,14 +20340,83 @@
               }
             ],
             "hits": 1,
-            "when": "once per target",
+            "when": "per cast",
             "alt": true
           }
         ],
         "steroids": [],
-        "defensive": [],
+        "defensive": [
+          {
+            "kind": "heal",
+            "base": [
+              4,
+              6,
+              8,
+              10
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 5
+              }
+            ],
+            "when": "per enemy hit",
+            "alt": false
+          },
+          {
+            "kind": "heal",
+            "base": [
+              16,
+              24,
+              32,
+              40
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 20
+              }
+            ],
+            "when": "per champion hit",
+            "alt": false
+          },
+          {
+            "kind": "heal",
+            "base": [
+              12,
+              18,
+              24,
+              30
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 15
+              }
+            ],
+            "when": "per enemy hit",
+            "alt": true
+          },
+          {
+            "kind": "heal",
+            "base": [
+              48,
+              72,
+              96,
+              120
+            ],
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 60
+              }
+            ],
+            "when": "per champion hit",
+            "alt": true
+          }
+        ],
         "unmodeled": [
-          "Healing: per enemy hit 4/6/8/10 (+5% bonus AD), if champion hit additional 16/24/32/40 (+20% bonus AD). Enhanced: healing increased by 200%."
+          "Generates 5 Fury (10 vs champions) per enemy hit; Enhanced consumes 50 Fury."
         ]
       },
       "2": {
@@ -20282,7 +20444,8 @@
               }
             ],
             "hits": 2,
-            "when": "per auto"
+            "when": "per auto",
+            "alt": false
           },
           {
             "name": "Ruthless Predator (Enhanced)",
@@ -20307,7 +20470,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Stuns for 0.75s (enhanced 1.5s). Enhanced clears shields. Gains 10 Fury on champion hit."
+          "Stun 0.75s (1.5s enhanced); Shield clear on enhanced; Gain 10 additional Fury on champion hit (enhanced)."
         ]
       },
       "3": {
@@ -20320,7 +20483,7 @@
         ],
         "damage": [
           {
-            "name": "Slice (First Dash)",
+            "name": "Slice",
             "type": "physical",
             "base": [
               40,
@@ -20335,10 +20498,11 @@
               }
             ],
             "hits": 1,
-            "when": "once per target"
+            "when": "per cast",
+            "alt": false
           },
           {
-            "name": "Dice (Second Dash Base)",
+            "name": "Dice (Normal)",
             "type": "physical",
             "base": [
               40,
@@ -20353,10 +20517,11 @@
               }
             ],
             "hits": 1,
-            "when": "once per target"
+            "when": "per cast",
+            "alt": false
           },
           {
-            "name": "Dice (Enhanced Second Dash)",
+            "name": "Dice (Enhanced)",
             "type": "physical",
             "base": [
               70,
@@ -20371,14 +20536,14 @@
               }
             ],
             "hits": 1,
-            "when": "once per target",
+            "when": "per cast",
             "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Enhanced second dash shreds armor by 25/30/35/40% for 4s. First dash grants second dash if hits enemy."
+          "Slice: 5 Fury per enemy (10 vs champion); Dice: normal deals same as Slice if unenhanced; Enhanced Dice removes 25-40% armor for 4s and restores 20 Fury over 2s on champion hit."
         ]
       },
       "4": {
@@ -20390,7 +20555,7 @@
         ],
         "damage": [
           {
-            "name": "Dominus Aura",
+            "name": "Dominus (Tick)",
             "type": "magic",
             "base": [
               70,
@@ -20408,41 +20573,37 @@
             "durationS": 12
           }
         ],
-        "steroids": [],
+        "steroids": [
+          {
+            "stat": "hp",
+            "flat": [
+              300,
+              575,
+              750
+            ],
+            "note": "Grants bonus max HP for 12 seconds"
+          }
+        ],
         "defensive": [],
         "unmodeled": [
-          "Gains 20 Fury on cast and 5 Fury per second. Gains 300/575/750 bonus health for 12 seconds (unshielded)."
+          "Initial 20 Fury; +5 Fury per second for 12s."
         ]
       }
     },
     "combo": [
+      "4",
       "3",
       "2",
-      "auto",
       "1",
-      "3",
-      "4"
-    ],
-    "mechanics": [
-      {
-        "kind": "doubleShot",
-        "params": {
-          "secondShotPct": 0.75
-        },
-        "source": "llm-knowledge"
-      },
-      {
-        "kind": "noResource",
-        "params": {},
-        "source": "llm-knowledge"
-      }
+      "auto",
+      "3"
     ],
     "knowledge": {
       "source": "llm-knowledge",
       "asEfficiency": 0.3,
       "resource": "none",
       "abilitiesCanCrit": false,
-      "confidence": "high"
+      "confidence": "medium"
     }
   },
   "Rengar": {

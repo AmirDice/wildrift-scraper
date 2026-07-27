@@ -4019,7 +4019,11 @@
         "damageTypes": [
           "physical"
         ],
-        "icon": "/abilities/gnar-boomerang-throw-boulder-toss.png"
+        "icon": "/abilities/gnar-boomerang-throw-boulder-toss.png",
+        "formIcons": [
+          "/abilities/Gnar_Boomerang_Throw_WR.png",
+          "/abilities/Gnar_Boulder_Toss_WR.png"
+        ]
       },
       {
         "slot": "2",
@@ -4036,7 +4040,11 @@
           "physical",
           "magic"
         ],
-        "icon": "/abilities/gnar-hyper-wallop.png"
+        "icon": "/abilities/gnar-hyper-wallop.png",
+        "formIcons": [
+          "/abilities/Gnar_Hyper_WR.png",
+          "/abilities/Gnar_Wallop_WR.png"
+        ]
       },
       {
         "slot": "3",
@@ -4052,7 +4060,11 @@
         "damageTypes": [
           "physical"
         ],
-        "icon": "/abilities/gnar-hop-crunch.png"
+        "icon": "/abilities/gnar-hop-crunch.png",
+        "formIcons": [
+          "/abilities/Gnar_Hop_WR.png",
+          "/abilities/Gnar_Crunch_WR.png"
+        ]
       },
       {
         "slot": "4",
@@ -5310,7 +5322,11 @@
         "damageTypes": [
           "physical"
         ],
-        "icon": "/abilities/jayce-to-the-skies-shock-blast.png"
+        "icon": "/abilities/jayce-to-the-skies-shock-blast.png",
+        "formIcons": [
+          "/abilities/Jayce_To_the_Skies%21_WR.png",
+          "/abilities/Jayce_Shock_Blast_WR.png"
+        ]
       },
       {
         "slot": "2",
@@ -5327,7 +5343,11 @@
           "physical",
           "magic"
         ],
-        "icon": "/abilities/jayce-lightning-field-hyper-charge.png"
+        "icon": "/abilities/jayce-lightning-field-hyper-charge.png",
+        "formIcons": [
+          "/abilities/Jayce_Lightning_Field_WR.png",
+          "/abilities/Jayce_Hyper_Charge_WR.png"
+        ]
       },
       {
         "slot": "3",
@@ -5343,7 +5363,11 @@
         "damageTypes": [
           "magic"
         ],
-        "icon": "/abilities/jayce-thundering-blow-acceleration-gate.png"
+        "icon": "/abilities/jayce-thundering-blow-acceleration-gate.png",
+        "formIcons": [
+          "/abilities/Jayce_Thundering_Blow_WR.png",
+          "/abilities/Jayce_Acceleration_Gate_WR.png"
+        ]
       },
       {
         "slot": "4",
@@ -11378,7 +11402,7 @@
         "slot": "4",
         "key": "R",
         "name": "Dominus",
-        "text": "Gain 20 Fury and 300 / 575 / 750 Heath for 12 seconds. Every second after casting, gain 5 fury and deal 70 / 120 / 170 ( +20% AP ) magic damage to nearby enemies.",
+        "text": "Gain 20 Fury and 300 / 575 / 750 Health for 12 seconds. Every second after casting, gain 5 fury and deal 70 / 120 / 170 ( +20% AP ) magic damage to nearby enemies.",
         "cooldowns": [
           "75",
           "70",
@@ -17044,7 +17068,11 @@
         "damageTypes": [
           "magic"
         ],
-        "icon": "/abilities/yunara-arc-of-judgment-arc-of-ruin.png"
+        "icon": "/abilities/yunara-arc-of-judgment-arc-of-ruin.png",
+        "formIcons": [
+          "/abilities/Yunara_Arc_of_Judgment_WR.png",
+          "/abilities/Yunara_Arc_of_Ruin_WR.png"
+        ]
       },
       {
         "slot": "3",
@@ -17058,7 +17086,11 @@
           "9"
         ],
         "damageTypes": [],
-        "icon": "/abilities/yunara-kanmeis-steps-untouchable-shadow.png"
+        "icon": "/abilities/yunara-kanmeis-steps-untouchable-shadow.png",
+        "formIcons": [
+          "/abilities/Yunara_Kanmei%27s_Steps_WR.png",
+          "/abilities/Yunara_Untouchable_Shadow_WR.png"
+        ]
       },
       {
         "slot": "4",

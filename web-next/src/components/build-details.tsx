@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Tip } from "@/components/build-view";
 import {
   calculatedChampionAbilities,
+  ultTransform,
   conditionalBuildEffects,
   listedBuildStats,
   type CustomizerItem,
@@ -122,8 +123,13 @@ export function BuildStatsPanel({
   // ramps has ramped. Guaranteed stays the default because it is the one you
   // can rely on; scaled is what makes stacking items comparable to static ones.
   const [scaled, setScaled] = useState(false);
+  // A transform ultimate's buff is a real stat change, but only while it is up,
+  // so the sheet leaves it out of the guaranteed numbers by default and offers
+  // it as its own state rather than mixing the two.
+  const transform = ultTransform(name);
+  const [ultOn, setUltOn] = useState(false);
   const base = listedBuildStats(name, [], level);
-  const listed = listedBuildStats(name, itemSlugs, level, runeNames);
+  const listed = listedBuildStats(name, itemSlugs, level, runeNames, ultOn);
   const scaledResult = scaledBuildStats(name, itemSlugs, level, runeNames);
   if (!base || !listed) return null;
   const stats = scaled && scaledResult ? scaledResult.stats : listed;
@@ -145,8 +151,23 @@ export function BuildStatsPanel({
           Champion stats{" "}
           <span className="normal-case text-faint/60">
             · level {level} base + {scaled ? "fully scaled build stats" : "guaranteed build stats"}
+            {ultOn && transform ? ` · with ${transform.label}` : ""}
           </span>
         </p>
+        {transform && (
+          <div className="flex items-center gap-0.5 rounded-lg border border-line bg-white/[0.03] p-0.5">
+            <StatModeButton active={!ultOn} onClick={() => setUltOn(false)} title="Stats without the ultimate active.">
+              Ult off
+            </StatModeButton>
+            <StatModeButton
+              active={ultOn}
+              onClick={() => setUltOn(true)}
+              title={`Stats while ${transform.label} is active.`}
+            >
+              Ult on
+            </StatModeButton>
+          </div>
+        )}
         {scalable.length > 0 && (
           <div className="flex items-center gap-0.5 rounded-lg border border-line bg-white/[0.03] p-0.5">
             <StatModeButton
@@ -327,6 +348,9 @@ function StatModeButton({
  */
 const DUAL_FORM_CHAMPIONS: Record<string, [string, string]> = {
   Nidalee: ["Human", "Cougar"],
+  Gnar: ["Mini", "Mega"],
+  Jayce: ["Hammer", "Cannon"],
+  Yunara: ["Base", "Transcendent"],
 };
 
 /** The half of a two-form ability that belongs to the selected form. */
@@ -369,8 +393,26 @@ export function ChampionAbilitiesPanel({
   embedded?: boolean;
 }) {
   const formNames = DUAL_FORM_CHAMPIONS[name];
-  const [formSide, setFormSide] = useState(0);
-  const raw = calculatedChampionAbilities(name, itemSlugs, runeNames, level);
+  // Keyed by champion so the choice resets when you switch: leaving the panel on
+  // "Mega" and picking Jayce would otherwise show his Cannon abilities as if
+  // that were the default.
+  const [formState, setFormState] = useState({ champ: name, side: 0 });
+  const formSide = formState.champ === name ? formState.side : 0;
+  const setFormSide = (side: number) => setFormState({ champ: name, side });
+  // Ultimates that transform the champion (Aatrox's +50% AD, Shyvana's +600
+  // Health) change every other number on this panel, because the buff feeds the
+  // same AD/AP the ability ratios read from. The stat sheet lists only
+  // unconditional stats, so without this the transformed values were nowhere.
+  const transform = ultTransform(name);
+  const [ultState, setUltState] = useState({ champ: name, on: false });
+  const ultOn = ultState.champ === name && ultState.on;
+  const setUltOn = (on: boolean) => setUltState({ champ: name, on });
+  // For a champion whose FORM is the ultimate (Gnar rages, Jayce swaps weapon,
+  // Yunara transcends), the form switch already says whether the ult is up, so
+  // it drives the stats too rather than sitting next to a second toggle that
+  // means the same thing.
+  const ultActive = formNames ? formSide === 1 : ultOn;
+  const raw = calculatedChampionAbilities(name, itemSlugs, runeNames, level, ultActive);
   const abilities = formNames ? raw.map((a) => abilityForForm(a, formSide)) : raw;
   if (!abilities.length) return null;
 
@@ -380,6 +422,20 @@ export function ChampionAbilitiesPanel({
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
           Live ability values <span className="normal-case text-faint/60">· level {level} with this build</span>
         </p>
+        {transform && !formNames && (
+          <div className="ml-auto flex gap-1 rounded-lg border border-line bg-black/30 p-0.5">
+            <StatModeButton active={!ultOn} onClick={() => setUltOn(false)} title="Values without the ultimate active.">
+              Ult off
+            </StatModeButton>
+            <StatModeButton
+              active={ultOn}
+              onClick={() => setUltOn(true)}
+              title={`${transform.label} active: the buff it grants feeds every ratio below.`}
+            >
+              Ult on
+            </StatModeButton>
+          </div>
+        )}
         {formNames && (
           <div className="ml-auto flex gap-1 rounded-lg border border-line bg-black/30 p-0.5">
             {formNames.map((label, index) => (

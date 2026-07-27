@@ -613,6 +613,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 st["bonusMs"] += st["baseMs"] * pct / 100.0 * 0.5  # avg uptime
             elif stat in ("armor", "mr") and s.get("flat"):
                 st[stat] += _scale_val(s["flat"], 3, level)
+            elif stat == "damageReduction":
+                # Flat damage reduction from a kit (Alistar's ultimate). Takes
+                # the strongest source, mirroring how the rune path treats drPct.
+                st["dr"] = max(st["dr"], _scale_val(s.get("pct"), 3, level) / 100.0)
             elif stat == "hp":
                 # Transform ultimates grant flat Health (Shyvana, Nasus,
                 # Volibear). It is bonus HP, so shield/HP-scaling effects see it.

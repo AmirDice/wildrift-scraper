@@ -14043,14 +14043,16 @@
           "70",
           "65"
         ],
-        "text": "Gain 20 Fury and 300 / 575 / 750 Heath for 12 seconds. Every second after casting, gain 5 fury and deal 70 / 120 / 170 ( +20% AP ) magic damage to nearby enemies.",
+        "text": "Gain 20 Fury and 300 / 575 / 750 Health for 12 seconds. Every second after casting, gain 5 fury and deal 70 / 120 / 170 ( +20% AP ) magic damage to nearby enemies.",
         "damageTypes": [
           "magic"
         ],
         "scales": [
           "ap"
         ],
-        "tags": []
+        "tags": [
+          "heal"
+        ]
       }
     ]
   },

@@ -45,7 +45,11 @@ RATIO_STATS = ["ad", "bonusAd", "ap", "targetMaxHp", "targetCurrentHp", "targetM
 # Dragon's Descent is "gaining 350 / 475 / 600 Health", Nasus and Volibear the
 # same. Without it the closed vocabulary silently dropped the entire buff, so a
 # transformed champion simulated at his untransformed health.
-STEROID_STATS = ["ad", "ap", "attackSpeed", "moveSpeed", "armor", "mr", "critChance", "hp"]
+# damageReduction is here for the same reason as hp: Alistar's Unbreakable Will
+# is "55% / 65% / 75% damage reduction", the single most important number in his
+# kit, and a closed vocabulary without it drops the whole ultimate.
+STEROID_STATS = ["ad", "ap", "attackSpeed", "moveSpeed", "armor", "mr", "critChance",
+                 "hp", "damageReduction"]
 
 SYSTEM = (
     "You transcribe Wild Rift ability tooltips into machine-readable JSON for a damage "
@@ -88,6 +92,10 @@ SYSTEM = (
     "\"flat\":[per-rank] OR \"pct\":number, \"from\":optional conversion source stat "
     "(e.g. Hecarim: stat=ad, from=bonusMs, pct=12), \"note\":\"...\"}\n"
     "- shields/heals: {\"kind\":\"shield|heal\",\"base\":[...],\"ratios\":[...]}\n"
+    "- BONUS HEALTH IS NOT A SHIELD. 'gain 300 / 575 / 750 Health for 12 seconds' is a "
+    "steroid {\"stat\":\"hp\",\"flat\":[300,575,750]} -- a stat you have while it lasts, "
+    "which health and shield scaling then read from. A shield is a separate pool that "
+    "absorbs damage and is consumed. Filing it as a shield loses the entire buff.\n"
     "- Anything you cannot express (clones, transformations, stacking mechanics, "
     "conditional executes) -> put a short string in \"unmodeled\". Do NOT force it.\n"
     "- ON-HIT DAMAGE IS CRITICAL: any damage added to basic attacks MUST be a damage "
@@ -339,6 +347,25 @@ def _derivable(v: float, allowed: set[str]) -> bool:
     return False
 
 
+def _numeric_ok(comp: dict) -> bool:
+    """Are the fields that must hold numbers actually holding numbers?
+
+    The model occasionally answers a numeric field with prose -- Sett's shield
+    came back as {"base": "grit consumed"} -- which passes every other check,
+    reaches the exported JSON and breaks the typed frontend. The note itself is
+    fine; it just belongs in unmodeled, not in `base`."""
+    for field in ("base", "flat", "pct", "hits"):
+        v = comp.get(field)
+        if v is None:
+            continue
+        if isinstance(v, dict):
+            v = v.get("lvlRange") or []
+        for x in (v if isinstance(v, list) else [v]):
+            if not isinstance(x, (int, float)):
+                return False
+    return True
+
+
 def _drop_nulls(comp: dict) -> dict:
     """Strip keys the model answered with null.
 
@@ -486,10 +513,13 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
             if comp.get("type") not in ("physical", "magic", "true"):
                 dropped.append(f"{slot}: bad type {comp.get('type')}")
                 continue
+            if not _numeric_ok(comp):
+                dropped.append(f"{slot}/{comp.get('name','?')}: non-numeric value in a number field")
+                continue
             damage.append(_drop_nulls(comp))
         steroids = []
         for st in ab.get("steroids") or []:
-            if isinstance(st, dict) and st.get("stat") in STEROID_STATS:
+            if isinstance(st, dict) and st.get("stat") in STEROID_STATS and _numeric_ok(st):
                 steroids.append(_drop_nulls(st))
         # The model sometimes answers a defensive slot with a bare sentence
         # instead of an object ("Becomes untargetable for 1.2 seconds"). That is
@@ -497,7 +527,12 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
         # that calls .get() on a defensive entry.
         defensive, prose = [], []
         for d in ab.get("defensive") or []:
-            (defensive.append(_drop_nulls(d)) if isinstance(d, dict) else prose.append(d))
+            if not isinstance(d, dict):
+                prose.append(d)
+            elif not _numeric_ok(d):
+                prose.append(f"{d.get('kind', 'defensive')}: {d.get('note') or d.get('base')}")
+            else:
+                defensive.append(_drop_nulls(d))
         un_raw = ab.get("unmodeled") or []
         if isinstance(un_raw, str):  # model sometimes returns one string, not a list
             un_raw = [un_raw]

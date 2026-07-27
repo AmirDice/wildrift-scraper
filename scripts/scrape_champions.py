@@ -156,6 +156,9 @@ SOURCE_TEXT_FIXES: list[tuple[str, str, str, str]] = [
     # then read 130 instead of 160, undercounting his main damage ability.
     ("kayn", "Reaping Slash: Rhaast",
      "70 / 100 / 130 / 130 / 160", "70 / 100 / 130 / 160"),
+    # "Heath" for "Health". Extraction reads a closed vocabulary of stat names,
+    # so the misspelling made Dominus grant nothing at all.
+    ("renekton", "Dominus", "750 Heath", "750 Health"),
 ]
 
 
