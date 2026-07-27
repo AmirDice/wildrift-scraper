@@ -55,6 +55,48 @@ for slug, fx in _load("item_engine_overrides.json").items():
     if isinstance(fx, dict):
         ENGINE_FX.setdefault(slug, {}).update({k: v for k, v in fx.items() if not k.startswith("_")})
 KIT_AMPS = (_load("kit_amps.json") or {}).get("champions", {})
+# Who a kit heal lands on, per champion and slot: "self", "ally" or "both".
+# Everything the engine used to do assumed "ally", which is right for an
+# enchanter and wrong for every bruiser who sustains through his own kit.
+HEAL_TARGETS = (_load("heal_targets.json") or {}).get("champions", {})
+
+
+def heal_target(name: str, slot: str) -> str:
+    """Hand-verified; anything unlisted keeps the historical ally-facing read."""
+    return (HEAL_TARGETS.get(name) or {}).get(slot, "ally")
+
+
+def kit_heal(name: str, st: dict, level: int, window: float, audience: str) -> float:
+    """Healing and shielding this kit produces for `audience` over a fight.
+
+    Shared by the ally-value model and the champion's own sustain so the two
+    read the same components and cannot disagree about what a kit does."""
+    f = (FORMULAS.get(name, {}) or {}).get("abilities", {}) or {}
+    amp = 1 + st["healShieldAmp"]
+    haste_m = 100 / (100 + st["haste"])
+    total = 0.0
+    for slot, ab in f.items():
+        target = heal_target(name, slot)
+        if target != "both" and target != audience:
+            continue
+        comps = [c for c in (ab.get("defensive") or [])
+                 if not c.get("alt") and c.get("kind") in ("heal", "shield")]
+        if not comps:
+            continue
+        cds = ab.get("cooldowns") or []
+        cd = (_rank_val(cds, 3) if cds else 8.0) * haste_m
+        casts = 1 if slot == "4" else max(1, 1 + int(window // max(cd, 0.75)))
+        for c in comps:
+            v = _scale_val(c.get("base"), 3, level)
+            for r in c.get("ratios") or []:
+                pct = _scale_val(r.get("pct", 0), 3, level) / 100.0
+                src = {"ap": st["ap"], "ad": st["ad"], "bonusAd": st["bonusAd"],
+                       "ownMaxHp": st["hp"], "ownBonusHp": st["bonusHp"]}.get(r.get("stat"), 0.0)
+                v += pct * src
+            if c.get("when") == "dot total" and c.get("durationS"):
+                v *= float(c["durationS"])
+            total += v * casts
+    return total * amp
 # Ultimates that hit an area. Only Axiom Arcanist cares: it amplifies an ult by
 # 10%, or by 5% when the damage is AoE.
 AOE_ULTS = set((_load("ult_shape.json") or {}).get("aoeUlts", []))
@@ -1239,25 +1281,10 @@ def support_value(name: str, item_slugs: list[str], rune_names: list[str] | None
     haste_m = 100 / (100 + st["haste"])
     total = 0.0
 
-    # 1) the champion's own heals / shields (these scale with AP, which is why an
-    #    enchanter should value AP and heal-amp rather than raw damage stats)
-    for slot, ab in f.items():
-        comps = [c for c in (ab.get("defensive") or [])
-                 if not c.get("alt") and c.get("kind") in ("heal", "shield")]
-        if not comps:
-            continue
-        cds = ab.get("cooldowns") or []
-        cd = (_rank_val(cds, 3) if cds else 8.0) * haste_m
-        casts = 1 if slot == "4" else max(1, 1 + int(SUPPORT_WINDOW // max(cd, 0.75)))
-        for c in comps:
-            v = _scale_val(c.get("base"), 3, level)
-            for r in c.get("ratios") or []:
-                pct = _scale_val(r.get("pct", 0), 3, level) / 100.0
-                src = {"ap": st["ap"], "ad": st["ad"], "bonusAd": st["bonusAd"],
-                       "ownMaxHp": st["hp"], "ownBonusHp": st["bonusHp"]}.get(r.get("stat"), 0.0)
-                v += pct * src
-            total += v * casts
-    total *= amp
+    # 1) heals and shields this kit puts on ALLIES. A self-heal is not ally
+    #    value: counting Swain's Demonic Ascension here gave him 255 points of
+    #    support he never provided, while his own sustain read zero.
+    total += kit_heal(name, st, level, SUPPORT_WINDOW, "ally")
 
     # 1b) ally healing/shielding from RUNES (Font of Life, Guardian). Without
     #     this the rune search is blind to a support page's whole point, which
@@ -1301,7 +1328,11 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
     shield *= 1 + st["healShieldAmp"]  # Revitalize-style amplification
     mixed_taken = 0.5 * 100 / (100 + st["armor"]) + 0.5 * 100 / (100 + st["mr"])
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
+    # Kit self-healing counts toward staying alive, the same as lifesteal. It
+    # used to be credited entirely as ally value, so a champion who sustains
+    # through his own kit scored as though he had no sustain at all.
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
+               + kit_heal(name, st, level, 8.0, "self")
                + st["healOnHit"] * rotation(name, st, TARGETS["bruiser"], 8.0, level)["nAutos"])
 
     return {"burst3": round(burst3), "dps8": round(dps8), "ttk": ttk,
@@ -1422,7 +1453,8 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
     shield *= 1 + st["healShieldAmp"]
     mixed_taken = 0.5 * 100 / (100 + st["armor"]) + 0.5 * 100 / (100 + st["mr"])
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
-    sustain = st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
+    sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
+               + kit_heal(name, st, level, 8.0, "self"))
     deff = (ehp + 0.5 * sustain) / REF_DEF
     # standard's neutral 60/40: stat_weights is variant-independent, and this is
     # the blend "the best all-around build" is defined by.
