@@ -71,6 +71,14 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      # Next 16 GENERATES the PageProps and RouteContext types into
+      # .next/types, which tsconfig.json includes. A dev machine always has
+      # them, left behind by `next dev` or `next build`, so a local tsc passes;
+      # a fresh checkout has neither and tsc fails on every typed page and
+      # route handler. typegen writes them without a full build.
+      - name: Generate route types
+        run: npx next typegen
+
       - name: Typecheck
         run: npx tsc --noEmit -p tsconfig.json
 
