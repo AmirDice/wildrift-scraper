@@ -41,6 +41,15 @@ from web.build_advisor import advise  # noqa: E402
 # it this endpoint is an open, billable API.
 ADVISOR_SECRET = os.environ.get("ADVISOR_SECRET", "")
 
+# Deployed, an unset secret is not "no auth configured", it is a public endpoint
+# that spends money on request. The per-IP daily cap lives in the Next route, so
+# anyone calling this URL directly bypasses it completely. When Vercel is the
+# host and no secret is set, refuse everything rather than serve openly.
+#
+# Locally there is no VERCEL variable and the site spawns the advisor as a
+# subprocess instead of calling over HTTP, so this never affects development.
+REQUIRE_SECRET = bool(os.environ.get("VERCEL"))
+
 MAX_BODY_BYTES = 16_384
 
 
@@ -113,6 +122,11 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self) -> None:  # noqa: N802  (Vercel/BaseHTTPRequestHandler contract)
+        if REQUIRE_SECRET and not ADVISOR_SECRET:
+            print("ADVISOR_SECRET is not set; refusing to serve an open billable "
+                  "endpoint", file=sys.stderr)
+            self._send(503, {"error": "advisor is not configured"})
+            return
         if ADVISOR_SECRET and self.headers.get("x-advisor-secret") != ADVISOR_SECRET:
             self._send(401, {"error": "unauthorized"})
             return
