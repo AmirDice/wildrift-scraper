@@ -532,6 +532,24 @@ def advise(champion: str, role: str, enemies: list[str],
     for entry in withheld:
         print(f"[advisor] withheld {entry['item']}: {entry['reason']}", file=sys.stderr)
 
+    # Never demand an audit of an item that was withheld from the pool. The two
+    # lists are computed independently, so a kit-linked item that the filter
+    # removes (Runaan's Hurricane is ranged-only, and Xin Zhao is melee) was
+    # still required to appear in mandatoryAuditScores -- the model was being
+    # asked to justify rejecting something it was never offered.
+    #
+    # Validation then failed on its absence, and the repair could not fix it
+    # either, because the item is not in the pool the repair prompt carries: a
+    # measured Gemini run burned two repair rounds and 68 of its 117 seconds on
+    # exactly this, and the build that finally passed had the entry dropped
+    # again as unselectable.
+    audit_pool = set(pool_slugs)
+    dropped_audit = [s for s in kit_linked_items if s not in audit_pool]
+    if dropped_audit:
+        kit_linked_items = [s for s in kit_linked_items if s in audit_pool]
+        print(f"[advisor] audit skips withheld items: {', '.join(dropped_audit)}",
+              file=sys.stderr)
+
     # Locks: items and runes the player pinned before generating. Resolve them
     # against the real pools now (a lock on an unknown slug is silently dropped
     # rather than failing the whole request), and cap them so a "locked" build is
