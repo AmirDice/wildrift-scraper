@@ -41,7 +41,11 @@ MODEL = "deepseek-v4-flash"
 
 RATIO_STATS = ["ad", "bonusAd", "ap", "targetMaxHp", "targetCurrentHp", "targetMissingHp",
                "ownMaxHp", "ownBonusHp", "armor", "mr", "bonusMs", "bonusArmor", "bonusMr"]
-STEROID_STATS = ["ad", "ap", "attackSpeed", "moveSpeed", "armor", "mr", "critChance"]
+# hp belongs here because transform ultimates grant it directly -- Shyvana's
+# Dragon's Descent is "gaining 350 / 475 / 600 Health", Nasus and Volibear the
+# same. Without it the closed vocabulary silently dropped the entire buff, so a
+# transformed champion simulated at his untransformed health.
+STEROID_STATS = ["ad", "ap", "attackSpeed", "moveSpeed", "armor", "mr", "critChance", "hp"]
 
 SYSTEM = (
     "You transcribe Wild Rift ability tooltips into machine-readable JSON for a damage "

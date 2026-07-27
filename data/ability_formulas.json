@@ -2036,25 +2036,28 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Pix, Faerie Companion",
+            "name": "Pix Bolts",
             "type": "magic",
-            "base": [
-              6
-            ],
+            "base": {
+              "lvlRange": [
+                12,
+                96
+              ]
+            },
             "ratios": [
               {
                 "stat": "ap",
                 "pct": 15
               }
             ],
-            "hits": 3,
+            "hits": 1,
             "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "base damage increases by 6 per champion level; bolts can be blocked"
+          "Pix's bolts can be blocked by other units. Pix attaches to champions when casting some abilities, revealing enemies or aiding allies' attacks."
         ]
       },
       "1": {
@@ -2088,7 +2091,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "bolts deal 70% damage to subsequent enemies hit; slow 80% decaying over 2s"
+          "Bolts deal 70% damage to subsequent enemies hit. Slows by 80% decaying over 2s."
         ]
       },
       "2": {
@@ -2103,25 +2106,24 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 20,
+            "pct": 5,
             "from": "ap",
-            "pctFromStat": 5,
-            "note": "on ally"
+            "note": "Duration scales 3.5/4/4.5/5s"
           },
           {
             "stat": "attackSpeed",
-            "flat": [
+            "pct": [
               25,
               30,
               35,
               40
             ],
-            "note": "on ally"
+            "note": "Duration scales 3.5/4/4.5/5s"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "on enemy: polymorph for 1/1.25/1.5/1.75s, slow 60, reveal"
+          "Polymorph: disables attacking/casting, reduces movement speed by 60 for 1/1.25/1.5/1.75s. Attaches Pix."
         ]
       },
       "3": {
@@ -2134,7 +2136,7 @@
         ],
         "damage": [
           {
-            "name": "Help, Pix!",
+            "name": "Help, Pix! (Enemy)",
             "type": "magic",
             "base": [
               80,
@@ -2153,10 +2155,26 @@
           }
         ],
         "steroids": [],
-        "defensive": [],
+        "defensive": [
+          {
+            "kind": "shield",
+            "base": [
+              60,
+              100,
+              140,
+              180
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "note": "Duration 2.5s"
+          }
+        ],
         "unmodeled": [
-          "grants True Sight on enemy",
-          "3: bad type None"
+          "Attaches Pix and grants True Sight on enemy."
         ]
       },
       "4": {
@@ -2168,23 +2186,32 @@
         ],
         "damage": [],
         "steroids": [],
-        "defensive": [],
+        "defensive": [
+          {
+            "kind": "shield",
+            "base": [
+              250,
+              400,
+              550
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 50
+              }
+            ],
+            "note": "Duration 7s. Grants bonus health (not a shield). Also knocks up and slows enemies."
+          }
+        ],
         "unmodeled": [
-          "grants bonus max health 250/400/550 (+50% AP) for 7s; knocks up nearby enemies for 0.75s; slows nearby enemies by 30%"
+          "Knocks up nearby enemies for 0.75s and slows them by 30% for 7s."
         ]
       }
     },
-    "combo": [
-      "3",
-      "1",
-      "auto",
-      "auto"
-    ],
     "mechanics": [
       {
         "kind": "multiShot",
         "shots": 3,
-        "damagePerShotPct": 33.33,
         "source": "llm-knowledge"
       }
     ],
@@ -2732,11 +2759,14 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Right Punch Bonus",
+            "name": "Right Punch",
             "type": "physical",
-            "base": [
-              9
-            ],
+            "base": {
+              "lvlRange": [
+                10,
+                24
+              ]
+            },
             "ratios": [
               {
                 "stat": "ad",
@@ -2750,8 +2780,9 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "right punch bonus damage scales with champion level",
-          "bonus health regen based on missing health"
+          "Gains 0.25 bonus Health Regeneration for each 5% missing Health.",
+          "Resets to left punch if no right punch within 2 seconds.",
+          "Right punch attack speed is 8 times left punch."
         ]
       },
       "1": {
@@ -2764,7 +2795,7 @@
         ],
         "damage": [
           {
-            "name": "Knuckle Down Empowered",
+            "name": "Knuckle Down",
             "type": "physical",
             "base": [
               5,
@@ -2785,13 +2816,14 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 35
+            "pct": 35,
+            "note": "towards enemy champions only, 1.5 second duration"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "additional 0.01%/0.015%/0.02%/0.025% AD of target max health per rank",
-          "movement speed toward enemy champions for 1.5s"
+          "Additional percent max health damage scales with AD per rank (0.01%/0.015%/0.02%/0.025% per AD).",
+          "Damage capped at 100 vs monsters."
         ]
       },
       "2": {
@@ -2802,11 +2834,34 @@
           13.0,
           12.0
         ],
-        "damage": [],
+        "damage": [
+          {
+            "name": "Haymaker Center",
+            "type": "true",
+            "base": [
+              80,
+              105,
+              130,
+              155
+            ],
+            "ratios": [],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
         "steroids": [],
-        "defensive": [],
+        "defensive": [
+          {
+            "kind": "shield",
+            "base": "grit consumed",
+            "ratios": [],
+            "note": "100% of Grit consumed as shield, decays over 3 seconds. Grit stored up to 305 (50% max HP)."
+          }
+        ],
         "unmodeled": [
-          "Passive: stores damage taken as Grit (max 305 or 50% max HP). Active: gains shield equal to Grit consumed. Damage: base 80/105/130/155 + 25% Grit consumed + (0.275% AD)*Grit consumed true damage (center) or physical (edge). Damage falloff with distance."
+          "Plus 25% (+0.275% per AD) of Grit consumed as additional true damage.",
+          "Enemies not in center take physical damage (values not specified).",
+          "Passive stores damage as Grit, decays after 4 seconds."
         ]
       },
       "3": {
@@ -2840,7 +2895,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "slow by 50% for 0.5s, conditional stun if both sides grabbed"
+          "Slows by 50% for 0.5 seconds. Stuns for 1 second if grabbed enemies from both sides."
         ]
       },
       "4": {
@@ -2863,6 +2918,14 @@
               {
                 "stat": "ad",
                 "pct": 100
+              },
+              {
+                "stat": "ownBonusHp",
+                "pct": [
+                  35,
+                  45,
+                  55
+                ]
               }
             ],
             "hits": 1,
@@ -2872,15 +2935,14 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "+35%/45%/55% bonus health damage per rank",
-          "damage reduces with distance from landing point",
-          "suppresses target",
-          "99% slow for 1s"
+          "Damage reduced by distance from target.",
+          "Slows by 99% for 1 second."
         ]
       }
     },
     "combo": [
       "3",
+      "auto",
       "1",
       "auto",
       "auto",
@@ -2892,11 +2954,15 @@
         "kind": "everyNHit",
         "evidence": "Sett's Attacks alternate between left and right punches.",
         "n": 2
+      },
+      {
+        "kind": "noResource",
+        "source": "llm-knowledge"
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.3,
+      "asEfficiency": 0.2,
       "resource": "none",
       "abilitiesCanCrit": false,
       "confidence": "high"
@@ -18033,7 +18099,6 @@
               80,
               110
             ],
-            "ratios": [],
             "hits": 1,
             "when": "per auto"
           }
@@ -18041,7 +18106,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Permanently increases damage on kill, additional increase from champions/large minions/monsters"
+          "permanently increases damage on kill (5 per minion, 14 per champion/large minion/large monster)"
         ]
       },
       "2": {
@@ -18056,7 +18121,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows enemy Movement Speed by 35% increasing to 45%/60%/75%/90% over 5 seconds, and Attack Speed by 22.49%/29.98%/37.48%/44.96% for 5 seconds"
+          "Slows enemy movement speed by 35% (increasing to 45%/60%/75%/90% over 5s) and attack speed by 22.49%/29.98%/37.48%/44.96% for 5 seconds"
         ]
       },
       "3": {
@@ -18069,7 +18134,7 @@
         ],
         "damage": [
           {
-            "name": "Spirit Fire Initial",
+            "name": "Spirit Fire initial",
             "type": "magic",
             "base": [
               55,
@@ -18090,15 +18155,15 @@
             "name": "Spirit Fire DoT",
             "type": "magic",
             "base": [
-              55,
-              110,
-              165,
-              220
+              11,
+              22,
+              33,
+              44
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 12
               }
             ],
             "hits": 1,
@@ -18109,7 +18174,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Reduces enemy Armor by 20%/25%/30%/35% for 5 seconds"
+          "Reduces enemy armor by 20%/25%/30%/35% while in zone"
         ]
       },
       "4": {
@@ -18121,7 +18186,7 @@
         ],
         "damage": [
           {
-            "name": "Fury of the Sands Aura",
+            "name": "Fury of the Sands aura",
             "type": "magic",
             "base": 0,
             "ratios": [
@@ -18145,6 +18210,14 @@
         ],
         "steroids": [
           {
+            "stat": "hp",
+            "flat": [
+              300,
+              450,
+              600
+            ]
+          },
+          {
             "stat": "armor",
             "flat": [
               40,
@@ -18162,13 +18235,15 @@
           }
         ],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "Buff lasts 12 seconds"
+        ]
       }
     },
     "combo": [
+      "4",
       "3",
       "2",
-      "4",
       "1",
       "auto"
     ],
@@ -21931,7 +22006,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Draconic Bloodline: stacking passive enhances abilities at 100/200/300/400 stacks. No direct damage."
+          "Draconic Bloodline stacks: slaying large monsters gives 8, champion takedowns/Rift/Baron gives 15, Dragons give 35. Every 100 stacks enhances one ability."
         ]
       },
       "1": {
@@ -21946,12 +22021,7 @@
           {
             "name": "Twin Bite First Hit",
             "type": "physical",
-            "base": [
-              58,
-              58,
-              58,
-              58
-            ],
+            "base": 58,
             "ratios": [
               {
                 "stat": "ad",
@@ -21959,17 +22029,12 @@
               }
             ],
             "hits": 1,
-            "when": "per cast"
+            "when": "per auto"
           },
           {
             "name": "Twin Bite Second Hit",
             "type": "physical",
-            "base": [
-              12,
-              12,
-              12,
-              12
-            ],
+            "base": 12,
             "ratios": [
               {
                 "stat": "ad",
@@ -21982,13 +22047,13 @@
               }
             ],
             "hits": 1,
-            "when": "per cast"
+            "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Attacks reduce cooldown by 0.5s. Dragon Form area and slow at 100 stacks."
+          "Attacks reduce cooldown of Twin Bite by 0.5s. Dragon Form: larger area and applies on-hits to all enemies. Weight of the Mountain: slow 30% in Dragon Form (at 100 stacks)."
         ]
       },
       "2": {
@@ -22001,7 +22066,7 @@
         ],
         "damage": [
           {
-            "name": "Burnout DoT",
+            "name": "Burnout",
             "type": "magic",
             "base": [
               35,
@@ -22015,6 +22080,7 @@
                 "pct": 30
               }
             ],
+            "hits": 1,
             "when": "dot total",
             "durationS": 4
           }
@@ -22028,12 +22094,12 @@
               40,
               45
             ],
-            "note": "Decays over 3 seconds. Extendable by attacking."
+            "note": "decaying over 3 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Dragon Form expands area. At 200 stacks, additional 25% move speed in Dragon Form."
+          "Attacking extends duration up to 4s. Dragon Form: larger area. Wings of the Cloud: additional 25% haste in Dragon Form (at 200 stacks)."
         ]
       },
       "3": {
@@ -22046,7 +22112,7 @@
         ],
         "damage": [
           {
-            "name": "Flame Breath Projectile",
+            "name": "Flame Breath Fireball",
             "type": "magic",
             "base": [
               60,
@@ -22068,31 +22134,22 @@
             "when": "per cast"
           },
           {
-            "name": "Scorch On-Hit",
+            "name": "Scorched Attack",
             "type": "magic",
-            "base": [
-              0,
-              0,
-              0,
-              0
-            ],
+            "base": 0,
             "ratios": [
               {
                 "stat": "targetMaxHp",
                 "pct": 3
               }
             ],
+            "hits": 1,
             "when": "per auto"
           },
           {
-            "name": "Dragon Form Explosion",
+            "name": "Flame Breath Dragon Fireball",
             "type": "magic",
-            "base": [
-              110,
-              110,
-              110,
-              110
-            ],
+            "base": 110,
             "ratios": [
               {
                 "stat": "ad",
@@ -22108,14 +22165,9 @@
             "alt": true
           },
           {
-            "name": "Dragon Form Fire Field",
+            "name": "Flame Breath Dragon Fire",
             "type": "magic",
-            "base": [
-              28,
-              28,
-              28,
-              28
-            ],
+            "base": 28,
             "ratios": [
               {
                 "stat": "ad",
@@ -22126,15 +22178,30 @@
                 "pct": 20
               }
             ],
+            "hits": 1,
             "when": "dot total",
             "durationS": 4,
+            "alt": true
+          },
+          {
+            "name": "Scorched Attack (Dragon)",
+            "type": "magic",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 3
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
             "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "At 300 stacks, damage to scorched enemies becomes true damage in Dragon Form."
+          "Scorch lasts 5s. At 300 stacks, damage to scorched becomes true damage."
         ]
       },
       "4": {
@@ -22146,7 +22213,7 @@
         ],
         "damage": [
           {
-            "name": "Dragon's Descent Path Damage",
+            "name": "Dragon's Descent Path",
             "type": "magic",
             "base": [
               150,
@@ -22163,46 +22230,48 @@
             "when": "per cast"
           }
         ],
-        "steroids": [],
-        "defensive": [
+        "steroids": [
           {
-            "kind": "shield",
-            "base": [
+            "stat": "hp",
+            "flat": [
               350,
               475,
               600
             ],
-            "ratios": []
+            "note": "gained in Dragon Form"
           }
         ],
+        "defensive": [],
         "unmodeled": [
-          "Passive: generates Fury per second and per attack. At 400 stacks, 20% Omnivamp in Dragon Form."
+          "Passive: generates 1/1.5/2 Fury per second and 2 Fury per attack. At 100 Fury can cast. Active: transforms, flies to target, knocks enemies. Life of the Ocean: 20% Omnivamp in Dragon Form (at 400 stacks)."
         ]
       }
     },
     "combo": [
       "3",
-      "4",
       "1",
       "auto",
+      "auto",
       "2",
-      "auto"
+      "auto",
+      "auto",
+      "4",
+      "auto",
+      "1"
     ],
     "mechanics": [
       {
         "kind": "doubleShot",
-        "params": {
-          "secondShotPct": 0.2
-        },
+        "secondShotPct": 0.4,
         "source": "llm-knowledge"
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.7,
+      "asEfficiency": 0.6,
       "resource": "none",
       "abilitiesCanCrit": false,
-      "confidence": "medium"
+      "confidence": "high"
     }
   },
   "Sivir": {
@@ -26840,9 +26909,14 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Lightning Claws",
+            "name": "The Relentless Storm",
             "type": "magic",
-            "base": 0,
+            "base": {
+              "lvlRange": [
+                11,
+                80
+              ]
+            },
             "ratios": [
               {
                 "stat": "ap",
@@ -26856,19 +26930,15 @@
         "steroids": [
           {
             "stat": "attackSpeed",
-            "flat": 25,
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 20
-              }
+            "flat": [
+              5
             ],
-            "note": "max 5 stacks"
+            "note": "per stack, up to 5 stacks, also gains 4% AP per stack"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "splashes to 4 nearest enemies"
+          "Attack speed stacks on dealing damage, max 5 stacks, triggers bonus on-hit damage at 5 stacks, aoe splash to 4 enemies"
         ]
       },
       "1": {
@@ -26881,7 +26951,7 @@
         ],
         "damage": [
           {
-            "name": "Thundering Smash",
+            "name": "Thundering Smash Proc",
             "type": "physical",
             "base": [
               15,
@@ -26908,12 +26978,12 @@
               20,
               25
             ],
-            "note": "doubled toward champions"
+            "note": "duration 4s, doubled towards champions"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "stuns for 1s; duration paused if immobilized"
+          "stuns for 1s, duration paused if immobilized before stun"
         ]
       },
       "2": {
@@ -26940,7 +27010,7 @@
                 "pct": 100
               },
               {
-                "stat": "ownBonusHp",
+                "stat": "bonusHp",
                 "pct": 6.5
               }
             ],
@@ -26948,7 +27018,7 @@
             "when": "per cast"
           },
           {
-            "name": "Frenzied Maul Frenzy",
+            "name": "Frenzied Maul Enhanced",
             "type": "physical",
             "base": [
               8,
@@ -26962,7 +27032,7 @@
                 "pct": 160
               },
               {
-                "stat": "ownBonusHp",
+                "stat": "bonusHp",
                 "pct": 10.4
               }
             ],
@@ -26984,14 +27054,16 @@
             "ratios": [
               {
                 "stat": "targetMissingHp",
-                "pct": 10
+                "pct": 5
               }
             ],
-            "alt": true
+            "alt": true,
+            "note": "frenzy cast only, also gains +1% missing health per rank (5/6/7/8%)"
           }
         ],
         "unmodeled": [
-          "applies on-hit effects; damage to monsters reduced by 80%"
+          "applies on-hit effects",
+          "frenzy duration 8s after hitting champion or large monster"
         ]
       },
       "3": {
@@ -27030,7 +27102,9 @@
         "defensive": [
           {
             "kind": "shield",
-            "base": 131,
+            "base": [
+              131
+            ],
             "ratios": [
               {
                 "stat": "ap",
@@ -27041,11 +27115,11 @@
                 "pct": 14
               }
             ],
-            "note": "only if inside blast zone"
+            "note": "duration 2.5s, only if Volibear is inside blast zone"
           }
         ],
         "unmodeled": [
-          "slows by 40% for 2s; damage to non-champions capped at 150/250/350/450"
+          "slow 40% for 2s, damage cap on non-champions 150/250/350/450"
         ]
       },
       "4": {
@@ -27055,50 +27129,45 @@
           80.0,
           70.0
         ],
-        "damage": [
+        "damage": [],
+        "steroids": [
           {
-            "name": "Stormbringer Tower",
-            "type": "physical",
-            "base": [
-              300,
-              500,
-              700
+            "stat": "hp",
+            "flat": [
+              175,
+              350,
+              525
             ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 100
-              },
-              {
-                "stat": "bonusAd",
-                "pct": 210
-              }
-            ],
-            "hits": 1,
-            "when": "per cast",
-            "note": "only to towers"
+            "note": "for 12s"
           }
         ],
-        "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "gains 50 attack range for 12s; disables towers for 3s; nearby enemies slowed by 50% decaying; enemies directly underneath take unlisted damage"
+          "upon landing, disables towers, slows enemies, damages enemies directly underneath (damage numbers missing)"
         ]
       }
     },
     "combo": [
-      "4",
+      "3",
       "1",
       "auto",
       "2",
-      "3"
+      "auto",
+      "2",
+      "4"
+    ],
+    "mechanics": [
+      {
+        "kind": "transform",
+        "evidence": "Volibear transforms and leaps"
+      }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.5,
+      "asEfficiency": 0.6,
       "resource": "mana",
       "abilitiesCanCrit": false,
-      "confidence": "medium"
+      "confidence": "high"
     }
   },
   "Vladimir": {

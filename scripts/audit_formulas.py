@@ -44,6 +44,7 @@ KNOWN_GAPS = {
     ("Amumu", "P"): "damage amplification (+10% true from incoming magic), not damage",
     ("Kayn", "P"): "form-gated conditional amp (+52-66% magic, 3s, Shadow Assassin only)",
     ("Smolder", "P"): "stack-gated empowerment of Q/W/E; no stack count in the tooltip",
+    ("Volibear", "4"): "the stated 300/500/700 is damage to TOWERS; champions are only slowed",
 }
 
 

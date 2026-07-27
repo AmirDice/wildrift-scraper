@@ -613,6 +613,14 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 st["bonusMs"] += st["baseMs"] * pct / 100.0 * 0.5  # avg uptime
             elif stat in ("armor", "mr") and s.get("flat"):
                 st[stat] += _scale_val(s["flat"], 3, level)
+            elif stat == "hp":
+                # Transform ultimates grant flat Health (Shyvana, Nasus,
+                # Volibear). It is bonus HP, so shield/HP-scaling effects see it.
+                _hp = _scale_val(s.get("flat"), 3, level)
+                if not _hp and s.get("pct"):
+                    _hp = st["hp"] * _scale_val(s["pct"], 3, level) / 100.0
+                st["hp"] += _hp
+                st["bonusHp"] += _hp
     for ab in f.values():  # conversions last, after all MS sources counted
         for s in ab.get("steroids") or []:
             if s.get("from") == "bonusMs" and s.get("stat") == "ad" and s.get("pct") is not None:
