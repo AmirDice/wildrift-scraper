@@ -76,8 +76,12 @@ RUNE_SLOTS = json.loads((ROOT / "data" / "rune_slots.json").read_text(encoding="
 # Reactive anti-comp items (GA, Maw, anti-heal...) never compete for main-build
 # slots — they live in situational swaps only.
 SITUATIONAL_ONLY = set((RULES.get("situationalOnly") or {}).get("slugs") or [])
-CHAMPS = {c["name"]: c for c in json.loads(
-    (ROOT / "data" / "champions_wr.json").read_text(encoding="utf-8"))}
+_CHAMP_LIST = json.loads((ROOT / "data" / "champions_wr.json").read_text(encoding="utf-8"))
+# Transform forms are searched as champions of their own; without them the
+# lookup misses ("Kayn (Rhaast)"), the kit reads as empty, and every variant
+# fails with "no legal combos in pool".
+CHAMPS = {c["name"]: c for c in _CHAMP_LIST}
+CHAMPS.update({f["name"]: f for c in _CHAMP_LIST for f in (c.get("forms") or [])})
 
 POOL_SIZE = 14
 TOP_K = 20

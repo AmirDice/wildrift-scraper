@@ -32,7 +32,22 @@ def _load(name: str):
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
 
-CHAMPS = {c["name"]: c for c in _load("champions_wr.json")}
+def _with_forms(champs: list[dict]) -> dict:
+    """Champions by name, plus each transform form as a champion of its own.
+
+    A form ("Kayn (Rhaast)") is a different kit on the same base stats, so it
+    simulates as a separate champion. Keeping it nested inside the parent in
+    champions_wr.json means the roster stays 141 -- only code that asks for
+    forms sees them."""
+    out = {}
+    for c in champs:
+        out[c["name"]] = c
+        for form in c.get("forms") or []:
+            out[form["name"]] = form
+    return out
+
+
+CHAMPS = _with_forms(_load("champions_wr.json"))
 FORMULAS = _load("ability_formulas.json")
 ITEMS = {i["slug"]: i for i in _load("items.json")}
 ENGINE_FX = _load("item_engine.json")

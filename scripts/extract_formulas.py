@@ -56,6 +56,11 @@ SYSTEM = (
     "snips (hits=5) plus 1 final snip (hits=1) — NOT hits=1. Modelling one snip makes her "
     "primary ability look 5x weaker than it is,"
     "\"when\":\"per cast|per auto|once per target|dot total\"}\n"
+    "- A RATIO WHOSE PERCENT ITSELF SCALES (\"7% (+0.06% bonus AD) of the target's "
+    "maximum Health\", \"36% (+0.13% AD) of maximum health\") cannot be written exactly. "
+    "Emit the FLAT part as the ratio ({\"stat\":\"targetMaxHp\",\"pct\":7}) and put the "
+    "scaling part in unmodeled. Dropping the whole ratio loses the ability: max-Health "
+    "damage is the entire point of the abilities that have it.\n"
     "- DECAYING REPEAT HITS: when an ability fires N times at one target and the "
     "hits after the first are reduced (\"5 rockets... additional rocket hits after "
     "the first only deal 20%\"), give the TOTAL one cast lands on a CHAMPION as the "
@@ -599,6 +604,10 @@ def main() -> None:
         raise SystemExit("DEEPSEEK_API_KEY is not set")
 
     champs = json.loads(CHAMPS.read_text(encoding="utf-8"))
+    # Transform forms are full kits on the same champion, so they extract as
+    # champions of their own ("Kayn (Rhaast)"). Without this the engine has one
+    # set of formulas for two kits that play nothing alike.
+    champs = champs + [f for c in champs for f in (c.get("forms") or [])]
     only = {n.strip() for n in args.only.split(",") if n.strip()}
     if only:
         champs = [c for c in champs if c["name"] in only]

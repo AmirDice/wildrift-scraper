@@ -390,9 +390,12 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
 
 /** The AI build advisor. Counter mode always adapts to the selected enemies;
  *  Studio mode generates an enemy-agnostic personal build. */
-export function EnemyBuildAdvisor({ presetChampion, initialChampion, mode = "counter", onAdviceChange }: {
+export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion, mode = "counter", onAdviceChange }: {
   /** Locks the advisor to one champion (the studio embeds it this way). */
   presetChampion?: string;
+  /** Transform form to generate for, when the embedder already picked one
+   *  (the studio's Kayn toggle drives this so there is one control, not two). */
+  presetForm?: string;
   /** Seeds the picker but leaves it changeable (used by shared /counter links). */
   initialChampion?: string;
   mode?: AdvisorMode;
@@ -410,7 +413,7 @@ export function EnemyBuildAdvisor({ presetChampion, initialChampion, mode = "cou
   const [objective, setObjective] = useState<string>("balanced");
   const [gamePhase, setGamePhase] = useState<string>("balanced");
   const [damagePath, setDamagePath] = useState<string>("standard");
-  const [championForm, setChampionForm] = useState<string>("shadow-assassin");
+  const [championForm, setChampionForm] = useState<string>(presetForm || "shadow-assassin");
   const [enemies, setEnemies] = useState<(string | null)[]>(Array(5).fill(null));
   const [allies, setAllies] = useState<(string | null)[]>(Array(4).fill(null));
   const [aheadEnemy, setAheadEnemy] = useState<string>("");
@@ -563,7 +566,7 @@ export function EnemyBuildAdvisor({ presetChampion, initialChampion, mode = "cou
               </select>
             </div>
           )}
-          {champ === "Kayn" && (
+          {champ === "Kayn" && !presetForm && (
             <div>
               <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Kayn form</p>
               <select value={championForm} onChange={(e) => setChampionForm(e.target.value)}

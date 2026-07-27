@@ -216,6 +216,45 @@ export function buildChampions(): { slug: string; champion: Champion; builds: Ch
   return out;
 }
 
+/** One selectable kit for a champion who permanently transforms. */
+export interface BuildForm {
+  key: string;
+  label: string;
+  /** Short colloquial name players actually use ("Blue Kayn"). */
+  shortLabel: string;
+  builds: ChampionBuilds;
+}
+
+/**
+ * Build sets for a champion who transforms into a different kit.
+ *
+ * Kayn permanently becomes Shadow Assassin or Rhaast, and they want opposite
+ * items -- lethality burst against bruiser sustain -- so each is generated as
+ * its own champion ("Kayn (Rhaast)") and picked with a toggle. Returns an
+ * empty list for everyone else, including champions like Nidalee who swap
+ * forms freely: she has two ability sets but only ever one build.
+ */
+const FORM_LABELS: Record<string, { base: [string, string]; forms: Record<string, [string, string]> }> = {
+  Kayn: {
+    base: ["Shadow Assassin", "Blue Kayn"],
+    forms: { "Kayn (Rhaast)": ["Rhaast", "Red Kayn"] },
+  },
+};
+
+export function buildForms(championName: string): BuildForm[] {
+  const spec = FORM_LABELS[championName];
+  const base = BUILDS[championName];
+  if (!spec || !shippable(base)) return [];
+  const out: BuildForm[] = [{
+    key: "base", label: spec.base[0], shortLabel: spec.base[1], builds: base,
+  }];
+  for (const [name, [label, shortLabel]] of Object.entries(spec.forms)) {
+    const builds = BUILDS[name];
+    if (shippable(builds)) out.push({ key: name, label, shortLabel, builds });
+  }
+  return out.length > 1 ? out : [];
+}
+
 export function getBuild(slug: string): { champion: Champion; builds: ChampionBuilds } | null {
   const champion = getChampion(slug);
   if (!champion) return null;

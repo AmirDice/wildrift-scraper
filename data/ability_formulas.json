@@ -29739,5 +29739,184 @@
       "abilitiesCanCrit": true,
       "confidence": "medium"
     }
+  },
+  "Kayn (Rhaast)": {
+    "abilities": {
+      "P": {
+        "name": "The Darkin Scythe: Rhaast",
+        "cooldowns": [],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Passive: Transformation mechanic; Darkin Slayer form heals for 24%-38% of physical damage dealt to champions (scales with level)."
+        ]
+      },
+      "1": {
+        "name": "Reaping Slash: Rhaast",
+        "cooldowns": [
+          4.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "damage": [
+          {
+            "name": "Reaping Slash",
+            "type": "physical",
+            "base": [
+              70,
+              100,
+              130,
+              160
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": [
+                  60,
+                  65,
+                  70,
+                  75
+                ]
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": 7
+              }
+            ],
+            "hits": 2,
+            "unmodeled": "Max health damage also scales with 0.06% bonus AD (not modeled). Cap vs monsters: 235/310/385/460."
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": []
+      },
+      "2": {
+        "name": "Blade's Reach: Rhaast",
+        "cooldowns": [
+          8.0,
+          7.0,
+          6.0,
+          5.0
+        ],
+        "damage": [
+          {
+            "name": "Blade's Reach",
+            "type": "physical",
+            "base": [
+              105,
+              165,
+              225,
+              285
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 120
+              }
+            ],
+            "hits": 1
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Knocks up for 1s and slows 90% decaying over 1.5s."
+        ]
+      },
+      "3": {
+        "name": "Shadow Step: Rhaast",
+        "cooldowns": [
+          7.0,
+          7.0,
+          7.0,
+          7.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [
+          {
+            "kind": "heal",
+            "base": [
+              100,
+              120,
+              140,
+              160
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 50
+              }
+            ],
+            "unmodeled": "Heals on first entering terrain. Also grants 35% movement speed and terrain walk for 5/5.5/6/6.5s."
+          }
+        ],
+        "unmodeled": []
+      },
+      "4": {
+        "name": "Umbral Trespass: Rhaast",
+        "cooldowns": [
+          50.0,
+          44.0,
+          38.0
+        ],
+        "damage": [
+          {
+            "name": "Umbral Trespass",
+            "type": "physical",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 36
+              }
+            ],
+            "hits": 1,
+            "unmodeled": "Also scales with 0.13% bonus AD."
+          }
+        ],
+        "steroids": [],
+        "defensive": [
+          {
+            "kind": "heal",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "targetMaxHp",
+                "pct": 27
+              }
+            ],
+            "unmodeled": "Also scales with 0.1% bonus AD."
+          }
+        ],
+        "unmodeled": [
+          "Infests target for 2.5s, becoming untargetable. Re-cast ends early."
+        ]
+      }
+    },
+    "combo": [
+      "2",
+      "auto",
+      "1",
+      "auto",
+      "4",
+      "auto"
+    ],
+    "mechanics": [
+      {
+        "kind": "transform",
+        "evidence": "At full charge, Kayn can permanently transform at his base."
+      }
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.6,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "medium"
+    }
   }
 }

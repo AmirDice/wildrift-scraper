@@ -144,10 +144,15 @@ def _analyse_ability(text: str) -> dict:
     return {"damageTypes": dtypes, "scales": sorted(scales), "tags": sorted(tags)}
 
 
-def _abilities(soup: BeautifulSoup) -> list[dict]:
+def _abilities(soup: BeautifulSoup, start: int = 0, stop: int = 5) -> list[dict]:
+    """Parse one 5-block ability group.
+
+    A transforming champion renders both kits: Kayn's page carries 10 blocks,
+    Shadow Assassin then Rhaast. Only the first five were ever read, so half of
+    his kit -- the healing, the max-Health damage, the knock-up -- never
+    existed in the data, and the engine simulated one form for both."""
     out = []
-    # some pages (e.g. Kayn) render two transform forms = 10 blocks; keep base 5.
-    for block in soup.select(".statsBlock.abilities .statsBlock__block")[:5]:
+    for block in soup.select(".statsBlock.abilities .statsBlock__block")[start:stop]:
         name_el = block.select_one(".upper .name")
         if not name_el:
             continue
@@ -211,6 +216,18 @@ def _name_from_page(soup: BeautifulSoup, slug: str) -> str:
     return slug.replace("-", " ").title()
 
 
+def _form_label(abilities: list[dict]) -> str:
+    """The form's name, taken from the suffix the page puts on every ability.
+
+    Rhaast's abilities all read "Reaping Slash: Rhaast", so the text after the
+    last colon names the form. Falls back to nothing if the page does not
+    follow that convention, in which case the form is skipped rather than
+    guessed at."""
+    suffixes = {a["name"].rsplit(":", 1)[1].strip()
+                for a in abilities if ":" in a["name"]}
+    return suffixes.pop() if len(suffixes) == 1 else ""
+
+
 def parse_champion(slug: str, refresh: bool = False) -> dict | None:
     html = fetch(f"{BASE}/guide/{slug}", f"guide_{slug}.html", refresh=refresh)
     soup = BeautifulSoup(html, "html.parser")
@@ -219,13 +236,31 @@ def parse_champion(slug: str, refresh: bool = False) -> dict | None:
         return None
     base_stats = _base_stats(soup)
     profile = _derive_profile(abilities, base_stats)
-    return {
+    champ = {
         "slug": slug,
         "name": _name_from_page(soup, slug),
         "baseStats": base_stats,
         **profile,
         "abilities": abilities,
     }
+    # Second kit, for champions who transform. It is a full champion record so
+    # the formula extractor and the damage engine can treat it as one, sharing
+    # the base stats (the same champion, a different kit).
+    alt = _abilities(soup, 5, 10)
+    label = _form_label(alt) if alt else ""
+    if label:
+        key = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+        champ["forms"] = [{
+            "slug": f"{slug}-{key}",
+            "formKey": key,
+            "formOf": champ["name"],
+            "formLabel": label,
+            "name": f"{champ['name']} ({label})",
+            "baseStats": base_stats,
+            **_derive_profile(alt, base_stats),
+            "abilities": alt,
+        }]
+    return champ
 
 
 def main() -> None:

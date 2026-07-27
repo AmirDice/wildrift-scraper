@@ -252,6 +252,10 @@ CLASS_FALLBACK: dict[str, tuple[str, str]] = {
     "Skarner": ("Tank", "Jungle"),
     "Yunara": ("Marksman", "Dragon"),
     "Cho'Gath": ("Tank", "Baron"),
+    # Rhaast is a different champion from blue Kayn, and the class drives which
+    # build variants get authored: the Assassin set (balanced/oneshot) is the
+    # wrong question to ask about a bruiser who heals off max-Health damage.
+    "Kayn (Rhaast)": ("Bruiser", "Jungle"),
 }
 
 # Summoner spells come from web/advisor/summoners.py, shared with the live
@@ -1426,6 +1430,9 @@ def main() -> None:
     items = _load(ITEMS)
     runes = _load(RUNES)
     champs = _load(CHAMPS)
+    # Transform forms author their own builds: a permanently transformed Rhaast
+    # is a bruiser, and blue Kayn's item set does not fit him.
+    champs = champs + [f for c in champs for f in (c.get("forms") or [])]
     verified = (_load(CHAMPION_OVERRIDES) or {}).get("champions", {})
     for champion in champs:
         override = verified.get(champion.get("name"), {})

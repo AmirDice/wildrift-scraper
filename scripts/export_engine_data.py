@@ -28,6 +28,12 @@ def _load(name: str):
 
 def main() -> None:
     champs_all = _load("champions_wr.json")
+    # Transform forms ship as champions of their own so the browser engine can
+    # simulate the kit the user is actually looking at. Without this the
+    # customizer would price Rhaast's build against Shadow Assassin's kit,
+    # which is the mismatch the whole form split exists to remove. They are not
+    # in the roster, so nothing lists them -- only a lookup by name finds them.
+    champs_all = champs_all + [f for c in champs_all for f in (c.get("forms") or [])]
     champion_overrides = _load("champion_stat_overrides.json").get("champions", {})
     item_stat_rules = _load("item_stat_rules.json").get("items", {})
     rune_stat_rules = _load("rune_stat_rules.json").get("runes", {})
@@ -120,7 +126,13 @@ def main() -> None:
     # real defensive target (damage type, kit mechanics, class, base stats).
     site_meta = {c["name"]: c for c in site.get("champions", [])}
     roster = {}
+    # Forms are deliberately absent here. The roster is the list of champions
+    # the site shows and the threat model iterates; a form is a kit, not an
+    # extra champion to pick, and letting one in would put "Kayn (Rhaast)" in
+    # every enemy-team picker beside Kayn himself.
     for c in champs_all:
+        if c.get("formOf"):
+            continue
         name = c["name"]
         meta = site_meta.get(name, {})
         bs = c.get("baseStats", {})

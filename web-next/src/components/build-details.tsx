@@ -315,6 +315,38 @@ function StatModeButton({
   );
 }
 
+/**
+ * Champions who switch between two kits at will, and the names of those kits.
+ *
+ * This is NOT Kayn: he commits to one form for the rest of the game, so each
+ * of his forms is generated as its own champion with its own build. Nidalee
+ * swaps every few seconds, so she has one build and two ability sets, and the
+ * only thing that needs to change is which half of the kit you are reading.
+ * Her tooltips carry both ("Javelin Toss / Takedown"), which is where the
+ * per-form names come from.
+ */
+const DUAL_FORM_CHAMPIONS: Record<string, [string, string]> = {
+  Nidalee: ["Human", "Cougar"],
+};
+
+/** The half of a two-form ability that belongs to the selected form. */
+function abilityForForm<T extends { name: string; damage: any[]; effects: any[] }>(
+  ability: T, side: number,
+): T {
+  const halves = ability.name.split(" / ").map((part) => part.trim());
+  if (halves.length !== 2) return ability;          // shared across both forms
+  const mine = halves[side].toLowerCase();
+  const theirs = halves[1 - side].toLowerCase();
+  const pick = <P extends { label: string }>(parts: P[]): P[] => {
+    const own = parts.filter((p) => p.label.toLowerCase().includes(mine));
+    if (own.length) return own;
+    // Attributable to the OTHER form only, so this form does not show it.
+    // Anything matching neither name is kit-wide and stays visible.
+    return parts.filter((p) => !p.label.toLowerCase().includes(theirs));
+  };
+  return { ...ability, name: halves[side], damage: pick(ability.damage), effects: pick(ability.effects) };
+}
+
 export function ChampionAbilitiesPanel({
   name,
   itemSlugs = [],
@@ -328,14 +360,33 @@ export function ChampionAbilitiesPanel({
   level?: number;
   embedded?: boolean;
 }) {
-  const abilities = calculatedChampionAbilities(name, itemSlugs, runeNames, level);
+  const formNames = DUAL_FORM_CHAMPIONS[name];
+  const [formSide, setFormSide] = useState(0);
+  const raw = calculatedChampionAbilities(name, itemSlugs, runeNames, level);
+  const abilities = formNames ? raw.map((a) => abilityForForm(a, formSide)) : raw;
   if (!abilities.length) return null;
 
   return (
     <div className={embedded ? "mt-3 border-t border-line/60 pt-3" : "glass rounded-2xl p-4"}>
-      <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
-        Live ability values <span className="normal-case text-faint/60">· level {level} with this build</span>
-      </p>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
+          Live ability values <span className="normal-case text-faint/60">· level {level} with this build</span>
+        </p>
+        {formNames && (
+          <div className="ml-auto flex gap-1 rounded-lg border border-line bg-black/30 p-0.5">
+            {formNames.map((label, index) => (
+              <StatModeButton
+                key={label}
+                active={index === formSide}
+                onClick={() => setFormSide(index)}
+                title={`${label} Form abilities. ${name} switches freely, so both share one build.`}
+              >
+                {label}
+              </StatModeButton>
+            ))}
+          </div>
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         {abilities.map((ability) => (
           <Tip

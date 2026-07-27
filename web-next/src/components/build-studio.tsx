@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import {
   ALTERNATIVE_BUILD_VARIANT,
   buildChampions,
+  buildForms,
   buildGold,
   visibleBuildVariants,
   type Build,
@@ -129,7 +130,15 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
   const [champQuery, setChampQuery] = useState("");
 
   const rec = champs.find((c) => c.slug === slug) ?? champs[0];
-  const builds = rec.builds;
+  // Kayn transforms permanently into one of two kits that want opposite items,
+  // so each has its own generated build set and the studio picks between them.
+  const forms = useMemo(() => buildForms(rec.champion.name), [rec.champion.name]);
+  const [formKeyState, setFormKey] = useState("base");
+  const form = forms.find((f) => f.key === formKeyState) ?? forms[0] ?? null;
+  const builds = form ? form.builds : rec.builds;
+  // The engine simulates the FORM, not the champion: pricing Rhaast's build
+  // against Shadow Assassin's kit is the mismatch this whole split removes.
+  const engineName = form && form.key !== "base" ? form.key : rec.champion.name;
   const archetype = (builds as (ChampionBuilds & {
     archetype?: { archetype?: string; reason?: string };
   }) | null)?.archetype;
@@ -152,6 +161,7 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
 
   const switchChamp = (s: string) => {
     setSlug(s);
+    setFormKey("base");
     setTab(champs.find((entry) => entry.slug === s)?.builds ? "recommended" : "generate");
     setGeneratedAdvice(null);
   };
@@ -222,6 +232,32 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
               {selectedPathLabel ? ` · ${selectedPathLabel}` : ""}
             </p>
           </div>
+          {/* Transform toggle. Kayn commits to one of these for the rest of the
+              game and they want opposite items, so the whole tab -- build,
+              stats, customizer and generation -- follows the choice. */}
+          {forms.length > 1 && (
+            <div data-tour="champion-form" className="ml-auto flex gap-1 rounded-xl border border-line bg-black/30 p-1">
+              {forms.map((f) => {
+                const active = f.key === (form?.key ?? "base");
+                const red = f.key !== "base";
+                return (
+                  <button
+                    key={f.key}
+                    onClick={() => setFormKey(f.key)}
+                    title={`${f.label} — its own items, runes and simulated damage`}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+                      active
+                        ? red ? "bg-red-400/20 text-red-300" : "bg-sky-400/20 text-sky-300"
+                        : "text-muted hover:text-text"
+                    }`}
+                  >
+                    <span className="block">{f.label}</span>
+                    <span className="block text-[0.6rem] font-normal opacity-75">{f.shortLabel}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -241,18 +277,19 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
 
       <div className="mt-4">
         {effectiveTab === "recommended" && build && (
-          <BuildTab {...{ variants, variant, setVariant, build, name, slug, comparisonChoices }} onGenerate={() => setTab("generate")} />
+          <BuildTab {...{ variants, variant, setVariant, build, name, engineName, slug, comparisonChoices }} onGenerate={() => setTab("generate")} />
         )}
         {effectiveTab === "generate" && (
           <GenerateTab
-            key={name}
+            key={`${name}:${form?.key ?? "base"}`}
             name={name}
+            championForm={form ? (form.key === "base" ? "shadow-assassin" : "rhaast") : undefined}
             advice={generatedAdvice}
             setAdvice={setGeneratedAdvice}
             comparisonChoices={comparisonChoices}
           />
         )}
-        {effectiveTab === "customize" && builds && <BuildCustomizer name={name} data={builds} comparisonChoices={comparisonChoices} />}
+        {effectiveTab === "customize" && builds && <BuildCustomizer name={engineName} data={builds} comparisonChoices={comparisonChoices} />}
       </div>
 
       {/* Hand-off to the other tool: this page never looks at the enemy team. */}
@@ -381,7 +418,7 @@ function BootTile({ it, tier, note }: { it: any; tier?: string; note?: string })
   );
 }
 
-function BuildTab({ variants, variant, setVariant, build, name, slug, onGenerate, comparisonChoices }: any) {
+function BuildTab({ variants, variant, setVariant, build, name, engineName, slug, onGenerate, comparisonChoices }: any) {
   const finalItemSlugs = [
     ...build.coreBuild.map((item: { slug: string }) => item.slug),
     ...(build.boots?.slug ? [build.boots.slug] : []),
@@ -527,15 +564,15 @@ function BuildTab({ variants, variant, setVariant, build, name, slug, onGenerate
 
       <BuildExplanation build={build} />
 
-      <BuildStatsPanel name={name} itemSlugs={finalItemSlugs} runeNames={runeNamesFromBuild(build)} level={15} />
+      <BuildStatsPanel name={engineName ?? name} itemSlugs={finalItemSlugs} runeNames={runeNamesFromBuild(build)} level={15} />
       <ChampionAbilitiesPanel
-        name={name}
+        name={engineName ?? name}
         itemSlugs={finalItemSlugs}
         runeNames={runeNamesFromBuild(build)}
         level={15}
       />
       <BuildComparison
-        champion={name}
+        champion={engineName ?? name}
         current={comparableFromBuild(variant, build)}
         choices={comparisonChoices}
       />
@@ -606,11 +643,13 @@ function SituationalPanel({ build }: { build: Build }) {
 
 function GenerateTab({
   name,
+  championForm,
   advice,
   setAdvice,
   comparisonChoices,
 }: {
   name: string;
+  championForm?: string;
   advice: Advice | null;
   setAdvice: (advice: Advice | null) => void;
   comparisonChoices: ComparableBuild[];
@@ -624,7 +663,7 @@ function GenerateTab({
 
   return (
     <div className="flex flex-col gap-4">
-      <EnemyBuildAdvisor presetChampion={name} mode="studio" onAdviceChange={setAdvice} />
+      <EnemyBuildAdvisor presetChampion={name} presetForm={championForm} mode="studio" onAdviceChange={setAdvice} />
       {itemSlugs.length > 0 && (
         <>
           <BuildStatsPanel name={name} itemSlugs={itemSlugs} runeNames={runeNames} level={15} />
