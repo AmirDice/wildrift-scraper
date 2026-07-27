@@ -136,6 +136,72 @@ def _resulting_order(
     return resolved
 
 
+def _named_rune(reason: str) -> str | None:
+    """The rune a reason line is about, when it says so.
+
+    Reasons come back self-labelled, as "Eyeball Collector: scales AD from
+    takedowns" or "Electrocute procs easily with W-auto-Q". The name is the
+    lead, so only the start of the line is considered: a reason for Sudden
+    Impact that happens to mention Electrocute later is still about Sudden
+    Impact.
+    """
+    head = (reason or "").split(":", 1)[0]
+    # Longest first, so "Ultimate Hunter" is not matched as "Hunter".
+    for name in sorted(runemeta.SLOT_OF, key=len, reverse=True):
+        if head.lower().startswith(name.lower()):
+            return name
+    direct = runemeta.resolve(head.strip())
+    return direct
+
+
+def _realign_rune_reasons(res: dict, page: dict, report: Report) -> None:
+    """Attach each rune's reason to THAT rune, rather than to its position.
+
+    The two lists are zipped by index downstream, so one reason written for a
+    rune that did not make the final page shifts every reason after it. That
+    shipped: a Pantheon page showed Hubris explained as "Eyeball Collector:
+    scales AD from takedowns" and Eyeball Collector explained as "Relentless
+    Hunter: out-of-combat movement speed", a rune not in the build at all.
+
+    Re-keying by the name each reason gives is deterministic and free, where
+    failing the section would cost another model round trip to fix wording that
+    is already correct -- it is only attached to the wrong rune.
+    """
+    reasons = res.get("runeReasons")
+    if not isinstance(reasons, dict):
+        return
+
+    minors = list(page.get("minors") or [])
+    given = list(reasons.get("minors") or [])
+    if not minors or not given:
+        return
+
+    by_rune: dict[str, str] = {}
+    unlabelled: list[str] = []
+    for reason in given:
+        if not isinstance(reason, str):
+            continue
+        named = _named_rune(reason)
+        if named and named in minors and named not in by_rune:
+            by_rune[named] = reason
+        elif named:
+            # Names a rune that is not in this page: it explains a choice that
+            # was not made, so it cannot be shown against any of them.
+            continue
+        else:
+            unlabelled.append(reason)
+
+    if not by_rune:
+        return  # nothing self-labelled; leave the model's order alone
+
+    spare = iter(unlabelled)
+    realigned = [by_rune.get(m) or next(spare, "") for m in minors]
+    if realigned != given:
+        report.warn("runeReasons were attached to the wrong runes and have been "
+                    "realigned to the runes they name")
+    reasons["minors"] = realigned
+
+
 def validate(
     res: dict,
     *,
@@ -353,6 +419,7 @@ def validate(
         page["flex"] = runemeta.resolve(page.get("flex", ""))
         res["runes"] = page
     page_all = [page.get("keystone"), *(page.get("minors") or []), page.get("flex")]
+    _realign_rune_reasons(res, page, report)
 
     # ---- situational runes --------------------------------------------------
     situational_runes = []

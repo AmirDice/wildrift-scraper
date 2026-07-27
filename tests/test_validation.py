@@ -446,3 +446,83 @@ class TestLocks:
     def test_a_missing_locked_rune_is_reported(self, build):
         report = check(build, rune_locks=["Overgrowth"])
         assert "Overgrowth" in errors_in(report, "locks")
+
+
+class TestRuneReasonsFollowTheirRune:
+    """Reasons are zipped with runes BY INDEX downstream, so a reason written
+    for a rune that did not make the page shifts every reason after it.
+
+    This shipped on a live Pantheon build: Hubris was explained as "Eyeball
+    Collector: scales AD from takedowns", and Eyeball Collector as "Relentless
+    Hunter: out-of-combat movement speed" -- a rune that was not in the build.
+    """
+
+    def page(self):
+        return {"keystone": "Electrocute", "primaryTree": "Domination",
+                "minors": ["Sudden Impact", "Hubris", "Eyeball Collector"],
+                "flex": "Coup de Grace"}
+
+    def realign(self, minors_reasons):
+        from web.advisor import validate as validate_mod
+        page = self.page()
+        res = {"runes": page,
+               "runeReasons": {"keystone": "Electrocute procs off the combo.",
+                               "minors": minors_reasons,
+                               "flex": "Coup de Grace: finishes low targets."}}
+        report = validate_mod.Report()
+        validate_mod._realign_rune_reasons(res, page, report)
+        return dict(zip(page["minors"], res["runeReasons"]["minors"])), report
+
+    def test_a_reason_lands_on_the_rune_it_names(self):
+        paired, _ = self.realign([
+            "Sudden Impact: true damage after the dash.",
+            "Eyeball Collector: scales AD from takedowns.",
+            "Relentless Hunter: out-of-combat move speed.",
+        ])
+        assert paired["Sudden Impact"].startswith("Sudden Impact")
+        assert paired["Eyeball Collector"].startswith("Eyeball Collector")
+
+    def test_a_reason_for_a_rune_not_in_the_page_is_dropped(self):
+        paired, _ = self.realign([
+            "Sudden Impact: true damage after the dash.",
+            "Eyeball Collector: scales AD from takedowns.",
+            "Relentless Hunter: out-of-combat move speed.",
+        ])
+        assert "Relentless Hunter" not in " ".join(paired.values())
+
+    def test_a_rune_with_no_reason_of_its_own_gets_none(self):
+        """Better blank than borrowed: the frontend hides reasonless rows."""
+        paired, _ = self.realign([
+            "Sudden Impact: true damage after the dash.",
+            "Eyeball Collector: scales AD from takedowns.",
+            "Relentless Hunter: out-of-combat move speed.",
+        ])
+        assert paired["Hubris"] == ""
+
+    def test_the_realignment_is_reported(self):
+        _, report = self.realign([
+            "Sudden Impact: true damage after the dash.",
+            "Eyeball Collector: scales AD from takedowns.",
+            "Relentless Hunter: out-of-combat move speed.",
+        ])
+        assert any("realigned" in w for w in report.warnings)
+
+    def test_correct_reasons_are_left_exactly_as_they_are(self):
+        reasons = [
+            "Sudden Impact: true damage after the dash.",
+            "Hubris: stacking AD on takedowns.",
+            "Eyeball Collector: scales AD from takedowns.",
+        ]
+        paired, report = self.realign(list(reasons))
+        assert list(paired.values()) == reasons
+        assert not any("realigned" in w for w in report.warnings)
+
+    def test_unlabelled_reasons_keep_their_order(self):
+        """Not every reason names its rune; those fall back to position."""
+        paired, _ = self.realign([
+            "Sudden Impact: true damage after the dash.",
+            "stacks attack damage as you get takedowns.",
+            "gives more AD per eyeball.",
+        ])
+        assert paired["Hubris"] == "stacks attack damage as you get takedowns."
+        assert paired["Eyeball Collector"] == "gives more AD per eyeball."

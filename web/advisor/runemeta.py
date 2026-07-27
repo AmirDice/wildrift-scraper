@@ -53,6 +53,20 @@ def resolve(name: str) -> str | None:
     return CANON.get(_canon(name or ""))
 
 
+_TREE_BY_CANON = {_canon(t): t for t in TREES}
+
+
+def resolve_tree(name: str) -> str | None:
+    """Canonical tree name, case and spacing insensitive.
+
+    Rune NAMES have always been normalised this way; the tree was not, so a
+    model answering "domination" instead of "Domination" failed validation and
+    cost a full repair round trip to the model to fix its own capitalisation.
+    Measured at ~5s per occurrence, for nothing.
+    """
+    return _TREE_BY_CANON.get(_canon(name or ""))
+
+
 def metadata(name: str) -> dict:
     """Everything structurally true about one rune."""
     rune = BY_NAME.get(name) or {}
@@ -99,7 +113,12 @@ def page_errors(page: dict) -> list[str]:
     keystone = resolve(page.get("keystone", ""))
     minors = [resolve(m) for m in (page.get("minors") or [])]
     flex = resolve(page.get("flex", ""))
-    tree = page.get("primaryTree", "")
+    # Normalise in place, so everything downstream -- and the response the site
+    # renders -- sees the canonical spelling rather than the model's.
+    raw_tree = page.get("primaryTree", "")
+    tree = resolve_tree(raw_tree) or raw_tree
+    if raw_tree and tree != raw_tree:
+        page["primaryTree"] = tree
 
     if not keystone:
         errors.append(f"keystone {page.get('keystone')!r} is not a known rune")
@@ -161,7 +180,7 @@ def legal_swap_error(incoming: str, outgoing: str, page: dict) -> str | None:
     minors = [resolve(m) for m in (page.get("minors") or [])]
     keystone = resolve(page.get("keystone", ""))
     flex = resolve(page.get("flex", ""))
-    tree = page.get("primaryTree", "")
+    tree = resolve_tree(page.get("primaryTree", "")) or page.get("primaryTree", "")
 
     if outgoing == keystone:
         if BY_NAME.get(incoming, {}).get("type") != "Keystone":
