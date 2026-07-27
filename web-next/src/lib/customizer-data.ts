@@ -314,6 +314,22 @@ export function customBuildIssues(items: string[]): string[] {
  * simulate triggered passives, targets, combos, or assign a build score.
  */
 /**
+ * Champions who switch between two kits, and the names of those kits.
+ *
+ * This is NOT Kayn: he commits to one form for the rest of the game, so each of
+ * his forms is generated as its own champion with its own build. These four
+ * swap mid-fight, so they keep one build and one set of numbers, and only the
+ * half of the kit you are reading changes. Their tooltips carry both halves in
+ * one line ("Javelin Toss / Takedown"), which is where the names come from.
+ */
+export const DUAL_FORM_CHAMPIONS: Record<string, [string, string]> = {
+  Nidalee: ["Human", "Cougar"],
+  Gnar: ["Mini", "Mega"],
+  Jayce: ["Hammer", "Cannon"],
+  Yunara: ["Base", "Transcendent"],
+};
+
+/**
  * The self-buff a champion's ULTIMATE grants, if any.
  *
  * Aatrox's World Ender is +50% AD, Shyvana's Dragon's Descent +600 Health.
@@ -323,8 +339,22 @@ export function customBuildIssues(items: string[]): string[] {
  * `ultActive` exposes.
  */
 export function ultTransform(name: string): { label: string; steroids: AbilitySteroidComponent[] } | null {
-  const ult = DATA.formulas[name]?.abilities?.["4"];
-  const steroids = (ult?.steroids ?? []).filter((s) => s && s.stat);
+  const abilities = DATA.formulas[name]?.abilities ?? {};
+  const ult = abilities["4"];
+  const steroids = [...(ult?.steroids ?? []).filter((s) => s && s.stat)];
+  // Some transforms carry their stats on the PASSIVE, not the ultimate: Gnar's
+  // Rage Gene is what grants Mega's Health, Armour, MR and AD, and reading only
+  // slot 4 meant toggling him to Mega changed nothing on the stat sheet. His
+  // passive also lists MINI's rage bonuses, so take only the ones the tooltip
+  // attributes to the transformed form.
+  const onForm = DUAL_FORM_CHAMPIONS[name]?.[1];
+  if (onForm) {
+    for (const s of abilities["P"]?.steroids ?? []) {
+      if (s?.stat && (s.note ?? "").toLowerCase().includes(onForm.toLowerCase())) {
+        steroids.push(s);
+      }
+    }
+  }
   if (!steroids.length) return null;
   return { label: ult?.name ?? "Ultimate", steroids };
 }

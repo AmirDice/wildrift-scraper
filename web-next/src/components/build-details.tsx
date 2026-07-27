@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import { Tip } from "@/components/build-view";
 import {
   calculatedChampionAbilities,
+  DUAL_FORM_CHAMPIONS,
   ultTransform,
   conditionalBuildEffects,
   listedBuildStats,
@@ -105,6 +106,31 @@ const STAT_DESCRIPTIONS: Record<string, string> = {
   itemCost: "Combined gold cost of the selected completed items and boots.",
 };
 
+/**
+ * Which form the panels are showing, shared between them.
+ *
+ * The stat sheet and the ability list are siblings rendered in several places,
+ * and each owning its own toggle meant flipping Gnar to Mega changed his
+ * abilities while his stats stayed on Mini -- two controls for one idea. A
+ * store keyed by champion keeps them in step wherever they are mounted, and
+ * resets on its own because a different champion is a different key.
+ */
+const formStore = new Map<string, number>();
+const formListeners = new Set<() => void>();
+
+function useChampionForm(name: string): [number, (side: number) => void] {
+  const side = useSyncExternalStore(
+    (cb) => { formListeners.add(cb); return () => { formListeners.delete(cb); }; },
+    () => formStore.get(name) ?? 0,
+    () => 0,
+  );
+  const set = useCallback((next: number) => {
+    formStore.set(name, next);
+    formListeners.forEach((cb) => cb());
+  }, [name]);
+  return [side, set];
+}
+
 export function BuildStatsPanel({
   name,
   itemSlugs,
@@ -127,7 +153,13 @@ export function BuildStatsPanel({
   // so the sheet leaves it out of the guaranteed numbers by default and offers
   // it as its own state rather than mixing the two.
   const transform = ultTransform(name);
-  const [ultOn, setUltOn] = useState(false);
+  const formNames = DUAL_FORM_CHAMPIONS[name];
+  const [side, setSide] = useChampionForm(name);
+  const ultOn = side === 1;
+  const setUltOn = (on: boolean) => setSide(on ? 1 : 0);
+  // A champion who transforms already has a name for the two states, so use it
+  // rather than a second vocabulary: Gnar reads Mini / Mega, Aatrox Ult off / on.
+  const labels = formNames ?? ["Ult off", "Ult on"];
   const base = listedBuildStats(name, [], level);
   const listed = listedBuildStats(name, itemSlugs, level, runeNames, ultOn);
   const scaledResult = scaledBuildStats(name, itemSlugs, level, runeNames);
@@ -157,14 +189,14 @@ export function BuildStatsPanel({
         {transform && (
           <div className="flex items-center gap-0.5 rounded-lg border border-line bg-white/[0.03] p-0.5">
             <StatModeButton active={!ultOn} onClick={() => setUltOn(false)} title="Stats without the ultimate active.">
-              Ult off
+              {labels[0]}
             </StatModeButton>
             <StatModeButton
               active={ultOn}
               onClick={() => setUltOn(true)}
               title={`Stats while ${transform.label} is active.`}
             >
-              Ult on
+              {labels[1]}
             </StatModeButton>
           </div>
         )}
@@ -336,22 +368,6 @@ function StatModeButton({
   );
 }
 
-/**
- * Champions who switch between two kits at will, and the names of those kits.
- *
- * This is NOT Kayn: he commits to one form for the rest of the game, so each
- * of his forms is generated as its own champion with its own build. Nidalee
- * swaps every few seconds, so she has one build and two ability sets, and the
- * only thing that needs to change is which half of the kit you are reading.
- * Her tooltips carry both ("Javelin Toss / Takedown"), which is where the
- * per-form names come from.
- */
-const DUAL_FORM_CHAMPIONS: Record<string, [string, string]> = {
-  Nidalee: ["Human", "Cougar"],
-  Gnar: ["Mini", "Mega"],
-  Jayce: ["Hammer", "Cannon"],
-  Yunara: ["Base", "Transcendent"],
-};
 
 /** The half of a two-form ability that belongs to the selected form. */
 function abilityForForm<T extends {
@@ -393,20 +409,14 @@ export function ChampionAbilitiesPanel({
   embedded?: boolean;
 }) {
   const formNames = DUAL_FORM_CHAMPIONS[name];
-  // Keyed by champion so the choice resets when you switch: leaving the panel on
-  // "Mega" and picking Jayce would otherwise show his Cannon abilities as if
-  // that were the default.
-  const [formState, setFormState] = useState({ champ: name, side: 0 });
-  const formSide = formState.champ === name ? formState.side : 0;
-  const setFormSide = (side: number) => setFormState({ champ: name, side });
+  const [formSide, setFormSide] = useChampionForm(name);
   // Ultimates that transform the champion (Aatrox's +50% AD, Shyvana's +600
   // Health) change every other number on this panel, because the buff feeds the
   // same AD/AP the ability ratios read from. The stat sheet lists only
   // unconditional stats, so without this the transformed values were nowhere.
   const transform = ultTransform(name);
-  const [ultState, setUltState] = useState({ champ: name, on: false });
-  const ultOn = ultState.champ === name && ultState.on;
-  const setUltOn = (on: boolean) => setUltState({ champ: name, on });
+  const ultOn = formSide === 1;
+  const setUltOn = (on: boolean) => setFormSide(on ? 1 : 0);
   // For a champion whose FORM is the ultimate (Gnar rages, Jayce swaps weapon,
   // Yunara transcends), the form switch already says whether the ult is up, so
   // it drives the stats too rather than sitting next to a second toggle that

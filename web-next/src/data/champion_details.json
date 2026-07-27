@@ -5324,7 +5324,7 @@
         ],
         "icon": "/abilities/jayce-to-the-skies-shock-blast.png",
         "formIcons": [
-          "/abilities/Jayce_To_the_Skies%21_WR.png",
+          "/abilities/Jayce_To_the_Skies_WR.png",
           "/abilities/Jayce_Shock_Blast_WR.png"
         ]
       },
@@ -5383,7 +5383,11 @@
         "damageTypes": [
           "magic"
         ],
-        "icon": "/abilities/jayce-mercury-cannon-mercury-hammer.png"
+        "icon": "/abilities/jayce-mercury-cannon-mercury-hammer.png",
+        "formIcons": [
+          "/abilities/Jayce_Transform_Mercury_Cannon_WR.png",
+          "/abilities/Jayce_Transform_Mercury_Hammer_WR.png"
+        ]
       }
     ],
     "skillPriority": [
@@ -17088,7 +17092,7 @@
         "damageTypes": [],
         "icon": "/abilities/yunara-kanmeis-steps-untouchable-shadow.png",
         "formIcons": [
-          "/abilities/Yunara_Kanmei%27s_Steps_WR.png",
+          "/abilities/Yunara_Kanmeis_Steps_WR.png",
           "/abilities/Yunara_Untouchable_Shadow_WR.png"
         ]
       },

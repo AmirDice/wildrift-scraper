@@ -21,6 +21,7 @@ import argparse
 import json
 import re
 import time
+from urllib.parse import unquote
 from pathlib import Path
 
 import requests
@@ -79,6 +80,12 @@ def _download(url: str, headers: dict | None = None) -> str | None:
     """Rehost one icon; returns the /abilities/<file> path (or None on failure)."""
     url = _abs_url(url)
     fname = url.rsplit("/", 1)[-1].split("?")[0]
+    # Save under a name that survives a round trip through a URL. Wiki files
+    # carry punctuation ("To the Skies!", "Kanmei's Steps") which arrives
+    # percent-encoded; writing that verbatim produced a file literally named
+    # "...Skies%21_WR.png" that the browser then asked for as "...Skies!_WR.png"
+    # and got a 404. Decode first, then keep only URL-safe characters.
+    fname = re.sub(r"[^A-Za-z0-9._-]", "", unquote(fname))
     if not fname:
         return None
     dest = PUBLIC_ABILITIES / fname
@@ -117,9 +124,13 @@ def _norm_icon_key(title: str, champion: str) -> str:
     "Nidalee Javelin Toss WR.png" while Jayce only has "Jayce To the Skies!.png",
     and the wiki's casing does not match the guide's ("To the" vs "To The").
     Normalising both sides is what lets one lookup serve all of them."""
-    t = title.removeprefix("File:").rsplit(".", 1)[0]
+    t = unquote(title).removeprefix("File:").rsplit(".", 1)[0]
     t = t.removeprefix(champion).strip()
     t = re.sub("(?:^| )WR(?: |$)", " ", t)   # WR variants share the PC name
+    # Weapon-swap ultimates are filed under "Transform <name>" (Jayce's
+    # "Jayce Transform Mercury Cannon.png"), while the tooltip just calls the
+    # ability "Mercury Cannon" -- without this his ult icon never switched.
+    t = re.sub("^Transform ", "", t.strip())
     t = re.sub(r"\s+\d+$", "", t)          # "Hyper 2" is an alternate version
     return re.sub(r"[^a-z0-9]", "", t.lower())
 
