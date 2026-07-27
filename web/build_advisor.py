@@ -670,6 +670,40 @@ def advise(champion: str, role: str, enemies: list[str],
             repair.apply_repair(res, section, patch)
         report = _check(res)
 
+    # The repair budget can run out with the build still invalid, and until now
+    # that build was returned anyway: validated, found broken, logged, served.
+    # A measured Akali run shipped five times with boots sitting in the item
+    # slots and once with an item that does not exist in the game, every failure
+    # printed to the log first. Cached, one of those becomes that champion's
+    # permanent answer.
+    #
+    # So the core is now a hard gate and the extras degrade instead. A build
+    # whose items, boots, runes or locks are wrong is not a build; a build whose
+    # situational swaps are badly timed is a good build with a bad footnote, and
+    # dropping the footnote serves the player better than refusing outright.
+    if not report.ok:
+        CORE = ("items", "boots", "runes", "locks")
+        broken_core = [s for s in report.sections() if s in CORE]
+        if broken_core:
+            detail = "; ".join(report.flat()[:3])
+            print(f"[advisor] REFUSING to return an invalid build; "
+                  f"unrepaired sections: {broken_core}", file=sys.stderr)
+            raise RuntimeError(
+                f"the build could not be made valid after {repair.MAX_ATTEMPTS} repair "
+                f"attempts ({', '.join(broken_core)}): {detail}")
+        dropped = report.sections()
+        for section in dropped:
+            if section in ("situational", "situationalRunes"):
+                res[section] = []
+            elif section == "snowball":
+                res["snowballSwap"] = None
+            elif section == "scores":
+                # Scores explain the build rather than being it, so an unfixable
+                # scoring section costs the explanation, not the recommendation.
+                res["candidateItemScores"] = []
+                res["mandatoryAuditScores"] = []
+        print(f"[advisor] dropped unrepairable non-core sections: {dropped}", file=sys.stderr)
+
     # Summoners are assigned, not generated: the choice is a lookup, and asking
     # the model for it only created a way for an otherwise good build to fail.
     res["summoners"], summoner_reason = summoners.resolved(

@@ -526,3 +526,40 @@ class TestRuneReasonsFollowTheirRune:
         ])
         assert paired["Hubris"] == "stacks attack damage as you get takedowns."
         assert paired["Eyeball Collector"] == "gives more AD per eyeball."
+
+
+class TestAnInvalidBuildIsNeverServed:
+    """The repair budget can run out with the build still broken.
+
+    It used to be returned anyway. A measured Akali run shipped five builds with
+    boots sitting in the item slots, and one containing 'shadowflame', an item
+    that does not exist in the game -- every failure printed to the log first,
+    then served. Cached, one of those becomes the champion's permanent answer.
+    """
+
+    def test_boots_in_the_item_slots_is_caught(self, build):
+        build["items"] = ["boots-of-mana", "lich-bane", "stormsurge",
+                          "void-staff", "rabadons-deathcap"]
+        report = check(build)
+        assert "items" in report.sections()
+        assert "boots" in errors_in(report, "items")
+
+    def test_an_item_that_does_not_exist_is_caught(self, build):
+        build["items"] = ["lich-bane", "shadowflame", "stormsurge",
+                          "void-staff", "rabadons-deathcap"]
+        report = check(build)
+        assert "items" in report.sections()
+        assert "5 unique known slugs" in errors_in(report, "items")
+
+    def test_the_core_sections_are_the_ones_that_must_never_ship(self):
+        """items/boots/runes/locks are the build; the rest annotate it.
+
+        Guards the split the advisor gates on, so a section moving between the
+        two groups is a deliberate edit rather than an accident.
+        """
+        from web.advisor import validate as validate_mod
+        core = {"items", "boots", "runes", "locks"}
+        assert core <= set(validate_mod.SECTIONS)
+        extras = set(validate_mod.SECTIONS) - core
+        assert extras == {"situational", "situationalRunes", "snowball",
+                          "scores", "counterSummary"}
