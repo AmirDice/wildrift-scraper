@@ -80,6 +80,7 @@ export function GoogleSignInButton({ onDone }: { onDone?: () => void }) {
   useEffect(() => {
     if (!CLIENT_ID) return;
     let cancelled = false;
+    let renderCheck: number | null = null;
 
     loadGsi()
       .then(() => {
@@ -124,11 +125,35 @@ export function GoogleSignInButton({ onDone }: { onDone?: () => void }) {
           logo_alignment: "left",
           width: 240,
         });
+
+        // GIS refuses to render on an origin that is not registered against the
+        // OAuth client, and it does so SILENTLY as far as the page is concerned:
+        // it logs to the console and leaves the container empty, so the user
+        // just sees a blank space where the button should be. Every Vercel
+        // preview gets a fresh random subdomain, none of which can be
+        // pre-registered, so this is the normal preview experience.
+        //
+        // renderButton is not a promise, so the only way to know is to look.
+        renderCheck = window.setTimeout(() => {
+          if (cancelled) return;
+          const node = holder.current;
+          const drawn = !!node?.querySelector("iframe")
+            && (node?.getBoundingClientRect().height ?? 0) > 0;
+          if (drawn) return;
+          console.warn(
+            `[google-sign-in] Google did not render the button for origin ${window.location.origin}. `
+            + "The usual cause is that this exact origin is not in the OAuth client's "
+            + "Authorised JavaScript origins. Preview deployments get a new subdomain each "
+            + "time, so they need either a stable preview domain or a registered alias.",
+          );
+          setError("Google sign-in is not available on this address.");
+        }, 2500);
       })
       .catch(() => setError("Could not reach Google sign-in. Check your connection and retry."));
 
     return () => {
       cancelled = true;
+      if (renderCheck != null) window.clearTimeout(renderCheck);
     };
   }, []);
 
