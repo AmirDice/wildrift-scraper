@@ -144,11 +144,15 @@ export default function HomePage() {
           <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
             <BuildsGeneratedPill />
+            {/* "live now" overstated it: the win rates are gathered in
+                batches, not streamed, so the honest word is collecting. */}
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> EU · live now
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 motion-safe:animate-pulse" />
+              EU win rates · being collected
             </span>
-            <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-              NA win rates · coming soon
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent motion-safe:animate-pulse" />
+              NA win rates · being collected
             </span>
             {!BUILD_TOOLS_LIVE && (
               <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
@@ -208,9 +212,12 @@ export default function HomePage() {
                 accent="text-emerald-300"
                 ring="hover:border-emerald-400/40"
               />
+              {/* Badge was "live", which read as a claim about the win rates
+                  rather than the feature. It is the EU list, gathered in
+                  batches, and there is a separate China one. */}
               <FlagshipTool
                 href="/tier-list"
-                badge="live"
+                badge="EU"
                 badgeClass="bg-accent/20 text-accent"
                 title="Tier List"
                 desc="Every champion ranked by the real win rates of its 50 best players, confidence-adjusted so hype and lucky streaks never make the cut."
@@ -234,10 +241,14 @@ export default function HomePage() {
       <Container className="py-6">
         <SectionHeading title="Inside WrTrueMeta" subtitle="What the current site data and build catalogue cover" />
         <div className={`grid grid-cols-2 gap-3 ${BUILD_TOOLS_LIVE ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+          {/* No invented placeholder on the count. This card was hidden while
+              the tools were gated, so the old "171" fallback was never seen;
+              now that it ships, a made-up figure would sit on screen under the
+              label "by players" until the real one loads. */}
           {BUILD_TOOLS_LIVE && (
             <StatCard
               label="Builds generated"
-              value={<BuildsGeneratedCount fallback="171" />}
+              value={<BuildsGeneratedCount />}
               sub="by players, updated hourly"
               href="/build"
               valueClass="text-accent"
