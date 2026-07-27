@@ -218,7 +218,33 @@ def pool_text() -> str:
     return "\n".join(rows)
 
 
+def slot_groups_text() -> str:
+    """Each tree's minors grouped by slot, as three explicit lists.
+
+    The pool already tags every rune with its slot, but a tag has to be
+    remembered and cross-checked, and the model kept picking two minors from
+    one slot and none from another -- the single most common validation
+    failure, costing a repair round trip of 5-12s.
+
+    The repair prompt fixes it first try every time, and the only thing it adds
+    is exactly this: the legal names laid out per slot, so the choice becomes
+    "one from each list" rather than a constraint to verify afterwards.
+    """
+    out = []
+    for tree in sorted(TREES):
+        groups = minors_by_tree(tree)
+        if not groups:
+            continue
+        rows = "; ".join(f"slot {slot}: {', '.join(sorted(names))}"
+                         for slot, names in sorted(groups.items()))
+        out.append(f"  {tree} -- {rows}")
+    return "\n".join(out)
+
+
 def pool_text_block() -> str:
     """The rune pool with the page-construction rule stated alongside it."""
     return ("RUNES (page = 1 keystone + 3 minors from ONE tree, one from each of that "
-            "tree's 3 slots, + 1 flex from any tree):\n" + pool_text())
+            "tree's 3 slots, + 1 flex from any tree):\n" + pool_text()
+            + "\n\nMINORS BY SLOT -- take exactly one name from each of the three "
+              "lists for your chosen tree. Two from the same slot is not a legal "
+              "page:\n" + slot_groups_text())

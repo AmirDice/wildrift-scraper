@@ -122,6 +122,15 @@ SYSTEM = (
     "5 arrives after the game is decided. Return an empty list rather than inventing "
     "swaps that do not matter.\n"
 
+    # Stated as the acceptance test, because it IS one: the validator rejects a
+    # list where every swap lands at 4 or 5, and the model was writing exactly
+    # that and then paying a repair round trip to re-time it.
+    "  HARD RULE ON TIMING: if you return any situational swaps at all, at least one "
+    "MUST have insertAtPosition 2 or 3. A list where every swap lands at position 4 or "
+    "5 will be rejected -- those answer a threat after it has already decided the game. "
+    "Either re-time the swap that matters most to the purchase where the threat actually "
+    "bites, or return an empty list.\n"
+
     "SITUATIONAL RUNES: when a rune answers a matchup better than an item does, return "
     "it in `situationalRunes`. Two forms are allowed. replacesType 'rune' swaps one of "
     "YOUR chosen runes: a minor must be replaced by another rune from the SAME tree and "
