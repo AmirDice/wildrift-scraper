@@ -976,8 +976,14 @@ _MECHANIC_MEANING = {
     # would contradict the line directly above it.
     "everyNHit": ("every Nth attack is empowered, so per-attack damage and on-hit effects "
                   "are worth more than they look on a flat damage comparison"),
-    "noResource": ("this champion has NO mana. Mana, mana regeneration and mana-scaling "
-                   "items are dead stats on it"),
+    # Says STATS, not items, and deliberately so: an item's name is not its
+    # stat line. Boots of Mana grants 25 AP and 8 flat magic penetration and is
+    # a legitimate pick on a champion with no mana, but "mana items are dead"
+    # reads as a ban on it.
+    "noResource": ("this champion has NO mana, so mana, mana regeneration and mana-scaling "
+                   "STATS are dead on it. Judge each item by its stat line rather than its "
+                   "name: an item named for mana that also grants AP or penetration is "
+                   "still worth taking for those stats"),
     "transform": "the champion transforms, and the transformed state is not fully modelled here",
 }
 
@@ -1022,12 +1028,15 @@ def kit_mechanics(champion: str) -> list[str]:
         said_no_mana = any(m.get("kind") == "noResource" for m in rec.get("mechanics") or [])
         out.append(
             ("" if said_no_mana else
-             "this champion uses ENERGY, not mana, so mana and mana-regeneration items "
-             "are dead stats. ")
+             "this champion uses ENERGY, not mana, so mana and mana-regeneration stats "
+             "are dead on it. ")
             + "ENERGY is a small fixed pool that does not grow with items and refills on "
               "its own schedule, so cooldown reduction / ability haste is worth materially "
               "less here than on a mana champion: what stops the next cast is energy, not "
-              "the cooldown. Do not pick an item or boot mainly for haste on this kit.")
+              "the cooldown. Do not pick an item or boot mainly for haste on this kit. "
+              "Judge every item by its STATS, never by its name: Boots of Mana grants 25 "
+              "AP and 8 flat magic penetration, which are live stats here, and only its "
+              "mana regeneration is wasted, so it can still be the right boot.")
     return out
 
 
