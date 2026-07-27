@@ -59,6 +59,10 @@ KIT_AMPS = (_load("kit_amps.json") or {}).get("champions", {})
 # Everything the engine used to do assumed "ally", which is right for an
 # enchanter and wrong for every bruiser who sustains through his own kit.
 HEAL_TARGETS = (_load("heal_targets.json") or {}).get("champions", {})
+# How hurt a champion is when a missing-health heal lands. Healing off missing
+# health is worth nothing at full health and everything at death's door; this is
+# the one number in the heal model that the tooltips cannot supply.
+MISSING_HP_IN_FIGHT = 0.4
 
 
 def heal_target(name: str, slot: str) -> str:
@@ -66,7 +70,8 @@ def heal_target(name: str, slot: str) -> str:
     return (HEAL_TARGETS.get(name) or {}).get(slot, "ally")
 
 
-def kit_heal(name: str, st: dict, level: int, window: float, audience: str) -> float:
+def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
+             dmg_by_slot: dict | None = None, dmg_total: float = 0.0) -> float:
     """Healing and shielding this kit produces for `audience` over a fight.
 
     Shared by the ally-value model and the champion's own sustain so the two
@@ -90,8 +95,24 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str) -> f
             v = _scale_val(c.get("base"), 3, level)
             for r in c.get("ratios") or []:
                 pct = _scale_val(r.get("pct", 0), 3, level) / 100.0
-                src = {"ap": st["ap"], "ad": st["ad"], "bonusAd": st["bonusAd"],
-                       "ownMaxHp": st["hp"], "ownBonusHp": st["bonusHp"]}.get(r.get("stat"), 0.0)
+                stat = r.get("stat")
+                if stat == "damageDealt":
+                    # Heals for a share of what THIS ability dealt in the
+                    # simulated fight -- derived, not assumed. Deliberately the
+                    # ability's own damage and not the champion's total: reading
+                    # Warwick's passive percentage against everything he does
+                    # gave him 4,759 healing over 8 seconds, more than his health
+                    # bar. On-hit passives are not tracked per slot, so they
+                    # contribute nothing here rather than something invented.
+                    src = (dmg_by_slot or {}).get(slot, 0.0)
+                elif stat == "ownMissingHp":
+                    # Darius heals off MISSING health, which only exists once he
+                    # has been hurt. MISSING_HP_IN_FIGHT is the one assumption
+                    # here: a champion mid-fight, not one at full health.
+                    src = st["hp"] * MISSING_HP_IN_FIGHT
+                else:
+                    src = {"ap": st["ap"], "ad": st["ad"], "bonusAd": st["bonusAd"],
+                           "ownMaxHp": st["hp"], "ownBonusHp": st["bonusHp"]}.get(stat, 0.0)
                 v += pct * src
             if c.get("when") == "dot total" and c.get("durationS"):
                 v *= float(c["durationS"])
@@ -1068,7 +1089,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             total += d
         amp = 1 + st["damageAmp"]
         total += kit_amps(total)
-        return {"total": total * amp, "parts": parts, "nAutos": n_autos,
+        return {"total": total * amp, "parts": parts, "nAutos": n_autos, "bySlot": dict(by_slot_dmg),
                 "autoDmg": auto_dmg * amp,
                 "byType": {k: v * amp for k, v in by_type.items()}}
 
@@ -1152,7 +1173,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     total *= amp
     n_autos_ideal = max(1, int(window * st["as"]))  # no uptime discount
     return {"total": total, "parts": parts, "nAutos": n_autos,
-            "nAutosIdeal": n_autos_ideal, "castLog": cast_log,
+            "nAutosIdeal": n_autos_ideal, "castLog": cast_log, "bySlot": dict(by_slot_dmg),
             "autoDmg": auto_dmg * amp,
             "byType": {k: v * amp for k, v in by_type.items()}}
 
@@ -1331,9 +1352,10 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
     # Kit self-healing counts toward staying alive, the same as lifesteal. It
     # used to be credited entirely as ally value, so a champion who sustains
     # through his own kit scored as though he had no sustain at all.
+    r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
-               + kit_heal(name, st, level, 8.0, "self")
-               + st["healOnHit"] * rotation(name, st, TARGETS["bruiser"], 8.0, level)["nAutos"])
+               + kit_heal(name, st, level, 8.0, "self", r8["bySlot"], r8["total"])
+               + st["healOnHit"] * r8["nAutos"])
 
     return {"burst3": round(burst3), "dps8": round(dps8), "ttk": ttk,
             "ehp": round(ehp), "sustain": round(sustain),
@@ -1453,8 +1475,9 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
     shield *= 1 + st["healShieldAmp"]
     mixed_taken = 0.5 * 100 / (100 + st["armor"]) + 0.5 * 100 / (100 + st["mr"])
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
+    _r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
-               + kit_heal(name, st, level, 8.0, "self"))
+               + kit_heal(name, st, level, 8.0, "self", _r8["bySlot"], _r8["total"]))
     deff = (ehp + 0.5 * sustain) / REF_DEF
     # standard's neutral 60/40: stat_weights is variant-independent, and this is
     # the blend "the best all-around build" is defined by.

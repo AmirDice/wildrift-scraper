@@ -39,8 +39,13 @@ OUT = ROOT / "data" / "ability_formulas.json"
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-v4-flash"
 
+# ownMissingHp and damageDealt exist for healing: Darius restores "15% of his
+# missing Health", Warwick "100% of the damage dealt". Without them those heals
+# have no expressible form and the champions built around sustain read as
+# having none.
 RATIO_STATS = ["ad", "bonusAd", "ap", "targetMaxHp", "targetCurrentHp", "targetMissingHp",
-               "ownMaxHp", "ownBonusHp", "armor", "mr", "bonusMs", "bonusArmor", "bonusMr"]
+               "ownMaxHp", "ownBonusHp", "ownMissingHp", "damageDealt",
+               "armor", "mr", "bonusMs", "bonusArmor", "bonusMr"]
 # hp belongs here because transform ultimates grant it directly -- Shyvana's
 # Dragon's Descent is "gaining 350 / 475 / 600 Health", Nasus and Volibear the
 # same. Without it the closed vocabulary silently dropped the entire buff, so a
@@ -92,6 +97,15 @@ SYSTEM = (
     "\"flat\":[per-rank] OR \"pct\":number, \"from\":optional conversion source stat "
     "(e.g. Hecarim: stat=ad, from=bonusMs, pct=12), \"note\":\"...\"}\n"
     "- shields/heals: {\"kind\":\"shield|heal\",\"base\":[...],\"ratios\":[...]}\n"
+    "- HEALING AND SHIELDING ARE NOT OPTIONAL, exactly like on-hit damage. Any ability "
+    "that restores Health or grants a shield MUST produce a defensive component carrying "
+    "its numbers: \"restoring 15 / 20 / 25 / 30 ( +35% AP ) Health\" is "
+    "{\"kind\":\"heal\",\"base\":[15,20,25,30],\"ratios\":[{\"stat\":\"ap\",\"pct\":35}]}. "
+    "Describing it in a note instead of emitting the component means the champion "
+    "simulates with NO sustain at all, which is how a drain-tank ends up scored as a "
+    "glass cannon. If the amount is a share of something -- damage dealt, damage taken, "
+    "missing Health -- use the matching ratio stat and put only the leftover condition "
+    "in unmodeled.\n"
     "- BONUS HEALTH IS NOT A SHIELD. 'gain 300 / 575 / 750 Health for 12 seconds' is a "
     "steroid {\"stat\":\"hp\",\"flat\":[300,575,750]} -- a stat you have while it lasts, "
     "which health and shield scaling then read from. A shield is a separate pool that "

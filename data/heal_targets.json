@@ -268,5 +268,5 @@
       "2": "self"
     }
   },
-  "_conflicts": "Nilah[P]: Joy Unending SHARES healing with a nearby ally but the shield is self-only. One label per slot cannot express that; recorded as 'both' for the heal. Currently moot -- no defensive component is extracted for that passive."
+  "_conflicts": "Nilah: Joy Unending (P) shares HEALING with a nearby ally, while Jubilant Veil (W) is damage reduction, not a shield, and is treated as self-only. A 'veil' is its own mechanic -- only Nilah and Nocturne have one -- and the engine does not model it; neither slot has an extracted component today."
 }
