@@ -1,0 +1,124 @@
+"""Assemble and deploy the build advisor as its own Vercel project.
+
+WHY THIS EXISTS, rather than a vercel.json in the repo:
+
+    api/advisor.py needs the repo-root data files, so its deployment root has
+    to be the repo root. The SITE project's root is web-next, and a vercel.json
+    at the repo root fails that project's deployment at config time -- its
+    `functions` pattern matches nothing inside web-next. Confirmed twice, most
+    recently 2026-07-27. The two projects cannot share the file, so the advisor
+    is deployed from a staging directory built here instead, and the site is
+    left completely untouched.
+
+    The site reaches it over HTTP through ADVISOR_URL, which
+    web-next/src/app/api/build/route.ts already supports.
+
+WHAT IT SHIPS
+
+    Only what the function imports and reads: api/, web/**.py, and the
+    top-level data/*.json. NOT data/'s 124MB of screenshots, OCR captures and
+    scrape caches, which would put the bundle near the 250MB unzipped limit for
+    no reason, and not web-next at all.
+
+USAGE
+
+    python -m scripts.deploy_advisor            # build the staging dir only
+    python -m scripts.deploy_advisor --deploy   # ... and deploy it
+
+    Re-run after any data refresh: the JSON is baked into the deployment, so
+    the advisor keeps serving the old numbers until it is redeployed.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+STAGE = ROOT / ".advisor-deploy"
+PROJECT = "wrtruemeta-advisor"
+
+# 300s needs a plan above Hobby, which caps at 60. A real generation measured
+# 53s and counter builds with a full enemy team run longer, so 60 is not enough.
+# Do NOT add a "runtime" key: Python is detected from the .py extension, and
+# `runtime` is only valid for community runtimes -- an invalid value fails
+# config validation before any build runs.
+VERCEL_CONFIG = {
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "functions": {"api/advisor.py": {"maxDuration": 300, "memory": 1024}},
+}
+
+
+def build() -> Path:
+    if STAGE.exists():
+        shutil.rmtree(STAGE)
+    STAGE.mkdir()
+
+    # the function itself
+    shutil.copytree(ROOT / "api", STAGE / "api",
+                    ignore=shutil.ignore_patterns("__pycache__"))
+    # everything it imports
+    shutil.copytree(ROOT / "web", STAGE / "web",
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".env"))
+    # the data it reads: JSON only, no images or caches
+    data = STAGE / "data"
+    data.mkdir()
+    for src in sorted((ROOT / "data").glob("*.json")):
+        shutil.copy2(src, data / src.name)
+    # a couple of files are read from the web-next copy instead
+    web_data = STAGE / "web-next" / "src" / "data"
+    web_data.mkdir(parents=True)
+    for src in sorted((ROOT / "web-next" / "src" / "data").glob("*.json")):
+        shutil.copy2(src, web_data / src.name)
+
+    shutil.copy2(ROOT / "requirements.txt", STAGE / "requirements.txt")
+    (STAGE / "vercel.json").write_text(
+        json.dumps(VERCEL_CONFIG, indent=2) + "\n", encoding="utf-8")
+
+    size = sum(p.stat().st_size for p in STAGE.rglob("*") if p.is_file())
+    print(f"staged {STAGE.relative_to(ROOT)}: {size / 1024 / 1024:.1f} MB")
+    return STAGE
+
+
+def deploy(stage: Path) -> int:
+    """Link and deploy. Secrets are NOT set here; see the printed steps."""
+    npx = shutil.which("npx") or "npx"
+    link = subprocess.run(
+        [npx, "vercel", "link", "--project", PROJECT, "--yes"],
+        cwd=stage, text=True)
+    if link.returncode != 0:
+        print("vercel link failed", file=sys.stderr)
+        return link.returncode
+    return subprocess.run(
+        [npx, "vercel", "deploy", "--prod", "--yes"], cwd=stage, text=True).returncode
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--deploy", action="store_true",
+                    help="deploy the staged directory to Vercel")
+    args = ap.parse_args()
+
+    stage = build()
+    if not args.deploy:
+        print(f"\nnot deployed. run again with --deploy, or:\n"
+              f"  cd {stage}\n  npx vercel deploy --prod")
+        return
+
+    code = deploy(stage)
+    if code == 0:
+        print(
+            "\nDeployed. Two secrets still have to be set BY HAND (they are not\n"
+            "handled by this script):\n"
+            f"  npx vercel env add DEEPSEEK_API_KEY production --cwd {stage}\n"
+            f"  npx vercel env add ADVISOR_SECRET production --cwd {stage}\n"
+            "then redeploy, and set the same ADVISOR_SECRET plus ADVISOR_URL on\n"
+            "the site project.")
+    sys.exit(code)
+
+
+if __name__ == "__main__":
+    main()

@@ -40,3 +40,6 @@ scratch/
 /hecarim.json
 /payload_*.json
 /prompt_dump.txt
+
+# staging directory built by scripts/deploy_advisor.py
+.advisor-deploy/
