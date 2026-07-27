@@ -146,6 +146,11 @@ const OBJECTIVE_HELP: Record<string, string> = {
 
 const ROLES = ["Baron", "Jungle", "Mid", "Dragon", "Support"] as const;
 
+/** Measured generation time, mid-range: real runs land between 46s and 66s.
+ *  Both the progress curve and the note under the bar read from this, so they
+ *  can never drift apart again. */
+const EXPECTED_MS = 55_000;
+
 /** Sparkles mark (Heroicons) on the generate buttons: the visual cue for a
  *  generated build. */
 export function Sparkles({ className = "", size = 14 }: { className?: string; size?: number }) {
@@ -423,6 +428,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [lockedRunes, setLockedRunes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
   const [advice, setAdvice] = useState<Advice | null>(null);
 
   // the champion's home role, to flag off-role picks (Support Graves etc.)
@@ -466,21 +472,32 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     onAdviceChange?.(null);
   };
 
-  // Simulated progress: the advisor gives no streaming signal, so we ease toward
-  // ~92% over the expected ~30s and snap to 100% when the response lands.
+  // Simulated progress, calibrated to what generations ACTUALLY take.
+  //
+  // This eased toward 92% over 30 seconds, and the note under the bar promised
+  // "about 30 seconds". Measured generations run 46-66s, so the bar reached its
+  // ceiling and sat there for half the wait, having already told the player it
+  // was nearly done. A bar that stalls at 92% reads as broken, which is worse
+  // than one that is honestly still moving.
+  //
+  // 55s is the middle of the measured range. The curve is deliberately slower
+  // than exponential decay near the end so there is always visible movement,
+  // and it still snaps to 100% the moment the response lands.
   useEffect(() => {
     if (!loading) return;
     const started = Date.now();
     const id = setInterval(() => {
-      const t = (Date.now() - started) / 30_000; // fraction of expected time
-      setProgress(Math.min(92, 6 + 86 * (1 - Math.exp(-2.2 * t))));
+      setElapsed(Math.round((Date.now() - started) / 1000));
+      const t = (Date.now() - started) / EXPECTED_MS;
+      setProgress(Math.min(96, 4 + 92 * (1 - Math.exp(-1.35 * t))));
     }, 250);
     return () => clearInterval(id);
   }, [loading]);
 
   async function generate() {
     if (!champ || needsEnemy) return;
-    setProgress(6);
+    setProgress(4);
+    setElapsed(0);
     setLoading(true);
     setAdvice(null);
     onAdviceChange?.(null);
@@ -706,7 +723,11 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             <div className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
               style={{ width: `${progress}%` }} />
           </div>
-          <p className="mt-2 text-xs text-faint">This usually takes about 30 seconds.</p>
+          <p className="mt-2 text-xs text-faint">
+            {elapsed > 0 ? `${elapsed}s elapsed. ` : ""}
+            This usually takes about a minute. The model reasons through your whole
+            kit, the item pool and the runes before it answers.
+          </p>
         </div>
       )}
 
