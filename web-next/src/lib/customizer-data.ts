@@ -365,7 +365,9 @@ const STEROID_TO_STAT: Record<string, keyof ListedBuildStats> = {
   attackSpeed: "attackSpeed", moveSpeed: "moveSpeed", critChance: "crit",
 };
 
-function applyUltSteroids(stats: ListedBuildStats, name: string, level: number): ListedBuildStats {
+function applyUltSteroids(
+  stats: ListedBuildStats, name: string, level: number, baseStats?: ListedBuildStats | null,
+): ListedBuildStats {
   const t = ultTransform(name);
   if (!t) return stats;
   const out = { ...stats };
@@ -377,9 +379,16 @@ function applyUltSteroids(stats: ListedBuildStats, name: string, level: number):
     if (!key) continue;
     const flat = rankValue(s.flat, rankIndex, level);
     const pct = rankValue(s.pct, rankIndex, level);
-    // A percentage steroid scales the stat it names; a flat one adds to it.
     const current = Number(out[key]) || 0;
-    out[key] = (current + flat + (pct ? current * pct / 100 : 0)) as never;
+    // Some percentages act on the BONUS half of a stat, not the total, and the
+    // tooltip says so: K'Sante's All Out "loses 80% bonus armor (not total)".
+    // Charging that against his total armour would strip his base as well and
+    // make the transform look catastrophic instead of a trade.
+    const onBonus = (s.note ?? "").toLowerCase().includes("bonus");
+    const scaleBase = onBonus && baseStats
+      ? Math.max(0, current - (Number(baseStats[key]) || 0))
+      : current;
+    out[key] = (current + flat + (pct ? scaleBase * pct / 100 : 0)) as never;
   }
   return out;
 }
@@ -532,7 +541,11 @@ export function listedBuildStats(
   for (const key of Object.keys(result) as (keyof ListedBuildStats)[]) {
     result[key] = Math.round(result[key] * 100) / 100;
   }
-  return ultActive ? applyUltSteroids(result, name, level) : result;
+  // The no-items sheet tells a bonus-scaling steroid what counts as bonus. It
+  // is computed with ultActive false, so this recurses exactly once.
+  return ultActive
+    ? applyUltSteroids(result, name, level, listedBuildStats(name, [], level))
+    : result;
 }
 
 export function conditionalBuildEffects(itemSlugs: string[]): ConditionalBuildEffect[] {

@@ -219,9 +219,13 @@ export function scaledBuildStats(
   itemSlugs: string[],
   level = 15,
   runeNames: string[] = [],
+  ultActive = false,
 ): ScaledBuildStats | null {
-  const listed = listedBuildStats(name, itemSlugs, level, runeNames);
-  const baseOnly = listedBuildStats(name, [], level);
+  // The transform state has to reach this path too. Without it, switching Gnar
+  // to Mega and then to "Fully scaled" made his stats DROP, because the scaled
+  // sheet was recomputed from a build that had never heard of the ultimate.
+  const listed = listedBuildStats(name, itemSlugs, level, runeNames, ultActive);
+  const baseOnly = listedBuildStats(name, [], level, [], ultActive);
   if (!listed || !baseOnly) return null;
 
   const stats: ListedBuildStats = { ...listed };

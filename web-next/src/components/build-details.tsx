@@ -162,7 +162,7 @@ export function BuildStatsPanel({
   const labels = formNames ?? ["Ult off", "Ult on"];
   const base = listedBuildStats(name, [], level);
   const listed = listedBuildStats(name, itemSlugs, level, runeNames, ultOn);
-  const scaledResult = scaledBuildStats(name, itemSlugs, level, runeNames);
+  const scaledResult = scaledBuildStats(name, itemSlugs, level, runeNames, ultOn);
   if (!base || !listed) return null;
   const stats = scaled && scaledResult ? scaledResult.stats : listed;
   const contributions = scaledResult?.contributions ?? [];
