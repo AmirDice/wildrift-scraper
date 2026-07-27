@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { track } from "@/components/share-build";
 
 export interface TourStep {
@@ -17,6 +17,10 @@ export interface TourStep {
 type Rect = { top: number; left: number; width: number; height: number };
 
 const PADDING = 8;
+/** Smallest gap the card keeps from the viewport edge. */
+const MARGIN = 16;
+/** Gap between the spotlight and the card when they sit side by side. */
+const GAP = 12;
 
 function rectFor(target: string | undefined): Rect | null {
   if (!target || typeof document === "undefined") return null;
@@ -168,6 +172,29 @@ export function BuildTour({
   );
 }
 
+/** Viewport height, tracking the mobile URL bar via visualViewport when present. */
+function useViewportHeight(): number {
+  const [height, setHeight] = useState(() =>
+    typeof window === "undefined" ? 800 : window.visualViewport?.height ?? window.innerHeight);
+
+  useEffect(() => {
+    const update = () =>
+      setHeight(window.visualViewport?.height ?? window.innerHeight);
+    update();
+    const vv = window.visualViewport;
+    vv?.addEventListener("resize", update);
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      vv?.removeEventListener("resize", update);
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
+  }, []);
+
+  return height;
+}
+
 function TourCard({
   rect, step, index, total, onSkip, onBack, onNext,
 }: {
@@ -179,25 +206,66 @@ function TourCard({
   onBack: () => void;
   onNext: () => void;
 }) {
-  // Sit under the spotlight when there is room below, otherwise above it.
-  const viewportHeight = typeof window === "undefined" ? 800 : window.innerHeight;
-  const below = rect ? rect.top + rect.height + 16 : 0;
-  const placeBelow = rect ? below < viewportHeight - 220 : true;
+  const card = useRef<HTMLDivElement>(null);
+  const viewportHeight = useViewportHeight();
+  const [cardHeight, setCardHeight] = useState(0);
 
-  const style: React.CSSProperties = rect
-    ? {
-        position: "absolute",
-        top: placeBelow ? below : undefined,
-        bottom: placeBelow ? undefined : Math.max(16, viewportHeight - rect.top + 16),
-        left: 16,
-        right: 16,
-        margin: "0 auto",
-        maxWidth: 380,
-      }
-    : { position: "absolute", top: "50%", left: 16, right: 16, margin: "0 auto", maxWidth: 380, transform: "translateY(-50%)" };
+  // The card has to be MEASURED, not assumed. Its height swings from ~150px to
+  // over 300px with the length of the body copy, and the old code hard-coded
+  // 220px: anything taller ran off the bottom, and a target near the top of the
+  // screen pushed the card off the TOP, which is how a step could show with its
+  // heading cut off.
+  useLayoutEffect(() => {
+    const node = card.current;
+    if (!node) return;
+    const measure = () => setCardHeight(node.getBoundingClientRect().height);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [step]);
+
+  const maxHeight = Math.max(120, viewportHeight - MARGIN * 2);
+  // Before the first measurement, assume the worst so the opening frame is
+  // never the one that overflows.
+  const height = Math.min(cardHeight || maxHeight, maxHeight);
+
+  let top: number;
+  if (!rect) {
+    top = (viewportHeight - height) / 2;
+  } else {
+    const belowTop = rect.top + rect.height + GAP;
+    const aboveTop = rect.top - GAP - height;
+    if (belowTop + height <= viewportHeight - MARGIN) {
+      top = belowTop;
+    } else if (aboveTop >= MARGIN) {
+      top = aboveTop;
+    } else {
+      // Neither side fits. Overlapping the spotlight is the lesser evil against
+      // clipping the text, so sit on whichever side has more room and let the
+      // clamp below keep the whole card on screen.
+      const roomBelow = viewportHeight - (rect.top + rect.height);
+      top = roomBelow >= rect.top ? viewportHeight - MARGIN - height : MARGIN;
+    }
+  }
+  // The invariant: whatever the branch above decided, the card is on screen.
+  top = Math.min(Math.max(top, MARGIN), Math.max(MARGIN, viewportHeight - MARGIN - height));
+
+  const style: React.CSSProperties = {
+    position: "absolute",
+    top,
+    left: MARGIN,
+    right: MARGIN,
+    margin: "0 auto",
+    maxWidth: 380,
+    // A card longer than the screen (small phone, long step) scrolls inside
+    // itself rather than losing its bottom half.
+    maxHeight,
+    overflowY: "auto",
+  };
 
   return (
-    <div style={style} className="glass-menu rounded-2xl p-4">
+    <div ref={card} style={style} className="glass-menu rounded-2xl p-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-[0.6rem] font-bold uppercase tracking-wide text-faint">
           Step {index + 1} of {total}
