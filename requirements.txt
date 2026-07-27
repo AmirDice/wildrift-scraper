@@ -6,6 +6,7 @@ requests>=2.31.0
 
 # --- Scraper-only deps (not used by the deployed app, but kept here so
 #     the scraper runs from the same checkout on dev machines) ---
+beautifulsoup4>=4.12.0
 opencv-python>=4.9.0
 numpy>=1.26.0
 pytesseract>=0.3.10

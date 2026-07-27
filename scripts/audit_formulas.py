@@ -60,7 +60,12 @@ def _deals_damage(text: str) -> bool:
     return bool(DMG_RE.search(ABSORB_RE.sub(" ", text)))
 
 
-def main() -> None:
+def collect() -> dict[str, list]:
+    """The audit's findings, without printing them.
+
+    Split out so the tests can assert on the same analysis the CLI reports
+    instead of reimplementing it and drifting from it.
+    """
     F = json.loads(FORMULAS.read_text(encoding="utf-8"))
     C = json.loads(CHAMPS.read_text(encoding="utf-8"))
     C = list(C.values()) if isinstance(C, dict) else C
@@ -90,6 +95,15 @@ def main() -> None:
             else:
                 hard.append((champ, slot, ab.get("name"), txt[:90]))
 
+    return {"hard": hard, "known": known, "soft": soft, "ungrounded": ungrounded,
+            "staleKnownGaps": sorted(set(KNOWN_GAPS) - {(c, sl) for c, sl, _, _ in known})}
+
+
+def main() -> None:
+    found = collect()
+    hard, known, soft = found["hard"], found["known"], found["soft"]
+    ungrounded = found["ungrounded"]
+
     print(f"{'='*70}\nEMPTY ABILITIES THAT SHOULD DEAL DAMAGE  ({len(hard)})\n{'='*70}")
     for champ, slot, name, txt in hard:
         print(f"  {champ:<10} [{slot}] {str(name)[:26]:<26}")
@@ -100,7 +114,7 @@ def main() -> None:
     print(f"\n{'='*70}\nKNOWN GAPS (out of schema, accepted)  ({len(known)})\n{'='*70}")
     for champ, slot, name, why in known:
         print(f"  {champ:<13}[{slot}] {str(name)[:26]:<26} {why}")
-    stale = sorted(set(KNOWN_GAPS) - {(c, s) for c, s, _, _ in known})
+    stale = found["staleKnownGaps"]
     if stale:
         print("  -- no longer empty, drop from KNOWN_GAPS: " + ", ".join(f"{c}[{s}]" for c, s in stale))
 

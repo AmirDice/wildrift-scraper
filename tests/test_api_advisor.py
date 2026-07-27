@@ -99,13 +99,29 @@ class TestDeploymentShape:
         """It sits in api/ while the advisor is in web/, so sys.path matters."""
         assert callable(advisor_api.advise)
 
-    def test_vercel_json_declares_the_python_runtime_and_a_long_enough_timeout(self):
+    @pytest.mark.skipif(
+        not (ROOT / "vercel.json").exists(),
+        reason="vercel.json is deliberately deferred: it broke the Vercel build and is not "
+               "needed until the build tools launch and the advisor runs as a Python "
+               "function (it is in git history at 6ec257b). The assertions below are the "
+               "contract to restore it against, so this skips rather than being deleted.",
+    )
+    def test_vercel_json_gives_the_advisor_function_a_long_enough_timeout(self):
         import json
         config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
         fn = config["functions"]["api/advisor.py"]
-        assert fn["runtime"].startswith("python3.")
         # The TS route's own timeout is 240s; the function must outlast it.
         assert fn["maxDuration"] >= 240
+        # No `runtime` key on purpose. Vercel detects Python from the .py
+        # extension, and `runtime` is only valid for COMMUNITY runtimes -- a
+        # value like "python3.12" fails config validation and breaks the build.
+        assert "runtime" not in fn, (
+            "drop `runtime`: Python is detected from the extension, and setting "
+            "it fails Vercel config validation")
+        # The function reads the repo-root data files, so the deployment root
+        # must be the repo root and the Next build has to be pointed at web-next.
+        assert config["buildCommand"].strip().startswith("cd web-next")
+        assert config["outputDirectory"] == "web-next/.next"
 
     def test_the_body_size_cap_is_small(self):
         """This endpoint spends money, so it should not accept large payloads."""

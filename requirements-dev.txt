@@ -1,0 +1,13 @@
+# Exactly what the test suite imports, transitively -- nothing more.
+#
+# Deliberately NOT "-r requirements.txt": the tests read committed JSON and
+# never open a browser, an image or a dataframe, so pulling in streamlit,
+# opencv, pandas and pytesseract would add minutes to every CI run for nothing.
+#
+# If a new test imports something else, CI fails on ImportError. Add it here.
+pytest>=8.0.0
+
+# web/advisor and the LLM scripts import these at module scope, so collecting
+# the tests imports them even though no test makes a network call.
+requests>=2.31.0
+google-genai>=1.0.0

@@ -1,0 +1,67 @@
+name: Checks
+
+# Guards the data, not just the code. Every defect this catches shipped
+# silently at least once: an ability extracted as dealing nothing, prose in a
+# numeric field, a derived file left stale after its source changed. None of
+# them broke a build or raised an exception, so nothing surfaced them until
+# someone went looking months later.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Data integrity and Python tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      # No API keys are set, so nothing here can call an LLM or scrape. These
+      # read the committed data files and fail on the properties that matter.
+      - name: Run tests
+        run: python -m pytest -q
+
+      # Prints the current state even when green: the known-gap list and the
+      # unmodelled coverage are worth seeing in the log at a glance.
+      - name: Formula audit
+        run: python -m scripts.audit_formulas
+
+  web:
+    name: Typecheck and build the site
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web-next
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web-next/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit -p tsconfig.json
+
+      # The build is the only thing that exercises every page, and it has
+      # caught real breakage that typechecking alone did not.
+      - name: Build
+        run: npm run build
