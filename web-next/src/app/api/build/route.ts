@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { statSync } from "node:fs";
+import { readdirSync, statSync } from "node:fs";
+import { homedir } from "node:os";
 import path from "node:path";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -51,18 +52,57 @@ function resolvePython(): string {
   if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
   const win = process.platform === "win32";
   const names = win ? ["python.exe", "python3.exe"] : ["python3", "python"];
+  const real = (candidate: string) => {
+    try {
+      // A stub alias reports size 0; a real interpreter never does.
+      return statSync(candidate).size > 0 ? candidate : null;
+    } catch {
+      return null;
+    }
+  };
+
   for (const dir of (process.env.PATH ?? "").split(path.delimiter)) {
     if (!dir) continue;
     if (win && dir.toLowerCase().includes("microsoft\\windowsapps")) continue;
     for (const name of names) {
-      const candidate = path.join(dir, name);
+      const hit = real(path.join(dir, name));
+      if (hit) return hit;
+    }
+  }
+
+  // PATH is not enough. A dev server started from Explorer or a shell profile
+  // that never ran the Python installer's PATH edit inherits an environment
+  // where the interpreter simply is not on PATH -- which is the case on the
+  // machine this was reported from -- so look where Windows actually puts it.
+  if (win) {
+    // Derived from the home directory rather than %LOCALAPPDATA%, because the
+    // env the dev server inherits does not reliably carry it -- when it was
+    // missing this fell through to py.exe, which answered "No installed Python
+    // found!" for a user-scoped install it cannot see.
+    const local = path.join(homedir(), "AppData", "Local");
+    const roots = [
+      path.join(local, "Programs", "Python"),
+      path.join(process.env.LOCALAPPDATA ?? local, "Programs", "Python"),
+      process.env.ProgramFiles ?? "C:\\Program Files",
+      "C:\\",
+    ];
+    for (const root of roots) {
+      let entries: string[] = [];
       try {
-        // A stub alias reports size 0; a real interpreter never does.
-        if (statSync(candidate).size > 0) return candidate;
+        entries = readdirSync(root).filter((d) => d.toLowerCase().startsWith("python"));
       } catch {
-        // Not here; keep looking.
+        continue;
+      }
+      // Newest first, so a machine with several versions uses the current one.
+      for (const dir of entries.sort().reverse()) {
+        const hit = real(path.join(root, dir, "python.exe"));
+        if (hit) return hit;
       }
     }
+    // The launcher ships with every standard install and resolves versions
+    // itself. Last resort because it needs no PATH entry at all.
+    const launcher = real(path.join(process.env.WINDIR ?? "C:\\Windows", "py.exe"));
+    if (launcher) return launcher;
   }
   return win ? "python" : "python3";
 }
@@ -230,7 +270,10 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
     proc.stderr?.on("data", (d) => (err += d));
     proc.on("close", (code) => {
       if (code !== 0) {
-        finish({ ok: false, error: err.trim() || `advisor exited ${code}` });
+        // Name the interpreter. A failure here is usually about WHICH python
+        // ran, not about the advisor, and without this the message sends you
+        // looking in the wrong place.
+        finish({ ok: false, error: `${err.trim() || `advisor exited ${code}`} [python: ${PY}]` });
         return;
       }
       try {
