@@ -90708,14 +90708,12 @@
   },
   "Kayn (Rhaast)": {
     "synergyNotes": [
-      "Q (3s cd) spam makes ability haste multiply DPS and healing from Rhaast passive.",
-      "Passive (Rhaast): healing from ability damage rewards AD and AH.",
-      "Eclipse proc (%max HP) triggers easily with Q+auto for burst and shield.",
-      "Black Cleaver shred synergizes with physical damage from all abilities.",
-      "Spear of Shojin amplifies ability damage and gives basic ability haste.",
-      "Death's Dance provides damage delay and healing on takedown, perfect for sustained fights."
+      "Q low cooldown synergizes with Spear of Shojin and ability haste for repeated casts.",
+      "Passive healing scales with damage, making AD and armor penetration directly increase sustain.",
+      "Built-in %max HP damage reduces need for anti-tank items, allowing durability focus.",
+      "Black Cleaver shred and movement speed boost his sticking power in prolonged fights."
     ],
-    "damageProfile": "bruiser (AD/pen/AH)",
+    "damageProfile": "physical-bruiser",
     "canOneshot": false,
     "variants": [
       "standard",
@@ -90724,56 +90722,55 @@
     ],
     "builds": {
       "standard": {
-        "summary": "Eclipse > Black Cleaver > Spear of Shojin > Death's Dance > Sterak's. High sustained damage with shred and survivability.",
+        "summary": "Balanced bruiser build emphasizing ability haste and survivability to sustain through extended fights with repeated Q casts.",
         "label": "Standard",
         "trustTier": "trusted",
         "buildScore": {
-          "overall": 80.0,
+          "overall": 85.0,
           "burst": 70.0,
           "sustainedDamage": 85.0,
-          "survivability": 75.0,
+          "survivability": 85.0,
           "mobility": 60.0,
-          "utility": 75.0,
-          "earlyPower": 75.0,
+          "utility": 50.0,
+          "earlyPower": 80.0,
           "confidence": 85.0,
-          "reason": "Solid first item Eclipse, strong midgame with BC+Shojin, good late with DD+Sterak's."
+          "reason": "Excellent synergy with Rhaast's spell-spam kit, balanced offense and defense for prolonged teamfights. Conqueror and healing provide strong sustained threat."
         },
         "coreBuild": [
           {
-            "slug": "seryldas-grudge",
-            "name": "Serylda's Grudge",
-            "cost": 3300,
-            "icon": "/items/seryldas-grudge.webp",
-            "reason": "Armor pen and slow for sticking.",
-            "core": true
-          },
-          {
-            "slug": "divine-sunderer",
-            "name": "Divine Sunderer",
-            "cost": 3400,
-            "icon": "/items/divine-sunderer.webp",
-            "reason": "Sheen proc synergizes with Q healing."
-          },
-          {
-            "slug": "duskblade-of-draktharr",
-            "name": "Duskblade of Draktharr",
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
             "cost": 3000,
-            "icon": "/items/duskblade-of-draktharr.webp",
-            "reason": "Lethality burst and invis on kill."
-          },
-          {
-            "slug": "youmuus-ghostblade",
-            "name": "Youmuu's Ghostblade",
-            "cost": 3000,
-            "icon": "/items/youmuus-ghostblade.webp",
-            "reason": "Move speed active to close gaps."
+            "icon": "/items/black-cleaver.webp",
+            "reason": "Core shred, HP, AD, and movement speed for sticking."
           },
           {
             "slug": "spear-of-shojin",
             "name": "Spear of Shojin",
             "cost": 3100,
             "icon": "/items/spear-of-shojin.webp",
-            "reason": "Ability damage amp and basic AH for Q spam."
+            "reason": "Basic ability haste and stacking damage amp for Q spam."
+          },
+          {
+            "slug": "deaths-dance",
+            "name": "Death's Dance",
+            "cost": 3100,
+            "icon": "/items/deaths-dance.webp",
+            "reason": "Converts burst to DOT, synergizing with passive healing."
+          },
+          {
+            "slug": "steraks-gage",
+            "name": "Sterak's Gage",
+            "cost": 3200,
+            "icon": "/items/steraks-gage.webp",
+            "reason": "Lifeline shield and CC removal for diving."
+          },
+          {
+            "slug": "guardian-angel",
+            "name": "Guardian Angel",
+            "cost": 3200,
+            "icon": "/items/guardian-angel.webp",
+            "reason": "Revive for late-game teamfights and shutdown protection."
           }
         ],
         "boots": {
@@ -90781,7 +90778,7 @@
           "name": "Crimson Lucidity",
           "cost": 2000,
           "icon": "/items/crimson-lucidity.webp",
-          "reason": "AH for Q spam and summoner spell haste."
+          "reason": "Ability haste for more spell rotations."
         },
         "enchantment": null,
         "situational": [
@@ -90792,7 +90789,7 @@
             "icon": "/items/maw-of-malmortius.webp",
             "when": "vs AP",
             "replaces": "steraks-gage",
-            "atPosition": 5
+            "atPosition": 4
           },
           {
             "slug": "chempunk-chainsword",
@@ -90800,8 +90797,334 @@
             "cost": 2800,
             "icon": "/items/chempunk-chainsword.webp",
             "when": "vs Healing",
+            "replaces": "spear-of-shojin",
+            "atPosition": 2
+          },
+          {
+            "slug": "serpents-fang",
+            "name": "Serpent's Fang",
+            "cost": 2800,
+            "icon": "/items/serpents-fang.webp",
+            "when": "vs Shields",
+            "replaces": "deaths-dance",
+            "atPosition": 3
+          }
+        ],
+        "bootsEarly": {
+          "slug": "ionian-boots-of-lucidity",
+          "name": "Ionian Boots of Lucidity",
+          "cost": 1000,
+          "icon": "/items/ionian-boots-of-lucidity.webp",
+          "reason": "Ability haste for more spell rotations."
+        },
+        "bootsUpgradeAfter": 2,
+        "situationalBoots": [
+          {
+            "boots": "mercurys-treads",
+            "bootsUpgrade": "chainlaced-crushers",
+            "when": "vs heavy CC or magic damage"
+          },
+          {
+            "boots": "plated-steelcaps",
+            "bootsUpgrade": "armored-advance",
+            "when": "vs heavy AD auto-attacker comps"
+          }
+        ],
+        "situationalRunes": [],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
+          },
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Conqueror",
+            "slug": "conqueror",
+            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
+            "reason": "Grants adaptive AD and omnivamp, stacking quickly with multi-hit abilities."
+          },
+          "primaryTree": "Precision",
+          "treeMinors": [
+            {
+              "name": "Triumph",
+              "slug": "triumph",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+              "reason": "Healing and speed on takedown for dives."
+            },
+            {
+              "name": "Last Stand",
+              "slug": "last-stand",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/last-stand.png",
+              "reason": "Increased damage at low health, common for bruisers."
+            },
+            {
+              "name": "Legend: Tenacity",
+              "slug": "legend-tenacity",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
+              "reason": "Tenacity to resist CC while engaging."
+            }
+          ],
+          "flexMinor": {
+            "name": "Overgrowth",
+            "slug": "overgrowth",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
+            "reason": "Scaling max HP from jungle camps."
+          }
+        },
+        "pathLabel": "Physical"
+      },
+      "damage": {
+        "summary": "Damage-forward build replacing Sterak's with Edge of Night for more AD and a spell shield, while maintaining core durability.",
+        "label": "Aggressive",
+        "trustTier": "trusted",
+        "buildScore": {
+          "overall": 82.0,
+          "burst": 80.0,
+          "sustainedDamage": 88.0,
+          "survivability": 72.0,
+          "mobility": 65.0,
+          "utility": 45.0,
+          "earlyPower": 78.0,
+          "confidence": 80.0,
+          "reason": "Edge of Night provides offensive defense, allowing more aggressive engages without sacrificing core damage loop. Slightly less durable but higher kill pressure."
+        },
+        "coreBuild": [
+          {
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
+            "cost": 3000,
+            "icon": "/items/black-cleaver.webp",
+            "reason": "Shred and AD/HP core."
+          },
+          {
+            "slug": "spear-of-shojin",
+            "name": "Spear of Shojin",
+            "cost": 3100,
+            "icon": "/items/spear-of-shojin.webp",
+            "reason": "Essential for Q spam damage."
+          },
+          {
+            "slug": "edge-of-night",
+            "name": "Edge of Night",
+            "cost": 3000,
+            "icon": "/items/edge-of-night.webp",
+            "reason": "Spell shield enables aggressive dives without being CC'd."
+          },
+          {
+            "slug": "deaths-dance",
+            "name": "Death's Dance",
+            "cost": 3100,
+            "icon": "/items/deaths-dance.webp",
+            "reason": "Bleed conversion for survivability."
+          },
+          {
+            "slug": "guardian-angel",
+            "name": "Guardian Angel",
+            "cost": 3200,
+            "icon": "/items/guardian-angel.webp",
+            "reason": "Second life for high-risk plays."
+          }
+        ],
+        "boots": {
+          "slug": "armorcrusher-boots",
+          "name": "Armorcrusher Boots",
+          "cost": 2200,
+          "icon": "/items/armorcrusher-boots.webp",
+          "reason": "Flat armor penetration amplifies damage."
+        },
+        "enchantment": null,
+        "situational": [
+          {
+            "slug": "maw-of-malmortius",
+            "name": "Maw of Malmortius",
+            "cost": 3000,
+            "icon": "/items/maw-of-malmortius.webp",
+            "when": "vs AP",
+            "replaces": "edge-of-night",
+            "atPosition": 3
+          },
+          {
+            "slug": "chempunk-chainsword",
+            "name": "Chempunk Chainsword",
+            "cost": 2800,
+            "icon": "/items/chempunk-chainsword.webp",
+            "when": "vs Healing",
+            "replaces": "spear-of-shojin",
+            "atPosition": 2
+          },
+          {
+            "slug": "serpents-fang",
+            "name": "Serpent's Fang",
+            "cost": 2800,
+            "icon": "/items/serpents-fang.webp",
+            "when": "vs Shields",
+            "replaces": "edge-of-night",
+            "atPosition": 3
+          }
+        ],
+        "bootsEarly": {
+          "slug": "boots-of-dynamism",
+          "name": "Boots of Dynamism",
+          "cost": 1200,
+          "icon": "/items/boots-of-dynamism.webp",
+          "reason": "Flat armor penetration amplifies damage."
+        },
+        "bootsUpgradeAfter": 2,
+        "situationalBoots": [
+          {
+            "boots": "mercurys-treads",
+            "bootsUpgrade": "chainlaced-crushers",
+            "when": "vs heavy CC or magic damage"
+          },
+          {
+            "boots": "plated-steelcaps",
+            "bootsUpgrade": "armored-advance",
+            "when": "vs heavy AD auto-attacker comps"
+          }
+        ],
+        "situationalRunes": [],
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
+            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
+          },
+          {
+            "name": "Smite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
+            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Conqueror",
+            "slug": "conqueror",
+            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
+            "reason": "Still best for sustained damage and healing."
+          },
+          "primaryTree": "Precision",
+          "treeMinors": [
+            {
+              "name": "Triumph",
+              "slug": "triumph",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
+              "reason": "Takedown heal for dives."
+            },
+            {
+              "name": "Last Stand",
+              "slug": "last-stand",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/last-stand.png",
+              "reason": "More damage when low."
+            },
+            {
+              "name": "Legend: Tenacity",
+              "slug": "legend-tenacity",
+              "tree": "Precision",
+              "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
+              "reason": "CC reduction."
+            }
+          ],
+          "flexMinor": {
+            "name": "Sudden Impact",
+            "slug": "sudden-impact",
+            "tree": "Domination",
+            "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+            "reason": "True damage and movement speed after using Q dash."
+          }
+        },
+        "pathLabel": "Physical"
+      },
+      "tanky": {
+        "summary": "Durable build with Gargoyle Stoneplate as a massive teamfight shield, increasing survivability while retaining essential damage.",
+        "label": "Durable",
+        "trustTier": "trusted",
+        "buildScore": {
+          "overall": 83.0,
+          "burst": 65.0,
+          "sustainedDamage": 80.0,
+          "survivability": 92.0,
+          "mobility": 55.0,
+          "utility": 55.0,
+          "earlyPower": 78.0,
+          "confidence": 82.0,
+          "reason": "Gargoyle Stoneplate provides a massive shield, allowing Rhaast to withstand focus fire while his healing keeps him going. Less burst but highly resilient."
+        },
+        "coreBuild": [
+          {
+            "slug": "black-cleaver",
+            "name": "Black Cleaver",
+            "cost": 3000,
+            "icon": "/items/black-cleaver.webp",
+            "reason": "Armor shred and HP."
+          },
+          {
+            "slug": "spear-of-shojin",
+            "name": "Spear of Shojin",
+            "cost": 3100,
+            "icon": "/items/spear-of-shojin.webp",
+            "reason": "Haste and damage amp."
+          },
+          {
+            "slug": "deaths-dance",
+            "name": "Death's Dance",
+            "cost": 3100,
+            "icon": "/items/deaths-dance.webp",
+            "reason": "Bleed and heal synergy."
+          },
+          {
+            "slug": "steraks-gage",
+            "name": "Sterak's Gage",
+            "cost": 3200,
+            "icon": "/items/steraks-gage.webp",
+            "reason": "Lifeline and tenacity."
+          },
+          {
+            "slug": "gargoyle-stoneplate",
+            "name": "Gargoyle Stoneplate",
+            "cost": 2900,
+            "icon": "/items/gargoyle-stoneplate.webp",
+            "reason": "Active shield for absorbing burst in teamfights."
+          }
+        ],
+        "boots": {
+          "slug": "crimson-lucidity",
+          "name": "Crimson Lucidity",
+          "cost": 2000,
+          "icon": "/items/crimson-lucidity.webp",
+          "reason": "Ability haste for sustain."
+        },
+        "enchantment": null,
+        "situational": [
+          {
+            "slug": "maw-of-malmortius",
+            "name": "Maw of Malmortius",
+            "cost": 3000,
+            "icon": "/items/maw-of-malmortius.webp",
+            "when": "vs AP",
             "replaces": "steraks-gage",
-            "atPosition": 5
+            "atPosition": 4
+          },
+          {
+            "slug": "chempunk-chainsword",
+            "name": "Chempunk Chainsword",
+            "cost": 2800,
+            "icon": "/items/chempunk-chainsword.webp",
+            "when": "vs Healing",
+            "replaces": "spear-of-shojin",
+            "atPosition": 2
           },
           {
             "slug": "guardian-angel",
@@ -90809,7 +91132,7 @@
             "cost": 3200,
             "icon": "/items/guardian-angel.webp",
             "when": "vs AD burst",
-            "replaces": "steraks-gage",
+            "replaces": "gargoyle-stoneplate",
             "atPosition": 5
           }
         ],
@@ -90817,19 +91140,20 @@
           "slug": "ionian-boots-of-lucidity",
           "name": "Ionian Boots of Lucidity",
           "cost": 1000,
-          "icon": "/items/ionian-boots-of-lucidity.webp"
+          "icon": "/items/ionian-boots-of-lucidity.webp",
+          "reason": "Ability haste for sustain."
         },
         "bootsUpgradeAfter": 2,
         "situationalBoots": [
           {
-            "boots": "plated-steelcaps",
-            "bootsUpgrade": "armored-advance",
-            "when": "vs heavy AD basic attackers"
-          },
-          {
             "boots": "mercurys-treads",
             "bootsUpgrade": "chainlaced-crushers",
-            "when": "vs AP/CC heavy comps"
+            "when": "vs heavy CC or magic damage"
+          },
+          {
+            "boots": "plated-steelcaps",
+            "bootsUpgrade": "armored-advance",
+            "when": "vs heavy AD auto-attacker comps"
           }
         ],
         "situationalRunes": [],
@@ -90850,7 +91174,7 @@
             "name": "Conqueror",
             "slug": "conqueror",
             "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
-            "reason": "Stacks quickly with Q spam, grants AD and omnivamp."
+            "reason": "Grants adaptive AD and omnivamp, stacking quickly with multi-hit abilities."
           },
           "primaryTree": "Precision",
           "treeMinors": [
@@ -90859,21 +91183,21 @@
               "slug": "triumph",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
-              "reason": "Heal and movespeed on takedowns, great for skirmishes."
+              "reason": "Healing and speed on takedown for dives."
             },
             {
               "name": "Last Stand",
               "slug": "last-stand",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/last-stand.png",
-              "reason": "Bonus damage when low, synergizes with bruiser sustain."
+              "reason": "Increased damage at low health, common for bruisers."
             },
             {
               "name": "Legend: Tenacity",
               "slug": "legend-tenacity",
               "tree": "Precision",
               "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
-              "reason": "Reduce CC duration, essential for melee diver."
+              "reason": "Tenacity to resist CC while engaging."
             }
           ],
           "flexMinor": {
@@ -90881,661 +91205,14 @@
             "slug": "overgrowth",
             "tree": "Resolve",
             "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-            "reason": "Free HP from jungle camps, scales well."
+            "reason": "Scaling max HP from jungle camps."
           }
         },
-        "pathLabel": "Physical",
-        "searched": {
-          "combos": 1453,
-          "poolSize": 14,
-          "pool": [
-            "eclipse",
-            "black-cleaver",
-            "spear-of-shojin",
-            "deaths-dance",
-            "steraks-gage",
-            "manamune",
-            "seryldas-grudge",
-            "chempunk-chainsword",
-            "guardian-angel",
-            "edge-of-night",
-            "overlords-bloodmail",
-            "lord-dominiks-regard",
-            "titanic-hydra",
-            "sundered-sky"
-          ],
-          "engineScore": 97.0,
-          "llmBaseline": 66.8
-        },
-        "engine": {
-          "burst3": 5031,
-          "dps8": 2394,
-          "ttk": 1.5,
-          "ehp": 6459,
-          "sustain": 0,
-          "support": 1002,
-          "ad": 348,
-          "ap": 0,
-          "hp": 3507,
-          "armor": 110,
-          "mr": 64,
-          "moveSpeed": 480,
-          "attackSpeed": 0.92,
-          "haste": 135,
-          "crit": 0,
-          "mana": 0,
-          "score": 97.0,
-          "efficiency": 0.598,
-          "level": 15,
-          "curve": [
-            {
-              "n": 1,
-              "gold": 3300,
-              "level": 8,
-              "item": "Serylda's Grudge",
-              "score": 66.5,
-              "burst3": 1725,
-              "dps8": 537,
-              "ehp": 2804
-            },
-            {
-              "n": 2,
-              "gold": 5300,
-              "level": 10,
-              "item": "Crimson Lucidity",
-              "score": 82.8,
-              "burst3": 1810,
-              "dps8": 675,
-              "ehp": 3348
-            },
-            {
-              "n": 3,
-              "gold": 8700,
-              "level": 12,
-              "item": "Divine Sunderer",
-              "score": 119.1,
-              "burst3": 2447,
-              "dps8": 976,
-              "ehp": 4666
-            },
-            {
-              "n": 4,
-              "gold": 11700,
-              "level": 13,
-              "item": "Duskblade of Draktharr",
-              "score": 162.9,
-              "burst3": 3846,
-              "dps8": 1390,
-              "ehp": 4980
-            },
-            {
-              "n": 5,
-              "gold": 14700,
-              "level": 14,
-              "item": "Youmuu's Ghostblade",
-              "score": 218.8,
-              "burst3": 4340,
-              "dps8": 1921,
-              "ehp": 5301
-            },
-            {
-              "n": 6,
-              "gold": 17800,
-              "level": 15,
-              "item": "Spear of Shojin",
-              "score": 272.1,
-              "burst3": 5031,
-              "dps8": 2394,
-              "ehp": 6459
-            }
-          ]
-        }
-      },
-      "damage": {
-        "summary": "Eclipse > Spear of Shojin > Serylda's Grudge > Death's Dance > Guardian Angel. Max penetration and damage amp with some safety.",
-        "label": "Aggressive",
-        "trustTier": "trusted",
-        "buildScore": {
-          "overall": 78.0,
-          "burst": 80.0,
-          "sustainedDamage": 80.0,
-          "survivability": 60.0,
-          "mobility": 70.0,
-          "utility": 50.0,
-          "earlyPower": 80.0,
-          "confidence": 80.0,
-          "reason": "Higher burst from Serylda's and GA, but less durable than standard."
-        },
-        "coreBuild": [
-          {
-            "slug": "seryldas-grudge",
-            "name": "Serylda's Grudge",
-            "cost": 3300,
-            "icon": "/items/seryldas-grudge.webp",
-            "reason": "Armor pen and slow on abilities, great for chasing.",
-            "core": true
-          },
-          {
-            "slug": "divine-sunderer",
-            "name": "Divine Sunderer",
-            "cost": 3400,
-            "icon": "/items/divine-sunderer.webp",
-            "reason": "Sheen proc synergizes with Q healing.",
-            "core": true
-          },
-          {
-            "slug": "duskblade-of-draktharr",
-            "name": "Duskblade of Draktharr",
-            "cost": 3000,
-            "icon": "/items/duskblade-of-draktharr.webp",
-            "reason": "Lethality burst and invis on kill."
-          },
-          {
-            "slug": "youmuus-ghostblade",
-            "name": "Youmuu's Ghostblade",
-            "cost": 3000,
-            "icon": "/items/youmuus-ghostblade.webp",
-            "reason": "Move speed active to close gaps."
-          },
-          {
-            "slug": "spear-of-shojin",
-            "name": "Spear of Shojin",
-            "cost": 3100,
-            "icon": "/items/spear-of-shojin.webp",
-            "reason": "Ability damage amp and basic AH for Q spam."
-          }
-        ],
-        "boots": {
-          "slug": "crimson-lucidity",
-          "name": "Crimson Lucidity",
-          "cost": 2000,
-          "icon": "/items/crimson-lucidity.webp",
-          "reason": "AH for Q spam and summoner spell haste."
-        },
-        "enchantment": null,
-        "situational": [
-          {
-            "slug": "maw-of-malmortius",
-            "name": "Maw of Malmortius",
-            "cost": 3000,
-            "icon": "/items/maw-of-malmortius.webp",
-            "when": "vs AP",
-            "replaces": "guardian-angel",
-            "atPosition": 5
-          },
-          {
-            "slug": "chempunk-chainsword",
-            "name": "Chempunk Chainsword",
-            "cost": 2800,
-            "icon": "/items/chempunk-chainsword.webp",
-            "when": "vs Healing",
-            "replaces": "guardian-angel",
-            "atPosition": 5
-          },
-          {
-            "slug": "edge-of-night",
-            "name": "Edge of Night",
-            "cost": 3000,
-            "icon": "/items/edge-of-night.webp",
-            "when": "vs CC",
-            "replaces": "guardian-angel",
-            "atPosition": 5
-          }
-        ],
-        "bootsEarly": {
-          "slug": "ionian-boots-of-lucidity",
-          "name": "Ionian Boots of Lucidity",
-          "cost": 1000,
-          "icon": "/items/ionian-boots-of-lucidity.webp"
-        },
-        "bootsUpgradeAfter": 2,
-        "situationalBoots": [
-          {
-            "boots": "plated-steelcaps",
-            "bootsUpgrade": "armored-advance",
-            "when": "vs heavy AD basic attackers"
-          },
-          {
-            "boots": "mercurys-treads",
-            "bootsUpgrade": "chainlaced-crushers",
-            "when": "vs AP/CC heavy comps"
-          }
-        ],
-        "situationalRunes": [],
-        "summoners": [
-          {
-            "name": "Flash",
-            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
-            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
-          },
-          {
-            "name": "Smite",
-            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
-            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Conqueror",
-            "slug": "conqueror",
-            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
-            "reason": "Stacks quickly with Q spam, grants AD and omnivamp."
-          },
-          "primaryTree": "Precision",
-          "treeMinors": [
-            {
-              "name": "Triumph",
-              "slug": "triumph",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
-              "reason": "Heal and movespeed on takedowns, great for skirmishes."
-            },
-            {
-              "name": "Last Stand",
-              "slug": "last-stand",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/last-stand.png",
-              "reason": "Bonus damage when low, synergizes with bruiser sustain."
-            },
-            {
-              "name": "Legend: Tenacity",
-              "slug": "legend-tenacity",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
-              "reason": "Reduce CC duration, essential for melee diver."
-            }
-          ],
-          "flexMinor": {
-            "name": "Overgrowth",
-            "slug": "overgrowth",
-            "tree": "Resolve",
-            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-            "reason": "Free HP from jungle camps, scales well."
-          }
-        },
-        "pathLabel": "Physical",
-        "searched": {
-          "combos": 1261,
-          "poolSize": 14,
-          "pool": [
-            "eclipse",
-            "spear-of-shojin",
-            "seryldas-grudge",
-            "deaths-dance",
-            "guardian-angel",
-            "black-cleaver",
-            "muramana",
-            "divine-sunderer",
-            "chempunk-chainsword",
-            "steraks-gage",
-            "edge-of-night",
-            "youmuus-ghostblade",
-            "overlords-bloodmail",
-            "goredrinker"
-          ],
-          "engineScore": 105.0,
-          "llmBaseline": 73.3
-        },
-        "engine": {
-          "burst3": 5031,
-          "dps8": 2394,
-          "ttk": 1.5,
-          "ehp": 6459,
-          "sustain": 0,
-          "support": 1002,
-          "ad": 348,
-          "ap": 0,
-          "hp": 3507,
-          "armor": 110,
-          "mr": 64,
-          "moveSpeed": 480,
-          "attackSpeed": 0.92,
-          "haste": 135,
-          "crit": 0,
-          "mana": 0,
-          "score": 105.0,
-          "efficiency": 0.598,
-          "level": 15,
-          "curve": [
-            {
-              "n": 1,
-              "gold": 3300,
-              "level": 8,
-              "item": "Serylda's Grudge",
-              "score": 70.8,
-              "burst3": 1725,
-              "dps8": 537,
-              "ehp": 2804
-            },
-            {
-              "n": 2,
-              "gold": 5300,
-              "level": 10,
-              "item": "Crimson Lucidity",
-              "score": 88.7,
-              "burst3": 1810,
-              "dps8": 675,
-              "ehp": 3348
-            },
-            {
-              "n": 3,
-              "gold": 8700,
-              "level": 12,
-              "item": "Divine Sunderer",
-              "score": 127.8,
-              "burst3": 2447,
-              "dps8": 976,
-              "ehp": 4666
-            },
-            {
-              "n": 4,
-              "gold": 11700,
-              "level": 13,
-              "item": "Duskblade of Draktharr",
-              "score": 178.2,
-              "burst3": 3846,
-              "dps8": 1390,
-              "ehp": 4980
-            },
-            {
-              "n": 5,
-              "gold": 14700,
-              "level": 14,
-              "item": "Youmuu's Ghostblade",
-              "score": 242.6,
-              "burst3": 4340,
-              "dps8": 1921,
-              "ehp": 5301
-            },
-            {
-              "n": 6,
-              "gold": 17800,
-              "level": 15,
-              "item": "Spear of Shojin",
-              "score": 302.0,
-              "burst3": 5031,
-              "dps8": 2394,
-              "ehp": 6459
-            }
-          ]
-        }
-      },
-      "tanky": {
-        "summary": "Eclipse > Black Cleaver > Sterak's Gage > Death's Dance > Overlord's Bloodmail. High HP, shields, and AD scaling for sustained fights.",
-        "label": "Durable",
-        "trustTier": "trusted",
-        "buildScore": {
-          "overall": 80.0,
-          "burst": 60.0,
-          "sustainedDamage": 80.0,
-          "survivability": 90.0,
-          "mobility": 50.0,
-          "utility": 70.0,
-          "earlyPower": 70.0,
-          "confidence": 85.0,
-          "reason": "Very durable, good sustained damage, lower burst but reliable."
-        },
-        "coreBuild": [
-          {
-            "slug": "steraks-gage",
-            "name": "Sterak's Gage",
-            "cost": 3200,
-            "icon": "/items/steraks-gage.webp",
-            "reason": "HP, AD from base, shield and tenacity for survivability.",
-            "core": true
-          },
-          {
-            "slug": "kaenic-rookern",
-            "name": "Kaenic Rookern",
-            "cost": 2800,
-            "icon": "/items/kaenic-rookern.webp",
-            "reason": "Magic shield to survive AP."
-          },
-          {
-            "slug": "warmogs-armor",
-            "name": "Warmog's Armor",
-            "cost": 2850,
-            "icon": "/items/warmogs-armor.webp",
-            "reason": "Health and regen for sustain."
-          },
-          {
-            "slug": "guardian-angel",
-            "name": "Guardian Angel",
-            "cost": 3200,
-            "icon": "/items/guardian-angel.webp",
-            "reason": "Revive to stay in fights."
-          },
-          {
-            "slug": "divine-sunderer",
-            "name": "Divine Sunderer",
-            "cost": 3400,
-            "icon": "/items/divine-sunderer.webp",
-            "reason": "Sheen proc and heal for durability."
-          }
-        ],
-        "boots": {
-          "slug": "crimson-lucidity",
-          "name": "Crimson Lucidity",
-          "cost": 2000,
-          "icon": "/items/crimson-lucidity.webp",
-          "reason": "AH for Q spam and summoner spell haste."
-        },
-        "enchantment": null,
-        "situational": [
-          {
-            "slug": "maw-of-malmortius",
-            "name": "Maw of Malmortius",
-            "cost": 3000,
-            "icon": "/items/maw-of-malmortius.webp",
-            "when": "vs AP",
-            "replaces": "overlords-bloodmail",
-            "atPosition": 5
-          },
-          {
-            "slug": "chempunk-chainsword",
-            "name": "Chempunk Chainsword",
-            "cost": 2800,
-            "icon": "/items/chempunk-chainsword.webp",
-            "when": "vs Healing",
-            "replaces": "overlords-bloodmail",
-            "atPosition": 5
-          },
-          {
-            "slug": "randuins-omen",
-            "name": "Randuin's Omen",
-            "cost": 2800,
-            "icon": "/items/randuins-omen.webp",
-            "when": "vs Crit",
-            "replaces": "overlords-bloodmail",
-            "atPosition": 5
-          }
-        ],
-        "bootsEarly": {
-          "slug": "ionian-boots-of-lucidity",
-          "name": "Ionian Boots of Lucidity",
-          "cost": 1000,
-          "icon": "/items/ionian-boots-of-lucidity.webp"
-        },
-        "bootsUpgradeAfter": 2,
-        "situationalBoots": [
-          {
-            "boots": "plated-steelcaps",
-            "bootsUpgrade": "armored-advance",
-            "when": "vs heavy AD basic attackers"
-          },
-          {
-            "boots": "mercurys-treads",
-            "bootsUpgrade": "chainlaced-crushers",
-            "when": "vs AP/CC heavy comps"
-          }
-        ],
-        "situationalRunes": [],
-        "summoners": [
-          {
-            "name": "Flash",
-            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png",
-            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
-          },
-          {
-            "name": "Smite",
-            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerSmite.png",
-            "reason": "Smite is mandatory in the jungle; Flash is the default partner."
-          }
-        ],
-        "runes": {
-          "keystone": {
-            "name": "Conqueror",
-            "slug": "conqueror",
-            "icon": "https://www.wildriftfire.com/images/runes/conqueror.png",
-            "reason": "Stacks quickly with Q spam, grants AD and omnivamp."
-          },
-          "primaryTree": "Precision",
-          "treeMinors": [
-            {
-              "name": "Triumph",
-              "slug": "triumph",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/triumph.png",
-              "reason": "Heal and movespeed on takedowns, great for skirmishes."
-            },
-            {
-              "name": "Last Stand",
-              "slug": "last-stand",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/last-stand.png",
-              "reason": "Bonus damage when low, synergizes with tankiness."
-            },
-            {
-              "name": "Legend: Tenacity",
-              "slug": "legend-tenacity",
-              "tree": "Precision",
-              "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
-              "reason": "Reduce CC duration, essential for melee diver."
-            }
-          ],
-          "flexMinor": {
-            "name": "Overgrowth",
-            "slug": "overgrowth",
-            "tree": "Resolve",
-            "icon": "https://www.wildriftfire.com/images/runes/overgrowth.png",
-            "reason": "Free HP from jungle camps, scales well."
-          }
-        },
-        "pathLabel": "Physical",
-        "searched": {
-          "combos": 1226,
-          "poolSize": 14,
-          "pool": [
-            "eclipse",
-            "black-cleaver",
-            "steraks-gage",
-            "deaths-dance",
-            "overlords-bloodmail",
-            "goredrinker",
-            "sunfire-aegis",
-            "titanic-hydra",
-            "heartsteel",
-            "unending-despair",
-            "dead-mans-plate",
-            "force-of-nature",
-            "abyssal-mask",
-            "thornmail"
-          ],
-          "engineScore": 83.4,
-          "llmBaseline": 61.9
-        },
-        "engine": {
-          "burst3": 1937,
-          "dps8": 688,
-          "ttk": 4.25,
-          "ehp": 25145,
-          "sustain": 0,
-          "support": 1020,
-          "ad": 203,
-          "ap": 0,
-          "hp": 4507,
-          "armor": 150,
-          "mr": 139,
-          "moveSpeed": 430,
-          "attackSpeed": 0.8,
-          "haste": 95,
-          "crit": 0,
-          "mana": 0,
-          "score": 90.4,
-          "efficiency": 0.719,
-          "level": 15,
-          "curve": [
-            {
-              "n": 1,
-              "gold": 3200,
-              "level": 8,
-              "item": "Sterak's Gage",
-              "score": 52.1,
-              "burst3": 1210,
-              "dps8": 290,
-              "ehp": 4190
-            },
-            {
-              "n": 2,
-              "gold": 5200,
-              "level": 10,
-              "item": "Crimson Lucidity",
-              "score": 65.4,
-              "burst3": 1254,
-              "dps8": 429,
-              "ehp": 4790
-            },
-            {
-              "n": 3,
-              "gold": 8000,
-              "level": 12,
-              "item": "Kaenic Rookern",
-              "score": 99.6,
-              "burst3": 1294,
-              "dps8": 436,
-              "ehp": 8862
-            },
-            {
-              "n": 4,
-              "gold": 10850,
-              "level": 13,
-              "item": "Warmog's Armor",
-              "score": 136.5,
-              "burst3": 1313,
-              "dps8": 439,
-              "ehp": 13301
-            },
-            {
-              "n": 5,
-              "gold": 14050,
-              "level": 14,
-              "item": "Guardian Angel",
-              "score": 206.2,
-              "burst3": 1468,
-              "dps8": 482,
-              "ehp": 21396
-            },
-            {
-              "n": 6,
-              "gold": 17450,
-              "level": 15,
-              "item": "Divine Sunderer",
-              "score": 249.6,
-              "burst3": 1937,
-              "dps8": 688,
-              "ehp": 25145
-            }
-          ]
-        }
+        "pathLabel": "Physical"
       }
     },
     "name": "Kayn (Rhaast)",
     "class": "Bruiser",
-    "role": "Jungle",
-    "warnings": [
-      "standard: every situational swap lands on item 4-5, too late to matter in a 15-20 minute game",
-      "damage: every situational swap lands on item 4-5, too late to matter in a 15-20 minute game",
-      "tanky: every situational swap lands on item 4-5, too late to matter in a 15-20 minute game"
-    ]
+    "role": "Jungle"
   }
 }
