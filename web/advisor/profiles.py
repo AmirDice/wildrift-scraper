@@ -80,11 +80,16 @@ for _source in ("../web-next/src/data/builds.json", "champion_builds.json",
 
 
 def _last_number(value, default: float = 0.0) -> float:
-    """Per-rank fields arrive as either a scalar or a list of rank values.
+    """Per-rank fields arrive as a scalar, a list of rank values, or a level
+    range ({"lvlRange":[lo,hi]}) for values that scale with champion level.
 
-    Max rank is the honest reading for a finished build, and it keeps a list
-    from reaching float() and taking the whole profile down.
+    The top end is the honest reading for a finished build in every shape, and
+    it keeps a list or dict from reaching float() and taking the whole profile
+    down. Without the dict case a level-scaling ratio silently read as 0 and
+    vanished from the champion's scaling profile.
     """
+    if isinstance(value, dict):
+        value = value.get("lvlRange") or []
     if isinstance(value, (list, tuple)):
         numbers = [v for v in value if isinstance(v, (int, float))]
         return float(numbers[-1]) if numbers else default

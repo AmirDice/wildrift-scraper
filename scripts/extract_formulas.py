@@ -15,7 +15,8 @@ Output: data/ability_formulas.json   (per champion, per ability)
 
 Run:
     python -m scripts.extract_formulas --only "Hecarim,Graves"
-    python -m scripts.extract_formulas            # full roster
+    python -m scripts.extract_formulas                  # champions not yet cached
+    python -m scripts.extract_formulas --workers 6      # same, in parallel
 """
 from __future__ import annotations
 
@@ -23,7 +24,9 @@ import argparse
 import json
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
 from itertools import combinations
+from threading import Lock
 import time
 from pathlib import Path
 
@@ -53,9 +56,19 @@ SYSTEM = (
     "snips (hits=5) plus 1 final snip (hits=1) — NOT hits=1. Modelling one snip makes her "
     "primary ability look 5x weaker than it is,"
     "\"when\":\"per cast|per auto|once per target|dot total\"}\n"
+    "- PER-LEVEL RANGES: a value written as a RANGE (\"8 - 36 bonus magic damage\", "
+    "\"4% - 13% of the target's maximum Health\", \"30 - 240 Health\") scales with the "
+    "champion's LEVEL, not with the ability's rank. Emit it as {\"lvlRange\":[low,high]} "
+    "wherever a number goes -- as \"base\", or as a ratio's \"pct\". Do NOT average it "
+    "into one number, do NOT put it in unmodeled, and do NOT confuse it with the "
+    "per-rank slash list (\"25 / 30 / 35 / 40\"), which stays a plain array.\n"
     "- For DoTs give the TOTAL damage over the duration if stated per-tick x duration; "
     "if only per-second is stated, set when='dot total' and base = per-second value with "
-    "\"durationS\": seconds.\n"
+    "\"durationS\": seconds. A TOGGLE or AURA that deals damage every second (Amumu's "
+    "Despair, Swain's Demonic Ascension) is a damage component too -- when='dot total', "
+    "base = the per-second value, durationS = how long it realistically runs in a fight "
+    "(use the stated duration; 4 if the toggle has none). Never put it in unmodeled: an "
+    "aura is often the champion's main damage. when='dot total' ALWAYS needs durationS.\n"
     "- steroids (self stat gains): {\"stat\":one of " + str(STEROID_STATS) + ","
     "\"flat\":[per-rank] OR \"pct\":number, \"from\":optional conversion source stat "
     "(e.g. Hecarim: stat=ad, from=bonusMs, pct=12), \"note\":\"...\"}\n"
@@ -228,7 +241,8 @@ def _clamp_knowledge(raw: dict) -> dict:
     return out
 
 SCHEMA = (
-    'Return ONLY this JSON object:\n'
+    'Return ONLY this JSON object (a number may be a scalar, a per-rank array, or '
+    '{"lvlRange":[low,high]} for a per-LEVEL range):\n'
     '{"abilities": {"P": {"damage": [...], "steroids": [...], "defensive": [...], '
     '"unmodeled": [...]}, "1": {...}, "2": {...}, "3": {...}, "4": {...}},\n'
     ' "combo": ["slot or auto", ...],\n'
@@ -275,12 +289,17 @@ def _derivable(v: float, allowed: set[str]) -> bool:
     So accept a value the text DERIVES: verbatim, a sum of listed numbers, a
     listed number times a small integer (N hits), or n*a + b (N hits plus a
     different final hit). Anything else is still rejected as invented.
+
+    The hit multiplier reaches 30 because channelled abilities fire far more
+    than a handful of times: Miss Fortune's Bullet Time is "12 / 14 / 16 waves
+    that each deal 39", Fiddlesticks' Crowstorm ticks 20 times. A cap of 10
+    rejected both totals as invented and deleted two ultimates outright.
     """
     if _norm_num(v) in allowed:
         return True
     nums = sorted({float(x) for x in allowed})
     for a in nums:                                  # 5 snips of 14
-        for k in range(2, 11):
+        for k in range(2, 31):
             if abs(a * k - v) < 1e-6:
                 return True
             for b in nums:                          # 5 snips of 14 + a 70 final
@@ -293,6 +312,38 @@ def _derivable(v: float, allowed: set[str]) -> bool:
     return False
 
 
+def _drop_nulls(comp: dict) -> dict:
+    """Strip keys the model answered with null.
+
+    "flat": null and a missing "flat" mean the same thing to every consumer,
+    but the null is what reaches the exported JSON and breaks the TypeScript
+    side, where the field is typed as a number."""
+    return {k: v for k, v in comp.items() if v is not None}
+
+
+def _values(v) -> list[float]:
+    """Every number asserted by a scalar, a per-rank list, or a level range.
+
+    {"lvlRange":[8,36]} is how a value that scales with CHAMPION LEVEL is
+    written (Teemo's "8 - 36 bonus magic damage"), as opposed to the per-rank
+    list used for ability ranks. Both endpoints are claims about the text, so
+    both are checked."""
+    if isinstance(v, dict):
+        v = v.get("lvlRange") or []
+    if not isinstance(v, list):
+        v = [v]
+    return [float(x) for x in v if isinstance(x, (int, float))]
+
+
+def _valid_lvl_range(v) -> bool:
+    """A level range must be exactly two ascending numbers to be usable."""
+    if not isinstance(v, dict):
+        return True
+    r = v.get("lvlRange")
+    return (isinstance(r, list) and len(r) == 2
+            and all(isinstance(x, (int, float)) for x in r) and r[0] <= r[1])
+
+
 def _grounded(comp: dict, allowed: set[str]) -> list[str]:
     """Return the extracted numbers the source text cannot justify.
 
@@ -302,17 +353,21 @@ def _grounded(comp: dict, allowed: set[str]) -> list[str]:
     bad = []
     base = comp.get("base")
     if base is not None:
-        for b in (base if isinstance(base, list) else [base]):
-            if float(b) == 0:
+        if not _valid_lvl_range(base):
+            bad.append(f"base malformed lvlRange {base.get('lvlRange')!r}")
+        for b in _values(base):
+            if b == 0:
                 continue
-            if not _derivable(float(b), allowed):
+            if not _derivable(b, allowed):
                 bad.append(f"base {b}")
     for r in comp.get("ratios") or []:
         p = r.get("pct")
-        for pv in (p if isinstance(p, list) else [p]):
-            if pv is None or float(pv) == 0:
+        if not _valid_lvl_range(p):
+            bad.append(f"ratio malformed lvlRange {p.get('lvlRange')!r}")
+        for pv in _values(p):
+            if pv == 0:
                 continue
-            if not _derivable(float(pv), allowed):
+            if not _derivable(pv, allowed):
                 bad.append(f"ratio {pv}%")
     return bad
 
@@ -371,6 +426,9 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
         allowed = _numbers_in(src.get("text", ""))
         damage, dropped = [], []
         for comp in ab.get("damage") or []:
+            if not isinstance(comp, dict):
+                dropped.append(f"{slot}: damage entry was prose, not a component")
+                continue
             # Strip an ungrounded RATIO instead of discarding the whole
             # component. One bad ratio used to delete the entire ability: Gwen's
             # passive reads "1% (+0.005% AP) of target max Health", the model
@@ -393,22 +451,29 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
             if comp.get("type") not in ("physical", "magic", "true"):
                 dropped.append(f"{slot}: bad type {comp.get('type')}")
                 continue
-            damage.append(comp)
+            damage.append(_drop_nulls(comp))
         steroids = []
         for st in ab.get("steroids") or []:
-            if st.get("stat") in STEROID_STATS:
-                steroids.append(st)
+            if isinstance(st, dict) and st.get("stat") in STEROID_STATS:
+                steroids.append(_drop_nulls(st))
+        # The model sometimes answers a defensive slot with a bare sentence
+        # instead of an object ("Becomes untargetable for 1.2 seconds"). That is
+        # an unmodeled note, and leaving it in the list crashed every consumer
+        # that calls .get() on a defensive entry.
+        defensive, prose = [], []
+        for d in ab.get("defensive") or []:
+            (defensive.append(_drop_nulls(d)) if isinstance(d, dict) else prose.append(d))
         un_raw = ab.get("unmodeled") or []
         if isinstance(un_raw, str):  # model sometimes returns one string, not a list
             un_raw = [un_raw]
-        unmodeled = [str(u) for u in un_raw] + dropped
+        unmodeled = [str(u) for u in un_raw] + dropped + [str(p) for p in prose]
         issues.extend(dropped)
         out["abilities"][slot] = {
             "name": src["name"],
             "cooldowns": _parse_cds(src.get("cooldowns")),
             "damage": damage,
             "steroids": steroids,
-            "defensive": ab.get("defensive") or [],
+            "defensive": defensive,
             "unmodeled": unmodeled,
         }
     combo = [str(a) for a in (raw.get("combo") or [])
@@ -456,10 +521,52 @@ def extract(champ: dict, key: str) -> tuple[dict, list[str]]:
     return out, issues
 
 
+def _save(cache: dict) -> None:
+    """Write the cache atomically, retrying a transient Windows lock.
+
+    The run rewrites this whole file once per champion. A plain write_text died
+    mid-run with OSError 22 (something else briefly held the path) and took the
+    champion in flight with it; a direct write is also the shape that leaves a
+    half-written JSON file if the process dies at the wrong moment."""
+    body = json.dumps(cache, ensure_ascii=False, indent=2)
+    tmp = OUT.with_suffix(".json.tmp")
+    for attempt in range(5):
+        try:
+            tmp.write_text(body, encoding="utf-8")
+            os.replace(tmp, OUT)
+            return
+        except OSError:
+            if attempt == 4:
+                raise
+            time.sleep(0.4 * (attempt + 1))
+
+
+def extract_validated(c: dict, key: str) -> tuple[dict | None, list[str]]:
+    """Extract one champion, re-rolling until the result survives the guards."""
+    rec, issues, ok = None, [], False
+    for _try in range(3):  # LLM extraction is a dice roll; validate each
+        rec, issues = extract(c, key)
+        n_direct = sum(len(a["damage"]) for a in rec["abilities"].values())
+        if n_direct == 0:      # bad roll: a kit with zero damage
+            continue
+        if _damage_type_ok(c["name"], rec, c):
+            ok = True
+            break
+    if not ok:
+        issues.append("damage type contradicts primaryDamage after 3 tries")
+    return rec, issues
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="")
     ap.add_argument("--fresh", action="store_true")
+    # The work is one champion = a few blocking HTTP calls, so the roster is
+    # bounded by DeepSeek round-trips, not by us. Threads cut a 110-champion
+    # run from hours to tens of minutes; each one owns its own champion key,
+    # and the shared cache + file write sit behind a lock.
+    ap.add_argument("--workers", type=int, default=1,
+                    help="champions to extract concurrently (default 1)")
     args = ap.parse_args()
     key = os.environ.get("DEEPSEEK_API_KEY", "")
     if not key:
@@ -474,37 +581,45 @@ def main() -> None:
     if OUT.exists() and not args.fresh:
         cache = json.loads(OUT.read_text(encoding="utf-8"))
     todo = [c for c in champs if only or c["name"] not in cache]
-    print(f"{len(champs)} in scope | {len(todo)} to extract")
+    workers = max(1, args.workers)
+    print(f"{len(champs)} in scope | {len(todo)} to extract | {workers} worker(s)")
 
-    for i, c in enumerate(todo, 1):
-        try:
-            rec, issues, ok = None, [], False
-            for _try in range(3):  # LLM extraction is a dice roll; validate each
-                rec, issues = extract(c, key)
-                n_direct = sum(len(a["damage"]) for a in rec["abilities"].values())
-                if n_direct == 0:      # bad roll: a kit with zero damage
-                    continue
-                if _damage_type_ok(c["name"], rec, c):
-                    ok = True
-                    break
-            if not ok:
-                issues.append("damage type contradicts primaryDamage after 3 tries")
-        except Exception as e:  # noqa: BLE001
-            print(f"  ! {c['name']}: {e}")
-            continue
-        if rec is None:
-            continue
+    lock = Lock()
+    done = 0
+
+    def record(c: dict, rec: dict) -> None:
+        nonlocal done
         n_dmg = sum(len(a["damage"]) for a in rec["abilities"].values())
         n_un = sum(len(a["unmodeled"]) for a in rec["abilities"].values())
-        # preserve blocks this pass doesn't produce (e.g. the behaviour model from
-        # scripts.extract_behavior) — a plain overwrite silently wiped them.
-        for _keep in ("behavior",):
-            if _keep in cache.get(c["name"], {}) and _keep not in rec:
-                rec[_keep] = cache[c["name"]][_keep]
-        cache[c["name"]] = rec
-        OUT.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
-        flag = f"  ({n_un} unmodeled)" if n_un else ""
-        print(f"  [{i}/{len(todo)}] {c['name']:16} {n_dmg} damage components{flag}")
+        with lock:
+            # preserve blocks this pass doesn't produce (e.g. the behaviour model
+            # from scripts.extract_behavior) — a plain overwrite silently wiped them.
+            for _keep in ("behavior",):
+                if _keep in cache.get(c["name"], {}) and _keep not in rec:
+                    rec[_keep] = cache[c["name"]][_keep]
+            cache[c["name"]] = rec
+            _save(cache)
+            done += 1
+            flag = f"  ({n_un} unmodeled)" if n_un else ""
+            print(f"  [{done}/{len(todo)}] {c['name']:16} {n_dmg} damage components{flag}",
+                  flush=True)
+
+    def run(c: dict) -> None:
+        try:
+            rec, _issues = extract_validated(c, key)
+        except Exception as e:  # noqa: BLE001
+            print(f"  ! {c['name']}: {e}", flush=True)
+            return
+        if rec is not None:
+            record(c, rec)
+
+    if workers == 1:
+        for c in todo:
+            run(c)
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            for _ in pool.map(run, todo):
+                pass
 
     print(f"\nwrote {OUT.relative_to(ROOT)} ({len(cache)} champions)")
 

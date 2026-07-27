@@ -174,9 +174,25 @@ def _lvl_range(v, level: int) -> float:
 def _rank_val(arr, rank: int) -> float:
     if isinstance(arr, (int, float)):
         return float(arr)
+    if isinstance(arr, dict):
+        # A per-level range read where no level is in scope (hit counts, cooldowns):
+        # take the level-15 end rather than crashing on the dict.
+        r = arr.get("lvlRange") or [0]
+        return float(r[-1])
     if not arr:
         return 0.0
     return float(arr[min(rank, len(arr) - 1)])
+
+
+def _scale_val(v, rank: int, level: int) -> float:
+    """A formula number: flat, per-ability-rank, or per-CHAMPION-level.
+
+    Extraction writes level-scaling values (Teemo's "8 - 36 bonus magic damage",
+    Aatrox's "4% - 13% of maximum Health") as {"lvlRange":[lo,hi]}, the same
+    shape items and runes already use. Everything else stays a rank lookup."""
+    if isinstance(v, dict) and "lvlRange" in v:
+        return _lvl_range(v, level)
+    return _rank_val(v, rank)
 
 
 def _prefers_ap(name: str) -> bool:
@@ -543,21 +559,21 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     for ab in f.values():
         for s in ab.get("steroids") or []:
             stat = s.get("stat")
-            pct = _rank_val(s.get("pct"), 3) if s.get("pct") is not None else 0.0
+            pct = _scale_val(s.get("pct"), 3, level) if s.get("pct") is not None else 0.0
             if s.get("from") == "bonusMs" and stat == "ad" and pct:
                 continue  # applied after MS totals below
             if stat == "attackSpeed":
-                st["baseAsPct"] += pct or _rank_val(s.get("flat"), 3)
+                st["baseAsPct"] += pct or _scale_val(s.get("flat"), 3, level)
             elif stat == "ad" and s.get("flat"):
-                st["bonusAd"] += _rank_val(s["flat"], 3)
+                st["bonusAd"] += _scale_val(s["flat"], 3, level)
             elif stat == "moveSpeed" and pct:
                 st["bonusMs"] += st["baseMs"] * pct / 100.0 * 0.5  # avg uptime
             elif stat in ("armor", "mr") and s.get("flat"):
-                st[stat] += _rank_val(s["flat"], 3)
+                st[stat] += _scale_val(s["flat"], 3, level)
     for ab in f.values():  # conversions last, after all MS sources counted
         for s in ab.get("steroids") or []:
             if s.get("from") == "bonusMs" and s.get("stat") == "ad" and s.get("pct") is not None:
-                st["bonusAd"] += st["bonusMs"] * _rank_val(s["pct"], 3) / 100.0
+                st["bonusAd"] += st["bonusMs"] * _scale_val(s["pct"], 3, level) / 100.0
 
     # Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
     # source above (items, runes, adaptive grants, Archangel's mana conversion).
@@ -785,12 +801,12 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         by_type[dtype] = by_type.get(dtype, 0.0) + amt
 
     def comp_dmg(comp, rank) -> float:
-        base = _rank_val(comp.get("base"), rank)
+        base = _scale_val(comp.get("base"), rank, level)
         if comp.get("when") == "dot total" and comp.get("durationS"):
             base *= float(comp["durationS"])
         val = base
         for r in comp.get("ratios") or []:
-            stat, pct = r.get("stat"), _rank_val(r.get("pct", 0), rank) / 100.0
+            stat, pct = r.get("stat"), _scale_val(r.get("pct", 0), rank, level) / 100.0
             src = {"ad": st["ad"], "bonusAd": st["bonusAd"], "ap": st["ap"],
                    "targetMaxHp": target["hp"], "targetCurrentHp": target["hp"] * 0.7,
                    "targetMissingHp": target["hp"] * 0.3, "ownMaxHp": st["hp"],
@@ -1103,9 +1119,9 @@ def support_value(name: str, item_slugs: list[str], rune_names: list[str] | None
         cd = (_rank_val(cds, 3) if cds else 8.0) * haste_m
         casts = 1 if slot == "4" else max(1, 1 + int(SUPPORT_WINDOW // max(cd, 0.75)))
         for c in comps:
-            v = _rank_val(c.get("base"), 3)
+            v = _scale_val(c.get("base"), 3, level)
             for r in c.get("ratios") or []:
-                pct = _rank_val(r.get("pct", 0), 3) / 100.0
+                pct = _scale_val(r.get("pct", 0), 3, level) / 100.0
                 src = {"ap": st["ap"], "ad": st["ad"], "bonusAd": st["bonusAd"],
                        "ownMaxHp": st["hp"], "ownBonusHp": st["bonusHp"]}.get(r.get("stat"), 0.0)
                 v += pct * src

@@ -5,7 +5,9 @@ import statRulesData from "@/data/stat_rules.json";
 
 type StatValue = { value?: number; percent?: boolean } | number;
 
-type RankValue = number | number[];
+// A formula number is flat, per-ability-rank, or a per-CHAMPION-level range —
+// the last for values a tooltip writes as "8 - 36 bonus magic damage".
+type RankValue = number | number[] | { lvlRange: number[] };
 
 type AbilityRatio = { stat: string; pct: RankValue };
 
@@ -463,8 +465,12 @@ const EFFECT_LABELS: Record<string, string> = {
   damageReduction: "Damage reduction",
 };
 
-function rankValue(value: RankValue | undefined, rankIndex: number): number {
+function rankValue(value: RankValue | undefined, rankIndex: number, level = 15): number {
   if (typeof value === "number") return value;
+  if (value && !Array.isArray(value) && "lvlRange" in value) {
+    const [lo, hi] = value.lvlRange;
+    return lo + (hi - lo) * (Math.min(Math.max(level, 1), 15) - 1) / 14;
+  }
   if (!Array.isArray(value) || value.length === 0) return 0;
   return Number(value[Math.min(Math.max(rankIndex, 0), value.length - 1)]) || 0;
 }
@@ -559,12 +565,12 @@ export function calculatedChampionAbilities(
         }));
 
     const damage: CalculatedAbilityDamage[] = rank === 0 ? [] : (formula?.damage ?? []).map((part) => {
-      const base = rankValue(part.base, rankIndex);
+      const base = rankValue(part.base, rankIndex, level);
       let amount = base;
       const breakdown = [String(cleanNumber(base))];
       const unresolved: string[] = [];
       for (const ratio of part.ratios ?? []) {
-        const pct = rankValue(ratio.pct, rankIndex);
+        const pct = rankValue(ratio.pct, rankIndex, level);
         const stat = statSources[ratio.stat];
         const label = ABILITY_STAT_LABELS[ratio.stat] ?? ratio.stat;
         if (typeof stat === "number") {
@@ -575,7 +581,7 @@ export function calculatedChampionAbilities(
           unresolved.push(`${cleanNumber(pct)}% ${label}`);
         }
       }
-      const hits = Math.max(1, Math.round(rankValue(part.hits ?? 1, rankIndex)));
+      const hits = Math.max(1, Math.round(rankValue(part.hits ?? 1, rankIndex, level)));
       const durationMultiplier = part.when === "dot total" && part.durationS ? part.durationS : 1;
       const totalMultiplier = hits * durationMultiplier;
       const context = [part.when, part.note, part.durationS ? `${part.durationS}s duration` : ""]
@@ -596,11 +602,11 @@ export function calculatedChampionAbilities(
     if (rank > 0) {
       for (const part of formula?.defensive ?? []) {
         const kind = part.kind ?? part.stat ?? "Effect";
-        const base = rankValue(part.base ?? part.flat, rankIndex);
+        const base = rankValue(part.base ?? part.flat, rankIndex, level);
         let amount = base;
         const unresolved: string[] = [];
         for (const ratio of part.ratios ?? []) {
-          const pct = rankValue(ratio.pct, rankIndex);
+          const pct = rankValue(ratio.pct, rankIndex, level);
           const stat = statSources[ratio.stat];
           if (typeof stat === "number") amount += stat * pct / 100;
           else unresolved.push(`${cleanNumber(pct)}% ${ABILITY_STAT_LABELS[ratio.stat] ?? ratio.stat}`);
@@ -620,8 +626,8 @@ export function calculatedChampionAbilities(
         });
       }
       for (const part of formula?.steroids ?? []) {
-        const pct = rankValue(part.pct, rankIndex);
-        const flat = rankValue(part.flat, rankIndex);
+        const pct = rankValue(part.pct, rankIndex, level);
+        const flat = rankValue(part.flat, rankIndex, level);
         const source = part.from ? statSources[part.from] : statSources[part.stat];
         const dynamicPct = pct + (part.pctFromStat && typeof statSources[part.from ?? ""] === "number"
           ? Number(statSources[part.from ?? ""]) * part.pctFromStat / 100

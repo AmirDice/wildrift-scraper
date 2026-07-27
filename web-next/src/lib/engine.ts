@@ -130,9 +130,16 @@ const lvlRange = (v: any, level: number): number => {
 };
 const rankVal = (arr: any, rank: number): number => {
   if (typeof arr === "number") return arr;
+  // A per-level range read where no level is in scope (hit counts, cooldowns):
+  // take the level-15 end rather than returning nothing.
+  if (arr && typeof arr === "object" && "lvlRange" in arr) return Number(arr.lvlRange.at(-1)) || 0;
   if (!Array.isArray(arr) || !arr.length) return 0;
   return Number(arr[Math.min(rank, arr.length - 1)]) || 0;
 };
+// A formula number: flat, per-ability-rank, or per-CHAMPION-level. Extraction
+// writes level-scaling values ("8 - 36 bonus magic damage") as {lvlRange:[lo,hi]}.
+const scaleVal = (v: any, rank: number, level: number): number =>
+  v && typeof v === "object" && "lvlRange" in v ? lvlRange(v, level) : rankVal(v, rank);
 
 function targetSquishy(level: number) {
   const c = DATA.champions["Ashe"];
@@ -307,18 +314,18 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   const f = DATA.formulas[name]?.abilities ?? {};
   for (const ab of Object.values<any>(f)) {
     for (const s of ab.steroids ?? []) {
-      const pct = s.pct != null ? rankVal(s.pct, 3) : 0;
+      const pct = s.pct != null ? scaleVal(s.pct, 3, level) : 0;
       if (s.from === "bonusMs" && s.stat === "ad" && pct) continue;
-      if (s.stat === "attackSpeed") st.baseAsPct += pct || rankVal(s.flat, 3);
-      else if (s.stat === "ad" && s.flat) st.bonusAd += rankVal(s.flat, 3);
+      if (s.stat === "attackSpeed") st.baseAsPct += pct || scaleVal(s.flat, 3, level);
+      else if (s.stat === "ad" && s.flat) st.bonusAd += scaleVal(s.flat, 3, level);
       else if (s.stat === "moveSpeed" && pct) st.bonusMs += st.baseMs * pct / 100 * 0.5;
-      else if ((s.stat === "armor" || s.stat === "mr") && s.flat) st[s.stat] += rankVal(s.flat, 3);
+      else if ((s.stat === "armor" || s.stat === "mr") && s.flat) st[s.stat] += scaleVal(s.flat, 3, level);
     }
   }
   for (const ab of Object.values<any>(f)) {
     for (const s of ab.steroids ?? []) {
       if (s.from === "bonusMs" && s.stat === "ad" && s.pct != null)
-        st.bonusAd += st.bonusMs * rankVal(s.pct, 3) / 100;
+        st.bonusAd += st.bonusMs * scaleVal(s.pct, 3, level) / 100;
     }
   }
 
@@ -394,11 +401,11 @@ export function rotation(name: string, st: any, target: any, window: number,
   const addT = (t: string, v: number) => { byType[t] = (byType[t] ?? 0) + v; };
 
   const compDmg = (comp: any, rank: number): number => {
-    let base = rankVal(comp.base, rank);
+    let base = scaleVal(comp.base, rank, level);
     if (comp.when === "dot total" && comp.durationS) base *= comp.durationS;
     let val = base;
     for (const r of comp.ratios ?? []) {
-      const pct = rankVal(r.pct ?? 0, rank) / 100;
+      const pct = scaleVal(r.pct ?? 0, rank, level) / 100;
       const src: Record<string, number> = {
         ad: st.ad, bonusAd: st.bonusAd, ap: st.ap,
         targetMaxHp: target.hp, targetCurrentHp: target.hp * 0.7,
@@ -1057,10 +1064,10 @@ export function abilityBreakdown(name: string, items: string[], runes: string[],
     if (so[slot] && levelsTaken === 0) continue; // not yet learned
     let dmg = 0; const scale = new Set<string>();
     for (const c of comps) {
-      let val = rankVal(c.base, rank);
+      let val = scaleVal(c.base, rank, level);
       if (c.when === "dot total" && c.durationS) val *= c.durationS;
       for (const r of c.ratios ?? []) {
-        const pct = rankVal(r.pct ?? 0, rank);
+        const pct = scaleVal(r.pct ?? 0, rank, level);
         if (!pct) continue;
         val += (pct / 100) * (src[r.stat] ?? 0);
         scale.add(`${Math.round(pct)}% ${STAT_LABEL[r.stat] ?? r.stat}`);
