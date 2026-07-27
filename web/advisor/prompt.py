@@ -220,6 +220,15 @@ def champion_block(name: str, champions: dict, archetypes: dict, wrmeta: dict,
     for note in derived.get("scalingNotes", []):
         lines.append(f"  note: {note}")
 
+    # Facts about HOW the kit attacks, which decide whether a stat is worth
+    # buying at all. Placed before the ability prose so the model reads the
+    # constraint before it reads the tooltip that tempts it.
+    mechanics = profiles.kit_mechanics(name)
+    if mechanics:
+        lines.append("KIT MECHANICS (machine-extracted; these change which STATS are worth "
+                     "buying, and they override any impression the ability prose gives):")
+        lines.extend(f"  - {m}" for m in mechanics)
+
     if champion.get("baseStats"):
         lines.append("verifiedBaseStats=" + json.dumps(champion["baseStats"], ensure_ascii=False))
     if champion.get("statRules"):

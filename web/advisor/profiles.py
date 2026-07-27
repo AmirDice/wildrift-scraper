@@ -205,6 +205,23 @@ _PASSIVE_EQUIVALENT_CD = 6.0
 _MIN_CD = 1.0
 
 
+# A percent of the TARGET's health is not the same currency as a percent of your
+# own AD or AP, so target-relative ratios are scaled into comparable damage
+# before they are weighted against each other. The factor is the reference
+# health bar divided by the reference own-stat: a level-13 bruiser target around
+# 3,400 HP against roughly 300 AD/AP on a finished build. Current-health and
+# missing-health ratios pay out on part of that bar rather than all of it, so
+# they get a share of the same factor.
+_REFERENCE_TARGET_HP = 3400.0
+_REFERENCE_OWN_STAT = 300.0
+_MAX_HP_SCALE = _REFERENCE_TARGET_HP / _REFERENCE_OWN_STAT
+_TARGET_SCALE = {
+    "targetMaxHealth": _MAX_HP_SCALE,
+    "targetCurrentHealth": _MAX_HP_SCALE * 0.7,
+    "targetMissingHealth": _MAX_HP_SCALE * 0.3,
+}
+
+
 @dataclass
 class Ratio:
     """One scaling ratio, with everything needed to weight it by real usage."""
@@ -228,8 +245,15 @@ class Ratio:
         ratio on a 4-second ability from a 100% AP ratio on an 85-second
         ultimate. Both read as "scales with" in the old tags; here the first is
         worth roughly 20x the second.
+
+        Target-relative ratios are converted first. "11% of the target's maximum
+        Health" and "65% AD" are both stored as a percent, but they are percents
+        of different things: one of a 3,400 HP health bar, the other of roughly
+        300 attack damage. Adding them raw made Vayne's Silver Bolts -- her
+        entire anti-tank identity -- read as 1.7% of her scaling and get labelled
+        not_viable, and it did the same to 41 other champions.
         """
-        return self.casts_per_minute * self.pct * max(1, self.hits)
+        return self.casts_per_minute * self.pct * _TARGET_SCALE.get(self.stat, 1.0) * max(1, self.hits)
 
 
 def _ability_correction(champion: str, ability: dict) -> dict:
@@ -571,6 +595,12 @@ def scaling_profile(champion: str) -> dict:
     if profile:
         viability = {}
         for stat, label in profile.items():
+            if stat in _TARGET_SCALE:
+                # Not a build path in either direction: no item sells "percent
+                # of the enemy's health". Listing it as not_viable told the
+                # model to ignore Vayne's anti-tank identity; it belongs in the
+                # scaling picture instead, which rawRatioShare now carries.
+                continue
             if stat in off_identity:
                 # Off-identity damage: experimental-only for real hybrids, else
                 # not usable. Never a trusted anchor.
@@ -597,7 +627,30 @@ def scaling_profile(champion: str) -> dict:
                 viability[top] = "core"
                 if top not in build_paths:
                     build_paths.append(top)
+            elif not viability:
+                # Nothing measurable is buildable. K'Sante reaches here: he
+                # scales off armour, magic resist and target health, so there is
+                # no AD or AP ratio to read, and build_identity mislabels him
+                # magic as a result while every damage component he has is
+                # physical. Trust the scraped damage type over the derived
+                # identity in that case, and say the anchor is inferred.
+                primary = (CHAMPIONS.get(champion) or {}).get("primaryDamage")
+                top = ("AP" if primary == "magic"
+                       else "totalAD" if primary == "physical"
+                       else sorted(identity_stats)[0])
+                viability[top] = "core"
+                build_paths.append(top)
+                result.setdefault("scalingNotes", []).append(
+                    f"no buildable ratio survived extraction for this kit, so {top} is taken "
+                    "from the champion's damage identity rather than measured. Treat it as a "
+                    "floor, not evidence.")
 
+        target_rel = [s for s in profile if s in _TARGET_SCALE]
+        if target_rel:
+            result.setdefault("scalingNotes", []).append(
+                f"{', '.join(target_rel)} is real damage but not a build path: no item grants "
+                "it. Treat it as what this kit does to high-health targets, and as a reason "
+                "to buy what makes the ability land more often, not as a stat to itemise for.")
         result["buildPathViability"] = viability
     if build_paths:
         result["buildPathStats"] = build_paths  # may have gained the promoted stat
@@ -904,6 +957,60 @@ def profile(champion: str, log: bool = True) -> dict:
         out["structuredEffects"] = structured
     if artifacts:
         out["abilityTextArtifacts"] = artifacts
+    return out
+
+
+# How a mechanic changes what is worth buying. The extraction records the
+# mechanic; this says why the model should care, because "reload" on its own
+# means nothing to a model deciding between two attack-speed items.
+_MECHANIC_MEANING = {
+    "fixedAttackSpeed": ("attack speed does NOT increase this champion's attack rate. "
+                         "Buying attack speed for the sake of attacking faster is wasted gold"),
+    "reload": ("attacks come in magazines with a reload between them, so attack speed "
+               "buys less than the raw number suggests"),
+    "multiShot": ("one basic attack fires several projectiles, so on-hit and per-hit "
+                  "effects trigger more than once per attack"),
+    "doubleShot": "attacks fire an extra shot under a condition, which multiplies on-hit effects",
+    # Deliberately says nothing about attack speed: Jhin has this AND
+    # fixedAttackSpeed, and claiming the empowered hit rewards attack speed
+    # would contradict the line directly above it.
+    "everyNHit": ("every Nth attack is empowered, so per-attack damage and on-hit effects "
+                  "are worth more than they look on a flat damage comparison"),
+    "noResource": ("this champion has NO mana. Mana, mana regeneration and mana-scaling "
+                   "items are dead stats on it"),
+    "transform": "the champion transforms, and the transformed state is not fully modelled here",
+}
+
+
+def kit_mechanics(champion: str) -> list[str]:
+    """Kit facts that decide which STATS are worth buying.
+
+    These are extracted per champion but were never reaching the prompt, so the
+    model was choosing items for Jhin without being told that attack speed does
+    nothing for him, and for Graves without being told he has no mana.
+    """
+    out: list[str] = []
+    rec = FORMULAS.get(champion) or {}
+    for mech in rec.get("mechanics") or []:
+        kind = mech.get("kind")
+        meaning = _MECHANIC_MEANING.get(kind)
+        if not meaning:
+            continue
+        params = ", ".join(f"{k}={v}" for k, v in mech.items()
+                           if k in ("magazine", "shots", "n", "secondShotPct")
+                           and isinstance(v, (int, float)))
+        out.append(f"{kind}{f' ({params})' if params else ''}: {meaning}.")
+    know = rec.get("knowledge") or {}
+    eff = know.get("asEfficiency")
+    if isinstance(eff, (int, float)):
+        out.append(
+            f"attackSpeedEfficiency={eff:.2f} (1.0 = a normal marksman, lower means attack "
+            f"speed converts poorly on this kit). ESTIMATED, not measured.")
+    if know.get("abilitiesCanCrit") is False:
+        out.append("this champion's ABILITIES cannot crit, so crit only improves basic attacks.")
+    if know.get("resource") == "none" and not any(m.get("kind") == "noResource"
+                                                  for m in rec.get("mechanics") or []):
+        out.append("this champion uses no mana: mana and mana-scaling items are dead stats.")
     return out
 
 
