@@ -55,8 +55,21 @@ jobs:
           cache: npm
           cache-dependency-path: web-next/package-lock.json
 
+      # `npm install`, not `npm ci`, and deliberately so.
+      #
+      # npm ci demands a lockfile that lists every package it will install on
+      # THIS platform. The tree includes optional wasm32-wasi fallbacks
+      # (@tailwindcss/oxide-wasm32-wasi, which pulls @emnapi/core and
+      # @emnapi/runtime), and npm running on the Windows dev machine will not
+      # resolve them: regenerating the lockfile from scratch, and with
+      # --os=linux --cpu=x64, both leave those two entries out, so npm ci fails
+      # on the Linux runner every time. Only a Linux npm can write a lockfile
+      # that satisfies it.
+      #
+      # Vercel builds this project with `npm install` too, so this also has CI
+      # install dependencies exactly the way the deployment does.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Typecheck
         run: npx tsc --noEmit -p tsconfig.json
