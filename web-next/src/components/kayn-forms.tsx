@@ -10,34 +10,6 @@ import { useBuildToolsVisible } from "@/lib/use-build-tools";
 
 type FormKey = (typeof KAYN_FORMS)[number]["key"];
 
-const RHAAST_ABILITIES: AbilityCard[] = [
-  {
-    slot: "P", key: "Passive", name: "The Darkin Scythe: Rhaast",
-    text: "Rhaast heals for 24%–38% of physical damage dealt to enemy champions. This makes repeated ability hits and staying in combat much more valuable than Shadow Assassin's opening burst.",
-    cooldowns: [], damageTypes: ["physical"], icon: "/abilities/kayn-the-darkin-scythe-shadow-assassin.png",
-  },
-  {
-    slot: "1", key: "Q", name: "Reaping Slash: Rhaast",
-    text: "Dashes and strikes, then spins for a second hit. Each hit deals physical damage plus target max-Health damage, giving Rhaast much stronger sustained damage into bruisers and tanks.",
-    cooldowns: ["4", "3", "3", "3"], damageTypes: ["physical"], icon: "/abilities/kayn-reaping-slash-shadow-assassin.png",
-  },
-  {
-    slot: "2", key: "W", name: "Blade's Reach: Rhaast",
-    text: "Deals physical damage, knocks enemies up for 1 second, and applies a heavy decaying slow. Unlike Shadow Assassin, Rhaast commits to the cast but gains hard crowd control.",
-    cooldowns: ["8", "7", "6", "5"], damageTypes: ["physical"], icon: "/abilities/kayn-blades-reach-shadow-assassin.png",
-  },
-  {
-    slot: "3", key: "E", name: "Shadow Step: Rhaast",
-    text: "Moves through terrain and heals on first entry. Rhaast receives less movement speed than Shadow Assassin and does not gain the blue form's slow immunity, reinforcing his bruiser identity.",
-    cooldowns: ["7", "7", "7", "7"], damageTypes: [], icon: "/abilities/kayn-shadow-step-shadow-assassin.png",
-  },
-  {
-    slot: "4", key: "R", name: "Umbral Trespass: Rhaast",
-    text: "Becomes untargetable inside an enemy, then exits for target max-Health physical damage and heals from the target's max Health. Use it to survive focus fire and re-enter an extended fight.",
-    cooldowns: ["50", "44", "38"], damageTypes: ["physical"], icon: "/abilities/kayn-umbral-trespass-shadow-assassin.png",
-  },
-];
-
 const FORM_DETAILS: Record<FormKey, { bestInto: string; identity: string; build: string[]; tone: string }> = {
   "shadow-assassin": {
     bestInto: "Ranged and fragile enemy teams",
@@ -88,9 +60,17 @@ export function KaynFormGuide() {
   );
 }
 
-export function KaynAbilities({ shadowAbilities }: { shadowAbilities: AbilityCard[] }) {
+export function KaynAbilities({ shadowAbilities, rhaastAbilities }: {
+  shadowAbilities: AbilityCard[];
+  /** Rhaast's real scraped kit. Both forms are on the guide page; only the
+   *  first five blocks used to be parsed, so this was hand-written prose with
+   *  no numbers and Shadow Assassin's icons until the scraper kept both. */
+  rhaastAbilities?: AbilityCard[];
+}) {
   const [form, setForm] = useState<FormKey>("shadow-assassin");
-  const abilities = form === "rhaast" ? RHAAST_ABILITIES : shadowAbilities;
+  const abilities = form === "rhaast" && rhaastAbilities?.length
+    ? rhaastAbilities
+    : shadowAbilities;
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">

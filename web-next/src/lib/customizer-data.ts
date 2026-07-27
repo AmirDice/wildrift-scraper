@@ -133,6 +133,9 @@ type ChampionAbility = {
   cooldowns: string[];
   damageTypes: string[];
   icon: string;
+  /** One icon per form, in the order the ability's two halves are named
+   *  ("Javelin Toss / Takedown"). Only free-switching champions have it. */
+  formIcons?: string[];
 };
 
 type ChampionDetail = { name: string; abilities?: ChampionAbility[] };
@@ -209,6 +212,8 @@ export interface CalculatedChampionAbility {
   key: string;
   name: string;
   icon: string;
+  /** Per-form icons for free-switching champions; see ChampionAbility. */
+  formIcons?: string[];
   rank: number;
   maxRank: number;
   unlockLevel?: number;
@@ -656,6 +661,7 @@ export function calculatedChampionAbilities(
       key: detail?.key ?? (slot === "P" ? "Passive" : ({ "1": "Q", "2": "W", "3": "E", "4": "R" }[slot] ?? slot)),
       name: formula?.name ?? detail?.name ?? slot,
       icon: detail?.icon ?? "",
+      formIcons: detail?.formIcons,
       rank,
       maxRank,
       unlockLevel,

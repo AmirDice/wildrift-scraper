@@ -330,9 +330,9 @@ const DUAL_FORM_CHAMPIONS: Record<string, [string, string]> = {
 };
 
 /** The half of a two-form ability that belongs to the selected form. */
-function abilityForForm<T extends { name: string; damage: any[]; effects: any[] }>(
-  ability: T, side: number,
-): T {
+function abilityForForm<T extends {
+  name: string; icon: string; formIcons?: string[]; damage: any[]; effects: any[];
+}>(ability: T, side: number): T {
   const halves = ability.name.split(" / ").map((part) => part.trim());
   if (halves.length !== 2) return ability;          // shared across both forms
   const mine = halves[side].toLowerCase();
@@ -344,7 +344,15 @@ function abilityForForm<T extends { name: string; damage: any[]; effects: any[] 
     // Anything matching neither name is kit-wide and stays visible.
     return parts.filter((p) => !p.label.toLowerCase().includes(theirs));
   };
-  return { ...ability, name: halves[side], damage: pick(ability.damage), effects: pick(ability.effects) };
+  return {
+    ...ability,
+    name: halves[side],
+    // The guide page has one combined image per slot, so the per-form art is
+    // sourced separately; fall back to the shared icon when it is missing.
+    icon: ability.formIcons?.[side] || ability.icon,
+    damage: pick(ability.damage),
+    effects: pick(ability.effects),
+  };
 }
 
 export function ChampionAbilitiesPanel({
