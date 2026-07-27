@@ -31,8 +31,8 @@ const COUNTER_TOUR: TourStep[] = [
   },
   {
     target: "objective",
-    title: "Optimize for the job you need doing",
-    body: "This is what the build is being solved FOR against this comp: carrying the fight, surviving the dive, or shredding the tank in front of you. It moves the item priorities rather than reshuffling the same list.",
+    title: "Stats, synergy, or a balance of both",
+    body: "Three options, and they trade against each other. Max stats favours the items whose raw stats this champion uses best per gold, accepting a bit less kit synergy. Max synergy favours items and runes that combo with the kit and with each other, even at some raw-stat cost. Balanced weighs both, and is the right answer more often than not.",
   },
   {
     target: "power-spike",
