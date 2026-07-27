@@ -1,0 +1,35 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "_comment": [
+    "This file configures the ADVISOR project only: a second Vercel project on",
+    "this same repository whose Root Directory is the REPO ROOT, deploying",
+    "api/advisor.py as a Python function and nothing else.",
+    "",
+    "The main site project is left exactly as it is (Root Directory web-next,",
+    "no vercel.json). It reaches the advisor over HTTP via ADVISOR_URL, which",
+    "the build route already supports, so nothing about the working production",
+    "deployment has to change to turn the build tools on.",
+    "",
+    "The function needs the repo-root data files (data/*.json, web/*.py), which",
+    "is why its root cannot be web-next: those directories would be outside the",
+    "bundle.",
+    "",
+    "Dependencies come from the repo-root requirements.txt, which is kept down",
+    "to `requests` for exactly this reason -- the bundle limit is 250MB unzipped",
+    "and the scraper/Streamlit deps live in requirements-scrape.txt instead.",
+    "",
+    "Do NOT set functions.runtime here. Python is detected from the .py",
+    "extension; `runtime` is only valid for community runtimes and an invalid",
+    "value fails config validation before any build runs.",
+    "",
+    "maxDuration 300 needs a plan above Hobby (which caps at 60s). A real",
+    "generation measured 53s, and counter builds with a full enemy team run",
+    "longer, so 60s is not enough headroom."
+  ],
+  "functions": {
+    "api/advisor.py": {
+      "maxDuration": 300,
+      "memory": 1024
+    }
+  }
+}

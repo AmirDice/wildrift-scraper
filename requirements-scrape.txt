@@ -1,0 +1,26 @@
+# Scrapers, OCR, and the legacy Streamlit app.
+#
+# Deliberately NOT in requirements.txt: that file is what Vercel installs into
+# the advisor serverless function, and none of these run there. Keeping them
+# out is what keeps that bundle under its 250MB limit.
+#
+#     pip install -r requirements-scrape.txt
+-r requirements.txt
+
+# scraping
+beautifulsoup4>=4.12.0
+
+# streamlit_app.py, retired in favour of web-next and not deployed anywhere.
+# Kept installable so the old script still runs, but it is a deletion
+# candidate along with the app itself.
+streamlit>=1.36.0
+pandas>=2.2.0
+
+# item-icon OCR and image work
+pillow>=10.0.0
+opencv-python>=4.9.0
+numpy>=1.26.0
+pytesseract>=0.3.10
+
+# Gemini, used by the CN scraper and the item enrichment scripts
+google-genai>=1.0.0

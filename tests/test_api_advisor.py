@@ -99,13 +99,6 @@ class TestDeploymentShape:
         """It sits in api/ while the advisor is in web/, so sys.path matters."""
         assert callable(advisor_api.advise)
 
-    @pytest.mark.skipif(
-        not (ROOT / "vercel.json").exists(),
-        reason="vercel.json is deliberately deferred: it broke the Vercel build and is not "
-               "needed until the build tools launch and the advisor runs as a Python "
-               "function (it is in git history at 6ec257b). The assertions below are the "
-               "contract to restore it against, so this skips rather than being deleted.",
-    )
     def test_vercel_json_gives_the_advisor_function_a_long_enough_timeout(self):
         import json
         config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
@@ -118,10 +111,33 @@ class TestDeploymentShape:
         assert "runtime" not in fn, (
             "drop `runtime`: Python is detected from the extension, and setting "
             "it fails Vercel config validation")
-        # The function reads the repo-root data files, so the deployment root
-        # must be the repo root and the Next build has to be pointed at web-next.
-        assert config["buildCommand"].strip().startswith("cd web-next")
-        assert config["outputDirectory"] == "web-next/.next"
+
+    def test_vercel_json_does_not_configure_the_next_build(self):
+        """This file belongs to the ADVISOR project, whose root is the repo root.
+
+        The site is a separate project rooted at web-next/. If build settings
+        for the site leak in here they are applied to the wrong project, which
+        is what made an earlier attempt fail before any build ran.
+        """
+        import json
+        config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+        for key in ("buildCommand", "outputDirectory", "framework", "installCommand"):
+            assert key not in config, f"{key} belongs to the site project, not the advisor"
+
+    def test_the_function_only_needs_what_requirements_txt_installs(self):
+        """requirements.txt is the advisor bundle, and it has a 250MB ceiling.
+
+        It used to carry streamlit, pandas, opencv and numpy, none of which the
+        function imports, which would very likely have breached that limit the
+        first time anyone tried to deploy it.
+        """
+        text = (ROOT / "requirements.txt").read_text(encoding="utf-8")
+        listed = {line.split(">=")[0].split("==")[0].strip().lower()
+                  for line in text.splitlines()
+                  if line.strip() and not line.strip().startswith("#")}
+        assert listed == {"requests"}, (
+            f"unexpected packages in the advisor bundle: {sorted(listed - {'requests'})}. "
+            "Scraper and Streamlit deps belong in requirements-scrape.txt.")
 
     def test_the_body_size_cap_is_small(self):
         """This endpoint spends money, so it should not accept large payloads."""

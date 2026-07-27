@@ -1,13 +1,15 @@
-# --- Web app deps (needed by Streamlit Cloud deploy) ---
-streamlit>=1.36.0
-pandas>=2.2.0
-pillow>=10.0.0
+# Installed into the Vercel Python serverless function (api/advisor.py), so
+# this file is deliberately tiny. Everything listed here is unzipped into a
+# bundle that has a 250MB ceiling, and streamlit + pandas + opencv + numpy
+# together would very likely breach it on their own.
+#
+# api/advisor.py -> web/build_advisor.py -> web/advisor/* imports exactly one
+# third-party package, verified by walking the import graph.
 requests>=2.31.0
 
-# --- Scraper-only deps (not used by the deployed app, but kept here so
-#     the scraper runs from the same checkout on dev machines) ---
-beautifulsoup4>=4.12.0
-opencv-python>=4.9.0
-numpy>=1.26.0
-pytesseract>=0.3.10
-google-genai>=1.0.0
+# Everything else the repo needs -- scrapers, OCR, the legacy Streamlit app --
+# is in requirements-scrape.txt:
+#
+#     pip install -r requirements-scrape.txt
+#
+# and the test suite's deps are in requirements-dev.txt.
