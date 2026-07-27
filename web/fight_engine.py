@@ -55,6 +55,9 @@ for slug, fx in _load("item_engine_overrides.json").items():
     if isinstance(fx, dict):
         ENGINE_FX.setdefault(slug, {}).update({k: v for k, v in fx.items() if not k.startswith("_")})
 KIT_AMPS = (_load("kit_amps.json") or {}).get("champions", {})
+# Ultimates that hit an area. Only Axiom Arcanist cares: it amplifies an ult by
+# 10%, or by 5% when the damage is AoE.
+AOE_ULTS = set((_load("ult_shape.json") or {}).get("aoeUlts", []))
 RUNE_FX = _load("rune_effects.json")
 RUNE_ENGINE = _load("rune_engine.json")  # LLM-extracted, used when not hand-curated
 # Per-ability mana costs (wr-meta, patch 7.2). Read straight from the scrape
@@ -536,7 +539,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             # items but never here, so Battle Zeal's ramping ability damage
             # ("up to a maximum of 6%") was extracted, stored, and dropped.
             st["abilityAmp"] += g("abilityAmpPct") / 100.0
-            st["ultAmp"] += g("ultAmpPct") / 100.0
+            st["ultAmp"] += (g("ultAmpPctAoe") if name in AOE_ULTS
+                             else g("ultAmpPct")) / 100.0
             if fx.get("burstProcFlat") or fx.get("burstProcApRatio") or fx.get("burstProcAdRatio"):
                 ragg["procs"].append((g("burstProcFlat"), g("burstProcAdRatio") / 100.0,
                                       fx.get("burstProcType", "magic")))
