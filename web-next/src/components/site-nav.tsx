@@ -256,18 +256,13 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
           <AccountMenu />
         </div>
 
-        {/* mobile: Discord icon stays in the top bar so it is never buried in a menu */}
+        {/* mobile: the account control sits in the top bar, because signing in
+            is what unlocks the extra daily generations and nobody finds an
+            offer that only exists behind a hamburger. Discord gave up the slot
+            for it and keeps its full entry in the drawer below. */}
         <div className="flex items-center gap-0.5 md:hidden">
           <NavSearch champions={champions} />
-          <Link
-            href={DISCORD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Join the WrTrueMeta Discord"
-            className="grid h-10 w-10 place-items-center rounded-lg text-muted transition hover:bg-[#5865F2]/15 hover:text-[#98a0ff]"
-          >
-            <DiscordIcon className="h-5 w-5" />
-          </Link>
+          <AccountMenu />
           <button
             onClick={() => setOpen((v) => !v)}
             className="grid h-10 w-10 place-items-center rounded-lg text-muted transition hover:bg-white/[0.06] hover:text-text"

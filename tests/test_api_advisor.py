@@ -99,9 +99,18 @@ class TestDeploymentShape:
         """It sits in api/ while the advisor is in web/, so sys.path matters."""
         assert callable(advisor_api.advise)
 
-    def test_vercel_json_gives_the_advisor_function_a_long_enough_timeout(self):
+    def test_the_advisor_function_config_asks_for_a_long_enough_timeout(self):
+        """Read from vercel.json.advisor, which is NOT named vercel.json.
+
+        A vercel.json at the repo root breaks the SITE project's build, even
+        though that project's Root Directory is web-next: its `functions`
+        pattern matches nothing there. Committing one failed the deployment
+        before any build ran, twice. So the advisor's intended function config
+        lives here as a record of the settings to apply, and the values are
+        applied in the Vercel dashboard instead.
+        """
         import json
-        config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+        config = json.loads((ROOT / "vercel.json.advisor").read_text(encoding="utf-8"))
         fn = config["functions"]["api/advisor.py"]
         # The TS route's own timeout is 240s; the function must outlast it.
         assert fn["maxDuration"] >= 240
@@ -112,17 +121,16 @@ class TestDeploymentShape:
             "drop `runtime`: Python is detected from the extension, and setting "
             "it fails Vercel config validation")
 
-    def test_vercel_json_does_not_configure_the_next_build(self):
-        """This file belongs to the ADVISOR project, whose root is the repo root.
+    def test_no_vercel_json_sits_at_the_repo_root(self):
+        """The one that breaks the site project's deployment.
 
-        The site is a separate project rooted at web-next/. If build settings
-        for the site leak in here they are applied to the wrong project, which
-        is what made an earlier attempt fail before any build ran.
+        Proven twice: commit 6ec257b's version, and again on 2026-07-27 with a
+        functions-only version, both of which failed the site deployment at
+        config time. Anything that recreates this file re-breaks the site.
         """
-        import json
-        config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
-        for key in ("buildCommand", "outputDirectory", "framework", "installCommand"):
-            assert key not in config, f"{key} belongs to the site project, not the advisor"
+        assert not (ROOT / "vercel.json").exists(), (
+            "a repo-root vercel.json fails the site project's build; the advisor's "
+            "settings belong in vercel.json.advisor and the Vercel dashboard")
 
     def test_the_function_only_needs_what_requirements_txt_installs(self):
         """requirements.txt is the advisor bundle, and it has a 250MB ceiling.
