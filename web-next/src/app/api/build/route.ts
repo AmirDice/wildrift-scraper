@@ -143,12 +143,40 @@ type AdvisorResult =
   | {
       ok: false;
       error: string;
-      /** True only when the local advisor was confirmed never to have started. */
+      /** True only when the request is confirmed never to have reached the
+       *  model: the local advisor did not start, or the remote one is absent.
+       *  A failure that may have spent a model call must not be refunded. */
       quotaRefundable?: boolean;
     };
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * Turn whatever the advisor endpoint returned into something a player can read.
+ *
+ * Our own function answers with `{"error": "some text"}`. Vercel's PLATFORM
+ * errors also answer with JSON, but the error is an object:
+ * `{"error": {"code": "NOT_FOUND", "message": "..."}}`. That shape used to be
+ * interpolated straight into the response, so a missing advisor surfaced in the
+ * UI as the immortal "Could not build: [object Object] (HTTP 502)".
+ */
+function advisorErrorText(data: unknown, status: number): string {
+  const raw = (data as { error?: unknown })?.error;
+  if (typeof raw === "string" && raw.trim()) return raw.trim();
+
+  if (raw && typeof raw === "object") {
+    const { code, message } = raw as { code?: unknown; message?: unknown };
+    if (code === "NOT_FOUND" || status === 404) {
+      return "the build service is not deployed in this environment yet";
+    }
+    const parts = [code, message].filter((p): p is string => typeof p === "string" && !!p);
+    if (parts.length) return parts.join(": ");
+  }
+
+  if (status === 404) return "the build service is not deployed in this environment yet";
+  return `the build service returned ${status}`;
 }
 
 /** Production path: the advisor as a Vercel Python function, over HTTP. */
@@ -170,11 +198,22 @@ async function callAdvisorFunction(b: Body): Promise<AdvisorResult> {
     try {
       data = JSON.parse(text);
     } catch {
+      // A 404 that is not even JSON means the request fell through to the
+      // Next app's own not-found page, i.e. the Python function is not there.
+      // Dumping 300 characters of HTML at the player helps nobody.
+      if (res.status === 404) {
+        return { ok: false, error: advisorErrorText(null, 404), quotaRefundable: true };
+      }
       return { ok: false, error: `unparseable advisor response: ${text.slice(0, 300)}` };
     }
     if (!res.ok) {
-      const message = (data as { error?: string })?.error ?? `advisor returned ${res.status}`;
-      return { ok: false, error: message };
+      // A 404 never reached the model, so it must not cost the player a
+      // generation from their daily allowance.
+      return {
+        ok: false,
+        error: advisorErrorText(data, res.status),
+        quotaRefundable: res.status === 404,
+      };
     }
     return { ok: true, data };
   } catch (err) {

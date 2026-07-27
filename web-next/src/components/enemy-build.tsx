@@ -514,12 +514,15 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
       }
 
       const payload = parsed as Advice;
+      // Belt and braces: the server is supposed to send a string here, but an
+      // upstream platform error can put an OBJECT in `error`, and interpolating
+      // that produced "Could not build: [object Object]".
+      const reported = typeof payload.error === "string" && payload.error.trim()
+        ? payload.error.trim()
+        : "Build request failed";
       const nextAdvice = res.ok
         ? payload
-        : {
-            ...payload,
-            error: `${payload.error || "Build request failed"} (HTTP ${res.status})`,
-          };
+        : { ...payload, error: `${reported} (HTTP ${res.status})` };
       setAdvice(nextAdvice);
       onAdviceChange?.(nextAdvice);
     } catch (e) {
