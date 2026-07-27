@@ -267,7 +267,66 @@ def _meta_block(name: str) -> str:
 
 
 
-def _call(key: str, prompt: str) -> dict:
+def _stream_call(key: str, body: dict, on_progress) -> dict:
+    """One streamed completion, reporting how much has arrived as it arrives.
+
+    The build cannot be shown before it is finished -- it still has to be
+    validated and possibly repaired, and rendering a draft that then changes
+    would be worse than waiting. What streaming buys is an HONEST progress
+    signal during the ~50s wait, in place of a bar that eases toward 92% on a
+    timer and stalls there.
+
+    So the content is accumulated exactly as the non-streaming path would, and
+    only the byte count is reported outward.
+    """
+    body = {**body, "stream": True}
+    chunks: list[str] = []
+    received = 0
+    reasoned = 0
+    last_report = 0.0
+    r = requests.post(DEEPSEEK_URL, json=body,
+                      headers={"Authorization": f"Bearer {key}"},
+                      timeout=300, stream=True)
+    if not r.ok:
+        raise RuntimeError(f"deepseek {r.status_code}: {r.text[:500]}")
+    finish_reason = None
+    for line in r.iter_lines(decode_unicode=True):
+        if not line or not line.startswith("data:"):
+            continue
+        data = line[5:].strip()
+        if data == "[DONE]":
+            break
+        try:
+            event = json.loads(data)
+        except json.JSONDecodeError:
+            continue
+        choice = (event.get("choices") or [{}])[0]
+        finish_reason = choice.get("finish_reason") or finish_reason
+        delta = choice.get("delta") or {}
+        piece = delta.get("content") or ""
+        # Thinking mode emits nothing on `content` until it has finished
+        # reasoning -- measured at ~50s of silence on a 66s generation, which is
+        # most of the wait. The reasoning deltas arrive throughout, so they are
+        # what makes a progress bar move honestly rather than on a timer.
+        thought = delta.get("reasoning_content") or ""
+        if piece:
+            chunks.append(piece)
+            received += len(piece)
+        if piece or thought:
+            reasoned += len(thought)
+            # Throttled: one event per 400ms is plenty to animate a bar, and
+            # every event is a chunk written down two more hops.
+            now = time.time()
+            if now - last_report > 0.4:
+                last_report = now
+                on_progress({"stage": "writing" if piece else "thinking",
+                             "chars": received, "reasoning": reasoned})
+    if finish_reason == "length":
+        raise RuntimeError("deepseek output reached max_tokens; refusing truncated JSON")
+    return json.loads("".join(chunks))
+
+
+def _call(key: str, prompt: str, on_progress=None) -> dict:
     body = {"model": MODEL,
             "messages": [{"role": "system", "content": prompt_mod.SYSTEM},
                          {"role": "user", "content": prompt}],
@@ -276,8 +335,16 @@ def _call(key: str, prompt: str) -> dict:
             "temperature": 0,
             "max_tokens": MAX_OUTPUT_TOKENS, "stream": False}
     for attempt in range(4):
-        r = requests.post(DEEPSEEK_URL, json=body,
-                          headers={"Authorization": f"Bearer {key}"}, timeout=240)
+        try:
+            if on_progress:
+                return _stream_call(key, body, on_progress)
+            r = requests.post(DEEPSEEK_URL, json=body,
+                              headers={"Authorization": f"Bearer {key}"}, timeout=240)
+        except requests.RequestException:
+            if attempt < 3:
+                time.sleep(3 * (attempt + 1))
+                continue
+            raise
         if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
             time.sleep(3 * (attempt + 1))
             continue
@@ -378,7 +445,12 @@ def advise(champion: str, role: str, enemies: list[str],
            champion_form: str = "", ahead_enemy: str = "",
            risk_tolerance: str = "medium",
            locked_items: list[str] | None = None,
-           locked_runes: list[str] | None = None) -> dict:
+           locked_runes: list[str] | None = None,
+           on_progress=None) -> dict:
+    # on_progress(event) is called with {"stage": ...} as the generation moves.
+    # It is optional and side-effect free: nothing about the build depends on
+    # whether anyone is listening.
+    emit = on_progress or (lambda _event: None)
     mode = "counter" if mode == "counter" else "studio"
     # Legacy playstyle aliases from older saved builds. 'sustain' predates the
     # split into damage variants; map it to the sustained-DPS preset (the app has
@@ -522,7 +594,15 @@ def advise(champion: str, role: str, enemies: list[str],
     ] if x)
 
     champion_class = champion_record.get("class", "")
-    res = _call(key, prompt)
+    emit({"stage": "model", "chars": 0})
+
+    def call(text: str) -> dict:
+        # Only pass the callback when there is one, so the signature every
+        # existing caller and test stub sees is unchanged.
+        return _call(key, text, on_progress=on_progress) if on_progress else _call(key, text)
+
+    res = call(prompt)
+    emit({"stage": "validating"})
 
     def _check(build: dict):
         return validate_mod.validate(
@@ -557,7 +637,8 @@ def advise(champion: str, role: str, enemies: list[str],
             errors = report.errors[section]
             print(f"[advisor] targeted repair: {section} ({len(errors)} errors)",
                   file=sys.stderr)
-            patch = _call(key, repair.repair_prompt(section, res, errors, pool_slugs))
+            emit({"stage": "repairing", "section": section})
+            patch = call(repair.repair_prompt(section, res, errors, pool_slugs))
             repair.apply_repair(res, section, patch)
         report = _check(res)
 
