@@ -583,14 +583,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               {availablePlaystyles.map((style) => <option key={style.key} value={style.key}>{style.label}</option>)}
             </select>
           </div>
-          <div>
+          <div data-tour="objective">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimize for</p>
             <select value={objective} onChange={(e) => setObjective(e.target.value)} title={OBJECTIVE_HELP[objective]}
               className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
               {OBJECTIVES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
           </div>
-          <div>
+          <div data-tour="role">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Role</p>
             <select value={role} onChange={(e) => setRole(e.target.value)} title="Choose where you plan to play this champion"
               className={`rounded-lg border bg-[#0e1322] px-2 py-2 text-sm outline-none ${roleMismatch ? "border-amber-500/60 text-amber-300" : "border-line text-text"}`}>

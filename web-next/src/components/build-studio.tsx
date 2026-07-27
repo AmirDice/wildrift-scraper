@@ -207,6 +207,7 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
   const tours = tabTours({
     formSets: forms.length > 1,
     transforms: Boolean(ultTransform(engineName)) || Boolean(DUAL_FORM_CHAMPIONS[engineName]),
+    generated: Boolean(generatedAdvice && !generatedAdvice.error),
   });
   // Comparisons expose the same curated item lists, so they follow the gate.
   const comparisonChoices = builds && recommendedOpen
@@ -419,7 +420,7 @@ const studioTour = ({ formSets, transforms }: TourContext): TourStep[] => [
  *  what is there: a step whose target does not exist still renders, just with
  *  nothing highlighted, and a walkthrough pointing at a control the player
  *  cannot see is worse than no step at all. */
-type TourContext = { formSets: boolean; transforms: boolean };
+type TourContext = { formSets: boolean; transforms: boolean; generated: boolean };
 
 const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: TourStep[] }> => ({
   recommended: { storageKey: "wtm_tour_studio_v2", steps: studioTour(ctx) },
@@ -437,6 +438,16 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
         body: "Not every champion offers every option: the list is filtered to the playstyles that champion can genuinely support, so anything you can choose here is a real build path.",
       },
       {
+        target: "role",
+        title: "Where are you actually playing it?",
+        body: "The role changes the build, not just the label: a jungler and a baron laner want different first items on the same champion. Pick something the champion is not normally played in and it warns you rather than quietly building something odd.",
+      },
+      {
+        target: "objective",
+        title: "Optimize for the job you need doing",
+        body: "This is what the build is being solved FOR -- carrying a fight, surviving a dive, shredding tanks, or a balanced spread. It moves the item priorities rather than reshuffling the same list.",
+      },
+      {
         target: "power-spike",
         title: "Say when you want to be strong",
         body: "Early, mid, late or balanced. This changes the purchase order more than the item list, because in a 15-20 minute game when an item lands matters as much as which item it is.",
@@ -450,9 +461,12 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
       {
         target: "generate",
         title: "Generate, then read the reasoning",
-        body: "You get a full item order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Save anything worth keeping to an album.",
+        body: "You get a full item order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Save anything worth keeping to an album. The champion stats and live ability values appear underneath once it finishes, so you can see what the build is actually worth before you trust it.",
       },
-      ...statSteps(ctx.transforms),
+      // The stat panels only exist after a generation. Adding their steps
+      // before that would spotlight nothing, which is the thing this tour was
+      // getting wrong; once a build is on screen they are worth explaining.
+      ...(ctx.generated ? statSteps(ctx.transforms) : []),
     ],
   },
   customize: {

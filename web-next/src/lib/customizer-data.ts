@@ -309,6 +309,31 @@ export function customBuildIssues(items: string[]): string[] {
 }
 
 /**
+ * Which items the current selection has ruled out, and why.
+ *
+ * customBuildIssues reports a conflict AFTER it exists, which means the player
+ * picks an item, sees the build go red, and has to work out what to undo. This
+ * answers the same question one step earlier -- before the click -- so the
+ * picker can lock those items and say what is blocking them.
+ */
+export function blockedItems(selected: string[]): Record<string, string> {
+  const blocked: Record<string, string> = {};
+  const nameOf = (slug: string) => DATA.items[slug]?.name ?? slug;
+  for (const slug of selected) {
+    if (slug) blocked[slug] = "Already in this build.";
+  }
+  for (const [groupName, group] of Object.entries(DATA.mutex)) {
+    const owner = selected.find((slug) => group.includes(slug));
+    if (!owner) continue;
+    for (const slug of group) {
+      if (slug === owner || blocked[slug]) continue;
+      blocked[slug] = `Shares the '${groupName}' passive with ${nameOf(owner)}, so only one of them works.`;
+    }
+  }
+  return blocked;
+}
+
+/**
  * Transparent stat sheet for the customizer: champion base growth plus the
  * unconditional champion, item, and rune stats. It deliberately does not
  * simulate triggered passives, targets, combos, or assign a build score.

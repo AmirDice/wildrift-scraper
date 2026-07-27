@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { visibleBuildVariants, type Build, type ChampionBuilds } from "@/lib/builds";
 import {
+  blockedItems,
   customBuildIssues,
   customizerItems,
   customizerRunes,
@@ -125,6 +126,9 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
   }));
   const [level, setLevel] = useState(15);
   const [picker, setPicker] = useState<{ kind: "item" | "boots" | "keystone" | "minor" | "flex"; idx?: number } | null>(null);
+  // Why the last locked item was refused. Hover already says it; tapping has to
+  // as well, because a touch device has no hover.
+  const [blockedNote, setBlockedNote] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [savedBuilds, setSavedBuilds] = useState<SavedCustomBuild[]>([]);
   const [saveName, setSaveName] = useState("");
@@ -275,6 +279,16 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
       return { ...current, runes };
     });
   };
+
+  // What the CURRENT selection rules out, ignoring the slot being filled: an
+  // item must not block its own replacement, and re-picking boots must not be
+  // barred by the boots already there.
+  const blocked = useMemo(() => {
+    if (!picker) return {};
+    const items = state.items.filter((slug, i) => Boolean(slug) && !(picker.kind === "item" && picker.idx === i));
+    const boots = picker.kind === "boots" ? null : state.boots;
+    return blockedItems([...items, ...(boots ? [boots] : [])]);
+  }, [picker, state.items, state.boots]);
 
   const candidates = useMemo(() => {
     if (!picker) return [];
@@ -452,19 +466,38 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
             <button onClick={() => setPicker(null)} className="text-xs text-muted hover:text-text">close</button>
           </div>
           <div className="mt-2 grid max-h-44 grid-cols-6 gap-1 overflow-y-auto sm:grid-cols-10">
-            {candidates.map((c) => (
-              <button
-                key={"slug" in c ? c.slug : c.name}
-                onClick={() => ("cost" in c ? pickItem(c.slug) : pickRune(c.name))}
-                title={c.name}
-                className="rounded-lg p-1 transition hover:bg-white/[0.08]"
-              >
-                <img src={c.icon} alt={c.name} width={34} height={34}
-                     className={`${"cost" in c ? "rounded-lg" : "rounded-full"} ring-1 ring-white/10`}
-                     style={{ width: 34, height: 34 }} />
-              </button>
-            ))}
+            {candidates.map((c) => {
+              const slug = "slug" in c ? c.slug : "";
+              const lockedWhy = "cost" in c ? blocked[slug] : undefined;
+              return (
+                <button
+                  key={slug || c.name}
+                  onClick={() => {
+                    if (lockedWhy) { setBlockedNote(`${c.name}: ${lockedWhy}`); return; }
+                    setBlockedNote(null);
+                    return "cost" in c ? pickItem(c.slug) : pickRune(c.name);
+                  }}
+                  title={lockedWhy ? `${c.name} — ${lockedWhy}` : c.name}
+                  aria-disabled={Boolean(lockedWhy)}
+                  className={`relative rounded-lg p-1 transition ${lockedWhy ? "cursor-not-allowed" : "hover:bg-white/[0.08]"}`}
+                >
+                  <img src={c.icon} alt={c.name} width={34} height={34}
+                       className={`${"cost" in c ? "rounded-lg" : "rounded-full"} ring-1 ring-white/10 ${lockedWhy ? "opacity-30 grayscale" : ""}`}
+                       style={{ width: 34, height: 34 }} />
+                  {lockedWhy && (
+                    <span aria-hidden className="pointer-events-none absolute inset-0 grid place-items-center text-sm">
+                      🔒
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
+          {blockedNote && (
+            <p className="mt-2 rounded-lg bg-bad/10 px-2.5 py-1.5 text-xs font-medium text-bad">
+              🔒 {blockedNote}
+            </p>
+          )}
         </div>
       )}
 
