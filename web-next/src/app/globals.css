@@ -267,3 +267,13 @@ body {
   55%, 100% { transform: translateX(500%) skewX(-20deg); }
 }
 
+/* Marquee for the feature banner's sentence on narrow screens, where it used to
+   be truncated mid-word. The track holds the sentence twice, and shifting by
+   exactly one copy (--marquee-shift, measured in JS) lands the second copy where
+   the first began, so the loop has no visible seam. Only applied when the text
+   genuinely overflows. */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-1 * var(--marquee-shift, 100%))); }
+}
+

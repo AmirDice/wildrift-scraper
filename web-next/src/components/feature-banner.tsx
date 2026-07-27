@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 
 // Top-of-page highlight for the newest feature. Dismissible (remembered in
@@ -20,15 +20,17 @@ const PROMO = BUILD_TOOLS_LIVE
       // The Counter Builder is one tab away once they arrive.
       key: "wtm-feature-builders-v4",
       href: "/build",
-      title: "Build Studio",
-      body: " is live: generate by playstyle, or craft builds with live item, rune and ability stats.",
+      // `lead` is pinned and never scrolls, so the thing being announced is
+      // readable at every width; only `body` travels.
+      lead: "Build Studio is live",
+      body: "generate by playstyle, or craft builds with live item, rune and ability stats.",
       hideOn: ["/build", "/counter"],
     }
   : {
       key: "wtm-feature-meta-report-v1",
       href: "/meta",
-      title: "New: Meta Report",
-      body: " maps the whole meta in charts, tier splits, win rate by class and role, and a win-rate-vs-popularity map of every champion.",
+      lead: "New: Meta Report",
+      body: "maps the whole meta in charts, tier splits, win rate by class and role, and a win-rate-vs-popularity map of every champion.",
       hideOn: ["/meta"],
     };
 const DISMISS_KEY = PROMO.key;
@@ -43,6 +45,77 @@ function SparklesGlyph() {
       <path d="M18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
       <path d="M16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
     </svg>
+  );
+}
+
+/** Pixels per second the sentence travels. Slow enough to read on a phone. */
+const MARQUEE_SPEED = 45;
+/** Blank space between the end of one copy of the sentence and the next. */
+const MARQUEE_GAP = 48;
+
+/**
+ * Scrolls `text` horizontally, but only when it does not fit.
+ *
+ * The banner used to `truncate`, which cut the sentence off mid-word on a
+ * phone. Scrolling unconditionally would be worse: on a desktop the sentence
+ * fits with room to spare, and moving text that had no need to move is just
+ * noise. So it is measured, and the animation is attached only when the text is
+ * actually wider than the space for it.
+ */
+function Marquee({ text, className = "" }: { text: string; className?: string }) {
+  const viewport = useRef<HTMLDivElement>(null);
+  const copy = useRef<HTMLSpanElement>(null);
+  const [shift, setShift] = useState(0);
+
+  useEffect(() => {
+    const outer = viewport.current;
+    const inner = copy.current;
+    if (!outer || !inner) return;
+
+    const measure = () => {
+      const available = outer.clientWidth;
+      // getBoundingClientRect, NOT scrollWidth: the sentence is an inline
+      // element, and scrollWidth reports 0 for those, so the overflow check
+      // silently never fired.
+      const needed = inner.getBoundingClientRect().width;
+      setShift(needed > available ? needed + MARQUEE_GAP : 0);
+    };
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(outer);
+    observer.observe(inner);
+    return () => observer.disconnect();
+  }, [text]);
+
+  const moving = shift > 0;
+
+  return (
+    <div ref={viewport} className={`min-w-0 overflow-hidden ${className}`}>
+      <div
+        className={
+          moving
+            ? "flex w-max motion-safe:animate-[marquee_linear_infinite] hover:[animation-play-state:paused]"
+            : "truncate"
+        }
+        style={moving
+          ? {
+              ["--marquee-shift" as string]: `${shift}px`,
+              animationDuration: `${shift / MARQUEE_SPEED}s`,
+            }
+          : undefined}
+      >
+        <span ref={copy} className="whitespace-nowrap text-muted">{text}</span>
+        {/* Second copy trails the first so the loop never shows a gap at the
+            end. Hidden from assistive tech, which should hear the sentence once. */}
+        {moving && (
+          <span aria-hidden className="whitespace-nowrap text-muted"
+            style={{ paddingLeft: MARQUEE_GAP }}>
+            {text}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -68,7 +141,11 @@ export function FeatureBanner() {
     <div className="relative overflow-hidden border-b border-emerald-400/25 bg-gradient-to-r from-accent/20 via-emerald-400/15 to-accent/20">
       {/* moving sheen to draw the eye */}
       <div aria-hidden className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 skew-x-[-20deg] bg-white/10 blur-md motion-safe:animate-[sheen_3.5s_ease-in-out_infinite]" />
-      <div className="relative mx-auto flex max-w-6xl items-center gap-2.5 px-5 py-2 text-sm sm:gap-3">
+      {/* Wraps on a phone: the headline and the buttons hold the first row and
+          the sentence gets the whole of the second, because sharing one row
+          left it about 70px to scroll through, which is unreadable. From sm up
+          there is room for everything on one line. */}
+      <div className="relative mx-auto flex max-w-6xl flex-wrap items-center gap-x-2.5 gap-y-1 px-5 py-2 text-sm sm:flex-nowrap sm:gap-3">
         <span className="text-emerald-300 motion-safe:animate-pulse"><SparklesGlyph /></span>
         <span className="hidden shrink-0 items-center gap-1 sm:inline-flex">
           <span className="rounded bg-emerald-400/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-emerald-300">
@@ -78,13 +155,16 @@ export function FeatureBanner() {
             Beta
           </span>
         </span>
-        <p className="min-w-0 flex-1 truncate">
-          <span className="font-semibold text-text">{PROMO.title}</span>
-          <span className="text-muted">{PROMO.body}</span>
-        </p>
+        <span className="shrink-0 whitespace-nowrap font-semibold text-text">
+          {PROMO.lead}
+        </span>
+        <Marquee
+          text={PROMO.body}
+          className="order-last w-full sm:order-none sm:w-auto sm:flex-1"
+        />
         <Link
           href={PROMO.href}
-          className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-emerald-400 px-3 py-1 text-xs font-bold text-black transition hover:brightness-110"
+          className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-lg bg-emerald-400 px-3 py-1 text-xs font-bold text-black transition hover:brightness-110 sm:ml-0"
         >
           Try it <span aria-hidden>→</span>
         </Link>
