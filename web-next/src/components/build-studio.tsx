@@ -130,7 +130,7 @@ function RecommendedComingSoon({ name, onGenerate }: { name: string; onGenerate:
       <h3 className="mt-3 text-lg font-semibold">Curated builds for {name} are still in review</h3>
       <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted">
         Every recommended build is checked before it ships, and {name} has not been through that
-        pass yet. Nothing here is hidden because it is broken -- it is hidden because it has not
+        pass yet. Nothing here is hidden because it is broken. It is hidden because it has not
         been verified, and a build you cannot trust is worse than no build.
       </p>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted">
@@ -373,7 +373,7 @@ const statSteps = (transforms: boolean): TourStep[] => [
   {
     target: "ability-values",
     title: "What your abilities actually hit for",
-    body: "Every ability recalculated against those stats -- real numbers, not ratios. Tap one for the formula, the rank it is read at, and the cooldown after haste."
+    body: "Every ability recalculated against those stats, as real numbers rather than ratios. Tap one for the formula, the rank it is read at, and the cooldown after haste."
       + (transforms
         ? " The toggle here switches the whole panel to the transformed kit, so you can read the abilities and damage you actually get after transforming."
         : ""),

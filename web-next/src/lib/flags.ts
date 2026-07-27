@@ -7,23 +7,20 @@
 // recommended build, the sitemap, and the pages themselves (which redirect
 // home).
 //
-// Resolution order:
-//   1. NEXT_PUBLIC_BUILD_TOOLS = "1" | "true"  -> force ON  (set in .env.local
-//      for local dev so the tools are always reachable while developing).
-//   2. NEXT_PUBLIC_BUILD_TOOLS = "0" | "false" -> force OFF.
-//   3. unset -> ON in local dev (next dev), OFF everywhere else (production).
+// LAUNCHED. The default is now ON everywhere, including preview and production
+// deployments; it used to be OFF unless NODE_ENV was development.
+//
+// The flag is kept rather than deleted, because it is still the kill switch:
+// set NEXT_PUBLIC_BUILD_TOOLS=0 in the Vercel environment and redeploy to pull
+// both tools back behind the curtain without touching code. Only an explicit
+// "0" or "false" turns them off; anything else, including unset, is ON.
 //
 // NEXT_PUBLIC_ vars are inlined at build time, so this works in both server and
-// client components. To LAUNCH in production, set NEXT_PUBLIC_BUILD_TOOLS=1 in
-// the Vercel environment (or just hard-code this to `true`).
+// client components -- and so a change to it needs a redeploy, not just a
+// restart.
 const _flag = process.env.NEXT_PUBLIC_BUILD_TOOLS?.toLowerCase();
 
-export const BUILD_TOOLS_LIVE =
-  _flag === "1" || _flag === "true"
-    ? true
-    : _flag === "0" || _flag === "false"
-      ? false
-      : process.env.NODE_ENV !== "production";
+export const BUILD_TOOLS_LIVE = !(_flag === "0" || _flag === "false");
 
 /**
  * Champions whose Recommended Builds tab is open.
