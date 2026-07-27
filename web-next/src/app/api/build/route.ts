@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { statSync } from "node:fs";
 import path from "node:path";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -32,7 +33,41 @@ export const maxDuration = 300;
 
 // repo root = parent of the web-next dir this app runs from
 const REPO_ROOT = path.resolve(process.cwd(), "..");
-const PY = process.env.PYTHON_BIN || "python";
+
+/**
+ * A Python that can actually be executed.
+ *
+ * Spawning the bare name "python" resolves through PATH, and on Windows the
+ * first hit is usually the Microsoft Store app-execution alias in
+ * %LOCALAPPDATA%\Microsoft\WindowsApps -- a ZERO-BYTE reparse stub that exists
+ * to open the Store. Node cannot execute it and spawn throws EPERM, which
+ * surfaced as "advisor process could not start: spawn EPERM" with the real
+ * interpreter sitting further down the same PATH.
+ *
+ * So: walk PATH ourselves, skip the aliases, and take the first real binary.
+ * PYTHON_BIN still wins if it is set.
+ */
+function resolvePython(): string {
+  if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
+  const win = process.platform === "win32";
+  const names = win ? ["python.exe", "python3.exe"] : ["python3", "python"];
+  for (const dir of (process.env.PATH ?? "").split(path.delimiter)) {
+    if (!dir) continue;
+    if (win && dir.toLowerCase().includes("microsoft\\windowsapps")) continue;
+    for (const name of names) {
+      const candidate = path.join(dir, name);
+      try {
+        // A stub alias reports size 0; a real interpreter never does.
+        if (statSync(candidate).size > 0) return candidate;
+      } catch {
+        // Not here; keep looking.
+      }
+    }
+  }
+  return win ? "python" : "python3";
+}
+
+const PY = resolvePython();
 // Thinking-mode generations now include the mandatory item audit and complete
 // LLM build evaluation, so allow the same four-minute ceiling as the advisor.
 const TIMEOUT_MS = 240_000;
