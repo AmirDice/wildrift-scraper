@@ -418,17 +418,22 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
         ) : (
           <Tile label="add keystone" size={40} round onClick={() => { setPicker({ kind: "keystone" }); setQuery(""); }} />
         )}
-        {/* minor path selector: switching resets the 3 minors */}
+        {/* Minor path selector: switching resets the 3 minors. The open list is
+            drawn by the OS and ignores a translucent background, so this needs an
+            opaque fill and an explicit colour -- white/[0.04] rendered white
+            options under white text and the list was unreadable. */}
         <select
           value={state.runes.tree}
           onChange={(e) => {
             setLoadedSavedId(null);
             setState((s) => ({ ...s, runes: { ...s.runes, tree: e.target.value, minors: ["", "", ""] } }));
           }}
-          className="rounded-lg border border-line bg-white/[0.04] px-1.5 py-1 text-xs outline-none"
+          className="rounded-lg border border-line bg-[#0e1322] px-1.5 py-1 text-xs text-text outline-none"
           title="Minor rune path"
         >
-          {TREES.map((t) => <option key={t} value={t}>{t}</option>)}
+          {TREES.map((t) => (
+            <option key={t} value={t} className="bg-[#0e1322] text-text">{t}</option>
+          ))}
         </select>
         {state.runes.minors.map((runeName, i) => {
           const rune = runeMeta.get(runeName);
@@ -477,7 +482,7 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
                     setBlockedNote(null);
                     return "cost" in c ? pickItem(c.slug) : pickRune(c.name);
                   }}
-                  title={lockedWhy ? `${c.name} — ${lockedWhy}` : c.name}
+                  title={lockedWhy ? `${c.name}: ${lockedWhy}` : c.name}
                   aria-disabled={Boolean(lockedWhy)}
                   className={`relative rounded-lg p-1 transition ${lockedWhy ? "cursor-not-allowed" : "hover:bg-white/[0.08]"}`}
                 >
@@ -485,8 +490,12 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
                        className={`${"cost" in c ? "rounded-lg" : "rounded-full"} ring-1 ring-white/10 ${lockedWhy ? "opacity-30 grayscale" : ""}`}
                        style={{ width: 34, height: 34 }} />
                   {lockedWhy && (
-                    <span aria-hidden className="pointer-events-none absolute inset-0 grid place-items-center text-sm">
-                      🔒
+                    <span aria-hidden className="pointer-events-none absolute inset-0 grid place-items-center">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                           stroke="currentColor" strokeWidth="2.5" className="text-bad drop-shadow">
+                        <rect x="4" y="10" width="16" height="10" rx="2" />
+                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                      </svg>
                     </span>
                   )}
                 </button>
@@ -495,7 +504,7 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
           </div>
           {blockedNote && (
             <p className="mt-2 rounded-lg bg-bad/10 px-2.5 py-1.5 text-xs font-medium text-bad">
-              🔒 {blockedNote}
+              {blockedNote}
             </p>
           )}
         </div>

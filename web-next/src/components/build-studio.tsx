@@ -248,7 +248,7 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
         onChange={(e) => setChampQuery(e.target.value)}
         placeholder="Search champion…"
         data-tour="champion-search"
-        className="mb-2 w-full max-w-xs rounded-lg border border-line bg-white/[0.04] px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
+        className="glass mb-2 w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
       />
       <div data-tour="champion-strip" className="-mx-1 flex gap-1.5 overflow-x-auto pb-2">
         {filteredChamps.map((c) => (
@@ -304,7 +304,7 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
                   <button
                     key={f.key}
                     onClick={() => setFormKey(f.key)}
-                    title={`${f.label} — its own items, runes and simulated damage`}
+                    title={`${f.label}: its own items, runes and simulated damage`}
                     className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
                       active
                         ? red ? "bg-red-400/20 text-red-300" : "bg-sky-400/20 text-sky-300"
@@ -322,7 +322,7 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
       </div>
 
       {/* tabs */}
-      <div data-tour="tabs" className="mt-4 flex gap-1 overflow-x-auto rounded-xl border border-line bg-white/[0.03] p-1">
+      <div data-tour="tabs" className="glass mt-4 flex gap-1 overflow-x-auto rounded-xl p-1">
         {availableTabs.map((entry) => (
           <button
             key={entry.id}
