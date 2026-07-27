@@ -144,7 +144,29 @@ def _analyse_ability(text: str) -> dict:
     return {"damageTypes": dtypes, "scales": sorted(scales), "tags": sorted(tags)}
 
 
-def _abilities(soup: BeautifulSoup, start: int = 0, stop: int = 5) -> list[dict]:
+# --- source typo corrections ------------------------------------------------
+# The guide pages are hand-maintained and occasionally miscount a rank list.
+# Extraction transcribes faithfully and must not "fix" numbers on its own, so
+# corrections belong here, at the source, where they are visible and survive a
+# re-scrape. Keep each one narrow: an exact string, only for the ability it
+# belongs to, so it silently stops applying if the page is ever corrected.
+SOURCE_TEXT_FIXES: list[tuple[str, str, str, str]] = [
+    # slug, ability-name fragment, wrong, right
+    # Rhaast's Reaping Slash lists FIVE values for a four-rank ability. Rank 4
+    # then read 130 instead of 160, undercounting his main damage ability.
+    ("kayn", "Reaping Slash: Rhaast",
+     "70 / 100 / 130 / 130 / 160", "70 / 100 / 130 / 160"),
+]
+
+
+def _fix_source_text(slug: str, name: str, text: str) -> str:
+    for fix_slug, fragment, wrong, right in SOURCE_TEXT_FIXES:
+        if fix_slug == slug and fragment in name and wrong in text:
+            text = text.replace(wrong, right)
+    return text
+
+
+def _abilities(soup: BeautifulSoup, start: int = 0, stop: int = 5, slug: str = "") -> list[dict]:
     """Parse one 5-block ability group.
 
     A transforming champion renders both kits: Kayn's page carries 10 blocks,
@@ -165,7 +187,7 @@ def _abilities(soup: BeautifulSoup, start: int = 0, stop: int = 5) -> list[dict]
         # Some abilities wrap the description in <p> tags, others put text straight
         # in the .lower div (e.g. Hecarim's Warpath) — take the whole node's text.
         lower = block.select_one(".lower")
-        text = lower.get_text(" ", strip=True) if lower else ""
+        text = _fix_source_text(slug, name, lower.get_text(" ", strip=True) if lower else "")
         an = _analyse_ability(text)
         out.append({
             "slot": slot,             # P / 1 / 2 / 3 / 4
@@ -231,7 +253,7 @@ def _form_label(abilities: list[dict]) -> str:
 def parse_champion(slug: str, refresh: bool = False) -> dict | None:
     html = fetch(f"{BASE}/guide/{slug}", f"guide_{slug}.html", refresh=refresh)
     soup = BeautifulSoup(html, "html.parser")
-    abilities = _abilities(soup)
+    abilities = _abilities(soup, slug=slug)
     if not abilities:
         return None
     base_stats = _base_stats(soup)
@@ -246,7 +268,7 @@ def parse_champion(slug: str, refresh: bool = False) -> dict | None:
     # Second kit, for champions who transform. It is a full champion record so
     # the formula extractor and the damage engine can treat it as one, sharing
     # the base stats (the same champion, a different kit).
-    alt = _abilities(soup, 5, 10)
+    alt = _abilities(soup, 5, 10, slug=slug)
     label = _form_label(alt) if alt else ""
     if label:
         key = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")

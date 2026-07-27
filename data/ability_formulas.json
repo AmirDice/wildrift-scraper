@@ -29747,9 +29747,14 @@
         "cooldowns": [],
         "damage": [],
         "steroids": [],
-        "defensive": [],
+        "defensive": [
+          {
+            "kind": "heal",
+            "note": "Heals for 24%-38% of physical damage dealt to champions (based on level)"
+          }
+        ],
         "unmodeled": [
-          "Passive: Transformation mechanic; Darkin Slayer form heals for 24%-38% of physical damage dealt to champions (scales with level)."
+          "Transformation mechanic: damaging ranged champions charges Shadow Assassin, damaging melee champions charges Darkin Slayer. At full charge, can transform at base."
         ]
       },
       "1": {
@@ -29786,7 +29791,7 @@
               }
             ],
             "hits": 2,
-            "unmodeled": "Max health damage also scales with 0.06% bonus AD (not modeled). Cap vs monsters: 235/310/385/460."
+            "unmodeled": "7% target max health also scales with 0.06% per bonus AD (not modeled). Max damage vs monsters: 235/310/385/460."
           }
         ],
         "steroids": [],
@@ -29817,14 +29822,13 @@
                 "pct": 120
               }
             ],
-            "hits": 1
+            "hits": 1,
+            "unmodeled": ""
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "Knocks up for 1s and slows 90% decaying over 1.5s."
-        ]
+        "unmodeled": []
       },
       "3": {
         "name": "Shadow Step: Rhaast",
@@ -29835,7 +29839,13 @@
           7.0
         ],
         "damage": [],
-        "steroids": [],
+        "steroids": [
+          {
+            "stat": "moveSpeed",
+            "pct": 35,
+            "note": "Gains 35% movement speed and can move through terrain for 5/5.5/6/6.5 seconds."
+          }
+        ],
         "defensive": [
           {
             "kind": "heal",
@@ -29851,10 +29861,12 @@
                 "pct": 50
               }
             ],
-            "unmodeled": "Heals on first entering terrain. Also grants 35% movement speed and terrain walk for 5/5.5/6/6.5s."
+            "note": "Heals upon entering terrain for the first time."
           }
         ],
-        "unmodeled": []
+        "unmodeled": [
+          "Being immobilized or spending >1.2s outside terrain or in combat ends the ability early."
+        ]
       },
       "4": {
         "name": "Umbral Trespass: Rhaast",
@@ -29865,7 +29877,7 @@
         ],
         "damage": [
           {
-            "name": "Umbral Trespass",
+            "name": "Umbral Trespass (Rhaast)",
             "type": "physical",
             "base": 0,
             "ratios": [
@@ -29875,7 +29887,7 @@
               }
             ],
             "hits": 1,
-            "unmodeled": "Also scales with 0.13% bonus AD."
+            "unmodeled": "Also has scaling of 0.13% per bonus AD (not modeled)."
           }
         ],
         "steroids": [],
@@ -29889,21 +29901,21 @@
                 "pct": 27
               }
             ],
-            "unmodeled": "Also scales with 0.1% bonus AD."
+            "unmodeled": "Also has scaling of 0.1% per bonus AD (not modeled)."
           }
         ],
         "unmodeled": [
-          "Infests target for 2.5s, becoming untargetable. Re-cast ends early."
+          "Untargetable during infestation. Re-cast ends early. If target dies, heal still triggers."
         ]
       }
     },
     "combo": [
+      "1",
       "2",
       "auto",
-      "1",
-      "auto",
       "4",
-      "auto"
+      "auto",
+      "1"
     ],
     "mechanics": [
       {
@@ -29913,7 +29925,7 @@
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.6,
+      "asEfficiency": 0.2,
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "medium"

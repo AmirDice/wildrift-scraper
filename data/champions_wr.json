@@ -8021,7 +8021,7 @@
               "3",
               "3"
             ],
-            "text": "Dashes and deals 70 / 100 / 130 / 130 / 160 ( 60% / 65% / 70% / 75% AD )  plus 7% ( +0.06% bonus AD ) of the target's maximum health as physical damage (max 235 / 310 / 385 / 460 vs monsters), then spins his scythe to deal the same damage. Deals an additional 35 physical damage to minions and monsters.",
+            "text": "Dashes and deals 70 / 100 / 130 / 160 ( 60% / 65% / 70% / 75% AD )  plus 7% ( +0.06% bonus AD ) of the target's maximum health as physical damage (max 235 / 310 / 385 / 460 vs monsters), then spins his scythe to deal the same damage. Deals an additional 35 physical damage to minions and monsters.",
             "damageTypes": [
               "physical"
             ],
