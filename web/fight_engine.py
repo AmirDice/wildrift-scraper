@@ -529,6 +529,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                                                        if g("allyShieldFlat") else 0.0)
             ragg["onHitFlat"] += g("onHitFlat")
             ragg["ampPct"] += g("ampPct") / 100.0
+            # Ability amplification from a RUNE. The same key was read for
+            # items but never here, so Battle Zeal's ramping ability damage
+            # ("up to a maximum of 6%") was extracted, stored, and dropped.
+            st["abilityAmp"] += g("abilityAmpPct") / 100.0
             if fx.get("burstProcFlat") or fx.get("burstProcApRatio") or fx.get("burstProcAdRatio"):
                 ragg["procs"].append((g("burstProcFlat"), g("burstProcAdRatio") / 100.0,
                                       fx.get("burstProcType", "magic")))
@@ -543,6 +547,13 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["dr"] = max(st["dr"], r.get("drPct", 0) / 100.0)
         st["healShieldAmp"] += r.get("healShieldAmpPct", 0) / 100.0
         st["runeHealPerSec"] += r.get("healPerSec", 0) + r.get("healPerProc", 0) / 9.0
+        # Vamp from a rune. Only items and the LLM rune path fed these, so a
+        # curated rune granting omnivamp or lifesteal healed for nothing.
+        _vamp = (r.get("omnivampPct", 0) + r.get("lifestealPct", 0)
+                 + r.get("physVampPct", 0)) / 100.0
+        st["vamp"] += _vamp
+        st["omnivampPct"] += r.get("omnivampPct", 0) / 100.0
+        st["lifestealPct"] += (r.get("lifestealPct", 0) + r.get("physVampPct", 0)) / 100.0
         if r.get("procTargetMaxHpPct"):
             st["graspPct"] += r["procTargetMaxHpPct"]
             st["graspEvery"] = r.get("procEverySec", 5)

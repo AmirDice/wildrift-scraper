@@ -113,7 +113,10 @@
     },
     "Relentless Hunter": {},
     "Triumph": {},
-    "Legend: Bloodline": {},
+    "Legend: Bloodline": {
+      "omnivampPct": 1,
+      "_why": "'Gain 1% omnivamp, up to bonus 7% ... when taking down' -- only the guaranteed 1% is modelled. The ramp needs takedowns, which a 1v1 simulation cannot produce, and averaging it in would price the rune off a condition the engine never checks."
+    },
     "Celerity": {
       "msPctAvg": 2,
       "msAmpPct": 7,
