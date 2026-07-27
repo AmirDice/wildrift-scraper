@@ -6,6 +6,7 @@ import {
   ALTERNATIVE_BUILD_VARIANT,
   buildChampions,
   buildForms,
+  getBuildsFor,
   buildGold,
   visibleBuildVariants,
   type Build,
@@ -16,6 +17,7 @@ import { ChampionAvatar, TierChip } from "@/components/ui";
 import { EnemyBuildAdvisor, Sparkles, type Advice } from "@/components/enemy-build";
 import { BuildCustomizer } from "@/components/build-customizer";
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
+import { hasSimulatableKit } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
 import { BuildExplanation } from "@/components/build-explanation";
 import { BuildLikeButton } from "@/components/build-like";
@@ -23,7 +25,7 @@ import { ShareBuildButton } from "@/components/share-build";
 import { AddToAlbumButton } from "@/components/add-to-album";
 import { CounterBuilderCta, GenerateBuildCta } from "@/components/tool-crosslinks";
 import { BuildTour, type TourStep } from "@/components/build-tour";
-import { getChampions } from "@/lib/data";
+import { getChampions, pendingChampions } from "@/lib/data";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -116,11 +118,18 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
 } = {}) {
   const champs = useMemo(() => {
     const built = new Map(buildChampions().map((entry) => [entry.slug, entry]));
-    return getChampions().map((champion) => built.get(champion.slug) ?? {
-      slug: champion.slug,
-      champion,
-      builds: null,
-    });
+    // Champions with no leaderboard yet are excluded from every ranking, but
+    // their kit and their generated build are real, so the studio lists the
+    // ones that actually have a build to show.
+    const pendingWithBuilds = pendingChampions()
+      .map((champion) => ({ champion, builds: getBuildsFor(champion.name) }))
+      .filter((entry) => entry.builds && hasSimulatableKit(entry.champion.name))
+      .map((entry) => ({ slug: entry.champion.slug, champion: entry.champion, builds: entry.builds! }));
+    return [...getChampions(), ...pendingWithBuilds.map((e) => e.champion)].map((champion) =>
+      built.get(champion.slug)
+        ?? pendingWithBuilds.find((e) => e.slug === champion.slug)
+        ?? { slug: champion.slug, champion, builds: null },
+    );
   }, []);
   const initialSlug = champs.some((entry) => entry.slug === initialChampion) ? initialChampion! : champs[0]?.slug ?? "";
   const initialRecord = champs.find((entry) => entry.slug === initialSlug);

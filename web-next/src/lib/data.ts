@@ -1,4 +1,5 @@
 import siteData from "@/data/site.json";
+import { getNewChampion, getNewChampions, type NewChampion } from "@/lib/new-champions";
 
 export interface BestPlayer {
   player: string;
@@ -34,6 +35,10 @@ export interface Champion {
   icon: string;
   splash: string;
   bestPlayer: BestPlayer | null;
+  /** No top-50 leaderboard yet, so every ranking field on this record is a
+   *  placeholder and must not be rendered. Set only for champions surfaced
+   *  from new_champions.json; see pendingChampion(). */
+  statsPending?: boolean;
 }
 
 export interface MetaClass {
@@ -136,9 +141,44 @@ export function getChampions(): Champion[] {
 // the kind of cost that only shows up once the build has 140 pages in it.
 let _bySlug: Map<string, Champion> | null = null;
 
+/**
+ * A champion who is live in the game but has no ranked data here yet.
+ *
+ * Every ranking field is a placeholder: the site's numbers come from top-50
+ * player win rates, and inventing one for a champion with no leaderboard is
+ * exactly what this codebase refuses to do. `statsPending` marks that, and
+ * callers must hide the ranking UI rather than render these values -- which is
+ * why the win rate is NaN and the tier is empty: they cannot be shown by
+ * accident without looking obviously wrong.
+ */
+function pendingChampion(c: NewChampion): Champion {
+  return {
+    name: c.name, slug: c.slug, role: c.role, class: c.class,
+    difficulty: c.difficulty, difficultyLabel: c.difficultyLabel,
+    isHard: c.difficulty >= 7,
+    wr: NaN, meanWr: null, maxWr: null, winrateStd: null,
+    medianGames: null, totalGames: null, nPlayers: null, medianMastery: null,
+    maxScore: null, otpScore: null, isOtp: false, topPlayer: null,
+    tier: "", tierCss: "", tierRole: "", tierRoleCss: "",
+    skillSpread: null, icon: c.icon, splash: c.splash, bestPlayer: null,
+    statsPending: true,
+  };
+}
+
 export function getChampion(slug: string): Champion | undefined {
   if (!_bySlug) _bySlug = new Map(site.champions.map((c) => [c.slug, c]));
-  return _bySlug.get(slug);
+  const ranked = _bySlug.get(slug);
+  if (ranked) return ranked;
+  // Falls back so a champion with a real kit and a generated build still has a
+  // page and a build, even before they have a win rate. getChampions() is left
+  // alone on purpose: it feeds the tier list and every ranking on the site.
+  const pending = getNewChampion(slug);
+  return pending ? pendingChampion(pending) : undefined;
+}
+
+/** Kit-complete champions with no ranked data yet, as Champion records. */
+export function pendingChampions(): Champion[] {
+  return getNewChampions().map(pendingChampion);
 }
 
 export function championsInRole(role: string): Champion[] {

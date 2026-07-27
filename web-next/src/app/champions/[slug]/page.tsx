@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getChampion, getChampions, championsInRole, tierText, tierLabel } from "@/lib/data";
+import { getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel } from "@/lib/data";
 import { getCnBySlug } from "@/lib/cn";
 import { getMatchups, type ResolvedMatchup } from "@/lib/counters";
 import { getSkewBySlug } from "@/lib/skew";
@@ -30,7 +30,7 @@ const SCALES_LABEL: Record<string, string> = { ad: "AD", ap: "AP", maxHp: "Max H
 const pretty = (map: Record<string, string>, key: string) => map[key] ?? key;
 
 export function generateStaticParams() {
-  return getChampions().map((champion) => ({ slug: champion.slug }));
+  return [...getChampions(), ...pendingChampions()].map((champion) => ({ slug: champion.slug }));
 }
 
 export async function generateMetadata(props: PageProps<"/champions/[slug]">): Promise<Metadata> {
@@ -42,7 +42,9 @@ export async function generateMetadata(props: PageProps<"/champions/[slug]">): P
   // "counters" in the description are there to match real queries rather than
   // to describe the page to ourselves.
   const title = `${champion.name} Wild Rift Build, Counters & Win Rate`;
-  const description = `${champion.name} is ${tierLabel(champion.tier)} tier in Wild Rift with a ${champion.wr.toFixed(1)}% win rate across its 50 best EU players. Counters, matchups, abilities, runes, item build and full patch history.`;
+  const description = champion.statsPending
+    ? `${champion.name} in Wild Rift: full kit, ability numbers, base stats and item build. Win rate and tier arrive once there is a ranked sample to build them from.`
+    : `${champion.name} is ${tierLabel(champion.tier)} tier in Wild Rift with a ${champion.wr.toFixed(1)}% win rate across its 50 best EU players. Counters, matchups, abilities, runes, item build and full patch history.`;
   return { title, description, alternates: { canonical: `/champions/${champion.slug}` }, openGraph: { title, description, images: [champion.splash] }, twitter: { card: "summary_large_image", title, description, images: [champion.splash] } };
 }
 
@@ -64,12 +66,35 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const playstyle = getPlaystyleProfile(champion);
   const history = getChampionHistory(champion.name);
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
-  const stats = [
+  const stats = champion.statsPending ? [] : [
     { label: "Tier", value: tierLabel(champion.tier), className: tierText[champion.tier] },
     { label: "Win rate", value: `${champion.wr.toFixed(1)}%`, className: "text-accent" },
     { label: "Ceiling WR", value: champion.maxWr != null ? `${champion.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
     { label: "Median games", value: champion.medianGames != null ? champion.medianGames.toLocaleString() : "-", className: "" },
   ];
+
+  // Everything in the overview is leaderboard-derived, so a champion without
+  // one gets an honest placeholder instead: the kit, base stats and build tabs
+  // still carry real data and stay exactly as they are.
+  const pendingOverview = (
+    <div className="space-y-6">
+      <Card className="p-5 sm:p-6">
+        <h2 className="text-lg font-semibold">{champion.name} stats are pending</h2>
+        <p className="mt-2 leading-relaxed text-muted">
+          {champion.name} is live in Wild Rift but has no top-50 leaderboard here yet, and every
+          ranking on this site is built from those players. Rather than publish a win rate we
+          cannot stand behind, this page shows the kit and base stats now, and the rankings
+          arrive with the first collected sample.
+        </p>
+        {kit?.primaryDamage && (
+          <p className="mt-3 text-sm text-muted">
+            <span className="font-medium text-text">Damage type:</span> {kit.primaryDamage}
+            {kit.scalesWith?.length ? <> · <span className="font-medium text-text">Scales with:</span> {kit.scalesWith.join(", ")}</> : null}
+          </p>
+        )}
+      </Card>
+    </div>
+  );
 
   const overview = (
     <div className="space-y-6">
@@ -147,7 +172,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
       <ToolsCta />
       <Container className="py-8 sm:py-10">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{stats.map((stat) => <Card key={stat.label} className="p-4"><p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">{stat.label}</p><p className={`mt-2 text-xl font-semibold sm:text-2xl ${stat.className}`}>{stat.value}</p></Card>)}</div>
-        <ChampionTabs panels={{ overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}/>
+        <ChampionTabs panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}/>
         {related.length > 0 && <div className="mt-10"><h2 className="mb-4 text-lg font-semibold">Other {champion.role} champions</h2><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{related.map((entry) => <Link key={entry.slug} href={`/champions/${entry.slug}`} className="glass glass-hover flex flex-col items-center gap-2 rounded-xl p-3 text-center"><ChampionAvatar champion={entry} size={48}/><span className="w-full truncate text-sm font-medium">{entry.name}</span><div className="flex items-center gap-1.5"><TierChip tier={entry.tier}/><span className="text-xs font-semibold text-accent">{entry.wr.toFixed(1)}%</span></div></Link>)}</div></div>}
       </Container>
     </>

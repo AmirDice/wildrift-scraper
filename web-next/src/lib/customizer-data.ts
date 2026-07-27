@@ -233,6 +233,31 @@ export interface ConditionalBuildEffect {
   detail: string;
 }
 
+/**
+ * Does this champion have a kit the engine can actually simulate?
+ *
+ * An unreleased champion's guide page carries placeholder tooltips with no
+ * numbers ("dealing damage and slowing them"), so extraction yields components
+ * with empty values and every simulated build scores the same. A generated
+ * build for such a champion is a guess no engine ever checked, so the studio
+ * does not offer one.
+ */
+export function hasSimulatableKit(name: string): boolean {
+  const abilities = DATA.formulas[name]?.abilities ?? {};
+  return Object.values(abilities).some((ability) =>
+    (ability.damage ?? []).some((part) => {
+      const nums = (v: unknown): number[] =>
+        typeof v === "number" ? [v]
+          : Array.isArray(v) ? v.filter((x): x is number => typeof x === "number")
+          : v && typeof v === "object" && "lvlRange" in (v as object)
+            ? ((v as { lvlRange: number[] }).lvlRange ?? []) : [];
+      const base = nums(part.base).some((x) => x !== 0);
+      const ratio = (part.ratios ?? []).some((r) => nums(r.pct).some((x) => x !== 0));
+      return base || ratio;
+    }),
+  );
+}
+
 export function customizerItems(): CustomizerItem[] {
   return Object.entries(DATA.items)
     .filter(([, item]) => item.category !== "Enchantment")

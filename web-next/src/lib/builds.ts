@@ -206,6 +206,13 @@ function shippable(b: ChampionBuilds | undefined): b is ChampionBuilds {
   return b.variants.length > 0 && b.variants.every((v) => b.builds[v]);
 }
 
+/** A champion's shippable build set by name, or null. Used to reach builds for
+ *  champions the roster deliberately excludes (no leaderboard yet). */
+export function getBuildsFor(championName: string): ChampionBuilds | null {
+  const b = BUILDS[championName];
+  return shippable(b) ? b : null;
+}
+
 /** Champions that have a valid generated build, as {slug, champion} pairs. */
 export function buildChampions(): { slug: string; champion: Champion; builds: ChampionBuilds }[] {
   const out: { slug: string; champion: Champion; builds: ChampionBuilds }[] = [];

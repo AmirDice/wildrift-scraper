@@ -3,6 +3,7 @@ import { site, getChampions } from "@/lib/data";
 import { getCnChampions, cnRoles, CN_META } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { ChampionsExplorer } from "@/components/champions-explorer";
+import { NewChampions } from "@/components/new-champions";
 
 export const metadata: Metadata = {
   title: "Wild Rift Champions | Stats & Win Rates",
@@ -25,6 +26,12 @@ export default function ChampionsPage() {
           cnMeta={CN_META}
           euUpdated={site.collectedOn}
         />
+      </div>
+      {/* Champions who are live in the game but have no ranked sample yet.
+          They cannot be placed in the explorer above without inventing a win
+          rate, so they get their own section with the kit we do have. */}
+      <div className="mt-14">
+        <NewChampions />
       </div>
     </Container>
   );
