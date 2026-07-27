@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { SESSION_COOKIE, readSession } from "@/lib/session";
+import { SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
 import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, refundQuota } from "@/lib/quota";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
@@ -342,7 +342,10 @@ async function handlePost(request: Request) {
   const store = await cookies();
   const user = readSession(store.get(SESSION_COOKIE)?.value);
   const access = readAccessCookie(store.get(ACCESS_COOKIE)?.value);
-  const unlimited = access?.unlimited ?? false;
+  // Either route to an exempt account: an access code's cookie, or being one of
+  // the ADMIN_EMAILS. Usage is still counted for both (see consumeQuota), so
+  // the cost of a beta remains visible.
+  const unlimited = (access?.unlimited ?? false) || isAdmin(user);
 
   // guard the shell-out: only plausible names/values reach argv
   const clean = (s: unknown) =>

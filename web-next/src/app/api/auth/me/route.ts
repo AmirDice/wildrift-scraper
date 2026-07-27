@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { AUTH_CONFIGURED, SESSION_COOKIE, readSession } from "@/lib/session";
+import { AUTH_CONFIGURED, SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { clientIp, peekQuota } from "@/lib/quota";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
 
@@ -16,7 +16,10 @@ export async function GET(request: Request) {
   const store = await cookies();
   const user = readSession(store.get(SESSION_COOKIE)?.value);
   const access = readAccessCookie(store.get(ACCESS_COOKIE)?.value);
-  const quota = await peekQuota(user, clientIp(request), access?.unlimited ?? false);
+  // Match the build route exactly, or the nav would advertise a cap the
+  // generator does not actually apply.
+  const unlimited = (access?.unlimited ?? false) || isAdmin(user);
+  const quota = await peekQuota(user, clientIp(request), unlimited);
 
   return NextResponse.json(
     {

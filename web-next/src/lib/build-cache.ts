@@ -77,7 +77,13 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v5: requests carry risk tolerance, structured counter threats, per-mode
   // metadata (requestMeta) and, in counter mode, a counterSummary; a v4 entry
   // predates those, so it must not be served for a v5-shaped request.
-  return `build:v5:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v6: rune reasons were being stored against the wrong runes. They are zipped
+  // with the runes by index, so one reason written for a rune that did not make
+  // the final page shifted every reason after it, and a v5 entry has that
+  // baked in -- a live Pantheon build explained Hubris as "Eyeball Collector:
+  // scales AD from takedowns". Reasons are now re-keyed to the rune they name,
+  // and every build cached before that fix is unreachable.
+  return `build:v6:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

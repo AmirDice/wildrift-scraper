@@ -25,6 +25,31 @@ const AUTH_SECRET = process.env.AUTH_SECRET ?? "";
 /** Sign-in is only offered when both halves are configured. */
 export const AUTH_CONFIGURED = Boolean(GOOGLE_CLIENT_ID && AUTH_SECRET);
 
+/**
+ * Accounts that are exempt from the daily generation cap.
+ *
+ * Comma-separated in ADMIN_EMAILS, deliberately NOT hard-coded: the repository
+ * is public, and an owner's personal address does not belong in it. Compared
+ * against the Google-verified email on the session, so it cannot be spoofed by
+ * editing a cookie -- the session is HMAC-signed and the email inside it came
+ * from a token checked against Google's JWKS.
+ *
+ * The access-code route to unlimited generations still exists and is unchanged.
+ * This one is tied to the account rather than to a cookie, so it survives a
+ * cleared browser and works on any device the owner signs in on.
+ */
+const ADMIN_EMAILS = new Set(
+  (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+export function isAdmin(user: { email?: string } | null | undefined): boolean {
+  const email = user?.email?.trim().toLowerCase();
+  return Boolean(email && ADMIN_EMAILS.has(email));
+}
+
 export interface SessionUser {
   /** Google subject id: the stable per-user key our quotas are counted against. */
   sub: string;
