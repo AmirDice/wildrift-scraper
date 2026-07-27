@@ -427,7 +427,7 @@ export function ChampionAbilitiesPanel({
   if (!abilities.length) return null;
 
   return (
-    <div className={embedded ? "mt-3 border-t border-line/60 pt-3" : "glass rounded-2xl p-4"}>
+    <div data-tour="ability-values" className={embedded ? "mt-3 border-t border-line/60 pt-3" : "glass rounded-2xl p-4"}>
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
           Live ability values <span className="normal-case text-faint/60">· level {level} with this build</span>

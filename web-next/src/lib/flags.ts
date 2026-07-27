@@ -24,3 +24,23 @@ export const BUILD_TOOLS_LIVE =
     : _flag === "0" || _flag === "false"
       ? false
       : process.env.NODE_ENV !== "production";
+
+/**
+ * Champions whose Recommended Builds tab is open.
+ *
+ * The generated catalogue still needs validating, so the curated tab is held
+ * back per champion rather than as a whole: everything else in the studio --
+ * the Personal Build Generator, the Custom Build Lab and the Counter Builder --
+ * is live, because those compute an answer for the player rather than serving a
+ * pre-authored one we have not finished checking.
+ *
+ * Hecarim stays open deliberately. He is the landing page's example, and a
+ * visitor who follows it should reach a real build rather than a locked tab.
+ *
+ * Opening the rest is a one-line change: add the name, or return true here.
+ */
+const RECOMMENDED_BUILDS_OPEN = new Set(["Hecarim"]);
+
+export function recommendedBuildsLive(championName: string): boolean {
+  return RECOMMENDED_BUILDS_OPEN.has(championName);
+}

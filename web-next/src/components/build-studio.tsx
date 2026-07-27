@@ -26,6 +26,7 @@ import { AddToAlbumButton } from "@/components/add-to-album";
 import { CounterBuilderCta, GenerateBuildCta } from "@/components/tool-crosslinks";
 import { BuildTour, type TourStep } from "@/components/build-tour";
 import { getChampions, pendingChampions } from "@/lib/data";
+import { recommendedBuildsLive } from "@/lib/flags";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -113,6 +114,39 @@ const ARCHETYPE_LABEL: Record<string, string> = {
   weaver: "Weaver", onhitcaster: "On-hit caster",
 };
 
+/**
+ * Stands in for a champion's curated builds while they are still being checked.
+ *
+ * Deliberately a placeholder rather than a hidden tab: the tab is the promise,
+ * and the two tools that ARE ready compute their answer live rather than
+ * serving something pre-authored, so it points at those instead of dead-ending.
+ */
+function RecommendedComingSoon({ name, onGenerate }: { name: string; onGenerate: () => void }) {
+  return (
+    <div className="glass rounded-2xl p-6 text-center sm:p-8">
+      <span className="inline-flex rounded-full bg-gold/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-gold">
+        Coming soon
+      </span>
+      <h3 className="mt-3 text-lg font-semibold">Curated builds for {name} are still in review</h3>
+      <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted">
+        Every recommended build is checked before it ships, and {name} has not been through that
+        pass yet. Nothing here is hidden because it is broken -- it is hidden because it has not
+        been verified, and a build you cannot trust is worse than no build.
+      </p>
+      <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted">
+        The Personal Build Generator works for {name} right now and builds around how you play.
+        The Custom Build Lab is open too, with live stats for anything you assemble.
+      </p>
+      <button
+        onClick={onGenerate}
+        className="mt-5 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-bold text-black transition hover:opacity-90"
+      >
+        Generate a build for {name} →
+      </button>
+    </div>
+  );
+}
+
 export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
   initialChampion?: string; initialTab?: Tab; initialVariant?: string;
 } = {}) {
@@ -163,15 +197,24 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
 
   const name = rec.champion.name;
 
-  const comparisonChoices = builds ? variants.map((key) => comparableFromBuild(key, builds.builds[key])) : [];
+  // The curated catalogue is still being validated, so Recommended Builds is
+  // open per champion. The tab stays visible either way -- a locked tab that
+  // says what is coming reads better than a tab that silently is not there.
+  const recommendedOpen = recommendedBuildsLive(rec.champion.name);
+  // Comparisons expose the same curated item lists, so they follow the gate.
+  const comparisonChoices = builds && recommendedOpen
+    ? variants.map((key) => comparableFromBuild(key, builds.builds[key]))
+    : [];
   const availableTabs = builds ? TABS : TABS.filter((entry) => entry.id === "generate");
-  const effectiveTab = availableTabs.some((entry) => entry.id === tab) ? tab : "generate";
+  const wanted = availableTabs.some((entry) => entry.id === tab) ? tab : "generate";
+  const effectiveTab = wanted === "recommended" && !recommendedOpen ? "recommended" : wanted;
   const selectedPathLabel = effectiveTab === "recommended" ? controlledPathLabel(build) : null;
 
   const switchChamp = (s: string) => {
     setSlug(s);
     setFormKey("base");
-    setTab(champs.find((entry) => entry.slug === s)?.builds ? "recommended" : "generate");
+    const next = champs.find((entry) => entry.slug === s);
+    setTab(next?.builds && recommendedBuildsLive(next.champion.name) ? "recommended" : "generate");
     setGeneratedAdvice(null);
   };
   const filteredChamps = champQuery
@@ -285,7 +328,8 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
       </div>
 
       <div className="mt-4">
-        {effectiveTab === "recommended" && build && (
+        {effectiveTab === "recommended" && !recommendedOpen && <RecommendedComingSoon name={name} onGenerate={() => setTab("generate")} />}
+        {effectiveTab === "recommended" && recommendedOpen && build && (
           <BuildTab {...{ variants, variant, setVariant, build, name, engineName, slug, comparisonChoices }} onGenerate={() => setTab("generate")} />
         )}
         {effectiveTab === "generate" && (
@@ -309,6 +353,21 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
   );
 }
 
+/** The two panels every tab shows once there is a build on screen. They are the
+ *  reason to trust the rest of the page, and the tour never mentioned them. */
+const STAT_STEPS: TourStep[] = [
+  {
+    target: "build-stats",
+    title: "Champion stats, not item stats",
+    body: "This is the whole build resolved onto the champion at level 15: base growth, every item and the guaranteed part of the runes, with kit conversions already applied. Guaranteed is what you are certain to have when a fight starts; Fully scaled is what the loadout is worth once stacking items and ramping passives have paid off. The gap between the two is how greedy a build is.",
+  },
+  {
+    target: "ability-values",
+    title: "What your abilities actually hit for",
+    body: "Every ability recalculated against those stats -- real numbers, not ratios. Tap one for the formula, the rank it is read at, and the cooldown after haste. If a champion transforms, the toggle here switches the whole panel to the transformed kit, so you can read Mega Gnar or Rhaast rather than guessing what changes.",
+  },
+];
+
 /** Per-tab walkthroughs. Bump a storageKey when its tab changes shape enough
  *  that the old walkthrough would be describing controls that moved. */
 const STUDIO_TOUR: TourStep[] = [
@@ -328,6 +387,13 @@ const STUDIO_TOUR: TourStep[] = [
     body: "Items are shown in purchase order, with boots slotted where they actually get bought. Tap any item, rune or ability for the reasoning behind it.",
   },
   {
+    target: "champion-form",
+    optional: true,
+    title: "Champions who transform get two builds",
+    body: "Kayn commits to Shadow Assassin or Rhaast for the rest of the game, and they want opposite items, so each form has its own build. The toggle switches everything below it: items, runes, stats and the simulated damage. Only appears for champions this applies to.",
+  },
+  ...STAT_STEPS,
+  {
     target: "generate-cta",
     title: "Nothing here fits your game?",
     body: "Generate a build around your role, playstyle and power spike, then compare it against any recommended build.",
@@ -340,9 +406,9 @@ const STUDIO_TOUR: TourStep[] = [
 ];
 
 const TAB_TOURS: Record<Tab, { storageKey: string; steps: TourStep[] }> = {
-  recommended: { storageKey: "wtm_tour_studio_v1", steps: STUDIO_TOUR },
+  recommended: { storageKey: "wtm_tour_studio_v2", steps: STUDIO_TOUR },
   generate: {
-    storageKey: "wtm_tour_generate_v1",
+    storageKey: "wtm_tour_generate_v2",
     steps: [
       {
         target: "your-champion",
@@ -370,10 +436,11 @@ const TAB_TOURS: Record<Tab, { storageKey: string; steps: TourStep[] }> = {
         title: "Generate, then read the reasoning",
         body: "You get a full item order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Save anything worth keeping to an album.",
       },
+      ...STAT_STEPS,
     ],
   },
   customize: {
-    storageKey: "wtm_tour_lab_v1",
+    storageKey: "wtm_tour_lab_v2",
     steps: [
       {
         target: "lab-start-from",
@@ -385,11 +452,7 @@ const TAB_TOURS: Record<Tab, { storageKey: string; steps: TourStep[] }> = {
         title: "Five items, boots, and a full rune page",
         body: "Tap an empty slot to pick, tap the small cross to remove. Items, boots, keystone and the three minors all behave the same way.",
       },
-      {
-        target: "build-stats",
-        title: "Watch the stats as you go",
-        body: "Every change updates the sheet immediately. Switch it to Fully scaled to see what the build is worth once stacking items and runes have ramped up.",
-      },
+      ...STAT_STEPS,
       {
         target: "lab-saved",
         title: "Save what you land on",
