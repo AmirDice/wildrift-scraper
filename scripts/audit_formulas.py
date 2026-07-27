@@ -28,13 +28,23 @@ ROOT = Path(__file__).resolve().parent.parent
 FORMULAS = ROOT / "data" / "ability_formulas.json"
 CHAMPS = ROOT / "data" / "champions_wr.json"
 
-# Text that means "this ability damages something".
+# An ability that DAMAGES states a number attached to a damage type. Matching
+# the bare word "damage" instead flagged all 53 shields in the game, because a
+# shield "absorbs 200 magic damage" -- 90 reported losses of which 4 were real,
+# which is noise dense enough that the real ones have to be found by hand.
 DMG_RE = re.compile(
-    r"\b(damage|damages|deal|deals|dealing|burn|burns|execute|strikes?)\b", re.I)
-# Abilities that legitimately deal nothing.
-UTILITY_RE = re.compile(
-    r"\b(shield|heal|dash|blink|cleanse|untargetable|invulnerab|stealth|vision|"
-    r"movement speed|move speed)\b", re.I)
+    r"\d[\d\s/.,%]*\)?\s*(?:\([^)]*\)\s*)?(?:physical|magic|true)\s+damage", re.I)
+# Absorb clauses state a damage number that the ability soaks rather than deals.
+ABSORB_RE = re.compile(r"[^.]*(?:absorb|aborb)\w*[^.]*\.", re.I)
+
+# Abilities whose damage genuinely cannot be expressed in the schema, checked
+# by hand. Listing them keeps the audit's output actionable: anything printed
+# outside this set is a regression, not a known limit.
+KNOWN_GAPS = {
+    ("Amumu", "P"): "damage amplification (+10% true from incoming magic), not damage",
+    ("Kayn", "P"): "form-gated conditional amp (+52-66% magic, 3s, Shadow Assassin only)",
+    ("Smolder", "P"): "stack-gated empowerment of Q/W/E; no stack count in the tooltip",
+}
 
 
 def _text_of(champ: dict, slot: str) -> str:
@@ -44,14 +54,20 @@ def _text_of(champ: dict, slot: str) -> str:
     return ""
 
 
+def _deals_damage(text: str) -> bool:
+    """Does the tooltip state damage this ability DEALS (not damage it absorbs)?"""
+    return bool(DMG_RE.search(ABSORB_RE.sub(" ", text)))
+
+
 def main() -> None:
     F = json.loads(FORMULAS.read_text(encoding="utf-8"))
     C = json.loads(CHAMPS.read_text(encoding="utf-8"))
     C = list(C.values()) if isinstance(C, dict) else C
     by_name = {c["name"]: c for c in C}
 
-    hard: list[tuple] = []   # damage text, but no damage component -> real loss
-    soft: list[tuple] = []   # no damage text -> legitimately empty
+    hard: list[tuple] = []   # states damage it deals, but no component -> real loss
+    soft: list[tuple] = []   # states no damage -> legitimately empty
+    known: list[tuple] = []  # real loss, but out of schema by decision
     ungrounded: list[tuple] = []
 
     for champ, rec in sorted(F.items()):
@@ -66,17 +82,26 @@ def main() -> None:
                     ungrounded.append((champ, slot, ab.get("name"), u))
             if n_dmg:
                 continue
-            has_dmg_text = bool(DMG_RE.search(txt))
-            is_util = bool(UTILITY_RE.search(txt)) and not has_dmg_text
-            (soft if (is_util or not has_dmg_text) else hard).append(
-                (champ, slot, ab.get("name"), txt[:90]))
+            if not _deals_damage(txt):
+                soft.append((champ, slot, ab.get("name"), txt[:90]))
+            elif (champ, slot) in KNOWN_GAPS:
+                known.append((champ, slot, ab.get("name"), KNOWN_GAPS[(champ, slot)]))
+            else:
+                hard.append((champ, slot, ab.get("name"), txt[:90]))
 
     print(f"{'='*70}\nEMPTY ABILITIES THAT SHOULD DEAL DAMAGE  ({len(hard)})\n{'='*70}")
     for champ, slot, name, txt in hard:
         print(f"  {champ:<10} [{slot}] {str(name)[:26]:<26}")
         print(f"       text: {txt}...")
     if not hard:
-        print("  none -- every ability whose text mentions damage has a damage component")
+        print("  none -- every ability that states damage it deals has a component")
+
+    print(f"\n{'='*70}\nKNOWN GAPS (out of schema, accepted)  ({len(known)})\n{'='*70}")
+    for champ, slot, name, why in known:
+        print(f"  {champ:<13}[{slot}] {str(name)[:26]:<26} {why}")
+    stale = sorted(set(KNOWN_GAPS) - {(c, s) for c, s, _, _ in known})
+    if stale:
+        print("  -- no longer empty, drop from KNOWN_GAPS: " + ", ".join(f"{c}[{s}]" for c, s in stale))
 
     print(f"\n{'='*70}\nEMPTY BUT LEGITIMATE (pure utility)  ({len(soft)})\n{'='*70}")
     for champ, slot, name, _ in soft:
