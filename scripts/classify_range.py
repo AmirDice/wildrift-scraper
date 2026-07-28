@@ -176,6 +176,11 @@ def apply_to_profiles(store: dict, min_confidence: str = "medium") -> None:
     melee_added, melee_removed = [], []
     for name, entry in sorted(confident.items()):
         record = champs.get(name) or {}
+        # Hybrid is a human judgement the classifier cannot make: it only ever
+        # answers melee or ranged, so letting it write here would flatten Gnar
+        # and Jayce back to one mode and hand them ranged-only items.
+        if record.get("rangeProfile") == "hybrid":
+            continue
         if entry.get("attackType") == "melee":
             if default_is_melee(name):
                 continue                      # the default already says this
@@ -217,6 +222,18 @@ def apply_to_profiles(store: dict, min_confidence: str = "medium") -> None:
                 if _profiles.range_profile(n) == "melee"
                 or n in melee or default_is_melee(n)}
     no_poke |= set(entries) - set(confident)
+
+    # An owner confirmation outranks every rule above it, including the melee
+    # gate. Rell is the case that forced this: she is a melee Tank, so she was
+    # excluded twice over -- once by the attack type and once by a Tank class
+    # list that has no Poke entry to begin with -- and the owner still wants
+    # Poke available for her. `userConfirmed` in range_classification.json is
+    # the record of that decision, so a re-run of the classifier cannot quietly
+    # revert it.
+    poke_confirmed = sorted(
+        n for n, e in entries.items()
+        if e.get("userConfirmed") and e.get("pokeEligible") and n in _profiles.CHAMPIONS)
+    no_poke -= set(poke_confirmed)
     no_poke = sorted(no_poke & set(_profiles.CHAMPIONS))
 
     ps = json.loads(PLAYSTYLES.read_text(encoding="utf-8"))
@@ -230,7 +247,28 @@ def apply_to_profiles(store: dict, min_confidence: str = "medium") -> None:
         "comes from long range. Champions the classifier was not confident about are "
         "also listed: an unsure answer does not get to advertise a build the player "
         "may not be able to execute. Poke is filtered out for everyone on this list.")
+    ps["_pokeConfirmedNote"] = (
+        "Owner-confirmed Poke champions. Outranks the melee gate and the noPoke "
+        "list. Rell is here despite being a melee Tank, which is also why she "
+        "needs an entry in `overrides` below: the Tank class list has no Poke "
+        "entry, so confirming her eligible is not on its own enough to put Poke "
+        "in her menu.")
+    ps["pokeConfirmed"] = poke_confirmed
     ps["noPoke"] = no_poke
+
+    # A confirmed champion whose CLASS never offers Poke needs the style added
+    # explicitly, or the confirmation has no visible effect.
+    by_class = ps.get("byClass", {})
+    for name in poke_confirmed:
+        champ_class = (_profiles.CHAMPIONS.get(name) or {}).get("class", "")
+        if "poke" in (by_class.get(champ_class) or []):
+            continue
+        current = ps["overrides"].get(name) or list(by_class.get(champ_class) or [])
+        if "poke" not in current:
+            ps["overrides"][name] = [*current, "poke"]
+            print(f"added Poke to {name}'s playstyle override "
+                  f"(class {champ_class!r} does not grant it)")
+
     PLAYSTYLES.write_text(json.dumps(ps, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     print(f"rangeProfile: +{len(melee_added)} melee "

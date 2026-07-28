@@ -9,11 +9,15 @@
     "reason": "why the derivation is wrong here. Required."
   },
   "_buildIdentityNote": "buildIdentity overrides the derived AD/AP itemisation identity for the exceptions the class+scalesWith rule cannot catch: AP bruisers/tanks whose kit also carries an AD ratio, so scalesWith contains 'ad' yet they build full AP.",
-  "_rangeProfileNote": "rangeProfile ('melee'|'ranged') is curated because the scrape carries no attack-range field. It gates the Poke curated variant: a melee assassin classed as Mage (Akali) must not read as ranged. Default when absent: Marksman/Mage/Enchanter are ranged, everyone else melee. Only the exceptions -- melee champions in a ranged class -- are listed here.",
+  "_rangeProfileNote": "rangeProfile ('melee'|'ranged'|'hybrid') is curated because the scrape carries no attack-range field. It gates the Poke variant and ranged-only items. 'hybrid' means the champion has BOTH a melee and a ranged mode in the kit (Gnar transforms, Jayce swaps weapon). Ranged-only items require PURE ranged: a champion who spends any of the game in melee cannot rely on an item that stops working there, so hybrid is treated as melee for items. Default when absent: Marksman/Mage/Enchanter are ranged, everyone else melee. Only exceptions are listed here.",
   "champions": {
     "Akali": {
       "rangeProfile": "melee",
       "reason": "Melee assassin classed as Mage; her ranged Q is all-in setup, not repeatable safe poke."
+    },
+    "Akshan": {
+      "rangeProfile": "ranged",
+      "reason": "Ranged basic attacks from his pistol crossbow; no melee mode in the kit."
     },
     "Diana": {
       "rangeProfile": "melee",
@@ -75,6 +79,10 @@
       "buildIdentity": "magic",
       "reason": "AP tank/support: his Q/E/R all scale with AP and he is itemised AP, but a stray AD ratio and his Tank class made the class+scalesWith rule read him as AD."
     },
+    "Gnar": {
+      "rangeProfile": "hybrid",
+      "reason": "Mini Gnar attacks at range, Mega Gnar in melee. Ranged-only items stop working the moment he transforms, so they are withheld."
+    },
     "Gragas": {
       "rangeProfile": "melee",
       "reason": "Melee Mage. Barrel is thrown, but his damage pattern is engage and body-slam, not ranged pressure."
@@ -130,6 +138,10 @@
         }
       },
       "reason": "The raw ultimate cooldowns contain a fourth stray value (8) after the valid three ranks, which made a once-per-fight AP ultimate look like an eight-second spell. Irelia's repeatable engine is AD/on-hit passive attacks and Q resets."
+    },
+    "Jayce": {
+      "rangeProfile": "hybrid",
+      "reason": "Mercury Cannon is ranged, Mercury Hammer is melee, and he swaps freely. Ranged-only items are dead in hammer form."
     },
     "Kassadin": {
       "rangeProfile": "melee",
@@ -324,6 +336,10 @@
     "Rumble": {
       "rangeProfile": "melee",
       "reason": "Melee Mage. Flamespitter is a short cone applied from melee range."
+    },
+    "Urgot": {
+      "rangeProfile": "ranged",
+      "reason": "Fires projectiles from range; no melee mode in the kit."
     }
   }
 }

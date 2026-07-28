@@ -891,8 +891,9 @@
    "longRangeDamageShare": "some",
    "pokeEligible": true,
    "pokeReason": "Her Human form Javelin Toss is a signature, high-damage long-range skillshot intended to weaken enemies before engaging.",
-   "confidence": "low",
-   "class": ""
+   "confidence": "high",
+   "class": "",
+   "userConfirmed": "Owner confirmed 2026-07-28: Nidalee can have poke."
   },
   "Nocturne": {
    "attackType": "melee",
@@ -1010,10 +1011,11 @@
    "combatRange": "short",
    "combatRangeReason": "Rell is an all-in engage tank who dives into the middle of the enemy team with her abilities to pull and crowd-control them.",
    "longRangeDamageShare": "little",
-   "pokeEligible": false,
+   "pokeEligible": true,
    "pokeReason": "Rell is a melee vanguard tank with no safe long-range poke abilities.",
-   "confidence": "low",
-   "class": ""
+   "confidence": "high",
+   "class": "",
+   "userConfirmed": "Owner confirmed 2026-07-28: Rell can have poke."
   },
   "Renekton": {
    "attackType": "melee",

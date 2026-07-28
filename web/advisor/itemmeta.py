@@ -262,8 +262,10 @@ def filter_candidates(
     # rangeProfile overrides entirely -- so every melee champion classed as a
     # Mage (Akali, Katarina, Diana, Lillia...) counted as ranged for item
     # filtering and was offered Runaan's Hurricane, which they cannot use.
+    # Pure ranged only. A hybrid (Gnar, Jayce) has a melee mode, and an item
+    # that switches off when they transform is not an item they can build.
     from web.advisor import profiles  # local: keeps module import order free
-    ranged = profiles.range_profile(champion_record.get("name", "")) == "ranged"
+    ranged = profiles.is_pure_ranged(champion_record.get("name", ""))
 
     def drop(slug: str, reason: str) -> None:
         removed.append({"item": slug, "reason": reason})

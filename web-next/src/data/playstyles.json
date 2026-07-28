@@ -186,6 +186,13 @@
       "vamp",
       "antitank",
       "tanky"
+    ],
+    "Rell": [
+      "standard",
+      "tanky",
+      "utility",
+      "burst",
+      "poke"
     ]
   },
   "_noPokeNote": "Champions for whom a Poke build is not offered, classified by scripts/classify_range.py. This is NOT the same as being melee: Lillia, Thresh, Rakan and Vladimir all have ranged basic attacks and still belong here, because they fight at short range and almost none of their damage comes from long range. Champions the classifier was not confident about are also listed: an unsure answer does not get to advertise a build the player may not be able to execute. Poke is filtered out for everyone on this list.",
@@ -250,7 +257,6 @@
     "Nami",
     "Nasus",
     "Nautilus",
-    "Nidalee",
     "Nilah",
     "Nocturne",
     "Nunu & Willump",
@@ -261,7 +267,6 @@
     "Pyke",
     "Rakan",
     "Rammus",
-    "Rell",
     "Renekton",
     "Rengar",
     "Riven",
@@ -296,5 +301,11 @@
     "Yunara",
     "Zed",
     "Zeri"
+  ],
+  "_pokeConfirmedNote": "Owner-confirmed Poke champions. Outranks the melee gate and the noPoke list. Rell is here despite being a melee Tank, which is also why she needs an entry in `overrides` below: the Tank class list has no Poke entry, so confirming her eligible is not on its own enough to put Poke in her menu.",
+  "pokeConfirmed": [
+    "Nidalee",
+    "Rell",
+    "Vel'Koz"
   ]
 }

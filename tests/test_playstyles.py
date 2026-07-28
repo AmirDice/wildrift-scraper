@@ -90,6 +90,25 @@ class TestPokeEligibility:
             assert profiles.range_profile(name) == "ranged", name
             assert profiles.poke_eligibility(name)["eligible"], name
 
+    def test_an_owner_confirmation_outranks_every_rule(self):
+        """Rell is the case that forced this.
+
+        She is a melee Tank, so she was excluded twice over: once by the melee
+        gate, and once by a Tank class list with no Poke entry at all. The
+        owner confirmed Poke for her anyway, so the confirmation has to beat
+        both -- and the class list needs the style added, or confirming her
+        would have had no visible effect.
+        """
+        assert profiles.range_profile("Rell") == "melee"
+        assert "Rell" in profiles.POKE_CONFIRMED
+        assert profiles.poke_eligibility("Rell")["eligible"]
+        assert "poke" in PLAYSTYLES["overrides"]["Rell"], (
+            "Rell's class grants no Poke, so without an override the "
+            "confirmation never reaches her playstyle menu")
+
+    def test_confirmed_champions_are_absent_from_the_no_poke_list(self):
+        assert not (profiles.POKE_CONFIRMED & profiles.NO_POKE)
+
     def test_an_unsure_classification_never_offers_poke(self):
         low = {name for name, entry in CLASSIFIED.items()
                if entry.get("confidence") not in ("high", "medium")}
@@ -124,6 +143,36 @@ class TestRangedOnlyItems:
                 record, profiles.combat_profile(name), profiles.scaling_profile(name))
             for slug in ranged_only:
                 assert slug not in kept, f"{name} is melee but was offered {slug}"
+
+    def test_a_hybrid_champion_is_denied_ranged_only_items(self):
+        """Owner's rule: any melee in the kit disqualifies a ranged-only item.
+
+        Gnar and Jayce both have a ranged mode and a melee mode. Runaan's
+        Hurricane switches off the moment they transform, so an item that is
+        only live half the game is not an item they can build around -- hybrid
+        is treated exactly like melee here, even though it is not melee.
+        """
+        from web.advisor import itemmeta
+        for name in ("Gnar", "Jayce"):
+            assert profiles.range_profile(name) == "hybrid", name
+            assert not profiles.is_pure_ranged(name), name
+            record = profiles.CHAMPIONS.get(name) or {}
+            kept, _ = itemmeta.filter_candidates(
+                record, profiles.combat_profile(name), profiles.scaling_profile(name))
+            assert "runaans-hurricane" not in kept, name
+
+    def test_a_pure_ranged_champion_with_no_melee_mode_keeps_them(self):
+        """The other half of the same rule, and a correction to the default.
+
+        Akshan and Urgot were melee by class default, which was simply wrong.
+        """
+        from web.advisor import itemmeta
+        for name in ("Akshan", "Urgot"):
+            assert profiles.range_profile(name) == "ranged", name
+            record = profiles.CHAMPIONS.get(name) or {}
+            kept, _ = itemmeta.filter_candidates(
+                record, profiles.combat_profile(name), profiles.scaling_profile(name))
+            assert "runaans-hurricane" in kept, name
 
     def test_ranged_champions_keep_them(self):
         from web.advisor import itemmeta

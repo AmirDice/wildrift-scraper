@@ -451,20 +451,41 @@ _RANGED_CLASSES = {"Marksman", "Mage", "Enchanter"}
 # because the studio filters its playstyle menu from the same list, and the two
 # must not drift; tests/test_playstyles.py fails if they do.
 _PLAYSTYLES_PATH = ROOT / "web-next" / "src" / "data" / "playstyles.json"
-NO_POKE: set[str] = set(
-    (json.loads(_PLAYSTYLES_PATH.read_text(encoding="utf-8")).get("noPoke") or [])
-    if _PLAYSTYLES_PATH.exists() else []
+_PLAYSTYLE_DATA: dict = (
+    json.loads(_PLAYSTYLES_PATH.read_text(encoding="utf-8"))
+    if _PLAYSTYLES_PATH.exists() else {}
 )
+NO_POKE: set[str] = set(_PLAYSTYLE_DATA.get("noPoke") or [])
+# Owner-confirmed, and deliberately checked before everything else.
+POKE_CONFIRMED: set[str] = set(_PLAYSTYLE_DATA.get("pokeConfirmed") or [])
 
 
 def range_profile(champion: str) -> str:
-    """"ranged" or "melee". Curated overrides win (the scrape has no range
-    field); otherwise ranged classes are ranged and everyone else is melee."""
+    """"ranged", "melee" or "hybrid".
+
+    Curated overrides win (the scrape has no range field); otherwise ranged
+    classes are ranged and everyone else is melee.
+
+    "hybrid" means both modes exist in the kit: Gnar transforms, Jayce swaps
+    weapon. It is deliberately NOT a third thing everywhere -- see
+    `is_pure_ranged`, which is what item gating asks.
+    """
     override = (OVERRIDES.get(champion) or {}).get("rangeProfile")
-    if override in ("ranged", "melee"):
+    if override in ("ranged", "melee", "hybrid"):
         return override
     champ_class = (CHAMPIONS.get(champion) or {}).get("class", "")
     return "ranged" if champ_class in _RANGED_CLASSES else "melee"
+
+
+def is_pure_ranged(champion: str) -> bool:
+    """Whether ranged-only items are usable by this champion.
+
+    Pure ranged only. A champion with any melee mode in the kit cannot lean on
+    an item that stops working the moment they transform -- Runaan's Hurricane
+    is dead in Mega Gnar and dead in Jayce's hammer form -- so hybrid is treated
+    exactly like melee here even though it is not melee.
+    """
+    return range_profile(champion) == "ranged"
 
 
 def poke_eligibility(champion: str) -> dict:
@@ -481,14 +502,21 @@ def poke_eligibility(champion: str) -> dict:
     question. The list is in playstyles.json, classified by
     scripts/classify_range.py, and is shared with the studio so both agree.
     """
+    # An owner confirmation wins outright, including over the melee gate below.
+    # Rell is melee and still confirmed, and a rule that overrode the person who
+    # plays the game would just be a rule nobody could correct.
+    if champion in POKE_CONFIRMED:
+        return {"eligible": True,
+                "reason": "Confirmed as a poke champion for this kit."}
     if champion in NO_POKE:
         return {"eligible": False,
                 "reason": "Classified as unable to poke: this champion fights at short "
                           "range, whatever its basic attack range says."}
-    if range_profile(champion) == "melee":
+    if not is_pure_ranged(champion):
         return {"eligible": False,
-                "reason": "Melee champion: its ranged abilities are engage/all-in setup, "
-                          "not repeatable safe pressure from range."}
+                "reason": "Fights in melee for at least part of the game: its ranged "
+                          "abilities are engage/all-in setup, not repeatable safe "
+                          "pressure from range."}
     if build_identity(champion) != "magic" and (CHAMPIONS.get(champion) or {}).get("class") != "Marksman":
         return {"eligible": False,
                 "reason": "No sustained ranged-ability damage to poke with."}
