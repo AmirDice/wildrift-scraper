@@ -268,6 +268,14 @@ def _summoner_block(role: str, enemies_known: bool = True, immobile: bool = Fals
                    "is cast on, which is the reason to bring it, and a solo laner gets a "
                    "worse Barrier."))
 
+    # The playstyle reaches here too. A Sustain request wants the spell that
+    # keeps the champion in the fight, a Burst request the one that secures the
+    # kill -- and until this was said, the summoner slot was the one part of the
+    # loadout the brief never touched.
+    rule += (" PLAYSTYLE: the requested playstyle applies to these two slots as much as "
+             "to the items and the runes. Choose the pair that serves it for THIS kit, "
+             "and say in `summonerReason` how they do.")
+
     if immobile:
         rule += (" MOBILITY: this champion has no dash, blink or leap of its own, so it "
                  "cannot create distance or close it without help. Flash and Ghost are the "
@@ -683,7 +691,18 @@ def advise(champion: str, role: str, enemies: list[str],
     prompt = "\n\n".join(x for x in [
         prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
         f"ROLE: {role}",
-        f"PLAYSTYLE (build toward this): {style}",
+        # The playstyle governs the WHOLE loadout. Stated here rather than
+        # repeated in each of the fifteen playstyle texts, because those are
+        # written per style and this rule is the same for all of them: a
+        # Sustain build that itemises for healing and then takes an unrelated
+        # keystone and an unrelated summoner has answered a third of the brief.
+        f"PLAYSTYLE (build toward this): {style}\n"
+        "THE PLAYSTYLE GOVERNS THE ENTIRE LOADOUT -- items, boots, the rune page AND the "
+        "summoner spells. All four are chosen from this one brief, and each of them can "
+        "serve it or ignore it independently. Apply it to each the way THIS kit can "
+        "express it: a rune whose trigger the champion cannot meet, or a summoner that "
+        "does nothing for how it actually fights, is not serving the playstyle whatever "
+        "its description promises.",
         # Personal optimisation contract: the chosen playstyle must actually
         # move the weighting, not collapse back to the safe Standard build.
         ("PERSONAL OPTIMISATION: within legality and practical champion function, optimise "

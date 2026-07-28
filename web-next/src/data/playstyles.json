@@ -64,7 +64,7 @@
       "key": "vamp",
       "label": "Sustain",
       "description": "Lifesteal or omnivamp for healing through fights.",
-      "prompt": "SUSTAIN: survive extended fights by out-healing the damage taken, built the way THIS kit actually heals. Lifesteal and physical vamp are BASIC-ATTACK stats and are only the answer for a champion whose damage comes from attacking; a caster sustains through omnivamp/spell vamp, healing amplification, or enough durability that its own kit healing keeps up. Do not put a lifesteal item on a kit that cannot proc it -- identify how this champion heals first, then buy that."
+      "prompt": "SUSTAIN: survive extended fights by out-healing the damage taken, built the way THIS kit actually heals. Lifesteal and physical vamp are BASIC-ATTACK stats and are only the answer for a champion whose damage comes from attacking; a caster sustains through omnivamp/spell vamp, healing amplification, or enough durability that its own kit healing keeps up. Do not put a lifesteal item on a kit that cannot proc it -- identify how this champion heals first, then buy that. This applies to the RUNE PAGE too: Conqueror, Fleet Footwork, Grasp of the Undying, Legend: Bloodline, Second Wind and Revitalize are all sustain, and a page that ignores the request has answered half of it."
     },
     {
       "key": "antitank",

@@ -242,9 +242,27 @@ def slot_groups_text() -> str:
 
 
 def pool_text_block() -> str:
-    """The rune pool with the page-construction rule stated alongside it."""
+    """The rune pool with the page-construction rule stated alongside it.
+
+    The playstyle used to reach only the items. It is stated at the top of the
+    prompt, so the model could apply it here, but every word of guidance about
+    it was written about item choices -- and a Sustain request that itemises for
+    healing while taking an unrelated keystone has answered half the question.
+    The runes carry as much of a playstyle as the items do: Conqueror, Fleet
+    Footwork, Grasp, Legend: Bloodline and Revitalize are all sustain, and none
+    of them is an item.
+    """
     return ("RUNES (page = 1 keystone + 3 minors from ONE tree, one from each of that "
             "tree's 3 slots, + 1 flex from any tree):\n" + pool_text()
             + "\n\nMINORS BY SLOT -- take exactly one name from each of the three "
               "lists for your chosen tree. Two from the same slot is not a legal "
-              "page:\n" + slot_groups_text())
+              "page:\n" + slot_groups_text()
+            + "\n\nTHE PLAYSTYLE APPLIES TO THE RUNE PAGE, NOT ONLY TO THE ITEMS. The "
+              "page is roughly a sixth of the build's power and it is chosen from the "
+              "same brief: a Sustain request wants the keystone and minors that heal or "
+              "keep the champion in the fight, a Burst request wants the ones that "
+              "front-load damage, a Durable request wants the ones that keep it alive. "
+              "Serve the playstyle the way THIS kit can express it -- the same rule as "
+              "the items, so a rune whose trigger this champion cannot meet is not "
+              "serving the playstyle no matter what its text promises. Say in the rune "
+              "reasons how the page serves the requested playstyle.")

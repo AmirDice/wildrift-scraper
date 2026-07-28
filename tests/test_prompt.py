@@ -220,3 +220,51 @@ class TestRuneMetadata:
 
     def test_the_pool_block_states_the_page_rule(self):
         assert "1 keystone + 3 minors from ONE tree" in runemeta.pool_text_block()
+
+
+class TestThePlaystyleReachesTheRunes:
+    """A playstyle is a brief for the whole build, not just the item list.
+
+    The rune section never mentioned it. The playstyle line sits at the top of
+    the prompt so the model COULD apply it, but every word of guidance about it
+    was written about items -- and a Sustain build that itemises for healing
+    while taking an unrelated keystone has answered half the question.
+    """
+
+    def test_the_rune_block_says_the_playstyle_applies_to_it(self, hecarim_unknown):
+        assert "THE PLAYSTYLE APPLIES TO THE RUNE PAGE" in hecarim_unknown
+
+    def test_it_defers_to_the_kit_the_same_way_the_items_do(self, hecarim_unknown):
+        """A rune whose trigger the champion cannot meet is not serving the
+        playstyle, exactly as with an item it cannot proc."""
+        assert "a rune whose trigger this champion cannot meet" in hecarim_unknown
+
+    def test_the_reasons_must_connect_the_page_to_the_request(self, hecarim_unknown):
+        assert "how the page serves the requested playstyle" in hecarim_unknown
+
+
+class TestThePlaystyleGovernsTheWholeLoadout:
+    """Items, boots, runes AND summoners are chosen from one brief.
+
+    Each of the four can serve the playstyle or ignore it independently, and
+    the guidance only ever addressed items -- so a Sustain build could itemise
+    for healing and then take an unrelated keystone and an unrelated summoner.
+    Stated once here rather than repeated inside each of the fifteen playstyle
+    texts, which are written per style while this rule is the same for all.
+    """
+
+    def test_the_scope_is_stated_where_the_playstyle_is_introduced(self, hecarim_unknown):
+        assert "THE PLAYSTYLE GOVERNS THE ENTIRE LOADOUT" in hecarim_unknown
+        for part in ("items", "boots", "rune page", "summoner spells"):
+            assert part in hecarim_unknown, part
+
+    def test_the_summoner_block_carries_it_too(self, hecarim_unknown):
+        assert "the requested playstyle applies to these two slots" in hecarim_unknown
+
+    def test_the_rune_block_carries_it_too(self, hecarim_unknown):
+        assert "THE PLAYSTYLE APPLIES TO THE RUNE PAGE" in hecarim_unknown
+
+    def test_every_section_defers_to_the_kit_rather_than_the_description(self, hecarim_unknown):
+        """The same rule the items already had: a rune or summoner the champion
+        cannot use is not serving the playstyle, whatever its text promises."""
+        assert "is not serving the playstyle whatever" in hecarim_unknown
