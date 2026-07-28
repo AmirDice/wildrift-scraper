@@ -191,6 +191,14 @@ def priority_threats(enemies: list[str], me: str = "") -> list[dict]:
         if _has(rec, "heal") or cp.get("healingReliance") in ("medium", "high"):
             threats.append("healing")
             itemizable.append("grievous_wounds")
+        # Shielding was counted in the TEAM profile and then dropped here, so
+        # the model saw "shielding: high" as a bare categorical and never a
+        # threat it could answer. Against Karma, Lee Sin, Lulu and Sivir it
+        # itemised magic resist and never considered shield reduction, which is
+        # the response this list exists to name.
+        if _has(rec, "shield"):
+            threats.append("shielding")
+            itemizable.append("shield_reduction")
         if _has(rec, "cc"):
             threats.append("crowd_control")
             itemizable.append("tenacity")
