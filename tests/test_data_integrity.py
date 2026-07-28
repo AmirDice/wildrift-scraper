@@ -164,10 +164,38 @@ class TestDerivedDataIsFresh:
             "data/champion_builds.json by scripts/build_champions_llm.py")
 
     def test_engine_formulas_match_the_source(self):
-        """engine.json embeds ability_formulas.json verbatim, so the browser
-        engine and the Python engine cannot disagree unless this is stale."""
-        assert load(WEB / "engine.json")["formulas"] == load(DATA / "ability_formulas.json"), (
+        """engine.json embeds ability_formulas.json, so the browser engine and
+        the Python engine cannot disagree unless this is stale.
+
+        Everything EXCEPT `combo` is verbatim. Combos are overlaid from
+        champion_combos.json at export, because the extraction's own combo is
+        the one field in that file not grounded in the tooltip text, and it
+        answers a different question ("standard burst" rather than "highest
+        damage"). The overlay is asserted separately below.
+        """
+        engine = load(WEB / "engine.json")["formulas"]
+        source = load(DATA / "ability_formulas.json")
+        strip = lambda recs: {  # noqa: E731
+            name: {k: v for k, v in rec.items() if k != "combo"}
+            for name, rec in recs.items()
+        }
+        assert strip(engine) == strip(source), (
             "engine.json is stale; re-run python -m scripts.export_engine_data")
+
+    def test_engine_combos_come_from_the_overlay(self):
+        """A combo the site shows must be the curated one, not the extraction's.
+
+        If this fails, export_engine_data was run before the overlay existed, or
+        the overlay was edited without re-exporting -- either way the site is
+        showing a combo nobody signed off on.
+        """
+        engine = load(WEB / "engine.json")["formulas"]
+        overlay = load(DATA / "champion_combos.json")["champions"]
+        wrong = [name for name, entry in overlay.items()
+                 if name in engine and engine[name].get("combo") != entry["combo"]]
+        assert wrong == [], (
+            f"engine.json combos disagree with champion_combos.json for {wrong[:5]}; "
+            "re-run python -m scripts.export_engine_data")
 
     def test_roster_holds_champions_and_engine_holds_forms(self, champions):
         """A transform form is a kit, not a champion: the engine needs it so it

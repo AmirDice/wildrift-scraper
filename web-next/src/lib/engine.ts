@@ -567,6 +567,23 @@ export function rotation(name: string, st: any, target: any, window: number,
     }
   }
 
+  // Xin Zhao's Q: "each attack reduces other ability cooldowns by 1s". Three
+  // empowered attacks per cast is three seconds off W, E and R every cycle,
+  // which is the difference between casting W twice in a fight and casting it
+  // three times.
+  let cdrPerEmpoweredHit = 0;
+  let cdrSourceSlot = "";
+  for (const [slot, ab] of Object.entries(DATA.formulas[name]?.abilities ?? {})) {
+    for (const u of ((ab as any).unmodeled ?? [])) {
+      const m = String(u).match(
+        /reduc\w*\s+(?:all\s+|his\s+|her\s+|their\s+)?other\s+(?:ability\s+)?cooldowns?\s+by\s+([\d.]+)\s*s/i);
+      if (m) {
+        cdrPerEmpoweredHit = Number(m[1]) || 0;
+        cdrSourceSlot = slot;
+      }
+    }
+  }
+
   /**
    * Share of autos a per-auto component actually lands on.
    *
@@ -691,7 +708,17 @@ export function rotation(name: string, st: any, target: any, window: number,
     const cds = ab.cooldowns ?? [];
     const rank = rankOf[slot] ?? 3;
     const cdIdx = cds.length ? Math.min(rank, cds.length - 1) : 0;
-    const cd = (cds.length ? cds[cdIdx] : 8) * hasteM;
+    let cd = (cds.length ? cds[cdIdx] : 8) * hasteM;
+    if (cdrPerEmpoweredHit && slot !== cdrSourceSlot && window > 0) {
+      // Seconds of cooldown removed across the window, spread evenly. Capped at
+      // half, so a long fight cannot drive a cooldown to nothing.
+      const empowered = empowerLimit.get(cdrSourceSlot) ?? 0;
+      const srcCd = Math.max(0.5, rankVal(
+        (DATA.formulas[name]?.abilities?.[cdrSourceSlot] as any)?.cooldowns ?? 12, 3) * hasteM);
+      const srcCasts = 1 + Math.floor(window / srcCd);
+      const seconds = cdrPerEmpoweredHit * empowered * srcCasts;
+      cd = Math.max(cd * 0.5, cd - seconds / Math.max(1, window / Math.max(cd, 0.75)));
+    }
     let casts = cd ? 1 + Math.floor(window / Math.max(cd, 0.75)) : 1;
     if (slot === "4") casts = 1;
     const maxCasts = casts;
@@ -1334,6 +1361,8 @@ export interface DuelTarget {
 
 export interface DuelResult {
   target: DuelTarget;
+  /** The champion's own opening sequence, as slots and "auto". */
+  combo: string[];
   /** Seconds to take the target from full to zero, or null if it never gets there. */
   ttk: number | null;
   /** Damage in the window that killed, or the full cap window if it did not. */
@@ -1403,6 +1432,9 @@ export function duel(name: string, items: string[], runes: string[],
 
   return {
     target,
+    // The rotation the champion is actually meant to use, which the data
+    // already carries for 137 champions and nothing was showing.
+    combo: (DATA.formulas[name]?.combo ?? []) as string[],
     ttk,
     damage: Math.round(detail.damage),
     autos: detail.autos,

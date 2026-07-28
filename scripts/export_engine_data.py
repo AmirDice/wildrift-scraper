@@ -47,6 +47,21 @@ def main() -> None:
         if override.get("statRules"):
             champion["statRules"] = override["statRules"]
     formulas = _load("ability_formulas.json")
+    # Combos come from champion_combos.json, not from the extraction.
+    #
+    # ability_formulas.json carries a `combo` field, but it is the one thing in
+    # that file not grounded in the tooltip text, and the prompt that produced it
+    # asked for the "standard all-in burst sequence" -- a different question from
+    # the one the damage calculator needs. Asked instead for the HIGHEST DAMAGE
+    # combo, the same model moved Xin Zhao from a W-opener to an E-opener, which
+    # is what his kit actually wants.
+    #
+    # The overlay also survives re-extraction, so a human correction pinned there
+    # is not silently overwritten the next time formulas are rebuilt.
+    combos = (_load("champion_combos.json") or {}).get("champions") or {}
+    for name, entry in combos.items():
+        if name in formulas and entry.get("combo"):
+            formulas[name]["combo"] = entry["combo"]
     items = _load("items.json")
     item_fx = _load("item_engine.json")
     for slug, fx in _load("item_engine_overrides.json").items():

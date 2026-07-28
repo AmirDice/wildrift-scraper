@@ -137,9 +137,29 @@ export function DuelPanel({ name, itemSlugs, runeNames, level }: {
             </p>
           )}
 
+          {result.combo.length > 0 && (
+            <div className="mt-3">
+              <p className="mb-1.5 text-[0.6rem] font-bold uppercase tracking-wide text-faint">
+                The combo
+              </p>
+              <div className="flex flex-wrap items-center gap-1">
+                {result.combo.map((step, i) => (
+                  <span key={i} className="flex items-center gap-1">
+                    {i > 0 && <span className="text-faint">&rarr;</span>}
+                    <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${
+                      step === "auto" ? "bg-white/[0.06] text-muted"
+                                      : "bg-accent/15 text-accent"}`}>
+                      {step === "auto" ? "attack" : SLOT_LABEL[step] ?? step}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="mt-3">
             <p className="mb-1.5 text-[0.6rem] font-bold uppercase tracking-wide text-faint">
-              Abilities used
+              Abilities used over the fight
             </p>
             <div className="flex flex-wrap gap-1.5">
               {result.casts.length === 0 && (
