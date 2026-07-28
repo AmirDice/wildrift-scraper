@@ -40,10 +40,10 @@ export function BuildExplanation({ build }: { build: Build }) {
   const hasAny = [...items, ...runes, ...summoners].some((entry) => entry.reason);
   if (!hasAny) return null;
 
+  // Open by default: this is part of the result, not a drill-down. The nested
+  // "Advanced stats" and "Conditional" sections stay closed, because those are
+  // details someone goes looking for.
   return (
-    {/* Open by default: this is part of the result, not a drill-down. The
-        nested "Advanced stats" and "Conditional" sections stay closed, because
-        those are details someone goes looking for. */}
     <details open className="glass group rounded-2xl">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
         <span>
