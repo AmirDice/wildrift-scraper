@@ -45,6 +45,21 @@ const ADMIN_EMAILS = new Set(
     .filter(Boolean),
 );
 
+/**
+ * The parsed list, exported so the admin diagnostic reports what the gate
+ * actually holds rather than re-deriving it from the same variable. A
+ * diagnostic with its own copy of the parsing can agree with itself while
+ * disagreeing with the code it is describing.
+ */
+export function adminEmails(): string[] {
+  return [...ADMIN_EMAILS];
+}
+
+/** Whether ADMIN_EMAILS is present at all, which "parses to nothing" is not. */
+export function adminEmailsConfigured(): boolean {
+  return Boolean((process.env.ADMIN_EMAILS ?? "").trim());
+}
+
 export function isAdmin(user: { email?: string } | null | undefined): boolean {
   const email = user?.email?.trim().toLowerCase();
   return Boolean(email && ADMIN_EMAILS.has(email));

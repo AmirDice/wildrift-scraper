@@ -123,10 +123,112 @@ export function AdminConsole() {
 
   return (
     <div className="space-y-8">
+      <UnlimitedAccessPanel token={token} />
       <CodesPanel token={token} />
       <BestBuildsPanel token={token} />
       <CreatorsPanel token={token} />
     </div>
+  );
+}
+
+/**
+ * Why this browser's account is, or is not, exempt from the generation cap.
+ *
+ * First panel on the page on purpose: it answers the question that has no other
+ * answer. `unlimited: false` is indistinguishable from the outside whether the
+ * email mismatched, ADMIN_EMAILS never reached the deployment, or the session
+ * is stale, and working that out by elimination took a full round of checking
+ * the project, the deploy time and the session shape.
+ */
+function UnlimitedAccessPanel({ token }: { token: string }) {
+  const [state, setState] = useState<{
+    matched: boolean; reason: string; sessionEmail: string | null;
+    signedIn: boolean; configured: string[]; adminEmailsSet: boolean;
+  } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const fetchState = useCallback(async () => {
+    const res = await fetch(`/api/admin/whoami?token=${encodeURIComponent(token)}`);
+    return res.ok ? await res.json() : null;
+  }, [token]);
+
+  // The initial load deliberately does NOT flip `busy` first: setting state
+  // synchronously inside an effect triggers a cascading render, and every
+  // setState here lands after the fetch has already suspended.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const next = await fetchState();
+      if (!cancelled) setState(next);
+    })();
+    return () => { cancelled = true; };
+  }, [fetchState]);
+
+  // The button is an event handler, so the spinner can be set eagerly there.
+  const check = async () => {
+    setBusy(true);
+    try {
+      setState(await fetchState());
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section>
+      <h2 className="text-xl font-semibold tracking-tight">Unlimited generations</h2>
+      <p className="mt-1 max-w-2xl text-sm text-muted">
+        Whether the account signed in on <em>this</em> browser is exempt from the daily
+        build cap, and if not, exactly which part of the chain is failing.
+      </p>
+
+      <Card className="mt-4 p-4">
+        {!state ? (
+          <p className="text-sm text-muted">{busy ? "Checking…" : "No result."}</p>
+        ) : (
+          <>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`rounded-md px-2 py-1 text-xs font-bold uppercase tracking-wide ${
+                state.matched ? "bg-emerald-400/15 text-emerald-300" : "bg-bad/15 text-bad"}`}>
+                {state.matched ? "Unlimited" : "Capped"}
+              </span>
+              <button onClick={() => void check()} disabled={busy}
+                className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-muted transition hover:text-text disabled:opacity-40">
+                {busy ? "Checking…" : "Re-check"}
+              </button>
+            </div>
+
+            <p className="mt-3 text-sm leading-relaxed text-muted">{state.reason}</p>
+
+            <dl className="mt-4 grid gap-2 text-xs sm:grid-cols-2">
+              <div>
+                <dt className="font-semibold uppercase tracking-wide text-faint">Signed in as</dt>
+                <dd className="mt-0.5 font-mono text-text">{state.sessionEmail ?? "(nobody)"}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold uppercase tracking-wide text-faint">
+                  ADMIN_EMAILS ({state.configured.length})
+                </dt>
+                <dd className="mt-0.5 font-mono text-text">
+                  {state.adminEmailsSet
+                    ? (state.configured.join(", ") || "(set, but parses to nothing)")
+                    : "(not set on this deployment)"}
+                </dd>
+              </div>
+            </dl>
+
+            {!state.matched && state.signedIn && state.configured.length > 0 && (
+              <p className="mt-3 text-xs leading-relaxed text-faint">
+                Compare the two lines above character for character. A different Google
+                account and a one-letter typo look the same from the outside. Changing the
+                variable needs a redeploy: Vercel applies environment variables at deploy
+                time, not on save.
+              </p>
+            )}
+          </>
+        )}
+      </Card>
+    </section>
   );
 }
 
