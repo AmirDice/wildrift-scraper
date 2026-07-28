@@ -92,7 +92,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // validator moved underneath it too: kits now state energy costs, illegal
   // rune pages and mistimed swaps are rejected up front, and a build that
   // fails validation is no longer served at all.
-  return `build:v7:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v8: counter builds cached under v7 were generated while enemy shielding
+  // was measured but not itemizable, so none of them answer it. The cache is
+  // only hours old, so retiring it costs little against serving a build that
+  // ignores four shielders for the next 45 days.
+  return `build:v8:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
