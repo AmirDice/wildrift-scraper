@@ -1,8 +1,9 @@
 /**
  * Cache for generated builds.
  *
- * Every generation is a real DeepSeek call: about 30 seconds of waiting, a few
- * tenths of a cent, and one of the user's ten daily generations. But the inputs
+ * Every generation is a real model call: the better part of a minute of
+ * waiting, a few tenths of a cent, and one of the user's ten daily
+ * generations. But the inputs
  * are a small, closed set -- champion, role, playstyle, objective, power spike,
  * damage path, and (in counter mode) up to five enemies. Two players asking for
  * "Graves, jungle, standard, balanced" want the same answer, and the model is
@@ -83,7 +84,15 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // baked in -- a live Pantheon build explained Hubris as "Eyeball Collector:
   // scales AD from takedowns". Reasons are now re-keyed to the rune they name,
   // and every build cached before that fix is unreachable.
-  return `build:v6:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v7: the advisor changed MODEL. Every v6 entry was authored by DeepSeek,
+  // and the switch to Gemini was made on build quality -- it won a blind
+  // five-champion comparison judged on the builds themselves. Serving the
+  // DeepSeek answer for the next 45 days would mean the change reaches nobody
+  // who asks for a champion someone has already asked for. The prompt and the
+  // validator moved underneath it too: kits now state energy costs, illegal
+  // rune pages and mistimed swaps are rejected up front, and a build that
+  // fails validation is no longer served at all.
+  return `build:v7:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
