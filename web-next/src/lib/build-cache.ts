@@ -111,7 +111,17 @@ export function buildCacheKey(request: BuildRequestKey): string {
   //     under-represent them.
   // Serving any of those for the next 45 days would hide all four fixes from
   // exactly the champions someone has already asked about.
-  return `build:v10:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v11: v10 was bumped too early. Five changes to what the advisor produces
+  // landed AFTER it -- playstyles rewritten from mechanism to outcome, Max
+  // stats no longer discounting actives, the summoner pool rules, and the
+  // request reaching the rune page and the summoner slots instead of stopping
+  // at the items. v10 went live before the last of those deployed, so entries
+  // written in that window carry builds from the older prompt and would be
+  // served for the full 45 days.
+  //
+  // The lesson, for whoever bumps this next: the version has to move with the
+  // LAST advisor change that ships, not the first one noticed.
+  return `build:v11:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
