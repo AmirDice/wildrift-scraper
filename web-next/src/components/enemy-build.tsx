@@ -83,8 +83,11 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
   if (!hasDetail) return null;
 
   return (
-    <div className="glass rounded-2xl p-4">
-      <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Why this is the optimal build</p>
+    <details open className="glass group rounded-2xl p-4">
+      <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
+        <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Why this is the optimal build</p>
+        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+      </summary>
       {itemRows.length > 0 && (
         <div className="mb-3">
           <p className="mb-1.5 text-[0.6rem] font-bold uppercase tracking-wide text-faint">Items</p>
@@ -109,7 +112,7 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
           </ul>
         </div>
       )}
-    </div>
+    </details>
   );
 }
 
@@ -776,8 +779,11 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             </div>
 
             {advice.buildScore && (
-              <div className="glass rounded-2xl p-4">
-                <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Complete build evaluation</p>
+              <details open className="glass group rounded-2xl p-4">
+                <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Complete build evaluation</p>
+                  <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+                </summary>
                 <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
                   {[
                     ["Overall", advice.buildScore.overall],
@@ -796,12 +802,15 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                   ))}
                 </div>
                 <p className="mt-3 text-sm text-muted">{advice.buildScore.reason}</p>
-              </div>
+              </details>
             )}
 
             {advice.runes && (
-              <div className="glass rounded-2xl p-4">
-                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Runes · {advice.runes.primaryTree}</p>
+              <details open className="glass group rounded-2xl p-4">
+                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Runes · {advice.runes.primaryTree}</p>
+                  <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+                </summary>
                 <div className="flex flex-wrap items-center gap-2">
                   {[advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].map((rn, i) => (
                     <span key={rn + i} className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-xs">
@@ -810,12 +819,15 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     </span>
                   ))}
                 </div>
-              </div>
+              </details>
             )}
 
             {advice.summoners?.length ? (
-              <div className="glass rounded-2xl p-4">
-                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Summoner spells</p>
+              <details open className="glass group rounded-2xl p-4">
+                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Summoner spells</p>
+                  <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+                </summary>
                 <div className="flex flex-wrap items-center gap-2">
                   {advice.summoners.map((spell) => (
                     <span key={spell.name} className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-sm">
@@ -824,7 +836,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     </span>
                   ))}
                 </div>
-              </div>
+              </details>
             ) : null}
 
             {advice.situational?.length ? (
