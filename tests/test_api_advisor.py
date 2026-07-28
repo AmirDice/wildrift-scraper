@@ -132,19 +132,30 @@ class TestDeploymentShape:
             "a repo-root vercel.json fails the site project's build; the advisor's "
             "settings belong in vercel.json.advisor and the Vercel dashboard")
 
-    def test_the_function_only_needs_what_requirements_txt_installs(self):
-        """requirements.txt is the advisor bundle, and it has a 250MB ceiling.
+    def test_the_advisor_bundle_carries_what_it_imports_and_nothing_heavy(self):
+        """requirements.txt IS the advisor bundle, against a 250MB ceiling.
 
-        It used to carry streamlit, pandas, opencv and numpy, none of which the
-        function imports, which would very likely have breached that limit the
-        first time anyone tried to deploy it.
+        Two failures this guards, and both have happened:
+
+        Too much -- it once carried streamlit, pandas, opencv and numpy, none of
+        which the function imports, which would very likely have breached the
+        limit on the first deploy.
+
+        Too little -- slimming it to `requests` alone left out google-genai,
+        which the Gemini provider imports. The deployed function would have
+        raised ModuleNotFoundError on its first generation, and only in
+        production, because locally the package is installed anyway.
         """
         text = (ROOT / "requirements.txt").read_text(encoding="utf-8")
         listed = {line.split(">=")[0].split("==")[0].strip().lower()
                   for line in text.splitlines()
                   if line.strip() and not line.strip().startswith("#")}
-        assert listed == {"requests"}, (
-            f"unexpected packages in the advisor bundle: {sorted(listed - {'requests'})}. "
+        required = {"requests", "google-genai"}
+        assert required <= listed, (
+            f"the advisor imports these but the bundle does not install them: "
+            f"{sorted(required - listed)}")
+        assert listed <= required, (
+            f"unexpected packages in the advisor bundle: {sorted(listed - required)}. "
             "Scraper and Streamlit deps belong in requirements-scrape.txt.")
 
     def test_the_body_size_cap_is_small(self):

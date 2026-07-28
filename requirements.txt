@@ -3,9 +3,15 @@
 # bundle that has a 250MB ceiling, and streamlit + pandas + opencv + numpy
 # together would very likely breach it on their own.
 #
-# api/advisor.py -> web/build_advisor.py -> web/advisor/* imports exactly one
-# third-party package, verified by walking the import graph.
+# api/advisor.py -> web/build_advisor.py -> web/advisor/* imports these two and
+# nothing else, verified by walking the import graph.
 requests>=2.31.0
+
+# The build advisor speaks to Gemini when ADVISOR_MODEL names one, which is the
+# production default now. Left out when this file was first slimmed -- the
+# provider did not exist yet -- so the deployed function would have raised
+# ModuleNotFoundError on its first Gemini generation.
+google-genai>=1.0.0
 
 # Everything else the repo needs -- scrapers, OCR, the legacy Streamlit app --
 # is in requirements-scrape.txt:
