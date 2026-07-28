@@ -468,9 +468,16 @@ PLAYSTYLES = {
 # A second, orthogonal axis: HOW to optimize, independent of the playstyle.
 OBJECTIVES = {
     "balanced": "",  # default: no extra bias
+    # "prefer stat-dense items over flashy actives" used to end this line, and
+    # it was a thumb on the scale in the wrong direction: actives were already
+    # being skipped almost entirely, and calling them flashy told the model they
+    # were frivolous. Stat efficiency is about gold conversion, not about
+    # excluding a category -- an active is one of the things an item does.
     "maxstats": "OPTIMIZE FOR STAT EFFICIENCY: favor the items whose raw stats this kit "
-                "uses most per gold; prefer stat-dense items over flashy actives when the "
-                "value is close.",
+                "uses most per gold. When two items are close, prefer the one whose stat "
+                "line this kit converts more completely. An item's ACTIVE counts as part "
+                "of what it delivers: weigh it by what it is worth to this kit, not "
+                "discounted for being an active.",
     "maxsynergy": "OPTIMIZE FOR SYNERGY: favor items and runes that combo with the kit's "
                   "mechanics and with each other (spellblade on weavers, on-hit on on-hit "
                   "casters, actives that chain into the kit), even at some raw-stat cost.",
