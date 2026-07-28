@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { DuelPanel } from "@/components/duel-panel";
 import { visibleBuildVariants, type Build, type ChampionBuilds } from "@/lib/builds";
 import {
   blockedItems,
@@ -511,6 +512,7 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
       )}
 
       <BuildStatsPanel name={name} itemSlugs={allSlugs} runeNames={runeNames} level={level} embedded />
+      <DuelPanel name={name} itemSlugs={allSlugs} runeNames={runeNames} level={level} />
       <ChampionAbilitiesPanel
         name={name}
         itemSlugs={allSlugs}
