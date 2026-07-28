@@ -405,7 +405,7 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
 
 /** The AI build advisor. Counter mode always adapts to the selected enemies;
  *  Studio mode generates an enemy-agnostic personal build. */
-export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion, mode = "counter", onAdviceChange }: {
+export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion, mode = "counter", onAdviceChange, onFormChange }: {
   /** Locks the advisor to one champion (the studio embeds it this way). */
   presetChampion?: string;
   /** Transform form to generate for, when the embedder already picked one
@@ -415,6 +415,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   initialChampion?: string;
   mode?: AdvisorMode;
   onAdviceChange?: (advice: Advice | null) => void;
+  /** Reports the transform form as it changes, so an embedder can keep the
+   *  panels it renders around this one on the form actually selected rather
+   *  than on the base champion. */
+  onFormChange?: (form: string) => void;
 }) {
   const roster = useMemo(() => rosterList(), []);
   const { quota, user, authConfigured, refresh } = useAccount();
@@ -599,7 +603,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           {champ === "Kayn" && !presetForm && (
             <div>
               <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Kayn form</p>
-              <select value={championForm} onChange={(e) => setChampionForm(e.target.value)}
+              <select value={championForm}
+                onChange={(e) => { setChampionForm(e.target.value); onFormChange?.(e.target.value); }}
                 title={KAYN_FORMS.find((form) => form.key === championForm)?.description}
                 className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
                 {KAYN_FORMS.map((form) => <option key={form.key} value={form.key}>{form.label}</option>)}

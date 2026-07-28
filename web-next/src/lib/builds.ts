@@ -248,6 +248,25 @@ const FORM_LABELS: Record<string, { base: [string, string]; forms: Record<string
   },
 };
 
+/**
+ * The engine/data name for a champion in one of the advisor's forms.
+ *
+ * Two vocabularies meet here. The advisor speaks the request's language
+ * ("shadow-assassin", "rhaast", from KAYN_FORMS) because that is what the
+ * player picked; the engine, the ability cards and the build catalogue are
+ * keyed by champion name ("Kayn", "Kayn (Rhaast)"). Without the translation
+ * the generated panels fell back to the base champion, so a build generated
+ * for Rhaast showed Shadow Assassin's abilities and Shadow Assassin's stats.
+ */
+const FORM_KEY_TO_NAME: Record<string, Record<string, string>> = {
+  Kayn: { "shadow-assassin": "Kayn", rhaast: "Kayn (Rhaast)" },
+};
+
+export function formEngineName(championName: string, formKey?: string): string {
+  if (!formKey) return championName;
+  return FORM_KEY_TO_NAME[championName]?.[formKey] ?? championName;
+}
+
 export function buildForms(championName: string): BuildForm[] {
   const spec = FORM_LABELS[championName];
   const base = BUILDS[championName];

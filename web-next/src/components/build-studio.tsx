@@ -9,6 +9,7 @@ import {
   getBuildsFor,
   buildGold,
   visibleBuildVariants,
+  formEngineName,
   type Build,
   type ChampionBuilds,
 } from "@/lib/builds";
@@ -303,7 +304,14 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
                 return (
                   <button
                     key={f.key}
-                    onClick={() => setFormKey(f.key)}
+                    onClick={() => {
+                      setFormKey(f.key);
+                      // A generated build belongs to the form it was generated
+                      // for. Keeping it across a toggle showed Rhaast's items
+                      // beside Shadow Assassin's abilities, which is not a
+                      // build anyone can play.
+                      if (f.key !== formKeyState) setGeneratedAdvice(null);
+                    }}
                     title={`${f.label}: its own items, runes and simulated damage`}
                     className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
                       active
@@ -527,6 +535,23 @@ function BuildTab({ variants, variant, setVariant, build, name, engineName, slug
   ];
   return (
     <div className="flex flex-col gap-4">
+      {/* Hecarim's tab is open for one reason: the landing page and the tour
+          both point at him, and a locked tab would dead-end the walkthrough.
+          The catalogue has NOT been validated yet, so the build behind this
+          tab is an example of the format rather than advice anyone should
+          take into a game. Saying that plainly costs nothing and is the whole
+          reason every other champion's tab is still closed. */}
+      <div className="rounded-xl border border-gold/30 bg-gold/[0.07] px-3 py-2.5">
+        <p className="text-xs leading-relaxed text-gold">
+          <span className="font-bold uppercase tracking-wide">Demonstration only</span>
+          <span className="text-muted">
+            {" "}&middot; this build is here to show how the studio works, not as a recommendation.
+            Curated builds are still being reviewed, which is why {name} is the only champion with
+            this tab open. For a build meant to be played, use the Personal Build Generator or the
+            Counter Builder.
+          </span>
+        </p>
+      </div>
       {/* Recommended builds are created without an enemy team. The callout says
           so and links straight into the Counter Builder for this champion, so
           nobody mistakes a curated build for a matchup-tuned one. */}
@@ -762,14 +787,22 @@ function GenerateTab({
   const runeNames = advice?.runes
     ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
     : [];
+  // Prefer the form the build was actually generated for, which the advisor
+  // now reports back, and fall back to the form currently selected.
+  const generatedForm =
+    (advice?.requestMeta as { championForm?: string } | undefined)?.championForm || championForm;
+  const panelName = formEngineName(name, generatedForm);
 
   return (
     <div className="flex flex-col gap-4">
       <EnemyBuildAdvisor presetChampion={name} presetForm={championForm} mode="studio" onAdviceChange={setAdvice} />
       {itemSlugs.length > 0 && (
         <>
-          <BuildStatsPanel name={name} itemSlugs={itemSlugs} runeNames={runeNames} level={15} />
-          <ChampionAbilitiesPanel name={name} itemSlugs={itemSlugs} runeNames={runeNames} level={15} />
+          {/* The FORM's kit, not the base champion's. These read `name` alone
+              until now, so a build generated for Rhaast was displayed against
+              Shadow Assassin's abilities and Shadow Assassin's base stats. */}
+          <BuildStatsPanel name={panelName} itemSlugs={itemSlugs} runeNames={runeNames} level={15} />
+          <ChampionAbilitiesPanel name={panelName} itemSlugs={itemSlugs} runeNames={runeNames} level={15} />
           <BuildComparison
             champion={name}
             current={{ id: "generated", label: "Generated build", itemSlugs, runeNames }}

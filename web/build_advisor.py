@@ -832,6 +832,10 @@ def advise(champion: str, role: str, enemies: list[str],
         "optimizationGoal": objective,
         "riskTolerance": risk_tolerance,
         "enemyContext": "known" if enemies_known else "unknown",
+        # Which transform form this build is for. The studio needs it to
+        # show the matching kit: without it a Rhaast build was rendered
+        # against Shadow Assassin's abilities and base stats.
+        "championForm": champion_form or "",
     }
 
     for warning in report.warnings:
