@@ -16,7 +16,11 @@ export function ChampionTabs({ panels }: { panels: Record<TabKey, ReactNode> }) 
   return (
     <div className="mt-6">
       <div className="glass sticky top-2 z-20 -mx-1 overflow-x-auto rounded-xl border border-line/70 p-1 shadow-xl shadow-black/10" role="tablist" aria-label="Champion information">
-        <div className="grid min-w-[420px] grid-cols-4 gap-1">
+        {/* The 420px minimum was wider than any phone, so the strip always
+            overflowed and "History" sat off-screen on a 375px viewport with
+            nothing to show it was scrollable. These four labels fit four
+            columns unaided; the minimum only applies once there is room. */}
+        <div className="grid grid-cols-4 gap-1 sm:min-w-[420px]">
           {TABS.map((tab) => (
             <button
               key={tab.key}
@@ -26,7 +30,7 @@ export function ChampionTabs({ panels }: { panels: Record<TabKey, ReactNode> }) 
               aria-controls={`champion-panel-${tab.key}`}
               id={`champion-tab-${tab.key}`}
               onClick={() => setActive(tab.key)}
-              className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition ${active === tab.key ? "bg-accent/15 text-accent ring-1 ring-accent/20" : "text-muted hover:bg-white/[0.05] hover:text-text"}`}
+              className={`min-w-0 rounded-lg px-1 py-2.5 text-xs font-semibold transition sm:px-3 sm:text-sm ${active === tab.key ? "bg-accent/15 text-accent ring-1 ring-accent/20" : "text-muted hover:bg-white/[0.05] hover:text-text"}`}
             >
               {tab.label}
             </button>

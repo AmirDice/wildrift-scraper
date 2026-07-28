@@ -704,7 +704,7 @@ def advise(champion: str, role: str, enemies: list[str],
         _meta_block(champion),
         prompt_mod.audit_block(kit_linked_items, combat),
         prompt_mod.rules_block(enemies_known, combat),
-        prompt_mod.boots_block(champion_record.get("class", ""), enemies_known),
+        prompt_mod.boots_block(champion_record.get("class", ""), enemies_known, damage_path),
         runemeta.pool_text_block(),
         prompt_mod.item_pool_block(pool_slugs),
         prompt_mod.filtered_note(withheld),
@@ -724,7 +724,8 @@ def advise(champion: str, role: str, enemies: list[str],
     def _check(build: dict):
         return validate_mod.validate(
             build, champion_class=champion_class, role=role, mode=mode,
-            enemies_known=enemies_known, required_audit_items=kit_linked_items,
+            enemies_known=enemies_known, damage_path=damage_path,
+            required_audit_items=kit_linked_items,
             allowed_items=pool_slugs, item_locks=item_locks, boot_lock=locked_boot,
             rune_locks=locked_runes, resolve_item=_resolve_item,
         )

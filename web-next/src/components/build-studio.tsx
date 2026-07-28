@@ -37,16 +37,19 @@ const TABS = [
   {
     id: "recommended",
     label: "Recommended Builds",
+    shortLabel: "Recommended",
     help: "Choose a playstyle to review a curated full build. Tap any item, rune, ability, or stat for an explanation, then open Compare Builds to check it against another playstyle.",
   },
   {
     id: "generate",
     label: "Personal Build Generator",
+    shortLabel: "Generate",
     help: "Choose your role, playstyle, and optimization goal, then generate. Review the recommendation and compare the result against any recommended build.",
   },
   {
     id: "customize",
     label: "Custom Build Lab",
+    shortLabel: "Custom Lab",
     help: "Build from scratch or load a recommended starting point. Add or remove items and runes, inspect live stats, and compare your custom loadout before you commit to it.",
   },
 ] as const;
@@ -330,15 +333,21 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
       </div>
 
       {/* tabs */}
-      <div data-tour="tabs" className="glass mt-4 flex gap-1 overflow-x-auto rounded-xl p-1">
+      {/* A grid, not a scrolling flex row. The row version put "Custom Build
+          Lab" at x=377 on a 375px viewport -- entirely off-screen, with
+          nothing to indicate the strip scrolled, so on a phone the tab may as
+          well not have existed. Equal columns plus a short label per tab means
+          all three fit and none of them needs discovering. */}
+      <div data-tour="tabs" className="glass mt-4 grid grid-cols-3 gap-1 rounded-xl p-1">
         {availableTabs.map((entry) => (
           <button
             key={entry.id}
             onClick={() => setTab(entry.id)}
             title={entry.help}
-            className={`flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition ${effectiveTab === entry.id ? "bg-accent/20 text-accent" : "text-muted hover:text-text"}`}
+            className={`min-w-0 rounded-lg px-1.5 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${effectiveTab === entry.id ? "bg-accent/20 text-accent" : "text-muted hover:text-text"}`}
           >
-            {entry.label}
+            <span className="sm:hidden">{entry.shortLabel}</span>
+            <span className="hidden sm:inline">{entry.label}</span>
           </button>
         ))}
       </div>

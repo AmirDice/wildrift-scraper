@@ -212,6 +212,7 @@ def validate(
     role: str = "",
     mode: str = "studio",
     enemies_known: bool = False,
+    damage_path: str = "standard",
     required_audit_items: list[str] | None = None,
     allowed_items: list[str] | None = None,
     item_locks: list[str] | None = None,
@@ -296,6 +297,22 @@ def validate(
     else:
         res["boots"] = boots
         res["bootsUpgrade"] = ITEMS[boots].get("upgradesTo")
+        # An AP request that comes back with attack-speed boots is not honouring
+        # the request. Only OFF-PATH OFFENSIVE boots are rejected: neutral and
+        # defensive boots (haste, armor, tenacity, omnivamp) are legitimate on
+        # any path and are often correct, so this must not become a rule that
+        # forces the offensive boot.
+        boot_stats = set((ITEMS.get(boots) or {}).get("stats") or {})
+        off_path = (
+            ("ad" in boot_stats or "attackSpeed" in boot_stats) if damage_path == "ap"
+            else ("ap" in boot_stats) if damage_path == "ad"
+            else False)
+        if off_path:
+            report.fail("boots",
+                        f"this is an {damage_path.upper()} build and {boots} is an offensive "
+                        f"boot for the other damage type ({', '.join(sorted(boot_stats))}). "
+                        f"Choose the {damage_path.upper()} offensive boot, or a neutral/"
+                        f"defensive boot -- those stay available on any damage path.")
         # The old rule banned defensive boots outright for these classes. That
         # is right with no enemy team and wrong once a comp is on the table,
         # where the defensive boot is sometimes simply the better choice. So the

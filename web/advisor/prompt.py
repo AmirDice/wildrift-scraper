@@ -431,7 +431,7 @@ COUNTER_SUMMARY_SCHEMA = (
 )
 
 
-def boots_block(champion_class: str, enemies_known: bool) -> str:
+def boots_block(champion_class: str, enemies_known: bool, damage_path: str = "standard") -> str:
     """Boots, with defensive options gated on evidence rather than on class.
 
     The old rule forbade Mercury's Treads and Plated Steelcaps outright for
@@ -460,6 +460,23 @@ def boots_block(champion_class: str, enemies_known: bool) -> str:
 
     block = ("BOOTS (pick ONE tier-2; it upgrades to the listed tier-3 for ~1000g after "
              "10:00 -- usually after your 2nd item):\n" + "\n".join(rows))
+
+    # The damage path was reaching the ITEM rules and stopping there. The hard
+    # legality rule says plainly that boots are not one of the five items, so
+    # "do not mix in AD items" reads as not covering them -- and an AP Kayle
+    # request came back with attack-speed boots.
+    if damage_path in ("ap", "ad"):
+        want, avoid = (("Ability Power", "attack speed or Attack Damage")
+                       if damage_path == "ap" else
+                       ("Attack Damage", "Ability Power"))
+        block += (
+            f"\n\nDAMAGE PATH APPLIES TO BOOTS TOO. This is an {damage_path.upper()} build. "
+            f"If you take an OFFENSIVE boot it must be the one that gives {want}; a boot "
+            f"whose stats are {avoid} does not belong in this build no matter how well it "
+            f"suits the champion's usual playstyle. Defensive and neutral boots (armor, "
+            f"magic resist, tenacity, ability haste, omnivamp) stay available on any path "
+            f"and are often the right call -- this rule forbids the OFF-PATH offensive "
+            f"boot, not every boot that is not {want}.")
     if defensive:
         if enemies_known:
             policy = (

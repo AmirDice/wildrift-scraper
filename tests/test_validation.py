@@ -576,3 +576,43 @@ class TestAnInvalidBuildIsNeverServed:
         extras = set(validate_mod.SECTIONS) - core
         assert extras == {"situational", "situationalRunes", "snowball",
                           "scores", "counterSummary"}
+
+
+class TestBootsFollowTheDamagePath:
+    """An AP request that returns attack-speed boots is not honouring it.
+
+    Reported on Kayle: asked for an AP build, given Berserker's Greaves. The
+    damage path reached the ITEM rules and stopped there, and the hard-legality
+    rule says plainly that boots are not one of the five items -- so "do not mix
+    in AD items" reads as not covering them.
+    """
+
+    def test_attack_speed_boots_are_rejected_on_an_ap_build(self, build):
+        build["boots"] = "berserkers-greaves"
+        report = check(build, damage_path="ap")
+        assert "boots" in report.sections()
+        assert "AP build" in " ".join(report.errors["boots"])
+
+    def test_ad_boots_are_rejected_on_an_ap_build(self, build):
+        build["boots"] = "boots-of-dynamism"
+        assert "boots" in check(build, damage_path="ap").sections()
+
+    def test_ap_boots_are_rejected_on_an_ad_build(self, build):
+        build["boots"] = "boots-of-mana"
+        assert "boots" in check(build, damage_path="ad").sections()
+
+    def test_the_ap_boot_passes_on_an_ap_build(self, build):
+        build["boots"] = "boots-of-mana"
+        assert "boots" not in check(build, damage_path="ap").sections()
+
+    def test_neutral_boots_stay_legal_on_every_path(self, build):
+        """The rule forbids the OFF-PATH OFFENSIVE boot, not every boot that is
+        not the on-path one. Ionian on an AP mage is a normal, correct choice."""
+        for path in ("ap", "ad", "standard"):
+            build["boots"] = "ionian-boots-of-lucidity"
+            assert "boots" not in check(build, damage_path=path).sections(), path
+
+    def test_the_standard_path_constrains_nothing(self, build):
+        for boots in ("berserkers-greaves", "boots-of-mana", "boots-of-dynamism"):
+            build["boots"] = boots
+            assert "boots" not in check(build, damage_path="standard").sections(), boots
