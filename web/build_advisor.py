@@ -47,7 +47,17 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
-MODEL = "deepseek-v4-flash"
+
+# Which model authors the build. Set ADVISOR_MODEL to switch; a name starting
+# with "gemini" routes to the Gemini API, anything else to DeepSeek.
+#
+# Gemini won a five-champion, fifty-build comparison judged on the builds
+# themselves: better picks on four of five champions, ~17% faster, and a third
+# of the repair rounds. The default stays DeepSeek until that is deployed with
+# a key that has quota; locally, put ADVISOR_MODEL and GEMINI_API_KEY in
+# web-next/.env.local and the dev server passes both through to this process.
+MODEL = os.environ.get("ADVISOR_MODEL", "deepseek-v4-flash").strip() or "deepseek-v4-flash"
+IS_GEMINI = MODEL.lower().startswith("gemini")
 THINKING = {"type": "enabled"}
 # Caps COMPLETION tokens, which include the model's reasoning, not just the
 # JSON. Measured on a full studio generation: 4,401 completion tokens, of which
@@ -336,7 +346,49 @@ def _stream_call(key: str, body: dict, on_progress) -> dict:
     return json.loads("".join(chunks))
 
 
+def _gemini_call(prompt: str) -> dict:
+    """The same contract as the DeepSeek path: prompt in, parsed build out.
+
+    Kept deliberately thin. Everything that decides the build -- the prompt, the
+    validator, the repair loop -- is shared, so switching providers changes the
+    author and nothing else, which is what made the comparison meaningful.
+    """
+    from google import genai
+    from google.genai import types
+
+    api_key = (os.environ.get("GEMINI_API_KEY")
+               or os.environ.get("GOOGLE_API_KEY") or "")
+    if not api_key:
+        raise SystemExit("GEMINI_API_KEY is not set, but ADVISOR_MODEL asks for "
+                         f"{MODEL}. Put it in web-next/.env.local.")
+    client = genai.Client(api_key=api_key)
+    config = types.GenerateContentConfig(
+        system_instruction=prompt_mod.SYSTEM,
+        response_mime_type="application/json",
+        temperature=0,
+        max_output_tokens=MAX_OUTPUT_TOKENS,
+    )
+    last = None
+    for attempt in range(4):
+        try:
+            r = client.models.generate_content(model=MODEL, contents=prompt, config=config)
+            return json.loads(r.text)
+        except Exception as exc:                       # noqa: BLE001
+            last = exc
+            text = str(exc)
+            if "RESOURCE_EXHAUSTED" in text or "429" in text:
+                # The free tier throttles hard and recovers in minutes, so wait
+                # rather than failing a generation the player is watching.
+                time.sleep(min(60, 15 * (attempt + 1)))
+                continue
+            if attempt < 3:
+                time.sleep(3 * (attempt + 1))
+    raise RuntimeError(f"gemini failed after 4 attempts: {str(last)[:300]}")
+
+
 def _call(key: str, prompt: str, on_progress=None) -> dict:
+    if IS_GEMINI:
+        return _gemini_call(prompt)
     body = {"model": MODEL,
             "messages": [{"role": "system", "content": prompt_mod.SYSTEM},
                          {"role": "user", "content": prompt}],
