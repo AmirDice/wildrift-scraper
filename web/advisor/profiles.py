@@ -447,6 +447,15 @@ def build_identity(champion: str) -> str:
 
 _RANGED_CLASSES = {"Marksman", "Mage", "Enchanter"}
 
+# Champions for whom Poke is not a playable build. Lives in playstyles.json
+# because the studio filters its playstyle menu from the same list, and the two
+# must not drift; tests/test_playstyles.py fails if they do.
+_PLAYSTYLES_PATH = ROOT / "web-next" / "src" / "data" / "playstyles.json"
+NO_POKE: set[str] = set(
+    (json.loads(_PLAYSTYLES_PATH.read_text(encoding="utf-8")).get("noPoke") or [])
+    if _PLAYSTYLES_PATH.exists() else []
+)
+
 
 def range_profile(champion: str) -> str:
     """"ranged" or "melee". Curated overrides win (the scrape has no range
@@ -463,10 +472,19 @@ def poke_eligibility(champion: str) -> dict:
 
     Poke means repeatable, reasonably safe ranged pressure BEFORE committing --
     not "has one ranged ability". A melee diver whose ranged spell is all-in
-    setup (Akali) does not qualify; a ranged control mage does. The signals we
-    can ground this on are range and damage identity; the ambiguous melee-caster
-    cases are handled by the curated rangeProfile override.
+    setup (Akali) does not qualify; a ranged control mage does.
+
+    The per-champion classification wins, because being ranged turned out not to
+    be the test. Lillia, Thresh, Rakan and Vladimir all have ranged basic
+    attacks and all fight at short range with almost none of their damage coming
+    from range, so deriving Poke from the attack type answered the wrong
+    question. The list is in playstyles.json, classified by
+    scripts/classify_range.py, and is shared with the studio so both agree.
     """
+    if champion in NO_POKE:
+        return {"eligible": False,
+                "reason": "Classified as unable to poke: this champion fights at short "
+                          "range, whatever its basic attack range says."}
     if range_profile(champion) == "melee":
         return {"eligible": False,
                 "reason": "Melee champion: its ranged abilities are engage/all-in setup, "

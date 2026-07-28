@@ -143,10 +143,6 @@
       "rangeProfile": "melee",
       "reason": "Melee assassin/bruiser."
     },
-    "Lillia": {
-      "rangeProfile": "melee",
-      "reason": "Melee Mage. Her abilities have reach but she attacks in melee, so Poke was being offered on a champion who has to walk in to apply damage."
-    },
     "Master Yi": {
       "combatProfile": {
         "basicAttackPattern": "repeated-attacks",
@@ -293,10 +289,6 @@
       "rangeProfile": "melee",
       "reason": "Melee assassin support."
     },
-    "Rakan": {
-      "rangeProfile": "melee",
-      "reason": "Melee Enchanter. His engage covers distance; his attacks do not."
-    },
     "Rammus": {
       "buildIdentityProfile": {
         "primaryBuildPath": "tank",
@@ -332,14 +324,6 @@
     "Rumble": {
       "rangeProfile": "melee",
       "reason": "Melee Mage. Flamespitter is a short cone applied from melee range."
-    },
-    "Thresh": {
-      "rangeProfile": "melee",
-      "reason": "Melee Enchanter. He hooks from range but auto-attacks in melee."
-    },
-    "Vladimir": {
-      "rangeProfile": "melee",
-      "reason": "Melee Mage. Transfusion is short-range and he wins by standing in the fight, not poking from outside it."
     }
   }
 }

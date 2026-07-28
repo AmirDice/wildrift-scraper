@@ -119,18 +119,20 @@ type PlaystyleDefinition = { key: string; label: string; description: string; pr
 const PLAYSTYLES = playstyleData.definitions as PlaystyleDefinition[];
 const PLAYSTYLES_BY_CLASS = playstyleData.byClass as Record<string, string[]>;
 const PLAYSTYLE_OVERRIDES = playstyleData.overrides as Record<string, string[]>;
-/** Ranged-class champions who actually attack in melee. See _meleeNote. */
-const MELEE_IN_RANGED_CLASS = new Set(playstyleData.meleeInRangedClass as string[]);
+/** Champions for whom Poke is not a playable build. See _noPokeNote. */
+const NO_POKE = new Set(playstyleData.noPoke as string[]);
 
 function playstylesFor(champion: RosterChampion | undefined, mode: AdvisorMode): PlaystyleDefinition[] {
   const allowed = champion
     ? [...(PLAYSTYLE_OVERRIDES[champion.name] ?? PLAYSTYLES_BY_CLASS[champion.class] ?? ["standard", "damage"])]
     : ["standard"];
-  // Poke comes from the class list, and three classes that grant it (Mage,
-  // Enchanter, Marksman) each contain melee champions. Poke means repeatable
-  // pressure from range, so offering it to Lillia or Nilah advertises a build
-  // they cannot execute.
-  if (champion && MELEE_IN_RANGED_CLASS.has(champion.name)) {
+  // Poke comes from the champion's CLASS, which is too coarse for it: Mage,
+  // Enchanter and Marksman all grant Poke and all contain champions who cannot
+  // do it. Being ranged is not the test either -- Lillia, Thresh, Rakan and
+  // Vladimir all have ranged basic attacks and still fight at short range with
+  // almost none of their damage coming from range. The list is classified per
+  // champion by scripts/classify_range.py.
+  if (champion && NO_POKE.has(champion.name)) {
     const poke = allowed.indexOf("poke");
     if (poke !== -1) allowed.splice(poke, 1);
   }

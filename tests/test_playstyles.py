@@ -27,13 +27,13 @@ CURATED_MELEE = {name for name, entry in COMBAT["champions"].items()
 
 
 class TestTheTwoListsAgree:
-    def test_the_frontend_list_mirrors_the_curated_overrides(self):
-        assert set(PLAYSTYLES["meleeInRangedClass"]) == CURATED_MELEE, (
-            "playstyles.json meleeInRangedClass has drifted from "
-            "combat_profiles.json rangeProfile; the studio and the advisor would "
-            "disagree about who can poke")
+    def test_the_advisor_and_the_studio_read_the_same_no_poke_list(self):
+        """One list, two consumers. profiles.NO_POKE loads playstyles.json
+        directly, so a drift here is a drift between the advisor's idea of a
+        legal playstyle and the menu the studio actually offers."""
+        assert profiles.NO_POKE == set(PLAYSTYLES["noPoke"])
 
-    def test_no_melee_champion_can_reach_poke_through_its_class(self):
+    def test_no_champion_can_reach_poke_through_its_class(self):
         """The invariant that actually matters, checked across the whole roster.
 
         Adding a melee champion to a poke-granting class, or granting poke to a
@@ -42,26 +42,36 @@ class TestTheTwoListsAgree:
         """
         by_class = PLAYSTYLES["byClass"]
         overrides = PLAYSTYLES["overrides"]
-        listed = set(PLAYSTYLES["meleeInRangedClass"])
+        listed = set(PLAYSTYLES["noPoke"])
 
         for name, record in profiles.CHAMPIONS.items():
             allowed = overrides.get(name) or by_class.get(record.get("class", "")) or []
             if "poke" not in allowed:
                 continue
-            if profiles.range_profile(name) == "melee":
+            if not profiles.poke_eligibility(name)["eligible"]:
                 assert name in listed, (
-                    f"{name} is melee, its class grants Poke, and it is not in "
-                    f"meleeInRangedClass -- the studio would offer it a Poke build")
+                    f"{name} cannot poke, its class grants Poke, and it is not in "
+                    f"noPoke -- the studio would offer it a Poke build")
 
 
 class TestPokeEligibility:
-    def test_lillia_is_melee_and_cannot_poke(self):
-        """The reported bug."""
-        assert profiles.range_profile("Lillia") == "melee"
+    def test_lillia_cannot_poke(self):
+        """The reported bug. She is ranged in the kit and still cannot poke."""
         assert not profiles.poke_eligibility("Lillia")["eligible"]
 
     def test_no_curated_melee_champion_is_poke_eligible(self):
         for name in CURATED_MELEE:
+            assert not profiles.poke_eligibility(name)["eligible"], name
+
+    def test_a_ranged_champion_who_fights_up_close_still_cannot_poke(self):
+        """The distinction the whole reclassification exists for.
+
+        These four have RANGED basic attacks -- marking them melee to suppress
+        Poke was the wrong fix, because it also withheld ranged-only items they
+        are allowed to buy.
+        """
+        for name in ("Lillia", "Thresh", "Rakan", "Vladimir"):
+            assert profiles.range_profile(name) == "ranged", name
             assert not profiles.poke_eligibility(name)["eligible"], name
 
     def test_a_genuine_ranged_mage_still_pokes(self):

@@ -52,7 +52,10 @@ SYSTEM = (
 
 SCHEMA = (
     '{"attackType":"melee"|"ranged",'
-    '"attackTypeReason":"one sentence: where this champion has to stand to deal damage",'
+    '"attackTypeReason":"one sentence about the BASIC ATTACK only",'
+    '"combatRange":"short"|"long",'
+    '"combatRangeReason":"one sentence: where the champion actually spends the fight",'
+    '"longRangeDamageShare":"most"|"some"|"little",'
     '"pokeEligible":true|false,'
     '"pokeReason":"one sentence",'
     '"confidence":"high"|"medium"|"low"}'
@@ -96,7 +99,21 @@ def prompt_for(c: dict) -> str:
         "   The champion's listed CLASS is unreliable here and is given only as "
         "context. Melee champions are routinely classed as Mage.\n\n"
 
-        "2. POKE: is a Poke build a real, playable option for this champion?\n"
+        "2. COMBAT RANGE: in actual gameplay, where does this champion spend the "
+        "fight?\n"
+        "   This is a DIFFERENT question from question 1 and the answer is often "
+        "different. Several champions have a ranged basic attack but still have to be "
+        "in the middle of the fight for their kit to do anything: their healing, their "
+        "engage, or their damage only works up close. Judge by how the champion is "
+        "actually played and which abilities carry their damage and their impact -- not "
+        "by the basic attack, and not by the single longest-range spell in the kit.\n"
+        "   Answer 'short' if the champion has to get close to do their job, 'long' if "
+        "they can do it from a distance and stay there.\n"
+        "   Also answer longRangeDamageShare: how much of this champion's damage and "
+        "impact actually comes from abilities used at long range -- 'most', 'some' or "
+        "'little'.\n\n"
+
+        "3. POKE: is a Poke build a real, playable option for this champion?\n"
         "   Poke means repeatable, reasonably safe damage from range BEFORE committing "
         "to a fight, on a short enough cooldown to do it repeatedly.\n"
         "   Being ranged is NOT enough. A ranged champion whose damage requires "
@@ -117,43 +134,102 @@ def current_state() -> dict[str, str]:
 
 
 def apply_to_profiles(store: dict, min_confidence: str = "medium") -> None:
-    """Merge agreed melee answers into combat_profiles.json.
+    """Write the two axes to the two places that consume them.
 
-    Only melee is written. Ranged is the default for the classes that matter, so
-    writing it back would fill the overrides file with entries that change
-    nothing and bury the real exceptions.
+    They are genuinely different questions and were conflated before, which is
+    what produced the wrong answer on four champions:
+
+      rangeProfile (melee|ranged) -- the BASIC ATTACK. Gates ranged-only items
+        like Runaan's Hurricane. Lillia, Thresh, Rakan and Vladimir are ranged
+        here, and marking them melee to suppress Poke also wrongly withheld an
+        item they are technically allowed to buy.
+
+      noPoke -- whether a Poke build is playable. Driven by the model's
+        pokeEligible, not by the attack type, because those four are ranged and
+        still fight at short range with almost none of their damage coming from
+        long range. That is the thing Poke actually asks about.
+
+    Only exceptions are written to rangeProfile: ranged is the default for the
+    classes that matter, so writing it back would bury the real entries.
     """
     rank = {"high": 3, "medium": 2, "low": 1}
     floor = rank.get(min_confidence, 2)
     data = json.loads(PROFILES.read_text(encoding="utf-8"))
     champs = data["champions"]
+    entries = store.get("champions", {})
 
-    added, skipped = [], []
-    for name, entry in sorted(store.get("champions", {}).items()):
-        if entry.get("attackType") != "melee":
-            continue
-        if rank.get(entry.get("confidence", "low"), 1) < floor:
-            skipped.append(f"{name} ({entry.get('confidence')})")
-            continue
-        record = champs.setdefault(name, {})
-        if record.get("rangeProfile") == "melee":
-            continue
-        record["rangeProfile"] = "melee"
-        record.setdefault("reason", str(entry.get("attackTypeReason", ""))[:200])
-        added.append(name)
+    confident = {n: e for n, e in entries.items()
+                 if rank.get(e.get("confidence", "low"), 1) >= floor}
+    skipped = sorted(set(entries) - set(confident))
+
+    # Only EXCEPTIONS belong in this file. Marksman/Mage/Enchanter default to
+    # ranged and everyone else to melee, so writing "melee" for Garen states
+    # what the default already says and buries the entries that matter. A first
+    # pass wrote 50 such rows before this check existed.
+    ranged_classes = {"Marksman", "Mage", "Enchanter"}
+    sys.path.insert(0, str(ROOT))
+    from web.advisor import profiles as _profiles
+
+    def default_is_melee(name: str) -> bool:
+        return (_profiles.CHAMPIONS.get(name) or {}).get("class", "") not in ranged_classes
+
+    melee_added, melee_removed = [], []
+    for name, entry in sorted(confident.items()):
+        record = champs.get(name) or {}
+        if entry.get("attackType") == "melee":
+            if default_is_melee(name):
+                continue                      # the default already says this
+            if record.get("rangeProfile") != "melee":
+                champs.setdefault(name, {})["rangeProfile"] = "melee"
+                champs[name].setdefault(
+                    "reason", str(entry.get("attackTypeReason", ""))[:200])
+                melee_added.append(name)
+        elif record.get("rangeProfile") == "melee":
+            # Classified ranged but currently overridden to melee. Drop the
+            # override so item filtering is right; Poke is handled separately.
+            record.pop("rangeProfile", None)
+            record.pop("reason", None)
+            if not record:
+                champs.pop(name, None)
+            melee_removed.append(name)
 
     data["champions"] = dict(sorted(champs.items()))
     PROFILES.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     melee = sorted(n for n, v in data["champions"].items() if v.get("rangeProfile") == "melee")
+
+    # noPoke is the union of two things, not just the model's verdict:
+    #   - champions it confidently says cannot poke, and
+    #   - every champion the advisor already rejects for being melee.
+    # Without the second half a low-confidence entry gets skipped here while the
+    # advisor still refuses the playstyle, so the studio offers a Poke build
+    # that the generator then declines to produce. Rumble hit exactly that.
+    no_poke = {n for n, e in confident.items() if not e.get("pokeEligible")}
+    no_poke |= {n for n in _profiles.CHAMPIONS
+                if _profiles.range_profile(n) == "melee"
+                or n in melee or default_is_melee(n)}
+    no_poke = sorted(no_poke & set(_profiles.CHAMPIONS))
+
     ps = json.loads(PLAYSTYLES.read_text(encoding="utf-8"))
-    ps["meleeInRangedClass"] = melee
+    ps.pop("meleeInRangedClass", None)
+    ps.pop("_meleeNote", None)
+    ps["_noPokeNote"] = (
+        "Champions for whom a Poke build is not playable, classified by "
+        "scripts/classify_range.py. This is NOT the same as being melee: Lillia, "
+        "Thresh, Rakan and Vladimir all have ranged basic attacks and still belong "
+        "here, because they fight at short range and almost none of their damage "
+        "comes from long range. Poke is filtered out for everyone on this list.")
+    ps["noPoke"] = no_poke
     PLAYSTYLES.write_text(json.dumps(ps, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    print(f"added {len(added)} melee overrides: {', '.join(added) or '(none)'}")
+    print(f"rangeProfile: +{len(melee_added)} melee "
+          f"({', '.join(melee_added) or 'none'})")
+    print(f"rangeProfile: -{len(melee_removed)} corrected to ranged "
+          f"({', '.join(melee_removed) or 'none'})")
+    print(f"combat_profiles.json now lists {len(melee)} melee champions")
+    print(f"playstyles.json noPoke now lists {len(no_poke)} champions")
     if skipped:
-        print(f"skipped for low confidence: {', '.join(skipped)}")
-    print(f"combat_profiles.json and playstyles.json now list {len(melee)} melee champions")
+        print(f"skipped for confidence below {min_confidence}: {', '.join(skipped)}")
 
 
 def main() -> None:
@@ -222,15 +298,20 @@ def main() -> None:
         done[c["name"]] = {
             "attackType": attack,
             "attackTypeReason": str(got.get("attackTypeReason", ""))[:300],
+            "combatRange": str(got.get("combatRange", "")).strip().lower(),
+            "combatRangeReason": str(got.get("combatRangeReason", ""))[:300],
+            "longRangeDamageShare": str(got.get("longRangeDamageShare", "")).strip().lower(),
             "pokeEligible": bool(got.get("pokeEligible")),
             "pokeReason": str(got.get("pokeReason", ""))[:300],
             "confidence": str(got.get("confidence", "")).strip().lower(),
             "class": c.get("class", ""),
         }
         OUT.write_text(json.dumps(store, indent=1, ensure_ascii=False), encoding="utf-8")
-        poke = "poke" if done[c["name"]]["pokeEligible"] else "no-poke"
-        print(f"  [{i}/{len(todo)}] {c['name']:<16} {attack:<7} {poke:<8} "
-              f"({done[c['name']]['confidence']})", flush=True)
+        e = done[c["name"]]
+        poke = "poke" if e["pokeEligible"] else "no-poke"
+        print(f"  [{i}/{len(todo)}] {c['name']:<16} attack={attack:<7} "
+              f"fights={e['combatRange']:<6} longRangeDmg={e['longRangeDamageShare']:<7} "
+              f"{poke:<8} ({e['confidence']})", flush=True)
         time.sleep(1)
 
     print(f"\n{len(done)} champions stored in {OUT.relative_to(ROOT)}")
