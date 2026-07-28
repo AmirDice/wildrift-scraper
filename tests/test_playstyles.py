@@ -189,3 +189,49 @@ class TestRangedOnlyItems:
         kept, _ = itemmeta.filter_candidates(
             record, profiles.combat_profile("Ashe"), profiles.scaling_profile("Ashe"))
         assert "runaans-hurricane" in kept
+
+
+class TestPlaystylePromptsDeferToTheKit:
+    """A playstyle names an OUTCOME; the kit decides the mechanism.
+
+    Reported on Sustain: the prompt read "a LIFESTEAL / omnivamp sustain
+    build", and lifesteal is a basic-attack stat. Orianna cannot proc it, so
+    asking her for Sustain asked for a build she cannot express. Sustain for
+    Orianna and Sustain for Aatrox are different builds serving one goal, and
+    only the kit knows which.
+    """
+
+    DEFINITIONS = {d["key"]: d for d in PLAYSTYLES["definitions"]}
+
+    # Styles offered to more than one class, where the means genuinely differ.
+    CROSS_CLASS = ("vamp", "tanky", "burst", "damage", "utility")
+
+    def test_cross_class_styles_defer_the_mechanism_to_the_kit(self):
+        for key in self.CROSS_CLASS:
+            prompt = self.DEFINITIONS[key]["prompt"]
+            assert "THIS kit" in prompt or "this champion" in prompt, (
+                f"{key} states a mechanism without deferring to the kit, which is "
+                f"how Sustain came to ask a mage for lifesteal")
+
+    def test_sustain_warns_that_lifesteal_is_a_basic_attack_stat(self):
+        """The exact bug, named in the prompt so it cannot come back quietly."""
+        prompt = self.DEFINITIONS["vamp"]["prompt"].lower()
+        assert "basic-attack stat" in prompt
+        assert "caster" in prompt
+
+    def test_every_style_a_mage_can_pick_is_expressible_by_a_mage(self):
+        """Any style granted to Mage must not demand basic-attack mechanics
+        without a caster carve-out."""
+        for key in PLAYSTYLES["byClass"]["Mage"]:
+            prompt = self.DEFINITIONS[key]["prompt"]
+            names_attack_stat = any(
+                term in prompt.lower() for term in ("lifesteal", "attack speed", "on-hit"))
+            if names_attack_stat:
+                assert "caster" in prompt.lower() or "cannot" in prompt.lower(), (
+                    f"{key} is offered to Mages and names a basic-attack mechanic "
+                    f"with no carve-out for a caster")
+
+    def test_no_prompt_is_a_bare_mechanism(self):
+        """Every prompt should say what the build is FOR, not only what to buy."""
+        for key, entry in self.DEFINITIONS.items():
+            assert len(entry["prompt"]) > 60, f"{key} is too terse to state an outcome"

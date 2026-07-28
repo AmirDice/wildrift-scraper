@@ -16,13 +16,13 @@
       "key": "damage",
       "label": "Glass cannon",
       "description": "Maximum overall damage with minimal defensive investment.",
-      "prompt": "maximum raw damage output for this kit (glass cannon): offense over defense, the highest-damage 5 items the kit can actually use."
+      "prompt": "MAXIMUM DAMAGE (glass cannon): the highest-damage five items THIS kit can actually convert, offense over defense. Convert is the operative word -- an item is only damage if the kit's ratios, cast pattern and attack pattern make use of it. Do not buy a stat the champion cannot express just because the number on it is large."
     },
     {
       "key": "crit",
       "label": "Crit",
       "description": "Critical-strike scaling and high basic-attack damage.",
-      "prompt": "a CRIT build: 4+ of the 5 items must grant Critical Rate; no lethality."
+      "prompt": "CRIT: 4+ of the 5 items must grant Critical Rate, and no lethality. Crit only applies to what can crit -- if this champion's ABILITIES cannot crit, the build improves basic attacks only, so weight it toward a kit that attacks often enough for that to matter."
     },
     {
       "key": "dps",
@@ -34,61 +34,61 @@
       "key": "onhit",
       "label": "On-hit",
       "description": "Attack speed plus effects triggered by repeated attacks.",
-      "prompt": "ON-HIT build stacking attack speed and on-hit effects."
+      "prompt": "ON-HIT: stack attack speed and on-hit effects, which only works on a kit that applies on-hit repeatedly. A champion who applies one empowered attack per rotation is NOT an on-hit champion, and reload or magazine kits convert attack speed poorly. If this champion cannot stack on-hit, say so rather than forcing the build."
     },
     {
       "key": "burst",
       "label": "Burst",
       "description": "Maximum damage in a short ability or attack combo.",
-      "prompt": "maximum BURST to delete a priority target quickly."
+      "prompt": "BURST: delete a priority target in one rotation, built around the damage THIS kit actually front-loads. Penetration matters more than raw damage once the target has resistances, and a kit whose damage arrives over several seconds is not made bursty by buying burst items -- if this champion cannot kill inside one rotation, say so and build the closest honest thing."
     },
     {
       "key": "oneshot",
       "label": "One-shot",
       "description": "Squishy-target deletion, accepting very low durability.",
-      "prompt": "full one-shot assassin build to instantly kill a squishy."
+      "prompt": "ONE-SHOT: kill a squishy target instantly from a committed engage. Lethality/magic penetration and raw damage over sustain, built around the exact rotation THIS kit uses to open -- the items must be live at the moment that rotation lands."
     },
     {
       "key": "splitpush",
       "label": "Split-push / Duelist",
       "description": "Side-lane dueling, wave pressure, and structure damage.",
-      "prompt": "a 1v1 duelist / SPLIT-PUSH build: win side-lane duels and shove/take towers fast (dueling sustain and tower/structure damage where the kit allows)."
+      "prompt": "SPLIT-PUSH / DUELIST: win side-lane 1v1s and take structures fast, built the way THIS kit duels. Dueling sustain, tower damage and escape all count; which of them to weight depends on whether this champion wins a duel through sustained damage, a burst window, or simply outliving the opponent."
     },
     {
       "key": "kiting",
       "label": "Mobile DPS",
       "description": "Keep dealing damage while moving and staying hard to catch.",
-      "prompt": "a KITING build: attack-move and keep dealing damage while staying mobile and hard to catch; survivability that keeps you attacking, not raw tank."
+      "prompt": "KITING: keep dealing damage while staying out of reach. Movement, attack range and slows are the tools, and survivability only counts here when it keeps you ATTACKING rather than merely alive. Judge each item by whether it lets this specific kit keep damaging while retreating."
     },
     {
       "key": "vamp",
       "label": "Sustain",
       "description": "Lifesteal or omnivamp for healing through fights.",
-      "prompt": "a LIFESTEAL / omnivamp sustain build that heals through fights while dealing damage."
+      "prompt": "SUSTAIN: survive extended fights by out-healing the damage taken, built the way THIS kit actually heals. Lifesteal and physical vamp are BASIC-ATTACK stats and are only the answer for a champion whose damage comes from attacking; a caster sustains through omnivamp/spell vamp, healing amplification, or enough durability that its own kit healing keeps up. Do not put a lifesteal item on a kit that cannot proc it -- identify how this champion heals first, then buy that."
     },
     {
       "key": "antitank",
       "label": "Anti-tank",
       "description": "Percent-health damage and penetration against frontlines.",
-      "prompt": "ANTI-TANK: %max-HP and armor/magic penetration to melt the frontline."
+      "prompt": "ANTI-TANK: melt a high-Health frontline. %max-HP damage and the penetration type THIS champion's damage actually uses -- armor penetration is worthless on a magic-damage kit and vice versa. Check the champion's damage type before choosing the penetration."
     },
     {
       "key": "tanky",
       "label": "Tanky / Durable",
       "description": "Prioritize survival while remaining useful or threatening.",
-      "prompt": "a bruiser/tank build that survives while staying a threat."
+      "prompt": "DURABLE: stay alive and remain a threat, built the way THIS kit converts durability into damage. Some kits scale damage directly off Health or resistances and want those stats outright; others get nothing from them and stay dangerous only by surviving long enough to keep casting. Decide which this champion is before choosing between raw resistances, Health, and defensive items with offensive passives."
     },
     {
       "key": "poke",
       "label": "Poke",
       "description": "Long-range damage and pressure from safety.",
-      "prompt": "long-range POKE and burst from safety."
+      "prompt": "POKE: repeatable long-range pressure before committing, built so the pressure can be REPEATED -- ability haste and the resource to keep casting matter as much as raw damage, because a poke build that casts twice and stops is not a poke build."
     },
     {
       "key": "utility",
       "label": "Utility",
       "description": "Ally protection, team value, and supportive effects.",
-      "prompt": "protect/utility support build; ally value over personal damage."
+      "prompt": "UTILITY: ally value over personal damage, delivered the way THIS kit delivers it. A shield/heal enchanter wants heal-and-shield power and the stats its abilities scale from; a lockdown or engage champion provides utility through crowd control and needs to survive long enough to land it. Both are utility builds and they share almost no items, so identify which one this champion is."
     }
   ],
   "byClass": {
