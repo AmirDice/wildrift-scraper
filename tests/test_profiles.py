@@ -246,3 +246,51 @@ def test_the_new_profile_is_far_more_selective_than_the_old_tag():
               if profiles.combat_profile(n)["repeatedOnHitReliance"] in ("medium", "high"))
     assert old > 80
     assert new < old / 2
+
+
+class TestManaReliance:
+    """The mirror of the manaless rule, which was missing entirely.
+
+    A champion with no mana was told mana stats are dead. Nothing ever told the
+    model that a kit is BOUNDED by mana, so builds for champions who cast
+    constantly skipped mana the same way a Graves build does -- reported on
+    Sona, whose auras are maintained by casting.
+    """
+
+    OWNER_LIST = ["Ezreal", "Jayce", "Kassadin", "Orianna", "Ryze", "Smolder", "Sona"]
+
+    def test_each_named_champion_is_told_mana_is_limiting(self):
+        for name in self.OWNER_LIST:
+            facts = " ".join(profiles.kit_mechanics(name))
+            assert "MANA-BOUND" in facts, name
+
+    def test_the_guidance_carries_the_reason_for_that_kit(self):
+        """A bare flag is a rule; the reason is what lets it be overridden."""
+        facts = " ".join(profiles.kit_mechanics("Sona"))
+        assert "Why for this kit:" in facts
+        assert "auras" in facts.lower()
+
+    def test_it_names_no_item(self):
+        """The lesson from the manaless wording: naming an item as an example
+        got it bought five times out of five."""
+        for name in self.OWNER_LIST:
+            facts = " ".join(m for m in profiles.kit_mechanics(name) if "MANA-BOUND" in m)
+            for slug in ("boots-of-mana", "Boots of Mana", "Archangel", "Seraph",
+                         "Rod of Ages", "Winter", "Fimbulwinter"):
+                assert slug.lower() not in facts.lower(), f"{name} names {slug}"
+
+    def test_it_says_stats_not_items(self):
+        facts = " ".join(m for m in profiles.kit_mechanics("Ryze") if "MANA-BOUND" in m)
+        assert "STATS" in facts
+
+    def test_a_manaless_champion_never_gets_it(self):
+        for name in ("Graves", "Katarina", "Garen"):
+            facts = " ".join(profiles.kit_mechanics(name))
+            assert "MANA-BOUND" not in facts, name
+
+    def test_an_ordinary_mana_user_gets_neither_claim(self):
+        """Most champions use mana without being bounded by it. Saying so for
+        everyone would make the signal meaningless."""
+        facts = " ".join(profiles.kit_mechanics("Lux"))
+        assert "MANA-BOUND" not in facts
+        assert "no mana" not in facts.lower()

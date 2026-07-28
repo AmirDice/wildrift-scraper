@@ -1060,6 +1060,21 @@ def kit_mechanics(champion: str) -> list[str]:
             f"speed converts poorly on this kit). ESTIMATED, not measured.")
     if know.get("abilitiesCanCrit") is False:
         out.append("this champion's ABILITIES cannot crit, so crit only improves basic attacks.")
+    # The mirror of noResource, and it was missing entirely. A manaless champion
+    # was told mana stats are dead; nothing ever told the model that a kit is
+    # BOUNDED by mana, so builds for champions who cast constantly skipped mana
+    # the same way builds for Graves did. Curated, because the scrape carries no
+    # ability costs -- there is nothing here to derive it from.
+    if (OVERRIDES.get(champion) or {}).get("manaReliance") == "high":
+        why = (OVERRIDES.get(champion) or {}).get("manaRelianceReason") or ""
+        out.append(
+            "this champion is MANA-BOUND: it casts often enough that mana and mana "
+            "regeneration are LIMITING stats, and running dry mid-fight is a real "
+            "failure mode rather than a rounding error. Weigh mana and mana-regen "
+            "STATS as part of its damage output, not as defensive padding. This does "
+            "not override the damage path and does not make an item mandatory -- judge "
+            "each item by its whole stat line."
+            + (f" Why for this kit: {why}" if why else ""))
     if know.get("resource") == "none" and not any(m.get("kind") == "noResource"
                                                   for m in rec.get("mechanics") or []):
         out.append("this champion uses no mana: mana and mana-scaling items are dead stats.")

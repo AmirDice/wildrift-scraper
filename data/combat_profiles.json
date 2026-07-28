@@ -31,6 +31,11 @@
       "rangeProfile": "melee",
       "reason": "Melee assassin classed as Mage."
     },
+    "Ezreal": {
+      "manaReliance": "high",
+      "manaRelianceReason": "Q on a short cooldown is his whole damage pattern; without mana he stops casting it.",
+      "reason": "Q on a short cooldown is his whole damage pattern; without mana he stops casting it."
+    },
     "Fiora": {
       "buildIdentity": "physical",
       "buildIdentityProfile": {
@@ -141,11 +146,15 @@
     },
     "Jayce": {
       "rangeProfile": "hybrid",
-      "reason": "Mercury Cannon is ranged, Mercury Hammer is melee, and he swaps freely. Ranged-only items are dead in hammer form."
+      "reason": "Mercury Cannon is ranged, Mercury Hammer is melee, and he swaps freely. Ranged-only items are dead in hammer form.",
+      "manaReliance": "high",
+      "manaRelianceReason": "Two full ability sets and constant form-swapping put more casts through one mana pool."
     },
     "Kassadin": {
       "rangeProfile": "melee",
-      "reason": "Melee anti-mage assassin classed as Mage."
+      "reason": "Melee anti-mage assassin classed as Mage.",
+      "manaReliance": "high",
+      "manaRelianceReason": "Riftwalk's cost stacks per cast, so his mobility is bounded by mana before cooldowns."
     },
     "Katarina": {
       "rangeProfile": "melee",
@@ -297,6 +306,11 @@
       },
       "reason": "Nunu has real AP ratios and can support a distinct AP burst path, but the reliable standard identity is an engage/control tank. Full AP belongs only in the explicitly marked Alternative Path."
     },
+    "Orianna": {
+      "manaReliance": "high",
+      "manaRelianceReason": "Ball manipulation means casting nearly every rotation to reposition, not only to damage.",
+      "reason": "Ball manipulation means casting nearly every rotation to reposition, not only to damage."
+    },
     "Pyke": {
       "rangeProfile": "melee",
       "reason": "Melee assassin support."
@@ -337,9 +351,25 @@
       "rangeProfile": "melee",
       "reason": "Melee Mage. Flamespitter is a short cone applied from melee range."
     },
+    "Ryze": {
+      "manaReliance": "high",
+      "manaRelianceReason": "His rotation is continuous spellcasting with no basic-attack pattern to fall back on.",
+      "reason": "His rotation is continuous spellcasting with no basic-attack pattern to fall back on."
+    },
+    "Smolder": {
+      "manaReliance": "high",
+      "manaRelianceReason": "Sustained ability casting to stack, so mana gates how fast the stacks arrive.",
+      "reason": "Sustained ability casting to stack, so mana gates how fast the stacks arrive."
+    },
+    "Sona": {
+      "manaReliance": "high",
+      "manaRelianceReason": "Auras are maintained by casting constantly; she is the clearest case of a kit bounded by mana.",
+      "reason": "Auras are maintained by casting constantly; she is the clearest case of a kit bounded by mana."
+    },
     "Urgot": {
       "rangeProfile": "ranged",
       "reason": "Fires projectiles from range; no melee mode in the kit."
     }
-  }
+  },
+  "_manaRelianceNote": "manaReliance ('high') marks champions for whom mana and mana regeneration are LIMITING stats rather than filler -- they cast often enough that running dry is a real failure mode, not a rounding error. Curated because the scrape carries no ability mana costs, so there is nothing to derive it from. The advisor had the opposite case covered (manaless champions were told mana stats are dead) and nothing at all for this one, so mana items were being skipped on champions built around spamming abilities."
 }
