@@ -14,7 +14,7 @@ import { CURRENT_PATCH } from "@/lib/patch";
 export const metadata: Metadata = {
   title: `Wild Rift Balance Report Patch ${CURRENT_PATCH} | Most and Least Changed Champions`,
   description:
-    "One page of Wild Rift balance history: the champions Riot changes most, the ones left alone longest, and the champion that has never received a single balance change.",
+    "One page of Wild Rift balance history: the most-changed champions, the ones left alone longest, and the champion that has never received a single balance change.",
   alternates: { canonical: "/changes-report" },
 };
 
@@ -55,7 +55,7 @@ export default function ChangesReportPage() {
         <h1 className="mx-auto mt-2 max-w-3xl text-2xl font-semibold leading-tight tracking-tight sm:text-4xl">
           {favorite && (
             <>
-              Riot has changed {favorite.champion.name}{" "}
+              {favorite.champion.name} has been changed{" "}
               <span className="text-bad">{favorite.balanceChanges} times</span>.{" "}
             </>
           )}
@@ -76,7 +76,7 @@ export default function ChangesReportPage() {
         {favorite && (
           <HeroPanel
             champion={favorite.champion}
-            eyebrow="Riot's favorite"
+            eyebrow="Most rebalanced"
             accent="text-bad"
             border="border-bad/25"
             value={String(favorite.balanceChanges)}
@@ -98,7 +98,7 @@ export default function ChangesReportPage() {
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Card className="p-4">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="font-semibold">Riot&rsquo;s favorites</h2>
+            <h2 className="font-semibold">Changed the most</h2>
             <span className="text-[0.7rem] text-faint">balance changes</span>
           </div>
           <ol className="mt-2">
