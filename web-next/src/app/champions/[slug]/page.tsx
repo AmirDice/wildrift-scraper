@@ -6,7 +6,7 @@ import { getCnBySlug } from "@/lib/cn";
 import { getMatchups, type ResolvedMatchup } from "@/lib/counters";
 import { getSkewBySlug } from "@/lib/skew";
 import { getBuild, type Build } from "@/lib/builds";
-import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { BUILD_TOOLS_LIVE, recommendedBuildsLive } from "@/lib/flags";
 import { roster, type RosterChampion } from "@/lib/threat";
 import { ChampionCombo } from "@/components/champion-combo";
 import { getChampionDetails, type AbilityCard } from "@/lib/champion-details";
@@ -143,7 +143,12 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         </Card>
       )}
       {synergyNotes.length > 0 && <Card className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Kit synergies</h2><ul className="mt-4 space-y-2">{synergyNotes.map((note, index) => <li key={index} className="flex gap-2.5 text-sm text-muted"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/70"/><span>{note}</span></li>)}</ul></Card>}
-      {BUILD_TOOLS_LIVE && standardBuild && <Card className="p-5 sm:p-6"><div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Recommended build</h2><Link href={`/build?champion=${champion.slug}`} className="rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">Open Build Studio →</Link></div><BuildOrder build={standardBuild}/><div className="mt-4 flex flex-wrap items-center gap-2"><BuildLikeButton buildId={`${champion.slug}:${standardKey}`}/><ShareBuildButton path={`/build?champion=${champion.slug}&variant=${standardKey}`} title={`${champion.name} recommended build`} text={`${champion.name} recommended build on WrTrueMeta: full item order, boots timing and runes.`}/></div></Card>}
+      {/* Gated on recommendedBuildsLive as well as BUILD_TOOLS_LIVE. The studio
+          holds the curated catalogue back per champion while it is validated,
+          and this card serves the same pre-authored build -- so without the
+          second check a locked champion's build was simply readable here
+          instead, which is what the gate exists to prevent. */}
+      {BUILD_TOOLS_LIVE && recommendedBuildsLive(champion.name) && standardBuild && <Card className="p-5 sm:p-6"><div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Recommended build</h2><Link href={`/build?champion=${champion.slug}`} className="rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">Open Build Studio →</Link></div><BuildOrder build={standardBuild}/><div className="mt-4 flex flex-wrap items-center gap-2"><BuildLikeButton buildId={`${champion.slug}:${standardKey}`}/><ShareBuildButton path={`/build?champion=${champion.slug}&variant=${standardKey}`} title={`${champion.name} recommended build`} text={`${champion.name} recommended build on WrTrueMeta: full item order, boots timing and runes.`}/></div></Card>}
       {BUILD_TOOLS_LIVE && champion.name === "Kayn" && <Card className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Form-specific build</h2><p className="mt-2 text-sm text-muted">Kayn does not have one responsible standard build: Shadow Assassin and Rhaast value different fights, runes, and items.</p><Link href="/build?champion=kayn&tab=generate" className="mt-4 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-bold text-black">Choose a form and generate →</Link></Card>}
       {(matchups.strong.length > 0 || matchups.weak.length > 0) && <div className="grid gap-4 sm:grid-cols-2"><Matchups title={`${champion.name} is strong against`} accent="text-accent" matchups={matchups.strong}/><Matchups title={`${champion.name} is weak against`} accent="text-bad" matchups={matchups.weak}/></div>}
     </div>
