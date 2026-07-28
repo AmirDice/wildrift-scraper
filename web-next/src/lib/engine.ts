@@ -477,8 +477,63 @@ export function rotation(name: string, st: any, target: any, window: number,
     // an assumption, so it is stated here rather than buried.
     return 1 / 3;
   })();
-  const perAutoShare = (c: any): number =>
-    (perAutoSlot.get(c) === "P" ? everyNShare : 1);
+  // Abilities that empower a LIMITED number of following attacks. Xin Zhao's Q
+  // empowers three and was being applied to all twenty-two autos of a long
+  // fight. The count is stated in the prose the extractor could not model
+  // ("Empowers next three attacks"), so it is read from there rather than
+  // curated per champion.
+  const WORD_N: Record<string, number> = {
+    one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
+  };
+  const empowerLimit = new Map<string, number>();
+  for (const [slot, ab] of Object.entries(DATA.formulas[name]?.abilities ?? {})) {
+    for (const u of ((ab as any).unmodeled ?? [])) {
+      const m = String(u).match(
+        /empower\w*\s+(?:the\s+|his\s+|her\s+|their\s+)?next\s+(\w+)\s+(?:basic\s+)?attack/i);
+      if (!m) continue;
+      const word = m[1].toLowerCase();
+      const n = WORD_N[word] ?? (Number(word) || 1);
+      empowerLimit.set(slot, Math.max(1, n));
+    }
+  }
+
+  /**
+   * Share of autos a per-auto component actually lands on.
+   *
+   * A passive that fires every Nth attack rides 1/N of them. An ability that
+   * empowers N attacks per cast rides N x (its casts), capped at every auto --
+   * so a Q cast twice in a fight empowers six attacks, not all of them.
+   */
+  // Four of these passives say the stacks come from abilities too ("Every
+  // third attack OR ABILITY on the same target"). Counting only autos then
+  // undercounts them, which is the opposite error to the one just fixed, so
+  // ability hits are added to the denominator's input rather than ignored.
+  const abilitiesStack = /abilit/i.test(String(everyN?.evidence ?? ""));
+  const perAutoShare = (c: any, nAutos: number): number => {
+    const slot = perAutoSlot.get(c);
+    if (slot === "P") {
+      if (!abilitiesStack || nAutos <= 0) return everyNShare;
+      const abilityHits = Object.values(castLog).reduce((n, v: any) => n + v.casts, 0);
+      // Triggers over the window, expressed per auto so the caller's `* nAutos`
+      // arrives at the right total.
+      return Math.min(1, everyNShare * ((nAutos + abilityHits) / nAutos));
+    }
+    const limit = slot ? empowerLimit.get(slot) : undefined;
+    if (limit && nAutos > 0) {
+      let casts = slot && castLog[slot] ? castLog[slot].casts : 0;
+      if (casts <= 0 && slot) {
+        // An ability whose ONLY damage is per-auto never enters the cast loop,
+        // because that loop needs a component to score. Xin Zhao's Q is exactly
+        // that, so reading casts alone would silently delete it instead of
+        // capping it. Fall back to how often its cooldown allows a cast.
+        const cds = (DATA.formulas[name]?.abilities?.[slot] as any)?.cooldowns ?? [];
+        const cd = rankVal(cds.length ? cds : 12, 3) || 12;
+        casts = Math.max(1, 1 + Math.floor(window / Math.max(0.5, cd * hasteM)));
+      }
+      return Math.min(1, (limit * casts) / nAutos);
+    }
+    return 1;
+  };
   const comboSeq: string[] = DATA.formulas[name]?.combo ?? [];
   const doAutos = (nAutos: number) => {
     let aPhys = st.ad * critEv * physM * giant;
@@ -489,7 +544,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     let aTrue = 0;
     for (const comp of perAuto) {
       const cd = compDmg(comp, 3) / Math.max(1, Math.floor(rankVal(comp.hits ?? 1, 3)) || 1)
-                 * perAutoShare(comp);
+                 * perAutoShare(comp, nAutos);
       if (comp.type === "magic") aMagic += cd;
       else if (comp.type === "true") aTrue += cd;
       else aPhys += cd;
