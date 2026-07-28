@@ -1011,11 +1011,11 @@
    "combatRange": "short",
    "combatRangeReason": "Rell is an all-in engage tank who dives into the middle of the enemy team with her abilities to pull and crowd-control them.",
    "longRangeDamageShare": "little",
-   "pokeEligible": true,
-   "pokeReason": "Rell is a melee vanguard tank with no safe long-range poke abilities.",
+   "pokeEligible": false,
+   "pokeReason": "Melee engage tank: her damage comes from committing to an engage, not from repeatable pressure at range.",
    "confidence": "high",
    "class": "",
-   "userConfirmed": "Owner confirmed 2026-07-28: Rell can have poke."
+   "userConfirmed": "Owner corrected 2026-07-28: Rell does NOT get poke (supersedes the earlier confirmation)."
   },
   "Renekton": {
    "attackType": "melee",

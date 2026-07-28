@@ -90,21 +90,30 @@ class TestPokeEligibility:
             assert profiles.range_profile(name) == "ranged", name
             assert profiles.poke_eligibility(name)["eligible"], name
 
-    def test_an_owner_confirmation_outranks_every_rule(self):
-        """Rell is the case that forced this.
+    def test_an_owner_confirmation_outranks_the_classifier(self):
+        """Vel'Koz and Nidalee both came back low confidence twice.
 
-        She is a melee Tank, so she was excluded twice over: once by the melee
-        gate, and once by a Tank class list with no Poke entry at all. The
-        owner confirmed Poke for her anyway, so the confirmation has to beat
-        both -- and the class list needs the style added, or confirming her
-        would have had no visible effect.
+        The unsure rule would have withheld Poke from both; the owner confirmed
+        it, and that confirmation is what puts it back.
         """
-        assert profiles.range_profile("Rell") == "melee"
-        assert "Rell" in profiles.POKE_CONFIRMED
-        assert profiles.poke_eligibility("Rell")["eligible"]
-        assert "poke" in PLAYSTYLES["overrides"]["Rell"], (
-            "Rell's class grants no Poke, so without an override the "
-            "confirmation never reaches her playstyle menu")
+        for name in ("Vel'Koz", "Nidalee"):
+            assert CLASSIFIED[name].get("userConfirmed"), name
+            assert name in profiles.POKE_CONFIRMED, name
+            assert profiles.poke_eligibility(name)["eligible"], name
+
+    def test_a_correction_survives_re_running_the_classifier(self):
+        """Rell is the case that matters here, in the other direction.
+
+        She was confirmed for Poke and then corrected, and the correction is
+        stored the same way the confirmation was. Without that, the next
+        --apply would read the model's answer and the mistake would come back.
+        """
+        assert "corrected" in CLASSIFIED["Rell"]["userConfirmed"].lower()
+        assert "Rell" not in profiles.POKE_CONFIRMED
+        assert not profiles.poke_eligibility("Rell")["eligible"]
+        assert "Rell" not in PLAYSTYLES["overrides"], (
+            "the Poke override --apply added for Rell is still there; her class "
+            "grants no Poke, so leaving it would re-offer the style")
 
     def test_confirmed_champions_are_absent_from_the_no_poke_list(self):
         assert not (profiles.POKE_CONFIRMED & profiles.NO_POKE)
