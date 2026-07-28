@@ -437,6 +437,48 @@ export function rotation(name: string, st: any, target: any, window: number,
   rankOf["4"] = level >= 13 ? 2 : 1;
 
   const perAuto: any[] = [];
+  const perAutoSlot = new Map<any, string>();
+  const addPerAuto = (c: any, slot: string) => {
+    if (perAuto.includes(c)) return;
+    perAuto.push(c);
+    perAutoSlot.set(c, slot);
+  };
+  // How often a per-auto component ACTUALLY lands, as a share of autos.
+  //
+  // Everything tagged "per auto" was being added to every single attack. For a
+  // passive that reads "every third attack deals an additional 13 (22% AD)"
+  // that is three times too much damage, and the extractor already recorded the
+  // condition as an everyNHit mechanic which nothing read.
+  const everyN = (DATA.formulas[name]?.mechanics ?? [])
+    .find((m: any) => m.kind === "everyNHit");
+  const everyNShare = (() => {
+    if (!everyN) return 1;
+    if (typeof everyN.n === "number" && everyN.n > 1) return 1 / everyN.n;
+    // Eight champions record the mechanic without the number. The evidence
+    // string usually still states it ("Every third attack deals..."), so read
+    // that before falling back, or Xin Zhao and Akshan would be guesses that
+    // happen to be right.
+    const ev = String(everyN.evidence ?? "").toLowerCase();
+    // Ordinals and cardinals both appear: "every third attack" but also
+    // "every three hits from attacks and abilities".
+    const words: Record<string, number> = {
+      second: 2, other: 2, two: 2, third: 3, three: 3, fourth: 4, four: 4,
+      fifth: 5, five: 5, sixth: 6, six: 6,
+    };
+    for (const [word, n] of Object.entries(words)) {
+      if (ev.includes(`every ${word}`) || ev.includes(`every other`)) return 1 / n;
+    }
+    const digits = ev.match(/every\s+(\d+)/) ?? ev.match(/(\d+)\s+(?:consecutive\s+)?(?:attacks|hits|stacks)/);
+    if (digits) {
+      const n = Number(digits[1]);
+      if (n > 1 && n <= 10) return 1 / n;
+    }
+    // No number anywhere: three is the commonest shape in this game, but it is
+    // an assumption, so it is stated here rather than buried.
+    return 1 / 3;
+  })();
+  const perAutoShare = (c: any): number =>
+    (perAutoSlot.get(c) === "P" ? everyNShare : 1);
   const comboSeq: string[] = DATA.formulas[name]?.combo ?? [];
   const doAutos = (nAutos: number) => {
     let aPhys = st.ad * critEv * physM * giant;
@@ -446,7 +488,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     let aMagic = st.onHitMagic * magicM;
     let aTrue = 0;
     for (const comp of perAuto) {
-      const cd = compDmg(comp, 3) / Math.max(1, Math.floor(rankVal(comp.hits ?? 1, 3)) || 1);
+      const cd = compDmg(comp, 3) / Math.max(1, Math.floor(rankVal(comp.hits ?? 1, 3)) || 1)
+                 * perAutoShare(comp);
       if (comp.type === "magic") aMagic += cd;
       else if (comp.type === "true") aTrue += cd;
       else aPhys += cd;
@@ -479,7 +522,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       if (!(slot in f)) continue;
       const comps = (f[slot].damage ?? []).filter((c: any) => !c.alt && c.when !== "per auto");
       for (const c of (f[slot].damage ?? []))
-        if (!c.alt && c.when === "per auto" && !perAuto.includes(c)) perAuto.push(c);
+        if (!c.alt && c.when === "per auto") addPerAuto(c, slot);
       const rank = slot === "4" ? 2 : 3;
       const ampA = 1 + st.abilityAmp;
       for (const c of comps) { const cd = compDmg(c, rank) * ampA; addT(c.type, cd); total += cd; }
@@ -518,7 +561,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     const ab = f[slot];
     const comps = (ab.damage ?? []).filter((c: any) => !c.alt);
     const dmgComps = comps.filter((c: any) => c.when !== "per auto");
-    for (const c of comps) if (c.when === "per auto") perAuto.push(c);
+    for (const c of comps) if (c.when === "per auto") addPerAuto(c, slot);
     if (!dmgComps.length || castBudget <= 0) continue;
     const cds = ab.cooldowns ?? [];
     const rank = rankOf[slot] ?? 3;
@@ -559,6 +602,39 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_NAUTOS = nAutos;
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
   return total * amp;
+}
+
+export interface RotationDetail {
+  damage: number;
+  autoDamage: number;
+  byType: { physical: number; magic: number; true: number };
+  /** Per ability: how many times it was cast in the window, and the cap. */
+  casts: Record<string, { name: string; casts: number; max: number }>;
+  autos: number;
+  autosIdeal: number;
+}
+
+/**
+ * `rotation` plus everything it worked out along the way.
+ *
+ * rotation() returns only a damage total and leaves the rest in module-level
+ * variables for the caller to read afterwards, which is safe exactly until two
+ * callers interleave -- there is already a `rotation(...) // restore stashes`
+ * line in analyzeBuild working around it. Reading them here, in the same
+ * synchronous breath as the call, is the one moment nothing else can have
+ * overwritten them, so new callers get a value instead of a landmine.
+ */
+export function rotationDetail(name: string, st: any, target: any, window: number,
+                               level = 13): RotationDetail {
+  const damage = rotation(name, st, target, window, level);
+  return {
+    damage,
+    autoDamage: ROT_AUTO_DMG,
+    byType: { physical: ROT_BY_TYPE.physical, magic: ROT_BY_TYPE.magic, true: ROT_BY_TYPE.true },
+    casts: JSON.parse(JSON.stringify(ROT_CAST_LOG)),
+    autos: ROT_NAUTOS,
+    autosIdeal: ROT_NAUTOS_IDEAL,
+  };
 }
 
 const STYLE_HINT_TS: Record<string, string> = {
@@ -1116,4 +1192,103 @@ export function engineItems(): { slug: string; name: string; icon: string; cost:
 export function engineRunes(): { name: string; icon: string; tree: string; type: string; slot: number }[] {
   return Object.entries<any>(DATA.runes)
     .map(([name, v]) => ({ name, icon: v.icon, tree: v.tree, type: v.type, slot: v.slot }));
+}
+
+// ---------------------------------------------------------------------------
+// Duel: what happens when this build fights that one
+// ---------------------------------------------------------------------------
+
+export interface DuelTarget {
+  label: string;
+  hp: number;
+  armor: number;
+  mr: number;
+  /** Health from items only. Some kits scale off the bonus, not the total. */
+  bonusHp: number;
+}
+
+export interface DuelResult {
+  target: DuelTarget;
+  /** Seconds to take the target from full to zero, or null if it never gets there. */
+  ttk: number | null;
+  /** Damage in the window that killed, or the full cap window if it did not. */
+  damage: number;
+  autos: number;
+  /** Autos the attack speed allowed, so "landed 6 of a possible 9" is visible. */
+  autosIdeal: number;
+  casts: { slot: string; name: string; casts: number }[];
+  byType: { physical: number; magic: number; true: number };
+  /** Damage past the kill: high overkill means the last cast was wasted. */
+  overkill: number;
+  dps: number;
+}
+
+/** A champion as a target: their real defensive stats at a level and build. */
+export function championTarget(name: string, level: number, items: string[],
+                               runes: string[] = []): DuelTarget | null {
+  const withBuild = resolveStats(name, level, items, runes);
+  if (!withBuild) return null;
+  // Bonus health is what the items added, so it has to be measured against the
+  // same champion at the same level with nothing equipped.
+  const naked = resolveStats(name, level, [], []);
+  return {
+    label: name,
+    hp: Math.round(withBuild.hp),
+    armor: Math.round(withBuild.armor),
+    mr: Math.round(withBuild.mr),
+    bonusHp: Math.max(0, Math.round(withBuild.hp - (naked?.hp ?? withBuild.hp))),
+  };
+}
+
+/** A plain practice-tool dummy: no build, only the numbers you give it. */
+export function dummyTarget(hp: number, armor = 0, mr = 0): DuelTarget {
+  return { label: "Practice dummy", hp, armor, mr, bonusHp: 0 };
+}
+
+/**
+ * Fight a target with a build and report what it took.
+ *
+ * This is a DAMAGE CALCULATOR against a stationary target, not a duel: the
+ * target does not move, dodge, heal, itemise reactively or fight back. It is
+ * the practice-tool dummy players already know, given a real champion's
+ * defensive stats. Presenting it as anything more would turn every modelling
+ * gap into a bug report.
+ */
+export function duel(name: string, items: string[], runes: string[],
+                     target: DuelTarget, level = 15, cap = 20): DuelResult | null {
+  const st = resolveStats(name, level, items, runes);
+  if (!st) return null;
+
+  const need = target.hp * (1 - (st.execute ?? 0));
+  let ttk: number | null = null;
+  // 0.25s steps match ttkOf, so this agrees with the number shown elsewhere.
+  for (let t = 0.25; t <= cap; t += 0.25) {
+    if (rotation(name, st, target, t, level) >= need) {
+      ttk = Math.round(t * 100) / 100;
+      break;
+    }
+  }
+
+  const window = ttk ?? cap;
+  const detail = rotationDetail(name, st, target, window, level);
+  const casts = Object.entries(detail.casts)
+    .map(([slot, v]) => ({ slot, name: v.name, casts: v.casts }))
+    .filter((c) => c.casts > 0)
+    .sort((a, b) => a.slot.localeCompare(b.slot));
+
+  return {
+    target,
+    ttk,
+    damage: Math.round(detail.damage),
+    autos: detail.autos,
+    autosIdeal: detail.autosIdeal,
+    casts,
+    byType: {
+      physical: Math.round(detail.byType.physical),
+      magic: Math.round(detail.byType.magic),
+      true: Math.round(detail.byType.true),
+    },
+    overkill: Math.max(0, Math.round(detail.damage - need)),
+    dps: Math.round(detail.damage / window),
+  };
 }
