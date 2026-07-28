@@ -198,27 +198,38 @@ def apply_to_profiles(store: dict, min_confidence: str = "medium") -> None:
 
     melee = sorted(n for n, v in data["champions"].items() if v.get("rangeProfile") == "melee")
 
-    # noPoke is the union of two things, not just the model's verdict:
-    #   - champions it confidently says cannot poke, and
-    #   - every champion the advisor already rejects for being melee.
-    # Without the second half a low-confidence entry gets skipped here while the
-    # advisor still refuses the playstyle, so the studio offers a Poke build
-    # that the generator then declines to produce. Rumble hit exactly that.
+    # noPoke is the union of three things, not just the model's verdict:
+    #   - champions it confidently says cannot poke,
+    #   - every champion the advisor already rejects for being melee, and
+    #   - every champion it was NOT confident about.
+    #
+    # The second half: without it a low-confidence entry is skipped while the
+    # advisor still refuses the playstyle, so the studio offers a Poke build the
+    # generator then declines to produce. Rumble hit exactly that.
+    #
+    # The third half is the owner's call, and it is the right way round. Poke is
+    # a build we advertise; offering one to a champion who cannot execute it
+    # costs a player a game, while withholding one from a champion who could
+    # costs them a menu entry. When the classifier is unsure, it does not get to
+    # advertise.
     no_poke = {n for n, e in confident.items() if not e.get("pokeEligible")}
     no_poke |= {n for n in _profiles.CHAMPIONS
                 if _profiles.range_profile(n) == "melee"
                 or n in melee or default_is_melee(n)}
+    no_poke |= set(entries) - set(confident)
     no_poke = sorted(no_poke & set(_profiles.CHAMPIONS))
 
     ps = json.loads(PLAYSTYLES.read_text(encoding="utf-8"))
     ps.pop("meleeInRangedClass", None)
     ps.pop("_meleeNote", None)
     ps["_noPokeNote"] = (
-        "Champions for whom a Poke build is not playable, classified by "
+        "Champions for whom a Poke build is not offered, classified by "
         "scripts/classify_range.py. This is NOT the same as being melee: Lillia, "
         "Thresh, Rakan and Vladimir all have ranged basic attacks and still belong "
         "here, because they fight at short range and almost none of their damage "
-        "comes from long range. Poke is filtered out for everyone on this list.")
+        "comes from long range. Champions the classifier was not confident about are "
+        "also listed: an unsure answer does not get to advertise a build the player "
+        "may not be able to execute. Poke is filtered out for everyone on this list.")
     ps["noPoke"] = no_poke
     PLAYSTYLES.write_text(json.dumps(ps, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 

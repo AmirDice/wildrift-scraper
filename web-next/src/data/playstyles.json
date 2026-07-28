@@ -188,7 +188,7 @@
       "tanky"
     ]
   },
-  "_noPokeNote": "Champions for whom a Poke build is not playable, classified by scripts/classify_range.py. This is NOT the same as being melee: Lillia, Thresh, Rakan and Vladimir all have ranged basic attacks and still belong here, because they fight at short range and almost none of their damage comes from long range. Poke is filtered out for everyone on this list.",
+  "_noPokeNote": "Champions for whom a Poke build is not offered, classified by scripts/classify_range.py. This is NOT the same as being melee: Lillia, Thresh, Rakan and Vladimir all have ranged basic attacks and still belong here, because they fight at short range and almost none of their damage comes from long range. Champions the classifier was not confident about are also listed: an unsure answer does not get to advertise a build the player may not be able to execute. Poke is filtered out for everyone on this list.",
   "noPoke": [
     "Aatrox",
     "Akali",
@@ -198,6 +198,8 @@
     "Amumu",
     "Annie",
     "Aurelion Sol",
+    "Aurora",
+    "Bard",
     "Blitzcrank",
     "Braum",
     "Camille",
@@ -233,6 +235,7 @@
     "Kennen",
     "Kha'Zix",
     "Kindred",
+    "Kog'Maw",
     "Lee Sin",
     "Leona",
     "Lillia",
@@ -247,6 +250,7 @@
     "Nami",
     "Nasus",
     "Nautilus",
+    "Nidalee",
     "Nilah",
     "Nocturne",
     "Nunu & Willump",
@@ -262,6 +266,7 @@
     "Rengar",
     "Riven",
     "Rumble",
+    "Ryze",
     "Samira",
     "Sett",
     "Shen",
@@ -288,6 +293,7 @@
     "Xin Zhao",
     "Yasuo",
     "Yone",
+    "Yunara",
     "Zed",
     "Zeri"
   ]

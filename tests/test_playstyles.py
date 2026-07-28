@@ -24,6 +24,8 @@ COMBAT = json.loads(
 
 CURATED_MELEE = {name for name, entry in COMBAT["champions"].items()
                  if entry.get("rangeProfile") == "melee"}
+CLASSIFIED = json.loads(
+    (ROOT / "data" / "range_classification.json").read_text(encoding="utf-8"))["champions"]
 
 
 class TestTheTwoListsAgree:
@@ -75,9 +77,27 @@ class TestPokeEligibility:
             assert not profiles.poke_eligibility(name)["eligible"], name
 
     def test_a_genuine_ranged_mage_still_pokes(self):
-        for name in ("Lux", "Ziggs", "Vel'Koz"):
+        """Vel'Koz is here on the owner's confirmation, not the classifier's.
+
+        The model read him as textbook poke -- fights long, most of his damage
+        from range -- but returned low confidence on two separate passes, and
+        an unsure answer does not get to advertise a build. The owner confirmed
+        it, which is what promoted him. That is the intended escape hatch for
+        the unsure list, and it is recorded in range_classification.json under
+        `userConfirmed` so it survives a re-run.
+        """
+        for name in ("Lux", "Ziggs", "Zilean", "Vel'Koz"):
             assert profiles.range_profile(name) == "ranged", name
             assert profiles.poke_eligibility(name)["eligible"], name
+
+    def test_an_unsure_classification_never_offers_poke(self):
+        low = {name for name, entry in CLASSIFIED.items()
+               if entry.get("confidence") not in ("high", "medium")}
+        assert low, "expected some low-confidence entries to guard"
+        for name in low & set(profiles.CHAMPIONS):
+            assert not profiles.poke_eligibility(name)["eligible"], (
+                f"{name} was classified with low confidence but is still offered "
+                f"a Poke build")
 
     def test_the_class_default_still_applies_without_an_override(self):
         assert profiles.range_profile("Ashe") == "ranged"
