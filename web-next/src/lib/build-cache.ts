@@ -99,7 +99,19 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v9: summoner spells moved from a static lookup to the model, which can see
   // the enemy comp the lookup never could. A v8 entry carries the lookup's
   // answer -- correct, but blind to the matchup it was generated against.
-  return `build:v9:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v10: four changes to what the advisor produces, each of which makes a v9
+  // entry wrong rather than merely older.
+  //   - Support builds open with the free support item. Every cached support
+  //     build skips it, which is the role's entire gold income.
+  //   - Mana-bound kits are told mana is a limiting stat. Cached Sona and Ryze
+  //     builds carry no mana item at all.
+  //   - The damage path now reaches the boots, so cached AP builds can be
+  //     holding attack-speed boots.
+  //   - Active items are audited rather than passed over, so cached builds
+  //     under-represent them.
+  // Serving any of those for the next 45 days would hide all four fixes from
+  // exactly the champions someone has already asked about.
+  return `build:v10:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
