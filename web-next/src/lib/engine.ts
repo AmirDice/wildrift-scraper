@@ -705,7 +705,15 @@ export function rotation(name: string, st: any, target: any, window: number,
     const comps = (ab.damage ?? []).filter((c: any) => !c.alt);
     const dmgComps = comps.filter((c: any) => c.when !== "per auto");
     for (const c of comps) if (c.when === "per auto") addPerAuto(c, slot);
-    if (!dmgComps.length || castBudget <= 0) continue;
+    // An ability whose damage is ALL per-auto still gets cast -- that is what
+    // empowers the attacks. Skipping it here left Xin Zhao's Q out of the cast
+    // log entirely, so the combo said "press Q" and the fight reported W, E and
+    // R only. It also forced the empowered-auto cap onto a cooldown estimate
+    // when a real cast count was available.
+    // Slot P excluded: a passive is not cast, and listing "Passive x5" in the
+    // abilities used reads as an action the player took.
+    const empowersAutos = slot !== "P" && comps.some((c: any) => c.when === "per auto");
+    if ((!dmgComps.length && !empowersAutos) || castBudget <= 0) continue;
     const cds = ab.cooldowns ?? [];
     const rank = rankOf[slot] ?? 3;
     const cdIdx = cds.length ? Math.min(rank, cds.length - 1) : 0;

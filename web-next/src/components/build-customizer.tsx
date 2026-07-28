@@ -284,8 +284,14 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
     }
     if (picker.kind === "keystone")
       return allRunes.filter((r) => r.type === "Keystone" && r.name.toLowerCase().includes(q));
+    // The flex is the one rune taken OUTSIDE the primary tree, so a Precision
+    // page cannot flex into another Precision minor. The advisor's validator
+    // has always enforced this; the picker was offering pages it would reject.
     if (picker.kind === "flex")
-      return allRunes.filter((r) => r.type === "Minor" && r.name.toLowerCase().includes(q));
+      return allRunes.filter(
+        (r) => r.type === "Minor"
+          && (!state.runes.tree || r.tree !== state.runes.tree)
+          && r.name.toLowerCase().includes(q));
     // tree minor: correct slot, constrained to the chosen tree (all trees if
     // none set, so the picker is never empty).
     const slot = (picker.idx ?? 0) + 1;
@@ -405,7 +411,23 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
           value={state.runes.tree}
           onChange={(e) => {
             setLoadedSavedId(null);
-            setState((s) => ({ ...s, runes: { ...s.runes, tree: e.target.value, minors: ["", "", ""] } }));
+            setState((s) => {
+              const tree = e.target.value;
+              // Switching the primary tree clears the three minors, and also
+              // the flex IF it now sits in that tree -- otherwise moving to
+              // Precision while flexing a Precision rune leaves a page the
+              // validator rejects and the game will not let you equip.
+              const flexTree = runeMeta.get(s.runes.flex)?.tree;
+              return {
+                ...s,
+                runes: {
+                  ...s.runes,
+                  tree,
+                  minors: ["", "", ""],
+                  flex: flexTree === tree ? "" : s.runes.flex,
+                },
+              };
+            });
           }}
           className="rounded-lg border border-line bg-[#0e1322] px-1.5 py-1 text-xs text-text outline-none"
           title="Minor rune path"
