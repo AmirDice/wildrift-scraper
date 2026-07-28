@@ -137,18 +137,26 @@ export function BuildStatsPanel({
   runeNames = [],
   level = 15,
   embedded = false,
+  onScaledChange,
 }: {
   name: string;
   itemSlugs: string[];
   runeNames?: string[];
   level?: number;
   embedded?: boolean;
+  /** Told when the Guaranteed / Fully scaled switch moves, so a sibling can
+   *  follow it. The Lab's fight has to agree with the stats above it. */
+  onScaledChange?: (scaled: boolean) => void;
 }) {
   // Two honest answers to "what are my stats?": what you are guaranteed to have
   // when a fight starts, and what the loadout is worth once everything that
   // ramps has ramped. Guaranteed stays the default because it is the one you
   // can rely on; scaled is what makes stacking items comparable to static ones.
-  const [scaled, setScaled] = useState(false);
+  const [scaled, setScaledState] = useState(false);
+  const setScaled = (next: boolean) => {
+    setScaledState(next);
+    onScaledChange?.(next);
+  };
   // A transform ultimate's buff is a real stat change, but only while it is up,
   // so the sheet leaves it out of the guaranteed numbers by default and offers
   // it as its own state rather than mixing the two.

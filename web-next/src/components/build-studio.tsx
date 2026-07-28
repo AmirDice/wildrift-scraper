@@ -473,16 +473,16 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
     storageKey: "wtm_tour_lab_v2",
     steps: [
       {
-        target: "lab-start-from",
-        title: "Start from scratch, or from something that works",
-        body: "An empty board is a slow start. Load a recommended build here and edit from there, or clear it and pick every slot yourself.",
-      },
-      {
         target: "lab-slots",
         title: "Five items, boots, and a full rune page",
         body: "Tap an empty slot to pick, tap the small cross to remove. Items, boots, keystone and the three minors all behave the same way.",
       },
       ...statSteps(ctx.transforms),
+      {
+        target: "lab-fight",
+        title: "Send it into a fight",
+        body: "Pick an opponent and press Fight. They stand on their own recommended build, so it is a real matchup rather than a target dummy, and you get time to kill, the combo, how many attacks landed, and where the damage came from. Nothing dodges or fights back, so read it as a damage check.",
+      },
       {
         target: "lab-saved",
         title: "Save what you land on",

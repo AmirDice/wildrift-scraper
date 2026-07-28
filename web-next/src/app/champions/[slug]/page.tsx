@@ -8,6 +8,7 @@ import { getSkewBySlug } from "@/lib/skew";
 import { getBuild, type Build } from "@/lib/builds";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { roster, type RosterChampion } from "@/lib/threat";
+import { ChampionCombo } from "@/components/champion-combo";
 import { getChampionDetails, type AbilityCard } from "@/lib/champion-details";
 import { getChampionHistory } from "@/lib/champion-history";
 import { getPlaystyleProfile } from "@/lib/playstyle-profile";
@@ -150,6 +151,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
 
   const abilities = (
     <div className="space-y-6">
+      <ChampionCombo name={champion.name} slug={champion.slug} />
       {details?.abilities.length ? (champion.name === "Kayn" ? <Card className="p-5 sm:p-6"><KaynAbilities shadowAbilities={details.abilities} rhaastAbilities={getChampionDetails("kayn-rhaast")?.abilities} /></Card> : <Card className="p-5 sm:p-6"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">{champion.name} abilities</h2>{details.skillPriority.length > 0 && <div className="flex items-center gap-1 text-xs text-muted"><span>Max:</span>{details.skillPriority.map((key, index) => <span key={key} className="flex items-center gap-1"><b className="grid h-6 w-6 place-items-center rounded-md bg-accent/20 text-accent">{key}</b>{index < details.skillPriority.length - 1 && <span>›</span>}</span>)}</div>}</div><div className="mt-5 space-y-4">{details.abilities.map((ability) => <Ability key={`${ability.slot}-${ability.name}`} ability={ability}/>)}</div></Card>) : null}
       {details && Object.keys(details.baseStats).length > 0 && <Card className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Base stats</h2><p className="mt-1 text-sm text-muted">Level 1 and level 15 values before items and runes.</p><BaseStats stats={details.baseStats}/></Card>}
     </div>

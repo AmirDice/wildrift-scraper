@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { DuelPanel } from "@/components/duel-panel";
-import { visibleBuildVariants, type Build, type ChampionBuilds } from "@/lib/builds";
+import { visibleBuildVariants, type ChampionBuilds } from "@/lib/builds";
 import {
   blockedItems,
   customBuildIssues,
@@ -32,22 +32,6 @@ type SavedCustomBuild = {
   savedAt: number;
 };
 
-function fromBuild(b: Build): { items: string[]; boots: string; runes: RunePick } {
-  return {
-    items: b.coreBuild.map((i) => i.slug),
-    boots: b.boots?.slug ?? "",
-    runes: {
-      keystone: b.runes.keystone?.name ?? "",
-      tree: b.runes.primaryTree,
-      minors: [
-        b.runes.treeMinors[0]?.name ?? "",
-        b.runes.treeMinors[1]?.name ?? "",
-        b.runes.treeMinors[2]?.name ?? "",
-      ],
-      flex: b.runes.flexMinor?.name ?? "",
-    },
-  };
-}
 
 const EMPTY_STATE: CustomBuildState = { items: [], boots: "", runes: { keystone: "", tree: "Precision", minors: ["", "", ""], flex: "" } };
 // Wild Rift minor-rune paths. Keystone is chosen independently of these.
@@ -114,8 +98,10 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
   comparisonChoices: ComparableBuild[];
 }) {
   const variants = visibleBuildVariants(data);
-  const [variant, setVariant] = useState(variants[0]);
-  const base = data.builds[variant];
+  // The first variant is only the BASELINE the per-item deltas are measured
+  // against; it is never loaded into the editor. It used to be selectable via
+  // "start from", which is what leaked the catalogue.
+  const base = data.builds[variants[0]];
   // start EMPTY: the sandbox shows the champion's bare base stats, and every
   // item/rune the user adds shows its delta. "Start from" loads a variant.
   // The minor TREE is seeded from the current build, else the tree-minor slots
@@ -126,6 +112,9 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
     runes: { ...EMPTY_STATE.runes, tree: base?.runes.primaryTree || "Precision" },
   }));
   const [level, setLevel] = useState(15);
+  // Mirrors the stats panel's Guaranteed / Fully scaled switch so the fight
+  // below it uses the same numbers the player is looking at.
+  const [scaled, setScaled] = useState(false);
   const [picker, setPicker] = useState<{ kind: "item" | "boots" | "keystone" | "minor" | "flex"; idx?: number } | null>(null);
   // Why the last locked item was refused. Hover already says it; tapping has to
   // as well, because a touch device has no hover.
@@ -214,13 +203,6 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
     itemSlugs: [...saved.state.items, ...(saved.state.boots ? [saved.state.boots] : [])],
     runeNames: [saved.state.runes.keystone, ...saved.state.runes.minors, saved.state.runes.flex].filter(Boolean),
   }));
-
-  const reset = (v: string) => {
-    setVariant(v);
-    setState(fromBuild(data.builds[v]));
-    setPicker(null);
-    setLoadedSavedId(null);
-  };
 
   const pickItem = (slug: string) => {
     setLoadedSavedId(null);
@@ -319,17 +301,13 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
           Customize <span className="normal-case text-faint/70">· build from scratch, watch every stat change</span>
         </p>
-        <div className="flex items-center gap-1.5" data-tour="lab-start-from">
-          <select
-            value=""
-            onChange={(e) => e.target.value && reset(e.target.value)}
-            title="Load a recommended build as your editable starting point"
-            aria-label="Start from a recommended build"
-            className="rounded-lg border border-line bg-[#0e1322] px-2 py-1 text-xs text-muted"
-          >
-            <option value="">start from…</option>
-            {variants.map((v) => <option key={v} value={v}>{v}</option>)}
-          </select>
+        {/* The "start from" dropdown is gone deliberately.
+            It loaded a generated recommended build into the editor, which put
+            the whole catalogue one click away on a page that is otherwise the
+            player's own work -- including the builds still held back behind
+            "coming soon" while they are being reviewed. Clearing to an empty
+            board is still here; seeding from our catalogue is not. */}
+        <div className="flex items-center gap-1.5">
           <button onClick={() => { setState(EMPTY_STATE); setPicker(null); setLoadedSavedId(null); }}
                   title="Remove every selected item and rune"
                   className="rounded-lg border border-line px-2 py-1 text-xs text-muted transition hover:text-text">
@@ -511,8 +489,10 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
         </div>
       )}
 
-      <BuildStatsPanel name={name} itemSlugs={allSlugs} runeNames={runeNames} level={level} embedded />
-      <DuelPanel name={name} itemSlugs={allSlugs} runeNames={runeNames} level={level} />
+      <BuildStatsPanel name={name} itemSlugs={allSlugs} runeNames={runeNames} level={level} embedded
+                       onScaledChange={setScaled} />
+      <DuelPanel name={name} itemSlugs={allSlugs} runeNames={runeNames} level={level}
+                 scaled={scaled} />
       <ChampionAbilitiesPanel
         name={name}
         itemSlugs={allSlugs}

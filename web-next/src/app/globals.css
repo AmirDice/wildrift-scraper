@@ -277,3 +277,11 @@ body {
   to   { transform: translateX(calc(-1 * var(--marquee-shift, 100%))); }
 }
 
+
+/* Result reveal for the build fight: the numbers rise into place after the
+   pause, so a result reads as something that happened rather than something
+   that was already there. */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

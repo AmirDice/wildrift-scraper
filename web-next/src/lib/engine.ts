@@ -4,6 +4,7 @@
  * Reads the same data both engines share (src/data/engine.json).
  */
 import engineData from "@/data/engine.json";
+import { scaledBuildStats } from "@/lib/build-scaling";
 import type { BuildAnalysis } from "@/lib/builds";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1350,6 +1351,35 @@ export function engineRunes(): { name: string; icon: string; tree: string; type:
 // Duel: what happens when this build fights that one
 // ---------------------------------------------------------------------------
 
+/**
+ * Fold the fully-scaled contributions into the engine's stat block.
+ *
+ * build-scaling.ts owns what "fully scaled" means -- stacking items at max
+ * stacks, ramping passives paid off -- and reports the deltas. Only the ones
+ * that change damage are applied here; move speed and vamp do not move a
+ * damage number and would just be noise.
+ */
+function applyScaling(name: string, items: string[], runes: string[],
+                      level: number, st: any): void {
+  const contributions =
+    scaledBuildStats(name, items, level, runes, false)?.contributions ?? [];
+  for (const c of contributions) {
+    const amount = Number(c.amount) || 0;
+    if (!amount) continue;
+    switch (c.stat) {
+      case "ad": st.bonusAd += amount; st.ad = st.baseAd + st.bonusAd; break;
+      case "ap": st.ap += amount; break;
+      case "haste": st.haste += amount; break;
+      case "attackSpeedPct": st.baseAsPct += amount; break;
+      case "hp": st.hp += amount; st.bonusHp += amount; break;
+      default: break;
+    }
+  }
+  if (contributions.some((c) => c.stat === "attackSpeedPct")) {
+    st.as = Math.min(st.baseAs * (1 + st.baseAsPct / 100), AS_CAP);
+  }
+}
+
 export interface DuelTarget {
   label: string;
   hp: number;
@@ -1409,9 +1439,15 @@ export function dummyTarget(hp: number, armor = 0, mr = 0): DuelTarget {
  * gap into a bug report.
  */
 export function duel(name: string, items: string[], runes: string[],
-                     target: DuelTarget, level = 15, cap = 20): DuelResult | null {
+                     target: DuelTarget, level = 15, cap = 20,
+                     scaled = false): DuelResult | null {
   const st = resolveStats(name, level, items, runes);
   if (!st) return null;
+  // "Fully scaled" is not a display mode: stacking items and ramping passives
+  // genuinely change how hard a build hits, so the fight has to see them too.
+  // A build shown as fully scaled that then fights at its guaranteed stats
+  // would be quietly contradicting the panel directly above it.
+  if (scaled) applyScaling(name, items, runes, level, st);
 
   const need = target.hp * (1 - (st.execute ?? 0));
   let ttk: number | null = null;

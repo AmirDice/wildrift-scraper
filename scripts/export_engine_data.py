@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web-next" / "src" / "data" / "engine.json"
 ROSTER_OUT = ROOT / "web-next" / "src" / "data" / "roster.json"
 STAT_RULES_OUT = ROOT / "web-next" / "src" / "data" / "stat_rules.json"
+COMBOS_OUT = ROOT / "web-next" / "src" / "data" / "champion_combos.json"
 
 
 def _load(name: str):
@@ -91,7 +92,8 @@ def main() -> None:
     # The overlay also survives re-extraction, so a human correction pinned there
     # is not silently overwritten the next time formulas are rebuilt.
     _apply_recovered_conditions(formulas)
-    combos = (_load("champion_combos.json") or {}).get("champions") or {}
+    combos_file = _load("champion_combos.json") or {}
+    combos = combos_file.get("champions") or {}
     for name, entry in combos.items():
         if name in formulas and entry.get("combo"):
             formulas[name]["combo"] = entry["combo"]
@@ -207,6 +209,12 @@ def main() -> None:
     STAT_RULES_OUT.write_text(json.dumps(stat_rules, ensure_ascii=False, indent=2),
                               encoding="utf-8")
     print(f"wrote {STAT_RULES_OUT.relative_to(ROOT)}")
+
+    # The champion page shows the combo with the model's reasoning attached, so
+    # the whole record ships rather than just the sequence baked into formulas.
+    COMBOS_OUT.write_text(json.dumps(combos_file, indent=1, ensure_ascii=False),
+                          encoding="utf-8")
+    print(f"wrote {COMBOS_OUT.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

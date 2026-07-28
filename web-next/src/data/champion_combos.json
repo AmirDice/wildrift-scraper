@@ -1,0 +1,1816 @@
+{
+ "_source": "gemini-3.6-flash, asked for the highest-damage combo",
+ "_note": "Model-generated, not scraped. A human correction placed here outranks it and is preserved: this file is never regenerated wholesale.",
+ "champions": {
+  "Graves": {
+   "combo": [
+    "auto",
+    "auto",
+    "3",
+    "auto",
+    "1",
+    "2",
+    "4"
+   ],
+   "why": "Expending both shotgun shells before using Quickdraw resets the attack timer and reloads a third shell for maximum basic attack output. Weaving End of the Line and Smoke Screen maximizes ability damage before finishing with Collateral Damage, which knocks Graves back out of range.",
+   "confidence": "high"
+  },
+  "Hecarim": {
+   "combo": [
+    "3",
+    "4",
+    "auto",
+    "2",
+    "1",
+    "auto"
+   ],
+   "why": "Activating Devastating Charge (3) ramps up movement speed to grant bonus Attack Damage through Warpath (P) before bursting with Onslaught of Shadows (4). Unleashing the empowered basic attack delivers maximum knockback damage, followed by Spirit of Dread (2) and a fully charged Rampage (1) for a cri",
+   "confidence": "high"
+  },
+  "Xin Zhao": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "auto",
+    "auto",
+    "2",
+    "4",
+    "auto"
+   ],
+   "why": "Audacious Charge (3) provides an immediate attack speed buff that is followed by a basic attack cancelled by Three Talon Strike (1) for a quick auto-reset. The three empowered attacks trigger the Passive bonus damage and knock up the target, guaranteeing both hits of Wind Becomes Lightning (2) befor",
+   "confidence": "high"
+  },
+  "Aatrox": {
+   "combo": [
+    "4",
+    "P",
+    "2",
+    "1",
+    "3",
+    "auto",
+    "1",
+    "1",
+    "auto"
+   ],
+   "why": "Activating World Ender first boosts Attack Damage for every subsequent ability and attack, maximizing the percent-health damage from Deathbringer Stance. Using Infernal Chains sets up guaranteed Darkin Blade sweetspots while Umbral Dash acts as a basic attack reset between Q casts.",
+   "confidence": "high"
+  },
+  "Ahri": {
+   "combo": [
+    "4",
+    "3",
+    "1",
+    "2",
+    "auto",
+    "4",
+    "auto",
+    "4"
+   ],
+   "why": "Initiating with Spirit Rush (4) closes the distance to land Charm (3), guaranteeing both hits of Orb of Deception (1) and locking Fox-Fire (2) onto the target. Weaving basic attacks between all three Spirit Rush (4) recasts maximizes single-target burst and sustained damage.",
+   "confidence": "high"
+  },
+  "Akali": {
+   "combo": [
+    "4",
+    "auto",
+    "3",
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "This sequence maximizes damage by weaving empowered passive basic attacks between every major ability hit to repeatedly trigger Assassin's Mark. Saving the second cast of Perfect Execution for the end ensures its missing-health scaling yields the highest possible execute damage.",
+   "confidence": "high"
+  },
+  "Akshan": {
+   "combo": [
+    "1",
+    "auto",
+    "auto",
+    "3",
+    "auto",
+    "4"
+   ],
+   "why": "Hitting 1 first marks the target and deals initial damage, allowing basic attacks to quickly trigger the passive 3-hit bonus magic damage burst. Heroic Swing (3) then unleashes a rapid barrage of targeted shots on the marked champion to drop their health, setting up Comeuppance (4) to deal maximum e",
+   "confidence": "high"
+  },
+  "Alistar": {
+   "combo": [
+    "3",
+    "2",
+    "1",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Activating Trample before engaging with Headbutt and Pulverize ensures the dot ticks constantly while the enemy is knocked up. Following up with basic attacks keeps the target in range to complete all Trample stacks and trigger the empowered basic attack.",
+   "confidence": "high"
+  },
+  "Ambessa": {
+   "combo": [
+    "4",
+    "auto",
+    "1",
+    "auto",
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "2",
+    "auto"
+   ],
+   "why": "Starting with 4 locks down the target with heavy burst, allowing Ambessa to seamlessly weave basic attacks after each ability cast including both casts of 1, 3, and 2. This structure maximizes total damage by fully consuming every Drakehound's Step passive empowerment after every spell.",
+   "confidence": "high"
+  },
+  "Amumu": {
+   "combo": [
+    "2",
+    "1",
+    "auto",
+    "3",
+    "4",
+    "1",
+    "auto"
+   ],
+   "why": "Activating Despair first ensures continuous tick damage, followed by Bandage Toss to close distance and a basic attack to apply Cursed Touch's 10% true damage amplifier. Following up with Tantrum, Curse of the Sad Mummy, and the second Bandage Toss charge maximizes magic damage amplified by the pass",
+   "confidence": "high"
+  },
+  "Annie": {
+   "combo": [
+    "4",
+    "auto",
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "4"
+   ],
+   "why": "Summoning Tibbers first locks down the target and maximizes Tibbers' continuous burn and basic attack damage over time. Weaving basic attacks between Disintegrate and Incinerate maximizes damage output while stalling for the Tibbers pounce recast.",
+   "confidence": "high"
+  },
+  "Ashe": {
+   "combo": [
+    "4",
+    "2",
+    "auto",
+    "auto",
+    "auto",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Opening with 4 deals high initial magic damage and stuns the target, followed by 2 for immediate physical damage while applying Frost Shot slow to empower all subsequent attacks. Four basic attacks fully charge Ranger's Focus, allowing 1 to act as an auto-attack animation reset for massive attack sp",
+   "confidence": "high"
+  },
+  "Aurelion Sol": {
+   "combo": [
+    "3",
+    "4",
+    "auto",
+    "2",
+    "1",
+    "auto"
+   ],
+   "why": "Starting with Singularity (3) pulls the target into center to guarantee the massive burst damage and stun from Falling Star (4). Activating Astral Flight (2) immediately before Breath of Light (1) grants up to 130% bonus damage to the continuous channel for maximum total DPS.",
+   "confidence": "high"
+  },
+  "Aurora": {
+   "combo": [
+    "1",
+    "auto",
+    "4",
+    "3",
+    "auto",
+    "1"
+   ],
+   "why": "Casting 1 first marks the target with a curse so all subsequent heavy abilities like 4 and 3 lower the target's health. Recasting 1 last maximizes its missing-health execute damage while weaving autos reliably triggers the Passive damage proc.",
+   "confidence": "high"
+  },
+  "Bard": {
+   "combo": [
+    "auto",
+    "1",
+    "auto",
+    "auto"
+   ],
+   "why": "Bard's only damaging active ability is Cosmic Binding (1), which should be woven immediately after an initial basic attack to cancel the attack animation and apply CC. Following up with subsequent basic attacks maximizes damage output by expending Passive Meep enhancements.",
+   "confidence": "high"
+  },
+  "Blitzcrank": {
+   "combo": [
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Landing Rocket Grab (1) pulls the enemy in for an auto attack followed immediately by Power Fist (3) as an auto-attack reset to trigger Static Field's (4) passive marks while it is off cooldown. Casting Static Field (4) active afterward delivers maximum burst damage before completing the sequence wi",
+   "confidence": "high"
+  },
+  "Brand": {
+   "combo": [
+    "3",
+    "2",
+    "auto",
+    "1",
+    "4",
+    "auto"
+   ],
+   "why": "Conflagration (3) applies Ablaze instantly so Pillar of Flame (2) deals 30% empowered damage on a burning target. Following with Sear (1) guarantees a stun to lock the enemy down while Pyroclasm (4) bounces between Brand and the target for maximum single-target damage.",
+   "confidence": "high"
+  },
+  "Braum": {
+   "combo": [
+    "auto",
+    "1",
+    "auto",
+    "auto",
+    "4",
+    "auto",
+    "auto"
+   ],
+   "why": "Starting with a basic attack into Winter's Bite cancels the attack animation to quickly stack Concussive Blows with follow-up attacks. Once the passive triggers its burst damage and stun, Glacial Fissure and additional basic attacks maximize total damage using the passive's bonus on-hit magic damage",
+   "confidence": "high"
+  },
+  "Caitlyn": {
+   "combo": [
+    "3",
+    "2",
+    "1",
+    "auto",
+    "auto",
+    "auto",
+    "4"
+   ],
+   "why": "Landing 90 Caliber Net sets up a guaranteed Yordle Snap Trap while allowing Piltover Peacemaker to deal full unreduced damage to the CC'd target. Weaving Headshot-empowered basic attacks before finishing with Ace in the Hole maximizes total output by utilizing the ultimate's missing health execute.",
+   "confidence": "high"
+  },
+  "Camille": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto",
+    "1",
+    "auto",
+    "2"
+   ],
+   "why": "Initiating with 3 deals damage and grants attack speed, which allows weaving basic attacks efficiently with 1's attack-resetting casts. Using 4 during the delay between 1's casts delivers current-health damage and empowers basic attacks before finishing with 1's true-damage recast and 2's percent-he",
+   "confidence": "high"
+  },
+  "Cho'Gath": {
+   "combo": [
+    "1",
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "4"
+   ],
+   "why": "Cho'Gath is currently not available in Wild Rift, but based on his traditional kit, initiating with Rupture (1) into Feral Scream (2) guarantees crowd control. Weaving a basic attack before activating Vorpal Spikes (3) cancels the attack animation timer to maximize damage output before executing wit",
+   "confidence": "low"
+  },
+  "Corki": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto",
+    "4",
+    "auto",
+    "4"
+   ],
+   "why": "Activating Gatling Gun (3) first reduces the target's armor and magic resist to amplify all following attacks and abilities. Weaving basic attacks between Phosphorus Bomb (1) and Missile Barrage (4) casts maximizes overall DPS and passive true damage output.",
+   "confidence": "high"
+  },
+  "Darius": {
+   "combo": [
+    "3",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "Using Crippling Strike [2] immediately after a basic attack resets the attack timer to rapidly build Hemorrhage [P] stacks. Reaching five stacks triggers Noxian Might's massive Attack Damage buff, maximizing the true damage of Noxian Guillotine [4].",
+   "confidence": "high"
+  },
+  "Diana": {
+   "combo": [
+    "1",
+    "3",
+    "auto",
+    "2",
+    "4",
+    "3",
+    "auto",
+    "auto"
+   ],
+   "why": "Applying Moonlight with Crescent Strike allows Lunar Rush to reset its cooldown, enabling a second dash for maximum total damage. Weaving basic attacks alongside Pale Cascade and a fully charged Moonfall maximizes attack speed buffs to reliably proc the Moonsilver Blade passive.",
+   "confidence": "high"
+  },
+  "Dr. Mundo": {
+   "combo": [
+    "1",
+    "2",
+    "4",
+    "auto",
+    "3",
+    "auto",
+    "2"
+   ],
+   "why": "Opening with 1 deals maximum percentage current Health damage to a full-health target while 2 applies continuous tick damage throughout the combo. Activating 4 boosts Attack Damage based on bonus Health prior to executing the auto -> 3 -> auto attack timer reset, finishing with the 2 recast for burs",
+   "confidence": "high"
+  },
+  "Draven": {
+   "combo": [
+    "1",
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "4",
+    "4",
+    "auto"
+   ],
+   "why": "Activating 1 and 2 maximizes physical attack damage and Attack Speed before weaving basic attacks. Using 3 deals direct spell damage and slows the target to guarantee double-hitting both passes of 4 upon instant reactivation for maximum total damage.",
+   "confidence": "high"
+  },
+  "Ekko": {
+   "combo": [
+    "2",
+    "3",
+    "1",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Pre-casting 2 provides crowd control to guarantee 4 lands, while canceling 1's animation during 3's dash allows the empowered auto to instantly proc Passive damage alongside 1's initial hit. Using 4 deals massive ultimate burst damage, followed by a final auto attack to maximize 2's missing health e",
+   "confidence": "high"
+  },
+  "Evelynn": {
+   "combo": [
+    "2",
+    "3",
+    "auto",
+    "1",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "Initiating with a fully charged Allure shreds the target's Magic Resist, maximizing the burst from an empowered Demon Shade Whiplash and both casts of Hate Spike. Weaving basic attacks adds supplemental damage while bringing the target below 35% Health so Last Caress delivers its maximum 230% execut",
+   "confidence": "high"
+  },
+  "Ezreal": {
+   "combo": [
+    "2",
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Initiating with Essence Flux guarantees Arcane Shift locks onto the target to detonate the mark for massive burst while stacking Rising Spell Force. Weaving basic attacks around Mystic Shot and Trueshot Barrage maximizes damage output utilizing the accumulated attack speed stacks.",
+   "confidence": "high"
+  },
+  "Fiddlesticks": {
+   "combo": [
+    "4",
+    "3",
+    "1",
+    "auto",
+    "2"
+   ],
+   "why": "Casting Crowstorm from out of vision fears the target, which doubles the damage dealt by Terrify (1) against recently feared enemies. Bountiful Harvest (2) is channeled last so its final tick deals maximum missing health execute damage.",
+   "confidence": "high"
+  },
+  "Fiora": {
+   "combo": [
+    "4",
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "auto",
+    "2"
+   ],
+   "why": "Activating Grand Challenge exposes all Vitals, allowing Lunge and basic attacks to rapidly proc each Vital for massive true damage. Bladework acts as an auto-attack reset with a guaranteed critical strike, while Riposte weaves in extra magic damage.",
+   "confidence": "high"
+  },
+  "Fizz": {
+   "combo": [
+    "4",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "3"
+   ],
+   "why": "Landing 4 from max distance maximizes its shark damage, followed by an auto attack immediately reset by 2 for the empowered burst. Weaving 1 afterwards applies Q damage plus 2's continuous on-hit bonus, leaving 3's full delayed splash to execute the target.",
+   "confidence": "high"
+  },
+  "Galio": {
+   "combo": [
+    "4",
+    "3",
+    "auto",
+    "1",
+    "2",
+    "auto"
+   ],
+   "why": "Starting with 4 delivers massive ultimate damage and knockup, leading into 3 and a initial passive-empowered auto attack. Sequential hits with 3, 1, and 2 rapidly refund Colossal Smash's cooldown, allowing a second empowered auto attack to conclude the combo.",
+   "confidence": "high"
+  },
+  "Garen": {
+   "combo": [
+    "auto",
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "4"
+   ],
+   "why": "Using a basic attack followed by 1 resets the attack timer to deal maximum physical damage upfront before channeling 3 for full duration damage. Finishing with a final basic attack into 4 maximizes Demacian Justice's execute true damage based on the target's high missing health.",
+   "confidence": "high"
+  },
+  "Gnar": {
+   "combo": [
+    "3",
+    "auto",
+    "4",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Leaping with 3 at near-full Rage triggers Crunch damage upon transforming into Mega Gnar, setting up an immediate 4 into a wall for empowered ultimate damage. Weaving auto attacks between 4, 2, and 1 maximizes single-target burst by utilizing ability recovery frames for extra basic attack damage.",
+   "confidence": "medium"
+  },
+  "Gragas": {
+   "combo": [
+    "2",
+    "1",
+    "3",
+    "auto",
+    "4",
+    "1"
+   ],
+   "why": "Pre-casting Drunken Rage (2) empowers the next basic attack for massive percentage health magic damage while placing Barrel Roll (1) early allows it to ferment for its maximum 150% damage scaling. Using Body Slam (3) stuns the target to guarantee the empowered auto attack hits before knocking them i",
+   "confidence": "high"
+  },
+  "Gwen": {
+   "combo": [
+    "auto",
+    "3",
+    "auto",
+    "4",
+    "auto",
+    "4",
+    "auto",
+    "1",
+    "4"
+   ],
+   "why": "Using Skip 'n Slash (3) resets the basic attack timer and applies bonus on-hit magic damage and attack speed to all subsequent attacks. Weaving basic attacks between Ultimate (4) recasts rapidly builds 4 stacks for Snip Snip! (1), delivering maximum snip damage before completing the combo with the f",
+   "confidence": "high"
+  },
+  "Heimerdinger": {
+   "combo": [
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "4",
+    "2",
+    "auto"
+   ],
+   "why": "Deploying a turret followed by Grenade stuns the target and instantly triggers a fully charged turret beam attack. Following up with UPGRADE!!! into Micro-Rockets unloads the massive Rocket Swarm burst while weaving basic attacks between casts for maximum single-target damage.",
+   "confidence": "high"
+  },
+  "Irelia": {
+   "combo": [
+    "3",
+    "4",
+    "1",
+    "3",
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "1"
+   ],
+   "why": "Opening with Vanguard's Edge and Flawless Duet allows Irelia to reset Bladesurge twice to rapidly reach maximum Ionian Fervor stacks. Weaving basic attacks and a fully charged Defiant Dance after hitting full stacks maximizes on-hit magic damage and burst output.",
+   "confidence": "high"
+  },
+  "Janna": {
+   "combo": [
+    "3",
+    "auto",
+    "2",
+    "1",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Eye Of The Storm (3) first grants Janna bonus Attack Damage to empower all subsequent basic attacks. Following up with Zephyr (2) and both stored charges of Howling Gale (1) maximizes burst magic damage while weaving AD-empowered auto attacks.",
+   "confidence": "high"
+  },
+  "Jarvan IV": {
+   "combo": [
+    "3",
+    "1",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Casting Demacian Standard (3) into Dragon Strike (1) deals initial magic and physical damage while applying a 10% armor reduction. Following up immediately with an auto-attack triggers Martial Cadence (P) for current HP damage on shredded armor, followed by Cataclysm (4) for massive physical burst.",
+   "confidence": "high"
+  },
+  "Jax": {
+   "combo": [
+    "3",
+    "1",
+    "4",
+    "auto",
+    "2",
+    "auto",
+    "auto",
+    "3"
+   ],
+   "why": "Activating Counter Strike before leaping and weaving Grandmaster-at-Arms active on landing delivers maximum burst upfront. Using Empower immediately after an auto attack resets the attack timer to quickly land the third consecutive hit that triggers the passive damage from Grandmaster-at-Arms.",
+   "confidence": "high"
+  },
+  "Jayce": {
+   "combo": [
+    "1",
+    "3",
+    "2",
+    "auto",
+    "4",
+    "1",
+    "auto",
+    "2",
+    "3"
+   ],
+   "why": "Empowering Shock Blast with Acceleration Gate delivers massive ranged poke, while an immediate Cannon auto applies the 11% Armor and Magic Resist shred. Transforming to Hammer mode preserves Hyper Charge's attack speed for rapid melee empowered autos after closing the gap with To The Skies!, finishi",
+   "confidence": "high"
+  },
+  "Jhin": {
+   "combo": [
+    "3",
+    "auto",
+    "2",
+    "1",
+    "auto",
+    "auto",
+    "auto",
+    "4"
+   ],
+   "why": "Placing Captive Audience before an auto-attack and Deadly Flourish guarantees rooting the target inside the trap to land its high explosion damage. Weaving abilities between basic attacks reduces target health to maximize the missing-health execute damage on Jhin's fourth Whisper shot and ultimate.",
+   "confidence": "high"
+  },
+  "Jinx": {
+   "combo": [
+    "3",
+    "2",
+    "1",
+    "auto",
+    "auto",
+    "auto",
+    "4"
+   ],
+   "why": "Using Flame Chompers guarantees root damage and sets up Zap! for high physical burst. Toggling Switcheroo! to Fishbones maximizes basic attack damage per hit before finishing with Super Mega Death Rocket to capitalize on its missing health execute damage.",
+   "confidence": "high"
+  },
+  "Kalista": {
+   "combo": [
+    "auto",
+    "1",
+    "auto",
+    "auto",
+    "auto",
+    "3"
+   ],
+   "why": "Canceling the initial basic attack recovery with 1 (Pierce) maximizes early damage and adds an additional spear stack. Weaving continuous basic attacks rapidly builds Rend stacks before executing 3 (Rend) to deal maximum cumulative damage.",
+   "confidence": "high"
+  },
+  "Kassadin": {
+   "combo": [
+    "4",
+    "auto",
+    "2",
+    "3",
+    "1"
+   ],
+   "why": "Riftwalk closes the gap to deal immediate area magic damage directly on top of the enemy target. Following up with an auto attack instantly reset by Nether Blade maximizes physical and empowered magic damage before weaving in Force Pulse and Null Sphere.",
+   "confidence": "high"
+  },
+  "Katarina": {
+   "combo": [
+    "1",
+    "3",
+    "auto",
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "4"
+   ],
+   "why": "Initiating with Bouncing Blades sets up a dagger while Shunpo resets the basic attack timer for an immediate auto-attack. Picking up daggers reduces Shunpo's cooldown to weave additional basic attacks and Passive slash damage before finishing with a full Death Lotus channel.",
+   "confidence": "high"
+  },
+  "Kayle": {
+   "combo": [
+    "1",
+    "auto",
+    "4",
+    "auto",
+    "3"
+   ],
+   "why": "Opening with Radiant Blast (1) reduces the target's armor and magic resistance, maximizing the damage from Divine Judgment (4) and subsequent strikes. Saving Starfire Spellblade (3) for last serves as a basic attack reset while capitalizing on its missing health execute damage.",
+   "confidence": "high"
+  },
+  "Kayn": {
+   "combo": [
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Opening with Blade's Reach (2) slows the target to reliably weave an auto attack and Reaping Slash (1) while the initial passive bonus damage is active. Casting Umbral Trespass (4) refreshes the passive cooldown upon exiting, allowing another empowered auto attack and Reaping Slash (1) to maximize t",
+   "confidence": "high"
+  },
+  "Kennen": {
+   "combo": [
+    "3",
+    "4",
+    "auto",
+    "2",
+    "1",
+    "auto"
+   ],
+   "why": "Initiating with 3 deals magic damage and grants bonus attack speed, followed immediately by 4 to start ramping ticking damage and passive Mark stacks. Weaving empowered basic attacks alongside 2 and 1 maximizes single-target burst while benefiting from the Attack Speed buff and energy refunds from P",
+   "confidence": "high"
+  },
+  "Kha'Zix": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "2",
+    "4",
+    "auto",
+    "1",
+    "4",
+    "auto",
+    "1"
+   ],
+   "why": "Leaping in and weaving Void Spike lets Kha'Zix land an initial passive-empowered basic attack alongside an isolated Taste Their Fear. Recasting Void Assault stealths Kha'Zix twice to repeatedly refresh Unseen Threat, maximizing total basic attack and low-cooldown Q damage.",
+   "confidence": "high"
+  },
+  "Kindred": {
+   "combo": [
+    "1",
+    "2",
+    "3",
+    "auto",
+    "auto",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Starting with Dance of Arrows grants an immediate attack speed boost, while Wolf's Frenzy enables continuous damage over time and drastically reduces Dance of Arrows' cooldown. Applying Mounting Dread before three basic attacks ensures its missing-health execute triggers after the target's health is",
+   "confidence": "high"
+  },
+  "Kog'Maw": {
+   "combo": [
+    "1",
+    "2",
+    "3",
+    "auto",
+    "auto",
+    "4"
+   ],
+   "why": "Casting Caustic Spittle first shreds the target's Armor and Magic Resist to maximize all subsequent magic and physical damage. Activating Bio-Arcane Barrage to weave empowered basic attacks reduces the target's health, maximizing the execution damage from Living Artillery.",
+   "confidence": "high"
+  },
+  "K'Sante": {
+   "combo": [
+    "4",
+    "auto",
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Activating 4 first transforms K'Sante into All Out form, maximizing all subsequent ability damage and passive scaling against the target. Interleaving basic attacks after every damaging ability consistently consumes Dauntless Instinct marks to maximize total health percentage damage.",
+   "confidence": "high"
+  },
+  "Lee Sin": {
+   "combo": [
+    "1",
+    "3",
+    "auto",
+    "2",
+    "auto",
+    "4",
+    "1"
+   ],
+   "why": "Landing Sonic Wave first marks the enemy so the second cast can be held until the target's health is depleted by Tempest, empowered auto attacks, and Dragon's Rage. Delaying Resonating Strike until the end maximizes its execution damage scaling based on the target's missing health.",
+   "confidence": "high"
+  },
+  "Leona": {
+   "combo": [
+    "2",
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Pre-casting Eclipse (2) ensures its delayed explosion detonates during the engage while Zenith Blade (3) closes the gap and deals damage. Weaving a basic attack before resetting the attack timer with Shield of Daybreak (1) maximizes basic attack output before casting Solar Flare (4).",
+   "confidence": "high"
+  },
+  "Lillia": {
+   "combo": [
+    "3",
+    "4",
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "1"
+   ],
+   "why": "Initiating with Swirlseed (3) applies Dream Dust, enabling Lilting Lullaby (4) to afflict the target with Drowsy before falling Asleep. Weaving Blooming Blows (1) and basic attacks during Drowsy maximizes total damage before landing a guaranteed center Watch Out! Eep! (2) to awaken the target and tr",
+   "confidence": "high"
+  },
+  "Lissandra": {
+   "combo": [
+    "3",
+    "3",
+    "auto",
+    "1",
+    "2",
+    "4",
+    "auto"
+   ],
+   "why": "Casting Glacial Path through the enemy deals its travel damage before recasting to blink directly into melee range. Weaving basic attacks between spell casts maximizes total damage while ensuring the enemy is locked down by Ring of Frost and Frozen Tomb.",
+   "confidence": "high"
+  },
+  "Lucian": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "4"
+   ],
+   "why": "Starting with Relentless Pursuit allows its cooldown to be reduced by Lightslinger basic attacks after Piercing Light and Ardent Blaze, granting a second Relentless Pursuit cast for an additional passive double-shot. Weaving basic attacks after every ability maximizes Lightslinger procs before concl",
+   "confidence": "high"
+  },
+  "Lulu": {
+   "combo": [
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "auto"
+   ],
+   "why": "Casting Whimsy on herself provides a substantial Attack Speed buff to maximize total damage from Pix passive bolts during basic attacks. Weaving basic attacks between Help, Pix! and Glitterlance optimizes damage output without wasting auto attack cooldowns.",
+   "confidence": "high"
+  },
+  "Lux": {
+   "combo": [
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Weaving basic attacks between each ability maximizes Illumination procs across your entire kit. Final Spark ignites an existing mark while refreshing it, allowing a fourth and final empowered auto attack.",
+   "confidence": "high"
+  },
+  "Malphite": {
+   "combo": [
+    "4",
+    "auto",
+    "2",
+    "auto",
+    "3",
+    "1",
+    "auto"
+   ],
+   "why": "Unstoppable Force guarantees the initial engage and knockup, allowing an immediate basic attack before Thunderclap resets the attack timer for a heavy empowered strike. Ground Slam and Seismic Shard are woven in between basic attacks to maximize spell damage while keeping the target slowed for furth",
+   "confidence": "high"
+  },
+  "Maokai": {
+   "combo": [
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Pre-casting Sapling Toss (3) before Twisted Advance (2) ensures the target remains rooted on top of the sapling for guaranteed detonation damage. Weaving basic attacks around Bramble Smash (1) utilizes its auto-attack reset to maximize total burst before finishing with Nature's Grasp (4).",
+   "confidence": "high"
+  },
+  "Master Yi": {
+   "combo": [
+    "4",
+    "auto",
+    "3",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Activating Highlander first grants massive attack speed to accelerate the entire damage output sequence. Landing a basic attack and immediately casting Wuju Style resets the attack timer while empowering all subsequent attacks and Alpha Strike with true damage burst.",
+   "confidence": "high"
+  },
+  "Mel": {
+   "combo": [
+    "3",
+    "1",
+    "auto",
+    "auto",
+    "4"
+   ],
+   "why": "Starting with Solar Snare (3) roots the target to ensure all multi-hit projectiles from Radiant Volley (1) land and accumulate maximum Overwhelm stacks. Weaving basic attacks further builds Overwhelm stacks before finishing with Golden Eclipse (4) to maximize its damage based on stacked Overwhelm.",
+   "confidence": "high"
+  },
+  "Milio": {
+   "combo": [
+    "3",
+    "auto",
+    "3",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "4",
+    "auto"
+   ],
+   "why": "This sequence weaves basic attacks between each self-buffing ability to repeatedly trigger and apply the Fired Up! passive without wasting non-stacking burn refreshes. Incorporating Ultra Mega Fire Kick adds direct ability damage to complete the maximum damage output against a single target.",
+   "confidence": "high"
+  },
+  "Miss Fortune": {
+   "combo": [
+    "2",
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "Activating Strut grants massive Attack Speed and dropping Make it Rain provides continuous ticking magic damage while weave-stacking basic attacks and Double Up to quickly proc Love Tap's 3-stack burst. Finishing with a full channel of Bullet Time delivers the highest potential total damage output a",
+   "confidence": "high"
+  },
+  "Mordekaiser": {
+   "combo": [
+    "4",
+    "3",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Realm of Death first steals the target's core stats immediately, amplifying the damage of all subsequent abilities and basic attacks. Following up with Death's Grasp and an auto attack rapidly fully stacks Darkness Rise, allowing the isolated Obliterate to deal maximum empowered damage.",
+   "confidence": "high"
+  },
+  "Morgana": {
+   "combo": [
+    "1",
+    "4",
+    "2",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Landing Dark Binding roots the target to guarantee the full duration of Tormented Shadow while Soul Shackles provides immediate burst to lower target health. This maximizes Tormented Shadow's missing-health damage scaling across its ticks while weaving basic attacks during the continuous crowd contr",
+   "confidence": "high"
+  },
+  "Nami": {
+   "combo": [
+    "3",
+    "4",
+    "1",
+    "2",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Pre-casting Tidecaller's Blessing empowers Nami's next three basic attacks with bonus magic damage without delaying her spell sequence. Layering Tidal Wave into Aqua Prison locks the enemy down, allowing Ebb and Flow and all three empowered auto-attacks to land guaranteed.",
+   "confidence": "high"
+  },
+  "Nasus": {
+   "combo": [
+    "3",
+    "4",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Spirit Fire (3) first applies armor reduction so all subsequent basic attacks and Siphoning Strike (1) deal maximum physical damage, while Fury of the Sands (4) initiates the continuous magic damage aura and halves 1's cooldown. An auto attack is woven immediately before Siphoning Strike (1)",
+   "confidence": "high"
+  },
+  "Nautilus": {
+   "combo": [
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "3",
+    "4",
+    "auto"
+   ],
+   "why": "Initiating with Dredge Line allows an immediate basic attack to apply the bonus physical damage from Staggering Blow before using Titan's Wrath as an auto-attack reset for an empowered hit. Canceling subsequent recovery frames with Riptide and Depth Charge ensures all abilities hit while weaving emp",
+   "confidence": "high"
+  },
+  "Nidalee": {
+   "combo": [
+    "3",
+    "1",
+    "auto",
+    "4",
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Primal Surge grants a substantial attack speed buff to maximize basic attack damage, while long-range Javelin Toss applies Hunted to empower Cougar abilities and refresh transformation cooldown. Takedown is cast last in the sequence to maximize its missing-health execute multiplier, with basic attac",
+   "confidence": "high"
+  },
+  "Nilah": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto",
+    "3",
+    "auto"
+   ],
+   "why": "Using Slipstream closes the gap and applies initial damage, allowing Formless Blade to land reliably and activate empowered basic attacks. Weaving basic attacks between Apotheosis and a secondary Slipstream dash maximizes attack speed resets and overall physical damage output.",
+   "confidence": "high"
+  },
+  "Nocturne": {
+   "combo": [
+    "4",
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Initiating with Paranoia (4) delivers high impact burst, which is immediately followed by Duskbringer (1) to active the Dusk Trail for bonus Attack Damage. Weaving basic attacks and Unspeakable Horror (3) afterwards maximizes overall DPS by ensuring every auto attack and Passive strike benefits from",
+   "confidence": "high"
+  },
+  "Norra": {
+   "combo": [
+    "3",
+    "auto",
+    "2",
+    "1",
+    "4",
+    "4",
+    "4",
+    "4",
+    "auto"
+   ],
+   "why": "Casting Threads of Homecoming (3) first applies Threads to trigger the passive bonus max health magic damage from Memory Surge (1) on subsequent attacks. Following with Journey to Nowhere (2), Memory Surge (1), all four recasts of Portalpalooza! (4), and basic attacks maximizes total damage output.",
+   "confidence": "medium"
+  },
+  "Nunu & Willump": {
+   "combo": [
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "1",
+    "4"
+   ],
+   "why": "Initiating with a fully charged 2 deals maximum impact damage and triggers Call of the Freljord for empowered attack speed on follow-up basic attacks. Using 3 roots the target inside 4, ensuring a full 3-second channel of Absolute Zero alongside 1 for maximum total burst damage.",
+   "confidence": "high"
+  },
+  "Olaf": {
+   "combo": [
+    "4",
+    "1",
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "3"
+   ],
+   "why": "Casting Ragnarok first maximizes bonus Attack Damage for all subsequent skills, while Undertow applies a 20% armor reduction before dashing in with Reckless Swing. Dashing onto the thrown axe enables an immediate Undertow reset while Vicious Strikes provides the attack speed needed to quickly reduce",
+   "confidence": "high"
+  },
+  "Orianna": {
+   "combo": [
+    "1",
+    "4",
+    "2",
+    "3",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "This order hits the target with all four abilities, bringing the Ball back through the enemy with Command: Protect for maximum ability damage. Following up with consecutive basic attacks takes full advantage of Clockwork Windup's stacking bonus magic damage on the same target.",
+   "confidence": "high"
+  },
+  "Ornn": {
+   "combo": [
+    "1",
+    "4",
+    "4",
+    "auto",
+    "3",
+    "2",
+    "auto"
+   ],
+   "why": "Casting Volcanic Rupture first sets up the terrain pillar required to amplify Searing Charge's shockwave damage while Call of the Forge God approaches. This sequence maximizes damage by weaving basic attacks to repeatedly consume and re-apply Brittle stacks between spell casts and knockups.",
+   "confidence": "high"
+  },
+  "Pantheon": {
+   "combo": [
+    "4",
+    "2",
+    "auto",
+    "1",
+    "3",
+    "auto",
+    "1"
+   ],
+   "why": "Starting with Grand Starfall guarantees full Mortal Will stacks for an Empowered Shield Vault, whose triple strike plus a basic attack builds four passive stacks. Weaving a short-cooldown tap Comet Spear grants the fifth stack before Aegis Assault, setting up a second, fully Empowered Comet Spear fo",
+   "confidence": "high"
+  },
+  "Poppy": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "P",
+    "4"
+   ],
+   "why": "Wall-stunning with 3 guarantees both instances of 1's damage while weaving basic attacks and passive-empowered attacks between ability casts. Using 4 at the end adds heavy physical burst damage to conclude the combo.",
+   "confidence": "low"
+  },
+  "Pyke": {
+   "combo": [
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "4"
+   ],
+   "why": "Starting with Bone Skewer pulls the target in for an immediate basic attack, followed by Phantom Undertow to guarantee the stun while weaving another basic attack before finishing with Death from Below.",
+   "confidence": "high"
+  },
+  "Rakan": {
+   "combo": [
+    "4",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Activating The Quickness before Grand Entrance guarantees the charm and ultimate damage hit upon dashing in, smoothly overlapping with the knockup. Weaving basic attacks between Grand Entrance and Gleaming Quill maximizes total damage while keeping the enemy completely locked down.",
+   "confidence": "high"
+  },
+  "Rammus": {
+   "combo": [
+    "1",
+    "4",
+    "2",
+    "3",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Casting Powerball before Soaring Slam carries the collision impact into the landing area for maximum initial burst damage. Activating Defensive Ball Curl right before Frenzying Taunt empowers basic attacks with Spiked Shell while forcing the enemy to attack Rammus to trigger passive damage reflectio",
+   "confidence": "high"
+  },
+  "Rell": {
+   "combo": [
+    "3",
+    "2",
+    "4",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Activating Full Tilt before engaging lets Crash Down and Magnet Storm lock down the target while quickly stacking Break the Mold's resistance shred. Following up with an empowered basic attack, Shattering Strike, and a final auto attack maximizes damage output against the target's reduced magic resi",
+   "confidence": "high"
+  },
+  "Renekton": {
+   "combo": [
+    "3",
+    "auto",
+    "4",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "3"
+   ],
+   "why": "Engaging with Slice allows weaving basic attacks and activating Dominus early to maximize continuous magic damage ticks and Fury generation throughout the trade. Ruthless Predator serves as a basic attack reset for massive burst damage before closing out with Cull the Meek and the second dash.",
+   "confidence": "high"
+  },
+  "Rengar": {
+   "combo": [
+    "4",
+    "P",
+    "3",
+    "2",
+    "1",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Initiating with Thrill of the Hunt applies armor shred on the leap, maximizing the physical damage of all subsequent attacks. Using Bola Strike and Battle Roar in mid-air/upon landing quickly builds Ferocity so Savagery can reset the auto-attack timer and immediately trigger an empowered Savagery.",
+   "confidence": "high"
+  },
+  "Riven": {
+   "combo": [
+    "4",
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "1",
+    "auto",
+    "1",
+    "4"
+   ],
+   "why": "Activating Blade of the Exile first increases total AD by 25% to maximize all damage dealt throughout the combo. Weaving basic attacks between Broken Wings casts consumes Runic Blade passive charges while resetting attack timers, culminating in Wind Slash to maximize its missing-health execute damag",
+   "confidence": "high"
+  },
+  "Rumble": {
+   "combo": [
+    "3",
+    "3",
+    "4",
+    "1",
+    "2",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Landing both Electro-Harpoons first reduces the target's Magic Resist to maximize all subsequent damage from The Equalizer and Danger Zone Flamespitter. Using Scrap Shield triggers Overheat while Flamespitter is already ticking, allowing continuous empowered auto attacks alongside full ability damag",
+   "confidence": "high"
+  },
+  "Ryze": {
+   "combo": [
+    "1",
+    "auto",
+    "3",
+    "1",
+    "2",
+    "1"
+   ],
+   "why": "Casting Overload (1) first deals baseline damage before Spell Flux (3) resets its cooldown and applies Flux. The second Overload consumes Flux for empowered double damage, after which Rune Prison (2) provides another cooldown reset for a third Overload.",
+   "confidence": "high"
+  },
+  "Samira": {
+   "combo": [
+    "auto",
+    "2",
+    "3",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "This combo uses Blade Whirl (2) followed by Wild Rush (3) and Flair (1) mid-dash, allowing the second hit of Blade Whirl to count as a unique style stack to reach 'S' rank rapidly. Reaching 'S' rank quickly allows Samira to cast Inferno Trigger (4) immediately while retaining the attack speed buff f",
+   "confidence": "high"
+  },
+  "Senna": {
+   "combo": [
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Casting Last Embrace (2) first guarantees crowd control to land the center damage beam of Dawning Shadow (4). Using Piercing Darkness (1) between basic attacks cancels the attack animation and quickly triggers the Passive soul siphon for maximum damage output.",
+   "confidence": "high"
+  },
+  "Seraphine": {
+   "combo": [
+    "4",
+    "3",
+    "2",
+    "1",
+    "auto"
+   ],
+   "why": "Opening with Encore [4] deals heavy initial burst damage and charms the target so Beat Drop [3] easily lands to root them. Using Surround Sound [2] primes her Passive Echo and stacks Notes, allowing High Note [1] to echo twice for maximum missing-health execute damage before releasing all accumulate",
+   "confidence": "high"
+  },
+  "Sett": {
+   "combo": [
+    "auto",
+    "auto",
+    "1",
+    "auto",
+    "auto",
+    "3",
+    "4",
+    "2"
+   ],
+   "why": "Starting with a left-right basic attack combination allows Knuckle Down (1) to instantly reset the attack timer for two empowered basic attacks in rapid succession. Following up with Facebreaker (3), The Show Stopper (4), and Haymaker (2) incorporates all high-scaling abilities into the string after",
+   "confidence": "high"
+  },
+  "Shen": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Shadow Dash (3) deals initial physical damage and positions Shen past the enemy so Twilight Assault (1) pulls the Spirit Blade through them for maximum empowered magic damage. Inserting an auto attack before casting 1 utilizes the attack timer reset to maximize overall damage during the taunt durati",
+   "confidence": "high"
+  },
+  "Shyvana": {
+   "combo": [
+    "4",
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Dragon's Descent first transforms Shyvana to enhance Flame Breath for higher burst damage and mark the target with Scorch. Following up with an auto-attack and immediately resetting it with Twin Bite triggers the Scorch on-hit percentage health damage twice in quick succession.",
+   "confidence": "high"
+  },
+  "Singed": {
+   "combo": [
+    "4",
+    "1",
+    "2",
+    "auto",
+    "3",
+    "auto"
+   ],
+   "why": "Activating Insanity Potion first grants a massive AP boost to maximize the damage of Poison Trail, Mega Adhesive, and Fling. Weaving auto attacks around Fling ensures additional physical damage while Poison Trail continuously ticks with empowered AP.",
+   "confidence": "high"
+  },
+  "Sion": {
+   "combo": [
+    "2",
+    "4",
+    "3",
+    "auto",
+    "1",
+    "2",
+    "auto"
+   ],
+   "why": "Pre-casting Soul Furnace (2) starts its 2-second timer so it can be detonated for maximum health magic damage mid-combo. Roar of the Slayer (3) applies a 20% armor shred immediately before fully charging Decimating Smash (1), dramatically amplifying its massive physical damage output.",
+   "confidence": "high"
+  },
+  "Sivir": {
+   "combo": [
+    "4",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Activating On The Hunt (4) first reduces basic ability cooldowns and grants Morale stacks upon dealing damage to maximize overall DPS. Weaving a basic attack before resetting the attack timer with Ricochet (2) and immediately buffering Boomerang Blade (1) delivers the highest burst damage against a ",
+   "confidence": "high"
+  },
+  "Skarner": {
+   "combo": [
+    "1",
+    "3",
+    "auto",
+    "auto",
+    "auto",
+    "2",
+    "4",
+    "auto"
+   ],
+   "why": "Pre-casting Shattered Earth prepares empowered attacks so charging in with Ixtal's Impact slams the target into a wall for huge physical damage and a stun duration. Following with three empowered basic attacks maxes out Threads of Vibration stacks for maximum health burn damage before weaving Seismi",
+   "confidence": "high"
+  },
+  "Smolder": {
+   "combo": [
+    "2",
+    "4",
+    "auto",
+    "1",
+    "3",
+    "auto"
+   ],
+   "why": "Initiating with 2 slows the target to guarantee landing the central high-damage zone of 4 for maximum burst. Weaving basic attacks around 1 and following up with 3 provides maximum single-target bombardment damage.",
+   "confidence": "high"
+  },
+  "Sona": {
+   "combo": [
+    "auto",
+    "4",
+    "1",
+    "auto"
+   ],
+   "why": "Casting 4 first deals damage, stuns the target, and reinforces Sona's auras for enhanced effectiveness. Following with 1 deals direct magic damage and grants the reinforced aura, allowing the final empowered basic attack to deal maximum damage combined with Power Chord.",
+   "confidence": "high"
+  },
+  "Soraka": {
+   "combo": [
+    "auto",
+    "3",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Equinox (3) first ensures the silence prevents escapes so both instances of its damage hit, while Starcall (1) adds additional magic damage and slow. Weaving basic attacks before and between ability casts maximizes physical damage output during the sequence.",
+   "confidence": "high"
+  },
+  "Swain": {
+   "combo": [
+    "4",
+    "3",
+    "2",
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "Activating Demonic Ascension first ensures continuous damage, while rooting with Nevermove allows Vision of Empire to deal 50% critical strike bonus damage. Recasting Nevermove pulls the target into point-blank range so all bolts of Death's Hand hit before finishing with the Demonflare recast.",
+   "confidence": "high"
+  },
+  "Syndra": {
+   "combo": [
+    "1",
+    "auto",
+    "2",
+    "1",
+    "3",
+    "1",
+    "4"
+   ],
+   "why": "This sequence stacks as many Dark Spheres as possible on the field using 1 and 2 before landing a guaranteed stun and damage with 3. Finishing with 4 unleashes the maximum number of spheres for the highest possible burst and execute damage.",
+   "confidence": "high"
+  },
+  "Taliyah": {
+   "combo": [
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Unraveled Earth (3) before Seismic Shove (2) guarantees the enemy is knocked through the minefield, triggering maximum stone detonation damage. Following up immediately with Threaded Volley (1) ensures all five rocks hit the crowd-controlled target while weaving basic attacks to maximize ove",
+   "confidence": "high"
+  },
+  "Talon": {
+   "combo": [
+    "2",
+    "4",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Rake and Shadow Assault quickly builds three passive stacks while allowing Talon to reach melee range and pull R blades onto the target with a basic attack. This immediately triggers the Blade's End bleed damage before following up with a close-range Noxian Diplomacy for maximum damage and a",
+   "confidence": "high"
+  },
+  "Teemo": {
+   "combo": [
+    "3",
+    "auto",
+    "4",
+    "1",
+    "auto",
+    "auto"
+   ],
+   "why": "Activating 3 grants a massive attack speed boost upon exiting stealth to maximize basic attack output and Toxic Shot on-hit damage instances. Throwing 4 directly onto the target applies high damage over time while 1 provides immediate burst squeezed between empowered basic attacks.",
+   "confidence": "high"
+  },
+  "Thresh": {
+   "combo": [
+    "auto",
+    "1",
+    "1",
+    "4",
+    "3",
+    "auto"
+   ],
+   "why": "Starting with a basic attack consumes the fully charged Flay passive for maximum initial bonus damage before hooking with Death Sentence. Recasting Death Sentence brings Thresh into melee range to cast The Box and immediately Flay the target into a wall to guarantee its massive burst damage.",
+   "confidence": "high"
+  },
+  "Tristana": {
+   "combo": [
+    "3",
+    "1",
+    "2",
+    "auto",
+    "auto",
+    "auto",
+    "auto",
+    "4",
+    "2"
+   ],
+   "why": "Placing Explosive Charge first allows Rapid Fire-empowered basic attacks and Rocket Jump to quickly stack and detonate the charge for maximum damage while resetting Rocket Jump's cooldown. Finishing with Buster Shot and a second reset Rocket Jump maximizes full single-target burst damage.",
+   "confidence": "high"
+  },
+  "Tryndamere": {
+   "combo": [
+    "auto",
+    "3",
+    "auto",
+    "4",
+    "auto",
+    "auto",
+    "3",
+    "auto"
+   ],
+   "why": "Starting with a basic attack triggers Battle Fury's bonus attack speed before animation-canceling into Spinning Slash for maximum initial burst damage. Activating Undying Rage instantly maximizes Fury for critical strike chance and attack speed while allowing low-HP passive Attack Damage scaling fro",
+   "confidence": "high"
+  },
+  "Twisted Fate": {
+   "combo": [
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Activating Stacked Deck (3) grants bonus attack speed, while locking Blue Card with Pick A Card (2) deals the highest single-target damage among card options. Delivering this empowered basic attack with Stacked Deck's passive damage and following with Wild Cards (1) and further autos maximizes total",
+   "confidence": "high"
+  },
+  "Twitch": {
+   "combo": [
+    "1",
+    "4",
+    "2",
+    "auto",
+    "auto",
+    "auto",
+    "3"
+   ],
+   "why": "Activating Ambush and Spray and Pray prior to attacking grants bonus attack damage and enables double stack application per attack. Venom Cask combined with basic attacks quickly achieves maximum Deadly Venom stacks to unleash peak damage with Contaminate.",
+   "confidence": "high"
+  },
+  "Urgot": {
+   "combo": [
+    "1",
+    "3",
+    "auto",
+    "4",
+    "2",
+    "4"
+   ],
+   "why": "Initiating with Corrosive Charge into Disdain guarantees CC landing and positions the enemy behind Urgot to land an immediate basic attack and Echoing Flames leg proc. Following up with Fear Beyond Death and Purge rapidly procs remaining passive shotgun legs before executing the target with the ulti",
+   "confidence": "high"
+  },
+  "Varus": {
+   "combo": [
+    "auto",
+    "auto",
+    "auto",
+    "3",
+    "4",
+    "2",
+    "1"
+   ],
+   "why": "Applying three Blight stacks with basic attacks and detonating them with 3 maximizes initial damage before using 4 to automatically re-apply three Blight stacks. Finishing with 2 into a charged 1 detonates the new Blight stacks while dealing execute damage based on the target's missing health.",
+   "confidence": "high"
+  },
+  "Vayne": {
+   "combo": [
+    "4",
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "3",
+    "auto",
+    "auto"
+   ],
+   "why": "Activating Final Hour (4) and Silver Bolts (2) first grants bonus Attack Damage and Attack Speed to empower all subsequent attacks. Using Tumble (1) immediately resets the basic attack timer for an empowered hit, followed by Condemn (3) to pin the target against a wall for maximum physical collision",
+   "confidence": "high"
+  },
+  "Veigar": {
+   "combo": [
+    "3",
+    "2",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "Casting Event Horizon locks down the target to ensure both Dark Matter and Baleful Strike reliably connect to heavily lower the enemy's health. Saving Primordial Burst for the end maximizes its damage multiplier, which deals up to 100% increased damage based on missing health.",
+   "confidence": "high"
+  },
+  "Vel'Koz": {
+   "combo": [
+    "3",
+    "2",
+    "1",
+    "2",
+    "auto",
+    "4"
+   ],
+   "why": "Landing Tectonic Disruption guarantees both ticks of Void Rift and Plasma Fission to trigger Organic Deconstruction and apply the Researched status. Expending both charges of Void Rift before channeling Life Form Disintegration Ray maximizes total burst damage while capitalizing on true damage ampli",
+   "confidence": "high"
+  },
+  "Vex": {
+   "combo": [
+    "4",
+    "4",
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Initiating with Shadow Surge into its recast gap-closes directly onto the target, allowing Looming Darkness to reliably land and apply Gloom. Consuming Gloom with Personal Space while weaving basic attacks around Mistral Bolt maximizes total burst damage.",
+   "confidence": "high"
+  },
+  "Vi": {
+   "combo": [
+    "1",
+    "auto",
+    "3",
+    "4",
+    "auto",
+    "3",
+    "auto"
+   ],
+   "why": "Fully charged Vault Breaker quickly stacks Denting Blows alongside an auto attack and Excessive Force reset to apply the 20% armor shred early. This maximizes the damage of Assault and Battery and subsequent auto-reset attacks while triggering Denting Blows twice.",
+   "confidence": "high"
+  },
+  "Viego": {
+   "combo": [
+    "3",
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "4"
+   ],
+   "why": "Pre-casting Harrowed Path (3) provides a massive attack speed boost, while weaving basic attacks between Spectral Maw (2) and Blade of the Ruined King (1) maximizes damage by consuming the passive double-strikes. Ending with Heartbreaker (4) maximizes damage output by utilizing its execute scaling o",
+   "confidence": "high"
+  },
+  "Viktor": {
+   "combo": [
+    "2",
+    "4",
+    "3",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Placing Gravity Field first locks down the champion to guarantee all damage ticks from Chaos Storm and both hits from Death Ray. Weaving a basic attack right before Siphon Power utilizes the attack timer reset and delivers the empowered magic damage auto attack.",
+   "confidence": "high"
+  },
+  "Vladimir": {
+   "combo": [
+    "4",
+    "3",
+    "1",
+    "auto",
+    "2",
+    "auto"
+   ],
+   "why": "Casting Hemoplague (4) first amplifies all damage dealt during the 4-second infection period by 10%. Fully charging Tides of Blood (3) alongside an empowered Transfusion (1), basic attacks, and Sanguine Pool (2) ticks maximizes total burst before Hemoplague explodes.",
+   "confidence": "high"
+  },
+  "Volibear": {
+   "combo": [
+    "3",
+    "1",
+    "4",
+    "auto",
+    "2",
+    "auto"
+   ],
+   "why": "Pre-casting Sky Splitter before leaping with Stormbringer while Thundering Smash is active ensures the target is stunned directly under the thundercloud to guarantee its max health damage hits. Following up with an empowered basic attack, Frenzied Maul, and subsequent autos maximizes damage output t",
+   "confidence": "high"
+  },
+  "Warwick": {
+   "combo": [
+    "2",
+    "4",
+    "auto",
+    "auto",
+    "1",
+    "auto",
+    "3",
+    "auto"
+   ],
+   "why": "Pre-casting 2 maximizes attack speed before landing 4, which empowers the following auto to suppress the target and apply four rapid passive on-hit procs. Following up with 1 acts as an auto-attack reset that deals bonus target max-health magic damage, while 3 fears the enemy to allow additional bas",
+   "confidence": "high"
+  },
+  "Wukong": {
+   "combo": [
+    "3",
+    "auto",
+    "2",
+    "1",
+    "auto",
+    "4",
+    "4"
+   ],
+   "why": "Starting with Nimbus Strike grants bonus attack speed immediately, while summoning the clone with Warrior Trickster prior to casting Golden Staff and Cyclone allows the clone to mimic both high-damage abilities. Golden Staff is used as an auto-attack reset to maximize burst before completing both ch",
+   "confidence": "high"
+  },
+  "Xayah": {
+   "combo": [
+    "2",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "3",
+    "auto"
+   ],
+   "why": "Activating Deadly Plumage first ensures all subsequent basic attacks deal 20% bonus damage with increased attack speed. Laying down feathers with Double Daggers, basic attacks, and Featherstorm prior to casting Bladecaller maximizes the total number of recalled feathers hitting the target for massiv",
+   "confidence": "high"
+  },
+  "Yasuo": {
+   "combo": [
+    "1",
+    "auto",
+    "3",
+    "1",
+    "4",
+    "auto",
+    "1",
+    "auto"
+   ],
+   "why": "Using a Tornado (1) to knock up allows weaving a basic attack before executing an Airblade (3 into 1 cancelled by 4) to transfer bonus damage into Last Breath. Subsequent basic attacks and Steel Tempest (1) then benefit from the 40% Armor Penetration granted by Last Breath.",
+   "confidence": "high"
+  },
+  "Yone": {
+   "combo": [
+    "3",
+    "4",
+    "auto",
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "1",
+    "3"
+   ],
+   "why": "Casting Soul Unbound (3) first ensures all subsequent damage accumulates into its execute mark, while Fate Sealed (4) deals heavy initial burst and locks down the target. Weaving basic attacks between Mortal Steel (1) and Spirit Cleave (2) maximizes attack damage output before recasting Soul Unbound",
+   "confidence": "high"
+  },
+  "Yunara": {
+   "combo": [
+    "4",
+    "2",
+    "auto",
+    "3",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "why": "Activating Transcend One's Self [4] instantly empowers basic abilities and automatically triggers Cultivation of Spirit [1] for empowered on-hit magic damage. Casting Arc of Ruin [2] delivers maximum ability burst, followed by Untouchable Shadow [3] and woven basic attacks to rapidly stack Unleash a",
+   "confidence": "high"
+  },
+  "Yuumi": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "why": "Casting Zoomies (3) first grants an attack speed buff to maximize the damage output of basic attacks woven between ability casts. Following up with Prowling Projectile (1) and channeling all seven waves of Final Chapter (4) delivers the highest possible single-target damage sequence.",
+   "confidence": "high"
+  },
+  "Zed": {
+   "combo": [
+    "4",
+    "2",
+    "3",
+    "1",
+    "auto",
+    "auto"
+   ],
+   "why": "Opening with Death Mark and placing Living Shadow next to the target setup a triple-hit setup for Shadow Slash and Razor Shuriken, maximizing the damage stored inside Death Mark. Following up with basic attacks guarantees triggering Contempt for the Weak once the spell burst drops the target below 5",
+   "confidence": "high"
+  },
+  "Zeri": {
+   "combo": [
+    "3",
+    "4",
+    "auto",
+    "2",
+    "1",
+    "auto",
+    "auto"
+   ],
+   "why": "Activating 3 first empowers subsequent attacks with bonus magic damage, while immediately following with 4 applies initial burst damage and triggers the Overcharge attack speed bonus. Weaving basic attacks with 2 and 1 maximizes both skill burst and sustained empowered damage during the ultimate win",
+   "confidence": "high"
+  },
+  "Ziggs": {
+   "combo": [
+    "3",
+    "2",
+    "4",
+    "1",
+    "auto"
+   ],
+   "why": "Casting Hexplosive Minefield and Satchel Charge first deals initial damage while reducing Short Fuse's cooldown to ensure Bouncing Bomb is fully empowered. Following up with Mega Inferno Bomb and weaving a basic attack maximizes total damage output against a single target.",
+   "confidence": "high"
+  },
+  "Zilean": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "2",
+    "auto"
+   ],
+   "why": "Temporal Mirage slows the enemy to reliably land Time Bomb and weave basic attacks. Using Twisted Timeflow accelerates projectile speed while inserting auto attacks maximizes total single-target damage.",
+   "confidence": "high"
+  },
+  "Zoe": {
+   "combo": [
+    "3",
+    "1",
+    "4",
+    "1",
+    "auto",
+    "2",
+    "auto"
+   ],
+   "why": "This combo lands Sleepy Trouble Bubble first to guarantee a sleep-amplified max-distance Paddle Star extended by Portal Jump. Using Spell Thief and basic attacks after Q2 hits maximizes More Sparkles! passive procs without prematurely waking the target.",
+   "confidence": "high"
+  },
+  "Zyra": {
+   "combo": [
+    "3",
+    "1",
+    "4",
+    "2",
+    "auto",
+    "auto"
+   ],
+   "why": "Starting with Grasping Roots (3) roots the target to guarantee hit reliability for Deadly Spines (1) and Stranglethorns (4) while spawning multiple Thorn Spitters. Following up with Rampant Growth (2) and basic attacks maximizes the enraged attack speed of all spawned plants for the highest total DP",
+   "confidence": "high"
+  },
+  "Kai'Sa": {
+   "combo": [
+    "3",
+    "2",
+    "4",
+    "auto",
+    "1",
+    "auto",
+    "auto"
+   ],
+   "why": "Pre-casting Supercharge provides maximum Attack Speed, while Void Seeker applies initial Plasma stacks to enable Killer Instinct for a rapid gap-close. Using Icathian Rain alongside basic attacks chunks the target's health so the fifth Plasma stack detonates for maximum missing health execute damage",
+   "confidence": "high"
+  },
+  "Karma": {
+   "combo": [
+    "2",
+    "auto",
+    "4",
+    "1",
+    "auto"
+   ],
+   "why": "Starting with Focused Resolve (2) initiates tether damage before Transcendent Embrace (4) pulls the target and instantly triggers Mantra state. This allows Inner Flame (1) to be cast in its empowered Mantra form for maximum overall burst damage combined with basic attacks.",
+   "confidence": "high"
+  }
+ }
+}
