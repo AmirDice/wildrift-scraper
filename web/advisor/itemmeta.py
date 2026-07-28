@@ -187,6 +187,14 @@ def metadata(slug: str) -> dict:
     activation_delay = "delayed" if _delayed.search(blob) else "immediate"
     resource_dependency = "mana" if ("mana" in stat_keys or "mana-dependent" in tags) else "none"
 
+    # `active` is a tag like any other so the pool carries the signal. Without
+    # it the model's only exposure to actives was the hard-legality rule that
+    # caps them at one and named eleven of them, which reads as a list of items
+    # to avoid -- the safest way never to break that rule is to buy none, and
+    # that is roughly what the builds showed.
+    if slug in ACTIVE_ITEMS:
+        tags = sorted({*tags, "active"})
+
     return {
         "slug": slug,
         "name": item.get("name", slug),
@@ -326,6 +334,7 @@ def item_pipeline_trace(
     *,
     damage_path: str = "standard",
     enemies_known: bool = False,
+    damage_identity: str = "",
 ) -> list[dict]:
     """Development trace: where each named item stands in the generation pipeline.
 
@@ -340,7 +349,7 @@ def item_pipeline_trace(
         champion_record, combat_profile, scaling_profile,
         damage_path=damage_path, enemies_known=enemies_known)
     withheld = {r["item"]: r["reason"] for r in removed}
-    audit = set(mandatory_audit(combat_profile, scaling_profile))
+    audit = set(mandatory_audit(combat_profile, scaling_profile, damage_identity))
     out = []
     for slug in slugs:
         out.append({
@@ -356,7 +365,8 @@ def item_pipeline_trace(
     return out
 
 
-def mandatory_audit(combat_profile: dict, scaling_profile: dict) -> list[str]:
+def mandatory_audit(combat_profile: dict, scaling_profile: dict,
+                    damage_identity: str = "") -> list[str]:
     """Items whose text matches this kit closely enough to demand a verdict.
 
     This replaces the old `onHit` tag audit, which fired for 85 of 141 champions
@@ -385,6 +395,30 @@ def mandatory_audit(combat_profile: dict, scaling_profile: dict) -> list[str]:
         add_by_tag("on-hit")
     if combat_profile.get("critValue") == "high":
         add_by_tag("crit-scaling")
+
+    # Actives, every time. They were being skipped almost entirely: on a Lux
+    # studio build the model scored 16 of 95 candidates and only ONE active
+    # reached the shortlist -- Zhonya's, at 82, with a sound reason -- and it
+    # still did not make the five. A high score does not put an item in a build;
+    # a demand for a verdict does, which is what this list is for.
+    #
+    # Filtered by damage identity from the item's own stat line, so a physical
+    # assassin is not asked to rule on Redemption. Stat-neutral actives
+    # (Gargoyle, Locket, Mikael's) are relevant to anyone and stay in.
+    for slug in ACTIVE_ITEMS:
+        if slug not in completed_items():
+            continue
+        stats = set(ITEMS.get(slug, {}).get("stats") or {})
+        offensive = stats & {"ap", "ad"}
+        if offensive and not damage_identity:
+            # Identity unknown: keep only the stat-neutral actives. Including
+            # everything here handed Annie a verdict to write on Galeforce.
+            continue
+        if "ap" in stats and damage_identity == "physical":
+            continue
+        if "ad" in stats and damage_identity == "magic":
+            continue
+        wanted.add(slug)
 
     # The audit is a demand for a verdict on every entry, so its cost is real:
     # each item spends output tokens the competitive comparison could use. If a

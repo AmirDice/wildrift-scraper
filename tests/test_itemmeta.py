@@ -14,7 +14,8 @@ def _for(name: str, **kwargs):
 def _audit(name: str):
     derived = profiles.profile(name, log=False)
     return itemmeta.mandatory_audit(derived["combatProfile"],
-                                    derived.get("scalingProfile", {}))
+                                    derived.get("scalingProfile", {}),
+                                    profiles.build_identity(name))
 
 
 class TestMandatoryAudit:
@@ -30,8 +31,25 @@ class TestMandatoryAudit:
         assert "guinsoos-rageblade" in audit
         assert "blade-of-the-ruined-king" in audit
 
-    def test_a_pure_caster_has_nothing_to_audit(self):
-        assert _audit("Annie") == []
+    def test_a_pure_caster_has_no_kit_mechanic_items_to_audit(self):
+        """Annie triggers no spellblade, on-hit or crit rule.
+
+        She is still audited on ACTIVES, which every champion is: they were
+        being skipped almost entirely otherwise, so they are a standing
+        question rather than one a kit trigger has to unlock.
+        """
+        audit = _audit("Annie")
+        assert not [s for s in audit
+                    if "active" not in itemmeta.metadata(s)["passiveTags"]]
+        assert audit, "actives should still be audited"
+
+    def test_actives_are_audited_for_the_right_damage_type(self):
+        """A physical assassin should not be asked to rule on Redemption."""
+        magic, physical = _audit("Annie"), _audit("Zed")
+        assert "zhonyas-hourglass" in magic and "galeforce" not in magic
+        assert "galeforce" in physical and "zhonyas-hourglass" not in physical
+        # Stat-neutral actives are relevant to anyone.
+        assert "gargoyle-stoneplate" in magic and "gargoyle-stoneplate" in physical
 
     def test_the_audit_stays_small_enough_to_be_worth_answering(self):
         """Every entry costs an explicit verdict, so an unbounded list quietly

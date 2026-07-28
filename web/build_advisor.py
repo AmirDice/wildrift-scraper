@@ -603,7 +603,8 @@ def advise(champion: str, role: str, enemies: list[str],
     derived = profiles.profile(champion)
     combat = derived["combatProfile"]
     scaling = derived.get("scalingProfile", {})
-    kit_linked_items = itemmeta.mandatory_audit(combat, scaling)
+    kit_linked_items = itemmeta.mandatory_audit(
+        combat, scaling, damage_identity=profiles.build_identity(champion))
     pool_slugs, withheld = itemmeta.filter_candidates(
         champion_record, combat, scaling,
         damage_path=damage_path, enemies_known=enemies_known, role=role)

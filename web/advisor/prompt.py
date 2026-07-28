@@ -293,10 +293,10 @@ def rules_block(enemies_known: bool, combat_profile: dict) -> str:
         "and never occupy one of the five slots.",
         "- Use only slugs from the supplied pools. Never invent or rename an item.",
         "- No duplicate items.",
-        "- At most ONE ACTIVE item. Items with an activatable effect (Zhonya's Stasis, "
-        "Gargoyle Stoneplate, Locket, Shurelya's, Redemption, Mikael's, Stridebreaker, "
-        "Goredrinker, Galeforce, Hextech Rocketbelt, Mercurial) are mutually exclusive; a "
-        "build may hold only one.",
+        "- At most ONE item tagged `active` in the pool. Wild Rift allows a single "
+        "activatable item per build. This is a CAP, not a discouragement: one active is "
+        "normal and is often the most valuable slot in the build. Zero actives is a "
+        "choice you should be able to defend, not a safe default.",
         "- Build AT MOST ONE item from each mutually exclusive group. These items cannot "
         "be equipped together in-game:",
     ]
@@ -318,7 +318,19 @@ def rules_block(enemies_known: bool, combat_profile: dict) -> str:
         lines.append(f"    {name}: {', '.join(group['slugs'])}")
         lines.append(f"      why it is usually wrong: {group.get('why', '')}")
 
-    lines += ["", "C. DEFAULT STRATEGY -- preferences you may override with an argument:"]
+    lines += [
+        "",
+        "C. DEFAULT STRATEGY -- preferences you may override with an argument:",
+        # Actives were being skipped almost entirely, because the only thing the
+        # prompt said about them was the one-per-build cap under HARD LEGALITY.
+        # A rule that appears solely as a restriction teaches avoidance, so the
+        # positive case has to be stated somewhere too.
+        "- CONSIDER THE ACTIVE SLOT. Items tagged `active` do something no stat line can: "
+        "Stasis buys three seconds against a burst combo, Shurelya's turns a won fight "
+        "into a caught one, Goredrinker heals off a crowd. Ask whether one of them "
+        "answers this kit's real problem better than another stat item. If none does, "
+        "say so in `why` rather than leaving the slot unconsidered.",
+    ]
     for preference in (RULES.get("defaultStrategy") or {}).get("preferences", []):
         lines.append(f"- {preference}")
 
