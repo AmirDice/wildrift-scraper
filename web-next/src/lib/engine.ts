@@ -312,10 +312,28 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
 
   // kit steroids + conversions
   const f = DATA.formulas[name]?.abilities ?? {};
-  for (const ab of Object.values<any>(f)) {
+  st.timedSteroids = [];
+  for (const [abSlot, ab] of Object.entries<any>(f)) {
     for (const s of ab.steroids ?? []) {
       const pct = s.pct != null ? scaleVal(s.pct, 3, level) : 0;
       if (s.from === "bonusMs" && s.stat === "ad" && pct) continue;
+      // Duration is structured on nine steroids and stated in prose on
+      // forty-two more ("Duration: 5 seconds", "for 3 seconds"), so both are
+      // read. Anything with neither is treated as permanent, which is right
+      // for passives and is the existing behaviour for the rest.
+      const noteS = String(s.note ?? "").match(/(\d+(?:\.\d+)?)\s*second/i);
+      const durationS = typeof s.durationS === "number" ? s.durationS
+        : noteS ? Number(noteS[1]) : null;
+      if (durationS && durationS > 0) {
+        const cds = (f[abSlot]?.cooldowns ?? []);
+        st.timedSteroids.push({
+          stat: s.stat,
+          asPct: s.stat === "attackSpeed" ? (pct || scaleVal(s.flat, 3, level)) : 0,
+          adFlat: s.stat === "ad" && s.flat ? scaleVal(s.flat, 3, level) : 0,
+          durationS,
+          cooldownS: cds.length ? scaleVal(cds, 3, level) : 12,
+        });
+      }
       if (s.stat === "attackSpeed") st.baseAsPct += pct || scaleVal(s.flat, 3, level);
       else if (s.stat === "ad" && s.flat) st.bonusAd += scaleVal(s.flat, 3, level);
       else if (s.stat === "moveSpeed" && pct) st.bonusMs += st.baseMs * pct / 100 * 0.5;
@@ -388,8 +406,60 @@ let ROT_CAST_LOG: Record<string, { name: string; casts: number; max: number }> =
 let ROT_NAUTOS = 0;
 let ROT_NAUTOS_IDEAL = 0;
 
+/**
+ * The stat block as it averages over a fight of this length.
+ *
+ * Ability buffs were applied permanently: Xin Zhao's E gives +67.5% attack
+ * speed for FIVE seconds and the sim used it for all twenty, inflating his auto
+ * count and most of his damage with it. A buff is up for its duration once per
+ * cooldown, so over a window it is worth its uptime, not its peak.
+ *
+ * The displayed stat block is left alone -- the player really does have that
+ * attack speed while it is running. Only the simulation averages it.
+ */
+function forWindow(name: string, st: any, window: number, level: number): any {
+  const timed = st.timedSteroids as any[] | undefined;
+  if (!timed || !timed.length || window <= 0) return st;
+  const hasteM = 100 / (100 + (st.haste ?? 0));
+  let asPctLost = 0;
+  let adLost = 0;
+  for (const s of timed) {
+    const cd = Math.max(0.5, (s.cooldownS || 12) * hasteM);
+    const casts = 1 + Math.floor(window / cd);
+    const uptime = Math.min(1, (s.durationS * casts) / window);
+    asPctLost += (s.asPct || 0) * (1 - uptime);
+    adLost += (s.adFlat || 0) * (1 - uptime);
+  }
+  if (!asPctLost && !adLost) return st;
+
+  const adj = { ...st };
+  if (adLost) {
+    adj.bonusAd = Math.max(0, st.bonusAd - adLost);
+    adj.ad = adj.baseAd + adj.bonusAd;
+  }
+  if (asPctLost) {
+    // Mirrors the attack-speed maths in resolveStats, so the two cannot drift.
+    const mechs = DATA.formulas[name]?.mechanics
+      ? Object.fromEntries((DATA.formulas[name]!.mechanics as any[]).map((m) => [m.kind, m]))
+      : {};
+    const know = (DATA.formulas[name] as any)?.knowledge ?? {};
+    if (!mechs.fixedAttackSpeed) {
+      let asPct = Math.max(0, st.baseAsPct - asPctLost);
+      if (!mechs.reload) asPct *= know.asEfficiency ?? 1;
+      adj.as = Math.min(adj.baseAs * (1 + asPct / 100), AS_CAP);
+      if (mechs.reload) {
+        const mag = Number(mechs.reload.magazine) || 2;
+        const reloadS = Number(know.reloadSeconds) || 1.0;
+        adj.as = mag / (mag / adj.as + reloadS);
+      }
+    }
+  }
+  return adj;
+}
+
 export function rotation(name: string, st: any, target: any, window: number,
                          level = 13): number {
+  st = forWindow(name, st, window, level);
   const f = DATA.formulas[name]?.abilities ?? {};
   const [physM, magicM] = mults(st, target);
   const giant = 1 + st.giant * Math.min(1, target.bonusHp / 1700);
