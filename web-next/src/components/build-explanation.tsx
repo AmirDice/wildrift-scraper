@@ -44,7 +44,7 @@ export function BuildExplanation({ build }: { build: Build }) {
     <details className="glass group rounded-2xl">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
         <span>
-          <span className="block text-sm font-bold text-text">Why this build</span>
+          <span className="block text-sm font-bold text-text">Why this is the optimal build</span>
           <span className="text-xs font-normal text-faint">The reason behind every item and rune</span>
         </span>
         <span aria-hidden className="text-accent transition group-open:rotate-180">⌄</span>

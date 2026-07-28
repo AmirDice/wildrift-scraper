@@ -22,11 +22,11 @@ export function GenerateBuildCta({
         Not sold on this build?
       </span>
       <span className="mt-1 block text-sm text-muted">
-        Generate one around how <span className="text-text">you</span> actually play
+        Generate the optimal one around how <span className="text-text">you</span> actually play
         {champion ? ` ${champion}` : ""}: your role, playstyle, power spike and win condition.
       </span>
       <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-accent">
-        Build it with the assistant <span aria-hidden>→</span>
+        Build the optimal loadout <span aria-hidden>→</span>
       </span>
     </>
   );
@@ -57,11 +57,11 @@ export function CounterBuilderCta({ champion }: { champion?: string }) {
         Facing a lane bully, or a comp that shreds you?
       </span>
       <span className="mt-1 block text-sm text-muted">
-        The Counter Builder takes the enemy team and rebuilds your items, boots and runes
-        around beating exactly those five picks.
+        The Counter Builder takes the enemy team and finds the optimal items, boots and runes
+        for beating exactly those five picks.
       </span>
       <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-emerald-300">
-        Counter your opponent <span aria-hidden>→</span>
+        Get the optimal counter build <span aria-hidden>→</span>
       </span>
     </Link>
   );
@@ -76,10 +76,10 @@ export function StudioCta({ champion }: { champion?: string }) {
     >
       <span className="flex items-center gap-2 font-semibold text-accent">
         <Sparkles size={15} />
-        Just want a solid build for the champion?
+        Just want the optimal build for the champion?
       </span>
       <span className="mt-1 block text-sm text-muted">
-        The Build Optimizer has curated builds per playstyle, a custom lab, and a generator
+        The Build Optimizer has curated optimal builds per playstyle, a custom lab, and a generator
         that reads your playstyle instead of the enemy team.
       </span>
       <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-accent">

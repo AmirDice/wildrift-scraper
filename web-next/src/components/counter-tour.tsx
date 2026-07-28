@@ -48,7 +48,7 @@ const COUNTER_TOUR: TourStep[] = [
   {
     target: "generate",
     title: "Generate, then read the reasoning",
-    body: "You get the full loadout with a purchase order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Every item carries the reason it is there, and the reasons name the enemies they answer.",
+    body: "You get the optimal loadout with a purchase order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Every item carries the reason it is there, and the reasons name the enemies they answer.",
   },
 ];
 

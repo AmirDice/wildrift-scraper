@@ -391,7 +391,7 @@ const studioTour = ({ formSets, transforms }: TourContext): TourStep[] => [
   {
     target: "tabs",
     title: "Three tabs, three questions",
-    body: "Recommended Builds is the curated answer, the Personal Build Generator builds around how you play, and the Custom Build Lab lets you assemble your own and see the stats move.",
+    body: "Recommended Builds is the curated optimal answer, the Personal Build Generator finds the optimal build around how you play, and the Custom Build Lab lets you assemble your own and see the stats move.",
   },
   {
     target: "build-order",
@@ -407,12 +407,12 @@ const studioTour = ({ formSets, transforms }: TourContext): TourStep[] => [
   {
     target: "generate-cta",
     title: "Nothing here fits your game?",
-    body: "Generate a build around your role, playstyle and power spike, then compare it against any recommended build.",
+    body: "Generate the optimal build around your role, playstyle and power spike, then compare it against any recommended build.",
   },
   {
     target: "counter-cta",
     title: "Facing a specific enemy team?",
-    body: "The Counter Builder rebuilds your items and runes around the exact five champions you are up against.",
+    body: "The Counter Builder finds the optimal items and runes against the exact five champions you are up against.",
   },
 ];
 
@@ -566,10 +566,10 @@ function BuildTab({ variants, variant, setVariant, build, name, engineName, slug
             </button>
           );
         })}
-        <button onClick={onGenerate} title="Open the Personal Build Generator for this champion"
+        <button onClick={onGenerate} title="Open the Personal Build Generator and build the optimal loadout for this champion"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-bold text-black transition hover:opacity-90">
           <Sparkles />
-          Generate my build
+          Generate my optimal build
         </button>
         <span className="ml-auto self-center rounded-md bg-gold/10 px-2 py-1 text-xs font-semibold text-gold">~{buildGold(build).toLocaleString()}g</span>
       </div>
@@ -613,7 +613,7 @@ function BuildTab({ variants, variant, setVariant, build, name, engineName, slug
 
       {/* the build: items */}
       <div data-tour="build-order" className="glass rounded-2xl p-4">
-        <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Build order <span className="normal-case text-faint/60">· tap for details{build.bootsEarly ? " · T2 boots first, T3 upgrade at 10:00" : ""}</span></p>
+        <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimal build order <span className="normal-case text-faint/60">· tap for details{build.bootsEarly ? " · T2 boots first, T3 upgrade at 10:00" : ""}</span></p>
         {/* Boots sit IN the order, not appended after it: 7.2 made tier 3 a real
             2000-2200g purchase unlocked at 10:00, so you buy tier 2 first and
             upgrade a couple of items later. */}

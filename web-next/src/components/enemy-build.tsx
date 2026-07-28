@@ -84,7 +84,7 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
 
   return (
     <div className="glass rounded-2xl p-4">
-      <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Why this build</p>
+      <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Why this is the optimal build</p>
       {itemRows.length > 0 && (
         <div className="mb-3">
           <p className="mb-1.5 text-[0.6rem] font-bold uppercase tracking-wide text-faint">Items</p>
@@ -693,10 +693,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           />
         </div>
         <div className="flex flex-wrap items-center gap-2" data-tour="generate">
-          <button onClick={generate} disabled={!champ || needsEnemy || loading || outOfBudget} title="Generate the complete item order, boots, runes, and build evaluation"
+          <button onClick={generate} disabled={!champ || needsEnemy || loading || outOfBudget} title="Generate the optimal item order, boots, runes, and build evaluation"
             className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2 text-sm font-bold text-black transition hover:opacity-90 disabled:opacity-40">
             {!loading && <Sparkles />}
-            {loading ? "Building…" : "Generate build"}
+            {loading ? "Building…" : "Generate optimal build"}
           </button>
           <button onClick={reset} disabled={loading}
             className="rounded-lg border border-line px-4 py-2 text-sm font-medium text-muted transition hover:text-text disabled:opacity-40">
@@ -715,7 +715,9 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         <div className="glass rounded-2xl p-4">
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="text-muted">
-              {isCounter ? "Reading the enemy comp and optimizing" : "Optimizing your build"}…
+              {isCounter
+                ? "Reading the enemy comp and finding the optimal build"
+                : "Finding your optimal build"}…
             </span>
             <span className="font-semibold text-accent">{Math.round(progress)}%</span>
           </div>
@@ -740,7 +742,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           <div className="space-y-4">
             <div className="glass rounded-2xl p-4">
               <div className="mb-3 flex items-center gap-3">
-                <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Build order{isCounter ? " · vs your enemy comp" : ` · ${selectedPlaystyle?.label ?? playstyle}`}</p>
+                <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimal build order{isCounter ? " · vs your enemy comp" : ` · ${selectedPlaystyle?.label ?? playstyle}`}</p>
                 {typeof advice.buildScore?.overall === "number" && (
                   <span className="rounded-md bg-accent/15 px-2 py-0.5 text-[0.65rem] font-bold text-accent"
                     title={advice.buildScore.reason}>

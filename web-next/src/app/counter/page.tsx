@@ -7,8 +7,11 @@ import { Container } from "@/components/ui";
 import { buildToolsVisible } from "@/lib/access";
 
 export const metadata: Metadata = {
-  title: "Counter Builder | WrTrueMeta",
-  description: "Pick your champion and the enemy team, and get a full build: items, order, boots and runes, optimized for that specific comp.",
+  // No "| WrTrueMeta" suffix here: the root layout's title template already
+  // appends one, and spelling it out again renders it twice in the tab and in
+  // search results.
+  title: "Counter Builder | Optimal Counter Builds",
+  description: "Pick your champion and the enemy team, and get the optimal build: items, order, boots and runes, tuned to that specific comp.",
   robots: { index: false, follow: false },
 };
 
@@ -33,8 +36,8 @@ export default async function CounterPage(props: PageProps<"/counter">) {
       </div>
       <p className="mb-6 max-w-xl text-sm text-muted">
         Pick your champion and the enemy team. It reads every enemy&rsquo;s damage type and kit,
-        then builds the full loadout: items, purchase order, boots and runes, for that specific comp,
-        with a complete evaluation of the final loadout.
+        then builds the optimal loadout: items, purchase order, boots and runes, for that specific comp,
+        with a complete evaluation of the final build.
       </p>
       <EnemyBuildAdvisor mode="counter" initialChampion={initialChampion} />
 

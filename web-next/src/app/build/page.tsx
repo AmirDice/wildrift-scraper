@@ -6,9 +6,9 @@ import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { buildToolsVisible } from "@/lib/access";
 
 export const metadata: Metadata = {
-  title: "Build Studio | Wild Rift Builds, Runes & Live Stats",
+  title: "Build Studio | Optimal Wild Rift Builds, Runes & Live Stats",
   description:
-    "Optimized Wild Rift builds for every champion: pick your champion, switch playstyles, customize items and runes, or generate a build tuned to your exact game.",
+    "Optimal Wild Rift builds for every champion: pick your champion, switch playstyles, customize items and runes, or generate the optimal build tuned to your exact game.",
   alternates: { canonical: "/build" },
   robots: BUILD_TOOLS_LIVE ? undefined : { index: false, follow: false },
 };
@@ -34,8 +34,8 @@ export default async function BuildPage(props: PageProps<"/build">) {
         </span>
       </div>
       <p className="mb-6 mt-1 max-w-xl text-sm text-muted">
-        Optimized builds for every champion. Pick your champion, switch playstyles,
-        customize items and runes, or generate a build tuned to your exact game.
+        Optimal builds for every champion. Pick your champion, switch playstyles,
+        customize items and runes, or generate the optimal build tuned to your exact game.
       </p>
       <BuildStudio initialChampion={initialChampion} initialTab={initialTab} initialVariant={initialVariant} />
     </Container>
