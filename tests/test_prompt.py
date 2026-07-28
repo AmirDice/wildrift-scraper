@@ -188,12 +188,28 @@ class TestItemPool:
             assert section in hecarim_unknown, section
         assert len(hecarim_unknown) > 40_000
 
-    def test_summoner_spells_are_not_asked_of_the_model(self, hecarim_unknown):
-        """They are assigned in code, so the pool and the schema field are gone
-        and the model is told plainly not to pick them."""
-        assert "SUMMONER SPELLS (choose exactly 2" not in hecarim_unknown
-        assert '"summoners"' not in prompt_mod.SYSTEM
-        assert "DO NOT CHOOSE SUMMONER SPELLS" in prompt_mod.SYSTEM
+    def test_summoner_spells_are_asked_of_the_model(self, hecarim_unknown):
+        """The model picks them now, so the pool and schema field are back.
+
+        This test previously asserted the exact opposite, and inverting it is
+        the point: the old design could not see the enemy comp, and a summoner
+        choice against a known comp is a judgement, not a lookup.
+        """
+        assert "SUMMONER SPELLS (choose exactly 2" in hecarim_unknown
+        assert '"summoners"' in prompt_mod.SYSTEM
+        assert "DO NOT CHOOSE SUMMONER SPELLS" not in prompt_mod.SYSTEM, (
+            "the system prompt still tells the model its summoners are discarded, "
+            "which contradicts the pool block")
+
+    def test_a_jungler_is_told_smite_is_not_the_decision(self, hecarim_unknown):
+        """Hecarim is a jungler, so only the partner slot is open to him."""
+        assert "Smite is MANDATORY" in hecarim_unknown
+        assert "must be either Flash or Ghost" in hecarim_unknown
+
+    def test_a_laner_is_told_never_to_take_smite(self):
+        block = advisor._summoner_block("Mid")
+        assert "NEVER take Smite" in block
+        assert "Both slots are open" in block
 
 
 class TestRuneMetadata:

@@ -99,9 +99,10 @@ SYSTEM = (
     "the flex, and the boots (bootsReason, runeReasons), not only the item choices. "
     "(Counter mode skips this, see below.)\n"
 
-    "DO NOT CHOOSE SUMMONER SPELLS. They are assigned deterministically from the "
-    "champion, role and class before this build reaches the player, and any you return "
-    "will be discarded. Do not mention them in `why` either.\n"
+    "CHOOSE THE SUMMONER SPELLS from the pool given below, and treat it as a real "
+    "decision rather than a habit: outside the jungle both slots are open, and the "
+    "enemy team is the reason to deviate from the usual pair. Smite is the jungler's "
+    "alone. Give the choice one line in `summonerReason`.\n"
 
     "PURCHASE ORDER IS TIMING, NOT A RANKING. Slot 1 is what you buy first, slot 5 "
     "is what you buy last and often never finish. Order each item by WHEN its effect "
@@ -177,6 +178,8 @@ SYSTEM = (
     '"confidence":0-100,"reason":"short evidence-based verdict"},'
     '"runes":{"keystone":"<name>","primaryTree":"<tree>","minors":["<name>","<name>","<name>"],'
     '"flex":"<name>"},'
+    '"summoners":["<spell>","<spell>"],'
+    '"summonerReason":"one line: why these two for this kit and matchup",'
     '"bootsReason":"one line: why these boots for this kit and matchup",'
     '"runeReasons":{"keystone":"one line","minors":["one line","one line","one line"],'
     '"flex":"one line"},'

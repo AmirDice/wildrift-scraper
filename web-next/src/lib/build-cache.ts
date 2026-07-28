@@ -96,7 +96,10 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // was measured but not itemizable, so none of them answer it. The cache is
   // only hours old, so retiring it costs little against serving a build that
   // ignores four shielders for the next 45 days.
-  return `build:v8:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v9: summoner spells moved from a static lookup to the model, which can see
+  // the enemy comp the lookup never could. A v8 entry carries the lookup's
+  // answer -- correct, but blind to the matchup it was generated against.
+  return `build:v9:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

@@ -295,18 +295,31 @@ class TestRunePage:
         assert report.sections() == ["runes"]
 
 
-class TestSummonersAreNoLongerValidated:
-    """They are assigned in code after validation, so the model cannot get them
-    wrong and a build must not fail over them."""
+class TestSummonersSurviveValidation:
+    """The model picks summoners now, and the validator must not touch them.
 
-    def test_whatever_the_model_returned_is_discarded(self, build):
-        build["summoners"] = ["Smite", "Smite", "nonsense"]
-        report = check(build, role="Mid")
+    This class previously asserted the opposite: validation popped the key,
+    because the advisor assigned spells itself. When the model was given the
+    choice back, that pop was left in place and silently discarded every pick,
+    so the fallback table answered every single build while appearing to work.
+    These tests exist so that cannot happen quietly a second time.
+    """
+
+    def test_the_model_pick_is_preserved_for_the_advisor_to_enforce(self, build):
+        build["summoners"] = ["Ghost", "Smite"]
+        report = check(build, role="Jungle")
         assert report.ok, report.flat()
-        assert "summoners" not in build
+        assert build["summoners"] == ["Ghost", "Smite"], (
+            "validation discarded the model's summoners; the advisor would fall "
+            "back to the static table for every build")
 
-    def test_a_jungler_missing_smite_no_longer_fails_the_build(self, build):
-        build["summoners"] = ["Flash", "Ignite"]
+    def test_junk_is_left_for_enforce_rather_than_failing_the_build(self, build):
+        """Malformed spells are still not a reason to reject a good build."""
+        build["summoners"] = ["Smite", "Smite", "nonsense"]
+        assert check(build, role="Mid").ok
+
+    def test_a_jungler_missing_smite_does_not_fail_the_build(self, build):
+        """Smite is imposed downstream by enforce(), not demanded here."""
         assert check(build, role="Jungle").ok
 
 

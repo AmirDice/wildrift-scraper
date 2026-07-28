@@ -1,15 +1,27 @@
-"""Summoner spells, decided in code rather than asked of the model.
+"""Summoner spells: chosen by the model, guaranteed by code.
 
-Summoner choice in Wild Rift is close to a lookup: the jungler takes Smite, the
-enchanter support takes Heal, the champion whose entire pattern is running you
-down takes Ghost. There is no comparison to make and no trade-off to reason
-about, so putting it in the prompt bought nothing and cost something -- every
-generation had to be checked for whether the jungler remembered Smite, and a
-build that was otherwise perfect could fail validation over it.
+These were a pure lookup for a while, and the reasoning was sound at the time --
+the jungler takes Smite, the enchanter takes Heal -- so asking the model bought
+nothing and cost a way for a good build to fail validation.
 
-So the rules live in data/summoner_rules.json and are applied here. The model is
-no longer told about summoner spells at all, and the result is correct by
-construction instead of correct after checking.
+What changed is the input. The lookup is static: it reads the champion, the role
+and the class, and nothing else. It cannot see that the enemy comp is four
+point-and-click stuns, which is what makes Cleanse right, or that the lane opponent
+is an assassin, which is what makes Barrier right. In counter mode we hand the
+model the entire enemy team and it demonstrably uses it -- it found the one AP
+anti-shield item in the pool unprompted. Summoner choice off a known comp is the
+same kind of judgement, and the lookup was throwing that information away.
+
+So the model picks, within limits it cannot violate:
+
+  * Jungle: Smite is not a choice. It is forced into the loadout regardless of
+    what the model returns, and the partner slot is restricted to Ghost or
+    Flash.
+  * Every other lane: free choice of two, except Smite, which is junglers-only.
+
+The old table stays as the fallback. If the model returns something illegal and
+the repair does not fix it, the build keeps its items and takes the lookup's
+spells rather than failing -- which is the original objection, answered.
 """
 from __future__ import annotations
 
@@ -39,6 +51,53 @@ SPELLS: dict[str, dict] = {
     "Heal": {"dd": "SummonerHeal", "desc": "Burst heal + move speed for you and an ally."},
     "Barrier": {"dd": "SummonerBarrier", "desc": "Self shield."},
 }
+
+
+# Smite is the jungler's, and only the jungler's. Everything else is open.
+JUNGLE_SPELL = "Smite"
+# The partner slot in the jungle. Deliberately just these two: Ghost for the
+# champions that win by running you down, Flash for everyone else. A jungler
+# giving up one of those for Ignite is not a build the site should suggest.
+JUNGLE_PARTNERS = ("Ghost", "Flash")
+
+_CANON = {name.lower(): name for name in SPELLS}
+
+
+def canon(name: object) -> str | None:
+    """The pool's spelling of a name, or None if it is not a summoner spell."""
+    return _CANON.get(str(name or "").strip().lower())
+
+
+def icons_for(names: list[str]) -> list[dict]:
+    """Frontend-shaped spells: [{name, icon}]."""
+    return [{"name": n, "icon": f"{_DD_SPELL}/{SPELLS[n]['dd']}.png"} for n in names]
+
+
+def enforce(picks: list[str], role: str) -> list[str] | None:
+    """The model's picks, with the jungle rules imposed. None if unusable.
+
+    Smite is not repaired by asking again: a jungle build without it is fixed
+    here by inserting it, because there is no version of the answer where the
+    jungler does not have Smite. What the model actually chooses in the jungle
+    is the partner, and if that partner is not Ghost or Flash there is nothing
+    to salvage, so the caller falls back to the lookup.
+    """
+    seen: list[str] = []
+    for pick in picks or []:
+        name = canon(pick)
+        if name and name not in seen:
+            seen.append(name)
+
+    if (role or "").strip().lower() == "jungle":
+        partner = next((n for n in seen if n in JUNGLE_PARTNERS), None)
+        if partner is None:
+            return None
+        # Smite first or second is cosmetic; the lookup renders it second.
+        return [partner, JUNGLE_SPELL]
+
+    # Outside the jungle, Smite is not selectable at all.
+    usable = [n for n in seen if n != JUNGLE_SPELL]
+    return usable[:2] if len(usable) >= 2 else None
 
 
 def summoners_for(champion: str, role: str, champion_class: str) -> tuple[list[str], str]:

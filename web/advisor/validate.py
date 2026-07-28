@@ -23,8 +23,11 @@ from web.advisor import itemmeta, runemeta
 ITEMS = itemmeta.ITEMS
 
 # Sections a repair can target independently. Ordering matters only for display.
-# `summoners` is absent: they are assigned in code, so there is nothing to check
-# and nothing the model could break.
+# `summoners` is absent even though the model now picks them. They are not
+# validated-then-repaired like the rest: summoners.enforce() imposes the jungle
+# rules on the answer directly, and anything it cannot use falls back to the
+# rule table. A summoner spell is never worth a repair round-trip, and never
+# worth failing a build that has five correct items in it.
 SECTIONS = ("items", "boots", "runes", "situational",
             "situationalRunes", "snowball", "scores", "counterSummary", "locks")
 
@@ -612,10 +615,11 @@ def validate(
             res["buildScore"] = build_score
 
     # ---- summoners ----------------------------------------------------------
-    # Not validated, because they are no longer the model's to get wrong: the
-    # advisor assigns them from champion, role and class after this runs. Any
-    # the model returned anyway is discarded here so it cannot leak through.
-    res.pop("summoners", None)
+    # Deliberately left alone. This used to pop the key, because the advisor
+    # assigned summoners itself and anything the model returned was noise. Now
+    # the model's pick IS the answer, and summoners.enforce() applies the jungle
+    # rules to it downstream, so discarding it here would silently throw away a
+    # choice made against the enemy comp and fall back to the static table.
 
     # ---- locks --------------------------------------------------------------
     for slug in (item_locks or []):

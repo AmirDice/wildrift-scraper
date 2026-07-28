@@ -1,4 +1,11 @@
-"""Summoner assignment: flat rules, applied in code, correct by construction."""
+"""Summoner spells.
+
+Two halves. `summoners_for` is the static rule table, which is now the FALLBACK
+rather than the answer, and is tested here unchanged because a fallback that has
+quietly rotted is worse than no fallback. `enforce` is the new path: the model
+picks, and these tests are the guarantee that no model output can put a jungler
+on the rift without Smite.
+"""
 from __future__ import annotations
 
 import pytest
@@ -116,3 +123,74 @@ class TestDefaultAndInvariants:
         assert [e["name"] for e in entries] == ["Ghost", "Smite"]
         assert all(e["icon"].startswith("https://") for e in entries)
         assert reason
+
+
+class TestEnforceInTheJungle:
+    """Smite is a guarantee, not a request. The model cannot spend that slot."""
+
+    def test_a_jungler_who_picked_flash_keeps_it_and_gains_smite(self):
+        assert summoners.enforce(["Flash", "Ignite"], "Jungle") == ["Flash", "Smite"]
+
+    def test_a_jungler_who_picked_ghost_keeps_ghost(self):
+        assert summoners.enforce(["Ghost", "Ignite"], "Jungle") == ["Ghost", "Smite"]
+
+    def test_a_jungler_who_forgot_smite_entirely_still_gets_it(self):
+        """The failure the old lookup existed to prevent."""
+        assert summoners.enforce(["Flash", "Exhaust"], "Jungle") == ["Flash", "Smite"]
+
+    def test_a_jungler_who_returned_only_smite_has_no_partner_to_keep(self):
+        """Nothing to salvage, so the caller falls back to the rule table."""
+        assert summoners.enforce(["Smite"], "Jungle") is None
+
+    def test_a_jungler_with_an_illegal_partner_falls_back(self):
+        assert summoners.enforce(["Ignite", "Exhaust"], "Jungle") is None
+        assert summoners.enforce(["Smite", "Heal"], "Jungle") is None
+
+    def test_smite_is_never_the_partner_slot(self):
+        """Smite twice must not resolve to a loadout of two Smites."""
+        assert summoners.enforce(["Smite", "Smite"], "Jungle") is None
+
+    def test_the_role_check_is_not_case_sensitive(self):
+        assert summoners.enforce(["Flash", "Ignite"], "jungle") == ["Flash", "Smite"]
+
+
+class TestEnforceInLane:
+    def test_a_laner_gets_what_they_asked_for(self):
+        assert summoners.enforce(["Cleanse", "Flash"], "Mid") == ["Cleanse", "Flash"]
+
+    def test_a_laner_can_skip_flash_entirely(self):
+        """Flash is the usual anchor, not a rule. The model may trade it."""
+        assert summoners.enforce(["Exhaust", "Barrier"], "Bot") == ["Exhaust", "Barrier"]
+
+    def test_smite_is_stripped_from_a_laner(self):
+        assert summoners.enforce(["Smite", "Flash", "Ignite"], "Mid") == ["Flash", "Ignite"]
+
+    def test_a_laner_left_with_one_usable_spell_falls_back(self):
+        assert summoners.enforce(["Smite", "Flash"], "Mid") is None
+
+
+class TestEnforceHandlesModelJunk:
+    def test_unknown_spells_are_discarded(self):
+        assert summoners.enforce(["Teleport", "Flash", "Ignite"], "Mid") == ["Flash", "Ignite"]
+        assert summoners.enforce(["Teleport", "Clarity"], "Mid") is None
+
+    def test_casing_and_whitespace_are_normalised(self):
+        assert summoners.enforce([" flash ", "IGNITE"], "Mid") == ["Flash", "Ignite"]
+
+    def test_duplicates_collapse_rather_than_filling_both_slots(self):
+        assert summoners.enforce(["Flash", "Flash", "Ignite"], "Mid") == ["Flash", "Ignite"]
+
+    def test_extras_beyond_two_are_dropped(self):
+        assert summoners.enforce(["Flash", "Ignite", "Heal", "Barrier"], "Mid") == \
+            ["Flash", "Ignite"]
+
+    @pytest.mark.parametrize("junk", [[], None, "Flash", [None], [{"name": "Flash"}], [123]])
+    def test_malformed_input_never_raises(self, junk):
+        """A model returning the wrong TYPE must fall back, not 500 the build."""
+        assert summoners.enforce(junk, "Mid") is None
+        assert summoners.enforce(junk, "Jungle") is None
+
+    def test_icons_for_returns_the_frontend_shape(self):
+        entries = summoners.icons_for(["Ghost", "Smite"])
+        assert [e["name"] for e in entries] == ["Ghost", "Smite"]
+        assert all(e["icon"].startswith("https://") for e in entries)

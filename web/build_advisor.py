@@ -228,13 +228,28 @@ SUMMONER_CANON = {_canon(n): n for n in SUMMONERS}
 
 
 def _summoner_block(role: str) -> str:
+    """The pool and the hard rules. The jungle rules are also enforced in code.
+
+    Stating them here anyway is not redundant: a model told the constraint picks
+    a sensible partner spell, whereas a model that has its answer corrected
+    afterwards writes a `summonerReason` explaining a choice it did not make.
+    """
     rows = "\n".join(f"- {name}: {meta['desc']}" for name, meta in SUMMONERS.items())
-    rule = ("This is a JUNGLER: Smite is MANDATORY; Flash is the default partner (Ghost only for "
-            "run-down fighters like Hecarim). Never Ignite just because the build is damage."
-            if role == "Jungle" else
-            "Non-jungler: never take Smite. Flash is the default; the second is a matchup call "
-            "(Ignite for kill-lane assassins, Heal/Barrier for marksmen, Exhaust/Cleanse situationally).")
-    return "SUMMONER SPELLS (choose exactly 2 distinct):\n" + rows + "\n" + rule
+    if (role or "").strip().lower() == "jungle":
+        rule = ("This is a JUNGLER. Smite is MANDATORY and occupies one slot -- it is not a "
+                "choice and you do not need to justify it. The ONLY decision is the second "
+                "slot, and it must be either Flash or Ghost: Ghost for champions that win by "
+                "running a target down and holding on, Flash for everyone else. Do not return "
+                "any other second spell.")
+    else:
+        rule = ("Not a jungler: NEVER take Smite. Both slots are open and this is a real "
+                "matchup decision, so use the enemy team above when you have one. Flash is "
+                "the usual anchor but it is not compulsory. Weigh the alternatives on what "
+                "this specific comp does to this specific champion: Cleanse against heavy "
+                "lockdown, Exhaust against a fed assassin or a hypercarry, Barrier or Heal "
+                "against burst, Ignite when the lane is a kill lane or the enemy heals.")
+    return ("SUMMONER SPELLS (choose exactly 2 distinct, from this pool only):\n"
+            + rows + "\n" + rule)
 
 
 def _lock_block(item_locks: list[str], boot_lock: str, rune_locks: list[str]) -> str:
@@ -642,6 +657,7 @@ def advise(champion: str, role: str, enemies: list[str],
         # there is an enemy team to build against.
         prompt_mod.ally_context_block(allies) if enemies_known else (
             f"ALLY TEAM: {', '.join(allies)}" if allies else ""),
+        _summoner_block(role),
         # Locks: the player has pinned these and the build MUST contain them.
         # They are a constraint on an otherwise free optimisation, so build the
         # best loadout that still honours them -- do not just append them.
@@ -756,11 +772,22 @@ def advise(champion: str, role: str, enemies: list[str],
                 res["mandatoryAuditScores"] = []
         print(f"[advisor] dropped unrepairable non-core sections: {dropped}", file=sys.stderr)
 
-    # Summoners are assigned, not generated: the choice is a lookup, and asking
-    # the model for it only created a way for an otherwise good build to fail.
-    res["summoners"], summoner_reason = summoners.resolved(
-        champion, role, champion_class)
-    res["summonerReason"] = summoner_reason
+    # Summoners are the model's call now, because the choice reads the enemy
+    # comp and the old lookup could not. The jungle rules are imposed on the
+    # answer rather than trusted from it, and anything unusable falls back to
+    # the lookup: a build should not be thrown away over a summoner spell.
+    raw_summoners = res.get("summoners") or []
+    picked = summoners.enforce(raw_summoners, role)
+    if picked:
+        res["summoners"] = summoners.icons_for(picked)
+        reason = str(res.get("summonerReason") or "").strip()
+        res["summonerReason"] = reason or (
+            f"{' and '.join(picked)}, chosen for this matchup.")
+    else:
+        res["summoners"], res["summonerReason"] = summoners.resolved(
+            champion, role, champion_class)
+        print(f"[advisor] summoners fell back to the rule table for {champion} "
+              f"({role}); model returned {raw_summoners!r}", file=sys.stderr)
 
     # Normalised request metadata, so the frontend can show what the build was
     # optimised for and flag any playstyle the champion could not honour. Added
