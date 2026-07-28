@@ -50,6 +50,40 @@ def _with_forms(champs: list[dict]) -> dict:
 
 CHAMPS = _with_forms(_load("champions_wr.json"))
 FORMULAS = _load("ability_formulas.json")
+
+
+def _apply_recovered_conditions(formulas: dict) -> int:
+    """Fold data/ability_conditions.json into the formulas.
+
+    Recovered conditions are written into the fields the engines already read
+    -- durationS on a steroid, n on an everyNHit mechanic -- so nothing in
+    either simulation changes. The extractor recorded that these effects were
+    conditional and then dropped the numbers; this puts them back.
+    """
+    path = ROOT / "data" / "ability_conditions.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, entries in (overlay.get("durations") or {}).items():
+        rec = formulas.get(name)
+        if not rec:
+            continue
+        for key, value in entries.items():
+            slot, _, idx = key.partition(":")
+            steroids = ((rec.get("abilities") or {}).get(slot) or {}).get("steroids") or []
+            if idx.isdigit() and int(idx) < len(steroids):
+                steroids[int(idx)]["durationS"] = value["seconds"]
+                applied += 1
+    for name, entry in (overlay.get("everyN") or {}).items():
+        for mech in (formulas.get(name) or {}).get("mechanics") or []:
+            if mech.get("kind") == "everyNHit":
+                mech["n"] = entry["n"]
+                applied += 1
+    return applied
+
+
+_apply_recovered_conditions(FORMULAS)
 # Combos are overlaid from champion_combos.json, the same source the exported
 # engine.json uses, so the Python and browser engines open with the same
 # sequence. The extraction's own combo answers a different question ("standard

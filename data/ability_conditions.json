@@ -1,0 +1,660 @@
+{
+ "_source": "gemini-3.6-flash, reading the scraped tooltip text",
+ "_note": "Recovered conditions the extraction dropped. An overlay, so re-extraction does not lose it; a human correction here outranks the model. null means the tooltip genuinely does not say.",
+ "durations": {
+  "Aatrox": {
+   "4:0": {
+    "stat": "ad",
+    "seconds": 10.0,
+    "quote": "Unleashes his demonic form for 10 seconds, gaining 30% / 40% / 50% Attack Damage"
+   }
+  },
+  "Gwen": {
+   "3:0": {
+    "stat": "attackSpeed",
+    "seconds": 4.0,
+    "quote": "Dashes and enhances her attacks for 4 seconds"
+   }
+  },
+  "Hecarim": {
+   "1:0": {
+    "stat": "moveSpeed",
+    "seconds": 3.0,
+    "quote": "gains a 30% Movement Speed bonus that decays over 3 seconds"
+   },
+   "2:0": {
+    "stat": "armor",
+    "seconds": 4.0,
+    "quote": "Gains 6 / 12 / 18 / 24 Armor and Magic Resist , and deals 12 / 18 / 24 / 30 ( +20% AP ) magic damage to nearby enemies o"
+   },
+   "2:1": {
+    "stat": "mr",
+    "seconds": 4.0,
+    "quote": "Gains 6 / 12 / 18 / 24 Armor and Magic Resist , and deals 12 / 18 / 24 / 30 ( +20% AP ) magic damage to nearby enemies o"
+   },
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 4.0,
+    "quote": "Gains 25% Movement Speed , which increases to 55% over 4 seconds"
+   }
+  },
+  "Ahri": {},
+  "Graves": {
+   "3:0": {
+    "stat": "armor",
+    "seconds": 4.0,
+    "quote": "granting True Grit for 4 seconds"
+   }
+  },
+  "Lulu": {},
+  "Malphite": {},
+  "Pantheon": {
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.5,
+    "quote": "he gains 60% Move Speed for 2.5 seconds"
+   }
+  },
+  "Soraka": {},
+  "Viego": {},
+  "Akali": {
+   "P:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.0,
+    "quote": "she gains 30% Movement Speed while moving toward enemy champions for 2 seconds."
+   }
+  },
+  "Akshan": {},
+  "Ashe": {
+   "1:0": {
+    "stat": "attackSpeed",
+    "seconds": 6.0,
+    "quote": "Gain 20% / 30% / 40% / 50% Attack Speed for 6 seconds"
+   }
+  },
+  "Aurora": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 4.0,
+    "quote": "Gains 25% / 30% / 35% / 40% Movement Speed for 4 seconds"
+   }
+  },
+  "Bard": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.5,
+    "quote": "granting 22.5% / 25% / 27.5% / 30% ( +0.05% AP ) for 1.5 second"
+   }
+  },
+  "Blitzcrank": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.5,
+    "quote": "Gains 35% / 40% / 45% / 50% to 10% decaying Movement Speed for 2.5 seconds"
+   },
+   "2:1": {
+    "stat": "moveSpeed",
+    "seconds": 1.5,
+    "quote": "reactivate Overdrive to gain 140% / 150% / 160% / 170% decaying Movement Speed for 1.5 seconds"
+   }
+  },
+  "Braum": {
+   "2:0": {
+    "stat": "armor",
+    "seconds": 3.0,
+    "quote": "gain 10 / 15 / 20 / 25 (+10% / 12% / 14% / 16% Armor) Armor and 10 / 15 / 20 / 25 (+10% / 12% / 14% / 16% MR) Magic Resi"
+   },
+   "2:1": {
+    "stat": "mr",
+    "seconds": 3.0,
+    "quote": "gain 10 / 15 / 20 / 25 (+10% / 12% / 14% / 16% Armor) Armor and 10 / 15 / 20 / 25 (+10% / 12% / 14% / 16% MR) Magic Resi"
+   },
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 4.0,
+    "quote": "Raises his shield, intercepting projectiles for 4 seconds. Braum negates the first instance of damage wichever direction"
+   }
+  },
+  "Garen": {},
+  "Darius": {
+   "P:0": {
+    "stat": "ad",
+    "seconds": 5.0,
+    "quote": "Noxian Might for 5 seconds"
+   }
+  },
+  "Ekko": {
+   "P:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.5,
+    "quote": "Ekko gains 40% Movement Speed for 2.5 seconds"
+   }
+  },
+  "Ezreal": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 8.0,
+    "quote": "Gains 13% Attack Speed for 8 seconds"
+   }
+  },
+  "Dr. Mundo": {
+   "4:0": {
+    "stat": "ad",
+    "seconds": 10.0,
+    "quote": "for 10 seconds"
+   }
+  },
+  "Galio": {},
+  "Janna": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.0,
+    "quote": "for 2 seconds"
+   },
+   "3:0": {
+    "stat": "ad",
+    "seconds": 3.0,
+    "quote": "Lasts for 3 seconds."
+   }
+  },
+  "Irelia": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 6.0,
+    "quote": "for 6 seconds"
+   }
+  },
+  "Heimerdinger": {},
+  "Jarvan IV": {},
+  "Jax": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 3.0,
+    "quote": "for 3 seconds"
+   },
+   "4:0": {
+    "stat": "armor",
+    "seconds": 8.0,
+    "quote": "for 8 seconds"
+   },
+   "4:1": {
+    "stat": "mr",
+    "seconds": 8.0,
+    "quote": "for 8 seconds"
+   }
+  },
+  "Gnar": {
+   "P:2": {
+    "stat": "hp",
+    "seconds": 15.0,
+    "quote": "transforms him into Mega Gnar for 15 seconds"
+   },
+   "P:3": {
+    "stat": "armor",
+    "seconds": 15.0,
+    "quote": "transforms him into Mega Gnar for 15 seconds"
+   },
+   "P:4": {
+    "stat": "mr",
+    "seconds": 15.0,
+    "quote": "transforms him into Mega Gnar for 15 seconds"
+   },
+   "P:5": {
+    "stat": "ad",
+    "seconds": 15.0,
+    "quote": "transforms him into Mega Gnar for 15 seconds"
+   },
+   "2:0": {
+    "stat": "attackSpeed",
+    "seconds": 6.0,
+    "quote": "Gains 35% / 40% / 45% / 50% Attack Speed for 6 seconds"
+   }
+  },
+  "Jinx": {
+   "1:0": {
+    "stat": "attackSpeed",
+    "seconds": 2.5,
+    "quote": "for 2.5 seconds"
+   }
+  },
+  "Jhin": {
+   "P:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.0,
+    "quote": "gains a burst of 15% ( +0.55% per 1% bonus AS ) movement speed for 2 seconds"
+   }
+  },
+  "Fiora": {
+   "P:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.75,
+    "quote": "grants her 3 0% Movement Speed (scales with Grand Challenge's level) decaying over 1.75 seconds"
+   }
+  },
+  "Jayce": {
+   "P:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.25,
+    "quote": "grants 30 Movement Speed for 1.25 seconds"
+   }
+  },
+  "Katarina": {},
+  "Kayle": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 5.0,
+    "quote": "Attacks grant 4% ( +1% AP ) Attack Speed for 5 seconds"
+   },
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.0,
+    "quote": "grants them 25% / 30% / 35% / 40% ( +0.08% AP ) Movement Speed for 2 seconds"
+   }
+  },
+  "Kha'Zix": {
+   "4:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.25,
+    "quote": "gain 40% Movement Speed for 1.25 seconds"
+   }
+  },
+  "Kog'Maw": {},
+  "Leona": {
+   "2:0": {
+    "stat": "armor",
+    "seconds": 3.0,
+    "quote": "For 3 seconds gain 40 / 60 / 80 / 100 ( +20% bonus Armor ) Armor"
+   },
+   "2:1": {
+    "stat": "mr",
+    "seconds": 3.0,
+    "quote": "For 3 seconds gain 40 / 60 / 80 / 100 ( +20% bonus Armor ) Armor and 40 / 60 / 80 / 100 ( +20% bonus MR ) Magic Resist"
+   }
+  },
+  "Kindred": {
+   "1:0": {
+    "stat": "attackSpeed",
+    "seconds": 4.0,
+    "quote": "gaining 25% (+5% of Mark of the Kindred stack count) Attack Speed for 4 seconds"
+   }
+  },
+  "K'Sante": {
+   "4:0": {
+    "stat": "attackSpeed",
+    "seconds": 15.0,
+    "quote": "goes All Out for 15 seconds"
+   },
+   "4:1": {
+    "stat": "armor",
+    "seconds": 15.0,
+    "quote": "goes All Out for 15 seconds"
+   },
+   "4:2": {
+    "stat": "mr",
+    "seconds": 15.0,
+    "quote": "goes All Out for 15 seconds"
+   }
+  },
+  "Lee Sin": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 3.0,
+    "quote": "40% Attack Speed for 2 attacks within 3 seconds"
+   }
+  },
+  "Master Yi": {
+   "4:0": {
+    "stat": "moveSpeed",
+    "seconds": 7.0,
+    "quote": "gains 35% / 45% / 55% Movement Speed and 30% / 60% / 90% Attack Speed for 7 seconds"
+   },
+   "4:1": {
+    "stat": "attackSpeed",
+    "seconds": 7.0,
+    "quote": "gains 35% / 45% / 55% Movement Speed and 30% / 60% / 90% Attack Speed for 7 seconds"
+   }
+  },
+  "Mel": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.0,
+    "quote": "gives her 30% decaying Movement Speed for 1 second"
+   }
+  },
+  "Morgana": {
+   "4:0": {
+    "stat": "moveSpeed",
+    "seconds": 3.0,
+    "quote": "The chains persist for 3 seconds, revealing and slowing by 15% Movement Speed . When the duration ends, chained targets "
+   }
+  },
+  "Mordekaiser": {
+   "P:0": {
+    "stat": "moveSpeed",
+    "seconds": 5.0,
+    "quote": "grants him 3% Movement Speed for 5 seconds"
+   }
+  },
+  "Nami": {
+   "P:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.5,
+    "quote": "gain 65 ( +20% AP ) Movement Speed for 1.5 seconds"
+   }
+  },
+  "Miss Fortune": {
+   "2:2": {
+    "stat": "attackSpeed",
+    "seconds": 4.0,
+    "quote": "grants 45% / 60% / 75% / 90% Attack Speed for 4 seconds"
+   }
+  },
+  "Nocturne": {
+   "2:1": {
+    "stat": "attackSpeed",
+    "seconds": 5.0,
+    "quote": "increased to 70% / 80% / 90% / 100% Attack Speed for 5 seconds"
+   }
+  },
+  "Nidalee": {},
+  "Nilah": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.75,
+    "quote": "Nilah evelops herself in mist for 1.75 seconds, during wich she gains 15% / 20% / 25% / 30% Movement Speed"
+   },
+   "2:1": {
+    "stat": "damageReduction",
+    "seconds": 1.75,
+    "quote": "Nilah evelops herself in mist for 1.75 seconds, during wich she gains 15% / 20% / 25% / 30% Movement Speed , reduces inc"
+   }
+  },
+  "Milio": {
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.5,
+    "quote": "granting 10% / 13% / 16% / 19% bonus Movement Speed for 2.5 seconds"
+   }
+  },
+  "Olaf": {
+   "4:2": {
+    "stat": "ad",
+    "seconds": 4.0,
+    "quote": "gains 5 / 15 / 25 ( +20% AD ) Attack Damage for 4 seconds"
+   }
+  },
+  "Nasus": {
+   "4:0": {
+    "stat": "hp",
+    "seconds": 12.0,
+    "quote": "for 12 seconds"
+   },
+   "4:1": {
+    "stat": "armor",
+    "seconds": 12.0,
+    "quote": "for 12 seconds"
+   },
+   "4:2": {
+    "stat": "mr",
+    "seconds": 12.0,
+    "quote": "for 12 seconds"
+   }
+  },
+  "Orianna": {},
+  "Poppy": {},
+  "Pyke": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 5.0,
+    "quote": "Becomes camouflaged for 5 seconds and gains 40% (+200% lethality) Movement Speed that decays over the duration."
+   }
+  },
+  "Rakan": {
+   "4:0": {
+    "stat": "moveSpeed",
+    "seconds": 4.0,
+    "quote": "Gains 60% Movement Speed for 4 seconds"
+   }
+  },
+  "Rammus": {
+   "2:0": {
+    "stat": "armor",
+    "seconds": 6.0,
+    "quote": "Brace for up to 6 seconds, gaining 30 ( +45% / 50% / 55% / 60% Armor ) Armor"
+   },
+   "2:1": {
+    "stat": "mr",
+    "seconds": 6.0,
+    "quote": "Brace for up to 6 seconds, gaining 30 ( +45% / 50% / 55% / 60% Armor ) Armor and 10 ( +35% / 40% / 45% / 50% MR ) Magic "
+   },
+   "3:0": {
+    "stat": "attackSpeed",
+    "seconds": 5.0,
+    "quote": "gain 35% / 45% / 55% / 65% Attack Speed decaying over 5 seconds"
+   }
+  },
+  "Rell": {
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 3.0,
+    "quote": "This bonus increases to 25% for 3 seconds when facing enemy champions or each other."
+   }
+  },
+  "Riven": {
+   "4:0": {
+    "stat": "ad",
+    "seconds": 12.0,
+    "quote": "Expand Riven's blade for 12 seconds, granting 25% bonus Attack Damage"
+   }
+  },
+  "Rengar": {
+   "1:0": {
+    "stat": "attackSpeed",
+    "seconds": 3.0,
+    "quote": "within 3 seconds"
+   }
+  },
+  "Rumble": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 4.0,
+    "quote": "he becomes Overheated for 4 seconds"
+   },
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.0,
+    "quote": "20% / 25% / 30% / 35% Movement Speed for 1 second"
+   }
+  },
+  "Shen": {},
+  "Senna": {},
+  "Seraphine": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.5,
+    "quote": "grants them 20% / 22.5% / 25% / 27.5% Movement Speed for 2.5 seconds"
+   }
+  },
+  "Shyvana": {},
+  "Singed": {
+   "4:0": {
+    "stat": "ap",
+    "seconds": 20.0,
+    "quote": "gaining buffs and granting 30% of the buffs to the nearest allied champion for 20 seconds"
+   },
+   "4:1": {
+    "stat": "armor",
+    "seconds": 20.0,
+    "quote": "gaining buffs and granting 30% of the buffs to the nearest allied champion for 20 seconds"
+   },
+   "4:2": {
+    "stat": "mr",
+    "seconds": 20.0,
+    "quote": "gaining buffs and granting 30% of the buffs to the nearest allied champion for 20 seconds"
+   },
+   "4:3": {
+    "stat": "moveSpeed",
+    "seconds": 20.0,
+    "quote": "gaining buffs and granting 30% of the buffs to the nearest allied champion for 20 seconds"
+   }
+  },
+  "Syndra": {},
+  "Taliyah": {},
+  "Sona": {
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 5.0,
+    "quote": "Gains 15% / 16% / 17% / 18% ( +3% AP ) Movement Speed for 5 seconds."
+   }
+  },
+  "Sion": {},
+  "Teemo": {
+   "2:1": {
+    "stat": "moveSpeed",
+    "seconds": 3.0,
+    "quote": "sprints for 3 seconds"
+   }
+  },
+  "Talon": {
+   "4:0": {
+    "stat": "moveSpeed",
+    "seconds": 2.5,
+    "quote": "gaining invisibility and 40% / 55% / 70% bonus Movement Speed for up to 2.5 seconds"
+   }
+  },
+  "Tryndamere": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 5.0,
+    "quote": "Attacking a champion grants 30% Attack Speed for 5 seconds."
+   }
+  },
+  "Skarner": {},
+  "Twisted Fate": {
+   "3:0": {
+    "stat": "attackSpeed",
+    "seconds": 3.0,
+    "quote": "Gain 20% / 25% / 30% / 35% Attack Speed for 3 seconds"
+   },
+   "3:1": {
+    "stat": "attackSpeed",
+    "seconds": 3.0,
+    "quote": "Gain 20% / 25% / 30% / 35% Attack Speed for 3 seconds"
+   }
+  },
+  "Twitch": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 5.0,
+    "quote": "Twitch gains 30% / 35% / 40% / 45% / 50% attack speed for 5 seconds"
+   },
+   "4:0": {
+    "stat": "ad",
+    "seconds": 6.0,
+    "quote": "For 6 seconds gain 225 Attack Range and 30 / 45 / 60 bonus Attack Damage"
+   }
+  },
+  "Varus": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 5.0,
+    "quote": "These bonuses last 5 seconds."
+   },
+   "P:1": {
+    "stat": "ad",
+    "seconds": 5.0,
+    "quote": "These bonuses last 5 seconds."
+   },
+   "P:2": {
+    "stat": "ap",
+    "seconds": 5.0,
+    "quote": "These bonuses last 5 seconds."
+   }
+  },
+  "Vayne": {
+   "2:0": {
+    "stat": "attackSpeed",
+    "seconds": 3.0,
+    "quote": "Gains 10% / 15% / 20% / 25% Attack Speed and 10% Omnivamp for 3 seconds."
+   }
+  },
+  "Volibear": {
+   "P:0": {
+    "stat": "attackSpeed",
+    "seconds": 6.0,
+    "quote": "for 6 seconds"
+   },
+   "1:0": {
+    "stat": "moveSpeed",
+    "seconds": 4.0,
+    "quote": "for the next 4 seconds"
+   },
+   "4:0": {
+    "stat": "hp",
+    "seconds": 12.0,
+    "quote": "for the next 12 seconds"
+   }
+  },
+  "Vladimir": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.0,
+    "quote": "gradually decays over 1 second"
+   }
+  },
+  "Vi": {},
+  "Warwick": {},
+  "Wukong": {},
+  "Yuumi": {
+   "3:0": {
+    "stat": "attackSpeed",
+    "seconds": 3.0,
+    "quote": "24% / 28% / 32% / 36% ( +8% AP ) Attack Speed for 3 seconds"
+   }
+  },
+  "Yasuo": {},
+  "Zilean": {
+   "2:0": {
+    "stat": "moveSpeed",
+    "seconds": 3.0,
+    "quote": "grants Fleeting Time and an identical shield to the nearest allied champion for 3 seconds"
+   }
+  },
+  "Zeri": {
+   "4:0": {
+    "stat": "moveSpeed",
+    "seconds": 5.0,
+    "quote": "gains 10% Movement Speed and a 30% Attack Speed bonus that can bypass her Attack Speed cap for 5 seconds"
+   },
+   "4:1": {
+    "stat": "attackSpeed",
+    "seconds": 5.0,
+    "quote": "gains 10% Movement Speed and a 30% Attack Speed bonus that can bypass her Attack Speed cap for 5 seconds"
+   }
+  },
+  "Yunara": {
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 1.5,
+    "quote": "Gains 30% / 35% / 40% / 45% Movement Speed for 1.5 seconds"
+   }
+  },
+  "Yone": {
+   "3:0": {
+    "stat": "moveSpeed",
+    "seconds": 5.0,
+    "quote": "leaving his body behind for 5 seconds"
+   }
+  }
+ },
+ "everyN": {
+  "Diana": {
+   "n": 3,
+   "quote": "Every third attack"
+  },
+  "Kennen": {
+   "n": 3,
+   "quote": "At 3 stacks"
+  }
+ }
+}

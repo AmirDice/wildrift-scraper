@@ -164,37 +164,48 @@ class TestDerivedDataIsFresh:
             "data/champion_builds.json by scripts/build_champions_llm.py")
 
     def test_engine_formulas_match_the_source(self):
-        """engine.json embeds ability_formulas.json, so the browser engine and
-        the Python engine cannot disagree unless this is stale.
+        """engine.json must equal what the exporter builds from the sources.
 
-        Everything EXCEPT `combo` is verbatim. Combos are overlaid from
-        champion_combos.json at export, because the extraction's own combo is
-        the one field in that file not grounded in the tooltip text, and it
-        answers a different question ("standard burst" rather than "highest
-        damage"). The overlay is asserted separately below.
+        It is no longer a verbatim copy of ability_formulas.json: combos come
+        from champion_combos.json and recovered durations and every-N counts
+        from ability_conditions.json, both applied at export. Rather than
+        listing the fields that may differ -- which needs editing every time an
+        overlay is added, and silently stops checking whatever is forgotten --
+        this applies the SAME overlays the exporter does and compares the whole
+        thing.
         """
-        engine = load(WEB / "engine.json")["formulas"]
-        source = load(DATA / "ability_formulas.json")
-        strip = lambda recs: {  # noqa: E731
-            name: {k: v for k, v in rec.items() if k != "combo"}
-            for name, rec in recs.items()
-        }
-        assert strip(engine) == strip(source), (
+        from scripts.export_engine_data import _apply_recovered_conditions
+
+        expected = load(DATA / "ability_formulas.json")
+        _apply_recovered_conditions(expected)
+        for name, entry in (load(DATA / "champion_combos.json")["champions"]).items():
+            if name in expected and entry.get("combo"):
+                expected[name]["combo"] = entry["combo"]
+
+        assert load(WEB / "engine.json")["formulas"] == expected, (
             "engine.json is stale; re-run python -m scripts.export_engine_data")
 
-    def test_engine_combos_come_from_the_overlay(self):
-        """A combo the site shows must be the curated one, not the extraction's.
+    def test_recovered_conditions_reach_the_engine(self):
+        """A duration recovered into the overlay must be in the exported data.
 
-        If this fails, export_engine_data was run before the overlay existed, or
-        the overlay was edited without re-exporting -- either way the site is
-        showing a combo nobody signed off on.
+        Without this the recovery silently does nothing: the engines read
+        durationS, and an overlay that never lands leaves every buff permanent
+        again -- the exact bug it was written to fix.
         """
+        overlay = load(DATA / "ability_conditions.json")
         engine = load(WEB / "engine.json")["formulas"]
-        overlay = load(DATA / "champion_combos.json")["champions"]
-        wrong = [name for name, entry in overlay.items()
-                 if name in engine and engine[name].get("combo") != entry["combo"]]
-        assert wrong == [], (
-            f"engine.json combos disagree with champion_combos.json for {wrong[:5]}; "
+        missing = []
+        for name, entries in (overlay.get("durations") or {}).items():
+            for key, value in entries.items():
+                slot, _, idx = key.partition(":")
+                steroids = ((engine.get(name, {}).get("abilities") or {})
+                            .get(slot, {}).get("steroids") or [])
+                if not idx.isdigit() or int(idx) >= len(steroids):
+                    continue
+                if steroids[int(idx)].get("durationS") != value["seconds"]:
+                    missing.append(f"{name}[{key}]")
+        assert missing == [], (
+            f"recovered durations did not reach engine.json: {missing[:5]}; "
             "re-run python -m scripts.export_engine_data")
 
     def test_roster_holds_champions_and_engine_holds_forms(self, champions):

@@ -26,6 +26,38 @@ def _load(name: str):
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
 
+
+def _apply_recovered_conditions(formulas: dict) -> int:
+    """Fold data/ability_conditions.json into the formulas.
+
+    Recovered conditions are written into the fields the engines already read
+    -- durationS on a steroid, n on an everyNHit mechanic -- so nothing in
+    either simulation changes. The extractor recorded that these effects were
+    conditional and then dropped the numbers; this puts them back.
+    """
+    path = ROOT / "data" / "ability_conditions.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, entries in (overlay.get("durations") or {}).items():
+        rec = formulas.get(name)
+        if not rec:
+            continue
+        for key, value in entries.items():
+            slot, _, idx = key.partition(":")
+            steroids = ((rec.get("abilities") or {}).get(slot) or {}).get("steroids") or []
+            if idx.isdigit() and int(idx) < len(steroids):
+                steroids[int(idx)]["durationS"] = value["seconds"]
+                applied += 1
+    for name, entry in (overlay.get("everyN") or {}).items():
+        for mech in (formulas.get(name) or {}).get("mechanics") or []:
+            if mech.get("kind") == "everyNHit":
+                mech["n"] = entry["n"]
+                applied += 1
+    return applied
+
+
 def main() -> None:
     champs_all = _load("champions_wr.json")
     # Transform forms ship as champions of their own so the browser engine can
@@ -58,6 +90,7 @@ def main() -> None:
     #
     # The overlay also survives re-extraction, so a human correction pinned there
     # is not silently overwritten the next time formulas are rebuilt.
+    _apply_recovered_conditions(formulas)
     combos = (_load("champion_combos.json") or {}).get("champions") or {}
     for name, entry in combos.items():
         if name in formulas and entry.get("combo"):
