@@ -257,12 +257,14 @@ def pool_text_block() -> str:
             + "\n\nMINORS BY SLOT -- take exactly one name from each of the three "
               "lists for your chosen tree. Two from the same slot is not a legal "
               "page:\n" + slot_groups_text()
-            + "\n\nTHE PLAYSTYLE APPLIES TO THE RUNE PAGE, NOT ONLY TO THE ITEMS. The "
-              "page is roughly a sixth of the build's power and it is chosen from the "
-              "same brief: a Sustain request wants the keystone and minors that heal or "
-              "keep the champion in the fight, a Burst request wants the ones that "
-              "front-load damage, a Durable request wants the ones that keep it alive. "
-              "Serve the playstyle the way THIS kit can express it -- the same rule as "
-              "the items, so a rune whose trigger this champion cannot meet is not "
-              "serving the playstyle no matter what its text promises. Say in the rune "
-              "reasons how the page serves the requested playstyle.")
+            + "\n\nTHE REQUEST APPLIES TO THE RUNE PAGE, NOT ONLY TO THE ITEMS. The page "
+              "is roughly a sixth of the build's power and it answers the SAME brief as "
+              "the items -- playstyle, power curve, optimisation goal, damage path and "
+              "risk tolerance all bear on it. A Sustain request wants the keystone and "
+              "minors that heal or keep the champion in the fight; an Early-game curve "
+              "wants runes that pay off in the first ten minutes rather than at three "
+              "items; an AP path wants runes its magic damage actually scales. Serve it "
+              "the way THIS kit can express it -- the same rule as the items, so a rune "
+              "whose trigger this champion cannot meet is not serving the request no "
+              "matter what its text promises. Say in the rune reasons how the page "
+              "serves what was asked for.")

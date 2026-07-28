@@ -231,8 +231,8 @@ class TestThePlaystyleReachesTheRunes:
     while taking an unrelated keystone has answered half the question.
     """
 
-    def test_the_rune_block_says_the_playstyle_applies_to_it(self, hecarim_unknown):
-        assert "THE PLAYSTYLE APPLIES TO THE RUNE PAGE" in hecarim_unknown
+    def test_the_rune_block_says_the_request_applies_to_it(self, hecarim_unknown):
+        assert "THE REQUEST APPLIES TO THE RUNE PAGE" in hecarim_unknown
 
     def test_it_defers_to_the_kit_the_same_way_the_items_do(self, hecarim_unknown):
         """A rune whose trigger the champion cannot meet is not serving the
@@ -240,31 +240,46 @@ class TestThePlaystyleReachesTheRunes:
         assert "a rune whose trigger this champion cannot meet" in hecarim_unknown
 
     def test_the_reasons_must_connect_the_page_to_the_request(self, hecarim_unknown):
-        assert "how the page serves the requested playstyle" in hecarim_unknown
+        assert "how the page serves what was asked for" in hecarim_unknown
 
 
-class TestThePlaystyleGovernsTheWholeLoadout:
+class TestEverySelectedOptionGovernsTheWholeLoadout:
     """Items, boots, runes AND summoners are chosen from one brief.
 
-    Each of the four can serve the playstyle or ignore it independently, and
-    the guidance only ever addressed items -- so a Sustain build could itemise
-    for healing and then take an unrelated keystone and an unrelated summoner.
-    Stated once here rather than repeated inside each of the fifteen playstyle
-    texts, which are written per style while this rule is the same for all.
+    Each of the four can serve the request or ignore it independently, and
+    almost every option's text was phrased about items -- "cheap first-ITEM
+    spikes", "avoid conditional ITEMS", "do not mix in AP ITEMS" -- so the rune
+    page and the summoner slots were the parts the request never reached.
+    Stated once where the options are introduced rather than repeated inside
+    each option's own text, which is written per option while this rule is the
+    same for all of them.
     """
 
-    def test_the_scope_is_stated_where_the_playstyle_is_introduced(self, hecarim_unknown):
-        assert "THE PLAYSTYLE GOVERNS THE ENTIRE LOADOUT" in hecarim_unknown
+    def test_the_scope_covers_every_toggle_not_just_the_playstyle(self, hecarim_unknown):
+        assert "EVERY SELECTED OPTION GOVERNS THE ENTIRE LOADOUT" in hecarim_unknown
+        for toggle in ("playstyle", "power curve", "optimisation goal",
+                       "damage path", "risk tolerance"):
+            assert toggle in hecarim_unknown, toggle
+
+    def test_it_names_all_four_parts_of_the_loadout(self, hecarim_unknown):
         for part in ("items", "boots", "rune page", "summoner spells"):
             assert part in hecarim_unknown, part
 
+    def test_it_says_the_item_wording_still_applies_to_the_whole_build(self, hecarim_unknown):
+        """Several options are worded about items and are not being rewritten
+        one by one; the reader is told to read them as build-wide."""
+        assert "read them as applying to the whole build" in hecarim_unknown
+
     def test_the_summoner_block_carries_it_too(self, hecarim_unknown):
-        assert "the requested playstyle applies to these two slots" in hecarim_unknown
+        assert "THE REQUEST APPLIES HERE TOO" in hecarim_unknown
 
     def test_the_rune_block_carries_it_too(self, hecarim_unknown):
-        assert "THE PLAYSTYLE APPLIES TO THE RUNE PAGE" in hecarim_unknown
+        assert "THE REQUEST APPLIES TO THE RUNE PAGE" in hecarim_unknown
+
+    def test_the_rune_block_names_more_than_the_playstyle(self, hecarim_unknown):
+        """Power curve and damage path shape a rune page as much as playstyle."""
+        assert "Early-game curve" in hecarim_unknown
+        assert "AP path wants runes" in hecarim_unknown
 
     def test_every_section_defers_to_the_kit_rather_than_the_description(self, hecarim_unknown):
-        """The same rule the items already had: a rune or summoner the champion
-        cannot use is not serving the playstyle, whatever its text promises."""
-        assert "is not serving the playstyle whatever" in hecarim_unknown
+        assert "is not serving the request whatever" in hecarim_unknown
