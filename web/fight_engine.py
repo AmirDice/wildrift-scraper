@@ -22,6 +22,7 @@ No LLM at runtime — pure math on transcribed numbers.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -49,6 +50,13 @@ def _with_forms(champs: list[dict]) -> dict:
 
 CHAMPS = _with_forms(_load("champions_wr.json"))
 FORMULAS = _load("ability_formulas.json")
+# Combos are overlaid from champion_combos.json, the same source the exported
+# engine.json uses, so the Python and browser engines open with the same
+# sequence. The extraction's own combo answers a different question ("standard
+# burst" rather than "highest damage") and is rewritten on every re-extraction.
+for _name, _entry in ((_load("champion_combos.json") or {}).get("champions") or {}).items():
+    if _name in FORMULAS and _entry.get("combo"):
+        FORMULAS[_name]["combo"] = _entry["combo"]
 ITEMS = {i["slug"]: i for i in _load("items.json")}
 ENGINE_FX = _load("item_engine.json")
 for slug, fx in _load("item_engine_overrides.json").items():
@@ -662,12 +670,30 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
 
     # kit steroids (max rank), incl. conversions like Warpath bonusMS -> AD
     f = FORMULAS.get(name, {}).get("abilities", {})
-    for ab in f.values():
+    st["timedSteroids"] = []
+    for _ab_slot, ab in f.items():
         for s in ab.get("steroids") or []:
             stat = s.get("stat")
             pct = _scale_val(s.get("pct"), 3, level) if s.get("pct") is not None else 0.0
             if s.get("from") == "bonusMs" and stat == "ad" and pct:
                 continue  # applied after MS totals below
+            # Ability buffs were applied permanently. Xin Zhao's E gives +67.5%
+            # attack speed for FIVE seconds and the sim used it for the whole
+            # fight. Duration is structured on nine steroids and stated in prose
+            # on forty-two more, so both are read; anything with neither stays
+            # permanent, which is right for passives.
+            note_s = re.search(r"(\d+(?:\.\d+)?)\s*second", str(s.get("note") or ""), re.I)
+            duration = (s.get("durationS") if isinstance(s.get("durationS"), (int, float))
+                        else float(note_s.group(1)) if note_s else None)
+            if duration and duration > 0:
+                cds = ab.get("cooldowns") or []
+                st["timedSteroids"].append({
+                    "stat": stat,
+                    "asPct": (pct or _scale_val(s.get("flat"), 3, level)) if stat == "attackSpeed" else 0.0,
+                    "adFlat": _scale_val(s["flat"], 3, level) if stat == "ad" and s.get("flat") else 0.0,
+                    "durationS": float(duration),
+                    "cooldownS": _scale_val(cds, 3, level) if cds else 12.0,
+                })
             if stat == "attackSpeed":
                 st["baseAsPct"] += pct or _scale_val(s.get("flat"), 3, level)
             elif stat == "ad" and s.get("flat"):
@@ -849,7 +875,74 @@ def _auto_uptime(name: str, window: float, st: dict | None = None) -> float:
     return up
 
 
-def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, comp_dmg):
+_ORDINALS = {"second": 2, "other": 2, "two": 2, "third": 3, "three": 3,
+             "fourth": 4, "four": 4, "fifth": 5, "five": 5, "sixth": 6, "six": 6}
+
+
+def every_n_share(name: str) -> tuple[float, bool]:
+    """How often an everyNHit passive fires, and whether abilities feed it.
+
+    Per-auto components were added to EVERY attack, including passives whose own
+    evidence says "Every third attack deals an additional 13 (22% AD)" -- three
+    times too much damage from a condition the extractor had already recorded
+    and nothing read. Twelve champions state N; two more state it only in the
+    prose, which is parsed here; six state neither and fall back to three, which
+    is an assumption rather than a reading.
+    """
+    mech = next((m for m in FORMULAS.get(name, {}).get("mechanics") or []
+                 if m.get("kind") == "everyNHit"), None)
+    if not mech:
+        return 1.0, False
+    ev = str(mech.get("evidence") or "").lower()
+    abilities_stack = "abilit" in ev
+    n = mech.get("n")
+    if isinstance(n, (int, float)) and n > 1:
+        return 1.0 / n, abilities_stack
+    for word, value in _ORDINALS.items():
+        if f"every {word}" in ev:
+            return 1.0 / value, abilities_stack
+    digits = re.search(r"every\s+(\d+)", ev) or re.search(
+        r"(\d+)\s+(?:consecutive\s+)?(?:attacks|hits|stacks)", ev)
+    if digits and 1 < int(digits.group(1)) <= 10:
+        return 1.0 / int(digits.group(1)), abilities_stack
+    return 1.0 / 3.0, abilities_stack
+
+
+def empower_limits(name: str) -> dict[str, int]:
+    """Abilities that empower a LIMITED number of following attacks.
+
+    Xin Zhao's Q empowers three and was applied to every auto of the fight. The
+    count sits in the prose the extractor could not model, so it is read from
+    there rather than curated per champion.
+    """
+    out: dict[str, int] = {}
+    for slot, ab in (FORMULAS.get(name, {}).get("abilities") or {}).items():
+        for u in ab.get("unmodeled") or []:
+            m = re.search(r"empower\w*\s+(?:the\s+|his\s+|her\s+|their\s+)?next\s+"
+                          r"(\w+)\s+(?:basic\s+)?attack", str(u), re.I)
+            if not m:
+                continue
+            word = m.group(1).lower()
+            out[slot] = max(1, _ORDINALS.get(word, 0) or (int(word) if word.isdigit() else 1))
+    return out
+
+
+def cooldown_relief(name: str) -> tuple[float, str]:
+    """Seconds shaved off OTHER cooldowns per empowered hit, and the source slot.
+
+    Xin Zhao's Q: "each attack reduces other ability cooldowns by 1s". Three
+    empowered attacks per cast is three seconds off W, E and R every cycle.
+    """
+    for slot, ab in (FORMULAS.get(name, {}).get("abilities") or {}).items():
+        for u in ab.get("unmodeled") or []:
+            m = re.search(r"reduc\w*\s+(?:all\s+|his\s+|her\s+|their\s+)?other\s+"
+                          r"(?:ability\s+)?cooldowns?\s+by\s+([\d.]+)\s*s", str(u), re.I)
+            if m:
+                return float(m.group(1)), slot
+    return 0.0, ""
+
+
+def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, comp_dmg, per_auto_share=None):
     """One auto-attack's damage, split by type (physical / magic / true).
 
     Pre-doubleShot, pre-count: the caller scales by uptime and multiplies. Kept
@@ -879,6 +972,8 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
                         for r in comp.get("ratios") or [])):
             continue
         cd = comp_dmg(comp, 3) / max(int(_rank_val(comp.get("hits", 1), 3) or 1), 1)
+        if per_auto_share is not None:
+            cd *= per_auto_share(_slot)
         t = comp["type"]
         if t == "magic":
             a_magic += cd
@@ -900,9 +995,53 @@ def _proc_split(st, target, phys_m, magic_m):
     return once_p, once_m
 
 
+def _for_window(name: str, st: dict, window: float) -> dict:
+    """The stat block as it averages over a fight of this length.
+
+    A buff is up for its duration once per cooldown, so across a window it is
+    worth its uptime rather than its peak. The DISPLAYED stat block is left
+    alone -- the player really does have that attack speed while it runs -- and
+    only the simulation averages.
+    """
+    timed = st.get("timedSteroids") or []
+    if not timed or window <= 0:
+        return st
+    haste_m = 100 / (100 + st["haste"])
+    as_lost = ad_lost = 0.0
+    for s in timed:
+        cd = max(0.5, (s["cooldownS"] or 12) * haste_m)
+        casts = 1 + int(window / cd)
+        uptime = min(1.0, (s["durationS"] * casts) / window)
+        as_lost += s["asPct"] * (1 - uptime)
+        ad_lost += s["adFlat"] * (1 - uptime)
+    if not as_lost and not ad_lost:
+        return st
+
+    adj = dict(st)
+    mechs = {m.get("kind"): m for m in FORMULAS.get(name, {}).get("mechanics") or []}
+    know = FORMULAS.get(name, {}).get("knowledge") or {}
+    if ad_lost:
+        adj["bonusAd"] = max(0.0, st["bonusAd"] - ad_lost)
+        adj["ad"] = adj["baseAd"] + adj["bonusAd"]
+    if as_lost and not mechs.get("fixedAttackSpeed"):
+        # Mirrors the attack-speed maths in resolve_stats, so they cannot drift.
+        as_pct = max(0.0, st["baseAsPct"] - as_lost)
+        if not mechs.get("reload"):
+            as_pct *= know.get("asEfficiency") or 1
+        adj["as"] = min(adj["baseAs"] * (1 + as_pct / 100.0), AS_CAP)
+        if mechs.get("reload"):
+            mag = float(mechs["reload"].get("magazine") or 2)
+            reload_s = float(know.get("reloadSeconds") or 1.0)
+            adj["as"] = mag / (mag / adj["as"] + reload_s)
+    return adj
+
+
 def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) -> dict:
     """Damage dealt over `window` seconds: abilities on cooldown + autos."""
+    st = _for_window(name, st, window)
     f = FORMULAS.get(name, {}).get("abilities", {})
+    _cdr_per_hit, _cdr_slot = cooldown_relief(name)
+    _limits = empower_limits(name)
     phys_m, magic_m = _mults(st, target)
     giant = 1 + st["giant"] * min(1.0, target["bonusHp"] / 1700)
     crit_ev = 1 + st["crit"] * (st["critMult"] - 1)
@@ -1052,8 +1191,31 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             total += d
             casts_total += 1
         n_autos = max(n_autos_seq, int(window * st["as"] * 0.5))
+        # Frequency of each per-auto component: a passive that fires every Nth
+        # attack rides 1/N of them, and an ability that empowers N attacks per
+        # cast rides N x its casts. Both were riding every attack.
+        _share_p, _abilities_stack = every_n_share(name)
+        _limits = empower_limits(name)
+
+        def per_auto_share(slot, _n=None):
+            if slot == "P":
+                if not _abilities_stack or not n_autos:
+                    return _share_p
+                hits = sum(v["casts"] for v in cast_log.values())
+                return min(1.0, _share_p * ((n_autos + hits) / n_autos))
+            limit = _limits.get(slot)
+            if limit and n_autos:
+                casts = cast_log.get(slot, {}).get("casts", 0)
+                if casts <= 0:
+                    cds = (FORMULAS.get(name, {}).get("abilities", {})
+                           .get(slot, {}).get("cooldowns") or 12)
+                    cd = _rank_val(cds, 3) or 12
+                    casts = max(1, 1 + int(window / max(0.5, cd * haste_m)))
+                return min(1.0, (limit * casts) / n_autos)
+            return 1.0
         a_phys, a_magic, a_true = _auto_split(st, target, phys_m, magic_m, giant,
-                                              crit_ev, per_auto_comps, comp_dmg)
+                                              crit_ev, per_auto_comps, comp_dmg,
+                                              per_auto_share)
         dsm = st.get("doubleShotMult", 1.0)
         auto = (a_phys + a_magic + a_true) * dsm * n_autos
         add_t("physical", a_phys * dsm * n_autos)
@@ -1106,6 +1268,14 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         rank = rank_of.get(slot, 3)
         cd_idx = min(rank, len(cds) - 1) if cds else 0
         cd = (cds[cd_idx] if cds else 8.0) * haste_m
+        if _cdr_per_hit and slot != _cdr_slot and window > 0:
+            # Seconds of cooldown removed across the window, spread evenly and
+            # capped at halving, so a long fight cannot drive one to nothing.
+            _empowered = _limits.get(_cdr_slot, 0)
+            _src_cds = (f.get(_cdr_slot, {}) or {}).get("cooldowns") or 12
+            _src_cd = max(0.5, (_rank_val(_src_cds, 3) or 12) * haste_m)
+            _seconds = _cdr_per_hit * _empowered * (1 + int(window / _src_cd))
+            cd = max(cd * 0.5, cd - _seconds / max(1.0, window / max(cd, 0.75)))
         casts = 1 + int(window // max(cd, 0.75)) if cd else 1
         if slot == "4":
             casts = 1  # one ult per fight window
@@ -1126,8 +1296,31 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
 
     # autos
     n_autos = max(1, int(window * st["as"] * _auto_uptime(name, window, st)))
+    # Frequency of each per-auto component: a passive that fires every Nth
+    # attack rides 1/N of them, and an ability that empowers N attacks per
+    # cast rides N x its casts. Both were riding every attack.
+    _share_p, _abilities_stack = every_n_share(name)
+    _limits = empower_limits(name)
+
+    def per_auto_share(slot, _n=None):
+        if slot == "P":
+            if not _abilities_stack or not n_autos:
+                return _share_p
+            hits = sum(v["casts"] for v in cast_log.values())
+            return min(1.0, _share_p * ((n_autos + hits) / n_autos))
+        limit = _limits.get(slot)
+        if limit and n_autos:
+            casts = cast_log.get(slot, {}).get("casts", 0)
+            if casts <= 0:
+                cds = (FORMULAS.get(name, {}).get("abilities", {})
+                       .get(slot, {}).get("cooldowns") or 12)
+                cd = _rank_val(cds, 3) or 12
+                casts = max(1, 1 + int(window / max(0.5, cd * haste_m)))
+            return min(1.0, (limit * casts) / n_autos)
+        return 1.0
     a_phys, a_magic, a_true = _auto_split(st, target, phys_m, magic_m, giant,
-                                          crit_ev, per_auto_comps, comp_dmg)
+                                          crit_ev, per_auto_comps, comp_dmg,
+                                          per_auto_share)
     dsm = st.get("doubleShotMult", 1.0)
     d_autos = (a_phys + a_magic + a_true) * dsm * n_autos
     add_t("physical", a_phys * dsm * n_autos)
