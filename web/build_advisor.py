@@ -39,7 +39,7 @@ from pathlib import Path
 import requests
 
 from web.advisor import env as advisor_env
-from web.advisor import itemmeta, profiles, repair, runemeta, summoners
+from web.advisor import itemmeta, profiles, repair, runemeta, summoners, supportitem
 from web.advisor import prompt as prompt_mod
 from web.advisor import validate as validate_mod
 
@@ -250,6 +250,25 @@ def _summoner_block(role: str) -> str:
                 "against burst, Ignite when the lane is a kill lane or the enemy heals.")
     return ("SUMMONER SPELLS (choose exactly 2 distinct, from this pool only):\n"
             + rows + "\n" + rule)
+
+
+def _support_item_block(role: str) -> str:
+    """Only rendered for supports. Also enforced in code, same as Smite."""
+    if not supportitem.is_support(role):
+        return ""
+    return (
+        "SUPPORT ITEM (MANDATORY, FIRST PURCHASE):\n"
+        "This is a SUPPORT build, so item 1 MUST be one of the two free support items. "
+        "They cost 0 gold, they are the role's entire income (Soulcast pays 75 gold a "
+        "minute and stacks up to 250 Health and 20 AD or 40 AP), and they are never "
+        "sold. Choose between them on what this champion needs:\n"
+        f"- {ITEMS[supportitem.TANKY]['name']} ({supportitem.TANKY}): 175 Health, 10 ability "
+        "haste. For supports who absorb damage -- engage, tanks, front line.\n"
+        f"- {ITEMS[supportitem.DAMAGE]['name']} ({supportitem.DAMAGE}): 10 ability haste plus "
+        "an adaptive 14 Attack Damage or 28 Ability Power. For supports who convert gold "
+        "into threat -- enchanters, mages, poke.\n"
+        "Return it as items[1] in the purchase order. The remaining four items are the "
+        "real build, so choose them knowing you have four slots and boots, not five.")
 
 
 def _lock_block(item_locks: list[str], boot_lock: str, rune_locks: list[str]) -> str:
@@ -587,7 +606,7 @@ def advise(champion: str, role: str, enemies: list[str],
     kit_linked_items = itemmeta.mandatory_audit(combat, scaling)
     pool_slugs, withheld = itemmeta.filter_candidates(
         champion_record, combat, scaling,
-        damage_path=damage_path, enemies_known=enemies_known)
+        damage_path=damage_path, enemies_known=enemies_known, role=role)
     # Locked items are the player's explicit instruction and outrank the filter:
     # withholding one would make the lock impossible to honour.
     for slug in (locked_items or []):
@@ -658,6 +677,7 @@ def advise(champion: str, role: str, enemies: list[str],
         prompt_mod.ally_context_block(allies) if enemies_known else (
             f"ALLY TEAM: {', '.join(allies)}" if allies else ""),
         _summoner_block(role),
+        _support_item_block(role),
         # Locks: the player has pinned these and the build MUST contain them.
         # They are a constraint on an otherwise free optimisation, so build the
         # best loadout that still honours them -- do not just append them.
@@ -776,6 +796,16 @@ def advise(champion: str, role: str, enemies: list[str],
     # comp and the old lookup could not. The jungle rules are imposed on the
     # answer rather than trusted from it, and anything unusable falls back to
     # the lookup: a build should not be thrown away over a summoner spell.
+    # The support item is guaranteed, not requested: a support build without it
+    # has given up the role's gold income for the whole game. Runs before the
+    # summoners so both corrections land on the same object.
+    fixed_items, changed = supportitem.enforce(
+        res.get("items") or [], role, champion_class)
+    if changed:
+        print(f"[advisor] support item enforced for {champion} ({role}): "
+              f"{res.get('items')} -> {fixed_items}", file=sys.stderr)
+        res["items"] = fixed_items
+
     raw_summoners = res.get("summoners") or []
     picked = summoners.enforce(raw_summoners, role)
     if picked:

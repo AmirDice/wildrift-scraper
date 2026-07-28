@@ -119,11 +119,21 @@ type PlaystyleDefinition = { key: string; label: string; description: string; pr
 const PLAYSTYLES = playstyleData.definitions as PlaystyleDefinition[];
 const PLAYSTYLES_BY_CLASS = playstyleData.byClass as Record<string, string[]>;
 const PLAYSTYLE_OVERRIDES = playstyleData.overrides as Record<string, string[]>;
+/** Ranged-class champions who actually attack in melee. See _meleeNote. */
+const MELEE_IN_RANGED_CLASS = new Set(playstyleData.meleeInRangedClass as string[]);
 
 function playstylesFor(champion: RosterChampion | undefined, mode: AdvisorMode): PlaystyleDefinition[] {
   const allowed = champion
     ? [...(PLAYSTYLE_OVERRIDES[champion.name] ?? PLAYSTYLES_BY_CLASS[champion.class] ?? ["standard", "damage"])]
     : ["standard"];
+  // Poke comes from the class list, and three classes that grant it (Mage,
+  // Enchanter, Marksman) each contain melee champions. Poke means repeatable
+  // pressure from range, so offering it to Lillia or Nilah advertises a build
+  // they cannot execute.
+  if (champion && MELEE_IN_RANGED_CLASS.has(champion.name)) {
+    const poke = allowed.indexOf("poke");
+    if (poke !== -1) allowed.splice(poke, 1);
+  }
   if (champion?.role === "Support" && !allowed.includes("utility")) allowed.push("utility");
   const modeKeys = mode === "counter"
     ? ["adaptive", ...allowed.filter((key) => key !== "standard")]

@@ -581,7 +581,12 @@ def validate(
         report.fail("scores", "these items are in the mandatory audit and must each appear in "
                               "mandatoryAuditScores with a score and a reason: "
                     + ", ".join(missing_audit))
-    missing_final = sorted(s for s in main_items if s not in scored)
+    # The free support item is exempt: it is mandatory for the role rather than
+    # selected, so there is no competing candidate to score it against. Demanding
+    # a score for it cost a whole repair round on the first live support build.
+    _SUPPORT_ITEMS = {"bulwark-of-the-mountain", "black-mist-scythe"}
+    missing_final = sorted(s for s in main_items
+                           if s not in scored and s not in _SUPPORT_ITEMS)
     if missing_final:
         report.fail("scores", "every item you selected must also be scored: "
                     + ", ".join(missing_final) + " are missing from candidateItemScores")

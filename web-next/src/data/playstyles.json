@@ -92,19 +92,119 @@
     }
   ],
   "byClass": {
-    "Assassin": ["standard", "damage", "burst", "oneshot"],
-    "Bruiser": ["standard", "damage", "dps", "splitpush", "vamp", "antitank", "tanky"],
-    "Fighter": ["standard", "damage", "dps", "splitpush", "vamp", "antitank", "tanky"],
-    "Marksman": ["standard", "damage", "crit", "dps", "onhit", "burst", "kiting", "vamp", "antitank"],
-    "Mage": ["standard", "damage", "burst", "poke", "vamp"],
-    "Tank": ["standard", "tanky", "utility", "burst"],
-    "Enchanter": ["standard", "utility", "poke", "tanky"]
+    "Assassin": [
+      "standard",
+      "damage",
+      "burst",
+      "oneshot"
+    ],
+    "Bruiser": [
+      "standard",
+      "damage",
+      "dps",
+      "splitpush",
+      "vamp",
+      "antitank",
+      "tanky"
+    ],
+    "Fighter": [
+      "standard",
+      "damage",
+      "dps",
+      "splitpush",
+      "vamp",
+      "antitank",
+      "tanky"
+    ],
+    "Marksman": [
+      "standard",
+      "damage",
+      "crit",
+      "dps",
+      "onhit",
+      "burst",
+      "kiting",
+      "vamp",
+      "antitank"
+    ],
+    "Mage": [
+      "standard",
+      "damage",
+      "burst",
+      "poke",
+      "vamp"
+    ],
+    "Tank": [
+      "standard",
+      "tanky",
+      "utility",
+      "burst"
+    ],
+    "Enchanter": [
+      "standard",
+      "utility",
+      "poke",
+      "tanky"
+    ]
   },
   "overrides": {
-    "Zed": ["standard", "damage", "burst", "oneshot"],
-    "Akali": ["standard", "damage", "burst", "oneshot", "vamp"],
-    "Blitzcrank": ["standard", "tanky", "utility", "burst"],
-    "Lucian": ["standard", "damage", "crit", "dps", "onhit", "burst", "kiting", "vamp", "antitank"],
-    "Ambessa": ["standard", "damage", "dps", "splitpush", "vamp", "antitank", "tanky"]
-  }
+    "Zed": [
+      "standard",
+      "damage",
+      "burst",
+      "oneshot"
+    ],
+    "Akali": [
+      "standard",
+      "damage",
+      "burst",
+      "oneshot",
+      "vamp"
+    ],
+    "Blitzcrank": [
+      "standard",
+      "tanky",
+      "utility",
+      "burst"
+    ],
+    "Lucian": [
+      "standard",
+      "damage",
+      "crit",
+      "dps",
+      "onhit",
+      "burst",
+      "kiting",
+      "vamp",
+      "antitank"
+    ],
+    "Ambessa": [
+      "standard",
+      "damage",
+      "dps",
+      "splitpush",
+      "vamp",
+      "antitank",
+      "tanky"
+    ]
+  },
+  "_meleeNote": "Champions in a ranged class (Marksman/Mage/Enchanter) who actually attack in melee. Poke is filtered out for these: it means repeatable safe pressure from range, which a champion who has to walk in cannot do. Mirrored from data/combat_profiles.json rangeProfile overrides; tests/test_playstyles.py fails if the two drift apart.",
+  "meleeInRangedClass": [
+    "Akali",
+    "Diana",
+    "Ekko",
+    "Evelynn",
+    "Fizz",
+    "Gragas",
+    "Kassadin",
+    "Katarina",
+    "Kayn",
+    "Lillia",
+    "Nilah",
+    "Pyke",
+    "Rakan",
+    "Rumble",
+    "Thresh",
+    "Vladimir"
+  ]
 }

@@ -11,25 +11,73 @@
   "_buildIdentityNote": "buildIdentity overrides the derived AD/AP itemisation identity for the exceptions the class+scalesWith rule cannot catch: AP bruisers/tanks whose kit also carries an AD ratio, so scalesWith contains 'ad' yet they build full AP.",
   "_rangeProfileNote": "rangeProfile ('melee'|'ranged') is curated because the scrape carries no attack-range field. It gates the Poke curated variant: a melee assassin classed as Mage (Akali) must not read as ranged. Default when absent: Marksman/Mage/Enchanter are ranged, everyone else melee. Only the exceptions -- melee champions in a ranged class -- are listed here.",
   "champions": {
-    "Akali": { "rangeProfile": "melee", "reason": "Melee assassin classed as Mage; her ranged Q is all-in setup, not repeatable safe poke." },
-    "Katarina": { "rangeProfile": "melee", "reason": "Melee reset assassin classed as Mage; no repeatable ranged pressure." },
-    "Diana": { "rangeProfile": "melee", "reason": "Melee diver classed as Mage; ranged Q is engage setup, not poke." },
-    "Fizz": { "rangeProfile": "melee", "reason": "Melee assassin classed as Mage." },
-    "Ekko": { "rangeProfile": "melee", "reason": "Melee assassin/diver classed as Mage." },
-    "Kassadin": { "rangeProfile": "melee", "reason": "Melee anti-mage assassin classed as Mage." },
-    "Kayn": { "rangeProfile": "melee", "reason": "Melee assassin/bruiser." },
-    "Pyke": { "rangeProfile": "melee", "reason": "Melee assassin support." },
-    "Mordekaiser": {
-      "buildIdentity": "magic",
-      "reason": "AP bruiser. His kit carries an AD ratio so scalesWith includes 'ad', but he is itemised full AP; without this override he reads as an AD champion."
+    "Akali": {
+      "rangeProfile": "melee",
+      "reason": "Melee assassin classed as Mage; her ranged Q is all-in setup, not repeatable safe poke."
     },
-    "Gwen": {
-      "buildIdentity": "magic",
-      "reason": "AP bruiser/skirmisher; builds AP despite a bruiser class and a small AD ratio."
+    "Diana": {
+      "rangeProfile": "melee",
+      "reason": "Melee diver classed as Mage; ranged Q is engage setup, not poke."
+    },
+    "Ekko": {
+      "rangeProfile": "melee",
+      "reason": "Melee assassin/diver classed as Mage."
+    },
+    "Evelynn": {
+      "rangeProfile": "melee",
+      "reason": "Melee assassin classed as Mage."
+    },
+    "Fiora": {
+      "buildIdentity": "physical",
+      "buildIdentityProfile": {
+        "primaryBuildPath": "physical",
+        "primaryCombatEngine": "Use Lunge and empowered attacks to repeatedly strike Vitals, converting bonus AD into true damage and sustain.",
+        "mainDamageSource": "Vital procs, Lunge and repeated AD basic attacks; Riposte's AP ratio is defensive utility and one occasional hit.",
+        "coreStats": [
+          "attackDamage",
+          "abilityHaste",
+          "health",
+          "physicalVamp"
+        ],
+        "secondaryStats": [
+          "attackSpeed",
+          "movementSpeed"
+        ],
+        "approvedBuildPaths": [
+          "physical-duelist",
+          "physical-spellblade-duelist"
+        ],
+        "forbiddenAnchors": [
+          "AP"
+        ],
+        "variantRules": {
+          "*": {
+            "maximumAPItems": 0
+          }
+        }
+      },
+      "alternativePath": {
+        "id": "crit-duelist",
+        "label": "Crit Duelist",
+        "description": "A physical crit path supported by Bladework's attack sequence and Lunge applying on-hit effects; it must remain an AD duelist rather than AP novelty.",
+        "anchorStats": [
+          "AD",
+          "crit"
+        ]
+      },
+      "reason": "Riposte has a 100% AP ratio but is neither Fiora's repeatable damage engine nor a reason to buy AP. Vitals, Q and attacks define her itemisation; crit is the only credible distinct alternative."
+    },
+    "Fizz": {
+      "rangeProfile": "melee",
+      "reason": "Melee assassin classed as Mage."
     },
     "Galio": {
       "buildIdentity": "magic",
       "reason": "AP tank/support: his Q/E/R all scale with AP and he is itemised AP, but a stray AD ratio and his Tank class made the class+scalesWith rule read him as AD."
+    },
+    "Gragas": {
+      "rangeProfile": "melee",
+      "reason": "Melee Mage. Barrel is thrown, but his damage pattern is engage and body-slam, not ranged pressure."
     },
     "Graves": {
       "combatProfile": {
@@ -38,77 +86,66 @@
       },
       "reason": "Reload/magazine kit: his damage is governed by shells and reload time, not by attacks per second, so raw attack speed converts far worse for him than the basic-attack-carry pattern implies. This is the same stance the advisor's system prompt already takes ('attack-speed runes are wasted on a reload/magazine kit like Graves')."
     },
-    "Rammus": {
-      "buildIdentityProfile": {
-        "primaryBuildPath": "tank",
-        "primaryCombatEngine": "Taunt forces repeated attacks into Defensive Ball Curl, whose retaliation scales with Armor.",
-        "mainDamageSource": "Repeated armor-scaled Spiked Shell retaliation during Defensive Ball Curl, not the one-time AP ratio on Powerball.",
-        "coreStats": ["armor", "health", "magicResist", "abilityHaste"],
-        "secondaryStats": ["movementSpeed", "attackSpeed"],
-        "approvedBuildPaths": ["armor-tank", "mixed-resist-tank"],
-        "forbiddenAnchors": ["AP", "crit"],
-        "variantRules": {
-          "*": {"minimumDefensiveItems": 3, "maximumAPItems": 1}
-        }
-      },
-      "reason": "Rammus deals magic damage, but AP does not define his build. His repeatable damage and durability both come from Armor through Defensive Ball Curl and forced enemy attacks through Taunt."
-    },
-    "Nasus": {
-      "buildIdentity": "physical",
-      "buildIdentityProfile": {
-        "primaryBuildPath": "physical",
-        "primaryCombatEngine": "Farm permanent Siphoning Strike stacks, then repeatedly weave the empowered attack with Spellblade while surviving in melee.",
-        "mainDamageSource": "Repeated Siphoning Strike empowered basic attacks and their permanent stacks.",
-        "coreStats": ["attackDamage", "abilityHaste", "health", "armor", "magicResist"],
-        "secondaryStats": ["movementSpeed", "physicalVamp"],
-        "approvedBuildPaths": ["physical-spellblade-bruiser", "physical-durable-bruiser"],
-        "forbiddenAnchors": ["AP", "crit", "attackSpeed"],
-        "variantRules": {
-          "*": {"maximumAPItems": 1, "minimumPhysicalOrDefenseItems": 4}
-        }
-      },
-      "reason": "Nasus's scrape exposes AP ratios but misses the permanent Q stacking engine because it is flat stacking rather than a printed AD ratio. His build is physical Spellblade plus durability, not AP."
-    },
-    "Fiora": {
-      "buildIdentity": "physical",
-      "buildIdentityProfile": {
-        "primaryBuildPath": "physical",
-        "primaryCombatEngine": "Use Lunge and empowered attacks to repeatedly strike Vitals, converting bonus AD into true damage and sustain.",
-        "mainDamageSource": "Vital procs, Lunge and repeated AD basic attacks; Riposte's AP ratio is defensive utility and one occasional hit.",
-        "coreStats": ["attackDamage", "abilityHaste", "health", "physicalVamp"],
-        "secondaryStats": ["attackSpeed", "movementSpeed"],
-        "approvedBuildPaths": ["physical-duelist", "physical-spellblade-duelist"],
-        "forbiddenAnchors": ["AP"],
-        "variantRules": {
-          "*": {"maximumAPItems": 0}
-        }
-      },
-      "alternativePath": {
-        "id": "crit-duelist",
-        "label": "Crit Duelist",
-        "description": "A physical crit path supported by Bladework's attack sequence and Lunge applying on-hit effects; it must remain an AD duelist rather than AP novelty.",
-        "anchorStats": ["AD", "crit"]
-      },
-      "reason": "Riposte has a 100% AP ratio but is neither Fiora's repeatable damage engine nor a reason to buy AP. Vitals, Q and attacks define her itemisation; crit is the only credible distinct alternative."
+    "Gwen": {
+      "buildIdentity": "magic",
+      "reason": "AP bruiser/skirmisher; builds AP despite a bruiser class and a small AD ratio."
     },
     "Irelia": {
       "buildIdentity": "physical",
       "abilityDataCorrections": {
-        "4": {"cooldowns": [70, 65, 60]}
+        "4": {
+          "cooldowns": [
+            70,
+            65,
+            60
+          ]
+        }
       },
       "buildIdentityProfile": {
         "primaryBuildPath": "physical",
         "primaryCombatEngine": "Stack Ionian Fervor with abilities, reset Bladesurge, then deal repeated empowered basic-attack damage.",
         "mainDamageSource": "Fully stacked passive attacks plus Bladesurge resets; E and R primarily enable marks, resets and crowd control.",
-        "coreStats": ["attackDamage", "attackSpeed", "onHit", "health"],
-        "secondaryStats": ["abilityHaste", "physicalVamp"],
-        "approvedBuildPaths": ["physical-on-hit-bruiser", "physical-durable-bruiser"],
-        "forbiddenAnchors": ["AP", "crit"],
+        "coreStats": [
+          "attackDamage",
+          "attackSpeed",
+          "onHit",
+          "health"
+        ],
+        "secondaryStats": [
+          "abilityHaste",
+          "physicalVamp"
+        ],
+        "approvedBuildPaths": [
+          "physical-on-hit-bruiser",
+          "physical-durable-bruiser"
+        ],
+        "forbiddenAnchors": [
+          "AP",
+          "crit"
+        ],
         "variantRules": {
-          "*": {"maximumAPItems": 0}
+          "*": {
+            "maximumAPItems": 0
+          }
         }
       },
       "reason": "The raw ultimate cooldowns contain a fourth stray value (8) after the valid three ranks, which made a once-per-fight AP ultimate look like an eight-second spell. Irelia's repeatable engine is AD/on-hit passive attacks and Q resets."
+    },
+    "Kassadin": {
+      "rangeProfile": "melee",
+      "reason": "Melee anti-mage assassin classed as Mage."
+    },
+    "Katarina": {
+      "rangeProfile": "melee",
+      "reason": "Melee reset assassin classed as Mage; no repeatable ranged pressure."
+    },
+    "Kayn": {
+      "rangeProfile": "melee",
+      "reason": "Melee assassin/bruiser."
+    },
+    "Lillia": {
+      "rangeProfile": "melee",
+      "reason": "Melee Mage. Her abilities have reach but she attacks in melee, so Poke was being offered on a champion who has to walk in to apply damage."
     },
     "Master Yi": {
       "combatProfile": {
@@ -125,19 +162,91 @@
         "primaryBuildPath": "physical",
         "primaryCombatEngine": "Use Highlander's attack speed to trigger Double Strike and Wuju Style repeatedly while attacks reduce Alpha Strike's cooldown.",
         "mainDamageSource": "Repeated basic attacks, Double Strike and Wuju Style true damage; Alpha Strike supplies access and can crit.",
-        "coreStats": ["attackSpeed", "onHit", "attackDamage"],
-        "secondaryStats": ["crit", "omnivamp", "movementSpeed"],
-        "approvedBuildPaths": ["ad-on-hit", "crit-on-hit"],
-        "forbiddenAnchors": ["AP", "lethality"],
+        "coreStats": [
+          "attackSpeed",
+          "onHit",
+          "attackDamage"
+        ],
+        "secondaryStats": [
+          "crit",
+          "omnivamp",
+          "movementSpeed"
+        ],
+        "approvedBuildPaths": [
+          "ad-on-hit",
+          "crit-on-hit"
+        ],
+        "forbiddenAnchors": [
+          "AP",
+          "lethality"
+        ],
         "variantRules": {
-          "*": {"maximumAPItems": 0, "maximumLethalityItems": 1},
-          "standard": {"minimumAttackSpeedItems": 2, "minimumOnHitItems": 2},
-          "dps": {"minimumAttackSpeedItems": 3, "minimumOnHitItems": 2},
-          "crit": {"minimumAttackSpeedItems": 1, "minimumCritItems": 3},
-          "antitank": {"minimumAttackSpeedItems": 2, "minimumOnHitItems": 2}
+          "*": {
+            "maximumAPItems": 0,
+            "maximumLethalityItems": 1
+          },
+          "standard": {
+            "minimumAttackSpeedItems": 2,
+            "minimumOnHitItems": 2
+          },
+          "dps": {
+            "minimumAttackSpeedItems": 3,
+            "minimumOnHitItems": 2
+          },
+          "crit": {
+            "minimumAttackSpeedItems": 1,
+            "minimumCritItems": 3
+          },
+          "antitank": {
+            "minimumAttackSpeedItems": 2,
+            "minimumOnHitItems": 2
+          }
         }
       },
       "reason": "Master Yi is an on-hit/attack-speed carry despite his Assassin class. Meditate's AP ratio is defensive and flat armor penetration does not amplify Wuju Style's repeated true damage."
+    },
+    "Mordekaiser": {
+      "buildIdentity": "magic",
+      "reason": "AP bruiser. His kit carries an AD ratio so scalesWith includes 'ad', but he is itemised full AP; without this override he reads as an AD champion."
+    },
+    "Nasus": {
+      "buildIdentity": "physical",
+      "buildIdentityProfile": {
+        "primaryBuildPath": "physical",
+        "primaryCombatEngine": "Farm permanent Siphoning Strike stacks, then repeatedly weave the empowered attack with Spellblade while surviving in melee.",
+        "mainDamageSource": "Repeated Siphoning Strike empowered basic attacks and their permanent stacks.",
+        "coreStats": [
+          "attackDamage",
+          "abilityHaste",
+          "health",
+          "armor",
+          "magicResist"
+        ],
+        "secondaryStats": [
+          "movementSpeed",
+          "physicalVamp"
+        ],
+        "approvedBuildPaths": [
+          "physical-spellblade-bruiser",
+          "physical-durable-bruiser"
+        ],
+        "forbiddenAnchors": [
+          "AP",
+          "crit",
+          "attackSpeed"
+        ],
+        "variantRules": {
+          "*": {
+            "maximumAPItems": 1,
+            "minimumPhysicalOrDefenseItems": 4
+          }
+        }
+      },
+      "reason": "Nasus's scrape exposes AP ratios but misses the permanent Q stacking engine because it is flat stacking rather than a printed AD ratio. His build is physical Spellblade plus durability, not AP."
+    },
+    "Nilah": {
+      "rangeProfile": "melee",
+      "reason": "Melee Marksman -- the one marksman who attacks in melee range."
     },
     "Nunu & Willump": {
       "buildIdentity": "magic",
@@ -145,21 +254,92 @@
         "primaryBuildPath": "tank",
         "primaryCombatEngine": "Create engages with Snowball, absorb focus, repeatedly Consume, and hold enemies in Snowball Barrage for the team.",
         "mainDamageSource": "Base damage and repeated frontline spell casts while surviving; a fully channelled ultimate is powerful but interruptible and not the default damage loop.",
-        "coreStats": ["health", "armor", "magicResist", "abilityHaste"],
-        "secondaryStats": ["AP", "movementSpeed"],
-        "approvedBuildPaths": ["engage-tank", "mixed-resist-tank"],
-        "forbiddenAnchors": ["attackSpeed", "crit"],
+        "coreStats": [
+          "health",
+          "armor",
+          "magicResist",
+          "abilityHaste"
+        ],
+        "secondaryStats": [
+          "AP",
+          "movementSpeed"
+        ],
+        "approvedBuildPaths": [
+          "engage-tank",
+          "mixed-resist-tank"
+        ],
+        "forbiddenAnchors": [
+          "attackSpeed",
+          "crit"
+        ],
         "variantRules": {
-          "*": {"minimumDefensiveItems": 3, "maximumAPItems": 2}
+          "*": {
+            "minimumDefensiveItems": 3,
+            "maximumAPItems": 2
+          }
         }
       },
       "alternativePath": {
         "id": "ap-burst",
         "label": "AP Burst",
         "description": "A genuine AP burst path using Snowball and Absolute Zero ratios, accepting lower reliability when channels are interrupted.",
-        "anchorStats": ["AP"]
+        "anchorStats": [
+          "AP"
+        ]
       },
       "reason": "Nunu has real AP ratios and can support a distinct AP burst path, but the reliable standard identity is an engage/control tank. Full AP belongs only in the explicitly marked Alternative Path."
+    },
+    "Pyke": {
+      "rangeProfile": "melee",
+      "reason": "Melee assassin support."
+    },
+    "Rakan": {
+      "rangeProfile": "melee",
+      "reason": "Melee Enchanter. His engage covers distance; his attacks do not."
+    },
+    "Rammus": {
+      "buildIdentityProfile": {
+        "primaryBuildPath": "tank",
+        "primaryCombatEngine": "Taunt forces repeated attacks into Defensive Ball Curl, whose retaliation scales with Armor.",
+        "mainDamageSource": "Repeated armor-scaled Spiked Shell retaliation during Defensive Ball Curl, not the one-time AP ratio on Powerball.",
+        "coreStats": [
+          "armor",
+          "health",
+          "magicResist",
+          "abilityHaste"
+        ],
+        "secondaryStats": [
+          "movementSpeed",
+          "attackSpeed"
+        ],
+        "approvedBuildPaths": [
+          "armor-tank",
+          "mixed-resist-tank"
+        ],
+        "forbiddenAnchors": [
+          "AP",
+          "crit"
+        ],
+        "variantRules": {
+          "*": {
+            "minimumDefensiveItems": 3,
+            "maximumAPItems": 1
+          }
+        }
+      },
+      "reason": "Rammus deals magic damage, but AP does not define his build. His repeatable damage and durability both come from Armor through Defensive Ball Curl and forced enemy attacks through Taunt."
+    },
+    "Rumble": {
+      "rangeProfile": "melee",
+      "reason": "Melee Mage. Flamespitter is a short cone applied from melee range."
+    },
+    "Thresh": {
+      "rangeProfile": "melee",
+      "reason": "Melee Enchanter. He hooks from range but auto-attacks in melee."
+    },
+    "Vladimir": {
+      "rangeProfile": "melee",
+      "reason": "Melee Mage. Transfusion is short-range and he wins by standing in the fight, not poking from outside it."
     }
   }
 }

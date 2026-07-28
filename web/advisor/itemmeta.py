@@ -117,6 +117,10 @@ _NEGATION = re.compile(r"\b(?:cannot|can\s*not|may\s*not|never|not)\b", re.IGNOR
 # a third convention here would just be a third thing to keep in sync.
 RANGED_CLASSES = {"Marksman", "Mage", "Enchanter"}
 
+# Mirrored from web/advisor/supportitem.py, which owns the rule. Named here to
+# keep this module import-free at the top level.
+_SUPPORT_ITEMS = frozenset({"bulwark-of-the-mountain", "black-mist-scythe"})
+
 
 def _range_restriction(blob: str) -> str:
     """'melee-only', 'ranged-only', or '' when the item is open to everyone.
@@ -241,6 +245,7 @@ def filter_candidates(
     scaling_profile: dict,
     damage_path: str = "standard",
     enemies_known: bool = False,
+    role: str = "",
 ) -> tuple[list[str], list[dict]]:
     """Split the pool into what the model sees and what it does not.
 
@@ -252,7 +257,13 @@ def filter_candidates(
     kept: list[str] = []
     removed: list[dict] = []
     manaless = _is_manaless(champion_record)
-    ranged = champion_record.get("class", "") in RANGED_CLASSES
+    # Ask profiles rather than re-deriving from the class here. This used to be
+    # its own `class in RANGED_CLASSES` check, which ignored the curated
+    # rangeProfile overrides entirely -- so every melee champion classed as a
+    # Mage (Akali, Katarina, Diana, Lillia...) counted as ranged for item
+    # filtering and was offered Runaan's Hurricane, which they cannot use.
+    from web.advisor import profiles  # local: keeps module import order free
+    ranged = profiles.range_profile(champion_record.get("name", "")) == "ranged"
 
     def drop(slug: str, reason: str) -> None:
         removed.append({"item": slug, "reason": reason})
@@ -268,7 +279,15 @@ def filter_candidates(
             drop(slug, "champion has no mana pool and this item's stats are mana only")
             continue
 
-        # 2. Range restriction printed on the item itself.
+        # 2. The free support items, which are income for the support and dead
+        #    weight for anyone else -- their value is Soulcast's gold, and only
+        #    the support collects it. Offering them outside the role invited a
+        #    solo laner to spend a slot on 10 ability haste.
+        if slug in _SUPPORT_ITEMS and (role or "").strip().lower() != "support":
+            drop(slug, "free support item and this is not a support build")
+            continue
+
+        # 3. Range restriction printed on the item itself.
         if ranged and not meta["rangedAllowed"]:
             drop(slug, "item is melee-only and this champion is ranged")
             continue
