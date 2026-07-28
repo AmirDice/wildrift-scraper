@@ -227,27 +227,54 @@ SUMMONERS: dict[str, dict] = {
 SUMMONER_CANON = {_canon(n): n for n in SUMMONERS}
 
 
-def _summoner_block(role: str) -> str:
+def _summoner_block(role: str, enemies_known: bool = True, immobile: bool = False) -> str:
     """The pool and the hard rules. The jungle rules are also enforced in code.
 
     Stating them here anyway is not redundant: a model told the constraint picks
     a sensible partner spell, whereas a model that has its answer corrected
     afterwards writes a `summonerReason` explaining a choice it did not make.
     """
-    rows = "\n".join(f"- {name}: {meta['desc']}" for name, meta in SUMMONERS.items())
+    pool = summoners.allowed_pool(role, enemies_known)
+    rows = "\n".join(f"- {name}: {meta['desc']}"
+                     for name, meta in SUMMONERS.items()
+                     if name in pool or name == summoners.JUNGLE_SPELL)
+
     if (role or "").strip().lower() == "jungle":
         rule = ("This is a JUNGLER. Smite is MANDATORY and occupies one slot -- it is not a "
-                "choice and you do not need to justify it. The ONLY decision is the second "
-                "slot, and it must be either Flash or Ghost: Ghost for champions that win by "
-                "running a target down and holding on, Flash for everyone else. Do not return "
-                "any other second spell.")
+                "choice and you do not need to justify it. This applies even if the champion "
+                "is not normally played in the jungle: a jungle build takes Smite. The ONLY "
+                "decision is the second slot, and it must be either Flash or Ghost: Ghost for "
+                "champions that win by running a target down and holding on, Flash for "
+                "everyone else. Do not return any other second spell.")
+    elif not enemies_known:
+        # No enemy team means a summoner pick cannot be a read, so the pool is
+        # narrowed to the spells that are defensible without one. Heal is absent
+        # outside support (it is an ALLY heal; a solo laner gets a worse
+        # Barrier), and Ignite is a bet on a kill lane nobody has described.
+        rule = ("Not a jungler, and NO enemy team was supplied. Choose two from the pool "
+                "above and nothing else -- Heal and Ignite are deliberately not offered here, "
+                "because both are answers to a specific matchup and there is no matchup to "
+                "read. Flash is the usual anchor; Ghost for a champion that has to walk to "
+                "its target, Exhaust against whoever ends up carrying, Cleanse into lockdown.")
     else:
         rule = ("Not a jungler: NEVER take Smite. Both slots are open and this is a real "
-                "matchup decision, so use the enemy team above when you have one. Flash is "
-                "the usual anchor but it is not compulsory. Weigh the alternatives on what "
-                "this specific comp does to this specific champion: Cleanse against heavy "
-                "lockdown, Exhaust against a fed assassin or a hypercarry, Barrier or Heal "
-                "against burst, Ignite when the lane is a kill lane or the enemy heals.")
+                "matchup decision, so use the enemy team above. Flash is the usual anchor "
+                "but it is not compulsory. Weigh the alternatives on what this specific comp "
+                "does to this specific champion: Cleanse against heavy lockdown, Exhaust "
+                "against a fed assassin or a hypercarry, Barrier against burst, Ignite when "
+                "the lane is a kill lane or the enemy heals."
+                + ("" if (role or "").strip().lower() == "support" else
+                   " Heal is a SUPPORT spell and is not offered here: it heals the ally it "
+                   "is cast on, which is the reason to bring it, and a solo laner gets a "
+                   "worse Barrier."))
+
+    if immobile:
+        rule += (" MOBILITY: this champion has no dash, blink or leap of its own, so it "
+                 "cannot create distance or close it without help. Flash and Ghost are the "
+                 "two spells that substitute for that, and both should be seriously "
+                 "considered here -- taking neither leaves the champion unable to reposition "
+                 "at all. Say why in `summonerReason` if you choose otherwise.")
+
     return ("SUMMONER SPELLS (choose exactly 2 distinct, from this pool only):\n"
             + rows + "\n" + rule)
 
@@ -684,7 +711,9 @@ def advise(champion: str, role: str, enemies: list[str],
         # there is an enemy team to build against.
         prompt_mod.ally_context_block(allies) if enemies_known else (
             f"ALLY TEAM: {', '.join(allies)}" if allies else ""),
-        _summoner_block(role),
+        _summoner_block(role, enemies_known, immobile=not summoners.has_mobility(
+            champion, ' '.join((a.get('text') or '')
+                               for a in (champion_record.get('abilities') or [])))),
         _support_item_block(role),
         # Locks: the player has pinned these and the build MUST contain them.
         # They are a constraint on an otherwise free optimisation, so build the
@@ -816,7 +845,7 @@ def advise(champion: str, role: str, enemies: list[str],
         res["items"] = fixed_items
 
     raw_summoners = res.get("summoners") or []
-    picked = summoners.enforce(raw_summoners, role)
+    picked = summoners.enforce(raw_summoners, role, enemies_known)
     if picked:
         res["summoners"] = summoners.icons_for(picked)
         reason = str(res.get("summonerReason") or "").strip()
@@ -824,7 +853,7 @@ def advise(champion: str, role: str, enemies: list[str],
             f"{' and '.join(picked)}, chosen for this matchup.")
     else:
         res["summoners"], res["summonerReason"] = summoners.resolved(
-            champion, role, champion_class)
+            champion, role, champion_class, enemies_known)
         print(f"[advisor] summoners fell back to the rule table for {champion} "
               f"({role}); model returned {raw_summoners!r}", file=sys.stderr)
 

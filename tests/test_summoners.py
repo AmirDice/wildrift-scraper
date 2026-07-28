@@ -194,3 +194,84 @@ class TestEnforceHandlesModelJunk:
         entries = summoners.icons_for(["Ghost", "Smite"])
         assert [e["name"] for e in entries] == ["Ghost", "Smite"]
         assert all(e["icon"].startswith("https://") for e in entries)
+
+
+class TestTheAllowedPool:
+    """Which spells a request may offer at all.
+
+    Reported on Jinx: a standard studio build came back with Heal. Heal heals
+    the ALLY it is cast on, which is the reason to bring it, so on a solo laner
+    it is a worse Barrier. And with no enemy team a summoner pick cannot be a
+    read, so the spells that answer a specific matchup are not offered blind.
+    """
+
+    def test_studio_offers_only_the_four_that_are_never_wrong(self):
+        assert summoners.allowed_pool("Mid", enemies_known=False) == frozenset(
+            {"Flash", "Exhaust", "Ghost", "Cleanse"})
+
+    def test_studio_withholds_heal_and_ignite(self):
+        pool = summoners.allowed_pool("Bot", enemies_known=False)
+        assert "Heal" not in pool and "Ignite" not in pool
+
+    def test_counter_opens_everything_except_heal(self):
+        pool = summoners.allowed_pool("Mid", enemies_known=True)
+        assert "Ignite" in pool and "Barrier" in pool
+        assert "Heal" not in pool
+
+    def test_a_support_keeps_heal_in_both_modes(self):
+        for known in (True, False):
+            assert "Heal" in summoners.allowed_pool("Support", enemies_known=known)
+
+    def test_smite_is_never_selectable(self):
+        for role in ("Mid", "Jungle", "Support"):
+            for known in (True, False):
+                assert "Smite" not in summoners.allowed_pool(role, known)
+
+
+class TestTheReportedJinxBug:
+    def test_heal_on_a_studio_marksman_is_refused(self):
+        assert summoners.enforce(["Heal", "Flash"], "Bot", enemies_known=False) is None
+
+    def test_ignite_on_a_studio_build_is_refused(self):
+        assert summoners.enforce(["Ignite", "Flash"], "Mid", enemies_known=False) is None
+
+    def test_the_studio_four_are_accepted(self):
+        assert summoners.enforce(["Flash", "Exhaust"], "Bot", enemies_known=False) == \
+            ["Flash", "Exhaust"]
+
+    def test_heal_survives_for_a_support(self):
+        assert summoners.enforce(["Heal", "Flash"], "Support", enemies_known=False) == \
+            ["Heal", "Flash"]
+
+    def test_the_fallback_cannot_smuggle_a_banned_spell_back_in(self):
+        """Vayne's lookup answer is Flash+Barrier, and Barrier is not offered
+        in studio mode. Falling back must not become a way around the rule."""
+        names = [e["name"] for e in
+                 summoners.resolved("Vayne", "Bot", "Marksman", enemies_known=False)[0]]
+        assert set(names) <= summoners.allowed_pool("Bot", enemies_known=False)
+
+
+class TestOffRoleJungle:
+    def test_a_champion_who_is_not_a_jungler_still_gets_smite(self):
+        """The REQUESTED role decides, not the champion's usual one."""
+        assert summoners.enforce(["Flash", "Ignite"], "Jungle", enemies_known=False) == \
+            ["Flash", "Smite"]
+
+    def test_the_fallback_also_forces_smite_off_role(self):
+        names = [e["name"] for e in
+                 summoners.resolved("Lux", "Jungle", "Mage", enemies_known=False)[0]]
+        assert "Smite" in names
+
+
+class TestMobility:
+    def test_a_champion_with_no_dash_reads_as_immobile(self):
+        assert not summoners.has_mobility("Jinx", "Fires rockets. Sets traps.")
+
+    def test_the_curated_marksman_list_covers_what_the_text_scan_misses(self):
+        """Ezreal's Arcane Shift and Vayne's Tumble are both dashes the ability
+        text does not describe with a keyword."""
+        for name in ("Ezreal", "Vayne"):
+            assert summoners.has_mobility(name, "")
+
+    def test_a_dash_in_the_text_counts(self):
+        assert summoners.has_mobility("Nobody", "Dashes to the target location.")

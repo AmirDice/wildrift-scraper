@@ -26,6 +26,7 @@ spells rather than failing -- which is the original objection, answered.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -62,6 +63,27 @@ JUNGLE_PARTNERS = ("Ghost", "Flash")
 
 _CANON = {name.lower(): name for name in SPELLS}
 
+# Whether the kit can reposition on its own. Used only to NUDGE -- a champion
+# with no dash is told to consider Flash and Ghost seriously, because those two
+# are the only substitutes for mobility it does not have.
+#
+# The signal is approximate and knowingly so. A keyword scan over ability text
+# misses Ezreal's Arcane Shift and Vayne's Tumble outright, which is why the
+# curated marksman list has to be consulted as well, and it still cannot see
+# Malphite's ultimate. Getting this right across the roster wants the same
+# treatment `rangeProfile` got: classified per champion, not pattern-matched.
+# Until then a miss costs a nudge, not a wrong build.
+_MOBILITY_TEXT = re.compile(
+    r"\b(dash(?:es|ing)?|blink(?:s|ing)?|leaps?|lunges?|vaults?|teleports?|"
+    r"flies|flying|jumps?|charges? (?:toward|at|forward))\b", re.I)
+
+
+def has_mobility(champion: str, abilities_text: str = "") -> bool:
+    """Whether this kit can reposition without a summoner spell."""
+    if champion in MOBILE_MARKSMEN or champion in RUN_DOWN:
+        return True
+    return bool(_MOBILITY_TEXT.search(abilities_text or ""))
+
 
 def canon(name: object) -> str | None:
     """The pool's spelling of a name, or None if it is not a summoner spell."""
@@ -73,30 +95,63 @@ def icons_for(names: list[str]) -> list[dict]:
     return [{"name": n, "icon": f"{_DD_SPELL}/{SPELLS[n]['dd']}.png"} for n in names]
 
 
-def enforce(picks: list[str], role: str) -> list[str] | None:
-    """The model's picks, with the jungle rules imposed. None if unusable.
+# Heal is a SUPPORT spell. It heals the ally it is cast on as well as the
+# caster, and that second half is the whole reason to bring it -- a solo laner
+# gets a worse Barrier. The model gave Jinx Heal on a standard build, which is
+# what made this explicit rather than assumed.
+SUPPORT_ONLY = frozenset({"Heal"})
+
+# With NO enemy team, a summoner choice cannot be a read: there is nothing to
+# answer. The defensible set is the one that is never wrong -- Flash to escape,
+# Ghost to close or leave, Exhaust for whoever ends up threatening, Cleanse for
+# whatever lockdown appears. Ignite is a bet on a kill lane that has not been
+# described yet, so it is not offered blind.
+STUDIO_POOL = frozenset({"Flash", "Exhaust", "Ghost", "Cleanse"})
+
+
+def allowed_pool(role: str, enemies_known: bool) -> frozenset[str]:
+    """Which spells this request may choose from, before the jungle rule."""
+    pool = set(SPELLS) if enemies_known else set(STUDIO_POOL)
+    if (role or "").strip().lower() != "support":
+        pool -= SUPPORT_ONLY
+    else:
+        pool |= SUPPORT_ONLY          # a support keeps Heal in either mode
+    pool.discard(JUNGLE_SPELL)        # Smite is imposed, never chosen
+    return frozenset(pool)
+
+
+def enforce(picks: list[str], role: str, enemies_known: bool = True) -> list[str] | None:
+    """The model's picks, with the rules imposed. None if unusable.
 
     Smite is not repaired by asking again: a jungle build without it is fixed
     here by inserting it, because there is no version of the answer where the
-    jungler does not have Smite. What the model actually chooses in the jungle
-    is the partner, and if that partner is not Ghost or Flash there is nothing
-    to salvage, so the caller falls back to the lookup.
+    jungler does not have Smite. That is keyed on the REQUESTED role, so a
+    champion who is not normally a jungler still gets Smite when someone asks
+    for a jungle build.
+
+    Everything else is filtered against `allowed_pool` before the pick is
+    accepted, so a spell the request should never offer cannot arrive by the
+    model returning it anyway.
     """
+    is_jungle = (role or "").strip().lower() == "jungle"
+    pool = allowed_pool(role, enemies_known)
+
     seen: list[str] = []
     for pick in picks or []:
         name = canon(pick)
         if name and name not in seen:
             seen.append(name)
 
-    if (role or "").strip().lower() == "jungle":
-        partner = next((n for n in seen if n in JUNGLE_PARTNERS), None)
+    if is_jungle:
+        # The partner must be legal for the request as well as a jungle partner:
+        # Ghost and Flash are both in every pool, so this is belt and braces.
+        partner = next((n for n in seen if n in JUNGLE_PARTNERS and n in pool), None)
         if partner is None:
             return None
         # Smite first or second is cosmetic; the lookup renders it second.
         return [partner, JUNGLE_SPELL]
 
-    # Outside the jungle, Smite is not selectable at all.
-    usable = [n for n in seen if n != JUNGLE_SPELL]
+    usable = [n for n in seen if n in pool]
     return usable[:2] if len(usable) >= 2 else None
 
 
@@ -150,7 +205,38 @@ def summoners_for(champion: str, role: str, champion_class: str) -> tuple[list[s
         "playmaking, Ignite for kill pressure.")
 
 
-def resolved(champion: str, role: str, champion_class: str) -> tuple[list[dict], str]:
+# Preference order when the lookup's answer is not legal for this request and a
+# slot has to be filled. Flash first because it is never wrong; Heal last
+# because it only reaches this list for a support.
+_FALLBACK_ORDER = ("Flash", "Ghost", "Exhaust", "Cleanse", "Barrier", "Ignite", "Heal")
+
+
+def _legalise(names: list[str], pool: frozenset[str]) -> list[str]:
+    """Two spells from `pool`, keeping the lookup's answer where it is legal.
+
+    The lookup predates the pool rules and can return spells this request may
+    not offer -- Barrier to a mobile marksman, Heal to a support-shaped kit --
+    so filtering it is not optional. Falling back must not become a way around
+    the rule the model is held to.
+    """
+    out = [n for n in names if n in pool]
+    for candidate in _FALLBACK_ORDER:
+        if len(out) >= 2:
+            break
+        if candidate in pool and candidate not in out:
+            out.append(candidate)
+    return out[:2]
+
+
+def resolved(champion: str, role: str, champion_class: str,
+             enemies_known: bool = True) -> tuple[list[dict], str]:
     """Frontend-shaped summoners: [{name, icon}], plus the reason."""
     names, reason = summoners_for(champion, role, champion_class)
-    return [{"name": n, "icon": f"{_DD_SPELL}/{SPELLS[n]['dd']}.png"} for n in names], reason
+    legal = _legalise(names, allowed_pool(role, enemies_known))
+    if (role or "").strip().lower() == "jungle":
+        partner = next((n for n in legal if n in JUNGLE_PARTNERS), "Flash")
+        legal = [partner, JUNGLE_SPELL]
+    if legal != names:
+        reason = (f"{' and '.join(legal)}: the default pairing for this kit, kept within "
+                  f"the spells this request may offer.")
+    return [{"name": n, "icon": f"{_DD_SPELL}/{SPELLS[n]['dd']}.png"} for n in legal], reason
