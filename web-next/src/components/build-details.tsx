@@ -182,11 +182,15 @@ export function BuildStatsPanel({
   const advancedRows = ADVANCED_STAT_ROWS.filter(([key]) => stats[key] !== 0);
 
   return (
-    <div
+    <details
       data-tour="build-stats"
-      className={embedded ? "mt-3 border-t border-line/60 pt-3" : "glass rounded-2xl p-4"}
+      open
+      className={embedded ? "group mt-3 border-t border-line/60 pt-3" : "glass group rounded-2xl p-4"}
     >
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+      {/* Only the title goes in the summary. The mode buttons below switch what
+          the panel shows, and a button inside <summary> folds the panel on
+          every click -- the control would fight the disclosure. */}
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
           Champion stats{" "}
           <span className="normal-case text-faint/60">
@@ -194,6 +198,9 @@ export function BuildStatsPanel({
             {ultOn && transform ? ` · with ${transform.label}` : ""}
           </span>
         </p>
+        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="mb-2 mt-2 flex flex-wrap items-center justify-end gap-2">
         {transform && (
           <div className="flex items-center gap-0.5 rounded-lg border border-line bg-white/[0.03] p-0.5">
             <StatModeButton active={!ultOn} onClick={() => setUltOn(false)} title="Stats without the ultimate active.">
@@ -353,7 +360,7 @@ export function BuildStatsPanel({
           ? "Stacking items, ramping passives and stat conversions are counted at their maximum. Triggered damage procs are still excluded."
           : "Unconditional scoped haste and guaranteed rune stats are included. Triggered effects are not."}
       </p>
-    </div>
+    </details>
   );
 }
 
@@ -435,11 +442,17 @@ export function ChampionAbilitiesPanel({
   if (!abilities.length) return null;
 
   return (
-    <div data-tour="ability-values" className={embedded ? "mt-3 border-t border-line/60 pt-3" : "glass rounded-2xl p-4"}>
-      <div className="mb-3 flex flex-wrap items-center gap-2">
+    <details data-tour="ability-values" open
+      className={embedded ? "group mt-3 border-t border-line/60 pt-3" : "glass group rounded-2xl p-4"}>
+      {/* Title only, for the same reason as the stats panel above: the ult and
+          form switches below would fold the panel if they sat in the summary. */}
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
           Live ability values <span className="normal-case text-faint/60">· level {level} with this build</span>
         </p>
+        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="mb-3 mt-2 flex flex-wrap items-center gap-2">
         {transform && !formNames && (
           <div className="ml-auto flex gap-1 rounded-lg border border-line bg-black/30 p-0.5">
             <StatModeButton active={!ultOn} onClick={() => setUltOn(false)} title="Values without the ultimate active.">
@@ -542,7 +555,7 @@ export function ChampionAbilitiesPanel({
       <p className="mt-2 text-center text-[0.65rem] text-faint">
         Raw pre-mitigation values update with level, items, and guaranteed rune stats. Hover or tap for formulas; target and triggered effects remain labeled.
       </p>
-    </div>
+    </details>
   );
 }
 

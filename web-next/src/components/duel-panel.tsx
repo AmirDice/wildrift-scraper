@@ -149,10 +149,16 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
     );
   }
 
+  // Collapsible, open by default. The enemy picker, the HP slider and Fight all
+  // live in the body rather than the summary: a control inside <summary> folds
+  // the panel on every click.
   return (
-    <div className="glass mt-4 overflow-hidden rounded-2xl">
+    <details open className="glass group mt-4 overflow-hidden rounded-2xl">
+      <summary className="flex cursor-pointer list-none items-center gap-3 p-4 pb-0">
+        <span className="min-w-0 flex-1"><Heading /></span>
+        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+      </summary>
       <div className="p-4">
-        <Heading />
 
         <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <Fighter name={name} icon={iconOf[name]} level={level} mine />
@@ -229,7 +235,7 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
           )}
         </div>
       )}
-    </div>
+    </details>
   );
 }
 
