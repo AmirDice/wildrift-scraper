@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { AttackStyle, Build, BuildItem, ChampionBuilds, Rune } from "@/lib/builds";
 import { buildGold, visibleBuildVariants } from "@/lib/builds";
 
@@ -10,6 +10,42 @@ import { buildGold, visibleBuildVariants } from "@/lib/builds";
  *  here so the build itself stays a clean icon strip. */
 export function Tip({ tip, children, wide = false }: { tip: React.ReactNode; children: React.ReactNode; wide?: boolean }) {
   const [open, setOpen] = useState(false);
+  const bubble = useRef<HTMLSpanElement>(null);
+
+  /**
+   * Keep the bubble on screen.
+   *
+   * It is centred on whatever it describes (`left-1/2 -translate-x-1/2`),
+   * which clips the moment the trigger is near an edge -- and on a phone
+   * almost everything is near an edge, so tapping an item in the first or last
+   * build slot showed half a tooltip.
+   *
+   * The position is written straight to the node rather than held in state: a
+   * measure-then-setState in an effect is a second render per open, and this
+   * has to run before paint or the bubble visibly jumps.
+   */
+  useLayoutEffect(() => {
+    const el = bubble.current;
+    if (!open || !el) return;
+    el.style.transform = "translateX(-50%)";
+    el.style.bottom = "";
+    el.style.top = "";
+
+    const pad = 8;
+    const rect = el.getBoundingClientRect();
+    let shift = 0;
+    if (rect.left < pad) shift = pad - rect.left;
+    else if (rect.right > window.innerWidth - pad) shift = window.innerWidth - pad - rect.right;
+    if (shift) el.style.transform = `translateX(calc(-50% + ${Math.round(shift)}px))`;
+
+    // Not enough room above? Flip below. Reading the top of a tooltip matters
+    // more than which side of the trigger it sits on.
+    if (rect.top < pad) {
+      el.style.bottom = "auto";
+      el.style.top = "calc(100% + 0.5rem)";
+    }
+  }, [open, tip]);
+
   return (
     <span
       className="relative inline-flex"
@@ -19,7 +55,10 @@ export function Tip({ tip, children, wide = false }: { tip: React.ReactNode; chi
     >
       {children}
       {open && tip && (
-        <span className={`absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded-xl border border-line bg-[#0e1322] p-2.5 text-left text-xs leading-snug text-text shadow-2xl ${wide ? "w-72 max-w-[80vw]" : "w-52"}`}>
+        <span
+          ref={bubble}
+          className={`absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded-xl border border-line bg-[#0e1322] p-2.5 text-left text-xs leading-snug text-text shadow-2xl ${wide ? "w-72 max-w-[80vw]" : "w-52 max-w-[calc(100vw-1rem)]"}`}
+        >
           {tip}
         </span>
       )}
