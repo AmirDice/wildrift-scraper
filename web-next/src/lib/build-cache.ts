@@ -129,7 +129,13 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Sin all read as low on-hit reliance and never saw on-hit items considered.
   // Sundered Sky's truncated passive text was repaired in the same batch. A v12
   // entry for any of them was built from the wrong profile.
-  return `build:v16:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v18, and v17 is deliberately SKIPPED: v17 keys exist in KV from the
+  // 2026-07-29 window that was rolled back the same day, so reusing the number
+  // would serve those entries again. v18: Kayn form text no longer fights an
+  // explicit playstyle, and explicit-playstyle builds are authored by the
+  // escalation model -- cached preference builds (including a live tanky
+  // 'burst' Rhaast) predate both.
+  return `build:v18:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

@@ -58,6 +58,28 @@ DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 # web-next/.env.local and the dev server passes both through to this process.
 MODEL = os.environ.get("ADVISOR_MODEL", "deepseek-v4-flash").strip() or "deepseek-v4-flash"
 IS_GEMINI = MODEL.lower().startswith("gemini")
+# Escalation model for requests the cheap model measurably cannot serve.
+# gemini-3.5-flash-lite matches flash on standard builds at a fraction of the
+# price, but it IGNORES explicit playstyle requests when they contradict its
+# prior about the champion: a Rhaast BURST request produced the drain-bruiser
+# build four runs out of four with the model calling it deliberate ("Built
+# strictly around Rhaast's drain-bruiser identity"), while gemini-3.6-flash
+# honoured the same prompt (Eclipse opener, Electrocute page). Same failure
+# family as the measured Malphite tank-identity and Yordle Trap misses.
+# Standard/adaptive requests -- the bulk of traffic -- stay on ADVISOR_MODEL;
+# explicit playstyles escalate. Unset means no escalation (everything on
+# ADVISOR_MODEL), so this is inert unless configured.
+PREMIUM_MODEL = os.environ.get("ADVISOR_MODEL_PREMIUM", "").strip()
+
+
+def model_for_request(playstyle: str) -> str:
+    """Which model authors this build. Escalation applies only within the
+    Gemini family: mixing providers per-request would change auth and the
+    response contract mid-pipeline."""
+    if (PREMIUM_MODEL and IS_GEMINI and PREMIUM_MODEL.lower().startswith("gemini")
+            and playstyle not in ("standard", "adaptive")):
+        return PREMIUM_MODEL
+    return MODEL
 THINKING = {"type": "enabled"}
 # Caps COMPLETION tokens, which include the model's reasoning, not just the
 # JSON. Measured on a full studio generation: 4,401 completion tokens, of which
@@ -417,7 +439,7 @@ def _stream_call(key: str, body: dict, on_progress) -> dict:
     return json.loads("".join(chunks))
 
 
-def _gemini_call(prompt: str) -> dict:
+def _gemini_call(prompt: str, model: str = "") -> dict:
     """The same contract as the DeepSeek path: prompt in, parsed build out.
 
     Kept deliberately thin. Everything that decides the build -- the prompt, the
@@ -442,7 +464,7 @@ def _gemini_call(prompt: str) -> dict:
     last = None
     for attempt in range(4):
         try:
-            r = client.models.generate_content(model=MODEL, contents=prompt, config=config)
+            r = client.models.generate_content(model=model or MODEL, contents=prompt, config=config)
             return json.loads(r.text)
         except Exception as exc:                       # noqa: BLE001
             last = exc
@@ -457,9 +479,9 @@ def _gemini_call(prompt: str) -> dict:
     raise RuntimeError(f"gemini failed after 4 attempts: {str(last)[:300]}")
 
 
-def _call(key: str, prompt: str, on_progress=None) -> dict:
+def _call(key: str, prompt: str, on_progress=None, model: str = "") -> dict:
     if IS_GEMINI:
-        return _gemini_call(prompt)
+        return _gemini_call(prompt, model=model)
     body = {"model": MODEL,
             "messages": [{"role": "system", "content": prompt_mod.SYSTEM},
                          {"role": "user", "content": prompt}],
@@ -549,13 +571,24 @@ DAMAGE_PATHS = {
               "kit converts both efficiently. Every mixed purchase must have a kit-linked reason.",
 }
 
-KAYN_FORMS = {
+# Split per form into KIT FACTS (always sent) and the form's DEFAULT identity
+# (sent only when no explicit playstyle was chosen). The identity used to be an
+# unconditional command inside one string -- "Favor bruiser durability ... do
+# not build him as blue Kayn" -- which contradicted any non-standard playstyle
+# in the same prompt. A live Rhaast BURST request carried both "delete a target
+# in one rotation" and "favor durability", and the model built the bruiser and
+# said so ("Built strictly around Rhaast's drain-bruiser identity"). Rewording
+# the identity into a conditional default did NOT fix it -- the model anchored
+# on the identity sentence anyway -- so the choice is now made at assembly
+# time, where it cannot be misread: an explicit playstyle simply removes the
+# competing instruction from the prompt.
+_KAYN_FORM_FACTS = {
     "shadow-assassin": (
         "KAYN FORM -- SHADOW ASSASSIN (blue): optimize the actual transformed kit. "
-        "He is a burst assassin for ranged/squishy targets: his passive adds magic damage "
-        "during the opening combat window, Blade's Reach can be cast while moving, Shadow "
-        "Step has stronger roaming, and Umbral Trespass refreshes his passive. Favor fast "
-        "physical burst, penetration, mobility and short target access."
+        "His passive adds magic damage during the opening combat window, Blade's Reach "
+        "can be cast while moving, Shadow Step has stronger roaming and slow immunity, "
+        "and Umbral Trespass refreshes his passive. Physical damage, penetration and "
+        "mobility are what this form converts."
     ),
     "rhaast": (
         "KAYN FORM -- RHAAST / DARKIN SLAYER (red): this OVERRIDES Shadow Assassin-specific "
@@ -563,10 +596,42 @@ KAYN_FORMS = {
         "to champions. Reaping Slash hits twice and each hit adds target max-Health physical "
         "damage. Blade's Reach knocks up for 1 second. Shadow Step has less movement speed and "
         "no Shadow Assassin slow immunity. Umbral Trespass deals target max-Health physical "
-        "damage and heals from the target's max Health. Favor bruiser durability, ability "
-        "haste, sustained physical damage and healing; do not build him as blue Kayn."
+        "damage and heals from the target's max Health. His healing scales with the physical "
+        "damage he deals, so damage doubles as durability on this form. Never build him as "
+        "blue Kayn: no lethality-assassin one-shot itemisation."
     ),
 }
+_KAYN_FORM_DEFAULT = {
+    "shadow-assassin": (
+        "No specific playstyle was requested, so build his natural identity: a burst "
+        "assassin for ranged/squishy targets -- fast physical burst, penetration, "
+        "mobility and short target access."
+    ),
+    "rhaast": (
+        "No specific playstyle was requested, so build his natural identity: a durable "
+        "drain bruiser -- durability, ability haste, sustained physical damage and healing."
+    ),
+}
+# Kept for the request-validation check and any external reader; the prompt
+# itself is assembled by kayn_form_block below.
+KAYN_FORMS = _KAYN_FORM_FACTS
+
+
+def kayn_form_block(form: str, playstyle: str) -> str:
+    """The form text the prompt actually carries, resolved against the request.
+
+    Standard/adaptive requests get the form's default identity; an explicit
+    playstyle replaces it with a direct handover, so the prompt never contains
+    two competing itemisation instructions for the model to reconcile.
+    """
+    facts = _KAYN_FORM_FACTS.get(form, "")
+    if not facts:
+        return ""
+    if playstyle in ("standard", "adaptive"):
+        return f"{facts} {_KAYN_FORM_DEFAULT[form]}"
+    return (f"{facts} The player explicitly selected the {playstyle!r} playstyle for this "
+            f"form and it GOVERNS the loadout: express that playstyle through what this "
+            f"form's kit converts, not through the form's usual default build.")
 
 RISK_TOLERANCE = {
     "low": "RISK TOLERANCE LOW: favour reliable activation and safer completion curves, "
@@ -723,7 +788,7 @@ def advise(champion: str, role: str, enemies: list[str],
         risk,
         GAME_PHASES[game_phase],
         DAMAGE_PATHS[damage_path],
-        KAYN_FORMS.get(champion_form, ""),
+        kayn_form_block(champion_form, playstyle),
         # Counter mode gets the structured, weighted threat picture; other modes
         # get the plain enemy line (usually "unknown" in studio).
         prompt_mod.enemy_threat_block(enemies, champion, WRMETA) if enemies_known
@@ -776,10 +841,23 @@ def advise(champion: str, role: str, enemies: list[str],
     champion_class = champion_record.get("class", "")
     emit({"stage": "model", "chars": 0})
 
+    request_model = model_for_request(playstyle)
+    if request_model != MODEL:
+        print(f"[advisor] escalated to {request_model}: playstyle={playstyle!r} "
+              f"is an explicit request the base model measurably ignores", file=sys.stderr)
+
     def call(text: str) -> dict:
-        # Only pass the callback when there is one, so the signature every
-        # existing caller and test stub sees is unchanged.
-        return _call(key, text, on_progress=on_progress) if on_progress else _call(key, text)
+        # Pass each keyword only when it deviates from the default, so the
+        # signature every existing caller and test stub sees is unchanged --
+        # stubs monkeypatch _call as (key, text). The chosen model covers the
+        # repair rounds too: a build authored by the premium model must not be
+        # repaired by the one that caused the escalation.
+        kwargs = {}
+        if on_progress:
+            kwargs["on_progress"] = on_progress
+        if request_model != MODEL:
+            kwargs["model"] = request_model
+        return _call(key, text, **kwargs)
 
     res = call(prompt)
     emit({"stage": "validating"})
