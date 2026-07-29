@@ -174,16 +174,41 @@ class TestDerivedDataIsFresh:
         this applies the SAME overlays the exporter does and compares the whole
         thing.
         """
-        from scripts.export_engine_data import _apply_recovered_conditions
+        from scripts.export_engine_data import (
+            _apply_recovered_conditions, apply_cooldown_corrections,
+        )
 
         expected = load(DATA / "ability_formulas.json")
         _apply_recovered_conditions(expected)
+        apply_cooldown_corrections(expected)
         for name, entry in (load(DATA / "champion_combos.json")["champions"]).items():
             if name in expected and entry.get("combo"):
                 expected[name]["combo"] = entry["combo"]
 
         assert load(WEB / "engine.json")["formulas"] == expected, (
             "engine.json is stale; re-run python -m scripts.export_engine_data")
+
+    def test_owner_verified_cooldowns_reach_the_engine(self):
+        """A cooldown read off the game must be what the engine ships.
+
+        The scrape gave Kayn's two forms DIFFERENT cooldowns and both sets were
+        wrong; the game gives base, Shadow Assassin and Rhaast the same ones.
+        This checks the overlay is applied rather than merely present.
+        """
+        overlay = load(DATA / "ability_cooldown_corrections.json")["champions"]
+        shipped = load(WEB / "engine.json")["formulas"]
+        for name, entry in overlay.items():
+            for slot, fix in (entry.get("abilities") or {}).items():
+                got = shipped[name]["abilities"][slot]["cooldowns"]
+                assert got == [float(v) for v in fix["cooldowns"]], f"{name} slot {slot}"
+
+    def test_both_kayn_forms_share_their_cooldowns(self):
+        """The specific error: forms change what an ability DOES, not how often
+        it can be cast. Two different cooldown sets is the bug's signature."""
+        shipped = load(WEB / "engine.json")["formulas"]
+        for slot in ("1", "2", "3", "4"):
+            assert (shipped["Kayn"]["abilities"][slot]["cooldowns"]
+                    == shipped["Kayn (Rhaast)"]["abilities"][slot]["cooldowns"]), slot
 
     def test_recovered_conditions_reach_the_engine(self):
         """A duration recovered into the overlay must be in the exported data.

@@ -256,15 +256,32 @@ class Ratio:
         return self.casts_per_minute * self.pct * _TARGET_SCALE.get(self.stat, 1.0) * max(1, self.hits)
 
 
+# Owner-verified cooldowns, shared with the export path so the advisor, the
+# fight engine and the on-screen ability cards cannot disagree about how often
+# an ability can be cast. Kayn is the case that forced it: the scrape produced
+# two different cooldown sets for his two forms and both were wrong.
+COOLDOWN_FIX: dict[str, dict] = (
+    (_load("ability_cooldown_corrections.json", {}) or {}).get("champions", {}))
+
+
 def _ability_correction(champion: str, ability: dict) -> dict:
     """Reviewed correction for one ability, keyed by its stable slot.
 
     Corrections are deliberately external to the scraped champion record. This
     keeps the raw evidence auditable while ensuring every consumer (ratio
     weighting and prompt display) sees the same corrected value.
+
+    Two overlays feed this. `abilityDataCorrections` in combat_profiles.json is
+    the older per-champion one; ability_cooldown_corrections.json is shared with
+    the exporters so the numbers on screen match the numbers the advisor reasons
+    from. The shared file wins, because it is the one the display honours.
     """
-    corrections = (OVERRIDES.get(champion) or {}).get("abilityDataCorrections") or {}
-    return corrections.get(str(ability.get("slot") or "")) or {}
+    slot = str(ability.get("slot") or "")
+    merged = dict((OVERRIDES.get(champion) or {}).get("abilityDataCorrections", {}).get(slot) or {})
+    shared = ((COOLDOWN_FIX.get(champion) or {}).get("abilities") or {}).get(slot) or {}
+    if "cooldowns" in shared:
+        merged["cooldowns"] = shared["cooldowns"]
+    return merged
 
 
 def _numeric_cooldowns(value) -> list[float]:

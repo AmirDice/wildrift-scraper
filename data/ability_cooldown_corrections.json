@@ -1,0 +1,25 @@
+{
+  "_note": "Owner-verified ability cooldowns, applied OVER data/ability_formulas.json at load by scripts/export_engine_data.py and web/fight_engine.py, and over the exported cards by scripts/export_champion_details.py. Kept outside the extracted files on purpose: those are regenerated and would eat any edit made directly to them.",
+  "_provenance": "Read from the game. Nothing here is inferred from the scrape -- if a real value is not known, the scraped one stays, because a plausible guess is worse than a visible mismatch.",
+  "_why": "The scrape produced DIFFERENT cooldowns for Kayn's two forms and both sets were wrong. Wild Rift gives base, Shadow Assassin and Rhaast identical cooldowns; the scraped values also understated every one of them, so the panel showed a champion far shorter on cooldown than he is.",
+  "champions": {
+    "Kayn": {
+      "_source": "Owner-supplied in-game values, 2026-07-29.",
+      "abilities": {
+        "1": { "cooldowns": [6.5, 6, 5.5, 5], "_was": [5, 4, 4, 3] },
+        "2": { "cooldowns": [12, 11, 10, 9], "_was": [9, 8, 7, 6] },
+        "3": { "cooldowns": [18, 16, 14, 12], "_was": [6, 6, 6, 6] },
+        "4": { "cooldowns": [80, 70, 60], "_was": [59, 52, 44] }
+      }
+    },
+    "Kayn (Rhaast)": {
+      "_source": "Owner-supplied in-game values, 2026-07-29. Identical to Shadow Assassin: the forms change what the abilities DO, not how often they can be cast.",
+      "abilities": {
+        "1": { "cooldowns": [6.5, 6, 5.5, 5], "_was": [4, 3, 3, 3] },
+        "2": { "cooldowns": [12, 11, 10, 9], "_was": [8, 7, 6, 5] },
+        "3": { "cooldowns": [18, 16, 14, 12], "_was": [7, 7, 7, 7] },
+        "4": { "cooldowns": [80, 70, 60], "_was": [50, 44, 38] }
+      }
+    }
+  }
+}

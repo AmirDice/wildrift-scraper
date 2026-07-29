@@ -28,6 +28,32 @@ def _load(name: str):
 
 
 
+def apply_cooldown_corrections(formulas: dict) -> int:
+    """Fold data/ability_cooldown_corrections.json into the formulas.
+
+    The scrape got Kayn's cooldowns wrong in both forms, and wrong in
+    DIFFERENT ways -- it produced two distinct sets where the game has one.
+    Owner-verified values live in the overlay so a re-extraction cannot quietly
+    put the wrong numbers back.
+    """
+    path = ROOT / "data" / "ability_cooldown_corrections.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, entry in (overlay.get("champions") or {}).items():
+        record = formulas.get(name)
+        if not record:
+            continue
+        for slot, fix in (entry.get("abilities") or {}).items():
+            ability = (record.get("abilities") or {}).get(slot)
+            if not ability or "cooldowns" not in fix:
+                continue
+            ability["cooldowns"] = [float(v) for v in fix["cooldowns"]]
+            applied += 1
+    return applied
+
+
 def _apply_recovered_conditions(formulas: dict) -> int:
     """Fold data/ability_conditions.json into the formulas.
 
@@ -92,6 +118,9 @@ def main() -> None:
     # The overlay also survives re-extraction, so a human correction pinned there
     # is not silently overwritten the next time formulas are rebuilt.
     _apply_recovered_conditions(formulas)
+    fixed = apply_cooldown_corrections(formulas)
+    if fixed:
+        print(f"applied {fixed} owner-verified cooldown corrections")
     combos_file = _load("champion_combos.json") or {}
     combos = combos_file.get("champions") or {}
     for name, entry in combos.items():
