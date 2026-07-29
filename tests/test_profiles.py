@@ -311,11 +311,7 @@ class TestMultiStrikeEmpoweredAttacks:
     part that was wrong.
     """
 
-    # Shyvana's Twin Bite "empowers her next attack to strike twice"; the same
-    # shape as Pantheon and Renekton. Viego also strikes twice but is a
-    # once-per-target proc, which an earlier branch claims -- left alone
-    # pending a call on whether two applications per target window counts.
-    MULTI_STRIKE = ("Pantheon", "Renekton", "Shyvana")
+    MULTI_STRIKE = ("Pantheon", "Renekton", "Shyvana", "Viego")
 
     def test_zeds_energy_refund_is_not_a_multi_strike(self):
         """"gains Energy whenever an ABILITY strikes the same enemy twice" is a
@@ -334,6 +330,21 @@ class TestMultiStrikeEmpoweredAttacks:
         the field."""
         for name in self.MULTI_STRIKE:
             assert profiles.combat_profile(name)["repeatedOnHitReliance"] != "high", name
+
+    def test_a_once_per_target_proc_that_strikes_twice_is_middle_ground(self):
+        """Viego. His proc lands twice but only on the first attack per target,
+        so he is neither Jarvan (one application) nor a marksman."""
+        assert profiles.combat_profile("Viego")["repeatedOnHitReliance"] == "medium"
+
+    def test_a_once_per_target_proc_that_strikes_once_stays_low(self):
+        """The rule the floor must not swallow."""
+        assert profiles.combat_profile("Jarvan IV")["repeatedOnHitReliance"] == "low"
+
+    def test_the_floor_never_demotes_a_genuine_on_hit_carry(self):
+        """Master Yi matches the pattern and is correctly `high`. An earlier
+        attempt placed this as a branch and dropped him to medium."""
+        for name in ("Master Yi", "Caitlyn", "Senna", "Gwen", "Jax"):
+            assert profiles.combat_profile(name)["repeatedOnHitReliance"] == "high", name
 
     def test_a_single_hit_empower_is_still_low(self):
         """The rule this narrows must keep working for everyone else."""
@@ -358,14 +369,14 @@ class TestMultiStrikeEmpoweredAttacks:
         "not low" rather than "in my list" -- the list would have to be edited
         every time an existing high-reliance kit happened to match.
 
-        Viego is the known exception and is excluded deliberately: he strikes
-        twice but only on the first attack per target, so an earlier branch
-        claims him. Whether that is right is a judgement about whether two
-        applications per target window count, not something this test settles.
+        Viego needed the rule to be a FLOOR rather than a branch: the
+        once-per-target rule claims him before any later branch runs, and
+        moving the check earlier demoted Master Yi instead. A floor only lifts
+        `low`, so it fixes one without breaking the other.
         """
         for name, record in profiles.CHAMPIONS.items():
             text = " ".join((a.get("text") or "") for a in (record.get("abilities") or []))
-            if profiles._MULTI_STRIKE.search(text) and name != "Viego":
+            if profiles._MULTI_STRIKE.search(text):
                 got = profiles.combat_profile(name)["repeatedOnHitReliance"]
                 assert got in ("medium", "high"), (
                     f"{name}'s attack strikes more than once but reads {got}")

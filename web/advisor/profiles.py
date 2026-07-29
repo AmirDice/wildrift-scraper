@@ -855,24 +855,27 @@ def combat_profile(champion: str) -> dict:
         on_hit = "high"
     elif pattern == "repeated-attacks":
         on_hit = "high" if attack_speed_steroid else "medium"
-    elif single_empower and multi_strike_empower:
-        # An empowered attack that strikes MORE THAN ONCE is not one on-hit
-        # application, and the rule above read it as one. Pantheon's Shield
-        # Vault "strikes 3 times", so a Mortal Will cycle applies on-hit three
-        # times off a single ability -- which is why Blade of the Ruined King
-        # works on him despite an attack-speed efficiency of 0.30. The two
-        # things are separable: how OFTEN on-hit lands, and whether attack
-        # speed is what makes it land. Only the first belongs here.
-        #
-        # `medium` rather than `high` on purpose: three applications per cycle
-        # is real, but it is not a marksman applying on-hit every auto.
-        on_hit = "medium"
     elif single_empower and not attack_speed_steroid:
         on_hit = "low"
     elif repeated and attack_speed_steroid:
         on_hit = "medium"
     else:
         on_hit = "none" if pattern == "caster" else "low"
+
+    # A multi-hit empowered attack applies on-hit once per HIT, and every rule
+    # above counts it once. Applied as a FLOOR rather than a branch, because
+    # branch surgery gets one of the two cases wrong whichever side it sits:
+    # placed early it demotes Master Yi, who matches and is correctly `high`;
+    # placed late it never reaches Viego, whom the once-per-target rule claims
+    # first. A floor only ever lifts `low`, which is the error being fixed.
+    #
+    # `medium`, not `high`: Pantheon and Renekton strike three times and
+    # Shyvana and Viego twice, but none of them is a marksman applying on-hit
+    # on every auto. Viego is the middle ground by design -- his proc lands
+    # twice but only on the first attack per target, and people do not always
+    # build the item his Q is named after.
+    if multi_strike_empower and on_hit == "low":
+        on_hit = "medium"
 
     # --- attack speed and crit value -----------------------------------------
     attack_speed_value = {
