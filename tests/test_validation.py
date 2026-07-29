@@ -106,6 +106,13 @@ class TestRedundancyIsAWarningNotAnError:
         build["candidateItemScores"] += [
             {"item": s, "score": 70, "reason": "x"} for s in
             ["chempunk-chainsword", "thornmail"]]
+        # The guide names the items it was written for, so swapping the build
+        # out from under it correctly invalidates it -- rewrite it to match.
+        build["playGuide"]["powerSpike"] = (
+            "Chempunk Chainsword at one item is the spike, and Conqueror keeps "
+            "stacking through the longer fights it buys you.")
+        build["playGuide"]["teamfight"] = (
+            "Open on whoever Thornmail punishes hardest and hold Last Stand range.")
         report = check(build, enemies_known=True)
         assert report.ok, report.flat()
         assert any("grievous-wounds" in w for w in report.warnings)
@@ -575,7 +582,7 @@ class TestAnInvalidBuildIsNeverServed:
         assert core <= set(validate_mod.SECTIONS)
         extras = set(validate_mod.SECTIONS) - core
         assert extras == {"situational", "situationalRunes", "snowball",
-                          "scores", "counterSummary"}
+                          "scores", "counterSummary", "playGuide"}
 
 
 class TestBootsFollowTheDamagePath:

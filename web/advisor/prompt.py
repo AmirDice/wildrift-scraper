@@ -99,6 +99,32 @@ SYSTEM = (
     "the flex, and the boots (bootsReason, runeReasons), not only the item choices. "
     "(Counter mode skips this, see below.)\n"
 
+    "WRITE A PLAY GUIDE for the build you just chose (`playGuide`). This is the part the "
+    "player reads before a game, so it has to be about THIS BUILD on THIS CHAMPION, not "
+    "about the champion in general. The test for every sentence: could it be copied onto "
+    "a different build for the same champion without changing? If yes, it is filler -- "
+    "delete it and write the version that names what you actually chose.\n"
+    "THE WHOLE LOADOUT WORKS TOGETHER, so write about it that way. The items, the runes "
+    "and the summoner spells were picked to do ONE thing between them, and the guide is "
+    "where that plan gets said out loud: a keystone that needs a target reached explains "
+    "why the boots were bought, a rune that rewards a takedown explains which fight to "
+    "look for, a summoner explains how the engage starts. Name runes and summoners "
+    "alongside items wherever they are part of the same play -- a guide that only "
+    "discusses items is describing a third of the build.\n"
+    "- earlyGame: how to play until the first item completes, given what that item and "
+    "the rune page give you. Say what the early game lets the champion do that it could "
+    "not do without them.\n"
+    "- powerSpike: the moment this build turns on, named by ITEM COUNT or item, and what "
+    "changes at that point -- what to look for on the map once it lands.\n"
+    "- teamfight: how to actually fight with this loadout. Who to look for, from where, "
+    "and in what order the abilities, items and summoners come out. Reference the combo "
+    "if one was supplied.\n"
+    "- pitfall: the mistake that wastes THIS build specifically. Not generic advice like "
+    "'do not get caught' -- the one that follows from these items, these runes, these "
+    "summoners, or this champion's cooldowns.\n"
+    "Two or three plain sentences each, written to a player who knows the game. No "
+    "headings, no bullet characters, no markdown.\n"
+
     "CHOOSE THE SUMMONER SPELLS from the pool given below, and treat it as a real "
     "decision rather than a habit: outside the jungle both slots are open, and the "
     "enemy team is the reason to deviate from the usual pair. Smite is the jungler's "
@@ -191,6 +217,7 @@ SYSTEM = (
     '"when":"..."}],'
     '"snowballSwap":null or {"item":"<slug>","replaces":"<slug>","atPosition":1-5,'
     '"resultingOrder":["<slug>","<slug>","<slug>","<slug>","<slug>"],"when":"..."},'
+    '"playGuide":{"earlyGame":"...","powerSpike":"...","teamfight":"...","pitfall":"..."},'
     '"why":["3-5 short bullets"]}'
 )
 

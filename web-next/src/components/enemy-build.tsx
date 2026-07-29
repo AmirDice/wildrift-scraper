@@ -57,6 +57,55 @@ function WhyRow({ icon, round, name, reason }: {
   );
 }
 
+/**
+ * How to play the build that was just generated.
+ *
+ * "Why this build" explains the choices; this explains what to do with them.
+ * They are different questions and a player asked for both -- the reasoning is
+ * what you read once, this is what you read before a game.
+ *
+ * Rendered above the reasoning for that reason, and open by default like every
+ * other result panel.
+ */
+const GUIDE_SECTIONS = [
+  ["earlyGame", "Early game", "text-emerald-300"],
+  ["powerSpike", "Your power spike", "text-gold"],
+  ["teamfight", "In a fight", "text-accent"],
+  ["pitfall", "What wastes this build", "text-bad"],
+] as const;
+
+function PlayGuide({ advice }: { advice: Advice }) {
+  const guide = advice.playGuide;
+  const rows = GUIDE_SECTIONS
+    .map(([key, label, tone]) => ({ label, tone, text: (guide?.[key] ?? "").trim() }))
+    .filter((row) => row.text);
+  if (!rows.length) return null;
+
+  return (
+    <details open className="glass group rounded-2xl p-4">
+      <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
+        <span className="min-w-0">
+          <span className="block text-sm font-bold text-text">How to play this build</span>
+          <span className="text-xs font-normal text-faint">
+            Getting the most out of these items and runes
+          </span>
+        </span>
+        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="space-y-3">
+        {rows.map((row) => (
+          <div key={row.label}>
+            <p className={`text-[0.65rem] font-bold uppercase tracking-wide ${row.tone}`}>
+              {row.label}
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-muted">{row.text}</p>
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
 function WhyThisBuild({ advice }: { advice: Advice }) {
   const reasonBySlug = new Map(
     (advice.candidateItemScores ?? []).map((row) => [row.item, row.reason]),
@@ -244,6 +293,13 @@ export type Advice = {
     earlyPower: number;
     confidence: number;
     reason: string;
+  };
+  /** How to actually play the loadout that was just generated. */
+  playGuide?: {
+    earlyGame?: string;
+    powerSpike?: string;
+    teamfight?: string;
+    pitfall?: string;
   };
   validationErrors?: string[];
   /** Additive metadata (schemaVersion 2): what the build was optimised for, and
@@ -914,6 +970,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 </div>
               </div>
             ) : null}
+
+            <PlayGuide advice={advice} />
 
             <WhyThisBuild advice={advice} />
 

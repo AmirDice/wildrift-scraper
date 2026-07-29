@@ -29,7 +29,8 @@ ITEMS = itemmeta.ITEMS
 # rule table. A summoner spell is never worth a repair round-trip, and never
 # worth failing a build that has five correct items in it.
 SECTIONS = ("items", "boots", "runes", "situational",
-            "situationalRunes", "snowball", "scores", "counterSummary", "locks")
+            "situationalRunes", "snowball", "scores", "counterSummary",
+            "playGuide", "locks")
 
 
 @dataclass
@@ -642,6 +643,43 @@ def validate(
     # the model's pick IS the answer, and summoners.enforce() applies the jungle
     # rules to it downstream, so discarding it here would silently throw away a
     # choice made against the enemy comp and fall back to the static table.
+
+    # ---- play guide ---------------------------------------------------------
+    # Checked for SUBSTANCE, not just presence. The failure mode for a written
+    # section is not a missing key, it is four paragraphs of advice that would
+    # be true of any build on this champion -- which is worse than nothing,
+    # because it looks like an answer. So the guide has to name pieces of the
+    # loadout it is describing, and the whole loadout counts: a guide that
+    # discusses only items is describing a third of what was chosen.
+    guide = res.get("playGuide")
+    _GUIDE_KEYS = ("earlyGame", "powerSpike", "teamfight", "pitfall")
+    if not isinstance(guide, dict):
+        report.fail("playGuide", "playGuide must be an object with the keys "
+                                 f"{', '.join(_GUIDE_KEYS)}")
+    else:
+        thin = [k for k in _GUIDE_KEYS if len(str(guide.get(k) or "").strip()) < 40]
+        if thin:
+            report.fail("playGuide",
+                        f"these playGuide sections are missing or too short to be useful: "
+                        f"{', '.join(thin)}. Each needs two or three real sentences about "
+                        f"THIS build.")
+        else:
+            blob = " ".join(str(guide.get(k) or "") for k in _GUIDE_KEYS).lower()
+            named = [s for s in main_items + [boots] if s
+                     and (ITEMS.get(s, {}).get("name", "") or "").lower().split()[0] in blob]
+            page = res.get("runes") or {}
+            rune_names = [page.get("keystone"), *(page.get("minors") or []), page.get("flex")]
+            named_runes = [r for r in rune_names if r and str(r).lower() in blob]
+            if not named:
+                report.fail("playGuide",
+                            "the playGuide never names an item from this build, so it is "
+                            "generic champion advice rather than a guide to this build. "
+                            "Name the pieces the advice depends on.")
+            elif not named_runes:
+                report.fail("playGuide",
+                            "the playGuide names items but never a rune from the page you "
+                            "chose. The items, runes and summoners were picked to work "
+                            "together -- say how, naming the runes involved.")
 
     # ---- locks --------------------------------------------------------------
     for slug in (item_locks or []):

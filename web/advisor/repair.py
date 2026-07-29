@@ -35,6 +35,9 @@ REPAIRABLE: dict[str, tuple[str, ...]] = {
     "scores": ("candidateItemScores", "mandatoryAuditScores", "itemScores", "buildScore"),
     # The counter summary is commentary on the build, so it repairs in isolation.
     "counterSummary": ("counterSummary",),
+    # Same for the play guide: it describes the build without being it, so a
+    # thin guide is worth one more ask and never worth the five items.
+    "playGuide": ("playGuide",),
 }
 
 # `items` is deliberately absent: the item selection is the spine of the build,

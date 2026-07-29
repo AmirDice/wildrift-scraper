@@ -42,6 +42,20 @@ def make_build(**overrides) -> dict:
             "flex": "Celerity",
         },
         "summoners": ["Flash", "Smite"],
+        # Names an item AND a rune from the page above, which is what the
+        # playGuide check requires: a guide that could be pasted onto any build
+        # for this champion is filler, and one that only discusses items is
+        # describing a third of what was chosen.
+        "playGuide": {
+            "earlyGame": "Clear to level four before looking for a gank, using Conqueror "
+                         "stacks from repeated hits rather than one burst window.",
+            "powerSpike": "Black Cleaver at one item is the spike; the armour shred turns "
+                          "a losing dive into a winning one.",
+            "teamfight": "Open on the target Trinity Force can reach, then hold Last Stand "
+                         "range rather than retreating early.",
+            "pitfall": "Spending the engage before Conqueror is stacked wastes the whole "
+                       "build, which pays out over a long fight rather than instantly.",
+        },
         "situational": [],
         "situationalRunes": [],
         "situationalBoots": [],

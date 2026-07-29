@@ -121,7 +121,10 @@ export function buildCacheKey(request: BuildRequestKey): string {
   //
   // The lesson, for whoever bumps this next: the version has to move with the
   // LAST advisor change that ships, not the first one noticed.
-  return `build:v11:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v12: builds now carry a playGuide. A v11 entry has no guide at all, so
+  // serving one would render the panel empty for every champion someone has
+  // already asked about -- which is most of the popular ones.
+  return `build:v12:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
