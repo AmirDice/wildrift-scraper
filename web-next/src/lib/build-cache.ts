@@ -124,7 +124,12 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v12: builds now carry a playGuide. A v11 entry has no guide at all, so
   // serving one would render the panel empty for every champion someone has
   // already asked about -- which is most of the popular ones.
-  return `build:v12:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v13: seven champions had a multi-hit empowered attack counted as ONE on-hit
+  // application, so Pantheon, Renekton, Shyvana, Viego, Fiora, Graves and Lee
+  // Sin all read as low on-hit reliance and never saw on-hit items considered.
+  // Sundered Sky's truncated passive text was repaired in the same batch. A v12
+  // entry for any of them was built from the wrong profile.
+  return `build:v13:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
