@@ -120,6 +120,10 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
   // as well, because a touch device has no hover.
   const [blockedNote, setBlockedNote] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  // Item-type filter for the picker. "Active" is deliberately absent from
+  // the chips: only two items carry it, so a chip that yields two results
+  // costs more row than it saves.
+  const [category, setCategory] = useState("All");
   const [savedBuilds, setSavedBuilds] = useState<SavedCustomBuild[]>([]);
   const [saveName, setSaveName] = useState("");
   const [loadedSavedId, setLoadedSavedId] = useState<string | null>(null);
@@ -279,6 +283,10 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
     if (picker.kind === "item" || picker.kind === "boots") {
       return allItems
         .filter((i) => (picker.kind === "boots" ? i.category === "Boots" : i.category !== "Boots"))
+        // Category filter. The full item list is ~100 entries in a grid of
+        // icons, so "find me a magic resist item" meant recognising every
+        // icon or knowing the name already.
+        .filter((i) => category === "All" || i.category === category)
         .filter((i) => i.name.toLowerCase().includes(q))
         .sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -299,7 +307,7 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
       (r) => r.type === "Minor" && r.slot === slot
         && (!state.runes.tree || r.tree === state.runes.tree)
         && r.name.toLowerCase().includes(q));
-  }, [picker, query, allItems, allRunes, state.runes.tree]);
+  }, [picker, query, category, allItems, allRunes, state.runes.tree]);
 
   return (
     <div className="glass rounded-2xl p-4">
@@ -386,14 +394,14 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
         })}
         {state.items.length < 5 && (
           <Tile label="add item"
-                onClick={() => { setPicker({ kind: "item", idx: state.items.length }); setQuery(""); }} />
+                onClick={() => { setPicker({ kind: "item", idx: state.items.length }); setQuery(""); setCategory("All"); }} />
         )}
         <span className="text-faint">+</span>
         {state.boots && itemMeta.get(state.boots) ? (
           <EquippedTile icon={itemMeta.get(state.boots)!.icon} label={itemMeta.get(state.boots)!.name}
             detail={<ItemDetail item={itemMeta.get(state.boots)!} />} size={36} onRemove={removeBoots} />
         ) : (
-          <Tile label="add boots" size={36} onClick={() => { setPicker({ kind: "boots" }); setQuery(""); }} />
+          <Tile label="add boots" size={36} onClick={() => { setPicker({ kind: "boots" }); setQuery(""); setCategory("All"); }} />
         )}
         <span className="mx-1 h-8 w-px bg-line" />
         {state.runes.keystone && runeMeta.get(state.runes.keystone) ? (
@@ -471,6 +479,23 @@ export function BuildCustomizer({ name, data, comparisonChoices }: {
             />
             <button onClick={() => setPicker(null)} className="text-xs text-muted hover:text-text">close</button>
           </div>
+          {picker.kind === "item" && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {["All", "Physical", "Magic", "Defense", "Support"].map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCategory(c)}
+                  className={`rounded-md px-2 py-1 text-[0.7rem] font-semibold transition ${
+                    category === c
+                      ? "bg-accent/20 text-accent"
+                      : "text-muted hover:bg-white/[0.05] hover:text-text"
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="mt-2 grid max-h-44 grid-cols-6 gap-1 overflow-y-auto sm:grid-cols-10">
             {candidates.map((c) => {
               const slug = "slug" in c ? c.slug : "";
