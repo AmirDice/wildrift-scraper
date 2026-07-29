@@ -40,6 +40,29 @@ class TestModelRouting:
         adv = _advisor(monkeypatch, "gemini-3.5-flash-lite", "")
         assert adv.model_for_request("burst") == "gemini-3.5-flash-lite"
 
+    def test_complex_champions_escalate_even_on_standard(self, monkeypatch):
+        """Malphite's measured failure was a STANDARD build: the lite went AP
+        past an AUTHORITATIVE tank identity three runs out of three. Playstyle
+        routing alone would never have caught it."""
+        adv = _advisor(monkeypatch, "gemini-3.5-flash-lite", "gemini-3.6-flash")
+        for champ in ("Malphite", "Kayn", "Master Yi", "Garen", "Nunu & Willump"):
+            assert adv.model_for_request("standard", champ) == "gemini-3.6-flash", champ
+
+    def test_simple_champions_stay_cheap_on_standard(self, monkeypatch):
+        adv = _advisor(monkeypatch, "gemini-3.5-flash-lite", "gemini-3.6-flash")
+        for champ in ("Jinx", "Annie", "Nami", "Zed"):
+            assert adv.model_for_request("standard", champ) == "gemini-3.5-flash-lite", champ
+
+    def test_complex_set_is_derived_not_hand_picked(self, monkeypatch):
+        """The set must follow the data: forms, curated identities, derived
+        tanks. If someone deletes the derivation this catches the regression."""
+        adv = _advisor(monkeypatch, "gemini-3.5-flash-lite", "gemini-3.6-flash")
+        assert "Kayn" in adv.COMPLEX_CHAMPIONS            # transform forms
+        assert "Fiora" in adv.COMPLEX_CHAMPIONS           # curated identity
+        assert "Malphite" in adv.COMPLEX_CHAMPIONS        # derived tank
+        assert "Jinx" not in adv.COMPLEX_CHAMPIONS
+        assert 20 <= len(adv.COMPLEX_CHAMPIONS) <= 50, len(adv.COMPLEX_CHAMPIONS)
+
     def test_never_escalates_across_providers(self, monkeypatch):
         """Mixing providers per-request would change auth and the response
         contract mid-pipeline; a DeepSeek base ignores a Gemini premium."""

@@ -72,12 +72,48 @@ IS_GEMINI = MODEL.lower().startswith("gemini")
 PREMIUM_MODEL = os.environ.get("ADVISOR_MODEL_PREMIUM", "").strip()
 
 
-def model_for_request(playstyle: str) -> str:
+def _complex_champions() -> frozenset[str]:
+    """Champions the cheap model gets wrong even on STANDARD requests.
+
+    Three groups, each tied to evidence rather than taste:
+      - transform forms (Kayn): the form block and the base record disagree,
+        and the lite resolved that disagreement against a live request;
+      - champions with a curated build identity in combat_profiles.json: the
+        derivation got them wrong, which is the definition of a confusing kit;
+      - every champion whose derived build path is "tank": the lite built Rod
+        of Ages / Riftmaker / Rabadon's Malphite three STANDARD runs out of
+        three, straight past an identity block marked AUTHORITATIVE.
+
+    Derived at import from the same data everything else reads, so a new
+    curated override or a re-derived tank automatically joins the set.
+    """
+    out = {n for n, c in CHAMPS.items() if c.get("forms")}
+    for name, entry in ((_load("combat_profiles.json", {}) or {}).get("champions") or {}).items():
+        if any(k in entry for k in ("buildIdentity", "buildIdentityProfile", "alternativePath")):
+            out.add(name)
+    for name in CHAMPS:
+        try:
+            if profiles.build_identity_profile(name).get("primaryBuildPath") == "tank":
+                out.add(name)
+        except Exception:  # noqa: BLE001 -- a broken profile must not kill import
+            continue
+    return frozenset(out)
+
+
+# Assigned after the champion data loads below; the function body reads CHAMPS
+# and the profiles module at call time, not at definition time.
+COMPLEX_CHAMPIONS: frozenset[str] = frozenset()
+
+
+def model_for_request(playstyle: str, champion: str = "") -> str:
     """Which model authors this build. Escalation applies only within the
     Gemini family: mixing providers per-request would change auth and the
-    response contract mid-pipeline."""
-    if (PREMIUM_MODEL and IS_GEMINI and PREMIUM_MODEL.lower().startswith("gemini")
-            and playstyle not in ("standard", "adaptive")):
+    response contract mid-pipeline. Two triggers, both measured failures of
+    the cheap model: an explicit playstyle it ignores, or a champion whose
+    identity it overrides even on standard requests."""
+    if not (PREMIUM_MODEL and IS_GEMINI and PREMIUM_MODEL.lower().startswith("gemini")):
+        return MODEL
+    if playstyle not in ("standard", "adaptive") or champion in COMPLEX_CHAMPIONS:
         return PREMIUM_MODEL
     return MODEL
 THINKING = {"type": "enabled"}
@@ -150,6 +186,8 @@ for _rec in (_ROSTER.values() if isinstance(_ROSTER, dict) else _ROSTER):
     if _name in CHAMPS:
         CHAMPS[_name].setdefault("class", _rec.get("class", ""))
         CHAMPS[_name].setdefault("role", _rec.get("role", ""))
+
+COMPLEX_CHAMPIONS = _complex_champions()
 
 PLAYSTYLE_CONFIG = json.loads(PLAYSTYLE_CONFIG_PATH.read_text(encoding="utf-8"))
 PLAYSTYLES_BY_CLASS: dict[str, list[str]] = PLAYSTYLE_CONFIG["byClass"]
@@ -841,10 +879,13 @@ def advise(champion: str, role: str, enemies: list[str],
     champion_class = champion_record.get("class", "")
     emit({"stage": "model", "chars": 0})
 
-    request_model = model_for_request(playstyle)
+    request_model = model_for_request(playstyle, champion)
     if request_model != MODEL:
-        print(f"[advisor] escalated to {request_model}: playstyle={playstyle!r} "
-              f"is an explicit request the base model measurably ignores", file=sys.stderr)
+        why = (f"champion {champion!r} is in the complex set"
+               if playstyle in ("standard", "adaptive")
+               else f"playstyle {playstyle!r} is an explicit request")
+        print(f"[advisor] escalated to {request_model}: {why} "
+              f"the base model measurably gets wrong", file=sys.stderr)
 
     def call(text: str) -> dict:
         # Pass each keyword only when it deviates from the default, so the

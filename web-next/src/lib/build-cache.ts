@@ -135,7 +135,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // explicit playstyle, and explicit-playstyle builds are authored by the
   // escalation model -- cached preference builds (including a live tanky
   // 'burst' Rhaast) predate both.
-  return `build:v18:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v19: complex champions (forms, curated identities, derived tanks -- 30 of
+  // 141) escalate to the premium model even on standard requests. v18 entries
+  // for those champions are minutes old and lite-authored, and Malphite's
+  // measured failure was exactly a lite-authored standard build.
+  return `build:v19:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
