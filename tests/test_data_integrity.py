@@ -263,3 +263,53 @@ class TestDerivedDataIsFresh:
         assert expected <= set(details), (
             "champion_details.json is stale; re-run python -m scripts.export_champion_details. "
             f"missing: {sorted(expected - set(details))}")
+
+
+class TestKaynBaseStats:
+    """Owner-read level 1 and level 15, growing linearly between them.
+
+    The scrape had almost every number wrong: hp 630 where it is 725, armor 40
+    where it is 44, mr 36 where it is 38, attack speed 0.80 where it is 0.85,
+    level-15 AD understated by 14 -- and no mana, mana regen or ability haste
+    at all on a champion who uses mana.
+    """
+
+    L1 = {"ad": 70, "hp": 725, "mana": 465, "armor": 44, "mr": 38,
+          "attackSpeed": 0.85, "hpRegen": 10, "manaRegen": 15, "moveSpeed": 350}
+    L15 = {"ad": 126, "hp": 2422, "mana": 1260, "armor": 110, "mr": 64,
+           "attackSpeed": 1.03, "hpRegen": 20, "manaRegen": 26, "moveSpeed": 350}
+
+    def _stats(self, name):
+        return load(WEB / "engine.json")["champions"][name]["baseStats"]
+
+    def test_level_one_matches_the_game(self):
+        for form in ("Kayn", "Kayn (Rhaast)"):
+            got = self._stats(form)
+            for stat, want in self.L1.items():
+                assert got[stat]["base"] == want, f"{form} {stat}"
+
+    def test_level_fifteen_matches_the_game(self):
+        for form in ("Kayn", "Kayn (Rhaast)"):
+            got = self._stats(form)
+            for stat, want in self.L15.items():
+                assert got[stat]["lvl15"] == want, f"{form} {stat}"
+
+    def test_the_growth_actually_reaches_level_fifteen(self):
+        """perLevel is not decoration: base + 14 growths must land on lvl15, or
+        every level between 1 and 15 is wrong while both ends look right."""
+        for form in ("Kayn", "Kayn (Rhaast)"):
+            for stat, entry in self._stats(form).items():
+                if "perLevel" not in entry or "lvl15" not in entry:
+                    continue
+                reached = entry["base"] + entry["perLevel"] * 14
+                assert abs(reached - entry["lvl15"]) < 0.01, f"{form} {stat}: {reached}"
+
+    def test_both_forms_share_a_body(self):
+        """The transform changes the abilities, not the base stats."""
+        assert self._stats("Kayn") == self._stats("Kayn (Rhaast)")
+
+    def test_he_has_a_mana_pool_at_all(self):
+        """The specific omission: a mana champion carrying no mana meant every
+        mana-scaling judgement about him was made against zero."""
+        for form in ("Kayn", "Kayn (Rhaast)"):
+            assert self._stats(form)["mana"]["base"] > 0, form

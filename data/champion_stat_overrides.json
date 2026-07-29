@@ -6,11 +6,31 @@
   "champions": {
     "Pantheon": {
       "baseStats": {
-        "ad": { "base": 64, "perLevel": 3.6, "lvl15": 114.4 },
-        "mana": { "base": 420, "perLevel": 33, "lvl15": 882 },
-        "armor": { "base": 52, "perLevel": 4.7, "lvl15": 117.8 },
-        "hpRegen": { "base": 9, "perLevel": 0.7142857143, "lvl15": 19 },
-        "manaRegen": { "base": 12, "perLevel": 0.7142857143, "lvl15": 22 }
+        "ad": {
+          "base": 64,
+          "perLevel": 3.6,
+          "lvl15": 114.4
+        },
+        "mana": {
+          "base": 420,
+          "perLevel": 33,
+          "lvl15": 882
+        },
+        "armor": {
+          "base": 52,
+          "perLevel": 4.7,
+          "lvl15": 117.8
+        },
+        "hpRegen": {
+          "base": 9,
+          "perLevel": 0.7142857143,
+          "lvl15": 19
+        },
+        "manaRegen": {
+          "base": 12,
+          "perLevel": 0.7142857143,
+          "lvl15": 22
+        }
       },
       "statRules": {
         "attackSpeedRatio": 0.66,
@@ -18,7 +38,11 @@
           {
             "slot": "4",
             "stat": "physicalPen",
-            "values": [10, 20, 30],
+            "values": [
+              10,
+              20,
+              30
+            ],
             "label": "Grand Starfall passive"
           }
         ],
@@ -47,10 +71,26 @@
     },
     "Lucian": {
       "baseStats": {
-        "mana": { "base": 390, "perLevel": 49, "lvl15": 1076 },
-        "mr": { "base": 30, "perLevel": 1.5, "lvl15": 51 },
-        "hpRegen": { "base": 9, "perLevel": 0.8571428571, "lvl15": 21 },
-        "manaRegen": { "base": 12, "perLevel": 1.1428571429, "lvl15": 28 }
+        "mana": {
+          "base": 390,
+          "perLevel": 49,
+          "lvl15": 1076
+        },
+        "mr": {
+          "base": 30,
+          "perLevel": 1.5,
+          "lvl15": 51
+        },
+        "hpRegen": {
+          "base": 9,
+          "perLevel": 0.8571428571,
+          "lvl15": 21
+        },
+        "manaRegen": {
+          "base": 12,
+          "perLevel": 1.1428571429,
+          "lvl15": 28
+        }
       },
       "sources": [
         "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-4/",
@@ -58,6 +98,106 @@
         "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-5-3b/",
         "in-game level-15 verification supplied 2026-07-21"
       ]
+    },
+    "Kayn": {
+      "baseStats": {
+        "ad": {
+          "base": 70,
+          "perLevel": 4.0,
+          "lvl15": 126
+        },
+        "hp": {
+          "base": 725,
+          "perLevel": 121.2142857143,
+          "lvl15": 2422
+        },
+        "mana": {
+          "base": 465,
+          "perLevel": 56.7857142857,
+          "lvl15": 1260
+        },
+        "armor": {
+          "base": 44,
+          "perLevel": 4.7142857143,
+          "lvl15": 110
+        },
+        "mr": {
+          "base": 38,
+          "perLevel": 1.8571428571,
+          "lvl15": 64
+        },
+        "attackSpeed": {
+          "base": 0.85,
+          "perLevel": 0.0128571429,
+          "lvl15": 1.03
+        },
+        "hpRegen": {
+          "base": 10,
+          "perLevel": 0.7142857143,
+          "lvl15": 20
+        },
+        "manaRegen": {
+          "base": 15,
+          "perLevel": 0.7857142857,
+          "lvl15": 26
+        },
+        "moveSpeed": {
+          "base": 350,
+          "perLevel": 0.0,
+          "lvl15": 350
+        }
+      },
+      "_source": "Owner-read in-game values, 2026-07-29, level 1 and level 15. The scrape had Kayn's level-1 bases wrong across the board (hp 630 vs 725, armor 40 vs 44, mr 36 vs 38, attack speed 0.80 vs 0.85), understated his level-15 AD by 14, and carried NO mana, mana regen or ability haste at all. perLevel is linear over 14 level-ups, matching every other override here."
+    },
+    "Kayn (Rhaast)": {
+      "baseStats": {
+        "ad": {
+          "base": 70,
+          "perLevel": 4.0,
+          "lvl15": 126
+        },
+        "hp": {
+          "base": 725,
+          "perLevel": 121.2142857143,
+          "lvl15": 2422
+        },
+        "mana": {
+          "base": 465,
+          "perLevel": 56.7857142857,
+          "lvl15": 1260
+        },
+        "armor": {
+          "base": 44,
+          "perLevel": 4.7142857143,
+          "lvl15": 110
+        },
+        "mr": {
+          "base": 38,
+          "perLevel": 1.8571428571,
+          "lvl15": 64
+        },
+        "attackSpeed": {
+          "base": 0.85,
+          "perLevel": 0.0128571429,
+          "lvl15": 1.03
+        },
+        "hpRegen": {
+          "base": 10,
+          "perLevel": 0.7142857143,
+          "lvl15": 20
+        },
+        "manaRegen": {
+          "base": 15,
+          "perLevel": 0.7857142857,
+          "lvl15": 26
+        },
+        "moveSpeed": {
+          "base": 350,
+          "perLevel": 0.0,
+          "lvl15": 350
+        }
+      },
+      "_source": "Owner-read in-game values, 2026-07-29, level 1 and level 15. The scrape had Kayn's level-1 bases wrong across the board (hp 630 vs 725, armor 40 vs 44, mr 36 vs 38, attack speed 0.80 vs 0.85), understated his level-15 AD by 14, and carried NO mana, mana regen or ability haste at all. perLevel is linear over 14 level-ups, matching every other override here. Both forms share base stats; the transform changes the abilities, not the body."
     }
   }
 }
