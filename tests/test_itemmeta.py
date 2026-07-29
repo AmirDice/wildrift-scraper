@@ -165,3 +165,53 @@ class TestItemAvailability:
     def test_all_three_items_are_in_the_source_pool(self):
         for slug in ("eclipse", "sundered-sky", "dusk-and-dawn"):
             assert slug in itemmeta.completed_items(), slug
+
+
+class TestItemTextCorrections:
+    """Corrected passive text for items the scrape mangled.
+
+    The prompt calls the item description the FACTUAL SOURCE, so an item whose
+    text stops mid-formula is the one being described worst. Sundered Sky's
+    heal clause was cut off with an unbalanced bracket and appears in almost
+    every bruiser build, which is what prompted the check.
+    """
+
+    def test_the_correction_reaches_the_item_pool(self):
+        text = " ".join(itemmeta.ITEMS["sundered-sky"]["passives"])
+        assert "restoring Health equal to 125% of base Attack Damage" in text
+        assert "deals Critically Strikes" not in text, "the garbled verb is back"
+
+    def test_no_item_text_stops_mid_bracket(self):
+        """Unbalanced parentheses are the signature of a truncated scrape.
+
+        Guinsoo's is the known remaining one and is excluded until its real
+        wording is confirmed -- a plausible guess in the factual source is
+        worse than obvious damage.
+        """
+        known = {"guinsoos-rageblade"}
+        broken = {
+            slug for slug, item in itemmeta.ITEMS.items()
+            for passive in (item.get("passives") or [])
+            if " ".join(passive.split()).count("(") != " ".join(passive.split()).count(")")
+        }
+        assert broken <= known, f"newly truncated item text: {sorted(broken - known)}"
+
+    def test_corrections_never_invent_an_item(self):
+        """The overlay may only correct items that exist in the scrape."""
+        import json, pathlib
+        raw = json.loads(
+            (pathlib.Path(itemmeta.DATA) / "item_text_corrections.json").read_text(encoding="utf-8"))
+        for slug in raw:
+            if not slug.startswith("_"):
+                assert slug in itemmeta.ITEMS, slug
+
+    def test_every_correction_records_where_it_came_from(self):
+        """Provenance is the point: this file overrides the scraped truth."""
+        import json, pathlib
+        raw = json.loads(
+            (pathlib.Path(itemmeta.DATA) / "item_text_corrections.json").read_text(encoding="utf-8"))
+        for slug, entry in raw.items():
+            if slug.startswith("_"):
+                continue
+            assert entry.get("_source"), f"{slug} has no _source"
+            assert entry.get("_was"), f"{slug} does not record what it replaced"

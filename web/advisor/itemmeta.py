@@ -32,6 +32,18 @@ def _load(name: str, default=None):
 
 
 ITEMS: dict[str, dict] = {i["slug"]: i for i in _load("items.json", [])}
+
+# Corrected passive text for items the scrape mangled. The prompt states that
+# the item description is the FACTUAL SOURCE, so an item whose text stops
+# mid-formula is the one being described worst -- Sundered Sky's heal clause was
+# cut off with an unbalanced bracket. Applied here rather than edited into
+# items.json, which the scraper regenerates.
+for _slug, _fix in (_load("item_text_corrections.json", {}) or {}).items():
+    if _slug.startswith("_") or _slug not in ITEMS:
+        continue
+    if _fix.get("passives"):
+        ITEMS[_slug]["passives"] = list(_fix["passives"])
+
 RULES: dict = _load("item_rules.json", {}) or {}
 
 HARD_EXCLUSIVE: dict[str, list[str]] = {
