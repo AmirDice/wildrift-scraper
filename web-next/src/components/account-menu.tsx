@@ -64,8 +64,14 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
               <p className="truncate text-xs text-faint">{user.email}</p>
               {quota && (
                 <p className="mt-3 rounded-lg bg-white/[0.05] px-3 py-2 text-xs text-muted">
-                  <span className="font-semibold text-accent">{quota.remaining}</span> of {quota.limit} build
-                  generations left today.
+                  {quota.unlimited ? (
+                    <span className="font-semibold text-accent">Unlimited build generations.</span>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-accent">{quota.remaining}</span> of {quota.limit} build
+                      generations left today.
+                    </>
+                  )}
                 </p>
               )}
               <Link

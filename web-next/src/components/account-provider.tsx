@@ -10,8 +10,11 @@ export interface AccountUser {
 
 export interface QuotaState {
   used: number;
-  limit: number;
-  remaining: number;
+  /** null when the account is unlimited: Infinity does not survive JSON, so
+   *  the server's Number.POSITIVE_INFINITY arrives here as null. Read
+   *  `unlimited` before doing arithmetic on these. */
+  limit: number | null;
+  remaining: number | null;
   signedIn: boolean;
   canUnlockBySigningIn: boolean;
   resetAt: number;

@@ -605,7 +605,13 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const needsEnemy = isCounter && selectedEnemies.length === 0;
   const roleMismatch = Boolean(champ && role && naturalRole && role !== naturalRole);
   const supportsDamagePath = Boolean(champ && HYBRID_DAMAGE_CHAMPIONS.has(champ));
-  const outOfBudget = Boolean(quota && quota.remaining <= 0);
+  // `remaining` is null for unlimited accounts (Infinity does not survive
+  // JSON), and in JS `null <= 0` is true -- so without the guards the more
+  // privileged the account, the more locked-out the UI: the server exempted
+  // admins while this line disabled their Generate button.
+  const outOfBudget = Boolean(
+    quota && !quota.unlimited && typeof quota.remaining === "number" && quota.remaining <= 0,
+  );
 
   const pickChamp = (name: string) => {
     setChamp(name);
@@ -896,7 +902,13 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           </button>
           {quota && !outOfBudget && (
             <span className="text-xs text-faint">
-              <span className="font-semibold text-muted">{quota.remaining}</span> of {quota.limit} generations left today
+              {quota.unlimited ? (
+                <span className="font-semibold text-muted">Unlimited generations</span>
+              ) : (
+                <>
+                  <span className="font-semibold text-muted">{quota.remaining}</span> of {quota.limit} generations left today
+                </>
+              )}
             </span>
           )}
         </div>
