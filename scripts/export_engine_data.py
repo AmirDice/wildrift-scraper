@@ -230,7 +230,13 @@ def main() -> None:
 
     stat_rules = {
         "schemaVersion": 1,
-        "targetPatch": "7.2a",
+        # Read from the data, not hard-coded here. It WAS hard-coded, so
+        # applying 7.2b updated champion_stat_overrides.json and this
+        # exporter then wrote "7.2a" straight back over it -- the site would
+        # have shipped 7.2b numbers under a 7.2a label, including in the
+        # build cache key, which is keyed on the patch.
+        "targetPatch": _load("champion_stat_overrides.json").get(
+            "targetPatch", "unknown"),
         "champions": champion_overrides,
         "items": item_stat_rules,
         "runes": rune_stat_rules,
