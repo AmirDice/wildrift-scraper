@@ -457,7 +457,10 @@ export function listedBuildStats(
     omnivamp: 0,
     physicalVamp: 0,
     magicVamp: 0,
-    tenacity: 0,
+    // Read from baseStats like every other level-scaling stat. It was a hard 0,
+    // so a champion with innate tenacity (Kayn carries 3%) showed none until an
+    // item or Perseverance granted some.
+    tenacity: atLevel("tenacity"),
     healShieldPower: 0,
     manaRegen: atLevel("manaRegen"),
     hpRegen: atLevel("hpRegen"),

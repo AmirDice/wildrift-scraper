@@ -274,12 +274,12 @@ class TestKaynBaseStats:
     at all on a champion who uses mana.
     """
 
-    L1 = {"ad": 70, "hp": 725, "mana": 465, "armor": 44, "mr": 38,
-          "attackSpeed": 0.85, "abilityHaste": 5, "hpRegen": 10, "manaRegen": 15,
-          "moveSpeed": 350}
+    L1 = {"ad": 70, "hp": 630, "mana": 420, "armor": 40, "mr": 36,
+          "attackSpeed": 0.80, "hpRegen": 8, "manaRegen": 12, "moveSpeed": 350,
+          "tenacity": 3}
     L15 = {"ad": 126, "hp": 2422, "mana": 1260, "armor": 110, "mr": 64,
-           "attackSpeed": 1.03, "abilityHaste": 10, "hpRegen": 20, "manaRegen": 26,
-           "moveSpeed": 350}
+           "attackSpeed": 1.01, "hpRegen": 20, "manaRegen": 26, "moveSpeed": 350,
+           "tenacity": 3}
 
     def _stats(self, name):
         return load(WEB / "engine.json")["champions"][name]["baseStats"]
@@ -310,13 +310,21 @@ class TestKaynBaseStats:
         """The transform changes the abilities, not the base stats."""
         assert self._stats("Kayn") == self._stats("Kayn (Rhaast)")
 
-    def test_base_ability_haste_is_carried(self):
-        """The pipeline already READ abilityHaste from baseStats -- generalHaste
-        is atLevel("abilityHaste") -- but no champion carried the value, so it
-        silently resolved to zero and the panel showed only what items and runes
-        added. Kayn is the first champion with a real one."""
+    def test_he_carries_no_base_ability_haste(self):
+        """Verified as genuinely 0 at every level, so no entry is carried.
+
+        An earlier pass here asserted 5 growing to 10, from a stat sheet the
+        owner later corrected. Kept as a test because "we checked and it is
+        zero" is worth recording -- otherwise the next person adds it back.
+        """
         for form in ("Kayn", "Kayn (Rhaast)"):
-            assert self._stats(form)["abilityHaste"]["base"] == 5, form
+            assert "abilityHaste" not in self._stats(form), form
+
+    def test_innate_tenacity_is_carried(self):
+        """3% at every level. listedBuildStats had tenacity hard-coded to 0, so
+        a champion with innate tenacity showed none until an item granted it."""
+        for form in ("Kayn", "Kayn (Rhaast)"):
+            assert self._stats(form)["tenacity"]["base"] == 3, form
 
     def test_he_has_a_mana_pool_at_all(self):
         """The specific omission: a mana champion carrying no mana meant every
