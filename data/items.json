@@ -80,10 +80,6 @@
       "attackSpeed": {
         "value": 35.0,
         "percent": true
-      },
-      "ad": {
-        "value": 30.0,
-        "percent": false
       }
     },
     "passives": [
@@ -653,7 +649,7 @@
     "categories": [
       "Physical"
     ],
-    "cost": 2700,
+    "cost": 2800,
     "stats": {
       "crit": {
         "value": 25.0,
@@ -1208,7 +1204,7 @@
     "cost": 3300,
     "stats": {
       "ad": {
-        "value": 30.0,
+        "value": 25.0,
         "percent": false
       },
       "physicalPen": {
@@ -1391,7 +1387,7 @@
       }
     },
     "passives": [
-      "Echo: Your next damaging ability or empowered attack deals an additional 140 + 15% [ap] magic damage to the target and up to 3 nearby enemies. (9s Cooldown)"
+      "Echo: Your next damaging ability or empowered attack deals an additional 110 + 10% [ap] magic damage to the target and up to 3 nearby enemies. (10s Cooldown)"
     ],
     "tags": [],
     "icon": "/items/ludens-echo.webp"
@@ -2258,10 +2254,10 @@
     "categories": [
       "Defense"
     ],
-    "cost": 3000,
+    "cost": 3100,
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 250.0,
         "percent": false
       },
       "armor": {

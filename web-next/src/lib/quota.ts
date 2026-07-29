@@ -1,10 +1,10 @@
 /**
  * Daily build-generation quota.
  *
- * Everyone gets 5 generations a day. Signing in with Google grants a second
- * allowance of 5 counted against the Google account instead of the IP, so a
- * visitor who burns through the anonymous five can sign in and keep going --
- * 10 in a day, total.
+ * Everyone gets 10 generations a day. Signing in with Google grants a second
+ * allowance of 10 counted against the Google account instead of the IP, so a
+ * visitor who burns through the anonymous ten can sign in and keep going --
+ * 20 in a day, total.
  *
  * Counters live in the shared KV store (src/lib/kv.ts) keyed by UTC day, so
  * they survive redeploys and are shared across serverless instances whenever
@@ -15,9 +15,9 @@ import { dayKey, kvGetNumber, kvIncr } from "@/lib/kv";
 import type { SessionUser } from "@/lib/session";
 
 /** Anonymous allowance, per IP per UTC day. */
-export const ANON_DAILY_BUILDS = 5;
+export const ANON_DAILY_BUILDS = 10;
 /** Extra allowance unlocked by signing in, per Google account per UTC day. */
-export const SIGNED_IN_DAILY_BUILDS = 5;
+export const SIGNED_IN_DAILY_BUILDS = 10;
 
 const DAY_SECONDS = 60 * 60 * 24;
 

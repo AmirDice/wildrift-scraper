@@ -176,13 +176,11 @@ class TestDerivedDataIsFresh:
         """
         from scripts.export_engine_data import (
             _apply_recovered_conditions, apply_cooldown_corrections,
-            apply_formula_corrections,
         )
 
         expected = load(DATA / "ability_formulas.json")
         _apply_recovered_conditions(expected)
         apply_cooldown_corrections(expected)
-        apply_formula_corrections(expected)
         for name, entry in (load(DATA / "champion_combos.json")["champions"]).items():
             if name in expected and entry.get("combo"):
                 expected[name]["combo"] = entry["combo"]

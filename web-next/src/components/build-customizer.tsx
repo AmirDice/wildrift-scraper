@@ -23,7 +23,7 @@ import { getChampions } from "@/lib/data";
 /* eslint-disable @next/next/no-img-element */
 
 type RunePick = { keystone: string; tree: string; minors: [string, string, string]; flex: string };
-export type CustomBuildState = { items: string[]; boots: string; runes: RunePick };
+type CustomBuildState = { items: string[]; boots: string; runes: RunePick };
 type SavedCustomBuild = {
   id: string;
   name: string;
@@ -92,15 +92,10 @@ function EquippedTile({ icon, label, detail, onRemove, size = 40, round = false 
   );
 }
 
-export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
+export function BuildCustomizer({ name, data, comparisonChoices }: {
   name: string;
   data: ChampionBuilds;
   comparisonChoices: ComparableBuild[];
-  /** A loadout to open with, sent here from a generated build so it can be run
-   *  through the damage check. Consumed as the INITIAL state and nothing more:
-   *  the studio remounts this component when a new one arrives, so seeding
-   *  needs no effect and cannot fight the user's own edits afterwards. */
-  seed?: CustomBuildState | null;
 }) {
   const variants = visibleBuildVariants(data);
   // The first variant is only the BASELINE the per-item deltas are measured
@@ -112,7 +107,7 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
   // The minor TREE is seeded from the current build, else the tree-minor slots
   // filter on tree === "" and show nothing (the reported bug). In Wild Rift the
   // keystone is independent of the minor path, so the tree is its own control.
-  const [state, setState] = useState(() => seed ?? ({
+  const [state, setState] = useState(() => ({
     ...EMPTY_STATE,
     runes: { ...EMPTY_STATE.runes, tree: base?.runes.primaryTree || "Precision" },
   }));

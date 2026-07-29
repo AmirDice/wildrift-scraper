@@ -598,14 +598,6 @@ def advise(champion: str, role: str, enemies: list[str],
     # to the credibility check below.
     playstyle = {"sustain": "dps", "sustained_damage": "dps",
                  "glass_cannon": "oneshot"}.get(playstyle, playstyle)
-    # "best" is the studio's Best Build toggle: one tick that disables every
-    # other option. It travels as a playstyle so the cache key and the API
-    # surface need no new field, but it is NOT a preset -- it neutralises all
-    # five axes and swaps the option texts for one directive further down.
-    best_build = playstyle == "best"
-    if best_build:
-        playstyle, objective, game_phase = "standard", "balanced", "balanced"
-        damage_path, risk_tolerance = "standard", "medium"
     if mode == "counter" and not enemies:
         return {"error": "at least one enemy is required for a counter build"}
     if mode == "counter" and playstyle == "standard":
@@ -645,18 +637,6 @@ def advise(champion: str, role: str, enemies: list[str],
     obj = OBJECTIVES.get(objective, "")
     risk_tolerance = risk_tolerance if risk_tolerance in RISK_TOLERANCE else "medium"
     risk = RISK_TOLERANCE[risk_tolerance]
-    if best_build:
-        style = (
-            "BEST BUILD: the player ticked 'Best build', which disables every other "
-            "option -- no playstyle, power curve, optimisation goal, damage path or "
-            "risk preference applies. Choose the single strongest practical loadout "
-            "for this champion and role: the build you would tell a player to default "
-            "to in ranked, the one with the highest expected win rate over a normal "
-            "Wild Rift match. Commit to the strongest mainstream plan and optimise "
-            "every slot toward it; do not hedge toward novelty or spread value "
-            "across styles.")
-        obj = ""
-        risk = ""
     if mode == "studio":
         enemies = []
     enemies_known = bool(enemies)
@@ -738,7 +718,7 @@ def advise(champion: str, role: str, enemies: list[str],
          "Do NOT pull the result back toward the Standard build merely because Standard would "
          "be safer -- the player asked for this playstyle on purpose. Illegal, "
          "resource-incompatible, or role-breaking builds are still rejected."
-         if mode == "studio" and not best_build else ""),
+         if mode == "studio" else ""),
         f"OPTIMIZE FOR: {obj}" if obj else "",
         risk,
         GAME_PHASES[game_phase],
@@ -811,7 +791,6 @@ def advise(champion: str, role: str, enemies: list[str],
             required_audit_items=kit_linked_items,
             allowed_items=pool_slugs, item_locks=item_locks, boot_lock=locked_boot,
             rune_locks=locked_runes, resolve_item=_resolve_item,
-            build_identity=derived.get("buildIdentityProfile"),
         )
 
     report = _check(res)
@@ -912,7 +891,7 @@ def advise(champion: str, role: str, enemies: list[str],
     res["requestMeta"] = {
         "mode": mode,
         "requestedPlaystyle": playstyle,
-        "resolvedPlaystyle": "best" if best_build else playstyle,
+        "resolvedPlaystyle": playstyle,   # a hard-invalid style errors earlier
         "playstyleAdjustment": None,
         "powerCurve": game_phase,
         "optimizationGoal": objective,

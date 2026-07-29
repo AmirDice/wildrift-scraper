@@ -116,10 +116,10 @@ const ADVISOR_URL = process.env.ADVISOR_URL
   || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/advisor` : "");
 const ADVISOR_SECRET = process.env.ADVISOR_SECRET || "";
 
-// The daily cap lives in src/lib/quota.ts: 5 generations per IP per day, plus
-// another 5 for anyone signed in with Google. It exists because every
-// generation costs a real model call, so an unattended script could otherwise
-// run up the bill.
+// The daily cap lives in src/lib/quota.ts: 10 generations per IP per day, plus
+// another 10 for anyone signed in with Google. It exists because every
+// generation costs a real DeepSeek call (~$0.003), so an unattended script
+// could otherwise run up the bill.
 
 type Body = {
   champion?: string;

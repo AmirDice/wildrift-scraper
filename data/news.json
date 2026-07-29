@@ -3,38 +3,6 @@
   "count": 24,
   "articles": [
     {
-      "title": "Wild Rift Patch Notes 7.2b",
-      "excerpt": "Patch 7.2b is here with balance changes to champions, items, runes, and gameplay systems.",
-      "date": "2026-07-29T09:00:00.000Z",
-      "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-2b",
-      "category": "Game Updates",
-      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/0e51f4ce80a6c8846429295a0e438124d2ceba07-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
-    },
-    {
-      "title": "Wild Rift Classic Moment",
-      "excerpt": "We’re turning back time along with League Classic. Get your piece of Wild Rift nostalgia, sentimental fun and plenty of goodies starting August 7th UTC!",
-      "date": "2026-07-25T10:30:00.000Z",
-      "url": "https://www.youtube.com/watch?v=liAG0ZK9x-I",
-      "category": "Game Updates",
-      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/cae3a531844fbb3d4e60ec1050440d33360dd579-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
-    },
-    {
-      "title": "Wild Rift Patch Notes 7.2a",
-      "excerpt": "Patch 7.2a is here with balance adjustments to champions, items, and boots, targeting overperforming picks while giving underperformers a boost.",
-      "date": "2026-07-15T09:00:00.000Z",
-      "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-2a",
-      "category": "Game Updates",
-      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/c866980f254e2a4b62eba65d4b77d2cb48aafd06-1980x891.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
-    },
-    {
-      "title": "Wild Rift Patch Notes 7.2",
-      "excerpt": "Welcome to Patch 7.2, one of our biggest gameplay updates!",
-      "date": "2026-07-08T09:00:00.000Z",
-      "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-2",
-      "category": "Game Updates",
-      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/da8a30ba40f370ba330bac2b6c93781271288173-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
-    },
-    {
       "title": "Yunara Champion Overview",
       "excerpt": "PSA: time to get your world balance back in order. Or come July 9th UTC Yunara will do it for you.",
       "date": "2026-07-04T02:00:00.000Z",
@@ -193,6 +161,38 @@
       "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-1",
       "category": "Game Updates",
       "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/56be83407dc0226b2471399092f6bccd2dd96272-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
+    },
+    {
+      "title": "K’Sante Champion Overview",
+      "excerpt": "Leader in battle, or in government-who better to learn from than K’Sante, who takes on the Rift April 9th UTC. Get your leadership tutorial Nazumah-style here!",
+      "date": "2026-04-03T02:00:00.000Z",
+      "url": "https://www.youtube.com/watch?v=jx09xrerPCo",
+      "category": "Game Updates",
+      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/c68a20841657588722bf129d7593b3212eb6b097-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
+    },
+    {
+      "title": "Patch 7.1 Preview",
+      "excerpt": "Put your seat belt on because John and Will are here to take you on a wild ride! Get up to speed with everything coming your way in patch 7.1: Flat Out on April 9th UTC!",
+      "date": "2026-03-26T02:00:00.000Z",
+      "url": "https://www.youtube.com/watch?v=LIZmDM8wOJo",
+      "category": "Game Updates",
+      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/7e67b98d43f927873f293abfc419c4f989f5e521-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
+    },
+    {
+      "title": "Wild Rift Patch Notes 7.0g",
+      "excerpt": "🐶🪄",
+      "date": "2026-03-25T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-0g",
+      "category": "Game Updates",
+      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/384fad302a198a568256901235bddbb8bc636d41-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
+    },
+    {
+      "title": "Wild Rift Patch Notes 7.0f",
+      "excerpt": "Welcome to Patch 7.0f!",
+      "date": "2026-03-18T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-0f",
+      "category": "Game Updates",
+      "image": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/2557a0573a9562c704edb94a29a0b5656743ddd2-1920x1080.jpg?accountingTag=WR?w=640&h=360&fit=crop&auto=format"
     }
   ]
 }

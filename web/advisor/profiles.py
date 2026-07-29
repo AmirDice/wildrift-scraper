@@ -62,36 +62,6 @@ FORMULAS: dict[str, dict] = _load("ability_formulas.json", {}) or {}
 ARCHETYPES: dict[str, dict] = _load("champion_archetypes.json", {}) or {}
 OVERRIDES: dict[str, dict] = (_load("combat_profiles.json", {}) or {}).get("champions", {})
 
-
-def _apply_formula_corrections(formulas: dict) -> int:
-    """Fold data/formula_corrections.json into the formulas.
-
-    The `knowledge` and `mechanics` blocks are LLM-estimated at extraction
-    time and carry factual errors a re-extraction would regenerate -- Graves
-    was flagged noResource while paying 65-80 mana per Q. Reviewed corrections
-    live in the overlay; the fight engine and the exporter fold in the same
-    file so no consumer can disagree.
-    """
-    applied = 0
-    for name, entry in ((_load("formula_corrections.json", {}) or {})
-                        .get("champions") or {}).items():
-        rec = formulas.get(name)
-        if not rec:
-            continue
-        know = rec.setdefault("knowledge", {})
-        for key, value in (entry.get("knowledge") or {}).items():
-            know[key] = value
-            applied += 1
-        drop = set(entry.get("removeMechanics") or [])
-        if drop:
-            kept = [m for m in rec.get("mechanics") or [] if m.get("kind") not in drop]
-            applied += len(rec.get("mechanics") or []) - len(kept)
-            rec["mechanics"] = kept
-    return applied
-
-
-_apply_formula_corrections(FORMULAS)
-
 # Class and role are not in the champion scrape -- they live in the builds file
 # and the site roster. Without them a Marksman reads as an unclassified kit and
 # the attack-pattern rules below fall through to the wrong branch, so fold them

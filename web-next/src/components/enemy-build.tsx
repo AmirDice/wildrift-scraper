@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { rosterList, type RosterChampion } from "@/lib/threat";
 import engineData from "@/data/engine.json";
@@ -581,10 +580,6 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [objective, setObjective] = useState<string>("balanced");
   const [gamePhase, setGamePhase] = useState<string>("balanced");
   const [damagePath, setDamagePath] = useState<string>("standard");
-  // Best build: one tick that overrides and disables the preference dropdowns.
-  // Travels as playstyle "best"; the neutral values below keep the cache key
-  // canonical so every Best Build request for a champion+role hits one entry.
-  const [bestBuild, setBestBuild] = useState(false);
   const [championForm, setChampionForm] = useState<string>(presetForm || "shadow-assassin");
   const [enemies, setEnemies] = useState<(string | null)[]>(Array(5).fill(null));
   const [allies, setAllies] = useState<(string | null)[]>(Array(4).fill(null));
@@ -673,11 +668,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          champion: champ, role,
-          playstyle: bestBuild ? "best" : playstyle,
-          objective: bestBuild ? "balanced" : objective,
-          gamePhase: bestBuild ? "balanced" : gamePhase,
-          damagePath: bestBuild ? "standard" : damagePath,
+          champion: champ, role, playstyle, objective, gamePhase, damagePath,
           championForm: champ === "Kayn" ? championForm : "",
           aheadEnemy: isCounter ? safeAheadEnemy : "", mode,
           enemies: isCounter ? selectedEnemies : [],
@@ -739,33 +730,20 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 excluded={new Set([...selectedEnemies, ...selectedAllies])} />
             )}
           </div>
-          {!isCounter && (
-            <div data-tour="best-build">
-              <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Best build</p>
-              <label
-                title="Ignore every preference below and generate the strongest overall build for this champion and role"
-                className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
-                  bestBuild ? "border-accent/60 bg-accent/10 text-accent" : "border-line bg-[#0e1322] text-text"}`}>
-                <input type="checkbox" checked={bestBuild} onChange={(e) => setBestBuild(e.target.checked)}
-                  className="accent-current" />
-                Strongest overall
-              </label>
-            </div>
-          )}
           <div data-tour="power-spike">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Power spike</p>
-            <select value={gamePhase} onChange={(e) => setGamePhase(e.target.value)} disabled={bestBuild}
+            <select value={gamePhase} onChange={(e) => setGamePhase(e.target.value)}
               title={GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
               {GAME_PHASES.map((phase) => <option key={phase.key} value={phase.key}>{phase.label}</option>)}
             </select>
           </div>
           {supportsDamagePath && (
             <div>
               <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Damage path</p>
-              <select value={damagePath} onChange={(e) => setDamagePath(e.target.value)} disabled={bestBuild}
+              <select value={damagePath} onChange={(e) => setDamagePath(e.target.value)}
                 title={DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}
-                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
+                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
                 {DAMAGE_PATHS.map((path) => <option key={path.key} value={path.key}>{path.label}</option>)}
               </select>
             </div>
@@ -783,17 +761,15 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           )}
           <div data-tour="playstyle">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Playstyle</p>
-            <select value={playstyle} onChange={(e) => setPlaystyle(e.target.value)} disabled={bestBuild}
-              title={selectedPlaystyle?.description}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
+            <select value={playstyle} onChange={(e) => setPlaystyle(e.target.value)} title={selectedPlaystyle?.description}
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
               {availablePlaystyles.map((style) => <option key={style.key} value={style.key}>{style.label}</option>)}
             </select>
           </div>
           <div data-tour="objective">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimize for</p>
-            <select value={objective} onChange={(e) => setObjective(e.target.value)} disabled={bestBuild}
-              title={OBJECTIVE_HELP[objective]}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
+            <select value={objective} onChange={(e) => setObjective(e.target.value)} title={OBJECTIVE_HELP[objective]}
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
               {OBJECTIVES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
           </div>
@@ -811,46 +787,12 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             Not recommended: {champ} is usually played {naturalRole}, not {role}. The build may be off-meta.
           </p>
         )}
-        {bestBuild && !isCounter && (
-          <p className="text-xs text-muted">
-            Best build: all preferences are ignored. The model generates the strongest
-            overall build it can make for this champion and role.
-          </p>
-        )}
-        {selectedPlaystyle && !bestBuild && (
+        {selectedPlaystyle && (
           <div className="space-y-1 text-xs text-muted">
             <p>{selectedPlaystyle.description}</p>
             <p><span className="font-medium text-text">Power spike:</span> {GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}</p>
             {supportsDamagePath && <p><span className="font-medium text-text">Damage path:</span> {DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}</p>}
             {champ === "Kayn" && <p><span className="font-medium text-text">Form:</span> {KAYN_FORMS.find((form) => form.key === championForm)?.description}</p>}
-          </div>
-        )}
-        {/* What this tool is actually optimising for, said before the player
-            waits a minute for an answer. A blind build is solving a different
-            problem from a counter build, and someone who picks Standard and
-            Balanced and expects a one-shot page has been misled by silence
-            rather than by anything the generator said. */}
-        {!isCounter && (
-          <div className="rounded-xl border border-line/70 bg-white/[0.02] p-3">
-            <p className="text-xs leading-relaxed text-muted">
-              <span className="font-semibold text-text">This build is made blind.</span>{" "}
-              No enemy team is supplied, so it optimises for the most consistent
-              first-pick loadout: the one that holds up whoever you end up against.
-              Standard with everything balanced will return a solid, safe build rather
-              than a one-shot or maximum-damage page, because a build that gambles is
-              the wrong answer when the matchup is unknown. Pick a playstyle if you
-              want it to commit to something.
-            </p>
-            <p className="mt-2 text-xs leading-relaxed text-muted">
-              Already know who you are up against?{" "}
-              <Link
-                href={champ ? `/counter?champion=${encodeURIComponent(champ)}` : "/counter"}
-                className="font-semibold text-emerald-300 underline decoration-emerald-300/40 underline-offset-2 transition hover:decoration-emerald-300"
-              >
-                Use the Counter Builder
-              </Link>{" "}
-              instead. It reads all five enemies and itemises against them specifically.
-            </p>
           </div>
         )}
         {isCounter && (
