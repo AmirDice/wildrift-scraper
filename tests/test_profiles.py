@@ -294,3 +294,78 @@ class TestManaReliance:
         facts = " ".join(profiles.kit_mechanics("Lux"))
         assert "MANA-BOUND" not in facts
         assert "no mana" not in facts.lower()
+
+
+class TestMultiStrikeEmpoweredAttacks:
+    """An empowered attack that lands three hits applies on-hit three times.
+
+    The rule read "empowered attack" and stopped, so Pantheon's Shield Vault --
+    which the ability text says "strikes 3 times" -- counted as ONE on-hit
+    application and he read as low reliance. That is why Blade of the Ruined
+    King was scored 25 and skipped: the model was told his kit barely applies
+    on-hit, when a single Mortal Will cycle applies it three times.
+
+    The two things are separable and were being conflated: how OFTEN on-hit
+    lands, and whether ATTACK SPEED is what makes it land. Pantheon's attack
+    speed efficiency is 0.30 and that stays true; the application count was the
+    part that was wrong.
+    """
+
+    # Shyvana's Twin Bite "empowers her next attack to strike twice"; the same
+    # shape as Pantheon and Renekton. Viego also strikes twice but is a
+    # once-per-target proc, which an earlier branch claims -- left alone
+    # pending a call on whether two applications per target window counts.
+    MULTI_STRIKE = ("Pantheon", "Renekton", "Shyvana")
+
+    def test_zeds_energy_refund_is_not_a_multi_strike(self):
+        """"gains Energy whenever an ABILITY strikes the same enemy twice" is a
+        refund condition, not an attack landing twice. A bare `twice` match
+        promoted him, which is why the pattern is anchored on "attack"."""
+        assert profiles.combat_profile("Zed")["repeatedOnHitReliance"] == "low"
+
+    def test_a_multi_strike_empower_is_not_low_reliance(self):
+        for name in self.MULTI_STRIKE:
+            got = profiles.combat_profile(name)["repeatedOnHitReliance"]
+            assert got == "medium", f"{name} reads {got}"
+
+    def test_it_is_not_promoted_all_the_way_to_high(self):
+        """Three applications per cycle is real, but it is not a marksman
+        applying on-hit on every auto -- that distinction is the whole point of
+        the field."""
+        for name in self.MULTI_STRIKE:
+            assert profiles.combat_profile(name)["repeatedOnHitReliance"] != "high", name
+
+    def test_a_single_hit_empower_is_still_low(self):
+        """The rule this narrows must keep working for everyone else."""
+        for name in ("Darius", "Aatrox", "Camille"):
+            assert profiles.combat_profile(name)["repeatedOnHitReliance"] == "low", name
+
+    def test_a_real_on_hit_carry_is_untouched(self):
+        assert profiles.combat_profile("Jax")["repeatedOnHitReliance"] == "high"
+
+    def test_attack_speed_efficiency_is_unaffected(self):
+        """Applying on-hit often does NOT mean attack speed converts well, and
+        promoting one must not quietly promote the other."""
+        know = (profiles.FORMULAS.get("Pantheon") or {}).get("knowledge") or {}
+        assert know.get("asEfficiency", 1.0) < 0.5
+
+    def test_no_multi_strike_kit_reads_as_low_reliance(self):
+        """The invariant, stated as an outcome rather than a membership list.
+
+        A champion whose ATTACK lands more than once applies on-hit more than
+        once, so `low` is wrong for them whatever route they took to it. Master
+        Yi matches the pattern and is already `high`, which is why the check is
+        "not low" rather than "in my list" -- the list would have to be edited
+        every time an existing high-reliance kit happened to match.
+
+        Viego is the known exception and is excluded deliberately: he strikes
+        twice but only on the first attack per target, so an earlier branch
+        claims him. Whether that is right is a judgement about whether two
+        applications per target window count, not something this test settles.
+        """
+        for name, record in profiles.CHAMPIONS.items():
+            text = " ".join((a.get("text") or "") for a in (record.get("abilities") or []))
+            if profiles._MULTI_STRIKE.search(text) and name != "Viego":
+                got = profiles.combat_profile(name)["repeatedOnHitReliance"]
+                assert got in ("medium", "high"), (
+                    f"{name}'s attack strikes more than once but reads {got}")

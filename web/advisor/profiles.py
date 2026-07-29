@@ -710,6 +710,19 @@ def scaling_profile(champion: str) -> dict:
 # Text that means "this ability empowers ONE attack" -- a spellblade trigger and
 # a weaving signal, but NOT evidence of repeated on-hit application. Separating
 # these two readings is the entire reason the old `onHit` tag misfires.
+# An empowered ATTACK that lands several hits. Each hit applies on-hit, so the
+# strike count is the difference between one application and three.
+#
+# Anchored on the word "attack" within the preceding clause, which is what
+# separates the real cases from the false one. All four genuine kits read
+# "...next attack to strike twice" or "...attack that strikes 3 times", while
+# Zed's "gains Energy whenever an ABILITY strikes the same enemy twice" is an
+# energy refund and applies no extra on-hit at all. A bare `twice` match
+# promoted him, which is why the anchor is not optional.
+_MULTI_STRIKE = re.compile(
+    r"attack[^.]{0,80}?strikes?\s+(?:2|3|4|two|three|four|twice|thrice)",
+    re.IGNORECASE)
+
 _SINGLE_EMPOWER = re.compile(
     r"next (?:basic )?attack|next attack|empowere?d? (?:basic )?attack|"
     r"his next attack|her next attack|their next attack",
@@ -778,6 +791,11 @@ def combat_profile(champion: str) -> dict:
     # A once-per-target proc reads as a single empowered attack, NOT repeated
     # application -- unless the kit ALSO has genuine every-hit wording.
     single_empower = bool(_SINGLE_EMPOWER.search(text)) or (once_per_target and not repeated)
+    # "strikes 3 times" / "Strikes three times": the empowered attack lands more
+    # than one hit, so it applies on-hit more than once. Two champions in the
+    # roster do this (Pantheon, Renekton) and both read as a single application
+    # without it.
+    multi_strike_empower = bool(_MULTI_STRIKE.search(text))
     attack_speed_steroid = any(
         _STAT_CANON.get(str(s.get("stat", "")).lower()) == "attackSpeed"
         for s in steroids(champion)
@@ -837,6 +855,18 @@ def combat_profile(champion: str) -> dict:
         on_hit = "high"
     elif pattern == "repeated-attacks":
         on_hit = "high" if attack_speed_steroid else "medium"
+    elif single_empower and multi_strike_empower:
+        # An empowered attack that strikes MORE THAN ONCE is not one on-hit
+        # application, and the rule above read it as one. Pantheon's Shield
+        # Vault "strikes 3 times", so a Mortal Will cycle applies on-hit three
+        # times off a single ability -- which is why Blade of the Ruined King
+        # works on him despite an attack-speed efficiency of 0.30. The two
+        # things are separable: how OFTEN on-hit lands, and whether attack
+        # speed is what makes it land. Only the first belongs here.
+        #
+        # `medium` rather than `high` on purpose: three applications per cycle
+        # is real, but it is not a marksman applying on-hit every auto.
+        on_hit = "medium"
     elif single_empower and not attack_speed_steroid:
         on_hit = "low"
     elif repeated and attack_speed_steroid:
