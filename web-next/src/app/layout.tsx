@@ -16,28 +16,32 @@ export const metadata: Metadata = {
     template: "%s | WrTrueMeta",
   },
   description:
-    "Real League of Legends Wild Rift win rates from the top 50 players on every champion. Tier list, leaderboards, best players, role & class meta, updated twice a month.",
+    "Real League of Legends Wild Rift win rates from the top 50 players on every champion. Tier list, leaderboards and meta tracking, plus a Build Studio and Counter Builder that generate optimal items, runes and summoners for your exact game.",
   keywords: [
-    "Wild Rift tier list",
     "Wild Rift tier list",
     "League of Legends Wild Rift",
     "Wild Rift meta",
     "Wild Rift win rates",
     "Wild Rift champions",
+    "Wild Rift builds",
+    "Wild Rift build generator",
+    "Wild Rift counter builds",
+    "Wild Rift runes",
   ],
   openGraph: {
     type: "website",
     siteName: "WrTrueMeta",
     url: "https://wrtruemeta.com",
-    title: "WrTrueMeta | Wild Rift Tier List, Win Rates & Meta Tracker",
+    title: "WrTrueMeta | Wild Rift Tier List, Win Rates & Build Tools",
     description:
-      "Real League of Legends Wild Rift win rates from the top 50 players on every champion.",
+      "Real Wild Rift win rates from the top 50 players on every champion, plus a Build Studio and Counter Builder that generate optimal items, runes and summoners.",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WrTrueMeta | Wild Rift Tier List & Meta Tracker",
+    title: "WrTrueMeta | Wild Rift Tier List & Build Tools",
     description:
-      "Real Wild Rift win rates from the top 50 players of every champion.",
+      "Real Wild Rift win rates from the top 50 players of every champion, plus build and counter tools.",
   },
   robots: { index: true, follow: true },
 };

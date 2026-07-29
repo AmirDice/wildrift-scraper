@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BuildStudio } from "@/components/build-studio";
 import { Container } from "@/components/ui";
+import { BuildsGeneratedPill } from "@/components/builds-counter";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { buildToolsVisible } from "@/lib/access";
 
@@ -33,10 +34,17 @@ export default async function BuildPage(props: PageProps<"/build">) {
           Beta
         </span>
       </div>
-      <p className="mb-6 mt-1 max-w-xl text-sm text-muted">
+      <p className="mt-1 max-w-xl text-sm text-muted">
         Optimal builds for every champion. Pick your champion, switch playstyles,
         customize items and runes, or generate the optimal build tuned to your exact game.
       </p>
+      {/* The same live figure the home page shows. It belongs here too: this is
+          the page where someone decides whether to spend a generation, and
+          "other people are using this" is the most honest thing we can say at
+          that moment. It refreshes on its own while the page is open. */}
+      <div className="mb-6 mt-3">
+        <BuildsGeneratedPill />
+      </div>
       <BuildStudio initialChampion={initialChampion} initialTab={initialTab} initialVariant={initialVariant} />
     </Container>
   );

@@ -11,12 +11,21 @@ import { useEffect, useRef, useState } from "react";
  * per hour.
  */
 
-// The home page renders this figure twice (hero pill and stats grid). One
-// module-level promise means one request, not two, however many callers mount.
+// The home page renders this figure twice (hero pill and stats grid), and the
+// build page renders it again. One module-level promise means one request per
+// refresh window, not one per caller.
+//
+// The memo is time-boxed rather than permanent: the figure now refreshes while
+// someone is sitting on the build page, and a promise cached for the life of
+// the tab would have made the interval below do nothing at all.
+const REFRESH_MS = 60_000;
 let pending: Promise<number | null> | null = null;
+let pendingAt = 0;
 
 function fetchTotal(): Promise<number | null> {
-  if (pending) return pending;
+  const now = Date.now();
+  if (pending && now - pendingAt < REFRESH_MS) return pending;
+  pendingAt = now;
   pending = (async () => {
     try {
       const res = await fetch("/api/stats");
@@ -34,11 +43,26 @@ function useBuildsGenerated(): number | null {
   const [total, setTotal] = useState<number | null>(null);
   useEffect(() => {
     let cancelled = false;
-    void fetchTotal().then((value) => {
-      if (!cancelled && value != null) setTotal(value);
-    });
+    const load = () => {
+      void fetchTotal().then((value) => {
+        if (!cancelled && value != null) setTotal(value);
+      });
+    };
+    load();
+    // Only while the tab is actually being looked at. A background tab polling
+    // a counter nobody can see is pure waste, and browsers throttle it into
+    // bursts on return anyway.
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, REFRESH_MS);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
   return total;
@@ -55,22 +79,41 @@ function useBuildsGenerated(): number | null {
 function useCountUp(target: number | null, durationMs = 1400): number {
   const [value, setValue] = useState(0);
   const frame = useRef<number | null>(null);
+  // What is on screen right now, so a refresh can animate from it rather than
+  // from zero. Mirrored in its own effect rather than assigned during render:
+  // writing a ref while rendering is exactly what react-hooks/refs forbids, and
+  // the animation only reads this at the moment a new target arrives.
+  const shown = useRef(0);
+  useEffect(() => {
+    shown.current = value;
+  }, [value]);
 
   useEffect(() => {
     if (target == null) return;
 
     const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reduced || target <= 0) {
-      setValue(target);
-      return;
+      // Deferred by a frame rather than set here: a synchronous setState inside
+      // an effect costs a second render pass on every refresh tick.
+      frame.current = requestAnimationFrame(() => setValue(target));
+      return () => {
+        if (frame.current != null) cancelAnimationFrame(frame.current);
+      };
     }
+
+    // Animate from what is displayed, not from zero. On first load that IS
+    // zero, so the original count-up is unchanged; on the minute refresh it
+    // ticks the last few digits up instead of resetting to nothing and
+    // sprinting back, which would read as the site losing its numbers.
+    const from = shown.current;
+    if (from === target) return;
 
     const start = performance.now();
     const tick = (now: number) => {
       const progress = Math.min(1, (now - start) / durationMs);
       // easeOutCubic
       const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(target * eased));
+      setValue(Math.round(from + (target - from) * eased));
       if (progress < 1) frame.current = requestAnimationFrame(tick);
     };
     frame.current = requestAnimationFrame(tick);

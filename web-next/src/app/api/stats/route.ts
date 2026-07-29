@@ -4,9 +4,15 @@ import { eventSummary } from "@/lib/stats";
 /**
  * GET -- public usage counters for the home page.
  *
- * Deliberately cached at the edge for an hour: the "builds generated" number is
- * a live figure, but it does not need to be live to the second, and hitting KV
- * on every home-page view would be a needless cost on the busiest route.
+ * Cached at the edge for a minute. It was an hour, which was right when the
+ * only caller was the home page and read it once on load -- but the build page
+ * now refreshes the figure while someone sits on it, and a client polling a
+ * value the edge holds for an hour is just asking the same question sixty times
+ * for the same answer.
+ *
+ * The edge cache still does the real work: the KV read happens once a minute no
+ * matter how many people are looking, so this scales with time rather than with
+ * traffic.
  */
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,7 +33,7 @@ export async function GET() {
     },
     {
       headers: {
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=86400",
       },
     },
   );

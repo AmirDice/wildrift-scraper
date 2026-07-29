@@ -48,7 +48,12 @@ const COUNTER_TOUR: TourStep[] = [
   {
     target: "generate",
     title: "Generate, then read the reasoning",
-    body: "You get the optimal loadout with a purchase order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Every item carries the reason it is there, and the reasons name the enemies they answer.",
+    body: "You get the optimal loadout in about 30 seconds. Items, runes and summoner spells sit open at the top because they are the build; everything under them starts folded, so tap Show to open it. Tap any item or rune for its cost, its stats and the reason it is there -- and against a known comp, the reasons name the enemies they answer.",
+  },
+  {
+    target: "generate",
+    title: "There is a guide for the build, too",
+    body: "\"How to play this build\" is written for the loadout you just got rather than for the champion in general: what your first item buys you, when the build turns on, how to open the fight, and the mistake that wastes it against this comp.",
   },
 ];
 

@@ -478,7 +478,17 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
       {
         target: "generate",
         title: "Generate, then read the reasoning",
-        body: "You get a full item order, boot timing, runes, situational swaps and a rating for the finished build. It takes about 30 seconds. Save anything worth keeping to an album. The champion stats and live ability values appear underneath once it finishes, so you can see what the build is actually worth before you trust it.",
+        body: "You get the full loadout in about 30 seconds: item order with boot timing, the rune page, and your summoner spells. Those three sit open at the top because they are the build. Everything under them starts folded -- tap Show on any panel to open it.",
+      },
+      {
+        target: "generate",
+        title: "Read \"How to play this build\" before your game",
+        body: "Folded under the build is a guide written for THIS loadout, not for the champion in general: what your first item buys you, the moment the build turns on, how the fight opens, and the mistake that wastes it. Underneath that, \"Why this is the optimal build\" explains every individual pick, and the evaluation rates the finished result.",
+      },
+      {
+        target: "generate",
+        title: "Tap anything you do not recognise",
+        body: "Every item and rune in a generated build opens a card with its cost, its stats and the reason it was chosen for you. That works on a phone by tapping, not just by hovering.",
       },
       // The stat panels only exist after a generation. Adding their steps
       // before that would spotlight nothing, which is the thing this tour was
