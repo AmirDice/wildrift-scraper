@@ -83,7 +83,37 @@ def _apply_recovered_conditions(formulas: dict) -> int:
     return applied
 
 
+def _apply_formula_corrections(formulas: dict) -> int:
+    """Fold data/formula_corrections.json into the formulas.
+
+    Reviewed fixes to the LLM-estimated `knowledge` and `mechanics` blocks
+    (wrong resource types, asEfficiency stuck at the caster floor for kits
+    whose abilities count attacks). asEfficiency multiplies straight into
+    attack speed below, so a wrong value here distorts every simulation.
+    """
+    path = ROOT / "data" / "formula_corrections.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, entry in (overlay.get("champions") or {}).items():
+        rec = formulas.get(name)
+        if not rec:
+            continue
+        know = rec.setdefault("knowledge", {})
+        for key, value in (entry.get("knowledge") or {}).items():
+            know[key] = value
+            applied += 1
+        drop = set(entry.get("removeMechanics") or [])
+        if drop:
+            kept = [m for m in rec.get("mechanics") or [] if m.get("kind") not in drop]
+            applied += len(rec.get("mechanics") or []) - len(kept)
+            rec["mechanics"] = kept
+    return applied
+
+
 _apply_recovered_conditions(FORMULAS)
+_apply_formula_corrections(FORMULAS)
 # Combos are overlaid from champion_combos.json, the same source the exported
 # engine.json uses, so the Python and browser engines open with the same
 # sequence. The extraction's own combo answers a different question ("standard

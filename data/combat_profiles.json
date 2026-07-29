@@ -150,6 +150,13 @@
       "manaReliance": "high",
       "manaRelianceReason": "Two full ability sets and constant form-swapping put more casts through one mana pool."
     },
+    "Jhin": {
+      "combatProfile": {
+        "attackSpeedValue": "low",
+        "repeatedOnHitReliance": "low"
+      },
+      "reason": "His attack speed is FIXED (the extraction's fixedAttackSpeed mechanic, asEfficiency 0.2) and his attacks come from a four-shot magazine with a reload -- bonus attack speed converts to AD instead of attacks per second, and on-hit effects apply too rarely to stack. The derived profile read his every-4th-shot wording as a repeated-attacks pattern and rated both 'high', directly contradicting the mechanics in the same prompt."
+    },
     "Kassadin": {
       "rangeProfile": "melee",
       "reason": "Melee anti-mage assassin classed as Mage.",
@@ -355,6 +362,12 @@
       "manaReliance": "high",
       "manaRelianceReason": "His rotation is continuous spellcasting with no basic-attack pattern to fall back on.",
       "reason": "His rotation is continuous spellcasting with no basic-attack pattern to fall back on."
+    },
+    "Senna": {
+      "combatProfile": {
+        "attackSpeedValue": "low"
+      },
+      "reason": "Fixed slow attack cadence (the extraction's fixedAttackSpeed mechanic, asEfficiency 0.6): bonus attack speed barely raises her attacks per second, so the derived 'high' contradicted the mechanic in the same prompt. repeatedOnHitReliance stays 'high' on purpose -- her per-auto Mist passive is genuine on-hit reliance, and the two axes differing is exactly the distinction the profile exists to make (each auto matters; buying more autos per second is what does not work)."
     },
     "Smolder": {
       "manaReliance": "high",

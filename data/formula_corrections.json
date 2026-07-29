@@ -1,0 +1,35 @@
+{
+  "_note": "Curated corrections to the `knowledge` and `mechanics` blocks of ability_formulas.json. Those blocks are LLM-estimated during extraction, and a re-extraction would regenerate the same errors, so corrections live here and are folded in by every loader (web/advisor/profiles.py, web/fight_engine.py, scripts/export_engine_data.py). Only add an entry when the extracted value is factually WRONG and the evidence can be stated; every entry needs a reason.",
+  "_schema": {
+    "knowledge": "keys merged over the champion's knowledge block (resource, asEfficiency, abilitiesCanCrit, ...)",
+    "removeMechanics": "list of mechanic kinds to delete from the champion's mechanics list",
+    "reason": "why the extraction is wrong here. Required."
+  },
+  "champions": {
+    "Garen": {
+      "knowledge": { "resource": "none" },
+      "reason": "Extraction says resource=mana; Garen has no resource. Base stats carry mana=null and no ability lists a cost. The error was masked by a correct noResource mechanic, but anything reading the resource field directly sees the wrong answer."
+    },
+    "Mordekaiser": {
+      "knowledge": { "resource": "none" },
+      "reason": "Extraction says resource=mana; Mordekaiser is manaless (base mana=null, no costs). Unlike Garen he has NO noResource mechanic either, so nothing told the model mana stats are dead on him."
+    },
+    "Graves": {
+      "knowledge": { "resource": "mana" },
+      "removeMechanics": ["noResource"],
+      "reason": "Extraction says resource=none plus a noResource mechanic, and the prompt told the model Graves 'has NO mana'. He has 390 base mana and pays per cast (Q 65/70/75/80) -- wildriftfire and wr-meta agree. The reload/magazine mechanic likely got conflated with resourcelessness."
+    },
+    "Twisted Fate": {
+      "knowledge": { "asEfficiency": 0.8 },
+      "reason": "Was 0.2, the caster floor shared with Annie and Amumu. Stacked Deck grants 25/30% attack speed to his own attacks and procs every 4th attack -- an ability that buys attack speed and counts hits cannot sit at the floor of the attack-speed-value scale. 0.8 places him beside Kayle/Jax (0.9), below the pure-AS marksmen at 1.0."
+    },
+    "Nilah": {
+      "knowledge": { "asEfficiency": 0.9 },
+      "reason": "Was 0.2. She is a melee Marksman with a basic-attack-carry pattern whose attacks cleave; her damage is attacks per second. 0.9 matches Kai'Sa's tier."
+    },
+    "Kennen": {
+      "knowledge": { "asEfficiency": 0.7 },
+      "reason": "Was 0.2. Electrical Surge marks every 5th attack for 55-85 (+70-100% bonus AD) and his passive stuns through repeated marks, so attacks convert -- but the kit is AP-primary, so he sits at 0.7 with Teemo rather than marksman tier."
+    }
+  }
+}
