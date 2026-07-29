@@ -16,7 +16,7 @@ import {
 import { Tip } from "@/components/build-view";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { EnemyBuildAdvisor, Sparkles, type Advice } from "@/components/enemy-build";
-import { BuildCustomizer } from "@/components/build-customizer";
+import { BuildCustomizer, type CustomBuildState as LabSeed } from "@/components/build-customizer";
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
 import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
@@ -174,6 +174,10 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
   const [slug, setSlug] = useState(initialSlug);
   const [tab, setTab] = useState<Tab>(initialTab ?? (initialRecord?.builds ? "recommended" : "generate"));
   const [generatedAdvice, setGeneratedAdvice] = useState<Advice | null>(null);
+  // A generated build handed to the Custom Build Lab so it can be run through
+  // the damage check. The counter bumps on every send, and keys the Lab, so
+  // sending the SAME build twice still reopens it rather than doing nothing.
+  const [labSeed, setLabSeed] = useState<{ id: number; state: LabSeed } | null>(null);
   const [champQuery, setChampQuery] = useState("");
 
   const rec = champs.find((c) => c.slug === slug) ?? champs[0];
@@ -364,10 +368,22 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
             championForm={form ? (form.key === "base" ? "shadow-assassin" : "rhaast") : undefined}
             advice={generatedAdvice}
             setAdvice={setGeneratedAdvice}
+            onTestInLab={(seedState) => {
+              setLabSeed({ id: Date.now(), state: seedState });
+              setTab("customize");
+            }}
             comparisonChoices={comparisonChoices}
           />
         )}
-        {effectiveTab === "customize" && builds && <BuildCustomizer name={engineName} data={builds} comparisonChoices={comparisonChoices} />}
+        {effectiveTab === "customize" && builds && (
+          <BuildCustomizer
+            key={labSeed?.id ?? "empty"}
+            name={engineName}
+            data={builds}
+            comparisonChoices={comparisonChoices}
+            seed={labSeed?.state ?? null}
+          />
+        )}
       </div>
 
       {/* Hand-off to the other tool: this page never looks at the enemy team. */}
@@ -793,12 +809,17 @@ function GenerateTab({
   advice,
   setAdvice,
   comparisonChoices,
+  onTestInLab,
 }: {
   name: string;
   championForm?: string;
   advice: Advice | null;
   setAdvice: (advice: Advice | null) => void;
   comparisonChoices: ComparableBuild[];
+  /** Hands this build to the Custom Build Lab so it can be run through the
+   *  damage check. The generator has no fight of its own, and rebuilding the
+   *  loadout by hand to test it was the only way across before. */
+  onTestInLab: (seed: LabSeed) => void;
 }) {
   const itemSlugs = advice && !advice.error
     ? [...(advice.items ?? []), ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : [])]
@@ -817,6 +838,39 @@ function GenerateTab({
       <EnemyBuildAdvisor presetChampion={name} presetForm={championForm} mode="studio" onAdviceChange={setAdvice} />
       {itemSlugs.length > 0 && (
         <>
+          {/* The generator has no fight of its own; the Lab does. Rebuilding a
+              generated loadout by hand to run it through the damage check was
+              the only way across, which nobody was going to do. */}
+          <button
+            onClick={() => onTestInLab({
+              items: [...(advice?.items ?? [])],
+              // The Lab holds ONE boots slot. Send the tier-3 the build
+              // actually finishes on, not the tier-2 it passes through.
+              boots: advice?.bootsUpgrade || advice?.boots || "",
+              runes: {
+                keystone: advice?.runes?.keystone ?? "",
+                tree: advice?.runes?.primaryTree ?? "Precision",
+                minors: [
+                  advice?.runes?.minors?.[0] ?? "",
+                  advice?.runes?.minors?.[1] ?? "",
+                  advice?.runes?.minors?.[2] ?? "",
+                ],
+                flex: advice?.runes?.flex ?? "",
+              },
+            })}
+            className="glass glass-hover flex items-center justify-between gap-3 rounded-2xl border border-line p-4 text-left transition"
+          >
+            <span className="min-w-0">
+              <span className="block text-sm font-bold text-text">
+                Test this build in the Custom Build Lab
+              </span>
+              <span className="mt-0.5 block text-xs text-muted">
+                Opens the loadout in the damage check, where you can fight a champion or
+                a dummy, and swap pieces to see what actually changes.
+              </span>
+            </span>
+            <span aria-hidden className="shrink-0 text-sm font-semibold text-accent">→</span>
+          </button>
           {/* The FORM's kit, not the base champion's. These read `name` alone
               until now, so a build generated for Rhaast was displayed against
               Shadow Assassin's abilities and Shadow Assassin's base stats. */}

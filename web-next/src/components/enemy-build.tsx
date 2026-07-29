@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { rosterList, type RosterChampion } from "@/lib/threat";
 import engineData from "@/data/engine.json";
@@ -793,6 +794,34 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             <p><span className="font-medium text-text">Power spike:</span> {GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}</p>
             {supportsDamagePath && <p><span className="font-medium text-text">Damage path:</span> {DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}</p>}
             {champ === "Kayn" && <p><span className="font-medium text-text">Form:</span> {KAYN_FORMS.find((form) => form.key === championForm)?.description}</p>}
+          </div>
+        )}
+        {/* What this tool is actually optimising for, said before the player
+            waits a minute for an answer. A blind build is solving a different
+            problem from a counter build, and someone who picks Standard and
+            Balanced and expects a one-shot page has been misled by silence
+            rather than by anything the generator said. */}
+        {!isCounter && (
+          <div className="rounded-xl border border-line/70 bg-white/[0.02] p-3">
+            <p className="text-xs leading-relaxed text-muted">
+              <span className="font-semibold text-text">This build is made blind.</span>{" "}
+              No enemy team is supplied, so it optimises for the most consistent
+              first-pick loadout: the one that holds up whoever you end up against.
+              Standard with everything balanced will return a solid, safe build rather
+              than a one-shot or maximum-damage page, because a build that gambles is
+              the wrong answer when the matchup is unknown. Pick a playstyle if you
+              want it to commit to something.
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-muted">
+              Already know who you are up against?{" "}
+              <Link
+                href={champ ? `/counter?champion=${encodeURIComponent(champ)}` : "/counter"}
+                className="font-semibold text-emerald-300 underline decoration-emerald-300/40 underline-offset-2 transition hover:decoration-emerald-300"
+              >
+                Use the Counter Builder
+              </Link>{" "}
+              instead. It reads all five enemies and itemises against them specifically.
+            </p>
           </div>
         )}
         {isCounter && (
