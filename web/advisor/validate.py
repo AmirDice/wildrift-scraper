@@ -86,6 +86,51 @@ def hard_exclusive_violation(slugs: list[str]) -> str | None:
     return None
 
 
+def tank_identity_violations(
+    slugs: list[str],
+    build_identity: dict | None,
+    item_locks: list[str] | None = None,
+) -> list[str]:
+    """A tank-identity champion whose main five is not a tank build.
+
+    The prompt already declares the build identity AUTHORITATIVE, and
+    gemini-3.6-flash obeys it -- but a measured gemini-3.5-flash-lite run
+    built Rod of Ages / Riftmaker / Rabadon's on Malphite three times out of
+    three, straight past `approvedBuildPaths: ["tank"]`, and nothing here
+    stopped it. Prompt authority is not enforcement; this is the enforcement.
+
+    Curated variantRules (Rammus, Nunu) win where present; the defaults mirror
+    them. Player-locked items are exempt: a lock is the player overriding the
+    identity on purpose, so locked damage items loosen the thresholds instead
+    of making the build unrepairable.
+    """
+    identity = build_identity or {}
+    if identity.get("primaryBuildPath") != "tank":
+        return []
+    rules = (identity.get("variantRules") or {}).get("*") or {}
+    locks = set(item_locks or [])
+    cat = lambda s: (itemmeta.ITEMS.get(s) or {}).get("category")  # noqa: E731
+    locked_non_def = [s for s in slugs if s in locks and cat(s) != "Defense"]
+    minimum = min(int(rules.get("minimumDefensiveItems", 3)), 5 - len(locked_non_def))
+    max_ap = int(rules.get("maximumAPItems", 1)) + sum(
+        1 for s in slugs if s in locks and cat(s) == "Magic")
+
+    defensive = [s for s in slugs if cat(s) == "Defense"]
+    magic = [s for s in slugs if cat(s) == "Magic"]
+    out = []
+    if len(defensive) < minimum:
+        out.append(
+            f"this champion's build identity is TANK (authoritative): the main five must "
+            f"carry at least {minimum} Defense-category items, found {len(defensive)} "
+            f"({', '.join(defensive) or 'none'}) -- replace damage items with tank items")
+    if len(magic) > max_ap:
+        out.append(
+            f"TANK build identity allows at most {max_ap} Magic-category item(s) in the "
+            f"main five; found {len(magic)}: {', '.join(magic)} -- keep the strongest one "
+            f"and replace the rest with Defense items")
+    return out
+
+
 def redundancy_notes(slugs: list[str]) -> list[str]:
     """Overlaps that are legal but usually wasteful. Warnings, never errors."""
     notes = []
@@ -222,6 +267,7 @@ def validate(
     resolve_item=None,
     resolve_summoner=None,
     summoner_icons: dict | None = None,
+    build_identity: dict | None = None,
 ) -> Report:
     """Check and normalise the model's build in place. Returns a Report."""
     report = Report()
@@ -276,6 +322,12 @@ def validate(
         violation = hard_exclusive_violation(items)
         if violation:
             report.fail("items", violation)
+        # Only on the standard path: a player who explicitly selected an AP or
+        # AD damage path has overridden the identity, and the guard fighting
+        # that choice would make their request unfulfillable.
+        if damage_path == "standard":
+            for msg in tank_identity_violations(items, build_identity, item_locks):
+                report.fail("items", msg)
         for note in redundancy_notes(items):
             report.warn(note)
         # Late-strategic items are allowed, but not anywhere and not silently.

@@ -581,6 +581,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [objective, setObjective] = useState<string>("balanced");
   const [gamePhase, setGamePhase] = useState<string>("balanced");
   const [damagePath, setDamagePath] = useState<string>("standard");
+  // Best build: one tick that overrides and disables the preference dropdowns.
+  // Travels as playstyle "best"; the neutral values below keep the cache key
+  // canonical so every Best Build request for a champion+role hits one entry.
+  const [bestBuild, setBestBuild] = useState(false);
   const [championForm, setChampionForm] = useState<string>(presetForm || "shadow-assassin");
   const [enemies, setEnemies] = useState<(string | null)[]>(Array(5).fill(null));
   const [allies, setAllies] = useState<(string | null)[]>(Array(4).fill(null));
@@ -669,7 +673,11 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          champion: champ, role, playstyle, objective, gamePhase, damagePath,
+          champion: champ, role,
+          playstyle: bestBuild ? "best" : playstyle,
+          objective: bestBuild ? "balanced" : objective,
+          gamePhase: bestBuild ? "balanced" : gamePhase,
+          damagePath: bestBuild ? "standard" : damagePath,
           championForm: champ === "Kayn" ? championForm : "",
           aheadEnemy: isCounter ? safeAheadEnemy : "", mode,
           enemies: isCounter ? selectedEnemies : [],
@@ -731,20 +739,33 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 excluded={new Set([...selectedEnemies, ...selectedAllies])} />
             )}
           </div>
+          {!isCounter && (
+            <div data-tour="best-build">
+              <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Best build</p>
+              <label
+                title="Ignore every preference below and generate the strongest overall build for this champion and role"
+                className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
+                  bestBuild ? "border-accent/60 bg-accent/10 text-accent" : "border-line bg-[#0e1322] text-text"}`}>
+                <input type="checkbox" checked={bestBuild} onChange={(e) => setBestBuild(e.target.checked)}
+                  className="accent-current" />
+                Strongest overall
+              </label>
+            </div>
+          )}
           <div data-tour="power-spike">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Power spike</p>
-            <select value={gamePhase} onChange={(e) => setGamePhase(e.target.value)}
+            <select value={gamePhase} onChange={(e) => setGamePhase(e.target.value)} disabled={bestBuild}
               title={GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
               {GAME_PHASES.map((phase) => <option key={phase.key} value={phase.key}>{phase.label}</option>)}
             </select>
           </div>
           {supportsDamagePath && (
             <div>
               <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Damage path</p>
-              <select value={damagePath} onChange={(e) => setDamagePath(e.target.value)}
+              <select value={damagePath} onChange={(e) => setDamagePath(e.target.value)} disabled={bestBuild}
                 title={DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}
-                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
                 {DAMAGE_PATHS.map((path) => <option key={path.key} value={path.key}>{path.label}</option>)}
               </select>
             </div>
@@ -762,15 +783,17 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           )}
           <div data-tour="playstyle">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Playstyle</p>
-            <select value={playstyle} onChange={(e) => setPlaystyle(e.target.value)} title={selectedPlaystyle?.description}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+            <select value={playstyle} onChange={(e) => setPlaystyle(e.target.value)} disabled={bestBuild}
+              title={selectedPlaystyle?.description}
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
               {availablePlaystyles.map((style) => <option key={style.key} value={style.key}>{style.label}</option>)}
             </select>
           </div>
           <div data-tour="objective">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimize for</p>
-            <select value={objective} onChange={(e) => setObjective(e.target.value)} title={OBJECTIVE_HELP[objective]}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+            <select value={objective} onChange={(e) => setObjective(e.target.value)} disabled={bestBuild}
+              title={OBJECTIVE_HELP[objective]}
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none disabled:opacity-40">
               {OBJECTIVES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
           </div>
@@ -788,7 +811,13 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             Not recommended: {champ} is usually played {naturalRole}, not {role}. The build may be off-meta.
           </p>
         )}
-        {selectedPlaystyle && (
+        {bestBuild && !isCounter && (
+          <p className="text-xs text-muted">
+            Best build: all preferences are ignored. The model generates the strongest
+            overall build it can make for this champion and role.
+          </p>
+        )}
+        {selectedPlaystyle && !bestBuild && (
           <div className="space-y-1 text-xs text-muted">
             <p>{selectedPlaystyle.description}</p>
             <p><span className="font-medium text-text">Power spike:</span> {GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}</p>

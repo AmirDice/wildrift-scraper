@@ -129,7 +129,7 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Sin all read as low on-hit reliance and never saw on-hit items considered.
   // Sundered Sky's truncated passive text was repaired in the same batch. A v12
   // entry for any of them was built from the wrong profile.
-  return `build:v16:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  return `build:v17:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
