@@ -275,9 +275,11 @@ class TestKaynBaseStats:
     """
 
     L1 = {"ad": 70, "hp": 725, "mana": 465, "armor": 44, "mr": 38,
-          "attackSpeed": 0.85, "hpRegen": 10, "manaRegen": 15, "moveSpeed": 350}
+          "attackSpeed": 0.85, "abilityHaste": 5, "hpRegen": 10, "manaRegen": 15,
+          "moveSpeed": 350}
     L15 = {"ad": 126, "hp": 2422, "mana": 1260, "armor": 110, "mr": 64,
-           "attackSpeed": 1.03, "hpRegen": 20, "manaRegen": 26, "moveSpeed": 350}
+           "attackSpeed": 1.03, "abilityHaste": 10, "hpRegen": 20, "manaRegen": 26,
+           "moveSpeed": 350}
 
     def _stats(self, name):
         return load(WEB / "engine.json")["champions"][name]["baseStats"]
@@ -307,6 +309,14 @@ class TestKaynBaseStats:
     def test_both_forms_share_a_body(self):
         """The transform changes the abilities, not the base stats."""
         assert self._stats("Kayn") == self._stats("Kayn (Rhaast)")
+
+    def test_base_ability_haste_is_carried(self):
+        """The pipeline already READ abilityHaste from baseStats -- generalHaste
+        is atLevel("abilityHaste") -- but no champion carried the value, so it
+        silently resolved to zero and the panel showed only what items and runes
+        added. Kayn is the first champion with a real one."""
+        for form in ("Kayn", "Kayn (Rhaast)"):
+            assert self._stats(form)["abilityHaste"]["base"] == 5, form
 
     def test_he_has_a_mana_pool_at_all(self):
         """The specific omission: a mana champion carrying no mana meant every

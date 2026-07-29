@@ -145,6 +145,11 @@
           "base": 350,
           "perLevel": 0.0,
           "lvl15": 350
+        },
+        "abilityHaste": {
+          "base": 5,
+          "perLevel": 0.3571428571,
+          "lvl15": 10
         }
       },
       "_source": "Owner-read in-game values, 2026-07-29, level 1 and level 15. The scrape had Kayn's level-1 bases wrong across the board (hp 630 vs 725, armor 40 vs 44, mr 36 vs 38, attack speed 0.80 vs 0.85), understated his level-15 AD by 14, and carried NO mana, mana regen or ability haste at all. perLevel is linear over 14 level-ups, matching every other override here."
@@ -195,6 +200,11 @@
           "base": 350,
           "perLevel": 0.0,
           "lvl15": 350
+        },
+        "abilityHaste": {
+          "base": 5,
+          "perLevel": 0.3571428571,
+          "lvl15": 10
         }
       },
       "_source": "Owner-read in-game values, 2026-07-29, level 1 and level 15. The scrape had Kayn's level-1 bases wrong across the board (hp 630 vs 725, armor 40 vs 44, mr 36 vs 38, attack speed 0.80 vs 0.85), understated his level-15 AD by 14, and carried NO mana, mana regen or ability haste at all. perLevel is linear over 14 level-ups, matching every other override here. Both forms share base stats; the transform changes the abilities, not the body."
