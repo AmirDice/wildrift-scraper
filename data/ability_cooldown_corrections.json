@@ -1,24 +1,124 @@
 {
   "_note": "Owner-verified ability cooldowns, applied OVER data/ability_formulas.json at load by scripts/export_engine_data.py and web/fight_engine.py, and over the exported cards by scripts/export_champion_details.py. Kept outside the extracted files on purpose: those are regenerated and would eat any edit made directly to them.",
   "_provenance": "Read from the game. Nothing here is inferred from the scrape -- if a real value is not known, the scraped one stays, because a plausible guess is worse than a visible mismatch.",
-  "_why": "The scrape produced DIFFERENT cooldowns for Kayn's two forms and both sets were wrong. Wild Rift gives base, Shadow Assassin and Rhaast identical cooldowns; the scraped values also understated every one of them, so the panel showed a champion far shorter on cooldown than he is.",
+  "_why": "The scrape produced wrong cooldowns for both Kayn forms. The forms are MOSTLY identical -- Q and the ultimate match -- but Shadow Assassin genuinely has a shorter Blade's Reach and a much shorter Shadow Step, which is the form's whole identity as the mobile one. An earlier pass here assumed all three states shared every cooldown; they do not.",
   "champions": {
     "Kayn": {
-      "_source": "Owner-supplied in-game values, 2026-07-29.",
+      "_source": "Owner-supplied in-game values, 2026-07-29, re-checked per form. Shadow Assassin (blue) has a shorter Blade's Reach and Shadow Step than Rhaast.",
       "abilities": {
-        "1": { "cooldowns": [6.5, 6, 5.5, 5], "_was": [5, 4, 4, 3] },
-        "2": { "cooldowns": [12, 11, 10, 9], "_was": [9, 8, 7, 6] },
-        "3": { "cooldowns": [18, 16, 14, 12], "_was": [6, 6, 6, 6] },
-        "4": { "cooldowns": [80, 70, 60], "_was": [59, 52, 44] }
+        "1": {
+          "cooldowns": [
+            6.5,
+            6,
+            5.5,
+            5
+          ],
+          "_was": [
+            5,
+            4,
+            4,
+            3
+          ]
+        },
+        "2": {
+          "cooldowns": [
+            11,
+            10,
+            9,
+            8
+          ],
+          "_was": [
+            9,
+            8,
+            7,
+            6
+          ]
+        },
+        "3": {
+          "cooldowns": [
+            7,
+            7,
+            7,
+            7
+          ],
+          "_was": [
+            6,
+            6,
+            6,
+            6
+          ]
+        },
+        "4": {
+          "cooldowns": [
+            80,
+            70,
+            60
+          ],
+          "_was": [
+            59,
+            52,
+            44
+          ]
+        }
       }
     },
     "Kayn (Rhaast)": {
-      "_source": "Owner-supplied in-game values, 2026-07-29. Identical to Shadow Assassin: the forms change what the abilities DO, not how often they can be cast.",
+      "_source": "Owner-supplied in-game values, 2026-07-29. Shares Q and the ultimate with Shadow Assassin; Blade's Reach and Shadow Step are longer.",
       "abilities": {
-        "1": { "cooldowns": [6.5, 6, 5.5, 5], "_was": [4, 3, 3, 3] },
-        "2": { "cooldowns": [12, 11, 10, 9], "_was": [8, 7, 6, 5] },
-        "3": { "cooldowns": [18, 16, 14, 12], "_was": [7, 7, 7, 7] },
-        "4": { "cooldowns": [80, 70, 60], "_was": [50, 44, 38] }
+        "1": {
+          "cooldowns": [
+            6.5,
+            6,
+            5.5,
+            5
+          ],
+          "_was": [
+            4,
+            3,
+            3,
+            3
+          ]
+        },
+        "2": {
+          "cooldowns": [
+            12,
+            11,
+            10,
+            9
+          ],
+          "_was": [
+            8,
+            7,
+            6,
+            5
+          ]
+        },
+        "3": {
+          "cooldowns": [
+            18,
+            16,
+            14,
+            12
+          ],
+          "_was": [
+            7,
+            7,
+            7,
+            7
+          ]
+        },
+        "4": {
+          "cooldowns": [
+            80,
+            70,
+            60
+          ],
+          "_was": [
+            50,
+            44,
+            38
+          ]
+        }
       }
     }
   }

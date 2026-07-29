@@ -202,13 +202,25 @@ class TestDerivedDataIsFresh:
                 got = shipped[name]["abilities"][slot]["cooldowns"]
                 assert got == [float(v) for v in fix["cooldowns"]], f"{name} slot {slot}"
 
-    def test_both_kayn_forms_share_their_cooldowns(self):
-        """The specific error: forms change what an ability DOES, not how often
-        it can be cast. Two different cooldown sets is the bug's signature."""
+    def test_the_kayn_forms_agree_where_they_should_and_differ_where_they_do(self):
+        """This test previously asserted the forms were IDENTICAL, which was my
+        assumption rather than a checked fact -- the owner then read the game
+        and found Shadow Assassin has a shorter Blade's Reach and a much
+        shorter Shadow Step. Q and the ultimate really are shared.
+
+        Kept as a test because the shape still catches the original bug: the
+        scrape had every one of these wrong, in both directions.
+        """
         shipped = load(WEB / "engine.json")["formulas"]
-        for slot in ("1", "2", "3", "4"):
-            assert (shipped["Kayn"]["abilities"][slot]["cooldowns"]
-                    == shipped["Kayn (Rhaast)"]["abilities"][slot]["cooldowns"]), slot
+        blue = shipped["Kayn"]["abilities"]
+        red = shipped["Kayn (Rhaast)"]["abilities"]
+        for slot in ("1", "4"):
+            assert blue[slot]["cooldowns"] == red[slot]["cooldowns"], slot
+        # Shadow Step is the form's identity: 7s flat versus 18/16/14/12.
+        assert blue["3"]["cooldowns"] == [7.0, 7.0, 7.0, 7.0]
+        assert red["3"]["cooldowns"] == [18.0, 16.0, 14.0, 12.0]
+        assert blue["2"]["cooldowns"] == [11.0, 10.0, 9.0, 8.0]
+        assert red["2"]["cooldowns"] == [12.0, 11.0, 10.0, 9.0]
 
     def test_recovered_conditions_reach_the_engine(self):
         """A duration recovered into the overlay must be in the exported data.
