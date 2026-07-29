@@ -54,6 +54,36 @@ def apply_cooldown_corrections(formulas: dict) -> int:
     return applied
 
 
+def apply_formula_corrections(formulas: dict) -> int:
+    """Fold data/formula_corrections.json into the formulas.
+
+    Reviewed fixes to the LLM-estimated `knowledge` and `mechanics` blocks:
+    wrong resource types (Graves flagged manaless while paying 65-80 per Q),
+    and asEfficiency values stuck at the 0.2 caster floor on kits whose
+    abilities explicitly count attacks (Twisted Fate, Nilah, Kennen). The
+    advisor and the fight engine fold in the same file at load.
+    """
+    path = ROOT / "data" / "formula_corrections.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, entry in (overlay.get("champions") or {}).items():
+        rec = formulas.get(name)
+        if not rec:
+            continue
+        know = rec.setdefault("knowledge", {})
+        for key, value in (entry.get("knowledge") or {}).items():
+            know[key] = value
+            applied += 1
+        drop = set(entry.get("removeMechanics") or [])
+        if drop:
+            kept = [m for m in rec.get("mechanics") or [] if m.get("kind") not in drop]
+            applied += len(rec.get("mechanics") or []) - len(kept)
+            rec["mechanics"] = kept
+    return applied
+
+
 def _apply_recovered_conditions(formulas: dict) -> int:
     """Fold data/ability_conditions.json into the formulas.
 
@@ -121,6 +151,9 @@ def main() -> None:
     fixed = apply_cooldown_corrections(formulas)
     if fixed:
         print(f"applied {fixed} owner-verified cooldown corrections")
+    fixed = apply_formula_corrections(formulas)
+    if fixed:
+        print(f"applied {fixed} formula knowledge/mechanics corrections")
     combos_file = _load("champion_combos.json") or {}
     combos = combos_file.get("champions") or {}
     for name, entry in combos.items():
