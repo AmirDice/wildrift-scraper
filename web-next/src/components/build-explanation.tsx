@@ -2,6 +2,8 @@
 
 import type { Build } from "@/lib/builds";
 
+import { Disclosure } from "@/components/ui";
+
 /* eslint-disable @next/next/no-img-element */
 
 /**
@@ -50,7 +52,7 @@ export function BuildExplanation({ build }: { build: Build }) {
           <span className="block text-sm font-bold text-text">Why this is the optimal build</span>
           <span className="text-xs font-normal text-faint">The reason behind every item and rune</span>
         </span>
-        <span aria-hidden className="text-accent transition group-open:rotate-180">⌄</span>
+        <Disclosure />
       </summary>
       <div className="space-y-4 border-t border-line/60 p-4">
         <Section title="Items" rows={items} />

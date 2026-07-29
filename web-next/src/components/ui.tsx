@@ -104,3 +104,24 @@ export function Card({
 }) {
   return <div className={`glass rounded-2xl ${className}`}>{children}</div>;
 }
+
+/**
+ * The show/hide control on a collapsible result panel.
+ *
+ * A lone chevron is easy to read as decoration, especially on a phone where
+ * there is no hover to reveal it is interactive. Pairing it with a word inside
+ * a bordered pill makes it look like the button it is, and the word flips with
+ * the panel so the control always says what the next tap does.
+ */
+export function Disclosure() {
+  return (
+    <span
+      aria-hidden
+      className="inline-flex shrink-0 items-center gap-1 rounded-full border border-line bg-white/[0.04] px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-accent transition group-hover:border-accent/40 group-hover:bg-accent/10"
+    >
+      <span className="group-open:hidden">Show</span>
+      <span className="hidden group-open:inline">Hide</span>
+      <span className="transition group-open:rotate-180">⌄</span>
+    </span>
+  );
+}

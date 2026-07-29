@@ -13,6 +13,8 @@ import {
 } from "@/lib/customizer-data";
 import { scaledBuildStats, scalingSources, unmodelledRunes } from "@/lib/build-scaling";
 
+import { Disclosure } from "@/components/ui";
+
 /* eslint-disable @next/next/no-img-element */
 
 const STAT_ROWS = [
@@ -198,7 +200,7 @@ export function BuildStatsPanel({
             {ultOn && transform ? ` · with ${transform.label}` : ""}
           </span>
         </p>
-        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+        <Disclosure />
       </summary>
       <div className="mb-2 mt-2 flex flex-wrap items-center justify-end gap-2">
         {transform && (
@@ -450,7 +452,7 @@ export function ChampionAbilitiesPanel({
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
           Live ability values <span className="normal-case text-faint/60">· level {level} with this build</span>
         </p>
-        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+        <Disclosure />
       </summary>
       <div className="mb-3 mt-2 flex flex-wrap items-center gap-2">
         {transform && !formNames && (

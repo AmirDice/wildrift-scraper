@@ -11,6 +11,8 @@ import { BuildFeedback } from "@/components/build-feedback";
 import { ShareBuildButton } from "@/components/share-build";
 import { AddToAlbumButton } from "@/components/add-to-album";
 import { LockPicker } from "@/components/lock-picker";
+import { Tip } from "@/components/build-view";
+import { Disclosure } from "@/components/ui";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -82,7 +84,7 @@ function PlayGuide({ advice }: { advice: Advice }) {
   if (!rows.length) return null;
 
   return (
-    <details open className="glass group rounded-2xl p-4">
+    <details className="glass group rounded-2xl p-4">
       <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
         <span className="min-w-0">
           <span className="block text-sm font-bold text-text">How to play this build</span>
@@ -90,7 +92,7 @@ function PlayGuide({ advice }: { advice: Advice }) {
             Getting the most out of these items and runes
           </span>
         </span>
-        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+        <Disclosure />
       </summary>
       <div className="space-y-3">
         {rows.map((row) => (
@@ -132,10 +134,10 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
   if (!hasDetail) return null;
 
   return (
-    <details open className="glass group rounded-2xl p-4">
+    <details className="glass group rounded-2xl p-4">
       <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Why this is the optimal build</p>
-        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+        <Disclosure />
       </summary>
       {itemRows.length > 0 && (
         <div className="mb-3">
@@ -397,28 +399,113 @@ function Picker({ value, onPick, onClear, excluded, placeholder, size = 44 }: {
   );
 }
 
+/** Human stat lines from the engine's stat blob, e.g. "333 HP · 30 AD". */
+const STAT_LABEL: Record<string, string> = {
+  hp: "HP", ad: "AD", ap: "AP", armor: "Armor", mr: "Magic Resist",
+  attackSpeed: "Attack Speed", crit: "Crit", abilityHaste: "Ability Haste",
+  moveSpeed: "Move Speed", mana: "Mana", manaRegen: "Mana Regen",
+  lifesteal: "Lifesteal", omnivamp: "Omnivamp", physicalVamp: "Physical Vamp",
+  magicPen: "Magic Pen", magicPenFlat: "Magic Pen", physicalPen: "Armor Pen",
+  physicalPenFlat: "Armor Pen", tenacity: "Tenacity", healShieldPower: "Heal & Shield Power",
+};
+
+function statLines(slug: string): string[] {
+  const raw = (DATA.items?.[slug] as { stats?: Record<string, { value: number; percent: boolean }> })?.stats;
+  if (!raw) return [];
+  return Object.entries(raw).map(([key, v]) =>
+    `${v.value}${v.percent ? "%" : ""} ${STAT_LABEL[key] ?? key}`);
+}
+
+/**
+ * Item and rune tooltips for the GENERATED build.
+ *
+ * These used to be bare `title=` attributes, which a phone cannot show at all
+ * (there is no hover) and which carry no stats. The Recommended tab has had
+ * proper tooltips the whole time; the generator's own strip did not, so tapping
+ * an item there did nothing.
+ */
+function ItemTip({ slug, advice, children }: {
+  slug: string; advice: Advice; children: React.ReactNode;
+}) {
+  const stats = statLines(slug);
+  const reason = (advice.candidateItemScores ?? []).find((r) => r.item === slug)?.reason;
+  return (
+    <Tip
+      tip={
+        <>
+          <span className="font-bold">{itemName(slug)}</span>
+          <span className="text-gold"> · {itemCost(slug).toLocaleString()}g</span>
+          {stats.length > 0 && <span className="mt-1 block text-accent">{stats.join(" · ")}</span>}
+          {reason && <span className="mt-1 block text-muted">{reason}</span>}
+        </>
+      }
+    >
+      <span className="cursor-pointer">{children}</span>
+    </Tip>
+  );
+}
+
+function RuneTip({ name, advice, children }: {
+  name: string; advice: Advice; children: React.ReactNode;
+}) {
+  const meta = (DATA.runes?.[name] ?? {}) as { description?: string; tree?: string; type?: string };
+  const rr = advice.runeReasons;
+  const page = advice.runes;
+  let reason: string | undefined;
+  if (page && rr) {
+    if (name === page.keystone) reason = rr.keystone;
+    else if (name === page.flex) reason = rr.flex;
+    else {
+      const i = page.minors.indexOf(name);
+      if (i >= 0) reason = rr.minors?.[i];
+    }
+  }
+  return (
+    <Tip
+      tip={
+        <>
+          <span className="font-bold">{name}</span>
+          {(meta.tree || meta.type) && (
+            <span className="text-faint"> · {[meta.tree, meta.type].filter(Boolean).join(" ")}</span>
+          )}
+          {meta.description && <span className="mt-1 block text-accent">{meta.description}</span>}
+          {reason && <span className="mt-1 block text-muted">{reason}</span>}
+        </>
+      }
+    >
+      <span className="cursor-pointer">{children}</span>
+    </Tip>
+  );
+}
+
 function ItemStrip({ advice }: { advice: Advice }) {
   const items = advice.items ?? [];
   const upAfter = 2; // tier-3 lands after ~2 items (matches the advisor's guidance)
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       {advice.boots && (
-        <span className="relative inline-flex flex-col items-center">
-          <img src={itemIcon(advice.boots)} alt={itemName(advice.boots)} title={`${itemName(advice.boots)} (T2)`} width={40} height={40} className="rounded-lg ring-1 ring-white/10" />
-          <span className="mt-0.5 text-[0.55rem] font-bold uppercase text-faint">T2 boots</span>
-        </span>
+        <ItemTip slug={advice.boots} advice={advice}>
+          <span className="relative inline-flex flex-col items-center">
+            <img src={itemIcon(advice.boots)} alt={itemName(advice.boots)} width={40} height={40} className="rounded-lg ring-1 ring-white/10" />
+            <span className="mt-0.5 text-[0.55rem] font-bold uppercase text-faint">T2 boots</span>
+          </span>
+        </ItemTip>
       )}
       {items.map((slug, i) => (
         <span key={slug} className="inline-flex items-center gap-2.5">
-          <span className="relative">
-            <img src={itemIcon(slug)} alt={itemName(slug)} title={`${itemName(slug)} · ${itemCost(slug)}g`} width={46} height={46} className="rounded-lg ring-1 ring-white/10" />
-            <span className="absolute -left-1.5 -top-1.5 grid h-[18px] w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{i + 1}</span>
-          </span>
-          {advice.bootsUpgrade && i + 1 === upAfter && (
-            <span className="relative inline-flex flex-col items-center">
-              <img src={itemIcon(advice.bootsUpgrade)} alt={itemName(advice.bootsUpgrade)} title={`Upgrade to ${itemName(advice.bootsUpgrade)} (~10:00)`} width={40} height={40} className="rounded-lg ring-1 ring-gold/40" />
-              <span className="mt-0.5 text-[0.55rem] font-bold uppercase text-gold">T3 @10:00</span>
+          <ItemTip slug={slug} advice={advice}>
+            <span className="relative">
+              <img src={itemIcon(slug)} alt={itemName(slug)} width={46} height={46} className="rounded-lg ring-1 ring-white/10" />
+              <span className="absolute -left-1.5 -top-1.5 grid h-[18px] w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{i + 1}</span>
             </span>
+          </ItemTip>
+          {advice.bootsUpgrade && i + 1 === upAfter && (
+            <ItemTip slug={advice.bootsUpgrade} advice={advice}>
+              <span className="relative inline-flex flex-col items-center">
+                <img src={itemIcon(advice.bootsUpgrade)} alt={itemName(advice.bootsUpgrade)} width={40} height={40} className="rounded-lg ring-1 ring-gold/40" />
+                <span className="mt-0.5 text-[0.55rem] font-bold uppercase text-gold">T3 @10:00</span>
+              </span>
+            </ItemTip>
           )}
         </span>
       ))}
@@ -834,11 +921,137 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               <ItemStrip advice={advice} />
             </div>
 
-            {advice.buildScore && (
+
+            {advice.runes && (
               <details open className="glass group rounded-2xl p-4">
+                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Runes · {advice.runes.primaryTree}</p>
+                  <Disclosure />
+                </summary>
+                <div className="flex flex-wrap items-center gap-2">
+                  {[advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].map((rn, i) => (
+                    <RuneTip key={rn + i} name={rn} advice={advice}>
+                      <span className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-xs">
+                        {runeIcon(rn) && <img src={runeIcon(rn)!} alt={rn} width={20} height={20} />}
+                        {rn}{i === 0 && <span className="text-[0.6rem] font-bold text-accent"> KEY</span>}
+                      </span>
+                    </RuneTip>
+                  ))}
+                </div>
+              </details>
+            )}
+
+            {advice.summoners?.length ? (
+              <details open className="glass group rounded-2xl p-4">
+                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Summoner spells</p>
+                  <Disclosure />
+                </summary>
+                <div className="flex flex-wrap items-center gap-2">
+                  {advice.summoners.map((spell) => (
+                    <span key={spell.name} className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-sm">
+                      {spell.icon && <img src={spell.icon} alt="" width={24} height={24} className="rounded" />}
+                      {spell.name}
+                    </span>
+                  ))}
+                </div>
+              </details>
+            ) : null}
+
+            {advice.situational?.length ? (
+              <details className="glass group rounded-2xl p-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
+                  Situational swaps <span className="normal-case text-faint/60">· bought in place of that purchase, not added at the end</span>
+                </p>
+                <Disclosure />
+              </summary>
+                <div className="space-y-2 text-sm">
+                  {[...advice.situational]
+                    .sort((left, right) => (left.atPosition ?? 9) - (right.atPosition ?? 9))
+                    .map((s, i) => (
+                      <div key={i} className="flex flex-wrap items-center gap-2">
+                        {s.atPosition ? (
+                          <span className="shrink-0 rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-accent">
+                            {ordinal(s.atPosition)} item
+                          </span>
+                        ) : null}
+                        <img src={itemIcon(s.item)} alt={itemName(s.item)} width={24} height={24} className="rounded" />
+                        <span className="font-medium">{itemName(s.item)}</span>
+                        <span className="text-muted">
+                          instead of {itemName(s.replaces)} · when {s.when}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </details>
+            ) : null}
+
+            {advice.situationalRunes?.length ? (
+              <details className="glass group rounded-2xl p-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
+                  Situational runes <span className="normal-case text-faint/60">· sometimes a rune answers it cheaper than an item</span>
+                </p>
+                <Disclosure />
+              </summary>
+                <div className="space-y-2 text-sm">
+                  {advice.situationalRunes.map((s, i) => (
+                    <div key={i} className="flex flex-wrap items-center gap-2">
+                      {runeIcon(s.rune) && <img src={runeIcon(s.rune)!} alt="" width={22} height={22} className="rounded-full" />}
+                      <span className="font-medium">{s.rune}</span>
+                      <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide ${
+                        s.replacesType === "item" ? "bg-gold/15 text-gold" : "bg-accent/15 text-accent"
+                      }`}>
+                        {s.replacesType === "item" ? "frees an item slot" : "rune swap"}
+                      </span>
+                      <span className="text-muted">
+                        over {s.replacesLabel ?? (s.replacesType === "item" ? itemName(s.replaces) : s.replaces)} · when {s.when}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ) : null}
+
+            {advice.snowballSwap ? (
+              <div className="rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] p-4">
+                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-amber-300">If {safeAheadEnemy || "the threat"} is snowballing</p>
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <img src={itemIcon(advice.snowballSwap.item)} alt={itemName(advice.snowballSwap.item)} width={28} height={28} className="rounded" />
+                  <span>Pick <b>{itemName(advice.snowballSwap.item)}</b> over <b>{itemName(advice.snowballSwap.replaces)}</b>.</span>
+                  <span className="text-muted">{advice.snowballSwap.when}</span>
+                </div>
+              </div>
+            ) : null}
+
+            {advice.situationalBoots?.length ? (
+              <details className="glass group rounded-2xl p-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Situational boots</p>
+                <Disclosure />
+              </summary>
+                <div className="space-y-1.5 text-sm">
+                  {advice.situationalBoots.map((s) => (
+                    <div key={s.boots} className="flex items-center gap-2">
+                      <img src={itemIcon(s.boots)} alt={itemName(s.boots)} width={24} height={24} className="rounded" />
+                      <span className="font-medium">{itemName(s.boots)}</span>
+                      <span className="text-muted">when {s.when}</span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ) : null}
+
+            <PlayGuide advice={advice} />
+
+            <WhyThisBuild advice={advice} />
+
+            {advice.buildScore && (
+              <details className="glass group rounded-2xl p-4">
                 <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
                   <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Complete build evaluation</p>
-                  <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+                  <Disclosure />
                 </summary>
                 <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
                   {[
@@ -860,120 +1073,6 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 <p className="mt-3 text-sm text-muted">{advice.buildScore.reason}</p>
               </details>
             )}
-
-            {advice.runes && (
-              <details open className="glass group rounded-2xl p-4">
-                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
-                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Runes · {advice.runes.primaryTree}</p>
-                  <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
-                </summary>
-                <div className="flex flex-wrap items-center gap-2">
-                  {[advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].map((rn, i) => (
-                    <span key={rn + i} className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-xs">
-                      {runeIcon(rn) && <img src={runeIcon(rn)!} alt={rn} width={20} height={20} />}
-                      {rn}{i === 0 && <span className="text-[0.6rem] font-bold text-accent"> KEY</span>}
-                    </span>
-                  ))}
-                </div>
-              </details>
-            )}
-
-            {advice.summoners?.length ? (
-              <details open className="glass group rounded-2xl p-4">
-                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
-                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Summoner spells</p>
-                  <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
-                </summary>
-                <div className="flex flex-wrap items-center gap-2">
-                  {advice.summoners.map((spell) => (
-                    <span key={spell.name} className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-sm">
-                      {spell.icon && <img src={spell.icon} alt="" width={24} height={24} className="rounded" />}
-                      {spell.name}
-                    </span>
-                  ))}
-                </div>
-              </details>
-            ) : null}
-
-            {advice.situational?.length ? (
-              <div className="glass rounded-2xl p-4">
-                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
-                  Situational swaps <span className="normal-case text-faint/60">· bought in place of that purchase, not added at the end</span>
-                </p>
-                <div className="space-y-2 text-sm">
-                  {[...advice.situational]
-                    .sort((left, right) => (left.atPosition ?? 9) - (right.atPosition ?? 9))
-                    .map((s, i) => (
-                      <div key={i} className="flex flex-wrap items-center gap-2">
-                        {s.atPosition ? (
-                          <span className="shrink-0 rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-accent">
-                            {ordinal(s.atPosition)} item
-                          </span>
-                        ) : null}
-                        <img src={itemIcon(s.item)} alt={itemName(s.item)} width={24} height={24} className="rounded" />
-                        <span className="font-medium">{itemName(s.item)}</span>
-                        <span className="text-muted">
-                          instead of {itemName(s.replaces)} · when {s.when}
-                        </span>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            ) : null}
-
-            {advice.situationalRunes?.length ? (
-              <div className="glass rounded-2xl p-4">
-                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
-                  Situational runes <span className="normal-case text-faint/60">· sometimes a rune answers it cheaper than an item</span>
-                </p>
-                <div className="space-y-2 text-sm">
-                  {advice.situationalRunes.map((s, i) => (
-                    <div key={i} className="flex flex-wrap items-center gap-2">
-                      {runeIcon(s.rune) && <img src={runeIcon(s.rune)!} alt="" width={22} height={22} className="rounded-full" />}
-                      <span className="font-medium">{s.rune}</span>
-                      <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide ${
-                        s.replacesType === "item" ? "bg-gold/15 text-gold" : "bg-accent/15 text-accent"
-                      }`}>
-                        {s.replacesType === "item" ? "frees an item slot" : "rune swap"}
-                      </span>
-                      <span className="text-muted">
-                        over {s.replacesLabel ?? (s.replacesType === "item" ? itemName(s.replaces) : s.replaces)} · when {s.when}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            {advice.snowballSwap ? (
-              <div className="rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] p-4">
-                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-amber-300">If {safeAheadEnemy || "the threat"} is snowballing</p>
-                <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <img src={itemIcon(advice.snowballSwap.item)} alt={itemName(advice.snowballSwap.item)} width={28} height={28} className="rounded" />
-                  <span>Pick <b>{itemName(advice.snowballSwap.item)}</b> over <b>{itemName(advice.snowballSwap.replaces)}</b>.</span>
-                  <span className="text-muted">{advice.snowballSwap.when}</span>
-                </div>
-              </div>
-            ) : null}
-
-            {advice.situationalBoots?.length ? (
-              <div className="glass rounded-2xl p-4">
-                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Situational boots</p>
-                <div className="space-y-1.5 text-sm">
-                  {advice.situationalBoots.map((s) => (
-                    <div key={s.boots} className="flex items-center gap-2">
-                      <img src={itemIcon(s.boots)} alt={itemName(s.boots)} width={24} height={24} className="rounded" />
-                      <span className="font-medium">{itemName(s.boots)}</span>
-                      <span className="text-muted">when {s.when}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            <PlayGuide advice={advice} />
-
-            <WhyThisBuild advice={advice} />
 
             <div className="flex flex-wrap items-center gap-2">
               <ShareBuildButton
