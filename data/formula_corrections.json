@@ -19,17 +19,10 @@
       "removeMechanics": ["noResource"],
       "reason": "Extraction says resource=none plus a noResource mechanic, and the prompt told the model Graves 'has NO mana'. He has 390 base mana and pays per cast (Q 65/70/75/80) -- wildriftfire and wr-meta agree. The reload/magazine mechanic likely got conflated with resourcelessness."
     },
-    "Twisted Fate": {
-      "knowledge": { "asEfficiency": 0.8 },
-      "reason": "Was 0.2, the caster floor shared with Annie and Amumu. Stacked Deck grants 25/30% attack speed to his own attacks and procs every 4th attack -- an ability that buys attack speed and counts hits cannot sit at the floor of the attack-speed-value scale. 0.8 places him beside Kayle/Jax (0.9), below the pure-AS marksmen at 1.0."
-    },
     "Nilah": {
       "knowledge": { "asEfficiency": 0.9 },
       "reason": "Was 0.2. She is a melee Marksman with a basic-attack-carry pattern whose attacks cleave; her damage is attacks per second. 0.9 matches Kai'Sa's tier."
-    },
-    "Kennen": {
-      "knowledge": { "asEfficiency": 0.7 },
-      "reason": "Was 0.2. Electrical Surge marks every 5th attack for 55-85 (+70-100% bonus AD) and his passive stuns through repeated marks, so attacks convert -- but the kit is AP-primary, so he sits at 0.7 with Teemo rather than marksman tier."
     }
-  }
+  },
+  "_revertNote": "Twisted Fate (asEfficiency 0.8) and Kennen (0.7) corrections were applied on 2026-07-29 and REVERTED the same day on owner meta-judgment: with the raised values the model built Nashor's Tooth as an effective core item on both (slot 2 in consecutive Twisted Fate runs), and neither champion builds it as a staple in the live meta. Their every-N-hit passives are real, but the extraction's 0.2 produces the builds that match reality. If this comes up again, re-litigate with N-run evidence against real meta builds, not from ability text alone."
 }

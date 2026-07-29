@@ -48,11 +48,25 @@ class TestFactualResourceFixes:
 
 
 class TestAttackSpeedEfficiencyFloorEscapes:
-    def test_attack_counting_kits_left_the_caster_floor(self):
-        """Twisted Fate's own ability GRANTS attack speed; 0.2 was Annie's value."""
-        for name in ("Twisted Fate", "Nilah", "Kennen"):
+    def test_nilah_left_the_caster_floor(self):
+        """A melee Marksman cannot share Annie's attack-speed value.
+
+        Twisted Fate and Kennen deliberately do NOT appear here: their raised
+        values were reverted on owner meta-judgment the same day they landed
+        (see _revertNote in the overlay) -- the model started building Nashor's
+        Tooth as core on both, and neither builds it as a staple in the live
+        meta. The floor being textually indefensible did not make the raised
+        value produce better builds.
+        """
+        eff = _know(profiles.FORMULAS, "Nilah").get("asEfficiency")
+        assert eff and eff >= 0.7, f"Nilah asEfficiency={eff}, back at the floor"
+
+    def test_twisted_fate_and_kennen_stay_reverted(self):
+        """The revert is an owner decision; a future 'cleanup' re-raising them
+        should have to delete this test and argue the case, not slip through."""
+        for name in ("Twisted Fate", "Kennen"):
             eff = _know(profiles.FORMULAS, name).get("asEfficiency")
-            assert eff and eff >= 0.7, f"{name} asEfficiency={eff}, back at the floor"
+            assert eff == 0.2, f"{name} asEfficiency={eff}, expected the reverted 0.2"
 
     def test_fight_engine_sees_the_same_values(self):
         """asEfficiency multiplies into attack speed in simulation, so the two
