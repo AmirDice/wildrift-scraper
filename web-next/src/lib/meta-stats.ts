@@ -90,12 +90,6 @@ export function roleTierMatrix(): HeatRow[] {
   });
 }
 
-export type DifficultyStat = { difficulty: string; wr: number; nChampions: number };
-
-export function difficultyMeta(): DifficultyStat[] {
-  return site.winrateByDifficulty as DifficultyStat[];
-}
-
 // Headline numbers for the summary strip.
 export function metaHeadline() {
   const champs = getChampions();

@@ -4,10 +4,12 @@ import { site } from "@/lib/data";
 import { Container, Card, SectionHeading } from "@/components/ui";
 import {
   tierDistribution, wrHistogram, wrVsGames, classMeta, roleMeta,
-  roleTierMatrix, difficultyMeta, metaHeadline,
+  roleTierMatrix, metaHeadline,
 } from "@/lib/meta-stats";
+import { climbingPicks, stomperPicks } from "@/lib/skew";
 import {
-  MetaScatter, TierBars, ClassRadar, RoleTierHeatmap, WrHistogram, ValueBars, DifficultyBars,
+  MetaScatter, TierBars, RoleTierHeatmap, WrHistogram, ValueBars, SkewDumbbell,
+  type SkewRow,
 } from "@/components/meta-charts";
 
 export const metadata: Metadata = {
@@ -25,7 +27,13 @@ export default function MetaPage() {
   const classes = classMeta();
   const roles = roleMeta();
   const heat = roleTierMatrix();
-  const diff = difficultyMeta();
+
+  const toRow = (s: ReturnType<typeof climbingPicks>[number]): SkewRow => ({
+    slug: s.champion.slug, name: s.champion.name, icon: s.champion.icon,
+    role: s.champion.role, low: s.low, high: s.high, skew: s.skew,
+  });
+  const climbers = climbingPicks(7).map(toRow);
+  const fallers = stomperPicks(7).map(toRow);
 
   return (
     <Container className="py-12">
@@ -54,6 +62,21 @@ export default function MetaPage() {
         </Card>
       </div>
 
+      {/* elo-skew dumbbell */}
+      {(climbers.length > 0 || fallers.length > 0) && (
+        <div className="mt-10">
+          <SectionHeading
+            title="Who scales with elo"
+            subtitle="Win rate at Diamond+ vs the Challenger bracket (CN ranked data). A long line means the champion plays very differently at the top."
+            href="/ranks"
+            linkLabel="Every champion by rank"
+          />
+          <Card className="p-5 sm:p-6">
+            <SkewDumbbell climbers={climbers} fallers={fallers} />
+          </Card>
+        </div>
+      )}
+
       {/* tier distribution + histogram */}
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
         <div>
@@ -66,20 +89,22 @@ export default function MetaPage() {
         </div>
       </div>
 
-      {/* class radar + role bars */}
+      {/* class bars + role bars */}
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
         <div id="classes" className="scroll-mt-24">
           <SectionHeading title="Win rate by class" subtitle="Average of each class's top 5 picks" />
-          <Card className="flex items-center justify-center p-5 sm:p-6"><ClassRadar rows={classes} /></Card>
+          <Card className="p-5 sm:p-6">
+            <ValueBars rows={classes.map((c) => ({ label: c.class, value: c.wr }))} />
+            <p className="mt-5 border-t border-line/60 pt-4 text-xs text-faint">
+              Champion difficulty barely moves the needle: every difficulty bucket sits within
+              about one point of 50%, so play what you enjoy.
+            </p>
+          </Card>
         </div>
         <div id="roles" className="scroll-mt-24">
           <SectionHeading title="Win rate by role" subtitle="Strength of each role's meta picks" href="/ranks" linkLabel="Skill-bracket trends" />
           <Card className="p-5 sm:p-6">
             <ValueBars rows={roles.map((r) => ({ label: r.role, value: r.wr }))} />
-            <div className="mt-6 border-t border-line/60 pt-5">
-              <p className="mb-3 text-sm font-medium text-muted">Does difficulty pay off? Win rate by champion difficulty</p>
-              <DifficultyBars rows={diff} />
-            </div>
           </Card>
         </div>
       </div>

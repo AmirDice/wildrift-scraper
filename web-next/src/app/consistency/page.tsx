@@ -26,13 +26,14 @@ export default function ConsistencyPage() {
         <WinrateScatter champions={champions} />
       </div>
       <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted">
+        {/* same tier palette as every other chart (meta-charts TIER_COLOR) */}
         {[
-          ["GOD", "#ffd76e"],
-          ["S", "#7fd1ff"],
-          ["A", "#4f8dff"],
-          ["B", "#8aa0c0"],
-          ["C", "#6b7890"],
-          ["L", "#ff6a6a"],
+          ["GOD", "#ff9d3c"],
+          ["S", "#ff7f3a"],
+          ["A", "#f3b400"],
+          ["B", "#4f8dff"],
+          ["C", "#8a92a6"],
+          ["L", "#4a5266"],
         ].map(([t, col]) => (
           <span key={t} className="inline-flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: col }} />

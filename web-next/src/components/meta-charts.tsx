@@ -1,8 +1,10 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element -- champion icons come from external CDNs */
+
 import { useState } from "react";
 import type {
-  TierCount, HistBin, ScatterPoint, ClassStat, RoleStat, HeatRow, DifficultyStat,
+  TierCount, HistBin, ScatterPoint, HeatRow,
 } from "@/lib/meta-stats";
 
 // Lightweight, dependency-free SVG charts for the Meta Report. Everything is a
@@ -87,16 +89,20 @@ export function MetaScatter({ points }: { points: ScatterPoint[] }) {
           <text x={m.left + iw / 2} y={H - 6} textAnchor="middle" fontSize="11" fill={AXIS}>Games played (log scale)</text>
           <text x={-(m.top + ih / 2)} y={14} transform="rotate(-90)" textAnchor="middle" fontSize="11" fill={AXIS}>Win rate</text>
 
-          {/* points */}
+          {/* points: visible mark + an invisible, larger hit target so hover
+              never requires landing dead-center on a 4px dot */}
           {points.map((p) => (
-            <circle
-              key={p.slug}
-              cx={x(p.games)} cy={y(p.wr)} r={hover?.slug === p.slug ? r(p.ceiling) + 2 : r(p.ceiling)}
-              fill={TIER_COLOR[p.tier]} fillOpacity={dim(p) ? 0.12 : 0.82}
-              stroke={hover?.slug === p.slug ? "#fff" : "rgba(0,0,0,0.35)"} strokeWidth={hover?.slug === p.slug ? 1.5 : 0.6}
+            <g key={p.slug}
               onMouseEnter={() => setHover(p)} onMouseLeave={() => setHover(null)}
-              className="cursor-pointer transition-[r]"
-            />
+              className="cursor-pointer">
+              <circle
+                cx={x(p.games)} cy={y(p.wr)} r={hover?.slug === p.slug ? r(p.ceiling) + 2 : r(p.ceiling)}
+                fill={TIER_COLOR[p.tier]} fillOpacity={dim(p) ? 0.12 : 0.82}
+                stroke={hover?.slug === p.slug ? "#fff" : "rgba(0,0,0,0.35)"} strokeWidth={hover?.slug === p.slug ? 1.5 : 0.6}
+                className="transition-[r]"
+              />
+              <circle cx={x(p.games)} cy={y(p.wr)} r={Math.max(12, r(p.ceiling) + 4)} fill="transparent" />
+            </g>
           ))}
         </svg>
 
@@ -144,49 +150,14 @@ export function TierBars({ rows }: { rows: TierCount[] }) {
   );
 }
 
-/* ------------------------------------------------------------- class radar */
-
-export function ClassRadar({ rows }: { rows: ClassStat[] }) {
-  const S = 300, c = S / 2, R = 108;
-  const n = rows.length;
-  const [lo, hi] = niceExtent(rows.map((r) => r.wr), 0.4);
-  const norm = (wr: number) => (wr - lo) / (hi - lo);
-  const angle = (i: number) => (Math.PI * 2 * i) / n - Math.PI / 2;
-  const pt = (i: number, rad: number) => [c + Math.cos(angle(i)) * rad, c + Math.sin(angle(i)) * rad];
-
-  const rings = [0.25, 0.5, 0.75, 1];
-  const poly = rows.map((r, i) => pt(i, norm(r.wr) * R).join(",")).join(" ");
-
-  return (
-    <svg viewBox={`0 0 ${S} ${S}`} className="mx-auto w-full max-w-[320px]" role="img" aria-label="Win rate by class radar">
-      {rings.map((rr) => (
-        <polygon key={rr} points={rows.map((_, i) => pt(i, rr * R).join(",")).join(" ")} fill="none" stroke={GRID} />
-      ))}
-      {rows.map((_, i) => {
-        const [ex, ey] = pt(i, R);
-        return <line key={i} x1={c} y1={c} x2={ex} y2={ey} stroke={GRID} />;
-      })}
-      <polygon points={poly} fill="rgba(79,141,255,0.22)" stroke="var(--color-accent)" strokeWidth="2" />
-      {rows.map((r, i) => {
-        const [px, py] = pt(i, norm(r.wr) * R);
-        const [lx, ly] = pt(i, R + 20);
-        return (
-          <g key={r.class}>
-            <circle cx={px} cy={py} r="3.5" fill="var(--color-accent)" />
-            <text x={lx} y={ly} textAnchor="middle" fontSize="10.5" fill={AXIS}>{r.class}</text>
-            <text x={lx} y={ly + 12} textAnchor="middle" fontSize="9.5" fill="rgba(255,255,255,0.7)" fontWeight="600">{r.wr.toFixed(1)}%</text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
 /* -------------------------------------------------------------- heatmap */
 
 export function RoleTierHeatmap({ rows }: { rows: HeatRow[] }) {
   const tiers = rows[0]?.cells ?? [];
-  const maxInRow = (row: HeatRow) => Math.max(1, ...row.cells.map((cc) => cc.count));
+  // ONE sequential scale for the whole grid (single hue, more = darker), so any
+  // two cells are comparable. Per-row normalization made "20" in one row look
+  // like "7" in another.
+  const globalMax = Math.max(1, ...rows.flatMap((r) => r.cells.map((cc) => cc.count)));
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-separate border-spacing-1 text-center text-xs">
@@ -199,28 +170,32 @@ export function RoleTierHeatmap({ rows }: { rows: HeatRow[] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => {
-            const mx = maxInRow(row);
-            return (
-              <tr key={row.role}>
-                <td className="pr-2 text-left font-medium text-muted">{row.role}</td>
-                {row.cells.map((cc) => (
+          {rows.map((row) => (
+            <tr key={row.role}>
+              <td className="pr-2 text-left font-medium text-muted">{row.role}</td>
+              {row.cells.map((cc) => {
+                const t = cc.count / globalMax; // 0..1 on the shared scale
+                return (
                   <td key={cc.tier}>
                     <div
                       className="grid h-9 place-items-center rounded-md font-semibold"
+                      title={`${row.role} · ${cc.label} tier: ${cc.count} champion${cc.count === 1 ? "" : "s"}`}
                       style={{
-                        background: cc.count === 0 ? "rgba(255,255,255,0.03)" : TIER_COLOR[cc.tier],
-                        opacity: cc.count === 0 ? 1 : 0.28 + 0.72 * (cc.count / mx),
-                        color: cc.count === 0 ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.82)",
+                        background: cc.count === 0
+                          ? "rgba(255,255,255,0.03)"
+                          : `rgba(79,141,255,${0.15 + 0.85 * t})`,
+                        color: cc.count === 0
+                          ? "rgba(255,255,255,0.25)"
+                          : t > 0.55 ? "#07121f" : "rgba(255,255,255,0.9)",
                       }}
                     >
                       {cc.count || ""}
                     </div>
                   </td>
-                ))}
-              </tr>
-            );
-          })}
+                );
+              })}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -279,26 +254,123 @@ export function ValueBars({ rows, unit = "%", accentTop = true }: { rows: { labe
   );
 }
 
-/* ---------------------------------------------------- difficulty vs win rate */
+/* ------------------------------------------------------- elo-skew dumbbell */
 
-export function DifficultyBars({ rows }: { rows: DifficultyStat[] }) {
-  const max = Math.max(...rows.map((r) => r.wr));
-  const min = Math.min(...rows.map((r) => r.wr));
-  const span = max - min || 1;
+export type SkewRow = {
+  slug: string; name: string; icon: string; role: string;
+  low: number;   // win rate in the Diamond+ bracket
+  high: number;  // win rate in the Challenger bracket
+  skew: number;  // high - low
+};
+
+const UP = "#4ade80";    // climbs with elo (site-wide "up" color)
+const DOWN = "#fb7185";  // falls off at the top
+
+/**
+ * Dumbbell: each champion's win rate at Diamond+ (hollow dot) vs Challenger
+ * (filled dot), on ONE shared axis so slopes are comparable. The signed delta
+ * is direct-labeled on every row (this doubles as the CVD-safe secondary
+ * encoding for the green/red pair, alongside the two spatially separate groups).
+ */
+function DumbbellRow({ r, color, pct, active, onHover }: {
+  r: SkewRow; color: string; pct: (v: number) => number;
+  active: boolean; onHover: (slug: string | null) => void;
+}) {
+  const a = pct(r.low), b = pct(r.high);
+  const [left, right] = a < b ? [a, b] : [b, a];
   return (
-    <div className="flex flex-col gap-3">
-      {rows.map((r) => {
-        const pct = ((r.wr - min) / span) * 100;
-        return (
-          <div key={r.difficulty} className="flex items-center gap-3">
-            <span className="w-24 shrink-0 text-sm font-medium">{r.difficulty}</span>
-            <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
-              <div className="h-full rounded-full bg-gold" style={{ width: `${Math.max(6, pct)}%` }} />
-            </div>
-            <span className="w-24 text-right text-xs text-muted">{r.wr.toFixed(1)}% · {r.nChampions}</span>
+    <div
+      className={`flex items-center gap-3 rounded-lg px-2 py-1.5 transition ${active ? "bg-white/[0.05]" : ""}`}
+      onMouseEnter={() => onHover(r.slug)} onMouseLeave={() => onHover(null)}
+    >
+      <span className="h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
+        <img src={r.icon} alt="" width={28} height={28} loading="lazy" className="h-full w-full scale-[1.12] object-cover" />
+      </span>
+      <span className="w-24 shrink-0 truncate text-sm font-medium sm:w-28">{r.name}</span>
+      <div className="relative h-7 flex-1">
+        {/* 50% reference */}
+        <span className="absolute inset-y-0 w-px bg-white/15" style={{ left: `${pct(50)}%` }} />
+        {/* connector */}
+        <span
+          className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full"
+          style={{ left: `${left}%`, width: `${Math.max(0.5, right - left)}%`, background: color, opacity: active ? 0.9 : 0.55 }}
+        />
+        {/* Diamond+ (start): hollow */}
+        <span
+          className="absolute top-1/2 h-[9px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-bg"
+          style={{ left: `${a}%`, borderColor: color }}
+        />
+        {/* Challenger (end): filled */}
+        <span
+          className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ left: `${b}%`, background: color, boxShadow: "0 0 0 2px rgba(7,10,18,0.9)" }}
+        />
+        {/* values on hover */}
+        {active && (
+          <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-[#0e1322] px-2 py-0.5 text-[0.68rem] text-muted shadow-xl">
+            Diamond+ {r.low.toFixed(1)}% → Challenger {r.high.toFixed(1)}%
+          </span>
+        )}
+      </div>
+      <span className="w-12 shrink-0 text-right text-sm font-semibold tabular-nums" style={{ color }}>
+        {r.skew > 0 ? "+" : "−"}{Math.abs(r.skew).toFixed(1)}
+      </span>
+    </div>
+  );
+}
+
+// margins mirror the DumbbellRow layout exactly (px-2 + icon 28px + gap-3 +
+// name w-24/sm:w-28 + gap-3 left; gap-3 + delta w-12 + px-2 right), so the
+// tick labels sit precisely under the shared track column.
+function DumbbellAxis({ lo, hi, pct }: { lo: number; hi: number; pct: (v: number) => number }) {
+  return (
+    <div className="relative ml-[9.75rem] mr-[4.25rem] mt-1 h-4 text-[0.65rem] text-faint sm:ml-[10.75rem]">
+      <span className="absolute -translate-x-1/2" style={{ left: "0%" }}>{lo}%</span>
+      <span className="absolute -translate-x-1/2" style={{ left: `${pct(50)}%` }}>50%</span>
+      <span className="absolute -translate-x-1/2" style={{ left: "100%" }}>{hi}%</span>
+    </div>
+  );
+}
+
+export function SkewDumbbell({ climbers, fallers }: { climbers: SkewRow[]; fallers: SkewRow[] }) {
+  const [hover, setHover] = useState<string | null>(null);
+  const all = [...climbers, ...fallers];
+  const lo = Math.floor(Math.min(50, ...all.flatMap((r) => [r.low, r.high])) - 1);
+  const hi = Math.ceil(Math.max(50, ...all.flatMap((r) => [r.low, r.high])) + 1);
+  const pct = (v: number) => ((v - lo) / (hi - lo)) * 100;
+
+  return (
+    <div>
+      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-[9px] w-[9px] rounded-full border-2 border-white/60" /> Diamond+ bracket
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-[9px] w-[9px] rounded-full bg-white/70" /> Challenger bracket
+        </span>
+        <span className="text-faint">Same axis for every row · vertical line marks 50%</span>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div>
+          <p className="mb-2 text-sm font-semibold text-emerald-300">Scales with elo · win rate climbs at the top</p>
+          <div className="flex flex-col gap-0.5">
+            {climbers.map((r) => (
+              <DumbbellRow key={r.slug} r={r} color={UP} pct={pct} active={hover === r.slug} onHover={setHover} />
+            ))}
           </div>
-        );
-      })}
+          <DumbbellAxis lo={lo} hi={hi} pct={pct} />
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-semibold text-rose-300">Falls off · strong low, fades vs the best</p>
+          <div className="flex flex-col gap-0.5">
+            {fallers.map((r) => (
+              <DumbbellRow key={r.slug} r={r} color={DOWN} pct={pct} active={hover === r.slug} onHover={setHover} />
+            ))}
+          </div>
+          <DumbbellAxis lo={lo} hi={hi} pct={pct} />
+        </div>
+      </div>
     </div>
   );
 }

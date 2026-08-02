@@ -3,15 +3,10 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
-
-const TIER_COLOR: Record<string, string> = {
-  GOD: "#ffd76e",
-  S: "#7fd1ff",
-  A: "#4f8dff",
-  B: "#8aa0c0",
-  C: "#6b7890",
-  Ass: "#ff6a6a",
-};
+// Same tier palette as every other chart (meta-charts.tsx): one entity, one
+// color everywhere. The old local palette disagreed with /meta and used red --
+// a status color -- for the bottom tier.
+import { TIER_COLOR } from "@/components/meta-charts";
 
 const W = 820;
 const H = 540;
