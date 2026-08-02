@@ -73,6 +73,25 @@ SCREEN_5_STRIP_RIGHT_X: int = _x + _w - 30
 # row pitch.
 SCREEN_2_BADGE_X_RANGE: tuple[int, int] = (575, 695)
 
+# ---- extended-capture points (phone 2340x1080, measured from flow_*.png) ----
+# Book icon at the right of every leaderboard row: opens the player's BUILD
+# popup for this champion. Tap at (BOOK_X, detected row y).
+SCREEN_2_BOOK_X: int = 2049
+# The X that closes the build popup.
+SCREEN_2_BUILD_CLOSE: tuple[int, int] = (1936, 178)
+# STATS tab in the profile's bottom tab bar (same bar as CHAMPION AND LANE).
+SCREEN_5_STATS_TAB: tuple[int, int] = (1178, 1028)
+# Stats page controls: the list-view toggle (right of the radar/list switch),
+# the queue dropdown, and the dropdown's option rows when open.
+STATS_LIST_TOGGLE: tuple[int, int] = (2153, 45)
+STATS_QUEUE_DROPDOWN: tuple[int, int] = (1702, 45)
+STATS_QUEUE_OPTIONS: dict[str, tuple[int, int]] = {
+    "all": (1702, 109),
+    "ranked": (1702, 181),
+    "normal": (1702, 252),
+    "legendary": (1702, 325),
+}
+
 # Safe-zone y-range on screen 2 — any rank badge whose top y is below this
 # minimum (closer to the top of the screen) is partially cut off; any badge
 # whose bottom y exceeds the maximum is partially cut off at the bottom.

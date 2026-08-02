@@ -53,8 +53,14 @@ from .config import (
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_2_NAME_HEIGHT,
     SCREEN_2_NAME_X_RANGE,
+    SCREEN_2_BOOK_X,
+    SCREEN_2_BUILD_CLOSE,
     SCREEN_2_NAME_Y_OFFSET,
     SCREEN_5_OCR_REGION,
+    SCREEN_5_STATS_TAB,
+    STATS_LIST_TOGGLE,
+    STATS_QUEUE_DROPDOWN,
+    STATS_QUEUE_OPTIONS,
     load_calibration,
     load_screen_points,
     save_calibration,
@@ -244,6 +250,12 @@ def main() -> int:
                              "Extract afterwards with: python -m src.extract_frames <capture dir>")
     parser.add_argument("--capture-dir", type=Path, default=Path("data/captures"),
                         help="Where --capture-only sessions are stored")
+    parser.add_argument("--builds", action="store_true",
+                        help="capture-only: also capture each player's BUILD popup (book icon "
+                             "on the leaderboard row; ~2s/profile)")
+    parser.add_argument("--stats", action="store_true",
+                        help="capture-only: also capture the rank popup and the STATS page for "
+                             "BOTH queues (Ranked + Legendary Ranked; ~5s/profile)")
     args = parser.parse_args()
 
     capture_dir: Path | None = None
@@ -368,10 +380,28 @@ def main() -> int:
             except Exception:
                 player_name = None
 
+        build_frame: str | None = None
+        if capture_dir is not None and args.builds:
+            # BUILD popup via the book icon on the row we just located. The
+            # popup prints "Rank: N" inside, so correlation is intrinsic.
+            client.tap(SCREEN_2_BOOK_X, py, hold_ms=args.tap_hold_ms)
+            time.sleep(args.step_wait + 0.2)
+            build_frame = f"{rank:03d}_build.jpg"
+            cv2.imwrite(str(capture_dir / build_frame), client.screenshot(),
+                        [cv2.IMWRITE_JPEG_QUALITY, 92])
+            client.tap(*SCREEN_2_BUILD_CLOSE, hold_ms=args.tap_hold_ms)
+            time.sleep(args.step_wait)
         # Single tap per transition. Pause is checked after each step so a
         # mid-profile 'p' press lands within ~step_wait seconds.
         client.tap(px, py, hold_ms=args.tap_hold_ms)
         time.sleep(args.step_wait)
+        popup_frame: str | None = None
+        if capture_dir is not None:
+            # Rank popup: name#tag, tier (Grandmaster etc.), account level --
+            # free, we pass through this screen on the way to the profile.
+            popup_frame = f"{rank:03d}_popup.jpg"
+            cv2.imwrite(str(capture_dir / popup_frame), client.screenshot(),
+                        [cv2.IMWRITE_JPEG_QUALITY, 92])
         _check_pause_or_raise()
 
         client.tap(*s3_view, hold_ms=args.tap_hold_ms)
@@ -396,16 +426,42 @@ def main() -> int:
             strip_name = f"{rank:03d}_strip.jpg"
             cv2.imwrite(str(capture_dir / strip_name), strip_img,
                         [cv2.IMWRITE_JPEG_QUALITY, 92])
+            stats_frames: dict[str, str] = {}
+            if args.stats:
+                # STATS tab -> list view -> EXPLICIT queue selection for both
+                # captures: the game remembers the last dropdown choice, so
+                # trusting defaults would desync across profiles. The frame
+                # shows the selected queue, so extraction re-verifies it.
+                client.tap(*SCREEN_5_STATS_TAB, hold_ms=args.tap_hold_ms)
+                time.sleep(args.step_wait + 0.3)
+                client.tap(*STATS_LIST_TOGGLE, hold_ms=args.tap_hold_ms)
+                time.sleep(0.4)
+                for queue in ("ranked", "legendary"):
+                    client.tap(*STATS_QUEUE_DROPDOWN, hold_ms=args.tap_hold_ms)
+                    time.sleep(0.45)
+                    client.tap(*STATS_QUEUE_OPTIONS[queue], hold_ms=args.tap_hold_ms)
+                    time.sleep(0.7)
+                    fn = f"{rank:03d}_stats_{queue}.jpg"
+                    cv2.imwrite(str(capture_dir / fn), client.screenshot(),
+                                [cv2.IMWRITE_JPEG_QUALITY, 92])
+                    stats_frames[queue] = fn
+            entry = {
+                "champion": args.target,
+                "rank": rank,
+                "strip_frame": strip_name,
+                "lb_frame": f"{rank:03d}_leaderboard.jpg",
+                "tap_y": py,
+                "strip_region": list(SCREEN_5_OCR_REGION),
+                "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            }
+            if build_frame:
+                entry["build_frame"] = build_frame
+            if popup_frame:
+                entry["popup_frame"] = popup_frame
+            if stats_frames:
+                entry["stats_frames"] = stats_frames
             with (capture_dir / "manifest.jsonl").open("a", encoding="utf-8") as f:
-                f.write(json.dumps({
-                    "champion": args.target,
-                    "rank": rank,
-                    "strip_frame": strip_name,
-                    "lb_frame": f"{rank:03d}_leaderboard.jpg",
-                    "tap_y": py,
-                    "strip_region": list(SCREEN_5_OCR_REGION),
-                    "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
-                }, ensure_ascii=False) + "\n")
+                f.write(json.dumps(entry, ensure_ascii=False) + "\n")
             wr = sc = gm = None
         else:
             wr, sc, gm, _, _, last_img = find_target_in_strip(

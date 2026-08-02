@@ -76,6 +76,52 @@ Respond ONLY with a JSON array, no prose, no markdown fences. Example:
 """
 
 
+POPUP_PROMPT = """\
+This is a Wild Rift player popup card (shown over a leaderboard). Extract:
+  - player_name: the display name WITHOUT the #tag (preserve non-ASCII exactly)
+  - riot_tag: the part after '#' if shown, else null
+  - level: the account level number shown under/near the avatar, else null
+  - tier: the ranked tier text (e.g. "Grandmaster III", "Challenger",
+    "Sovereign" -- the LINE that names a competitive rank), else null
+  - guild: the short guild/club tag on the dark chip if shown, else null
+Respond ONLY with one JSON object, no prose:
+{"player_name": "...", "riot_tag": "...", "level": 422, "tier": "Grandmaster III", "guild": "SLVF"}
+"""
+
+STATS_PROMPT = """\
+This is a Wild Rift profile STATS page in list view. Extract exactly what is
+printed (null for anything unreadable or absent):
+  - player_name (preserve non-ASCII), tier (e.g. "Grandmaster I")
+  - queue: the selected value of the middle dropdown at the top
+    (e.g. "Ranked", "Legendary Ranked", "All matches", "Normal")
+  - games, win_rate (number, no % sign)
+  - mvp, s_rating, a_rating, legendary, pentakill, quadra_kill, triple_kill,
+    first_blood  (the counters in the left panel)
+  - kda, teamfight_participation (number, no %), gold_per_minute,
+    damage_dealt_per_match, damage_taken_per_match, turret_damage_per_match
+    (the list on the right; strip commas)
+Respond ONLY with one JSON object, no prose.
+"""
+
+BUILD_PROMPT = """\
+This is a Wild Rift build popup: a champion name at the top, the player's
+name and leaderboard position ("Rank: N") on the left, and three icon rows
+labeled Spells, Runes and Items. Identify each icon by its official League of
+Legends: Wild Rift name.
+  - champion: the champion name printed at the top
+  - player_name: the name under the portrait (preserve non-ASCII)
+  - position: the integer after "Rank:"
+  - spells: array of the 2 summoner spell names, in order
+  - runes: array of the rune names, in order (first is the keystone)
+  - items: array of the item names, in order (ignore small overlay markers)
+If an icon cannot be identified with confidence, use "?" for it.
+Respond ONLY with one JSON object, no prose:
+{"champion": "Aatrox", "player_name": "...", "position": 1,
+ "spells": ["Flash", "Ignite"], "runes": ["Conqueror", "..."],
+ "items": ["Eclipse", "..."]}
+"""
+
+
 @dataclass
 class LeaderboardRow:
     rank: int
@@ -164,6 +210,53 @@ def _generate_json(image: np.ndarray, prompt: str, model: str) -> list:
     if not isinstance(data, list):
         raise RuntimeError(f"Expected JSON array, got {type(data).__name__}: {raw[:200]!r}")
     return data
+
+
+def _generate_obj(image: np.ndarray, prompt: str, model: str) -> dict:
+    """Like _generate_json but for prompts that return ONE JSON object.
+    Tolerates the model wrapping it in a single-element array."""
+    from google.genai import types
+
+    ok, buf = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    if not ok:
+        raise RuntimeError("Failed to JPEG-encode image")
+    response = _client().models.generate_content(
+        model=model,
+        contents=[prompt, types.Part.from_bytes(data=bytes(buf), mime_type="image/jpeg")],
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json", temperature=0.0),
+    )
+    raw = _extract_json(response.text or "")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        repaired = re.sub(r"\\u(?![0-9a-fA-F]{4})", r"\\\\u", raw)
+        try:
+            data = json.loads(repaired)
+        except json.JSONDecodeError:
+            raise RuntimeError(f"Gemini returned non-JSON: {raw[:200]!r}") from e
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        data = data[0]
+    if not isinstance(data, dict):
+        raise RuntimeError(f"Expected JSON object, got {type(data).__name__}: {raw[:200]!r}")
+    return data
+
+
+def read_rank_popup(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> dict:
+    """Player popup card: name#tag, account level, ranked tier, guild tag."""
+    return _generate_obj(image, POPUP_PROMPT, model)
+
+
+def read_stats_page(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> dict:
+    """Profile STATS page (list view): per-queue player statistics. The
+    returned 'queue' field is what the dropdown actually shows, so callers
+    can verify the frame matches the queue they intended to capture."""
+    return _generate_obj(image, STATS_PROMPT, model)
+
+
+def read_build_popup(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> dict:
+    """Build popup: champion, player, position, spell/rune/item names."""
+    return _generate_obj(image, BUILD_PROMPT, model)
 
 
 def read_strip(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> list[StripTile]:

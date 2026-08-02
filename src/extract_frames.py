@@ -357,6 +357,139 @@ def main() -> int:
             captured_at=e.get("captured_at", ""),
         ))
 
+    # ---- extended frames: rank popup, stats pages, build popups ----
+    # All optional (present only when the capture ran with --stats/--builds).
+    # Each write their own artifact next to extracted.csv.
+    def _read_frame_file(name: str | None):
+        if not name:
+            return None
+        fp = args.capture_dir / name
+        return cv2.imread(str(fp)) if fp.exists() else None
+
+    if args.engine == "gemini":
+        from .gemini_ocr import read_build_popup, read_rank_popup, read_stats_page
+
+        # canonical item-slug resolution against the site's item catalog
+        items_path = Path(__file__).resolve().parent.parent / "data" / "items.json"
+        item_canon: dict[str, str] = {}
+        if items_path.exists():
+            _norm = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())  # noqa: E731
+            for it in json.loads(items_path.read_text(encoding="utf-8")):
+                item_canon[_norm(it["name"])] = it["slug"]
+                item_canon.setdefault(_norm(it["slug"]), it["slug"])
+
+        def resolve_item(name: str) -> str | None:
+            c = re.sub(r"[^a-z0-9]", "", name.lower())
+            if c in item_canon:
+                return item_canon[c]
+            for cand in (c.rstrip("s"), c + "s"):
+                if cand in item_canon:
+                    return item_canon[cand]
+            hits = {slug for cc, slug in item_canon.items() if c and (c in cc or cc in c)}
+            return hits.pop() if len(hits) == 1 else None
+
+        def extract_extras(e: dict) -> tuple[int, dict | None, dict[str, dict], dict | None]:
+            rank = e["rank"]
+            popup = stats = build = None
+            stats_by_queue: dict[str, dict] = {}
+            img = _read_frame_file(e.get("popup_frame"))
+            if img is not None:
+                try:
+                    popup = read_rank_popup(img, model=args.model)
+                except Exception as exc:  # noqa: BLE001
+                    print(f"  [popup] rank {rank}: {exc}")
+            for queue, fn in (e.get("stats_frames") or {}).items():
+                img = _read_frame_file(fn)
+                if img is None:
+                    continue
+                try:
+                    stats_by_queue[queue] = read_stats_page(img, model=args.model)
+                except Exception as exc:  # noqa: BLE001
+                    print(f"  [stats/{queue}] rank {rank}: {exc}")
+            img = _read_frame_file(e.get("build_frame"))
+            if img is not None:
+                try:
+                    build = read_build_popup(img, model=args.model)
+                except Exception as exc:  # noqa: BLE001
+                    print(f"  [build] rank {rank}: {exc}")
+            return rank, popup, stats_by_queue, build
+
+        has_extras = any(e.get("popup_frame") or e.get("stats_frames") or e.get("build_frame")
+                         for e in entries)
+        if has_extras:
+            import csv as _csv
+            popups: dict[int, dict] = {}
+            stats_rows: list[dict] = []
+            builds: list[dict] = []
+            with ThreadPoolExecutor(max_workers=args.workers) as pool:
+                for rank, popup, stats_by_queue, build in pool.map(extract_extras, entries):
+                    if popup:
+                        popups[rank] = popup
+                    for queue, st in stats_by_queue.items():
+                        st["_rank"], st["_requested_queue"] = rank, queue
+                        stats_rows.append(st)
+                    if build:
+                        build["_rank"] = rank
+                        builds.append(build)
+
+            if popups:
+                with (args.capture_dir / "players.csv").open("w", encoding="utf-8", newline="") as f:
+                    w = _csv.writer(f)
+                    w.writerow(["rank", "player_name", "riot_tag", "tier", "level", "guild"])
+                    for r in sorted(popups):
+                        pp = popups[r]
+                        w.writerow([r, pp.get("player_name") or names.get(r, ""),
+                                    pp.get("riot_tag"), pp.get("tier"),
+                                    pp.get("level"), pp.get("guild")])
+                print(f"players.csv : {len(popups)} rows (tier/level/tag)")
+
+            if stats_rows:
+                cols = ["rank", "queue", "requested_queue", "games", "win_rate", "kda",
+                        "teamfight_participation", "gold_per_minute",
+                        "damage_dealt_per_match", "damage_taken_per_match",
+                        "turret_damage_per_match", "mvp", "s_rating", "a_rating",
+                        "legendary", "pentakill", "quadra_kill", "triple_kill", "first_blood"]
+                mismatched = 0
+                with (args.capture_dir / "stats.csv").open("w", encoding="utf-8", newline="") as f:
+                    w = _csv.writer(f)
+                    w.writerow(cols)
+                    for st in sorted(stats_rows, key=lambda x: (x["_rank"], x["_requested_queue"])):
+                        shown = str(st.get("queue") or "").lower()
+                        req = st["_requested_queue"]
+                        # 'legendary' request must show 'Legendary Ranked';
+                        # 'ranked' must show plain 'Ranked'
+                        ok_q = ("legendary" in shown) == (req == "legendary")
+                        if not ok_q:
+                            mismatched += 1
+                        w.writerow([st["_rank"], st.get("queue"), req,
+                                    st.get("games"), st.get("win_rate"), st.get("kda"),
+                                    st.get("teamfight_participation"), st.get("gold_per_minute"),
+                                    st.get("damage_dealt_per_match"), st.get("damage_taken_per_match"),
+                                    st.get("turret_damage_per_match"), st.get("mvp"),
+                                    st.get("s_rating"), st.get("a_rating"), st.get("legendary"),
+                                    st.get("pentakill"), st.get("quadra_kill"),
+                                    st.get("triple_kill"), st.get("first_blood")])
+                note = f" ({mismatched} queue mismatches -- check dropdown taps)" if mismatched else ""
+                print(f"stats.csv   : {len(stats_rows)} rows{note}")
+
+            if builds:
+                with (args.capture_dir / "builds.jsonl").open("w", encoding="utf-8") as f:
+                    for b in sorted(builds, key=lambda x: x["_rank"]):
+                        items = [{"name": n, "slug": resolve_item(str(n)) if n and n != "?" else None}
+                                 for n in (b.get("items") or [])]
+                        f.write(json.dumps({
+                            "rank": b["_rank"],
+                            "position_shown": b.get("position"),
+                            "champion": b.get("champion"),
+                            "player_name": b.get("player_name"),
+                            "spells": b.get("spells"),
+                            "runes": b.get("runes"),
+                            "items": items,
+                        }, ensure_ascii=False) + chr(10))
+                unresolved = sum(1 for b in builds for n in (b.get("items") or [])
+                                 if n and n != "?" and resolve_item(str(n)) is None)
+                print(f"builds.jsonl: {len(builds)} builds ({unresolved} unresolved item names)")
+
     report = args.capture_dir / "needs_manual.txt"
     sections: list[str] = []
     if missing:
