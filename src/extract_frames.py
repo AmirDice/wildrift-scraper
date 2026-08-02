@@ -238,10 +238,25 @@ def main() -> int:
         if img is None:
             return rank, (None, None, None)
         region = tuple(e.get("strip_region") or SCREEN_5_OCR_REGION)  # type: ignore[arg-type]
+        # A miss is only believed after the OTHER engine confirms it: Gemini
+        # occasionally drops visible tiles (retried first -- flaky misses
+        # collapse under retries), and Tesseract sees through an entirely
+        # different pipeline. A frame is only "target not visible" when both
+        # agree.
         try:
             if args.engine == "gemini":
+                for _attempt in range(2):
+                    triple = _extract_strip_gemini(img, region, target, args.model)
+                    if triple[0] is not None:
+                        return rank, triple
+                return rank, _extract_strip_tesseract(img, region, target)
+            triple = _extract_strip_tesseract(img, region, target)
+            if triple[0] is not None:
+                return rank, triple
+            try:
                 return rank, _extract_strip_gemini(img, region, target, args.model)
-            return rank, _extract_strip_tesseract(img, region, target)
+            except Exception:  # noqa: BLE001 -- no key/network: keep the miss
+                return rank, triple
         except Exception as exc:  # noqa: BLE001 -- a bad frame shouldn't kill the batch
             print(f"  [strip] rank {rank}: {exc}")
             return rank, (None, None, None)

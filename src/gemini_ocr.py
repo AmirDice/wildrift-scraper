@@ -144,7 +144,10 @@ def _generate_json(image: np.ndarray, prompt: str, model: str) -> list:
             types.Part.from_bytes(data=bytes(buf), mime_type="image/jpeg"),
         ],
         # Server-side JSON mode: the model cannot emit prose or fences.
-        config=types.GenerateContentConfig(response_mime_type="application/json"),
+        # Temperature 0: extraction must be repeatable -- sampling variance
+        # made the same frame's tiles appear and vanish between runs.
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json", temperature=0.0),
     )
     raw = _extract_json(response.text or "")
     try:
