@@ -464,6 +464,219 @@ def read_all_visible_ranks(
     return out
 
 
+def scan_visible_ranks(
+    image: np.ndarray,
+    badge_x_range: tuple[int, int],
+    y_range: tuple[int, int] | None = None,
+    max_rank: int = 250,
+    hint: float | None = None,
+    expected_pitch: float | None = None,
+) -> tuple[dict[int, int], float | None]:
+    """Locate every rank badge visible in the leaderboard's badge column.
+
+    One screenshot, one OCR pass over the badge-column strip: returns
+    ({rank: row_center_y_in_original_coords}, measured_row_pitch_px).
+    Pitch is None when fewer than two consecutive ranks were read.
+
+    This is what makes tap-by-detection work: instead of assuming rows sit at
+    calibrated positions, we read where they actually are after any scroll and
+    tap those coordinates. Rank 1's stylized trophy badge does not OCR — when
+    rank 2 and a pitch are known, rank 1 is extrapolated one pitch above.
+
+    Robustness: OCR misreads are filtered by keeping the longest chain of
+    top-to-bottom ranks that increase by exactly +1 (leaderboard rows are
+    always consecutive). A lone garbage token cannot survive that filter.
+    """
+    x0, x1 = badge_x_range
+    h = image.shape[0]
+    y0, y1 = y_range if y_range is not None else (0, h)
+    crop = image[y0:y1, x0:x1]
+    if crop.size == 0:
+        return {}, None
+
+    scale = 3.0
+    candidates: list[tuple[int, int]] = []  # (y_orig_center, ocr_rank)
+    seen_y: set[int] = set()
+
+    def _collect(pre: np.ndarray) -> None:
+        data = pytesseract.image_to_data(
+            pre,
+            config="--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789",
+            output_type=pytesseract.Output.DICT,
+        )
+        n = len(data.get("text", []))
+        for i in range(n):
+            text = (data["text"][i] or "").strip()
+            if not text.isdigit():
+                continue
+            rank = int(text)
+            if not (1 <= rank <= max_rank):
+                continue
+            cy_pre = data["top"][i] + data["height"][i] // 2
+            cy = y0 + int(round(cy_pre / scale))
+            # Merge duplicate detections of the same badge across passes.
+            if any(abs(cy - s) < 12 for s in seen_y):
+                continue
+            seen_y.add(cy)
+            candidates.append((cy, rank))
+
+    # Illumination flattening before Otsu: the panel's vertical luminance
+    # gradient made a GLOBAL threshold binarize lower rows thicker, which
+    # deterministically closed the open top of "3" into "5" (and "2" into
+    # "4") -- a real frame read rank 31 as 51 at 86 confidence, twice in a
+    # row. Dividing out the low-frequency background removes the gradient;
+    # the glyphs keep their local contrast.
+    gray0 = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if crop.ndim == 3 else crop
+    g = gray0.astype(np.float32)
+    bg = cv2.GaussianBlur(g, (0, 0), sigmaX=25)
+    flat = np.clip((g / np.maximum(bg, 1.0)) * 128.0, 0, 255).astype(np.uint8)
+    flat = cv2.resize(flat, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+    flat = cv2.bilateralFilter(flat, d=5, sigmaColor=50, sigmaSpace=50)
+    # PSM 6 is the only mode that reads these ornate banner badges (verified
+    # against saved screenshots; sparse-text PSMs return nothing).
+    for invert in (False, True):
+        flag = cv2.THRESH_BINARY_INV if invert else cv2.THRESH_BINARY
+        _, pre = cv2.threshold(flat, 0, 255, flag | cv2.THRESH_OTSU)
+        _collect(pre)
+
+    if len(candidates) < 4:
+        # Ornate badge styles (the emulator's gold/silver/bronze banners)
+        # lose contrast under flattening; the classic global-Otsu path reads
+        # those. Only runs when the flattened pass came up short.
+        for invert in (False, True):
+            _collect(preprocess(crop, scale=scale, invert=invert))
+
+    if len(candidates) < 4:
+        # Last resort: adaptive thresholding, per-neighborhood and immune to
+        # anything global illumination can do.
+        gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if crop.ndim == 3 else crop
+        gray = cv2.resize(gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+        for thresh_type in (cv2.THRESH_BINARY, cv2.THRESH_BINARY_INV):
+            pre = cv2.adaptiveThreshold(
+                gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, thresh_type, 61, 6)
+            _collect(pre)
+
+    if not candidates:
+        return {}, None
+    candidates.sort()
+
+    # Anchor: runs of consecutive (+1) ranks going down the screen.
+    # Leaderboard rows are always consecutive, so chains are built from
+    # plausibly-correct badges -- but misreads can BE consecutive too: a real
+    # frame read "29,30,51,52,53" ("31-33" misread as "51-53"), and pure
+    # longest-chain picked the majority-wrong run, then grid-snapped the two
+    # CORRECT reads to match it. The caller's predicted position (`hint`)
+    # therefore outweighs one extra chain link: a chain near the prediction
+    # beats a slightly longer chain claiming a physically impossible teleport.
+    # Once the right chain anchors, grid-snap rewrites the misread badges by
+    # position, so the same OCR output yields a fully correct window.
+    def chain_mean(ch: list[tuple[int, int]]) -> float:
+        return sum(r for _, r in ch) / len(ch)
+
+    def chain_score(ch: list[tuple[int, int]]) -> float:
+        score = float(len(ch))
+        if hint is not None and abs(chain_mean(ch) - hint) <= 6:
+            score += 2.5
+        return score
+
+    best_chain: list[tuple[int, int]] = []
+    for start in range(len(candidates)):
+        chain = [candidates[start]]
+        for j in range(start + 1, len(candidates)):
+            if candidates[j][1] == chain[-1][1] + 1:
+                chain.append(candidates[j])
+        if not best_chain or chain_score(chain) > chain_score(best_chain):
+            best_chain = chain
+        elif (
+            chain_score(chain) == chain_score(best_chain) and hint is not None
+            and abs(chain_mean(chain) - hint) < abs(chain_mean(best_chain) - hint)
+        ):
+            best_chain = chain
+    if not best_chain:
+        return {}, None
+
+    ranks = {rank: y for y, rank in best_chain}
+    pitch: float | None = None
+    if len(best_chain) >= 2:
+        (y_first, r_first), (y_last, r_last) = best_chain[0], best_chain[-1]
+        pitch = (y_last - y_first) / (r_last - r_first)
+
+    # Row pitch is a DEVICE CONSTANT (~0.135x screen height on every layout
+    # measured). A chain whose pitch disagrees with the known value is built
+    # from garbage tokens (avatar digits, name text), not badges -- and
+    # top-fill would then inflate it into a convincing fake window ("ranks
+    # 1-17"). Reject it outright.
+    if (
+        expected_pitch is not None and pitch is not None
+        and abs(pitch - expected_pitch) / expected_pitch > 0.30
+    ):
+        return {}, None
+
+    if pitch is not None and pitch > 0:
+        # Grid-snap correction: rows are evenly spaced, so any detection whose
+        # y sits on a grid slot IS that slot's rank, whatever digit OCR read.
+        # (Observed: the bronze "3" banner misreads as "2"; its position still
+        # identifies it unambiguously.)
+        anchor_y, anchor_rank = best_chain[0]
+        for cy, _ocr_rank in candidates:
+            slots_away = (cy - anchor_y) / pitch
+            slot = round(slots_away)
+            if abs(slots_away - slot) > 0.35:
+                continue  # not on the grid: genuine garbage, drop it
+            inferred = anchor_rank + slot
+            if inferred < 1 or inferred > max_rank or inferred in ranks:
+                continue
+            ranks[inferred] = cy
+        # The TOP badges (gold/silver trophies, ranks 1-2) OCR worst, but
+        # their rows sit on the same grid: fill every missing rank above the
+        # topmost read badge, as long as its extrapolated y still lands
+        # plausibly inside the list area -- a genuinely scrolled-off rank
+        # would extrapolate above the list top and is never invented.
+        min_y = y0 + 0.09 * (y1 - y0)
+        r = min(ranks)
+        y_up = float(ranks[r])
+        while r > 1 and y_up - pitch >= min_y:
+            r -= 1
+            y_up -= pitch
+            ranks.setdefault(r, int(round(y_up)))
+    return ranks, pitch
+
+
+def locate_badge_column(
+    image: np.ndarray,
+    window_w: int = 170,
+    step: int = 50,
+) -> tuple[tuple[int, int] | None, dict[int, int], float | None]:
+    """Find the rank-badge column automatically by sliding an OCR window
+    across the left half of the screen and keeping whichever x-window yields
+    the most rank badges. Returns (x_range, ranks, pitch) — x_range is None
+    if nothing scanned like a leaderboard.
+
+    Meant to run once per session (or when the configured range finds
+    nothing), then be persisted via config.save_calibration, since it costs
+    several OCR passes.
+    """
+    w = image.shape[1]
+    best: tuple[int, tuple[int, int], dict[int, int], float | None] | None = None
+    for x0 in range(int(w * 0.25), int(w * 0.60) - window_w, step):
+        rng = (x0, x0 + window_w)
+        ranks, pitch = scan_visible_ranks(image, rng)
+        # Acceptance is strict because a wrong answer gets PERSISTED: at
+        # least 4 badges, and a pitch matching how leaderboard rows actually
+        # render (both measured devices sit at ~0.135x screen height; the
+        # band below covers standard layouts -- a compact/popup layout needs
+        # manual --badge-x calibration). One real run locked onto avatar
+        # digits at the right of the list and poisoned every later run.
+        if pitch is None or not (100 <= pitch <= 200) or len(ranks) < 4:
+            continue
+        score = len(ranks)
+        if best is None or score > best[0]:
+            best = (score, rng, ranks, pitch)
+    if best is None:
+        return None, {}, None
+    return best[1], best[2], best[3]
+
+
 def read_player_name(image: np.ndarray, region: tuple[int, int, int, int]) -> str | None:
     """OCR a region containing a player's display name (e.g. shown at the
     top of screen 5). Returns the cleaned-up string (whitespace collapsed,

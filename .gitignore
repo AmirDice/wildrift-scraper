@@ -43,3 +43,8 @@ scratch/
 
 # staging directory built by scripts/deploy_advisor.py
 .advisor-deploy/
+
+# scraper capture sessions (hundreds of MB of frames; manifest-driven, local only)
+data/captures/
+# navigator debug dumps -- rejected frames; pinned test fixtures are force-added
+data/debug_scans/

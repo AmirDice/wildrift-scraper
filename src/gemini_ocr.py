@@ -58,11 +58,64 @@ Respond ONLY with a JSON array. No prose, no markdown fences. Example:
 """
 
 
+STRIP_PROMPT = """\
+This is a cropped horizontal strip of champion tiles from a Wild Rift player
+profile ("CHAMPION AND LANE" page). Each fully visible tile shows, top to
+bottom: the champion's name, a label ("Highest Achieved" or "Season highest"),
+a large score number, "Games" with a count, and "Win Rate" with a percentage.
+
+For every FULLY visible tile (skip tiles cut off at the left or right edge),
+return:
+  - champion: the champion name exactly as printed
+  - score: the large score as an integer (strip commas), or null if unreadable
+  - games: the games count as an integer, or null
+  - win_rate: the win-rate as a number 0-100 without the % sign, or null
+
+Respond ONLY with a JSON array, no prose, no markdown fences. Example:
+[{"champion": "Aatrox", "score": 19076, "games": 523, "win_rate": 57.8}]
+"""
+
+
 @dataclass
 class LeaderboardRow:
     rank: int
     player_name: str
     score: int | None
+
+
+@dataclass
+class StripTile:
+    champion: str
+    score: int | None
+    games: int | None
+    win_rate: float | None
+
+
+_CLIENT = None  # cached google-genai client (one TLS handshake per run, not per call)
+
+
+def _client():
+    global _CLIENT
+    if _CLIENT is not None:
+        return _CLIENT
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "GEMINI_API_KEY env var not set. "
+            "Get a key at https://aistudio.google.com/app/apikey"
+        )
+    try:
+        from google import genai
+    except ImportError as e:
+        raise RuntimeError(
+            "google-genai not installed. Run: pip install google-genai"
+        ) from e
+    try:
+        # Bound the HTTP round trip so a network stall can't hang the scraper.
+        _CLIENT = genai.Client(api_key=api_key, http_options={"timeout": 15_000})
+    except TypeError:  # older SDK without http_options
+        _CLIENT = genai.Client(api_key=api_key)
+    return _CLIENT
 
 
 def _extract_json(text: str) -> str:
@@ -75,48 +128,69 @@ def _extract_json(text: str) -> str:
     return text.strip()
 
 
-def read_leaderboard(image: np.ndarray, model: str = "gemini-2.5-flash-lite") -> list[LeaderboardRow]:
-    """Send `image` to Gemini and return the parsed rows.
-
-    Raises RuntimeError if the API key is missing or the response can't be
-    parsed as JSON.
-    """
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError(
-            "GEMINI_API_KEY env var not set. "
-            "Get a key at https://aistudio.google.com/app/apikey"
-        )
-
-    try:
-        from google import genai
-        from google.genai import types
-    except ImportError as e:
-        raise RuntimeError(
-            "google-genai not installed. Run: pip install google-genai"
-        ) from e
+def _generate_json(image: np.ndarray, prompt: str, model: str) -> list:
+    """Send one image + prompt, expect a JSON array back."""
+    from google.genai import types
 
     # Encode the BGR image as JPEG (smaller payload than PNG)
     ok, buf = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, 90])
     if not ok:
         raise RuntimeError("Failed to JPEG-encode image")
 
-    client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
+    response = _client().models.generate_content(
         model=model,
         contents=[
-            PROMPT,
+            prompt,
             types.Part.from_bytes(data=bytes(buf), mime_type="image/jpeg"),
         ],
+        # Server-side JSON mode: the model cannot emit prose or fences.
+        config=types.GenerateContentConfig(response_mime_type="application/json"),
     )
-
     raw = _extract_json(response.text or "")
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as e:
-        raise RuntimeError(f"Gemini returned non-JSON: {raw[:200]!r}") from e
+        # Observed in the wild: a malformed \u escape inside a non-ASCII name
+        # ("\u0ۂeriaatrox" for a Turkish S-cedilla) poisons the whole
+        # array. Neutralize invalid \uXXXX sequences and salvage the rest.
+        repaired = re.sub(r"\\u(?![0-9a-fA-F]{4})", r"\\\\u", raw)
+        try:
+            data = json.loads(repaired)
+        except json.JSONDecodeError:
+            raise RuntimeError(f"Gemini returned non-JSON: {raw[:200]!r}") from e
     if not isinstance(data, list):
         raise RuntimeError(f"Expected JSON array, got {type(data).__name__}: {raw[:200]!r}")
+    return data
+
+
+def read_strip(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> list[StripTile]:
+    """Read every fully-visible champion tile from a screen-5 strip crop.
+    One structured call replaces ~4 Tesseract passes over the same crop."""
+    tiles: list[StripTile] = []
+    for item in _generate_json(image, STRIP_PROMPT, model):
+        try:
+            wr = item.get("win_rate")
+            wr_f = float(wr) if wr is not None else None
+            if wr_f is not None and not (0.0 <= wr_f <= 100.0):
+                wr_f = None
+            tiles.append(StripTile(
+                champion=str(item["champion"]).strip(),
+                score=int(item["score"]) if item.get("score") is not None else None,
+                games=int(item["games"]) if item.get("games") is not None else None,
+                win_rate=wr_f,
+            ))
+        except (KeyError, ValueError, TypeError):
+            continue
+    return tiles
+
+
+def read_leaderboard(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> list[LeaderboardRow]:
+    """Send `image` to Gemini and return the parsed rows.
+
+    Raises RuntimeError if the API key is missing or the response can't be
+    parsed as JSON.
+    """
+    data = _generate_json(image, PROMPT, model)
 
     rows: list[LeaderboardRow] = []
     for item in data:
@@ -138,7 +212,7 @@ def read_leaderboard(image: np.ndarray, model: str = "gemini-2.5-flash-lite") ->
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("image", type=Path)
-    parser.add_argument("--model", default="gemini-2.5-flash-lite", help="Gemini model name")
+    parser.add_argument("--model", default="gemini-3.5-flash-lite", help="Gemini model name")
     args = parser.parse_args()
 
     img = cv2.imread(str(args.image))

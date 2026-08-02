@@ -222,7 +222,7 @@ def main() -> int:
                 client.tap(*champ_and_lane_tap)
                 time.sleep(args.step_wait)
 
-                target_wr, found, swipes_done, img = find_target_in_strip(
+                target_wr, _score, _games, found, swipes_done, img = find_target_in_strip(
                     client,
                     champ_name,
                     max_swipes=args.max_strip_swipes,

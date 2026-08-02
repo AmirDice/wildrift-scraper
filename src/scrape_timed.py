@@ -34,14 +34,18 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
+import threading
 import time
 import traceback
+from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 from .adb_client import ADBClient, ADBError
 from .config import (
@@ -50,9 +54,19 @@ from .config import (
     SCREEN_2_NAME_HEIGHT,
     SCREEN_2_NAME_X_RANGE,
     SCREEN_2_NAME_Y_OFFSET,
+    SCREEN_5_OCR_REGION,
+    load_calibration,
     load_screen_points,
+    save_calibration,
 )
-from .ocr import read_player_name, read_text
+from .navigator import LeaderboardNavigator
+from .ocr import (
+    locate_badge_column,
+    read_player_name,
+    read_rank_badge,
+    read_text,
+    scan_visible_ranks,
+)
 from .storage import CSVWriter, LeaderboardRow
 from .strip import find_target_in_strip
 
@@ -94,6 +108,87 @@ class PauseRequested(Exception):
     pass
 
 
+def _ensure_gemini_key() -> bool:
+    """True if GEMINI_API_KEY is available. Falls back to reading it out of
+    web-next/.env.local (where it already lives for the site) so the scraper
+    works without exporting it separately."""
+    if os.environ.get("GEMINI_API_KEY"):
+        return True
+    env_file = Path(__file__).resolve().parent.parent / "web-next" / ".env.local"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"\s*GEMINI_API_KEY\s*=\s*(.+?)\s*$", line)
+            if m:
+                os.environ["GEMINI_API_KEY"] = m.group(1).strip().strip('"')
+                print("[gemini] using GEMINI_API_KEY from web-next/.env.local")
+                return True
+    return False
+
+
+class NameReader:
+    """Async page-level name/score reader for the leaderboard screen.
+
+    One Gemini call reads ALL visible rows (rank, name, score) — including the
+    CJK names Tesseract cannot read. Calls run on a background thread so they
+    are off the critical path: fire on the pre-tap screenshot, collect at
+    CSV-write time. Because one page yields 4-5 ranks per call, "submit only
+    when the current rank is unknown" naturally batches to one call per page.
+    """
+
+    def __init__(self, model: str) -> None:
+        self._model = model
+        self._pool = ThreadPoolExecutor(max_workers=1)
+        self._lock = threading.Lock()
+        self._names: dict[int, str] = {}
+        self._scores: dict[int, int] = {}
+        self._pending: Future | None = None
+        self._errors = 0
+
+    def cached(self, rank: int) -> str | None:
+        with self._lock:
+            return self._names.get(rank)
+
+    def cached_score(self, rank: int) -> int | None:
+        with self._lock:
+            return self._scores.get(rank)
+
+    def maybe_submit(self, img: np.ndarray, rank: int) -> None:
+        """Queue a page read if `rank` is unknown and nothing is in flight."""
+        if self._errors >= 3:  # repeated API failures: stop burning time
+            return
+        with self._lock:
+            if rank in self._names:
+                return
+            if self._pending is not None and not self._pending.done():
+                return
+            self._pending = self._pool.submit(self._read, img.copy())
+
+    def _read(self, img: np.ndarray) -> None:
+        try:
+            from .gemini_ocr import read_leaderboard
+            rows = read_leaderboard(img, model=self._model)
+        except Exception as e:  # noqa: BLE001 -- network/API: names just stay Tesseract
+            self._errors += 1
+            print(f"  [gemini-names] read failed ({e}); Tesseract fallback stays in effect")
+            return
+        with self._lock:
+            for r in rows:
+                if r.player_name:
+                    self._names[r.rank] = r.player_name
+                if r.score is not None:
+                    self._scores[r.rank] = r.score
+
+    def get(self, rank: int, timeout: float = 3.0) -> str | None:
+        """Wait briefly for an in-flight read, then return the cached name."""
+        pending = self._pending
+        if pending is not None and self.cached(rank) is None:
+            try:
+                pending.result(timeout=timeout)
+            except Exception:  # noqa: BLE001 -- timeout or read error: use fallback
+                pass
+        return self.cached(rank)
+
+
 def _check_pause_or_raise() -> None:
     """Poll the keyboard; if 'p' was pressed, raise PauseRequested. Caller
     catches it, pauses, and retries the same rank on resume."""
@@ -127,7 +222,49 @@ def main() -> int:
     parser.add_argument("--max-retries-per-player", type=int, default=2)
     parser.add_argument("--no-rank-check", action="store_true",
                         help="Skip the pre-tap rank-badge OCR check (faster but won't catch unexpected refreshes)")
+    parser.add_argument("--auto-scroll", action="store_true",
+                        help="Tap-by-detection mode: read the rank badges to find rows, travel to the "
+                             "target rank automatically (fling + slow-drag correction), and recover from "
+                             "leaderboard snap-backs without manual scrolling. Falls back to a manual "
+                             "prompt whenever detection is lost.")
+    parser.add_argument("--badge-x", default=None,
+                        help="Rank-badge column x-range as 'x0,x1' (auto-located and remembered if omitted)")
+    parser.add_argument("--gemini-names", action="store_true",
+                        help="Read player names + scores with one async Gemini call per leaderboard page "
+                             "(handles CJK names Tesseract cannot read; off the critical path). "
+                             "Tesseract stays as the fallback.")
+    parser.add_argument("--gemini-strip", action="store_true",
+                        help="Read the screen-5 champion strip with one structured Gemini call per frame "
+                             "instead of ~4 Tesseract passes. Falls back to Tesseract on any API error.")
+    parser.add_argument("--gemini-model", default="gemini-3.5-flash-lite",
+                        help="Gemini model for --gemini-names / --gemini-strip")
+    parser.add_argument("--capture-only", action="store_true",
+                        help="Fastest mode: save screenshots + a manifest instead of reading anything "
+                             "on the critical path (no strip OCR, no swipes, no live name read). "
+                             "Extract afterwards with: python -m src.extract_frames <capture dir>")
+    parser.add_argument("--capture-dir", type=Path, default=Path("data/captures"),
+                        help="Where --capture-only sessions are stored")
     args = parser.parse_args()
+
+    capture_dir: Path | None = None
+    if args.capture_only:
+        # One directory per session so reruns never mix frames.
+        stamp = time.strftime("%Y%m%d_%H%M")
+        capture_dir = args.capture_dir / f"{args.target.lower().replace(' ', '-')}_{stamp}"
+        capture_dir.mkdir(parents=True, exist_ok=True)
+        # Live Gemini is pointless here -- extraction happens offline.
+        args.gemini_names = False
+        args.gemini_strip = False
+
+    name_reader: NameReader | None = None
+    if args.gemini_names or args.gemini_strip:
+        if _ensure_gemini_key():
+            if args.gemini_names:
+                name_reader = NameReader(args.gemini_model)
+        else:
+            print("warning: GEMINI_API_KEY not found; --gemini-names/--gemini-strip disabled", file=sys.stderr)
+            args.gemini_names = False
+            args.gemini_strip = False
 
     client = ADBClient(device=args.device)
     if not args.no_connect:
@@ -195,28 +332,41 @@ def main() -> int:
             return (target_x, row_ys[slot])
         return (target_x, int(round(start_y + slot * pitch_y)))
 
-    def scrape_one(rank: int, slot: int) -> tuple[float | None, int | None, int | None, str | None]:
-        """Tap chain through one player's profile. Returns (winrate, score,
-        games, player_name). Raises PauseRequested if the user presses 'p'
-        between any two steps so the caller can abort and retry the rank."""
-        px, py = slot_xy(slot)
+    def scrape_one(rank: int, tap_y: int) -> tuple[float | None, int | None, int | None, str | None]:
+        """Tap chain through one player's profile at the given row y. Returns
+        (winrate, score, games, player_name). Raises PauseRequested if the user
+        presses 'p' between any two steps so the caller can abort and retry."""
+        px, py = target_x, tap_y
 
-        # OCR the player name from the leaderboard BEFORE tapping in — the
-        # row is already visible at slot's y position. Cheaper than reading
-        # it from inside the profile and we keep it even if profile load
-        # fails downstream.
-        try:
-            pre_img = client.screenshot()
-            name_x0, name_x1 = SCREEN_2_NAME_X_RANGE
-            name_region = (
-                name_x0,
-                max(0, py + SCREEN_2_NAME_Y_OFFSET),
-                name_x1 - name_x0,
-                SCREEN_2_NAME_HEIGHT,
-            )
-            player_name = read_player_name(pre_img, name_region)
-        except Exception:
-            player_name = None
+        # Player name from the leaderboard BEFORE tapping in. When the async
+        # Gemini page reader already knows this rank (one call covers the whole
+        # page), skip the screenshot + Tesseract read entirely; otherwise OCR
+        # it as the fallback and hand the screenshot to the page reader.
+        # Capture mode reads nothing: it saves the leaderboard frame for the
+        # offline extractor and moves on.
+        player_name = name_reader.cached(rank) if name_reader else None
+        if capture_dir is not None:
+            try:
+                pre_img = client.screenshot()
+                cv2.imwrite(str(capture_dir / f"{rank:03d}_leaderboard.jpg"), pre_img,
+                            [cv2.IMWRITE_JPEG_QUALITY, 92])
+            except Exception:
+                pass
+        elif player_name is None:
+            try:
+                pre_img = client.screenshot()
+                if name_reader is not None:
+                    name_reader.maybe_submit(pre_img, rank)
+                name_x0, name_x1 = SCREEN_2_NAME_X_RANGE
+                name_region = (
+                    name_x0,
+                    max(0, py + SCREEN_2_NAME_Y_OFFSET),
+                    name_x1 - name_x0,
+                    SCREEN_2_NAME_HEIGHT,
+                )
+                player_name = read_player_name(pre_img, name_region)
+            except Exception:
+                player_name = None
 
         # Single tap per transition. Pause is checked after each step so a
         # mid-profile 'p' press lands within ~step_wait seconds.
@@ -238,17 +388,39 @@ def main() -> int:
         time.sleep(args.step_wait)
         _check_pause_or_raise()
 
-        wr, sc, gm, _, _, last_img = find_target_in_strip(
-            client, args.target,
-            max_swipes=args.max_strip_swipes,
-            swipe_scale=args.strip_swipe_scale,
-            swipe_duration_ms=args.strip_swipe_duration_ms,
-            wait_after_swipe=args.step_wait,
-        )
+        if capture_dir is not None:
+            # Capture mode: save the strip frame + manifest entry and leave.
+            # No OCR, no swipes -- if the target isn't in the visible tiles,
+            # the offline extractor flags this rank for manual review.
+            strip_img = client.screenshot()
+            strip_name = f"{rank:03d}_strip.jpg"
+            cv2.imwrite(str(capture_dir / strip_name), strip_img,
+                        [cv2.IMWRITE_JPEG_QUALITY, 92])
+            with (capture_dir / "manifest.jsonl").open("a", encoding="utf-8") as f:
+                f.write(json.dumps({
+                    "champion": args.target,
+                    "rank": rank,
+                    "strip_frame": strip_name,
+                    "lb_frame": f"{rank:03d}_leaderboard.jpg",
+                    "tap_y": py,
+                    "strip_region": list(SCREEN_5_OCR_REGION),
+                    "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                }, ensure_ascii=False) + "\n")
+            wr = sc = gm = None
+        else:
+            wr, sc, gm, _, _, last_img = find_target_in_strip(
+                client, args.target,
+                max_swipes=args.max_strip_swipes,
+                swipe_scale=args.strip_swipe_scale,
+                swipe_duration_ms=args.strip_swipe_duration_ms,
+                wait_after_swipe=args.step_wait,
+                use_gemini=args.gemini_strip,
+                gemini_model=args.gemini_model,
+            )
+            if args.save_screenshots:
+                cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}.png"), last_img)
         _check_pause_or_raise()
 
-        if args.save_screenshots:
-            cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}.png"), last_img)
         client.tap(*s5_back, hold_ms=args.tap_hold_ms)
         time.sleep(args.step_wait)
         return wr, sc, gm, player_name
@@ -277,8 +449,296 @@ def main() -> int:
     # The rank-badge OCR check uses SCREEN_2_BADGE_X_RANGE which was tuned
     # for the 1600x900 emulator. Phone layouts (2340x1080 etc.) need a new
     # crop region. Default the check OFF unless user has handled this.
+    # (--auto-scroll mode does not need it: it auto-locates the badge column.)
     if not args.no_rank_check:
         args.no_rank_check = True
+
+    # ------------------------------------------------------------------
+    # AUTO-SCROLL MODE: tap-by-detection + closed-loop travel.
+    #
+    # Instead of requiring rows to land on calibrated positions (impossible:
+    # Android flings are inertial), every profile starts from a screenshot:
+    # scan the rank-badge column (one small OCR, all visible rows at once),
+    # tap the target rank at its REAL y. Travel to off-screen ranks is dead
+    # reckoning (fast flings) plus one slow-drag correction — slow drags have
+    # no inertia, so they move exactly the requested distance. Snap-backs
+    # after ~6 profile views are detected by the same scan (suddenly seeing
+    # ranks 1-5) and recovered by travelling again; scrolling itself does not
+    # trigger the reset, so a ~6s journey is safe.
+    # ------------------------------------------------------------------
+    if args.auto_scroll:
+        cal = load_calibration()
+        if args.badge_x:
+            try:
+                p0, p1 = (int(v) for v in args.badge_x.split(","))
+                badge_x: tuple[int, int] = (p0, p1)
+            except ValueError:
+                print(f"error: --badge-x must be 'x0,x1', got {args.badge_x!r}", file=sys.stderr)
+                return 1
+        elif "badge_x0" in cal and "badge_x1" in cal:
+            badge_x = (int(cal["badge_x0"]), int(cal["badge_x1"]))
+        else:
+            badge_x = SCREEN_2_BADGE_X_RANGE
+        fling_rows = float(cal.get("fling_rows", 10.0))  # rows one fling moves; self-tunes
+
+        low_reads = 0
+
+        def scan(img, hint: float | None = None) -> tuple[dict[int, int], float | None]:
+            """Badge scan; re-locates the column on a total miss OR after
+            consecutive degraded reads. (A miscalibrated column can read the
+            narrow single-digit ranks fine while clipping two-digit ones --
+            it looks like flaky deep-rank OCR, but it's geometry.)"""
+            nonlocal badge_x, low_reads
+            ranks, pitch = scan_visible_ranks(img, badge_x, hint=hint,
+                                              expected_pitch=nav.last_pitch)
+            if len(ranks) >= 3:
+                low_reads = 0
+                return ranks, pitch
+            low_reads += 1
+            if not ranks or low_reads >= 2:
+                rng, ranks2, pitch2 = locate_badge_column(img)
+                # A re-location gets PERSISTED, so it must prove itself: full
+                # window, physical pitch, and agreement with where the
+                # navigator believes we are. One real run re-located on a
+                # degraded frame, locked onto avatar digits, and poisoned
+                # every following run -- a proven-good column must never lose
+                # to one bad frame.
+                ok = (
+                    rng is not None and len(ranks2) >= 4 and pitch2 is not None
+                    and (nav.last_pitch is None
+                         or abs(pitch2 - nav.last_pitch) / nav.last_pitch <= 0.3)
+                    and (hint is None
+                         or abs((min(ranks2) + max(ranks2)) / 2 - hint) <= 8)
+                )
+                if ok:
+                    badge_x = rng
+                    save_calibration({"badge_x0": rng[0], "badge_x1": rng[1]})
+                    print(f"  [detect] badge column re-located at x={rng} (saved to calibration)")
+                    low_reads = 0
+                    return ranks2, pitch2
+            return ranks, pitch
+
+        def slow_drag(rows: float, pitch: float) -> None:
+            """Move the list by ~rows rows with an inertia-free drag.
+            rows > 0 reveals deeper ranks (content moves up)."""
+            H = nav.screen_h or 1080
+            dist = int(round(rows * pitch))
+            if dist == 0:
+                return
+            y_from = int(H * 0.72) if dist > 0 else int(H * 0.30)
+            y_to = max(int(H * 0.08), min(int(H * 0.92), y_from - dist))
+            dur = max(500, min(1300, int(abs(y_from - y_to) * 1.8)))
+            client.swipe(target_x, y_from, target_x, y_to, dur)
+            time.sleep(0.45)
+
+        def fling(down: bool) -> None:
+            """Fast inertial page-jump. Imprecise by nature; used only for
+            long hauls, always followed by a scan + slow-drag correction.
+            The settle wait must outlast the coast, or the next scan reads a
+            moving (blurred, misread-prone) list."""
+            H = nav.screen_h or 1080
+            y_a, y_b = int(H * 0.80), int(H * 0.22)
+            if down:
+                client.swipe(target_x, y_a, target_x, y_b, 120)
+            else:
+                client.swipe(target_x, y_b, target_x, y_a, 120)
+            time.sleep(1.0)
+
+        def stable_screenshot() -> np.ndarray:
+            """Screenshot only once the list has STOPPED moving: two frames
+            250ms apart must match on the badge column. Every 'clearly visible
+            badge that failed to read' traced back to scanning a frame taken
+            while the list was still coasting or bounce-settling -- the saved
+            (settled) frames from the same runs all scan perfectly."""
+            prev = client.screenshot()
+            cur = prev
+            for _ in range(4):
+                time.sleep(0.15)
+                cur = client.screenshot()
+                a = prev[:, badge_x[0]:badge_x[1]]
+                b = cur[:, badge_x[0]:badge_x[1]]
+                if a.shape == b.shape and float(np.mean(cv2.absdiff(a, b))) < 2.0:
+                    return cur
+                prev = cur
+            return cur
+
+        def careful_rescan(img) -> dict[int, int]:
+            """Arbitration read for when the action ledger proves the fast
+            scan wrong (e.g. a systematically dropped leading digit).
+
+            Preferred arbitrator: one Gemini read of the leaderboard -- it
+            reads the stylized badges near-perfectly where Tesseract cannot.
+            Its rank NUMBERS are mapped onto the badge y POSITIONS the fast
+            scan located (positions are reliable even when digits misread;
+            both are top-to-bottom). Falls back to a per-badge multi-PSM
+            Tesseract pass without a key or on API failure. Only runs in the
+            rare locked state, so its 1-2s latency is irrelevant."""
+            fast, _p = scan(img)
+            ys = sorted(fast.values())
+            if not ys:
+                return {}
+            if _ensure_gemini_key():
+                try:
+                    from .gemini_ocr import read_leaderboard
+                    rows = read_leaderboard(img, model=args.gemini_model)
+                    rr = sorted(r.rank for r in rows)
+                    if rr and rr == list(range(rr[0], rr[0] + len(rr))):
+                        if len(rr) == len(ys) + 1:
+                            # Gemini saw a row whose badge the fast scan missed
+                            # (usually clipped under the header): drop the top.
+                            rr = rr[1:]
+                        if len(rr) == len(ys):
+                            mapping = dict(zip(rr, ys))
+                            print(f"  [detect] arbitration: screen shows ranks "
+                                  f"{rr[0]}-{rr[-1]}")
+                            return mapping
+                except Exception as e:  # noqa: BLE001 -- fall through to Tesseract
+                    print(f"  [detect] gemini arbitration failed ({e})")
+            reads: list[tuple[int, int]] = []  # (y, rank)
+            for y in ys:
+                r = read_rank_badge(img, 0, y, 0.0, badge_x)
+                if r is not None:
+                    reads.append((y, r[0]))
+            best: list[tuple[int, int]] = []
+            for i in range(len(reads)):
+                chain = [reads[i]]
+                for j in range(i + 1, len(reads)):
+                    if reads[j][1] == chain[-1][1] + 1:
+                        chain.append(reads[j])
+                if len(chain) > len(best):
+                    best = chain
+            if len(best) < 2:
+                return {}
+            out = {r: y for y, r in best}
+            # fill unread badges by grid position relative to the chain
+            pitch = (best[-1][0] - best[0][0]) / (best[-1][1] - best[0][1])
+            for y in ys:
+                slots = (y - best[0][0]) / pitch
+                slot = round(slots)
+                if abs(slots - slot) <= 0.35:
+                    inferred = best[0][1] + slot
+                    if inferred >= 1:
+                        out.setdefault(inferred, y)
+            return out
+
+        def _dump_frame(img, rank):
+            dump = Path("data/debug_scans")
+            dump.mkdir(parents=True, exist_ok=True)
+            path = dump / f"lost_rank{rank}_{time.strftime('%H%M%S')}.png"
+            try:
+                cv2.imwrite(str(path), img)
+                return str(path)
+            except Exception:  # noqa: BLE001
+                return None
+
+        # The travel logic lives in navigator.py so it can be simulated
+        # offline against replayed failure frames (tests/test_navigator.py).
+        nav = LeaderboardNavigator(
+            screenshot=stable_screenshot,
+            scan=scan,
+            drag_rows=slow_drag,
+            fling=fling,
+            arbitrate=careful_rescan,
+            on_fling_calibrated=lambda v: save_calibration({"fling_rows": round(v, 1)}),
+            dump_frame=_dump_frame,
+            fling_rows=fling_rows,
+        )
+
+        print(f"target        : {args.target}")
+        print(f"ranks         : {args.start_rank}..{args.start_rank + args.n - 1}")
+        print(f"mode          : AUTO-SCROLL (tap-by-detection)")
+        print(f"badge column  : x={badge_x} (auto-relocates if wrong)")
+        print(f"fling estimate: ~{fling_rows:.0f} rows/fling (self-tuning)")
+        print(f"CSV output    : {args.output}")
+        print()
+        print("Open the leaderboard at ANY scroll position. The bot finds its own way.")
+        print("Press 'p' anytime to pause after the current profile.")
+        input("Press Enter to start: ")
+
+        current_rank = args.start_rank
+        end_rank = args.start_rank + args.n - 1
+        successes = 0
+        total = 0
+        t0 = time.time()
+        try:
+            while current_rank <= end_rank:
+                if _key_pressed() == "p":
+                    _handle_pause(time.time())
+
+                tap_y = nav.ensure_visible(current_rank)
+                if tap_y is None:
+                    print(f"\n[detect] lost position looking for rank {current_rank}.")
+                    input(f">>> Scroll so rank {current_rank} is visible, then press Enter: ")
+                    continue
+
+                t_profile = time.time()
+                print(f"\n--- rank {current_rank} (tap y={tap_y}) ---")
+                wr: float | None = None
+                sc: int | None = None
+                gm: int | None = None
+                player_name: str | None = None
+                for attempt in range(args.max_retries_per_player):
+                    try:
+                        wr, sc, gm, player_name = scrape_one(current_rank, tap_y)
+                        # Capture mode has no live read result -- one clean pass
+                        # through the tap chain is success by definition.
+                        if wr is not None or capture_dir is not None:
+                            break
+                    except PauseRequested:
+                        print(f"\n[PAUSED] rank {current_rank} aborted mid-chain.")
+                        input("Restore the leaderboard, then press Enter to re-do this rank: ")
+                    except Exception:
+                        print(f"  exception on attempt {attempt + 1}:")
+                        traceback.print_exc()
+                        for _ in range(3):
+                            client.back()
+                            time.sleep(0.2)
+                    # Whatever happened, re-detect before the next attempt —
+                    # the list may have snapped back mid-recovery.
+                    ny = nav.ensure_visible(current_rank)
+                    if ny is None:
+                        break
+                    tap_y = ny
+
+                # Collect the async Gemini page read (if any): its names beat
+                # Tesseract's (CJK), and its screen-2 score fills a missing one.
+                if name_reader is not None:
+                    g_name = name_reader.get(current_rank)
+                    if g_name:
+                        player_name = g_name
+                    if sc is None:
+                        sc = name_reader.cached_score(current_rank)
+
+                # Capture mode: the manifest is the record; the offline
+                # extractor writes the CSV.
+                if capture_dir is None:
+                    writer.write(LeaderboardRow(
+                        champion=args.target,
+                        rank=current_rank,
+                        player_name=player_name or "",
+                        score=sc,
+                        games=gm,
+                        winrate=wr,
+                    ))
+                total += 1
+                if wr is not None or capture_dir is not None:
+                    successes += 1
+                print(f"  player={player_name!r}  winrate={wr}  score={sc}  games={gm}"
+                      f"  [took {time.time() - t_profile:.1f}s]")
+                current_rank += 1
+        except KeyboardInterrupt:
+            print("\n^C — stopping")
+
+        mins = (time.time() - t0) / 60
+        print(f"\n==================== SESSION DONE ====================")
+        print(f"profiles scraped : {total} in {mins:.1f} min")
+        if capture_dir is not None:
+            print(f"frames captured  : {capture_dir}")
+            print(f"next step        : python -m src.extract_frames \"{capture_dir}\"")
+        else:
+            print(f"winrate parsed   : {successes}")
+            print(f"CSV              : {args.output}")
+        return 0
 
     print(f"target            : {args.target}")
     print(f"ranks to scrape   : {args.start_rank}..{args.start_rank + args.n - 1}")
@@ -356,8 +816,8 @@ def main() -> int:
                     pause_mid_profile = False
                     for attempt in range(args.max_retries_per_player):
                         try:
-                            wr, sc, gm, player_name = scrape_one(current_rank, slot)
-                            if wr is not None:
+                            wr, sc, gm, player_name = scrape_one(current_rank, slot_xy(slot)[1])
+                            if wr is not None or capture_dir is not None:
                                 break
                         except PauseRequested:
                             pause_mid_profile = True
@@ -389,15 +849,23 @@ def main() -> int:
                 profile_time = time.time() - profile_start
                 print(f"  player={player_name!r}  winrate={wr}  score={sc}  games={gm}  [took {profile_time:.1f}s]")
 
-                writer.write(LeaderboardRow(
-                    champion=args.target,
-                    rank=current_rank,
-                    player_name=player_name or "",
-                    score=sc,
-                    games=gm,
-                    winrate=wr,
-                ))
-                if wr is not None:
+                if name_reader is not None:
+                    g_name = name_reader.get(current_rank)
+                    if g_name:
+                        player_name = g_name
+                    if sc is None:
+                        sc = name_reader.cached_score(current_rank)
+
+                if capture_dir is None:
+                    writer.write(LeaderboardRow(
+                        champion=args.target,
+                        rank=current_rank,
+                        player_name=player_name or "",
+                        score=sc,
+                        games=gm,
+                        winrate=wr,
+                    ))
+                if wr is not None or capture_dir is not None:
                     successes += 1
                     window_successes += 1
                 current_rank += 1
@@ -425,8 +893,12 @@ def main() -> int:
 
     print(f"\n==================== SESSION DONE ====================")
     print(f"total profiles scraped : {total_profiles}")
-    print(f"with winrate parsed    : {successes}")
-    print(f"CSV                    : {args.output}")
+    if capture_dir is not None:
+        print(f"frames captured        : {capture_dir}")
+        print(f"next step              : python -m src.extract_frames \"{capture_dir}\"")
+    else:
+        print(f"with winrate parsed    : {successes}")
+        print(f"CSV                    : {args.output}")
     return 0
 
 
