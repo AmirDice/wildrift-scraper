@@ -428,23 +428,27 @@ def main() -> int:
                         [cv2.IMWRITE_JPEG_QUALITY, 92])
             stats_frames: dict[str, str] = {}
             if args.stats:
-                # STATS tab -> list view -> EXPLICIT queue selection for both
-                # captures: the game remembers the last dropdown choice, so
-                # trusting defaults would desync across profiles. The frame
-                # shows the selected queue, so extraction re-verifies it.
+                # STATS tab -> list view. The page always opens on Ranked
+                # (owner-verified), so capture it directly and open the
+                # dropdown only ONCE, to switch to Legendary Ranked. The
+                # extractor re-verifies the queue label visible in each
+                # frame, so a surprise default gets flagged, not mislabeled.
                 client.tap(*SCREEN_5_STATS_TAB, hold_ms=args.tap_hold_ms)
                 time.sleep(args.step_wait + 0.3)
                 client.tap(*STATS_LIST_TOGGLE, hold_ms=args.tap_hold_ms)
-                time.sleep(0.4)
-                for queue in ("ranked", "legendary"):
-                    client.tap(*STATS_QUEUE_DROPDOWN, hold_ms=args.tap_hold_ms)
-                    time.sleep(0.45)
-                    client.tap(*STATS_QUEUE_OPTIONS[queue], hold_ms=args.tap_hold_ms)
-                    time.sleep(0.7)
-                    fn = f"{rank:03d}_stats_{queue}.jpg"
-                    cv2.imwrite(str(capture_dir / fn), client.screenshot(),
-                                [cv2.IMWRITE_JPEG_QUALITY, 92])
-                    stats_frames[queue] = fn
+                time.sleep(0.5)
+                fn = f"{rank:03d}_stats_ranked.jpg"
+                cv2.imwrite(str(capture_dir / fn), client.screenshot(),
+                            [cv2.IMWRITE_JPEG_QUALITY, 92])
+                stats_frames["ranked"] = fn
+                client.tap(*STATS_QUEUE_DROPDOWN, hold_ms=args.tap_hold_ms)
+                time.sleep(0.45)
+                client.tap(*STATS_QUEUE_OPTIONS["legendary"], hold_ms=args.tap_hold_ms)
+                time.sleep(0.7)
+                fn = f"{rank:03d}_stats_legendary.jpg"
+                cv2.imwrite(str(capture_dir / fn), client.screenshot(),
+                            [cv2.IMWRITE_JPEG_QUALITY, 92])
+                stats_frames["legendary"] = fn
             entry = {
                 "champion": args.target,
                 "rank": rank,
