@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import difflib
 import json
+import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -88,18 +89,37 @@ def verify_taps(
     located = False
     status: dict[int, str] = {}
     anomalies: list[str] = []
+
+    # Two passes. The first collects the session's row pitch (a device
+    # constant) from whatever frames read cleanly; the second verifies every
+    # frame with the same priors the live navigator enjoys -- the expected
+    # rank as the chain hint plus the pitch band. Without them, the verifier
+    # re-suffers every OCR quirk the scanner was hardened against and files
+    # false mismatches on correct taps.
+    pitches: list[float] = []
+    images: dict[int, np.ndarray] = {}
     for e in entries:
-        rank = e["rank"]
-        tap_y = e.get("tap_y")
         lb_path = capture_dir / e.get("lb_frame", "")
-        if tap_y is None or not lb_path.exists():
-            status[rank] = "unknown"
+        if e.get("tap_y") is None or not lb_path.exists():
             continue
         img = cv2.imread(str(lb_path))
         if img is None:
+            continue
+        images[e["rank"]] = img
+        _r, p = scan_visible_ranks(img, badge_x, hint=float(e["rank"]))
+        if p:
+            pitches.append(p)
+    session_pitch = sorted(pitches)[len(pitches) // 2] if pitches else None
+
+    for e in entries:
+        rank = e["rank"]
+        tap_y = e.get("tap_y")
+        img = images.get(rank)
+        if tap_y is None or img is None:
             status[rank] = "unknown"
             continue
-        ranks_map, pitch = scan_visible_ranks(img, badge_x)
+        ranks_map, pitch = scan_visible_ranks(
+            img, badge_x, hint=float(rank), expected_pitch=session_pitch)
         if not ranks_map and not located:
             # Badge column may be calibrated for a different device; find it
             # once from the frames themselves.
@@ -120,7 +140,7 @@ def verify_taps(
             status[rank] = f"MISMATCH: tapped the rank-{nearest_rank} row"
             anomalies.append(
                 f"rank {rank:>3}: lb_frame shows rank {nearest_rank} at the tap position "
-                f"-- stats likely belong to rank {nearest_rank} ({lb_path})"
+                f"-- stats likely belong to rank {nearest_rank} ({capture_dir / e.get('lb_frame', '')})"
             )
     return status, anomalies
 
@@ -245,13 +265,27 @@ def main() -> int:
     #    on the same pixels agreeing is strong evidence the name is right.
     #    Only meaningful for mostly-ASCII names (Tesseract garbles CJK).
     ascii_share = lambda s: sum(c.isascii() for c in s) / max(1, len(s))  # noqa: E731
+
+    def _looks_like_a_name(s: str) -> bool:
+        """Tesseract failure output ('oe eee iar immm Ae') is mostly-ASCII and
+        sailed past a plain ASCII-share filter, filing 7 false disagreements
+        against perfectly good Gemini names in one run. A usable read has a
+        real word in it and is not mostly whitespace fragments."""
+        if ascii_share(s) < 0.7 or s.count(" ") / max(1, len(s)) > 0.3:
+            return False
+        return bool(re.search(r"[A-Za-z0-9]{4}", s))
+
     if args.engine == "gemini":
         for e in entries:
             rank = e["rank"]
             g_name = names.get(rank)
             tap_y = e.get("tap_y")
             lb_path = args.capture_dir / e.get("lb_frame", "")
-            if not g_name or tap_y is None or not lb_path.exists() or ascii_share(g_name) < 0.7:
+            # Tesseract is only a fair second witness for pure-ASCII names;
+            # any diacritic or CJK in the true name guarantees a garbage
+            # Tesseract read and a meaningless "disagreement".
+            if not g_name or tap_y is None or not lb_path.exists() \
+                    or any(not c.isascii() for c in g_name):
                 continue
             img = cv2.imread(str(lb_path))
             if img is None:
@@ -259,7 +293,7 @@ def main() -> int:
             x0, x1 = SCREEN_2_NAME_X_RANGE
             region = (x0, max(0, int(tap_y) + SCREEN_2_NAME_Y_OFFSET), x1 - x0, SCREEN_2_NAME_HEIGHT)
             t_name = read_player_name(img, region)
-            if not t_name or ascii_share(t_name) < 0.7:
+            if not t_name or not _looks_like_a_name(t_name):
                 continue
             ratio = difflib.SequenceMatcher(None, _norm_name(t_name), _norm_name(g_name)).ratio()
             if ratio < 0.5:
