@@ -477,8 +477,18 @@ def main() -> int:
                 cv2.imwrite(str(data_dir / f"run_rank_{rank:03d}.png"), last_img)
         _check_pause_or_raise()
 
-        client.tap(*s5_back, hold_ms=args.tap_hold_ms)
-        time.sleep(args.step_wait)
+        if capture_dir is not None and args.stats:
+            # From the STATS tab the way out is TWO presses (the profile's
+            # tab back-stack pops first) -- and they must be SYSTEM backs:
+            # tapping the chevron position while already on the leaderboard
+            # would exit the leaderboard itself. Mirrors the manual walk.
+            client.back()
+            time.sleep(args.step_wait)
+            client.back()
+            time.sleep(args.step_wait)
+        else:
+            client.tap(*s5_back, hold_ms=args.tap_hold_ms)
+            time.sleep(args.step_wait)
         return wr, sc, gm, player_name
 
     def quick_rank_check(slot: int) -> int | None:
