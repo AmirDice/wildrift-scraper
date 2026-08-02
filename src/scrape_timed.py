@@ -478,14 +478,22 @@ def main() -> int:
         _check_pause_or_raise()
 
         if capture_dir is not None and args.stats:
-            # From the STATS tab the way out is TWO presses (the profile's
-            # tab back-stack pops first) -- and they must be SYSTEM backs:
-            # tapping the chevron position while already on the leaderboard
-            # would exit the leaderboard itself. Mirrors the manual walk.
-            client.back()
-            time.sleep(args.step_wait)
-            client.back()
-            time.sleep(args.step_wait)
+            # VERIFIED exit: the STATS tab sometimes needs one back, sometimes
+            # two (tab back-stack). A fixed count either strands us in the
+            # profile or punches out of the leaderboard entirely -- so press,
+            # then CHECK for the leaderboard (3+ rank badges) before pressing
+            # again.
+            for _press in range(3):
+                client.back()
+                time.sleep(args.step_wait + 0.2)
+                try:
+                    ranks_chk, _pchk = scan(client.screenshot())
+                except NameError:   # manual mode: no scanner in scope
+                    break
+                except Exception:   # noqa: BLE001 -- scan hiccup: press again
+                    continue
+                if len(ranks_chk) >= 3:
+                    break
         else:
             client.tap(*s5_back, hold_ms=args.tap_hold_ms)
             time.sleep(args.step_wait)
@@ -756,9 +764,17 @@ def main() -> int:
                     except Exception:
                         print(f"  exception on attempt {attempt + 1}:")
                         traceback.print_exc()
-                        for _ in range(3):
+                        # Verified recovery: back out only until the
+                        # leaderboard (3+ badges) is visible again, never blind.
+                        for _ in range(4):
                             client.back()
-                            time.sleep(0.2)
+                            time.sleep(0.4)
+                            try:
+                                r_chk, _pc = scan(client.screenshot())
+                                if len(r_chk) >= 3:
+                                    break
+                            except Exception:  # noqa: BLE001
+                                continue
                     # Whatever happened, re-detect before the next attempt —
                     # the list may have snapped back mid-recovery.
                     ny = nav.ensure_visible(current_rank)
