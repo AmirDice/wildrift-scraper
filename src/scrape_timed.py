@@ -270,6 +270,10 @@ def main() -> int:
     parser.add_argument("--skip-existing", action="store_true",
                         help="Carousel: skip champions that already have a near-complete capture "
                              "session under --capture-dir (resume overnight runs)")
+    parser.add_argument("--unattended", action="store_true",
+                        help="Never block on a keyboard prompt when detection is lost: abandon the "
+                             "current champion and move on. Abandoned champions stay below the "
+                             "--skip-existing completeness bar, so the next run redoes them.")
     parser.add_argument("--stats", action="store_true",
                         help="capture-only: also capture the rank popup and the STATS page for "
                              "BOTH queues (Ranked + Legendary Ranked; ~5s/profile)")
@@ -766,10 +770,12 @@ def main() -> int:
         print("Press 'p' anytime to pause after the current profile.")
         input("Press Enter to start: ")
 
-        def run_ranks() -> None:
+        def run_ranks() -> int:
             """Capture ranks start..start+n-1 for the CURRENT args.target
-            into the CURRENT capture_dir. Re-raises KeyboardInterrupt
-            after its summary so a carousel stops cleanly."""
+            into the CURRENT capture_dir. Returns the number of profiles
+            captured (the carousel uses 0 as a leaderboard-down signal).
+            Re-raises KeyboardInterrupt after its summary so a carousel
+            stops cleanly."""
             interrupted = False
             current_rank = args.start_rank
             end_rank = args.start_rank + args.n - 1
@@ -784,6 +790,14 @@ def main() -> int:
                     tap_y = nav.ensure_visible(current_rank)
                     if tap_y is None:
                         print(f"\n[detect] lost position looking for rank {current_rank}.")
+                        if args.unattended:
+                            # Overnight runs cannot wait on a human. Abandon
+                            # this champion: the partial session stays under
+                            # the --skip-existing completeness bar, so the
+                            # next run redoes it from scratch.
+                            print(f"[unattended] abandoning {args.target} at rank "
+                                  f"{current_rank} -- will be redone next run")
+                            break
                         input(f">>> Scroll so rank {current_rank} is visible, then press Enter: ")
                         continue
 
@@ -865,6 +879,7 @@ def main() -> int:
                 print(f"CSV              : {args.output}")
             if interrupted:
                 raise KeyboardInterrupt
+            return total
 
         if not args.champions:
             try:
@@ -897,12 +912,14 @@ def main() -> int:
                 print(f"[carousel] resuming: {len(scraped)} champion(s) already captured")
 
         print(f"CAROUSEL MODE: {args.champions} champion(s), top {args.n} each"
-              + (", builds" if args.builds else "") + (", stats" if args.stats else ""))
+              + (", builds" if args.builds else "") + (", stats" if args.stats else "")
+              + (", UNATTENDED" if args.unattended else ""))
         print("Open the CHAMPION tab of the leaderboard (the champions list).")
         input("Press Enter to start: ")
 
         done = 0
         stale_pages = 0
+        empty_sessions = 0   # consecutive zero-profile champions (down detector)
         t_carousel = time.time()
 
         def back_to_champions() -> None:
@@ -968,9 +985,19 @@ def main() -> int:
                 nav.last_center = None   # fresh position memory per champion
                 print()
                 print(f"#################### {label} ({done + 1}/{args.champions}) ####################")
-                run_ranks()
+                n_captured = run_ranks()
                 scraped.add(label)
                 done += 1
+                if args.unattended:
+                    # Champions failing with ZERO profiles back-to-back means
+                    # the leaderboard itself is broken (rankings lock, server
+                    # maintenance) -- stop instead of burning the champion
+                    # list on a dead screen all night.
+                    empty_sessions = empty_sessions + 1 if n_captured == 0 else 0
+                    if empty_sessions >= 3:
+                        print("[unattended] 3 consecutive champions captured NOTHING -- "
+                              "the leaderboard looks down; stopping the carousel")
+                        break
                 if args.auto_extract:
                     log_path = capture_dir / "extract.log"
                     with log_path.open("w", encoding="utf-8") as lf:
