@@ -496,7 +496,6 @@ def scan_visible_ranks(
 
     scale = 3.0
     candidates: list[tuple[int, int]] = []  # (y_orig_center, ocr_rank)
-    seen_y: set[int] = set()
 
     def _collect(pre: np.ndarray) -> None:
         data = pytesseract.image_to_data(
@@ -514,10 +513,15 @@ def scan_visible_ranks(
                 continue
             cy_pre = data["top"][i] + data["height"][i] // 2
             cy = y0 + int(round(cy_pre / scale))
-            # Merge duplicate detections of the same badge across passes.
-            if any(abs(cy - s) < 12 for s in seen_y):
+            # Merge only IDENTICAL detections (same row, same digits). Passes
+            # are allowed to DISAGREE about a row: a first-wins merge once let
+            # the flatten pass's misreads mask the classic pass's correct
+            # digits at the same y, leaving no correct chain to find. The
+            # chain builder's pitch constraint keeps one chain from using two
+            # same-row hypotheses, and grid-snap infers ranks from position,
+            # so competing hypotheses are safe everywhere downstream.
+            if any(abs(cy - c) < 12 and rank == r for c, r in candidates):
                 continue
-            seen_y.add(cy)
             candidates.append((cy, rank))
 
     # Illumination flattening before Otsu: the panel's vertical luminance
@@ -579,11 +583,27 @@ def scan_visible_ranks(
             score += 2.5
         return score
 
+    def gap_ok(chain: list[tuple[int, int]], y_new: int) -> bool:
+        """Consecutive ranks must sit ONE row pitch apart vertically. Without
+        this, two misread badges 3 rows apart once chained as 'ranks 2,3'
+        (455px gap) and outvoted the real rows. Chains self-establish their
+        pitch from the first link; later links must agree with it."""
+        gap = y_new - chain[-1][0]
+        if not (40 <= gap <= 250):
+            return False
+        if len(chain) >= 2:
+            prev_gap = chain[-1][0] - chain[-2][0]
+            if abs(gap - prev_gap) > 0.3 * prev_gap:
+                return False
+        if expected_pitch is not None and abs(gap - expected_pitch) > 0.35 * expected_pitch:
+            return False
+        return True
+
     best_chain: list[tuple[int, int]] = []
     for start in range(len(candidates)):
         chain = [candidates[start]]
         for j in range(start + 1, len(candidates)):
-            if candidates[j][1] == chain[-1][1] + 1:
+            if candidates[j][1] == chain[-1][1] + 1 and gap_ok(chain, candidates[j][0]):
                 chain.append(candidates[j])
         if not best_chain or chain_score(chain) > chain_score(best_chain):
             best_chain = chain

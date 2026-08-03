@@ -111,6 +111,27 @@ def test_healthy_frame_recovers_real_column():
     assert len(r2) < 3, f"poisoned column produced a fake window: {sorted(r2.items())}"
 
 
+CROSS_STAGE_MASK_FRAME = Path("data/debug_scans/lost_rank1_040002.png")
+
+
+@pytest.mark.skipif(not CROSS_STAGE_MASK_FRAME.exists(), reason="captured failure frame not present")
+def test_stage_misreads_cannot_mask_better_reads_or_chain_across_rows():
+    """Pristine Kayn top-of-list frame that scanned as just '[2, 3]' -- two
+    failures compounding. The flatten pass misread badges 3 and 5 (as '5' and
+    '3'), and the first-wins y-merge let those tokens MASK the classic pass's
+    correct digits at the same rows. The surviving '2' and '3' then chained as
+    consecutive ranks despite sitting 455px (three rows) apart, because the
+    chain builder never demanded that consecutive ranks be one pitch apart.
+    With per-(row, digit) merging and the pitch constraint, the correct [4,5]
+    chain anchors and grid-snap yields the full window."""
+    img = cv2.imread(str(CROSS_STAGE_MASK_FRAME))
+    for hint in (None, 1.0):
+        ranks, pitch = scan_visible_ranks(img, (985, 1155), hint=hint,
+                                          expected_pitch=146.0)
+        assert {1, 2, 3, 4, 5} <= set(ranks), f"hint={hint}: got {sorted(ranks)}"
+        assert pitch and 140 <= pitch <= 155
+
+
 @pytest.mark.skipif(not FRAME.exists(), reason="sample frame not present")
 def test_scrolled_off_ranks_are_not_invented():
     """When the list is scrolled (rank 3 genuinely at the top edge), ranks 1-2
