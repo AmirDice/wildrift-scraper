@@ -115,6 +115,31 @@ function TierBadge({ tier, size = 18 }: { tier: string; size?: number }) {
   );
 }
 
+/* Runes and summoner spells render as art, like items: a rune page reads as
+   a row of icons far faster than five names separated by dots.
+
+   A name with no art is a name the build extractor invented -- the vision
+   model substitutes League PC rune names when it cannot read an icon, and
+   17 such names were confirmed as runes that do not exist in the game. Those
+   are dropped rather than rendered, so the page never shows a rune nobody
+   can equip. data/rune_extraction_report.txt tracks them for the rework. */
+function ArtIcon({ src, name, size }: { src?: string; name: string; size: number }) {
+  if (!src) return null;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={name}
+      title={name}
+      width={size}
+      height={size}
+      loading="lazy"
+      className="shrink-0 rounded-md bg-black/30 object-contain ring-1 ring-white/10"
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
 function ItemIcon({ slug, name, icons, size = 26, className = "" }: {
   slug: string | null; name: string; icons: Record<string, string>; size?: number;
   className?: string;
@@ -147,7 +172,10 @@ function ItemIcon({ slug, name, icons, size = 26, className = "" }: {
 }
 
 /* What the whole top 50 agrees on: item pick rates, tier spread, averages. */
-function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Record<string, string> }) {
+function ChampionPulse({ payload, icons, runeIcons, spellIcons }: {
+  payload: EnrichedPayload; icons: Record<string, string>;
+  runeIcons: Record<string, string>; spellIcons: Record<string, string>;
+}) {
   const pulse = useMemo(() => {
     const players = payload.players;
     const withBuild = players.filter((p) => p.build?.items?.length);
@@ -254,9 +282,10 @@ function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Re
       {pulse.topKeystone && (
         <div>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Top keystone</p>
-          <p className="mt-1.5 text-sm font-medium">
+          <p className="mt-1.5 flex items-center gap-1.5 text-sm font-medium">
+            <ArtIcon src={runeIcons[pulse.topKeystone[0]]} name={pulse.topKeystone[0]} size={22} />
             {pulse.topKeystone[0]}
-            <span className="ml-1.5 text-xs text-faint">
+            <span className="text-xs text-faint">
               {Math.round((pulse.topKeystone[1] / pulse.nBuilds) * 100)}%
             </span>
           </p>
@@ -265,9 +294,11 @@ function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Re
       {pulse.topSpells && (
         <div>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Spells</p>
-          <p className="mt-1.5 text-sm font-medium">
-            {pulse.topSpells[0]}
-            <span className="ml-1.5 text-xs text-faint">
+          <p className="mt-1.5 flex items-center gap-1.5 text-sm font-medium">
+            {pulse.topSpells[0].split(" + ").map((sp) => (
+              <ArtIcon key={sp} src={spellIcons[sp]} name={sp} size={22} />
+            ))}
+            <span className="text-xs text-faint">
               {Math.round((pulse.topSpells[1] / pulse.nBuilds) * 100)}%
             </span>
           </p>
@@ -335,7 +366,14 @@ function QueuePanel({ title, s }: { title: string; s: QueueStats }) {
   );
 }
 
-function ExpandedRow({ p, icons }: { p: EnrichedPlayer; icons: Record<string, string> }) {
+function ExpandedRow({ p, icons, runeIcons, spellIcons }: {
+  p: EnrichedPlayer;
+  icons: Record<string, string>;
+  runeIcons: Record<string, string>;
+  spellIcons: Record<string, string>;
+}) {
+  const runes = (p.build?.runes ?? []).filter((r) => runeIcons[r]);
+  const spells = (p.build?.spells ?? []).filter((s) => spellIcons[s]);
   return (
     <td colSpan={7} className="px-4 pb-4 pt-1">
       <div className="flex flex-col gap-3">
@@ -346,14 +384,20 @@ function ExpandedRow({ p, icons }: { p: EnrichedPlayer; icons: Record<string, st
                 <ItemIcon key={`${it.slug}-${i}`} slug={it.slug} name={it.name} icons={icons} size={32} />
               ))}
             </div>
-            {p.build.runes.length > 0 && (
-              <p className="text-xs text-muted">
-                <span className="font-semibold text-text">{p.build.runes[0]}</span>
-                {p.build.runes.length > 1 && <> · {p.build.runes.slice(1).join(" · ")}</>}
-              </p>
+            {runes.length > 0 && (
+              <span className="flex items-center gap-1.5" title={runes.join(" · ")}>
+                {runes.map((r, i) => (
+                  /* keystone first and larger: it is the page's identity */
+                  <ArtIcon key={`${r}-${i}`} src={runeIcons[r]} name={r} size={i === 0 ? 30 : 24} />
+                ))}
+              </span>
             )}
-            {p.build.spells.length > 0 && (
-              <p className="text-xs text-faint">{p.build.spells.join(" + ")}</p>
+            {spells.length > 0 && (
+              <span className="flex items-center gap-1.5" title={spells.join(" + ")}>
+                {spells.map((s, i) => (
+                  <ArtIcon key={`${s}-${i}`} src={spellIcons[s]} name={s} size={24} />
+                ))}
+              </span>
             )}
           </div>
         )}
@@ -369,9 +413,11 @@ function ExpandedRow({ p, icons }: { p: EnrichedPlayer; icons: Record<string, st
   );
 }
 
-export function LeaderboardView({ champions, itemIcons }: {
+export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }: {
   champions: SlimChampion[];
   itemIcons: Record<string, string>;
+  runeIcons: Record<string, string>;
+  spellIcons: Record<string, string>;
 }) {
   const byName = useMemo(
     () => [...champions].sort((a, b) => a.name.localeCompare(b.name)),
@@ -527,7 +573,7 @@ export function LeaderboardView({ champions, itemIcons }: {
       <BestPlayerBuild slug={slug} championName={champ?.name} />
 
       {/* What the whole top 50 agrees on, from the freshly captured data */}
-      {hasDetail && <ChampionPulse payload={enriched} icons={itemIcons} />}
+      {hasDetail && <ChampionPulse payload={enriched} icons={itemIcons} runeIcons={runeIcons} spellIcons={spellIcons} />}
 
       {/* Player table */}
       {data === null && !hasDetail ? (
@@ -632,7 +678,7 @@ export function LeaderboardView({ champions, itemIcons }: {
                     </tr>
                     {open && e && (
                       <tr className="border-b border-line/60 last:border-0">
-                        <ExpandedRow p={e} icons={itemIcons} />
+                        <ExpandedRow p={e} icons={itemIcons} runeIcons={runeIcons} spellIcons={spellIcons} />
                       </tr>
                     )}
                   </FragmentRow>

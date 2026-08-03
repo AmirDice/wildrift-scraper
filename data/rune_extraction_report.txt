@@ -1,0 +1,48 @@
+rune catalogue: 53 runes, 53 with local art
+
+captured rune slots: 4200
+  resolve to a real rune : 3462 (82.4%)
+  extractor invented     : 738 (17.6%)
+
+NAMES THE EXTRACTOR INVENTED (not runes in Wild Rift; each is a misread
+of whatever was actually on the build popup):
+    181  Conditioning
+    136  Hunter - Titan
+     69  Cosmic Insight
+     55  Glacial Augment
+     52  Pathfinder
+     45  Hunter - Vampirism
+     28  Sweet Tooth
+     24  Titan
+     18  Adaptive Carapace
+     18  Waterwalking
+     17  Aftershock
+     15  Treasure Hunter
+     10  Weakness
+      8  Cosmetic Insight
+      7  Hunter-Titan
+      7  Hunter – Titan
+      6  Champion
+      6  Mastermind
+      5  Mark of the Weak
+      3  Carapace
+      3  Loyalty
+      3  Bloodline
+      2  glacial augment
+      2  conditioning
+      2  Mark of the Hunt
+      2  Growth
+      1  Presence of Mind
+      1  Expose Weakness
+      1  Oracle Lens
+      1  Dominion
+      1  Graceful Death
+      1  Ultimate Shield
+      1  Heroism
+      1  Heroic Tribute
+      1  Hunter - Vampism
+      1  Ultimate Hunter
+      1  Hunter – Vampirism
+      1  Statue
+      1  Mark of the Hunter
+      1  Overcharge

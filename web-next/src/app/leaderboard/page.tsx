@@ -3,6 +3,8 @@ import { site, getChampions } from "@/lib/data";
 import { Container, SectionHeading } from "@/components/ui";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
 import items from "@/data/items.json";
+import runeIcons from "@/data/rune_icons.json";
+import spells from "@/data/spells.json";
 
 // This is the page the site genuinely ranks for: "wild rift leaderboard" sits
 // around position 6-8 and "wild rift leaderboard eu" around 3, where the head
@@ -54,7 +56,14 @@ export default function LeaderboardPage() {
       </p>
       <section id="players" className="mt-8 scroll-mt-24">
         <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table, with builds, ranked tiers and per-queue stats where freshly captured" />
-        <LeaderboardView champions={slim} itemIcons={itemIcons} />
+        <LeaderboardView
+          champions={slim}
+          itemIcons={itemIcons}
+          runeIcons={runeIcons as Record<string, string>}
+          spellIcons={Object.fromEntries(
+            (spells as { name: string; icon: string }[]).map((s) => [s.name, s.icon])
+          )}
+        />
       </section>
     </Container>
   );
