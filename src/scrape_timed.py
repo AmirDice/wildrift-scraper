@@ -518,37 +518,36 @@ def main() -> int:
         _check_pause_or_raise()
 
         if capture_dir is not None and args.stats:
-            # Exit from the stats page is exactly TWO backs (stats -> profile
-            # -> leaderboard). The old press-then-check loop pressed a THIRD
-            # back whenever the leaderboard's rows were still populating (the
-            # check reads <3 badges on a loading list) -- and a third back
-            # EXITS the leaderboard, which is unrecoverable mid-run. So: press
-            # the known count, then verify with PATIENCE. A slow list costs a
-            # rescan; an extra back press costs the whole champion. Only after
-            # patient verification fails is one further press allowed, itself
-            # verified the same way.
-            def _on_leaderboard() -> bool:
-                for _try in range(4):
-                    try:
-                        ranks_chk, _pchk = scan(client.screenshot())
-                    except NameError:   # manual mode: no scanner in scope
-                        return True
-                    except Exception:   # noqa: BLE001 -- scan hiccup: wait it out
-                        time.sleep(0.5)
-                        continue
+            # Exit from the stats page is normally two backs (stats -> profile
+            # -> leaderboard), but the chain cannot PROVE it is on the stats
+            # page (a missed tap leaves it one screen shallower, and then a
+            # fixed second back exits the leaderboard to the MAIN MENU -- a
+            # live Karma run died exactly this way). Nor can 'leaderboard'
+            # be recognised by badges alone: the rows repopulate slowly after
+            # backing, and an impatient extra press on a loading list is the
+            # same main-menu exit. The reliable identity signal is the
+            # champion LABEL (bottom-left): it renders with the screen chrome
+            # immediately, appears on NO other screen in the chain (verified
+            # against all ten flow frames and a captured main-menu frame),
+            # and is independent of row loading. So: CHECK for the label
+            # before every press, and never press more than 3 times.
+            for _press in range(4):
+                img_chk = client.screenshot()
+                if read_champion_name(img_chk, SCREEN_2_CHAMP_LABEL_REGION) is not None:
+                    break
+                try:
+                    ranks_chk, _pchk = scan(img_chk)
                     if len(ranks_chk) >= 3:
-                        return True
-                    time.sleep(0.5)
-                return False
-
-            client.back()
-            time.sleep(args.step_wait + 0.2)
-            client.back()
-            time.sleep(args.step_wait + 0.2)
-            if not _on_leaderboard():
+                        break
+                except NameError:   # manual mode: no scanner in scope
+                    break
+                except Exception:   # noqa: BLE001 -- scan hiccup: label rules anyway
+                    pass
+                if _press == 3:
+                    print("  [detect] back-out could not verify the leaderboard -- stopping presses")
+                    break
                 client.back()
-                time.sleep(args.step_wait + 0.2)
-                _on_leaderboard()
+                time.sleep(args.step_wait + 0.3)
         else:
             client.tap(*s5_back, hold_ms=args.tap_hold_ms)
             time.sleep(args.step_wait)
@@ -857,10 +856,14 @@ def main() -> int:
                             # Verified recovery: CHECK first (the exception may
                             # have left us on the leaderboard already -- an
                             # unneeded back exits it), then back out one press
-                            # at a time until 3+ badges are visible.
+                            # at a time. The champion label is the identity
+                            # signal; it shows even while the rows repopulate.
                             for _ in range(4):
+                                img_chk = client.screenshot()
+                                if read_champion_name(img_chk, SCREEN_2_CHAMP_LABEL_REGION) is not None:
+                                    break
                                 try:
-                                    r_chk, _pc = scan(client.screenshot())
+                                    r_chk, _pc = scan(img_chk)
                                     if len(r_chk) >= 3:
                                         break
                                 except Exception:  # noqa: BLE001
