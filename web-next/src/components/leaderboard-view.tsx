@@ -59,28 +59,55 @@ type SortKey = "r" | "w" | "g" | "s";
 
 const num = (v: number | null | undefined) => (v == null ? -Infinity : v);
 
-/* "Grandmaster III" -> short chip text + a colour family the eye can scan. */
-function tierBadge(tier: string): { label: string; cls: string } {
-  const t = tier.toLowerCase();
+/* Standard ranked tiers have real emblem art in /public/tiers; Legendary
+   Ranked tiers (no art found yet) fall back to a text chip. */
+const TIER_ICONS = new Set([
+  "iron", "bronze", "silver", "gold", "platinum", "emerald",
+  "diamond", "master", "grandmaster", "challenger", "sovereign",
+]);
+
+function tierParts(tier: string): { family: string; roman: string } {
+  const family = tier.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
   const roman = tier.match(/\b(I{1,3}|IV|V)\b/)?.[1] ?? "";
-  const short = (abbr: string) => (roman ? `${abbr} ${roman}` : abbr);
-  if (t.startsWith("sovereign")) return { label: short("SOV"), cls: "bg-gold/20 text-gold" };
-  if (t.startsWith("challenger")) return { label: short("CHAL"), cls: "bg-cyan-400/15 text-cyan-300" };
-  if (t.startsWith("grandmaster")) return { label: short("GM"), cls: "bg-red-400/15 text-red-300" };
-  if (t.startsWith("master")) return { label: short("M"), cls: "bg-purple-400/15 text-purple-300" };
-  if (t.startsWith("diamond")) return { label: short("DIA"), cls: "bg-sky-400/15 text-sky-300" };
-  return { label: tier, cls: "bg-white/10 text-muted" };
+  return { family, roman };
 }
 
-function ItemIcon({ slug, name, icons, size = 26 }: {
+function TierBadge({ tier, size = 18 }: { tier: string; size?: number }) {
+  const { family, roman } = tierParts(tier);
+  if (TIER_ICONS.has(family)) {
+    return (
+      <span className="inline-flex items-center gap-0.5" title={tier}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/tiers/${family}.webp`}
+          alt={tier}
+          width={size}
+          height={size}
+          loading="lazy"
+          className="shrink-0 object-contain"
+          style={{ width: size, height: size }}
+        />
+        {roman && <span className="text-[0.6rem] font-bold text-muted">{roman}</span>}
+      </span>
+    );
+  }
+  return (
+    <span className="rounded bg-white/10 px-1 py-px text-[0.6rem] font-bold text-muted" title={tier}>
+      {tier}
+    </span>
+  );
+}
+
+function ItemIcon({ slug, name, icons, size = 26, className = "" }: {
   slug: string | null; name: string; icons: Record<string, string>; size?: number;
+  className?: string;
 }) {
   const src = slug ? icons[slug] : undefined;
   if (!src) {
     return (
       <span
         title={name}
-        className="grid shrink-0 place-items-center rounded-md border border-line bg-white/5 text-[0.55rem] text-faint"
+        className={`grid shrink-0 place-items-center rounded-md border border-line bg-white/5 text-[0.55rem] text-faint ${className}`}
         style={{ width: size, height: size }}
       >
         ?
@@ -96,7 +123,7 @@ function ItemIcon({ slug, name, icons, size = 26 }: {
       width={size}
       height={size}
       loading="lazy"
-      className="shrink-0 rounded-md border border-line/70 bg-black/30 object-cover"
+      className={`shrink-0 rounded-md border border-line/70 bg-black/30 object-cover ${className}`}
       style={{ width: size, height: size }}
     />
   );
@@ -141,7 +168,7 @@ function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Re
 
   if (!pulse.nBuilds) return null;
   return (
-    <div className="glass mb-4 flex flex-wrap items-center gap-x-8 gap-y-3 rounded-2xl px-5 py-4">
+    <div className="glass mb-4 flex flex-wrap items-center gap-x-5 gap-y-3 rounded-2xl px-4 py-3.5 sm:gap-x-8 sm:px-5 sm:py-4">
       <div>
         <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">
           Core items across the top 50
@@ -160,15 +187,13 @@ function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Re
       {pulse.tierSpread.length > 0 && (
         <div>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Ranked tiers</p>
-          <div className="mt-1.5 flex items-center gap-1.5">
-            {pulse.tierSpread.map(([family, n]) => {
-              const b = tierBadge(family);
-              return (
-                <span key={family} className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold ${b.cls}`}>
-                  {b.label} ×{n}
-                </span>
-              );
-            })}
+          <div className="mt-1.5 flex items-center gap-2">
+            {pulse.tierSpread.map(([family, n]) => (
+              <span key={family} className="inline-flex items-center gap-0.5 text-xs text-muted">
+                <TierBadge tier={family} size={22} />
+                ×{n}
+              </span>
+            ))}
           </div>
         </div>
       )}
@@ -426,24 +451,30 @@ export function LeaderboardView({ champions, itemIcons }: {
         </div>
       ) : (
         <div className="glass overflow-x-auto rounded-2xl">
-          <table className="w-full min-w-[560px] border-collapse text-sm">
+          {/* On a phone the enriched table drops Games and Mastery (still
+              sortable from sm up) rather than forcing a sideways scroll:
+              rank, player, build and win rate are the columns people came
+              for, and they fit a 360px screen with room for the chevron. */}
+          <table className="w-full border-collapse text-sm sm:min-w-[560px]">
             <thead>
               <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
-                <Th onClick={() => toggleSort("r")} active={sortKey === "r"} dir={dir} className="w-16 text-center">
-                  Rank
+                <Th onClick={() => toggleSort("r")} active={sortKey === "r"} dir={dir} className="w-10 text-center sm:w-16">
+                  <span className="hidden sm:inline">Rank</span>
+                  <span className="sm:hidden">#</span>
                 </Th>
                 <Th>Player</Th>
                 {hasDetail && <Th>Build</Th>}
                 <Th onClick={() => toggleSort("w")} active={sortKey === "w"} dir={dir} right>
-                  Win rate
+                  <span className="hidden sm:inline">Win rate</span>
+                  <span className="sm:hidden">WR</span>
                 </Th>
-                <Th onClick={() => toggleSort("g")} active={sortKey === "g"} dir={dir} right>
+                <Th onClick={() => toggleSort("g")} active={sortKey === "g"} dir={dir} right className="hidden sm:table-cell">
                   Games
                 </Th>
-                <Th onClick={() => toggleSort("s")} active={sortKey === "s"} dir={dir} right>
+                <Th onClick={() => toggleSort("s")} active={sortKey === "s"} dir={dir} right className="hidden md:table-cell">
                   Mastery
                 </Th>
-                {hasDetail && <Th className="w-10"> </Th>}
+                {hasDetail && <Th className="w-6 sm:w-10"> </Th>}
               </tr>
             </thead>
             <tbody>
@@ -457,33 +488,32 @@ export function LeaderboardView({ champions, itemIcons }: {
                       onClick={clickable ? () => setExpanded(open ? null : row.r) : undefined}
                       className={`border-b border-line/60 transition last:border-0 hover:bg-white/[0.03] ${clickable ? "cursor-pointer" : ""} ${open ? "bg-white/[0.03]" : ""}`}
                     >
-                      <td className="px-3 py-2.5 text-center">
+                      <td className="px-1.5 py-2.5 text-center sm:px-3">
                         <span className={row.r <= 3 ? "font-bold text-accent" : "text-faint"}>
                           {row.r}
                         </span>
                       </td>
-                      <td className="max-w-[240px] px-3 py-2.5">
+                      <td className="max-w-[98px] px-1.5 py-2.5 sm:max-w-[240px] sm:px-3">
                         <span className="block truncate font-medium">{row.p}</span>
-                        {e && (e.tier || e.tag) && (
-                          <span className="mt-0.5 flex items-center gap-1.5">
-                            {e.tier && (() => {
-                              const b = tierBadge(e.tier);
-                              return (
-                                <span className={`rounded px-1 py-px text-[0.6rem] font-bold ${b.cls}`}>
-                                  {b.label}
-                                </span>
-                              );
-                            })()}
-                            {e.tag && <span className="truncate text-[0.65rem] text-faint">#{e.tag}</span>}
+                        {e?.tier && (
+                          <span className="mt-0.5 flex items-center">
+                            <TierBadge tier={e.tier} />
                           </span>
                         )}
                       </td>
                       {hasDetail && (
-                        <td className="px-3 py-2.5">
+                        <td className="px-1.5 py-2.5 sm:px-3">
                           {e?.build ? (
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-0.5 sm:gap-1">
                               {e.build.items.slice(0, 6).map((it, j) => (
-                                <ItemIcon key={`${it.slug}-${j}`} slug={it.slug} name={it.name} icons={itemIcons} size={24} />
+                                <ItemIcon
+                                  key={`${it.slug}-${j}`}
+                                  slug={it.slug}
+                                  name={it.name}
+                                  icons={itemIcons}
+                                  size={22}
+                                  className={j >= 4 ? "hidden sm:block" : ""}
+                                />
                               ))}
                             </span>
                           ) : (
@@ -491,13 +521,13 @@ export function LeaderboardView({ champions, itemIcons }: {
                           )}
                         </td>
                       )}
-                      <td className="px-3 py-2.5 text-right font-semibold text-accent">
+                      <td className="px-2 py-2.5 text-right font-semibold text-accent sm:px-3">
                         {row.w != null ? `${row.w.toFixed(1)}%` : "-"}
                       </td>
-                      <td className="px-3 py-2.5 text-right text-muted">
+                      <td className="hidden px-3 py-2.5 text-right text-muted sm:table-cell">
                         {row.g != null ? row.g.toLocaleString() : "-"}
                       </td>
-                      <td className="px-3 py-2.5 text-right text-muted">
+                      <td className="hidden px-3 py-2.5 text-right text-muted md:table-cell">
                         {row.s != null ? row.s.toLocaleString() : "-"}
                       </td>
                       {hasDetail && (
