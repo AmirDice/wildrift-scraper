@@ -38,6 +38,7 @@ import json
 import os
 import re
 import sys
+import subprocess
 import threading
 import time
 import traceback
@@ -263,6 +264,9 @@ def main() -> int:
                         help="Carousel mode: process this many champions from the CHAMPION tab, "
                              "navigating rows by name OCR and returning after each top-N capture. "
                              "Requires --auto-scroll --capture-only.")
+    parser.add_argument("--auto-extract", action="store_true",
+                        help="Carousel: launch offline extraction for each finished champion in "
+                             "the background, so capture and extraction overlap")
     parser.add_argument("--skip-existing", action="store_true",
                         help="Carousel: skip champions that already have a near-complete capture "
                              "session under --capture-dir (resume overnight runs)")
@@ -378,7 +382,16 @@ def main() -> int:
         player_name = name_reader.cached(rank) if name_reader else None
         if capture_dir is not None:
             try:
-                pre_img = client.screenshot()
+                # Reuse the navigator's decision frame as the leaderboard
+                # capture: it is the EXACT frame tap_y came from (stronger
+                # for offline tap-verification) and saves a ~1.2s screenshot.
+                pre_img = None
+                try:
+                    pre_img = nav.last_frame
+                except NameError:
+                    pre_img = None
+                if pre_img is None:
+                    pre_img = client.screenshot()
                 cv2.imwrite(str(capture_dir / f"{rank:03d}_leaderboard.jpg"), pre_img,
                             [cv2.IMWRITE_JPEG_QUALITY, 92])
             except Exception:
@@ -732,6 +745,7 @@ def main() -> int:
         # offline against replayed failure frames (tests/test_navigator.py).
         nav = LeaderboardNavigator(
             screenshot=stable_screenshot,
+            screenshot_fast=client.screenshot,
             scan=scan,
             drag_rows=slow_drag,
             fling=fling,
@@ -957,6 +971,15 @@ def main() -> int:
                 run_ranks()
                 scraped.add(label)
                 done += 1
+                if args.auto_extract:
+                    log_path = capture_dir / "extract.log"
+                    with log_path.open("w", encoding="utf-8") as lf:
+                        subprocess.Popen(
+                            [sys.executable, "-m", "src.extract_frames", str(capture_dir)],
+                            stdout=lf, stderr=subprocess.STDOUT,
+                            cwd=str(Path(__file__).resolve().parent.parent),
+                        )
+                    print(f"[carousel] extraction launched in background -> {log_path}")
 
                 client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
                 time.sleep(args.step_wait + 0.4)

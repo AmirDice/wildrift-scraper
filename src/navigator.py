@@ -27,6 +27,7 @@ class LeaderboardNavigator:
         self,
         *,
         screenshot: Callable[[], np.ndarray],
+        screenshot_fast: Callable[[], np.ndarray] | None = None,
         scan: Scan,
         drag_rows: Callable[[float, float], None],
         fling: Callable[[bool], None],
@@ -39,6 +40,7 @@ class LeaderboardNavigator:
         max_cycles: int = 14,
     ) -> None:
         self.screenshot = screenshot
+        self.screenshot_fast = screenshot_fast
         self.scan = scan
         self.drag_rows = drag_rows
         self.fling = fling
@@ -53,6 +55,7 @@ class LeaderboardNavigator:
         self.last_pitch: float | None = None
         self.last_center: float | None = None
         self.screen_h: int | None = None
+        self.last_frame: np.ndarray | None = None  # frame behind the last returned y
         self._debug_dumps = 0  # rejected-frame dumps this run (capped)
 
     def _dump_rejected(self, img: np.ndarray, rank: int) -> None:
@@ -86,9 +89,13 @@ class LeaderboardNavigator:
         # (pre-burst hi_r, n, sign, est): fling calibration measured on the
         # NEXT accepted scan, so bursts need no extra screenshot of their own.
         pending_fling: tuple[int, int, int, float] | None = None
+        # Screenshots dominate profile cost (~1.2s each on this device), so
+        # the happy path uses ONE fast frame; any rejection this journey
+        # escalates to the stability-paired grabber for the remaining cycles.
+        use_stable = self.screenshot_fast is None
 
         for _cycle in range(self.max_cycles):
-            img = self.screenshot()
+            img = self.screenshot() if use_stable else self.screenshot_fast()
             if self.screen_h is None:
                 self.screen_h = int(img.shape[0])
             H = self.screen_h
@@ -105,6 +112,7 @@ class LeaderboardNavigator:
                 if empty_scans >= 4:
                     self.last_center = None
                     return None
+                use_stable = True
                 if ranks:
                     self.log(f"  [scan] only {len(ranks)} badge(s) read -- "
                              f"rows may still be loading, waiting")
@@ -136,6 +144,7 @@ class LeaderboardNavigator:
                 # still bounds the pathological case.
                 is_top_window = lo_r <= 2 and len(ranks) >= 4
                 if gap > 5 and not confirmed and not is_top_window:
+                    use_stable = True
                     rejects += 1
                     pending = center
                     self.log(f"  [detect] scan says ranks {lo_r}-{hi_r}, expected ~{expected:.0f}"
@@ -183,6 +192,7 @@ class LeaderboardNavigator:
                 # screen edge may be partially clipped.
                 if H * 0.13 <= y <= H * 0.87:
                     self.last_center = center
+                    self.last_frame = img
                     return y
                 nudge = 0.8 if y > H * 0.87 else -0.8
                 self.drag_rows(nudge, p)
@@ -207,6 +217,7 @@ class LeaderboardNavigator:
                         self.log(f"  [detect] rank {rank}'s badge did not OCR; "
                                  f"row inferred at y={y_inf} from rank {nb} + grid")
                         self.last_center = center
+                        self.last_frame = img
                         return y_inf
             delta = rank - hi_r if rank > hi_r else rank - lo_r
             sign = 1 if delta > 0 else -1
@@ -227,6 +238,7 @@ class LeaderboardNavigator:
                             y = careful[rank]
                             if H * 0.13 <= y <= H * 0.87:
                                 self.last_center = (min(careful) + max(careful)) / 2
+                                self.last_frame = img
                                 return y
                         if careful:
                             ranks = careful
