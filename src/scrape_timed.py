@@ -531,19 +531,30 @@ def main() -> int:
             # against all ten flow frames and a captured main-menu frame),
             # and is independent of row loading. So: CHECK for the label
             # before every press, and never press more than 3 times.
-            for _press in range(4):
+            # The first press is blind: this code runs right after the stats
+            # phase, so the screen is the stats page (or, if a tap missed,
+            # the profile) -- one back from either depth cannot exit the
+            # leaderboard, and skipping the check saves a screenshot round.
+            client.back()
+            time.sleep(args.step_wait + 0.3)
+            for _press in range(3):
                 img_chk = client.screenshot()
                 if read_champion_name(img_chk, SCREEN_2_CHAMP_LABEL_REGION) is not None:
                     break
                 try:
-                    ranks_chk, _pchk = scan(img_chk)
+                    # RAW scan, not the self-relocating wrapper: mid-chain
+                    # screens read as empty, and an empty read sends the
+                    # wrapper into its ~15s column-relocation sweep -- twice
+                    # per back-out, which tripled the profile time.
+                    ranks_chk, _pchk = scan_visible_ranks(
+                        img_chk, badge_x, expected_pitch=nav.last_pitch)
                     if len(ranks_chk) >= 3:
                         break
-                except NameError:   # manual mode: no scanner in scope
+                except NameError:   # manual mode: no scanner state in scope
                     break
                 except Exception:   # noqa: BLE001 -- scan hiccup: label rules anyway
                     pass
-                if _press == 3:
+                if _press == 2:
                     print("  [detect] back-out could not verify the leaderboard -- stopping presses")
                     break
                 client.back()
@@ -863,7 +874,10 @@ def main() -> int:
                                 if read_champion_name(img_chk, SCREEN_2_CHAMP_LABEL_REGION) is not None:
                                     break
                                 try:
-                                    r_chk, _pc = scan(img_chk)
+                                    # raw scan: the wrapper's relocation sweep
+                                    # costs ~15s on every empty mid-chain frame
+                                    r_chk, _pc = scan_visible_ranks(
+                                        img_chk, badge_x, expected_pitch=nav.last_pitch)
                                     if len(r_chk) >= 3:
                                         break
                                 except Exception:  # noqa: BLE001
