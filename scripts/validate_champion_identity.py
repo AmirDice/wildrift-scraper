@@ -54,6 +54,11 @@ def item_tokens(slug: str) -> set[str]:
     out = {tok for key, tok in DEFINING.items() if key in stats}
     if "ap" in stats and item.get("category") == "Magic":
         out.add("ap")
+    # A crit item that carries lethality (The Collector) is CRIT evidence,
+    # not lethality-path evidence -- it rides along in crit builds. Only a
+    # pure lethality item proves the lethality archetype.
+    if "lethality" in out and "crit" in stats:
+        out.discard("lethality")
     return out
 
 

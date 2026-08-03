@@ -230,7 +230,9 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
             hit = "crit"
         elif "ap" in avoid and "ap" in stats and item.get("category") == "Magic":
             hit = "ap"
-        elif "lethality" in avoid and "physicalPenFlat" in stats:
+        elif "lethality" in avoid and "physicalPenFlat" in stats and "crit" not in stats:
+            # crit items carrying lethality (The Collector) belong to crit
+            # builds; 12% of ladder Vaynes buy it inside a no-lethality kit
             hit = "lethality"
         elif ("healing_power" in avoid or "shield_power" in avoid) and "healShieldPower" in stats:
             hit = "healing/shield power"

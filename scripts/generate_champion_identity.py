@@ -118,14 +118,47 @@ def _who(display_name: str) -> str:
     return display_name
 
 
+def ladder_evidence(name: str) -> str:
+    """Observed item frequencies from this champion's scraped top-50 builds,
+    as prompt text. Empty when no complete capture session exists. Used for
+    regenerating cards the validator flagged: the model reconciles its meta
+    knowledge with what the ladder measurably plays."""
+    try:
+        from scripts.export_captures import find_sessions, _builds_by_rank
+    except ImportError:
+        return ""
+    session = find_sessions(45).get(name.split(" (")[0])
+    if session is None:
+        return ""
+    freq: dict[str, int] = {}
+    builds = _builds_by_rank(session)
+    for b in builds.values():
+        for it in b.get("items", []):
+            if it.get("slug"):
+                freq[it["slug"]] = freq.get(it["slug"], 0) + 1
+    if not freq:
+        return ""
+    n = len(builds)
+    top = sorted(freq.items(), key=lambda kv: -kv[1])[:12]
+    lines = ", ".join(f"{slug} in {c}/{n}" for slug, c in top)
+    return (f"\nOBSERVED LADDER EVIDENCE (items actually equipped by the top {n} "
+            f"ranked players of this champion in Wild Rift, freshly scraped): {lines}.\n"
+            "Your card MUST be consistent with this evidence: an archetype the "
+            "ladder measurably plays cannot be marked never or off_meta, and "
+            "stats carried by frequently equipped items cannot be avoidStats.\n")
+
+
 def generate_one(client, types, model: str, name: str) -> dict:
     config = types.GenerateContentConfig(
         response_mime_type="application/json",
         temperature=0.15,
-        max_output_tokens=2048,
+        # Thinking models spend output budget on reasoning BEFORE the JSON;
+        # 2048 truncated mid-card ('Unterminated string' at ~1.7KB) and
+        # burned six retries per champion on the same wall.
+        max_output_tokens=16384,
     )
     prompt = PROMPT.format(who=_who(name), stats=", ".join(STAT_TOKENS),
-                           statuses="|".join(STATUSES))
+                           statuses="|".join(STATUSES)) + ladder_evidence(name)
     last: Exception | None = None
     for attempt in range(6):
         try:
