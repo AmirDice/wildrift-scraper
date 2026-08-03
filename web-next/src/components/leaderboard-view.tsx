@@ -59,27 +59,42 @@ type SortKey = "r" | "w" | "g" | "s";
 
 const num = (v: number | null | undefined) => (v == null ? -Infinity : v);
 
-/* Standard ranked tiers have real emblem art in /public/tiers; Legendary
-   Ranked tiers (no art found yet) fall back to a text chip. */
-const TIER_ICONS = new Set([
-  "iron", "bronze", "silver", "gold", "platinum", "emerald",
-  "diamond", "master", "grandmaster", "challenger", "sovereign",
-]);
+/* Every tier family has real emblem art in /public/tiers: the standard
+   ladder (Season 2019 crests + WR Emerald/Sovereign, .webp) and the
+   Legendary Ranked ladder (owner-supplied art, .png). Unknown strings
+   fall back to a text chip. */
+const TIER_ICONS: Record<string, string> = {
+  iron: "iron.webp", bronze: "bronze.webp", silver: "silver.webp",
+  gold: "gold.webp", platinum: "platinum.webp", emerald: "emerald.webp",
+  diamond: "diamond.webp", master: "master.webp", grandmaster: "grandmaster.webp",
+  challenger: "challenger.webp", sovereign: "sovereign.webp",
+  "legendary-master": "legendary-master.png",
+  "legendary-grandmaster": "legendary-grandmaster.png",
+  "legendary-challenger": "legendary-challenger.png",
+  "legendary-commander": "legendary-commander.png",
+  legend: "legend.png",
+};
 
 function tierParts(tier: string): { family: string; roman: string } {
-  const family = tier.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+  const words = tier.trim().toLowerCase().replace(/[^a-z\si]/g, "").split(/\s+/);
+  let family = words[0] ?? "";
+  // Legendary Ranked tiers are two words ("Legendary Grandmaster IV");
+  // "Legend" and "Ascended Legend" share the Legend art.
+  if (family === "legendary" && words[1]) family = `legendary-${words[1]}`;
+  if (family === "ascended") family = "legend";
   const roman = tier.match(/\b(I{1,3}|IV|V)\b/)?.[1] ?? "";
   return { family, roman };
 }
 
 function TierBadge({ tier, size = 18 }: { tier: string; size?: number }) {
   const { family, roman } = tierParts(tier);
-  if (TIER_ICONS.has(family)) {
+  const icon = TIER_ICONS[family];
+  if (icon) {
     return (
       <span className="inline-flex items-center gap-0.5" title={tier}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={`/tiers/${family}.webp`}
+          src={`/tiers/${icon}`}
           alt={tier}
           width={size}
           height={size}
