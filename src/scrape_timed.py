@@ -930,6 +930,8 @@ def main() -> int:
                 client.back()
                 time.sleep(0.7)
 
+        prev_names: set[str] = set()
+        skip_ys: list[int] = []   # rows on THIS page that resolved to captured champions
         try:
             while done < args.champions:
                 img = stable_screenshot()
@@ -941,10 +943,22 @@ def main() -> int:
                         continue          # header overlap / bottom clip
                     if cname is not None and cname in scraped:
                         continue
+                    if any(abs(y - sy) < 40 for sy in skip_ys):
+                        continue          # tapped before; resolved to a captured champion
                     cand = (y, cname)
                     break
                 if cand is None:
-                    stale_pages += 1
+                    # The list resets to the TOP each time we back out, so a
+                    # resumed (or deep) run must page down through screens of
+                    # already-captured names to reach fresh ones. A page whose
+                    # names are still CHANGING between swipes is progress --
+                    # only an unchanged or unreadable view counts as stale.
+                    names = {c for _, c in slots if c}
+                    if names and names != prev_names:
+                        stale_pages = 0
+                    else:
+                        stale_pages += 1
+                    prev_names = names or prev_names
                     if not slots and stale_pages >= 3:
                         print("[carousel] champions page not detected -- stopping")
                         break
@@ -957,8 +971,10 @@ def main() -> int:
                     client.swipe(SCREEN_1_ROW_TAP_X, y_from, SCREEN_1_ROW_TAP_X, y_to,
                                  max(500, min(1300, int((y_from - y_to) * 1.8))))
                     time.sleep(0.7)
+                    skip_ys.clear()       # rows moved; the y blacklist no longer maps
                     continue
                 stale_pages = 0
+                prev_names = {c for _, c in slots if c}
 
                 y, cname = cand
                 client.tap(SCREEN_1_ROW_TAP_X, y, hold_ms=args.tap_hold_ms)
@@ -968,11 +984,14 @@ def main() -> int:
                     print(f"[carousel] no champion label after tapping y={y} -- backing out")
                     if cname:
                         scraped.add(cname)   # do not loop on a broken row
+                    else:
+                        skip_ys.append(y)    # nameless row: remember it by position
                     back_to_champions()
                     continue
                 if label in scraped:
                     print(f"[carousel] {label} already captured -- skipping")
                     scraped.add(label)
+                    skip_ys.append(y)        # this row IS that champion; never re-tap it
                     client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
                     time.sleep(args.step_wait + 0.3)
                     back_to_champions()
