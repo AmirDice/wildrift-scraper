@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site } from "@/lib/data";
+import { site, getChampions } from "@/lib/data";
 import { Container, Card, SectionHeading } from "@/components/ui";
+import { LadderPulseSection } from "@/components/ladder-pulse-section";
 import {
   tierDistribution, wrHistogram, wrVsGames, classMeta, roleMeta,
   roleTierMatrix, metaHeadline,
@@ -114,6 +115,9 @@ export default function MetaPage() {
         <SectionHeading title="Where each role's power sits" subtitle="Champion count by role and tier. Darker means more champions land in that tier." />
         <Card className="p-5 sm:p-6"><RoleTierHeatmap rows={heat} /></Card>
       </div>
+
+      {/* the freshly scraped boards: builds, queues and match-history evidence */}
+      <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
 
       <p className="mt-10 text-sm text-faint">
         Want the raw ordering instead of the charts?{" "}

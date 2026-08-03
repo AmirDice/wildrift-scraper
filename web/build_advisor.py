@@ -803,6 +803,7 @@ def advise(champion: str, role: str, enemies: list[str],
     prompt = "\n\n".join(x for x in [
         prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
         prompt_mod.meta_identity_block(identity_key),
+        prompt_mod.ladder_consensus_block(identity_key),
         f"ROLE: {role}",
         # Every selected option governs the WHOLE loadout. Stated once here
         # rather than repeated inside each option's own text: those are written
@@ -1019,6 +1020,12 @@ def advise(champion: str, role: str, enemies: list[str],
     # Normalised request metadata, so the frontend can show what the build was
     # optimised for and flag any playstyle the champion could not honour. Added
     # additively under a bumped schema version; old consumers ignore it.
+    # How much of the final build the champion's top-50 ladder players also
+    # equip -- surfaced to the UI as a credibility badge. None when this
+    # champion has no fresh capture yet.
+    res["ladderAgreement"] = prompt_mod.ladder_agreement(
+        identity_key, [s for s in (res.get("items") or []) if s])
+
     res["schemaVersion"] = 2
     res["requestMeta"] = {
         "mode": mode,

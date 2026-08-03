@@ -286,6 +286,10 @@ export type Advice = {
   /** Legal-but-wasteful overlaps and thin inputs. Not failures. */
   validationWarnings?: string[];
   why?: string[];
+  /** Share of the build's items also equipped by the champion's top-50
+      ranked players (freshly scraped); null before that champion's first
+      capture. */
+  ladderAgreement?: { matched: number; of: number; score: number } | null;
   buildScore?: {
     overall: number;
     burst: number;
@@ -951,6 +955,12 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                   <span className="rounded-md bg-accent/15 px-2 py-0.5 text-[0.65rem] font-bold text-accent"
                     title={advice.buildScore.reason}>
                     Build rating {advice.buildScore.overall}
+                  </span>
+                )}
+                {advice.ladderAgreement && advice.ladderAgreement.score >= 40 && (
+                  <span className="rounded-md bg-gold/15 px-2 py-0.5 text-[0.65rem] font-bold text-gold"
+                    title={`${advice.ladderAgreement.matched} of ${advice.ladderAgreement.of} items are also equipped by this champion's top-50 ranked players right now`}>
+                    {advice.ladderAgreement.score}% ladder match
                   </span>
                 )}
                 {advice.validationErrors?.length ? (

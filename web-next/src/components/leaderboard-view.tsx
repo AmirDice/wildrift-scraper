@@ -172,13 +172,44 @@ function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Re
     const avgKda = kdas.length ? kdas.reduce((a, b) => a + b, 0) / kdas.length : null;
 
     const keystones = new Map<string, number>();
+    const spellPairs = new Map<string, number>();
+    const cores = new Map<string, number>();
     for (const p of withBuild) {
       const ks = p.build!.runes?.[0];
       if (ks) keystones.set(ks, (keystones.get(ks) ?? 0) + 1);
+      const spells = p.build!.spells;
+      if (spells?.length) {
+        const pair = [...spells].sort().join(" + ");
+        spellPairs.set(pair, (spellPairs.get(pair) ?? 0) + 1);
+      }
+      const core = p.build!.items.map((i) => i.slug).filter(Boolean).sort().join("|");
+      if (core.split("|").length >= 5) cores.set(core, (cores.get(core) ?? 0) + 1);
     }
     const topKeystone = [...keystones.entries()].sort((a, b) => b[1] - a[1])[0];
+    const topSpells = [...spellPairs.entries()].sort((a, b) => b[1] - a[1])[0];
+    const conformity = Math.max(0, ...cores.values());
 
-    return { topItems, tierSpread, avgKda, topKeystone, nBuilds: withBuild.length };
+    // Legendary tax: how much win rate the same players give up in the
+    // sweatier queue (players with 10+ legendary games).
+    const rankedWr = players.map((p) => p.stats?.ranked?.wr).filter((v): v is number => v != null);
+    const legendWr = players
+      .filter((p) => (p.stats?.legendary?.games ?? 0) >= 10)
+      .map((p) => p.stats!.legendary!.wr)
+      .filter((v): v is number => v != null);
+    const mean = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+    const mRanked = mean(rankedWr);
+    const mLegend = mean(legendWr);
+    const legendaryTax = mRanked != null && mLegend != null ? mLegend - mRanked : null;
+
+    const fbRates = players
+      .map((p) => p.stats?.ranked)
+      .filter((r): r is QueueStats => r != null && (r.games ?? 0) > 0 && r.firstBlood != null)
+      .map((r) => (r.firstBlood! / r.games!) * 100);
+    const firstBlood = mean(fbRates);
+    const pentas = players.reduce((acc, p) => acc + (p.stats?.ranked?.penta ?? 0), 0);
+
+    return { topItems, tierSpread, avgKda, topKeystone, topSpells, conformity,
+             legendaryTax, firstBlood, pentas, nBuilds: withBuild.length };
   }, [payload]);
 
   if (!pulse.nBuilds) return null;
@@ -227,6 +258,45 @@ function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Re
               {Math.round((pulse.topKeystone[1] / pulse.nBuilds) * 100)}%
             </span>
           </p>
+        </div>
+      )}
+      {pulse.topSpells && (
+        <div>
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Spells</p>
+          <p className="mt-1.5 text-sm font-medium">
+            {pulse.topSpells[0]}
+            <span className="ml-1.5 text-xs text-faint">
+              {Math.round((pulse.topSpells[1] / pulse.nBuilds) * 100)}%
+            </span>
+          </p>
+        </div>
+      )}
+      {pulse.conformity >= 2 && (
+        <div title="Players running the exact same item core">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Same core</p>
+          <p className="mt-1.5 text-sm font-medium tabular-nums">
+            {pulse.conformity}<span className="text-xs text-faint">/{pulse.nBuilds}</span>
+          </p>
+        </div>
+      )}
+      {pulse.legendaryTax != null && (
+        <div title="Win rate change for these players in Legendary Ranked">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Legendary tax</p>
+          <p className={`mt-1.5 text-sm font-semibold tabular-nums ${pulse.legendaryTax >= 0 ? "text-accent" : "text-bad"}`}>
+            {pulse.legendaryTax >= 0 ? "+" : ""}{pulse.legendaryTax.toFixed(1)}pp
+          </p>
+        </div>
+      )}
+      {pulse.firstBlood != null && (
+        <div title="Share of ranked games with first blood">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">First blood</p>
+          <p className="mt-1.5 text-sm font-medium tabular-nums">{pulse.firstBlood.toFixed(1)}%</p>
+        </div>
+      )}
+      {pulse.pentas > 0 && (
+        <div title="Pentakills across the top 50, ranked queue">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Pentakills</p>
+          <p className="mt-1.5 text-sm font-semibold text-gold tabular-nums">{pulse.pentas}</p>
         </div>
       )}
     </div>

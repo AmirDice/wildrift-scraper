@@ -57,6 +57,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
       { href: "/global", label: "Global Win Rates", desc: "EU vs CN cross-server meta" },
       { href: "/consistency", label: "Consistency", desc: "Skill ceiling & reliability" },
       { href: "/leaderboard", label: "Leaderboards", desc: "Top 50 players per champion" },
+      { href: "/hall-of-fame", label: "Hall of Fame", badge: "new", desc: "Ladder records & guild rankings" },
     ],
   },
   {

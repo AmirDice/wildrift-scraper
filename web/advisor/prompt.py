@@ -356,6 +356,55 @@ def meta_identity_block(name: str) -> str:
     return "\n".join(lines)
 
 
+_CONSENSUS_CACHE: dict | None = None
+
+
+def _consensus_store() -> dict:
+    global _CONSENSUS_CACHE
+    if _CONSENSUS_CACHE is None:
+        p = DATA / "ladder_consensus.json"
+        _CONSENSUS_CACHE = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    return _CONSENSUS_CACHE
+
+
+def ladder_consensus_block(name: str) -> str:
+    """What the top 50 ranked players of this champion ACTUALLY equip,
+    freshly scraped from the live leaderboard. Empirical evidence with the
+    same authority rules as the meta identity card: it constrains archetype
+    drift but never overrides an explicitly requested alternative path."""
+    rec = _consensus_store().get(name.split(" (")[0])
+    if not rec or not rec.get("items"):
+        return ""
+    of = rec["items"][0]["of"] if rec["items"] else 0
+    items = ", ".join(f"{i['name']} ({i['count']}/{i['of']})" for i in rec["items"][:8])
+    lines = [
+        f"LADDER CONSENSUS (items equipped by the top {of} ranked players of this "
+        "champion, freshly scraped; strong empirical evidence for the standard build):",
+        f"  items: {items}",
+    ]
+    if rec.get("keystones"):
+        lines.append("  keystones: " + ", ".join(
+            f"{k['name']} ({k['count']}/{k['of']})" for k in rec["keystones"]))
+    if rec.get("spells"):
+        lines.append("  summoner spells: " + ", ".join(
+            f"{s['pair']} ({s['count']}/{s['of']})" for s in rec["spells"]))
+    return "\n".join(lines)
+
+
+def ladder_agreement(name: str, slugs: list[str]) -> dict | None:
+    """Share of a build's items that the champion's top-50 players also
+    equip (pick rate >= 15%). None when no ladder data exists yet."""
+    rec = _consensus_store().get(name.split(" (")[0])
+    if not rec or not rec.get("items"):
+        return None
+    popular = {i["slug"] for i in rec["items"] if i["of"] and i["count"] / i["of"] >= 0.15}
+    if not popular or not slugs:
+        return None
+    hits = sum(1 for s in slugs if s in popular)
+    return {"matched": hits, "of": len(slugs),
+            "score": round(hits / len(slugs) * 100)}
+
+
 def identity_threat_lines(enemies: list[str]) -> str:
     """Per-enemy meta threat notes for the counter prompt: what each enemy
     DOES at high rank and the itemization answers players actually buy."""

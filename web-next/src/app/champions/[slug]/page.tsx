@@ -21,6 +21,7 @@ import { KaynAbilities, KaynFormGuide } from "@/components/kayn-forms";
 import { BuildLikeButton } from "@/components/build-like";
 import { ShareBuildButton } from "@/components/share-build";
 import { ToolsCta } from "@/components/tools-cta";
+import { MeasuredProfile } from "@/components/measured-profile";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 
 /* eslint-disable @next/next/no-img-element */
@@ -121,6 +122,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           {skew.legendary && <p className="mt-3 text-center text-sm text-muted">CN Legendary solo-queue benchmark: <span className="font-semibold text-gold">{skew.legendary.wr.toFixed(1)}%</span></p>}
         </Card>
       )}
+      <MeasuredProfile slug={champion.slug} />
       <Card className="p-5 sm:p-6">
         <h2 className="text-lg font-semibold">Best {champion.name} player</h2>
         {champion.bestPlayer ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{champion.bestPlayer.player}</span>{champion.bestPlayer.rank ? ` (rank #${champion.bestPlayer.rank})` : ""} leads the EU sample with a confidence-adjusted win rate of <span className="font-medium text-accent">{champion.bestPlayer.confidence_wr?.toFixed(1) ?? "-"}%</span>.</p> : <p className="mt-2 text-muted">Best-player data is being collected.</p>}
