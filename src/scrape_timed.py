@@ -1141,6 +1141,7 @@ def main() -> int:
 
         prev_names: set[str] = set()
         skip_ys: list[int] = []   # rows on THIS page that resolved to captured champions
+        label_fails: dict[str, int] = {}   # per-champion label-read failures
         try:
             while done < args.champions:
                 img = stable_screenshot()
@@ -1192,17 +1193,29 @@ def main() -> int:
                 # loading, and a false 'no label' sends us into a back-out
                 # that skips a champion (and once ended on the main menu).
                 label = None
+                img_lbl = None
                 for _read in range(3):
-                    label = read_champion_name(client.screenshot(), SCREEN_2_CHAMP_LABEL_REGION)
+                    img_lbl = client.screenshot()
+                    label = read_champion_name(img_lbl, SCREEN_2_CHAMP_LABEL_REGION)
                     if label is not None:
                         break
                     time.sleep(0.6)
                 if label is None:
                     print(f"[carousel] no champion label after tapping y={y} -- backing out")
+                    if img_lbl is not None:
+                        path = _dump_frame(img_lbl, 0)
+                        if path:
+                            print(f"[carousel] label-fail frame saved -> {path}")
+                    # One failed read is not a verdict on the CHAMPION: give
+                    # each name a second attempt later in the run before
+                    # writing it off (a live run skipped Zoe on a single
+                    # unexplained miss). The y blacklist still stops an
+                    # immediate re-tap of the same row.
                     if cname:
-                        scraped.add(cname)   # do not loop on a broken row
-                    else:
-                        skip_ys.append(y)    # nameless row: remember it by position
+                        label_fails[cname] = label_fails.get(cname, 0) + 1
+                        if label_fails[cname] >= 2:
+                            scraped.add(cname)   # twice broken: stop looping on it
+                    skip_ys.append(y)
                     back_to_champions()
                     continue
                 if label in scraped:
