@@ -85,6 +85,16 @@ SCREEN_5_STATS_TAB: tuple[int, int] = (1178, 1028)
 # the queue dropdown, and the dropdown's option rows when open.
 STATS_LIST_TOGGLE: tuple[int, int] = (2153, 45)
 STATS_QUEUE_DROPDOWN: tuple[int, int] = (1702, 45)
+# Champions page (screen 1, CHAMPION tab): rows carry the champion NAME as
+# text (no number badges). Names live in this x-band; rows share the 146px
+# pitch of the player list.
+SCREEN_1_NAME_X_RANGE: tuple[int, int] = (1180, 1660)
+SCREEN_1_ROW_TAP_X: int = 1220
+# Screen 2's top-left back chevron (returns to the champions page) and the
+# champion-name label at the bottom-left (authoritative identity check).
+SCREEN_2_BACK_POINT: tuple[int, int] = (172, 47)
+SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 260, 55)
+
 STATS_QUEUE_OPTIONS: dict[str, tuple[int, int]] = {
     "all": (1702, 109),
     "ranked": (1702, 181),

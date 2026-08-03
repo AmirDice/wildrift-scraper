@@ -53,8 +53,12 @@ from .config import (
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_2_NAME_HEIGHT,
     SCREEN_2_NAME_X_RANGE,
+    SCREEN_1_NAME_X_RANGE,
+    SCREEN_1_ROW_TAP_X,
+    SCREEN_2_BACK_POINT,
     SCREEN_2_BOOK_X,
     SCREEN_2_BUILD_CLOSE,
+    SCREEN_2_CHAMP_LABEL_REGION,
     SCREEN_2_NAME_Y_OFFSET,
     SCREEN_5_OCR_REGION,
     SCREEN_5_STATS_TAB,
@@ -68,9 +72,11 @@ from .config import (
 from .navigator import LeaderboardNavigator
 from .ocr import (
     locate_badge_column,
+    read_champion_name,
     read_player_name,
     read_rank_badge,
     read_text,
+    scan_champion_rows,
     scan_visible_ranks,
 )
 from .storage import CSVWriter, LeaderboardRow
@@ -253,17 +259,30 @@ def main() -> int:
     parser.add_argument("--builds", action="store_true",
                         help="capture-only: also capture each player's BUILD popup (book icon "
                              "on the leaderboard row; ~2s/profile)")
+    parser.add_argument("--champions", type=int, default=0,
+                        help="Carousel mode: process this many champions from the CHAMPION tab, "
+                             "navigating rows by name OCR and returning after each top-N capture. "
+                             "Requires --auto-scroll --capture-only.")
+    parser.add_argument("--skip-existing", action="store_true",
+                        help="Carousel: skip champions that already have a near-complete capture "
+                             "session under --capture-dir (resume overnight runs)")
     parser.add_argument("--stats", action="store_true",
                         help="capture-only: also capture the rank popup and the STATS page for "
                              "BOTH queues (Ranked + Legendary Ranked; ~5s/profile)")
     args = parser.parse_args()
 
+    if args.champions and not (args.auto_scroll and args.capture_only):
+        print("error: --champions requires --auto-scroll --capture-only", file=sys.stderr)
+        return 1
+
     capture_dir: Path | None = None
     if args.capture_only:
-        # One directory per session so reruns never mix frames.
-        stamp = time.strftime("%Y%m%d_%H%M")
-        capture_dir = args.capture_dir / f"{args.target.lower().replace(' ', '-')}_{stamp}"
-        capture_dir.mkdir(parents=True, exist_ok=True)
+        if not args.champions:
+            # One directory per session so reruns never mix frames. Carousel
+            # mode creates a fresh directory per champion instead.
+            stamp = time.strftime("%Y%m%d_%H%M")
+            capture_dir = args.capture_dir / f"{args.target.lower().replace(' ', '-')}_{stamp}"
+            capture_dir.mkdir(parents=True, exist_ok=True)
         # Live Gemini is pointless here -- extraction happens offline.
         args.gemini_names = False
         args.gemini_strip = False
@@ -733,98 +752,227 @@ def main() -> int:
         print("Press 'p' anytime to pause after the current profile.")
         input("Press Enter to start: ")
 
-        current_rank = args.start_rank
-        end_rank = args.start_rank + args.n - 1
-        successes = 0
-        total = 0
-        t0 = time.time()
-        try:
-            while current_rank <= end_rank:
-                if _key_pressed() == "p":
-                    _handle_pause(time.time())
+        def run_ranks() -> None:
+            """Capture ranks start..start+n-1 for the CURRENT args.target
+            into the CURRENT capture_dir. Re-raises KeyboardInterrupt
+            after its summary so a carousel stops cleanly."""
+            interrupted = False
+            current_rank = args.start_rank
+            end_rank = args.start_rank + args.n - 1
+            successes = 0
+            total = 0
+            t0 = time.time()
+            try:
+                while current_rank <= end_rank:
+                    if _key_pressed() == "p":
+                        _handle_pause(time.time())
 
-                tap_y = nav.ensure_visible(current_rank)
-                if tap_y is None:
-                    print(f"\n[detect] lost position looking for rank {current_rank}.")
-                    input(f">>> Scroll so rank {current_rank} is visible, then press Enter: ")
+                    tap_y = nav.ensure_visible(current_rank)
+                    if tap_y is None:
+                        print(f"\n[detect] lost position looking for rank {current_rank}.")
+                        input(f">>> Scroll so rank {current_rank} is visible, then press Enter: ")
+                        continue
+
+                    t_profile = time.time()
+                    print(f"\n--- rank {current_rank} (tap y={tap_y}) ---")
+                    wr: float | None = None
+                    sc: int | None = None
+                    gm: int | None = None
+                    player_name: str | None = None
+                    for attempt in range(args.max_retries_per_player):
+                        try:
+                            wr, sc, gm, player_name = scrape_one(current_rank, tap_y)
+                            # Capture mode has no live read result -- one clean pass
+                            # through the tap chain is success by definition.
+                            if wr is not None or capture_dir is not None:
+                                break
+                        except PauseRequested:
+                            print(f"\n[PAUSED] rank {current_rank} aborted mid-chain.")
+                            input("Restore the leaderboard, then press Enter to re-do this rank: ")
+                        except Exception:
+                            print(f"  exception on attempt {attempt + 1}:")
+                            traceback.print_exc()
+                            # Verified recovery: back out only until the
+                            # leaderboard (3+ badges) is visible again, never blind.
+                            for _ in range(4):
+                                client.back()
+                                time.sleep(0.4)
+                                try:
+                                    r_chk, _pc = scan(client.screenshot())
+                                    if len(r_chk) >= 3:
+                                        break
+                                except Exception:  # noqa: BLE001
+                                    continue
+                        # Whatever happened, re-detect before the next attempt —
+                        # the list may have snapped back mid-recovery.
+                        ny = nav.ensure_visible(current_rank)
+                        if ny is None:
+                            break
+                        tap_y = ny
+
+                    # Collect the async Gemini page read (if any): its names beat
+                    # Tesseract's (CJK), and its screen-2 score fills a missing one.
+                    if name_reader is not None:
+                        g_name = name_reader.get(current_rank)
+                        if g_name:
+                            player_name = g_name
+                        if sc is None:
+                            sc = name_reader.cached_score(current_rank)
+
+                    # Capture mode: the manifest is the record; the offline
+                    # extractor writes the CSV.
+                    if capture_dir is None:
+                        writer.write(LeaderboardRow(
+                            champion=args.target,
+                            rank=current_rank,
+                            player_name=player_name or "",
+                            score=sc,
+                            games=gm,
+                            winrate=wr,
+                        ))
+                    total += 1
+                    if wr is not None or capture_dir is not None:
+                        successes += 1
+                    print(f"  player={player_name!r}  winrate={wr}  score={sc}  games={gm}"
+                          f"  [took {time.time() - t_profile:.1f}s]")
+                    current_rank += 1
+            except KeyboardInterrupt:
+                interrupted = True
+                print("\n^C — stopping")
+
+            mins = (time.time() - t0) / 60
+            print(f"\n==================== SESSION DONE ====================")
+            print(f"profiles scraped : {total} in {mins:.1f} min")
+            if capture_dir is not None:
+                print(f"frames captured  : {capture_dir}")
+                print(f"next step        : python -m src.extract_frames \"{capture_dir}\"")
+            else:
+                print(f"winrate parsed   : {successes}")
+                print(f"CSV              : {args.output}")
+            if interrupted:
+                raise KeyboardInterrupt
+
+        if not args.champions:
+            try:
+                run_ranks()
+            except KeyboardInterrupt:
+                pass
+            return 0
+
+        # ------------------------------------------------------------------
+        # CHAMPION CAROUSEL: full automation across the CHAMPION tab.
+        # Rows have no number badges, so navigation is name-driven: scan the
+        # visible champion names (unread rows become grid slots), tap the
+        # first unvisited one, let the screen-2 champion label be the
+        # AUTHORITATIVE identity, capture its top-N, back out verified, and
+        # page down when the visible rows are exhausted.
+        # ------------------------------------------------------------------
+        scraped: set[str] = set()
+        if args.skip_existing:
+            for mf in args.capture_dir.glob("*/manifest.jsonl"):
+                lines = [ln for ln in mf.read_text(encoding="utf-8").splitlines() if ln.strip()]
+                if len(lines) < max(1, int(args.n * 0.9)):
+                    continue
+                try:
+                    ch = json.loads(lines[0]).get("champion")
+                except json.JSONDecodeError:
+                    continue
+                if ch:
+                    scraped.add(ch)
+            if scraped:
+                print(f"[carousel] resuming: {len(scraped)} champion(s) already captured")
+
+        print(f"CAROUSEL MODE: {args.champions} champion(s), top {args.n} each"
+              + (", builds" if args.builds else "") + (", stats" if args.stats else ""))
+        print("Open the CHAMPION tab of the leaderboard (the champions list).")
+        input("Press Enter to start: ")
+
+        done = 0
+        stale_pages = 0
+        t_carousel = time.time()
+
+        def back_to_champions() -> None:
+            """Verified return to the champions page (never blind)."""
+            for _ in range(4):
+                if scan_champion_rows(client.screenshot(), SCREEN_1_NAME_X_RANGE):
+                    return
+                client.back()
+                time.sleep(0.7)
+
+        try:
+            while done < args.champions:
+                img = stable_screenshot()
+                slots = scan_champion_rows(img, SCREEN_1_NAME_X_RANGE)
+                H = nav.screen_h or img.shape[0]
+                cand = None
+                for y, cname in slots:
+                    if not (260 <= y <= H * 0.88):
+                        continue          # header overlap / bottom clip
+                    if cname is not None and cname in scraped:
+                        continue
+                    cand = (y, cname)
+                    break
+                if cand is None:
+                    stale_pages += 1
+                    if not slots and stale_pages >= 3:
+                        print("[carousel] champions page not detected -- stopping")
+                        break
+                    if stale_pages >= 5:
+                        print("[carousel] end of the champion list")
+                        break
+                    # page exhausted (or unreadable): scroll one page down
+                    y_from = int(H * 0.78)
+                    y_to = max(int(H * 0.10), y_from - int(4 * 146))
+                    client.swipe(SCREEN_1_ROW_TAP_X, y_from, SCREEN_1_ROW_TAP_X, y_to,
+                                 max(500, min(1300, int((y_from - y_to) * 1.8))))
+                    time.sleep(0.7)
+                    continue
+                stale_pages = 0
+
+                y, cname = cand
+                client.tap(SCREEN_1_ROW_TAP_X, y, hold_ms=args.tap_hold_ms)
+                time.sleep(args.step_wait + 0.5)
+                label = read_champion_name(client.screenshot(), SCREEN_2_CHAMP_LABEL_REGION)
+                if label is None:
+                    print(f"[carousel] no champion label after tapping y={y} -- backing out")
+                    if cname:
+                        scraped.add(cname)   # do not loop on a broken row
+                    back_to_champions()
+                    continue
+                if label in scraped:
+                    print(f"[carousel] {label} already captured -- skipping")
+                    scraped.add(label)
+                    client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
+                    time.sleep(args.step_wait + 0.3)
+                    back_to_champions()
                     continue
 
-                t_profile = time.time()
-                print(f"\n--- rank {current_rank} (tap y={tap_y}) ---")
-                wr: float | None = None
-                sc: int | None = None
-                gm: int | None = None
-                player_name: str | None = None
-                for attempt in range(args.max_retries_per_player):
-                    try:
-                        wr, sc, gm, player_name = scrape_one(current_rank, tap_y)
-                        # Capture mode has no live read result -- one clean pass
-                        # through the tap chain is success by definition.
-                        if wr is not None or capture_dir is not None:
-                            break
-                    except PauseRequested:
-                        print(f"\n[PAUSED] rank {current_rank} aborted mid-chain.")
-                        input("Restore the leaderboard, then press Enter to re-do this rank: ")
-                    except Exception:
-                        print(f"  exception on attempt {attempt + 1}:")
-                        traceback.print_exc()
-                        # Verified recovery: back out only until the
-                        # leaderboard (3+ badges) is visible again, never blind.
-                        for _ in range(4):
-                            client.back()
-                            time.sleep(0.4)
-                            try:
-                                r_chk, _pc = scan(client.screenshot())
-                                if len(r_chk) >= 3:
-                                    break
-                            except Exception:  # noqa: BLE001
-                                continue
-                    # Whatever happened, re-detect before the next attempt —
-                    # the list may have snapped back mid-recovery.
-                    ny = nav.ensure_visible(current_rank)
-                    if ny is None:
-                        break
-                    tap_y = ny
+                slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+                capture_dir = args.capture_dir / f"{slug}_{time.strftime('%Y%m%d_%H%M')}"
+                capture_dir.mkdir(parents=True, exist_ok=True)
+                args.target = label
+                nav.last_center = None   # fresh position memory per champion
+                print()
+                print(f"#################### {label} ({done + 1}/{args.champions}) ####################")
+                run_ranks()
+                scraped.add(label)
+                done += 1
 
-                # Collect the async Gemini page read (if any): its names beat
-                # Tesseract's (CJK), and its screen-2 score fills a missing one.
-                if name_reader is not None:
-                    g_name = name_reader.get(current_rank)
-                    if g_name:
-                        player_name = g_name
-                    if sc is None:
-                        sc = name_reader.cached_score(current_rank)
-
-                # Capture mode: the manifest is the record; the offline
-                # extractor writes the CSV.
-                if capture_dir is None:
-                    writer.write(LeaderboardRow(
-                        champion=args.target,
-                        rank=current_rank,
-                        player_name=player_name or "",
-                        score=sc,
-                        games=gm,
-                        winrate=wr,
-                    ))
-                total += 1
-                if wr is not None or capture_dir is not None:
-                    successes += 1
-                print(f"  player={player_name!r}  winrate={wr}  score={sc}  games={gm}"
-                      f"  [took {time.time() - t_profile:.1f}s]")
-                current_rank += 1
+                client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
+                time.sleep(args.step_wait + 0.4)
+                back_to_champions()
         except KeyboardInterrupt:
-            print("\n^C — stopping")
+            print()
+            print("^C -- carousel stopped")
 
-        mins = (time.time() - t0) / 60
-        print(f"\n==================== SESSION DONE ====================")
-        print(f"profiles scraped : {total} in {mins:.1f} min")
-        if capture_dir is not None:
-            print(f"frames captured  : {capture_dir}")
-            print(f"next step        : python -m src.extract_frames \"{capture_dir}\"")
-        else:
-            print(f"winrate parsed   : {successes}")
-            print(f"CSV              : {args.output}")
+        mins = (time.time() - t_carousel) / 60
+        print()
+        print("==================== CAROUSEL DONE ====================")
+        print(f"champions captured : {done} in {mins:.1f} min")
+        print(f"sessions under     : {args.capture_dir}")
+        print("extract each session with: python -m src.extract_frames <session dir>")
         return 0
+
 
     print(f"target            : {args.target}")
     print(f"ranks to scrape   : {args.start_rank}..{args.start_rank + args.n - 1}")

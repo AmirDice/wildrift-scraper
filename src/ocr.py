@@ -642,6 +642,72 @@ def scan_visible_ranks(
     return ranks, pitch
 
 
+def scan_champion_rows(
+    image: np.ndarray,
+    name_x_range: tuple[int, int],
+    y_range: tuple[int, int] = (150, 1020),
+) -> list[tuple[int, str | None]]:
+    """Locate champion rows on the CHAMPION tab of the leaderboard.
+
+    Unlike player rows there are no number badges -- rows are identified by
+    the champion NAME text. Returns [(row_center_y, canonical_name_or_None)]
+    top to bottom. Rows whose name failed OCR are still returned as grid
+    slots (name None): rows sit on the same ~146px pitch as player rows, so
+    a gap of ~2 pitches between named rows means one unread row between them.
+    The caller confirms identity from the screen-2 champion label anyway.
+    """
+    from . import champions as champ_module
+
+    x0, x1 = name_x_range
+    y0, y1 = y_range
+    crop = image[y0:y1, x0:x1]
+    if crop.size == 0:
+        return []
+    scale = 3.0
+    words = read_words(crop, GENERAL_TESSERACT_CONFIG)
+    # group words into rows by (downscaled) y proximity
+    groups: list[list[OCRWord]] = []
+    for w in sorted(words, key=lambda w: w.y):
+        if groups and abs(w.y - groups[-1][-1].y) < 60:  # preprocessed coords
+            groups[-1].append(w)
+        else:
+            groups.append([w])
+    named: list[tuple[int, str]] = []
+    for g in groups:
+        toks = [w.text for w in sorted(g, key=lambda w: w.x)]
+        hit = None
+        for span in range(min(champ_module.MAX_WORD_COUNT, len(toks)), 0, -1):
+            for start in range(len(toks) - span + 1):
+                hit = champ_module.match(toks[start:start + span])
+                if hit:
+                    break
+            if hit:
+                break
+        if hit:
+            cy = y0 + int(round(sum(w.y for w in g) / len(g) / scale))
+            named.append((cy, hit))
+    if not named:
+        return []
+    named.sort()
+    # pitch from consecutive named rows (fallback to the device constant)
+    diffs = [b[0] - a[0] for a, b in zip(named, named[1:]) if 100 <= b[0] - a[0] <= 200]
+    pitch = (sum(diffs) / len(diffs)) if diffs else 146.0
+    # grid-fill unread slots between and around the named rows
+    slots: list[tuple[int, str | None]] = list(named)
+    for (ya, _na), (yb, _nb) in zip(named, named[1:]):
+        gap = round((yb - ya) / pitch)
+        for k in range(1, gap):
+            slots.append((int(round(ya + k * pitch)), None))
+    # extend one slot above/below when there is room inside the list area
+    top_y, bot_y = named[0][0], named[-1][0]
+    if top_y - pitch > y0 + 40:
+        slots.append((int(round(top_y - pitch)), None))
+    if bot_y + pitch < y1 - 40:
+        slots.append((int(round(bot_y + pitch)), None))
+    slots.sort(key=lambda t: t[0])
+    return slots
+
+
 def locate_badge_column(
     image: np.ndarray,
     window_w: int = 170,
