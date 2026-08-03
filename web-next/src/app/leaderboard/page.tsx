@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { site, getChampions } from "@/lib/data";
 import { Container, SectionHeading } from "@/components/ui";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
+import items from "@/data/items.json";
 
 // This is the page the site genuinely ranks for: "wild rift leaderboard" sits
 // around position 6-8 and "wild rift leaderboard eu" around 3, where the head
@@ -22,6 +23,12 @@ export const metadata: Metadata = {
 
 export default function LeaderboardPage() {
   const champions = getChampions();
+  // slug -> icon path, for the per-player build columns; slim on purpose so
+  // the client bundle carries paths, not the whole item catalog
+  const itemIcons: Record<string, string> = {};
+  for (const it of items as { slug: string; icon?: string }[]) {
+    if (it.icon) itemIcons[it.slug] = it.icon;
+  }
   const slim: SlimChampion[] = champions.map((c) => ({
     name: c.name,
     slug: c.slug,
@@ -46,8 +53,8 @@ export default function LeaderboardPage() {
         )}
       </p>
       <section id="players" className="mt-8 scroll-mt-24">
-        <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table" />
-        <LeaderboardView champions={slim} />
+        <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table, with builds, ranked tiers and per-queue stats where freshly captured" />
+        <LeaderboardView champions={slim} itemIcons={itemIcons} />
       </section>
     </Container>
   );

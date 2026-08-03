@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { TierChip } from "@/components/ui";
 import { ChampionCombobox } from "@/components/champion-combobox";
@@ -21,20 +21,259 @@ export type SlimChampion = {
 };
 
 type Row = { r: number; p: string; w: number | null; g: number | null; s: number | null };
+
+type QueueStats = {
+  games: number | null;
+  wr: number | null;
+  kda: number | null;
+  tf: number | null;
+  gpm: number | null;
+  dmg: number | null;
+  taken: number | null;
+  turret: number | null;
+  mvp: number | null;
+  sRating: number | null;
+  aRating: number | null;
+  legendary: number | null;
+  penta: number | null;
+  quadra: number | null;
+  triple: number | null;
+  firstBlood: number | null;
+};
+
+type EnrichedPlayer = Row & {
+  tag: string | null;
+  tier: string | null;
+  level: number | null;
+  build: {
+    items: { slug: string | null; name: string }[];
+    runes: string[];
+    spells: string[];
+  } | null;
+  stats: { ranked?: QueueStats; legendary?: QueueStats } | null;
+};
+
+type EnrichedPayload = { champion: string; slug: string; capturedAt: string; players: EnrichedPlayer[] };
+
 type SortKey = "r" | "w" | "g" | "s";
 
 const num = (v: number | null | undefined) => (v == null ? -Infinity : v);
 
-export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
+/* "Grandmaster III" -> short chip text + a colour family the eye can scan. */
+function tierBadge(tier: string): { label: string; cls: string } {
+  const t = tier.toLowerCase();
+  const roman = tier.match(/\b(I{1,3}|IV|V)\b/)?.[1] ?? "";
+  const short = (abbr: string) => (roman ? `${abbr} ${roman}` : abbr);
+  if (t.startsWith("sovereign")) return { label: short("SOV"), cls: "bg-gold/20 text-gold" };
+  if (t.startsWith("challenger")) return { label: short("CHAL"), cls: "bg-cyan-400/15 text-cyan-300" };
+  if (t.startsWith("grandmaster")) return { label: short("GM"), cls: "bg-red-400/15 text-red-300" };
+  if (t.startsWith("master")) return { label: short("M"), cls: "bg-purple-400/15 text-purple-300" };
+  if (t.startsWith("diamond")) return { label: short("DIA"), cls: "bg-sky-400/15 text-sky-300" };
+  return { label: tier, cls: "bg-white/10 text-muted" };
+}
+
+function ItemIcon({ slug, name, icons, size = 26 }: {
+  slug: string | null; name: string; icons: Record<string, string>; size?: number;
+}) {
+  const src = slug ? icons[slug] : undefined;
+  if (!src) {
+    return (
+      <span
+        title={name}
+        className="grid shrink-0 place-items-center rounded-md border border-line bg-white/5 text-[0.55rem] text-faint"
+        style={{ width: size, height: size }}
+      >
+        ?
+      </span>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={name}
+      title={name}
+      width={size}
+      height={size}
+      loading="lazy"
+      className="shrink-0 rounded-md border border-line/70 bg-black/30 object-cover"
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
+/* What the whole top 50 agrees on: item pick rates, tier spread, averages. */
+function ChampionPulse({ payload, icons }: { payload: EnrichedPayload; icons: Record<string, string> }) {
+  const pulse = useMemo(() => {
+    const players = payload.players;
+    const withBuild = players.filter((p) => p.build?.items?.length);
+    const freq = new Map<string, { name: string; slug: string; n: number }>();
+    for (const p of withBuild) {
+      for (const it of p.build!.items) {
+        if (!it.slug) continue;
+        const cur = freq.get(it.slug) ?? { name: it.name, slug: it.slug, n: 0 };
+        cur.n += 1;
+        freq.set(it.slug, cur);
+      }
+    }
+    const topItems = [...freq.values()].sort((a, b) => b.n - a.n).slice(0, 6);
+
+    const tiers = new Map<string, number>();
+    for (const p of players) {
+      if (!p.tier) continue;
+      const family = p.tier.split(" ")[0];
+      tiers.set(family, (tiers.get(family) ?? 0) + 1);
+    }
+    const tierSpread = [...tiers.entries()].sort((a, b) => b[1] - a[1]);
+
+    const kdas = players.map((p) => p.stats?.ranked?.kda).filter((v): v is number => v != null);
+    const avgKda = kdas.length ? kdas.reduce((a, b) => a + b, 0) / kdas.length : null;
+
+    const keystones = new Map<string, number>();
+    for (const p of withBuild) {
+      const ks = p.build!.runes?.[0];
+      if (ks) keystones.set(ks, (keystones.get(ks) ?? 0) + 1);
+    }
+    const topKeystone = [...keystones.entries()].sort((a, b) => b[1] - a[1])[0];
+
+    return { topItems, tierSpread, avgKda, topKeystone, nBuilds: withBuild.length };
+  }, [payload]);
+
+  if (!pulse.nBuilds) return null;
+  return (
+    <div className="glass mb-4 flex flex-wrap items-center gap-x-8 gap-y-3 rounded-2xl px-5 py-4">
+      <div>
+        <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">
+          Core items across the top 50
+        </p>
+        <div className="mt-1.5 flex items-center gap-1.5">
+          {pulse.topItems.map((it) => (
+            <span key={it.slug} className="flex flex-col items-center gap-0.5">
+              <ItemIcon slug={it.slug} name={it.name} icons={icons} size={30} />
+              <span className="text-[0.6rem] tabular-nums text-faint">
+                {Math.round((it.n / pulse.nBuilds) * 100)}%
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
+      {pulse.tierSpread.length > 0 && (
+        <div>
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Ranked tiers</p>
+          <div className="mt-1.5 flex items-center gap-1.5">
+            {pulse.tierSpread.map(([family, n]) => {
+              const b = tierBadge(family);
+              return (
+                <span key={family} className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold ${b.cls}`}>
+                  {b.label} ×{n}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {pulse.avgKda != null && (
+        <div>
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Avg ranked KDA</p>
+          <p className="mt-1.5 text-lg font-semibold text-accent">{pulse.avgKda.toFixed(1)}</p>
+        </div>
+      )}
+      {pulse.topKeystone && (
+        <div>
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Top keystone</p>
+          <p className="mt-1.5 text-sm font-medium">
+            {pulse.topKeystone[0]}
+            <span className="ml-1.5 text-xs text-faint">
+              {Math.round((pulse.topKeystone[1] / pulse.nBuilds) * 100)}%
+            </span>
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StatCell({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[0.6rem] uppercase tracking-wide text-faint">{label}</p>
+      <p className="text-sm font-medium tabular-nums">{value}</p>
+    </div>
+  );
+}
+
+function QueuePanel({ title, s }: { title: string; s: QueueStats }) {
+  const fmt = (v: number | null, suffix = "") => (v == null ? "-" : `${v.toLocaleString()}${suffix}`);
+  return (
+    <div className="rounded-xl border border-line/70 bg-black/20 p-3">
+      <p className="mb-2 text-xs font-semibold text-muted">{title}</p>
+      <div className="grid grid-cols-3 gap-x-4 gap-y-2 sm:grid-cols-5">
+        <StatCell label="Games" value={fmt(s.games)} />
+        <StatCell label="Win rate" value={s.wr == null ? "-" : `${s.wr.toFixed(1)}%`} />
+        <StatCell label="KDA" value={fmt(s.kda)} />
+        <StatCell label="Teamfight" value={s.tf == null ? "-" : `${s.tf.toFixed(1)}%`} />
+        <StatCell label="Gold/min" value={fmt(s.gpm)} />
+        <StatCell label="Dmg dealt" value={fmt(s.dmg)} />
+        <StatCell label="Dmg taken" value={fmt(s.taken)} />
+        <StatCell label="MVPs" value={fmt(s.mvp)} />
+        <StatCell label="S ratings" value={fmt(s.sRating)} />
+        <StatCell label="Multikills" value={fmt((s.penta ?? 0) + (s.quadra ?? 0) + (s.triple ?? 0))} />
+      </div>
+    </div>
+  );
+}
+
+function ExpandedRow({ p, icons }: { p: EnrichedPlayer; icons: Record<string, string> }) {
+  return (
+    <td colSpan={7} className="px-4 pb-4 pt-1">
+      <div className="flex flex-col gap-3">
+        {p.build && (
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <div className="flex items-center gap-1.5">
+              {p.build.items.map((it, i) => (
+                <ItemIcon key={`${it.slug}-${i}`} slug={it.slug} name={it.name} icons={icons} size={32} />
+              ))}
+            </div>
+            {p.build.runes.length > 0 && (
+              <p className="text-xs text-muted">
+                <span className="font-semibold text-text">{p.build.runes[0]}</span>
+                {p.build.runes.length > 1 && <> · {p.build.runes.slice(1).join(" · ")}</>}
+              </p>
+            )}
+            {p.build.spells.length > 0 && (
+              <p className="text-xs text-faint">{p.build.spells.join(" + ")}</p>
+            )}
+          </div>
+        )}
+        <div className="grid gap-3 lg:grid-cols-2">
+          {p.stats?.ranked && <QueuePanel title="Ranked" s={p.stats.ranked} />}
+          {p.stats?.legendary && <QueuePanel title="Legendary Ranked" s={p.stats.legendary} />}
+        </div>
+        {!p.build && !p.stats && (
+          <p className="text-sm text-faint">No detail captured for this player.</p>
+        )}
+      </div>
+    </td>
+  );
+}
+
+export function LeaderboardView({ champions, itemIcons }: {
+  champions: SlimChampion[];
+  itemIcons: Record<string, string>;
+}) {
   const byName = useMemo(
     () => [...champions].sort((a, b) => a.name.localeCompare(b.name)),
     [champions]
   );
   const [slug, setSlug] = useState(champions[0]?.slug ?? "");
   const [data, setData] = useState<Record<string, Row[]> | null>(null);
+  const [enriched, setEnriched] = useState<EnrichedPayload | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("r");
   const [dir, setDir] = useState<"asc" | "desc">("asc");
   const [region, setRegion] = useState<Region>("EU");
+  // one champion's enriched file is ~50 KB; keep what was already fetched
+  const enrichedCache = useRef<Map<string, EnrichedPayload | null>>(new Map());
 
   useEffect(() => {
     const param = new URLSearchParams(window.location.search).get("champion");
@@ -51,14 +290,41 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
       .catch(() => setData({}));
   }, [champions]);
 
+  // The per-champion enriched file exists only once that champion has been
+  // recaptured with the extended pipeline; 404 simply means the thin table.
+  useEffect(() => {
+    setExpanded(null);
+    const cached = enrichedCache.current.get(slug);
+    if (cached !== undefined) {
+      setEnriched(cached);
+      return;
+    }
+    let cancelled = false;
+    setEnriched(null);
+    fetch(`/players/${slug}.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((payload: EnrichedPayload | null) => {
+        enrichedCache.current.set(slug, payload);
+        if (!cancelled) setEnriched(payload);
+      })
+      .catch(() => {
+        enrichedCache.current.set(slug, null);
+        if (!cancelled) setEnriched(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
   const champ = champions.find((c) => c.slug === slug);
-  const rows = useMemo(() => {
-    const base = data?.[slug] ?? [];
+  const rows: (Row | EnrichedPlayer)[] = useMemo(() => {
+    const base: (Row | EnrichedPlayer)[] = enriched?.players ?? data?.[slug] ?? [];
     return [...base].sort((a, b) => {
       const cmp = num(a[sortKey]) - num(b[sortKey]);
       return dir === "asc" ? cmp : -cmp;
     });
-  }, [data, slug, sortKey, dir]);
+  }, [data, enriched, slug, sortKey, dir]);
+  const hasDetail = enriched != null && enriched.players.length > 0;
 
   const toggleSort = (key: SortKey) => {
     if (key === sortKey) setDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -148,8 +414,11 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
           been entered in the admin console. Silent when it has not. */}
       <BestPlayerBuild slug={slug} championName={champ?.name} />
 
+      {/* What the whole top 50 agrees on, from the freshly captured data */}
+      {hasDetail && <ChampionPulse payload={enriched} icons={itemIcons} />}
+
       {/* Player table */}
-      {data === null ? (
+      {data === null && !hasDetail ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">Loading players…</div>
       ) : rows.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
@@ -164,6 +433,7 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
                   Rank
                 </Th>
                 <Th>Player</Th>
+                {hasDetail && <Th>Build</Th>}
                 <Th onClick={() => toggleSort("w")} active={sortKey === "w"} dir={dir} right>
                   Win rate
                 </Th>
@@ -173,39 +443,96 @@ export function LeaderboardView({ champions }: { champions: SlimChampion[] }) {
                 <Th onClick={() => toggleSort("s")} active={sortKey === "s"} dir={dir} right>
                   Mastery
                 </Th>
+                {hasDetail && <Th className="w-10"> </Th>}
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, i) => (
-                <tr
-                  key={`${row.r}-${i}`}
-                  className="border-b border-line/60 transition last:border-0 hover:bg-white/[0.03]"
-                >
-                  <td className="px-3 py-2.5 text-center">
-                    <span className={row.r <= 3 ? "font-bold text-accent" : "text-faint"}>
-                      {row.r}
-                    </span>
-                  </td>
-                  <td className="max-w-[220px] truncate px-3 py-2.5 font-medium">{row.p}</td>
-                  <td className="px-3 py-2.5 text-right font-semibold text-accent">
-                    {row.w != null ? `${row.w.toFixed(1)}%` : "-"}
-                  </td>
-                  <td className="px-3 py-2.5 text-right text-muted">
-                    {row.g != null ? row.g.toLocaleString() : "-"}
-                  </td>
-                  <td className="px-3 py-2.5 text-right text-muted">
-                    {row.s != null ? row.s.toLocaleString() : "-"}
-                  </td>
-                </tr>
-              ))}
+              {rows.map((row, i) => {
+                const e = hasDetail ? (row as EnrichedPlayer) : null;
+                const open = e != null && expanded === row.r;
+                const clickable = e != null && (e.build != null || e.stats != null);
+                return (
+                  <FragmentRow key={`${row.r}-${i}`}>
+                    <tr
+                      onClick={clickable ? () => setExpanded(open ? null : row.r) : undefined}
+                      className={`border-b border-line/60 transition last:border-0 hover:bg-white/[0.03] ${clickable ? "cursor-pointer" : ""} ${open ? "bg-white/[0.03]" : ""}`}
+                    >
+                      <td className="px-3 py-2.5 text-center">
+                        <span className={row.r <= 3 ? "font-bold text-accent" : "text-faint"}>
+                          {row.r}
+                        </span>
+                      </td>
+                      <td className="max-w-[240px] px-3 py-2.5">
+                        <span className="block truncate font-medium">{row.p}</span>
+                        {e && (e.tier || e.tag) && (
+                          <span className="mt-0.5 flex items-center gap-1.5">
+                            {e.tier && (() => {
+                              const b = tierBadge(e.tier);
+                              return (
+                                <span className={`rounded px-1 py-px text-[0.6rem] font-bold ${b.cls}`}>
+                                  {b.label}
+                                </span>
+                              );
+                            })()}
+                            {e.tag && <span className="truncate text-[0.65rem] text-faint">#{e.tag}</span>}
+                          </span>
+                        )}
+                      </td>
+                      {hasDetail && (
+                        <td className="px-3 py-2.5">
+                          {e?.build ? (
+                            <span className="flex items-center gap-1">
+                              {e.build.items.slice(0, 6).map((it, j) => (
+                                <ItemIcon key={`${it.slug}-${j}`} slug={it.slug} name={it.name} icons={itemIcons} size={24} />
+                              ))}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-faint">-</span>
+                          )}
+                        </td>
+                      )}
+                      <td className="px-3 py-2.5 text-right font-semibold text-accent">
+                        {row.w != null ? `${row.w.toFixed(1)}%` : "-"}
+                      </td>
+                      <td className="px-3 py-2.5 text-right text-muted">
+                        {row.g != null ? row.g.toLocaleString() : "-"}
+                      </td>
+                      <td className="px-3 py-2.5 text-right text-muted">
+                        {row.s != null ? row.s.toLocaleString() : "-"}
+                      </td>
+                      {hasDetail && (
+                        <td className="px-2 py-2.5 text-center text-faint">
+                          {clickable ? (open ? "▾" : "▸") : ""}
+                        </td>
+                      )}
+                    </tr>
+                    {open && e && (
+                      <tr className="border-b border-line/60 last:border-0">
+                        <ExpandedRow p={e} icons={itemIcons} />
+                      </tr>
+                    )}
+                  </FragmentRow>
+                );
+              })}
             </tbody>
           </table>
         </div>
+      )}
+      {hasDetail && (
+        <p className="mt-2 text-xs text-faint">
+          Click a player row for their full build, runes and per-queue stats. Captured {enriched.capturedAt}.
+        </p>
       )}
       </>
       )}
     </div>
   );
+}
+
+/* React fragments cannot carry keys through .map inside <tbody> without a
+   wrapper; this keeps the expanded row adjacent to its player row. */
+function FragmentRow({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }
 
 function Th({

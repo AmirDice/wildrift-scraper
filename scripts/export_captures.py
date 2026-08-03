@@ -190,6 +190,9 @@ def main() -> int:
                     help="Extraction rows a session needs to count as complete")
     ap.add_argument("--fresh", action="store_true",
                     help="Drop ALL existing winrates.csv rows instead of merging")
+    ap.add_argument("--players-only", action="store_true",
+                    help="Write only the enriched players/<slug>.json files; leave "
+                         "winrates.csv untouched (pre-release preview)")
     args = ap.parse_args()
 
     sessions = find_sessions(args.min_ranks)
@@ -211,6 +214,10 @@ def main() -> int:
         n_stats = sum(1 for p in payload["players"] if p.get("stats"))
         print(f"  {champ}: {len(csv_rows)} rows, {n_builds} builds, {n_stats} stat sets "
               f"({session.name}) -> {out.relative_to(ROOT)}")
+
+    if args.players_only:
+        print("\n--players-only: winrates.csv left untouched")
+        return 0
 
     with WINRATES.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
