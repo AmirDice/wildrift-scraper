@@ -1053,6 +1053,46 @@ def main() -> int:
 
         recovery["fn"] = reenter_champion
 
+        def find_partial_session(champ: str) -> tuple[Path | None, int]:
+            """The newest incomplete capture session for `champ`, and the rank
+            to resume from. (None, 1) when there is nothing worth resuming.
+
+            A champion that died at rank 45 used to redo all 44 captured
+            profiles in a fresh directory; resuming appends to the same
+            manifest, so extraction and the completeness bar see one whole
+            session. Sessions with fewer than 3 ranks are not worth the
+            deep-rank journey bookkeeping -- redo those from scratch."""
+            best: tuple[str, Path, int] | None = None
+            for mf in args.capture_dir.glob("*/manifest.jsonl"):
+                lines = [ln for ln in mf.read_text(encoding="utf-8").splitlines() if ln.strip()]
+                if not lines:
+                    continue
+                try:
+                    if json.loads(lines[0]).get("champion") != champ:
+                        continue
+                    ranks_seen = {int(json.loads(ln)["rank"]) for ln in lines}
+                except (json.JSONDecodeError, KeyError, ValueError):
+                    continue
+                if len(ranks_seen) >= max(1, int(args.n * 0.9)):
+                    continue    # complete: --skip-existing territory, not ours
+                if len(ranks_seen) < 3 or max(ranks_seen) >= args.n:
+                    continue
+                # Never stitch two leaderboard weeks into one session: a
+                # partial older than ~20h may predate a ranking reset, and
+                # its ranks 1..k would describe a different ladder than the
+                # fresh ranks k+1..n appended to it.
+                try:
+                    stamp = time.strptime(mf.parent.name.split("_", 1)[1], "%Y%m%d_%H%M")
+                    if time.time() - time.mktime(stamp) > 20 * 3600:
+                        continue
+                except (IndexError, ValueError):
+                    continue
+                if best is None or mf.parent.name > best[0]:
+                    best = (mf.parent.name, mf.parent, max(ranks_seen))
+            if best is None:
+                return None, 1
+            return best[1], best[2] + 1
+
         prev_names: set[str] = set()
         skip_ys: list[int] = []   # rows on THIS page that resolved to captured champions
         try:
@@ -1129,13 +1169,27 @@ def main() -> int:
                     continue
 
                 slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
-                capture_dir = args.capture_dir / f"{slug}_{time.strftime('%Y%m%d_%H%M')}"
-                capture_dir.mkdir(parents=True, exist_ok=True)
+                resume_dir, resume_from = find_partial_session(label)
+                if resume_dir is not None:
+                    capture_dir = resume_dir
+                else:
+                    capture_dir = args.capture_dir / f"{slug}_{time.strftime('%Y%m%d_%H%M')}"
+                    capture_dir.mkdir(parents=True, exist_ok=True)
                 args.target = label
                 nav.last_center = None   # fresh position memory per champion
                 print()
                 print(f"#################### {label} ({done + 1}/{args.champions}) ####################")
-                n_captured = run_ranks()
+                if resume_dir is not None:
+                    print(f"[carousel] resuming {label} at rank {resume_from} "
+                          f"({resume_dir.name}: ranks 1-{resume_from - 1} already captured)")
+                prev_start, prev_n = args.start_rank, args.n
+                if resume_dir is not None:
+                    args.start_rank = resume_from
+                    args.n = prev_n - (resume_from - prev_start)
+                try:
+                    n_captured = run_ranks()
+                finally:
+                    args.start_rank, args.n = prev_start, prev_n
                 scraped.add(label)
                 done += 1
                 if args.unattended:
