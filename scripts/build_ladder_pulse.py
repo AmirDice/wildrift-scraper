@@ -132,6 +132,11 @@ def build() -> tuple[dict, dict]:
             pools["grinder"].append((g, name, champ, f"{w:.1f}% win rate"))
             if g >= MIN_GAMES_FEATURED:
                 pools["perfectionist"].append((w, name, champ, f"{g} games"))
+            try:
+                score = int(float(r["score"]))
+                pools["masteryRecord"].append((score, name, champ, f"rank {rank} by mastery"))
+            except (TypeError, ValueError):
+                pass
 
         for rank, who in ids.items():
             fam = tier_family(who.get("tier") or "")
@@ -166,6 +171,8 @@ def build() -> tuple[dict, dict]:
                 if r0.get("penta"):
                     pentas += r0["penta"]
                     pools["pentaKing"].append((r0["penta"], name, champ, f"{g0} games"))
+                if r0.get("quadra"):
+                    pools["quadraKing"].append((r0["quadra"], name, champ, f"{g0} games"))
                 if g0 >= MIN_GAMES_FEATURED:
                     if r0.get("kda") is not None:
                         pools["kdaKing"].append((r0["kda"], name, champ, f"{g0} games"))
@@ -176,8 +183,22 @@ def build() -> tuple[dict, dict]:
                         pools["wall"].append((r0["taken"], name, champ, "damage taken per match"))
                     if r0.get("turret") is not None:
                         pools["demolition"].append((r0["turret"], name, champ, "turret damage per match"))
+                    if r0.get("dmg") is not None:
+                        pools["executioner"].append((r0["dmg"], name, champ, "damage per match"))
+                    if r0.get("gpm") is not None:
+                        pools["economist"].append((r0["gpm"], name, champ, "gold per minute"))
+                    if r0.get("tf") is not None:
+                        pools["teamfighter"].append((r0["tf"], name, champ, f"{g0} games"))
+                    if r0.get("firstBlood") is not None:
+                        pools["firstStriker"].append((round(r0["firstBlood"] / g0 * 100, 1), name,
+                                                      champ, f"{r0['firstBlood']} first bloods in {g0} games"))
+                    if r0.get("sRating") is not None:
+                        pools["sCollector"].append((r0["sRating"], name, champ, f"{g0} games"))
             if l0 and (l0.get("games") or 0) >= 10 and l0.get("wr") is not None:
                 l_wr.append(l0["wr"])
+            if l0 and (l0.get("games") or 0) >= 15 and l0.get("wr") is not None:
+                pools["legendKiller"].append((l0["wr"], name, champ,
+                                              f"{l0['games']} Legendary Ranked games"))
 
         top_ks = ks.most_common(1)
         top_sp = spells.most_common(1)
@@ -215,9 +236,13 @@ def build() -> tuple[dict, dict]:
                         "slug": _slug(champ), "detail": detail})
         return out if n > 1 else (out[0] if out else None)
 
+    # Two DISTINCT champions required: the same display name at two ranks of
+    # one board is a duplicate (snap-back re-scrape or a name collision),
+    # not a multi-board master.
     multi = sorted(
         ({"player": name, "boards": sorted(v, key=lambda b: b["rank"])}
-         for name, v in cross.items() if name and len(v) >= 2),
+         for name, v in cross.items()
+         if name and len({b["slug"] for b in v}) >= 2),
         key=lambda m: (-len(m["boards"]), min(b["rank"] for b in m["boards"])))
 
     champs_list = list(champions.values())
@@ -242,9 +267,17 @@ def build() -> tuple[dict, dict]:
             "perfectionist": top("perfectionist"),
             "kdaKing": top("kdaKing"),
             "pentaKing": top("pentaKing"),
+            "quadraKing": top("quadraKing"),
             "mvpMachine": top("mvpMachine"),
             "wall": top("wall"),
             "demolition": top("demolition"),
+            "executioner": top("executioner"),
+            "economist": top("economist"),
+            "teamfighter": top("teamfighter"),
+            "firstStriker": top("firstStriker"),
+            "sCollector": top("sCollector"),
+            "legendKiller": top("legendKiller"),
+            "masteryRecord": top("masteryRecord"),
             "veteran": top("veteran"),
             "freshest": top("veteran", reverse=False),
             "guilds": [{"guild": g, "spots": c} for g, c in guilds.most_common(10)],

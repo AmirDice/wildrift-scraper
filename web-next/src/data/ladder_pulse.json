@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-03 23:07",
+ "generatedAt": "2026-08-03 23:55",
  "nChampions": 14,
  "nPlayers": 687,
  "nBuilds": 697,
@@ -783,6 +783,13 @@
    "slug": "tryndamere",
    "detail": "251 games"
   },
+  "quadraKing": {
+   "value": 71,
+   "player": "SKT T1 Mika",
+   "champion": "Tryndamere",
+   "slug": "tryndamere",
+   "detail": "251 games"
+  },
   "mvpMachine": {
    "value": 68.4,
    "player": "The Last Oné",
@@ -803,6 +810,55 @@
    "champion": "Tryndamere",
    "slug": "tryndamere",
    "detail": "turret damage per match"
+  },
+  "executioner": {
+   "value": 46971,
+   "player": "The Last Oné",
+   "champion": "Vayne",
+   "slug": "vayne",
+   "detail": "damage per match"
+  },
+  "economist": {
+   "value": 1056,
+   "player": "metdxgus",
+   "champion": "Kha'Zix",
+   "slug": "khazix",
+   "detail": "gold per minute"
+  },
+  "teamfighter": {
+   "value": 90.3,
+   "player": "Chỉ Ôm Trụ Thôi",
+   "champion": "Jinx",
+   "slug": "jinx",
+   "detail": "228 games"
+  },
+  "firstStriker": {
+   "value": 47.7,
+   "player": "THE PROFES",
+   "champion": "Rengar",
+   "slug": "rengar",
+   "detail": "41 first bloods in 86 games"
+  },
+  "sCollector": {
+   "value": 104,
+   "player": "Chỉ Ôm Trụ Thôi",
+   "champion": "Jinx",
+   "slug": "jinx",
+   "detail": "228 games"
+  },
+  "legendKiller": {
+   "value": 85.7,
+   "player": "SolaxxxZola",
+   "champion": "Rengar",
+   "slug": "rengar",
+   "detail": "21 Legendary Ranked games"
+  },
+  "masteryRecord": {
+   "value": 20778,
+   "player": "SKT T1 Mika",
+   "champion": "Tryndamere",
+   "slug": "tryndamere",
+   "detail": "rank 1 by mastery"
   },
   "veteran": {
    "value": 578,
@@ -957,25 +1013,6 @@
     ]
    },
    {
-    "player": "LampiS",
-    "boards": [
-     {
-      "champion": "Lux",
-      "slug": "lux",
-      "rank": 11,
-      "wr": 53.7,
-      "games": 123
-     },
-     {
-      "champion": "Lux",
-      "slug": "lux",
-      "rank": 13,
-      "wr": 53.7,
-      "games": 123
-     }
-    ]
-   },
-   {
     "player": "UrGOAT ON Mid",
     "boards": [
      {
@@ -1052,25 +1089,6 @@
     ]
    },
    {
-    "player": "Twitch sSing1e",
-    "boards": [
-     {
-      "champion": "Zoe",
-      "slug": "zoe",
-      "rank": 36,
-      "wr": 56.5,
-      "games": 138
-     },
-     {
-      "champion": "Zoe",
-      "slug": "zoe",
-      "rank": 40,
-      "wr": 56.5,
-      "games": 138
-     }
-    ]
-   },
-   {
     "player": "Jonas",
     "boards": [
      {
@@ -1086,6 +1104,25 @@
       "rank": 42,
       "wr": 57.5,
       "games": 80
+     }
+    ]
+   },
+   {
+    "player": "Credimillonario",
+    "boards": [
+     {
+      "champion": "Wukong",
+      "slug": "wukong",
+      "rank": 44,
+      "wr": 52.8,
+      "games": 53
+     },
+     {
+      "champion": "Vayne",
+      "slug": "vayne",
+      "rank": 49,
+      "wr": 63.0,
+      "games": 27
      }
     ]
    }
