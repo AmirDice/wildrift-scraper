@@ -1,5 +1,4 @@
 Aatrox (50 scraped builds, session aatrox_20260803_1350):
-  CONTRADICTION: card says never crit, but 14% of builds contain a crit item (e.g. mortal-reminder) -- review the card
   weak signature: Black Cleaver appears in only 4% of builds
   weak signature: Sundered Sky appears in only 2% of builds
   observed core: seryldas-grudge 42/50, plated-steelcaps 34/50, eclipse 33/50, divine-sunderer 23/50, trinity-force 21/50, spear-of-shojin 20/50, deaths-dance 17/50, steraks-gage 10/50
@@ -13,10 +12,9 @@ Garen (50 scraped builds, session garen_20260803_0549):
   weak signature: Trinity Force appears in only 4% of builds
   weak signature: Sterak's Gage appears in only 12% of builds
   weak signature: Hullbreaker appears in only 10% of builds
-  observed core: plated-steelcaps 46/50, thornmail 37/50, black-cleaver 32/50, force-of-nature 31/50, dead-mans-plate 19/50, spear-of-shojin 19/50, heartsteel 18/50, amaranths-twinguard 10/50
+  observed core: plated-steelcaps 46/50, thornmail 37/50, black-cleaver 32/50, force-of-nature 31/50, spear-of-shojin 19/50, dead-mans-plate 19/50, heartsteel 18/50, amaranths-twinguard 10/50
 
 Kayn (50 scraped builds, session kayn_20260803_1022):
-  CONTRADICTION: card says never crit, but 14% of builds contain a crit item (e.g. the-collector) -- review the card
   weak signature: Black Cleaver appears in only 8% of builds
   weak signature: Black Cleaver appears in only 8% of builds
   note: signature item 'Spirit Visage' not in the item catalog (enchanted boots or stale name)
@@ -27,18 +25,18 @@ Kayn (50 scraped builds, session kayn_20260803_1022):
 Lux (50 scraped builds, session lux_20260803_0608):
   weak signature: Horizon Focus appears in only 2% of builds
   note: signature item 'Crown of the Shattered Queen' not in the item catalog (enchanted boots or stale name)
-  observed core: rabadons-deathcap 48/50, ludens-echo 46/50, infinity-orb 34/50, imperial-mandate 18/50, void-staff 18/50, harmonic-echo 16/50, banshees-veil 11/50, cosmic-drive 11/50
+  observed core: rabadons-deathcap 48/50, ludens-echo 46/50, infinity-orb 34/50, void-staff 18/50, imperial-mandate 18/50, harmonic-echo 16/50, banshees-veil 11/50, cosmic-drive 11/50
 
 Nunu & Willump (48 scraped builds, session nunu-willump_20260803_1755):
   weak signature: Amaranth's Twinguard appears in only 15% of builds
   note: signature item 'Spirit Visage' not in the item catalog (enchanted boots or stale name)
   weak signature: Searing Crown appears in only 0% of builds
-  observed core: thornmail 38/48, sunfire-aegis 28/48, plated-steelcaps 26/48, zekes-convergence 25/48, warmogs-armor 17/48, randuins-omen 17/48, force-of-nature 17/48, dead-mans-plate 15/48
+  observed core: thornmail 38/48, sunfire-aegis 28/48, plated-steelcaps 26/48, zekes-convergence 25/48, warmogs-armor 17/48, force-of-nature 17/48, randuins-omen 17/48, dead-mans-plate 15/48
 
 Orianna (50 scraped builds, session orianna_20260803_1702):
   weak signature: Seraph's Embrace appears in only 4% of builds
   note: signature item 'Crown of the Shattered Queen' not in the item catalog (enchanted boots or stale name)
-  observed core: rabadons-deathcap 50/50, ludens-echo 47/50, banshees-veil 34/50, infinity-orb 30/50, archangels-staff 16/50, void-staff 16/50, rod-of-ages 13/50, cosmic-drive 9/50
+  observed core: rabadons-deathcap 50/50, ludens-echo 47/50, banshees-veil 34/50, infinity-orb 30/50, void-staff 16/50, archangels-staff 16/50, rod-of-ages 13/50, cosmic-drive 9/50
 
 Rengar (50 scraped builds, session rengar_20260803_1410):
   weak signature: Youmuu's Ghostblade appears in only 6% of builds
@@ -56,7 +54,7 @@ Vayne (50 scraped builds, session vayne_20260803_1635):
 
 Wukong (49 scraped builds, session wukong_20260803_1545):
   card agrees with the ladder
-  observed core: trinity-force 37/49, seryldas-grudge 30/49, divine-sunderer 25/49, plated-steelcaps 21/49, duskblade-of-draktharr 21/49, gluttonous-greaves 21/49, thornmail 15/49, mantle-of-the-twelfth-hour 10/49
+  observed core: trinity-force 37/49, seryldas-grudge 30/49, divine-sunderer 25/49, plated-steelcaps 21/49, gluttonous-greaves 21/49, duskblade-of-draktharr 21/49, thornmail 15/49, mantle-of-the-twelfth-hour 10/49
 
 Zoe (49 scraped builds, session zoe_20260803_1906):
   note: signature item 'Crown of the Shattered Queen' not in the item catalog (enchanted boots or stale name)

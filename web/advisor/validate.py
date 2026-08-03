@@ -226,7 +226,11 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
         item = ITEMS.get(slug) or {}
         stats = item.get("stats") or {}
         hit = None
-        if "crit" in avoid and "crit" in stats:
+        if "crit" in avoid and "crit" in stats \
+                and "physicalPen" not in stats and "physicalPenFlat" not in stats:
+            # pen items carrying crit (Mortal Reminder, LDR) are bought for
+            # the pen/anti-heal by no-crit champions; 14% of ladder Aatrox
+            # carry Mortal Reminder inside strictly critless builds
             hit = "crit"
         elif "ap" in avoid and "ap" in stats and item.get("category") == "Magic":
             hit = "ap"

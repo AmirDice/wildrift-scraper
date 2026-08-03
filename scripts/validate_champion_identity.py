@@ -59,6 +59,11 @@ def item_tokens(slug: str) -> set[str]:
     # pure lethality item proves the lethality archetype.
     if "lethality" in out and "crit" in stats:
         out.discard("lethality")
+    # Symmetrically, crit riding on a penetration item (Mortal Reminder for
+    # anti-heal, LDR vs tanks) is not crit-path evidence: bruisers buy those
+    # for the pen. Only pure crit items (IE, Shieldbow) prove crit.
+    if "crit" in out and ("physicalPen" in stats or "physicalPenFlat" in stats):
+        out.discard("crit")
     return out
 
 
