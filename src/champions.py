@@ -67,17 +67,28 @@ WORD_COUNT: dict[str, int] = {c: len(c.split()) for c in CHAMPIONS}
 MAX_WORD_COUNT: int = max(WORD_COUNT.values())
 
 
+# Stylized capitals OCR as digits ('ZOE' -> '2OE' skipped Zoe on a live run).
+# Champion names contain no digits, so mapping each digit to its lookalike
+# letter BEFORE stripping can only help.
+_DIGIT_LOOKALIKES = str.maketrans("01258", "olzsb")
+
+
 def match(tokens: list[str]) -> str | None:
     """If `tokens` (a sequence of 1+ OCR words) joined matches a champion name,
     return the canonical name. Otherwise None.
 
-    Second try drops single-character tokens: no champion name contains a
-    one-letter word, but OCR renders '&' as a lone junk character ('S', '@')
-    that poisons the join for "Nunu & Willump"."""
+    Fallbacks, each earned by a live miss: digit lookalikes are re-lettered
+    ('2OE' -> Zoe), and single-character tokens are dropped (OCR renders the
+    '&' of "Nunu & Willump" as lone junk that poisons the join)."""
     joined = _normalize("".join(tokens))
     hit = NORMALIZED_TO_CANONICAL.get(joined)
     if hit:
         return hit
+    relettered = _normalize("".join(tokens).lower().translate(_DIGIT_LOOKALIKES))
+    if relettered != joined:
+        hit = NORMALIZED_TO_CANONICAL.get(relettered)
+        if hit:
+            return hit
     cleaned = _normalize("".join(t for t in tokens if len(t.strip()) > 1))
     if cleaned != joined:
         return NORMALIZED_TO_CANONICAL.get(cleaned)

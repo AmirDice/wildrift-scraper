@@ -810,14 +810,20 @@ def read_champion_name(image: np.ndarray, region: tuple[int, int, int, int]) -> 
     # light behind the label). Morphological TOPHAT isolates bright
     # structures narrower than the kernel -- the text strokes -- from any
     # smooth background, bright or dark; measured as the only pipeline of
-    # seven that read the failing frames. Runs only when the fast path found
+    # seven that read the failing frames. 5x scale and an uppercase
+    # whitelist were both required for short stylized names ('ZOE' read as
+    # 'Py wih' at 3x unrestricted). Runs only when the fast path found
     # nothing, so ordinary frames pay nothing.
-    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if crop.ndim == 3 else crop
-    gray = cv2.resize(gray, None, fx=3.0, fy=3.0, interpolation=cv2.INTER_CUBIC)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (35, 35))
+    # Resize the COLOR crop BEFORE grayscaling: cubic interpolation across
+    # three channels preserves stroke edges that die in gray ('ZOE' at 96
+    # confidence vs a lone 'K' with the orders swapped -- measured).
+    up = cv2.resize(crop, None, fx=5.0, fy=5.0, interpolation=cv2.INTER_CUBIC)
+    gray = cv2.cvtColor(up, cv2.COLOR_BGR2GRAY) if up.ndim == 3 else up
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (57, 57))
     tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, kernel)
     _, pre = cv2.threshold(tophat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    text, _conf = _run_tesseract(pre, GENERAL_TESSERACT_CONFIG)
+    config = "--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ'& "
+    text, _conf = _run_tesseract(pre, config)
     return _match(text)
 
 
