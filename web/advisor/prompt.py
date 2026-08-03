@@ -301,6 +301,80 @@ def champion_block(name: str, champions: dict, archetypes: dict, wrmeta: dict,
 
 
 # --------------------------------------------------------------------------
+# meta itemization identity (curated cards, data/champion_identity.json)
+# --------------------------------------------------------------------------
+
+_IDENTITY_CACHE: dict | None = None
+
+
+def _identity_store() -> dict:
+    """Cards keyed by the same display names as champion_builds.json."""
+    global _IDENTITY_CACHE
+    if _IDENTITY_CACHE is None:
+        p = DATA / "champion_identity.json"
+        _IDENTITY_CACHE = (json.loads(p.read_text(encoding="utf-8")).get("champions", {})
+                           if p.exists() else {})
+    return _IDENTITY_CACHE
+
+
+def identity_card(name: str) -> dict | None:
+    """The raw card for callers that need the data, not the prompt text."""
+    return _identity_store().get(name)
+
+
+def meta_identity_block(name: str) -> str:
+    """How this champion is ACTUALLY itemized at high rank.
+
+    The kit-derived profiles above say what the abilities could use; this card
+    says what the meta has settled on -- including which tempting paths are
+    traps. It exists because the measured failure mode of every model tried is
+    identity drift: a build that is internally coherent but that nobody who
+    plays the champion would recognise. Verdicts marked "never" are hard
+    constraints; the validator enforces them after generation too."""
+    card = _identity_store().get(name)
+    if not card:
+        return ""
+    verdicts = "; ".join(
+        f"{a['path']}={a['status'].upper()}" + (f" ({_norm(a['note'])})" if a.get("note") else "")
+        for a in card.get("archetypes", []))
+    lines = [
+        "META ITEMIZATION IDENTITY (curated, cross-checked against top-ladder builds; "
+        "this CONSTRAINS which archetype the build may express -- the kit profiles above "
+        "decide the details INSIDE the allowed archetypes, never outside them):",
+        f"  is: {_norm(card.get('identitySummary', ''))}",
+        f"  archetype verdicts: {verdicts}",
+        "  statuses: PRIMARY anchors the default build; VIABLE is a legitimate alternative; "
+        "SITUATIONAL only under its stated condition; FLEX_ONE_ITEM allows exactly ONE item "
+        "of that archetype; OFF_META must not be recommended; NEVER is a hard constraint.",
+    ]
+    if card.get("statPriorities"):
+        lines.append("  stat priorities: " + " > ".join(card["statPriorities"]))
+    if card.get("avoidStats"):
+        lines.append("  never build around: " + ", ".join(card["avoidStats"]))
+    if card.get("flexPatterns"):
+        lines.append("  accepted flexes: " + "; ".join(_norm(f) for f in card["flexPatterns"]))
+    return "\n".join(lines)
+
+
+def identity_threat_lines(enemies: list[str]) -> str:
+    """Per-enemy meta threat notes for the counter prompt: what each enemy
+    DOES at high rank and the itemization answers players actually buy."""
+    store = _identity_store()
+    lines = []
+    for enemy in enemies:
+        tp = (store.get(enemy) or {}).get("threatProfile") or {}
+        if not tp.get("threats"):
+            continue
+        lines.append(f"  {enemy}: threats: " + "; ".join(tp["threats"])
+                     + (". itemization answers: " + "; ".join(tp.get("counterplay", []))
+                        if tp.get("counterplay") else ""))
+    if not lines:
+        return ""
+    return ("META THREAT NOTES (curated per-enemy: what each enemy actually does at high "
+            "rank, and the answers high-rank players buy against them):\n" + "\n".join(lines))
+
+
+# --------------------------------------------------------------------------
 # rules, in three tiers
 # --------------------------------------------------------------------------
 

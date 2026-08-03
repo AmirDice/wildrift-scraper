@@ -1,0 +1,354 @@
+{
+  "_meta": {
+    "model": "gemini-3.1-pro-preview",
+    "statTokens": [
+      "ad",
+      "ap",
+      "attack_speed",
+      "crit",
+      "lethality",
+      "armor_pen",
+      "magic_pen",
+      "on_hit",
+      "ability_haste",
+      "hp",
+      "armor",
+      "mr",
+      "mana",
+      "energy",
+      "healing_power",
+      "shield_power",
+      "move_speed",
+      "lifesteal",
+      "omnivamp"
+    ],
+    "statuses": [
+      "primary",
+      "viable",
+      "situational",
+      "flex_one_item",
+      "off_meta",
+      "never"
+    ]
+  },
+  "champions": {
+    "Ahri": {
+      "_generated": "2026-08-03",
+      "_model": "gemini-3.1-pro-preview",
+      "archetypes": [
+        {
+          "note": "Standard Wild Rift build. Focuses on Luden's Echo, Infinity Orb, and Rabadon's to maximize one-shot potential on squishies.",
+          "path": "AP Burst / Assassin",
+          "status": "primary"
+        },
+        {
+          "note": "Leverages Awakened Soulstealer for ultimate resets and magic pen, synergizing perfectly with her innate takedown resets.",
+          "path": "AP Utility / Haste",
+          "status": "viable"
+        },
+        {
+          "note": "Splashing Crown of the Shattered Queen or Banshee's Veil is common to survive heavy dive or burst.",
+          "path": "Defensive AP",
+          "status": "flex_one_item"
+        },
+        {
+          "note": "Liandry's Torment or Riftmaker. Suboptimal because Ahri excels at quick burst and repositioning, not extended DPS.",
+          "path": "AP Bruiser / Sustained",
+          "status": "off_meta"
+        },
+        {
+          "note": "Ahri has zero AD scalings. Building attack damage or crit is entirely a trap.",
+          "path": "AD / Crit / On-hit",
+          "status": "never"
+        },
+        {
+          "note": "Completely wastes her mobility and damage-focused kit.",
+          "path": "Tank",
+          "status": "never"
+        }
+      ],
+      "avoidStats": [
+        "ad",
+        "crit",
+        "lethality",
+        "armor_pen",
+        "attack_speed",
+        "healing_power",
+        "shield_power"
+      ],
+      "confidence": "high",
+      "flexPatterns": [
+        "One defensive AP item like Crown of the Shattered Queen late.",
+        "Awakened Soulstealer early for ultimate resets and snowballing.",
+        "Morellonomicon flexed in against heavy enemy healing."
+      ],
+      "identitySummary": "Highly mobile AP burst mage and assassin. Relies on magic penetration, high AP, and ability haste to secure picks and snowball teamfights.",
+      "signatureItems": [
+        "Luden's Echo",
+        "Infinity Orb",
+        "Rabadon's Deathcap",
+        "Awakened Soulstealer",
+        "Void Staff",
+        "Crown of the Shattered Queen"
+      ],
+      "statPriorities": [
+        "ap",
+        "magic_pen",
+        "ability_haste",
+        "mana",
+        "move_speed"
+      ],
+      "threatProfile": {
+        "counterplay": [
+          "Magic resistance items",
+          "Spell shields to block Charm",
+          "Stasis enchant to dodge burst",
+          "Tenacity to reduce Charm duration"
+        ],
+        "threats": [
+          "High mobility and ultimate resets",
+          "Single-target burst damage",
+          "True damage on returning orb",
+          "Pick potential with Charm"
+        ]
+      }
+    },
+    "Akshan": {
+      "_generated": "2026-08-03",
+      "_model": "gemini-3.1-pro-preview",
+      "archetypes": [
+        {
+          "note": "The standard scaling path. E scales with crit damage and attack speed, making Infinity Edge and Magnetic Blaster core.",
+          "path": "Crit + Attack Speed",
+          "status": "primary"
+        },
+        {
+          "note": "Blade of the Ruined King and Wit's End are massive early spikes because his E rapidly applies on-hit effects.",
+          "path": "On-hit",
+          "status": "viable"
+        },
+        {
+          "note": "Tempting for Q/R burst, but vastly inferior to Crit/On-hit for his primary damage tool (E).",
+          "path": "Lethality",
+          "status": "off_meta"
+        },
+        {
+          "note": "A single defensive AD item like Guardian Angel or Maw of Malmortius is acceptable late game.",
+          "path": "Bruiser",
+          "status": "flex_one_item"
+        },
+        {
+          "note": "Akshan has no AP ratios that justify building magic damage items.",
+          "path": "AP",
+          "status": "never"
+        },
+        {
+          "note": "Akshan requires pure offensive stats to function as an assassin/marksman.",
+          "path": "Tank",
+          "status": "never"
+        }
+      ],
+      "avoidStats": [
+        "ap",
+        "hp",
+        "armor",
+        "mr",
+        "mana",
+        "healing_power",
+        "shield_power"
+      ],
+      "confidence": "high",
+      "flexPatterns": [
+        "Blade of the Ruined King is the standard first item spike before building crit.",
+        "Wit's End is frequently rushed against heavy AP mid laners.",
+        "Exactly one defensive item (Guardian Angel) late game to ensure revives."
+      ],
+      "identitySummary": "A roaming marksman-assassin who relies on on-hit effects and critical strikes to maximize his swing (E) and double-shot burst.",
+      "signatureItems": [
+        "Blade of the Ruined King",
+        "Magnetic Blaster",
+        "Infinity Edge",
+        "Mortal Reminder",
+        "Wit's End"
+      ],
+      "statPriorities": [
+        "ad",
+        "attack_speed",
+        "on_hit",
+        "crit",
+        "armor_pen",
+        "lifesteal"
+      ],
+      "threatProfile": {
+        "counterplay": [
+          "Armor items like Plated Steelcaps",
+          "Hard CC to interrupt his swing",
+          "Burst damage to kill him quickly"
+        ],
+        "threats": [
+          "High mobility physical burst",
+          "Stealth roaming and flanks",
+          "Game-changing ally revives",
+          "Rapid on-hit application via E"
+        ]
+      }
+    },
+    "Alistar": {
+      "_generated": "2026-08-03",
+      "_model": "gemini-3.1-pro-preview",
+      "archetypes": [
+        {
+          "note": "Standard path. Focuses on HP, resistances, and utility to survive engages and peel for carries.",
+          "path": "Tank Support",
+          "status": "primary"
+        },
+        {
+          "note": "AP ratios exist, but building AP sacrifices his core identity as an unkillable frontline. A trap in ranked.",
+          "path": "AP Burst",
+          "status": "never"
+        },
+        {
+          "note": "His passive heal is too unreliable and small to justify healing or shielding power items.",
+          "path": "Enchanter",
+          "status": "never"
+        },
+        {
+          "note": "No AD scaling, slow attack speed, and zero auto-attack synergy.",
+          "path": "AD Bruiser",
+          "status": "never"
+        }
+      ],
+      "avoidStats": [
+        "ad",
+        "ap",
+        "attack_speed",
+        "crit",
+        "lethality",
+        "armor_pen",
+        "magic_pen",
+        "on_hit",
+        "healing_power",
+        "shield_power",
+        "lifesteal",
+        "omnivamp"
+      ],
+      "confidence": "high",
+      "flexPatterns": [
+        "Rushing Dead Man's Plate early for map-wide roam speed.",
+        "Adapting boots enchant to Protobelt for engage or Gargoyle for survival.",
+        "Building Thornmail if enemies have high sustain and healing."
+      ],
+      "identitySummary": "Alistar is a premier engage tank support who builds pure defensive and utility items to survive diving into the enemy team.",
+      "signatureItems": [
+        "Relic Shield",
+        "Dead Man's Plate",
+        "Dawnshroud",
+        "Zeke's Convergence",
+        "Protector's Vow",
+        "Gargoyle Enchant"
+      ],
+      "statPriorities": [
+        "hp",
+        "armor",
+        "mr",
+        "move_speed",
+        "ability_haste"
+      ],
+      "threatProfile": {
+        "counterplay": [
+          "Tenacity to reduce CC duration",
+          "True damage to bypass ultimate mitigation",
+          "Armor penetration and magic penetration"
+        ],
+        "threats": [
+          "AoE knockup engage",
+          "Targeted displacement",
+          "Massive damage mitigation via ultimate",
+          "Tower diving"
+        ]
+      }
+    },
+    "Viego": {
+      "_generated": "2026-08-03",
+      "_model": "gemini-3.1-pro-preview",
+      "archetypes": [
+        {
+          "note": "Standard WR path. BotRK into Trinity Force or Divine Sunderer, followed by survivability like Sterak's Gage or Death's Dance.",
+          "path": "bruiser",
+          "status": "primary"
+        },
+        {
+          "note": "Blade of the Ruined King is mandatory. Wit's End is a common flex against magic damage.",
+          "path": "on_hit",
+          "status": "primary"
+        },
+        {
+          "note": "High risk, high reward. Shieldbow or Mortal Reminder are good, but full crit is often too squishy for WR teamfights.",
+          "path": "crit",
+          "status": "viable"
+        },
+        {
+          "note": "Snowball reliant. Lacks the durability needed to secure the crucial first reset in even games.",
+          "path": "lethality",
+          "status": "off_meta"
+        },
+        {
+          "note": "Viego needs offensive stats to kill targets and trigger his passive resets.",
+          "path": "tank",
+          "status": "never"
+        },
+        {
+          "note": "W has an AP ratio, but building AP is a complete trap.",
+          "path": "ap",
+          "status": "never"
+        }
+      ],
+      "avoidStats": [
+        "ap",
+        "mana",
+        "energy",
+        "healing_power",
+        "shield_power"
+      ],
+      "confidence": "high",
+      "flexPatterns": [
+        "Swap Trinity Force for Divine Sunderer against tank-heavy comps.",
+        "One or two heavy defensive items like Amaranth Twinguard late game.",
+        "Wit's End as a magic resist option synergizing with on-hit."
+      ],
+      "identitySummary": "A reset-reliant skirmisher who builds on-hit and bruiser items to survive long enough to secure his first possession and snowball teamfights.",
+      "signatureItems": [
+        "Blade of the Ruined King",
+        "Trinity Force",
+        "Divine Sunderer",
+        "Sterak's Gage",
+        "Death's Dance",
+        "Guardian Angel"
+      ],
+      "statPriorities": [
+        "ad",
+        "attack_speed",
+        "on_hit",
+        "hp",
+        "lifesteal",
+        "armor",
+        "mr",
+        "ability_haste"
+      ],
+      "threatProfile": {
+        "counterplay": [
+          "Anti-heal to reduce his innate sustain",
+          "Hard CC to burst him before he resets",
+          "Armor to mitigate his physical damage",
+          "Guardian Angel to deny his resets"
+        ],
+        "threats": [
+          "Chain resets via passive possession",
+          "High % current HP physical damage",
+          "Sustained melee DPS and healing",
+          "Execute damage on ultimate"
+        ]
+      }
+    }
+  }
+}

@@ -793,8 +793,16 @@ def advise(champion: str, role: str, enemies: list[str],
     item_locks = [s for s in locked_items if s not in boots_locks][:3]
     locked_boot = boots_locks[0] if boots_locks else ""
     locked_runes = [r for r in (RUNE_CANON.get(_canon(x)) for x in (locked_runes or [])) if r][:2]
+    # Meta identity cards are keyed by display name including transform forms
+    # ("Kayn (Rhaast)"); pick the form's card when a form was requested.
+    identity_key = champion
+    if champion_form == "rhaast":
+        identity_key = "Kayn (Rhaast)"
+    identity_card = prompt_mod.identity_card(identity_key)
+
     prompt = "\n\n".join(x for x in [
         prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
+        prompt_mod.meta_identity_block(identity_key),
         f"ROLE: {role}",
         # Every selected option governs the WHOLE loadout. Stated once here
         # rather than repeated inside each option's own text: those are written
@@ -831,6 +839,7 @@ def advise(champion: str, role: str, enemies: list[str],
         # get the plain enemy line (usually "unknown" in studio).
         prompt_mod.enemy_threat_block(enemies, champion, WRMETA) if enemies_known
         else _enemy_block(enemies or [], champion),
+        prompt_mod.identity_threat_lines(enemies) if enemies_known else "",
         (f"SNOWBALL THREAT: {ahead_enemy} is ahead. If one main-build item should be "
          "replaced to survive or shut down this specific lead, return snowballSwap with "
          "the item to add, the main item it replaces, and the timing/condition. Return null "
@@ -910,6 +919,10 @@ def advise(champion: str, role: str, enemies: list[str],
             required_audit_items=kit_linked_items,
             allowed_items=pool_slugs, item_locks=item_locks, boot_lock=locked_boot,
             rune_locks=locked_runes, resolve_item=_resolve_item,
+            # An explicitly selected alternative damage path is the player
+            # overriding the standard identity on purpose; the lint stands
+            # down rather than fight the request it was told to honour.
+            identity=identity_card if damage_path == "standard" else None,
         )
 
     report = _check(res)

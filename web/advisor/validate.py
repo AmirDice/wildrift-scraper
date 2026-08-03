@@ -206,6 +206,41 @@ def _realign_rune_reasons(res: dict, page: dict, report: Report) -> None:
     reasons["minors"] = realigned
 
 
+def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
+    """Hard meta-identity lint: items whose defining stat the champion's
+    curated identity card marks as never-build.
+
+    Deliberately contained to stats an item cannot carry incidentally -- crit,
+    Magic-category AP, lethality, heal/shield power. Stats like attack speed or
+    mana ride along on hybrid items (Trinity Force) and are the PROMPT's job to
+    keep in line, because failing them here would reject correct builds. This
+    check exists for the stochastic tail: the one-in-N build that drifts into
+    an archetype nobody builds on this champion."""
+    if not identity:
+        return []
+    avoid = set(identity.get("avoidStats") or [])
+    if not avoid:
+        return []
+    out: list[str] = []
+    for slug in slugs:
+        item = ITEMS.get(slug) or {}
+        stats = item.get("stats") or {}
+        hit = None
+        if "crit" in avoid and "crit" in stats:
+            hit = "crit"
+        elif "ap" in avoid and "ap" in stats and item.get("category") == "Magic":
+            hit = "ap"
+        elif "lethality" in avoid and "physicalPenFlat" in stats:
+            hit = "lethality"
+        elif ("healing_power" in avoid or "shield_power" in avoid) and "healShieldPower" in stats:
+            hit = "healing/shield power"
+        if hit:
+            out.append(f"{slug} is a {hit} item, and this champion's meta identity marks "
+                       f"{hit} as never-build; replace it with an item from an approved "
+                       "archetype in the META ITEMIZATION IDENTITY block")
+    return out
+
+
 def validate(
     res: dict,
     *,
@@ -222,6 +257,7 @@ def validate(
     resolve_item=None,
     resolve_summoner=None,
     summoner_icons: dict | None = None,
+    identity: dict | None = None,
 ) -> Report:
     """Check and normalise the model's build in place. Returns a Report."""
     report = Report()
@@ -288,6 +324,8 @@ def validate(
                 report.fail("items", f"{slug} is a late strategic purchase and cannot sit at "
                                      f"position {position}; it may enter the build at "
                                      f"position {minimum} or later")
+        for problem in identity_violations(items, identity):
+            report.fail("items", problem)
 
     main_items = [s for s in items if s]
 
