@@ -11,7 +11,7 @@ type Milestone = { date: string; title: string; desc: string };
 const MILESTONES: Milestone[] = [
   { date: "2026-07-26", title: "Build Optimizer & Counter Builder", desc: "Generate a full build, runes and item order for any champion, or one tuned to beat your exact enemy team." },
   { date: "2026-08-02", title: "NA win rates", desc: "Real North America win rates from the top players on every champion." },
-  { date: "2026-08-09", title: "EU win rates refresh", desc: "A fresh Europe pull, expanded coverage across every champion." },
+  { date: "2026-08-05", title: "EU win rates refresh", desc: "A fresh Europe pull: top-50 win rates plus player builds, ranked tiers and per-queue stats for every champion." },
   { date: "2026-08-16", title: "Draft counter-pick", desc: "Live draft assistant: pick the champion that best counters the enemy draft, pick by pick." },
 ];
 

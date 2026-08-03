@@ -12,7 +12,22 @@ import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 // While the build tools are held back, the banner promotes the Meta Report
 // instead; when they launch it flips to advertising them (and re-surfaces via
 // its own dismiss key).
-const PROMO = BUILD_TOOLS_LIVE
+// TEMPORARY OVERRIDE: the EU data refresh lands around Aug 5. Until it ships,
+// this announcement outranks the flag-based promos below; delete EU_PROMO (and
+// the `?? EU_PROMO` fallthrough) once the refresh is live to restore them.
+const EU_PROMO = {
+  key: "wtm-eu-data-refresh-v1",
+  href: "/tier-list",
+  // `lead` is pinned and never scrolls, so the thing being announced is
+  // readable at every width; only `body` travels.
+  lead: "EU data refresh incoming",
+  body: "fresh top-50 win rates plus player builds, ranked tiers and per-queue stats for every champion, releasing in about 2 days.",
+  hideOn: [],
+  badges: ["Incoming"],
+  cta: "Current stats",
+};
+
+const FLAG_PROMO = BUILD_TOOLS_LIVE
   ? {
       // One tool, not two: "Build Optimizer & Counter Builder are live:
       // generate a full build, runes and item order for any champion or
@@ -20,11 +35,11 @@ const PROMO = BUILD_TOOLS_LIVE
       // The Counter Builder is one tab away once they arrive.
       key: "wtm-feature-builders-v4",
       href: "/build",
-      // `lead` is pinned and never scrolls, so the thing being announced is
-      // readable at every width; only `body` travels.
       lead: "Build Studio is live",
       body: "generate by playstyle, or craft builds with live item, rune and ability stats.",
       hideOn: ["/build", "/counter"],
+      badges: ["New", "Beta"],
+      cta: "Try it",
     }
   : {
       key: "wtm-feature-meta-report-v1",
@@ -32,7 +47,14 @@ const PROMO = BUILD_TOOLS_LIVE
       lead: "New: Meta Report",
       body: "maps the whole meta in charts, tier splits, win rate by class and role, and a win-rate-vs-popularity map of every champion.",
       hideOn: ["/meta"],
+      badges: ["New"],
+      cta: "See it",
     };
+
+// Flip to false when the EU refresh ships.
+const EU_REFRESH_PENDING = true;
+
+const PROMO = EU_REFRESH_PENDING ? EU_PROMO : FLAG_PROMO;
 const DISMISS_KEY = PROMO.key;
 // pages the banner points at -- no reason to show it there
 const HIDE_ON = PROMO.hideOn;
@@ -148,12 +170,18 @@ export function FeatureBanner() {
       <div className="relative mx-auto flex max-w-6xl flex-wrap items-center gap-x-2.5 gap-y-1 px-5 py-2 text-sm sm:flex-nowrap sm:gap-3">
         <span className="text-emerald-300 motion-safe:animate-pulse"><SparklesGlyph /></span>
         <span className="hidden shrink-0 items-center gap-1 sm:inline-flex">
-          <span className="rounded bg-emerald-400/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-emerald-300">
-            New
-          </span>
-          <span className="rounded bg-gold/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-gold">
-            Beta
-          </span>
+          {PROMO.badges.map((badge, i) => (
+            <span
+              key={badge}
+              className={
+                i === 0
+                  ? "rounded bg-emerald-400/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-emerald-300"
+                  : "rounded bg-gold/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-gold"
+              }
+            >
+              {badge}
+            </span>
+          ))}
         </span>
         <span className="shrink-0 whitespace-nowrap font-semibold text-text">
           {PROMO.lead}
@@ -166,7 +194,7 @@ export function FeatureBanner() {
           href={PROMO.href}
           className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-lg bg-emerald-400 px-3 py-1 text-xs font-bold text-black transition hover:brightness-110 sm:ml-0"
         >
-          Try it <span aria-hidden>→</span>
+          {PROMO.cta} <span aria-hidden>→</span>
         </Link>
         <button
           onClick={dismiss}
