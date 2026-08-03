@@ -692,9 +692,20 @@ def main() -> int:
             if not ys:
                 return {}
             if _ensure_gemini_key():
-                try:
-                    from .gemini_ocr import read_leaderboard
-                    rows = read_leaderboard(img, model=args.gemini_model)
+                from .gemini_ocr import read_leaderboard
+                # One empty Gemini response during a live run left a confirmed
+                # misread ('30-34' as '50-54') with no arbiter and cost the
+                # whole champion. Empty/transient failures deserve one retry;
+                # a sane-but-unusable answer does not.
+                for attempt in (1, 2):
+                    try:
+                        rows = read_leaderboard(img, model=args.gemini_model)
+                    except Exception as e:  # noqa: BLE001 -- retry once, then Tesseract
+                        print(f"  [detect] gemini arbitration failed ({e})"
+                              + (" -- retrying" if attempt == 1 else ""))
+                        if attempt == 1:
+                            time.sleep(0.6)
+                        continue
                     rr = sorted(r.rank for r in rows)
                     if rr and rr == list(range(rr[0], rr[0] + len(rr))):
                         if len(rr) == len(ys) + 1:
@@ -706,8 +717,7 @@ def main() -> int:
                             print(f"  [detect] arbitration: screen shows ranks "
                                   f"{rr[0]}-{rr[-1]}")
                             return mapping
-                except Exception as e:  # noqa: BLE001 -- fall through to Tesseract
-                    print(f"  [detect] gemini arbitration failed ({e})")
+                    break
             reads: list[tuple[int, int]] = []  # (y, rank)
             for y in ys:
                 r = read_rank_badge(img, 0, y, 0.0, badge_x)

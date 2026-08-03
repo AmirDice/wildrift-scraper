@@ -93,6 +93,7 @@ class LeaderboardNavigator:
         img: np.ndarray | None = None
         pending: float | None = None   # center of a rejected (unconfirmed) scan
         rejects = 0
+        impossible_scans = 0   # confirmed downward teleports refused by physics
         # (pre-burst hi_r, n, sign, est): fling calibration measured on the
         # NEXT accepted scan, so bursts need no extra screenshot of their own.
         pending_fling: tuple[int, int, int, float] | None = None
@@ -166,8 +167,8 @@ class LeaderboardNavigator:
             # wrong read, twice). Before acting on a confirmed teleport claim,
             # let the careful reader arbitrate -- it reads the badges through
             # an entirely different pipeline.
-            if anomaly_confirmed and self.arbitrate is not None:
-                careful = self.arbitrate(img)
+            if anomaly_confirmed:
+                careful = self.arbitrate(img) if self.arbitrate is not None else {}
                 if careful:
                     c_center = (min(careful) + max(careful)) / 2
                     if abs(c_center - center) > 5:
@@ -176,6 +177,24 @@ class LeaderboardNavigator:
                         ranks = careful
                         lo_r, hi_r = min(ranks), max(ranks)
                         center = (lo_r + hi_r) / 2
+                elif center - expected > 5 and net_down < (center - expected) - 4:
+                    # Arbitration is unavailable, but PHYSICS still rules: the
+                    # list only teleports UPWARD (resets snap to rank 1). A
+                    # confirmed downward jump bigger than our downward actions
+                    # can explain is a deterministic misread ('30-34' read as
+                    # '50-54' survived every OCR pass on a real frame). Refuse
+                    # it; give arbitration fresh chances, then hand over.
+                    impossible_scans += 1
+                    self.log(f"  [detect] scan claims ranks {lo_r}-{hi_r} but nothing scrolled "
+                             f"us down there -- refusing a downward teleport"
+                             + (" (giving up)" if impossible_scans >= 3 else ""))
+                    self._dump_rejected(img, rank)
+                    if impossible_scans >= 3:
+                        self.last_center = None
+                        return None
+                    use_stable = True
+                    self.sleep(0.4)
+                    continue
             if settle_pending and (rank in ranks or rank < max(ranks)):
                 # This scan could produce a tap. Confirm the list is truly
                 # stationary: a second frame (~1.2s later) must show the same

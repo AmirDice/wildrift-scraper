@@ -163,6 +163,43 @@ def test_missing_target_badge_grid_inference():
     assert b.actions == []
 
 
+def _teleport_lie(board: FakeBoard, offset: int):
+    """Scan output that misreads every badge `offset` ranks deeper (the
+    deterministic '30-34 read as 50-54' failure -- same ys, wrong digits)."""
+    t = board.truth()
+    return ({r + offset: y for r, y in t.items()}, PITCH)
+
+
+def test_confirmed_downward_teleport_refused_when_arbitration_fails():
+    """Rengar rank 34: '30-34' deterministically misread as '50-54' by every
+    OCR pass, and Gemini arbitration returned empty. The old loop accepted
+    the confirmed lie and spiraled for 2 minutes before the ledger caught it.
+    Physics forbids it outright: lists teleport UP (resets), never 20 rows
+    DOWN with zero downward actions. With no arbiter, the journey must hand
+    over cleanly -- zero movement, no scraping of wrong rows."""
+    b = FakeBoard(pos=30.0)
+    nav = make_nav(b)
+    nav.arbitrate = lambda _img: {}      # Gemini down, Tesseract agrees w/ lie
+    nav.last_center = 32.0
+    b.scan_script = {i: _teleport_lie(b, 20) for i in range(1, 40)}
+    y = nav.ensure_visible(34)
+    assert y is None, "accepted a physically impossible downward teleport"
+    assert b.actions == [], f"moved on a refused scan: {b.actions}"
+
+
+def test_confirmed_downward_teleport_rescued_by_arbitration():
+    """Same lie, but arbitration answers: it overrules the misread and the
+    journey finishes on the spot with zero movement."""
+    b = FakeBoard(pos=30.0)
+    nav = make_nav(b)
+    nav.last_center = 32.0
+    b.scan_script = {i: _teleport_lie(b, 20) for i in range(1, 40)}
+    y = nav.ensure_visible(34)
+    assert y is not None
+    assert abs(y - b.true_y(34)) <= 3
+    assert b.actions == []
+
+
 class GlidingBoard(FakeBoard):
     """A fling leaves residual inertia: each subsequent frame catches the
     list a bit further along until the glide dies. Frames themselves look
