@@ -106,6 +106,11 @@ MAIN_MENU_LEADERBOARD_BADGE: tuple[int, int] = (1331, 1016)  # last badge, botto
 LEADERBOARD_CHAMPION_TAB: tuple[int, int] = (698, 1028)      # bottom tab bar
 QUIT_DIALOG_REGION: tuple[int, int, int, int] = (809, 369, 740, 330)  # OCR: NOTICE / Quit Game?
 QUIT_DIALOG_CANCEL: tuple[int, int] = (1002, 631)
+# The leaderboard ROOT screen's bottom tab bar (RANKED / CHAMPION / LANE /
+# COLLECTION / GUILD). System back from a champion's leaderboard lands on the
+# RANKED tab here -- which shows rank badges of its own and fooled the
+# recovery into chevron-tapping its way further out.
+LEADERBOARD_TAB_BAR_REGION: tuple[int, int, int, int] = (155, 995, 2100, 75)
 
 STATS_QUEUE_OPTIONS: dict[str, tuple[int, int]] = {
     "all": (1702, 109),

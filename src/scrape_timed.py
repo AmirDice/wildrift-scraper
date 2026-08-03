@@ -51,6 +51,7 @@ import numpy as np
 from .adb_client import ADBClient, ADBError
 from .config import (
     LEADERBOARD_CHAMPION_TAB,
+    LEADERBOARD_TAB_BAR_REGION,
     MAIN_MENU_LEADERBOARD_BADGE,
     MAIN_MENU_PLAY_REGION,
     QUIT_DIALOG_CANCEL,
@@ -1025,6 +1026,20 @@ def main() -> int:
                 img = client.screenshot()
                 if scan_champion_rows(img, SCREEN_1_NAME_X_RANGE):
                     return
+                # Leaderboard ROOT (any tab): the CHAMPION tab is one tap
+                # away. This must outrank the badge heuristic below -- the
+                # RANKED tab shows rank badges of its own, and a live run
+                # mistook it for a champion leaderboard, chevron-tapped, and
+                # ejected itself further.
+                # 'collection'/'guild' appear ONLY on the root tab bar; the
+                # profile page's own tabs contain 'champion and lane', so the
+                # word 'champion' would misfire there.
+                tab_bar = _region_text(img, LEADERBOARD_TAB_BAR_REGION)
+                if any(w in tab_bar for w in ("collection", "guild")):
+                    print("[recover] on the leaderboard root -- tapping the CHAMPION tab")
+                    client.tap(*LEADERBOARD_CHAMPION_TAB, hold_ms=args.tap_hold_ms)
+                    time.sleep(1.2)
+                    continue
                 on_leaderboard = read_champion_name(img, SCREEN_2_CHAMP_LABEL_REGION) is not None
                 if not on_leaderboard:
                     try:
@@ -1047,9 +1062,7 @@ def main() -> int:
                     print("[recover] on the MAIN MENU -- re-entering the leaderboard")
                     client.tap(*MAIN_MENU_LEADERBOARD_BADGE, hold_ms=args.tap_hold_ms)
                     time.sleep(2.5)   # the leaderboard screen loads from scratch
-                    client.tap(*LEADERBOARD_CHAMPION_TAB, hold_ms=args.tap_hold_ms)
-                    time.sleep(1.2)
-                    continue
+                    continue        # next loop: the tab-bar case taps CHAMPION
                 client.back()
                 time.sleep(0.7)
 
