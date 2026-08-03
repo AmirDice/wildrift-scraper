@@ -98,6 +98,15 @@ SCREEN_2_BACK_POINT: tuple[int, int] = (172, 47)
 # that no other screen shows matchable text in this band at width 700.
 SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 700, 55)
 
+# Main-menu recovery: climbing back into the leaderboard after a full
+# ejection. Coordinates derived from owner-supplied screenshots
+# (data/menu_01_mainmenu.png, data/menu_02.png, data/exit_game.png).
+MAIN_MENU_PLAY_REGION: tuple[int, int, int, int] = (1950, 865, 245, 150)  # OCR: "PLAY"
+MAIN_MENU_LEADERBOARD_BADGE: tuple[int, int] = (1331, 1016)  # last badge, bottom bar
+LEADERBOARD_CHAMPION_TAB: tuple[int, int] = (698, 1028)      # bottom tab bar
+QUIT_DIALOG_REGION: tuple[int, int, int, int] = (809, 369, 740, 330)  # OCR: NOTICE / Quit Game?
+QUIT_DIALOG_CANCEL: tuple[int, int] = (1002, 631)
+
 STATS_QUEUE_OPTIONS: dict[str, tuple[int, int]] = {
     "all": (1702, 109),
     "ranked": (1702, 181),

@@ -50,6 +50,11 @@ import numpy as np
 
 from .adb_client import ADBClient, ADBError
 from .config import (
+    LEADERBOARD_CHAMPION_TAB,
+    MAIN_MENU_LEADERBOARD_BADGE,
+    MAIN_MENU_PLAY_REGION,
+    QUIT_DIALOG_CANCEL,
+    QUIT_DIALOG_REGION,
     ROWS_PER_PAGE,
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_2_NAME_HEIGHT,
@@ -992,6 +997,14 @@ def main() -> int:
         empty_sessions = 0   # consecutive zero-profile champions (down detector)
         t_carousel = time.time()
 
+        def _region_text(img, region: tuple[int, int, int, int]) -> str:
+            from .ocr import GENERAL_TESSERACT_CONFIG, read_text
+            x, y, w, h = region
+            crop = img[y:y + h, x:x + w]
+            if crop.size == 0:
+                return ""
+            return (read_text(crop, GENERAL_TESSERACT_CONFIG).text or "").lower()
+
         def back_to_champions() -> None:
             """Verified return to the champions page (never blind).
 
@@ -1001,8 +1014,14 @@ def main() -> int:
             (a live run ended there when one flaky label read triggered this
             recovery). When the current screen IS a leaderboard, leave via
             the chevron tap; system back is only for deeper screens (profile,
-            popups), where it is the correct control."""
-            for _ in range(4):
+            popups), where it is the correct control.
+
+            Full ejections are also recoverable now: from the MAIN MENU the
+            last badge on the bottom bar opens the leaderboard and the
+            CHAMPION tab sits in its bottom tab bar (owner-supplied path);
+            and the quit dialog that a stray system back opens on the main
+            menu is dismissed with CANCEL, never CONFIRM."""
+            for _ in range(6):
                 img = client.screenshot()
                 if scan_champion_rows(img, SCREEN_1_NAME_X_RANGE):
                     return
@@ -1016,8 +1035,22 @@ def main() -> int:
                         pass
                 if on_leaderboard:
                     client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
-                else:
-                    client.back()
+                    time.sleep(0.7)
+                    continue
+                dialog = _region_text(img, QUIT_DIALOG_REGION)
+                if "quit" in dialog or "notice" in dialog:
+                    print("[recover] quit dialog open -- cancelling it")
+                    client.tap(*QUIT_DIALOG_CANCEL, hold_ms=args.tap_hold_ms)
+                    time.sleep(0.7)
+                    continue
+                if "play" in _region_text(img, MAIN_MENU_PLAY_REGION):
+                    print("[recover] on the MAIN MENU -- re-entering the leaderboard")
+                    client.tap(*MAIN_MENU_LEADERBOARD_BADGE, hold_ms=args.tap_hold_ms)
+                    time.sleep(2.5)   # the leaderboard screen loads from scratch
+                    client.tap(*LEADERBOARD_CHAMPION_TAB, hold_ms=args.tap_hold_ms)
+                    time.sleep(1.2)
+                    continue
+                client.back()
                 time.sleep(0.7)
 
         def reenter_champion() -> bool:
