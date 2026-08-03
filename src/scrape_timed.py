@@ -976,11 +976,31 @@ def main() -> int:
         t_carousel = time.time()
 
         def back_to_champions() -> None:
-            """Verified return to the champions page (never blind)."""
+            """Verified return to the champions page (never blind).
+
+            HOW we leave matters as much as how many times: the champions TAB
+            is not in Android's back stack, so SYSTEM back from a champion's
+            leaderboard pops the whole leaderboard activity to the MAIN MENU
+            (a live run ended there when one flaky label read triggered this
+            recovery). When the current screen IS a leaderboard, leave via
+            the chevron tap; system back is only for deeper screens (profile,
+            popups), where it is the correct control."""
             for _ in range(4):
-                if scan_champion_rows(client.screenshot(), SCREEN_1_NAME_X_RANGE):
+                img = client.screenshot()
+                if scan_champion_rows(img, SCREEN_1_NAME_X_RANGE):
                     return
-                client.back()
+                on_leaderboard = read_champion_name(img, SCREEN_2_CHAMP_LABEL_REGION) is not None
+                if not on_leaderboard:
+                    try:
+                        r_chk, _pc = scan_visible_ranks(img, badge_x,
+                                                        expected_pitch=nav.last_pitch)
+                        on_leaderboard = len(r_chk) >= 3
+                    except Exception:  # noqa: BLE001
+                        pass
+                if on_leaderboard:
+                    client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
+                else:
+                    client.back()
                 time.sleep(0.7)
 
         prev_names: set[str] = set()
@@ -1032,7 +1052,15 @@ def main() -> int:
                 y, cname = cand
                 client.tap(SCREEN_1_ROW_TAP_X, y, hold_ms=args.tap_hold_ms)
                 time.sleep(args.step_wait + 0.5)
-                label = read_champion_name(client.screenshot(), SCREEN_2_CHAMP_LABEL_REGION)
+                # One label read is not a verdict: the screen may still be
+                # loading, and a false 'no label' sends us into a back-out
+                # that skips a champion (and once ended on the main menu).
+                label = None
+                for _read in range(3):
+                    label = read_champion_name(client.screenshot(), SCREEN_2_CHAMP_LABEL_REGION)
+                    if label is not None:
+                        break
+                    time.sleep(0.6)
                 if label is None:
                     print(f"[carousel] no champion label after tapping y={y} -- backing out")
                     if cname:
