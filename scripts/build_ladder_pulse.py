@@ -35,6 +35,7 @@ from scripts.export_captures import (  # noqa: E402
     find_sessions, _builds_by_rank, _stats_by_rank, _players_by_rank,
     _read_csv, _slug,
 )
+from web.integrity import is_advertising_account  # noqa: E402
 
 PULSE_OUT = ROOT / "web-next" / "src" / "data" / "ladder_pulse.json"
 CONSENSUS_OUT = ROOT / "data" / "ladder_consensus.json"
@@ -89,11 +90,19 @@ def build() -> tuple[dict, dict]:
         stats = _stats_by_rank(sess)
         name_by_rank: dict[int, str] = {}
 
+        # Boosting accounts contribute to nothing: not a record, not a stat,
+        # not an item pick rate. Their ranks are blocked up front so every
+        # loop below skips them (web/integrity.py explains why).
+        blocked = {int(r["rank"]) for r in rows
+                   if is_advertising_account(r.get("player_name"))}
+
         ks: Counter = Counter()
         spells: Counter = Counter()
         items: Counter = Counter()
         exact: Counter = Counter()
-        for b in builds.values():
+        for rank, b in builds.items():
+            if rank in blocked:
+                continue
             n_builds += 1
             if b.get("runes"):
                 ks[b["runes"][0]] += 1
@@ -117,6 +126,8 @@ def build() -> tuple[dict, dict]:
 
         for r in rows:
             name = r.get("player_name") or ""
+            if is_advertising_account(name):
+                continue
             try:
                 g = int(float(r["games"]))
                 w = float(r["winrate"])
@@ -139,6 +150,8 @@ def build() -> tuple[dict, dict]:
                 pass
 
         for rank, who in ids.items():
+            if rank in blocked:
+                continue
             fam = tier_family(who.get("tier") or "")
             if fam:
                 tiers[fam] += 1
@@ -149,6 +162,8 @@ def build() -> tuple[dict, dict]:
                 pools["veteran"].append((who["level"], name_by_rank.get(rank, ""), champ, "account level"))
 
         for rank, q in stats.items():
+            if rank in blocked:
+                continue
             name = name_by_rank.get(rank, "")
             r0 = q.get("ranked")
             l0 = q.get("legendary")
@@ -279,7 +294,10 @@ def build() -> tuple[dict, dict]:
             "legendKiller": top("legendKiller"),
             "masteryRecord": top("masteryRecord"),
             "veteran": top("veteran"),
-            "freshest": top("veteran", reverse=False),
+            # No "lowest account level" crown: a level-25 account inside a
+            # top-50 board is a smurf or a bought account far more often than
+            # a prodigy, and the record would celebrate exactly the behaviour
+            # the rest of this file filters out.
             "guilds": [{"guild": g, "spots": c} for g, c in guilds.most_common(10)],
             "multiBoard": multi[:12],
         },

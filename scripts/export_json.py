@@ -292,7 +292,12 @@ def build_players() -> dict:
     leaderboard page fetches on demand): r=rank, p=player, w=winrate,
     g=games, s=score (mastery).
     """
-    df = load_leaderboard()
+    # The board is a mirror of the game, so boosting accounts keep their ROW
+    # (ranks stay contiguous) with the name hidden -- unlike every statistic,
+    # which drops them entirely. See web/integrity.py.
+    from web.integrity import display_name
+
+    df = load_leaderboard(include_boosters=True)
     if df.empty:
         return {}
     top = df[df["rank"] <= TOP_N].copy()
@@ -302,7 +307,7 @@ def build_players() -> dict:
         for _, r in g.sort_values("rank").iterrows():
             rows.append({
                 "r": _i(r.get("rank")),
-                "p": str(r["player_name"]) if pd.notna(r.get("player_name")) else "—",
+                "p": display_name(str(r["player_name"])) if pd.notna(r.get("player_name")) else "—",
                 "w": _f(r.get("winrate")),
                 "g": _i(r.get("games")),
                 "s": _i(r.get("score")),

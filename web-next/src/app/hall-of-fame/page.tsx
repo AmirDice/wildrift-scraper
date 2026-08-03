@@ -77,7 +77,6 @@ const CARDS: {
   { key: "legendKiller", title: "The Legend Killer", blurb: "Best Legendary Ranked win rate, 15 games minimum", glyph: "flame", tone: "text-rose-300", fmt: (v) => `${v.toFixed(1)}% in Legendary` },
   { key: "masteryRecord", title: "The Scholar", blurb: "Highest champion mastery score in EU", glyph: "scroll", tone: "text-teal-300", fmt: (v) => `${v.toLocaleString()} mastery` },
   { key: "veteran", title: "The Veteran", blurb: "Highest account level on any board", glyph: "hourglass", tone: "text-stone-300", fmt: (v) => `Level ${v}` },
-  { key: "freshest", title: "The Prodigy", blurb: "Lowest account level to crack a top 50", glyph: "sprout", tone: "text-lime-300", fmt: (v) => `Level ${v}` },
 ];
 
 function Laurel() {
@@ -249,8 +248,10 @@ export default function HallOfFamePage() {
 
       <p className="mt-10 text-xs text-faint">
         Records involving a rate require 30 or more ranked games, so a lucky handful of
-        matches cannot take a crown. Data comes from the in-game leaderboards and each
-        player&apos;s ranked match history.
+        matches cannot take a crown. Accounts advertising boosting services are excluded
+        from every record and from champion win rates: they play deliberately below their
+        skill, so their numbers measure a mismatch rather than a player. Data comes from
+        the in-game leaderboards and each player&apos;s ranked match history.
       </p>
     </Container>
   );

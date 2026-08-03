@@ -40,6 +40,18 @@ export default function MethodologyPage() {
           score is the games-weighted mean of these adjusted rates.
         </Section>
 
+        <Section title="Boosting accounts are excluded">
+          Some leaderboard accounts advertise a boosting service in their own name. They are
+          removed from every statistic on this site: champion win rates, tier placements, best
+          player, and all ladder records. The reason is accuracy before ethics. A boosting
+          account is a strong player deliberately playing on a weaker account, so its{" "}
+          <strong className="text-text">90%+ win rate measures a skill mismatch</strong>, not the
+          champion. Their rank still appears on the leaderboard, because the board is a mirror of
+          the game, but the name is hidden rather than advertised. Detection is deliberately
+          narrow and based only on what the account declares in its own name, so ordinary players
+          are never labelled.
+        </Section>
+
         <Section title="Adaptive games floor">
           Play volume differs wildly per champion, so the entry bar scales with each
           champion&rsquo;s own median games rather than a global cutoff. A spammer can&rsquo;t own

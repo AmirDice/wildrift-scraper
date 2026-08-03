@@ -45,6 +45,8 @@ type EnrichedPlayer = Row & {
   tag: string | null;
   tier: string | null;
   level: number | null;
+  /** Boosting advert: row kept, name and detail withheld. */
+  hidden?: boolean | null;
   build: {
     items: { slug: string | null; name: string }[];
     runes: string[];
@@ -579,7 +581,14 @@ export function LeaderboardView({ champions, itemIcons }: {
                         </span>
                       </td>
                       <td className="max-w-[98px] px-1.5 py-2.5 sm:max-w-[240px] sm:px-3">
-                        <span className="block truncate font-medium">{row.p}</span>
+                        <span
+                          className={`block truncate font-medium ${e?.hidden ? "italic text-faint" : ""}`}
+                          title={e?.hidden
+                            ? "This account advertises a boosting service. Its name is hidden and its games are excluded from champion win rates and records."
+                            : undefined}
+                        >
+                          {row.p}
+                        </span>
                         {e?.tier && (
                           <span className="mt-0.5 flex items-center">
                             <TierBadge tier={e.tier} />

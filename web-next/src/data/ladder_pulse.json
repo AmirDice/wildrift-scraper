@@ -1,18 +1,18 @@
 {
- "generatedAt": "2026-08-03 23:55",
+ "generatedAt": "2026-08-04 00:28",
  "nChampions": 14,
- "nPlayers": 687,
- "nBuilds": 697,
+ "nPlayers": 685,
+ "nBuilds": 695,
  "itemMeta": [
   {
    "slug": "gluttonous-greaves",
    "name": "Gluttonous Greaves",
-   "count": 180
+   "count": 179
   },
   {
    "slug": "rabadons-deathcap",
    "name": "Rabadon's Deathcap",
-   "count": 178
+   "count": 177
   },
   {
    "slug": "seryldas-grudge",
@@ -25,19 +25,19 @@
    "count": 152
   },
   {
-   "slug": "mortal-reminder",
-   "name": "Mortal Reminder",
-   "count": 151
-  },
-  {
    "slug": "plated-steelcaps",
    "name": "Plated Steelcaps",
    "count": 151
   },
   {
+   "slug": "mortal-reminder",
+   "name": "Mortal Reminder",
+   "count": 150
+  },
+  {
    "slug": "ludens-echo",
    "name": "Luden's Echo",
-   "count": 126
+   "count": 125
   },
   {
    "slug": "duskblade-of-draktharr",
@@ -47,7 +47,7 @@
   {
    "slug": "guardian-angel",
    "name": "Guardian Angel",
-   "count": 118
+   "count": 117
   },
   {
    "slug": "randuins-omen",
@@ -57,7 +57,7 @@
   {
    "slug": "the-collector",
    "name": "The Collector",
-   "count": 109
+   "count": 108
   },
   {
    "slug": "blade-of-the-ruined-king",
@@ -67,12 +67,12 @@
   {
    "slug": "infinity-orb",
    "name": "Infinity Orb",
-   "count": 107
+   "count": 106
   },
   {
    "slug": "infinity-edge",
    "name": "Infinity Edge",
-   "count": 99
+   "count": 98
   },
   {
    "slug": "trinity-force",
@@ -108,11 +108,11 @@
  "keystoneMeta": [
   {
    "name": "Conqueror",
-   "count": 175
+   "count": 174
   },
   {
    "name": "Lethal Tempo",
-   "count": 148
+   "count": 147
   },
   {
    "name": "First Strike",
@@ -150,7 +150,7 @@
  "spellMeta": [
   {
    "pair": "Flash + Smite",
-   "count": 220
+   "count": 219
   },
   {
    "pair": "Flash + Ignite",
@@ -162,7 +162,7 @@
   },
   {
    "pair": "Barrier + Flash",
-   "count": 65
+   "count": 64
   },
   {
    "pair": "Ghost + Smite",
@@ -176,8 +176,8 @@
  "tierComposition": {
   "grandmaster": 247,
   "master": 232,
-  "challenger": 70,
-  "sovereign": 15,
+  "challenger": 69,
+  "sovereign": 14,
   "legendary-grandmaster": 13,
   "legendary-master": 9,
   "iron": 9,
@@ -505,26 +505,26 @@
   },
   "orianna": {
    "name": "Orianna",
-   "avgWr": 61.35,
-   "kda": 5.03,
-   "teamfight": 54.14,
-   "gpm": 800.3,
-   "dmgDealt": 26709.12,
-   "dmgTaken": 16240.14,
-   "turret": 2428.24,
-   "firstBlood": 10.01,
-   "mvpRate": 15.37,
-   "sRate": 16.84,
+   "avgWr": 60.68,
+   "kda": 4.98,
+   "teamfight": 53.96,
+   "gpm": 797.82,
+   "dmgDealt": 26581.94,
+   "dmgTaken": 16263.29,
+   "turret": 2378.57,
+   "firstBlood": 9.95,
+   "mvpRate": 14.86,
+   "sRate": 16.25,
    "gamesMedian": 195,
-   "legendaryTax": -0.7,
+   "legendaryTax": -0.3,
    "keystone": {
     "name": "Conqueror",
-    "count": 28,
+    "count": 27,
     "of": 50
    },
    "spells": {
     "pair": "Barrier + Flash",
-    "count": 26,
+    "count": 25,
     "of": 50
    },
    "conformity": {
@@ -534,7 +534,7 @@
    "pentas": 21,
    "tiers": {
     "grandmaster": 20,
-    "challenger": 12,
+    "challenger": 11,
     "master": 6,
     "sovereign": 3,
     "legendary-grandmaster": 2,
@@ -587,21 +587,21 @@
   },
   "tryndamere": {
    "name": "Tryndamere",
-   "avgWr": 60.96,
+   "avgWr": 60.29,
    "kda": 3.29,
-   "teamfight": 46.73,
-   "gpm": 836.4,
-   "dmgDealt": 23834.66,
-   "dmgTaken": 21728.58,
-   "turret": 4006.06,
-   "firstBlood": 15.61,
-   "mvpRate": 16.46,
-   "sRate": 12.53,
+   "teamfight": 46.44,
+   "gpm": 836.73,
+   "dmgDealt": 23986.29,
+   "dmgTaken": 21833.33,
+   "turret": 4056.59,
+   "firstBlood": 15.78,
+   "mvpRate": 16.43,
+   "sRate": 12.15,
    "gamesMedian": 169,
-   "legendaryTax": -2.9,
+   "legendaryTax": -1.9,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 49,
+    "count": 48,
     "of": 50
    },
    "spells": {
@@ -613,11 +613,11 @@
     "count": 8,
     "of": 50
    },
-   "pentas": 57,
+   "pentas": 53,
    "tiers": {
     "master": 31,
     "grandmaster": 12,
-    "sovereign": 3,
+    "sovereign": 2,
     "challenger": 2,
     "legendary-grandmaster": 1,
     "emerald": 1
@@ -746,13 +746,13 @@
  },
  "baseline": {
   "kda": 4.36,
-  "teamfight": 52.5,
-  "gpm": 810.57,
-  "dmgDealt": 24972.16,
-  "dmgTaken": 19668.85,
-  "turret": 3018.98,
-  "firstBlood": 11.74,
-  "mvpRate": 18.26
+  "teamfight": 52.47,
+  "gpm": 810.42,
+  "dmgDealt": 24973.91,
+  "dmgTaken": 19677.99,
+  "turret": 3019.04,
+  "firstBlood": 11.75,
+  "mvpRate": 18.22
  },
  "hallOfFame": {
   "grinder": {
@@ -763,11 +763,11 @@
    "detail": "49.4% win rate"
   },
   "perfectionist": {
-   "value": 94.5,
-   "player": "Insta wrboost25",
-   "champion": "Orianna",
-   "slug": "orianna",
-   "detail": "55 games"
+   "value": 86.7,
+   "player": "Erfi",
+   "champion": "Kha'Zix",
+   "slug": "khazix",
+   "detail": "30 games"
   },
   "kdaKing": {
    "value": 9.6,
@@ -865,13 +865,6 @@
    "player": "UNDxRGRxUND",
    "champion": "Wukong",
    "slug": "wukong",
-   "detail": "account level"
-  },
-  "freshest": {
-   "value": 25,
-   "player": "LetMeCarry",
-   "champion": "Rengar",
-   "slug": "rengar",
    "detail": "account level"
   },
   "guilds": [

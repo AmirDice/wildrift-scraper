@@ -32,6 +32,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from web.integrity import HIDDEN_LABEL, is_advertising_account  # noqa: E402
+
 CAPTURES = ROOT / "data" / "captures"
 WINRATES = ROOT / "data" / "winrates.csv"
 PLAYERS_DIR = ROOT / "web-next" / "public" / "players"
@@ -163,17 +167,22 @@ def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
             continue  # unextracted rank (manual-review leftovers)
         csv_rows.append({c: r.get(c, "") for c in CSV_COLUMNS})
         who = ids.get(rank) or {}
+        # Boosting adverts keep their ROW (ranks stay contiguous and the board
+        # stays a faithful mirror of the game) but lose their name and their
+        # build: the name is the advertisement. web/integrity.py has the rest.
+        hidden = is_advertising_account(r.get("player_name"))
         enriched.append({
             "r": rank,
-            "p": r.get("player_name") or "",
+            "p": HIDDEN_LABEL if hidden else (r.get("player_name") or ""),
+            "hidden": True if hidden else None,
             "s": _int(r.get("score")),
             "g": _int(r.get("games")),
             "w": _float(r.get("winrate")),
-            "tag": who.get("tag"),
+            "tag": None if hidden else who.get("tag"),
             "tier": who.get("tier"),
             "level": who.get("level"),
-            "build": builds.get(rank),
-            "stats": stats.get(rank) or None,
+            "build": None if hidden else builds.get(rank),
+            "stats": None if hidden else (stats.get(rank) or None),
         })
     payload = {
         "champion": champ,

@@ -162,8 +162,12 @@ def _otp_score(games: pd.Series) -> float | None:
 
 
 @st.cache_data(ttl=60)
-def load_leaderboard() -> pd.DataFrame:
+def load_leaderboard(include_boosters: bool = False) -> pd.DataFrame:
     """Return the full scraped leaderboard CSV as a DataFrame.
+
+    `include_boosters=True` keeps advertising accounts in the frame. Only the
+    leaderboard EXPORT wants that -- it renders their rank with the name
+    hidden so the board stays contiguous. Every statistic uses the default.
 
     Empty DataFrame (with the expected columns) if the file doesn't exist.
     Numeric columns are coerced to numbers; bad values become NaN.
@@ -197,6 +201,16 @@ def load_leaderboard() -> pd.DataFrame:
     # downstream lookup (role, class, icon, splash) hits the canonical entry.
     if "champion" in df.columns:
         df["champion"] = df["champion"].apply(_canonicalize_champion)
+
+    # Boosting accounts are dropped from EVERY statistic computed here (tier
+    # list, champion averages, best player, class and role strength). They
+    # play deliberately below their skill, so their 90%+ win rates measure a
+    # skill mismatch rather than the champion -- keeping them would make the
+    # tier list less accurate. See web/integrity.py; the raw CSV keeps them,
+    # and the leaderboard page still shows their rank with the name hidden.
+    if "player_name" in df.columns and not include_boosters:
+        from web.integrity import is_advertising_account
+        df = df[~df["player_name"].apply(is_advertising_account)].reset_index(drop=True)
     return df
 
 

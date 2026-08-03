@@ -793,25 +793,25 @@
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
-    "count": 50,
+    "count": 49,
     "of": 50
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
-    "count": 47,
+    "count": 46,
     "of": 50
    },
    {
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
-    "count": 34,
+    "count": 33,
     "of": 50
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
-    "count": 30,
+    "count": 29,
     "of": 50
    },
    {
@@ -847,14 +847,14 @@
    {
     "slug": "rylais-crystal-scepter",
     "name": "Rylai's Crystal Scepter",
-    "count": 5,
+    "count": 4,
     "of": 50
    }
   ],
   "keystones": [
    {
     "name": "Conqueror",
-    "count": 28,
+    "count": 27,
     "of": 50
    },
    {
@@ -876,7 +876,7 @@
   "spells": [
    {
     "pair": "Barrier + Flash",
-    "count": 26,
+    "count": 25,
     "of": 50
    },
    {
@@ -999,7 +999,7 @@
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
-    "count": 47,
+    "count": 46,
     "of": 50
    },
    {
@@ -1011,19 +1011,13 @@
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
-    "count": 36,
+    "count": 35,
     "of": 50
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
-    "count": 35,
-    "of": 50
-   },
-   {
-    "slug": "gluttonous-greaves",
-    "name": "Gluttonous Greaves",
-    "count": 32,
+    "count": 34,
     "of": 50
    },
    {
@@ -1033,9 +1027,15 @@
     "of": 50
    },
    {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 31,
+    "of": 50
+   },
+   {
     "slug": "the-collector",
     "name": "The Collector",
-    "count": 22,
+    "count": 21,
     "of": 50
    },
    {
@@ -1053,14 +1053,14 @@
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
-    "count": 5,
+    "count": 4,
     "of": 50
    }
   ],
   "keystones": [
    {
     "name": "Lethal Tempo",
-    "count": 49,
+    "count": 48,
     "of": 50
    },
    {
