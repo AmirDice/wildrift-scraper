@@ -163,6 +163,61 @@ def test_missing_target_badge_grid_inference():
     assert b.actions == []
 
 
+class GlidingBoard(FakeBoard):
+    """A fling leaves residual inertia: each subsequent frame catches the
+    list a bit further along until the glide dies. Frames themselves look
+    perfectly static -- exactly the live rank-29 failure."""
+
+    def __init__(self, *a, glide=(1.0, 0.4), **kw) -> None:
+        super().__init__(*a, **kw)
+        self.glide_profile = list(glide)
+        self.pending_glide: list[float] = []
+
+    def fling(self, down: bool) -> None:
+        super().fling(down)
+        self.pending_glide = [g if down else -g for g in self.glide_profile]
+
+    def drag(self, rows: float, pitch: float) -> None:
+        self.pending_glide = []   # touching the list kills inertia
+        super().drag(rows, pitch)
+
+    def screenshot(self):
+        img = super().screenshot()
+        # this frame captured the CURRENT position; the glide continues after
+        if self.pending_glide:
+            self.pos = max(1.0, self.pos + self.pending_glide.pop(0))
+        return img
+
+
+def test_post_fling_glide_is_never_trusted_rank29_replay():
+    """Garen rank 29: the journey's last fling left the list gliding; a scan
+    read rank 29 at y=765, the list slid one more row before the taps landed,
+    and the chain opened rank 30's profile believing it was 29's. The
+    navigator must never act on a single post-fling frame: it re-reads until
+    two consecutive frames agree, and only then returns a tap y."""
+    b = GlidingBoard(pos=1.0, fling_step=12.0)
+    nav = make_nav(b, fling_rows=10.0)
+    nav.last_center = 3.0          # journey starts from a post-reset top window
+    y = nav.ensure_visible(29)
+    assert y is not None
+    assert not b.pending_glide, "returned a tap y while the list was still gliding"
+    assert abs(y - b.true_y(29)) <= 8, \
+        f"tap y {y} vs settled row {b.true_y(29):.0f} -- stale by {abs(y - b.true_y(29)):.0f}px"
+
+
+def test_drag_journeys_pay_no_settle_tax():
+    """Drags are inertia-free, so short journeys must not spend extra frames
+    on settle confirmation -- the speed pass depends on the one-screenshot
+    happy path."""
+    b = FakeBoard(pos=9.5)
+    nav = make_nav(b)
+    nav.last_center = 11.5
+    y = nav.ensure_visible(14)     # 2 rows away: pure drag territory
+    assert y is not None
+    assert abs(y - b.true_y(14)) <= 2
+    assert b.frame <= 3, f"drag journey took {b.frame} frames"
+
+
 def test_top_ranks_reachable_when_trophy_badges_fail():
     """Live failure: 'it sees only 3-5' -- ranks 1-2's trophy badges don't
     OCR at the top of the list. Multi-step grid inference must still reach

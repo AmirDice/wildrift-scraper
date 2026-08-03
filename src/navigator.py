@@ -76,6 +76,13 @@ class LeaderboardNavigator:
         no_fling = False
         down_locked = False
         careful_used = False
+        # A fling's inertia can keep the list gliding after a frame that
+        # LOOKS static: rank 29's row read at y=765, the list slid one more
+        # row before the taps landed, and the chain opened rank 30's profile.
+        # While this flag is set, no tap or inference may come from a single
+        # frame -- two consecutive reads must agree first. Drags clear it:
+        # touching the list kills inertia, so drag releases are exact.
+        settle_pending = False
         # Seed the sanity gate with where we last verifiably were, so even a
         # journey's FIRST scan is plausibility-checked. (A bad frame once read
         # a single badge, "10" as "1", and an unseeded journey believed it had
@@ -169,6 +176,27 @@ class LeaderboardNavigator:
                         ranks = careful
                         lo_r, hi_r = min(ranks), max(ranks)
                         center = (lo_r + hi_r) / 2
+            if settle_pending and (rank in ranks or rank < max(ranks)):
+                # This scan could produce a tap. Confirm the list is truly
+                # stationary: a second frame (~1.2s later) must show the same
+                # rows at the same ys. A gliding list cannot pass this.
+                img2 = self.screenshot() if use_stable else self.screenshot_fast()
+                ranks2, pitch2 = self.scan(img2, center)
+                if pitch2:
+                    self.last_pitch = pitch2
+                shared = set(ranks) & set(ranks2)
+                still = bool(shared) and all(abs(ranks[r] - ranks2[r]) <= 8 for r in shared)
+                if len(ranks2) >= 3 and still:
+                    settle_pending = False
+                    ranks, img = ranks2, img2   # freshest truth wins
+                    lo_r, hi_r = min(ranks), max(ranks)
+                    center = (lo_r + hi_r) / 2
+                    pitch = pitch2 or pitch
+                else:
+                    self.log("  [detect] list still settling after fling -- re-reading")
+                    if len(ranks2) >= 3:
+                        expected = (min(ranks2) + max(ranks2)) / 2
+                    continue
             if pending_fling is not None:
                 b_hi, n_f, s_f, est = pending_fling
                 pending_fling = None
@@ -196,6 +224,7 @@ class LeaderboardNavigator:
                     return y
                 nudge = 0.8 if y > H * 0.87 else -0.8
                 self.drag_rows(nudge, p)
+                settle_pending = False
                 net_down += nudge
                 expected = center + nudge
                 continue
@@ -255,6 +284,7 @@ class LeaderboardNavigator:
                 # -- exactness means no scan is needed between them.
                 step = float(max(-4, min(4, delta)))
                 self.drag_rows(step, p)
+                settle_pending = False
                 net_down += step
                 remaining = delta - step
                 if abs(remaining) >= 4:
@@ -270,6 +300,7 @@ class LeaderboardNavigator:
             n = max(1, min(4, int(abs(delta) - 2) // max(4, int(self.fling_rows))))
             for _ in range(n):
                 self.fling(sign > 0)
+            settle_pending = True
             moved_est = sign * self.fling_rows * n
             net_down += moved_est
             expected = center + moved_est

@@ -296,6 +296,13 @@ def main() -> int:
             g_name = names.get(rank)
             tap_y = e.get("tap_y")
             lb_path = args.capture_dir / e.get("lb_frame", "")
+            # The name check exists to catch wrong-row captures -- but the
+            # badge-based tap verification above proves those authoritatively.
+            # Once a rank is tap-verified, a Tesseract/Gemini name mismatch
+            # can only be a Tesseract misread of a stylized font (4 false
+            # alarms in one 29-rank run). Only second-guess unverified ranks.
+            if tap_status.get(rank) == "ok":
+                continue
             # Tesseract is only a fair second witness for pure-ASCII names;
             # any diacritic or CJK in the true name guarantees a garbage
             # Tesseract read and a meaningless "disagreement".
@@ -376,6 +383,10 @@ def main() -> int:
             _norm = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())  # noqa: E731
             for it in json.loads(items_path.read_text(encoding="utf-8")):
                 item_canon[_norm(it["name"])] = it["slug"]
+                # Gemini reads "Amaranth Twinguard" off the popup where the
+                # catalog says "Amaranth's Twinguard" -- index a possessive-
+                # stripped alias so mid-name 's never blocks resolution.
+                item_canon.setdefault(_norm(re.sub(r"'s\b", "", it["name"], flags=re.I)), it["slug"])
                 item_canon.setdefault(_norm(it["slug"]), it["slug"])
 
         def resolve_item(name: str) -> str | None:
@@ -386,7 +397,12 @@ def main() -> int:
                 if cand in item_canon:
                     return item_canon[cand]
             hits = {slug for cc, slug in item_canon.items() if c and (c in cc or cc in c)}
-            return hits.pop() if len(hits) == 1 else None
+            if len(hits) == 1:
+                return hits.pop()
+            # Last resort for one-character OCR slips: a very close fuzzy
+            # match (>=0.9) is unambiguous at this catalog size.
+            close = difflib.get_close_matches(c, list(item_canon), n=2, cutoff=0.9)
+            return item_canon[close[0]] if len(close) == 1 else None
 
         def extract_extras(e: dict) -> tuple[int, dict | None, dict[str, dict], dict | None]:
             rank = e["rank"]
