@@ -93,7 +93,10 @@ SCREEN_1_ROW_TAP_X: int = 1220
 # Screen 2's top-left back chevron (returns to the champions page) and the
 # champion-name label at the bottom-left (authoritative identity check).
 SCREEN_2_BACK_POINT: tuple[int, int] = (172, 47)
-SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 260, 55)
+# Wide enough for the longest names ("NUNU & WILLUMP" clipped at 260px and a
+# live run skipped him); verified against every flow frame + the main menu
+# that no other screen shows matchable text in this band at width 700.
+SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 700, 55)
 
 STATS_QUEUE_OPTIONS: dict[str, tuple[int, int]] = {
     "all": (1702, 109),

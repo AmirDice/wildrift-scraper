@@ -52,8 +52,10 @@ CHAMPIONS: list[str] = [
 
 
 def _normalize(name: str) -> str:
-    """Lowercase + strip non-alphanumerics. So Kai'Sa, KAISA, kaisa all match."""
-    return re.sub(r"[^a-z0-9]", "", name.lower())
+    """Lowercase + strip everything that is not a letter. Champion names
+    contain no digits, and OCR loves turning '&' into '8' ("NUNU 8 WILLUMP"),
+    so digits are noise here, never signal."""
+    return re.sub(r"[^a-z]", "", name.lower())
 
 
 # name (normalized) -> canonical display name
@@ -67,6 +69,16 @@ MAX_WORD_COUNT: int = max(WORD_COUNT.values())
 
 def match(tokens: list[str]) -> str | None:
     """If `tokens` (a sequence of 1+ OCR words) joined matches a champion name,
-    return the canonical name. Otherwise None."""
+    return the canonical name. Otherwise None.
+
+    Second try drops single-character tokens: no champion name contains a
+    one-letter word, but OCR renders '&' as a lone junk character ('S', '@')
+    that poisons the join for "Nunu & Willump"."""
     joined = _normalize("".join(tokens))
-    return NORMALIZED_TO_CANONICAL.get(joined)
+    hit = NORMALIZED_TO_CANONICAL.get(joined)
+    if hit:
+        return hit
+    cleaned = _normalize("".join(t for t in tokens if len(t.strip()) > 1))
+    if cleaned != joined:
+        return NORMALIZED_TO_CANONICAL.get(cleaned)
+    return None
