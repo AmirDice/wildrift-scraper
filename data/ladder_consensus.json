@@ -1,0 +1,1383 @@
+{
+ "Aatrox": {
+  "items": [
+   {
+    "slug": "seryldas-grudge",
+    "name": "Serylda's Grudge",
+    "count": 47,
+    "of": 50
+   },
+   {
+    "slug": "plated-steelcaps",
+    "name": "Plated Steelcaps",
+    "count": 34,
+    "of": 50
+   },
+   {
+    "slug": "eclipse",
+    "name": "Eclipse",
+    "count": 33,
+    "of": 50
+   },
+   {
+    "slug": "divine-sunderer",
+    "name": "Divine Sunderer",
+    "count": 23,
+    "of": 50
+   },
+   {
+    "slug": "trinity-force",
+    "name": "Trinity Force",
+    "count": 22,
+    "of": 50
+   },
+   {
+    "slug": "spear-of-shojin",
+    "name": "Spear of Shojin",
+    "count": 20,
+    "of": 50
+   },
+   {
+    "slug": "deaths-dance",
+    "name": "Death's Dance",
+    "count": 17,
+    "of": 50
+   },
+   {
+    "slug": "steraks-gage",
+    "name": "Sterak's Gage",
+    "count": 10,
+    "of": 50
+   },
+   {
+    "slug": "randuins-omen",
+    "name": "Randuin's Omen",
+    "count": 8,
+    "of": 50
+   },
+   {
+    "slug": "maw-of-malmortius",
+    "name": "Maw of Malmortius",
+    "count": 8,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Conqueror",
+    "count": 48,
+    "of": 50
+   },
+   {
+    "name": "Press the Attack",
+    "count": 1,
+    "of": 50
+   },
+   {
+    "name": "Fleet Footwork",
+    "count": 1,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Ignite",
+    "count": 41,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Teleport",
+    "count": 6,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Smite",
+    "count": 2,
+    "of": 50
+   }
+  ]
+ },
+ "Amumu": {
+  "items": [
+   {
+    "slug": "thornmail",
+    "name": "Thornmail",
+    "count": 50,
+    "of": 50
+   },
+   {
+    "slug": "radiant-virtue",
+    "name": "Radiant Virtue",
+    "count": 38,
+    "of": 50
+   },
+   {
+    "slug": "randuins-omen",
+    "name": "Randuin's Omen",
+    "count": 37,
+    "of": 50
+   },
+   {
+    "slug": "force-of-nature",
+    "name": "Force of Nature",
+    "count": 33,
+    "of": 50
+   },
+   {
+    "slug": "dead-mans-plate",
+    "name": "Dead Man's Plate",
+    "count": 23,
+    "of": 50
+   },
+   {
+    "slug": "amaranths-twinguard",
+    "name": "Amaranth's Twinguard",
+    "count": 23,
+    "of": 50
+   },
+   {
+    "slug": "zekes-convergence",
+    "name": "Zeke's Convergence",
+    "count": 22,
+    "of": 50
+   },
+   {
+    "slug": "abyssal-mask",
+    "name": "Abyssal Mask",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "slug": "sunfire-aegis",
+    "name": "Sunfire Aegis",
+    "count": 11,
+    "of": 50
+   },
+   {
+    "slug": "plated-steelcaps",
+    "name": "Plated Steelcaps",
+    "count": 9,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Glacial Augment",
+    "count": 23,
+    "of": 50
+   },
+   {
+    "name": "Aftershock",
+    "count": 17,
+    "of": 50
+   },
+   {
+    "name": "First Strike",
+    "count": 7,
+    "of": 50
+   },
+   {
+    "name": "Font of Life",
+    "count": 2,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Smite",
+    "count": 48,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Teleport",
+    "count": 2,
+    "of": 50
+   }
+  ]
+ },
+ "Garen": {
+  "items": [
+   {
+    "slug": "plated-steelcaps",
+    "name": "Plated Steelcaps",
+    "count": 46,
+    "of": 50
+   },
+   {
+    "slug": "thornmail",
+    "name": "Thornmail",
+    "count": 37,
+    "of": 50
+   },
+   {
+    "slug": "black-cleaver",
+    "name": "Black Cleaver",
+    "count": 32,
+    "of": 50
+   },
+   {
+    "slug": "force-of-nature",
+    "name": "Force of Nature",
+    "count": 31,
+    "of": 50
+   },
+   {
+    "slug": "dead-mans-plate",
+    "name": "Dead Man's Plate",
+    "count": 19,
+    "of": 50
+   },
+   {
+    "slug": "spear-of-shojin",
+    "name": "Spear of Shojin",
+    "count": 19,
+    "of": 50
+   },
+   {
+    "slug": "heartsteel",
+    "name": "Heartsteel",
+    "count": 18,
+    "of": 50
+   },
+   {
+    "slug": "amaranths-twinguard",
+    "name": "Amaranth's Twinguard",
+    "count": 10,
+    "of": 50
+   },
+   {
+    "slug": "sunfire-aegis",
+    "name": "Sunfire Aegis",
+    "count": 8,
+    "of": 50
+   },
+   {
+    "slug": "guardian-angel",
+    "name": "Guardian Angel",
+    "count": 7,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Grasp of the Undying",
+    "count": 25,
+    "of": 50
+   },
+   {
+    "name": "Conqueror",
+    "count": 24,
+    "of": 50
+   },
+   {
+    "name": "Phase Rush",
+    "count": 1,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Ignite",
+    "count": 37,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Teleport",
+    "count": 10,
+    "of": 50
+   },
+   {
+    "pair": "Ghost + Ignite",
+    "count": 1,
+    "of": 50
+   }
+  ]
+ },
+ "Jinx": {
+  "items": [
+   {
+    "slug": "runaans-hurricane",
+    "name": "Runaan's Hurricane",
+    "count": 45,
+    "of": 50
+   },
+   {
+    "slug": "bloodthirster",
+    "name": "Bloodthirster",
+    "count": 38,
+    "of": 50
+   },
+   {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 38,
+    "of": 50
+   },
+   {
+    "slug": "mortal-reminder",
+    "name": "Mortal Reminder",
+    "count": 34,
+    "of": 50
+   },
+   {
+    "slug": "the-collector",
+    "name": "The Collector",
+    "count": 34,
+    "of": 50
+   },
+   {
+    "slug": "infinity-edge",
+    "name": "Infinity Edge",
+    "count": 25,
+    "of": 50
+   },
+   {
+    "slug": "phantom-dancer",
+    "name": "Phantom Dancer",
+    "count": 18,
+    "of": 50
+   },
+   {
+    "slug": "kraken-slayer",
+    "name": "Kraken Slayer",
+    "count": 15,
+    "of": 50
+   },
+   {
+    "slug": "lord-dominiks-regard",
+    "name": "Lord Dominik's Regard",
+    "count": 12,
+    "of": 50
+   },
+   {
+    "slug": "blade-of-the-ruined-king",
+    "name": "Blade of the Ruined King",
+    "count": 11,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Lethal Tempo",
+    "count": 50,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Ghost",
+    "count": 30,
+    "of": 50
+   },
+   {
+    "pair": "Barrier + Flash",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "pair": "Cleanse + Flash",
+    "count": 4,
+    "of": 50
+   }
+  ]
+ },
+ "Kayn": {
+  "items": [
+   {
+    "slug": "seryldas-grudge",
+    "name": "Serylda's Grudge",
+    "count": 45,
+    "of": 50
+   },
+   {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 33,
+    "of": 50
+   },
+   {
+    "slug": "duskblade-of-draktharr",
+    "name": "Duskblade of Draktharr",
+    "count": 26,
+    "of": 50
+   },
+   {
+    "slug": "youmuus-ghostblade",
+    "name": "Youmuu's Ghostblade",
+    "count": 22,
+    "of": 50
+   },
+   {
+    "slug": "eclipse",
+    "name": "Eclipse",
+    "count": 20,
+    "of": 50
+   },
+   {
+    "slug": "serpents-fang",
+    "name": "Serpent's Fang",
+    "count": 20,
+    "of": 50
+   },
+   {
+    "slug": "spear-of-shojin",
+    "name": "Spear of Shojin",
+    "count": 20,
+    "of": 50
+   },
+   {
+    "slug": "deaths-dance",
+    "name": "Death's Dance",
+    "count": 18,
+    "of": 50
+   },
+   {
+    "slug": "guardian-angel",
+    "name": "Guardian Angel",
+    "count": 15,
+    "of": 50
+   },
+   {
+    "slug": "goredrinker",
+    "name": "Goredrinker",
+    "count": 13,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Conqueror",
+    "count": 24,
+    "of": 50
+   },
+   {
+    "name": "First Strike",
+    "count": 16,
+    "of": 50
+   },
+   {
+    "name": "Dark Harvest",
+    "count": 10,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Smite",
+    "count": 29,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Ignite",
+    "count": 14,
+    "of": 50
+   },
+   {
+    "pair": "Ignite + Smite",
+    "count": 4,
+    "of": 50
+   }
+  ]
+ },
+ "Kha'Zix": {
+  "items": [
+   {
+    "slug": "seryldas-grudge",
+    "name": "Serylda's Grudge",
+    "count": 47,
+    "of": 50
+   },
+   {
+    "slug": "youmuus-ghostblade",
+    "name": "Youmuu's Ghostblade",
+    "count": 38,
+    "of": 50
+   },
+   {
+    "slug": "duskblade-of-draktharr",
+    "name": "Duskblade of Draktharr",
+    "count": 31,
+    "of": 50
+   },
+   {
+    "slug": "serpents-fang",
+    "name": "Serpent's Fang",
+    "count": 28,
+    "of": 50
+   },
+   {
+    "slug": "guardian-angel",
+    "name": "Guardian Angel",
+    "count": 28,
+    "of": 50
+   },
+   {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 19,
+    "of": 50
+   },
+   {
+    "slug": "eclipse",
+    "name": "Eclipse",
+    "count": 19,
+    "of": 50
+   },
+   {
+    "slug": "mantle-of-the-twelfth-hour",
+    "name": "Mantle of the Twelfth Hour",
+    "count": 9,
+    "of": 50
+   },
+   {
+    "slug": "the-collector",
+    "name": "The Collector",
+    "count": 8,
+    "of": 50
+   },
+   {
+    "slug": "edge-of-night",
+    "name": "Edge of Night",
+    "count": 6,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "First Strike",
+    "count": 26,
+    "of": 50
+   },
+   {
+    "name": "Electrocute",
+    "count": 10,
+    "of": 50
+   },
+   {
+    "name": "Conqueror",
+    "count": 6,
+    "of": 50
+   },
+   {
+    "name": "Dark Harvest",
+    "count": 5,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Smite",
+    "count": 36,
+    "of": 50
+   },
+   {
+    "pair": "Ghost + Smite",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Ghost",
+    "count": 1,
+    "of": 50
+   }
+  ]
+ },
+ "Lux": {
+  "items": [
+   {
+    "slug": "ludens-echo",
+    "name": "Luden's Echo",
+    "count": 48,
+    "of": 50
+   },
+   {
+    "slug": "rabadons-deathcap",
+    "name": "Rabadon's Deathcap",
+    "count": 48,
+    "of": 50
+   },
+   {
+    "slug": "infinity-orb",
+    "name": "Infinity Orb",
+    "count": 34,
+    "of": 50
+   },
+   {
+    "slug": "imperial-mandate",
+    "name": "Imperial Mandate",
+    "count": 18,
+    "of": 50
+   },
+   {
+    "slug": "void-staff",
+    "name": "Void Staff",
+    "count": 18,
+    "of": 50
+   },
+   {
+    "slug": "harmonic-echo",
+    "name": "Harmonic Echo",
+    "count": 16,
+    "of": 50
+   },
+   {
+    "slug": "banshees-veil",
+    "name": "Banshee's Veil",
+    "count": 11,
+    "of": 50
+   },
+   {
+    "slug": "cosmic-drive",
+    "name": "Cosmic Drive",
+    "count": 11,
+    "of": 50
+   },
+   {
+    "slug": "ionian-boots-of-lucidity",
+    "name": "Ionian Boots of Lucidity",
+    "count": 7,
+    "of": 50
+   },
+   {
+    "slug": "archangels-staff",
+    "name": "Archangel's Staff",
+    "count": 3,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Aery",
+    "count": 20,
+    "of": 50
+   },
+   {
+    "name": "Arcane Comet",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "name": "First Strike",
+    "count": 8,
+    "of": 50
+   },
+   {
+    "name": "Dark Harvest",
+    "count": 7,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Ignite",
+    "count": 22,
+    "of": 50
+   },
+   {
+    "pair": "Barrier + Flash",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Heal",
+    "count": 11,
+    "of": 50
+   }
+  ]
+ },
+ "Nunu & Willump": {
+  "items": [
+   {
+    "slug": "thornmail",
+    "name": "Thornmail",
+    "count": 38,
+    "of": 48
+   },
+   {
+    "slug": "sunfire-aegis",
+    "name": "Sunfire Aegis",
+    "count": 28,
+    "of": 48
+   },
+   {
+    "slug": "plated-steelcaps",
+    "name": "Plated Steelcaps",
+    "count": 26,
+    "of": 48
+   },
+   {
+    "slug": "zekes-convergence",
+    "name": "Zeke's Convergence",
+    "count": 25,
+    "of": 48
+   },
+   {
+    "slug": "warmogs-armor",
+    "name": "Warmog's Armor",
+    "count": 17,
+    "of": 48
+   },
+   {
+    "slug": "force-of-nature",
+    "name": "Force of Nature",
+    "count": 17,
+    "of": 48
+   },
+   {
+    "slug": "randuins-omen",
+    "name": "Randuin's Omen",
+    "count": 17,
+    "of": 48
+   },
+   {
+    "slug": "dead-mans-plate",
+    "name": "Dead Man's Plate",
+    "count": 15,
+    "of": 48
+   },
+   {
+    "slug": "radiant-virtue",
+    "name": "Radiant Virtue",
+    "count": 13,
+    "of": 48
+   },
+   {
+    "slug": "abyssal-mask",
+    "name": "Abyssal Mask",
+    "count": 10,
+    "of": 48
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Glacial Augment",
+    "count": 32,
+    "of": 48
+   },
+   {
+    "name": "First Strike",
+    "count": 8,
+    "of": 48
+   },
+   {
+    "name": "Phase Rush",
+    "count": 4,
+    "of": 48
+   },
+   {
+    "name": "Dark Harvest",
+    "count": 3,
+    "of": 48
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Smite",
+    "count": 30,
+    "of": 48
+   },
+   {
+    "pair": "Ghost + Smite",
+    "count": 14,
+    "of": 48
+   },
+   {
+    "pair": "Flash + Teleport",
+    "count": 2,
+    "of": 48
+   }
+  ]
+ },
+ "Orianna": {
+  "items": [
+   {
+    "slug": "rabadons-deathcap",
+    "name": "Rabadon's Deathcap",
+    "count": 50,
+    "of": 50
+   },
+   {
+    "slug": "ludens-echo",
+    "name": "Luden's Echo",
+    "count": 47,
+    "of": 50
+   },
+   {
+    "slug": "banshees-veil",
+    "name": "Banshee's Veil",
+    "count": 34,
+    "of": 50
+   },
+   {
+    "slug": "infinity-orb",
+    "name": "Infinity Orb",
+    "count": 30,
+    "of": 50
+   },
+   {
+    "slug": "archangels-staff",
+    "name": "Archangel's Staff",
+    "count": 16,
+    "of": 50
+   },
+   {
+    "slug": "void-staff",
+    "name": "Void Staff",
+    "count": 16,
+    "of": 50
+   },
+   {
+    "slug": "rod-of-ages",
+    "name": "Rod of Ages",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "slug": "cosmic-drive",
+    "name": "Cosmic Drive",
+    "count": 9,
+    "of": 50
+   },
+   {
+    "slug": "riftmaker",
+    "name": "Riftmaker",
+    "count": 6,
+    "of": 50
+   },
+   {
+    "slug": "rylais-crystal-scepter",
+    "name": "Rylai's Crystal Scepter",
+    "count": 5,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Conqueror",
+    "count": 28,
+    "of": 50
+   },
+   {
+    "name": "Phase Rush",
+    "count": 14,
+    "of": 50
+   },
+   {
+    "name": "Aery",
+    "count": 4,
+    "of": 50
+   },
+   {
+    "name": "Electrocute",
+    "count": 3,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Barrier + Flash",
+    "count": 26,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Ghost",
+    "count": 21,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Ignite",
+    "count": 1,
+    "of": 50
+   }
+  ]
+ },
+ "Rengar": {
+  "items": [
+   {
+    "slug": "duskblade-of-draktharr",
+    "name": "Duskblade of Draktharr",
+    "count": 38,
+    "of": 50
+   },
+   {
+    "slug": "infinity-edge",
+    "name": "Infinity Edge",
+    "count": 35,
+    "of": 50
+   },
+   {
+    "slug": "the-collector",
+    "name": "The Collector",
+    "count": 28,
+    "of": 50
+   },
+   {
+    "slug": "mortal-reminder",
+    "name": "Mortal Reminder",
+    "count": 28,
+    "of": 50
+   },
+   {
+    "slug": "trinity-force",
+    "name": "Trinity Force",
+    "count": 24,
+    "of": 50
+   },
+   {
+    "slug": "lord-dominiks-regard",
+    "name": "Lord Dominik's Regard",
+    "count": 18,
+    "of": 50
+   },
+   {
+    "slug": "guardian-angel",
+    "name": "Guardian Angel",
+    "count": 17,
+    "of": 50
+   },
+   {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "slug": "bloodthirster",
+    "name": "Bloodthirster",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "slug": "essence-reaver",
+    "name": "Essence Reaver",
+    "count": 6,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Conqueror",
+    "count": 26,
+    "of": 50
+   },
+   {
+    "name": "First Strike",
+    "count": 16,
+    "of": 50
+   },
+   {
+    "name": "Phase Rush",
+    "count": 6,
+    "of": 50
+   },
+   {
+    "name": "Fleet Footwork",
+    "count": 1,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Smite",
+    "count": 40,
+    "of": 50
+   },
+   {
+    "pair": "Ghost + Smite",
+    "count": 4,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Ignite",
+    "count": 4,
+    "of": 50
+   }
+  ]
+ },
+ "Tryndamere": {
+  "items": [
+   {
+    "slug": "mortal-reminder",
+    "name": "Mortal Reminder",
+    "count": 47,
+    "of": 50
+   },
+   {
+    "slug": "blade-of-the-ruined-king",
+    "name": "Blade of the Ruined King",
+    "count": 44,
+    "of": 50
+   },
+   {
+    "slug": "guardian-angel",
+    "name": "Guardian Angel",
+    "count": 36,
+    "of": 50
+   },
+   {
+    "slug": "infinity-edge",
+    "name": "Infinity Edge",
+    "count": 35,
+    "of": 50
+   },
+   {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 32,
+    "of": 50
+   },
+   {
+    "slug": "kraken-slayer",
+    "name": "Kraken Slayer",
+    "count": 32,
+    "of": 50
+   },
+   {
+    "slug": "the-collector",
+    "name": "The Collector",
+    "count": 22,
+    "of": 50
+   },
+   {
+    "slug": "berserkers-greaves",
+    "name": "Berserker's Greaves",
+    "count": 11,
+    "of": 50
+   },
+   {
+    "slug": "phantom-dancer",
+    "name": "Phantom Dancer",
+    "count": 6,
+    "of": 50
+   },
+   {
+    "slug": "bloodthirster",
+    "name": "Bloodthirster",
+    "count": 5,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Lethal Tempo",
+    "count": 49,
+    "of": 50
+   },
+   {
+    "name": "Phase Rush",
+    "count": 1,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Ghost + Smite",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "pair": "Ghost + Ignite",
+    "count": 11,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Ignite",
+    "count": 10,
+    "of": 50
+   }
+  ]
+ },
+ "Vayne": {
+  "items": [
+   {
+    "slug": "blade-of-the-ruined-king",
+    "name": "Blade of the Ruined King",
+    "count": 47,
+    "of": 50
+   },
+   {
+    "slug": "guinsoos-rageblade",
+    "name": "Guinsoo's Rageblade",
+    "count": 46,
+    "of": 50
+   },
+   {
+    "slug": "kraken-slayer",
+    "name": "Kraken Slayer",
+    "count": 38,
+    "of": 50
+   },
+   {
+    "slug": "randuins-omen",
+    "name": "Randuin's Omen",
+    "count": 36,
+    "of": 50
+   },
+   {
+    "slug": "mortal-reminder",
+    "name": "Mortal Reminder",
+    "count": 32,
+    "of": 50
+   },
+   {
+    "slug": "rabadons-deathcap",
+    "name": "Rabadon's Deathcap",
+    "count": 21,
+    "of": 50
+   },
+   {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 19,
+    "of": 50
+   },
+   {
+    "slug": "lord-dominiks-regard",
+    "name": "Lord Dominik's Regard",
+    "count": 11,
+    "of": 50
+   },
+   {
+    "slug": "thornmail",
+    "name": "Thornmail",
+    "count": 8,
+    "of": 50
+   },
+   {
+    "slug": "berserkers-greaves",
+    "name": "Berserker's Greaves",
+    "count": 7,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Lethal Tempo",
+    "count": 49,
+    "of": 50
+   },
+   {
+    "name": "Press the Attack",
+    "count": 1,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Ghost",
+    "count": 38,
+    "of": 50
+   },
+   {
+    "pair": "Barrier + Flash",
+    "count": 7,
+    "of": 50
+   },
+   {
+    "pair": "Exhaust + Flash",
+    "count": 2,
+    "of": 50
+   }
+  ]
+ },
+ "Wukong": {
+  "items": [
+   {
+    "slug": "trinity-force",
+    "name": "Trinity Force",
+    "count": 37,
+    "of": 50
+   },
+   {
+    "slug": "seryldas-grudge",
+    "name": "Serylda's Grudge",
+    "count": 31,
+    "of": 50
+   },
+   {
+    "slug": "divine-sunderer",
+    "name": "Divine Sunderer",
+    "count": 26,
+    "of": 50
+   },
+   {
+    "slug": "plated-steelcaps",
+    "name": "Plated Steelcaps",
+    "count": 21,
+    "of": 50
+   },
+   {
+    "slug": "duskblade-of-draktharr",
+    "name": "Duskblade of Draktharr",
+    "count": 21,
+    "of": 50
+   },
+   {
+    "slug": "gluttonous-greaves",
+    "name": "Gluttonous Greaves",
+    "count": 21,
+    "of": 50
+   },
+   {
+    "slug": "thornmail",
+    "name": "Thornmail",
+    "count": 15,
+    "of": 50
+   },
+   {
+    "slug": "mantle-of-the-twelfth-hour",
+    "name": "Mantle of the Twelfth Hour",
+    "count": 10,
+    "of": 50
+   },
+   {
+    "slug": "randuins-omen",
+    "name": "Randuin's Omen",
+    "count": 9,
+    "of": 50
+   },
+   {
+    "slug": "sunfire-aegis",
+    "name": "Sunfire Aegis",
+    "count": 6,
+    "of": 50
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Conqueror",
+    "count": 19,
+    "of": 50
+   },
+   {
+    "name": "First Strike",
+    "count": 14,
+    "of": 50
+   },
+   {
+    "name": "Grasp of the Undying",
+    "count": 13,
+    "of": 50
+   },
+   {
+    "name": "Phase Rush",
+    "count": 2,
+    "of": 50
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Smite",
+    "count": 25,
+    "of": 50
+   },
+   {
+    "pair": "Flash + Ignite",
+    "count": 24,
+    "of": 50
+   },
+   {
+    "pair": "? + ?",
+    "count": 1,
+    "of": 50
+   }
+  ]
+ },
+ "Zoe": {
+  "items": [
+   {
+    "slug": "rabadons-deathcap",
+    "name": "Rabadon's Deathcap",
+    "count": 48,
+    "of": 49
+   },
+   {
+    "slug": "lich-bane",
+    "name": "Lich Bane",
+    "count": 45,
+    "of": 49
+   },
+   {
+    "slug": "infinity-orb",
+    "name": "Infinity Orb",
+    "count": 41,
+    "of": 49
+   },
+   {
+    "slug": "void-staff",
+    "name": "Void Staff",
+    "count": 39,
+    "of": 49
+   },
+   {
+    "slug": "ludens-echo",
+    "name": "Luden's Echo",
+    "count": 26,
+    "of": 49
+   },
+   {
+    "slug": "banshees-veil",
+    "name": "Banshee's Veil",
+    "count": 20,
+    "of": 49
+   },
+   {
+    "slug": "harmonic-echo",
+    "name": "Harmonic Echo",
+    "count": 2,
+    "of": 49
+   },
+   {
+    "slug": "cosmic-drive",
+    "name": "Cosmic Drive",
+    "count": 2,
+    "of": 49
+   },
+   {
+    "slug": "imperial-mandate",
+    "name": "Imperial Mandate",
+    "count": 1,
+    "of": 49
+   }
+  ],
+  "keystones": [
+   {
+    "name": "Electrocute",
+    "count": 33,
+    "of": 49
+   },
+   {
+    "name": "First Strike",
+    "count": 11,
+    "of": 49
+   },
+   {
+    "name": "Aery",
+    "count": 3,
+    "of": 49
+   },
+   {
+    "name": "Dark Harvest",
+    "count": 1,
+    "of": 49
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Flash + Ignite",
+    "count": 41,
+    "of": 49
+   },
+   {
+    "pair": "Barrier + Flash",
+    "count": 4,
+    "of": 49
+   },
+   {
+    "pair": "Exhaust + Flash",
+    "count": 2,
+    "of": 49
+   }
+  ]
+ }
+}

@@ -1,0 +1,268 @@
+"""Aggregate every complete capture session into the site's ladder pulse.
+
+Two outputs:
+
+1. web-next/src/data/ladder_pulse.json -- consumed at build time by the meta
+   page's ladder section, the Hall of Fame page, and the champion combat
+   profiles: global item/keystone/spell meta, per-champion measured profiles
+   (KDA, teamfight, gold, damage dealt/taken, turret pressure, first blood,
+   MVP and S-rating rates, the legendary tax, keystone consensus, build
+   conformity, pentakills, tier composition), cross-champion baselines, and
+   the hall-of-fame superlatives (grinder, perfectionist, KDA king, penta
+   king, MVP machine, the wall, demolition expert, account extremes, guild
+   power ranking, multi-board masters).
+
+2. data/ladder_consensus.json -- the advisor's view of the same evidence:
+   per champion, the top-50 players' item pick rates, keystone shares and
+   spell pairs, injected into the build prompt and used to score generated
+   builds' agreement with the ladder.
+
+Run after extractions (idempotent, only complete sessions count):
+    python -m scripts.build_ladder_pulse
+"""
+from __future__ import annotations
+
+import json
+import sys
+import time
+from collections import Counter, defaultdict
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from scripts.export_captures import (  # noqa: E402
+    find_sessions, _builds_by_rank, _stats_by_rank, _players_by_rank,
+    _read_csv, _slug,
+)
+
+PULSE_OUT = ROOT / "web-next" / "src" / "data" / "ladder_pulse.json"
+CONSENSUS_OUT = ROOT / "data" / "ladder_consensus.json"
+ITEMS = {i["slug"]: i["name"]
+         for i in json.loads((ROOT / "data" / "items.json").read_text(encoding="utf-8"))}
+
+MIN_GAMES_FEATURED = 30   # a superlative needs a real sample behind it
+
+
+def tier_family(tier: str) -> str:
+    """'Legendary Grandmaster IV' -> 'legendary-grandmaster'; strips OCR
+    punctuation ('Challenger:' -> 'challenger')."""
+    words = [w for w in "".join(c for c in tier.lower() if c.isalpha() or c.isspace()).split() if w]
+    if not words:
+        return ""
+    if words[0] == "legendary" and len(words) > 1:
+        return f"legendary-{words[1]}"
+    if words[0] == "ascended":
+        return "legend"
+    return words[0]
+
+
+def _avg(a):
+    a = [x for x in a if x is not None]
+    return round(sum(a) / len(a), 2) if a else None
+
+
+def _median(a):
+    a = sorted(x for x in a if x is not None)
+    return a[len(a) // 2] if a else None
+
+
+def build() -> tuple[dict, dict]:
+    sessions = find_sessions(45)
+    item_global: Counter = Counter()
+    keystone_global: Counter = Counter()
+    spell_global: Counter = Counter()
+    tier_global: Counter = Counter()
+    champions: dict = {}
+    consensus: dict = {}
+    cross: dict[str, list] = defaultdict(list)
+    guilds: Counter = Counter()
+    n_players = n_builds = 0
+
+    # superlative candidate pools: (value, player, champion, detail)
+    pools: dict[str, list] = defaultdict(list)
+
+    for champ, sess in sorted(sessions.items()):
+        rows = _read_csv(sess / "extracted.csv")
+        ids = _players_by_rank(sess)
+        builds = _builds_by_rank(sess)
+        stats = _stats_by_rank(sess)
+        name_by_rank: dict[int, str] = {}
+
+        ks: Counter = Counter()
+        spells: Counter = Counter()
+        items: Counter = Counter()
+        exact: Counter = Counter()
+        for b in builds.values():
+            n_builds += 1
+            if b.get("runes"):
+                ks[b["runes"][0]] += 1
+                keystone_global[b["runes"][0]] += 1
+            if b.get("spells"):
+                pair = " + ".join(sorted(b["spells"]))
+                spells[pair] += 1
+                spell_global[pair] += 1
+            slugs = tuple(sorted(i["slug"] for i in b["items"] if i.get("slug")))
+            for s in slugs:
+                items[s] += 1
+                item_global[s] += 1
+            if len(slugs) >= 5:
+                exact[slugs] += 1
+
+        wrs, r_wr, l_wr = [], [], []
+        kda, tf, gpm, dmg, taken, turret = [], [], [], [], [], []
+        fb, mvp_rate, s_rate, games_r = [], [], [], []
+        pentas = 0
+        tiers: Counter = Counter()
+
+        for r in rows:
+            name = r.get("player_name") or ""
+            try:
+                g = int(float(r["games"]))
+                w = float(r["winrate"])
+            except (TypeError, ValueError):
+                continue
+            rank = int(r["rank"])
+            name_by_rank[rank] = name
+            n_players += 1
+            wrs.append(w)
+            if name:
+                cross[name].append({"champion": champ, "slug": _slug(champ),
+                                    "rank": rank, "wr": w, "games": g})
+            pools["grinder"].append((g, name, champ, f"{w:.1f}% win rate"))
+            if g >= MIN_GAMES_FEATURED:
+                pools["perfectionist"].append((w, name, champ, f"{g} games"))
+
+        for rank, who in ids.items():
+            fam = tier_family(who.get("tier") or "")
+            if fam:
+                tiers[fam] += 1
+                tier_global[fam] += 1
+            if who.get("guild"):
+                guilds[who["guild"]] += 1
+            if who.get("level"):
+                pools["veteran"].append((who["level"], name_by_rank.get(rank, ""), champ, "account level"))
+
+        for rank, q in stats.items():
+            name = name_by_rank.get(rank, "")
+            r0 = q.get("ranked")
+            l0 = q.get("legendary")
+            if r0:
+                g0 = r0.get("games") or 0
+                if r0.get("wr") is not None:
+                    r_wr.append(r0["wr"])
+                for arr, key in ((kda, "kda"), (tf, "tf"), (gpm, "gpm"),
+                                 (dmg, "dmg"), (taken, "taken"), (turret, "turret")):
+                    if r0.get(key) is not None:
+                        arr.append(r0[key])
+                if g0:
+                    games_r.append(g0)
+                    if r0.get("firstBlood") is not None:
+                        fb.append(r0["firstBlood"] / g0 * 100)
+                    if r0.get("mvp") is not None:
+                        mvp_rate.append(r0["mvp"] / g0 * 100)
+                    if r0.get("sRating") is not None:
+                        s_rate.append(r0["sRating"] / g0 * 100)
+                if r0.get("penta"):
+                    pentas += r0["penta"]
+                    pools["pentaKing"].append((r0["penta"], name, champ, f"{g0} games"))
+                if g0 >= MIN_GAMES_FEATURED:
+                    if r0.get("kda") is not None:
+                        pools["kdaKing"].append((r0["kda"], name, champ, f"{g0} games"))
+                    if r0.get("mvp") is not None:
+                        pools["mvpMachine"].append((round(r0["mvp"] / g0 * 100, 1), name, champ,
+                                                    f"{r0['mvp']} MVPs in {g0} games"))
+                    if r0.get("taken") is not None:
+                        pools["wall"].append((r0["taken"], name, champ, "damage taken per match"))
+                    if r0.get("turret") is not None:
+                        pools["demolition"].append((r0["turret"], name, champ, "turret damage per match"))
+            if l0 and (l0.get("games") or 0) >= 10 and l0.get("wr") is not None:
+                l_wr.append(l0["wr"])
+
+        top_ks = ks.most_common(1)
+        top_sp = spells.most_common(1)
+        top_exact = exact.most_common(1)
+        slug = _slug(champ)
+        champions[slug] = {
+            "name": champ,
+            "avgWr": _avg(wrs),
+            "kda": _avg(kda), "teamfight": _avg(tf), "gpm": _avg(gpm),
+            "dmgDealt": _avg(dmg), "dmgTaken": _avg(taken), "turret": _avg(turret),
+            "firstBlood": _avg(fb), "mvpRate": _avg(mvp_rate), "sRate": _avg(s_rate),
+            "gamesMedian": _median(games_r),
+            "legendaryTax": (round(_avg(l_wr) - _avg(r_wr), 1)
+                             if _avg(l_wr) is not None and _avg(r_wr) is not None else None),
+            "keystone": ({"name": top_ks[0][0], "count": top_ks[0][1], "of": len(builds)}
+                         if top_ks else None),
+            "spells": ({"pair": top_sp[0][0], "count": top_sp[0][1], "of": len(builds)}
+                       if top_sp else None),
+            "conformity": ({"count": top_exact[0][1], "of": len(builds)} if top_exact else None),
+            "pentas": pentas,
+            "tiers": dict(tiers.most_common()),
+        }
+        consensus[champ] = {
+            "items": [{"slug": s, "name": ITEMS.get(s, s), "count": c, "of": len(builds)}
+                      for s, c in items.most_common(10)],
+            "keystones": [{"name": k, "count": c, "of": len(builds)} for k, c in ks.most_common(4)],
+            "spells": [{"pair": p, "count": c, "of": len(builds)} for p, c in spells.most_common(3)],
+        }
+
+    def top(pool: str, n: int = 1, reverse: bool = True):
+        rows = sorted(pools[pool], key=lambda x: x[0], reverse=reverse)
+        out = []
+        for v, name, champ, detail in rows[:n]:
+            out.append({"value": v, "player": name, "champion": champ,
+                        "slug": _slug(champ), "detail": detail})
+        return out if n > 1 else (out[0] if out else None)
+
+    multi = sorted(
+        ({"player": name, "boards": sorted(v, key=lambda b: b["rank"])}
+         for name, v in cross.items() if name and len(v) >= 2),
+        key=lambda m: (-len(m["boards"]), min(b["rank"] for b in m["boards"])))
+
+    champs_list = list(champions.values())
+    baseline = {k: _avg([c[k] for c in champs_list])
+                for k in ("kda", "teamfight", "gpm", "dmgDealt", "dmgTaken",
+                          "turret", "firstBlood", "mvpRate")}
+
+    pulse = {
+        "generatedAt": time.strftime("%Y-%m-%d %H:%M"),
+        "nChampions": len(champions),
+        "nPlayers": n_players,
+        "nBuilds": n_builds,
+        "itemMeta": [{"slug": s, "name": ITEMS.get(s, s), "count": c}
+                     for s, c in item_global.most_common(20)],
+        "keystoneMeta": [{"name": k, "count": c} for k, c in keystone_global.most_common(10)],
+        "spellMeta": [{"pair": p, "count": c} for p, c in spell_global.most_common(6)],
+        "tierComposition": dict(tier_global.most_common()),
+        "champions": champions,
+        "baseline": baseline,
+        "hallOfFame": {
+            "grinder": top("grinder"),
+            "perfectionist": top("perfectionist"),
+            "kdaKing": top("kdaKing"),
+            "pentaKing": top("pentaKing"),
+            "mvpMachine": top("mvpMachine"),
+            "wall": top("wall"),
+            "demolition": top("demolition"),
+            "veteran": top("veteran"),
+            "freshest": top("veteran", reverse=False),
+            "guilds": [{"guild": g, "spots": c} for g, c in guilds.most_common(10)],
+            "multiBoard": multi[:12],
+        },
+    }
+    return pulse, consensus
+
+
+def main() -> int:
+    pulse, consensus = build()
+    PULSE_OUT.write_text(json.dumps(pulse, ensure_ascii=False, indent=1), encoding="utf-8")
+    CONSENSUS_OUT.write_text(json.dumps(consensus, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"ladder_pulse.json: {pulse['nChampions']} champions, {pulse['nPlayers']} players, "
+          f"{pulse['nBuilds']} builds -> {PULSE_OUT.relative_to(ROOT)}")
+    print(f"ladder_consensus.json -> {CONSENSUS_OUT.relative_to(ROOT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
