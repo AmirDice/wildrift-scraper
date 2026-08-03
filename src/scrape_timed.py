@@ -814,6 +814,12 @@ def main() -> int:
         print("Press 'p' anytime to pause after the current profile.")
         input("Press Enter to start: ")
 
+        # The carousel installs a self-recovery here: from any wrecked
+        # mid-chain UI state, walk back to the champions page and re-enter
+        # the current champion's leaderboard. run_ranks calls it before
+        # abandoning a champion.
+        recovery: dict = {"fn": None}
+
         def run_ranks() -> int:
             """Capture ranks start..start+n-1 for the CURRENT args.target
             into the CURRENT capture_dir. Returns the number of profiles
@@ -825,6 +831,7 @@ def main() -> int:
             end_rank = args.start_rank + args.n - 1
             successes = 0
             total = 0
+            recoveries = 0
             t0 = time.time()
             try:
                 while current_rank <= end_rank:
@@ -835,10 +842,20 @@ def main() -> int:
                     if tap_y is None:
                         print(f"\n[detect] lost position looking for rank {current_rank}.")
                         if args.unattended:
-                            # Overnight runs cannot wait on a human. Abandon
-                            # this champion: the partial session stays under
-                            # the --skip-existing completeness bar, so the
-                            # next run redoes it from scratch.
+                            # Overnight runs cannot wait on a human. First
+                            # choice: SELF-RECOVER -- re-enter this champion's
+                            # leaderboard from the champions page and continue
+                            # at the same rank. Only when that fails (twice)
+                            # is the champion abandoned; the partial session
+                            # stays under the --skip-existing completeness
+                            # bar, so the next run redoes it from scratch.
+                            if recovery["fn"] is not None and recoveries < 2:
+                                recoveries += 1
+                                print(f"[unattended] self-recovery {recoveries}/2: "
+                                      f"re-entering {args.target}'s leaderboard")
+                                if recovery["fn"]():
+                                    nav.last_center = None
+                                    continue
                             print(f"[unattended] abandoning {args.target} at rank "
                                   f"{current_rank} -- will be redone next run")
                             break
@@ -1002,6 +1019,39 @@ def main() -> int:
                 else:
                     client.back()
                 time.sleep(0.7)
+
+        def reenter_champion() -> bool:
+            """Self-recovery from any wrecked mid-chain state: navigate back
+            to the champions page, page down until the CURRENT champion's row
+            is visible, tap it, and verify the label. True = the leaderboard
+            is open again (at the top; the caller resets position memory)."""
+            target = args.target
+            back_to_champions()
+            for _page in range(12):
+                img = stable_screenshot()
+                slots = scan_champion_rows(img, SCREEN_1_NAME_X_RANGE)
+                if not slots:
+                    return False
+                H = nav.screen_h or img.shape[0]
+                hit = next((y for y, cname in slots
+                            if cname == target and 260 <= y <= H * 0.88), None)
+                if hit is not None:
+                    client.tap(SCREEN_1_ROW_TAP_X, hit, hold_ms=args.tap_hold_ms)
+                    time.sleep(args.step_wait + 0.5)
+                    for _read in range(3):
+                        if read_champion_name(client.screenshot(),
+                                              SCREEN_2_CHAMP_LABEL_REGION) == target:
+                            return True
+                        time.sleep(0.6)
+                    return False
+                y_from = int(H * 0.78)
+                y_to = max(int(H * 0.10), y_from - int(4 * 146))
+                client.swipe(SCREEN_1_ROW_TAP_X, y_from, SCREEN_1_ROW_TAP_X, y_to,
+                             max(500, min(1300, int((y_from - y_to) * 1.8))))
+                time.sleep(0.7)
+            return False
+
+        recovery["fn"] = reenter_champion
 
         prev_names: set[str] = set()
         skip_ys: list[int] = []   # rows on THIS page that resolved to captured champions
