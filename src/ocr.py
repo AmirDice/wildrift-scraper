@@ -787,17 +787,38 @@ def read_champion_name(image: np.ndarray, region: tuple[int, int, int, int]) -> 
     and return the canonical champion name. Returns None if no match."""
     from . import champions as champ_module
 
+    def _match(text: str) -> str | None:
+        tokens = [t for t in text.split() if t.strip()]
+        # Try longest spans first (handles "Master Yi", "Twisted Fate", etc.)
+        for span in range(min(champ_module.MAX_WORD_COUNT, len(tokens)), 0, -1):
+            for start in range(len(tokens) - span + 1):
+                canonical = champ_module.match(tokens[start:start + span])
+                if canonical is not None:
+                    return canonical
+        return None
+
     x, y, w, h = region
     crop = image[y:y + h, x:x + w]
-    result = read_text(crop, GENERAL_TESSERACT_CONFIG)
-    tokens = [t for t in result.text.split() if t.strip()]
-    # Try longest spans first (handles "Master Yi", "Twisted Fate", etc.)
-    for span in range(min(champ_module.MAX_WORD_COUNT, len(tokens)), 0, -1):
-        for start in range(len(tokens) - span + 1):
-            canonical = champ_module.match(tokens[start:start + span])
-            if canonical is not None:
-                return canonical
-    return None
+    if crop.size == 0:
+        return None
+    hit = _match(read_text(crop, GENERAL_TESSERACT_CONFIG).text)
+    if hit is not None:
+        return hit
+    # Global Otsu fails when the label sits on BRIGHT splash art (cream
+    # 'KARMA' over Karma's pale robes read as nothing four sessions in a
+    # row, and the carousel skipped every champion whose art happened to be
+    # light behind the label). Morphological TOPHAT isolates bright
+    # structures narrower than the kernel -- the text strokes -- from any
+    # smooth background, bright or dark; measured as the only pipeline of
+    # seven that read the failing frames. Runs only when the fast path found
+    # nothing, so ordinary frames pay nothing.
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if crop.ndim == 3 else crop
+    gray = cv2.resize(gray, None, fx=3.0, fy=3.0, interpolation=cv2.INTER_CUBIC)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (35, 35))
+    tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, kernel)
+    _, pre = cv2.threshold(tophat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    text, _conf = _run_tesseract(pre, GENERAL_TESSERACT_CONFIG)
+    return _match(text)
 
 
 def find_champion_winrates(
