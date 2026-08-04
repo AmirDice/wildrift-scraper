@@ -3,6 +3,7 @@ import Link from "next/link";
 import { site, getChampions } from "@/lib/data";
 import { Container, Card, SectionHeading } from "@/components/ui";
 import { LadderPulseSection } from "@/components/ladder-pulse-section";
+import { UsageTables } from "@/components/usage-tables";
 import {
   tierDistribution, wrHistogram, wrVsGames, classMeta, roleMeta,
   roleTierMatrix, metaHeadline,
@@ -118,6 +119,9 @@ export default function MetaPage() {
 
       {/* the freshly scraped boards: builds, queues and match-history evidence */}
       <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
+
+      {/* rune and item usage, ordered, with the win rate behind each choice */}
+      <UsageTables />
 
       <p className="mt-10 text-sm text-faint">
         Want the raw ordering instead of the charts?{" "}

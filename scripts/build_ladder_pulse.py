@@ -22,6 +22,7 @@ Run after extractions (idempotent, only complete sessions count):
 """
 from __future__ import annotations
 
+import functools
 import json
 import sys
 import time
@@ -36,6 +37,27 @@ from scripts.export_captures import (  # noqa: E402
     _read_csv, _slug,
 )
 from web.integrity import is_advertising_account  # noqa: E402
+from web.runes import canonical_rune, is_known_rune  # noqa: E402
+
+
+@functools.lru_cache(maxsize=1)
+def _rune_trees() -> dict[str, str]:
+    """{rune name: tree}. Keystones are their own 'tree' in the catalogue, so
+    a keystone's real tree is not recorded -- only minors carry one."""
+    runes = json.loads((ROOT / "data" / "wrmeta_runes.json").read_text(encoding="utf-8"))
+    return {r["name"]: (r.get("tree") or r.get("type") or "") for r in runes}
+
+
+def _weighted(stat: dict) -> float | None:
+    """Games-weighted mean win rate for a usage bucket, or None if too thin.
+
+    Weighting by games matters: a rune carried by one 400-game main should not
+    read the same as one used across forty short samples. The 200-game floor
+    keeps a single lucky player from topping the table.
+    """
+    if stat["games"] < 200:
+        return None
+    return round(stat["wr_games"] / stat["games"], 2)
 
 PULSE_OUT = ROOT / "web-next" / "src" / "data" / "ladder_pulse.json"
 CONSENSUS_OUT = ROOT / "data" / "ladder_consensus.json"
@@ -73,6 +95,18 @@ def build() -> tuple[dict, dict]:
     item_global: Counter = Counter()
     keystone_global: Counter = Counter()
     spell_global: Counter = Counter()
+    tree_global: Counter = Counter()
+    minor_global: Counter = Counter()
+    # {name: {"n": builds, "games": games, "wr_games": winrate*games}} so a
+    # bucket's win rate can be games-weighted rather than a flat average
+    perf: dict[str, dict] = {}
+
+    def _note(bucket: str, name: str, wr, games) -> None:
+        d = perf.setdefault(bucket + "|" + name, {"n": 0, "games": 0, "wr_games": 0.0})
+        d["n"] += 1
+        if wr is not None and games:
+            d["games"] += games
+            d["wr_games"] += wr * games
     tier_global: Counter = Counter()
     champions: dict = {}
     consensus: dict = {}
@@ -100,13 +134,35 @@ def build() -> tuple[dict, dict]:
         spells: Counter = Counter()
         items: Counter = Counter()
         exact: Counter = Counter()
+        # win rate + games for the player who ran each build, so usage can be
+        # weighted by how well it actually performed
+        by_rank = {}
+        for r in rows:
+            try:
+                by_rank[int(r["rank"])] = (float(r["winrate"]), int(float(r["games"])))
+            except (TypeError, ValueError, KeyError):
+                continue
+
         for rank, b in builds.items():
             if rank in blocked:
                 continue
             n_builds += 1
+            wr_g = by_rank.get(rank, (None, None))
             if b.get("runes"):
-                ks[b["runes"][0]] += 1
-                keystone_global[b["runes"][0]] += 1
+                key = canonical_rune(b["runes"][0])
+                ks[key] += 1
+                keystone_global[key] += 1
+                _note("keystone", key, *wr_g)
+                for minor in b["runes"][1:]:
+                    m = canonical_rune(minor)
+                    if not is_known_rune(m):
+                        continue
+                    minor_global[m] += 1
+                    _note("minor", m, *wr_g)
+                    tree = _rune_trees().get(m)
+                    if tree and tree != "Keystone":
+                        tree_global[tree] += 1
+                        _note("tree", tree, *wr_g)
             if b.get("spells"):
                 pair = " + ".join(sorted(b["spells"]))
                 spells[pair] += 1
@@ -115,6 +171,7 @@ def build() -> tuple[dict, dict]:
             for s in slugs:
                 items[s] += 1
                 item_global[s] += 1
+                _note("item", s, *wr_g)
             if len(slugs) >= 5:
                 exact[slugs] += 1
 
@@ -274,6 +331,21 @@ def build() -> tuple[dict, dict]:
                      for s, c in item_global.most_common(20)],
         "keystoneMeta": [{"name": k, "count": c} for k, c in keystone_global.most_common(10)],
         "spellMeta": [{"pair": p, "count": c} for p, c in spell_global.most_common(6)],
+        # Usage tables, ordered. "least used" counts only entries that were
+        # actually seen at least once -- an item nobody built is absent from
+        # the data, not the bottom of the ranking.
+        "treeMeta": [{"name": t, "count": c, "wr": _weighted(perf.get("tree|" + t, {"games": 0}))}
+                     for t, c in tree_global.most_common()],
+        "keystoneAll": [{"name": k, "count": c,
+                         "wr": _weighted(perf.get("keystone|" + k, {"games": 0}))}
+                        for k, c in keystone_global.most_common()],
+        "minorMeta": [{"name": m, "count": c,
+                       "tree": _rune_trees().get(m, ""),
+                       "wr": _weighted(perf.get("minor|" + m, {"games": 0}))}
+                      for m, c in minor_global.most_common()],
+        "itemAll": [{"slug": s, "name": ITEMS.get(s, s), "count": c,
+                     "wr": _weighted(perf.get("item|" + s, {"games": 0}))}
+                    for s, c in item_global.most_common()],
         "tierComposition": dict(tier_global.most_common()),
         "champions": champions,
         "baseline": baseline,

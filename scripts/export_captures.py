@@ -153,9 +153,42 @@ def _players_by_rank(session: Path) -> dict[int, dict]:
     return out
 
 
+def _drop_snapback_duplicates(rows: list[dict]) -> tuple[list[dict], list[int]]:
+    """Remove the same player captured twice from one leaderboard reset.
+
+    The board snaps back to rank 1 every few profile views. When it does so
+    mid-journey the scraper can re-capture a row it already has while
+    believing it is deeper down, which lands the identical player -- same
+    name, score, games and win rate -- under two ranks. The genuine one is
+    the LOWER rank: the snap-back throws us toward the top, so the bogus copy
+    is always the deeper one we thought we had reached.
+
+    Score cannot arbitrate this. What the site stores is each player's
+    HIGHEST ACHIEVED score, not their current one, so it legitimately fails
+    to decrease with rank.
+    """
+    seen: dict[tuple, int] = {}
+    dropped: list[int] = []
+    keep: list[dict] = []
+    for r in sorted(rows, key=lambda x: int(x["rank"])):
+        name = (r.get("player_name") or "").strip()
+        key = (name, r.get("score"), r.get("games"), r.get("winrate"))
+        if name and key in seen:
+            dropped.append(int(r["rank"]))
+            continue
+        if name:
+            seen[key] = int(r["rank"])
+        keep.append(r)
+    return keep, dropped
+
+
 def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
     """(winrates.csv rows, enriched players/<slug>.json payload)."""
     rows = _read_csv(session / "extracted.csv")
+    rows, dropped = _drop_snapback_duplicates(rows)
+    if dropped:
+        print(f"    dropped {len(dropped)} snap-back duplicate(s) at rank(s) "
+              + ", ".join(str(d) for d in dropped))
     ids = _players_by_rank(session)
     builds = _builds_by_rank(session)
     stats = _stats_by_rank(session)
