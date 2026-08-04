@@ -285,7 +285,15 @@ def champion_block(name: str, champions: dict, archetypes: dict, wrmeta: dict,
                      + (f" (mana {mana})" if mana else "")
                      + f": {ability['text']}")
     if meta.get("skillPriority"):
-        lines.append(f"skillPriority={meta['skillPriority']}")
+        # The raw list covers the three BASIC abilities only, and saying just
+        # "1, 2, 3" understated the ultimate into invisibility -- for many
+        # kits the ultimate is the largest single damage source and the thing
+        # the whole build exists to enable. Spell it out.
+        lines.append(
+            f"skillPriority={meta['skillPriority']} (basic abilities only -- the "
+            "ULTIMATE is levelled the moment it is available at 5/9/13, sits outside "
+            "this ordering, and for many kits is the primary damage source or the "
+            "fight-deciding effect; weigh items that amplify or enable it accordingly)")
 
     if derived.get("structuredEffects"):
         lines.append(
@@ -367,27 +375,69 @@ def _consensus_store() -> dict:
     return _CONSENSUS_CACHE
 
 
+#: pick rate at which a ladder item is put in front of the model at all
+LADDER_CORE_RATE = 0.30
+
+
+def ladder_core_slugs(name: str) -> list[str]:
+    """The non-boots slugs the REQUIRED CANDIDATES block will demand scores
+    for -- exposed so the validator can enforce what the prompt asks. The rule
+    lived only in prose until a live Aatrox run silently skipped
+    trinity-force, a core item, and nothing caught it."""
+    rec = _consensus_store().get(name.split(" (")[0])
+    if not rec or not rec.get("items"):
+        return []
+    return [i["slug"] for i in rec["items"]
+            if i.get("of") and i["count"] / i["of"] >= LADDER_CORE_RATE]
+
+
 def ladder_consensus_block(name: str) -> str:
-    """What the top 50 ranked players of this champion ACTUALLY equip,
-    freshly scraped from the live leaderboard. Empirical evidence with the
-    same authority rules as the meta identity card: it constrains archetype
-    drift but never overrides an explicitly requested alternative path."""
+    """The ladder core as a mandatory candidate set -- with its origin hidden.
+
+    The provenance IS the anchor. Every earlier wording named the source, and
+    each time the model deferred to that authority instead of evaluating:
+    shown pick-rate counts ("Kraken Slayer (36/50)") it rubber-stamped the
+    whole core and reported "unchanged" while 100+ single swaps scored higher
+    in the fight engine; told merely that "top ranked players equip these",
+    it reproduced the list verbatim. A model cannot be asked to out-build the
+    ladder while being told the ladder is the answer.
+
+    So the block says nothing about where the list comes from. The items,
+    keystone, minors and spells arrive as required CANDIDATES -- they must
+    enter the evaluation, and any that misses the final build must be argued
+    away, not skipped -- but they carry no counts, no ranking, and no appeal
+    to who runs them. If the ladder is right, the model's own kit analysis
+    should arrive there unprompted (blind-tested on Vayne it found 4 of the
+    6 by itself); where it disagrees, the disagreement gets said out loud
+    instead of being talked out of existence by a headline.
+
+    The wording deliberately names no output field. Pointing at
+    candidateItemScores made the requirement about filling in a schema; the
+    schema section already says where answers go. Boots need no special note
+    either: the list shows the finished tier-3 boot, and boots_block already
+    explains the tier-2 purchase that upgrades into it.
+    """
     rec = _consensus_store().get(name.split(" (")[0])
     if not rec or not rec.get("items"):
         return ""
-    of = rec["items"][0]["of"] if rec["items"] else 0
-    items = ", ".join(f"{i['name']} ({i['count']}/{i['of']})" for i in rec["items"][:8])
+    core = [i for i in rec["items"]
+            if i.get("of") and i["count"] / i["of"] >= LADDER_CORE_RATE]
+    if not core:
+        return ""
     lines = [
-        f"LADDER CONSENSUS (items equipped by the top {of} ranked players of this "
-        "champion, freshly scraped; strong empirical evidence for the standard build):",
-        f"  items: {items}",
+        "REQUIRED CANDIDATES (must be in the initial candidate list you score; "
+        "judge them exactly like every other candidate):",
+        "  items: " + ", ".join(sorted(i["name"] for i in core)),
     ]
     if rec.get("keystones"):
-        lines.append("  keystones: " + ", ".join(
-            f"{k['name']} ({k['count']}/{k['of']})" for k in rec["keystones"]))
+        lines.append("  keystone: " + rec["keystones"][0]["name"])
+    if rec.get("minors"):
+        lines.append("  minor runes: " + ", ".join(m["name"] for m in rec["minors"]))
     if rec.get("spells"):
-        lines.append("  summoner spells: " + ", ".join(
-            f"{s['pair']} ({s['count']}/{s['of']})" for s in rec["spells"]))
+        lines.append("  summoner spells: " + rec["spells"][0]["pair"])
+    lines.append(
+        "  None of these has to reach your final build. For any that does not, "
+        "state why it lost to what you chose instead.")
     return "\n".join(lines)
 
 
@@ -433,9 +483,14 @@ def rules_block(enemies_known: bool, combat_profile: dict) -> str:
     situational = (RULES.get("situationalOnly") or {}).get("slugs", [])
     late = RULES.get("lateGameStrategic") or {}
 
+    has_redundancy = any(not n.startswith("_") and isinstance(g, dict)
+                         for n, g in redundancy.items())
     lines = [
-        "RULES, IN THREE TIERS. Only tier A is absolute. Tier B is a strong default you "
-        "may override with a stated reason. Tier C is preference.",
+        ("RULES, IN THREE TIERS. Only tier A is absolute. Tier B is a strong default "
+         "you may override with a stated reason. Tier C is preference."
+         if has_redundancy else
+         "RULES, IN TWO TIERS. Tier A is absolute. Tier B is preference you may "
+         "override with an argument."),
         "",
         "A. HARD LEGALITY -- the game forbids these; breaking one makes the build "
         "impossible, not merely bad:",
@@ -458,19 +513,27 @@ def rules_block(enemies_known: bool, combat_profile: dict) -> str:
         "- The rune page is 1 keystone + 3 minors from ONE tree, one from each of that "
         "tree's 3 slots, + 1 flex from any tree. The flex must not duplicate a rune "
         "already on the page.",
-        "",
-        "B. REDUNDANCY -- legal, and normally a waste. Build two from a group only when "
-        "you say why the overlap earns its gold:",
     ]
-    for name, group in redundancy.items():
-        if name.startswith("_") or not isinstance(group, dict):
-            continue
-        lines.append(f"    {name}: {', '.join(group['slugs'])}")
-        lines.append(f"      why it is usually wrong: {group.get('why', '')}")
+
+    # Redundancy groups are empty by owner decision (see item_rules.json): the
+    # only group ever defined was grievous-wounds, and it swept in Serylda's
+    # Grudge -- a mainline armor-pen item the ladder pairs freely. The section
+    # renders only if a group is ever added back, and the tier letters shift
+    # so the prompt never shows an empty tier.
+    groups = [(n, g) for n, g in redundancy.items()
+              if not n.startswith("_") and isinstance(g, dict)]
+    next_tier = "B"
+    if groups:
+        lines += ["", "B. REDUNDANCY -- legal, and normally a waste. Build two from a "
+                      "group only when you say why the overlap earns its gold:"]
+        for name, group in groups:
+            lines.append(f"    {name}: {', '.join(group['slugs'])}")
+            lines.append(f"      why it is usually wrong: {group.get('why', '')}")
+        next_tier = "C"
 
     lines += [
         "",
-        "C. DEFAULT STRATEGY -- preferences you may override with an argument:",
+        f"{next_tier}. DEFAULT STRATEGY -- preferences you may override with an argument:",
         # Actives were being skipped almost entirely, because the only thing the
         # prompt said about them was the one-per-build cap under HARD LEGALITY.
         # A rule that appears solely as a restriction teaches avoidance, so the
@@ -513,18 +576,26 @@ def rules_block(enemies_known: bool, combat_profile: dict) -> str:
 # unknown enemy team
 # --------------------------------------------------------------------------
 
+# When no enemy team is supplied, the model used to be told it had "no
+# evidence" of anything -- which is false. Ranked compositions are highly
+# regular, and a build made for the median comp beats a build made for a
+# vacuum: anti-heal, armor pen and MR all have expected value before a single
+# enemy is named (the ladder's top 50 buy them at 60%+ pick with exactly as
+# little information). So the model now builds against the TYPICAL comp,
+# stated as archetypes, while still forbidden from naming specific champions.
 UNKNOWN_ENEMY_BLOCK = (
     "WHEN THE ENEMY TEAM IS UNKNOWN (it is, for this request):\n"
-    "- Do not invent enemy champions, and do not describe threats you were not given.\n"
-    "- Do not assume heavy healing, shielding, critical damage, crowd control or magic "
-    "damage. You have no evidence for any of it.\n"
-    "- Do not invent damage ratios or a damage split for the enemy team.\n"
-    "- Optimise for a robust all-around build: prefer items that hold their value across "
-    "the compositions this champion commonly meets in this role.\n"
-    "- Use situational recommendations to cover the important deviations, each with the "
-    "condition that would trigger it.\n"
-    "- Never call a situational item mandatory. Without a supplied enemy condition there "
-    "is nothing to make it mandatory.\n"
+    "- Assume the typical ranked composition: BARON LANE one tank or bruiser, "
+    "JUNGLE one bruiser, tank or AD assassin, MID one mage or assassin, DRAGON "
+    "LANE one marksman, SUPPORT one enchanter or tank.\n"
+    "- What that implies, and what you may build for: mixed but physical-leaning "
+    "damage from two or three sources, one serious magic threat, a real frontline "
+    "with resistances worth penetrating, meaningful healing and shielding "
+    "somewhere on the team, and some crowd control.\n"
+    "- Do NOT name specific enemy champions, and do not assume an extreme comp "
+    "(full AD, five tanks, triple healer). Reason at the archetype level above.\n"
+    "- Use situational recommendations for the real deviations from that typical "
+    "comp, each with the condition that would trigger it.\n"
     "- Lower `confidence` relative to a fully specified matchup."
 )
 

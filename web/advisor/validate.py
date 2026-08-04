@@ -264,6 +264,7 @@ def validate(
     resolve_summoner=None,
     summoner_icons: dict | None = None,
     identity: dict | None = None,
+    ladder_core: list[str] | None = None,
 ) -> Report:
     """Check and normalise the model's build in place. Returns a Report."""
     report = Report()
@@ -652,6 +653,19 @@ def validate(
     if missing_final:
         report.fail("scores", "every item you selected must also be scored: "
                     + ", ".join(missing_final) + " are missing from candidateItemScores")
+    # The prompt's REQUIRED CANDIDATES (the ladder core, presented without
+    # provenance) demand a score whether or not they reach the build. The rule
+    # lived only in prose until a live Aatrox run silently skipped
+    # trinity-force -- a core item -- and nothing caught it. Boots are exempt
+    # for the same reason selected items' boots are: candidateItemScores never
+    # carries boots, they are argued in bootsReason.
+    missing_core = sorted(
+        s for s in (ladder_core or [])
+        if s not in scored and _completed_non_boots(s) and s not in _SUPPORT_ITEMS)
+    if missing_core:
+        report.fail("scores", "these required candidates must each appear in "
+                              "candidateItemScores with a score and a reason, whether or "
+                              "not they made your build: " + ", ".join(missing_core))
     if candidates and len(candidates) < 12:
         report.warn(f"only {len(candidates)} competitive candidates were scored; the brief asks "
                     "for 15-18 so the comparison is real")

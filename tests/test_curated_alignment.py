@@ -194,13 +194,18 @@ class TestCuratedKitHints:
 
 
 class TestCuratedRulesBlock:
-    def test_it_separates_hard_exclusivity_from_redundancy(self):
+    def test_redundancy_section_is_gone_while_hard_exclusivity_stays(self):
+        """Owner decision (2026-08-04): the redundancy groups are empty -- the
+        only one was grievous-wounds, which swept in Serylda's Grudge, a
+        mainline armor-pen item the ladder pairs freely. Hard exclusivity is a
+        GAME rule and must survive; the redundancy advice must vanish rather
+        than render as an empty header."""
         rules = curated._load(curated.RULES)
         items = {i["slug"]: i for i in curated._load(curated.ITEMS)}
         block = curated._mutex_block(rules, items)
         assert "HARD EXCLUSIVITY" in block
-        assert "REDUNDANCY" in block
-        assert block.index("HARD EXCLUSIVITY") < block.index("REDUNDANCY")
+        assert "REDUNDANCY" not in block
+        assert "why it is usually wrong" not in block
 
     def test_the_system_prompt_states_the_three_tiers(self):
         assert "RULES COME IN THREE TIERS" in curated.SYSTEM

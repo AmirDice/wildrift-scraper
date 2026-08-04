@@ -138,11 +138,19 @@ class TestChampionBlock:
 
 
 class TestRulesTiers:
-    def test_all_three_tiers_are_present_and_distinguished(self, hecarim_unknown):
+    def test_two_tiers_with_no_redundancy_groups(self, hecarim_unknown):
+        """Owner decision (2026-08-04): the redundancy groups are empty -- the
+        only one ever defined was grievous-wounds, and it swept in Serylda's
+        Grudge, a mainline armor-pen item the ladder pairs freely. With no
+        groups the section must VANISH, not render as an empty tier, and the
+        letters must close ranks so the model never sees a gap."""
         assert "A. HARD LEGALITY" in hecarim_unknown
-        assert "B. REDUNDANCY" in hecarim_unknown
-        assert "C. DEFAULT STRATEGY" in hecarim_unknown
-        assert "Only tier A is absolute" in hecarim_unknown
+        assert "B. REDUNDANCY" not in hecarim_unknown
+        assert "why it is usually wrong" not in hecarim_unknown
+        # the factual `grievous-wounds` passive TAG stays on pool lines --
+        # only the redundancy rule about it is gone
+        assert "B. DEFAULT STRATEGY" in hecarim_unknown
+        assert "RULES, IN TWO TIERS" in hecarim_unknown
 
     def test_terminus_appears_in_the_hard_armor_penetration_group(self, hecarim_unknown):
         line = [l for l in hecarim_unknown.splitlines()
@@ -157,9 +165,16 @@ class TestRulesTiers:
 
 
 class TestUnknownEnemyHandling:
-    def test_the_unknown_enemy_block_appears_when_no_enemies_given(self, hecarim_unknown):
+    def test_the_unknown_enemy_block_assumes_the_typical_comp(self, hecarim_unknown):
+        """Owner decision (2026-08-04): "you have no evidence" was false --
+        ranked comps are highly regular, so with no enemies supplied the model
+        builds against the TYPICAL composition, stated as archetypes, and is
+        still forbidden from naming specific champions."""
         assert "WHEN THE ENEMY TEAM IS UNKNOWN" in hecarim_unknown
-        assert "Do not invent enemy champions" in hecarim_unknown
+        assert "typical ranked composition" in hecarim_unknown
+        assert "Do NOT name specific enemy champions" in hecarim_unknown
+        # the old vacuum framing must be gone
+        assert "You have no evidence" not in hecarim_unknown
 
     def test_it_is_absent_when_an_enemy_team_is_supplied(self, hecarim_known):
         assert "WHEN THE ENEMY TEAM IS UNKNOWN" not in hecarim_known
@@ -183,7 +198,7 @@ class TestItemPool:
         assert "guinsoos-rageblade" not in audit_section
 
     def test_the_prompt_is_not_truncated_and_carries_every_section(self, hecarim_unknown):
-        for section in ["CHAMPION: Hecarim", "ROLE: Jungle", "RULES, IN THREE TIERS",
+        for section in ["CHAMPION: Hecarim", "ROLE: Jungle", "RULES, IN TWO TIERS",
                         "BOOTS (pick ONE tier-2", "RUNES (page =", "ITEM POOL"]:
             assert section in hecarim_unknown, section
         assert len(hecarim_unknown) > 40_000

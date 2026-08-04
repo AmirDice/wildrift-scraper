@@ -115,7 +115,10 @@ class TestRedundancyIsAWarningNotAnError:
             "Open on whoever Thornmail punishes hardest and hold Last Stand range.")
         report = check(build, enemies_known=True)
         assert report.ok, report.flat()
-        assert any("grievous-wounds" in w for w in report.warnings)
+        # Owner decision (2026-08-04): the grievous-wounds redundancy group is
+        # gone -- it swept in Serylda's Grudge, a mainline armor-pen item the
+        # ladder pairs freely -- so the pairing now passes with NO warning.
+        assert not any("grievous-wounds" in w for w in report.warnings)
 
 
 class TestBoots:
@@ -623,3 +626,47 @@ class TestBootsFollowTheDamagePath:
         for boots in ("berserkers-greaves", "boots-of-mana", "boots-of-dynamism"):
             build["boots"] = boots
             assert "boots" not in check(build, damage_path="standard").sections(), boots
+
+
+class TestLadderCoreScoring:
+    """The REQUIRED CANDIDATES rule, with teeth.
+
+    The prompt demands a score for every ladder-core item whether or not it
+    reaches the build. That lived only in prose until a live Aatrox run
+    silently skipped trinity-force -- a core item -- and nothing caught it.
+    Now the validator fails the scores section, which the targeted repair
+    loop already knows how to fix.
+    """
+
+    def test_an_unscored_core_item_fails_scores(self, build):
+        scored = {r["item"] for r in build["candidateItemScores"]}
+        assert "kraken-slayer" not in scored, "fixture drifted; pick another slug"
+        report = check(build, ladder_core=["kraken-slayer"])
+        assert not report.ok
+        assert "kraken-slayer" in errors_in(report, "scores")
+
+    def test_a_scored_core_item_passes_even_when_not_built(self, build):
+        build["candidateItemScores"].append(
+            {"item": "kraken-slayer", "score": 55,
+             "reason": "on-hit burst loses to Cleaver shred on this kit"})
+        report = check(build, ladder_core=["kraken-slayer"])
+        assert report.ok, report.flat()
+        assert "kraken-slayer" not in (build.get("items") or [])
+
+    def test_core_boots_are_exempt(self, build):
+        """candidateItemScores never carries boots; they are argued in
+        bootsReason. A tier-3 boot in the ladder core must not demand the
+        impossible."""
+        report = check(build, ladder_core=["gunmetal-greaves", "armored-advance"])
+        assert report.ok, report.flat()
+
+    def test_core_support_items_are_exempt(self, build):
+        """Same carve-out the selected-items check has: the free support item
+        is mandatory for the role, not selected, so there is nothing to score
+        it against."""
+        report = check(build, ladder_core=["black-mist-scythe"])
+        assert report.ok, report.flat()
+
+    def test_no_core_means_no_new_requirement(self, build):
+        assert check(build, ladder_core=None).ok
+        assert check(build, ladder_core=[]).ok

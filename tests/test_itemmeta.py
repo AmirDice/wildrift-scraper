@@ -66,10 +66,19 @@ class TestPreFilter:
         assert len(removed) <= 3
         assert len(kept) > 90
 
-    def test_reactive_items_are_withheld_only_without_an_enemy_team(self):
-        _, removed_unknown = _for("Hecarim", enemies_known=False)
+    def test_reactive_items_stay_in_the_pool_without_an_enemy_team(self):
+        """Owner decision (2026-08-04): reactive items are standard buys, not
+        counter-buys. Mortal Reminder is a 64% pick on Vayne's top 50, bought
+        with no knowledge of the enemy comp either, and the unknown-enemy
+        prompt now assumes a typical composition -- so there IS something to
+        react to. Withholding them asked the model to out-build a ladder it
+        was not allowed to imitate."""
+        kept_unknown, removed_unknown = _for("Hecarim", enemies_known=False)
+        for slug in ("serpents-fang", "mortal-reminder", "maw-of-malmortius"):
+            assert slug in kept_unknown, f"{slug} withheld despite the policy change"
         withheld = {r["item"] for r in removed_unknown}
-        assert "serpents-fang" in withheld
+        assert not {"serpents-fang", "mortal-reminder",
+                    "morellonomicon", "maw-of-malmortius"} & withheld
 
         kept_known, _ = _for("Hecarim", enemies_known=True)
         assert "serpents-fang" in kept_known

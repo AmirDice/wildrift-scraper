@@ -924,6 +924,11 @@ def advise(champion: str, role: str, enemies: list[str],
             # overriding the standard identity on purpose; the lint stands
             # down rather than fight the request it was told to honour.
             identity=identity_card if damage_path == "standard" else None,
+            # The REQUIRED CANDIDATES block demands a score for each ladder
+            # core item; this is the teeth behind that prose. Studio only:
+            # counter mode trades scoring depth for speed on purpose.
+            ladder_core=(prompt_mod.ladder_core_slugs(identity_key)
+                         if mode != "counter" else None),
         )
 
     report = _check(res)
