@@ -93,6 +93,14 @@ SCREEN_1_ROW_TAP_X: int = 1220
 # Screen 2's top-left back chevron (returns to the champions page) and the
 # champion-name label at the bottom-left (authoritative identity check).
 SCREEN_2_BACK_POINT: tuple[int, int] = (172, 47)
+
+# The in-app back chevron on the PROFILE screens (profile, champion and lane,
+# stats, legendary stats) -- measured at (197-202, 47) on all four. Using it
+# instead of SYSTEM back is what stops the profile chain ejecting the app: a
+# system back with the chain one screen shallower than expected walks out of
+# the leaderboard entirely and then opens the quit dialog on the main menu.
+# The chevron can only ever move one level up inside the game.
+PROFILE_BACK_POINT: tuple[int, int] = (200, 50)
 # Wide enough for the longest names ("NUNU & WILLUMP" clipped at 260px and a
 # live run skipped him); verified against every flow frame + the main menu
 # that no other screen shows matchable text in this band at width 700.

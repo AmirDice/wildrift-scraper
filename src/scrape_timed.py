@@ -66,6 +66,7 @@ from .config import (
     SCREEN_2_NAME_X_RANGE,
     SCREEN_1_NAME_X_RANGE,
     SCREEN_1_ROW_TAP_X,
+    PROFILE_BACK_POINT,
     SCREEN_2_BACK_POINT,
     SCREEN_2_BOOK_X,
     SCREEN_2_BUILD_CLOSE,
@@ -528,25 +529,27 @@ def main() -> int:
         _check_pause_or_raise()
 
         if capture_dir is not None and args.stats:
-            # Exit from the stats page is normally two backs (stats -> profile
-            # -> leaderboard), but the chain cannot PROVE it is on the stats
-            # page (a missed tap leaves it one screen shallower, and then a
-            # fixed second back exits the leaderboard to the MAIN MENU -- a
-            # live Karma run died exactly this way). Nor can 'leaderboard'
-            # be recognised by badges alone: the rows repopulate slowly after
-            # backing, and an impatient extra press on a loading list is the
-            # same main-menu exit. The reliable identity signal is the
-            # champion LABEL (bottom-left): it renders with the screen chrome
-            # immediately, appears on NO other screen in the chain (verified
-            # against all ten flow frames and a captured main-menu frame),
-            # and is independent of row loading. So: CHECK for the label
-            # before every press, and never press more than 3 times.
-            # The first press is blind: this code runs right after the stats
-            # phase, so the screen is the stats page (or, if a tap missed,
-            # the profile) -- one back from either depth cannot exit the
-            # leaderboard, and skipping the check saves a screenshot round.
-            client.back()
-            time.sleep(args.step_wait + 0.3)
+            # Leave the profile with the game's OWN back chevron, never system
+            # back. Every profile screen (profile, champion and lane, stats,
+            # legendary) carries it at PROFILE_BACK_POINT, and it can only move
+            # one level up INSIDE the game. System back could not: with the
+            # chain one screen shallower than expected it walked out of the
+            # leaderboard entirely, and the next press on the main menu opened
+            # the quit dialog -- which is how runs kept ending up ejected.
+            #
+            # The count is known: from the stats page it is EXACTLY TWO taps
+            # back to the leaderboard (owner-confirmed). So both are taken
+            # up front, and verification only decides whether a THIRD is
+            # needed -- which happens when an earlier tap in the chain missed
+            # and we started one screen shallower.
+            for _ in range(2):
+                client.tap(*PROFILE_BACK_POINT, hold_ms=args.tap_hold_ms)
+                time.sleep(args.step_wait + 0.3)
+
+            # Identity check: the champion LABEL (bottom-left) renders with the
+            # screen chrome immediately and appears on no other screen in the
+            # chain, so unlike the rank badges it does not depend on the row
+            # list finishing its reload. Give it a moment before spending a tap.
             for _press in range(3):
                 img_chk = client.screenshot()
                 if read_champion_name(img_chk, SCREEN_2_CHAMP_LABEL_REGION) is not None:
@@ -554,8 +557,7 @@ def main() -> int:
                 try:
                     # RAW scan, not the self-relocating wrapper: mid-chain
                     # screens read as empty, and an empty read sends the
-                    # wrapper into its ~15s column-relocation sweep -- twice
-                    # per back-out, which tripled the profile time.
+                    # wrapper into its ~15s column-relocation sweep.
                     ranks_chk, _pchk = scan_visible_ranks(
                         img_chk, badge_x, expected_pitch=nav.last_pitch)
                     if len(ranks_chk) >= 3:
@@ -564,17 +566,17 @@ def main() -> int:
                     break
                 except Exception:   # noqa: BLE001 -- scan hiccup: label rules anyway
                     pass
-                # Already out of the leaderboard: pressing again only digs
-                # deeper (on the main menu, back opens the quit dialog). Stop
-                # and let the caller's recovery climb back in.
                 if _looks_like_main_menu(img_chk):
                     print("  [detect] back-out overshot to the MAIN MENU -- stopping, "
                           "recovery will re-enter")
                     break
+                if _press == 0:
+                    time.sleep(0.6)     # still settling: wait before tapping again
+                    continue
                 if _press == 2:
-                    print("  [detect] back-out could not verify the leaderboard -- stopping presses")
+                    print("  [detect] back-out could not verify the leaderboard -- stopping")
                     break
-                client.back()
+                client.tap(*PROFILE_BACK_POINT, hold_ms=args.tap_hold_ms)
                 time.sleep(args.step_wait + 0.3)
         else:
             client.tap(*s5_back, hold_ms=args.tap_hold_ms)
@@ -974,7 +976,10 @@ def main() -> int:
                                         break
                                 except Exception:  # noqa: BLE001
                                     pass
-                                client.back()
+                                # chevron, not system back: this is the same
+                                # profile chain, and system back here is what
+                                # walked runs out to the main menu
+                                client.tap(*PROFILE_BACK_POINT, hold_ms=args.tap_hold_ms)
                                 time.sleep(0.4)
                         # Whatever happened, re-detect before the next attempt —
                         # the list may have snapped back mid-recovery.
@@ -1134,7 +1139,10 @@ def main() -> int:
                     continue        # next loop: the tab-bar case taps CHAMPION
                 if at_menu:
                     continue        # never system-back from the menu
-                client.back()
+                # Unrecognised screen. Every screen in this flow carries the
+                # in-app chevron, so prefer it; a tap that lands on nothing is
+                # harmless, whereas system back can leave the game entirely.
+                client.tap(*PROFILE_BACK_POINT, hold_ms=args.tap_hold_ms)
                 time.sleep(0.7)
 
         def reenter_champion() -> bool:
@@ -1443,9 +1451,11 @@ def main() -> int:
                         except Exception:
                             print(f"  exception on attempt {attempt + 1}:")
                             traceback.print_exc()
-                            # Hardware-back recovery
+                            # In-app chevron recovery (legacy timed mode).
+                            # Hardware back was used here too and carries the
+                            # same ejection risk.
                             for _ in range(3):
-                                client.back()
+                                client.tap(*PROFILE_BACK_POINT, hold_ms=args.tap_hold_ms)
                                 time.sleep(0.2)
 
                     if not pause_mid_profile:
