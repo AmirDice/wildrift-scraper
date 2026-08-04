@@ -44,6 +44,7 @@ from .ocr import (
     scan_visible_ranks,
 )
 from .storage import CSVWriter, LeaderboardRow
+from .tiers import canonical_tier, resolve_tier
 
 
 def _load_manifest(capture_dir: Path) -> list[dict]:
@@ -454,6 +455,25 @@ def main() -> int:
                         print(f"  [build] rank {rank}: {unresolved} icon slot(s) unresolved")
                 except Exception as exc:  # noqa: BLE001 -- keep the model's read
                     print(f"  [icons] rank {rank}: {exc}")
+            # The popup card animates in, so a screenshot taken a beat early
+            # catches it before the tier line paints -- 71 of 686 captured
+            # players had no tier. The STATS page prints the same tier and is
+            # already captured, so ask it rather than lose the field. The
+            # canonicaliser also drops sub-Diamond readings: those are the
+            # player's Adventure-mode rank shown in the ranked slot, and
+            # nobody below Diamond is in a champion's top 50.
+            if popup is not None:
+                before = popup.get("tier")
+                popup["tier"] = resolve_tier(
+                    before, *(s.get("tier") for s in stats_by_queue.values()))
+                if popup["tier"] != before:
+                    if not popup["tier"]:
+                        where = "dropped, not a ranked tier"
+                    elif canonical_tier(before):
+                        where = "cleaned"       # the popup's own value, titled
+                    else:
+                        where = "from stats page"
+                    print(f"  [tier] rank {rank}: {before!r} -> {popup['tier']!r} ({where})")
             return rank, popup, stats_by_queue, build
 
         has_extras = any(e.get("popup_frame") or e.get("stats_frames") or e.get("build_frame")
