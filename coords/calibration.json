@@ -1,6 +1,10 @@
 {
   "badge_x0": 985,
   "badge_x1": 1155,
-  "fling_rows": 11.4,
-  "profile_name": "wrtruemeta"
+  "fling_rows": 12.9,
+  "profile_name": "wrtruemeta",
+  "badge_x_ref": [
+    985,
+    1155
+  ]
 }

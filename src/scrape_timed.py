@@ -638,6 +638,20 @@ def main() -> int:
         else:
             badge_x = SCREEN_2_BADGE_X_RANGE
         fling_rows = float(cal.get("fling_rows", 10.0))  # rows one fling moves; self-tunes
+        # The trusted column for this device. Relocation is measured against
+        # this and it is never rewritten by a relocation, so drift cannot
+        # accumulate. Seeded once from the calibrated value.
+        badge_ref = tuple(cal.get("badge_x_ref") or badge_x)
+        if list(badge_ref) != list(cal.get("badge_x_ref") or []):
+            save_calibration({"badge_x_ref": list(badge_ref)})
+        # If a previous run persisted a drifted column, snap back to the
+        # reference rather than starting the session already lost.
+        if (min(badge_x[1], badge_ref[1]) - max(badge_x[0], badge_ref[0])
+                < 0.7 * (badge_ref[1] - badge_ref[0])):
+            print(f"  [detect] stored badge column x={badge_x} disagrees with the device "
+                  f"reference x={badge_ref} -- resetting to the reference")
+            badge_x = badge_ref
+            save_calibration({"badge_x0": badge_x[0], "badge_x1": badge_x[1]})
 
         low_reads = 0
 
@@ -667,15 +681,18 @@ def main() -> int:
                          or abs(pitch2 - nav.last_pitch) / nav.last_pitch <= 0.3)
                     and (hint is None
                          or abs((min(ranks2) + max(ranks2)) / 2 - hint) <= 8)
-                    # A real column DRIFTS (the clipping fix moved it ~30px);
-                    # it never teleports. A candidate that does not even
-                    # overlap the proven column is another screen's digits:
-                    # a run with hint=None once accepted x=(835,1005) mid
-                    # back-out, saved it, and every later scan of a perfect
-                    # leaderboard failed. Refuse, never persist.
+                    # Judged against the IMMUTABLE reference column, never
+                    # against the current one. Comparing to the current value
+                    # is a ratchet: a live run walked (985,1155) -> (1060,1230)
+                    # -> (1135,1305) in two hops that each overlapped their
+                    # predecessor by 95px, landed on the player avatars, saved
+                    # that, and every champion afterwards read nothing. The
+                    # leaderboard layout does not move on a given device, so a
+                    # proposal far from the reference is another screen's
+                    # digits, however plausible it looks on its own.
                     and rng is not None
-                    and min(rng[1], badge_x[1]) - max(rng[0], badge_x[0])
-                        >= 0.5 * (badge_x[1] - badge_x[0])
+                    and min(rng[1], badge_ref[1]) - max(rng[0], badge_ref[0])
+                        >= 0.7 * (badge_ref[1] - badge_ref[0])
                 )
                 if ok:
                     badge_x = rng
