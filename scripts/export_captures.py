@@ -34,11 +34,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.tiers import canonical_tier  # noqa: E402
 from web.integrity import HIDDEN_LABEL, is_advertising_account  # noqa: E402
 
 CAPTURES = ROOT / "data" / "captures"
 WINRATES = ROOT / "data" / "winrates.csv"
 PLAYERS_DIR = ROOT / "web-next" / "public" / "players"
+INDEX_FILE = ROOT / "web-next" / "public" / "player-index.json"
 
 CSV_COLUMNS = ["champion", "rank", "player_name", "score", "games", "winrate", "captured_at"]
 
@@ -146,7 +148,12 @@ def _players_by_rank(session: Path) -> dict[int, dict]:
         tag = (r.get("riot_tag") or "").strip()
         out[rank] = {
             "tag": tag if tag and tag.lower() != "error" else None,
-            "tier": (r.get("tier") or "").strip() or None,
+            # Canonicalised on the way out as well as on the way in, so
+            # sessions extracted before the tier rules existed are cleaned
+            # without re-running their extraction. A sub-Diamond reading is
+            # the player's Adventure rank sitting in the ranked slot, not a
+            # Gold player in a champion's top 50.
+            "tier": canonical_tier(r.get("tier")),
             "level": _int(r.get("level")),
             "guild": (r.get("guild") or "").strip() or None,
         }
@@ -226,6 +233,76 @@ def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
     return csv_rows, payload
 
 
+def tag_hash(tag: str | None) -> str | None:
+    """FNV-1a 32-bit of the folded riot tag, or None.
+
+    The tag is a SEARCH KEY, never a published field. Shipping it in plaintext
+    would turn player-index.json into a tag directory that anyone can download
+    -- exactly what showing tags on the page would do, only worse, because it
+    is machine-readable and complete. Storing the hash keeps the "search by
+    #tag if you already know it" behaviour while the file itself reveals none.
+
+    FNV rather than a crypto hash because the client has to compute the same
+    value from what the user typed, and this is obfuscation, not secrecy: tags
+    are short enough that anyone determined could enumerate the space. It stops
+    the index being a bulk source of tags, which is the actual concern.
+    """
+    folded = re.sub(r"\s+", "", (tag or "")).lower()
+    if not folded:
+        return None
+    h = 0x811C9DC5
+    for ch in folded:
+        h = ((h ^ ord(ch)) * 0x01000193) & 0xFFFFFFFF
+    return f"{h:08x}"
+
+
+def build_player_index(payloads: list[dict]) -> dict:
+    """One searchable record per player, across every champion board.
+
+    The per-champion files answer "who is best at Vayne". This answers the
+    other direction -- "what is this player good at" -- which is only visible
+    once the boards are joined, because a strong player shows up on several.
+
+    Joined on the display name. There is no account id in any of this: the
+    boards print a name and sometimes a riot tag, so the name IS the key.
+    That means two different people sharing a name would merge, which is why
+    the tag is carried and shown wherever the game gave us one.
+
+    Boosting adverts are omitted entirely rather than listed without a name.
+    Their rows stay on the champion boards so the ladder is still a faithful
+    mirror, but making them FINDABLE is the one thing the policy exists to
+    prevent -- the name is the advertisement.
+    """
+    by_name: dict[str, dict] = {}
+    for payload in payloads:
+        slug = payload["slug"]
+        for p in payload["players"]:
+            if p.get("hidden"):
+                continue
+            name = (p.get("p") or "").strip()
+            if not name:
+                continue
+            rec = by_name.setdefault(name.casefold(), {
+                "n": name, "th": None, "tier": None, "lv": None, "c": [],
+            })
+            # Identity fields repeat per board; keep the first non-empty and
+            # prefer the highest level seen, since it only ever goes up.
+            # `th` is the HASHED tag -- see tag_hash. There is deliberately no
+            # plaintext tag field anywhere in this file.
+            rec["th"] = rec["th"] or tag_hash(p.get("tag"))
+            rec["tier"] = rec["tier"] or p.get("tier")
+            if p.get("level") is not None:
+                rec["lv"] = max(rec["lv"] or 0, int(p["level"]))
+            rec["c"].append({
+                "s": slug, "r": p.get("r"), "w": p.get("w"),
+                "g": p.get("g"), "sc": p.get("s"),
+            })
+    for rec in by_name.values():
+        rec["c"].sort(key=lambda e: (e["r"] is None, e["r"]))
+    players = sorted(by_name.values(), key=lambda r: (-len(r["c"]), r["n"].casefold()))
+    return {"players": players}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--min-ranks", type=int, default=45,
@@ -247,9 +324,11 @@ def main() -> int:
 
     PLAYERS_DIR.mkdir(parents=True, exist_ok=True)
     new_rows: list[dict] = []
+    payloads: list[dict] = []
     for champ, session in sorted(sessions.items()):
         csv_rows, payload = export_champion(champ, session)
         new_rows.extend(csv_rows)
+        payloads.append(payload)
         out = PLAYERS_DIR / f"{payload['slug']}.json"
         out.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
         n_builds = sum(1 for p in payload["players"] if p.get("build"))
@@ -257,8 +336,14 @@ def main() -> int:
         print(f"  {champ}: {len(csv_rows)} rows, {n_builds} builds, {n_stats} stat sets "
               f"({session.name}) -> {out.relative_to(ROOT)}")
 
+    index = build_player_index(payloads)
+    INDEX_FILE.write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
+    multi = sum(1 for p in index["players"] if len(p["c"]) > 1)
+    print(f"\nplayer-index.json: {len(index['players'])} players "
+          f"({multi} on more than one board) -> {INDEX_FILE.relative_to(ROOT)}")
+
     if args.players_only:
-        print("\n--players-only: winrates.csv left untouched")
+        print("--players-only: winrates.csv left untouched")
         return 0
 
     with WINRATES.open("w", encoding="utf-8", newline="") as f:

@@ -6,6 +6,7 @@ import items from "@/data/items.json";
 import runeIcons from "@/data/rune_icons.json";
 import spells from "@/data/spells.json";
 import { NextStep } from "@/components/next-step";
+import { PlayerQuickSearch } from "@/components/player-quick-search";
 
 // This is the page the site genuinely ranks for: "wild rift leaderboard" sits
 // around position 6-8 and "wild rift leaderboard eu" around 3, where the head
@@ -55,6 +56,16 @@ export default function LeaderboardPage() {
           <span className="text-faint"> Data collected {site.collectedOn}.</span>
         )}
       </p>
+      {/* Looking for a person rather than a champion. Sits above the board
+          because someone who arrived with a name in mind should not have to
+          scan a champion table first. */}
+      <section className="mt-8 sm:max-w-sm">
+        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+          Looking for a player?
+        </p>
+        <PlayerQuickSearch />
+      </section>
+
       <section id="players" className="mt-8 scroll-mt-24">
         <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table, with builds, ranked tiers and per-queue stats where freshly captured" />
         <LeaderboardView
@@ -66,7 +77,7 @@ export default function LeaderboardPage() {
           )}
         />
       </section>
-      <NextStep steps={["build", "meta"]} />
+      <NextStep steps={["player", "build", "meta"]} />
 
     </Container>
   );

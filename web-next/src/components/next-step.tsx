@@ -51,6 +51,12 @@ const STEPS: Record<string, Step> = {
     body: "The top 50 on every champion, with the builds, runes and per-queue stats they actually run.",
     cta: "Browse leaderboards",
   },
+  player: {
+    href: "/player",
+    title: "Look up a player",
+    body: "Search anyone on a top 50 board and see every champion they rank on, with their win rate on each.",
+    cta: "Open player search",
+  },
   champions: {
     href: "/champions",
     title: "Dig into one champion",

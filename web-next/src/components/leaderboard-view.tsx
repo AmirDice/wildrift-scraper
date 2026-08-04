@@ -5,6 +5,10 @@ import Link from "next/link";
 import { TierChip } from "@/components/ui";
 import { ChampionCombobox } from "@/components/champion-combobox";
 import { BestPlayerBuild } from "@/components/best-player-build";
+import { Glyph, GLYPHS, Laurel } from "@/components/insignia";
+import { TierBadge, tierParts } from "@/components/tier-badge";
+import { QueuePanel } from "@/components/queue-panel";
+import type { QueueStats } from "@/lib/player-index";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 
 export type SlimChampion = {
@@ -21,25 +25,6 @@ export type SlimChampion = {
 };
 
 type Row = { r: number; p: string; w: number | null; g: number | null; s: number | null };
-
-type QueueStats = {
-  games: number | null;
-  wr: number | null;
-  kda: number | null;
-  tf: number | null;
-  gpm: number | null;
-  dmg: number | null;
-  taken: number | null;
-  turret: number | null;
-  mvp: number | null;
-  sRating: number | null;
-  aRating: number | null;
-  legendary: number | null;
-  penta: number | null;
-  quadra: number | null;
-  triple: number | null;
-  firstBlood: number | null;
-};
 
 type EnrichedPlayer = Row & {
   tag: string | null;
@@ -61,57 +46,156 @@ type SortKey = "r" | "w" | "g" | "s";
 
 const num = (v: number | null | undefined) => (v == null ? -Infinity : v);
 
-/* Every tier family has real emblem art in /public/tiers: the standard
-   ladder (Season 2019 crests + WR Emerald/Sovereign, .webp) and the
-   Legendary Ranked ladder (owner-supplied art, .png). Unknown strings
-   fall back to a text chip. */
-const TIER_ICONS: Record<string, string> = {
-  iron: "iron.webp", bronze: "bronze.webp", silver: "silver.webp",
-  gold: "gold.webp", platinum: "platinum.webp", emerald: "emerald.webp",
-  diamond: "diamond.webp", master: "master.webp", grandmaster: "grandmaster.webp",
-  challenger: "challenger.webp", sovereign: "sovereign.webp",
-  "legendary-master": "legendary-master.png",
-  "legendary-grandmaster": "legendary-grandmaster.png",
-  "legendary-challenger": "legendary-challenger.png",
-  "legendary-commander": "legendary-commander.png",
-  legend: "legend.png",
-};
-
-function tierParts(tier: string): { family: string; roman: string } {
-  const words = tier.trim().toLowerCase().replace(/[^a-z\si]/g, "").split(/\s+/);
-  let family = words[0] ?? "";
-  // Legendary Ranked tiers are two words ("Legendary Grandmaster IV");
-  // "Legend" and "Ascended Legend" share the Legend art.
-  if (family === "legendary" && words[1]) family = `legendary-${words[1]}`;
-  if (family === "ascended") family = "legend";
-  const roman = tier.match(/\b(I{1,3}|IV|V)\b/)?.[1] ?? "";
-  return { family, roman };
+/* The enriched row for the champion's best player, or null.
+ *
+ * Rank alone is NOT enough to join these two sources. `bestPlayer` comes from
+ * site.json (built from winrates.csv) while the enriched rows come from the
+ * per-champion capture export, and the two are refreshed independently -- so
+ * during a collection they routinely describe different ladders. Joining on
+ * rank put "247 games" beside a name belonging to somebody else entirely.
+ *
+ * The name has to agree too. When it does not, the spotlight simply shows
+ * less, which is the correct amount to show about a player we cannot identify.
+ */
+function matchBestPlayer(
+  champ: SlimChampion,
+  enriched: EnrichedPayload | null,
+): EnrichedPlayer | null {
+  const bp = champ.bestPlayer;
+  if (!bp || bp.rank == null || !enriched) return null;
+  const row = enriched.players.find((p) => p.r === bp.rank);
+  if (!row || row.hidden) return null;
+  const norm = (s: string | null | undefined) =>
+    (s ?? "").toLowerCase().replace(/\s+/g, "");
+  return norm(row.p) && norm(row.p) === norm(bp.player) ? row : null;
 }
 
-function TierBadge({ tier, size = 18 }: { tier: string; size?: number }) {
-  const { family, roman } = tierParts(tier);
-  const icon = TIER_ICONS[family];
-  if (icon) {
-    return (
-      <span className="inline-flex items-center gap-0.5" title={tier}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`/tiers/${icon}`}
-          alt={tier}
-          width={size}
-          height={size}
-          loading="lazy"
-          className="shrink-0 object-contain"
-          style={{ width: size, height: size }}
-        />
-        {roman && <span className="text-[0.6rem] font-bold text-muted">{roman}</span>}
-      </span>
-    );
-  }
+/* The champion header, and the crowning of its best player.
+ *
+ * The old version put the champion and the player side by side in the same
+ * visual weight, both on top of a triple-stacked scrim that turned the splash
+ * to mud. Nothing looked like the subject. This gives the two jobs different
+ * treatments: the champion identifies the page, quietly; the best player is
+ * the thing being celebrated, so it gets the gold, the crown, the laurels and
+ * the only large number on the card.
+ *
+ * The splash is cropped to 25% from the top because champion art puts the
+ * character's head in the upper third, and bg-center reliably decapitated
+ * them.
+ */
+function ChampionSpotlight({
+  champ,
+  best,
+}: {
+  champ: SlimChampion;
+  best: EnrichedPlayer | null;
+}) {
+  const bp = champ.bestPlayer;
   return (
-    <span className="rounded bg-white/10 px-1 py-px text-[0.6rem] font-bold text-muted" title={tier}>
-      {tier}
-    </span>
+    <div className="relative mb-6 overflow-hidden rounded-2xl border border-line">
+      <div
+        className="absolute inset-0 bg-cover"
+        style={{ backgroundImage: `url(${champ.splash})`, backgroundPosition: "center 25%" }}
+      />
+      {/* One horizontal scrim, not three: text sits on solid ground at the
+          left while the art stays legible on the right. */}
+      <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/92 to-bg/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent" />
+      {/* A warm glow under the spotlight panel, so the celebration reads
+          before any of the words do. */}
+      {bp && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 top-1/2 hidden h-72 w-72 -translate-y-1/2 rounded-full sm:block"
+          style={{ background: "radial-gradient(circle, rgb(234 179 8 / 0.16), transparent 68%)" }}
+        />
+      )}
+
+      <div className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+        <div className="min-w-0">
+          <Link
+            href={`/champions/${champ.slug}`}
+            className="group inline-flex items-center gap-3.5 transition hover:opacity-95"
+          >
+            <span
+              className={`h-16 w-16 shrink-0 overflow-hidden rounded-full ${
+                champ.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/20"
+              }`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={champ.icon}
+                alt=""
+                width={64}
+                height={64}
+                className="h-full w-full scale-[1.12] object-cover"
+              />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-2xl font-semibold leading-tight tracking-tight">
+                {champ.name}
+              </span>
+              <span className="block text-xs uppercase tracking-[0.16em] text-muted">
+                {champ.role} · {champ.class}
+              </span>
+            </span>
+          </Link>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <TierChip tier={champ.tier} />
+            <span className="rounded-md border border-line bg-white/[0.04] px-2 py-0.5 text-sm font-semibold tabular-nums text-accent">
+              {champ.wr.toFixed(1)}% win rate
+            </span>
+          </div>
+        </div>
+
+        {bp && (
+          <div className="relative w-full shrink-0 overflow-hidden rounded-xl border border-gold/35 bg-black/35 px-5 py-4 backdrop-blur-sm sm:w-auto sm:min-w-[17rem]">
+            <div className="flex items-center gap-2 text-gold">
+              <Glyph d={GLYPHS.crown} className="text-gold" size={18} />
+              <span className="text-[0.65rem] font-bold uppercase tracking-[0.2em]">
+                Best {champ.name}
+              </span>
+            </div>
+            <div className="mt-2 flex items-center gap-2.5">
+              <Laurel size={26} />
+              <p className="min-w-0 flex-1 truncate text-2xl font-semibold leading-tight text-gold">
+                {bp.player}
+              </p>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-gold/20 pt-3 text-xs text-muted">
+              {bp.rank != null && (
+                <span className="font-semibold text-text">#{bp.rank} on the board</span>
+              )}
+              {bp.confidence_wr != null && (
+                <span className="tabular-nums">{bp.confidence_wr.toFixed(1)}% adjusted</span>
+              )}
+              {best?.g != null && <span className="tabular-nums">{best.g} games</span>}
+              {best?.tier && <TierBadge tier={best.tier} size={18} />}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* One ladder's worth of "emblem xN". The Ranked and Legendary Ranked queues
+   each get their own, because they are separate ladders: a Legendary Master
+   listed between Master and Grandmaster reads as one continuous ranking, and
+   it is not one. */
+function TierSpread({ label, rows }: { label: string; rows: [string, number][] }) {
+  return (
+    <div>
+      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">{label}</p>
+      <div className="mt-1.5 flex items-center gap-2">
+        {rows.map(([family, n]) => (
+          <span key={family} className="inline-flex items-center gap-0.5 text-xs text-muted">
+            <TierBadge tier={family} size={22} />
+            ×{n}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -193,10 +277,22 @@ function ChampionPulse({ payload, icons, runeIcons, spellIcons }: {
     const tiers = new Map<string, number>();
     for (const p of players) {
       if (!p.tier) continue;
-      const family = p.tier.split(" ")[0];
+      // Group by the SAME family the badge draws. Taking the first word
+      // collapsed the whole Legendary Ranked ladder -- Master, Grandmaster,
+      // Challenger and Commander -- into one bucket called "Legendary",
+      // which is four different tiers counted as one and drawn with no
+      // emblem, since "legendary" alone owns no art.
+      const { family } = tierParts(p.tier);
       tiers.set(family, (tiers.get(family) ?? 0) + 1);
     }
-    const tierSpread = [...tiers.entries()].sort((a, b) => b[1] - a[1]);
+    // Two ladders, two rows. Legendary Ranked is a separate queue with its
+    // own tiers, so a Legendary Master sitting between Master and Grandmaster
+    // reads as if it were part of one ordered ladder, which it is not. Each
+    // player holds exactly one tier, so the split partitions them cleanly.
+    const byCount = (a: [string, number], b: [string, number]) => b[1] - a[1];
+    const entries = [...tiers.entries()];
+    const tierSpread = entries.filter(([f]) => !f.startsWith("legendary")).sort(byCount);
+    const legendarySpread = entries.filter(([f]) => f.startsWith("legendary")).sort(byCount);
 
     const kdas = players.map((p) => p.stats?.ranked?.kda).filter((v): v is number => v != null);
     const avgKda = kdas.length ? kdas.reduce((a, b) => a + b, 0) / kdas.length : null;
@@ -238,7 +334,7 @@ function ChampionPulse({ payload, icons, runeIcons, spellIcons }: {
     const firstBlood = mean(fbRates);
     const pentas = players.reduce((acc, p) => acc + (p.stats?.ranked?.penta ?? 0), 0);
 
-    return { topItems, tierSpread, avgKda, topKeystone, topSpells, conformity,
+    return { topItems, tierSpread, legendarySpread, avgKda, topKeystone, topSpells, conformity,
              legendaryTax, firstBlood, pentas, nBuilds: withBuild.length };
   }, [payload]);
 
@@ -261,17 +357,10 @@ function ChampionPulse({ payload, icons, runeIcons, spellIcons }: {
         </div>
       </div>
       {pulse.tierSpread.length > 0 && (
-        <div>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Ranked tiers</p>
-          <div className="mt-1.5 flex items-center gap-2">
-            {pulse.tierSpread.map(([family, n]) => (
-              <span key={family} className="inline-flex items-center gap-0.5 text-xs text-muted">
-                <TierBadge tier={family} size={22} />
-                ×{n}
-              </span>
-            ))}
-          </div>
-        </div>
+        <TierSpread label="Ranked tiers" rows={pulse.tierSpread} />
+      )}
+      {pulse.legendarySpread.length > 0 && (
+        <TierSpread label="Legendary Ranked" rows={pulse.legendarySpread} />
       )}
       {pulse.avgKda != null && (
         <div>
@@ -332,36 +421,6 @@ function ChampionPulse({ payload, icons, runeIcons, spellIcons }: {
           <p className="mt-1.5 text-sm font-semibold text-gold tabular-nums">{pulse.pentas}</p>
         </div>
       )}
-    </div>
-  );
-}
-
-function StatCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="text-[0.6rem] uppercase tracking-wide text-faint">{label}</p>
-      <p className="text-sm font-medium tabular-nums">{value}</p>
-    </div>
-  );
-}
-
-function QueuePanel({ title, s }: { title: string; s: QueueStats }) {
-  const fmt = (v: number | null, suffix = "") => (v == null ? "-" : `${v.toLocaleString()}${suffix}`);
-  return (
-    <div className="rounded-xl border border-line/70 bg-black/20 p-3">
-      <p className="mb-2 text-xs font-semibold text-muted">{title}</p>
-      <div className="grid grid-cols-3 gap-x-4 gap-y-2 sm:grid-cols-5">
-        <StatCell label="Games" value={fmt(s.games)} />
-        <StatCell label="Win rate" value={s.wr == null ? "-" : `${s.wr.toFixed(1)}%`} />
-        <StatCell label="KDA" value={fmt(s.kda)} />
-        <StatCell label="Teamfight" value={s.tf == null ? "-" : `${s.tf.toFixed(1)}%`} />
-        <StatCell label="Gold/min" value={fmt(s.gpm)} />
-        <StatCell label="Dmg dealt" value={fmt(s.dmg)} />
-        <StatCell label="Dmg taken" value={fmt(s.taken)} />
-        <StatCell label="MVPs" value={fmt(s.mvp)} />
-        <StatCell label="S ratings" value={fmt(s.sRating)} />
-        <StatCell label="Multikills" value={fmt((s.penta ?? 0) + (s.quadra ?? 0) + (s.triple ?? 0))} />
-      </div>
     </div>
   );
 }
@@ -512,60 +571,8 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
         />
       </div>
 
-      {/* Best-player splash highlight */}
       {champ && (
-        <div className="relative mb-6 overflow-hidden rounded-2xl border border-line">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${champ.splash})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-bg/90 to-transparent" />
-          <div className="relative flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <Link
-                href={`/champions/${champ.slug}`}
-                className="inline-flex items-center gap-3 transition hover:opacity-90"
-              >
-                <span className={`h-11 w-11 shrink-0 overflow-hidden rounded-full ${champ.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/15"}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={champ.icon}
-                    alt=""
-                    width={44}
-                    height={44}
-                    className="h-full w-full scale-[1.12] object-cover"
-                  />
-                </span>
-                <span>
-                  <span className="block text-xl font-semibold leading-tight">{champ.name}</span>
-                  <span className="block text-xs text-muted">
-                    {champ.role} · {champ.class}
-                  </span>
-                </span>
-              </Link>
-              <div className="mt-3 flex items-center gap-2">
-                <TierChip tier={champ.tier} />
-                <span className="text-sm font-semibold text-accent">{champ.wr.toFixed(1)}% win rate</span>
-              </div>
-            </div>
-
-            {champ.bestPlayer && (
-              <div className="glass rounded-xl px-5 py-4 sm:text-right">
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-                  Best {champ.name} player
-                </p>
-                <p className="mt-1.5 truncate text-2xl font-semibold">{champ.bestPlayer.player}</p>
-                <p className="mt-0.5 text-sm text-muted">
-                  {champ.bestPlayer.rank ? `Rank #${champ.bestPlayer.rank} · ` : ""}
-                  {champ.bestPlayer.confidence_wr != null
-                    ? `${champ.bestPlayer.confidence_wr.toFixed(1)}% adjusted`
-                    : ""}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+        <ChampionSpotlight champ={champ} best={matchBestPlayer(champ, enriched)} />
       )}
 
       {/* The hand-recorded build for this champion's best player, when one has

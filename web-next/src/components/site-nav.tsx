@@ -10,7 +10,10 @@ import { AccountMenu } from "@/components/account-menu";
 import { ChampionCombobox, type ComboItem } from "@/components/champion-combobox";
 
 type NavItem = { href: string; label: string; badge?: string; badges?: string[]; desc?: string };
-type NavGroup = { label: string; items: NavItem[] };
+/** `collapsed` folds the group on MOBILE only, behind a tap. Use it for
+ *  browse-when-curious sections, never for ones people arrive looking for --
+ *  a tap is a wall for anything that needs to be found. */
+type NavGroup = { label: string; items: NavItem[]; collapsed?: boolean };
 type NavEntry = NavItem | NavGroup;
 
 const isGroup = (e: NavEntry): e is NavGroup => "items" in e;
@@ -46,6 +49,19 @@ const buildsEntry = (live: boolean): NavEntry => (live
 const navEntries = (buildToolsLive: boolean): NavEntry[] => [
   { href: "/tier-list", label: "Tier List" },
   { href: "/champions", label: "Champions" },
+  // PLAYERS is its own group, not a corner of Meta. Everything else on this
+  // site is about champions; these three are about people, and they were
+  // sitting at the bottom of a nine-item dropdown where nobody found them.
+  // Filing them under Champions would have been a category error -- a player
+  // is not a champion -- and Tier List is one ranking page, not a hub.
+  {
+    label: "Players",
+    items: [
+      { href: "/leaderboard", label: "Leaderboards", desc: "Top 50 players per champion" },
+      { href: "/player", label: "Player Search", badge: "new", desc: "Find a player and every champion they rank on" },
+      { href: "/hall-of-fame", label: "Hall of Fame", badge: "new", desc: "Ladder records & guild rankings" },
+    ],
+  },
   buildsEntry(buildToolsLive),
   {
     label: "Meta",
@@ -56,12 +72,11 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
       { href: "/rising", label: "Rising Picks", desc: "What China plays before the West" },
       { href: "/global", label: "Global Win Rates", desc: "EU vs CN cross-server meta" },
       { href: "/consistency", label: "Consistency", desc: "Skill ceiling & reliability" },
-      { href: "/leaderboard", label: "Leaderboards", desc: "Top 50 players per champion" },
-      { href: "/hall-of-fame", label: "Hall of Fame", badge: "new", desc: "Ladder records & guild rankings" },
     ],
   },
   {
     label: "Updates",
+    collapsed: true,
     items: [
       { href: "/blog", label: "Guides", badge: "new", desc: "Best picks per role, climbing & meta reads" },
       { href: "/creators", label: "Creators", badge: "new", desc: "Wild Rift channels still uploading" },
@@ -71,7 +86,11 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
       { href: "/recap", label: "Season Recap", desc: "Season 22 in review" },
     ],
   },
-  { href: "/methodology", label: "Methodology" },
+  // Methodology lives in the FOOTER, not here. It is a trust page rather than
+  // a destination -- the people who open it are deciding whether to believe
+  // the numbers, and they look for it at the bottom of the page, which is
+  // where every site puts this. Keeping it out of the top bar buys a slot for
+  // Players without costing a link (footer + sitemap still carry it).
 ];
 
 function NavBadge({ text }: { text: string }) {
@@ -220,6 +239,69 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
   );
 }
 
+/* A group in the mobile drawer.
+ *
+ * Open by default, because the drawer's job is discovery and a tap is a wall:
+ * anything folded away is effectively invisible to someone who does not
+ * already know it exists. Only sections marked `collapsed` fold, and they
+ * open anyway when the page you are on lives inside them, so the menu never
+ * hides where you already are.
+ */
+function MobileGroup({
+  group,
+  isActive,
+  onNavigate,
+}: {
+  group: NavGroup;
+  isActive: (href: string) => boolean;
+  onNavigate: () => void;
+}) {
+  const containsCurrent = group.items.some((it) => isActive(it.href));
+  const [open, setOpen] = useState(!group.collapsed || containsCurrent);
+
+  const links = group.items.map((it) => (
+    <Link
+      key={it.href}
+      href={it.href}
+      onClick={onNavigate}
+      className={`flex items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+        isActive(it.href) ? "text-accent bg-accent/10" : "text-muted hover:text-text hover:bg-white/[0.04]"
+      }`}
+    >
+      {it.label}
+      <NavBadges item={it} />
+    </Link>
+  ));
+
+  if (!group.collapsed) {
+    return (
+      <div className="mt-1">
+        <p className="px-3 pb-1 pt-2 text-[0.6rem] font-bold uppercase tracking-wide text-faint">
+          {group.label}
+        </p>
+        {links}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-1">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium text-muted transition hover:bg-white/[0.04] hover:text-text"
+      >
+        <span className="text-[0.6rem] font-bold uppercase tracking-wide text-faint">
+          {group.label}
+        </span>
+        <Caret open={open} />
+      </button>
+      {open && links}
+    </div>
+  );
+}
+
 export function SiteNav({ champions }: { champions: ComboItem[] }) {
   const pathname = usePathname();
   const NAV = navEntries(useBuildToolsVisible());
@@ -293,22 +375,12 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
           <div className="flex flex-col gap-1">
             {NAV.map((e) =>
               isGroup(e) ? (
-                <div key={e.label} className="mt-1">
-                  <p className="px-3 pb-1 pt-2 text-[0.6rem] font-bold uppercase tracking-wide text-faint">{e.label}</p>
-                  {e.items.map((it) => (
-                    <Link
-                      key={it.href}
-                      href={it.href}
-                      onClick={() => setOpen(false)}
-                      className={`flex items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                        isActive(it.href) ? "text-accent bg-accent/10" : "text-muted hover:text-text hover:bg-white/[0.04]"
-                      }`}
-                    >
-                      {it.label}
-                      <NavBadges item={it} />
-                    </Link>
-                  ))}
-                </div>
+                <MobileGroup
+                  key={e.label}
+                  group={e}
+                  isActive={isActive}
+                  onNavigate={() => setOpen(false)}
+                />
               ) : (
                 <Link
                   key={e.href}
