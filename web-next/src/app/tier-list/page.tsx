@@ -5,6 +5,7 @@ import { getCnChampionsByBracket, getCnRolesByBracket, CN_META, getGlobalChampio
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
+import { NextStep } from "@/components/next-step";
 
 // The patch belongs in the title: people search "wild rift tier list patch
 // 7.2a", and a tier list with no patch on it reads as undated to both a
@@ -71,6 +72,8 @@ export default function TierListPage() {
           initialRegion="CN"
         />
       </div>
+      <NextStep steps={["build", "counter", "meta"]} />
+
     </Container>
   );
 }

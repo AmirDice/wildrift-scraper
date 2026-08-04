@@ -6,6 +6,7 @@ import { getChampions } from "@/lib/data";
 import {getChampionChangeAge,
   getChampionChangeRanking} from "@/lib/champion-change-ranking";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { NextStep } from "@/components/next-step";
 
 export const metadata: Metadata = {
   title: "Champion Change History | Wild Rift",
@@ -72,6 +73,8 @@ export default function ChampionChangesPage() {
       <div className="mt-8">
         <ChampionChangeList entries={entries} />
       </div>
+      <NextStep steps={["tierList", "meta"]} />
+
     </Container>
   );
 }

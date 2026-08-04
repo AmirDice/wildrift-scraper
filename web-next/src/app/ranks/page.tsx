@@ -5,6 +5,7 @@ import { getEloSkews } from "@/lib/skew";
 import { Container } from "@/components/ui";
 import { EloSkewView, type SkewRow } from "@/components/elo-skew-view";
 import { ChinaUpdated } from "@/components/tierlist-updated";
+import { NextStep } from "@/components/next-step";
 
 export const metadata: Metadata = {
   title: "Win Rate by Skill Bracket | Wild Rift China Rank Data",
@@ -60,6 +61,8 @@ export default function RanksPage() {
           </Link>.
         </p>
       </div>
+      <NextStep steps={["tierList", "meta"]} />
+
     </Container>
   );
 }

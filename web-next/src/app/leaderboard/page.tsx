@@ -5,6 +5,7 @@ import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-vie
 import items from "@/data/items.json";
 import runeIcons from "@/data/rune_icons.json";
 import spells from "@/data/spells.json";
+import { NextStep } from "@/components/next-step";
 
 // This is the page the site genuinely ranks for: "wild rift leaderboard" sits
 // around position 6-8 and "wild rift leaderboard eu" around 3, where the head
@@ -65,6 +66,8 @@ export default function LeaderboardPage() {
           )}
         />
       </section>
+      <NextStep steps={["build", "meta"]} />
+
     </Container>
   );
 }

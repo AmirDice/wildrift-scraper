@@ -285,3 +285,13 @@ body {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Champion avatars that shrink on phones. The tier list packs a whole tier
+   into one wrapping row, and at desktop size a 375px screen fits only three
+   per line, which made the tiers read as tall ragged columns. */
+@media (min-width: 640px) {
+  [data-av-full="52"] { --av: 52px; }
+  [data-av-full="56"] { --av: 56px; }
+  [data-av-full="64"] { --av: 64px; }
+  [data-av-full="72"] { --av: 72px; }
+}

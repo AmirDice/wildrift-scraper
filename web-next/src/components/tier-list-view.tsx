@@ -160,13 +160,13 @@ export function TierListView({
               const champs = buckets[t] ?? [];
               if (champs.length === 0) return null;
               return (
-                <div key={t} className="flex items-stretch gap-2.5">
+                <div key={t} className="flex items-stretch gap-1.5 sm:gap-2.5">
                   <div
-                    className={`grid w-16 shrink-0 place-items-center rounded-xl text-2xl font-black sm:w-20 ${tierClass[t]}`}
+                    className={`grid w-11 shrink-0 place-items-center rounded-xl text-lg font-black sm:w-20 sm:text-2xl ${tierClass[t]}`}
                   >
                     {tierLabel(t)}
                   </div>
-                  <div className="glass flex flex-1 flex-wrap content-center gap-3 rounded-xl p-3 sm:gap-4 sm:p-4">
+                  <div className="glass flex flex-1 flex-wrap content-center gap-x-1.5 gap-y-2 rounded-xl p-2 sm:gap-4 sm:p-4">
                     {champs.map((c) => {
                       const movementBracket = isGlobal ? cnMeta.defaultBracket : cnBracket;
                       const cnMovement = isCN || isGlobal ? moverBySlug(c.slug, movementBracket) : null;
@@ -189,13 +189,13 @@ export function TierListView({
                         <Link
                           key={c.slug}
                           href={`/champions/${c.slug}`}
-                          className="group flex w-[60px] flex-col items-center text-center transition sm:w-[68px]"
+                          className="group flex w-[46px] flex-col items-center text-center transition sm:w-[68px]"
                           title={changed && mv
                             ? `${c.name} · ${c.wr.toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : "previous CN scrape"} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
                             : `${c.name} · ${c.wr.toFixed(1)}% WR`}
                         >
                           <span className="relative transition group-hover:-translate-y-0.5">
-                            <ChampionAvatar champion={c} size={52} />
+                            <ChampionAvatar champion={c} size={52} mobileSize={38} />
                             {changed && mv && (
                               <span className={`absolute -right-1.5 -top-1 rounded-full px-1 text-[0.55rem] font-bold text-white ring-1 ring-black/30 ${up ? "bg-emerald-500" : "bg-bad"}`}>
                                 {up ? "▲" : "▼"}

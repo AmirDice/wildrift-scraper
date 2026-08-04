@@ -4,11 +4,13 @@ import { site, getChampions } from "@/lib/data";
 import { Container, Card, SectionHeading } from "@/components/ui";
 import { LadderPulseSection } from "@/components/ladder-pulse-section";
 import { UsageTables } from "@/components/usage-tables";
+import { DeepDiveSections } from "@/components/deep-dive";
 import {
   tierDistribution, wrHistogram, wrVsGames, classMeta, roleMeta,
   roleTierMatrix, metaHeadline,
 } from "@/lib/meta-stats";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
+import { NextStep } from "@/components/next-step";
 import {
   MetaScatter, TierBars, RoleTierHeatmap, WrHistogram, ValueBars, SkewDumbbell,
   type SkewRow,
@@ -123,12 +125,17 @@ export default function MetaPage() {
       {/* rune and item usage, ordered, with the win rate behind each choice */}
       <UsageTables />
 
+      {/* everything that used to run down the home page */}
+      <DeepDiveSections />
+
       <p className="mt-10 text-sm text-faint">
         Want the raw ordering instead of the charts?{" "}
         <Link href="/tier-list" className="text-accent hover:underline">See the full tier list</Link>
         {" "}or{" "}
         <Link href="/champions" className="text-accent hover:underline">browse every champion</Link>.
       </p>
+      <NextStep steps={["build", "counter"]} />
+
     </Container>
   );
 }

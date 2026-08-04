@@ -7,6 +7,7 @@ import { risingPicks, overratedInEu } from "@/lib/gap";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/components/ui";
 import { HomeSearch } from "@/components/home-search";
+import { InsightCard } from "@/components/insight-card";
 import { SeasonCard } from "@/components/season-card";
 import { MoversHighlight } from "@/components/movers-highlight";
 import { Roadmap } from "@/components/roadmap";
@@ -165,13 +166,27 @@ export default function HomePage() {
             {site.nPlayers.toLocaleString()} player records
             {site.collectedOn ? `, collected ${site.collectedOn}` : ""}.
           </p>
+
+          {/* Scroll cue. The hero fills the first screen, so without this the
+              page reads as if it ends here. Anchored to the section below so
+              it works as a real control, not just decoration. */}
+          <a href="#explore"
+            aria-label="Scroll to see more"
+            className="group mx-auto mt-10 flex w-fit flex-col items-center gap-1 text-faint transition hover:text-accent">
+            <span className="text-[0.7rem] font-medium uppercase tracking-[0.2em]">More below</span>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden
+              className="motion-safe:animate-bounce">
+              <path d="M12 5v14M6 13l6 6 6-6" />
+            </svg>
+          </a>
         </Container>
       </section>
 
       {/* Flagship slot right under the hero for the products we most want people
           to find. The build tools take it once they launch; until then it
           leads with the new Meta Report. */}
-      <Container className="py-10">
+      <Container id="explore" className="scroll-mt-20 py-10">
         <div className="grid gap-4 md:grid-cols-2">
           {BUILD_TOOLS_LIVE ? (
             <>
@@ -355,228 +370,36 @@ export default function HomePage() {
         </div>
       </Container>
 
-      {/* China Legendary solo queue */}
-      <Container className="py-6">
-        <SectionHeading
-          title="CN Legendary solo queue"
-          subtitle="The best and worst performers in China's separate solo-queue dataset"
-          href="/tier-list/china?bracket=4"
-          linkLabel="Open CN Legendary tier list"
-        />
-        <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard
-            title="Best solo-queue champions"
-            subtitle="CN · Legendary · minimum 0.5% pick rate"
-            href="/tier-list/china?bracket=4"
-            items={legendaryBest.map((c) => ({
-              icon: c.icon,
-              name: c.name,
-              sub: `${c.role} · ${c.cnPickRate.toFixed(1)}% pick`,
-              href: `/champions/${c.slug}`,
-              metric: `${c.wr.toFixed(1)}%`,
-              metricClass: "text-emerald-300",
-            }))}
-          />
-          <InsightCard
-            title="Worst solo-queue champions"
-            subtitle="CN · Legendary · minimum 0.5% pick rate"
-            href="/tier-list/china?bracket=4"
-            items={legendaryWorst.map((c) => ({
-              icon: c.icon,
-              name: c.name,
-              sub: `${c.role} · ${c.cnPickRate.toFixed(1)}% pick`,
-              href: `/champions/${c.slug}`,
-              metric: `${c.wr.toFixed(1)}%`,
-              metricClass: "text-rose-300",
-            }))}
-          />
-        </div>
-      </Container>
-
-      {/* Across all servers */}
-      <Container className="py-6">
-        <SectionHeading
-          title="Across all servers"
-          subtitle="Combined EU + CN · who's genuinely strong everywhere"
-          href="/global"
-          linkLabel="Cross-server comparison"
-        />
-        <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard
-            title="Strongest globally"
-            subtitle="Highest combined EU + CN win rate"
-            href="/tier-list"
-            items={globalBest.map((c) => ({
-              icon: c.icon,
-              name: c.name,
-              sub: c.role,
-              href: `/champions/${c.slug}`,
-              metric: `${c.wr.toFixed(1)}%`,
-              metricClass: "text-accent",
-            }))}
-          />
-          <InsightCard
-            title="Weakest globally"
-            subtitle="Lowest combined EU + CN win rate"
-            href="/tier-list"
-            items={globalWorst.map((c) => ({
-              icon: c.icon,
-              name: c.name,
-              sub: c.role,
-              href: `/champions/${c.slug}`,
-              metric: `${c.wr.toFixed(1)}%`,
-              metricClass: "text-bad",
-            }))}
-          />
-        </div>
-      </Container>
-
-      {/* The meta gap: CN top elo vs EU */}
-      <Container className="py-6">
-        <SectionHeading
-          title="The meta gap"
-          subtitle="Where China's Challenger sample disagrees with EU, often a patch ahead"
-          href="/rising"
-          linkLabel="Full meta gap"
-        />
-        <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard
-            title="Rising in China"
-            subtitle="Rated far higher in CN top elo · learn early"
-            href="/rising"
-            items={rising.map((g) => ({
-              icon: g.champion.icon,
-              name: g.champion.name,
-              sub: `${g.champion.role} · CN ${g.cnWr.toFixed(1)}% vs EU ${g.euWr.toFixed(1)}%`,
-              href: `/champions/${g.champion.slug}`,
-              metric: `+${g.gap.toFixed(1)}`,
-              metricClass: "text-emerald-300",
-            }))}
-          />
-          <InsightCard
-            title="Overrated in EU"
-            subtitle="EU rates them above China's best players"
-            href="/rising"
-            items={overrated.map((g) => ({
-              icon: g.champion.icon,
-              name: g.champion.name,
-              sub: `${g.champion.role} · EU ${g.euWr.toFixed(1)}% vs CN ${g.cnWr.toFixed(1)}%`,
-              href: `/champions/${g.champion.slug}`,
-              metric: `−${Math.abs(g.gap).toFixed(1)}`,
-              metricClass: "text-rose-300",
-            }))}
-          />
-        </div>
-      </Container>
-
-      {/* By rank: CN skill brackets */}
-      <Container className="py-6">
-        <SectionHeading
-          title="By skill bracket"
-          subtitle="How champions move from China's cumulative Diamond+ sample to Challenger"
-          href="/ranks"
-          linkLabel="Explore skill brackets"
-        />
-        <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard
-            title="Scales with elo"
-            subtitle="High-skill specialists · better the higher you climb"
-            href="/ranks"
-            items={climbing.map((s) => ({
-              icon: s.champion.icon,
-              name: s.champion.name,
-              sub: `${s.champion.role} · ${s.low.toFixed(1)}% → ${s.high.toFixed(1)}%`,
-              href: `/champions/${s.champion.slug}`,
-              metric: `+${s.skew.toFixed(1)}`,
-              metricClass: "text-emerald-300",
-            }))}
-          />
-          <InsightCard
-            title="Low-elo stompers"
-            subtitle="Strong to climb with, fall off at the top"
-            href="/ranks"
-            items={stompers.map((s) => ({
-              icon: s.champion.icon,
-              name: s.champion.name,
-              sub: `${s.champion.role} · ${s.low.toFixed(1)}% → ${s.high.toFixed(1)}%`,
-              href: `/champions/${s.champion.slug}`,
-              metric: `−${Math.abs(s.skew).toFixed(1)}`,
-              metricClass: "text-rose-300",
-            }))}
-          />
-        </div>
-      </Container>
-
-      {/* Champion insights */}
-      <Container className="py-6">
-        <SectionHeading title="Champion insights" subtitle="Cut the data a few different ways" />
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <InsightCard href="/otp-champions" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.otpScore?.toFixed(1) ?? "-"}`, metricClass: "text-gold" }))} />
-          <InsightCard href="/consistency" title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
-          <InsightCard href="/consistency" title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
-          <InsightCard
-            href="/champion-changes"
-            title="Longest unchanged"
-            subtitle="Standard balance changes only"
-            items={longestUnchanged.map((entry) => ({
-              icon: entry.champion.icon,
-              name: entry.champion.name,
-              sub: entry.lastBalancePatch ? `Last changed in patch ${entry.lastBalancePatch}` : "No standard change recorded",
-              href: `/champions/${entry.champion.slug}`,
-              metric: `${entry.daysSinceBalanceChange!.toLocaleString()} days`,
-              metricClass: "text-gold",
-            }))}
-          />
-        </div>
-      </Container>
-
-      {/* The other end of the same data: who Riot cannot leave alone. */}
-      <Container className="py-6">
-        <SectionHeading
-          title="Most adjusted champions"
-          subtitle="Times each champion has appeared in the patch notes since we started tracking"
-          href="/champion-changes"
-          linkLabel="Full champion changes"
-        />
-        <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard
-            title="Riot cannot leave them alone"
-            subtitle="Most patch-note appearances, all kinds"
-            href="/champion-changes"
-            items={mostAdjusted.map((entry) => ({
-              icon: entry.champion.icon,
-              name: entry.champion.name,
-              sub: `${entry.balanceChanges} standard balance ${entry.balanceChanges === 1 ? "change" : "changes"}${entry.lastBalancePatch ? ` · last in ${entry.lastBalancePatch}` : ""}`,
-              href: `/champions/${entry.champion.slug}`,
-              metric: `${entry.totalChanges}×`,
-              metricClass: "text-bad",
-            }))}
-          />
-          <InsightCard
-            title="Barely touched"
-            subtitle="Fewest patch-note appearances"
-            href="/champion-changes"
-            items={leastAdjusted.map((entry) => ({
-              icon: entry.champion.icon,
-              name: entry.champion.name,
-              sub: entry.totalChanges === 0
-                ? "Never changed, not once"
-                : `${entry.balanceChanges} standard balance ${entry.balanceChanges === 1 ? "change" : "changes"}`,
-              href: `/champions/${entry.champion.slug}`,
-              metric: `${entry.totalChanges}×`,
-              metricClass: "text-emerald-300",
-            }))}
-          />
-        </div>
-      </Container>
-
-      {/* Players */}
+      {/* The home page used to run fourteen sections deep, which buried the
+          tools that actually differentiate the site. The cross-server data,
+          CN/EU meta gap, skill-bracket splits, champion cuts and player
+          oddities now live on the meta report, one click away. */}
       <Container className="py-12">
-        <div className="grid gap-4 md:grid-cols-2">
-          <InsightCard href="/leaderboard#multi-champion-mains" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, href: byName.get(m.champions[0]) ? `/leaderboard?champion=${byName.get(m.champions[0])!.slug}` : undefined, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "-", metricClass: "text-muted" }))} />
-          <InsightCard href="/leaderboard#funniest-names" title="Funniest names" subtitle="Spotted in the top 50, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player, sub: f.champion, href: byName.get(f.champion) ? `/leaderboard?champion=${byName.get(f.champion)!.slug}` : undefined }))} />
+        <div className="glass relative overflow-hidden rounded-2xl px-6 py-8 text-center sm:px-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+            There is a lot more
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            The full meta report
+          </h2>
+          <p className="mx-auto mt-2 max-w-xl text-muted">
+            Cross-server win rates, the China-versus-Europe meta gap, skill-bracket
+            splits, rune and item usage from real high-elo builds, and every champion
+            cut we track. All of it on one page.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/meta"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-black transition hover:brightness-110">
+              Open the meta report <span aria-hidden>→</span>
+            </Link>
+            <Link href="/leaderboard"
+              className="inline-flex items-center gap-2 rounded-lg border border-line px-5 py-2.5 text-sm font-semibold transition hover:border-accent/40 hover:text-accent">
+              Browse the leaderboards
+            </Link>
+          </div>
         </div>
       </Container>
+
     </>
   );
 }
@@ -707,61 +530,6 @@ function BarCard({ title, subtitle, rows }: { title: string; subtitle?: string; 
           );
         })}
       </div>
-    </Card>
-  );
-}
-
-type InsightItem = { icon?: string; name: string; sub?: string; metric?: string; metricClass?: string; href?: string };
-
-function InsightCard({
-  title,
-  subtitle,
-  items,
-  href,
-}: {
-  title: string;
-  subtitle?: string;
-  items: InsightItem[];
-  href?: string;
-}) {
-  return (
-    <Card className="flex flex-col p-5">
-      <h3 className="font-semibold">{title}</h3>
-      {subtitle && <p className="mt-0.5 text-xs text-muted">{subtitle}</p>}
-      <div className="mt-3 flex flex-1 flex-col">
-        {items.map((it, i) => {
-          const row = (
-            <div className="flex items-center gap-3 py-2">
-              {it.icon ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <span className="h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
-                  <img src={it.icon} alt="" width={28} height={28} loading="lazy" className="h-full w-full scale-[1.12] object-cover" />
-                </span>
-              ) : (
-                <span className="h-7 w-7 shrink-0 rounded-full bg-white/[0.06]" />
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{it.name}</p>
-                {it.sub && <p className="truncate text-xs text-muted">{it.sub}</p>}
-              </div>
-              {it.metric && <span className={`text-sm font-semibold ${it.metricClass ?? "text-text"}`}>{it.metric}</span>}
-            </div>
-          );
-          return (
-            <div key={i} className={i > 0 ? "border-t border-line/60" : ""}>
-              {it.href ? <Link href={it.href} className="block transition hover:opacity-80">{row}</Link> : row}
-            </div>
-          );
-        })}
-      </div>
-      {href && (
-        <Link
-          href={href}
-          className="mt-3 border-t border-line/60 pt-3 text-sm font-medium text-accent transition hover:opacity-80"
-        >
-          View more →
-        </Link>
-      )}
     </Card>
   );
 }

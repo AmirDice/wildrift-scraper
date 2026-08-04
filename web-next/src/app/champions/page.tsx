@@ -6,6 +6,7 @@ import rosterData from "@/data/roster.json";
 import { Container } from "@/components/ui";
 import { ChampionsExplorer } from "@/components/champions-explorer";
 import { NewChampions } from "@/components/new-champions";
+import { NextStep } from "@/components/next-step";
 
 export const metadata: Metadata = {
   title: "Wild Rift Champions | Stats & Win Rates",
@@ -53,6 +54,8 @@ export default function ChampionsPage() {
       <div className="mt-14">
         <NewChampions />
       </div>
+      <NextStep steps={["build", "tierList"]} />
+
     </Container>
   );
 }

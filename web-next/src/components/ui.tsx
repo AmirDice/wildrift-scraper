@@ -5,11 +5,14 @@ import { tierClass, tierLabel } from "@/lib/data";
 export function Container({
   children,
   className = "",
+  id,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** Anchor target, so in-page links (the hero's scroll cue) can reach it. */
+  id?: string;
 }) {
-  return <div className={`mx-auto max-w-6xl px-5 ${className}`}>{children}</div>;
+  return <div id={id} className={`mx-auto max-w-6xl px-5 ${className}`}>{children}</div>;
 }
 
 export function TierChip({ tier, className = "" }: { tier: string; className?: string }) {
@@ -27,17 +30,30 @@ export function ChampionAvatar({
   size = 56,
   href,
   showBadges = true,
+  mobileSize,
 }: {
   champion: Champion;
   size?: number;
   href?: string;
   showBadges?: boolean;
+  /** Rendered size below the sm breakpoint. The tier list packs a lot of
+   *  these per row, and at full size a phone fits only three per line. */
+  mobileSize?: number;
 }) {
   const ring = champion.isHard
     ? "ring-2 ring-bad/70"
     : "ring-1 ring-white/10";
   const img = (
-    <span className="relative inline-block" style={{ width: size, height: size }}>
+    <span
+      className="relative inline-block"
+      style={
+        mobileSize
+          ? ({ width: "var(--av)", height: "var(--av)",
+               ["--av" as string]: `${mobileSize}px` } as React.CSSProperties)
+          : { width: size, height: size }
+      }
+      data-av-full={mobileSize ? size : undefined}
+    >
       <span className={`block h-full w-full overflow-hidden rounded-full ${ring}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
