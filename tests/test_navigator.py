@@ -311,3 +311,67 @@ def test_never_finds_target_bails_to_manual():
     b.scan_script = {i: ({}, None) for i in range(1, 40)}
     assert nav.ensure_visible(13) is None
     assert b.actions == []          # no movement without evidence
+
+
+def test_arbiter_reading_20_high_never_overrules_a_correct_scan():
+    """Lucian rank 45. The fast scan read 32-37 and was RIGHT (the saved frame
+    shows 33 Balance1, 34 Don, 35 hansel, 36), but the navigator's prediction
+    had drifted to ~45, so the disagreement got confirmed and handed to
+    arbitration -- which answered 52-57 and threw the run 20 rows away.
+
+    The arbiter reads through a different pipeline but not a different FONT,
+    so it makes the same 3-reads-as-5 mistake. That misread only ever reads
+    HIGH, so an arbiter sitting exactly one tens digit ABOVE the scan is
+    repeating the error, not correcting it, and never wins.
+
+    The mirror case stays intact:
+    test_confirmed_downward_teleport_rescued_by_arbitration has the arbiter
+    20 rows BELOW a lying scan, and there the arbiter must win.
+    """
+    b = FakeBoard(pos=32.0)
+    nav = make_nav(b)
+    nav.arbitrate = lambda img: {r + 20: y for r, y in b.truth().items()}
+    nav.last_center = 45.0          # stale prediction, exactly as in the run
+    y = nav.ensure_visible(34)
+    assert y is not None
+    assert abs(y - b.true_y(34)) <= 3, "followed the arbiter 20 rows off"
+    assert b.actions == [], f"moved on the arbiter's misread: {b.actions}"
+
+
+def test_deterministic_partial_read_is_nudged_not_waited_out():
+    """Kayle rank 34. Three rejected frames, taken 47 seconds apart, scanned
+    to identical results down to the row y-coordinates -- the screen never
+    changed, so waiting could only ever re-derive the same answer. It cost 90
+    seconds and then the champion.
+
+    The first degraded read still gets the benefit of the doubt (rows really
+    may be populating). After that the list is nudged half a row, which
+    re-renders every glyph against a different slice of the panel's luminance
+    gradient -- the thing the misread actually depends on."""
+    b = FakeBoard(pos=30.0)
+    nav = make_nav(b)
+    nav.last_center = 32.0
+    t = b.truth()
+    stuck = {33: t[33]} if 33 in t else {min(t): t[min(t)]}
+    b.scan_script[1] = (stuck, None)
+    b.scan_script[2] = (stuck, None)     # identical: the live signature
+    y = nav.ensure_visible(34)
+    assert y is not None
+    assert abs(y - b.true_y(34)) <= 3
+    drags = [a for a in b.actions if a[0] == "drag"]
+    assert drags, "waited out a deterministic read instead of changing the pixels"
+    assert all(abs(rows) <= 1.0 for _, rows in drags), (
+        f"nudge must not move us off the row: {drags}")
+
+
+def test_an_empty_scan_is_never_nudged():
+    """A partial read is a misread of the list. A read of NOTHING is evidence
+    we may not be looking at the list at all -- the main-menu ejection looks
+    exactly like this -- and moving blind on an unidentified screen is how
+    whole champions got lost. That path waits, then hands over to recovery."""
+    b = FakeBoard(pos=1.0)
+    nav = make_nav(b)
+    nav.last_center = 12.0
+    b.scan_script = {i: ({}, None) for i in range(1, 40)}
+    assert nav.ensure_visible(13) is None
+    assert b.actions == [], f"moved on a screen it could not read: {b.actions}"

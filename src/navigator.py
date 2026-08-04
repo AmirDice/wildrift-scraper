@@ -139,10 +139,38 @@ class LeaderboardNavigator:
                     self.last_center = None
                     return None
                 use_stable = True
+                self._dump_rejected(img, rank)
+                # The FIRST degraded read gets the benefit of the doubt: rows
+                # really may still be populating. After that, stop waiting.
+                # A degraded read is usually DETERMINISTIC, not transient --
+                # three rejected frames from one live incident, taken 47s
+                # apart, scanned to identical results down to the row
+                # y-coordinates, because the screen never changed. Re-reading
+                # the same pixels re-derives the same answer at 45s a try,
+                # then gives up. A half-row nudge re-renders every glyph
+                # against a different slice of the panel's luminance
+                # gradient, which is what the misread depends on in the first
+                # place; alternating the direction leaves the position where
+                # it was. A list that genuinely is still loading loses
+                # nothing: it gets the same 0.5s wait either way.
                 if ranks:
                     self.log(f"  [scan] only {len(ranks)} badge(s) read -- "
-                             f"rows may still be loading, waiting")
-                self._dump_rejected(img, rank)
+                             + ("rows may still be loading, waiting"
+                                if empty_scans < 2 else
+                                "same pixels re-read the same way, nudging the list"))
+                # Only a PARTIAL read is nudged. A scan that returned nothing
+                # at all is not a misread of the list, it is evidence we may
+                # not be looking at the list -- the main-menu ejection reads
+                # exactly like this -- and moving blind on a screen we cannot
+                # identify is how whole champions got lost. That path waits,
+                # then hands over to recovery.
+                if ranks and empty_scans >= 2:
+                    nudge = 0.5 if empty_scans % 2 else -0.5
+                    self.drag_rows(nudge, self.last_pitch or (H * 0.135))
+                    net_down += nudge
+                    settle_pending = False
+                    if expected is not None:
+                        expected += nudge
                 self.sleep(0.5)
                 continue
             empty_scans = 0
@@ -187,6 +215,27 @@ class LeaderboardNavigator:
             # an entirely different pipeline.
             if anomaly_confirmed:
                 careful = self.arbitrate(img) if self.arbitrate is not None else {}
+                # The arbiter reads the badges through a different pipeline,
+                # but not through a different FONT, and it makes the same
+                # tens-digit mistake: on a real frame plainly showing 33-36
+                # the fast scan read 33-36 and Gemini "overruled" it with
+                # 52-57, throwing the run 20 rows off.
+                #
+                # A disagreement of exactly one tens digit cannot be settled
+                # by asking who spoke last, but it can be settled by
+                # DIRECTION. The misread has only one direction: the glyph
+                # binarizes thicker, closing an open top, so 3 reads as 5 and
+                # 2 reads as 4. It never thins a 5 into a 3. So of two
+                # readings exactly 20 apart, the LOWER one is the true one --
+                # whichever side said it. That keeps the Rengar rescue (scan
+                # 50-54, arbiter 30-34, arbiter wins) and refuses the Lucian
+                # override (scan 32-37, arbiter 52-57, scan wins).
+                if careful and abs(abs((min(careful) + max(careful)) / 2 - center) - 20) <= 2:
+                    if (min(careful) + max(careful)) / 2 > center:
+                        self.log(f"  [detect] arbitration says {min(careful)}-{max(careful)}, one "
+                                 f"tens digit ABOVE the scan's {lo_r}-{hi_r}: that is the 3-reads-"
+                                 f"as-5 misread, which only ever reads HIGH -- keeping the scan")
+                        careful = {}
                 if careful:
                     c_center = (min(careful) + max(careful)) / 2
                     if abs(c_center - center) > 5:

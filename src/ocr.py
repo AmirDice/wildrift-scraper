@@ -34,6 +34,8 @@ import cv2
 import numpy as np
 import pytesseract
 
+from . import rank_digits
+
 
 # Tesseract binary discovery on Windows: pytesseract defaults to PATH, but the
 # winget install lands at "C:\Program Files\Tesseract-OCR\tesseract.exe" and
@@ -524,24 +526,37 @@ def scan_visible_ranks(
                 continue
             candidates.append((cy, rank))
 
-    # Illumination flattening before Otsu: the panel's vertical luminance
-    # gradient made a GLOBAL threshold binarize lower rows thicker, which
-    # deterministically closed the open top of "3" into "5" (and "2" into
-    # "4") -- a real frame read rank 31 as 51 at 86 confidence, twice in a
-    # row. Dividing out the low-frequency background removes the gradient;
-    # the glyphs keep their local contrast.
-    gray0 = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if crop.ndim == 3 else crop
-    g = gray0.astype(np.float32)
-    bg = cv2.GaussianBlur(g, (0, 0), sigmaX=25)
-    flat = np.clip((g / np.maximum(bg, 1.0)) * 128.0, 0, 255).astype(np.uint8)
-    flat = cv2.resize(flat, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
-    flat = cv2.bilateralFilter(flat, d=5, sigmaColor=50, sigmaSpace=50)
-    # PSM 6 is the only mode that reads these ornate banner badges (verified
-    # against saved screenshots; sparse-text PSMs return nothing).
-    for invert in (False, True):
-        flag = cv2.THRESH_BINARY_INV if invert else cv2.THRESH_BINARY
-        _, pre = cv2.threshold(flat, 0, 255, flag | cv2.THRESH_OTSU)
-        _collect(pre)
+    # TEMPLATE PASS, ahead of every OCR pass. The badges are one font at one
+    # size, so they can be compared against the game's own glyphs instead of
+    # interpreted -- which is both exact where tesseract is not (it reads this
+    # "3" as a "5") and ~25x faster (65ms a frame against 1.5-3s). It declines
+    # rather than guesses, so a clipped edge row simply does not appear and
+    # the grid inference below places it. Falls through to OCR untouched when
+    # no bank has been built.
+    for _rank, _cy in rank_digits.read_column(image, badge_x_range, (y0, y1)).items():
+        if 1 <= _rank <= max_rank:
+            candidates.append((_cy, _rank))
+
+    if len(candidates) < 4:
+        # Illumination flattening before Otsu: the panel's vertical luminance
+        # gradient made a GLOBAL threshold binarize lower rows thicker, which
+        # deterministically closed the open top of "3" into "5" (and "2" into
+        # "4") -- a real frame read rank 31 as 51 at 86 confidence, twice in a
+        # row. Dividing out the low-frequency background removes the gradient;
+        # the glyphs keep their local contrast.
+        gray0 = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if crop.ndim == 3 else crop
+        g = gray0.astype(np.float32)
+        bg = cv2.GaussianBlur(g, (0, 0), sigmaX=25)
+        flat = np.clip((g / np.maximum(bg, 1.0)) * 128.0, 0, 255).astype(np.uint8)
+        flat = cv2.resize(flat, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+        flat = cv2.bilateralFilter(flat, d=5, sigmaColor=50, sigmaSpace=50)
+        # PSM 6 is the only mode that reads these ornate banner badges
+        # (verified against saved screenshots; sparse-text PSMs return
+        # nothing).
+        for invert in (False, True):
+            flag = cv2.THRESH_BINARY_INV if invert else cv2.THRESH_BINARY
+            _, pre = cv2.threshold(flat, 0, 255, flag | cv2.THRESH_OTSU)
+            _collect(pre)
 
     if len(candidates) < 4:
         # Ornate badge styles (the emulator's gold/silver/bronze banners)
@@ -599,19 +614,86 @@ def scan_visible_ranks(
             return False
         return True
 
+    def readings(ch: list[tuple[int, int]]) -> list[list[tuple[int, int]]]:
+        """A chain's plausible interpretations: as read, plus the tens-digit
+        rescue below.
+
+        In this font a "3" and a "5" (and a "2" and a "4") differ only by
+        whether the glyph's top stroke reads as closed, and the illumination
+        flattening biases the LEADING digit hardest: the tens digit sits
+        against ~90px of dark gutter, so its local background estimate comes
+        out low, the glyph binarizes thicker, and the open top of a 3 closes
+        into a 5. The units digit, flanked by the other glyph, is almost
+        never wrong -- on one frame "33" read as "53", the same glyph right
+        twice over in one row.
+
+        The whole visible window shares one binarization, so it misreads
+        TOGETHER, by exactly one tens digit: a saved frame showing 31-35
+        scanned as 51-55, one showing 29-33 scanned as 49-53. Being
+        internally consecutive, the wrong window is invisible to the chain
+        filter -- 51,52,53 looks as legitimate as 31,32,33 -- and the hint
+        then rejects it, leaving the one badge that happened to read
+        correctly and a lost position.
+
+        The correction is only ever DOWNWARD. Thickening closes an open top,
+        so 3 reads as 5 and 2 reads as 4; nothing thins a 5 back into a 3.
+        Every frame with known ground truth reads HIGH, so a chain is only
+        ever offered a reading 20 lower, never 20 higher. Three guards then
+        keep this from rewriting a correct scan whose HINT has gone stale
+        (the prediction is an estimate, and a fling can overshoot 10+ rows):
+          * digit-plausible: every tens digit must be a 4 or a 5, the only
+            two that this misread can produce;
+          * the raw reading must be implausible against the prediction and
+            the shifted one squarely on it;
+          * corroboration: some OTHER read must sit on the shifted grid AND
+            already report the rank that grid gives it. A real misread is
+            always partial -- the passes disagree per row -- so the badges
+            that came out right vouch for the correction. That includes a
+            rival reading of a row the chain already uses: one frame had
+            y=740 read as both "54" (which the chain took) and "34" (which
+            the flattened pass got right), and the second reading is
+            independent evidence, not the row vouching for itself. When
+            every read agrees on the same wrong answer there is nothing to
+            vouch, and refusing leaves us where we are today.
+        """
+        out = [ch]
+        if hint is None or chain_mean(ch) - hint <= 15:
+            return out
+        pitch_ch = ((ch[-1][0] - ch[0][0]) / (len(ch) - 1)) if len(ch) >= 2 else expected_pitch
+        if not pitch_ch or pitch_ch <= 0:
+            return out
+        shifted = [(y, r - 20) for y, r in ch]
+        if shifted[0][1] < 1:
+            return out
+        if any((r // 10) % 10 not in (4, 5) for _, r in ch):
+            return out
+        if abs(chain_mean(shifted) - hint) > 6:
+            return out
+        own = set(ch)
+        anchor_y, anchor_rank = shifted[0]
+        if any(
+            (cy, cr) not in own
+            and abs((cy - anchor_y) / pitch_ch - round((cy - anchor_y) / pitch_ch)) <= 0.35
+            and anchor_rank + round((cy - anchor_y) / pitch_ch) == cr
+            for cy, cr in candidates
+        ):
+            out.append(shifted)
+        return out
+
     best_chain: list[tuple[int, int]] = []
     for start in range(len(candidates)):
-        chain = [candidates[start]]
+        raw = [candidates[start]]
         for j in range(start + 1, len(candidates)):
-            if candidates[j][1] == chain[-1][1] + 1 and gap_ok(chain, candidates[j][0]):
-                chain.append(candidates[j])
-        if not best_chain or chain_score(chain) > chain_score(best_chain):
-            best_chain = chain
-        elif (
-            chain_score(chain) == chain_score(best_chain) and hint is not None
-            and abs(chain_mean(chain) - hint) < abs(chain_mean(best_chain) - hint)
-        ):
-            best_chain = chain
+            if candidates[j][1] == raw[-1][1] + 1 and gap_ok(raw, candidates[j][0]):
+                raw.append(candidates[j])
+        for chain in readings(raw):
+            if not best_chain or chain_score(chain) > chain_score(best_chain):
+                best_chain = chain
+            elif (
+                chain_score(chain) == chain_score(best_chain) and hint is not None
+                and abs(chain_mean(chain) - hint) < abs(chain_mean(best_chain) - hint)
+            ):
+                best_chain = chain
     if not best_chain:
         return {}, None
 
