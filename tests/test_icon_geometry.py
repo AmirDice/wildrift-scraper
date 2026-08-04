@@ -106,3 +106,58 @@ def test_a_shifted_popup_still_reads_correctly():
     shifted = np.roll(np.roll(img, 2, axis=0), -2, axis=1)
     got = read_build_icons(shifted)["items"]
     assert got == truth, f"a 2px shift changed the build:\n  {truth}\n  {got}"
+
+
+class TestSupportItemBank:
+    """The overlay bank for art the catalogue does not carry.
+
+    The catalogue holds only the FINAL support income items, while the game
+    draws whatever upgrade stage the player had -- so the sickle and shield
+    stages matched nothing and 8 of 50 Lux support builds lost their support
+    item to an honest "?". The templates in data/icon_bank/items.npz are
+    averaged from 363 captured tiles, assigned by CHAMPION evidence (every
+    Braum game carries the shield, every Yuumi game the sickle), not by
+    eyeballing icons.
+    """
+
+    def test_bank_exists_with_both_lines(self):
+        import numpy as np
+        bank = Path("data/icon_bank/items.npz")
+        if not bank.exists():
+            pytest.skip("items.npz not built")
+        with np.load(bank) as z:
+            bases = {n.split("#")[0] for n in z.files}
+        assert bases == {"Black Mist Scythe", "Bulwark of the Mountain"}
+
+    @pytest.mark.parametrize("frame,expected", [
+        ("data/captures/lux_20260803_0608/010_build.jpg", "Black Mist Scythe"),
+        ("data/captures/braum_20260803_2138/001_build.jpg", "Bulwark of the Mountain"),
+    ])
+    def test_support_income_item_resolves_in_slot_one(self, frame, expected):
+        path = Path(frame)
+        if not path.exists():
+            pytest.skip(f"{frame} not present")
+        from src.icon_match import read_build_icons
+        got = read_build_icons(cv2.imread(str(path)))["items"]
+        assert got and got[0] == expected, f"slot 1 read {got[:1]}, want {expected}"
+
+    def test_stage_templates_fold_to_one_name(self):
+        """Two templates of the SAME item must not occupy first and second
+        place and destroy each other's runner-up gap -- that would reject an
+        item precisely because the bank knows it too well. match_slot folds
+        "#stage" keys to the base name before ranking."""
+        import numpy as np
+        from src.icon_match import templates, match_slot, MIN_SCORE
+        bank = Path("data/icon_bank/items.npz")
+        if not bank.exists():
+            pytest.skip("items.npz not built")
+        with np.load(bank) as z:
+            name = z.files[0]
+            tpl = z[name]
+        # feed the bank's own template back: identical match, so any gap
+        # collapse could only come from a sibling stage of the same item
+        v = (tpl - tpl.min()) / max(float(tpl.max() - tpl.min()), 1e-6)
+        fake_slot = (v * 255).astype("uint8")
+        got, score, gap, _ru = match_slot(fake_slot, "items")
+        assert got == name.split("#")[0]
+        assert score >= MIN_SCORE

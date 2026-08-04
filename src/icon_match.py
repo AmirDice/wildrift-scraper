@@ -96,6 +96,20 @@ def templates() -> dict[str, dict[str, np.ndarray]]:
         if art is not None:
             out["items"][it["name"]] = _norm_tile(art)
 
+    # Item OVERLAY bank: templates harvested from captured frames for art the
+    # catalogue does not carry. The support income items are the reason this
+    # exists -- the catalogue holds only the FINAL forms (Black Mist Scythe,
+    # Bulwark of the Mountain) while the game draws whatever upgrade stage the
+    # player had, so mid-tier art matched nothing and 8 of 50 Lux support
+    # builds lost their support item to an honest "?". Keys may carry a
+    # "#stage" suffix ("Black Mist Scythe#1"): extra looks of the SAME item.
+    # match_slot folds suffixed keys into their base name when scoring.
+    item_bank = ROOT / "data" / "icon_bank" / "items.npz"
+    if item_bank.exists():
+        with np.load(item_bank) as z:
+            for name in z.files:
+                out["items"][name] = z[name].astype(np.float32)
+
     # Runes come from the BANK -- templates averaged from the game's own
     # rendering of each rune, built by scripts/build_icon_bank.py from
     # owner-labelled clusters. The shipped catalogue art is drawn differently
@@ -155,13 +169,26 @@ def _score(tile: np.ndarray, w: np.ndarray, template: np.ndarray) -> float:
 
 
 def match_slot(tile: np.ndarray, kind: str) -> tuple[str, float, float, str]:
-    """(name_or_?, score, gap, runner_up) for one cropped slot."""
+    """(name_or_?, score, gap, runner_up) for one cropped slot.
+
+    Scores fold to the BASE name first ("Black Mist Scythe#1" counts as
+    "Black Mist Scythe" at its best stage's score). Without the fold, two
+    stages of the same item occupy first and second place, the winner's gap
+    over "the runner-up" collapses to ~0, and the confidence gate rejects an
+    item precisely because the bank knows it too well.
+    """
     cands = templates()[kind]
     if not cands or tile.size == 0:
         return "?", 0.0, 0.0, ""
     t = _norm_tile(tile)
     w = _weights(True, kind == "runes")
-    ranked = sorted(((_score(t, w, tpl), name) for name, tpl in cands.items()), reverse=True)
+    best: dict[str, float] = {}
+    for name, tpl in cands.items():
+        base = name.split("#")[0]
+        s = _score(t, w, tpl)
+        if s > best.get(base, -9.0):
+            best[base] = s
+    ranked = sorted(((s, n) for n, s in best.items()), reverse=True)
     (s1, n1), (s2, n2) = ranked[0], ranked[1] if len(ranked) > 1 else (0.0, "")
     gap = s1 - s2
     ok = s1 >= MIN_SCORE and gap >= MIN_GAP

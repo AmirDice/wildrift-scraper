@@ -1,172 +1,172 @@
 {
- "generatedAt": "2026-08-04 14:09",
- "nChampions": 14,
- "nPlayers": 685,
- "nBuilds": 696,
+ "generatedAt": "2026-08-05 00:30",
+ "nChampions": 15,
+ "nPlayers": 733,
+ "nBuilds": 746,
  "itemMeta": [
   {
-   "slug": "gluttonous-greaves",
-   "name": "Gluttonous Greaves",
-   "count": 179
+   "slug": "seryldas-grudge",
+   "name": "Serylda's Grudge",
+   "count": 209
+  },
+  {
+   "slug": "amaranths-twinguard",
+   "name": "Amaranth's Twinguard",
+   "count": 188
   },
   {
    "slug": "rabadons-deathcap",
    "name": "Rabadon's Deathcap",
-   "count": 178
+   "count": 149
   },
   {
-   "slug": "seryldas-grudge",
-   "name": "Serylda's Grudge",
-   "count": 172
+   "slug": "spellslingers-shoes",
+   "name": "Spellslinger's Shoes",
+   "count": 142
   },
   {
    "slug": "thornmail",
    "name": "Thornmail",
-   "count": 152
+   "count": 141
   },
   {
-   "slug": "plated-steelcaps",
-   "name": "Plated Steelcaps",
-   "count": 151
+   "slug": "gunmetal-greaves",
+   "name": "Gunmetal Greaves",
+   "count": 135
   },
   {
-   "slug": "mortal-reminder",
-   "name": "Mortal Reminder",
-   "count": 150
-  },
-  {
-   "slug": "duskblade-of-draktharr",
-   "name": "Duskblade of Draktharr",
-   "count": 121
-  },
-  {
-   "slug": "guardian-angel",
-   "name": "Guardian Angel",
-   "count": 117
-  },
-  {
-   "slug": "randuins-omen",
-   "name": "Randuin's Omen",
-   "count": 110
-  },
-  {
-   "slug": "ludens-echo",
-   "name": "Luden's Echo",
-   "count": 110
-  },
-  {
-   "slug": "the-collector",
-   "name": "The Collector",
-   "count": 108
-  },
-  {
-   "slug": "blade-of-the-ruined-king",
-   "name": "Blade of the Ruined King",
-   "count": 108
+   "slug": "immortal-treads",
+   "name": "Immortal Treads",
+   "count": 133
   },
   {
    "slug": "infinity-orb",
    "name": "Infinity Orb",
-   "count": 105
-  },
-  {
-   "slug": "infinity-edge",
-   "name": "Infinity Edge",
-   "count": 98
+   "count": 121
   },
   {
    "slug": "trinity-force",
    "name": "Trinity Force",
-   "count": 90
+   "count": 114
   },
   {
-   "slug": "force-of-nature",
-   "name": "Force of Nature",
-   "count": 85
+   "slug": "serpents-fang",
+   "name": "Serpent's Fang",
+   "count": 113
   },
   {
-   "slug": "kraken-slayer",
-   "name": "Kraken Slayer",
-   "count": 85
+   "slug": "armored-advance",
+   "name": "Armored Advance",
+   "count": 112
+  },
+  {
+   "slug": "guardian-angel",
+   "name": "Guardian Angel",
+   "count": 112
   },
   {
    "slug": "eclipse",
    "name": "Eclipse",
-   "count": 79
+   "count": 106
   },
   {
-   "slug": "void-staff",
-   "name": "Void Staff",
-   "count": 75
+   "slug": "spear-of-shojin",
+   "name": "Spear of Shojin",
+   "count": 106
   },
   {
-   "slug": "banshees-veil",
-   "name": "Banshee's Veil",
-   "count": 70
+   "slug": "duskblade-of-draktharr",
+   "name": "Duskblade of Draktharr",
+   "count": 105
+  },
+  {
+   "slug": "blade-of-the-ruined-king",
+   "name": "Blade of the Ruined King",
+   "count": 103
+  },
+  {
+   "slug": "mortal-reminder",
+   "name": "Mortal Reminder",
+   "count": 99
+  },
+  {
+   "slug": "magnetic-blaster",
+   "name": "Magnetic Blaster",
+   "count": 92
+  },
+  {
+   "slug": "armorcrusher-boots",
+   "name": "Armorcrusher Boots",
+   "count": 85
+  },
+  {
+   "slug": "infinity-edge",
+   "name": "Infinity Edge",
+   "count": 83
   }
  ],
  "keystoneMeta": [
   {
    "name": "Conqueror",
-   "count": 174
+   "count": 173
   },
   {
    "name": "Lethal Tempo",
-   "count": 147
+   "count": 146
+  },
+  {
+   "name": "Ice Overlord",
+   "count": 95
   },
   {
    "name": "First Strike",
-   "count": 107
+   "count": 93
   },
   {
-   "name": "Glacial Augment",
-   "count": 55
+   "name": "Phase Rush",
+   "count": 75
   },
   {
    "name": "Electrocute",
-   "count": 48
+   "count": 44
   },
   {
    "name": "Grasp of the Undying",
    "count": 38
   },
   {
-   "name": "Phase Rush",
-   "count": 31
+   "name": "Arcane Comet",
+   "count": 35
   },
   {
    "name": "Dark Harvest",
-   "count": 28
+   "count": 32
   },
   {
-   "name": "Aery",
-   "count": 24
-  },
-  {
-   "name": "Aftershock",
-   "count": 17
+   "name": "Fleet Footwork",
+   "count": 11
   }
  ],
  "spellMeta": [
   {
    "pair": "Flash + Smite",
-   "count": 219
+   "count": 216
   },
   {
    "pair": "Flash + Ignite",
-   "count": 196
+   "count": 197
   },
   {
    "pair": "Flash + Ghost",
-   "count": 99
-  },
-  {
-   "pair": "Barrier + Flash",
-   "count": 64
+   "count": 94
   },
   {
    "pair": "Ghost + Smite",
-   "count": 44
+   "count": 91
+  },
+  {
+   "pair": "Barrier + Flash",
+   "count": 68
   },
   {
    "pair": "Flash + Teleport",
@@ -176,50 +176,55 @@
  "treeMeta": [
   {
    "name": "Precision",
-   "count": 907,
-   "wr": 59.41
+   "count": 858,
+   "wr": 59.71
   },
   {
    "name": "Resolve",
-   "count": 633,
-   "wr": 59.58
+   "count": 840,
+   "wr": 59.64
   },
   {
    "name": "Sorcery",
-   "count": 422,
-   "wr": 58.42
+   "count": 657,
+   "wr": 60.54
   },
   {
    "name": "Domination",
-   "count": 347,
-   "wr": 58.84
+   "count": 624,
+   "wr": 59.29
   }
  ],
  "keystoneAll": [
   {
    "name": "Conqueror",
-   "count": 174,
-   "wr": 59.71
+   "count": 173,
+   "wr": 59.58
   },
   {
    "name": "Lethal Tempo",
-   "count": 147,
-   "wr": 59.1
+   "count": 146,
+   "wr": 59.24
+  },
+  {
+   "name": "Ice Overlord",
+   "count": 95,
+   "wr": 61.74
   },
   {
    "name": "First Strike",
-   "count": 107,
-   "wr": 60.04
+   "count": 93,
+   "wr": 59.16
   },
   {
-   "name": "Glacial Augment",
-   "count": 55,
-   "wr": 60.66
+   "name": "Phase Rush",
+   "count": 75,
+   "wr": 64.62
   },
   {
    "name": "Electrocute",
-   "count": 48,
-   "wr": 57.4
+   "count": 44,
+   "wr": 57.19
   },
   {
    "name": "Grasp of the Undying",
@@ -227,352 +232,412 @@
    "wr": 56.33
   },
   {
-   "name": "Phase Rush",
-   "count": 31,
-   "wr": 59.0
+   "name": "Arcane Comet",
+   "count": 35,
+   "wr": 59.86
   },
   {
    "name": "Dark Harvest",
-   "count": 28,
+   "count": 32,
    "wr": 58.46
   },
   {
-   "name": "Aery",
-   "count": 24,
-   "wr": 61.43
-  },
-  {
-   "name": "Aftershock",
-   "count": 17,
-   "wr": 61.93
-  },
-  {
-   "name": "Arcane Comet",
-   "count": 13,
-   "wr": 58.31
-  },
-  {
    "name": "Fleet Footwork",
-   "count": 7,
-   "wr": 65.48
+   "count": 11,
+   "wr": 62.09
   },
   {
-   "name": "Empowerment",
-   "count": 2,
-   "wr": null
-  },
-  {
-   "name": "Font of Life",
-   "count": 2,
-   "wr": null
-  },
-  {
-   "name": "glacial augment",
-   "count": 2,
-   "wr": null
-  },
-  {
-   "name": "?",
-   "count": 1,
+   "name": "Aery",
+   "count": 3,
    "wr": null
   }
  ],
  "minorMeta": [
   {
-   "name": "Brutal",
-   "count": 308,
-   "tree": "Precision",
-   "wr": 59.56
-  },
-  {
-   "name": "Legend: Alacrity",
-   "count": 264,
-   "tree": "Precision",
-   "wr": 59.81
-  },
-  {
-   "name": "Last Stand",
-   "count": 249,
-   "tree": "Precision",
-   "wr": 58.9
+   "name": "Sudden Impact",
+   "count": 241,
+   "tree": "Domination",
+   "wr": 59.43
   },
   {
    "name": "Overgrowth",
-   "count": 222,
+   "count": 201,
    "tree": "Resolve",
-   "wr": 59.62
-  },
-  {
-   "name": "Bone Plating",
-   "count": 203,
-   "tree": "Resolve",
-   "wr": 59.25
-  },
-  {
-   "name": "Sudden Impact",
-   "count": 139,
-   "tree": "Domination",
-   "wr": 58.81
-  },
-  {
-   "name": "Eyeball Collector",
-   "count": 120,
-   "tree": "Domination",
-   "wr": 59.09
-  },
-  {
-   "name": "Font of Life",
-   "count": 118,
-   "tree": "Resolve",
-   "wr": 60.23
+   "wr": 60.1
   },
   {
    "name": "Transcendence",
-   "count": 112,
+   "count": 201,
    "tree": "Sorcery",
-   "wr": 59.02
-  },
-  {
-   "name": "Gathering Storm",
-   "count": 107,
-   "tree": "Sorcery",
-   "wr": 59.0
-  },
-  {
-   "name": "Manaflow Band",
-   "count": 102,
-   "tree": "Sorcery",
-   "wr": 58.26
-  },
-  {
-   "name": "Nimbus Cloak",
-   "count": 79,
-   "tree": "Sorcery",
-   "wr": 57.76
-  },
-  {
-   "name": "Second Wind",
-   "count": 41,
-   "tree": "Resolve",
-   "wr": 60.49
-  },
-  {
-   "name": "Chain Assault",
-   "count": 34,
-   "tree": "Domination",
-   "wr": 59.07
-  },
-  {
-   "name": "Legend: Tenacity",
-   "count": 29,
-   "tree": "Precision",
-   "wr": 59.77
-  },
-  {
-   "name": "Nullifying Orb",
-   "count": 26,
-   "tree": "Resolve",
-   "wr": 59.47
-  },
-  {
-   "name": "Zombie Ward",
-   "count": 26,
-   "tree": "Domination",
-   "wr": 59.26
-  },
-  {
-   "name": "Demolish",
-   "count": 22,
-   "tree": "Resolve",
-   "wr": 57.35
+   "wr": 61.13
   },
   {
    "name": "Cut Down",
-   "count": 20,
+   "count": 183,
    "tree": "Precision",
-   "wr": 59.01
+   "wr": 59.59
   },
   {
-   "name": "Ingenious Hunter",
-   "count": 18,
-   "tree": "Domination",
-   "wr": 59.61
+   "name": "Bone Plating",
+   "count": 181,
+   "tree": "Resolve",
+   "wr": 58.8
   },
   {
-   "name": "Triumph",
-   "count": 18,
-   "tree": "Precision",
-   "wr": 58.68
+   "name": "Second Wind",
+   "count": 178,
+   "tree": "Resolve",
+   "wr": 59.9
   },
   {
-   "name": "Legend: Bloodline",
-   "count": 14,
+   "name": "Legend: Alacrity",
+   "count": 168,
    "tree": "Precision",
    "wr": 59.17
   },
   {
-   "name": "Celerity",
-   "count": 6,
+   "name": "Nimbus Cloak",
+   "count": 165,
    "tree": "Sorcery",
-   "wr": 57.47
+   "wr": 60.39
   },
   {
-   "name": "Scorch",
-   "count": 6,
-   "tree": "Sorcery",
-   "wr": 58.96
-  },
-  {
-   "name": "Botanist",
-   "count": 6,
-   "tree": "Sorcery",
-   "wr": 55.65
-  },
-  {
-   "name": "Coup de Grace",
-   "count": 5,
+   "name": "Brutal",
+   "count": 160,
    "tree": "Precision",
-   "wr": 57.42
+   "wr": 59.59
   },
   {
-   "name": "Cheap Shot",
-   "count": 4,
+   "name": "Eyeball Collector",
+   "count": 128,
    "tree": "Domination",
-   "wr": 55.0
+   "wr": 58.86
+  },
+  {
+   "name": "Unshakeable",
+   "count": 121,
+   "tree": "Resolve",
+   "wr": 60.28
+  },
+  {
+   "name": "Legend: Bloodline",
+   "count": 98,
+   "tree": "Precision",
+   "wr": 62.82
+  },
+  {
+   "name": "Chain Assault",
+   "count": 76,
+   "tree": "Domination",
+   "wr": 60.2
+  },
+  {
+   "name": "Battle Zeal",
+   "count": 71,
+   "tree": "Precision",
+   "wr": 58.36
+  },
+  {
+   "name": "Axiom Arcanist",
+   "count": 69,
+   "tree": "Sorcery",
+   "wr": 63.67
+  },
+  {
+   "name": "Manaflow Band",
+   "count": 65,
+   "tree": "Sorcery",
+   "wr": 58.54
   },
   {
    "name": "Tyrant",
-   "count": 4,
+   "count": 64,
    "tree": "Domination",
-   "wr": 55.94
+   "wr": 58.48
+  },
+  {
+   "name": "Last Stand",
+   "count": 58,
+   "tree": "Precision",
+   "wr": 58.78
   },
   {
    "name": "Absolute Focus",
-   "count": 4,
+   "count": 57,
    "tree": "Sorcery",
-   "wr": 51.95
+   "wr": 59.26
   },
   {
-   "name": "Relentless Hunter",
-   "count": 2,
-   "tree": "Domination",
-   "wr": null
+   "name": "Perseverance",
+   "count": 54,
+   "tree": "Resolve",
+   "wr": 60.84
+  },
+  {
+   "name": "Demolish",
+   "count": 50,
+   "tree": "Resolve",
+   "wr": 57.6
+  },
+  {
+   "name": "Legend: Tenacity",
+   "count": 49,
+   "tree": "Precision",
+   "wr": 60.91
+  },
+  {
+   "name": "Coup de Grace",
+   "count": 44,
+   "tree": "Precision",
+   "wr": 59.77
   },
   {
    "name": "Courage of the Colossus",
-   "count": 1,
+   "count": 40,
    "tree": "Resolve",
+   "wr": 60.36
+  },
+  {
+   "name": "Zombie Ward",
+   "count": 37,
+   "tree": "Domination",
+   "wr": 61.67
+  },
+  {
+   "name": "Cheap Shot",
+   "count": 34,
+   "tree": "Domination",
+   "wr": 57.93
+  },
+  {
+   "name": "Gathering Storm",
+   "count": 33,
+   "tree": "Sorcery",
+   "wr": 58.54
+  },
+  {
+   "name": "Scorch",
+   "count": 31,
+   "tree": "Sorcery",
+   "wr": 59.8
+  },
+  {
+   "name": "Triumph",
+   "count": 27,
+   "tree": "Precision",
+   "wr": 58.6
+  },
+  {
+   "name": "Hubris",
+   "count": 27,
+   "tree": "Domination",
+   "wr": 60.17
+  },
+  {
+   "name": "Botanist",
+   "count": 23,
+   "tree": "Sorcery",
+   "wr": 60.93
+  },
+  {
+   "name": "Celerity",
+   "count": 9,
+   "tree": "Sorcery",
+   "wr": 59.26
+  },
+  {
+   "name": "Nullifying Orb",
+   "count": 6,
+   "tree": "Resolve",
+   "wr": 58.38
+  },
+  {
+   "name": "Ingenious Hunter",
+   "count": 6,
+   "tree": "Domination",
+   "wr": 60.53
+  },
+  {
+   "name": "Relentless Hunter",
+   "count": 6,
+   "tree": "Domination",
+   "wr": 56.45
+  },
+  {
+   "name": "Revitalize",
+   "count": 5,
+   "tree": "Resolve",
+   "wr": 62.05
+  },
+  {
+   "name": "Empowered Attack",
+   "count": 5,
+   "tree": "Domination",
+   "wr": 57.08
+  },
+  {
+   "name": "Font of Life",
+   "count": 4,
+   "tree": "Resolve",
+   "wr": 52.98
+  },
+  {
+   "name": "Ixtali Seedjar",
+   "count": 3,
+   "tree": "Sorcery",
+   "wr": 57.02
+  },
+  {
+   "name": "Hextech Flashtraption",
+   "count": 1,
+   "tree": "Sorcery",
    "wr": null
   }
  ],
  "itemAll": [
   {
-   "slug": "gluttonous-greaves",
-   "name": "Gluttonous Greaves",
-   "count": 179,
-   "wr": 59.32
+   "slug": "seryldas-grudge",
+   "name": "Serylda's Grudge",
+   "count": 209,
+   "wr": 61.63
+  },
+  {
+   "slug": "amaranths-twinguard",
+   "name": "Amaranth's Twinguard",
+   "count": 188,
+   "wr": 61.03
   },
   {
    "slug": "rabadons-deathcap",
    "name": "Rabadon's Deathcap",
-   "count": 178,
-   "wr": 58.44
+   "count": 149,
+   "wr": 58.19
   },
   {
-   "slug": "seryldas-grudge",
-   "name": "Serylda's Grudge",
-   "count": 172,
-   "wr": 60.09
+   "slug": "spellslingers-shoes",
+   "name": "Spellslinger's Shoes",
+   "count": 142,
+   "wr": 58.26
   },
   {
    "slug": "thornmail",
    "name": "Thornmail",
-   "count": 152,
-   "wr": 59.96
+   "count": 141,
+   "wr": 60.0
   },
   {
-   "slug": "plated-steelcaps",
-   "name": "Plated Steelcaps",
-   "count": 151,
-   "wr": 58.6
+   "slug": "gunmetal-greaves",
+   "name": "Gunmetal Greaves",
+   "count": 135,
+   "wr": 59.38
   },
   {
-   "slug": "mortal-reminder",
-   "name": "Mortal Reminder",
-   "count": 150,
-   "wr": 60.1
-  },
-  {
-   "slug": "duskblade-of-draktharr",
-   "name": "Duskblade of Draktharr",
-   "count": 121,
-   "wr": 60.39
-  },
-  {
-   "slug": "guardian-angel",
-   "name": "Guardian Angel",
-   "count": 117,
-   "wr": 59.94
-  },
-  {
-   "slug": "randuins-omen",
-   "name": "Randuin's Omen",
-   "count": 110,
-   "wr": 60.76
-  },
-  {
-   "slug": "ludens-echo",
-   "name": "Luden's Echo",
-   "count": 110,
-   "wr": 58.5
-  },
-  {
-   "slug": "the-collector",
-   "name": "The Collector",
-   "count": 108,
-   "wr": 59.03
-  },
-  {
-   "slug": "blade-of-the-ruined-king",
-   "name": "Blade of the Ruined King",
-   "count": 108,
-   "wr": 59.99
+   "slug": "immortal-treads",
+   "name": "Immortal Treads",
+   "count": 133,
+   "wr": 62.38
   },
   {
    "slug": "infinity-orb",
    "name": "Infinity Orb",
-   "count": 105,
-   "wr": 57.77
-  },
-  {
-   "slug": "infinity-edge",
-   "name": "Infinity Edge",
-   "count": 98,
-   "wr": 59.62
+   "count": 121,
+   "wr": 57.98
   },
   {
    "slug": "trinity-force",
    "name": "Trinity Force",
-   "count": 90,
-   "wr": 59.24
+   "count": 114,
+   "wr": 62.31
   },
   {
-   "slug": "force-of-nature",
-   "name": "Force of Nature",
-   "count": 85,
-   "wr": 59.72
+   "slug": "serpents-fang",
+   "name": "Serpent's Fang",
+   "count": 113,
+   "wr": 59.31
   },
   {
-   "slug": "kraken-slayer",
-   "name": "Kraken Slayer",
-   "count": 85,
-   "wr": 58.82
+   "slug": "armored-advance",
+   "name": "Armored Advance",
+   "count": 112,
+   "wr": 58.01
+  },
+  {
+   "slug": "guardian-angel",
+   "name": "Guardian Angel",
+   "count": 112,
+   "wr": 60.01
   },
   {
    "slug": "eclipse",
    "name": "Eclipse",
-   "count": 79,
-   "wr": 58.97
+   "count": 106,
+   "wr": 59.07
+  },
+  {
+   "slug": "spear-of-shojin",
+   "name": "Spear of Shojin",
+   "count": 106,
+   "wr": 62.94
+  },
+  {
+   "slug": "duskblade-of-draktharr",
+   "name": "Duskblade of Draktharr",
+   "count": 105,
+   "wr": 60.6
+  },
+  {
+   "slug": "blade-of-the-ruined-king",
+   "name": "Blade of the Ruined King",
+   "count": 103,
+   "wr": 59.67
+  },
+  {
+   "slug": "mortal-reminder",
+   "name": "Mortal Reminder",
+   "count": 99,
+   "wr": 59.39
+  },
+  {
+   "slug": "magnetic-blaster",
+   "name": "Magnetic Blaster",
+   "count": 92,
+   "wr": 58.35
+  },
+  {
+   "slug": "armorcrusher-boots",
+   "name": "Armorcrusher Boots",
+   "count": 85,
+   "wr": 59.64
+  },
+  {
+   "slug": "infinity-edge",
+   "name": "Infinity Edge",
+   "count": 83,
+   "wr": 60.16
+  },
+  {
+   "slug": "banshees-veil",
+   "name": "Banshee's Veil",
+   "count": 83,
+   "wr": 58.2
+  },
+  {
+   "slug": "chainlaced-crushers",
+   "name": "Chainlaced Crushers",
+   "count": 76,
+   "wr": 62.35
+  },
+  {
+   "slug": "deaths-dance",
+   "name": "Death's Dance",
+   "count": 76,
+   "wr": 60.9
+  },
+  {
+   "slug": "ludens-echo",
+   "name": "Luden's Echo",
+   "count": 75,
+   "wr": 57.88
   },
   {
    "slug": "void-staff",
@@ -581,76 +646,82 @@
    "wr": 58.62
   },
   {
-   "slug": "banshees-veil",
-   "name": "Banshee's Veil",
-   "count": 70,
-   "wr": 58.89
+   "slug": "hollow-radiance",
+   "name": "Hollow Radiance",
+   "count": 71,
+   "wr": 60.59
   },
   {
-   "slug": "divine-sunderer",
-   "name": "Divine Sunderer",
+   "slug": "searing-crown",
+   "name": "Searing Crown",
    "count": 69,
-   "wr": 58.5
+   "wr": 61.94
+  },
+  {
+   "slug": "essence-reaver",
+   "name": "Essence Reaver",
+   "count": 69,
+   "wr": 60.36
   },
   {
    "slug": "youmuus-ghostblade",
    "name": "Youmuu's Ghostblade",
-   "count": 67,
-   "wr": 60.62
+   "count": 64,
+   "wr": 60.43
+  },
+  {
+   "slug": "manamune",
+   "name": "Manamune",
+   "count": 63,
+   "wr": 66.44
+  },
+  {
+   "slug": "edge-of-night",
+   "name": "Edge of Night",
+   "count": 60,
+   "wr": 59.67
   },
   {
    "slug": "bloodthirster",
    "name": "Bloodthirster",
-   "count": 66,
-   "wr": 59.01
+   "count": 57,
+   "wr": 58.8
   },
   {
-   "slug": "spear-of-shojin",
-   "name": "Spear of Shojin",
-   "count": 62,
-   "wr": 59.73
+   "slug": "randuins-omen",
+   "name": "Randuin's Omen",
+   "count": 56,
+   "wr": 61.79
   },
   {
-   "slug": "dead-mans-plate",
-   "name": "Dead Man's Plate",
-   "count": 58,
-   "wr": 60.23
+   "slug": "lord-dominiks-regard",
+   "name": "Lord Dominik's Regard",
+   "count": 55,
+   "wr": 60.3
   },
   {
-   "slug": "zekes-convergence",
-   "name": "Zeke's Convergence",
-   "count": 58,
-   "wr": 60.09
+   "slug": "horizon-focus",
+   "name": "Horizon Focus",
+   "count": 54,
+   "wr": 58.43
   },
   {
-   "slug": "sunfire-aegis",
-   "name": "Sunfire Aegis",
-   "count": 53,
-   "wr": 59.73
+   "slug": "force-of-nature",
+   "name": "Force of Nature",
+   "count": 51,
+   "wr": 58.64
   },
   {
-   "slug": "radiant-virtue",
-   "name": "Radiant Virtue",
-   "count": 52,
-   "wr": 62.16
-  },
-  {
-   "slug": "serpents-fang",
-   "name": "Serpent's Fang",
-   "count": 52,
-   "wr": 60.08
-  },
-  {
-   "slug": "amaranths-twinguard",
-   "name": "Amaranth's Twinguard",
+   "slug": "the-collector",
+   "name": "The Collector",
    "count": 48,
-   "wr": 61.05
+   "wr": 59.35
   },
   {
    "slug": "runaans-hurricane",
    "name": "Runaan's Hurricane",
-   "count": 46,
-   "wr": 58.65
+   "count": 47,
+   "wr": 58.59
   },
   {
    "slug": "guinsoos-rageblade",
@@ -665,256 +736,292 @@
    "wr": 57.74
   },
   {
-   "slug": "spellslingers-shoes",
-   "name": "Spellslinger's Shoes",
-   "count": 46,
-   "wr": 58.08
+   "slug": "terminus",
+   "name": "Terminus",
+   "count": 41,
+   "wr": 61.3
   },
   {
-   "slug": "lord-dominiks-regard",
-   "name": "Lord Dominik's Regard",
-   "count": 43,
-   "wr": 60.4
-  },
-  {
-   "slug": "deaths-dance",
-   "name": "Death's Dance",
-   "count": 42,
-   "wr": 60.25
+   "slug": "sundered-sky",
+   "name": "Sundered Sky",
+   "count": 40,
+   "wr": 59.39
   },
   {
    "slug": "black-cleaver",
    "name": "Black Cleaver",
-   "count": 42,
-   "wr": 57.09
+   "count": 40,
+   "wr": 57.11
   },
   {
-   "slug": "warmogs-armor",
-   "name": "Warmog's Armor",
-   "count": 35,
-   "wr": 58.39
-  },
-  {
-   "slug": "manamune",
-   "name": "Manamune",
-   "count": 31,
-   "wr": 60.88
-  },
-  {
-   "slug": "mantle-of-the-twelfth-hour",
-   "name": "Mantle of the Twelfth Hour",
-   "count": 27,
-   "wr": 59.17
-  },
-  {
-   "slug": "abyssal-mask",
-   "name": "Abyssal Mask",
-   "count": 25,
-   "wr": 58.81
-  },
-  {
-   "slug": "phantom-dancer",
-   "name": "Phantom Dancer",
-   "count": 25,
-   "wr": 57.82
-  },
-  {
-   "slug": "heartsteel",
-   "name": "Heartsteel",
-   "count": 24,
-   "wr": 56.16
-  },
-  {
-   "slug": "steraks-gage",
-   "name": "Sterak's Gage",
-   "count": 23,
-   "wr": 59.13
-  },
-  {
-   "slug": "goredrinker",
-   "name": "Goredrinker",
-   "count": 21,
-   "wr": 61.03
-  },
-  {
-   "slug": "berserkers-greaves",
-   "name": "Berserker's Greaves",
-   "count": 21,
-   "wr": 58.17
-  },
-  {
-   "slug": "cosmic-drive",
-   "name": "Cosmic Drive",
-   "count": 21,
-   "wr": 58.41
-  },
-  {
-   "slug": "horizon-focus",
-   "name": "Horizon Focus",
-   "count": 21,
-   "wr": 57.71
-  },
-  {
-   "slug": "archangels-staff",
-   "name": "Archangel's Staff",
-   "count": 19,
-   "wr": 62.0
-  },
-  {
-   "slug": "imperial-mandate",
-   "name": "Imperial Mandate",
-   "count": 18,
-   "wr": 60.95
-  },
-  {
-   "slug": "harmonic-echo",
-   "name": "Harmonic Echo",
-   "count": 18,
-   "wr": 58.16
-  },
-  {
-   "slug": "ionian-boots-of-lucidity",
-   "name": "Ionian Boots of Lucidity",
-   "count": 17,
-   "wr": 60.79
-  },
-  {
-   "slug": "riftmaker",
-   "name": "Riftmaker",
-   "count": 16,
-   "wr": 60.53
-  },
-  {
-   "slug": "fimbulwinter",
-   "name": "Fimbulwinter",
-   "count": 16,
-   "wr": 60.33
-  },
-  {
-   "slug": "rod-of-ages",
-   "name": "Rod of Ages",
-   "count": 15,
-   "wr": 58.14
-  },
-  {
-   "slug": "maw-of-malmortius",
-   "name": "Maw of Malmortius",
-   "count": 14,
-   "wr": 60.2
-  },
-  {
-   "slug": "chempunk-chainsword",
-   "name": "Chempunk Chainsword",
-   "count": 12,
-   "wr": 57.39
-  },
-  {
-   "slug": "hullbreaker",
-   "name": "Hullbreaker",
-   "count": 9,
-   "wr": 55.26
-  },
-  {
-   "slug": "frozen-heart",
-   "name": "Frozen Heart",
-   "count": 9,
-   "wr": 60.65
-  },
-  {
-   "slug": "edge-of-night",
-   "name": "Edge of Night",
-   "count": 9,
-   "wr": 56.95
-  },
-  {
-   "slug": "rylais-crystal-scepter",
-   "name": "Rylai's Crystal Scepter",
-   "count": 7,
-   "wr": 63.51
-  },
-  {
-   "slug": "essence-reaver",
-   "name": "Essence Reaver",
-   "count": 7,
-   "wr": null
-  },
-  {
-   "slug": "gargoyle-stoneplate",
-   "name": "Gargoyle Stoneplate",
-   "count": 6,
-   "wr": 58.63
-  },
-  {
-   "slug": "mercurys-treads",
-   "name": "Mercury's Treads",
-   "count": 6,
-   "wr": 62.6
-  },
-  {
-   "slug": "zhonyas-hourglass",
-   "name": "Zhonya's Hourglass",
-   "count": 5,
-   "wr": 60.89
-  },
-  {
-   "slug": "liandrys-torment",
-   "name": "Liandry's Torment",
-   "count": 4,
-   "wr": 63.68
-  },
-  {
-   "slug": "hextech-rocketbelt",
-   "name": "Hextech Rocketbelt",
-   "count": 4,
-   "wr": 62.06
-  },
-  {
-   "slug": "cryptbloom",
-   "name": "Cryptbloom",
-   "count": 4,
-   "wr": 56.6
-  },
-  {
-   "slug": "morellonomicon",
-   "name": "Morellonomicon",
-   "count": 4,
-   "wr": 60.87
-  },
-  {
-   "slug": "winters-approach",
-   "name": "Winter's Approach",
-   "count": 3,
-   "wr": 54.54
-  },
-  {
-   "slug": "titanic-hydra",
-   "name": "Titanic Hydra",
-   "count": 3,
-   "wr": 50.18
-  },
-  {
-   "slug": "navori-quickblades",
-   "name": "Navori Quickblades",
-   "count": 3,
-   "wr": 62.88
+   "slug": "kraken-slayer",
+   "name": "Kraken Slayer",
+   "count": 40,
+   "wr": 58.99
   },
   {
    "slug": "mercurial-scimitar",
    "name": "Mercurial Scimitar",
-   "count": 3,
-   "wr": 63.33
+   "count": 38,
+   "wr": 65.37
+  },
+  {
+   "slug": "sunfire-aegis",
+   "name": "Sunfire Aegis",
+   "count": 38,
+   "wr": 59.33
+  },
+  {
+   "slug": "unending-despair",
+   "name": "Unending Despair",
+   "count": 36,
+   "wr": 57.89
+  },
+  {
+   "slug": "dead-mans-plate",
+   "name": "Dead Man's Plate",
+   "count": 33,
+   "wr": 58.73
+  },
+  {
+   "slug": "blackfire-torch",
+   "name": "Blackfire Torch",
+   "count": 31,
+   "wr": 60.4
+  },
+  {
+   "slug": "oceanids-trident",
+   "name": "Oceanid's Trident",
+   "count": 28,
+   "wr": 58.39
+  },
+  {
+   "slug": "malignance",
+   "name": "Malignance",
+   "count": 25,
+   "wr": 61.14
+  },
+  {
+   "slug": "goredrinker",
+   "name": "Goredrinker",
+   "count": 24,
+   "wr": 60.58
+  },
+  {
+   "slug": "warmogs-armor",
+   "name": "Warmog's Armor",
+   "count": 23,
+   "wr": 61.24
+  },
+  {
+   "slug": "phantom-dancer",
+   "name": "Phantom Dancer",
+   "count": 22,
+   "wr": 58.2
+  },
+  {
+   "slug": "crimson-lucidity",
+   "name": "Crimson Lucidity",
+   "count": 20,
+   "wr": 64.97
+  },
+  {
+   "slug": "abyssal-mask",
+   "name": "Abyssal Mask",
+   "count": 19,
+   "wr": 60.3
+  },
+  {
+   "slug": "heartsteel",
+   "name": "Heartsteel",
+   "count": 18,
+   "wr": 53.95
+  },
+  {
+   "slug": "maw-of-malmortius",
+   "name": "Maw of Malmortius",
+   "count": 16,
+   "wr": 60.61
+  },
+  {
+   "slug": "zhonyas-hourglass",
+   "name": "Zhonya's Hourglass",
+   "count": 16,
+   "wr": 58.82
+  },
+  {
+   "slug": "archangels-staff",
+   "name": "Archangel's Staff",
+   "count": 16,
+   "wr": 60.52
+  },
+  {
+   "slug": "cryptbloom",
+   "name": "Cryptbloom",
+   "count": 13,
+   "wr": 57.39
+  },
+  {
+   "slug": "steraks-gage",
+   "name": "Sterak's Gage",
+   "count": 11,
+   "wr": 57.34
+  },
+  {
+   "slug": "gargoyle-stoneplate",
+   "name": "Gargoyle Stoneplate",
+   "count": 11,
+   "wr": 57.33
+  },
+  {
+   "slug": "divine-sunderer",
+   "name": "Divine Sunderer",
+   "count": 11,
+   "wr": 58.41
+  },
+  {
+   "slug": "boots-of-mana",
+   "name": "Boots of Mana",
+   "count": 10,
+   "wr": 58.48
+  },
+  {
+   "slug": "quicksilver-sash",
+   "name": "Quicksilver Sash",
+   "count": 9,
+   "wr": 62.67
+  },
+  {
+   "slug": "stridebreaker",
+   "name": "Stridebreaker",
+   "count": 9,
+   "wr": 59.04
+  },
+  {
+   "slug": "stormsurge",
+   "name": "Stormsurge",
+   "count": 9,
+   "wr": 56.86
+  },
+  {
+   "slug": "experimental-hexplate",
+   "name": "Experimental Hexplate",
+   "count": 8,
+   "wr": 58.27
+  },
+  {
+   "slug": "galeforce",
+   "name": "Galeforce",
+   "count": 8,
+   "wr": 56.68
+  },
+  {
+   "slug": "black-mist-scythe",
+   "name": "Black Mist Scythe",
+   "count": 8,
+   "wr": 57.81
+  },
+  {
+   "slug": "frozen-heart",
+   "name": "Frozen Heart",
+   "count": 8,
+   "wr": 60.41
+  },
+  {
+   "slug": "chempunk-chainsword",
+   "name": "Chempunk Chainsword",
+   "count": 7,
+   "wr": 56.15
+  },
+  {
+   "slug": "hullbreaker",
+   "name": "Hullbreaker",
+   "count": 7,
+   "wr": 57.78
+  },
+  {
+   "slug": "boots-of-dynamism",
+   "name": "Boots of Dynamism",
+   "count": 7,
+   "wr": 59.58
+  },
+  {
+   "slug": "titanic-hydra",
+   "name": "Titanic Hydra",
+   "count": 7,
+   "wr": 55.56
+  },
+  {
+   "slug": "berserkers-greaves",
+   "name": "Berserker's Greaves",
+   "count": 7,
+   "wr": 56.38
+  },
+  {
+   "slug": "plated-steelcaps",
+   "name": "Plated Steelcaps",
+   "count": 5,
+   "wr": 54.12
+  },
+  {
+   "slug": "gluttonous-greaves",
+   "name": "Gluttonous Greaves",
+   "count": 5,
+   "wr": null
+  },
+  {
+   "slug": "cosmic-drive",
+   "name": "Cosmic Drive",
+   "count": 5,
+   "wr": 61.04
+  },
+  {
+   "slug": "navori-quickblades",
+   "name": "Navori Quickblades",
+   "count": 5,
+   "wr": 60.56
   },
   {
    "slug": "kaenic-rookern",
    "name": "Kaenic Rookern",
+   "count": 4,
+   "wr": 61.99
+  },
+  {
+   "slug": "soul-transfer",
+   "name": "Soul Transfer",
+   "count": 3,
+   "wr": 57.53
+  },
+  {
+   "slug": "liandrys-torment",
+   "name": "Liandry's Torment",
+   "count": 3,
+   "wr": null
+  },
+  {
+   "slug": "rod-of-ages",
+   "name": "Rod of Ages",
+   "count": 3,
+   "wr": 52.37
+  },
+  {
+   "slug": "staff-of-flowing-water",
+   "name": "Staff of Flowing Water",
+   "count": 3,
+   "wr": null
+  },
+  {
+   "slug": "riftmaker",
+   "name": "Riftmaker",
    "count": 2,
    "wr": null
   },
   {
-   "slug": "magnetic-blaster",
-   "name": "Magnetic Blaster",
+   "slug": "overlords-bloodmail",
+   "name": "Overlord's Bloodmail",
    "count": 2,
-   "wr": null
+   "wr": 49.33
   },
   {
    "slug": "wits-end",
@@ -923,89 +1030,70 @@
    "wr": 56.43
   },
   {
-   "slug": "muramana",
-   "name": "Muramana",
+   "slug": "bloodletters-curse",
+   "name": "Bloodletter's Curse",
+   "count": 2,
+   "wr": 53.25
+  },
+  {
+   "slug": "seekers-armguard",
+   "name": "Seeker's Armguard",
    "count": 2,
    "wr": null
   },
   {
-   "slug": "staff-of-flowing-water",
-   "name": "Staff of Flowing Water",
+   "slug": "dawnshroud",
+   "name": "Dawnshroud",
    "count": 2,
-   "wr": 53.99
+   "wr": null
+  },
+  {
+   "slug": "morellonomicon",
+   "name": "Morellonomicon",
+   "count": 1,
+   "wr": null
+  },
+  {
+   "slug": "imperial-mandate",
+   "name": "Imperial Mandate",
+   "count": 1,
+   "wr": null
+  },
+  {
+   "slug": "ionian-boots-of-lucidity",
+   "name": "Ionian Boots of Lucidity",
+   "count": 1,
+   "wr": null
+  },
+  {
+   "slug": "dusk-and-dawn",
+   "name": "Dusk and Dawn",
+   "count": 1,
+   "wr": null
   },
   {
    "slug": "nashors-tooth",
    "name": "Nashor's Tooth",
-   "count": 2,
-   "wr": null
-  },
-  {
-   "slug": "seraphs-embrace",
-   "name": "Seraph's Embrace",
-   "count": 2,
-   "wr": null
-  },
-  {
-   "slug": "oceanids-trident",
-   "name": "Oceanid's Trident",
-   "count": 2,
-   "wr": 56.82
-  },
-  {
-   "slug": "boots-of-mana",
-   "name": "Boots of Mana",
-   "count": 2,
-   "wr": 55.13
-  },
-  {
-   "slug": "crimson-lucidity",
-   "name": "Crimson Lucidity",
-   "count": 2,
-   "wr": null
-  },
-  {
-   "slug": "sundered-sky",
-   "name": "Sundered Sky",
    "count": 1,
    "wr": null
   },
   {
-   "slug": "locket-of-the-iron-solari",
-   "name": "Locket of the Iron Solari",
-   "count": 1,
-   "wr": null
-  },
-  {
-   "slug": "terminus",
-   "name": "Terminus",
-   "count": 1,
-   "wr": 53.8
-  },
-  {
-   "slug": "blackfire-torch",
-   "name": "Blackfire Torch",
+   "slug": "zekes-convergence",
+   "name": "Zeke's Convergence",
    "count": 1,
    "wr": null
   }
  ],
  "tierComposition": {
-  "grandmaster": 247,
-  "master": 234,
-  "challenger": 69,
-  "sovereign": 14,
-  "legendary-grandmaster": 13,
+  "grandmaster": 294,
+  "master": 261,
+  "challenger": 95,
+  "legendary-grandmaster": 25,
+  "sovereign": 16,
   "legendary-master": 9,
-  "iron": 9,
-  "legendary-challenger": 7,
-  "gold": 5,
-  "platinum": 4,
-  "bronze": 4,
-  "emerald": 3,
-  "silver": 3,
+  "legendary-challenger": 9,
   "diamond": 2,
-  "legendary-commander": 1,
-  "ii": 1
+  "legendary-commander": 1
  },
  "champions": {
   "aatrox": {
@@ -1024,7 +1112,7 @@
    "legendaryTax": -2.6,
    "keystone": {
     "name": "Conqueror",
-    "count": 48,
+    "count": 47,
     "of": 50
    },
    "spells": {
@@ -1033,19 +1121,17 @@
     "of": 50
    },
    "conformity": {
-    "count": 2,
+    "count": 6,
     "of": 50
    },
    "pentas": 35,
    "tiers": {
-    "grandmaster": 17,
-    "challenger": 9,
-    "master": 5,
-    "sovereign": 2,
-    "legendary-master": 1,
-    "legendary-grandmaster": 1,
-    "gold": 1,
-    "iron": 1
+    "grandmaster": 21,
+    "challenger": 12,
+    "master": 9,
+    "sovereign": 3,
+    "legendary-grandmaster": 2,
+    "legendary-master": 1
    }
   },
   "amumu": {
@@ -1063,26 +1149,25 @@
    "gamesMedian": 195,
    "legendaryTax": -0.7,
    "keystone": {
-    "name": "Glacial Augment",
-    "count": 23,
+    "name": "Ice Overlord",
+    "count": 50,
     "of": 50
    },
    "spells": {
     "pair": "Flash + Smite",
-    "count": 48,
+    "count": 47,
     "of": 50
    },
    "conformity": {
-    "count": 4,
+    "count": 37,
     "of": 50
    },
    "pentas": 16,
    "tiers": {
-    "master": 22,
-    "grandmaster": 17,
-    "challenger": 2,
-    "sovereign": 1,
-    "iron": 1
+    "master": 24,
+    "grandmaster": 21,
+    "challenger": 3,
+    "sovereign": 1
    }
   },
   "garen": {
@@ -1110,69 +1195,106 @@
     "of": 50
    },
    "conformity": {
-    "count": 9,
+    "count": 17,
     "of": 50
    },
    "pentas": 6,
    "tiers": {
     "grandmaster": 24,
-    "master": 19,
-    "emerald": 2,
-    "challenger": 1
+    "master": 22,
+    "challenger": 1,
+    "sovereign": 1
+   }
+  },
+  "hecarim": {
+   "name": "Hecarim",
+   "avgWr": 71.85,
+   "kda": 5.68,
+   "teamfight": 57.96,
+   "gpm": 918.3,
+   "dmgDealt": 27567.34,
+   "dmgTaken": 20080.36,
+   "turret": 3504.85,
+   "firstBlood": 10.97,
+   "mvpRate": 31.98,
+   "sRate": 25.96,
+   "gamesMedian": 167,
+   "legendaryTax": -2.6,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Ghost + Smite",
+    "count": 47,
+    "of": 50
+   },
+   "conformity": {
+    "count": 23,
+    "of": 50
+   },
+   "pentas": 77,
+   "tiers": {
+    "challenger": 17,
+    "grandmaster": 15,
+    "legendary-grandmaster": 9,
+    "legendary-challenger": 2,
+    "master": 2,
+    "sovereign": 1
    }
   },
   "jinx": {
    "name": "Jinx",
    "avgWr": 61.07,
-   "kda": 4.05,
-   "teamfight": 54.67,
-   "gpm": 817.3,
-   "dmgDealt": 28373.06,
-   "dmgTaken": 17986.76,
-   "turret": 3780.62,
-   "firstBlood": 10.88,
-   "mvpRate": 21.05,
-   "sRate": 16.6,
-   "gamesMedian": 194,
+   "kda": 4.06,
+   "teamfight": 54.85,
+   "gpm": 817.8,
+   "dmgDealt": 28427.35,
+   "dmgTaken": 17978.67,
+   "turret": 3793.61,
+   "firstBlood": 10.93,
+   "mvpRate": 21.2,
+   "sRate": 16.71,
+   "gamesMedian": 185,
    "legendaryTax": -1.3,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 50,
+    "count": 49,
     "of": 50
    },
    "spells": {
     "pair": "Flash + Ghost",
-    "count": 30,
+    "count": 29,
     "of": 50
    },
    "conformity": {
     "count": 12,
     "of": 50
    },
-   "pentas": 106,
+   "pentas": 104,
    "tiers": {
-    "master": 19,
-    "grandmaster": 18,
-    "challenger": 3,
+    "grandmaster": 22,
+    "master": 20,
+    "challenger": 5,
     "legendary-challenger": 1,
-    "legendary-grandmaster": 1,
-    "silver": 1
+    "legendary-grandmaster": 1
    }
   },
   "kayn": {
    "name": "Kayn",
-   "avgWr": 63.38,
-   "kda": 3.93,
-   "teamfight": 51.49,
-   "gpm": 851.44,
-   "dmgDealt": 25674.26,
-   "dmgTaken": 20550.52,
-   "turret": 2731.16,
-   "firstBlood": 9.81,
-   "mvpRate": 21.79,
-   "sRate": 14.4,
+   "avgWr": 62.92,
+   "kda": 3.97,
+   "teamfight": 51.69,
+   "gpm": 852.79,
+   "dmgDealt": 25836.1,
+   "dmgTaken": 20593.85,
+   "turret": 2742.54,
+   "firstBlood": 9.67,
+   "mvpRate": 22.12,
+   "sRate": 14.75,
    "gamesMedian": 142,
-   "legendaryTax": -0.9,
+   "legendaryTax": -1.0,
    "keystone": {
     "name": "Conqueror",
     "count": 24,
@@ -1180,26 +1302,22 @@
    },
    "spells": {
     "pair": "Flash + Smite",
-    "count": 29,
+    "count": 27,
     "of": 50
    },
    "conformity": {
-    "count": 3,
+    "count": 10,
     "of": 50
    },
    "pentas": 36,
    "tiers": {
-    "master": 15,
-    "grandmaster": 14,
-    "challenger": 7,
-    "sovereign": 2,
-    "legendary-grandmaster": 1,
-    "platinum": 1,
+    "grandmaster": 17,
+    "master": 17,
+    "challenger": 6,
     "legendary-challenger": 1,
+    "sovereign": 1,
     "legendary-commander": 1,
-    "legendary-master": 1,
-    "iron": 1,
-    "silver": 1
+    "legendary-master": 1
    }
   },
   "khazix": {
@@ -1223,22 +1341,19 @@
    },
    "spells": {
     "pair": "Flash + Smite",
-    "count": 36,
+    "count": 35,
     "of": 50
    },
    "conformity": {
-    "count": 3,
+    "count": 5,
     "of": 50
    },
    "pentas": 39,
    "tiers": {
     "master": 20,
-    "grandmaster": 13,
+    "grandmaster": 14,
     "challenger": 9,
-    "legendary-grandmaster": 2,
-    "bronze": 2,
-    "iron": 2,
-    "platinum": 1
+    "legendary-grandmaster": 2
    }
   },
   "lux": {
@@ -1256,8 +1371,8 @@
    "gamesMedian": 194,
    "legendaryTax": -0.9,
    "keystone": {
-    "name": "Aery",
-    "count": 20,
+    "name": "Arcane Comet",
+    "count": 33,
     "of": 50
    },
    "spells": {
@@ -1266,54 +1381,52 @@
     "of": 50
    },
    "conformity": {
-    "count": 8,
+    "count": 10,
     "of": 50
    },
    "pentas": 13,
    "tiers": {
-    "grandmaster": 20,
-    "master": 17,
+    "grandmaster": 23,
+    "master": 19,
+    "challenger": 2,
     "sovereign": 1,
     "diamond": 1,
     "legendary-grandmaster": 1,
-    "gold": 1,
-    "iron": 1,
-    "legendary-master": 1,
-    "challenger": 1
+    "legendary-master": 1
    }
   },
   "nunu-and-willump": {
    "name": "Nunu & Willump",
    "avgWr": 62.81,
-   "kda": 5.1,
-   "teamfight": 56.69,
-   "gpm": 768.78,
-   "dmgDealt": 19923.31,
-   "dmgTaken": 21141.37,
-   "turret": 2031.22,
-   "firstBlood": 9.61,
-   "mvpRate": 16.19,
-   "sRate": 10.6,
+   "kda": 5.07,
+   "teamfight": 56.52,
+   "gpm": 769.98,
+   "dmgDealt": 20029.1,
+   "dmgTaken": 21036.5,
+   "turret": 2061.46,
+   "firstBlood": 9.62,
+   "mvpRate": 16.18,
+   "sRate": 10.53,
    "gamesMedian": 188,
    "legendaryTax": -2.6,
    "keystone": {
-    "name": "Glacial Augment",
-    "count": 32,
-    "of": 48
+    "name": "Ice Overlord",
+    "count": 45,
+    "of": 50
    },
    "spells": {
     "pair": "Flash + Smite",
-    "count": 30,
-    "of": 48
+    "count": 31,
+    "of": 50
    },
    "conformity": {
-    "count": 7,
-    "of": 48
+    "count": 9,
+    "of": 50
    },
    "pentas": 12,
    "tiers": {
-    "master": 25,
-    "grandmaster": 14,
+    "master": 27,
+    "grandmaster": 18,
     "challenger": 3,
     "sovereign": 1,
     "legendary-master": 1
@@ -1332,7 +1445,7 @@
    "mvpRate": 14.86,
    "sRate": 16.25,
    "gamesMedian": 195,
-   "legendaryTax": -0.3,
+   "legendaryTax": -0.4,
    "keystone": {
     "name": "Conqueror",
     "count": 27,
@@ -1344,31 +1457,29 @@
     "of": 50
    },
    "conformity": {
-    "count": 6,
+    "count": 18,
     "of": 50
    },
    "pentas": 21,
    "tiers": {
-    "grandmaster": 20,
-    "challenger": 11,
+    "grandmaster": 21,
+    "challenger": 12,
     "master": 6,
     "sovereign": 3,
     "legendary-grandmaster": 2,
-    "gold": 2,
-    "bronze": 1,
     "legendary-challenger": 1,
     "legendary-master": 1
    }
   },
   "rengar": {
    "name": "Rengar",
-   "avgWr": 63.74,
+   "avgWr": 63.61,
    "kda": 4.37,
    "teamfight": 54.74,
    "gpm": 874.48,
-   "dmgDealt": 25309.3,
-   "dmgTaken": 20601.04,
-   "turret": 3255.42,
+   "dmgDealt": 25248.22,
+   "dmgTaken": 20629.27,
+   "turret": 3245.94,
    "firstBlood": 11.67,
    "mvpRate": 24.4,
    "sRate": 17.37,
@@ -1390,15 +1501,12 @@
    },
    "pentas": 27,
    "tiers": {
-    "grandmaster": 22,
-    "master": 12,
-    "challenger": 5,
+    "grandmaster": 23,
+    "master": 14,
+    "challenger": 6,
     "legendary-challenger": 2,
-    "ii": 1,
-    "legendary-grandmaster": 1,
-    "legendary-master": 1,
-    "iron": 1,
-    "gold": 1
+    "legendary-grandmaster": 2,
+    "legendary-master": 1
    }
   },
   "tryndamere": {
@@ -1426,7 +1534,7 @@
     "of": 50
    },
    "conformity": {
-    "count": 8,
+    "count": 14,
     "of": 50
    },
    "pentas": 53,
@@ -1435,8 +1543,7 @@
     "grandmaster": 12,
     "sovereign": 2,
     "challenger": 2,
-    "legendary-grandmaster": 1,
-    "emerald": 1
+    "legendary-grandmaster": 1
    }
   },
   "vayne": {
@@ -1464,20 +1571,18 @@
     "of": 50
    },
    "conformity": {
-    "count": 15,
+    "count": 31,
     "of": 50
    },
    "pentas": 131,
    "tiers": {
-    "grandmaster": 18,
-    "master": 11,
-    "challenger": 7,
+    "grandmaster": 21,
+    "master": 14,
+    "challenger": 8,
     "legendary-challenger": 2,
     "sovereign": 1,
     "legendary-grandmaster": 1,
-    "legendary-master": 1,
-    "bronze": 1,
-    "platinum": 1
+    "legendary-master": 1
    }
   },
   "wukong": {
@@ -1505,19 +1610,17 @@
     "of": 50
    },
    "conformity": {
-    "count": 6,
+    "count": 7,
     "of": 50
    },
    "pentas": 14,
    "tiers": {
-    "grandmaster": 18,
-    "master": 15,
+    "grandmaster": 20,
+    "master": 18,
+    "legendary-grandmaster": 4,
     "challenger": 3,
-    "legendary-grandmaster": 2,
     "sovereign": 1,
-    "legendary-master": 1,
-    "iron": 1,
-    "platinum": 1
+    "legendary-master": 1
    }
   },
   "zoe": {
@@ -1550,25 +1653,23 @@
    },
    "pentas": 18,
    "tiers": {
-    "grandmaster": 20,
-    "master": 17,
+    "grandmaster": 22,
+    "master": 18,
     "challenger": 6,
     "diamond": 1,
-    "silver": 1,
-    "legendary-master": 1,
-    "iron": 1
+    "legendary-master": 1
    }
   }
  },
  "baseline": {
-  "kda": 4.36,
-  "teamfight": 52.47,
-  "gpm": 810.3,
-  "dmgDealt": 24968.11,
-  "dmgTaken": 19673.8,
-  "turret": 3017.78,
-  "firstBlood": 11.74,
-  "mvpRate": 18.21
+  "kda": 4.45,
+  "teamfight": 52.85,
+  "gpm": 817.71,
+  "dmgDealt": 25158.78,
+  "dmgTaken": 19698.14,
+  "turret": 3053.26,
+  "firstBlood": 11.68,
+  "mvpRate": 19.16
  },
  "hallOfFame": {
   "grinder": {
@@ -1579,18 +1680,18 @@
    "detail": "49.4% win rate"
   },
   "perfectionist": {
-   "value": 86.7,
-   "player": "Erfi",
-   "champion": "Kha'Zix",
-   "slug": "khazix",
-   "detail": "30 games"
+   "value": 93.5,
+   "player": "WorstPlayerEuw",
+   "champion": "Hecarim",
+   "slug": "hecarim",
+   "detail": "77 games"
   },
   "kdaKing": {
-   "value": 9.6,
-   "player": "Your Angel",
-   "champion": "Lux",
-   "slug": "lux",
-   "detail": "71 games"
+   "value": 12.0,
+   "player": "pelin",
+   "champion": "Hecarim",
+   "slug": "hecarim",
+   "detail": "116 games"
   },
   "pentaKing": {
    "value": 32,
@@ -1607,11 +1708,11 @@
    "detail": "251 games"
   },
   "mvpMachine": {
-   "value": 68.4,
-   "player": "The Last Oné",
-   "champion": "Vayne",
-   "slug": "vayne",
-   "detail": "26 MVPs in 38 games"
+   "value": 80.6,
+   "player": "WorstPlayerEuw",
+   "champion": "Hecarim",
+   "slug": "hecarim",
+   "detail": "100 MVPs in 124 games"
   },
   "wall": {
    "value": 33277,
@@ -1635,10 +1736,10 @@
    "detail": "damage per match"
   },
   "economist": {
-   "value": 1056,
-   "player": "metdxgus",
-   "champion": "Kha'Zix",
-   "slug": "khazix",
+   "value": 1211,
+   "player": "50胜率cel",
+   "champion": "Hecarim",
+   "slug": "hecarim",
    "detail": "gold per minute"
   },
   "teamfighter": {
@@ -1686,18 +1787,22 @@
   "guilds": [
    {
     "guild": "emo",
-    "spots": 9
+    "spots": 12
+   },
+   {
+    "guild": "wrsam",
+    "spots": 8
    },
    {
     "guild": "MuXue",
-    "spots": 6
+    "spots": 7
    },
    {
     "guild": "VIE",
     "spots": 5
    },
    {
-    "guild": "wrsam",
+    "guild": "AVRGE",
     "spots": 4
    },
    {
@@ -1719,13 +1824,47 @@
    {
     "guild": "TXIC",
     "spots": 3
-   },
-   {
-    "guild": "NOVAX",
-    "spots": 3
    }
   ],
   "multiBoard": [
+   {
+    "player": "i like mommies",
+    "boards": [
+     {
+      "champion": "Aatrox",
+      "slug": "aatrox",
+      "rank": 1,
+      "wr": 66.0,
+      "games": 47
+     },
+     {
+      "champion": "Hecarim",
+      "slug": "hecarim",
+      "rank": 16,
+      "wr": 80.8,
+      "games": 26
+     }
+    ]
+   },
+   {
+    "player": "ÂSpaY ツ",
+    "boards": [
+     {
+      "champion": "Amumu",
+      "slug": "amumu",
+      "rank": 1,
+      "wr": 60.6,
+      "games": 66
+     },
+     {
+      "champion": "Orianna",
+      "slug": "orianna",
+      "rank": 16,
+      "wr": 51.9,
+      "games": 54
+     }
+    ]
+   },
    {
     "player": "无敌Pka大王",
     "boards": [
@@ -1784,6 +1923,44 @@
     ]
    },
    {
+    "player": "兄弟Wagwan一匹狼",
+    "boards": [
+     {
+      "champion": "Hecarim",
+      "slug": "hecarim",
+      "rank": 4,
+      "wr": 69.2,
+      "games": 65
+     },
+     {
+      "champion": "Kayn",
+      "slug": "kayn",
+      "rank": 29,
+      "wr": 53.4,
+      "games": 73
+     }
+    ]
+   },
+   {
+    "player": "AKREP",
+    "boards": [
+     {
+      "champion": "Wukong",
+      "slug": "wukong",
+      "rank": 7,
+      "wr": 60.6,
+      "games": 66
+     },
+     {
+      "champion": "Hecarim",
+      "slug": "hecarim",
+      "rank": 39,
+      "wr": 69.0,
+      "games": 42
+     }
+    ]
+   },
+   {
     "player": "Shenron",
     "boards": [
      {
@@ -1799,6 +1976,25 @@
       "rank": 23,
       "wr": 52.6,
       "games": 38
+     }
+    ]
+   },
+   {
+    "player": "Mr Củ Chuối",
+    "boards": [
+     {
+      "champion": "Wukong",
+      "slug": "wukong",
+      "rank": 10,
+      "wr": 50.0,
+      "games": 86
+     },
+     {
+      "champion": "Hecarim",
+      "slug": "hecarim",
+      "rank": 46,
+      "wr": 60.0,
+      "games": 45
      }
     ]
    },
@@ -1856,82 +2052,6 @@
       "rank": 35,
       "wr": 52.9,
       "games": 85
-     }
-    ]
-   },
-   {
-    "player": "锋利的弹簧刀",
-    "boards": [
-     {
-      "champion": "Jinx",
-      "slug": "jinx",
-      "rank": 17,
-      "wr": 68.4,
-      "games": 19
-     },
-     {
-      "champion": "Vayne",
-      "slug": "vayne",
-      "rank": 23,
-      "wr": 51.4,
-      "games": 37
-     }
-    ]
-   },
-   {
-    "player": "Mclammitys",
-    "boards": [
-     {
-      "champion": "Amumu",
-      "slug": "amumu",
-      "rank": 27,
-      "wr": 61.3,
-      "games": 62
-     },
-     {
-      "champion": "Wukong",
-      "slug": "wukong",
-      "rank": 34,
-      "wr": 60.8,
-      "games": 74
-     }
-    ]
-   },
-   {
-    "player": "Jonas",
-    "boards": [
-     {
-      "champion": "Nunu & Willump",
-      "slug": "nunu-and-willump",
-      "rank": 39,
-      "wr": 76.2,
-      "games": 21
-     },
-     {
-      "champion": "Rengar",
-      "slug": "rengar",
-      "rank": 42,
-      "wr": 57.5,
-      "games": 80
-     }
-    ]
-   },
-   {
-    "player": "Credimillonario",
-    "boards": [
-     {
-      "champion": "Wukong",
-      "slug": "wukong",
-      "rank": 44,
-      "wr": 52.8,
-      "games": 53
-     },
-     {
-      "champion": "Vayne",
-      "slug": "vayne",
-      "rank": 49,
-      "wr": 63.0,
-      "games": 27
      }
     ]
    }

@@ -131,6 +131,7 @@ def build() -> tuple[dict, dict]:
                    if is_advertising_account(r.get("player_name"))}
 
         ks: Counter = Counter()
+        minors: Counter = Counter()
         spells: Counter = Counter()
         items: Counter = Counter()
         exact: Counter = Counter()
@@ -150,13 +151,21 @@ def build() -> tuple[dict, dict]:
             wr_g = by_rank.get(rank, (None, None))
             if b.get("runes"):
                 key = canonical_rune(b["runes"][0])
-                ks[key] += 1
-                keystone_global[key] += 1
-                _note("keystone", key, *wr_g)
+                # Slot 0 must actually BE a keystone. A captured popup that was
+                # not a build screen (one live frame carried plain UI text)
+                # yields a page like ['Legend: Bloodline', '?', '?', '?', '?'],
+                # and counting its slot 0 as a keystone poisons the consensus.
+                # A page whose first rune is unknown or a minor is page-level
+                # garbage: skip the whole rune read, keep the item read.
+                if _rune_trees().get(key) == "Keystone":
+                    ks[key] += 1
+                    keystone_global[key] += 1
+                    _note("keystone", key, *wr_g)
                 for minor in b["runes"][1:]:
                     m = canonical_rune(minor)
                     if not is_known_rune(m):
                         continue
+                    minors[m] += 1
                     minor_global[m] += 1
                     _note("minor", m, *wr_g)
                     tree = _rune_trees().get(m)
@@ -298,6 +307,9 @@ def build() -> tuple[dict, dict]:
                       for s, c in items.most_common(10)],
             "keystones": [{"name": k, "count": c, "of": len(builds)} for k, c in ks.most_common(4)],
             "spells": [{"pair": p, "count": c, "of": len(builds)} for p, c in spells.most_common(3)],
+            # The three minors the board converges on, so the advisor can be
+            # shown a complete rune page rather than a keystone in isolation.
+            "minors": [{"name": m, "count": c, "of": len(builds)} for m, c in minors.most_common(3)],
         }
 
     def top(pool: str, n: int = 1, reverse: bool = True):
