@@ -101,10 +101,19 @@ SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 700, 55)
 # Main-menu recovery: climbing back into the leaderboard after a full
 # ejection. Coordinates derived from owner-supplied screenshots
 # (data/menu_01_mainmenu.png, data/menu_02.png, data/exit_game.png).
-# OCR target: the PLAY button. Its leading "P" sits on the button's bevel and
-# is regularly lost ("Bes) LAY |"), so callers must accept "lay" too.
+# Main-menu identification. The PLAY button was the original signal and it is
+# NOT reliable: it sits on a purple disc over champion art, and live frames
+# read as "( pay", "cn gy", "po n ( bay". The left-hand panel is plain white
+# UI text on flat chrome and reads perfectly on every captured main menu,
+# including through the dimmed quit dialog. Any one signal is enough.
 MAIN_MENU_PLAY_REGION: tuple[int, int, int, int] = (1950, 865, 245, 150)
 MAIN_MENU_PLAY_WORDS: tuple[str, ...] = ("play", "lay")
+MAIN_MENU_PANEL_REGION: tuple[int, int, int, int] = (150, 600, 400, 200)
+MAIN_MENU_PANEL_WORDS: tuple[str, ...] = ("wild pass", "stellar", "event(s)", "vent(s)")
+# Third signal: the account chip at top-left, which only the main menu shows.
+# The name is device-specific, so it is read from coords/calibration.json
+# ("profile_name") when present and ignored otherwise.
+MAIN_MENU_NAME_REGION: tuple[int, int, int, int] = (300, 40, 420, 70)
 MAIN_MENU_LEADERBOARD_BADGE: tuple[int, int] = (1331, 1016)  # last badge, bottom bar
 LEADERBOARD_CHAMPION_TAB: tuple[int, int] = (698, 1028)      # bottom tab bar
 QUIT_DIALOG_REGION: tuple[int, int, int, int] = (809, 369, 740, 330)  # OCR: NOTICE / Quit Game?

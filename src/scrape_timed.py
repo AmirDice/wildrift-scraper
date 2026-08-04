@@ -55,6 +55,9 @@ from .config import (
     MAIN_MENU_LEADERBOARD_BADGE,
     MAIN_MENU_PLAY_REGION,
     MAIN_MENU_PLAY_WORDS,
+    MAIN_MENU_PANEL_REGION,
+    MAIN_MENU_PANEL_WORDS,
+    MAIN_MENU_NAME_REGION,
     QUIT_DIALOG_CANCEL,
     QUIT_DIALOG_REGION,
     ROWS_PER_PAGE,
@@ -561,6 +564,13 @@ def main() -> int:
                     break
                 except Exception:   # noqa: BLE001 -- scan hiccup: label rules anyway
                     pass
+                # Already out of the leaderboard: pressing again only digs
+                # deeper (on the main menu, back opens the quit dialog). Stop
+                # and let the caller's recovery climb back in.
+                if _looks_like_main_menu(img_chk):
+                    print("  [detect] back-out overshot to the MAIN MENU -- stopping, "
+                          "recovery will re-enter")
+                    break
                 if _press == 2:
                     print("  [detect] back-out could not verify the leaderboard -- stopping presses")
                     break
@@ -786,6 +796,36 @@ def main() -> int:
                         out.setdefault(inferred, y)
             return out
 
+        def _region_text(img, region: tuple[int, int, int, int]) -> str:
+            from .ocr import GENERAL_TESSERACT_CONFIG, read_text
+            x, y, w, h = region
+            crop = img[y:y + h, x:x + w]
+            if crop.size == 0:
+                return ""
+            return (read_text(crop, GENERAL_TESSERACT_CONFIG).text or "").lower()
+
+        _profile_name = str(load_calibration().get("profile_name", "")).lower().strip()
+
+        def _looks_like_main_menu(img) -> bool:
+            """Multi-signal main-menu test; any one signal is enough.
+
+            The PLAY button alone was the original check and it is NOT
+            reliable -- live frames OCR it as "( pay", "cn gy", "po n ( bay",
+            so ejections went unnoticed for a minute at a time. The left
+            panel ("Wild Pass", "Stellar Bonds", "EVENT(S)") is flat UI text
+            and reads perfectly on every captured menu, including through the
+            dimmed quit dialog. The account chip at top-left is a third
+            signal when the profile name is calibrated."""
+            panel = _region_text(img, MAIN_MENU_PANEL_REGION)
+            if any(w in panel for w in MAIN_MENU_PANEL_WORDS):
+                return True
+            if _profile_name:
+                chip = _region_text(img, MAIN_MENU_NAME_REGION)
+                if _profile_name in chip:
+                    return True
+            play = _region_text(img, MAIN_MENU_PLAY_REGION)
+            return any(w in play for w in MAIN_MENU_PLAY_WORDS)
+
         def _off_leaderboard(img) -> str:
             """Name the screen when it is definitely not a leaderboard.
 
@@ -807,8 +847,7 @@ def main() -> int:
                 d = region(QUIT_DIALOG_REGION)
                 if "quit" in d or "notice" in d:
                     return "quit dialog"
-                play = region(MAIN_MENU_PLAY_REGION)
-                if any(w in play for w in MAIN_MENU_PLAY_WORDS):
+                if _looks_like_main_menu(img):
                     return "main menu"
             except Exception:  # noqa: BLE001 -- never let detection break a run
                 return ""
@@ -1028,14 +1067,6 @@ def main() -> int:
         empty_sessions = 0   # consecutive zero-profile champions (down detector)
         t_carousel = time.time()
 
-        def _region_text(img, region: tuple[int, int, int, int]) -> str:
-            from .ocr import GENERAL_TESSERACT_CONFIG, read_text
-            x, y, w, h = region
-            crop = img[y:y + h, x:x + w]
-            if crop.size == 0:
-                return ""
-            return (read_text(crop, GENERAL_TESSERACT_CONFIG).text or "").lower()
-
         def back_to_champions() -> None:
             """Verified return to the champions page (never blind).
 
@@ -1095,8 +1126,7 @@ def main() -> int:
                     client.tap(*QUIT_DIALOG_CANCEL, hold_ms=args.tap_hold_ms)
                     time.sleep(1.2)  # let the dialog finish fading before re-reading
                     continue
-                play_txt = _region_text(img, MAIN_MENU_PLAY_REGION)
-                if at_menu or any(w in play_txt for w in MAIN_MENU_PLAY_WORDS):
+                if at_menu or _looks_like_main_menu(img):
                     at_menu = True
                     print("[recover] on the MAIN MENU -- re-entering the leaderboard")
                     client.tap(*MAIN_MENU_LEADERBOARD_BADGE, hold_ms=args.tap_hold_ms)
