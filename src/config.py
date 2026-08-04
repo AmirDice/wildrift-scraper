@@ -101,7 +101,10 @@ SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 700, 55)
 # Main-menu recovery: climbing back into the leaderboard after a full
 # ejection. Coordinates derived from owner-supplied screenshots
 # (data/menu_01_mainmenu.png, data/menu_02.png, data/exit_game.png).
-MAIN_MENU_PLAY_REGION: tuple[int, int, int, int] = (1950, 865, 245, 150)  # OCR: "PLAY"
+# OCR target: the PLAY button. Its leading "P" sits on the button's bevel and
+# is regularly lost ("Bes) LAY |"), so callers must accept "lay" too.
+MAIN_MENU_PLAY_REGION: tuple[int, int, int, int] = (1950, 865, 245, 150)
+MAIN_MENU_PLAY_WORDS: tuple[str, ...] = ("play", "lay")
 MAIN_MENU_LEADERBOARD_BADGE: tuple[int, int] = (1331, 1016)  # last badge, bottom bar
 LEADERBOARD_CHAMPION_TAB: tuple[int, int] = (698, 1028)      # bottom tab bar
 QUIT_DIALOG_REGION: tuple[int, int, int, int] = (809, 369, 740, 330)  # OCR: NOTICE / Quit Game?

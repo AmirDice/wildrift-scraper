@@ -15,6 +15,7 @@ Run as a CLI to sanity-check before wiring it into the scraper:
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import os
 import re
@@ -103,23 +104,91 @@ printed (null for anything unreadable or absent):
 Respond ONLY with one JSON object, no prose.
 """
 
-BUILD_PROMPT = """\
-This is a Wild Rift build popup: a champion name at the top, the player's
-name and leaderboard position ("Rank: N") on the left, and three icon rows
-labeled Spells, Runes and Items. Identify each icon by its official League of
-Legends: Wild Rift name.
+def _catalogues() -> tuple[str, str, str]:
+    """The exact vocabulary a build popup can contain, as prompt text.
+
+    Asking an open question ("name this icon") made the model answer from its
+    League PC training data whenever an icon was unclear: 17.6% of captured
+    rune slots came back as runes that do not exist in Wild Rift
+    (Conditioning, Pathfinder, Press the Attack...), stated confidently. The
+    lists below turn recognition into CLASSIFICATION over a closed set, which
+    is both far easier and verifiable -- and lets the cheapest model do it.
+    Runes carry their tree because the tree colours the icon frame (Domination
+    red, Precision gold, Resolve green, Sorcery blue), which is the strongest
+    visual cue for narrowing a guess.
+    """
+    root = Path(__file__).resolve().parent.parent
+    runes = json.loads((root / "data" / "wrmeta_runes.json").read_text(encoding="utf-8"))
+    by_tree: dict[str, list[str]] = {}
+    for r in runes:
+        by_tree.setdefault(r.get("tree") or r.get("type") or "Other", []).append(r["name"])
+    rune_txt = "\n".join(f"  {tree}: " + ", ".join(sorted(names))
+                         for tree, names in sorted(by_tree.items()))
+
+    items = json.loads((root / "data" / "items.json").read_text(encoding="utf-8"))
+    by_cat: dict[str, list[str]] = {}
+    for it in items:
+        by_cat.setdefault(it.get("category") or "Other", []).append(it["name"])
+    item_txt = "\n".join(f"  {cat}: " + ", ".join(sorted(names))
+                         for cat, names in sorted(by_cat.items()))
+
+    spell_path = root / "web-next" / "src" / "data" / "spells.json"
+    spells = json.loads(spell_path.read_text(encoding="utf-8")) if spell_path.exists() else []
+    spell_txt = ", ".join(sorted(s["name"] for s in spells)) or "Flash, Ignite, Smite, Ghost"
+    return rune_txt, item_txt, spell_txt
+
+
+def _build_prompt() -> str:
+    rune_txt, item_txt, spell_txt = _catalogues()
+    return f"""\
+You are given TWO images of the same Wild Rift build popup:
+  1. the whole popup -- read the champion name, player name and "Rank: N" here;
+  2. a 3x CLOSE-UP of only the icon rows -- identify every Spell, Rune and
+     Item from THIS image, where the art is large and clear.
+The rows are, top to bottom: Spells (2), Runes (5, keystone first), Items (up to 6).
+
+CLOSED VOCABULARY. Every icon in this screenshot is one of the entries below.
+These are the ONLY valid answers. Copy a name EXACTLY as written here.
+
+SUMMONER SPELLS: {spell_txt}
+
+RUNES (grouped by tree; the tree tints the icon frame -- Domination red,
+Precision gold, Resolve green, Sorcery blue, Keystones sit in a larger frame):
+{rune_txt}
+
+ITEMS (grouped by category):
+{item_txt}
+
+RULES, and the third one matters most:
+  1. Answer only with names from the lists above, spelled exactly.
+  2. Read the icon ART, not what a similar League of Legends PC rune or item
+     would be called. Many PC names do not exist in Wild Rift.
+  3. If an icon does not clearly match one of the listed entries, answer "?"
+     for that slot. A "?" is CORRECT and useful; a plausible guess that is not
+     in the lists is a serious error. Never invent a name.
+
+Return:
   - champion: the champion name printed at the top
   - player_name: the name under the portrait (preserve non-ASCII)
   - position: the integer after "Rank:"
   - spells: array of the 2 summoner spell names, in order
   - runes: array of the rune names, in order (first is the keystone)
   - items: array of the item names, in order (ignore small overlay markers)
-If an icon cannot be identified with confidence, use "?" for it.
 Respond ONLY with one JSON object, no prose:
-{"champion": "Aatrox", "player_name": "...", "position": 1,
+{{"champion": "Aatrox", "player_name": "...", "position": 1,
  "spells": ["Flash", "Ignite"], "runes": ["Conqueror", "..."],
- "items": ["Eclipse", "..."]}
+ "items": ["Eclipse", "..."]}}
 """
+
+
+_BUILD_PROMPT_CACHE: str | None = None
+
+
+def BUILD_PROMPT() -> str:  # noqa: N802 -- kept callable so the lists load lazily
+    global _BUILD_PROMPT_CACHE
+    if _BUILD_PROMPT_CACHE is None:
+        _BUILD_PROMPT_CACHE = _build_prompt()
+    return _BUILD_PROMPT_CACHE
 
 
 @dataclass
@@ -212,17 +281,28 @@ def _generate_json(image: np.ndarray, prompt: str, model: str) -> list:
     return data
 
 
-def _generate_obj(image: np.ndarray, prompt: str, model: str) -> dict:
+def _generate_obj(image: np.ndarray, prompt: str, model: str,
+                  extra: np.ndarray | None = None) -> dict:
     """Like _generate_json but for prompts that return ONE JSON object.
-    Tolerates the model wrapping it in a single-element array."""
+    Tolerates the model wrapping it in a single-element array.
+
+    `extra` attaches a second image to the same call -- used to send an
+    upscaled close-up of the icon rows alongside the full popup, so text and
+    icons are each read from pixels that suit them.
+    """
     from google.genai import types
 
-    ok, buf = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, 90])
-    if not ok:
-        raise RuntimeError("Failed to JPEG-encode image")
+    parts = [prompt]
+    for im in (image, extra):
+        if im is None:
+            continue
+        ok, buf = cv2.imencode(".jpg", im, [cv2.IMWRITE_JPEG_QUALITY, 92])
+        if not ok:
+            raise RuntimeError("Failed to JPEG-encode image")
+        parts.append(types.Part.from_bytes(data=bytes(buf), mime_type="image/jpeg"))
     response = _client().models.generate_content(
         model=model,
-        contents=[prompt, types.Part.from_bytes(data=bytes(buf), mime_type="image/jpeg")],
+        contents=parts,
         config=types.GenerateContentConfig(
             response_mime_type="application/json", temperature=0.0),
     )
@@ -254,9 +334,104 @@ def read_stats_page(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> 
     return _generate_obj(image, STATS_PROMPT, model)
 
 
-def read_build_popup(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> dict:
-    """Build popup: champion, player, position, spell/rune/item names."""
-    return _generate_obj(image, BUILD_PROMPT, model)
+@functools.lru_cache(maxsize=1)
+def _valid_names() -> tuple[frozenset[str], dict[str, str]]:
+    """({normalised valid name}, {normalised: exact name}) for every spell,
+    rune and item. Used to VERIFY what came back, because a closed vocabulary
+    in the prompt only helps if something checks that the answer obeyed it."""
+    rune_txt, item_txt, spell_txt = _catalogues()
+    names: list[str] = [s.strip() for s in spell_txt.split(",")]
+    for block in (rune_txt, item_txt):
+        for line in block.splitlines():
+            _, _, rest = line.partition(":")
+            names += [n.strip() for n in rest.split(",") if n.strip()]
+    norm = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())  # noqa: E731
+    exact = {norm(n): n for n in names if n}
+    return frozenset(exact), exact
+
+
+def _verify_build(build: dict) -> tuple[dict, list[str]]:
+    """Snap every returned name onto the catalogue; return (build, invalid).
+
+    Near-misses (case, punctuation, "Legend Tenacity" for "Legend: Tenacity")
+    are corrected silently. Anything with no catalogue match is replaced with
+    "?" rather than kept: an invented name that reaches the data is worse than
+    a hole, because it looks like evidence.
+    """
+    _, exact = _valid_names()
+    norm = lambda s: re.sub(r"[^a-z0-9]", "", str(s).lower())  # noqa: E731
+    invalid: list[str] = []
+    for key in ("spells", "runes", "items"):
+        cleaned = []
+        for raw in (build.get(key) or []):
+            if raw is None or str(raw).strip() in ("", "?"):
+                cleaned.append("?")
+                continue
+            hit = exact.get(norm(raw))
+            if hit:
+                cleaned.append(hit)
+            else:
+                invalid.append(str(raw))
+                cleaned.append("?")
+        build[key] = cleaned
+    return build, invalid
+
+
+#: where the three icon rows sit inside a 2340x1080 build popup (y0,y1,x0,x1)
+BUILD_ICON_REGION = (250, 780, 1180, 1960)
+
+
+def _icon_closeup(image: np.ndarray, scale: float = 3.0) -> np.ndarray | None:
+    """The three icon rows, cropped out and upscaled.
+
+    The popup is 2340x1080 and each icon is about 50px, so a whole-screenshot
+    read asks the model to identify 170-odd near-identical miniatures from a
+    handful of pixels -- which is why it answered with confident guesses. The
+    same icons at 3x fill the frame. Scaled by the frame's own size so a
+    different device resolution still crops the right box.
+    """
+    h, w = image.shape[:2]
+    y0, y1, x0, x1 = BUILD_ICON_REGION
+    fy, fx = h / 1080, w / 2340
+    crop = image[int(y0 * fy):int(y1 * fy), int(x0 * fx):int(x1 * fx)]
+    if crop.size == 0 or crop.shape[0] < 40 or crop.shape[1] < 40:
+        return None
+    return cv2.resize(crop, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+
+
+def read_build_popup(image: np.ndarray, model: str = "gemini-3.5-flash-lite",
+                     retries: int = 1) -> dict:
+    """Build popup: champion, player, position, spell/rune/item names.
+
+    Every name is verified against the closed catalogue. If the model returns
+    something outside it, the popup is re-read once with the offending names
+    called out, then anything still unmatched becomes "?" -- the extractor
+    reports those rather than storing a guess. `_invalid` carries whatever was
+    rejected so callers can log it.
+    """
+    closeup = _icon_closeup(image)
+    build = _generate_obj(image, BUILD_PROMPT(), model, extra=closeup)
+    build, invalid = _verify_build(build)
+    for _ in range(max(0, retries)):
+        if not invalid:
+            break
+        nudge = (BUILD_PROMPT() + "\nA previous attempt answered "
+                 + ", ".join(f'"{n}"' for n in sorted(set(invalid))[:8])
+                 + " -- none of those are in the lists above. Look at those icons"
+                 " again and either pick the correct listed name or answer \"?\".")
+        retry = _generate_obj(image, nudge, model, extra=closeup)
+        retry, retry_invalid = _verify_build(retry)
+        # keep the read that resolved more slots
+        better = sum(1 for k in ("spells", "runes", "items")
+                     for v in retry.get(k, []) if v != "?")
+        current = sum(1 for k in ("spells", "runes", "items")
+                      for v in build.get(k, []) if v != "?")
+        if better > current:
+            build, invalid = retry, retry_invalid
+        else:
+            break
+    build["_invalid"] = sorted(set(invalid))
+    return build
 
 
 def read_strip(image: np.ndarray, model: str = "gemini-3.5-flash-lite") -> list[StripTile]:

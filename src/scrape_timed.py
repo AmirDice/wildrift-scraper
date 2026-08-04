@@ -54,6 +54,7 @@ from .config import (
     LEADERBOARD_TAB_BAR_REGION,
     MAIN_MENU_LEADERBOARD_BADGE,
     MAIN_MENU_PLAY_REGION,
+    MAIN_MENU_PLAY_WORDS,
     QUIT_DIALOG_CANCEL,
     QUIT_DIALOG_REGION,
     ROWS_PER_PAGE,
@@ -785,6 +786,34 @@ def main() -> int:
                         out.setdefault(inferred, y)
             return out
 
+        def _off_leaderboard(img) -> str:
+            """Name the screen when it is definitely not a leaderboard.
+
+            Cheap OCR of two small regions, and it only runs on a scan that
+            already failed, so the happy path pays nothing. Returning a name
+            makes the navigator hand over to recovery on the FIRST bad frame
+            instead of waiting out four cycles (a live run burned over a
+            minute scanning the main menu for rows that could not exist)."""
+            from .ocr import GENERAL_TESSERACT_CONFIG, read_text
+
+            def region(box):
+                x, y, w, h = box
+                crop = img[y:y + h, x:x + w]
+                if crop.size == 0:
+                    return ""
+                return (read_text(crop, GENERAL_TESSERACT_CONFIG).text or "").lower()
+
+            try:
+                d = region(QUIT_DIALOG_REGION)
+                if "quit" in d or "notice" in d:
+                    return "quit dialog"
+                play = region(MAIN_MENU_PLAY_REGION)
+                if any(w in play for w in MAIN_MENU_PLAY_WORDS):
+                    return "main menu"
+            except Exception:  # noqa: BLE001 -- never let detection break a run
+                return ""
+            return ""
+
         def _dump_frame(img, rank):
             dump = Path("data/debug_scans")
             dump.mkdir(parents=True, exist_ok=True)
@@ -806,6 +835,7 @@ def main() -> int:
             arbitrate=careful_rescan,
             on_fling_calibrated=lambda v: save_calibration({"fling_rows": round(v, 1)}),
             dump_frame=_dump_frame,
+            off_leaderboard=_off_leaderboard,
             fling_rows=fling_rows,
         )
 
@@ -1022,7 +1052,13 @@ def main() -> int:
             CHAMPION tab sits in its bottom tab bar (owner-supplied path);
             and the quit dialog that a stray system back opens on the main
             menu is dismissed with CANCEL, never CONFIRM."""
-            for _ in range(6):
+            # Once the quit dialog or the main menu has been seen, we KNOW we
+            # are outside the leaderboard, and SYSTEM BACK becomes forbidden:
+            # on the main menu it re-opens the quit dialog, so the old loop
+            # ping-ponged cancel/back/cancel/back until it gave up. From that
+            # point on the only way out is the leaderboard badge.
+            at_menu = False
+            for _ in range(8):
                 img = client.screenshot()
                 if scan_champion_rows(img, SCREEN_1_NAME_X_RANGE):
                     return
@@ -1054,15 +1090,20 @@ def main() -> int:
                     continue
                 dialog = _region_text(img, QUIT_DIALOG_REGION)
                 if "quit" in dialog or "notice" in dialog:
+                    at_menu = True   # the dialog only exists on the main menu
                     print("[recover] quit dialog open -- cancelling it")
                     client.tap(*QUIT_DIALOG_CANCEL, hold_ms=args.tap_hold_ms)
-                    time.sleep(0.7)
+                    time.sleep(1.2)  # let the dialog finish fading before re-reading
                     continue
-                if "play" in _region_text(img, MAIN_MENU_PLAY_REGION):
+                play_txt = _region_text(img, MAIN_MENU_PLAY_REGION)
+                if at_menu or any(w in play_txt for w in MAIN_MENU_PLAY_WORDS):
+                    at_menu = True
                     print("[recover] on the MAIN MENU -- re-entering the leaderboard")
                     client.tap(*MAIN_MENU_LEADERBOARD_BADGE, hold_ms=args.tap_hold_ms)
                     time.sleep(2.5)   # the leaderboard screen loads from scratch
                     continue        # next loop: the tab-bar case taps CHAMPION
+                if at_menu:
+                    continue        # never system-back from the menu
                 client.back()
                 time.sleep(0.7)
 

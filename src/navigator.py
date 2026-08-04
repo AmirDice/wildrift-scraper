@@ -34,6 +34,7 @@ class LeaderboardNavigator:
         arbitrate: Callable[[np.ndarray], dict[int, int]] | None = None,
         on_fling_calibrated: Callable[[float], None] | None = None,
         dump_frame: Callable[[np.ndarray, int], str | None] | None = None,
+        off_leaderboard: Callable[[np.ndarray], str] | None = None,
         fling_rows: float = 10.0,
         log: Callable[[str], None] = print,
         sleep: Callable[[float], None] = time.sleep,
@@ -47,6 +48,11 @@ class LeaderboardNavigator:
         self.arbitrate = arbitrate
         self.on_fling_calibrated = on_fling_calibrated
         self.dump_frame = dump_frame
+        # Names the screen when it is clearly NOT a leaderboard (main menu,
+        # quit dialog). Without it a run ejected to the main menu spends four
+        # scan cycles plus sleeps -- a minute or more -- waiting for rows that
+        # can never load, before recovery even starts.
+        self.off_leaderboard = off_leaderboard
         self.fling_rows = fling_rows
         self.log = log
         self.sleep = sleep
@@ -116,6 +122,18 @@ class LeaderboardNavigator:
                 # after a refresh -- rows still populating (skeleton rows have
                 # no badge yet and pass the stability gate). Wait for the list
                 # to finish loading instead of navigating on a partial read.
+                # Before assuming "still loading", ask whether this is even a
+                # leaderboard. Waiting out four cycles on the main menu is a
+                # minute of guaranteed failure, and the caller's recovery is
+                # the only thing that can fix it.
+                if self.off_leaderboard is not None:
+                    where = self.off_leaderboard(img)
+                    if where:
+                        self.log(f"  [detect] not on a leaderboard any more ({where})"
+                                 f" -- handing over to recovery immediately")
+                        self._dump_rejected(img, rank)
+                        self.last_center = None
+                        return None
                 empty_scans += 1
                 if empty_scans >= 4:
                     self.last_center = None

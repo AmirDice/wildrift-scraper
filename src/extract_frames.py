@@ -426,6 +426,12 @@ def main() -> int:
             if img is not None:
                 try:
                     build = read_build_popup(img, model=args.model)
+                    # Names the model produced that are not in the game's
+                    # catalogue. They have already been replaced with "?";
+                    # this line is how the rework sees what it invented.
+                    if build.get("_invalid"):
+                        print(f"  [build] rank {rank}: rejected invented names "
+                              + ", ".join(build["_invalid"][:6]))
                 except Exception as exc:  # noqa: BLE001
                     print(f"  [build] rank {rank}: {exc}")
             return rank, popup, stats_by_queue, build
