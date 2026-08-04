@@ -426,14 +426,34 @@ def main() -> int:
             if img is not None:
                 try:
                     build = read_build_popup(img, model=args.model)
-                    # Names the model produced that are not in the game's
-                    # catalogue. They have already been replaced with "?";
-                    # this line is how the rework sees what it invented.
                     if build.get("_invalid"):
-                        print(f"  [build] rank {rank}: rejected invented names "
+                        print(f"  [build] rank {rank}: model invented "
                               + ", ".join(build["_invalid"][:6]))
                 except Exception as exc:  # noqa: BLE001
                     print(f"  [build] rank {rank}: {exc}")
+                # TEMPLATE MATCHING OWNS THE ICONS. The vision model reads the
+                # popup's TEXT well (champion, player, rank) but cannot
+                # identify 50px icons: it invented runes that are not in the
+                # game for 17.6% of slots and disagreed with itself on two
+                # reads of the same image. Matching each slot against the
+                # game's own art is deterministic and reports real confidence,
+                # so an unclear slot becomes "?" instead of a guess.
+                try:
+                    from .icon_match import read_build_icons
+
+                    icons = read_build_icons(img)
+                    if build is None:
+                        build = {}
+                    for key in ("spells", "runes", "items"):
+                        if icons.get(key):
+                            build[key] = icons[key]
+                    build["_iconConfidence"] = icons.get("_confidence")
+                    unresolved = sum(1 for k in ("spells", "runes", "items")
+                                     for v in build.get(k, []) if v == "?")
+                    if unresolved:
+                        print(f"  [build] rank {rank}: {unresolved} icon slot(s) unresolved")
+                except Exception as exc:  # noqa: BLE001 -- keep the model's read
+                    print(f"  [icons] rank {rank}: {exc}")
             return rank, popup, stats_by_queue, build
 
         has_extras = any(e.get("popup_frame") or e.get("stats_frames") or e.get("build_frame")

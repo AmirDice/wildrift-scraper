@@ -75,12 +75,23 @@ def templates() -> dict[str, dict[str, np.ndarray]]:
         if art is not None:
             out["items"][it["name"]] = _norm_tile(art)
 
-    rune_map = ROOT / "web-next" / "src" / "data" / "rune_icons.json"
-    if rune_map.exists():
-        for name, icon in json.loads(rune_map.read_text(encoding="utf-8")).items():
-            art = _load_art(icon)
-            if art is not None:
-                out["runes"][name] = _norm_tile(art)
+    # Runes come from the BANK -- templates averaged from the game's own
+    # rendering of each rune, built by scripts/build_icon_bank.py from
+    # owner-labelled clusters. The shipped catalogue art is drawn differently
+    # (square, different zoom and backgrounds) and tops out around 3/5; the
+    # bank matches at 0.98-0.999 because it is the same pixels the game draws.
+    bank = ROOT / "data" / "icon_bank" / "runes.npz"
+    if bank.exists():
+        with np.load(bank) as z:
+            for name in z.files:
+                out["runes"][name] = z[name].astype(np.float32)
+    else:                                    # fall back to catalogue art
+        rune_map = ROOT / "web-next" / "src" / "data" / "rune_icons.json"
+        if rune_map.exists():
+            for name, icon in json.loads(rune_map.read_text(encoding="utf-8")).items():
+                art = _load_art(icon)
+                if art is not None:
+                    out["runes"][name] = _norm_tile(art)
 
     spells = ROOT / "web-next" / "src" / "data" / "spells.json"
     if spells.exists():
