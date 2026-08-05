@@ -9,7 +9,7 @@ this pipeline simulates combat.
       -> DERIVE how this champion fights          web/advisor/profiles.py
       -> FILTER only impossible items away        web/advisor/itemmeta.py
       -> ASSEMBLE one prompt from our data        web/advisor/prompt.py
-      -> DeepSeek thinking mode, JSON only
+      -> the model (gemini-3.6-flash by default), JSON only
       -> VALIDATE legality and completeness       web/advisor/validate.py
       -> REPAIR the broken section alone          web/advisor/repair.py
 
@@ -55,11 +55,22 @@ DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 #
 # Gemini won a five-champion, fifty-build comparison judged on the builds
 # themselves: better picks on four of five champions, ~17% faster, and a third
-# of the repair rounds. The default stays DeepSeek until that is deployed with
-# a key that has quota; locally, put ADVISOR_MODEL and GEMINI_API_KEY in
-# web-next/.env.local and the dev server passes both through to this process.
-MODEL = os.environ.get("ADVISOR_MODEL", "deepseek-v4-flash").strip() or "deepseek-v4-flash"
+# of the repair rounds. It has been what production serves since then, set as a
+# Vercel environment variable on the advisor project.
+#
+# The DEFAULT here stayed DeepSeek for a while after that, and the gap between
+# the two cost real work: anything not started by the dev server -- a script, a
+# benchmark, a timing run -- silently used a model the site does not serve. A
+# latency investigation measured DeepSeek at 272-293s per build, four times
+# Gemini's, and reported it as a production incident before anyone noticed that
+# production was never on DeepSeek. So the default is now what production runs.
+DEFAULT_MODEL = "gemini-3.6-flash"
+MODEL = os.environ.get("ADVISOR_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
 IS_GEMINI = MODEL.lower().startswith("gemini")
+# The key the ACTIVE model needs. Checking DEEPSEEK_API_KEY on a Gemini run
+# refuses a request the model could have served, and the reverse hands the
+# DeepSeek endpoint an empty Authorization header.
+KEY_NAME = "GEMINI_API_KEY" if IS_GEMINI else "DEEPSEEK_API_KEY"
 # Escalation model for requests the cheap model measurably cannot serve.
 # gemini-3.5-flash-lite matches flash on standard builds at a fraction of the
 # price, but it IGNORES explicit playstyle requests when they contradict its
@@ -489,11 +500,15 @@ def _gemini_call(prompt: str, model: str = "") -> dict:
     from google import genai
     from google.genai import types
 
-    api_key = (os.environ.get("GEMINI_API_KEY")
-               or os.environ.get("GOOGLE_API_KEY") or "")
+    # Read through advisor_env, not straight off os.environ. The Gemini path
+    # used to look only at the process environment while the DeepSeek path had
+    # the web-next/.env.local fallback, so a script that worked on DeepSeek
+    # failed on Gemini with the key sitting in the repo -- and every measurement
+    # script grew its own bootstrap to paper over it.
+    api_key = _api_key("GEMINI_API_KEY") or _api_key("GOOGLE_API_KEY")
     if not api_key:
-        raise SystemExit("GEMINI_API_KEY is not set, but ADVISOR_MODEL asks for "
-                         f"{MODEL}. Put it in web-next/.env.local.")
+        raise SystemExit(advisor_env.missing_key_message("GEMINI_API_KEY")
+                         + f" (the build model is {MODEL!r})")
     client = genai.Client(api_key=api_key)
     config = types.GenerateContentConfig(
         system_instruction=prompt_mod.SYSTEM,
@@ -729,11 +744,13 @@ def advise(champion: str, role: str, enemies: list[str],
     # playstyle reported "not a supported preset" on a machine with a key and
     # "DEEPSEEK_API_KEY is not set" on one without. CI, which has no key, is the
     # one that caught it.
-    key = _api_key()
+    #
+    # It checks the key the ACTIVE model needs, not DeepSeek's. Those were the
+    # same thing while DeepSeek was the default and are not now.
+    key = _api_key(KEY_NAME)
     if not key:
-        raise SystemExit(
-            "DEEPSEEK_API_KEY is not set. Either export it in this shell, or put it in "
-            f"{ENV_FILE.relative_to(ROOT)} (where the web app already reads it from).")
+        raise SystemExit(advisor_env.missing_key_message(KEY_NAME)
+                         + f" (ADVISOR_MODEL is {MODEL!r})")
     if champion == "Kayn":
         champion_form = champion_form if champion_form in KAYN_FORMS else "shadow-assassin"
     else:

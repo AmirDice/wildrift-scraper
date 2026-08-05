@@ -183,6 +183,13 @@ def test_live_deepseek_request_is_temperature_zero_and_keeps_thinking(monkeypatc
         seen.update(kwargs["json"])
         return _Response()
 
+    # Pin the provider. _call routes on IS_GEMINI, which is now True by default
+    # because the default model is what production runs -- so without this the
+    # test walks straight past the stubbed requests.post and makes a REAL,
+    # billed Gemini call, then fails on an empty `seen`. It did exactly that
+    # once. This test is about the DeepSeek request body, so it has to ask for
+    # the DeepSeek path rather than inherit whichever one is currently default.
+    monkeypatch.setattr(live_advisor, "IS_GEMINI", False)
     monkeypatch.setattr(live_advisor.requests, "post", fake_post)
     assert LIVE_CALL("test", "prompt") == {"ok": True}
     assert seen["temperature"] == 0
