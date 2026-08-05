@@ -37,16 +37,11 @@
       "prompt": "ON-HIT: stack attack speed and on-hit effects, which only works on a kit that applies on-hit repeatedly. A champion who applies one empowered attack per rotation is NOT an on-hit champion, and reload or magazine kits convert attack speed poorly. If this champion cannot stack on-hit, say so rather than forcing the build."
     },
     {
-      "key": "burst",
-      "label": "Burst",
-      "description": "Maximum damage in a short ability or attack combo.",
-      "prompt": "BURST: delete a priority target in one rotation, built around the damage THIS kit actually front-loads. Penetration matters more than raw damage once the target has resistances, and a kit whose damage arrives over several seconds is not made bursty by buying burst items -- if this champion cannot kill inside one rotation, say so and build the closest honest thing."
-    },
-    {
+      "_note": "'burst' was a separate preset and asked for the same build as this one: delete a priority target in one rotation, penetration over sustain, accept the fragility. Two presets that produce the same five items are two ways to ask the same question, so they merged into this one and burst's honesty clause came with it. Legacy ids still resolve: build_advisor.advise aliases 'burst' to 'oneshot'.",
       "key": "oneshot",
       "label": "One-shot",
-      "description": "Squishy-target deletion, accepting very low durability.",
-      "prompt": "ONE-SHOT: kill a squishy target instantly from a committed engage. Lethality/magic penetration and raw damage over sustain, built around the exact rotation THIS kit uses to open -- the items must be live at the moment that rotation lands."
+      "description": "Delete a priority target in one rotation, accepting very low durability.",
+      "prompt": "ONE-SHOT: kill a priority target inside ONE rotation from a committed engage, built around the damage THIS kit actually front-loads and the exact rotation it uses to open -- the items must be live at the moment that rotation lands. Lethality/magic penetration and raw damage over sustain, and penetration matters more than raw damage once the target has resistances. A kit whose damage arrives over several seconds is not made bursty by buying burst items: if this champion cannot kill inside one rotation, say so and build the closest honest thing."
     },
     {
       "key": "splitpush",
@@ -95,7 +90,6 @@
     "Assassin": [
       "standard",
       "damage",
-      "burst",
       "oneshot"
     ],
     "Bruiser": [
@@ -122,7 +116,7 @@
       "crit",
       "dps",
       "onhit",
-      "burst",
+      "oneshot",
       "kiting",
       "vamp",
       "antitank"
@@ -130,7 +124,7 @@
     "Mage": [
       "standard",
       "damage",
-      "burst",
+      "oneshot",
       "poke",
       "vamp"
     ],
@@ -138,7 +132,7 @@
       "standard",
       "tanky",
       "utility",
-      "burst"
+      "oneshot"
     ],
     "Enchanter": [
       "standard",
@@ -151,13 +145,11 @@
     "Zed": [
       "standard",
       "damage",
-      "burst",
       "oneshot"
     ],
     "Akali": [
       "standard",
       "damage",
-      "burst",
       "oneshot",
       "vamp"
     ],
@@ -165,7 +157,7 @@
       "standard",
       "tanky",
       "utility",
-      "burst"
+      "oneshot"
     ],
     "Lucian": [
       "standard",
@@ -173,7 +165,7 @@
       "crit",
       "dps",
       "onhit",
-      "burst",
+      "oneshot",
       "kiting",
       "vamp",
       "antitank"

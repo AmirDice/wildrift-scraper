@@ -204,7 +204,7 @@ class TestPlaystylePromptsDeferToTheKit:
     DEFINITIONS = {d["key"]: d for d in PLAYSTYLES["definitions"]}
 
     # Styles offered to more than one class, where the means genuinely differ.
-    CROSS_CLASS = ("vamp", "tanky", "burst", "damage", "utility")
+    CROSS_CLASS = ("vamp", "tanky", "oneshot", "damage", "utility")
 
     def test_cross_class_styles_defer_the_mechanism_to_the_kit(self):
         for key in self.CROSS_CLASS:
@@ -235,3 +235,46 @@ class TestPlaystylePromptsDeferToTheKit:
         """Every prompt should say what the build is FOR, not only what to buy."""
         for key, entry in self.DEFINITIONS.items():
             assert len(entry["prompt"]) > 60, f"{key} is too terse to state an outcome"
+
+
+class TestBurstMergedIntoOneShot:
+    """Two presets asked for the same build, so one of them had to go.
+
+    'Burst' and 'One-shot' both meant: delete a priority target in one
+    rotation, take penetration over sustain, accept the fragility. A player
+    choosing between them was choosing between two spellings of one request,
+    and the model got two near-identical instructions depending on which they
+    picked.
+    """
+
+    DEFINITIONS = {d["key"]: d for d in PLAYSTYLES["definitions"]}
+
+    def test_burst_is_no_longer_offered(self):
+        assert "burst" not in self.DEFINITIONS
+        for group, lists in (("class", PLAYSTYLES["byClass"]),
+                             ("override", PLAYSTYLES["overrides"])):
+            for name, keys in lists.items():
+                assert "burst" not in keys, f"{group} {name} still offers burst"
+
+    def test_every_class_that_offered_burst_still_has_the_one_rotation_build(self):
+        """Removing it must not leave Mages or Tanks with no way to ask for it."""
+        for name in ("Assassin", "Marksman", "Mage", "Tank"):
+            assert "oneshot" in PLAYSTYLES["byClass"][name]
+
+    def test_no_class_lists_the_same_playstyle_twice(self):
+        for name, keys in PLAYSTYLES["byClass"].items():
+            assert len(keys) == len(set(keys)), f"{name} has a duplicate playstyle"
+
+    def test_the_survivor_kept_the_honesty_clause(self):
+        """Burst's most useful sentence was the escape hatch: a kit whose damage
+        arrives over several seconds is not made bursty by buying burst items.
+        Dropping the preset must not drop that."""
+        prompt = self.DEFINITIONS["oneshot"]["prompt"].lower()
+        assert "cannot kill inside one rotation" in prompt
+        assert "one rotation" in prompt
+
+    def test_legacy_burst_requests_still_resolve(self):
+        """Shared links, albums and cache keys carry the old id."""
+        from web import build_advisor as adv
+        assert adv.PLAYSTYLES.get("oneshot")
+        assert "burst" not in adv.PLAYSTYLES
