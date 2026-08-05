@@ -45,46 +45,44 @@ export function GenerateBuildCta({
   );
 }
 
-/** Anywhere in the studio -> the Counter Builder. */
-export function CounterBuilderCta({ champion }: { champion?: string }) {
-  return (
-    <Link
-      href={champion ? `/counter?champion=${encodeURIComponent(champion)}` : "/counter"}
-      className="glass glass-hover block rounded-2xl border border-emerald-400/25 p-4 transition"
-    >
+/** Anywhere in the studio -> Build vs Enemy Team. */
+export function CounterBuilderCta({
+  onOpen,
+  champion,
+}: {
+  /** Switches the studio to its enemy-team tab. Omit to link to /build instead. */
+  onOpen?: () => void;
+  champion?: string;
+}) {
+  const body = (
+    <>
       <span className="flex items-center gap-2 font-semibold text-emerald-300">
         <ShieldGlyph />
-        Facing a lane bully, or a comp that shreds you?
+        Don&rsquo;t know what to build against an enemy team?
       </span>
       <span className="mt-1 block text-sm text-muted">
-        The Counter Builder takes the enemy team and finds the optimal items, boots and runes
-        for beating exactly those five picks.
+        Name the five champions you are up against and get the optimal items, boots and runes
+        for beating exactly those picks.
       </span>
       <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-emerald-300">
-        Get the optimal counter build <span aria-hidden>→</span>
+        Build against their team <span aria-hidden>→</span>
       </span>
-    </Link>
+    </>
   );
-}
 
-/** Counter Builder -> the studio's personal generator. */
-export function StudioCta({ champion }: { champion?: string }) {
-  return (
+  const className =
+    "glass glass-hover block rounded-2xl border border-emerald-400/25 p-4 text-left transition";
+
+  return onOpen ? (
+    <button onClick={onOpen} className={`${className} w-full`}>
+      {body}
+    </button>
+  ) : (
     <Link
-      href={champion ? `/build?champion=${encodeURIComponent(champion)}` : "/build"}
-      className="glass glass-hover block rounded-2xl border border-accent/25 p-4 transition"
+      href={champion ? `/build?champion=${encodeURIComponent(champion)}&tab=counter` : "/build?tab=counter"}
+      className={className}
     >
-      <span className="flex items-center gap-2 font-semibold text-accent">
-        <Sparkles size={15} />
-        Just want the optimal build for the champion?
-      </span>
-      <span className="mt-1 block text-sm text-muted">
-        The Build Optimizer has curated optimal builds per playstyle, a custom lab, and a generator
-        that reads your playstyle instead of the enemy team.
-      </span>
-      <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-accent">
-        Open the Build Optimizer <span aria-hidden>→</span>
-      </span>
+      {body}
     </Link>
   );
 }

@@ -28,7 +28,7 @@ const buildsEntry = (live: boolean): NavEntry => (live
       label: "Builds",
       items: [
         { href: "/build", label: "Build Studio", badges: ["new", "beta"], desc: "Generate by playstyle or craft with live stats" },
-        { href: "/counter", label: "Counter Builder", badges: ["new", "beta"], desc: "Build vs your exact enemy team" },
+        { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: ["new", "beta"], desc: "The build that beats their exact five picks" },
         { href: "/albums", label: "Build Albums", badge: "new", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", badge: "new", desc: "Effects, trees, cooldowns & uses" },

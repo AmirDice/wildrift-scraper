@@ -1,49 +1,22 @@
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { EnemyBuildAdvisor } from "@/components/enemy-build";
-import { CounterTour } from "@/components/counter-tour";
-import { StudioCta } from "@/components/tool-crosslinks";
-import { Container } from "@/components/ui";
-import { buildToolsVisible } from "@/lib/access";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  // No "| WrTrueMeta" suffix here: the root layout's title template already
-  // appends one, and spelling it out again renders it twice in the tab and in
-  // search results.
-  title: "Counter Builder | Optimal Counter Builds",
-  description: "Pick your champion and the enemy team, and get the optimal build: items, order, boots and runes, tuned to that specific comp.",
-  robots: { index: false, follow: false },
-};
-
+/**
+ * The Counter Builder moved into the Build Studio as the "Build vs Enemy Team"
+ * tab.
+ *
+ * It kept its own page for as long as it was a separate tool, and that cost it:
+ * 110 visits against the tier list's 498, because a second page is a second
+ * thing to find. It answers the same question the Personal Build Generator does
+ * with one extra input, so it belongs beside it rather than one navigation away.
+ *
+ * The route survives as a redirect rather than a 404. Shared counter links,
+ * Discord posts and the old nav entry all point here, and every one of them
+ * still has to land on the tool. The champion travels with it.
+ */
 export default async function CounterPage(props: PageProps<"/counter">) {
-  if (!(await buildToolsVisible())) redirect("/");
   const search = await props.searchParams;
-  // Shared counter links arrive with the champion already chosen; it stays
-  // changeable, unlike the studio's embedded advisor.
-  const initialChampion = typeof search.champion === "string" ? search.champion : undefined;
-
-  return (
-    <Container className="py-8">
-      <CounterTour />
-      <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Counter Builder</h1>
-        <span className="rounded-md bg-emerald-400/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-300">
-          New
-        </span>
-        <span className="rounded-md bg-accent/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-accent">
-          Beta
-        </span>
-      </div>
-      <p className="mb-6 max-w-xl text-sm text-muted">
-        Pick your champion and the enemy team. It reads every enemy&rsquo;s damage type and kit,
-        then builds the optimal loadout: items, purchase order, boots and runes, for that specific comp,
-        with a complete evaluation of the final build.
-      </p>
-      <EnemyBuildAdvisor mode="counter" initialChampion={initialChampion} />
-
-      <div className="mt-8">
-        <StudioCta champion={initialChampion} />
-      </div>
-    </Container>
+  const champion = typeof search.champion === "string" ? search.champion : "";
+  permanentRedirect(
+    champion ? `/build?champion=${encodeURIComponent(champion)}&tab=counter` : "/build?tab=counter",
   );
 }

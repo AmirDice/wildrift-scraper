@@ -41,7 +41,7 @@ const LIVE_TOOLS: Cta[] = [
     accent: "text-accent", ring: "hover:border-accent/40",
   },
   {
-    href: "/counter", title: "Counter Builder", short: "Counter",
+    href: "/build?tab=counter", title: "Build vs Enemy Team", short: "vs Enemy",
     badge: "new", badgeClass: "bg-emerald-400/20 text-emerald-300",
     secondBadge: "beta", secondBadgeClass: "bg-gold/20 text-gold",
     body: "A build tuned to beat the exact team you are facing.",

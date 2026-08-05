@@ -19,10 +19,11 @@ export default async function BuildPage(props: PageProps<"/build">) {
   if (!(await buildToolsVisible())) redirect("/");
   const search = await props.searchParams;
   const initialChampion = typeof search.champion === "string" ? search.champion : undefined;
-  const initialTab = search.tab === "generate" ? "generate" as const : undefined;
-  // Shared build links carry the playstyle variant so the recipient opens the
-  // exact build that was shared, not the default one.
-  const initialVariant = typeof search.variant === "string" ? search.variant : undefined;
+  // ?tab=counter is what /counter redirects to, so every link that ever pointed
+  // at the standalone Counter Builder still lands on the right tool.
+  const initialTab = search.tab === "generate" ? "generate" as const
+    : search.tab === "counter" ? "counter" as const
+    : undefined;
   return (
     <Container className="py-8">
       <div className="flex flex-wrap items-center gap-3">
@@ -45,7 +46,7 @@ export default async function BuildPage(props: PageProps<"/build">) {
       <div className="mb-6 mt-3">
         <BuildsGeneratedPill />
       </div>
-      <BuildStudio initialChampion={initialChampion} initialTab={initialTab} initialVariant={initialVariant} />
+      <BuildStudio initialChampion={initialChampion} initialTab={initialTab} />
     </Container>
   );
 }

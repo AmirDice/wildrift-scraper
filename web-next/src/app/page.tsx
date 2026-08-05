@@ -127,8 +127,8 @@ export default function HomePage() {
                 <Link href="/build?tab=generate" className="rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110">
                   Generate my build
                 </Link>
-                <Link href="/counter" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
-                  Counter the enemy team
+                <Link href="/build?tab=counter" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
+                  Build vs enemy team
                 </Link>
               </>
             ) : (
@@ -157,7 +157,7 @@ export default function HomePage() {
             </span>
             {!BUILD_TOOLS_LIVE && (
               <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
-                Build Studio &amp; Counter Builder · launching this month
+                Build Studio · launching this month
               </span>
             )}
           </div>
@@ -191,14 +191,14 @@ export default function HomePage() {
           {BUILD_TOOLS_LIVE ? (
             <>
               <FlagshipTool
-                href="/counter"
+                href="/build?tab=counter"
                 badge="beta"
                 badgeClass="bg-gold/20 text-gold"
                 secondBadge="new"
                 secondBadgeClass="bg-emerald-400/20 text-emerald-300"
-                title="Counter Builder"
-                desc="Pick your champion and the enemy team, get a build, runes and item order shaped to beat exactly who you are facing."
-                cta="Build against your enemies"
+                title="Build vs Enemy Team"
+                desc="Name your champion and the five you are up against, and get the items, runes and purchase order shaped to beat exactly those picks."
+                cta="Build against their team"
                 accent="text-emerald-300"
                 ring="hover:border-emerald-400/40"
               />

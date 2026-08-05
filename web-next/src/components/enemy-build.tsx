@@ -31,17 +31,6 @@ const itemIcon = (slug: string): string => DATA.items?.[slug]?.icon ?? `/items/$
 const runeIcon = (name: string): string | null => DATA.runes?.[name]?.icon ?? null;
 
 /**
- * "Why this build" for a GENERATED build.
- *
- * The old version listed only the free-text `why` bullets. This adds the
- * per-element reasoning the advisor now returns -- item reasons from
- * candidateItemScores, rune reasons from runeReasons, and the boots reason --
- * each shown with its own icon and name, so the reader can see WHICH piece each
- * line is about rather than reading a wall of prose. Counter mode returns none
- * of this (skipped for speed), so
- * the whole block simply renders nothing then.
- */
-/**
  * The items this one multiplies, or is multiplied by.
  *
  * A per-item score cannot say "this is worth more BECAUSE that is also in the
@@ -138,6 +127,17 @@ function PlayGuide({ advice }: { advice: Advice }) {
   );
 }
 
+/**
+ * "Why this build" for a GENERATED build.
+ *
+ * The old version listed only the free-text `why` bullets. This adds the
+ * per-element reasoning the advisor now returns -- item reasons from
+ * candidateItemScores, the pairings from synergyWith, rune reasons from
+ * runeReasons, and the boots reason -- each shown with its own icon and name,
+ * so the reader can see WHICH piece each line is about rather than reading a
+ * wall of prose. Counter mode returns none of this (skipped for speed), so the
+ * whole block simply renders nothing then.
+ */
 function WhyThisBuild({ advice }: { advice: Advice }) {
   const scoreBySlug = new Map(
     (advice.candidateItemScores ?? []).map((row) => [row.item, row]),
@@ -872,10 +872,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             <p className="mt-2 text-xs leading-relaxed text-muted">
               Already know who you are up against?{" "}
               <Link
-                href={champ ? `/counter?champion=${encodeURIComponent(champ)}` : "/counter"}
+                href={champ ? `/build?champion=${encodeURIComponent(champ)}&tab=counter` : "/build?tab=counter"}
                 className="font-semibold text-emerald-300 underline decoration-emerald-300/40 underline-offset-2 transition hover:decoration-emerald-300"
               >
-                Use the Counter Builder
+                Build against their team
               </Link>{" "}
               instead. It reads all five enemies and itemises against them specifically.
             </p>
@@ -1175,7 +1175,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             <div className="flex flex-wrap items-center gap-2">
               <ShareBuildButton
                 path={isCounter
-                  ? `/counter?champion=${encodeURIComponent(champ ?? "")}`
+                  ? `/build?champion=${encodeURIComponent(champ ?? "")}&tab=counter`
                   : `/build?champion=${encodeURIComponent(champ ?? "")}&tab=generate`}
                 title={`${champ} build on WrTrueMeta`}
                 text={isCounter

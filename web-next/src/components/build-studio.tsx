@@ -3,11 +3,9 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
-  ALTERNATIVE_BUILD_VARIANT,
   buildChampions,
   buildForms,
   getBuildsFor,
-  buildGold,
   visibleBuildVariants,
   formEngineName,
   type Build,
@@ -15,15 +13,11 @@ import {
 } from "@/lib/builds";
 import { Tip } from "@/components/build-view";
 import { ChampionAvatar, TierChip } from "@/components/ui";
-import { EnemyBuildAdvisor, Sparkles, type Advice } from "@/components/enemy-build";
+import { EnemyBuildAdvisor, type Advice } from "@/components/enemy-build";
 import { BuildCustomizer, type CustomBuildState as LabSeed } from "@/components/build-customizer";
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
 import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
-import { BuildExplanation } from "@/components/build-explanation";
-import { BuildLikeButton } from "@/components/build-like";
-import { ShareBuildButton } from "@/components/share-build";
-import { AddToAlbumButton } from "@/components/add-to-album";
 import { CounterBuilderCta, GenerateBuildCta } from "@/components/tool-crosslinks";
 import { BuildTour, type TourStep } from "@/components/build-tour";
 import { getChampions, pendingChampions } from "@/lib/data";
@@ -31,26 +25,33 @@ import { recommendedBuildsLive } from "@/lib/flags";
 
 /* eslint-disable @next/next/no-img-element */
 
-// "vs Enemy" moved to its own /counter page (the LLM advisor). The default
-// build view is deliberately enemy-agnostic: standard/crit/dps/etc only.
+// The two generators sit side by side because they answer the same question
+// with different inputs: one reads how you want to play, the other reads who
+// you are up against. "Counter Builder" lived on its own /counter page and was
+// the least-found tool on the site -- 110 visits against the tier list's 498 --
+// which is what a second page for a second half of one question earns. The
+// name went with it: nothing in "Counter Builder" says enemy team.
+//
+// The curated Recommended Builds tab used to hold the first slot. That
+// catalogue is retired, so the slot went to the tool people could not find.
 const TABS = [
-  {
-    id: "recommended",
-    label: "Recommended Builds",
-    shortLabel: "Recommended",
-    help: "Choose a playstyle to review a curated full build. Tap any item, rune, ability, or stat for an explanation, then open Compare Builds to check it against another playstyle.",
-  },
   {
     id: "generate",
     label: "Personal Build Generator",
     shortLabel: "Generate",
-    help: "Choose your role, playstyle, and optimization goal, then generate. Review the recommendation and compare the result against any recommended build.",
+    help: "Choose your role, playstyle, and optimization goal, then generate the optimal build around how you want to play. This one ignores the enemy team on purpose.",
+  },
+  {
+    id: "counter",
+    label: "Build vs Enemy Team",
+    shortLabel: "vs Enemy Team",
+    help: "Name the five champions you are up against and get the build that beats exactly those picks: items, purchase order, boots and runes, with what it can and cannot answer.",
   },
   {
     id: "customize",
     label: "Custom Build Lab",
     shortLabel: "Custom Lab",
-    help: "Build from scratch or load a recommended starting point. Add or remove items and runes, inspect live stats, and compare your custom loadout before you commit to it.",
+    help: "Build from scratch or load a generated build. Add or remove items and runes, inspect live stats, and compare your custom loadout before you commit to it.",
   },
 ] as const;
 type Tab = (typeof TABS)[number]["id"];
@@ -70,45 +71,6 @@ const VARIANT_LABEL: Record<string, string> = {
  *  stored id remains stable, but it is only exposed after the new generator (or
  *  a reviewer) explicitly approves the path. */
 
-/** Only these exact path concepts can become identity-like UI. This deliberately
- *  does not read the model-authored top-level `damageProfile`: an incidental AP
- *  ratio must never turn a tank into an "AP bruiser" in the champion header. */
-const CONTROLLED_PATH_LABELS: Record<string, string> = {
-  tank: "Tank",
-  bruiser: "Bruiser",
-  "ad bruiser": "AD Bruiser",
-  "ap bruiser": "AP Bruiser",
-  "hybrid bruiser": "Hybrid Bruiser",
-  "ad assassin": "AD Assassin",
-  "ap assassin": "AP Assassin",
-  "hybrid assassin": "Hybrid Assassin",
-  "ad carry": "AD Carry",
-  "ap carry": "AP Carry",
-  "crit carry": "Crit Carry",
-  "ad on hit": "AD On-hit",
-  "ap on hit": "AP On-hit",
-  "hybrid on hit": "Hybrid On-hit",
-  lethality: "Lethality",
-  battlemage: "Battlemage",
-  enchanter: "Enchanter",
-  utility: "Utility",
-  "armor tank": "Armor Tank",
-  "mixed resist tank": "Mixed-resist Tank",
-  "engage tank": "Engage Tank",
-  "physical spellblade bruiser": "Physical Spellblade Bruiser",
-  "physical durable bruiser": "Physical Durable Bruiser",
-  "physical duelist": "Physical Duelist",
-  "physical spellblade duelist": "Physical Spellblade Duelist",
-  "ap burst": "AP Burst",
-  "crit duelist": "Crit Duelist",
-  "hybrid ad + ap": "Hybrid AD + AP",
-};
-
-function controlledPathLabel(build: Build | null): string | null {
-  const value = build?.pathLabel?.trim().toLowerCase().replaceAll("-", " ");
-  return value ? CONTROLLED_PATH_LABELS[value] ?? null : null;
-}
-
 /** Mechanical archetype: HOW the kit delivers damage, which steers itemization
  *  (a weaver's cast-auto-cast rhythm makes Spellblade items core; an on-hit
  *  caster's abilities trigger on-hit items). Assigned per champion by
@@ -118,41 +80,8 @@ const ARCHETYPE_LABEL: Record<string, string> = {
   weaver: "Weaver", onhitcaster: "On-hit caster",
 };
 
-/**
- * Stands in for a champion's curated builds while they are still being checked.
- *
- * Deliberately a placeholder rather than a hidden tab: the tab is the promise,
- * and the two tools that ARE ready compute their answer live rather than
- * serving something pre-authored, so it points at those instead of dead-ending.
- */
-function RecommendedComingSoon({ name, onGenerate }: { name: string; onGenerate: () => void }) {
-  return (
-    <div className="glass rounded-2xl p-6 text-center sm:p-8">
-      <span className="inline-flex rounded-full bg-gold/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-gold">
-        Coming soon
-      </span>
-      <h3 className="mt-3 text-lg font-semibold">Curated builds for {name} are still in review</h3>
-      <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted">
-        Every recommended build is checked before it ships, and {name} has not been through that
-        pass yet. Nothing here is hidden because it is broken. It is hidden because it has not
-        been verified, and a build you cannot trust is worse than no build.
-      </p>
-      <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted">
-        The Personal Build Generator works for {name} right now and builds around how you play.
-        The Custom Build Lab is open too, with live stats for anything you assemble.
-      </p>
-      <button
-        onClick={onGenerate}
-        className="mt-5 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-bold text-black transition hover:opacity-90"
-      >
-        Generate a build for {name} →
-      </button>
-    </div>
-  );
-}
-
-export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
-  initialChampion?: string; initialTab?: Tab; initialVariant?: string;
+export function BuildStudio({ initialChampion, initialTab }: {
+  initialChampion?: string; initialTab?: Tab;
 } = {}) {
   const champs = useMemo(() => {
     const built = new Map(buildChampions().map((entry) => [entry.slug, entry]));
@@ -169,10 +98,17 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
         ?? { slug: champion.slug, champion, builds: null },
     );
   }, []);
-  const initialSlug = champs.some((entry) => entry.slug === initialChampion) ? initialChampion! : champs[0]?.slug ?? "";
-  const initialRecord = champs.find((entry) => entry.slug === initialSlug);
+  // ?champion= arrives as a display NAME from every link that builds one
+  // ("Vayne", "Kai'Sa"), and as a slug from anything that hand-wrote a URL.
+  // Matching only slugs silently dropped the first kind and opened the studio
+  // on whichever champion sorts first -- which the old /counter page did not
+  // do, because it seeded its picker by name.
+  const wanted = (initialChampion ?? "").toLowerCase();
+  const initialSlug = champs.find(
+    (entry) => entry.slug === wanted || entry.champion.name.toLowerCase() === wanted,
+  )?.slug ?? champs[0]?.slug ?? "";
   const [slug, setSlug] = useState(initialSlug);
-  const [tab, setTab] = useState<Tab>(initialTab ?? (initialRecord?.builds ? "recommended" : "generate"));
+  const [tab, setTab] = useState<Tab>(initialTab ?? "generate");
   const [generatedAdvice, setGeneratedAdvice] = useState<Advice | null>(null);
   // A generated build handed to the Custom Build Lab so it can be run through
   // the damage check. The counter bumps on every send, and keys the Lab, so
@@ -194,21 +130,9 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
     archetype?: { archetype?: string; reason?: string };
   }) | null)?.archetype;
   const variants = builds ? visibleBuildVariants(builds) : [];
-  const [variantState, setVariant] = useState(
-    (initialVariant && variants.includes(initialVariant) ? initialVariant : undefined)
-      ?? variants.find((v) => v === "standard" || v === "balanced")
-      ?? variants[0]
-      ?? "",
-  );
-  const variant = builds ? (variants.includes(variantState) ? variantState : variants[0]) : "";
-  const build = builds && variant ? builds.builds[variant] : null;
 
   const name = rec.champion.name;
 
-  // The curated catalogue is still being validated, so Recommended Builds is
-  // open per champion. The tab stays visible either way -- a locked tab that
-  // says what is coming reads better than a tab that silently is not there.
-  const recommendedOpen = recommendedBuildsLive(rec.champion.name);
   // Two different controls, and most champions have neither: the header toggle
   // that swaps between separately generated build sets (Kayn), and the panel
   // toggle that re-reads stats and abilities in the transformed state.
@@ -217,20 +141,22 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
     transforms: Boolean(ultTransform(engineName)) || Boolean(DUAL_FORM_CHAMPIONS[engineName]),
     generated: Boolean(generatedAdvice && !generatedAdvice.error),
   });
-  // Comparisons expose the same curated item lists, so they follow the gate.
-  const comparisonChoices = builds && recommendedOpen
+  // Comparison targets are the curated variants, and that catalogue never
+  // finished its review pass -- which is why the tab that served it is gone.
+  // The gate it was behind stays: comparing against an unchecked build would
+  // put the same unverified item list on screen through a different door.
+  const comparisonChoices = builds && recommendedBuildsLive(rec.champion.name)
     ? variants.map((key) => comparableFromBuild(key, builds.builds[key]))
     : [];
-  const availableTabs = builds ? TABS : TABS.filter((entry) => entry.id === "generate");
-  const wanted = availableTabs.some((entry) => entry.id === tab) ? tab : "generate";
-  const effectiveTab = wanted === "recommended" && !recommendedOpen ? "recommended" : wanted;
-  const selectedPathLabel = effectiveTab === "recommended" ? controlledPathLabel(build) : null;
+  // The Lab seeds itself from the curated record, so it only opens for a
+  // champion that has one. Both generators compute their answer live and work
+  // for everyone.
+  const availableTabs = builds ? TABS : TABS.filter((entry) => entry.id !== "customize");
+  const effectiveTab = availableTabs.some((entry) => entry.id === tab) ? tab : "generate";
 
   const switchChamp = (s: string) => {
     setSlug(s);
     setFormKey("base");
-    const next = champs.find((entry) => entry.slug === s);
-    setTab(next?.builds && recommendedBuildsLive(next.champion.name) ? "recommended" : "generate");
     setGeneratedAdvice(null);
   };
   const filteredChamps = champQuery
@@ -297,7 +223,6 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
             </div>
             <p className="text-sm text-muted">
               {builds?.class ?? rec.champion.class} · {builds?.role ?? rec.champion.role}
-              {selectedPathLabel ? ` · ${selectedPathLabel}` : ""}
             </p>
           </div>
           {/* Transform toggle. Kayn commits to one of these for the rest of the
@@ -342,7 +267,10 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
           nothing to indicate the strip scrolled, so on a phone the tab may as
           well not have existed. Equal columns plus a short label per tab means
           all three fit and none of them needs discovering. */}
-      <div data-tour="tabs" className="glass mt-4 grid grid-cols-3 gap-1 rounded-xl p-1">
+      <div
+        data-tour="tabs"
+        className={`glass mt-4 grid gap-1 rounded-xl p-1 ${availableTabs.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
+      >
         {availableTabs.map((entry) => (
           <button
             key={entry.id}
@@ -357,10 +285,6 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
       </div>
 
       <div className="mt-4">
-        {effectiveTab === "recommended" && !recommendedOpen && <RecommendedComingSoon name={name} onGenerate={() => setTab("generate")} />}
-        {effectiveTab === "recommended" && recommendedOpen && build && (
-          <BuildTab {...{ variants, variant, setVariant, build, name, engineName, slug, comparisonChoices }} onGenerate={() => setTab("generate")} />
-        )}
         {effectiveTab === "generate" && (
           <GenerateTab
             key={`${name}:${form?.key ?? "base"}`}
@@ -375,6 +299,18 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
             comparisonChoices={comparisonChoices}
           />
         )}
+        {/* Keyed by champion so switching champions clears the enemy team and
+            the build with it: the five picks you were up against belong to the
+            game you were in, and carrying them onto a different champion would
+            be an answer to a question nobody asked. */}
+        {effectiveTab === "counter" && (
+          <EnemyBuildAdvisor
+            key={`counter:${name}:${form?.key ?? "base"}`}
+            presetChampion={name}
+            presetForm={form ? (form.key === "base" ? "shadow-assassin" : "rhaast") : undefined}
+            mode="counter"
+          />
+        )}
         {effectiveTab === "customize" && builds && (
           <BuildCustomizer
             key={labSeed?.id ?? "empty"}
@@ -386,10 +322,16 @@ export function BuildStudio({ initialChampion, initialTab, initialVariant }: {
         )}
       </div>
 
-      {/* Hand-off to the other tool: this page never looks at the enemy team. */}
-      <div className="mt-6" data-tour="counter-cta">
-        <CounterBuilderCta champion={name} />
-      </div>
+      {/* Hand-off between the two generators. Only shown from the one you are
+          NOT on, and it switches tabs rather than navigating: they are two
+          halves of the same question and both live on this page now. */}
+      {effectiveTab !== "customize" && (
+        <div className="mt-6" data-tour="counter-cta">
+          {effectiveTab === "generate"
+            ? <CounterBuilderCta onOpen={() => setTab("counter")} />
+            : <GenerateBuildCta onGenerate={() => setTab("generate")} champion={name} />}
+        </div>
+      )}
     </div>
   );
 }
@@ -413,42 +355,6 @@ const statSteps = (transforms: boolean): TourStep[] => [
   },
 ];
 
-/** Per-tab walkthroughs. Bump a storageKey when its tab changes shape enough
- *  that the old walkthrough would be describing controls that moved. */
-const studioTour = ({ formSets, transforms }: TourContext): TourStep[] => [
-  {
-    target: "champion-search",
-    title: "Start with your champion",
-    body: "Search, or scroll the portrait strip. Everything below re-reads from the champion you pick.",
-  },
-  {
-    target: "tabs",
-    title: "Three tabs, three questions",
-    body: "Recommended Builds is the curated optimal answer, the Personal Build Generator finds the optimal build around how you play, and the Custom Build Lab lets you assemble your own and see the stats move.",
-  },
-  {
-    target: "build-order",
-    title: "The build order, explained",
-    body: "Items are shown in purchase order, with boots slotted where they actually get bought. Tap any item, rune or ability for the reasoning behind it.",
-  },
-  ...(formSets ? [{
-    target: "champion-form",
-    title: "This champion gets two separate builds",
-    body: "Kayn commits to Shadow Assassin or Rhaast for the rest of the game, and they want opposite items, so each form has its own build. The toggle switches everything below it: items, runes, stats and the simulated damage.",
-  }] : []),
-  ...statSteps(transforms),
-  {
-    target: "generate-cta",
-    title: "Nothing here fits your game?",
-    body: "Generate the optimal build around your role, playstyle and power spike, then compare it against any recommended build.",
-  },
-  {
-    target: "counter-cta",
-    title: "Facing a specific enemy team?",
-    body: "The Counter Builder finds the optimal items and runes against the exact five champions you are up against.",
-  },
-];
-
 /** What the open champion actually puts on screen. The tour describes only
  *  what is there: a step whose target does not exist still renders, just with
  *  nothing highlighted, and a walkthrough pointing at a control the player
@@ -456,14 +362,70 @@ const studioTour = ({ formSets, transforms }: TourContext): TourStep[] => [
 type TourContext = { formSets: boolean; transforms: boolean; generated: boolean };
 
 const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: TourStep[] }> => ({
-  recommended: { storageKey: "wtm_tour_studio_v2", steps: studioTour(ctx) },
+  // Moved here from the standalone /counter page. Two steps changed on the way:
+  // the champion is chosen once by the studio's portrait strip rather than
+  // inside this tab, and the step that explained how the counter builder
+  // differs "from the Build Studio" was describing a page boundary that no
+  // longer exists -- the contrast is now with the tab next to it.
+  counter: {
+    storageKey: "wtm_tour_counter_v3",
+    steps: [
+      {
+        target: "enemy-team",
+        title: "Tell it who you are up against",
+        body: "Add up to five enemies. One is enough to get a build; the more you add, the more the item order shifts to handle their damage and their threats. This is the whole difference from the Personal Build Generator beside it, which never looks at the enemy.",
+      },
+      {
+        target: "ally-team",
+        optional: true,
+        title: "Your team matters less, but it matters",
+        body: "Allies mostly change whether you need to cover a gap yourself. If nobody on your side brings anti-heal or a front line, that lands on you, and the build shifts to reflect it.",
+      },
+      {
+        target: "playstyle",
+        title: "Adaptive, or commit to a plan",
+        body: "Adaptive lets the enemy comp decide how you should play. Choose a specific playstyle instead when you already know what you want the game to look like, and the counter build is solved around that.",
+      },
+      {
+        target: "role",
+        title: "Where are you actually playing it?",
+        body: "The role changes the build, not just the label: the same champion wants different first items in the jungle than in a solo lane. Pick something the champion is not normally played in and it warns you rather than quietly building something odd.",
+      },
+      {
+        target: "objective",
+        title: "Stats, synergy, or a balance of both",
+        body: "Three options, and they trade against each other. Max stats favours the items whose raw stats this champion uses best per gold, accepting a bit less kit synergy. Max synergy favours items and runes that combo with the kit and with each other, even at some raw-stat cost. Balanced weighs both, and is the right answer more often than not.",
+      },
+      {
+        target: "power-spike",
+        title: "Say when you need to be strong",
+        body: "Early, mid, late or balanced. Against a comp that wins late, spiking earlier is a real answer, and this changes the purchase order more than the item list.",
+      },
+      {
+        target: "locks",
+        optional: true,
+        title: "Force in an item or rune you insist on",
+        body: "Pin up to three items and two runes and the counter build has to include them. Skip it unless you already know one piece of the answer, say the enemy has heavy healing and you want the anti-heal locked in, and want the rest solved around it.",
+      },
+      {
+        target: "generate",
+        title: "Generate, then read the reasoning",
+        body: "You get the optimal loadout in about 30 seconds. Items, runes and summoner spells sit open at the top because they are the build; everything under them starts folded, so tap Show to open it. Tap any item or rune for its cost, its stats and the reason it is there -- and against a known comp, the reasons name the enemies they answer.",
+      },
+      {
+        target: "generate",
+        title: "There is a guide for the build, too",
+        body: "\"How to play this build\" is written for the loadout you just got rather than for the champion in general: what your first item buys you, when the build turns on, how to open the fight, and the mistake that wastes it against this comp.",
+      },
+    ],
+  },
   generate: {
     storageKey: "wtm_tour_generate_v2",
     steps: [
       {
         target: "your-champion",
         title: "This build is about you, not the enemy",
-        body: "The generator ignores who you are against on purpose. It builds around how you want to play the champion; the Counter Builder is the one that reads the enemy team.",
+        body: "The generator ignores who you are against on purpose. It builds around how you want to play the champion; the tab beside it, Build vs Enemy Team, is the one that reads the enemy team.",
       },
       {
         target: "playstyle",
@@ -535,273 +497,6 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
   },
 });
 
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/** A boots tile in the build order, badged with its tier. Patch 7.2 turned the
- *  tier-3 boot into a real purchase (2000-2200g, unlocked at 10:00), so the
- *  order has to show WHICH boot you hold and WHEN it upgrades. */
-function BootTile({ it, tier, note }: { it: any; tier?: string; note?: string }) {
-  return (
-    <Tip
-      tip={
-        <>
-          <span className="font-bold">{it.name}</span>
-          <span className="text-gold"> · {(it.cost || 0).toLocaleString()}g</span>
-          {note && <span className="mt-1 block text-accent">{note}</span>}
-        </>
-      }
-    >
-      <span className="relative cursor-pointer">
-        <img src={it.icon} alt={it.name} width={40} height={40} className="rounded-lg ring-1 ring-white/10" />
-        {tier && (
-          <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded bg-[#0e1322] px-1 text-[0.55rem] font-bold uppercase leading-tight text-faint ring-1 ring-line">
-            {tier}
-          </span>
-        )}
-      </span>
-    </Tip>
-  );
-}
-
-function BuildTab({ variants, variant, setVariant, build, name, engineName, slug, onGenerate, comparisonChoices }: any) {
-  const finalItemSlugs = [
-    ...build.coreBuild.map((item: { slug: string }) => item.slug),
-    ...(build.boots?.slug ? [build.boots.slug] : []),
-  ];
-  return (
-    <div className="flex flex-col gap-4">
-      {/* Hecarim's tab is open for one reason: the landing page and the tour
-          both point at him, and a locked tab would dead-end the walkthrough.
-          The catalogue has NOT been validated yet, so the build behind this
-          tab is an example of the format rather than advice anyone should
-          take into a game. Saying that plainly costs nothing and is the whole
-          reason every other champion's tab is still closed. */}
-      <div className="rounded-xl border border-gold/30 bg-gold/[0.07] px-3 py-2.5">
-        <p className="text-xs leading-relaxed text-gold">
-          <span className="font-bold uppercase tracking-wide">Demonstration only</span>
-          <span className="text-muted">
-            {" "}&middot; this build is here to show how the studio works, not as a recommendation.
-            Curated builds are still being reviewed, which is why {name} is the only champion with
-            this tab open. For a build meant to be played, use the Personal Build Generator or the
-            Counter Builder.
-          </span>
-        </p>
-      </div>
-      {/* Recommended builds are created without an enemy team. The callout says
-          so and links straight into the Counter Builder for this champion, so
-          nobody mistakes a curated build for a matchup-tuned one. */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line/60 bg-white/[0.02] px-3 py-2.5">
-        <p className="text-xs leading-relaxed text-muted">
-          Recommended builds are created <span className="text-text">without knowing the enemy team</span>.
-          For a build tuned to the matchup, use the Counter Builder.
-        </p>
-        <Link
-          href={`/counter?champion=${encodeURIComponent(name)}`}
-          className="shrink-0 rounded-lg bg-emerald-400/15 px-3 py-1.5 text-xs font-bold text-emerald-300 transition hover:bg-emerald-400/25"
-        >
-          Build Against Enemy Team →
-        </Link>
-      </div>
-
-      {/* Variant pills + the AI "generate my build" button. Studio mode is a
-          personal, enemy-agnostic build; Counter Builder handles matchups. */}
-      <div className="flex flex-wrap items-center gap-1.5">
-        {variants.map((v: string) => {
-          const alternative = v === ALTERNATIVE_BUILD_VARIANT;
-          const active = v === variant;
-          return (
-            <button
-              key={v}
-              onClick={() => setVariant(v)}
-              title={alternative
-                ? "A reviewed secondary build path supported by this champion's repeated combat pattern"
-                : `Show the ${VARIANT_LABEL[v] ?? v} recommended build`}
-              className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-                active
-                  ? alternative ? "bg-violet-400/20 text-violet-200" : "bg-accent/20 text-accent"
-                  : alternative ? "bg-violet-400/[0.08] text-violet-200/80 hover:text-violet-200" : "bg-white/[0.04] text-muted hover:text-text"
-              }`}
-            >
-              {VARIANT_LABEL[v] ?? v}
-            </button>
-          );
-        })}
-        <button onClick={onGenerate} title="Open the Personal Build Generator and build the optimal loadout for this champion"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-bold text-black transition hover:opacity-90">
-          <Sparkles />
-          Generate my optimal build
-        </button>
-        <span className="ml-auto self-center rounded-md bg-gold/10 px-2 py-1 text-xs font-semibold text-gold">~{buildGold(build).toLocaleString()}g</span>
-      </div>
-
-      {variant === ALTERNATIVE_BUILD_VARIANT && (
-        <div className="rounded-xl border border-violet-400/30 bg-violet-400/[0.07] p-4">
-          <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-violet-200">
-            <span className="rounded bg-violet-400/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide">
-              Alternative Path
-            </span>
-            A supported secondary way to build {name}
-          </p>
-          <p className="mt-1 text-xs leading-relaxed text-muted">
-            This path is only shown after its items and runes have been reviewed against the champion&apos;s
-            repeated combat pattern. It is distinct from the default path, but it is not novelty built from one incidental ratio.
-          </p>
-          {build.summary && <p className="mt-2 text-sm leading-relaxed text-text/90">{build.summary}</p>}
-        </div>
-      )}
-
-      {/* Reactions: liking and sharing are only offered on the curated builds,
-          which are the ones that are stable enough to be worth a public vote. */}
-      <div className="flex flex-wrap items-center gap-2">
-        <BuildLikeButton buildId={`${slug}:${variant}`} />
-        <ShareBuildButton
-          path={`/build?champion=${encodeURIComponent(slug)}&variant=${encodeURIComponent(variant)}`}
-          title={`${name} ${VARIANT_LABEL[variant] ?? variant} build`}
-          text={`${name} ${VARIANT_LABEL[variant] ?? variant} build on WrTrueMeta: full item order, boots timing and runes.`}
-        />
-        <AddToAlbumButton
-          build={{
-            champion: name,
-            championSlug: slug,
-            source: "recommended",
-            variant,
-            items: finalItemSlugs,
-            runes: runeNamesFromBuild(build),
-          }}
-        />
-      </div>
-
-      {/* the build: items */}
-      <div data-tour="build-order" className="glass rounded-2xl p-4">
-        <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimal build order <span className="normal-case text-faint/60">· tap for details{build.bootsEarly ? " · T2 boots first, T3 upgrade at 10:00" : ""}</span></p>
-        {/* Boots sit IN the order, not appended after it: 7.2 made tier 3 a real
-            2000-2200g purchase unlocked at 10:00, so you buy tier 2 first and
-            upgrade a couple of items later. */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          {build.bootsEarly && (
-            <BootTile it={build.bootsEarly} tier="T2" />
-          )}
-          {build.coreBuild.map((it: any, i: number) => (
-            <span key={it.slug} className="inline-flex items-center gap-2.5">
-              <Tip tip={<><span className="font-bold">{it.name}</span><span className="text-gold"> · {it.cost.toLocaleString()}g</span>{it.core && <span className="ml-1 rounded bg-gold/20 px-1 text-[0.6rem] font-bold uppercase text-gold">core</span>}{it.reason && <span className="mt-1 block text-muted">{it.reason}</span>}</>}>
-                <span className="relative cursor-pointer">
-                  <img src={it.icon} alt={it.name} width={46} height={46} className={`rounded-lg ${it.core ? "ring-2 ring-gold" : "ring-1 ring-white/10"}`} />
-                  <span className="absolute -left-1.5 -top-1.5 grid h-4.5 w-4.5 min-h-[18px] min-w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{i + 1}</span>
-                </span>
-              </Tip>
-              {build.boots && build.bootsEarly && build.bootsUpgradeAfter === i + 1 && (
-                <BootTile it={build.boots} tier="T3" note={`Upgrade from ${build.bootsEarly.name} after item ${i + 1} (unlocks at 10:00)`} />
-              )}
-            </span>
-          ))}
-          {/* no tier-3 for these boots: show them once, at the end */}
-          {build.boots && !build.bootsEarly && (
-            <>
-              <span className="mx-0.5 text-faint">+</span>
-              <BootTile it={build.boots} />
-            </>
-          )}
-        </div>
-
-        {/* runes + summoners */}
-        <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-line/60 pt-3">
-          <div className="flex items-center gap-2">
-            {build.runes.keystone && <Tip tip={<span className="font-bold">{build.runes.keystone.name}</span>}><img src={build.runes.keystone.icon} alt="" width={38} height={38} className="cursor-pointer rounded-full ring-1 ring-white/15" /></Tip>}
-            {build.runes.treeMinors.map((r: any) => (
-              <Tip key={r.name} tip={<span className="font-bold">{r.name}</span>}><img src={r.icon} alt="" width={28} height={28} className="cursor-pointer rounded-full ring-1 ring-white/10" /></Tip>
-            ))}
-            {build.runes.flexMinor && <Tip tip={<span className="font-bold">{build.runes.flexMinor.name}</span>}><img src={build.runes.flexMinor.icon} alt="" width={28} height={28} className="cursor-pointer rounded-full opacity-90 ring-1 ring-white/10" /></Tip>}
-          </div>
-          {(build.summoners ?? []).length > 0 && (
-            <div className="flex items-center gap-2">
-              {build.summoners.map((s: any) => (
-                <Tip key={s.name} tip={<span className="font-bold">{s.name}</span>}><img src={s.icon} alt={s.name} width={28} height={28} className="cursor-pointer rounded-md ring-1 ring-white/10" /></Tip>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <SituationalPanel build={build} />
-
-      <BuildExplanation build={build} />
-
-      <BuildStatsPanel name={engineName ?? name} itemSlugs={finalItemSlugs} runeNames={runeNamesFromBuild(build)} level={15} />
-      <ChampionAbilitiesPanel
-        name={engineName ?? name}
-        itemSlugs={finalItemSlugs}
-        runeNames={runeNamesFromBuild(build)}
-        level={15}
-      />
-      <BuildComparison
-        champion={engineName ?? name}
-        current={comparableFromBuild(variant, build)}
-        choices={comparisonChoices}
-      />
-
-      <div data-tour="generate-cta">
-        <GenerateBuildCta champion={name} onGenerate={onGenerate} />
-      </div>
-    </div>
-  );
-}
-
-const ORDINALS = ["", "1st", "2nd", "3rd", "4th", "5th"];
-
-/** Situational swaps for a curated build.
- *
- *  A swap is only useful if you know WHEN it happens: it is bought in place of
- *  the item at that position, not bolted onto the end of the build. Swaps are
- *  therefore ordered by purchase position and labelled with it. */
-function SituationalPanel({ build }: { build: Build }) {
-  const swaps = [...(build.situational ?? [])].sort(
-    (left, right) => (left.atPosition ?? 9) - (right.atPosition ?? 9),
-  );
-  const runeSwaps = build.situationalRunes ?? [];
-  if (swaps.length === 0 && runeSwaps.length === 0) return null;
-
-  return (
-    <div className="glass rounded-2xl p-4">
-      <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
-        Situational swaps <span className="normal-case text-faint/60">· bought in place of that purchase</span>
-      </p>
-      <div className="flex flex-col gap-2">
-        {swaps.map((swap) => (
-          <div key={`${swap.slug}-${swap.replaces}`} className="flex flex-wrap items-center gap-2 text-sm">
-            {swap.atPosition && (
-              <span className="shrink-0 rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-accent">
-                {ORDINALS[swap.atPosition] ?? `${swap.atPosition}th`} item
-              </span>
-            )}
-            <img src={swap.icon} alt={swap.name} width={26} height={26} className="rounded ring-1 ring-white/10" />
-            <span className="font-medium">{swap.name}</span>
-            <span className="text-muted">
-              {swap.replaces && (() => {
-                const replaced = build.coreBuild.find((item) => item.slug === swap.replaces);
-                return replaced ? `instead of ${replaced.name}` : "";
-              })()}{" "}
-              {swap.when ? `· ${swap.when}` : ""}
-            </span>
-          </div>
-        ))}
-        {runeSwaps.map((swap) => (
-          <div key={swap.slug} className="flex flex-wrap items-center gap-2 text-sm">
-            <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide ${
-              swap.replacesType === "item" ? "bg-gold/15 text-gold" : "bg-violet-400/15 text-violet-300"
-            }`}>
-              {swap.replacesType === "item" ? "frees an item" : "rune"}
-            </span>
-            <img src={swap.icon} alt={swap.name} width={26} height={26} className="rounded-full ring-1 ring-white/10" />
-            <span className="font-medium">{swap.name}</span>
-            <span className="text-muted">
-              {swap.replacesLabel ? `over ${swap.replacesLabel}` : ""} {swap.when ? `· ${swap.when}` : ""}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function GenerateTab({
   name,

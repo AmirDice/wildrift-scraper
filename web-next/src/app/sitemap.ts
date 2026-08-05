@@ -33,11 +33,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/ranks`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE}/compare`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE}/consistency`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    // /build and /counter are only listed once the Build Optimizer launches.
+    // Only listed once the Build Optimizer launches. /counter is NOT here:
+    // it is a permanent redirect into /build now, and a sitemap that lists a
+    // redirect asks a crawler to index a URL that does not serve a page.
     ...(BUILD_TOOLS_LIVE
       ? ([
           { url: `${BASE}/build`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.9 },
-          { url: `${BASE}/counter`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.9 },
         ])
       : []),
     { url: `${BASE}/items`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },

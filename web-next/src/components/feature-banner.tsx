@@ -36,8 +36,8 @@ const FLAG_PROMO = BUILD_TOOLS_LIVE
       key: "wtm-feature-builders-v4",
       href: "/build",
       lead: "Build Studio is live",
-      body: "generate by playstyle, or craft builds with live item, rune and ability stats.",
-      hideOn: ["/build", "/counter"],
+      body: "generate by playstyle, build against the enemy team, or craft your own with live item, rune and ability stats.",
+      hideOn: ["/build", "/counter"],  // /counter redirects into /build
       badges: ["New", "Beta"],
       cta: "Try it",
     }

@@ -27,10 +27,10 @@ const STEPS: Record<string, Step> = {
     tone: "accent",
   },
   counter: {
-    href: "/counter",
+    href: "/build?tab=counter",
     title: "Facing a hard matchup?",
     body: "Enter the enemy team and get a build shaped to beat exactly who you are up against.",
-    cta: "Open Counter Builder",
+    cta: "Build vs enemy team",
     tone: "gold",
   },
   meta: {

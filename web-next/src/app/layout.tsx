@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | WrTrueMeta",
   },
   description:
-    "Real League of Legends Wild Rift win rates from the top 50 players on every champion. Tier list, leaderboards and meta tracking, plus a Build Studio and Counter Builder that generate optimal items, runes and summoners for your exact game.",
+    "Real League of Legends Wild Rift win rates from the top 50 players on every champion. Tier list, leaderboards and meta tracking, plus a Build Studio that generates optimal items, runes and summoners for your exact game, blind or against the enemy team.",
   keywords: [
     "Wild Rift tier list",
     "League of Legends Wild Rift",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     url: "https://wrtruemeta.com",
     title: "WrTrueMeta | Wild Rift Tier List, Win Rates & Build Tools",
     description:
-      "Real Wild Rift win rates from the top 50 players on every champion, plus a Build Studio and Counter Builder that generate optimal items, runes and summoners.",
+      "Real Wild Rift win rates from the top 50 players on every champion, plus a Build Studio that generates optimal items, runes and summoners for your exact game.",
     locale: "en_US",
   },
   twitter: {

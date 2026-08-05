@@ -71,7 +71,7 @@ export default async function Image() {
             champions ? `${champions} champions` : "Every champion",
             "Live win rates",
             "Build Studio",
-            "Counter Builder",
+            "Build vs Enemy Team",
           ].map((label) => (
             <div
               key={label}

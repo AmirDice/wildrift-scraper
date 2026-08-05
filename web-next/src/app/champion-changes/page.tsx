@@ -49,8 +49,8 @@ export default function ChampionChangesPage() {
       {BUILD_TOOLS_LIVE && (
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           <ToolPromo
-            href="/counter"
-            title="Counter Builder"
+            href="/build?tab=counter"
+            title="Build vs Enemy Team"
             body="Give it your champion and the enemy team, and get a build, runes and item order tuned to beat exactly who you are facing."
             cta="Build against your enemies"
             accent="text-emerald-300"

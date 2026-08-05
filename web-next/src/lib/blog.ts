@@ -230,9 +230,9 @@ export const POSTS: BlogPost[] = [
       },
       {
         kind: "cta",
-        href: "/counter",
+        href: "/build?tab=counter",
         label: "Build against your lane opponent",
-        text: "Tell the Counter Builder who you are facing and it rebuilds your items, boots and runes around beating exactly that.",
+        text: "Tell it who you are facing and it rebuilds your items, boots and runes around beating exactly that.",
       },
     ],
   },

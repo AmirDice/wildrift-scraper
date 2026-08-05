@@ -119,7 +119,7 @@ export function AlbumsView() {
         <Card className="p-6 text-center">
           <p className="text-sm text-muted">
             No albums yet. Create one above, then use <span className="text-text">Save to album</span> on any
-            build in the Build Optimizer or Counter Builder.
+            build in the Build Studio.
           </p>
         </Card>
       ) : (
