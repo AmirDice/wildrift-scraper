@@ -142,27 +142,27 @@ type Body = {
 };
 
 /**
- * Samples per generation, on a cache miss.
+ * Samples per generation, on a cache miss. OFF by default.
  *
- * The model is not deterministic and the spread is not small: the same Vayne
- * prompt returned three different builds on three runs. A cache miss is the
- * generation that becomes that request's answer for everyone until the patch
- * rolls, so it is worth several samples and a vote; a hit already has one.
+ * The machinery is built and tested (advise_best_of, tests/test_consensus.py):
+ * sample the model N times in parallel, keep the build the samples agree on.
+ * It exists because a cache miss is the generation that becomes that request's
+ * answer for everyone until the patch rolls, so a bad draw gets frozen in.
  *
- * Counter builds are excluded. They are wanted fast -- the prompt tells the
- * model to skip the full evaluation for exactly that reason -- and the enemy
- * comp constrains the answer enough that the samples have far less room to
- * disagree.
+ * It is not switched on because the model we actually run does not draw badly.
+ * Measured on Vayne at five samples on gemini-3.6-flash: nine of ten build
+ * elements unanimous, all four runes identical in every sample, and a single
+ * unsampled run returned the same five items the vote did -- matching the
+ * top-50 ladder core exactly. There is nothing for a vote to correct. Five
+ * samples also drew a 503 from the provider under concurrency, so switching it
+ * on would trade a real failure mode for a hypothetical one.
  *
- * Five, not three, because three samples cannot hold a real vote: most items
- * end up with exactly one vote, so a majority is not distinguishable from a
- * coin flip. At five, a 2-vote item is a genuine minority and a 3-vote item is
- * a genuine majority.
- *
- * Set BUILD_CONSENSUS_RUNS=1 to turn it off without a code change. The advisor
- * clamps it to 5 whatever this says.
+ * Worth revisiting if the model changes, or for a champion whose builds
+ * genuinely fork. BUILD_CONSENSUS_RUNS=5 turns it on with no code change; the
+ * advisor clamps to 5 whatever this says. Counter mode stays at one either
+ * way: it is wanted fast and the enemy comp already constrains the answer.
  */
-const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 5) || 1);
+const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 1) || 1);
 
 type AdvisorResult =
   | { ok: true; data: unknown }
