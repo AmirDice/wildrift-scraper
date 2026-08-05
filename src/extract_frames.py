@@ -375,7 +375,7 @@ def main() -> int:
         return cv2.imread(str(fp)) if fp.exists() else None
 
     if args.engine == "gemini":
-        from .gemini_ocr import read_build_popup, read_rank_popup, read_stats_page
+        from .gemini_ocr import read_rank_popup, read_stats_page
 
         # canonical item-slug resolution against the site's item catalog
         items_path = Path(__file__).resolve().parent.parent / "data" / "items.json"
@@ -425,26 +425,21 @@ def main() -> int:
                     print(f"  [stats/{queue}] rank {rank}: {exc}")
             img = _read_frame_file(e.get("build_frame"))
             if img is not None:
-                try:
-                    build = read_build_popup(img, model=args.model)
-                    if build.get("_invalid"):
-                        print(f"  [build] rank {rank}: model invented "
-                              + ", ".join(build["_invalid"][:6]))
-                except Exception as exc:  # noqa: BLE001
-                    print(f"  [build] rank {rank}: {exc}")
-                # TEMPLATE MATCHING OWNS THE ICONS. The vision model reads the
-                # popup's TEXT well (champion, player, rank) but cannot
-                # identify 50px icons: it invented runes that are not in the
-                # game for 17.6% of slots and disagreed with itself on two
-                # reads of the same image. Matching each slot against the
-                # game's own art is deterministic and reports real confidence,
-                # so an unclear slot becomes "?" instead of a guess.
+                # NO MODEL CALL HERE. Template matching owns every icon: the
+                # vision model invented runes that are not in the game for
+                # 17.6% of slots and disagreed with itself on two reads of the
+                # same image, so its spells/runes/items were being overwritten
+                # wholesale. What remained of its answer -- champion,
+                # player_name, position -- is read by nothing downstream
+                # (_builds_by_rank takes items, runes and spells only), and
+                # the champion is already in the manifest while the rank is
+                # independently tap-verified. That made this a fifth of every
+                # session's API spend, 50 calls of 250, buying nothing.
+                build = {"champion": e.get("champion")}
                 try:
                     from .icon_match import read_build_icons
 
                     icons = read_build_icons(img)
-                    if build is None:
-                        build = {}
                     for key in ("spells", "runes", "items"):
                         if icons.get(key):
                             build[key] = icons[key]
@@ -453,8 +448,9 @@ def main() -> int:
                                      for v in build.get(k, []) if v == "?")
                     if unresolved:
                         print(f"  [build] rank {rank}: {unresolved} icon slot(s) unresolved")
-                except Exception as exc:  # noqa: BLE001 -- keep the model's read
+                except Exception as exc:  # noqa: BLE001
                     print(f"  [icons] rank {rank}: {exc}")
+                    build = None
             # The popup card animates in, so a screenshot taken a beat early
             # catches it before the tier line paints -- 71 of 686 captured
             # players had no tier. The STATS page prints the same tier and is
@@ -541,9 +537,7 @@ def main() -> int:
                                  for n in (b.get("items") or [])]
                         f.write(json.dumps({
                             "rank": b["_rank"],
-                            "position_shown": b.get("position"),
                             "champion": b.get("champion"),
-                            "player_name": b.get("player_name"),
                             "spells": b.get("spells"),
                             "runes": b.get("runes"),
                             "items": items,
