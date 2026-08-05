@@ -136,7 +136,28 @@ type Body = {
   riskTolerance?: string;
   lockedItems?: string[];
   lockedRunes?: string[];
+  /** How many times to sample the model before answering. Set by this route on
+   *  a cache miss, never by the client. */
+  runs?: number;
 };
+
+/**
+ * Samples per generation, on a cache miss.
+ *
+ * The model is not deterministic and the spread is not small: the same Vayne
+ * prompt returned three different builds on three runs. A cache miss is the
+ * generation that becomes that request's answer for everyone until the patch
+ * rolls, so it is worth several samples and a vote; a hit already has one.
+ *
+ * Counter builds are excluded. They are wanted fast -- the prompt tells the
+ * model to skip the full evaluation for exactly that reason -- and the enemy
+ * comp constrains the answer enough that the samples have far less room to
+ * disagree.
+ *
+ * Set BUILD_CONSENSUS_RUNS=1 to turn it off without a code change. The advisor
+ * clamps it to 5 whatever this says.
+ */
+const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 3) || 1);
 
 type AdvisorResult =
   | { ok: true; data: unknown }
@@ -258,6 +279,8 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
       (b.lockedItems ?? []).join(","),
       "--locked-runes",
       (b.lockedRunes ?? []).join(","),
+      "--runs",
+      String(b.runs ?? 1),
     ];
     let out = "";
     let err = "";
@@ -428,7 +451,10 @@ async function handlePost(request: Request) {
       );
     }
 
-    const res = await runAdvisor(advisorRequest);
+    const res = await runAdvisor({
+      ...advisorRequest,
+      runs: mode === "counter" ? 1 : CONSENSUS_RUNS,
+    });
     if (!res.ok) {
       const responseQuota = res.quotaRefundable
         ? await refundQuota(user, ip, unlimited)

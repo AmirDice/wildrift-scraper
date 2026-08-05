@@ -65,7 +65,7 @@ class TestFailureHandling:
             self, monkeypatch, capsys):
         def explode(**_kwargs):
             raise RuntimeError("deepseek 500: upstream on fire")
-        monkeypatch.setattr(advisor_api, "advise", explode)
+        monkeypatch.setattr(advisor_api, "advise_best_of", explode)
 
         status, payload = advisor_api.build_from_request(
             {"champion": "Hecarim", "role": "Jungle"})
@@ -78,7 +78,7 @@ class TestFailureHandling:
     def test_a_missing_api_key_is_a_500_not_a_crash(self, monkeypatch):
         def no_key(**_kwargs):
             raise SystemExit("DEEPSEEK_API_KEY is not set")
-        monkeypatch.setattr(advisor_api, "advise", no_key)
+        monkeypatch.setattr(advisor_api, "advise_best_of", no_key)
 
         status, payload = advisor_api.build_from_request(
             {"champion": "Hecarim", "role": "Jungle"})
@@ -86,7 +86,7 @@ class TestFailureHandling:
         assert "DEEPSEEK_API_KEY" in payload["error"]
 
     def test_a_successful_build_passes_straight_through(self, monkeypatch):
-        monkeypatch.setattr(advisor_api, "advise",
+        monkeypatch.setattr(advisor_api, "advise_best_of",
                             lambda **_kwargs: {"items": ["black-cleaver"]})
         status, payload = advisor_api.build_from_request(
             {"champion": "Hecarim", "role": "Jungle"})
@@ -97,7 +97,7 @@ class TestFailureHandling:
 class TestDeploymentShape:
     def test_the_function_can_import_the_advisor_from_the_repo_root(self):
         """It sits in api/ while the advisor is in web/, so sys.path matters."""
-        assert callable(advisor_api.advise)
+        assert callable(advisor_api.advise_best_of)
 
     def test_the_advisor_function_config_asks_for_a_long_enough_timeout(self):
         """Read from vercel.json.advisor, which is NOT named vercel.json.

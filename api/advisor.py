@@ -35,7 +35,7 @@ from pathlib import Path
 # regardless of where the function is invoked from.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from web.build_advisor import advise  # noqa: E402
+from web.build_advisor import advise_best_of  # noqa: E402
 
 # Shared secret so only our own Next.js route can spend DeepSeek credit. Without
 # it this endpoint is an open, billable API.
@@ -82,11 +82,21 @@ def build_from_request(body: dict) -> tuple[int, dict]:
     if mode == "counter" and not enemies:
         return 400, {"error": "at least one enemy is required for a counter build"}
 
+    # How many times to sample the model before answering. The caller decides,
+    # because only the caller knows whether this request is filling an empty
+    # cache (worth several samples) or is a repeat (already answered). Clamped
+    # here so a forged body cannot bill us for fifty generations.
     try:
-        result = advise(
+        runs = max(1, min(5, int(body.get("runs") or 1)))
+    except (TypeError, ValueError):
+        runs = 1
+
+    try:
+        result = advise_best_of(
             champion=champion,
             role=_clean(body.get("role")),
             enemies=enemies,
+            runs=runs,
             allies=_clean_list(body.get("allies")),
             playstyle=_clean(body.get("playstyle")) or "standard",
             objective=_clean(body.get("objective")) or "balanced",

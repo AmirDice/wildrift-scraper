@@ -29,11 +29,13 @@ Run:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import json
 import os
 import re
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 import requests
@@ -697,10 +699,12 @@ def advise(champion: str, role: str, enemies: list[str],
     mode = "counter" if mode == "counter" else "studio"
     # Legacy playstyle aliases from older saved builds. 'sustain' predates the
     # split into damage variants; map it to the sustained-DPS preset (the app has
-    # no 'sustained_damage' id -- 'dps' is that build). Unknown ids fall through
-    # to the credibility check below.
+    # no 'sustained_damage' id -- 'dps' is that build). 'burst' was a preset in
+    # its own right until it turned out to ask for the same build as one-shot;
+    # shared links, albums and cached keys still carry the id. Unknown ids fall
+    # through to the credibility check below.
     playstyle = {"sustain": "dps", "sustained_damage": "dps",
-                 "glass_cannon": "oneshot"}.get(playstyle, playstyle)
+                 "glass_cannon": "oneshot", "burst": "oneshot"}.get(playstyle, playstyle)
     if mode == "counter" and not enemies:
         return {"error": "at least one enemy is required for a counter build"}
     if mode == "counter" and playstyle == "standard":
@@ -1066,6 +1070,122 @@ def advise(champion: str, role: str, enemies: list[str],
     return res
 
 
+# --------------------------------------------------------------------------
+# best of N: the same prompt does not produce the same build
+# --------------------------------------------------------------------------
+
+# One generation is one sample from a model that is not deterministic, and the
+# spread is not small: Vayne, asked three times on an IDENTICAL prompt, returned
+# three different builds. Whichever one a player happens to get is then CACHED
+# and becomes that champion's answer for everybody until the patch rolls.
+#
+# So the first generation of a request -- the one that fills an empty cache --
+# samples the model several times and keeps the build the samples agree on.
+
+
+def _build_elements(res: dict) -> dict:
+    """The parts of a build that get voted on: items, boots, keystone, minors.
+
+    Purchase order is deliberately excluded. Two runs that buy the same five
+    items in a different order agree about the build; making the order part of
+    the vote would score that as a disagreement.
+    """
+    runes = res.get("runes") or {}
+    return {
+        "items": [s for s in (res.get("items") or []) if s],
+        "boots": [s for s in [res.get("boots")] if s],
+        "runes": [r for r in ([runes.get("keystone")] + list(runes.get("minors") or [])) if r],
+    }
+
+
+def advise_best_of(champion: str, role: str, enemies: list[str],
+                   runs: int = 3, on_progress=None, **kwargs) -> dict:
+    """Sample `advise` `runs` times and return the sample the others agree with.
+
+    The result is one COMPLETE build that the model actually authored, not a
+    per-slot majority spliced together. A spliced build is one no run proposed:
+    its item reasons argue for items that are no longer in it, its purchase
+    order has gaps, its situational swaps replace items that were voted out,
+    and its `synergyWith` pairs point at absent partners. It would also arrive
+    unvalidated, because every check that passed did so against a build this is
+    not.
+
+    Picking the most-agreed COMPLETE run keeps all of that coherent and still
+    gets what the vote is for. An element in every sample is in the winner by
+    construction -- the winner is one of the samples -- and an element only one
+    sample wanted can only survive if the rest of that sample carried it there.
+
+    Failed runs are dropped rather than fatal: two samples still vote, and one
+    surviving sample is exactly what a single-run generation would have given.
+    """
+    if runs <= 1:
+        return advise(champion, role, enemies, on_progress=on_progress, **kwargs)
+
+    results: list[dict] = []
+    errors: list[BaseException] = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=runs) as pool:
+        # Progress is reported by the first sample only. All of them move
+        # through the same stages at roughly the same pace, and interleaving
+        # three streams would make the bar jump backwards.
+        futures = [pool.submit(advise, champion, role, enemies,
+                               on_progress=on_progress if i == 0 else None, **kwargs)
+                   for i in range(runs)]
+        for future in futures:
+            try:
+                res = future.result()
+            except Exception as exc:                    # noqa: BLE001
+                print(f"[advisor] consensus sample failed: {type(exc).__name__}: {exc}",
+                      file=sys.stderr)
+                errors.append(exc)
+                continue
+            # A rejected REQUEST (unsupported playstyle, unknown damage path) is
+            # not a bad sample, it is a bad request, and every sample will say
+            # the same thing. Hand it straight back.
+            if res.get("error"):
+                return res
+            results.append(res)
+
+    if not results:
+        raise errors[0]
+    if len(results) == 1:
+        print("[advisor] consensus: only one sample survived; returning it unvoted",
+              file=sys.stderr)
+        return results[0]
+
+    votes = {kind: Counter() for kind in ("items", "boots", "runes")}
+    for res in results:
+        for kind, values in _build_elements(res).items():
+            votes[kind].update(set(values))
+
+    def agreement(res: dict) -> tuple[int, int, int]:
+        elements = _build_elements(res)
+        score = sum(votes[kind][value] for kind, values in elements.items() for value in values)
+        ladder = (res.get("ladderAgreement") or {}).get("matched") or 0
+        return score, ladder, -len(res.get("validationWarnings") or [])
+
+    winner = max(results, key=agreement)
+    elements = _build_elements(winner)
+    total = sum(len(v) for v in elements.values())
+    unanimous = sum(1 for kind, values in elements.items()
+                    for value in values if votes[kind][value] == len(results))
+
+    # What the samples disagreed about, so a bad build can be read afterwards as
+    # "the model was guessing here" rather than just "the model chose this".
+    winner["consensus"] = {
+        "runs": len(results),
+        "requested": runs,
+        "unanimous": unanimous,
+        "of": total,
+        "votes": {kind: dict(counter.most_common()) for kind, counter in votes.items()},
+    }
+    contested = [f"{value} ({votes[kind][value]}/{len(results)})"
+                 for kind, values in elements.items()
+                 for value in values if votes[kind][value] < len(results)]
+    print(f"[advisor] consensus over {len(results)} samples: {unanimous}/{total} unanimous"
+          + (f"; contested: {', '.join(contested)}" if contested else ""), file=sys.stderr)
+    return winner
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--champion", required=True)
@@ -1082,10 +1202,14 @@ def main() -> None:
     ap.add_argument("--risk-tolerance", choices=tuple(RISK_TOLERANCE), default="medium")
     ap.add_argument("--locked-items", default="", help="comma-separated item slugs to pin")
     ap.add_argument("--locked-runes", default="", help="comma-separated rune names to pin")
+    ap.add_argument("--runs", type=int, default=1,
+                    help="sample the model this many times and return the build the "
+                         "samples agree on (default 1: one sample, no vote)")
     args = ap.parse_args()
-    res = advise(args.champion, args.role,
+    res = advise_best_of(args.champion, args.role,
                  [e.strip() for e in args.enemies.split(",") if e.strip()],
-                 [a.strip() for a in args.allies.split(",") if a.strip()],
+                 runs=max(1, args.runs),
+                 allies=[a.strip() for a in args.allies.split(",") if a.strip()],
                  playstyle=args.playstyle, objective=args.objective, mode=args.mode,
                  risk_tolerance=args.risk_tolerance,
                  game_phase=args.game_phase, damage_path=args.damage_path,
