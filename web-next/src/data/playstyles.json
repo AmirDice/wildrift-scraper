@@ -13,12 +13,6 @@
       "prompt": "the BEST build specifically against the supplied enemy team -- adapt damage, penetration, defenses, boots, and utility to the matchup."
     },
     {
-      "key": "damage",
-      "label": "Glass cannon",
-      "description": "Maximum overall damage with minimal defensive investment.",
-      "prompt": "MAXIMUM DAMAGE (glass cannon): the highest-damage five items THIS kit can actually convert, offense over defense. Convert is the operative word -- an item is only damage if the kit's ratios, cast pattern and attack pattern make use of it. Do not buy a stat the champion cannot express just because the number on it is large."
-    },
-    {
       "key": "crit",
       "label": "Crit",
       "description": "Critical-strike scaling and high basic-attack damage.",
@@ -37,11 +31,11 @@
       "prompt": "ON-HIT: stack attack speed and on-hit effects, which only works on a kit that applies on-hit repeatedly. A champion who applies one empowered attack per rotation is NOT an on-hit champion, and reload or magazine kits convert attack speed poorly. If this champion cannot stack on-hit, say so rather than forcing the build."
     },
     {
-      "_note": "'burst' was a separate preset and asked for the same build as this one: delete a priority target in one rotation, penetration over sustain, accept the fragility. Two presets that produce the same five items are two ways to ask the same question, so they merged into this one and burst's honesty clause came with it. Legacy ids still resolve: build_advisor.advise aliases 'burst' to 'oneshot'.",
+      "_note": "Absorbed two presets that asked for the same build. 'burst' wanted a priority target deleted in one rotation, which is this. 'damage' (Glass cannon) wanted maximum damage with no defensive investment, which is also this: the same five items, arrived at from the other side. Both left their distinctive sentence behind -- burst's honesty clause and glass cannon's 'convert is the operative word'. Legacy ids resolve in build_advisor.advise: burst -> oneshot, damage -> oneshot, glass_cannon -> oneshot.",
       "key": "oneshot",
       "label": "One-shot",
-      "description": "Delete a priority target in one rotation, accepting very low durability.",
-      "prompt": "ONE-SHOT: kill a priority target inside ONE rotation from a committed engage, built around the damage THIS kit actually front-loads and the exact rotation it uses to open -- the items must be live at the moment that rotation lands. Lethality/magic penetration and raw damage over sustain, and penetration matters more than raw damage once the target has resistances. A kit whose damage arrives over several seconds is not made bursty by buying burst items: if this champion cannot kill inside one rotation, say so and build the closest honest thing."
+      "description": "Delete a priority target in one rotation, offense over defense.",
+      "prompt": "ONE-SHOT: kill a priority target inside ONE rotation from a committed engage, built around the damage THIS kit actually front-loads and the exact rotation it uses to open -- the items must be live at the moment that rotation lands. Offense over defense: lethality/magic penetration and raw damage over sustain, and penetration matters more than raw damage once the target has resistances. Convert is the operative word -- an item is only damage if the kit's ratios, cast pattern and attack pattern make use of it, so do not buy a stat the champion cannot express just because the number on it is large. A kit whose damage arrives over several seconds is not made bursty by buying burst items: if this champion cannot kill inside one rotation, say so and build the closest honest thing."
     },
     {
       "key": "splitpush",
@@ -89,12 +83,12 @@
   "byClass": {
     "Assassin": [
       "standard",
-      "damage",
-      "oneshot"
+      "oneshot",
+      "antitank"
     ],
     "Bruiser": [
       "standard",
-      "damage",
+      "oneshot",
       "dps",
       "splitpush",
       "vamp",
@@ -103,7 +97,7 @@
     ],
     "Fighter": [
       "standard",
-      "damage",
+      "oneshot",
       "dps",
       "splitpush",
       "vamp",
@@ -112,21 +106,20 @@
     ],
     "Marksman": [
       "standard",
-      "damage",
+      "oneshot",
       "crit",
       "dps",
       "onhit",
-      "oneshot",
       "kiting",
       "vamp",
       "antitank"
     ],
     "Mage": [
       "standard",
-      "damage",
       "oneshot",
       "poke",
-      "vamp"
+      "vamp",
+      "antitank"
     ],
     "Tank": [
       "standard",
@@ -144,14 +137,14 @@
   "overrides": {
     "Zed": [
       "standard",
-      "damage",
-      "oneshot"
+      "oneshot",
+      "antitank"
     ],
     "Akali": [
       "standard",
-      "damage",
       "oneshot",
-      "vamp"
+      "vamp",
+      "antitank"
     ],
     "Blitzcrank": [
       "standard",
@@ -161,18 +154,17 @@
     ],
     "Lucian": [
       "standard",
-      "damage",
+      "oneshot",
       "crit",
       "dps",
       "onhit",
-      "oneshot",
       "kiting",
       "vamp",
       "antitank"
     ],
     "Ambessa": [
       "standard",
-      "damage",
+      "oneshot",
       "dps",
       "splitpush",
       "vamp",

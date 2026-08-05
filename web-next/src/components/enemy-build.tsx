@@ -215,7 +215,7 @@ const NO_POKE = new Set(playstyleData.noPoke as string[]);
 
 function playstylesFor(champion: RosterChampion | undefined, mode: AdvisorMode): PlaystyleDefinition[] {
   const allowed = champion
-    ? [...(PLAYSTYLE_OVERRIDES[champion.name] ?? PLAYSTYLES_BY_CLASS[champion.class] ?? ["standard", "damage"])]
+    ? [...(PLAYSTYLE_OVERRIDES[champion.name] ?? PLAYSTYLES_BY_CLASS[champion.class] ?? ["standard", "oneshot"])]
     : ["standard"];
   // Poke comes from the champion's CLASS, which is too coarse for it: Mage,
   // Enchanter and Marksman all grant Poke and all contain champions who cannot

@@ -211,7 +211,7 @@ def available_playstyles(champion: str) -> list[str]:
     if champion in PLAYSTYLE_OVERRIDES:
         return PLAYSTYLE_OVERRIDES[champion]
     champ = CHAMPS.get(champion) or {}
-    styles = list(PLAYSTYLES_BY_CLASS.get(champ.get("class", ""), ["standard", "damage"]))
+    styles = list(PLAYSTYLES_BY_CLASS.get(champ.get("class", ""), ["standard", "oneshot"]))
     if champ.get("role") == "Support" and "utility" not in styles:
         styles.append("utility")
     return styles
@@ -714,12 +714,13 @@ def advise(champion: str, role: str, enemies: list[str],
     mode = "counter" if mode == "counter" else "studio"
     # Legacy playstyle aliases from older saved builds. 'sustain' predates the
     # split into damage variants; map it to the sustained-DPS preset (the app has
-    # no 'sustained_damage' id -- 'dps' is that build). 'burst' was a preset in
-    # its own right until it turned out to ask for the same build as one-shot;
-    # shared links, albums and cached keys still carry the id. Unknown ids fall
-    # through to the credibility check below.
+    # no 'sustained_damage' id -- 'dps' is that build). 'burst' and 'damage'
+    # (Glass cannon) were presets in their own right until both turned out to
+    # ask for the same build as one-shot; shared links, albums and cached keys
+    # still carry those ids. Unknown ids fall through to the check below.
     playstyle = {"sustain": "dps", "sustained_damage": "dps",
-                 "glass_cannon": "oneshot", "burst": "oneshot"}.get(playstyle, playstyle)
+                 "glass_cannon": "oneshot", "burst": "oneshot",
+                 "damage": "oneshot"}.get(playstyle, playstyle)
     if mode == "counter" and not enemies:
         return {"error": "at least one enemy is required for a counter build"}
     if mode == "counter" and playstyle == "standard":

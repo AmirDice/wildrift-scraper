@@ -204,12 +204,16 @@ class TestPlaystylePromptsDeferToTheKit:
     DEFINITIONS = {d["key"]: d for d in PLAYSTYLES["definitions"]}
 
     # Styles offered to more than one class, where the means genuinely differ.
-    CROSS_CLASS = ("vamp", "tanky", "oneshot", "damage", "utility")
+    CROSS_CLASS = ("vamp", "tanky", "oneshot", "antitank", "utility")
 
     def test_cross_class_styles_defer_the_mechanism_to_the_kit(self):
+        # Case-insensitive: these prompts capitalise THIS for emphasis wherever
+        # the deferral is the point, so "THIS champion's damage" is the phrase
+        # doing exactly what this test asks for and a case-sensitive match
+        # rejected it.
         for key in self.CROSS_CLASS:
-            prompt = self.DEFINITIONS[key]["prompt"]
-            assert "THIS kit" in prompt or "this champion" in prompt, (
+            prompt = self.DEFINITIONS[key]["prompt"].lower()
+            assert "this kit" in prompt or "this champion" in prompt, (
                 f"{key} states a mechanism without deferring to the kit, which is "
                 f"how Sustain came to ask a mage for lifesteal")
 
@@ -237,44 +241,63 @@ class TestPlaystylePromptsDeferToTheKit:
             assert len(entry["prompt"]) > 60, f"{key} is too terse to state an outcome"
 
 
-class TestBurstMergedIntoOneShot:
-    """Two presets asked for the same build, so one of them had to go.
+class TestPresetsMergedIntoOneShot:
+    """Three presets asked for the same build, so two of them had to go.
 
-    'Burst' and 'One-shot' both meant: delete a priority target in one
-    rotation, take penetration over sustain, accept the fragility. A player
-    choosing between them was choosing between two spellings of one request,
-    and the model got two near-identical instructions depending on which they
-    picked.
+    'Burst' meant: delete a priority target in one rotation, penetration over
+    sustain, accept the fragility. 'Glass cannon' (id `damage`) meant: maximum
+    damage, offense over defense, buy only what the kit converts. One-shot
+    means both. A player choosing between them was choosing between spellings
+    of one request, and the model got near-identical instructions depending on
+    which they picked.
     """
 
     DEFINITIONS = {d["key"]: d for d in PLAYSTYLES["definitions"]}
+    GONE = ("burst", "damage")
 
-    def test_burst_is_no_longer_offered(self):
-        assert "burst" not in self.DEFINITIONS
-        for group, lists in (("class", PLAYSTYLES["byClass"]),
-                             ("override", PLAYSTYLES["overrides"])):
-            for name, keys in lists.items():
-                assert "burst" not in keys, f"{group} {name} still offers burst"
+    def test_the_merged_presets_are_no_longer_offered(self):
+        for key in self.GONE:
+            assert key not in self.DEFINITIONS
+            for group, lists in (("class", PLAYSTYLES["byClass"]),
+                                 ("override", PLAYSTYLES["overrides"])):
+                for name, keys in lists.items():
+                    assert key not in keys, f"{group} {name} still offers {key}"
 
-    def test_every_class_that_offered_burst_still_has_the_one_rotation_build(self):
-        """Removing it must not leave Mages or Tanks with no way to ask for it."""
-        for name in ("Assassin", "Marksman", "Mage", "Tank"):
-            assert "oneshot" in PLAYSTYLES["byClass"][name]
+    def test_every_class_still_has_the_one_rotation_build(self):
+        """Removing them must not leave a class with no way to ask for damage.
+
+        Mage and Tank only ever had Burst; Bruiser and Fighter only ever had
+        Glass cannon. Without the swap each would have lost the request
+        entirely, which is a missing feature rather than a simplification.
+        """
+        for name in ("Assassin", "Marksman", "Mage", "Tank", "Bruiser", "Fighter"):
+            assert "oneshot" in PLAYSTYLES["byClass"][name], name
+
+    def test_assassins_and_mages_can_ask_for_anti_tank(self):
+        """Added when Glass cannon went: both classes meet frontlines and had
+        no preset that said so."""
+        for name in ("Assassin", "Mage"):
+            assert "antitank" in PLAYSTYLES["byClass"][name], name
+
+    def test_a_per_champion_override_did_not_miss_the_anti_tank_grant(self):
+        """An override REPLACES the class list, so an Assassin or Mage with one
+        keeps whatever it was frozen with unless it is updated too."""
+        for name in ("Zed", "Akali"):
+            assert "antitank" in PLAYSTYLES["overrides"][name], name
+
+    def test_the_survivor_kept_what_both_presets_contributed(self):
+        """Burst's escape hatch and Glass cannon's convertibility rule."""
+        prompt = self.DEFINITIONS["oneshot"]["prompt"].lower()
+        assert "cannot kill inside one rotation" in prompt
+        assert "convert is the operative word" in prompt
 
     def test_no_class_lists_the_same_playstyle_twice(self):
         for name, keys in PLAYSTYLES["byClass"].items():
             assert len(keys) == len(set(keys)), f"{name} has a duplicate playstyle"
 
-    def test_the_survivor_kept_the_honesty_clause(self):
-        """Burst's most useful sentence was the escape hatch: a kit whose damage
-        arrives over several seconds is not made bursty by buying burst items.
-        Dropping the preset must not drop that."""
-        prompt = self.DEFINITIONS["oneshot"]["prompt"].lower()
-        assert "cannot kill inside one rotation" in prompt
-        assert "one rotation" in prompt
-
-    def test_legacy_burst_requests_still_resolve(self):
-        """Shared links, albums and cache keys carry the old id."""
+    def test_legacy_requests_still_resolve(self):
+        """Shared links, albums and cache keys carry the old ids."""
         from web import build_advisor as adv
         assert adv.PLAYSTYLES.get("oneshot")
-        assert "burst" not in adv.PLAYSTYLES
+        for key in self.GONE:
+            assert key not in adv.PLAYSTYLES
