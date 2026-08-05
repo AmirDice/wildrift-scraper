@@ -800,6 +800,41 @@ def _score_rows(report: Report, res: dict, key: str, resolve, allowed) -> list[d
             continue
         entry["item"] = slug
         entry["score"] = score
+        entry["synergyWith"] = _clean_synergy(report, key, slug, entry, resolve)
         out.append(entry)
     res[key] = out
     return out
+
+
+def _clean_synergy(report: Report, key: str, slug: str, entry: dict, resolve) -> list[str]:
+    """Normalise one row's `synergyWith`.
+
+    Per-item scoring cannot express "this is worth more BECAUSE that is in the
+    build" -- Guinsoo's doubling every other on-hit item, Runaan's turning
+    single-target on-hit into AoE. Asking for it in prose produced nothing
+    measurable across 25 items; a field can at least be checked.
+
+    Cleaned, never failed. An unusable reference is dropped with a warning:
+    this list is commentary on the decision rather than the decision, and the
+    same reasoning applies as for the score rows themselves. What IS enforced
+    is that it cannot name garbage or point at itself.
+    """
+    raw = entry.get("synergyWith")
+    if raw in (None, ""):
+        return []
+    if not isinstance(raw, list):
+        report.warn(f"{key}: {slug} synergyWith was not a list; ignored")
+        return []
+    seen: list[str] = []
+    for ref in raw:
+        target = resolve(ref if isinstance(ref, str) else "")
+        if not target or not _completed_non_boots(target):
+            report.warn(f"{key}: {slug} claims synergy with {ref!r}, which is not a known "
+                        "completed non-boots item")
+            continue
+        if target == slug:
+            report.warn(f"{key}: {slug} lists itself in synergyWith")
+            continue
+        if target not in seen:
+            seen.append(target)
+    return seen

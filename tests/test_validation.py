@@ -670,3 +670,73 @@ class TestLadderCoreScoring:
     def test_no_core_means_no_new_requirement(self, build):
         assert check(build, ladder_core=None).ok
         assert check(build, ladder_core=[]).ok
+
+
+class TestItemToItemSynergyField:
+    """`synergyWith` exists because per-item scoring cannot express "this is
+    worth more BECAUSE that is in the build" -- Guinsoo's doubling every other
+    on-hit item, Runaan's turning single-target on-hit into AoE.
+
+    Asking for it in prose produced nothing measurable: zero of 25 scored
+    items across five champions named a partner. A field can be checked, which
+    is the same lesson the ladder-core scoring rule taught.
+
+    Cleaned, never failed: the list is commentary on the decision, not the
+    decision, so a bad reference is dropped with a warning rather than costing
+    a regeneration.
+    """
+
+    @staticmethod
+    def _partner(build):
+        """A real item that is NOT the first score row's own item."""
+        own = build["candidateItemScores"][0]["item"]
+        return next(r["item"] for r in build["candidateItemScores"][1:]
+                    if r["item"] != own)
+
+    def test_valid_references_survive(self, build):
+        partner = self._partner(build)
+        build["candidateItemScores"][0]["synergyWith"] = [partner]
+        report = check(build)
+        assert report.ok, report.flat()
+        assert build["candidateItemScores"][0]["synergyWith"] == [partner]
+
+    def test_an_unknown_slug_is_dropped_with_a_warning(self, build):
+        partner = self._partner(build)
+        build["candidateItemScores"][0]["synergyWith"] = [partner, "not-a-real-item"]
+        report = check(build)
+        assert report.ok, report.flat()
+        assert build["candidateItemScores"][0]["synergyWith"] == [partner]
+        assert any("not-a-real-item" in w for w in report.warnings)
+
+    def test_self_reference_is_dropped(self, build):
+        row = build["candidateItemScores"][0]
+        row["synergyWith"] = [row["item"]]
+        report = check(build)
+        assert report.ok, report.flat()
+        assert build["candidateItemScores"][0]["synergyWith"] == []
+        assert any("itself" in w for w in report.warnings)
+
+    def test_boots_cannot_be_a_synergy_target(self, build):
+        """candidateItemScores is a non-boots list; a boot reference here is a
+        category error, not a synergy."""
+        row = build["candidateItemScores"][0]
+        row["synergyWith"] = ["ionian-boots-of-lucidity"]
+        report = check(build)
+        assert report.ok, report.flat()
+        assert build["candidateItemScores"][0]["synergyWith"] == []
+
+    def test_absent_or_empty_normalises_to_a_list(self, build):
+        """An item genuinely can stand alone. Absent must not become a failure
+        -- and must not become None either, or the frontend has to guard it."""
+        build["candidateItemScores"][0].pop("synergyWith", None)
+        build["candidateItemScores"][1]["synergyWith"] = []
+        report = check(build)
+        assert report.ok, report.flat()
+        assert build["candidateItemScores"][0]["synergyWith"] == []
+        assert build["candidateItemScores"][1]["synergyWith"] == []
+
+    def test_duplicates_collapse(self, build):
+        partner = self._partner(build)
+        build["candidateItemScores"][0]["synergyWith"] = [partner, partner]
+        assert check(build).ok
+        assert build["candidateItemScores"][0]["synergyWith"] == [partner]

@@ -183,6 +183,21 @@ SYSTEM = (
     "10% gold efficiency and reliability. Subtract for redundancy with another item you "
     "chose, incompatible scaling, slow activation, or conditions that rarely occur.\n"
 
+    "ITEM-TO-ITEM SYNERGY IS A FIELD, NOT A FLOURISH. The synergy share above covers "
+    "BOTH directions -- item-to-kit and item-to-item -- and `synergyWith` is where the "
+    "second one is recorded. For every item you score, list the slugs of the items IN "
+    "YOUR FINAL FIVE that it multiplies, or that multiply it.\n"
+    "- A MULTIPLIER earns a score its own stat line cannot justify: extra on-hit "
+    "applications, added attack instances, an amplifier across a whole rotation. It "
+    "gets better with every partner, so list them all.\n"
+    "- The reverse holds. An item unlocked BY another is worth little without it; do "
+    "not score it as though the partner were bought unless you are buying it.\n"
+    "- Penetration, amplification and shred stack against the SAME target, so a second "
+    "source is worth LESS than the first. That is redundancy -- the negative case of "
+    "this same rule, not a separate one.\n"
+    "- Leave `synergyWith` empty when an item genuinely stands alone. [] is an honest "
+    "answer; naming an item you did not build is not.\n"
+
     "BUILD SCORE RUBRIC (0-100): 25% kit and scaling synergy, 20% purchase timing and "
     "power curve, 15% role and playstyle fit, 15% practical damage profile, 10% "
     "survivability and reliability, 10% usefulness across common or supplied "
@@ -194,7 +209,8 @@ SYSTEM = (
     "team, or a champion whose supplied data is flagged as incomplete.\n"
 
     "Return ONLY JSON:\n"
-    '{"candidateItemScores":[{"item":"<slug>","score":0-100,"reason":"..."}],'
+    '{"candidateItemScores":[{"item":"<slug>","score":0-100,"reason":"...",'
+    '"synergyWith":["<slug in your five that this multiplies or is multiplied by>"]}],'
     '"mandatoryAuditScores":[{"item":"<slug>","score":0-100,"reason":"..."}],'
     '"items":["<slug>", 5 in PURCHASE ORDER],'
     '"boots":"<tier-2 slug>","bootsUpgrade":"<tier-3 slug>",'
