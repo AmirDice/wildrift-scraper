@@ -154,10 +154,15 @@ type Body = {
  * comp constrains the answer enough that the samples have far less room to
  * disagree.
  *
+ * Five, not three, because three samples cannot hold a real vote: most items
+ * end up with exactly one vote, so a majority is not distinguishable from a
+ * coin flip. At five, a 2-vote item is a genuine minority and a 3-vote item is
+ * a genuine majority.
+ *
  * Set BUILD_CONSENSUS_RUNS=1 to turn it off without a code change. The advisor
  * clamps it to 5 whatever this says.
  */
-const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 3) || 1);
+const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 5) || 1);
 
 type AdvisorResult =
   | { ok: true; data: unknown }
