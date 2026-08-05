@@ -10,6 +10,12 @@ worklist instead of a hunt.
 Because the frames stay on disk, extraction is re-runnable: fix a prompt or a
 parser, run again, nothing needs re-scraping.
 
+Re-runnable is not the same as safe to re-run, though. A batch re-extraction
+walked into an API quota wall partway through, and the runs after it read ZERO
+win rates and wrote that straight over files holding 43 -- the frames survived,
+the extraction did not, and nothing warned. So a run that reads FEWER win rates
+than the file already on disk does not replace it; see `--force`.
+
 Run:
     python -m src.extract_frames data/captures/aatrox_20260802_1710
     python -m src.extract_frames data/captures/aatrox_20260802_1710 --engine tesseract
@@ -63,6 +69,24 @@ def _load_manifest(capture_dir: Path) -> list[dict]:
         except (json.JSONDecodeError, KeyError, ValueError):
             continue
     return [by_rank[r] for r in sorted(by_rank)]
+
+
+def _winrate_count(csv_path: Path) -> int:
+    """How many rows in an existing extraction actually carry a win rate.
+
+    The count, not the row count: a credit-starved run still writes 50 rows,
+    every one of them blank. That is the difference between an extraction that
+    exists and one that worked.
+    """
+    if not csv_path.exists():
+        return 0
+    import csv as _csv
+    try:
+        with csv_path.open(encoding="utf-8", newline="") as fh:
+            return sum(1 for row in _csv.DictReader(fh) if (row.get("winrate") or "").strip())
+    except (OSError, UnicodeDecodeError):
+        # An unreadable file is not evidence of good data worth protecting.
+        return 0
 
 
 def _norm_name(s: str) -> str:
@@ -177,6 +201,10 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=4, help="Parallel frame reads")
     parser.add_argument("--output", type=Path, default=None,
                         help="CSV path (default: <capture_dir>/extracted.csv)")
+    parser.add_argument("--force", action="store_true",
+                        help="Replace the existing CSV even when this run read fewer "
+                             "win rates than it already holds. Without this, a run that "
+                             "comes back emptier is kept aside instead of overwriting.")
     args = parser.parse_args()
 
     entries = _load_manifest(args.capture_dir)
@@ -341,9 +369,14 @@ def main() -> int:
             )
 
     # ---- write CSV + review worklist ----
-    if out_csv.exists():
-        out_csv.unlink()  # extraction is re-runnable; stale rows would duplicate
-    writer = CSVWriter(out_csv)
+    # Into a sidecar, not over the real file. Whether this run is an improvement
+    # is only knowable once it has finished, and by then the old rows are gone
+    # if it wrote in place.
+    prior = _winrate_count(out_csv)
+    staged_csv = out_csv.with_name(out_csv.name + ".new")
+    if staged_csv.exists():
+        staged_csv.unlink()
+    writer = CSVWriter(staged_csv)
     missing: list[dict] = []
     found = 0
     for e in entries:
@@ -545,6 +578,24 @@ def main() -> int:
                 unresolved = sum(1 for b in builds for n in (b.get("items") or [])
                                  if n and n != "?" and resolve_item(str(n)) is None)
                 print(f"builds.jsonl: {len(builds)} builds ({unresolved} unresolved item names)")
+
+    # Promote or keep. A run that read fewer win rates than the file already
+    # holds is a worse answer to the same question, and the usual cause is an
+    # exhausted API quota rather than anything about the frames.
+    regressed = found < prior and not args.force
+    if regressed:
+        print(f"\nextracted    : {found}/{len(entries)} ranks")
+        print(f"REFUSING to replace {out_csv.name}: it holds {prior} win rates and this "
+              f"run read {found}.", file=sys.stderr)
+        print(f"  kept  : {out_csv}", file=sys.stderr)
+        print(f"  staged: {staged_csv}   (delete it, or re-run with --force to promote)",
+              file=sys.stderr)
+        print("  an empty run usually means the extraction API is out of quota, not that "
+              "the frames are bad -- they are still on disk, so try again later.",
+              file=sys.stderr)
+        return 1
+    out_csv.unlink(missing_ok=True)
+    staged_csv.replace(out_csv)
 
     report = args.capture_dir / "needs_manual.txt"
     sections: list[str] = []
