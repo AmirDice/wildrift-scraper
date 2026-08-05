@@ -41,8 +41,36 @@ const runeIcon = (name: string): string | null => DATA.runes?.[name]?.icon ?? nu
  * of this (skipped for speed), so
  * the whole block simply renders nothing then.
  */
-function WhyRow({ icon, round, name, reason }: {
+/**
+ * The items this one multiplies, or is multiplied by.
+ *
+ * A per-item score cannot say "this is worth more BECAUSE that is also in the
+ * build", so the advisor returns the pairing as its own field and this renders
+ * it. Slugs outside the shown build are dropped: the field is defined over the
+ * final five, and naming a seventh item here reads as a mistake rather than as
+ * information.
+ */
+function Pairing({ partners, inBuild }: { partners: string[]; inBuild: Set<string> }) {
+  const shown = partners.filter((slug) => inBuild.has(slug));
+  if (shown.length === 0) return null;
+  return (
+    <span className="mt-1 flex flex-wrap items-center gap-1">
+      <span className="text-[0.6rem] font-bold uppercase tracking-wide text-faint">Pairs with</span>
+      {shown.map((slug) => (
+        <span key={slug}
+          className="inline-flex items-center gap-1 rounded-md bg-white/[0.06] py-0.5 pl-0.5 pr-1.5 text-[0.7rem] text-muted">
+          <img src={itemIcon(slug)} alt="" width={16} height={16}
+            className="rounded-sm ring-1 ring-white/10" loading="lazy" />
+          {itemName(slug)}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function WhyRow({ icon, round, name, reason, partners, inBuild }: {
   icon?: string | null; round?: boolean; name: string; reason: string;
+  partners?: string[]; inBuild?: Set<string>;
 }) {
   return (
     <li className="flex items-start gap-2.5">
@@ -55,6 +83,7 @@ function WhyRow({ icon, round, name, reason }: {
       <span className="min-w-0 text-sm text-muted">
         <span className="font-semibold text-text">{name}</span>
         {reason ? <> — {reason}</> : null}
+        {partners && inBuild ? <Pairing partners={partners} inBuild={inBuild} /> : null}
       </span>
     </li>
   );
@@ -110,11 +139,18 @@ function PlayGuide({ advice }: { advice: Advice }) {
 }
 
 function WhyThisBuild({ advice }: { advice: Advice }) {
-  const reasonBySlug = new Map(
-    (advice.candidateItemScores ?? []).map((row) => [row.item, row.reason]),
+  const scoreBySlug = new Map(
+    (advice.candidateItemScores ?? []).map((row) => [row.item, row]),
   );
+  const inBuild = new Set((advice.items ?? []).filter(Boolean));
   const itemRows = (advice.items ?? [])
-    .map((slug) => ({ icon: itemIcon(slug), name: itemName(slug), reason: reasonBySlug.get(slug) ?? "" }))
+    .map((slug) => ({
+      icon: itemIcon(slug),
+      name: itemName(slug),
+      reason: scoreBySlug.get(slug)?.reason ?? "",
+      partners: scoreBySlug.get(slug)?.synergyWith ?? [],
+      inBuild,
+    }))
     .filter((row) => row.reason);
 
   const bootSlug = advice.bootsUpgrade ?? advice.boots;
@@ -281,7 +317,9 @@ export type Advice = {
   } | null;
   /** Competitive comparison set, separate from the mandatory audit so the audit
    *  does not consume the candidate budget. */
-  candidateItemScores?: { item: string; score: number; reason: string }[];
+  /** `synergyWith` names the other items in the final five this one multiplies
+   *  or is multiplied by -- the pair claim a per-item score cannot carry. */
+  candidateItemScores?: { item: string; score: number; reason: string; synergyWith?: string[] }[];
   mandatoryAuditScores?: { item: string; score: number; reason: string }[];
   /** Legal-but-wasteful overlaps and thin inputs. Not failures. */
   validationWarnings?: string[];
@@ -433,7 +471,11 @@ function ItemTip({ slug, advice, children }: {
   slug: string; advice: Advice; children: React.ReactNode;
 }) {
   const stats = statLines(slug);
-  const reason = (advice.candidateItemScores ?? []).find((r) => r.item === slug)?.reason;
+  const row = (advice.candidateItemScores ?? []).find((r) => r.item === slug);
+  const reason = row?.reason;
+  // names only here, not icons: the tooltip is already narrow on a phone.
+  const inBuild = new Set((advice.items ?? []).filter(Boolean));
+  const pairs = (row?.synergyWith ?? []).filter((s) => inBuild.has(s) && s !== slug);
   return (
     <Tip
       tip={
@@ -442,6 +484,11 @@ function ItemTip({ slug, advice, children }: {
           <span className="text-gold"> · {itemCost(slug).toLocaleString()}g</span>
           {stats.length > 0 && <span className="mt-1 block text-accent">{stats.join(" · ")}</span>}
           {reason && <span className="mt-1 block text-muted">{reason}</span>}
+          {pairs.length > 0 && (
+            <span className="mt-1 block text-faint">
+              Pairs with {pairs.map(itemName).join(", ")}
+            </span>
+          )}
         </>
       }
     >
