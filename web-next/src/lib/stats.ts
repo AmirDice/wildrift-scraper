@@ -25,6 +25,12 @@ export const TRACKED_EVENTS = [
   "tour_completed",
   "tour_skipped",
   "signed_in",
+  // The bottom-right flagship nudge: shown / clicked / dismissed, so the
+  // question "does the nudge move anyone" is answered by counters rather
+  // than argued about.
+  "nudge_shown",
+  "nudge_clicked",
+  "nudge_dismissed",
 ] as const;
 
 export type TrackedEvent = (typeof TRACKED_EVENTS)[number];

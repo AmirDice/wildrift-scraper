@@ -6,7 +6,7 @@ import { TierChip } from "@/components/ui";
 import { ChampionCombobox } from "@/components/champion-combobox";
 import { BestPlayerBuild } from "@/components/best-player-build";
 import { Glyph, GLYPHS, Laurel } from "@/components/insignia";
-import { TierBadge, tierParts } from "@/components/tier-badge";
+import { TierBadge, tierParts, tierRank } from "@/components/tier-badge";
 import { QueuePanel } from "@/components/queue-panel";
 import type { QueueStats } from "@/lib/player-index";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
@@ -32,6 +32,10 @@ type EnrichedPlayer = Row & {
   level: number | null;
   /** Boosting advert: row kept, name and detail withheld. */
   hidden?: boolean | null;
+  /** Permabanned: row AND name kept, but the number does not count. The
+   *  opposite trade to `hidden`, and deliberately so. */
+  banned?: boolean | null;
+  banReason?: string | null;
   build: {
     items: { slug: string | null; name: string }[];
     runes: string[];
@@ -42,7 +46,44 @@ type EnrichedPlayer = Row & {
 
 type EnrichedPayload = { champion: string; slug: string; capturedAt: string; players: EnrichedPlayer[] };
 
-type SortKey = "r" | "w" | "g" | "s";
+type SortKey = "r" | "w" | "g" | "s" | "wilson" | "tier";
+
+/**
+ * Lower bound of the 95% Wilson score interval, as a percentage.
+ *
+ * Shown in the table as "Best", which is the site's existing word for it: the
+ * champion page has a "Best {champion} player" panel driven by this number and
+ * /methodology defines the term ("'Best' means demonstrably best, not luckily
+ * best"). Calling the column anything else would give one metric two names.
+ *
+ * Rendered as a whole number WITHOUT a percent sign, unlike the champion page
+ * which prints it as a percentage. It is a win rate mathematically, but here it
+ * sits directly beside the actual win rate, and "61.6%" next to "79.3%" made
+ * two different quantities look like the same one.
+ *
+ * A mirror of web/data_loader.py::_wilson_lower_bound, same z=1.96, because the
+ * site already picks each champion's "best player" this way. Two places
+ * computing "who is actually best" by different formulas would disagree on the
+ * same page.
+ *
+ * Why it beats sorting by win rate: 100% off 10 games ranks below 75% off 200,
+ * which is the honest ordering. Raw win rate puts the 10-game player on top and
+ * says nothing about whether the number will hold.
+ *
+ * Null when the win rate never extracted -- those rows sort last rather than
+ * being treated as 0%, which would claim the player lost every game.
+ */
+function wilsonScore(winratePct: number | null, games: number | null): number | null {
+  if (winratePct == null || games == null || games <= 0) return null;
+  const n = games;
+  const phat = Math.min(1, Math.max(0, winratePct / 100));
+  const z = 1.96;
+  const z2 = z * z;
+  const denom = 1 + z2 / n;
+  const centre = phat + z2 / (2 * n);
+  const margin = z * Math.sqrt((phat * (1 - phat) + z2 / (4 * n)) / n);
+  return Math.max(0, (centre - margin) / denom) * 100;
+}
 
 const num = (v: number | null | undefined) => (v == null ? -Infinity : v);
 
@@ -433,8 +474,9 @@ function ExpandedRow({ p, icons, runeIcons, spellIcons }: {
 }) {
   const runes = (p.build?.runes ?? []).filter((r) => runeIcons[r]);
   const spells = (p.build?.spells ?? []).filter((s) => spellIcons[s]);
+  // spans: rank, player, build, win rate, confidence, games, mastery, chevron
   return (
-    <td colSpan={7} className="px-4 pb-4 pt-1">
+    <td colSpan={8} className="px-4 pb-4 pt-1">
       <div className="flex flex-col gap-3">
         {p.build && (
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -536,9 +578,20 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
   const champ = champions.find((c) => c.slug === slug);
   const rows: (Row | EnrichedPlayer)[] = useMemo(() => {
     const base: (Row | EnrichedPlayer)[] = enriched?.players ?? data?.[slug] ?? [];
+    // Two of the sort keys are DERIVED rather than fields on the row: the
+    // Wilson bound from win rate and games, the tier ordinal from the tier
+    // string. Both return null for a row that cannot supply them, which `num`
+    // sorts last in either direction.
+    const key = (row: Row | EnrichedPlayer) => {
+      if (sortKey === "wilson") return wilsonScore(row.w, row.g);
+      if (sortKey === "tier") return tierRank((row as EnrichedPlayer).tier);
+      return row[sortKey];
+    };
     return [...base].sort((a, b) => {
-      const cmp = num(a[sortKey]) - num(b[sortKey]);
-      return dir === "asc" ? cmp : -cmp;
+      const cmp = num(key(a)) - num(key(b));
+      // Ties on the sort key fall back to rank, so the order is stable and
+      // reads sensibly instead of depending on the source array.
+      return (dir === "asc" ? cmp : -cmp) || a.r - b.r;
     });
   }, [data, enriched, slug, sortKey, dir]);
   const hasDetail = enriched != null && enriched.players.length > 0;
@@ -582,6 +635,25 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
       {/* What the whole top 50 agrees on, from the freshly captured data */}
       {hasDetail && <ChampionPulse payload={enriched} icons={itemIcons} runeIcons={runeIcons} spellIcons={spellIcons} />}
 
+      {/* What the Best column means, said where everyone can read it. The
+          column header carries the same text as a title attribute, but a
+          tooltip needs a hover and most of this page's readers are on a
+          phone. An expandable pill puts the one unfamiliar column a tap away
+          from its explanation. */}
+      <details className="group mb-3 inline-block">
+        <summary className="glass glass-hover inline-flex cursor-pointer list-none items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-muted">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-accent/20 text-[0.65rem] font-bold text-accent">?</span>
+          What does &ldquo;Best&rdquo; mean?
+        </summary>
+        <p className="mt-2 max-w-xl rounded-xl border border-line bg-black/30 p-3 text-xs leading-relaxed text-muted">
+          <span className="font-semibold text-text">Demonstrably best, not luckily best.</span>{" "}
+          The Best score asks how much of a win rate the games behind it actually back up:
+          100% over 10 games proves less than 75% over 200, so the second scores higher.
+          Sort by it to see who is genuinely strongest on this champion rather than who had
+          a lucky run. It is the same maths that picks the best player in the spotlight above.
+        </p>
+      </details>
+
       {/* Player table */}
       {data === null && !hasDetail ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">Loading players…</div>
@@ -599,14 +671,28 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
             <thead>
               <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
                 <Th onClick={() => toggleSort("r")} active={sortKey === "r"} dir={dir} className="w-10 text-center sm:w-16">
-                  <span className="hidden sm:inline">Rank</span>
+                  <span
+                    title="Position in the current sort. The smaller number below it, when shown, is the player's rank on the in-game leaderboard."
+                    className="hidden sm:inline"
+                  >
+                    Rank
+                  </span>
                   <span className="sm:hidden">#</span>
                 </Th>
-                <Th>Player</Th>
+                <Th onClick={() => toggleSort("tier")} active={sortKey === "tier"} dir={dir}>
+                  <span title="Sort by ranked tier. Legendary Ranked tiers sort above the standard ladder, since that queue is entered from the top of it.">
+                    Player
+                  </span>
+                </Th>
                 {hasDetail && <Th>Build</Th>}
                 <Th onClick={() => toggleSort("w")} active={sortKey === "w"} dir={dir} right>
                   <span className="hidden sm:inline">Win rate</span>
                   <span className="sm:hidden">WR</span>
+                </Th>
+                <Th onClick={() => toggleSort("wilson")} active={sortKey === "wilson"} dir={dir} right className="hidden sm:table-cell">
+                  <span title="Demonstrably best, not luckily best. A player at 100% from 10 games has shown less than one at 75% from 200, so the second scores higher. Same formula that picks each champion's best player; the spotlight additionally requires enough games to qualify.">
+                    Best
+                  </span>
                 </Th>
                 <Th onClick={() => toggleSort("g")} active={sortKey === "g"} dir={dir} right className="hidden sm:table-cell">
                   Games
@@ -628,10 +714,28 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
                       onClick={clickable ? () => setExpanded(open ? null : row.r) : undefined}
                       className={`border-b border-line/60 transition last:border-0 hover:bg-white/[0.03] ${clickable ? "cursor-pointer" : ""} ${open ? "bg-white/[0.03]" : ""}`}
                     >
+                      {/* Position in the CURRENT ordering, always 1..N. It used
+                          to show the in-game rank, which reads as scrambled the
+                          moment you sort by anything else: "24, 1, 38, 2" is
+                          correct and looks broken.
+
+                          The board rank is still a real fact, so it sits under
+                          the position whenever the two differ. Sorted by rank
+                          they agree and the second line is not drawn -- except
+                          where a snap-back duplicate was dropped, which leaves
+                          a genuine gap in the board and is worth seeing. */}
                       <td className="px-1.5 py-2.5 text-center sm:px-3">
-                        <span className={row.r <= 3 ? "font-bold text-accent" : "text-faint"}>
-                          {row.r}
+                        <span className={i < 3 ? "font-bold text-accent" : "text-faint"}>
+                          {i + 1}
                         </span>
+                        {row.r !== i + 1 && (
+                          <span
+                            className="block text-[0.6rem] leading-tight text-faint"
+                            title={`Rank ${row.r} on the in-game leaderboard`}
+                          >
+                            #{row.r}
+                          </span>
+                        )}
                       </td>
                       <td className="max-w-[98px] px-1.5 py-2.5 sm:max-w-[240px] sm:px-3">
                         <span
@@ -642,9 +746,17 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
                         >
                           {row.p}
                         </span>
-                        {e?.tier && (
-                          <span className="mt-0.5 flex items-center">
-                            <TierBadge tier={e.tier} />
+                        {(e?.tier || e?.banned) && (
+                          <span className="mt-0.5 flex flex-wrap items-center gap-1">
+                            {e?.tier && <TierBadge tier={e.tier} />}
+                            {e?.banned && (
+                              <span
+                                title="This account has been permanently banned. Its row is shown as the game showed it, but its games are excluded from champion win rates and records."
+                                className="rounded px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-bad ring-1 ring-bad/40"
+                              >
+                                Permabanned
+                              </span>
+                            )}
                           </span>
                         )}
                       </td>
@@ -669,7 +781,30 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
                         </td>
                       )}
                       <td className="px-2 py-2.5 text-right font-semibold text-accent sm:px-3">
-                        {row.w != null ? `${row.w.toFixed(1)}%` : "-"}
+                        {row.w != null ? (
+                          `${row.w.toFixed(1)}%`
+                        ) : (
+                          // The rank was captured but its win rate never read.
+                          // A bare dash reads as "this player has no games";
+                          // this says the number is missing, not zero, and it
+                          // is what makes the row worth showing at all.
+                          <span
+                            title="The win rate for this rank could not be read from the capture. The player and their rank are correct; the number needs filling in by hand."
+                            className="cursor-help font-normal text-faint"
+                          >
+                            not read
+                          </span>
+                        )}
+                      </td>
+                      <td className="hidden px-3 py-2.5 text-right text-muted sm:table-cell">
+                        {(() => {
+                          const wl = wilsonScore(row.w, row.g);
+                          return wl != null ? (
+                            <span title={`Win rate ${row.w?.toFixed(1)}% over ${row.g} games`}>
+                              {Math.round(wl)}
+                            </span>
+                          ) : "-";
+                        })()}
                       </td>
                       <td className="hidden px-3 py-2.5 text-right text-muted sm:table-cell">
                         {row.g != null ? row.g.toLocaleString() : "-"}

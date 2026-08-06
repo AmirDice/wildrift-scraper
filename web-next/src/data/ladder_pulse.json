@@ -1,1099 +1,1188 @@
 {
- "generatedAt": "2026-08-05 00:30",
- "nChampions": 15,
- "nPlayers": 733,
- "nBuilds": 746,
+ "generatedAt": "2026-08-06 19:23",
+ "nChampions": 140,
+ "nPlayers": 6814,
+ "nBuilds": 6970,
  "itemMeta": [
-  {
-   "slug": "seryldas-grudge",
-   "name": "Serylda's Grudge",
-   "count": 209
-  },
-  {
-   "slug": "amaranths-twinguard",
-   "name": "Amaranth's Twinguard",
-   "count": 188
-  },
   {
    "slug": "rabadons-deathcap",
    "name": "Rabadon's Deathcap",
-   "count": 149
+   "count": 2157
   },
   {
    "slug": "spellslingers-shoes",
    "name": "Spellslinger's Shoes",
-   "count": 142
-  },
-  {
-   "slug": "thornmail",
-   "name": "Thornmail",
-   "count": 141
-  },
-  {
-   "slug": "gunmetal-greaves",
-   "name": "Gunmetal Greaves",
-   "count": 135
-  },
-  {
-   "slug": "immortal-treads",
-   "name": "Immortal Treads",
-   "count": 133
+   "count": 2076
   },
   {
    "slug": "infinity-orb",
    "name": "Infinity Orb",
-   "count": 121
+   "count": 1558
   },
   {
-   "slug": "trinity-force",
-   "name": "Trinity Force",
-   "count": 114
-  },
-  {
-   "slug": "serpents-fang",
-   "name": "Serpent's Fang",
-   "count": 113
+   "slug": "amaranths-twinguard",
+   "name": "Amaranth's Twinguard",
+   "count": 1385
   },
   {
    "slug": "armored-advance",
    "name": "Armored Advance",
-   "count": 112
+   "count": 1236
   },
   {
-   "slug": "guardian-angel",
-   "name": "Guardian Angel",
-   "count": 112
+   "slug": "void-staff",
+   "name": "Void Staff",
+   "count": 1125
   },
   {
-   "slug": "eclipse",
-   "name": "Eclipse",
-   "count": 106
+   "slug": "immortal-treads",
+   "name": "Immortal Treads",
+   "count": 973
   },
   {
-   "slug": "spear-of-shojin",
-   "name": "Spear of Shojin",
-   "count": 106
-  },
-  {
-   "slug": "duskblade-of-draktharr",
-   "name": "Duskblade of Draktharr",
-   "count": 105
-  },
-  {
-   "slug": "blade-of-the-ruined-king",
-   "name": "Blade of the Ruined King",
-   "count": 103
-  },
-  {
-   "slug": "mortal-reminder",
-   "name": "Mortal Reminder",
-   "count": 99
-  },
-  {
-   "slug": "magnetic-blaster",
-   "name": "Magnetic Blaster",
-   "count": 92
-  },
-  {
-   "slug": "armorcrusher-boots",
-   "name": "Armorcrusher Boots",
-   "count": 85
+   "slug": "trinity-force",
+   "name": "Trinity Force",
+   "count": 933
   },
   {
    "slug": "infinity-edge",
    "name": "Infinity Edge",
-   "count": 83
+   "count": 927
+  },
+  {
+   "slug": "blade-of-the-ruined-king",
+   "name": "Blade of the Ruined King",
+   "count": 891
+  },
+  {
+   "slug": "thornmail",
+   "name": "Thornmail",
+   "count": 870
+  },
+  {
+   "slug": "guardian-angel",
+   "name": "Guardian Angel",
+   "count": 861
+  },
+  {
+   "slug": "gunmetal-greaves",
+   "name": "Gunmetal Greaves",
+   "count": 857
+  },
+  {
+   "slug": "mortal-reminder",
+   "name": "Mortal Reminder",
+   "count": 736
+  },
+  {
+   "slug": "seryldas-grudge",
+   "name": "Serylda's Grudge",
+   "count": 680
+  },
+  {
+   "slug": "bloodthirster",
+   "name": "Bloodthirster",
+   "count": 658
+  },
+  {
+   "slug": "banshees-veil",
+   "name": "Banshee's Veil",
+   "count": 642
+  },
+  {
+   "slug": "deaths-dance",
+   "name": "Death's Dance",
+   "count": 602
+  },
+  {
+   "slug": "liandrys-torment",
+   "name": "Liandry's Torment",
+   "count": 563
+  },
+  {
+   "slug": "magnetic-blaster",
+   "name": "Magnetic Blaster",
+   "count": 554
   }
  ],
  "keystoneMeta": [
   {
    "name": "Conqueror",
-   "count": 173
+   "count": 1422
   },
   {
    "name": "Lethal Tempo",
-   "count": 146
+   "count": 701
   },
   {
    "name": "Ice Overlord",
-   "count": 95
-  },
-  {
-   "name": "First Strike",
-   "count": 93
-  },
-  {
-   "name": "Phase Rush",
-   "count": 75
+   "count": 696
   },
   {
    "name": "Electrocute",
-   "count": 44
+   "count": 624
   },
   {
    "name": "Grasp of the Undying",
-   "count": 38
-  },
-  {
-   "name": "Arcane Comet",
-   "count": 35
-  },
-  {
-   "name": "Dark Harvest",
-   "count": 32
+   "count": 585
   },
   {
    "name": "Fleet Footwork",
-   "count": 11
+   "count": 528
+  },
+  {
+   "name": "Phase Rush",
+   "count": 463
+  },
+  {
+   "name": "First Strike",
+   "count": 455
+  },
+  {
+   "name": "Dark Harvest",
+   "count": 430
+  },
+  {
+   "name": "Aery",
+   "count": 408
   }
  ],
  "spellMeta": [
   {
-   "pair": "Flash + Smite",
-   "count": 216
-  },
-  {
    "pair": "Flash + Ignite",
-   "count": 197
+   "count": 2227
   },
   {
-   "pair": "Flash + Ghost",
-   "count": 94
-  },
-  {
-   "pair": "Ghost + Smite",
-   "count": 91
+   "pair": "Flash + Smite",
+   "count": 1187
   },
   {
    "pair": "Barrier + Flash",
-   "count": 68
+   "count": 1065
+  },
+  {
+   "pair": "Flash + Heal",
+   "count": 698
+  },
+  {
+   "pair": "Flash + Ghost",
+   "count": 685
   },
   {
    "pair": "Flash + Teleport",
-   "count": 23
+   "count": 376
   }
  ],
  "treeMeta": [
   {
-   "name": "Precision",
-   "count": 858,
-   "wr": 59.71
+   "name": "Resolve",
+   "count": 8838,
+   "wr": 59.19
   },
   {
-   "name": "Resolve",
-   "count": 840,
-   "wr": 59.64
+   "name": "Precision",
+   "count": 8229,
+   "wr": 59.29
   },
   {
    "name": "Sorcery",
-   "count": 657,
-   "wr": 60.54
+   "count": 5917,
+   "wr": 59.61
   },
   {
    "name": "Domination",
-   "count": 624,
-   "wr": 59.29
+   "count": 4866,
+   "wr": 59.32
   }
  ],
  "keystoneAll": [
   {
    "name": "Conqueror",
-   "count": 173,
-   "wr": 59.58
+   "count": 1422,
+   "wr": 59.51
   },
   {
    "name": "Lethal Tempo",
-   "count": 146,
-   "wr": 59.24
+   "count": 701,
+   "wr": 58.64
   },
   {
    "name": "Ice Overlord",
-   "count": 95,
-   "wr": 61.74
-  },
-  {
-   "name": "First Strike",
-   "count": 93,
-   "wr": 59.16
-  },
-  {
-   "name": "Phase Rush",
-   "count": 75,
-   "wr": 64.62
+   "count": 696,
+   "wr": 59.42
   },
   {
    "name": "Electrocute",
-   "count": 44,
-   "wr": 57.19
+   "count": 624,
+   "wr": 58.87
   },
   {
    "name": "Grasp of the Undying",
-   "count": 38,
-   "wr": 56.33
-  },
-  {
-   "name": "Arcane Comet",
-   "count": 35,
-   "wr": 59.86
-  },
-  {
-   "name": "Dark Harvest",
-   "count": 32,
-   "wr": 58.46
+   "count": 585,
+   "wr": 58.87
   },
   {
    "name": "Fleet Footwork",
-   "count": 11,
-   "wr": 62.09
+   "count": 528,
+   "wr": 60.5
+  },
+  {
+   "name": "Phase Rush",
+   "count": 463,
+   "wr": 59.47
+  },
+  {
+   "name": "First Strike",
+   "count": 455,
+   "wr": 59.92
+  },
+  {
+   "name": "Dark Harvest",
+   "count": 430,
+   "wr": 59.65
   },
   {
    "name": "Aery",
-   "count": 3,
-   "wr": null
+   "count": 408,
+   "wr": 58.61
+  },
+  {
+   "name": "Arcane Comet",
+   "count": 337,
+   "wr": 59.04
+  },
+  {
+   "name": "Empowerment",
+   "count": 248,
+   "wr": 59.7
   }
  ],
  "minorMeta": [
   {
-   "name": "Sudden Impact",
-   "count": 241,
-   "tree": "Domination",
-   "wr": 59.43
-  },
-  {
-   "name": "Overgrowth",
-   "count": 201,
+   "name": "Bone Plating",
+   "count": 2306,
    "tree": "Resolve",
-   "wr": 60.1
-  },
-  {
-   "name": "Transcendence",
-   "count": 201,
-   "tree": "Sorcery",
-   "wr": 61.13
+   "wr": 59.19
   },
   {
    "name": "Cut Down",
-   "count": 183,
+   "count": 1830,
    "tree": "Precision",
-   "wr": 59.59
+   "wr": 59.44
   },
   {
-   "name": "Bone Plating",
-   "count": 181,
-   "tree": "Resolve",
-   "wr": 58.8
+   "name": "Sudden Impact",
+   "count": 1658,
+   "tree": "Domination",
+   "wr": 59.34
   },
   {
-   "name": "Second Wind",
-   "count": 178,
-   "tree": "Resolve",
-   "wr": 59.9
+   "name": "Transcendence",
+   "count": 1636,
+   "tree": "Sorcery",
+   "wr": 59.66
   },
   {
    "name": "Legend: Alacrity",
-   "count": 168,
+   "count": 1572,
    "tree": "Precision",
-   "wr": 59.17
-  },
-  {
-   "name": "Nimbus Cloak",
-   "count": 165,
-   "tree": "Sorcery",
-   "wr": 60.39
+   "wr": 59.46
   },
   {
    "name": "Brutal",
-   "count": 160,
+   "count": 1550,
    "tree": "Precision",
-   "wr": 59.59
+   "wr": 59.14
   },
   {
-   "name": "Eyeball Collector",
-   "count": 128,
-   "tree": "Domination",
-   "wr": 58.86
-  },
-  {
-   "name": "Unshakeable",
-   "count": 121,
+   "name": "Second Wind",
+   "count": 1441,
    "tree": "Resolve",
-   "wr": 60.28
+   "wr": 59.02
+  },
+  {
+   "name": "Overgrowth",
+   "count": 1397,
+   "tree": "Resolve",
+   "wr": 59.18
   },
   {
    "name": "Legend: Bloodline",
-   "count": 98,
+   "count": 1025,
    "tree": "Precision",
-   "wr": 62.82
+   "wr": 59.65
   },
   {
-   "name": "Chain Assault",
-   "count": 76,
+   "name": "Eyeball Collector",
+   "count": 983,
    "tree": "Domination",
-   "wr": 60.2
+   "wr": 58.97
   },
   {
-   "name": "Battle Zeal",
-   "count": 71,
-   "tree": "Precision",
-   "wr": 58.36
-  },
-  {
-   "name": "Axiom Arcanist",
-   "count": 69,
-   "tree": "Sorcery",
-   "wr": 63.67
-  },
-  {
-   "name": "Manaflow Band",
-   "count": 65,
-   "tree": "Sorcery",
-   "wr": 58.54
-  },
-  {
-   "name": "Tyrant",
-   "count": 64,
-   "tree": "Domination",
-   "wr": 58.48
-  },
-  {
-   "name": "Last Stand",
-   "count": 58,
-   "tree": "Precision",
-   "wr": 58.78
-  },
-  {
-   "name": "Absolute Focus",
-   "count": 57,
-   "tree": "Sorcery",
-   "wr": 59.26
+   "name": "Unshakeable",
+   "count": 960,
+   "tree": "Resolve",
+   "wr": 59.94
   },
   {
    "name": "Perseverance",
-   "count": 54,
+   "count": 896,
    "tree": "Resolve",
-   "wr": 60.84
+   "wr": 59.6
   },
   {
-   "name": "Demolish",
-   "count": 50,
-   "tree": "Resolve",
-   "wr": 57.6
-  },
-  {
-   "name": "Legend: Tenacity",
-   "count": 49,
+   "name": "Battle Zeal",
+   "count": 787,
    "tree": "Precision",
-   "wr": 60.91
+   "wr": 59.25
   },
   {
-   "name": "Coup de Grace",
-   "count": 44,
-   "tree": "Precision",
-   "wr": 59.77
-  },
-  {
-   "name": "Courage of the Colossus",
-   "count": 40,
-   "tree": "Resolve",
-   "wr": 60.36
-  },
-  {
-   "name": "Zombie Ward",
-   "count": 37,
+   "name": "Chain Assault",
+   "count": 786,
    "tree": "Domination",
-   "wr": 61.67
+   "wr": 59.27
   },
   {
-   "name": "Cheap Shot",
-   "count": 34,
-   "tree": "Domination",
-   "wr": 57.93
+   "name": "Absolute Focus",
+   "count": 676,
+   "tree": "Sorcery",
+   "wr": 59.87
+  },
+  {
+   "name": "Axiom Arcanist",
+   "count": 631,
+   "tree": "Sorcery",
+   "wr": 59.0
+  },
+  {
+   "name": "Nimbus Cloak",
+   "count": 624,
+   "tree": "Sorcery",
+   "wr": 59.55
   },
   {
    "name": "Gathering Storm",
-   "count": 33,
+   "count": 604,
    "tree": "Sorcery",
-   "wr": 58.54
+   "wr": 60.32
+  },
+  {
+   "name": "Demolish",
+   "count": 564,
+   "tree": "Resolve",
+   "wr": 58.28
+  },
+  {
+   "name": "Coup de Grace",
+   "count": 538,
+   "tree": "Precision",
+   "wr": 58.86
+  },
+  {
+   "name": "Manaflow Band",
+   "count": 488,
+   "tree": "Sorcery",
+   "wr": 59.72
   },
   {
    "name": "Scorch",
-   "count": 31,
+   "count": 434,
    "tree": "Sorcery",
-   "wr": 59.8
-  },
-  {
-   "name": "Triumph",
-   "count": 27,
-   "tree": "Precision",
-   "wr": 58.6
-  },
-  {
-   "name": "Hubris",
-   "count": 27,
-   "tree": "Domination",
-   "wr": 60.17
-  },
-  {
-   "name": "Botanist",
-   "count": 23,
-   "tree": "Sorcery",
-   "wr": 60.93
-  },
-  {
-   "name": "Celerity",
-   "count": 9,
-   "tree": "Sorcery",
-   "wr": 59.26
-  },
-  {
-   "name": "Nullifying Orb",
-   "count": 6,
-   "tree": "Resolve",
-   "wr": 58.38
-  },
-  {
-   "name": "Ingenious Hunter",
-   "count": 6,
-   "tree": "Domination",
-   "wr": 60.53
-  },
-  {
-   "name": "Relentless Hunter",
-   "count": 6,
-   "tree": "Domination",
-   "wr": 56.45
+   "wr": 58.49
   },
   {
    "name": "Revitalize",
-   "count": 5,
+   "count": 419,
    "tree": "Resolve",
-   "wr": 62.05
+   "wr": 58.81
   },
   {
-   "name": "Empowered Attack",
-   "count": 5,
+   "name": "Courage of the Colossus",
+   "count": 396,
+   "tree": "Resolve",
+   "wr": 58.61
+  },
+  {
+   "name": "Last Stand",
+   "count": 389,
+   "tree": "Precision",
+   "wr": 59.41
+  },
+  {
+   "name": "Tyrant",
+   "count": 381,
    "tree": "Domination",
-   "wr": 57.08
+   "wr": 59.25
+  },
+  {
+   "name": "Cheap Shot",
+   "count": 337,
+   "tree": "Domination",
+   "wr": 58.52
+  },
+  {
+   "name": "Zombie Ward",
+   "count": 326,
+   "tree": "Domination",
+   "wr": 60.83
   },
   {
    "name": "Font of Life",
-   "count": 4,
+   "count": 322,
    "tree": "Resolve",
-   "wr": 52.98
-  },
-  {
-   "name": "Ixtali Seedjar",
-   "count": 3,
-   "tree": "Sorcery",
-   "wr": 57.02
+   "wr": 59.17
   },
   {
    "name": "Hextech Flashtraption",
-   "count": 1,
+   "count": 315,
    "tree": "Sorcery",
-   "wr": null
+   "wr": 59.37
+  },
+  {
+   "name": "Triumph",
+   "count": 310,
+   "tree": "Precision",
+   "wr": 58.43
+  },
+  {
+   "name": "Celerity",
+   "count": 231,
+   "tree": "Sorcery",
+   "wr": 59.53
+  },
+  {
+   "name": "Legend: Tenacity",
+   "count": 228,
+   "tree": "Precision",
+   "wr": 58.77
+  },
+  {
+   "name": "Botanist",
+   "count": 210,
+   "tree": "Sorcery",
+   "wr": 61.08
+  },
+  {
+   "name": "Nullifying Orb",
+   "count": 137,
+   "tree": "Resolve",
+   "wr": 59.62
+  },
+  {
+   "name": "Hubris",
+   "count": 134,
+   "tree": "Domination",
+   "wr": 59.5
+  },
+  {
+   "name": "Empowered Attack",
+   "count": 123,
+   "tree": "Domination",
+   "wr": 60.32
+  },
+  {
+   "name": "Ingenious Hunter",
+   "count": 76,
+   "tree": "Domination",
+   "wr": 59.23
+  },
+  {
+   "name": "Ixtali Seedjar",
+   "count": 68,
+   "tree": "Sorcery",
+   "wr": 60.19
+  },
+  {
+   "name": "Relentless Hunter",
+   "count": 62,
+   "tree": "Domination",
+   "wr": 60.54
   }
  ],
  "itemAll": [
   {
-   "slug": "seryldas-grudge",
-   "name": "Serylda's Grudge",
-   "count": 209,
-   "wr": 61.63
-  },
-  {
-   "slug": "amaranths-twinguard",
-   "name": "Amaranth's Twinguard",
-   "count": 188,
-   "wr": 61.03
-  },
-  {
    "slug": "rabadons-deathcap",
    "name": "Rabadon's Deathcap",
-   "count": 149,
-   "wr": 58.19
+   "count": 2157,
+   "wr": 59.19
   },
   {
    "slug": "spellslingers-shoes",
    "name": "Spellslinger's Shoes",
-   "count": 142,
-   "wr": 58.26
-  },
-  {
-   "slug": "thornmail",
-   "name": "Thornmail",
-   "count": 141,
-   "wr": 60.0
-  },
-  {
-   "slug": "gunmetal-greaves",
-   "name": "Gunmetal Greaves",
-   "count": 135,
-   "wr": 59.38
-  },
-  {
-   "slug": "immortal-treads",
-   "name": "Immortal Treads",
-   "count": 133,
-   "wr": 62.38
+   "count": 2076,
+   "wr": 59.13
   },
   {
    "slug": "infinity-orb",
    "name": "Infinity Orb",
-   "count": 121,
-   "wr": 57.98
+   "count": 1558,
+   "wr": 58.92
   },
   {
-   "slug": "trinity-force",
-   "name": "Trinity Force",
-   "count": 114,
-   "wr": 62.31
-  },
-  {
-   "slug": "serpents-fang",
-   "name": "Serpent's Fang",
-   "count": 113,
-   "wr": 59.31
+   "slug": "amaranths-twinguard",
+   "name": "Amaranth's Twinguard",
+   "count": 1385,
+   "wr": 59.32
   },
   {
    "slug": "armored-advance",
    "name": "Armored Advance",
-   "count": 112,
-   "wr": 58.01
-  },
-  {
-   "slug": "guardian-angel",
-   "name": "Guardian Angel",
-   "count": 112,
-   "wr": 60.01
-  },
-  {
-   "slug": "eclipse",
-   "name": "Eclipse",
-   "count": 106,
-   "wr": 59.07
-  },
-  {
-   "slug": "spear-of-shojin",
-   "name": "Spear of Shojin",
-   "count": 106,
-   "wr": 62.94
-  },
-  {
-   "slug": "duskblade-of-draktharr",
-   "name": "Duskblade of Draktharr",
-   "count": 105,
-   "wr": 60.6
-  },
-  {
-   "slug": "blade-of-the-ruined-king",
-   "name": "Blade of the Ruined King",
-   "count": 103,
-   "wr": 59.67
-  },
-  {
-   "slug": "mortal-reminder",
-   "name": "Mortal Reminder",
-   "count": 99,
-   "wr": 59.39
-  },
-  {
-   "slug": "magnetic-blaster",
-   "name": "Magnetic Blaster",
-   "count": 92,
-   "wr": 58.35
-  },
-  {
-   "slug": "armorcrusher-boots",
-   "name": "Armorcrusher Boots",
-   "count": 85,
-   "wr": 59.64
-  },
-  {
-   "slug": "infinity-edge",
-   "name": "Infinity Edge",
-   "count": 83,
-   "wr": 60.16
-  },
-  {
-   "slug": "banshees-veil",
-   "name": "Banshee's Veil",
-   "count": 83,
-   "wr": 58.2
-  },
-  {
-   "slug": "chainlaced-crushers",
-   "name": "Chainlaced Crushers",
-   "count": 76,
-   "wr": 62.35
-  },
-  {
-   "slug": "deaths-dance",
-   "name": "Death's Dance",
-   "count": 76,
-   "wr": 60.9
-  },
-  {
-   "slug": "ludens-echo",
-   "name": "Luden's Echo",
-   "count": 75,
-   "wr": 57.88
+   "count": 1236,
+   "wr": 58.59
   },
   {
    "slug": "void-staff",
    "name": "Void Staff",
-   "count": 75,
-   "wr": 58.62
+   "count": 1125,
+   "wr": 58.99
   },
   {
-   "slug": "hollow-radiance",
-   "name": "Hollow Radiance",
-   "count": 71,
-   "wr": 60.59
+   "slug": "immortal-treads",
+   "name": "Immortal Treads",
+   "count": 973,
+   "wr": 59.94
   },
   {
-   "slug": "searing-crown",
-   "name": "Searing Crown",
-   "count": 69,
-   "wr": 61.94
+   "slug": "trinity-force",
+   "name": "Trinity Force",
+   "count": 933,
+   "wr": 60.63
   },
   {
-   "slug": "essence-reaver",
-   "name": "Essence Reaver",
-   "count": 69,
-   "wr": 60.36
+   "slug": "infinity-edge",
+   "name": "Infinity Edge",
+   "count": 927,
+   "wr": 59.21
   },
   {
-   "slug": "youmuus-ghostblade",
-   "name": "Youmuu's Ghostblade",
-   "count": 64,
-   "wr": 60.43
+   "slug": "blade-of-the-ruined-king",
+   "name": "Blade of the Ruined King",
+   "count": 891,
+   "wr": 59.72
   },
   {
-   "slug": "manamune",
-   "name": "Manamune",
-   "count": 63,
-   "wr": 66.44
+   "slug": "thornmail",
+   "name": "Thornmail",
+   "count": 870,
+   "wr": 58.94
   },
   {
-   "slug": "edge-of-night",
-   "name": "Edge of Night",
-   "count": 60,
-   "wr": 59.67
+   "slug": "guardian-angel",
+   "name": "Guardian Angel",
+   "count": 861,
+   "wr": 59.59
+  },
+  {
+   "slug": "gunmetal-greaves",
+   "name": "Gunmetal Greaves",
+   "count": 857,
+   "wr": 58.99
+  },
+  {
+   "slug": "mortal-reminder",
+   "name": "Mortal Reminder",
+   "count": 736,
+   "wr": 58.9
+  },
+  {
+   "slug": "seryldas-grudge",
+   "name": "Serylda's Grudge",
+   "count": 680,
+   "wr": 61.09
   },
   {
    "slug": "bloodthirster",
    "name": "Bloodthirster",
-   "count": 57,
-   "wr": 58.8
+   "count": 658,
+   "wr": 58.84
   },
   {
-   "slug": "randuins-omen",
-   "name": "Randuin's Omen",
-   "count": 56,
-   "wr": 61.79
+   "slug": "banshees-veil",
+   "name": "Banshee's Veil",
+   "count": 642,
+   "wr": 59.81
   },
   {
-   "slug": "lord-dominiks-regard",
-   "name": "Lord Dominik's Regard",
-   "count": 55,
-   "wr": 60.3
-  },
-  {
-   "slug": "horizon-focus",
-   "name": "Horizon Focus",
-   "count": 54,
-   "wr": 58.43
-  },
-  {
-   "slug": "force-of-nature",
-   "name": "Force of Nature",
-   "count": 51,
-   "wr": 58.64
-  },
-  {
-   "slug": "the-collector",
-   "name": "The Collector",
-   "count": 48,
-   "wr": 59.35
-  },
-  {
-   "slug": "runaans-hurricane",
-   "name": "Runaan's Hurricane",
-   "count": 47,
-   "wr": 58.59
-  },
-  {
-   "slug": "guinsoos-rageblade",
-   "name": "Guinsoo's Rageblade",
-   "count": 46,
-   "wr": 60.17
-  },
-  {
-   "slug": "lich-bane",
-   "name": "Lich Bane",
-   "count": 46,
-   "wr": 57.74
-  },
-  {
-   "slug": "terminus",
-   "name": "Terminus",
-   "count": 41,
-   "wr": 61.3
-  },
-  {
-   "slug": "sundered-sky",
-   "name": "Sundered Sky",
-   "count": 40,
-   "wr": 59.39
-  },
-  {
-   "slug": "black-cleaver",
-   "name": "Black Cleaver",
-   "count": 40,
-   "wr": 57.11
-  },
-  {
-   "slug": "kraken-slayer",
-   "name": "Kraken Slayer",
-   "count": 40,
-   "wr": 58.99
-  },
-  {
-   "slug": "mercurial-scimitar",
-   "name": "Mercurial Scimitar",
-   "count": 38,
-   "wr": 65.37
-  },
-  {
-   "slug": "sunfire-aegis",
-   "name": "Sunfire Aegis",
-   "count": 38,
-   "wr": 59.33
-  },
-  {
-   "slug": "unending-despair",
-   "name": "Unending Despair",
-   "count": 36,
-   "wr": 57.89
-  },
-  {
-   "slug": "dead-mans-plate",
-   "name": "Dead Man's Plate",
-   "count": 33,
-   "wr": 58.73
-  },
-  {
-   "slug": "blackfire-torch",
-   "name": "Blackfire Torch",
-   "count": 31,
-   "wr": 60.4
-  },
-  {
-   "slug": "oceanids-trident",
-   "name": "Oceanid's Trident",
-   "count": 28,
-   "wr": 58.39
-  },
-  {
-   "slug": "malignance",
-   "name": "Malignance",
-   "count": 25,
-   "wr": 61.14
-  },
-  {
-   "slug": "goredrinker",
-   "name": "Goredrinker",
-   "count": 24,
-   "wr": 60.58
-  },
-  {
-   "slug": "warmogs-armor",
-   "name": "Warmog's Armor",
-   "count": 23,
-   "wr": 61.24
-  },
-  {
-   "slug": "phantom-dancer",
-   "name": "Phantom Dancer",
-   "count": 22,
-   "wr": 58.2
-  },
-  {
-   "slug": "crimson-lucidity",
-   "name": "Crimson Lucidity",
-   "count": 20,
-   "wr": 64.97
-  },
-  {
-   "slug": "abyssal-mask",
-   "name": "Abyssal Mask",
-   "count": 19,
-   "wr": 60.3
-  },
-  {
-   "slug": "heartsteel",
-   "name": "Heartsteel",
-   "count": 18,
-   "wr": 53.95
-  },
-  {
-   "slug": "maw-of-malmortius",
-   "name": "Maw of Malmortius",
-   "count": 16,
-   "wr": 60.61
-  },
-  {
-   "slug": "zhonyas-hourglass",
-   "name": "Zhonya's Hourglass",
-   "count": 16,
-   "wr": 58.82
-  },
-  {
-   "slug": "archangels-staff",
-   "name": "Archangel's Staff",
-   "count": 16,
-   "wr": 60.52
-  },
-  {
-   "slug": "cryptbloom",
-   "name": "Cryptbloom",
-   "count": 13,
-   "wr": 57.39
-  },
-  {
-   "slug": "steraks-gage",
-   "name": "Sterak's Gage",
-   "count": 11,
-   "wr": 57.34
-  },
-  {
-   "slug": "gargoyle-stoneplate",
-   "name": "Gargoyle Stoneplate",
-   "count": 11,
-   "wr": 57.33
-  },
-  {
-   "slug": "divine-sunderer",
-   "name": "Divine Sunderer",
-   "count": 11,
-   "wr": 58.41
-  },
-  {
-   "slug": "boots-of-mana",
-   "name": "Boots of Mana",
-   "count": 10,
-   "wr": 58.48
-  },
-  {
-   "slug": "quicksilver-sash",
-   "name": "Quicksilver Sash",
-   "count": 9,
-   "wr": 62.67
-  },
-  {
-   "slug": "stridebreaker",
-   "name": "Stridebreaker",
-   "count": 9,
-   "wr": 59.04
-  },
-  {
-   "slug": "stormsurge",
-   "name": "Stormsurge",
-   "count": 9,
-   "wr": 56.86
-  },
-  {
-   "slug": "experimental-hexplate",
-   "name": "Experimental Hexplate",
-   "count": 8,
-   "wr": 58.27
-  },
-  {
-   "slug": "galeforce",
-   "name": "Galeforce",
-   "count": 8,
-   "wr": 56.68
-  },
-  {
-   "slug": "black-mist-scythe",
-   "name": "Black Mist Scythe",
-   "count": 8,
-   "wr": 57.81
-  },
-  {
-   "slug": "frozen-heart",
-   "name": "Frozen Heart",
-   "count": 8,
-   "wr": 60.41
-  },
-  {
-   "slug": "chempunk-chainsword",
-   "name": "Chempunk Chainsword",
-   "count": 7,
-   "wr": 56.15
-  },
-  {
-   "slug": "hullbreaker",
-   "name": "Hullbreaker",
-   "count": 7,
-   "wr": 57.78
-  },
-  {
-   "slug": "boots-of-dynamism",
-   "name": "Boots of Dynamism",
-   "count": 7,
-   "wr": 59.58
-  },
-  {
-   "slug": "titanic-hydra",
-   "name": "Titanic Hydra",
-   "count": 7,
-   "wr": 55.56
-  },
-  {
-   "slug": "berserkers-greaves",
-   "name": "Berserker's Greaves",
-   "count": 7,
-   "wr": 56.38
-  },
-  {
-   "slug": "plated-steelcaps",
-   "name": "Plated Steelcaps",
-   "count": 5,
-   "wr": 54.12
-  },
-  {
-   "slug": "gluttonous-greaves",
-   "name": "Gluttonous Greaves",
-   "count": 5,
-   "wr": null
-  },
-  {
-   "slug": "cosmic-drive",
-   "name": "Cosmic Drive",
-   "count": 5,
-   "wr": 61.04
-  },
-  {
-   "slug": "navori-quickblades",
-   "name": "Navori Quickblades",
-   "count": 5,
-   "wr": 60.56
-  },
-  {
-   "slug": "kaenic-rookern",
-   "name": "Kaenic Rookern",
-   "count": 4,
-   "wr": 61.99
-  },
-  {
-   "slug": "soul-transfer",
-   "name": "Soul Transfer",
-   "count": 3,
-   "wr": 57.53
+   "slug": "deaths-dance",
+   "name": "Death's Dance",
+   "count": 602,
+   "wr": 60.44
   },
   {
    "slug": "liandrys-torment",
    "name": "Liandry's Torment",
-   "count": 3,
-   "wr": null
+   "count": 563,
+   "wr": 58.65
   },
   {
-   "slug": "rod-of-ages",
-   "name": "Rod of Ages",
-   "count": 3,
-   "wr": 52.37
+   "slug": "magnetic-blaster",
+   "name": "Magnetic Blaster",
+   "count": 554,
+   "wr": 58.69
   },
   {
-   "slug": "staff-of-flowing-water",
-   "name": "Staff of Flowing Water",
-   "count": 3,
-   "wr": null
+   "slug": "bulwark-of-the-mountain",
+   "name": "Bulwark of the Mountain",
+   "count": 534,
+   "wr": 58.17
+  },
+  {
+   "slug": "crimson-lucidity",
+   "name": "Crimson Lucidity",
+   "count": 522,
+   "wr": 59.52
+  },
+  {
+   "slug": "the-collector",
+   "name": "The Collector",
+   "count": 516,
+   "wr": 58.92
+  },
+  {
+   "slug": "black-mist-scythe",
+   "name": "Black Mist Scythe",
+   "count": 513,
+   "wr": 59.68
+  },
+  {
+   "slug": "lord-dominiks-regard",
+   "name": "Lord Dominik's Regard",
+   "count": 505,
+   "wr": 59.75
+  },
+  {
+   "slug": "serpents-fang",
+   "name": "Serpent's Fang",
+   "count": 498,
+   "wr": 60.28
+  },
+  {
+   "slug": "lich-bane",
+   "name": "Lich Bane",
+   "count": 484,
+   "wr": 59.92
+  },
+  {
+   "slug": "blackfire-torch",
+   "name": "Blackfire Torch",
+   "count": 480,
+   "wr": 59.74
+  },
+  {
+   "slug": "malignance",
+   "name": "Malignance",
+   "count": 469,
+   "wr": 59.31
   },
   {
    "slug": "riftmaker",
    "name": "Riftmaker",
-   "count": 2,
-   "wr": null
+   "count": 457,
+   "wr": 58.53
   },
   {
-   "slug": "overlords-bloodmail",
-   "name": "Overlord's Bloodmail",
-   "count": 2,
-   "wr": 49.33
+   "slug": "unending-despair",
+   "name": "Unending Despair",
+   "count": 446,
+   "wr": 58.21
   },
   {
-   "slug": "wits-end",
-   "name": "Wit's End",
-   "count": 2,
-   "wr": 56.43
+   "slug": "essence-reaver",
+   "name": "Essence Reaver",
+   "count": 444,
+   "wr": 59.74
   },
   {
-   "slug": "bloodletters-curse",
-   "name": "Bloodletter's Curse",
-   "count": 2,
-   "wr": 53.25
+   "slug": "zhonyas-hourglass",
+   "name": "Zhonya's Hourglass",
+   "count": 429,
+   "wr": 59.32
   },
   {
-   "slug": "seekers-armguard",
-   "name": "Seeker's Armguard",
-   "count": 2,
-   "wr": null
+   "slug": "spear-of-shojin",
+   "name": "Spear of Shojin",
+   "count": 422,
+   "wr": 61.46
   },
   {
-   "slug": "dawnshroud",
-   "name": "Dawnshroud",
-   "count": 2,
-   "wr": null
+   "slug": "force-of-nature",
+   "name": "Force of Nature",
+   "count": 422,
+   "wr": 59.25
   },
   {
-   "slug": "morellonomicon",
-   "name": "Morellonomicon",
-   "count": 1,
-   "wr": null
+   "slug": "stormsurge",
+   "name": "Stormsurge",
+   "count": 421,
+   "wr": 59.01
   },
   {
-   "slug": "imperial-mandate",
-   "name": "Imperial Mandate",
-   "count": 1,
-   "wr": null
+   "slug": "armorcrusher-boots",
+   "name": "Armorcrusher Boots",
+   "count": 407,
+   "wr": 60.75
   },
   {
-   "slug": "ionian-boots-of-lucidity",
-   "name": "Ionian Boots of Lucidity",
-   "count": 1,
-   "wr": null
+   "slug": "harmonic-echo",
+   "name": "Harmonic Echo",
+   "count": 403,
+   "wr": 59.05
   },
   {
-   "slug": "dusk-and-dawn",
-   "name": "Dusk and Dawn",
-   "count": 1,
-   "wr": null
+   "slug": "oceanids-trident",
+   "name": "Oceanid's Trident",
+   "count": 400,
+   "wr": 59.39
+  },
+  {
+   "slug": "ludens-echo",
+   "name": "Luden's Echo",
+   "count": 396,
+   "wr": 58.02
+  },
+  {
+   "slug": "runaans-hurricane",
+   "name": "Runaan's Hurricane",
+   "count": 391,
+   "wr": 58.21
+  },
+  {
+   "slug": "eclipse",
+   "name": "Eclipse",
+   "count": 364,
+   "wr": 60.09
+  },
+  {
+   "slug": "ardent-censer",
+   "name": "Ardent Censer",
+   "count": 357,
+   "wr": 59.16
+  },
+  {
+   "slug": "titanic-hydra",
+   "name": "Titanic Hydra",
+   "count": 346,
+   "wr": 58.73
+  },
+  {
+   "slug": "kraken-slayer",
+   "name": "Kraken Slayer",
+   "count": 337,
+   "wr": 58.76
+  },
+  {
+   "slug": "warmogs-armor",
+   "name": "Warmog's Armor",
+   "count": 336,
+   "wr": 58.83
+  },
+  {
+   "slug": "sundered-sky",
+   "name": "Sundered Sky",
+   "count": 320,
+   "wr": 59.49
+  },
+  {
+   "slug": "duskblade-of-draktharr",
+   "name": "Duskblade of Draktharr",
+   "count": 320,
+   "wr": 59.75
+  },
+  {
+   "slug": "terminus",
+   "name": "Terminus",
+   "count": 305,
+   "wr": 59.88
+  },
+  {
+   "slug": "heartsteel",
+   "name": "Heartsteel",
+   "count": 301,
+   "wr": 58.09
+  },
+  {
+   "slug": "guinsoos-rageblade",
+   "name": "Guinsoo's Rageblade",
+   "count": 287,
+   "wr": 58.95
+  },
+  {
+   "slug": "staff-of-flowing-water",
+   "name": "Staff of Flowing Water",
+   "count": 278,
+   "wr": 58.9
+  },
+  {
+   "slug": "chainlaced-crushers",
+   "name": "Chainlaced Crushers",
+   "count": 274,
+   "wr": 60.51
+  },
+  {
+   "slug": "sunfire-aegis",
+   "name": "Sunfire Aegis",
+   "count": 265,
+   "wr": 58.41
+  },
+  {
+   "slug": "steraks-gage",
+   "name": "Sterak's Gage",
+   "count": 256,
+   "wr": 59.05
   },
   {
    "slug": "nashors-tooth",
    "name": "Nashor's Tooth",
-   "count": 1,
-   "wr": null
+   "count": 252,
+   "wr": 60.94
+  },
+  {
+   "slug": "youmuus-ghostblade",
+   "name": "Youmuu's Ghostblade",
+   "count": 251,
+   "wr": 61.24
+  },
+  {
+   "slug": "cryptbloom",
+   "name": "Cryptbloom",
+   "count": 234,
+   "wr": 58.9
+  },
+  {
+   "slug": "dusk-and-dawn",
+   "name": "Dusk and Dawn",
+   "count": 234,
+   "wr": 59.75
+  },
+  {
+   "slug": "black-cleaver",
+   "name": "Black Cleaver",
+   "count": 231,
+   "wr": 58.55
+  },
+  {
+   "slug": "frozen-heart",
+   "name": "Frozen Heart",
+   "count": 229,
+   "wr": 58.96
+  },
+  {
+   "slug": "rylais-crystal-scepter",
+   "name": "Rylai's Crystal Scepter",
+   "count": 217,
+   "wr": 59.44
+  },
+  {
+   "slug": "manamune",
+   "name": "Manamune",
+   "count": 215,
+   "wr": 62.67
+  },
+  {
+   "slug": "edge-of-night",
+   "name": "Edge of Night",
+   "count": 214,
+   "wr": 61.19
+  },
+  {
+   "slug": "randuins-omen",
+   "name": "Randuin's Omen",
+   "count": 211,
+   "wr": 59.16
+  },
+  {
+   "slug": "hollow-radiance",
+   "name": "Hollow Radiance",
+   "count": 210,
+   "wr": 59.05
+  },
+  {
+   "slug": "dead-mans-plate",
+   "name": "Dead Man's Plate",
+   "count": 208,
+   "wr": 59.39
+  },
+  {
+   "slug": "galeforce",
+   "name": "Galeforce",
+   "count": 201,
+   "wr": 59.37
+  },
+  {
+   "slug": "archangels-staff",
+   "name": "Archangel's Staff",
+   "count": 187,
+   "wr": 61.89
+  },
+  {
+   "slug": "hullbreaker",
+   "name": "Hullbreaker",
+   "count": 186,
+   "wr": 59.0
+  },
+  {
+   "slug": "seekers-armguard",
+   "name": "Seeker's Armguard",
+   "count": 184,
+   "wr": 58.23
+  },
+  {
+   "slug": "horizon-focus",
+   "name": "Horizon Focus",
+   "count": 183,
+   "wr": 58.28
+  },
+  {
+   "slug": "knights-vow",
+   "name": "Knight's Vow",
+   "count": 178,
+   "wr": 58.27
   },
   {
    "slug": "zekes-convergence",
    "name": "Zeke's Convergence",
-   "count": 1,
-   "wr": null
+   "count": 175,
+   "wr": 57.37
+  },
+  {
+   "slug": "navori-quickblades",
+   "name": "Navori Quickblades",
+   "count": 173,
+   "wr": 58.93
+  },
+  {
+   "slug": "mercurial-scimitar",
+   "name": "Mercurial Scimitar",
+   "count": 155,
+   "wr": 61.63
+  },
+  {
+   "slug": "boots-of-mana",
+   "name": "Boots of Mana",
+   "count": 153,
+   "wr": 59.89
+  },
+  {
+   "slug": "gargoyle-stoneplate",
+   "name": "Gargoyle Stoneplate",
+   "count": 150,
+   "wr": 57.7
+  },
+  {
+   "slug": "mikaels-blessing",
+   "name": "Mikael's Blessing",
+   "count": 149,
+   "wr": 59.15
+  },
+  {
+   "slug": "iceborn-gauntlet",
+   "name": "Iceborn Gauntlet",
+   "count": 138,
+   "wr": 58.81
+  },
+  {
+   "slug": "bloodletters-curse",
+   "name": "Bloodletter's Curse",
+   "count": 128,
+   "wr": 59.01
+  },
+  {
+   "slug": "kaenic-rookern",
+   "name": "Kaenic Rookern",
+   "count": 121,
+   "wr": 58.34
+  },
+  {
+   "slug": "searing-crown",
+   "name": "Searing Crown",
+   "count": 121,
+   "wr": 60.42
+  },
+  {
+   "slug": "dawnshroud",
+   "name": "Dawnshroud",
+   "count": 113,
+   "wr": 59.75
+  },
+  {
+   "slug": "overlords-bloodmail",
+   "name": "Overlord's Bloodmail",
+   "count": 104,
+   "wr": 58.01
+  },
+  {
+   "slug": "yordle-trap",
+   "name": "Yordle Trap",
+   "count": 98,
+   "wr": 58.98
+  },
+  {
+   "slug": "redemption",
+   "name": "Redemption",
+   "count": 97,
+   "wr": 60.33
+  },
+  {
+   "slug": "morellonomicon",
+   "name": "Morellonomicon",
+   "count": 93,
+   "wr": 59.75
+  },
+  {
+   "slug": "rod-of-ages",
+   "name": "Rod of Ages",
+   "count": 93,
+   "wr": 60.79
+  },
+  {
+   "slug": "imperial-mandate",
+   "name": "Imperial Mandate",
+   "count": 91,
+   "wr": 60.62
+  },
+  {
+   "slug": "gluttonous-greaves",
+   "name": "Gluttonous Greaves",
+   "count": 90,
+   "wr": 60.53
+  },
+  {
+   "slug": "maw-of-malmortius",
+   "name": "Maw of Malmortius",
+   "count": 86,
+   "wr": 59.54
+  },
+  {
+   "slug": "locket-of-the-iron-solari",
+   "name": "Locket of the Iron Solari",
+   "count": 86,
+   "wr": 57.99
+  },
+  {
+   "slug": "plated-steelcaps",
+   "name": "Plated Steelcaps",
+   "count": 82,
+   "wr": 59.4
+  },
+  {
+   "slug": "abyssal-mask",
+   "name": "Abyssal Mask",
+   "count": 80,
+   "wr": 58.79
+  },
+  {
+   "slug": "radiant-virtue",
+   "name": "Radiant Virtue",
+   "count": 79,
+   "wr": 57.69
+  },
+  {
+   "slug": "cosmic-drive",
+   "name": "Cosmic Drive",
+   "count": 78,
+   "wr": 57.35
+  },
+  {
+   "slug": "goredrinker",
+   "name": "Goredrinker",
+   "count": 77,
+   "wr": 59.98
+  },
+  {
+   "slug": "wits-end",
+   "name": "Wit's End",
+   "count": 75,
+   "wr": 58.96
+  },
+  {
+   "slug": "berserkers-greaves",
+   "name": "Berserker's Greaves",
+   "count": 75,
+   "wr": 58.97
+  },
+  {
+   "slug": "experimental-hexplate",
+   "name": "Experimental Hexplate",
+   "count": 70,
+   "wr": 60.87
+  },
+  {
+   "slug": "stridebreaker",
+   "name": "Stridebreaker",
+   "count": 64,
+   "wr": 59.73
+  },
+  {
+   "slug": "divine-sunderer",
+   "name": "Divine Sunderer",
+   "count": 58,
+   "wr": 58.94
+  },
+  {
+   "slug": "phantom-dancer",
+   "name": "Phantom Dancer",
+   "count": 53,
+   "wr": 58.92
+  },
+  {
+   "slug": "soul-transfer",
+   "name": "Soul Transfer",
+   "count": 49,
+   "wr": 58.19
+  },
+  {
+   "slug": "quicksilver-sash",
+   "name": "Quicksilver Sash",
+   "count": 48,
+   "wr": 61.07
+  },
+  {
+   "slug": "boots-of-dynamism",
+   "name": "Boots of Dynamism",
+   "count": 47,
+   "wr": 60.07
+  },
+  {
+   "slug": "ionian-boots-of-lucidity",
+   "name": "Ionian Boots of Lucidity",
+   "count": 40,
+   "wr": 59.18
+  },
+  {
+   "slug": "chempunk-chainsword",
+   "name": "Chempunk Chainsword",
+   "count": 32,
+   "wr": 59.66
+  },
+  {
+   "slug": "mercurys-treads",
+   "name": "Mercury's Treads",
+   "count": 29,
+   "wr": 58.63
+  },
+  {
+   "slug": "shurelyas-battlesong",
+   "name": "Shurelya's Battlesong",
+   "count": 19,
+   "wr": 60.15
+  },
+  {
+   "slug": "winters-approach",
+   "name": "Winter's Approach",
+   "count": 16,
+   "wr": 56.35
   }
  ],
  "tierComposition": {
-  "grandmaster": 294,
-  "master": 261,
-  "challenger": 95,
-  "legendary-grandmaster": 25,
-  "sovereign": 16,
-  "legendary-master": 9,
-  "legendary-challenger": 9,
-  "diamond": 2,
-  "legendary-commander": 1
+  "grandmaster": 2815,
+  "master": 2142,
+  "challenger": 1003,
+  "legendary-grandmaster": 207,
+  "legendary-master": 114,
+  "legendary-challenger": 101,
+  "sovereign": 92,
+  "diamond": 68,
+  "legendary-commander": 5
  },
  "champions": {
   "aatrox": {
@@ -1109,7 +1198,8 @@
    "mvpRate": 21.31,
    "sRate": 18.48,
    "gamesMedian": 174,
-   "legendaryTax": -2.6,
+   "legendaryTax": -2.8,
+   "legendaryTaxN": 38,
    "keystone": {
     "name": "Conqueror",
     "count": 47,
@@ -1134,6 +1224,198 @@
     "legendary-master": 1
    }
   },
+  "ahri": {
+   "name": "Ahri",
+   "avgWr": 64.46,
+   "kda": 4.97,
+   "teamfight": 54.81,
+   "gpm": 797.32,
+   "dmgDealt": 26741.0,
+   "dmgTaken": 16879.68,
+   "turret": 2622.62,
+   "firstBlood": 13.95,
+   "mvpRate": 16.84,
+   "sRate": 19.06,
+   "gamesMedian": 217,
+   "legendaryTax": -1.7,
+   "legendaryTaxN": 45,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 50,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 47,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 21,
+   "tiers": {
+    "grandmaster": 28,
+    "challenger": 12,
+    "legendary-grandmaster": 4,
+    "master": 4,
+    "legendary-master": 2
+   }
+  },
+  "akali": {
+   "name": "Akali",
+   "avgWr": 57.94,
+   "kda": 4.03,
+   "teamfight": 51.23,
+   "gpm": 801.32,
+   "dmgDealt": 26548.62,
+   "dmgTaken": 18658.22,
+   "turret": 2643.8,
+   "firstBlood": 14.03,
+   "mvpRate": 15.6,
+   "sRate": 14.45,
+   "gamesMedian": 196,
+   "legendaryTax": -3.3,
+   "legendaryTaxN": 27,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 31,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 34,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 35,
+   "tiers": {
+    "grandmaster": 23,
+    "master": 17,
+    "challenger": 3,
+    "legendary-master": 2,
+    "legendary-challenger": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "akshan": {
+   "name": "Akshan",
+   "avgWr": 61.06,
+   "kda": 4.47,
+   "teamfight": 51.92,
+   "gpm": 829.51,
+   "dmgDealt": 25740.63,
+   "dmgTaken": 17504.84,
+   "turret": 3234.94,
+   "firstBlood": 19.36,
+   "mvpRate": 17.93,
+   "sRate": 15.55,
+   "gamesMedian": 143,
+   "legendaryTax": -5.1,
+   "legendaryTaxN": 18,
+   "keystone": {
+    "name": "Empowerment",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 26,
+   "tiers": {
+    "master": 27,
+    "grandmaster": 14,
+    "challenger": 5,
+    "legendary-master": 1,
+    "diamond": 1
+   }
+  },
+  "alistar": {
+   "name": "Alistar",
+   "avgWr": 59.69,
+   "kda": 5.24,
+   "teamfight": 56.58,
+   "gpm": 641.2,
+   "dmgDealt": 15498.14,
+   "dmgTaken": 21197.96,
+   "turret": 1143.74,
+   "firstBlood": 7.84,
+   "mvpRate": 8.64,
+   "sRate": 9.8,
+   "gamesMedian": 171,
+   "legendaryTax": 1.2,
+   "legendaryTaxN": 21,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 37,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 34,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 0,
+   "tiers": {
+    "master": 24,
+    "grandmaster": 15,
+    "challenger": 5,
+    "diamond": 2,
+    "legendary-grandmaster": 1
+   }
+  },
+  "ambessa": {
+   "name": "Ambessa",
+   "avgWr": 63.83,
+   "kda": 4.5,
+   "teamfight": 49.4,
+   "gpm": 831.04,
+   "dmgDealt": 26497.84,
+   "dmgTaken": 20637.64,
+   "turret": 3787.3,
+   "firstBlood": 12.57,
+   "mvpRate": 19.81,
+   "sRate": 17.59,
+   "gamesMedian": 165,
+   "legendaryTax": -1.3,
+   "legendaryTaxN": 38,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 33,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 27,
+   "tiers": {
+    "grandmaster": 21,
+    "challenger": 11,
+    "master": 8,
+    "sovereign": 3,
+    "legendary-grandmaster": 3,
+    "legendary-master": 1
+   }
+  },
   "amumu": {
    "name": "Amumu",
    "avgWr": 64.09,
@@ -1147,7 +1429,8 @@
    "mvpRate": 9.91,
    "sRate": 6.85,
    "gamesMedian": 195,
-   "legendaryTax": -0.7,
+   "legendaryTax": -0.8,
+   "legendaryTaxN": 40,
    "keystone": {
     "name": "Ice Overlord",
     "count": 50,
@@ -1170,6 +1453,853 @@
     "sovereign": 1
    }
   },
+  "annie": {
+   "name": "Annie",
+   "avgWr": 61.45,
+   "kda": 4.38,
+   "teamfight": 51.86,
+   "gpm": 766.76,
+   "dmgDealt": 24658.8,
+   "dmgTaken": 16214.31,
+   "turret": 2480.73,
+   "firstBlood": 9.78,
+   "mvpRate": 12.36,
+   "sRate": 12.89,
+   "gamesMedian": 190,
+   "legendaryTax": -1.2,
+   "legendaryTaxN": 24,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 46,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 17,
+   "tiers": {
+    "master": 22,
+    "grandmaster": 18,
+    "challenger": 4,
+    "sovereign": 1,
+    "diamond": 1
+   }
+  },
+  "ashe": {
+   "name": "Ashe",
+   "avgWr": 59.45,
+   "kda": 3.83,
+   "teamfight": 52.0,
+   "gpm": 788.28,
+   "dmgDealt": 26899.7,
+   "dmgTaken": 18060.74,
+   "turret": 3761.14,
+   "firstBlood": 11.76,
+   "mvpRate": 15.66,
+   "sRate": 12.85,
+   "gamesMedian": 209,
+   "legendaryTax": -0.5,
+   "legendaryTaxN": 28,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 21,
+    "of": 50
+   },
+   "conformity": {
+    "count": 18,
+    "of": 50
+   },
+   "pentas": 58,
+   "tiers": {
+    "master": 20,
+    "grandmaster": 19,
+    "challenger": 3,
+    "legendary-grandmaster": 2,
+    "legendary-master": 2
+   }
+  },
+  "aurelion-sol": {
+   "name": "Aurelion Sol",
+   "avgWr": 64.79,
+   "kda": 5.51,
+   "teamfight": 54.59,
+   "gpm": 801.4,
+   "dmgDealt": 27449.84,
+   "dmgTaken": 16967.62,
+   "turret": 1973.5,
+   "firstBlood": 9.89,
+   "mvpRate": 16.79,
+   "sRate": 18.26,
+   "gamesMedian": 185,
+   "legendaryTax": 0.0,
+   "legendaryTaxN": 37,
+   "keystone": {
+    "name": "Arcane Comet",
+    "count": 26,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Cleanse + Flash",
+    "count": 21,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 38,
+   "tiers": {
+    "grandmaster": 26,
+    "master": 13,
+    "challenger": 8,
+    "legendary-grandmaster": 1,
+    "legendary-master": 1
+   }
+  },
+  "aurora": {
+   "name": "Aurora",
+   "avgWr": 59.51,
+   "kda": 4.42,
+   "teamfight": 52.59,
+   "gpm": 802.45,
+   "dmgDealt": 26488.76,
+   "dmgTaken": 16836.45,
+   "turret": 2733.69,
+   "firstBlood": 14.17,
+   "mvpRate": 15.12,
+   "sRate": 14.44,
+   "gamesMedian": 250,
+   "legendaryTax": -1.5,
+   "legendaryTaxN": 41,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 47,
+    "of": 50
+   },
+   "conformity": {
+    "count": 18,
+    "of": 50
+   },
+   "pentas": 26,
+   "tiers": {
+    "grandmaster": 19,
+    "challenger": 12,
+    "master": 10,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1,
+    "sovereign": 1,
+    "legendary-master": 1
+   }
+  },
+  "bard": {
+   "name": "Bard",
+   "avgWr": 63.67,
+   "kda": 5.39,
+   "teamfight": 58.22,
+   "gpm": 688.88,
+   "dmgDealt": 20224.88,
+   "dmgTaken": 18653.9,
+   "turret": 1900.65,
+   "firstBlood": 9.18,
+   "mvpRate": 12.1,
+   "sRate": 11.61,
+   "gamesMedian": 175,
+   "legendaryTax": -1.9,
+   "legendaryTaxN": 34,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 29,
+    "of": 50
+   },
+   "conformity": {
+    "count": 7,
+    "of": 50
+   },
+   "pentas": 5,
+   "tiers": {
+    "grandmaster": 22,
+    "master": 11,
+    "challenger": 7,
+    "legendary-grandmaster": 3,
+    "sovereign": 2,
+    "legendary-master": 1
+   }
+  },
+  "blitzcrank": {
+   "name": "Blitzcrank",
+   "avgWr": 60.96,
+   "kda": 4.64,
+   "teamfight": 55.56,
+   "gpm": 660.29,
+   "dmgDealt": 16598.41,
+   "dmgTaken": 20661.31,
+   "turret": 1366.84,
+   "firstBlood": 8.72,
+   "mvpRate": 8.12,
+   "sRate": 8.97,
+   "gamesMedian": 160,
+   "legendaryTax": -2.3,
+   "legendaryTaxN": 20,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 46,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 35,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 6,
+   "tiers": {
+    "master": 24,
+    "grandmaster": 19,
+    "diamond": 4,
+    "challenger": 1,
+    "legendary-master": 1
+   }
+  },
+  "brand": {
+   "name": "Brand",
+   "avgWr": 60.02,
+   "kda": 3.54,
+   "teamfight": 50.59,
+   "gpm": 721.24,
+   "dmgDealt": 26366.18,
+   "dmgTaken": 17875.06,
+   "turret": 1891.49,
+   "firstBlood": 10.65,
+   "mvpRate": 8.75,
+   "sRate": 8.91,
+   "gamesMedian": 207,
+   "legendaryTax": -0.4,
+   "legendaryTaxN": 24,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 36,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 30,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 14,
+   "tiers": {
+    "master": 28,
+    "grandmaster": 17,
+    "challenger": 2,
+    "legendary-master": 1
+   }
+  },
+  "braum": {
+   "name": "Braum",
+   "avgWr": 61.17,
+   "kda": 5.7,
+   "teamfight": 61.55,
+   "gpm": 635.39,
+   "dmgDealt": 13789.37,
+   "dmgTaken": 20221.63,
+   "turret": 1244.94,
+   "firstBlood": 5.52,
+   "mvpRate": 7.35,
+   "sRate": 11.37,
+   "gamesMedian": 205,
+   "legendaryTax": 2.5,
+   "legendaryTaxN": 36,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 3,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 24,
+    "of": 50
+   },
+   "pentas": 2,
+   "tiers": {
+    "grandmaster": 17,
+    "master": 16,
+    "challenger": 4,
+    "legendary-grandmaster": 2,
+    "sovereign": 2,
+    "legendary-master": 1
+   }
+  },
+  "caitlyn": {
+   "name": "Caitlyn",
+   "avgWr": 58.8,
+   "kda": 4.25,
+   "teamfight": 53.8,
+   "gpm": 799.12,
+   "dmgDealt": 26900.1,
+   "dmgTaken": 17281.06,
+   "turret": 3578.18,
+   "firstBlood": 10.58,
+   "mvpRate": 16.88,
+   "sRate": 14.37,
+   "gamesMedian": 208,
+   "legendaryTax": -1.4,
+   "legendaryTaxN": 35,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 56,
+   "tiers": {
+    "grandmaster": 23,
+    "master": 11,
+    "challenger": 6,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1,
+    "diamond": 1,
+    "legendary-master": 1,
+    "sovereign": 1
+   }
+  },
+  "camille": {
+   "name": "Camille",
+   "avgWr": 62.11,
+   "kda": 4.52,
+   "teamfight": 48.63,
+   "gpm": 807.46,
+   "dmgDealt": 25300.34,
+   "dmgTaken": 21150.58,
+   "turret": 3956.94,
+   "firstBlood": 12.67,
+   "mvpRate": 17.42,
+   "sRate": 16.0,
+   "gamesMedian": 225,
+   "legendaryTax": -0.8,
+   "legendaryTaxN": 36,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 29,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 27,
+    "of": 50
+   },
+   "conformity": {
+    "count": 6,
+    "of": 50
+   },
+   "pentas": 14,
+   "tiers": {
+    "grandmaster": 27,
+    "challenger": 10,
+    "master": 3,
+    "sovereign": 3,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1,
+    "diamond": 1
+   }
+  },
+  "corki": {
+   "name": "Corki",
+   "avgWr": 61.46,
+   "kda": 4.66,
+   "teamfight": 55.8,
+   "gpm": 841.08,
+   "dmgDealt": 31051.1,
+   "dmgTaken": 18593.24,
+   "turret": 3741.72,
+   "firstBlood": 12.9,
+   "mvpRate": 25.03,
+   "sRate": 19.24,
+   "gamesMedian": 179,
+   "legendaryTax": -0.4,
+   "legendaryTaxN": 30,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 33,
+    "of": 50
+   },
+   "conformity": {
+    "count": 27,
+    "of": 50
+   },
+   "pentas": 52,
+   "tiers": {
+    "grandmaster": 20,
+    "challenger": 11,
+    "master": 9,
+    "legendary-challenger": 3,
+    "legendary-master": 2,
+    "legendary-grandmaster": 2,
+    "diamond": 2
+   }
+  },
+  "darius": {
+   "name": "Darius",
+   "avgWr": 62.85,
+   "kda": 4.08,
+   "teamfight": 48.96,
+   "gpm": 823.79,
+   "dmgDealt": 25926.56,
+   "dmgTaken": 22659.54,
+   "turret": 3881.04,
+   "firstBlood": 18.71,
+   "mvpRate": 20.55,
+   "sRate": 15.24,
+   "gamesMedian": 209,
+   "legendaryTax": -0.4,
+   "legendaryTaxN": 45,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 37,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 28,
+    "of": 50
+   },
+   "conformity": {
+    "count": 3,
+    "of": 50
+   },
+   "pentas": 58,
+   "tiers": {
+    "grandmaster": 24,
+    "challenger": 17,
+    "master": 3,
+    "legendary-grandmaster": 2,
+    "sovereign": 1,
+    "legendary-challenger": 1
+   }
+  },
+  "diana": {
+   "name": "Diana",
+   "avgWr": 62.31,
+   "kda": 4.39,
+   "teamfight": 54.7,
+   "gpm": 876.1,
+   "dmgDealt": 26855.98,
+   "dmgTaken": 18279.83,
+   "turret": 3323.23,
+   "firstBlood": 10.88,
+   "mvpRate": 25.05,
+   "sRate": 17.76,
+   "gamesMedian": 174,
+   "legendaryTax": -0.2,
+   "legendaryTaxN": 42,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 26,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 46,
+   "tiers": {
+    "grandmaster": 21,
+    "challenger": 13,
+    "master": 8,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1,
+    "sovereign": 1,
+    "legendary-master": 1
+   }
+  },
+  "dr-mundo": {
+   "name": "Dr. Mundo",
+   "avgWr": 60.35,
+   "kda": 3.69,
+   "teamfight": 46.02,
+   "gpm": 758.69,
+   "dmgDealt": 26130.73,
+   "dmgTaken": 29767.58,
+   "turret": 3505.48,
+   "firstBlood": 14.09,
+   "mvpRate": 16.27,
+   "sRate": 15.04,
+   "gamesMedian": 170,
+   "legendaryTax": -0.9,
+   "legendaryTaxN": 23,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Ghost + Ignite",
+    "count": 13,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 10,
+   "tiers": {
+    "grandmaster": 24,
+    "master": 20,
+    "challenger": 2,
+    "legendary-grandmaster": 1
+   }
+  },
+  "draven": {
+   "name": "Draven",
+   "avgWr": 62.22,
+   "kda": 4.26,
+   "teamfight": 55.1,
+   "gpm": 892.16,
+   "dmgDealt": 31035.06,
+   "dmgTaken": 18772.04,
+   "turret": 4834.76,
+   "firstBlood": 20.08,
+   "mvpRate": 28.41,
+   "sRate": 20.01,
+   "gamesMedian": 172,
+   "legendaryTax": -1.7,
+   "legendaryTaxN": 29,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 28,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 85,
+   "tiers": {
+    "master": 20,
+    "grandmaster": 18,
+    "challenger": 7,
+    "sovereign": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "ekko": {
+   "name": "Ekko",
+   "avgWr": 61.01,
+   "kda": 4.64,
+   "teamfight": 54.07,
+   "gpm": 857.36,
+   "dmgDealt": 26444.2,
+   "dmgTaken": 19472.24,
+   "turret": 3112.06,
+   "firstBlood": 13.24,
+   "mvpRate": 22.84,
+   "sRate": 18.31,
+   "gamesMedian": 173,
+   "legendaryTax": -3.7,
+   "legendaryTaxN": 39,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 32,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 31,
+    "of": 50
+   },
+   "conformity": {
+    "count": 21,
+    "of": 50
+   },
+   "pentas": 38,
+   "tiers": {
+    "grandmaster": 17,
+    "master": 14,
+    "challenger": 12,
+    "legendary-grandmaster": 4
+   }
+  },
+  "evelynn": {
+   "name": "Evelynn",
+   "avgWr": 60.83,
+   "kda": 4.71,
+   "teamfight": 53.62,
+   "gpm": 851.18,
+   "dmgDealt": 24968.84,
+   "dmgTaken": 17315.42,
+   "turret": 2353.32,
+   "firstBlood": 10.28,
+   "mvpRate": 20.47,
+   "sRate": 14.03,
+   "gamesMedian": 183,
+   "legendaryTax": -0.3,
+   "legendaryTaxN": 36,
+   "keystone": {
+    "name": "First Strike",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 18,
+    "of": 50
+   },
+   "pentas": 24,
+   "tiers": {
+    "grandmaster": 24,
+    "master": 16,
+    "challenger": 7,
+    "legendary-master": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "ezreal": {
+   "name": "Ezreal",
+   "avgWr": 63.86,
+   "kda": 4.75,
+   "teamfight": 55.53,
+   "gpm": 840.98,
+   "dmgDealt": 30859.52,
+   "dmgTaken": 18200.44,
+   "turret": 4057.52,
+   "firstBlood": 14.74,
+   "mvpRate": 25.48,
+   "sRate": 19.02,
+   "gamesMedian": 223,
+   "legendaryTax": 0.1,
+   "legendaryTaxN": 50,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 50,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 36,
+    "of": 50
+   },
+   "conformity": {
+    "count": 23,
+    "of": 50
+   },
+   "pentas": 70,
+   "tiers": {
+    "challenger": 29,
+    "grandmaster": 10,
+    "legendary-challenger": 5,
+    "legendary-grandmaster": 4,
+    "legendary-master": 1
+   }
+  },
+  "fiddlesticks": {
+   "name": "Fiddlesticks",
+   "avgWr": 59.52,
+   "kda": 4.21,
+   "teamfight": 52.61,
+   "gpm": 774.73,
+   "dmgDealt": 23184.31,
+   "dmgTaken": 18539.14,
+   "turret": 2000.04,
+   "firstBlood": 9.22,
+   "mvpRate": 13.34,
+   "sRate": 10.51,
+   "gamesMedian": 207,
+   "legendaryTax": -4.2,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Dark Harvest",
+    "count": 30,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 38,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 18,
+   "tiers": {
+    "grandmaster": 23,
+    "master": 22,
+    "legendary-grandmaster": 2,
+    "challenger": 1
+   }
+  },
+  "fiora": {
+   "name": "Fiora",
+   "avgWr": 62.38,
+   "kda": 3.86,
+   "teamfight": 46.2,
+   "gpm": 806.72,
+   "dmgDealt": 26953.48,
+   "dmgTaken": 23104.26,
+   "turret": 5234.88,
+   "firstBlood": 19.11,
+   "mvpRate": 18.62,
+   "sRate": 17.44,
+   "gamesMedian": 166,
+   "legendaryTax": 2.6,
+   "legendaryTaxN": 28,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 26,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 42,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 32,
+   "tiers": {
+    "grandmaster": 24,
+    "master": 14,
+    "challenger": 3,
+    "sovereign": 3,
+    "legendary-master": 2,
+    "legendary-challenger": 1
+   }
+  },
+  "fizz": {
+   "name": "Fizz",
+   "avgWr": 61.5,
+   "kda": 3.66,
+   "teamfight": 50.8,
+   "gpm": 811.36,
+   "dmgDealt": 24251.4,
+   "dmgTaken": 18757.46,
+   "turret": 3505.54,
+   "firstBlood": 10.51,
+   "mvpRate": 15.58,
+   "sRate": 12.32,
+   "gamesMedian": 161,
+   "legendaryTax": -0.9,
+   "legendaryTaxN": 21,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 40,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 39,
+    "of": 50
+   },
+   "conformity": {
+    "count": 26,
+    "of": 50
+   },
+   "pentas": 44,
+   "tiers": {
+    "master": 34,
+    "grandmaster": 11,
+    "challenger": 3,
+    "legendary-grandmaster": 1,
+    "legendary-master": 1
+   }
+  },
+  "galio": {
+   "name": "Galio",
+   "avgWr": 60.42,
+   "kda": 4.58,
+   "teamfight": 53.95,
+   "gpm": 758.23,
+   "dmgDealt": 23241.09,
+   "dmgTaken": 18317.51,
+   "turret": 2264.06,
+   "firstBlood": 10.72,
+   "mvpRate": 12.54,
+   "sRate": 12.45,
+   "gamesMedian": 234,
+   "legendaryTax": -1.7,
+   "legendaryTaxN": 34,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 29,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 45,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 10,
+   "tiers": {
+    "grandmaster": 27,
+    "master": 7,
+    "challenger": 6,
+    "legendary-grandmaster": 5,
+    "legendary-master": 2
+   }
+  },
   "garen": {
    "name": "Garen",
    "avgWr": 59.07,
@@ -1183,7 +2313,8 @@
    "mvpRate": 13.89,
    "sRate": 12.42,
    "gamesMedian": 193,
-   "legendaryTax": -4.4,
+   "legendaryTax": -4.8,
+   "legendaryTaxN": 36,
    "keystone": {
     "name": "Grasp of the Undying",
     "count": 25,
@@ -1206,42 +2337,468 @@
     "sovereign": 1
    }
   },
-  "hecarim": {
-   "name": "Hecarim",
-   "avgWr": 71.85,
-   "kda": 5.68,
-   "teamfight": 57.96,
-   "gpm": 918.3,
-   "dmgDealt": 27567.34,
-   "dmgTaken": 20080.36,
-   "turret": 3504.85,
-   "firstBlood": 10.97,
-   "mvpRate": 31.98,
-   "sRate": 25.96,
-   "gamesMedian": 167,
-   "legendaryTax": -2.6,
+  "gnar": {
+   "name": "Gnar",
+   "avgWr": 60.61,
+   "kda": 4.4,
+   "teamfight": 48.42,
+   "gpm": 772.98,
+   "dmgDealt": 26336.8,
+   "dmgTaken": 22324.22,
+   "turret": 3716.7,
+   "firstBlood": 13.0,
+   "mvpRate": 15.37,
+   "sRate": 16.46,
+   "gamesMedian": 155,
+   "legendaryTax": -2.5,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Teleport",
+    "count": 19,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 15,
+   "tiers": {
+    "grandmaster": 25,
+    "master": 11,
+    "challenger": 5,
+    "legendary-grandmaster": 2,
+    "legendary-master": 1
+   }
+  },
+  "gragas": {
+   "name": "Gragas",
+   "avgWr": 61.4,
+   "kda": 4.36,
+   "teamfight": 51.19,
+   "gpm": 825.43,
+   "dmgDealt": 25590.45,
+   "dmgTaken": 19426.57,
+   "turret": 3332.26,
+   "firstBlood": 11.68,
+   "mvpRate": 18.71,
+   "sRate": 15.63,
+   "gamesMedian": 143,
+   "legendaryTax": -4.2,
+   "legendaryTaxN": 20,
    "keystone": {
     "name": "Phase Rush",
-    "count": 48,
+    "count": 33,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 24,
+    "of": 50
+   },
+   "conformity": {
+    "count": 14,
+    "of": 50
+   },
+   "pentas": 18,
+   "tiers": {
+    "grandmaster": 19,
+    "master": 17,
+    "challenger": 5,
+    "diamond": 5,
+    "legendary-challenger": 1
+   }
+  },
+  "graves": {
+   "name": "Graves",
+   "avgWr": 61.38,
+   "kda": 3.99,
+   "teamfight": 50.87,
+   "gpm": 858.56,
+   "dmgDealt": 25272.94,
+   "dmgTaken": 21048.9,
+   "turret": 3200.9,
+   "firstBlood": 11.81,
+   "mvpRate": 21.8,
+   "sRate": 16.24,
+   "gamesMedian": 115,
+   "legendaryTax": -7.0,
+   "legendaryTaxN": 15,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 43,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 36,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 22,
+   "tiers": {
+    "master": 23,
+    "grandmaster": 11,
+    "diamond": 8,
+    "challenger": 2
+   }
+  },
+  "gwen": {
+   "name": "Gwen",
+   "avgWr": 61.83,
+   "kda": 4.05,
+   "teamfight": 49.62,
+   "gpm": 829.06,
+   "dmgDealt": 27436.71,
+   "dmgTaken": 21531.18,
+   "turret": 4301.1,
+   "firstBlood": 13.92,
+   "mvpRate": 20.53,
+   "sRate": 17.0,
+   "gamesMedian": 192,
+   "legendaryTax": -0.5,
+   "legendaryTaxN": 38,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 40,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 13,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 48,
+   "tiers": {
+    "grandmaster": 22,
+    "challenger": 9,
+    "master": 7,
+    "sovereign": 2,
+    "legendary-grandmaster": 1
+   }
+  },
+  "hecarim": {
+   "name": "Hecarim",
+   "avgWr": 72.27,
+   "kda": 5.67,
+   "teamfight": 57.91,
+   "gpm": 919.59,
+   "dmgDealt": 27614.78,
+   "dmgTaken": 20061.0,
+   "turret": 3537.92,
+   "firstBlood": 10.93,
+   "mvpRate": 32.11,
+   "sRate": 25.88,
+   "gamesMedian": 164,
+   "legendaryTax": -2.1,
+   "legendaryTaxN": 46,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 50,
     "of": 50
    },
    "spells": {
     "pair": "Ghost + Smite",
-    "count": 47,
+    "count": 49,
     "of": 50
    },
    "conformity": {
     "count": 23,
     "of": 50
    },
-   "pentas": 77,
+   "pentas": 79,
    "tiers": {
-    "challenger": 17,
+    "challenger": 19,
     "grandmaster": 15,
     "legendary-grandmaster": 9,
     "legendary-challenger": 2,
     "master": 2,
     "sovereign": 1
+   }
+  },
+  "heimerdinger": {
+   "name": "Heimerdinger",
+   "avgWr": 63.54,
+   "kda": 3.78,
+   "teamfight": 47.7,
+   "gpm": 772.1,
+   "dmgDealt": 28190.38,
+   "dmgTaken": 16171.0,
+   "turret": 3173.34,
+   "firstBlood": 7.21,
+   "mvpRate": 12.53,
+   "sRate": 11.34,
+   "gamesMedian": 140,
+   "legendaryTax": -2.9,
+   "legendaryTaxN": 17,
+   "keystone": {
+    "name": "First Strike",
+    "count": 40,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 10,
+   "tiers": {
+    "master": 31,
+    "grandmaster": 12,
+    "diamond": 2,
+    "legendary-challenger": 1,
+    "legendary-grandmaster": 1,
+    "challenger": 1
+   }
+  },
+  "irelia": {
+   "name": "Irelia",
+   "avgWr": 60.81,
+   "kda": 3.8,
+   "teamfight": 49.98,
+   "gpm": 823.87,
+   "dmgDealt": 28142.49,
+   "dmgTaken": 22703.34,
+   "turret": 3662.19,
+   "firstBlood": 22.16,
+   "mvpRate": 22.31,
+   "sRate": 17.54,
+   "gamesMedian": 181,
+   "legendaryTax": -0.1,
+   "legendaryTaxN": 39,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 41,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 54,
+   "tiers": {
+    "grandmaster": 23,
+    "challenger": 7,
+    "master": 6,
+    "legendary-grandmaster": 3,
+    "legendary-master": 2,
+    "diamond": 1,
+    "legendary-commander": 1
+   }
+  },
+  "janna": {
+   "name": "Janna",
+   "avgWr": 59.47,
+   "kda": 6.19,
+   "teamfight": 60.67,
+   "gpm": 643.58,
+   "dmgDealt": 13168.46,
+   "dmgTaken": 15643.76,
+   "turret": 1350.18,
+   "firstBlood": 6.11,
+   "mvpRate": 7.69,
+   "sRate": 8.84,
+   "gamesMedian": 165,
+   "legendaryTax": -4.5,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Aery",
+    "count": 28,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 47,
+    "of": 50
+   },
+   "conformity": {
+    "count": 6,
+    "of": 50
+   },
+   "pentas": 3,
+   "tiers": {
+    "master": 26,
+    "grandmaster": 15,
+    "legendary-master": 2,
+    "challenger": 2,
+    "diamond": 2,
+    "legendary-challenger": 1
+   }
+  },
+  "jarvan-iv": {
+   "name": "Jarvan IV",
+   "avgWr": 61.24,
+   "kda": 5.41,
+   "teamfight": 57.77,
+   "gpm": 813.98,
+   "dmgDealt": 21674.26,
+   "dmgTaken": 18907.6,
+   "turret": 2932.68,
+   "firstBlood": 10.97,
+   "mvpRate": 20.02,
+   "sRate": 14.54,
+   "gamesMedian": 217,
+   "legendaryTax": -2.3,
+   "legendaryTaxN": 40,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 35,
+    "of": 50
+   },
+   "pentas": 30,
+   "tiers": {
+    "grandmaster": 21,
+    "challenger": 13,
+    "master": 7,
+    "legendary-challenger": 2,
+    "legendary-master": 1,
+    "legendary-grandmaster": 1,
+    "diamond": 1,
+    "sovereign": 1
+   }
+  },
+  "jax": {
+   "name": "Jax",
+   "avgWr": 64.14,
+   "kda": 3.76,
+   "teamfight": 47.58,
+   "gpm": 816.43,
+   "dmgDealt": 26110.74,
+   "dmgTaken": 22289.33,
+   "turret": 4798.26,
+   "firstBlood": 14.05,
+   "mvpRate": 17.4,
+   "sRate": 14.95,
+   "gamesMedian": 181,
+   "legendaryTax": -5.5,
+   "legendaryTaxN": 34,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 30,
+    "of": 49
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 30,
+    "of": 49
+   },
+   "conformity": {
+    "count": 7,
+    "of": 49
+   },
+   "pentas": 27,
+   "tiers": {
+    "grandmaster": 19,
+    "master": 12,
+    "challenger": 6,
+    "legendary-grandmaster": 3,
+    "sovereign": 2,
+    "legendary-challenger": 1
+   }
+  },
+  "jayce": {
+   "name": "Jayce",
+   "avgWr": 62.83,
+   "kda": 4.28,
+   "teamfight": 50.75,
+   "gpm": 825.42,
+   "dmgDealt": 27965.5,
+   "dmgTaken": 19184.08,
+   "turret": 4406.22,
+   "firstBlood": 20.31,
+   "mvpRate": 19.24,
+   "sRate": 17.26,
+   "gamesMedian": 197,
+   "legendaryTax": -2.2,
+   "legendaryTaxN": 34,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 45,
+    "of": 50
+   },
+   "conformity": {
+    "count": 15,
+    "of": 50
+   },
+   "pentas": 21,
+   "tiers": {
+    "grandmaster": 17,
+    "challenger": 14,
+    "master": 10,
+    "sovereign": 2,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1
+   }
+  },
+  "jhin": {
+   "name": "Jhin",
+   "avgWr": 62.95,
+   "kda": 4.79,
+   "teamfight": 56.2,
+   "gpm": 846.06,
+   "dmgDealt": 29798.17,
+   "dmgTaken": 17433.62,
+   "turret": 3765.79,
+   "firstBlood": 13.39,
+   "mvpRate": 24.83,
+   "sRate": 17.8,
+   "gamesMedian": 204,
+   "legendaryTax": -1.5,
+   "legendaryTaxN": 37,
+   "keystone": {
+    "name": "Dark Harvest",
+    "count": 46,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 36,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 99,
+   "tiers": {
+    "grandmaster": 18,
+    "challenger": 15,
+    "master": 3,
+    "legendary-master": 2
    }
   },
   "jinx": {
@@ -1258,6 +2815,7 @@
    "sRate": 16.71,
    "gamesMedian": 185,
    "legendaryTax": -1.3,
+   "legendaryTaxN": 31,
    "keystone": {
     "name": "Lethal Tempo",
     "count": 49,
@@ -1281,9 +2839,280 @@
     "legendary-grandmaster": 1
    }
   },
+  "ksante": {
+   "name": "K'Sante",
+   "avgWr": 61.18,
+   "kda": 4.03,
+   "teamfight": 47.84,
+   "gpm": 782.08,
+   "dmgDealt": 25812.84,
+   "dmgTaken": 23321.78,
+   "turret": 3293.98,
+   "firstBlood": 16.44,
+   "mvpRate": 16.45,
+   "sRate": 13.3,
+   "gamesMedian": 189,
+   "legendaryTax": -0.6,
+   "legendaryTaxN": 43,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 34,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Teleport",
+    "count": 27,
+    "of": 50
+   },
+   "conformity": {
+    "count": 19,
+    "of": 50
+   },
+   "pentas": 16,
+   "tiers": {
+    "challenger": 17,
+    "grandmaster": 13,
+    "master": 12,
+    "sovereign": 1,
+    "legendary-grandmaster": 1,
+    "legendary-master": 1
+   }
+  },
+  "kaisa": {
+   "name": "Kai'Sa",
+   "avgWr": 60.1,
+   "kda": 4.33,
+   "teamfight": 55.9,
+   "gpm": 855.34,
+   "dmgDealt": 31068.18,
+   "dmgTaken": 18426.26,
+   "turret": 3863.04,
+   "firstBlood": 12.26,
+   "mvpRate": 26.39,
+   "sRate": 19.17,
+   "gamesMedian": 207,
+   "legendaryTax": 1.1,
+   "legendaryTaxN": 42,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 18,
+    "of": 50
+   },
+   "conformity": {
+    "count": 22,
+    "of": 50
+   },
+   "pentas": 120,
+   "tiers": {
+    "grandmaster": 28,
+    "challenger": 7,
+    "legendary-challenger": 4,
+    "master": 4,
+    "legendary-grandmaster": 2,
+    "legendary-master": 1,
+    "sovereign": 1
+   }
+  },
+  "kalista": {
+   "name": "Kalista",
+   "avgWr": 59.53,
+   "kda": 3.77,
+   "teamfight": 53.07,
+   "gpm": 821.1,
+   "dmgDealt": 28958.0,
+   "dmgTaken": 19216.45,
+   "turret": 3634.39,
+   "firstBlood": 16.91,
+   "mvpRate": 22.24,
+   "sRate": 14.36,
+   "gamesMedian": 200,
+   "legendaryTax": -0.2,
+   "legendaryTaxN": 16,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 35,
+    "of": 50
+   },
+   "conformity": {
+    "count": 23,
+    "of": 50
+   },
+   "pentas": 86,
+   "tiers": {
+    "master": 23,
+    "grandmaster": 18,
+    "challenger": 6,
+    "legendary-master": 1
+   }
+  },
+  "karma": {
+   "name": "Karma",
+   "avgWr": 62.41,
+   "kda": 6.5,
+   "teamfight": 61.97,
+   "gpm": 647.71,
+   "dmgDealt": 14240.39,
+   "dmgTaken": 14768.35,
+   "turret": 1370.69,
+   "firstBlood": 6.04,
+   "mvpRate": 7.21,
+   "sRate": 10.73,
+   "gamesMedian": 191,
+   "legendaryTax": -8.0,
+   "legendaryTaxN": 43,
+   "keystone": {
+    "name": "Aery",
+    "count": 28,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 14,
+    "of": 50
+   },
+   "pentas": 3,
+   "tiers": {
+    "grandmaster": 23,
+    "master": 11,
+    "challenger": 7,
+    "diamond": 2,
+    "legendary-grandmaster": 2,
+    "sovereign": 1
+   }
+  },
+  "kassadin": {
+   "name": "Kassadin",
+   "avgWr": 67.06,
+   "kda": 4.67,
+   "teamfight": 52.63,
+   "gpm": 845.51,
+   "dmgDealt": 27381.1,
+   "dmgTaken": 17842.31,
+   "turret": 2860.23,
+   "firstBlood": 9.77,
+   "mvpRate": 20.41,
+   "sRate": 18.56,
+   "gamesMedian": 174,
+   "legendaryTax": -0.5,
+   "legendaryTaxN": 27,
+   "keystone": {
+    "name": "First Strike",
+    "count": 39,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 38,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 84,
+   "tiers": {
+    "grandmaster": 15,
+    "challenger": 9,
+    "master": 5,
+    "legendary-challenger": 2,
+    "legendary-grandmaster": 2
+   }
+  },
+  "katarina": {
+   "name": "Katarina",
+   "avgWr": 57.53,
+   "kda": 3.94,
+   "teamfight": 54.73,
+   "gpm": 818.04,
+   "dmgDealt": 27880.7,
+   "dmgTaken": 18213.36,
+   "turret": 2196.86,
+   "firstBlood": 14.19,
+   "mvpRate": 20.15,
+   "sRate": 14.97,
+   "gamesMedian": 214,
+   "legendaryTax": -0.0,
+   "legendaryTaxN": 44,
+   "keystone": {
+    "name": "Dark Harvest",
+    "count": 29,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 98,
+   "tiers": {
+    "grandmaster": 27,
+    "master": 8,
+    "challenger": 5,
+    "legendary-master": 2,
+    "diamond": 1,
+    "legendary-grandmaster": 1,
+    "legendary-challenger": 1
+   }
+  },
+  "kayle": {
+   "name": "Kayle",
+   "avgWr": 65.01,
+   "kda": 4.4,
+   "teamfight": 50.27,
+   "gpm": 815.69,
+   "dmgDealt": 24690.65,
+   "dmgTaken": 18942.73,
+   "turret": 3631.27,
+   "firstBlood": 8.68,
+   "mvpRate": 17.44,
+   "sRate": 15.52,
+   "gamesMedian": 195,
+   "legendaryTax": -1.2,
+   "legendaryTaxN": 32,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 20,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 17,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 52,
+   "tiers": {
+    "grandmaster": 18,
+    "master": 16,
+    "challenger": 9,
+    "sovereign": 1,
+    "legendary-grandmaster": 1
+   }
+  },
   "kayn": {
    "name": "Kayn",
-   "avgWr": 62.92,
+   "avgWr": 62.9,
    "kda": 3.97,
    "teamfight": 51.69,
    "gpm": 852.79,
@@ -1294,7 +3123,8 @@
    "mvpRate": 22.12,
    "sRate": 14.75,
    "gamesMedian": 142,
-   "legendaryTax": -1.0,
+   "legendaryTax": 0.4,
+   "legendaryTaxN": 26,
    "keystone": {
     "name": "Conqueror",
     "count": 24,
@@ -1320,6 +3150,44 @@
     "legendary-master": 1
    }
   },
+  "kennen": {
+   "name": "Kennen",
+   "avgWr": 61.3,
+   "kda": 4.13,
+   "teamfight": 50.51,
+   "gpm": 787.37,
+   "dmgDealt": 25913.43,
+   "dmgTaken": 17371.06,
+   "turret": 3729.0,
+   "firstBlood": 25.03,
+   "mvpRate": 16.52,
+   "sRate": 16.14,
+   "gamesMedian": 156,
+   "legendaryTax": -0.8,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 38,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 41,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 23,
+   "tiers": {
+    "grandmaster": 21,
+    "master": 18,
+    "challenger": 7,
+    "legendary-challenger": 1,
+    "sovereign": 1
+   }
+  },
   "khazix": {
    "name": "Kha'Zix",
    "avgWr": 64.97,
@@ -1333,7 +3201,8 @@
    "mvpRate": 26.58,
    "sRate": 18.44,
    "gamesMedian": 152,
-   "legendaryTax": -4.1,
+   "legendaryTax": -1.5,
+   "legendaryTaxN": 29,
    "keystone": {
     "name": "First Strike",
     "count": 26,
@@ -1356,6 +3225,312 @@
     "legendary-grandmaster": 2
    }
   },
+  "kindred": {
+   "name": "Kindred",
+   "avgWr": 61.71,
+   "kda": 4.4,
+   "teamfight": 54.01,
+   "gpm": 855.53,
+   "dmgDealt": 26852.82,
+   "dmgTaken": 19499.41,
+   "turret": 3243.69,
+   "firstBlood": 10.15,
+   "mvpRate": 25.97,
+   "sRate": 20.1,
+   "gamesMedian": 147,
+   "legendaryTax": 0.6,
+   "legendaryTaxN": 20,
+   "keystone": {
+    "name": "Empowerment",
+    "count": 27,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 35,
+    "of": 50
+   },
+   "conformity": {
+    "count": 6,
+    "of": 50
+   },
+   "pentas": 55,
+   "tiers": {
+    "master": 25,
+    "grandmaster": 13,
+    "challenger": 6,
+    "diamond": 2,
+    "legendary-grandmaster": 1
+   }
+  },
+  "kogmaw": {
+   "name": "Kog'Maw",
+   "avgWr": 63.36,
+   "kda": 3.95,
+   "teamfight": 53.42,
+   "gpm": 797.08,
+   "dmgDealt": 29765.68,
+   "dmgTaken": 17758.98,
+   "turret": 3235.12,
+   "firstBlood": 9.45,
+   "mvpRate": 19.49,
+   "sRate": 13.91,
+   "gamesMedian": 212,
+   "legendaryTax": -1.2,
+   "legendaryTaxN": 30,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 34,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 20,
+    "of": 50
+   },
+   "conformity": {
+    "count": 31,
+    "of": 50
+   },
+   "pentas": 74,
+   "tiers": {
+    "grandmaster": 18,
+    "master": 18,
+    "challenger": 3,
+    "legendary-master": 2,
+    "sovereign": 1,
+    "legendary-commander": 1
+   }
+  },
+  "lee-sin": {
+   "name": "Lee Sin",
+   "avgWr": 63.79,
+   "kda": 5.38,
+   "teamfight": 57.81,
+   "gpm": 913.1,
+   "dmgDealt": 27416.14,
+   "dmgTaken": 19349.55,
+   "turret": 3631.82,
+   "firstBlood": 12.65,
+   "mvpRate": 31.19,
+   "sRate": 25.4,
+   "gamesMedian": 165,
+   "legendaryTax": -2.7,
+   "legendaryTaxN": 42,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 44,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 73,
+   "tiers": {
+    "challenger": 13,
+    "grandmaster": 13,
+    "legendary-challenger": 7,
+    "legendary-grandmaster": 6,
+    "master": 2,
+    "sovereign": 1
+   }
+  },
+  "leona": {
+   "name": "Leona",
+   "avgWr": 60.88,
+   "kda": 4.69,
+   "teamfight": 55.57,
+   "gpm": 654.62,
+   "dmgDealt": 15881.48,
+   "dmgTaken": 20097.02,
+   "turret": 1343.2,
+   "firstBlood": 8.31,
+   "mvpRate": 7.78,
+   "sRate": 7.54,
+   "gamesMedian": 180,
+   "legendaryTax": -0.4,
+   "legendaryTaxN": 29,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 31,
+    "of": 50
+   },
+   "conformity": {
+    "count": 19,
+    "of": 50
+   },
+   "pentas": 7,
+   "tiers": {
+    "master": 32,
+    "grandmaster": 15,
+    "legendary-master": 2
+   }
+  },
+  "lillia": {
+   "name": "Lillia",
+   "avgWr": 62.18,
+   "kda": 4.89,
+   "teamfight": 54.54,
+   "gpm": 854.92,
+   "dmgDealt": 25758.68,
+   "dmgTaken": 19037.34,
+   "turret": 2499.64,
+   "firstBlood": 8.97,
+   "mvpRate": 23.09,
+   "sRate": 16.66,
+   "gamesMedian": 148,
+   "legendaryTax": -3.6,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 24,
+    "of": 50
+   },
+   "pentas": 26,
+   "tiers": {
+    "master": 21,
+    "grandmaster": 20,
+    "challenger": 4,
+    "legendary-grandmaster": 1,
+    "legendary-challenger": 1
+   }
+  },
+  "lissandra": {
+   "name": "Lissandra",
+   "avgWr": 62.09,
+   "kda": 4.16,
+   "teamfight": 53.21,
+   "gpm": 770.52,
+   "dmgDealt": 24828.82,
+   "dmgTaken": 17432.28,
+   "turret": 2656.84,
+   "firstBlood": 12.27,
+   "mvpRate": 10.45,
+   "sRate": 12.47,
+   "gamesMedian": 176,
+   "legendaryTax": -2.8,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 46,
+    "of": 50
+   },
+   "conformity": {
+    "count": 34,
+    "of": 50
+   },
+   "pentas": 25,
+   "tiers": {
+    "grandmaster": 24,
+    "master": 21,
+    "challenger": 2,
+    "sovereign": 2,
+    "legendary-master": 1
+   }
+  },
+  "lucian": {
+   "name": "Lucian",
+   "avgWr": 63.37,
+   "kda": 4.95,
+   "teamfight": 56.62,
+   "gpm": 862.04,
+   "dmgDealt": 31388.68,
+   "dmgTaken": 18043.68,
+   "turret": 4046.24,
+   "firstBlood": 14.81,
+   "mvpRate": 28.06,
+   "sRate": 21.39,
+   "gamesMedian": 208,
+   "legendaryTax": -1.9,
+   "legendaryTaxN": 46,
+   "keystone": {
+    "name": "Empowerment",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 33,
+    "of": 50
+   },
+   "conformity": {
+    "count": 33,
+    "of": 50
+   },
+   "pentas": 101,
+   "tiers": {
+    "grandmaster": 22,
+    "challenger": 15,
+    "legendary-grandmaster": 5,
+    "legendary-challenger": 3,
+    "master": 3,
+    "sovereign": 1
+   }
+  },
+  "lulu": {
+   "name": "Lulu",
+   "avgWr": 61.55,
+   "kda": 6.82,
+   "teamfight": 64.07,
+   "gpm": 636.87,
+   "dmgDealt": 10477.64,
+   "dmgTaken": 13730.53,
+   "turret": 1227.43,
+   "firstBlood": 5.93,
+   "mvpRate": 5.68,
+   "sRate": 8.95,
+   "gamesMedian": 196,
+   "legendaryTax": -8.2,
+   "legendaryTaxN": 42,
+   "keystone": {
+    "name": "Aery",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 49,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 0,
+   "tiers": {
+    "grandmaster": 23,
+    "challenger": 9,
+    "legendary-grandmaster": 4,
+    "master": 3,
+    "diamond": 2,
+    "legendary-master": 2
+   }
+  },
   "lux": {
    "name": "Lux",
    "avgWr": 61.23,
@@ -1369,7 +3544,8 @@
    "mvpRate": 10.6,
    "sRate": 12.07,
    "gamesMedian": 194,
-   "legendaryTax": -0.9,
+   "legendaryTax": 0.0,
+   "legendaryTaxN": 36,
    "keystone": {
     "name": "Arcane Comet",
     "count": 33,
@@ -1395,6 +3571,586 @@
     "legendary-master": 1
    }
   },
+  "malphite": {
+   "name": "Malphite",
+   "avgWr": 61.37,
+   "kda": 4.05,
+   "teamfight": 47.31,
+   "gpm": 728.88,
+   "dmgDealt": 23084.94,
+   "dmgTaken": 21269.98,
+   "turret": 2912.34,
+   "firstBlood": 11.0,
+   "mvpRate": 10.38,
+   "sRate": 10.11,
+   "gamesMedian": 206,
+   "legendaryTax": -0.6,
+   "legendaryTaxN": 23,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 43,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 29,
+    "of": 50
+   },
+   "conformity": {
+    "count": 15,
+    "of": 50
+   },
+   "pentas": 13,
+   "tiers": {
+    "master": 26,
+    "grandmaster": 21,
+    "challenger": 3
+   }
+  },
+  "maokai": {
+   "name": "Maokai",
+   "avgWr": 59.71,
+   "kda": 4.78,
+   "teamfight": 55.89,
+   "gpm": 667.49,
+   "dmgDealt": 18647.73,
+   "dmgTaken": 20786.45,
+   "turret": 1338.69,
+   "firstBlood": 7.42,
+   "mvpRate": 9.09,
+   "sRate": 8.65,
+   "gamesMedian": 177,
+   "legendaryTax": -3.5,
+   "legendaryTaxN": 23,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 44,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 37,
+    "of": 50
+   },
+   "conformity": {
+    "count": 26,
+    "of": 50
+   },
+   "pentas": 7,
+   "tiers": {
+    "master": 30,
+    "grandmaster": 14,
+    "challenger": 3,
+    "legendary-challenger": 1,
+    "legendary-master": 1
+   }
+  },
+  "master-yi": {
+   "name": "Master Yi",
+   "avgWr": 60.94,
+   "kda": 4.03,
+   "teamfight": 53.08,
+   "gpm": 893.84,
+   "dmgDealt": 25764.49,
+   "dmgTaken": 18624.41,
+   "turret": 3529.49,
+   "firstBlood": 10.37,
+   "mvpRate": 26.96,
+   "sRate": 16.54,
+   "gamesMedian": 199,
+   "legendaryTax": -3.5,
+   "legendaryTaxN": 35,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 41,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 261,
+   "tiers": {
+    "grandmaster": 21,
+    "master": 11,
+    "challenger": 8,
+    "sovereign": 2,
+    "legendary-grandmaster": 1,
+    "legendary-master": 1,
+    "legendary-challenger": 1,
+    "diamond": 1
+   }
+  },
+  "mel": {
+   "name": "Mel",
+   "avgWr": 59.01,
+   "kda": 4.11,
+   "teamfight": 50.68,
+   "gpm": 768.1,
+   "dmgDealt": 25125.35,
+   "dmgTaken": 15895.67,
+   "turret": 2394.56,
+   "firstBlood": 11.34,
+   "mvpRate": 10.63,
+   "sRate": 10.2,
+   "gamesMedian": 207,
+   "legendaryTax": -1.9,
+   "legendaryTaxN": 34,
+   "keystone": {
+    "name": "Arcane Comet",
+    "count": 33,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 26,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 15,
+   "tiers": {
+    "grandmaster": 18,
+    "master": 15,
+    "challenger": 7,
+    "legendary-grandmaster": 1,
+    "legendary-challenger": 1
+   }
+  },
+  "milio": {
+   "name": "Milio",
+   "avgWr": 60.28,
+   "kda": 6.48,
+   "teamfight": 63.23,
+   "gpm": 626.96,
+   "dmgDealt": 10373.8,
+   "dmgTaken": 14152.16,
+   "turret": 1139.14,
+   "firstBlood": 4.74,
+   "mvpRate": 6.28,
+   "sRate": 7.71,
+   "gamesMedian": 241,
+   "legendaryTax": -3.1,
+   "legendaryTaxN": 46,
+   "keystone": {
+    "name": "Aery",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 49,
+    "of": 50
+   },
+   "conformity": {
+    "count": 21,
+    "of": 50
+   },
+   "pentas": 4,
+   "tiers": {
+    "grandmaster": 26,
+    "challenger": 9,
+    "master": 8,
+    "legendary-master": 3,
+    "diamond": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "miss-fortune": {
+   "name": "Miss Fortune",
+   "avgWr": 59.68,
+   "kda": 3.92,
+   "teamfight": 52.14,
+   "gpm": 780.6,
+   "dmgDealt": 24721.96,
+   "dmgTaken": 16957.44,
+   "turret": 3361.94,
+   "firstBlood": 13.0,
+   "mvpRate": 14.83,
+   "sRate": 9.65,
+   "gamesMedian": 191,
+   "legendaryTax": -1.2,
+   "legendaryTaxN": 37,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 43,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 33,
+    "of": 50
+   },
+   "pentas": 58,
+   "tiers": {
+    "master": 29,
+    "grandmaster": 19,
+    "challenger": 1
+   }
+  },
+  "mordekaiser": {
+   "name": "Mordekaiser",
+   "avgWr": 60.18,
+   "kda": 4.03,
+   "teamfight": 47.86,
+   "gpm": 759.56,
+   "dmgDealt": 25982.6,
+   "dmgTaken": 22876.74,
+   "turret": 2747.02,
+   "firstBlood": 15.95,
+   "mvpRate": 15.8,
+   "sRate": 12.23,
+   "gamesMedian": 150,
+   "legendaryTax": 0.2,
+   "legendaryTaxN": 24,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 41,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 12,
+   "tiers": {
+    "master": 30,
+    "grandmaster": 14,
+    "challenger": 3,
+    "legendary-master": 1,
+    "sovereign": 1
+   }
+  },
+  "morgana": {
+   "name": "Morgana",
+   "avgWr": 61.74,
+   "kda": 4.9,
+   "teamfight": 52.88,
+   "gpm": 735.43,
+   "dmgDealt": 22760.53,
+   "dmgTaken": 17084.1,
+   "turret": 2053.33,
+   "firstBlood": 7.64,
+   "mvpRate": 9.54,
+   "sRate": 11.15,
+   "gamesMedian": 180,
+   "legendaryTax": -4.6,
+   "legendaryTaxN": 38,
+   "keystone": {
+    "name": "Arcane Comet",
+    "count": 38,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 23,
+    "of": 50
+   },
+   "pentas": 5,
+   "tiers": {
+    "grandmaster": 22,
+    "master": 17,
+    "challenger": 3,
+    "legendary-grandmaster": 2,
+    "sovereign": 2,
+    "legendary-master": 2
+   }
+  },
+  "nami": {
+   "name": "Nami",
+   "avgWr": 63.98,
+   "kda": 6.88,
+   "teamfight": 63.67,
+   "gpm": 646.56,
+   "dmgDealt": 12344.42,
+   "dmgTaken": 13904.18,
+   "turret": 1426.6,
+   "firstBlood": 6.6,
+   "mvpRate": 7.36,
+   "sRate": 10.02,
+   "gamesMedian": 212,
+   "legendaryTax": -6.0,
+   "legendaryTaxN": 50,
+   "keystone": {
+    "name": "Aery",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 5,
+   "tiers": {
+    "grandmaster": 25,
+    "challenger": 13,
+    "legendary-grandmaster": 4,
+    "master": 2,
+    "legendary-challenger": 2,
+    "diamond": 1
+   }
+  },
+  "nasus": {
+   "name": "Nasus",
+   "avgWr": 63.14,
+   "kda": 4.29,
+   "teamfight": 46.12,
+   "gpm": 799.55,
+   "dmgDealt": 24495.2,
+   "dmgTaken": 24516.39,
+   "turret": 4519.53,
+   "firstBlood": 8.66,
+   "mvpRate": 18.25,
+   "sRate": 17.56,
+   "gamesMedian": 170,
+   "legendaryTax": 1.8,
+   "legendaryTaxN": 31,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 36,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Teleport",
+    "count": 23,
+    "of": 50
+   },
+   "conformity": {
+    "count": 7,
+    "of": 50
+   },
+   "pentas": 38,
+   "tiers": {
+    "grandmaster": 26,
+    "master": 18,
+    "challenger": 3,
+    "legendary-master": 1,
+    "diamond": 1,
+    "sovereign": 1
+   }
+  },
+  "nautilus": {
+   "name": "Nautilus",
+   "avgWr": 59.24,
+   "kda": 4.97,
+   "teamfight": 55.74,
+   "gpm": 670.5,
+   "dmgDealt": 16890.94,
+   "dmgTaken": 19590.66,
+   "turret": 1494.82,
+   "firstBlood": 8.87,
+   "mvpRate": 9.9,
+   "sRate": 10.09,
+   "gamesMedian": 209,
+   "legendaryTax": -0.9,
+   "legendaryTaxN": 34,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 33,
+    "of": 50
+   },
+   "conformity": {
+    "count": 26,
+    "of": 50
+   },
+   "pentas": 4,
+   "tiers": {
+    "master": 26,
+    "grandmaster": 14,
+    "challenger": 10
+   }
+  },
+  "nidalee": {
+   "name": "Nidalee",
+   "avgWr": 69.34,
+   "kda": 5.66,
+   "teamfight": 57.96,
+   "gpm": 889.23,
+   "dmgDealt": 26531.04,
+   "dmgTaken": 17959.48,
+   "turret": 3354.73,
+   "firstBlood": 13.5,
+   "mvpRate": 30.39,
+   "sRate": 23.56,
+   "gamesMedian": 151,
+   "legendaryTax": -8.2,
+   "legendaryTaxN": 41,
+   "keystone": {
+    "name": "Dark Harvest",
+    "count": 46,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 38,
+    "of": 50
+   },
+   "conformity": {
+    "count": 21,
+    "of": 50
+   },
+   "pentas": 63,
+   "tiers": {
+    "grandmaster": 19,
+    "challenger": 13,
+    "legendary-grandmaster": 4,
+    "master": 3,
+    "sovereign": 2,
+    "diamond": 1,
+    "legendary-challenger": 1,
+    "legendary-master": 1
+   }
+  },
+  "nilah": {
+   "name": "Nilah",
+   "avgWr": 68.1,
+   "kda": 4.82,
+   "teamfight": 55.38,
+   "gpm": 898.46,
+   "dmgDealt": 26552.62,
+   "dmgTaken": 18164.74,
+   "turret": 3176.22,
+   "firstBlood": 7.99,
+   "mvpRate": 29.27,
+   "sRate": 21.96,
+   "gamesMedian": 152,
+   "legendaryTax": -6.8,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 33,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 29,
+    "of": 50
+   },
+   "conformity": {
+    "count": 6,
+    "of": 50
+   },
+   "pentas": 136,
+   "tiers": {
+    "grandmaster": 17,
+    "master": 17,
+    "challenger": 7,
+    "diamond": 2,
+    "sovereign": 1,
+    "legendary-grandmaster": 1,
+    "legendary-master": 1,
+    "legendary-commander": 1
+   }
+  },
+  "nocturne": {
+   "name": "Nocturne",
+   "avgWr": 58.58,
+   "kda": 4.66,
+   "teamfight": 57.39,
+   "gpm": 852.12,
+   "dmgDealt": 24153.92,
+   "dmgTaken": 18176.69,
+   "turret": 2888.23,
+   "firstBlood": 11.26,
+   "mvpRate": 21.93,
+   "sRate": 16.71,
+   "gamesMedian": 231,
+   "legendaryTax": -1.8,
+   "legendaryTaxN": 40,
+   "keystone": {
+    "name": "First Strike",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 46,
+    "of": 50
+   },
+   "conformity": {
+    "count": 30,
+    "of": 50
+   },
+   "pentas": 33,
+   "tiers": {
+    "grandmaster": 22,
+    "challenger": 9,
+    "master": 9,
+    "legendary-grandmaster": 2,
+    "sovereign": 2,
+    "legendary-challenger": 1
+   }
+  },
+  "norra": {
+   "name": "Norra",
+   "avgWr": 61.53,
+   "kda": 5.02,
+   "teamfight": 52.92,
+   "gpm": 751.3,
+   "dmgDealt": 26555.02,
+   "dmgTaken": 15144.66,
+   "turret": 1970.98,
+   "firstBlood": 8.97,
+   "mvpRate": 11.1,
+   "sRate": 12.59,
+   "gamesMedian": 177,
+   "legendaryTax": -0.8,
+   "legendaryTaxN": 30,
+   "keystone": {
+    "name": "Dark Harvest",
+    "count": 41,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 28,
+    "of": 50
+   },
+   "conformity": {
+    "count": 7,
+    "of": 50
+   },
+   "pentas": 13,
+   "tiers": {
+    "master": 22,
+    "grandmaster": 13,
+    "challenger": 7,
+    "legendary-grandmaster": 2,
+    "sovereign": 1,
+    "legendary-challenger": 1,
+    "legendary-master": 1
+   }
+  },
   "nunu-and-willump": {
    "name": "Nunu & Willump",
    "avgWr": 62.81,
@@ -1408,7 +4164,8 @@
    "mvpRate": 16.18,
    "sRate": 10.53,
    "gamesMedian": 188,
-   "legendaryTax": -2.6,
+   "legendaryTax": -3.4,
+   "legendaryTaxN": 28,
    "keystone": {
     "name": "Ice Overlord",
     "count": 45,
@@ -1432,43 +4189,392 @@
     "legendary-master": 1
    }
   },
-  "orianna": {
-   "name": "Orianna",
-   "avgWr": 60.68,
-   "kda": 4.98,
-   "teamfight": 53.96,
-   "gpm": 797.82,
-   "dmgDealt": 26581.94,
-   "dmgTaken": 16263.29,
-   "turret": 2378.57,
-   "firstBlood": 9.95,
-   "mvpRate": 14.86,
-   "sRate": 16.25,
-   "gamesMedian": 195,
-   "legendaryTax": -0.4,
+  "olaf": {
+   "name": "Olaf",
+   "avgWr": 63.99,
+   "kda": 4.43,
+   "teamfight": 52.5,
+   "gpm": 852.14,
+   "dmgDealt": 26747.46,
+   "dmgTaken": 22132.04,
+   "turret": 3874.24,
+   "firstBlood": 15.06,
+   "mvpRate": 25.27,
+   "sRate": 19.53,
+   "gamesMedian": 177,
+   "legendaryTax": -2.4,
+   "legendaryTaxN": 35,
    "keystone": {
     "name": "Conqueror",
-    "count": 27,
+    "count": 50,
     "of": 50
    },
    "spells": {
     "pair": "Barrier + Flash",
-    "count": 25,
+    "count": 13,
+    "of": 50
+   },
+   "conformity": {
+    "count": 22,
+    "of": 50
+   },
+   "pentas": 56,
+   "tiers": {
+    "grandmaster": 26,
+    "challenger": 11,
+    "master": 6,
+    "legendary-master": 2,
+    "legendary-challenger": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "orianna": {
+   "name": "Orianna",
+   "avgWr": 61.35,
+   "kda": 5.03,
+   "teamfight": 54.14,
+   "gpm": 800.3,
+   "dmgDealt": 26709.12,
+   "dmgTaken": 16240.14,
+   "turret": 2428.24,
+   "firstBlood": 10.01,
+   "mvpRate": 15.37,
+   "sRate": 16.84,
+   "gamesMedian": 195,
+   "legendaryTax": -0.5,
+   "legendaryTaxN": 44,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 28,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 26,
+    "of": 50
+   },
+   "conformity": {
+    "count": 19,
+    "of": 50
+   },
+   "pentas": 21,
+   "tiers": {
+    "grandmaster": 21,
+    "challenger": 13,
+    "master": 6,
+    "sovereign": 3,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1,
+    "legendary-master": 1
+   }
+  },
+  "ornn": {
+   "name": "Ornn",
+   "avgWr": 61.16,
+   "kda": 4.73,
+   "teamfight": 51.33,
+   "gpm": 720.22,
+   "dmgDealt": 22701.47,
+   "dmgTaken": 23828.08,
+   "turret": 2214.16,
+   "firstBlood": 12.1,
+   "mvpRate": 11.54,
+   "sRate": 12.07,
+   "gamesMedian": 192,
+   "legendaryTax": -2.2,
+   "legendaryTaxN": 31,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 31,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 27,
+    "of": 50
+   },
+   "conformity": {
+    "count": 21,
+    "of": 50
+   },
+   "pentas": 11,
+   "tiers": {
+    "grandmaster": 22,
+    "master": 10,
+    "challenger": 9,
+    "legendary-grandmaster": 3,
+    "legendary-master": 3
+   }
+  },
+  "pantheon": {
+   "name": "Pantheon",
+   "avgWr": 64.62,
+   "kda": 4.47,
+   "teamfight": 54.74,
+   "gpm": 857.3,
+   "dmgDealt": 24322.48,
+   "dmgTaken": 17984.4,
+   "turret": 2725.82,
+   "firstBlood": 14.38,
+   "mvpRate": 22.34,
+   "sRate": 15.24,
+   "gamesMedian": 201,
+   "legendaryTax": -1.3,
+   "legendaryTaxN": 41,
+   "keystone": {
+    "name": "First Strike",
+    "count": 40,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 35,
+    "of": 50
+   },
+   "conformity": {
+    "count": 17,
+    "of": 50
+   },
+   "pentas": 32,
+   "tiers": {
+    "grandmaster": 21,
+    "challenger": 16,
+    "master": 6,
+    "legendary-challenger": 2,
+    "legendary-master": 2,
+    "sovereign": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "poppy": {
+   "name": "Poppy",
+   "avgWr": 61.52,
+   "kda": 4.03,
+   "teamfight": 48.57,
+   "gpm": 757.26,
+   "dmgDealt": 24868.72,
+   "dmgTaken": 23855.9,
+   "turret": 3330.9,
+   "firstBlood": 16.59,
+   "mvpRate": 15.53,
+   "sRate": 13.59,
+   "gamesMedian": 185,
+   "legendaryTax": -1.1,
+   "legendaryTaxN": 36,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 43,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 28,
+    "of": 50
+   },
+   "conformity": {
+    "count": 15,
+    "of": 50
+   },
+   "pentas": 8,
+   "tiers": {
+    "grandmaster": 27,
+    "master": 14,
+    "challenger": 4,
+    "legendary-grandmaster": 2,
+    "diamond": 1,
+    "legendary-master": 1
+   }
+  },
+  "pyke": {
+   "name": "Pyke",
+   "avgWr": 63.76,
+   "kda": 4.74,
+   "teamfight": 57.21,
+   "gpm": 777.92,
+   "dmgDealt": 20961.57,
+   "dmgTaken": 20105.59,
+   "turret": 2276.69,
+   "firstBlood": 13.26,
+   "mvpRate": 14.61,
+   "sRate": 13.53,
+   "gamesMedian": 162,
+   "legendaryTax": -0.6,
+   "legendaryTaxN": 28,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 28,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 50,
+   "tiers": {
+    "grandmaster": 21,
+    "master": 16,
+    "challenger": 6,
+    "legendary-grandmaster": 3,
+    "legendary-challenger": 1,
+    "legendary-master": 1
+   }
+  },
+  "rakan": {
+   "name": "Rakan",
+   "avgWr": 61.33,
+   "kda": 5.11,
+   "teamfight": 59.98,
+   "gpm": 671.1,
+   "dmgDealt": 17429.9,
+   "dmgTaken": 18027.82,
+   "turret": 1641.86,
+   "firstBlood": 8.02,
+   "mvpRate": 11.28,
+   "sRate": 13.0,
+   "gamesMedian": 170,
+   "legendaryTax": -2.2,
+   "legendaryTaxN": 26,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 30,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 32,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 4,
+   "tiers": {
+    "master": 20,
+    "grandmaster": 20,
+    "challenger": 7,
+    "legendary-grandmaster": 1,
+    "sovereign": 1
+   }
+  },
+  "rammus": {
+   "name": "Rammus",
+   "avgWr": 64.34,
+   "kda": 5.33,
+   "teamfight": 56.11,
+   "gpm": 743.46,
+   "dmgDealt": 18855.35,
+   "dmgTaken": 19144.68,
+   "turret": 1842.51,
+   "firstBlood": 8.19,
+   "mvpRate": 11.75,
+   "sRate": 9.7,
+   "gamesMedian": 207,
+   "legendaryTax": -2.6,
+   "legendaryTaxN": 31,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 50,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 41,
     "of": 50
    },
    "conformity": {
     "count": 18,
     "of": 50
    },
-   "pentas": 21,
+   "pentas": 10,
    "tiers": {
-    "grandmaster": 21,
-    "challenger": 12,
-    "master": 6,
-    "sovereign": 3,
+    "grandmaster": 23,
+    "master": 9,
+    "legendary-master": 1,
+    "legendary-grandmaster": 1,
+    "challenger": 1
+   }
+  },
+  "rell": {
+   "name": "Rell",
+   "avgWr": 58.54,
+   "kda": 4.92,
+   "teamfight": 58.44,
+   "gpm": 671.98,
+   "dmgDealt": 17149.54,
+   "dmgTaken": 19440.18,
+   "turret": 1650.2,
+   "firstBlood": 9.2,
+   "mvpRate": 10.48,
+   "sRate": 10.31,
+   "gamesMedian": 235,
+   "legendaryTax": -0.7,
+   "legendaryTaxN": 41,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 38,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 20,
+   "tiers": {
+    "grandmaster": 23,
+    "master": 16,
+    "challenger": 6,
+    "legendary-master": 2,
+    "diamond": 1
+   }
+  },
+  "renekton": {
+   "name": "Renekton",
+   "avgWr": 59.2,
+   "kda": 3.96,
+   "teamfight": 45.73,
+   "gpm": 802.94,
+   "dmgDealt": 25809.81,
+   "dmgTaken": 24310.79,
+   "turret": 4647.06,
+   "firstBlood": 19.74,
+   "mvpRate": 16.28,
+   "sRate": 15.75,
+   "gamesMedian": 189,
+   "legendaryTax": -3.1,
+   "legendaryTaxN": 20,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 39,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 46,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 19,
+   "tiers": {
+    "grandmaster": 19,
+    "master": 18,
+    "challenger": 7,
     "legendary-grandmaster": 2,
-    "legendary-challenger": 1,
-    "legendary-master": 1
+    "sovereign": 1,
+    "diamond": 1
    }
   },
   "rengar": {
@@ -1484,7 +4590,8 @@
    "mvpRate": 24.4,
    "sRate": 17.37,
    "gamesMedian": 170,
-   "legendaryTax": 0.5,
+   "legendaryTax": 1.7,
+   "legendaryTaxN": 31,
    "keystone": {
     "name": "Conqueror",
     "count": 26,
@@ -1509,23 +4616,907 @@
     "legendary-master": 1
    }
   },
-  "tryndamere": {
-   "name": "Tryndamere",
-   "avgWr": 60.29,
-   "kda": 3.29,
-   "teamfight": 46.44,
-   "gpm": 836.73,
-   "dmgDealt": 23986.29,
-   "dmgTaken": 21833.33,
-   "turret": 4056.59,
-   "firstBlood": 15.78,
-   "mvpRate": 16.43,
-   "sRate": 12.15,
-   "gamesMedian": 169,
+  "riven": {
+   "name": "Riven",
+   "avgWr": 63.51,
+   "kda": 5.24,
+   "teamfight": 54.79,
+   "gpm": 903.24,
+   "dmgDealt": 27322.02,
+   "dmgTaken": 19317.82,
+   "turret": 4096.66,
+   "firstBlood": 18.3,
+   "mvpRate": 31.02,
+   "sRate": 23.89,
+   "gamesMedian": 160,
    "legendaryTax": -1.9,
+   "legendaryTaxN": 40,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 50,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 34,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 74,
+   "tiers": {
+    "challenger": 15,
+    "grandmaster": 15,
+    "master": 8,
+    "legendary-challenger": 4,
+    "legendary-grandmaster": 3,
+    "sovereign": 1
+   }
+  },
+  "rumble": {
+   "name": "Rumble",
+   "avgWr": 57.13,
+   "kda": 4.05,
+   "teamfight": 47.24,
+   "gpm": 751.96,
+   "dmgDealt": 25300.02,
+   "dmgTaken": 20181.12,
+   "turret": 2624.48,
+   "firstBlood": 11.88,
+   "mvpRate": 11.37,
+   "sRate": 9.57,
+   "gamesMedian": 188,
+   "legendaryTax": -8.1,
+   "legendaryTaxN": 22,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 26,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 37,
+    "of": 50
+   },
+   "conformity": {
+    "count": 6,
+    "of": 50
+   },
+   "pentas": 6,
+   "tiers": {
+    "master": 25,
+    "grandmaster": 16,
+    "challenger": 7,
+    "diamond": 2
+   }
+  },
+  "ryze": {
+   "name": "Ryze",
+   "avgWr": 62.47,
+   "kda": 4.64,
+   "teamfight": 53.27,
+   "gpm": 825.96,
+   "dmgDealt": 27593.84,
+   "dmgTaken": 18290.78,
+   "turret": 2847.02,
+   "firstBlood": 11.94,
+   "mvpRate": 17.24,
+   "sRate": 18.01,
+   "gamesMedian": 199,
+   "legendaryTax": -2.4,
+   "legendaryTaxN": 45,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 38,
+    "of": 50
+   },
+   "conformity": {
+    "count": 28,
+    "of": 50
+   },
+   "pentas": 26,
+   "tiers": {
+    "grandmaster": 22,
+    "challenger": 16,
+    "master": 4,
+    "legendary-challenger": 3,
+    "legendary-grandmaster": 2
+   }
+  },
+  "samira": {
+   "name": "Samira",
+   "avgWr": 60.96,
+   "kda": 3.83,
+   "teamfight": 57.18,
+   "gpm": 855.39,
+   "dmgDealt": 31224.37,
+   "dmgTaken": 19983.55,
+   "turret": 3496.71,
+   "firstBlood": 16.72,
+   "mvpRate": 28.1,
+   "sRate": 16.66,
+   "gamesMedian": 196,
+   "legendaryTax": 0.0,
+   "legendaryTaxN": 36,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 50,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 45,
+    "of": 50
+   },
+   "conformity": {
+    "count": 33,
+    "of": 50
+   },
+   "pentas": 249,
+   "tiers": {
+    "grandmaster": 25,
+    "challenger": 11,
+    "master": 7,
+    "legendary-grandmaster": 2,
+    "sovereign": 1,
+    "legendary-master": 1,
+    "legendary-challenger": 1
+   }
+  },
+  "senna": {
+   "name": "Senna",
+   "avgWr": 63.61,
+   "kda": 5.6,
+   "teamfight": 59.41,
+   "gpm": 719.86,
+   "dmgDealt": 22729.32,
+   "dmgTaken": 17399.44,
+   "turret": 2574.14,
+   "firstBlood": 8.38,
+   "mvpRate": 18.33,
+   "sRate": 14.67,
+   "gamesMedian": 212,
+   "legendaryTax": -1.8,
+   "legendaryTaxN": 42,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 27,
+    "of": 50
+   },
+   "pentas": 14,
+   "tiers": {
+    "grandmaster": 19,
+    "challenger": 13,
+    "master": 10,
+    "legendary-grandmaster": 3,
+    "legendary-challenger": 2,
+    "sovereign": 1
+   }
+  },
+  "seraphine": {
+   "name": "Seraphine",
+   "avgWr": 61.26,
+   "kda": 5.66,
+   "teamfight": 57.99,
+   "gpm": 708.06,
+   "dmgDealt": 20490.6,
+   "dmgTaken": 14895.13,
+   "turret": 1861.34,
+   "firstBlood": 9.27,
+   "mvpRate": 10.23,
+   "sRate": 12.42,
+   "gamesMedian": 168,
+   "legendaryTax": -2.5,
+   "legendaryTaxN": 28,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 16,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 30,
+    "of": 50
+   },
+   "conformity": {
+    "count": 4,
+    "of": 50
+   },
+   "pentas": 8,
+   "tiers": {
+    "grandmaster": 21,
+    "master": 16,
+    "challenger": 4,
+    "legendary-master": 3,
+    "sovereign": 2,
+    "diamond": 1
+   }
+  },
+  "sett": {
+   "name": "Sett",
+   "avgWr": 61.5,
+   "kda": 3.61,
+   "teamfight": 47.09,
+   "gpm": 782.06,
+   "dmgDealt": 26203.02,
+   "dmgTaken": 24878.88,
+   "turret": 4176.74,
+   "firstBlood": 21.6,
+   "mvpRate": 17.39,
+   "sRate": 14.34,
+   "gamesMedian": 216,
+   "legendaryTax": 1.8,
+   "legendaryTaxN": 43,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 28,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 38,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 42,
+   "tiers": {
+    "grandmaster": 23,
+    "challenger": 12,
+    "master": 6,
+    "legendary-grandmaster": 5,
+    "legendary-challenger": 1
+   }
+  },
+  "shen": {
+   "name": "Shen",
+   "avgWr": 61.81,
+   "kda": 4.55,
+   "teamfight": 52.17,
+   "gpm": 731.39,
+   "dmgDealt": 21986.88,
+   "dmgTaken": 23356.78,
+   "turret": 2447.41,
+   "firstBlood": 12.05,
+   "mvpRate": 13.68,
+   "sRate": 11.04,
+   "gamesMedian": 240,
+   "legendaryTax": -3.4,
+   "legendaryTaxN": 31,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 40,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Teleport",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 15,
+   "tiers": {
+    "grandmaster": 25,
+    "master": 11,
+    "challenger": 9,
+    "legendary-master": 2,
+    "sovereign": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "shyvana": {
+   "name": "Shyvana",
+   "avgWr": 64.62,
+   "kda": 4.8,
+   "teamfight": 52.9,
+   "gpm": 873.82,
+   "dmgDealt": 24332.45,
+   "dmgTaken": 21214.14,
+   "turret": 3354.1,
+   "firstBlood": 9.5,
+   "mvpRate": 25.02,
+   "sRate": 18.49,
+   "gamesMedian": 167,
+   "legendaryTax": -1.2,
+   "legendaryTaxN": 33,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 44,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 46,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 40,
+   "tiers": {
+    "grandmaster": 24,
+    "master": 13,
+    "challenger": 3,
+    "legendary-challenger": 2,
+    "legendary-master": 2
+   }
+  },
+  "singed": {
+   "name": "Singed",
+   "avgWr": 59.47,
+   "kda": 4.68,
+   "teamfight": 52.85,
+   "gpm": 732.8,
+   "dmgDealt": 21625.82,
+   "dmgTaken": 20631.61,
+   "turret": 2161.67,
+   "firstBlood": 11.34,
+   "mvpRate": 10.14,
+   "sRate": 11.38,
+   "gamesMedian": 184,
+   "legendaryTax": -4.9,
+   "legendaryTaxN": 21,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 31,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 36,
+    "of": 50
+   },
+   "conformity": {
+    "count": 7,
+    "of": 50
+   },
+   "pentas": 24,
+   "tiers": {
+    "master": 21,
+    "grandmaster": 16,
+    "challenger": 4,
+    "legendary-master": 1,
+    "diamond": 1
+   }
+  },
+  "sion": {
+   "name": "Sion",
+   "avgWr": 61.06,
+   "kda": 3.56,
+   "teamfight": 47.38,
+   "gpm": 772.94,
+   "dmgDealt": 26111.27,
+   "dmgTaken": 26991.0,
+   "turret": 3360.39,
+   "firstBlood": 10.75,
+   "mvpRate": 17.29,
+   "sRate": 13.57,
+   "gamesMedian": 218,
+   "legendaryTax": -0.0,
+   "legendaryTaxN": 36,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 46,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Teleport",
+    "count": 34,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 7,
+   "tiers": {
+    "grandmaster": 28,
+    "master": 9,
+    "challenger": 6,
+    "legendary-grandmaster": 2,
+    "legendary-master": 1
+   }
+  },
+  "sivir": {
+   "name": "Sivir",
+   "avgWr": 60.49,
+   "kda": 3.88,
+   "teamfight": 51.2,
+   "gpm": 787.71,
+   "dmgDealt": 26113.98,
+   "dmgTaken": 18619.41,
+   "turret": 3280.84,
+   "firstBlood": 9.54,
+   "mvpRate": 15.74,
+   "sRate": 11.51,
+   "gamesMedian": 191,
+   "legendaryTax": -2.2,
+   "legendaryTaxN": 16,
    "keystone": {
     "name": "Lethal Tempo",
+    "count": 41,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 22,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 64,
+   "tiers": {
+    "master": 26,
+    "grandmaster": 7,
+    "challenger": 6,
+    "diamond": 6,
+    "legendary-grandmaster": 1
+   }
+  },
+  "skarner": {
+   "name": "Skarner",
+   "avgWr": 61.04,
+   "kda": 4.65,
+   "teamfight": 53.88,
+   "gpm": 741.19,
+   "dmgDealt": 21387.42,
+   "dmgTaken": 21771.33,
+   "turret": 2305.79,
+   "firstBlood": 10.46,
+   "mvpRate": 14.75,
+   "sRate": 13.59,
+   "gamesMedian": 167,
+   "legendaryTax": 4.6,
+   "legendaryTaxN": 21,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 23,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 21,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 11,
+   "tiers": {
+    "master": 22,
+    "grandmaster": 17,
+    "challenger": 2,
+    "legendary-master": 1,
+    "diamond": 1
+   }
+  },
+  "smolder": {
+   "name": "Smolder",
+   "avgWr": 62.91,
+   "kda": 4.66,
+   "teamfight": 55.55,
+   "gpm": 821.86,
+   "dmgDealt": 30375.84,
+   "dmgTaken": 17977.72,
+   "turret": 3172.22,
+   "firstBlood": 9.89,
+   "mvpRate": 21.95,
+   "sRate": 16.54,
+   "gamesMedian": 224,
+   "legendaryTax": -0.7,
+   "legendaryTaxN": 50,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 33,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 36,
+    "of": 50
+   },
+   "conformity": {
+    "count": 24,
+    "of": 50
+   },
+   "pentas": 89,
+   "tiers": {
+    "challenger": 19,
+    "grandmaster": 17,
+    "legendary-challenger": 4,
+    "master": 4,
+    "legendary-grandmaster": 1,
+    "sovereign": 1
+   }
+  },
+  "sona": {
+   "name": "Sona",
+   "avgWr": 63.94,
+   "kda": 6.27,
+   "teamfight": 61.36,
+   "gpm": 648.2,
+   "dmgDealt": 13355.59,
+   "dmgTaken": 15630.04,
+   "turret": 1418.31,
+   "firstBlood": 5.15,
+   "mvpRate": 9.52,
+   "sRate": 11.21,
+   "gamesMedian": 218,
+   "legendaryTax": -4.9,
+   "legendaryTaxN": 46,
+   "keystone": {
+    "name": "Aery",
+    "count": 24,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 49,
+    "of": 50
+   },
+   "conformity": {
+    "count": 15,
+    "of": 50
+   },
+   "pentas": 3,
+   "tiers": {
+    "grandmaster": 30,
+    "master": 11,
+    "challenger": 4,
+    "sovereign": 1,
+    "legendary-master": 1
+   }
+  },
+  "soraka": {
+   "name": "Soraka",
+   "avgWr": 63.49,
+   "kda": 5.76,
+   "teamfight": 60.0,
+   "gpm": 629.3,
+   "dmgDealt": 11735.18,
+   "dmgTaken": 15133.24,
+   "turret": 1192.2,
+   "firstBlood": 5.57,
+   "mvpRate": 7.79,
+   "sRate": 6.43,
+   "gamesMedian": 183,
+   "legendaryTax": -0.3,
+   "legendaryTaxN": 40,
+   "keystone": {
+    "name": "Aery",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
     "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 7,
+    "of": 50
+   },
+   "pentas": 3,
+   "tiers": {
+    "master": 24,
+    "grandmaster": 17,
+    "challenger": 1,
+    "legendary-challenger": 1,
+    "legendary-grandmaster": 1,
+    "legendary-master": 1
+   }
+  },
+  "swain": {
+   "name": "Swain",
+   "avgWr": 60.71,
+   "kda": 4.93,
+   "teamfight": 54.46,
+   "gpm": 804.62,
+   "dmgDealt": 27376.14,
+   "dmgTaken": 20315.44,
+   "turret": 2677.7,
+   "firstBlood": 9.34,
+   "mvpRate": 19.2,
+   "sRate": 19.09,
+   "gamesMedian": 195,
+   "legendaryTax": -2.3,
+   "legendaryTaxN": 39,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 32,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 50,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 65,
+   "tiers": {
+    "grandmaster": 31,
+    "challenger": 7,
+    "master": 7,
+    "legendary-grandmaster": 1,
+    "legendary-master": 1,
+    "sovereign": 1
+   }
+  },
+  "syndra": {
+   "name": "Syndra",
+   "avgWr": 61.27,
+   "kda": 4.78,
+   "teamfight": 52.25,
+   "gpm": 777.29,
+   "dmgDealt": 26907.84,
+   "dmgTaken": 15848.0,
+   "turret": 2258.41,
+   "firstBlood": 10.16,
+   "mvpRate": 13.62,
+   "sRate": 14.12,
+   "gamesMedian": 175,
+   "legendaryTax": -1.2,
+   "legendaryTaxN": 31,
+   "keystone": {
+    "name": "First Strike",
+    "count": 26,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 33,
+    "of": 50
+   },
+   "conformity": {
+    "count": 14,
+    "of": 50
+   },
+   "pentas": 30,
+   "tiers": {
+    "master": 20,
+    "grandmaster": 20,
+    "challenger": 3,
+    "legendary-master": 3,
+    "legendary-challenger": 1,
+    "legendary-grandmaster": 1
+   }
+  },
+  "taliyah": {
+   "name": "Taliyah",
+   "avgWr": 60.34,
+   "kda": 4.72,
+   "teamfight": 54.84,
+   "gpm": 809.22,
+   "dmgDealt": 26445.1,
+   "dmgTaken": 16433.53,
+   "turret": 2535.57,
+   "firstBlood": 11.33,
+   "mvpRate": 15.57,
+   "sRate": 15.38,
+   "gamesMedian": 229,
+   "legendaryTax": -1.0,
+   "legendaryTaxN": 39,
+   "keystone": {
+    "name": "Dark Harvest",
+    "count": 38,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 35,
+    "of": 50
+   },
+   "pentas": 28,
+   "tiers": {
+    "grandmaster": 30,
+    "challenger": 5,
+    "master": 4,
+    "legendary-grandmaster": 3,
+    "sovereign": 2,
+    "legendary-master": 1
+   }
+  },
+  "talon": {
+   "name": "Talon",
+   "avgWr": 63.87,
+   "kda": 4.76,
+   "teamfight": 54.85,
+   "gpm": 877.14,
+   "dmgDealt": 25870.42,
+   "dmgTaken": 18323.44,
+   "turret": 2833.38,
+   "firstBlood": 11.14,
+   "mvpRate": 23.12,
+   "sRate": 18.42,
+   "gamesMedian": 153,
+   "legendaryTax": -3.5,
+   "legendaryTaxN": 28,
+   "keystone": {
+    "name": "First Strike",
+    "count": 29,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 38,
+    "of": 50
+   },
+   "conformity": {
+    "count": 9,
+    "of": 50
+   },
+   "pentas": 43,
+   "tiers": {
+    "grandmaster": 18,
+    "master": 14,
+    "challenger": 7,
+    "sovereign": 2,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1,
+    "legendary-master": 1
+   }
+  },
+  "teemo": {
+   "name": "Teemo",
+   "avgWr": 61.23,
+   "kda": 3.64,
+   "teamfight": 47.98,
+   "gpm": 760.06,
+   "dmgDealt": 27341.32,
+   "dmgTaken": 18451.44,
+   "turret": 2522.72,
+   "firstBlood": 15.47,
+   "mvpRate": 11.02,
+   "sRate": 9.97,
+   "gamesMedian": 168,
+   "legendaryTax": -1.6,
+   "legendaryTaxN": 28,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 33,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 19,
+    "of": 50
+   },
+   "pentas": 7,
+   "tiers": {
+    "master": 26,
+    "grandmaster": 19,
+    "challenger": 3,
+    "legendary-master": 1
+   }
+  },
+  "thresh": {
+   "name": "Thresh",
+   "avgWr": 61.28,
+   "kda": 5.16,
+   "teamfight": 58.59,
+   "gpm": 682.59,
+   "dmgDealt": 18290.51,
+   "dmgTaken": 19856.82,
+   "turret": 1732.53,
+   "firstBlood": 9.25,
+   "mvpRate": 11.66,
+   "sRate": 11.99,
+   "gamesMedian": 205,
+   "legendaryTax": -1.6,
+   "legendaryTaxN": 45,
+   "keystone": {
+    "name": "Ice Overlord",
+    "count": 50,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 40,
+    "of": 50
+   },
+   "conformity": {
+    "count": 7,
+    "of": 50
+   },
+   "pentas": 4,
+   "tiers": {
+    "grandmaster": 25,
+    "master": 10,
+    "challenger": 8,
+    "legendary-grandmaster": 2
+   }
+  },
+  "tristana": {
+   "name": "Tristana",
+   "avgWr": 58.67,
+   "kda": 3.79,
+   "teamfight": 50.32,
+   "gpm": 787.1,
+   "dmgDealt": 26499.34,
+   "dmgTaken": 18870.86,
+   "turret": 4125.7,
+   "firstBlood": 9.11,
+   "mvpRate": 16.93,
+   "sRate": 12.72,
+   "gamesMedian": 165,
+   "legendaryTax": 1.3,
+   "legendaryTaxN": 22,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 26,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 57,
+   "tiers": {
+    "master": 32,
+    "grandmaster": 15,
+    "legendary-master": 1,
+    "sovereign": 1
+   }
+  },
+  "tryndamere": {
+   "name": "Tryndamere",
+   "avgWr": 59.99,
+   "kda": 3.24,
+   "teamfight": 46.07,
+   "gpm": 835.81,
+   "dmgDealt": 24019.96,
+   "dmgTaken": 21950.6,
+   "turret": 4103.33,
+   "firstBlood": 15.94,
+   "mvpRate": 16.12,
+   "sRate": 11.76,
+   "gamesMedian": 169,
+   "legendaryTax": -2.1,
+   "legendaryTaxN": 21,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 47,
     "of": 50
    },
    "spells": {
@@ -1537,13 +5528,165 @@
     "count": 14,
     "of": 50
    },
-   "pentas": 53,
+   "pentas": 21,
    "tiers": {
     "master": 31,
     "grandmaster": 12,
-    "sovereign": 2,
     "challenger": 2,
-    "legendary-grandmaster": 1
+    "legendary-grandmaster": 1,
+    "sovereign": 1
+   }
+  },
+  "twisted-fate": {
+   "name": "Twisted Fate",
+   "avgWr": 65.05,
+   "kda": 4.65,
+   "teamfight": 53.49,
+   "gpm": 848.02,
+   "dmgDealt": 26731.62,
+   "dmgTaken": 17389.82,
+   "turret": 3983.44,
+   "firstBlood": 10.14,
+   "mvpRate": 17.18,
+   "sRate": 18.99,
+   "gamesMedian": 178,
+   "legendaryTax": -0.5,
+   "legendaryTaxN": 30,
+   "keystone": {
+    "name": "Fleet Footwork",
+    "count": 39,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 36,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 24,
+   "tiers": {
+    "grandmaster": 17,
+    "challenger": 15,
+    "master": 12,
+    "legendary-challenger": 2,
+    "legendary-grandmaster": 1,
+    "sovereign": 1
+   }
+  },
+  "twitch": {
+   "name": "Twitch",
+   "avgWr": 60.3,
+   "kda": 3.99,
+   "teamfight": 54.32,
+   "gpm": 820.64,
+   "dmgDealt": 30081.56,
+   "dmgTaken": 18659.8,
+   "turret": 3239.1,
+   "firstBlood": 13.73,
+   "mvpRate": 23.1,
+   "sRate": 15.95,
+   "gamesMedian": 193,
+   "legendaryTax": -4.0,
+   "legendaryTaxN": 23,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 48,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 29,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 163,
+   "tiers": {
+    "master": 23,
+    "grandmaster": 21,
+    "challenger": 4
+   }
+  },
+  "urgot": {
+   "name": "Urgot",
+   "avgWr": 59.94,
+   "kda": 4.49,
+   "teamfight": 50.07,
+   "gpm": 784.9,
+   "dmgDealt": 22661.71,
+   "dmgTaken": 20176.6,
+   "turret": 2465.02,
+   "firstBlood": 10.77,
+   "mvpRate": 15.11,
+   "sRate": 11.93,
+   "gamesMedian": 184,
+   "legendaryTax": -1.6,
+   "legendaryTaxN": 36,
+   "keystone": {
+    "name": "Empowerment",
+    "count": 34,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 16,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 9,
+   "tiers": {
+    "grandmaster": 22,
+    "master": 18,
+    "challenger": 4,
+    "legendary-grandmaster": 3,
+    "legendary-master": 1
+   }
+  },
+  "varus": {
+   "name": "Varus",
+   "avgWr": 60.4,
+   "kda": 3.91,
+   "teamfight": 53.01,
+   "gpm": 816.58,
+   "dmgDealt": 27679.92,
+   "dmgTaken": 18367.96,
+   "turret": 3651.92,
+   "firstBlood": 11.3,
+   "mvpRate": 19.94,
+   "sRate": 13.68,
+   "gamesMedian": 206,
+   "legendaryTax": -1.4,
+   "legendaryTaxN": 42,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 45,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 21,
+    "of": 50
+   },
+   "conformity": {
+    "count": 23,
+    "of": 50
+   },
+   "pentas": 122,
+   "tiers": {
+    "grandmaster": 21,
+    "master": 17,
+    "challenger": 6,
+    "legendary-master": 2,
+    "legendary-grandmaster": 1,
+    "legendary-challenger": 1
    }
   },
   "vayne": {
@@ -1559,30 +5702,374 @@
    "mvpRate": 23.95,
    "sRate": 15.92,
    "gamesMedian": 202,
-   "legendaryTax": -1.7,
+   "legendaryTax": -0.5,
+   "legendaryTaxN": 40,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 49,
+    "count": 48,
     "of": 50
    },
    "spells": {
     "pair": "Flash + Ghost",
-    "count": 38,
+    "count": 37,
     "of": 50
    },
    "conformity": {
-    "count": 31,
+    "count": 30,
     "of": 50
    },
    "pentas": 131,
    "tiers": {
     "grandmaster": 21,
     "master": 14,
-    "challenger": 8,
+    "challenger": 7,
     "legendary-challenger": 2,
     "sovereign": 1,
     "legendary-grandmaster": 1,
     "legendary-master": 1
+   }
+  },
+  "veigar": {
+   "name": "Veigar",
+   "avgWr": 61.51,
+   "kda": 4.1,
+   "teamfight": 48.83,
+   "gpm": 764.76,
+   "dmgDealt": 23096.8,
+   "dmgTaken": 16303.41,
+   "turret": 2522.02,
+   "firstBlood": 9.02,
+   "mvpRate": 10.17,
+   "sRate": 10.34,
+   "gamesMedian": 154,
+   "legendaryTax": -0.3,
+   "legendaryTaxN": 27,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 29,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 9,
+   "tiers": {
+    "master": 34,
+    "grandmaster": 9,
+    "challenger": 2,
+    "legendary-master": 1
+   }
+  },
+  "velkoz": {
+   "name": "Vel'Koz",
+   "avgWr": 59.69,
+   "kda": 4.59,
+   "teamfight": 53.66,
+   "gpm": 758.68,
+   "dmgDealt": 26715.92,
+   "dmgTaken": 16572.22,
+   "turret": 2076.4,
+   "firstBlood": 9.51,
+   "mvpRate": 13.5,
+   "sRate": 13.22,
+   "gamesMedian": 160,
+   "legendaryTax": 3.2,
+   "legendaryTaxN": 24,
+   "keystone": {
+    "name": "Arcane Comet",
+    "count": 35,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 27,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 14,
+   "tiers": {
+    "master": 27,
+    "grandmaster": 17,
+    "challenger": 2,
+    "legendary-grandmaster": 1,
+    "sovereign": 1,
+    "diamond": 1,
+    "legendary-master": 1
+   }
+  },
+  "vex": {
+   "name": "Vex",
+   "avgWr": 59.9,
+   "kda": 3.93,
+   "teamfight": 50.93,
+   "gpm": 768.36,
+   "dmgDealt": 25773.46,
+   "dmgTaken": 16313.12,
+   "turret": 2460.94,
+   "firstBlood": 14.32,
+   "mvpRate": 12.6,
+   "sRate": 11.81,
+   "gamesMedian": 180,
+   "legendaryTax": -3.0,
+   "legendaryTaxN": 25,
+   "keystone": {
+    "name": "Electrocute",
+    "count": 46,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 44,
+    "of": 50
+   },
+   "conformity": {
+    "count": 20,
+    "of": 50
+   },
+   "pentas": 11,
+   "tiers": {
+    "master": 28,
+    "grandmaster": 14,
+    "challenger": 4,
+    "legendary-master": 1,
+    "diamond": 1
+   }
+  },
+  "vi": {
+   "name": "Vi",
+   "avgWr": 60.84,
+   "kda": 5.18,
+   "teamfight": 56.19,
+   "gpm": 844.94,
+   "dmgDealt": 23016.64,
+   "dmgTaken": 19603.82,
+   "turret": 2707.82,
+   "firstBlood": 10.9,
+   "mvpRate": 22.49,
+   "sRate": 17.93,
+   "gamesMedian": 207,
+   "legendaryTax": -1.5,
+   "legendaryTaxN": 47,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 11,
+    "of": 50
+   },
+   "pentas": 23,
+   "tiers": {
+    "grandmaster": 24,
+    "challenger": 15,
+    "master": 3,
+    "legendary-challenger": 2,
+    "legendary-grandmaster": 2,
+    "legendary-master": 2
+   }
+  },
+  "viego": {
+   "name": "Viego",
+   "avgWr": 61.57,
+   "kda": 5.01,
+   "teamfight": 56.89,
+   "gpm": 897.17,
+   "dmgDealt": 25917.98,
+   "dmgTaken": 19193.04,
+   "turret": 3017.08,
+   "firstBlood": 10.75,
+   "mvpRate": 28.69,
+   "sRate": 20.27,
+   "gamesMedian": 142,
+   "legendaryTax": -1.4,
+   "legendaryTaxN": 44,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 43,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 80,
+   "tiers": {
+    "grandmaster": 18,
+    "challenger": 12,
+    "master": 9,
+    "legendary-grandmaster": 5,
+    "legendary-challenger": 2
+   }
+  },
+  "viktor": {
+   "name": "Viktor",
+   "avgWr": 61.26,
+   "kda": 4.33,
+   "teamfight": 50.6,
+   "gpm": 759.24,
+   "dmgDealt": 26309.68,
+   "dmgTaken": 16529.44,
+   "turret": 2286.86,
+   "firstBlood": 9.39,
+   "mvpRate": 11.91,
+   "sRate": 11.58,
+   "gamesMedian": 200,
+   "legendaryTax": -2.3,
+   "legendaryTaxN": 27,
+   "keystone": {
+    "name": "Dark Harvest",
+    "count": 30,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 14,
+    "of": 50
+   },
+   "pentas": 16,
+   "tiers": {
+    "master": 22,
+    "grandmaster": 20,
+    "challenger": 3,
+    "sovereign": 2
+   }
+  },
+  "vladimir": {
+   "name": "Vladimir",
+   "avgWr": 58.26,
+   "kda": 4.16,
+   "teamfight": 49.49,
+   "gpm": 823.7,
+   "dmgDealt": 28176.44,
+   "dmgTaken": 21245.44,
+   "turret": 2694.44,
+   "firstBlood": 9.0,
+   "mvpRate": 17.83,
+   "sRate": 15.4,
+   "gamesMedian": 170,
+   "legendaryTax": -1.7,
+   "legendaryTaxN": 21,
+   "keystone": {
+    "name": "Phase Rush",
+    "count": 45,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 47,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 43,
+   "tiers": {
+    "grandmaster": 24,
+    "master": 20,
+    "challenger": 3
+   }
+  },
+  "volibear": {
+   "name": "Volibear",
+   "avgWr": 60.3,
+   "kda": 3.96,
+   "teamfight": 49.32,
+   "gpm": 788.2,
+   "dmgDealt": 25981.36,
+   "dmgTaken": 25507.3,
+   "turret": 3536.08,
+   "firstBlood": 14.99,
+   "mvpRate": 18.72,
+   "sRate": 15.39,
+   "gamesMedian": 208,
+   "legendaryTax": -0.5,
+   "legendaryTaxN": 44,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 36,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 25,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 24,
+   "tiers": {
+    "grandmaster": 27,
+    "challenger": 10,
+    "master": 4,
+    "legendary-grandmaster": 2,
+    "sovereign": 2,
+    "legendary-challenger": 1,
+    "legendary-master": 1
+   }
+  },
+  "warwick": {
+   "name": "Warwick",
+   "avgWr": 63.14,
+   "kda": 4.31,
+   "teamfight": 53.12,
+   "gpm": 852.02,
+   "dmgDealt": 23816.53,
+   "dmgTaken": 19222.71,
+   "turret": 3059.02,
+   "firstBlood": 13.56,
+   "mvpRate": 21.18,
+   "sRate": 14.67,
+   "gamesMedian": 206,
+   "legendaryTax": -1.1,
+   "legendaryTaxN": 38,
+   "keystone": {
+    "name": "Empowerment",
+    "count": 44,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 34,
+    "of": 50
+   },
+   "conformity": {
+    "count": 13,
+    "of": 50
+   },
+   "pentas": 50,
+   "tiers": {
+    "grandmaster": 21,
+    "challenger": 15,
+    "master": 7,
+    "sovereign": 3,
+    "legendary-grandmaster": 2
    }
   },
   "wukong": {
@@ -1598,7 +6085,8 @@
    "mvpRate": 18.81,
    "sRate": 16.31,
    "gamesMedian": 186,
-   "legendaryTax": -4.3,
+   "legendaryTax": -4.0,
+   "legendaryTaxN": 32,
    "keystone": {
     "name": "Conqueror",
     "count": 19,
@@ -1623,6 +6111,389 @@
     "legendary-master": 1
    }
   },
+  "xayah": {
+   "name": "Xayah",
+   "avgWr": 59.21,
+   "kda": 4.21,
+   "teamfight": 53.98,
+   "gpm": 823.81,
+   "dmgDealt": 29221.81,
+   "dmgTaken": 18845.0,
+   "turret": 4032.48,
+   "firstBlood": 13.81,
+   "mvpRate": 22.62,
+   "sRate": 16.49,
+   "gamesMedian": 174,
+   "legendaryTax": -0.3,
+   "legendaryTaxN": 31,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 49,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ghost",
+    "count": 18,
+    "of": 50
+   },
+   "conformity": {
+    "count": 17,
+    "of": 50
+   },
+   "pentas": 57,
+   "tiers": {
+    "grandmaster": 23,
+    "master": 17,
+    "challenger": 4,
+    "legendary-grandmaster": 2
+   }
+  },
+  "xin-zhao": {
+   "name": "Xin Zhao",
+   "avgWr": 60.48,
+   "kda": 4.6,
+   "teamfight": 52.6,
+   "gpm": 831.02,
+   "dmgDealt": 23287.33,
+   "dmgTaken": 19709.6,
+   "turret": 2980.62,
+   "firstBlood": 10.85,
+   "mvpRate": 20.83,
+   "sRate": 16.54,
+   "gamesMedian": 192,
+   "legendaryTax": -4.5,
+   "legendaryTaxN": 33,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 28,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Smite",
+    "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 26,
+   "tiers": {
+    "grandmaster": 23,
+    "master": 10,
+    "challenger": 9,
+    "legendary-master": 2,
+    "legendary-grandmaster": 2,
+    "diamond": 1,
+    "legendary-challenger": 1
+   }
+  },
+  "yasuo": {
+   "name": "Yasuo",
+   "avgWr": 59.83,
+   "kda": 3.64,
+   "teamfight": 49.18,
+   "gpm": 826.37,
+   "dmgDealt": 25710.61,
+   "dmgTaken": 19329.57,
+   "turret": 3056.1,
+   "firstBlood": 12.35,
+   "mvpRate": 15.69,
+   "sRate": 13.65,
+   "gamesMedian": 162,
+   "legendaryTax": -3.4,
+   "legendaryTaxN": 33,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 24,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 40,
+    "of": 50
+   },
+   "conformity": {
+    "count": 4,
+    "of": 50
+   },
+   "pentas": 34,
+   "tiers": {
+    "grandmaster": 28,
+    "master": 12,
+    "challenger": 6,
+    "legendary-challenger": 1,
+    "legendary-commander": 1
+   }
+  },
+  "yone": {
+   "name": "Yone",
+   "avgWr": 64.26,
+   "kda": 4.24,
+   "teamfight": 50.18,
+   "gpm": 842.22,
+   "dmgDealt": 29262.92,
+   "dmgTaken": 20836.47,
+   "turret": 3406.76,
+   "firstBlood": 13.04,
+   "mvpRate": 22.77,
+   "sRate": 18.68,
+   "gamesMedian": 176,
+   "legendaryTax": -1.8,
+   "legendaryTaxN": 45,
+   "keystone": {
+    "name": "Grasp of the Undying",
+    "count": 38,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 34,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 51,
+   "tiers": {
+    "grandmaster": 21,
+    "challenger": 18,
+    "master": 5,
+    "legendary-challenger": 2,
+    "legendary-grandmaster": 1
+   }
+  },
+  "yunara": {
+   "name": "Yunara",
+   "avgWr": 60.21,
+   "kda": 4.52,
+   "teamfight": 56.36,
+   "gpm": 861.9,
+   "dmgDealt": 32601.02,
+   "dmgTaken": 18023.74,
+   "turret": 3999.14,
+   "firstBlood": 12.9,
+   "mvpRate": 27.57,
+   "sRate": 20.46,
+   "gamesMedian": 218,
+   "legendaryTax": -0.4,
+   "legendaryTaxN": 47,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 50,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 24,
+    "of": 50
+   },
+   "conformity": {
+    "count": 12,
+    "of": 50
+   },
+   "pentas": 154,
+   "tiers": {
+    "challenger": 16,
+    "grandmaster": 15,
+    "legendary-challenger": 5,
+    "legendary-grandmaster": 5,
+    "master": 1,
+    "legendary-master": 1,
+    "sovereign": 1
+   }
+  },
+  "yuumi": {
+   "name": "Yuumi",
+   "avgWr": 58.27,
+   "kda": 6.57,
+   "teamfight": 62.56,
+   "gpm": 646.78,
+   "dmgDealt": 12456.67,
+   "dmgTaken": 13065.65,
+   "turret": 1183.12,
+   "firstBlood": 7.12,
+   "mvpRate": 7.2,
+   "sRate": 9.01,
+   "gamesMedian": 215,
+   "legendaryTax": -5.2,
+   "legendaryTaxN": 31,
+   "keystone": {
+    "name": "Aery",
+    "count": 42,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Exhaust + Heal",
+    "count": 33,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 12,
+   "tiers": {
+    "master": 21,
+    "grandmaster": 13,
+    "challenger": 5,
+    "legendary-master": 3,
+    "diamond": 2,
+    "legendary-challenger": 1
+   }
+  },
+  "zed": {
+   "name": "Zed",
+   "avgWr": 62.69,
+   "kda": 3.99,
+   "teamfight": 50.98,
+   "gpm": 826.47,
+   "dmgDealt": 27379.41,
+   "dmgTaken": 18901.04,
+   "turret": 3070.02,
+   "firstBlood": 14.16,
+   "mvpRate": 17.94,
+   "sRate": 15.7,
+   "gamesMedian": 170,
+   "legendaryTax": -0.3,
+   "legendaryTaxN": 24,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 29,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 48,
+    "of": 50
+   },
+   "conformity": {
+    "count": 8,
+    "of": 50
+   },
+   "pentas": 23,
+   "tiers": {
+    "grandmaster": 25,
+    "master": 15,
+    "challenger": 5,
+    "legendary-grandmaster": 1,
+    "sovereign": 1
+   }
+  },
+  "zeri": {
+   "name": "Zeri",
+   "avgWr": 61.33,
+   "kda": 4.28,
+   "teamfight": 53.82,
+   "gpm": 833.18,
+   "dmgDealt": 30427.26,
+   "dmgTaken": 18492.74,
+   "turret": 3940.76,
+   "firstBlood": 10.57,
+   "mvpRate": 22.56,
+   "sRate": 16.03,
+   "gamesMedian": 220,
+   "legendaryTax": 0.4,
+   "legendaryTaxN": 39,
+   "keystone": {
+    "name": "Conqueror",
+    "count": 47,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 29,
+    "of": 50
+   },
+   "conformity": {
+    "count": 22,
+    "of": 50
+   },
+   "pentas": 73,
+   "tiers": {
+    "grandmaster": 30,
+    "master": 9,
+    "challenger": 6,
+    "legendary-grandmaster": 2,
+    "legendary-challenger": 1
+   }
+  },
+  "ziggs": {
+   "name": "Ziggs",
+   "avgWr": 59.12,
+   "kda": 4.63,
+   "teamfight": 49.08,
+   "gpm": 748.62,
+   "dmgDealt": 26698.16,
+   "dmgTaken": 15357.4,
+   "turret": 2641.48,
+   "firstBlood": 8.53,
+   "mvpRate": 9.93,
+   "sRate": 12.01,
+   "gamesMedian": 169,
+   "legendaryTax": -3.0,
+   "legendaryTaxN": 29,
+   "keystone": {
+    "name": "Arcane Comet",
+    "count": 39,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Barrier + Flash",
+    "count": 30,
+    "of": 50
+   },
+   "conformity": {
+    "count": 10,
+    "of": 50
+   },
+   "pentas": 12,
+   "tiers": {
+    "master": 32,
+    "grandmaster": 11,
+    "challenger": 3,
+    "legendary-grandmaster": 1,
+    "diamond": 1
+   }
+  },
+  "zilean": {
+   "name": "Zilean",
+   "avgWr": 62.17,
+   "kda": 6.09,
+   "teamfight": 59.07,
+   "gpm": 658.38,
+   "dmgDealt": 17609.94,
+   "dmgTaken": 16595.27,
+   "turret": 1462.62,
+   "firstBlood": 7.7,
+   "mvpRate": 7.49,
+   "sRate": 10.24,
+   "gamesMedian": 184,
+   "legendaryTax": -2.9,
+   "legendaryTaxN": 25,
+   "keystone": {
+    "name": "Arcane Comet",
+    "count": 39,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Heal",
+    "count": 42,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 6,
+   "tiers": {
+    "grandmaster": 25,
+    "master": 19,
+    "challenger": 2,
+    "legendary-grandmaster": 1
+   }
+  },
   "zoe": {
    "name": "Zoe",
    "avgWr": 60.29,
@@ -1636,7 +6507,8 @@
    "mvpRate": 15.24,
    "sRate": 15.13,
    "gamesMedian": 181,
-   "legendaryTax": -1.9,
+   "legendaryTax": -1.3,
+   "legendaryTaxN": 19,
    "keystone": {
     "name": "Electrocute",
     "count": 32,
@@ -1659,348 +6531,663 @@
     "diamond": 1,
     "legendary-master": 1
    }
+  },
+  "zyra": {
+   "name": "Zyra",
+   "avgWr": 61.05,
+   "kda": 4.16,
+   "teamfight": 52.05,
+   "gpm": 723.08,
+   "dmgDealt": 25172.04,
+   "dmgTaken": 17390.92,
+   "turret": 2049.71,
+   "firstBlood": 7.67,
+   "mvpRate": 9.39,
+   "sRate": 10.98,
+   "gamesMedian": 174,
+   "legendaryTax": -1.5,
+   "legendaryTaxN": 32,
+   "keystone": {
+    "name": "Aery",
+    "count": 31,
+    "of": 50
+   },
+   "spells": {
+    "pair": "Flash + Ignite",
+    "count": 28,
+    "of": 50
+   },
+   "conformity": {
+    "count": 16,
+    "of": 50
+   },
+   "pentas": 6,
+   "tiers": {
+    "master": 28,
+    "grandmaster": 15,
+    "challenger": 4,
+    "legendary-grandmaster": 1,
+    "sovereign": 1,
+    "diamond": 1
+   }
   }
  },
  "baseline": {
-  "kda": 4.45,
-  "teamfight": 52.85,
-  "gpm": 817.71,
-  "dmgDealt": 25158.78,
-  "dmgTaken": 19698.14,
-  "turret": 3053.26,
+  "kda": 4.58,
+  "teamfight": 53.39,
+  "gpm": 788.09,
+  "dmgDealt": 24553.09,
+  "dmgTaken": 19112.7,
+  "turret": 2901.83,
   "firstBlood": 11.68,
-  "mvpRate": 19.16
+  "mvpRate": 17.2
  },
  "hallOfFame": {
   "grinder": {
-   "value": 330,
-   "player": "Xx 盖世绝伦 xX",
-   "champion": "Garen",
-   "slug": "garen",
-   "detail": "49.4% win rate"
+   "value": 479,
+   "player": "PTSDMaker",
+   "champion": "Fiddlesticks",
+   "slug": "fiddlesticks",
+   "detail": "52.0% win rate"
   },
   "perfectionist": {
-   "value": 93.5,
-   "player": "WorstPlayerEuw",
-   "champion": "Hecarim",
-   "slug": "hecarim",
-   "detail": "77 games"
+   "value": 97.4,
+   "player": "Nakamura",
+   "champion": "Nidalee",
+   "slug": "nidalee",
+   "detail": "39 games"
   },
   "kdaKing": {
-   "value": 12.0,
-   "player": "pelin",
-   "champion": "Hecarim",
-   "slug": "hecarim",
-   "detail": "116 games"
+   "value": 14.9,
+   "player": "Rarity Enjoyer",
+   "champion": "Lee Sin",
+   "slug": "lee-sin",
+   "detail": "120 games"
   },
   "pentaKing": {
-   "value": 32,
-   "player": "SKT T1 Mika",
-   "champion": "Tryndamere",
-   "slug": "tryndamere",
-   "detail": "251 games"
+   "value": 35,
+   "player": "Lối Đánh SeXy",
+   "champion": "Kassadin",
+   "slug": "kassadin",
+   "detail": "145 games"
   },
   "quadraKing": {
-   "value": 71,
-   "player": "SKT T1 Mika",
-   "champion": "Tryndamere",
-   "slug": "tryndamere",
-   "detail": "251 games"
+   "value": 85,
+   "player": "瑪莉UFC薩諾斯",
+   "champion": "Master Yi",
+   "slug": "master-yi",
+   "detail": "310 games"
   },
   "mvpMachine": {
-   "value": 80.6,
-   "player": "WorstPlayerEuw",
-   "champion": "Hecarim",
-   "slug": "hecarim",
-   "detail": "100 MVPs in 124 games"
+   "value": 88.3,
+   "player": "Rarity Enjoyer",
+   "champion": "Lee Sin",
+   "slug": "lee-sin",
+   "detail": "106 MVPs in 120 games"
   },
   "wall": {
-   "value": 33277,
-   "player": "listas",
-   "champion": "Garen",
-   "slug": "garen",
+   "value": 41731,
+   "player": "Oru Maito",
+   "champion": "Dr. Mundo",
+   "slug": "dr-mundo",
    "detail": "damage taken per match"
   },
   "demolition": {
-   "value": 10083,
-   "player": "Najib",
-   "champion": "Tryndamere",
-   "slug": "tryndamere",
+   "value": 11703,
+   "player": "Yağmur Tanesi",
+   "champion": "Draven",
+   "slug": "draven",
    "detail": "turret damage per match"
   },
   "executioner": {
-   "value": 46971,
-   "player": "The Last Oné",
-   "champion": "Vayne",
-   "slug": "vayne",
+   "value": 51542,
+   "player": "ToprAxe",
+   "champion": "Draven",
+   "slug": "draven",
    "detail": "damage per match"
   },
   "economist": {
-   "value": 1211,
-   "player": "50胜率cel",
-   "champion": "Hecarim",
-   "slug": "hecarim",
+   "value": 1290,
+   "player": "ToprAxe",
+   "champion": "Draven",
+   "slug": "draven",
    "detail": "gold per minute"
   },
   "teamfighter": {
-   "value": 90.3,
+   "value": 91.3,
    "player": "Chỉ Ôm Trụ Thôi",
-   "champion": "Jinx",
-   "slug": "jinx",
-   "detail": "228 games"
+   "champion": "Caitlyn",
+   "slug": "caitlyn",
+   "detail": "234 games"
   },
   "firstStriker": {
-   "value": 47.7,
-   "player": "THE PROFES",
-   "champion": "Rengar",
-   "slug": "rengar",
-   "detail": "41 first bloods in 86 games"
+   "value": 57.1,
+   "player": "ToprAxe",
+   "champion": "Draven",
+   "slug": "draven",
+   "detail": "20 first bloods in 35 games"
   },
   "sCollector": {
-   "value": 104,
-   "player": "Chỉ Ôm Trụ Thôi",
-   "champion": "Jinx",
-   "slug": "jinx",
-   "detail": "228 games"
+   "value": 138,
+   "player": "nuApă",
+   "champion": "Yunara",
+   "slug": "yunara",
+   "detail": "536 games"
   },
   "legendKiller": {
-   "value": 85.7,
-   "player": "SolaxxxZola",
-   "champion": "Rengar",
-   "slug": "rengar",
-   "detail": "21 Legendary Ranked games"
+   "value": 100.0,
+   "player": "Yui",
+   "champion": "Milio",
+   "slug": "milio",
+   "detail": "25 Legendary Ranked games"
   },
   "masteryRecord": {
-   "value": 20778,
-   "player": "SKT T1 Mika",
-   "champion": "Tryndamere",
-   "slug": "tryndamere",
+   "value": 20735,
+   "player": "Bella",
+   "champion": "Diana",
+   "slug": "diana",
    "detail": "rank 1 by mastery"
   },
   "veteran": {
-   "value": 578,
-   "player": "UNDxRGRxUND",
-   "champion": "Wukong",
-   "slug": "wukong",
+   "value": 639,
+   "player": "DeleteAllGirls",
+   "champion": "Milio",
+   "slug": "milio",
    "detail": "account level"
   },
   "guilds": [
    {
-    "guild": "emo",
-    "spots": 12
-   },
-   {
-    "guild": "wrsam",
-    "spots": 8
-   },
-   {
     "guild": "MuXue",
-    "spots": 7
+    "spots": 58
+   },
+   {
+    "guild": "emo",
+    "spots": 52
    },
    {
     "guild": "VIE",
-    "spots": 5
+    "spots": 46
    },
    {
-    "guild": "AVRGE",
-    "spots": 4
+    "guild": "wrsam",
+    "spots": 34
    },
    {
-    "guild": "BALLR",
-    "spots": 4
+    "guild": "DcY",
+    "spots": 34
+   },
+   {
+    "guild": "Zenyth",
+    "spots": 32
    },
    {
     "guild": "ELDERX",
-    "spots": 4
+    "spots": 31
    },
    {
     "guild": "OGez",
-    "spots": 4
+    "spots": 27
+   },
+   {
+    "guild": "KCreed",
+    "spots": 22
    },
    {
     "guild": "MMW",
-    "spots": 4
-   },
-   {
-    "guild": "TXIC",
-    "spots": 3
+    "spots": 21
    }
   ],
   "multiBoard": [
    {
-    "player": "i like mommies",
+    "player": "W o S",
     "boards": [
      {
-      "champion": "Aatrox",
-      "slug": "aatrox",
+      "champion": "Norra",
+      "slug": "norra",
       "rank": 1,
-      "wr": 66.0,
-      "games": 47
+      "wr": 59.2,
+      "games": 103
      },
      {
-      "champion": "Hecarim",
-      "slug": "hecarim",
-      "rank": 16,
-      "wr": 80.8,
-      "games": 26
-     }
-    ]
-   },
-   {
-    "player": "ÂSpaY ツ",
-    "boards": [
+      "champion": "Bard",
+      "slug": "bard",
+      "rank": 3,
+      "wr": 61.2,
+      "games": 49
+     },
      {
-      "champion": "Amumu",
-      "slug": "amumu",
-      "rank": 1,
-      "wr": 60.6,
-      "games": 66
+      "champion": "Aurelion Sol",
+      "slug": "aurelion-sol",
+      "rank": 6,
+      "wr": 58.7,
+      "games": 46
      },
      {
       "champion": "Orianna",
       "slug": "orianna",
-      "rank": 16,
-      "wr": 51.9,
-      "games": 54
-     }
-    ]
-   },
-   {
-    "player": "无敌Pka大王",
-    "boards": [
-     {
-      "champion": "Rengar",
-      "slug": "rengar",
-      "rank": 2,
-      "wr": 72.7,
-      "games": 66
+      "rank": 23,
+      "wr": 64.3,
+      "games": 28
      },
      {
-      "champion": "Kha'Zix",
-      "slug": "khazix",
-      "rank": 9,
-      "wr": 53.4,
-      "games": 73
+      "champion": "Smolder",
+      "slug": "smolder",
+      "rank": 48,
+      "wr": 52.9,
+      "games": 34
      }
     ]
    },
    {
-    "player": "RasmuSVP",
+    "player": "玳培加威shio1114",
     "boards": [
      {
-      "champion": "Tryndamere",
-      "slug": "tryndamere",
+      "champion": "Renekton",
+      "slug": "renekton",
+      "rank": 1,
+      "wr": 87.5,
+      "games": 48
+     },
+     {
+      "champion": "K'Sante",
+      "slug": "ksante",
       "rank": 2,
+      "wr": 80.5,
+      "games": 41
+     },
+     {
+      "champion": "Aurora",
+      "slug": "aurora",
+      "rank": 10,
+      "wr": 87.0,
+      "games": 23
+     },
+     {
+      "champion": "Ryze",
+      "slug": "ryze",
+      "rank": 24,
+      "wr": 75.6,
+      "games": 41
+     },
+     {
+      "champion": "Ryze",
+      "slug": "ryze",
+      "rank": 29,
+      "wr": 66.7,
+      "games": 27
+     }
+    ]
+   },
+   {
+    "player": "玳培加威LuvXingyu",
+    "boards": [
+     {
+      "champion": "Camille",
+      "slug": "camille",
+      "rank": 1,
+      "wr": 68.2,
+      "games": 85
+     },
+     {
+      "champion": "Taliyah",
+      "slug": "taliyah",
+      "rank": 4,
       "wr": 58.1,
-      "games": 105
+      "games": 86
+     },
+     {
+      "champion": "Zed",
+      "slug": "zed",
+      "rank": 4,
+      "wr": 67.2,
+      "games": 64
+     },
+     {
+      "champion": "Nidalee",
+      "slug": "nidalee",
+      "rank": 11,
+      "wr": 56.6,
+      "games": 76
+     },
+     {
+      "champion": "Ekko",
+      "slug": "ekko",
+      "rank": 40,
+      "wr": 52.7,
+      "games": 74
+     }
+    ]
+   },
+   {
+    "player": "私の花",
+    "boards": [
+     {
+      "champion": "Draven",
+      "slug": "draven",
+      "rank": 1,
+      "wr": 68.5,
+      "games": 89
      },
      {
       "champion": "Vayne",
       "slug": "vayne",
-      "rank": 6,
-      "wr": 72.1,
-      "games": 43
-     }
-    ]
-   },
-   {
-    "player": "Матвейка Рунаан",
-    "boards": [
-     {
-      "champion": "Jinx",
-      "slug": "jinx",
-      "rank": 4,
-      "wr": 54.1,
-      "games": 159
+      "rank": 2,
+      "wr": 59.6,
+      "games": 104
      },
      {
-      "champion": "Amumu",
-      "slug": "amumu",
-      "rank": 43,
-      "wr": 60.0,
-      "games": 30
-     }
-    ]
-   },
-   {
-    "player": "兄弟Wagwan一匹狼",
-    "boards": [
-     {
-      "champion": "Hecarim",
-      "slug": "hecarim",
-      "rank": 4,
-      "wr": 69.2,
-      "games": 65
+      "champion": "Lucian",
+      "slug": "lucian",
+      "rank": 13,
+      "wr": 65.6,
+      "games": 32
      },
      {
-      "champion": "Kayn",
-      "slug": "kayn",
-      "rank": 29,
-      "wr": 53.4,
-      "games": 73
+      "champion": "Kai'Sa",
+      "slug": "kaisa",
+      "rank": 20,
+      "wr": 44.6,
+      "games": 83
+     },
+     {
+      "champion": "Yunara",
+      "slug": "yunara",
+      "rank": 28,
+      "wr": 52.1,
+      "games": 48
      }
     ]
    },
    {
-    "player": "AKREP",
+    "player": "KVCPERO",
     "boards": [
      {
-      "champion": "Wukong",
-      "slug": "wukong",
-      "rank": 7,
-      "wr": 60.6,
+      "champion": "Ezreal",
+      "slug": "ezreal",
+      "rank": 1,
+      "wr": 68.8,
+      "games": 64
+     },
+     {
+      "champion": "Maokai",
+      "slug": "maokai",
+      "rank": 1,
+      "wr": 56.9,
+      "games": 58
+     },
+     {
+      "champion": "Smolder",
+      "slug": "smolder",
+      "rank": 3,
+      "wr": 73.2,
+      "games": 41
+     },
+     {
+      "champion": "Lucian",
+      "slug": "lucian",
+      "rank": 5,
+      "wr": 61.5,
+      "games": 39
+     },
+     {
+      "champion": "Senna",
+      "slug": "senna",
+      "rank": 8,
+      "wr": 58.3,
+      "games": 48
+     }
+    ]
+   },
+   {
+    "player": "Limbo",
+    "boards": [
+     {
+      "champion": "Zilean",
+      "slug": "zilean",
+      "rank": 2,
+      "wr": 66.7,
       "games": 66
      },
      {
-      "champion": "Hecarim",
-      "slug": "hecarim",
-      "rank": 39,
-      "wr": 69.0,
-      "games": 42
-     }
-    ]
-   },
-   {
-    "player": "Shenron",
-    "boards": [
-     {
-      "champion": "Amumu",
-      "slug": "amumu",
-      "rank": 10,
-      "wr": 60.0,
-      "games": 70
-     },
-     {
-      "champion": "Tryndamere",
-      "slug": "tryndamere",
-      "rank": 23,
-      "wr": 52.6,
-      "games": 38
-     }
-    ]
-   },
-   {
-    "player": "Mr Củ Chuối",
-    "boards": [
-     {
-      "champion": "Wukong",
-      "slug": "wukong",
-      "rank": 10,
-      "wr": 50.0,
-      "games": 86
-     },
-     {
-      "champion": "Hecarim",
-      "slug": "hecarim",
-      "rank": 46,
-      "wr": 60.0,
+      "champion": "Rell",
+      "slug": "rell",
+      "rank": 9,
+      "wr": 44.4,
       "games": 45
+     },
+     {
+      "champion": "Senna",
+      "slug": "senna",
+      "rank": 9,
+      "wr": 61.4,
+      "games": 44
+     },
+     {
+      "champion": "Karma",
+      "slug": "karma",
+      "rank": 18,
+      "wr": 53.1,
+      "games": 32
+     },
+     {
+      "champion": "Rakan",
+      "slug": "rakan",
+      "rank": 35,
+      "wr": 68.2,
+      "games": 22
+     }
+    ]
+   },
+   {
+    "player": "muye",
+    "boards": [
+     {
+      "champion": "Ashe",
+      "slug": "ashe",
+      "rank": 3,
+      "wr": 53.8,
+      "games": 65
+     },
+     {
+      "champion": "Kog'Maw",
+      "slug": "kogmaw",
+      "rank": 9,
+      "wr": 56.8,
+      "games": 37
+     },
+     {
+      "champion": "Samira",
+      "slug": "samira",
+      "rank": 13,
+      "wr": 52.7,
+      "games": 74
+     },
+     {
+      "champion": "Sivir",
+      "slug": "sivir",
+      "rank": 13,
+      "wr": 59.1,
+      "games": 22
+     },
+     {
+      "champion": "Smolder",
+      "slug": "smolder",
+      "rank": 16,
+      "wr": 60.9,
+      "games": 64
+     }
+    ]
+   },
+   {
+    "player": "DatOneShotTho",
+    "boards": [
+     {
+      "champion": "Kennen",
+      "slug": "kennen",
+      "rank": 3,
+      "wr": 52.4,
+      "games": 105
+     },
+     {
+      "champion": "Corki",
+      "slug": "corki",
+      "rank": 4,
+      "wr": 51.4,
+      "games": 105
+     },
+     {
+      "champion": "Zyra",
+      "slug": "zyra",
+      "rank": 5,
+      "wr": 53.8,
+      "games": 65
+     },
+     {
+      "champion": "Samira",
+      "slug": "samira",
+      "rank": 8,
+      "wr": 49.7,
+      "games": 157
+     },
+     {
+      "champion": "Senna",
+      "slug": "senna",
+      "rank": 30,
+      "wr": 53.2,
+      "games": 47
+     }
+    ]
+   },
+   {
+    "player": "The Unstoppable",
+    "boards": [
+     {
+      "champion": "Vladimir",
+      "slug": "vladimir",
+      "rank": 4,
+      "wr": 62.3,
+      "games": 53
+     },
+     {
+      "champion": "Akali",
+      "slug": "akali",
+      "rank": 22,
+      "wr": 64.0,
+      "games": 25
+     },
+     {
+      "champion": "Yasuo",
+      "slug": "yasuo",
+      "rank": 28,
+      "wr": 64.3,
+      "games": 28
+     },
+     {
+      "champion": "Ambessa",
+      "slug": "ambessa",
+      "rank": 35,
+      "wr": 85.7,
+      "games": 14
+     },
+     {
+      "champion": "Talon",
+      "slug": "talon",
+      "rank": 47,
+      "wr": 70.0,
+      "games": 10
+     }
+    ]
+   },
+   {
+    "player": "师承小超萌",
+    "boards": [
+     {
+      "champion": "Jayce",
+      "slug": "jayce",
+      "rank": 9,
+      "wr": 60.0,
+      "games": 35
+     },
+     {
+      "champion": "Volibear",
+      "slug": "volibear",
+      "rank": 9,
+      "wr": 70.7,
+      "games": 41
+     },
+     {
+      "champion": "Aatrox",
+      "slug": "aatrox",
+      "rank": 15,
+      "wr": 70.0,
+      "games": 20
+     },
+     {
+      "champion": "Darius",
+      "slug": "darius",
+      "rank": 38,
+      "wr": 57.6,
+      "games": 33
+     },
+     {
+      "champion": "Olaf",
+      "slug": "olaf",
+      "rank": 45,
+      "wr": 55.0,
+      "games": 40
+     }
+    ]
+   },
+   {
+    "player": "Lacest",
+    "boards": [
+     {
+      "champion": "Nidalee",
+      "slug": "nidalee",
+      "rank": 1,
+      "wr": 75.0,
+      "games": 72
+     },
+     {
+      "champion": "Aatrox",
+      "slug": "aatrox",
+      "rank": 19,
+      "wr": 59.4,
+      "games": 32
+     },
+     {
+      "champion": "Lee Sin",
+      "slug": "lee-sin",
+      "rank": 27,
+      "wr": 60.0,
+      "games": 30
+     },
+     {
+      "champion": "Hecarim",
+      "slug": "hecarim",
+      "rank": 47,
+      "wr": 85.7,
+      "games": 14
      }
     ]
    },
    {
     "player": "EndlessDecember",
     "boards": [
+     {
+      "champion": "Mel",
+      "slug": "mel",
+      "rank": 1,
+      "wr": 50.0,
+      "games": 76
+     },
+     {
+      "champion": "Ahri",
+      "slug": "ahri",
+      "rank": 7,
+      "wr": 72.2,
+      "games": 54
+     },
      {
       "champion": "Zoe",
       "slug": "zoe",
@@ -2014,44 +7201,6 @@
       "rank": 24,
       "wr": 68.0,
       "games": 25
-     }
-    ]
-   },
-   {
-    "player": "UrGOAT ON Mid",
-    "boards": [
-     {
-      "champion": "Rengar",
-      "slug": "rengar",
-      "rank": 12,
-      "wr": 61.2,
-      "games": 80
-     },
-     {
-      "champion": "Amumu",
-      "slug": "amumu",
-      "rank": 20,
-      "wr": 68.2,
-      "games": 66
-     }
-    ]
-   },
-   {
-    "player": "Alpha Rengo",
-    "boards": [
-     {
-      "champion": "Amumu",
-      "slug": "amumu",
-      "rank": 16,
-      "wr": 59.6,
-      "games": 99
-     },
-     {
-      "champion": "Rengar",
-      "slug": "rengar",
-      "rank": 35,
-      "wr": 52.9,
-      "games": 85
      }
     ]
    }

@@ -137,7 +137,7 @@ export default function HomePage() {
                   See what actually wins
                 </Link>
                 <Link href="/meta" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
-                  Read the meta report
+                  Read the meta overview
                 </Link>
               </>
             )}
@@ -192,7 +192,7 @@ export default function HomePage() {
             <>
               <FlagshipTool
                 href="/build?tab=counter"
-                badge="beta"
+                badge="v1"
                 badgeClass="bg-gold/20 text-gold"
                 secondBadge="new"
                 secondBadgeClass="bg-emerald-400/20 text-emerald-300"
@@ -204,7 +204,7 @@ export default function HomePage() {
               />
               <FlagshipTool
                 href="/build"
-                badge="beta"
+                badge="v1"
                 badgeClass="bg-gold/20 text-gold"
                 secondBadge="new"
                 secondBadgeClass="bg-emerald-400/20 text-emerald-300"
@@ -221,7 +221,7 @@ export default function HomePage() {
                 href="/meta"
                 badge="new"
                 badgeClass="bg-emerald-400/20 text-emerald-300"
-                title="Meta Report"
+                title="Meta Overview"
                 desc="The whole meta in one place: tier splits, win rate by class and role, and an interactive win-rate-vs-popularity map of every champion."
                 cta="Explore the charts"
                 accent="text-emerald-300"
@@ -347,7 +347,7 @@ export default function HomePage() {
 
       {/* Meta charts */}
       <Container className="py-12">
-        <SectionHeading title="Meta at a glance" subtitle="Win rate by class and role" href="/meta" linkLabel="Full meta report" />
+        <SectionHeading title="Meta at a glance" subtitle="Win rate by class and role" href="/meta" linkLabel="Full meta overview" />
         <div className="grid gap-6 lg:grid-cols-2">
           <BarCard title="Meta by class" subtitle="Avg win rate of each class's top 5 picks" rows={site.metaBreakdown.map((m) => ({ label: m.class, wr: m.wr }))} />
           <BarCard
@@ -380,7 +380,7 @@ export default function HomePage() {
             There is a lot more
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-            The full meta report
+            The full meta overview
           </h2>
           <p className="mx-auto mt-2 max-w-xl text-muted">
             Cross-server win rates, the China-versus-Europe meta gap, skill-bracket
@@ -390,7 +390,7 @@ export default function HomePage() {
           <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
             <Link href="/meta"
               className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-black transition hover:brightness-110">
-              Open the meta report <span aria-hidden>→</span>
+              Open the meta overview <span aria-hidden>→</span>
             </Link>
             <Link href="/leaderboard"
               className="inline-flex items-center gap-2 rounded-lg border border-line px-5 py-2.5 text-sm font-semibold transition hover:border-accent/40 hover:text-accent">

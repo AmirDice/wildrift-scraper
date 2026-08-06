@@ -27,8 +27,8 @@ const buildsEntry = (live: boolean): NavEntry => (live
   ? {
       label: "Builds",
       items: [
-        { href: "/build", label: "Build Studio", badges: ["new", "beta"], desc: "Generate by playstyle or craft with live stats" },
-        { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: ["new", "beta"], desc: "The build that beats their exact five picks" },
+        { href: "/build", label: "Build Studio", badges: ["new", "v1"], desc: "Generate by playstyle or craft with live stats" },
+        { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: ["new", "v1"], desc: "The build that beats their exact five picks" },
         { href: "/albums", label: "Build Albums", badge: "new", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", badge: "new", desc: "Effects, trees, cooldowns & uses" },
@@ -66,7 +66,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
   {
     label: "Meta",
     items: [
-      { href: "/meta", label: "Meta Report", badge: "new", desc: "Charts & visualizations" },
+      { href: "/meta", label: "Meta Overview", badge: "new", desc: "Builds, win rates & trends" },
       { href: "/ranks", label: "Win Rate by Skill Bracket", desc: "Diamond+ to Challenger trends" },
       { href: "/compare", label: "Compare Champions", desc: "Two champions side by side" },
       { href: "/rising", label: "Rising Picks", desc: "What China plays before the West" },

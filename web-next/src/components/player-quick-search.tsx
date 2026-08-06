@@ -48,7 +48,7 @@ export function PlayerQuickSearch() {
 
   return (
     <div className="relative">
-      <label className="block">
+      <label className="liquid-glass block rounded-xl">
         <span className="sr-only">Search a player by name</span>
         <input
           value={query}
@@ -67,7 +67,7 @@ export function PlayerQuickSearch() {
             if (e.key === "Escape") setOpen(false);
           }}
           placeholder="Search a player…"
-          className="w-full rounded-xl border border-line bg-white/[0.04] px-4 py-2.5 text-sm outline-none transition placeholder:text-faint focus:border-accent/50"
+          className="w-full rounded-xl bg-transparent px-4 py-2.5 text-sm outline-none transition placeholder:text-muted"
           autoComplete="off"
           spellCheck={false}
         />

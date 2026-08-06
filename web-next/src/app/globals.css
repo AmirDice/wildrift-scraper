@@ -120,6 +120,77 @@ body {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
+/* Liquid glass: the emphasized variant, for the one or two controls on a page
+   that must not be missed (the tier list's region toggle, the leaderboard's
+   player search). Same material family as .glass, three deliberate steps up:
+   an accent-tinted fill, a faint accent halo in the shadow stack, and a slow
+   specular sweep that reads as light moving through the material. The sweep is
+   the attention cue, so it is gentle, infrequent, and off entirely under
+   prefers-reduced-motion.
+
+   Same Lightning CSS rule as .glass: never hand-write -webkit-backdrop-filter
+   next to backdrop-filter. */
+.liquid-glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(120deg, rgba(79, 141, 255, 0.10), rgba(255, 255, 255, 0.02) 40%, rgba(79, 141, 255, 0.08) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.045) 45%, rgba(255, 255, 255, 0.08) 100%),
+    rgba(10, 14, 24, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  backdrop-filter: blur(26px) saturate(200%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 28px -10px rgba(0, 0, 0, 0.55),
+    0 0 26px -6px rgba(79, 141, 255, 0.3);
+}
+.liquid-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.13) 48%,
+    rgba(255, 255, 255, 0.045) 52%,
+    transparent 65%
+  );
+  background-size: 260% 100%;
+  background-position: 135% 0;
+  animation: liquid-sheen 6s ease-in-out infinite;
+}
+@keyframes liquid-sheen {
+  0%, 55% { background-position: 135% 0; }
+  90%, 100% { background-position: -65% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass::after { animation: none; }
+}
+
+/* Entrance for the bottom-right flagship nudge. Referenced via Tailwind's
+   arbitrary animate value; motion-safe there keeps it off under
+   prefers-reduced-motion, so no media query is needed here. */
+@keyframes nudge-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* An input inside liquid glass supplies its own focus signal on the shell,
+   since the input itself is drawn borderless on the material. */
+.liquid-glass:focus-within {
+  border-color: rgba(79, 141, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 28px -10px rgba(0, 0, 0, 0.55),
+    0 0 30px -4px rgba(79, 141, 255, 0.45);
+}
+
 .glass-hover {
   transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease,
     transform 0.22s ease;

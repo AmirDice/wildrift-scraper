@@ -48,6 +48,11 @@ export function TierListView({
 }) {
   const [role, setRole] = useState<string>("All roles");
   const [region, setRegion] = useState<Region>(initialRegion);
+  // Pool depth: how many of each champion's top players feed the number.
+  // EU only. CN offers no such slider because its figures are Tencent's own
+  // bracket aggregates -- there are no per-player rows to re-slice -- and
+  // Global inherits CN's limitation because it averages the two.
+  const [poolDepth, setPoolDepth] = useState<"all" | "25" | "10" | "5">("all");
   const [cnBracket, setCnBracket] = useState<CnBracketKey>(initialCnBracket ?? cnMeta.defaultBracket);
 
   const isCN = region === "CN";
@@ -64,14 +69,29 @@ export function TierListView({
     const inRole = options.includes(role) ? role : "All roles";
     const pool =
       inRole === "All roles" ? activeChampions : activeChampions.filter((c) => c.role === inRole);
+    // At a shallower depth every champion is re-read through its pools slice:
+    // wr, tier and role-tier all come from that depth, so the toggle changes
+    // the RANKING, not just the printed number. A champion with no slice at
+    // this depth (fewer counted players than the depth asks for) keeps its
+    // full-pool values rather than vanishing.
+    const depthActive = region === "EU" && poolDepth !== "all";
+    const view = (c: Champion) => {
+      if (!depthActive) return c;
+      const slice = c.pools?.[poolDepth];
+      return slice && slice.wr != null
+        ? { ...c, wr: slice.wr, tier: slice.tier, tierCss: slice.tierCss,
+            tierRole: slice.tierRole, tierRoleCss: slice.tierRoleCss }
+        : c;
+    };
+    const seen = pool.map(view);
     const tierOf = (c: Champion) => (inRole === "All roles" ? c.tier : c.tierRole);
     const map: Record<string, Champion[]> = {};
     for (const t of TIER_ORDER) map[t] = [];
-    for (const c of [...pool].sort((a, b) => b.wr - a.wr)) {
+    for (const c of [...seen].sort((a, b) => b.wr - a.wr)) {
       (map[tierOf(c)] ??= []).push(c);
     }
     return map;
-  }, [role, activeChampions, options]);
+  }, [role, activeChampions, options, region, poolDepth]);
 
   return (
     <div>
@@ -139,6 +159,33 @@ export function TierListView({
             </p>
           )}
 
+          {region === "EU" && (
+            <div className="mb-5">
+              <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="Player pool depth">
+                <span className="text-xs font-bold uppercase tracking-wide text-faint">Player pool</span>
+                {([["all", "All players"], ["25", "Top 25"], ["10", "Top 10"], ["5", "Top 5"]] as const).map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="tab"
+                    aria-selected={poolDepth === key}
+                    onClick={() => setPoolDepth(key)}
+                    className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
+                      poolDepth === key ? "bg-accent text-[#07121f]" : "glass glass-hover text-muted"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1.5 text-xs text-muted">
+                {poolDepth === "all"
+                  ? "Win rates from each champion's full top-50 board."
+                  : `Win rates from each champion's top ${poolDepth} players only. A champion that is strong here but weak on "All players" is carried by its elite, not its player base.`}
+              </p>
+            </div>
+          )}
+
           {/* Role filter */}
           <div className="mb-6 flex flex-wrap gap-2">
             {options.map((o) => (
@@ -172,7 +219,10 @@ export function TierListView({
                       const cnMovement = isCN || isGlobal ? moverBySlug(c.slug, movementBracket) : null;
                       // Global is the average of EU and CN. Until the EU data is
                       // refreshed, a CN move changes the combined score by half
-                      // of the CN delta. EU itself deliberately gets no badge.
+                      // of the CN delta. EU compares against its own previous
+                      // collection snapshot (site.movementSince) -- deltas are
+                      // computed raw-vs-raw at export so the display centering
+                      // never leaks into them.
                       const mv = isGlobal && cnMovement
                         ? {
                             ...cnMovement,
@@ -182,22 +232,40 @@ export function TierListView({
                           }
                         : isCN
                           ? cnMovement
-                          : null;
-                      const up = mv && mv.delta > 0;
-                      const changed = Boolean(mv && Math.abs(mv.delta) >= 0.05);
+                          : c.wrDelta != null
+                            ? {
+                                oldWr: Math.round((c.wr - c.wrDelta) * 10) / 10,
+                                newWr: c.wr,
+                                delta: c.wrDelta,
+                              }
+                            : null;
+                      // The EU arrow means "crossed a tier boundary", nothing
+                      // less: a tier is what this list ranks, so half a point
+                      // of wobble inside GOD is fine print (the small +/-
+                      // under the win rate), not a badge. CN keeps its
+                      // delta-based badge: its brackets re-rank week to week
+                      // and tier labels are not comparable across them.
+                      const euTierMove = !isCN && !isGlobal ? c.tierMoved : null;
+                      const up = isCN || isGlobal ? Boolean(mv && mv.delta > 0) : euTierMove === "up";
+                      const changed = isCN || isGlobal
+                        ? Boolean(mv && Math.abs(mv.delta) >= 0.05)
+                        : Boolean(euTierMove);
                       return (
                         <Link
                           key={c.slug}
                           href={`/champions/${c.slug}`}
                           className="group flex w-[46px] flex-col items-center text-center transition sm:w-[68px]"
                           title={changed && mv
-                            ? `${c.name} · ${c.wr.toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : "previous CN scrape"} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
+                            ? `${c.name} · ${c.wr.toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : isCN ? "previous CN scrape" : `since ${site.movementSince ?? "the previous collection"}`}${!isCN && !isGlobal && c.prevTier ? ` ${c.prevTier} → ${c.tier},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
                             : `${c.name} · ${c.wr.toFixed(1)}% WR`}
                         >
                           <span className="relative transition group-hover:-translate-y-0.5">
                             <ChampionAvatar champion={c} size={52} mobileSize={38} />
+                            {/* top-LEFT, because the OTP badge owns the
+                                top-right corner of the avatar and an OTP
+                                riser was showing exactly one of the two. */}
                             {changed && mv && (
-                              <span className={`absolute -right-1.5 -top-1 rounded-full px-1 text-[0.55rem] font-bold text-white ring-1 ring-black/30 ${up ? "bg-emerald-500" : "bg-bad"}`}>
+                              <span className={`absolute -left-1.5 -top-1 rounded-full px-1 text-[0.55rem] font-bold text-white ring-1 ring-black/30 ${up ? "bg-emerald-500" : "bg-bad"}`}>
                                 {up ? "▲" : "▼"}
                               </span>
                             )}
@@ -207,9 +275,9 @@ export function TierListView({
                           </span>
                           <span className="text-[0.7rem] font-semibold text-accent">
                             {c.wr.toFixed(1)}%
-                            {changed && mv && (
-                              <span className={`ml-1 ${up ? "text-emerald-400" : "text-bad"}`}>
-                                {up ? "+" : ""}{mv.delta}
+                            {mv && (changed || (!isCN && !isGlobal && Math.abs(mv.delta) >= 0.5)) && (
+                              <span className={`ml-1 ${mv.delta > 0 ? "text-emerald-400" : "text-bad"}`}>
+                                {mv.delta > 0 ? "+" : ""}{mv.delta}
                               </span>
                             )}
                           </span>

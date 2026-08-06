@@ -10,8 +10,20 @@ type ChampProfile = {
   name: string; avgWr: number | null; kda: number | null; teamfight: number | null;
   gpm: number | null; dmgDealt: number | null; dmgTaken: number | null;
   turret: number | null; firstBlood: number | null; mvpRate: number | null;
-  gamesMedian: number | null; legendaryTax: number | null; pentas: number;
+  sRate: number | null;
+  gamesMedian: number | null; legendaryTax: number | null;
+  legendaryTaxN?: number | null; pentas: number;
+  /** Ranked-tier composition of the board, keyed by tier family. */
+  tiers: Record<string, number>;
 };
+
+/** The two summits of the standard ladder. Legendary Ranked families are shown
+ *  as their own chip rather than summed in: it is a separate queue's ladder,
+ *  and adding its counts to Sovereign's would rank the two ladders as one. */
+const eliteCount = (t: Record<string, number> | undefined) =>
+  (t?.sovereign ?? 0) + (t?.challenger ?? 0);
+const legendaryCount = (t: Record<string, number> | undefined) =>
+  Object.entries(t ?? {}).reduce((a, [k, v]) => a + (k.startsWith("legendary") ? v : 0), 0);
 
 function itemIconMap(): Record<string, string> {
   const map: Record<string, string> = {};
@@ -47,6 +59,8 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
     { label: "Teamfight core", key: "teamfight", fmt: (v) => `${v.toFixed(1)}% presence` },
     { label: "First blood king", key: "firstBlood", fmt: (v) => `${v.toFixed(1)}% of games` },
     { label: "Richest", key: "gpm", fmt: (v) => `${Math.round(v)} gold per minute` },
+    { label: "MVP factory", key: "mvpRate", fmt: (v) => `${v.toFixed(1)}% MVP rate` },
+    { label: "S-rating machine", key: "sRate", fmt: (v) => `${v.toFixed(1)} S ratings per player` },
   ];
 
   const taxRows = champs
@@ -56,6 +70,19 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
   const dedication = [...champs]
     .filter(([, c]) => c.gamesMedian != null)
     .sort((a, b) => Number(b[1].gamesMedian) - Number(a[1].gamesMedian));
+
+  // Boards ranked by how much of the ladder's summit sits on them.
+  const stacked = [...champs]
+    .filter(([, c]) => eliteCount(c.tiers) > 0)
+    .sort((a, b) =>
+      eliteCount(b[1].tiers) - eliteCount(a[1].tiers)
+      || legendaryCount(b[1].tiers) - legendaryCount(a[1].tiers))
+    .slice(0, 10);
+  const pentaBoards = [...champs]
+    .filter(([, c]) => (c.pentas ?? 0) > 0)
+    .sort((a, b) => (b[1].pentas ?? 0) - (a[1].pentas ?? 0))
+    .slice(0, 10);
+  const maxPentas = pentaBoards.length ? pentaBoards[0][1].pentas : 1;
 
   return (
     <div className="mt-10">
@@ -147,20 +174,44 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
             The Legendary tax
           </p>
           <p className="mt-1 text-xs text-faint">
-            How much win rate each champion&apos;s top players give up in Legendary Ranked.
+            The same players, both queues: each player&apos;s Legendary Ranked win rate minus
+            their own ranked one (10+ games in each), averaged per champion. Positive means
+            the champion holds up at the top.
           </p>
           <div className="mt-3 space-y-1">
-            {taxRows.map(([slug, c]) => (
+            {taxRows.slice(0, 5).map(([slug, c]) => (
               <div key={slug} className="flex items-center justify-between text-sm">
                 <Link href={`/leaderboard?champion=${slug}`} className="truncate text-muted hover:text-text">
                   {c.name}
                 </Link>
                 <span className={`tabular-nums ${Number(c.legendaryTax) >= 0 ? "text-accent" : "text-bad"}`}>
                   {Number(c.legendaryTax) >= 0 ? "+" : ""}{Number(c.legendaryTax).toFixed(1)}pp
+                  <span className="ml-1.5 text-[0.65rem] text-faint">{c.legendaryTaxN}p</span>
                 </span>
               </div>
             ))}
           </div>
+          {taxRows.length > 5 && (
+            <details className="group mt-2">
+              <summary className="cursor-pointer list-none text-xs font-semibold text-accent hover:underline">
+                <span className="group-open:hidden">Show all {taxRows.length} champions</span>
+                <span className="hidden group-open:inline">Show less</span>
+              </summary>
+              <div className="mt-2 space-y-1">
+                {taxRows.slice(5).map(([slug, c]) => (
+                  <div key={slug} className="flex items-center justify-between text-sm">
+                    <Link href={`/leaderboard?champion=${slug}`} className="truncate text-muted hover:text-text">
+                      {c.name}
+                    </Link>
+                    <span className={`tabular-nums ${Number(c.legendaryTax) >= 0 ? "text-accent" : "text-bad"}`}>
+                      {Number(c.legendaryTax) >= 0 ? "+" : ""}{Number(c.legendaryTax).toFixed(1)}pp
+                      <span className="ml-1.5 text-[0.65rem] text-faint">{c.legendaryTaxN}p</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
         </Card>
 
         <Card className="p-5">
@@ -179,6 +230,64 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
                 <span className="h-2 rounded-full bg-gold/60"
                   style={{ width: `${Math.max(3, Number(c.gamesMedian) / 1.4)}px` }} />
                 <span className="text-xs tabular-nums text-muted">{c.gamesMedian}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card className="p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+            Most stacked boards
+          </p>
+          <p className="mt-1 text-xs text-faint">
+            Where the ladder&apos;s summit plays: Sovereign and Challenger players per board,
+            with the Legendary Ranked queue counted separately.
+          </p>
+          <div className="mt-3 space-y-1">
+            {stacked.map(([slug, c]) => (
+              <div key={slug} className="flex items-center justify-between gap-2 text-sm">
+                <Link href={`/leaderboard?champion=${slug}`} className="truncate text-muted hover:text-text">
+                  {c.name}
+                </Link>
+                <span className="flex shrink-0 items-center gap-1.5 text-xs tabular-nums">
+                  {(c.tiers?.sovereign ?? 0) > 0 && (
+                    <span className="rounded bg-gold/15 px-1.5 py-0.5 font-semibold text-gold">
+                      {c.tiers.sovereign} SOV
+                    </span>
+                  )}
+                  <span className="rounded bg-accent/15 px-1.5 py-0.5 font-semibold text-accent">
+                    {c.tiers?.challenger ?? 0} CHA
+                  </span>
+                  {legendaryCount(c.tiers) > 0 && (
+                    <span className="rounded bg-white/[0.07] px-1.5 py-0.5 text-muted">
+                      {legendaryCount(c.tiers)} LGD
+                    </span>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+            Pentakill boards
+          </p>
+          <p className="mt-1 text-xs text-faint">
+            Ranked pentakills this season across each board&apos;s top 50, from their
+            account stats pages.
+          </p>
+          <div className="mt-3 space-y-1">
+            {pentaBoards.map(([slug, c]) => (
+              <div key={slug} className="flex items-center gap-2 text-sm">
+                <Link href={`/leaderboard?champion=${slug}`} className="w-36 truncate text-muted hover:text-text">
+                  {c.name}
+                </Link>
+                <span className="h-2 rounded-full bg-bad/60"
+                  style={{ width: `${Math.max(4, (c.pentas / maxPentas) * 190)}px` }} />
+                <span className="text-xs tabular-nums text-muted">{c.pentas}</span>
               </div>
             ))}
           </div>

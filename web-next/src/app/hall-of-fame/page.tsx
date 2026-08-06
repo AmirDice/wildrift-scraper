@@ -34,21 +34,27 @@ const hof = pulse.hallOfFame as Record<string, unknown> & {
 const CARDS: {
   key: string; title: string; blurb: string; glyph: string; tone: string;
   fmt: (v: number) => string;
+  /** True when the stat comes from the account's THIS-SEASON profile (the STATS
+   *  page), which covers every champion the account plays. Champion-specific
+   *  data is only what the leaderboard row itself carries: score, win rate,
+   *  games. An account-wide card shows the board we found the account on,
+   *  and the wording must not pretend the number belongs to that champion. */
+  accountWide?: boolean;
 }[] = [
-  { key: "kdaKing", title: "The KDA King", blurb: "Best KDA, 30 games minimum", glyph: "gem", tone: "text-sky-300", fmt: (v) => `${v.toFixed(1)} KDA` },
+  { key: "kdaKing", title: "The KDA King", blurb: "Best KDA in ranked this season, 30 games minimum", glyph: "gem", tone: "text-sky-300", fmt: (v) => `${v.toFixed(1)} KDA`, accountWide: true },
   { key: "grinder", title: "The Grinder", blurb: "Most ranked games on one champion", glyph: "hourglass", tone: "text-amber-300", fmt: (v) => `${v.toLocaleString()} games` },
-  { key: "mvpMachine", title: "The MVP Machine", blurb: "Highest MVP rate, 30 games minimum", glyph: "medal", tone: "text-gold", fmt: (v) => `${v.toFixed(1)}% of games` },
-  { key: "quadraKing", title: "The Quadra Collector", blurb: "Most quadrakills on one champion", glyph: "cross", tone: "text-rose-300", fmt: (v) => `${v} quadrakills` },
-  { key: "executioner", title: "The Executioner", blurb: "Most damage dealt per match", glyph: "swords", tone: "text-red-300", fmt: (v) => `${Math.round(v / 100) / 10}k damage` },
-  { key: "wall", title: "The Wall", blurb: "Most damage soaked per match", glyph: "shield", tone: "text-emerald-300", fmt: (v) => `${Math.round(v / 100) / 10}k soaked` },
-  { key: "demolition", title: "The Demolition Expert", blurb: "Most turret damage per match", glyph: "tower", tone: "text-orange-300", fmt: (v) => `${Math.round(v / 100) / 10}k to turrets` },
-  { key: "economist", title: "The Economist", blurb: "Highest gold per minute, 30 games minimum", glyph: "coin", tone: "text-yellow-300", fmt: (v) => `${Math.round(v)} gold/min` },
-  { key: "teamfighter", title: "The Frontliner", blurb: "Highest teamfight presence, 30 games minimum", glyph: "users", tone: "text-cyan-300", fmt: (v) => `${v.toFixed(1)}% of fights` },
-  { key: "firstStriker", title: "The First Striker", blurb: "Highest first blood rate, 30 games minimum", glyph: "bolt", tone: "text-purple-300", fmt: (v) => `${v.toFixed(1)}% of games` },
-  { key: "sCollector", title: "The S Collector", blurb: "Most S ratings on one champion", glyph: "award", tone: "text-indigo-300", fmt: (v) => `${v} S ratings` },
-  { key: "legendKiller", title: "The Legend Killer", blurb: "Best Legendary Ranked win rate, 15 games minimum", glyph: "flame", tone: "text-rose-300", fmt: (v) => `${v.toFixed(1)}% in Legendary` },
+  { key: "mvpMachine", title: "The MVP Machine", blurb: "Highest MVP rate this season, 30 games minimum", glyph: "medal", tone: "text-gold", fmt: (v) => `${v.toFixed(1)}% of games`, accountWide: true },
+  { key: "quadraKing", title: "The Quadra Collector", blurb: "Most ranked quadrakills this season", glyph: "cross", tone: "text-rose-300", fmt: (v) => `${v} quadrakills`, accountWide: true },
+  { key: "executioner", title: "The Executioner", blurb: "Most damage dealt per match this season", glyph: "swords", tone: "text-red-300", fmt: (v) => `${Math.round(v / 100) / 10}k damage`, accountWide: true },
+  { key: "wall", title: "The Wall", blurb: "Most damage soaked per match this season", glyph: "shield", tone: "text-emerald-300", fmt: (v) => `${Math.round(v / 100) / 10}k soaked`, accountWide: true },
+  { key: "demolition", title: "The Demolition Expert", blurb: "Most turret damage per match this season", glyph: "tower", tone: "text-orange-300", fmt: (v) => `${Math.round(v / 100) / 10}k to turrets`, accountWide: true },
+  { key: "economist", title: "The Economist", blurb: "Highest gold per minute this season, 30 games minimum", glyph: "coin", tone: "text-yellow-300", fmt: (v) => `${Math.round(v)} gold/min`, accountWide: true },
+  { key: "teamfighter", title: "The Frontliner", blurb: "Highest teamfight presence this season, 30 games minimum", glyph: "users", tone: "text-cyan-300", fmt: (v) => `${v.toFixed(1)}% of fights`, accountWide: true },
+  { key: "firstStriker", title: "The First Striker", blurb: "Highest first blood rate this season, 30 games minimum", glyph: "bolt", tone: "text-purple-300", fmt: (v) => `${v.toFixed(1)}% of games`, accountWide: true },
+  { key: "sCollector", title: "The S Collector", blurb: "Most ranked S ratings this season", glyph: "award", tone: "text-indigo-300", fmt: (v) => `${v} S ratings`, accountWide: true },
+  { key: "legendKiller", title: "The Legend Killer", blurb: "Best Legendary Ranked win rate this season, 15 games minimum", glyph: "flame", tone: "text-rose-300", fmt: (v) => `${v.toFixed(1)}% in Legendary`, accountWide: true },
   { key: "masteryRecord", title: "The Scholar", blurb: "Highest champion mastery score in EU", glyph: "scroll", tone: "text-teal-300", fmt: (v) => `${v.toLocaleString()} mastery` },
-  { key: "veteran", title: "The Veteran", blurb: "Highest account level on any board", glyph: "hourglass", tone: "text-stone-300", fmt: (v) => `Level ${v}` },
+  { key: "veteran", title: "The Veteran", blurb: "Highest account level on any board", glyph: "hourglass", tone: "text-stone-300", fmt: (v) => `Level ${v}`, accountWide: true },
 ];
 
 export default function HallOfFamePage() {
@@ -77,7 +83,7 @@ export default function HallOfFamePage() {
 
       {/* the two thrones */}
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        {[{ feat: pentaKing, title: "The Penta King", blurb: "Most pentakills on a single champion", fmt: (v: number) => `${v} pentakills` },
+        {[{ feat: pentaKing, title: "The Penta King", blurb: "Most ranked pentakills this season", fmt: (v: number) => `${v} pentakills` },
           { feat: perfectionist, title: "The Perfectionist", blurb: "Highest win rate with 30 or more games", fmt: (v: number) => `${v.toFixed(1)}% win rate` }].map(({ feat, title, blurb, fmt }) => {
           if (!feat) return null;
           const art = byuSlug[feat.slug];
@@ -104,8 +110,9 @@ export default function HallOfFamePage() {
                   <div className="min-w-0">
                     <p className="truncate text-lg font-semibold">{feat.player || "Unknown player"}</p>
                     <p className="truncate text-xs text-muted">
+                      {title === "The Penta King" ? "seen on the " : ""}
                       <Link href={`/leaderboard?champion=${feat.slug}`} className="hover:text-text">{feat.champion}</Link>
-                      {" "}from {feat.detail}
+                      {title === "The Penta King" ? " board · " : " from "}{feat.detail}
                     </p>
                   </div>
                 </div>
@@ -118,7 +125,7 @@ export default function HallOfFamePage() {
       {/* the trophy wall */}
       <section className="mt-8">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {rest.map(({ key, title, blurb, glyph, tone, fmt }) => {
+          {rest.map(({ key, title, blurb, glyph, tone, fmt, accountWide }) => {
             const feat = hof[key] as Feat;
             if (!feat) return null;
             const art = byuSlug[feat.slug];
@@ -139,10 +146,11 @@ export default function HallOfFamePage() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{feat.player || "Unknown player"}</p>
                     <p className="truncate text-xs text-muted">
+                      {accountWide ? "seen on the " : ""}
                       <Link href={`/leaderboard?champion=${feat.slug}`} className="hover:text-text">
                         {feat.champion}
                       </Link>
-                      {" "}from {feat.detail}
+                      {accountWide ? " board · " : " from "}{feat.detail}
                     </p>
                   </div>
                 </div>
@@ -211,10 +219,11 @@ export default function HallOfFamePage() {
 
       <p className="mt-10 text-xs text-faint">
         Records involving a rate require 30 or more ranked games, so a lucky handful of
-        matches cannot take a crown. Accounts advertising boosting services are excluded
-        from every record and from champion win rates: they play deliberately below their
-        skill, so their numbers measure a mismatch rather than a player. Data comes from
-        the in-game leaderboards and each player&apos;s ranked match history.
+        matches cannot take a crown. A record is a name, so accounts that advertise
+        boosting services in their name and permanently banned accounts are never
+        crowned here -- and a banned account&apos;s games are excluded from every
+        statistic on the site besides. Data comes from the in-game leaderboards and each
+        player&apos;s ranked match history.
       </p>
     </Container>
   );

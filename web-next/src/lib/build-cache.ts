@@ -37,6 +37,9 @@ export interface BuildRequestKey {
   aheadEnemy: string;
   mode: string;
   riskTolerance?: string;
+  /** The player's own rank bracket; a Master+ build and an Emerald build are
+   *  different answers to the same champion. */
+  skillLevel?: string;
   enemies: string[];
   allies: string[];
   /** Items and runes the player pinned; part of the key so a locked request
@@ -63,6 +66,7 @@ export function buildCacheKey(request: BuildRequestKey): string {
     aheadEnemy: request.aheadEnemy,
     mode: request.mode,
     riskTolerance: request.riskTolerance ?? "medium",
+    skillLevel: request.skillLevel ?? "average",
     enemies: [...request.enemies].map((e) => e.toLowerCase()).sort(),
     allies: [...request.allies].map((a) => a.toLowerCase()).sort(),
     lockedItems: [...(request.lockedItems ?? [])].map((s) => s.toLowerCase()).sort(),
@@ -139,7 +143,24 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // 141) escalate to the premium model even on standard requests. v18 entries
   // for those champions are minutes old and lite-authored, and Malphite's
   // measured failure was exactly a lite-authored standard build.
-  return `build:v19:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v20: the prompt was reworked in the 2026-08-05/06 batch and none of it
+  // bumped the cache: ladder-core required candidates with scoring teeth, the
+  // item-to-item synergyWith field, Burst and Glass cannon merged into
+  // One-shot, the typical-comp unknown-enemy block, redundancy and
+  // reactive-item withholding removed, and best-of-N machinery. A v19 counter
+  // build predates all of it -- the reported symptom was a Graves counter
+  // versus a triple-shield comp (Lee Sin, Riven, Karma) that carried no
+  // Serpent's Fang, while a fresh generation of the identical request picks it
+  // second with shields as its top stated priority. The stale entry was the
+  // whole difference.
+  // v21: everything that landed AFTER the v20 bump, in the same day -- threat
+  // priority is now driven by measured enemy win rates, counter builds must
+  // answer with at least one rune, the studio summoner pool reads the typical
+  // ranked comp (Barrier joined it), skill level exists, and Skarner moved to
+  // Baron. v20 was bumped mid-batch, so an entry written in the gap carries a
+  // prompt none of those saw. The v20 namespace is hours old and likely near
+  // empty; retiring it costs nothing and removes the doubt.
+  return `build:v21:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

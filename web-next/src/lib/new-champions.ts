@@ -1,4 +1,5 @@
 import newChampionData from "@/data/new_champions.json";
+import siteData from "@/data/site.json";
 
 /**
  * Champions that are live in Wild Rift but have no ranked-player data here yet.
@@ -51,10 +52,21 @@ const DATA = newChampionData as {
 
 export const NEW_CHAMPION_SOURCE = DATA.source;
 
+// A champion GRADUATES the moment site.json carries ranked data for it, and
+// new_champions.json is regenerated on a different cadence than the site data,
+// so the two lists briefly overlap after every collection. Filtering here
+// rather than trusting the JSON is what stops a graduated champion from being
+// both "ranked" and "pending" at once -- Skarner and Yunara were, and every
+// page that concatenates the two lists rendered them twice (React's duplicate
+// key warning was the visible symptom).
+const RANKED_SLUGS = new Set(
+  (siteData as { champions: { slug: string }[] }).champions.map((c) => c.slug),
+);
+
 export function getNewChampions(): NewChampion[] {
-  return DATA.champions;
+  return DATA.champions.filter((champion) => !RANKED_SLUGS.has(champion.slug));
 }
 
 export function getNewChampion(slug: string): NewChampion | undefined {
-  return DATA.champions.find((champion) => champion.slug === slug);
+  return getNewChampions().find((champion) => champion.slug === slug);
 }

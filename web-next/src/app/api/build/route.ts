@@ -134,6 +134,7 @@ type Body = {
   aheadEnemy?: string;
   mode?: string;
   riskTolerance?: string;
+  skillLevel?: string;
   lockedItems?: string[];
   lockedRunes?: string[];
   /** How many times to sample the model before answering. Set by this route on
@@ -280,6 +281,8 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
       b.mode === "counter" ? "counter" : "studio",
       "--risk-tolerance",
       b.riskTolerance ?? "medium",
+      "--skill-level",
+      b.skillLevel ?? "average",
       "--locked-items",
       (b.lockedItems ?? []).join(","),
       "--locked-runes",
@@ -408,6 +411,7 @@ async function handlePost(request: Request) {
     aheadEnemy: clean(body.aheadEnemy),
     mode,
     riskTolerance: clean(body.riskTolerance) || "medium",
+    skillLevel: clean(body.skillLevel) || "average",
     // Slugs and rune names the player pinned; the advisor caps and resolves
     // them, so passing a few extra or unknown ones is harmless.
     lockedItems: cleanList(body.lockedItems),

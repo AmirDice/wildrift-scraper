@@ -17,9 +17,12 @@ import {
 } from "@/components/meta-charts";
 
 export const metadata: Metadata = {
-  title: "Meta Report | Wild Rift Win Rate Charts & Visualizations",
+  // "Overview", not "Report". A report is homework; an overview is
+  // orientation. Same reasoning as the page order below: cards and tables
+  // first, charts afterwards for whoever wants to keep reading.
+  title: "Meta Overview | Wild Rift Win Rates, Builds & Trends",
   description:
-    "The Wild Rift meta at a glance: tier distribution, win rate by class and role, a win-rate-vs-popularity map of every champion, and how the ladder splits across tiers.",
+    "The Wild Rift meta at a glance: what the top 50 players on every champion build, the runes and items that win, tier distribution, and win rate by class and role.",
   alternates: { canonical: "/meta" },
 };
 
@@ -42,11 +45,11 @@ export default function MetaPage() {
   return (
     <Container className="py-12">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-        Meta Report{site.collectedOn ? ` · ${site.collectedOn}` : ""}
+        Meta Overview{site.collectedOn ? ` · ${site.collectedOn}` : ""}
       </p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">The meta, visualized</h1>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">The meta at a glance</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        Every chart below is built from the same real EU data as the tier list: the top 50 players
+        Everything below is built from the same real EU data as the tier list: the top 50 players
         on each of {h.nChampions} champions, confidence-adjusted so hype never skews the picture.
       </p>
 
@@ -58,6 +61,23 @@ export default function MetaPage() {
         <Head label="Strongest role" value={h.topRole.role} sub={`${h.topRole.wr.toFixed(1)}% top picks`} />
       </div>
 
+      {/* the freshly scraped boards: builds, queues and match-history evidence */}
+      <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
+
+      {/* rune and item usage, ordered, with the win rate behind each choice */}
+      <UsageTables />
+
+      {/* everything that used to run down the home page */}
+      <DeepDiveSections />
+
+      {/* The charts live BELOW the cards and tables on purpose: most visitors
+          want "what do I play and what do I build", and a scatter plot as the
+          opening image reads like an exam. The chart-minded scroll; everyone
+          else has already been served. */}
+      <div className="mt-12 border-t border-line/60 pt-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">For the chart-minded</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight">The same meta, visualized</h2>
+      </div>
       {/* centerpiece scatter */}
       <div className="mt-10">
         <SectionHeading title="Win rate vs popularity" subtitle="Every ranked champion, mapped by how much it wins against how much it is played. Top-left is a hidden gem, top-right is a proven meta pillar." />
@@ -119,14 +139,6 @@ export default function MetaPage() {
         <Card className="p-5 sm:p-6"><RoleTierHeatmap rows={heat} /></Card>
       </div>
 
-      {/* the freshly scraped boards: builds, queues and match-history evidence */}
-      <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
-
-      {/* rune and item usage, ordered, with the win rate behind each choice */}
-      <UsageTables />
-
-      {/* everything that used to run down the home page */}
-      <DeepDiveSections />
 
       <p className="mt-10 text-sm text-faint">
         Want the raw ordering instead of the charts?{" "}

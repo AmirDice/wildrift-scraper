@@ -12,49 +12,34 @@ import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 // While the build tools are held back, the banner promotes the Meta Report
 // instead; when they launch it flips to advertising them (and re-surfaces via
 // its own dismiss key).
-// TEMPORARY OVERRIDE: the EU data refresh lands around Aug 5. Until it ships,
-// this announcement outranks the flag-based promos below; delete EU_PROMO (and
-// the `?? EU_PROMO` fallthrough) once the refresh is live to restore them.
-const EU_PROMO = {
-  key: "wtm-eu-data-refresh-v1",
-  href: "/tier-list",
-  // `lead` is pinned and never scrolls, so the thing being announced is
-  // readable at every width; only `body` travels.
-  lead: "EU data refresh incoming",
-  body: "fresh top-50 win rates plus player builds, ranked tiers and per-queue stats for every champion, releasing in about 2 days.",
-  hideOn: [],
-  badges: ["Incoming"],
-  cta: "Current stats",
-};
-
 const FLAG_PROMO = BUILD_TOOLS_LIVE
   ? {
-      // One tool, not two: "Build Optimizer & Counter Builder are live:
-      // generate a full build, runes and item order for any champion or
-      // matchup" wrapped to three lines on a phone and buried the point.
-      // The Counter Builder is one tab away once they arrive.
-      key: "wtm-feature-builders-v4",
+      // The two headline facts of this release in one line: the EU win rates
+      // are freshly collected (the full roster, this patch) and the Build
+      // Studio is open. Key bumped to v5 so people who dismissed the old
+      // banner see this one once.
+      key: "wtm-feature-builders-v5",
       href: "/build",
-      lead: "Build Studio is live",
-      body: "generate by playstyle, build against the enemy team, or craft your own with live item, rune and ability stats.",
+      lead: "EU win rates & Build Studio are live",
+      body: "fresh top-50 win rates for every champion, and a generator that builds around how you play.",
       hideOn: ["/build", "/counter"],  // /counter redirects into /build
-      badges: ["New", "Beta"],
+      badges: ["New"],
       cta: "Try it",
     }
   : {
       key: "wtm-feature-meta-report-v1",
       href: "/meta",
-      lead: "New: Meta Report",
+      lead: "New: Meta Overview",
       body: "maps the whole meta in charts, tier splits, win rate by class and role, and a win-rate-vs-popularity map of every champion.",
       hideOn: ["/meta"],
       badges: ["New"],
       cta: "See it",
     };
 
-// Flip to false when the EU refresh ships.
-const EU_REFRESH_PENDING = true;
-
-const PROMO = EU_REFRESH_PENDING ? EU_PROMO : FLAG_PROMO;
+// The "EU data refresh incoming" countdown banner that used to override this
+// was removed 2026-08-06, the day the refresh shipped -- the full roster is
+// collected and live, which is exactly what the current banner announces.
+const PROMO = FLAG_PROMO;
 const DISMISS_KEY = PROMO.key;
 // pages the banner points at -- no reason to show it there
 const HIDE_ON = PROMO.hideOn;

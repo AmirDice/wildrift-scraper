@@ -31,8 +31,10 @@ export default async function BuildPage(props: PageProps<"/build">) {
         <span className="rounded-md bg-emerald-400/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-300">
           New
         </span>
+        {/* Out of beta 2026-08-06: the full EU roster is collected and every
+            generator behaviour on this page is validated and cache-versioned. */}
         <span className="rounded-md bg-accent/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-accent">
-          Beta
+          v1
         </span>
       </div>
       <p className="mt-1 max-w-xl text-sm text-muted">

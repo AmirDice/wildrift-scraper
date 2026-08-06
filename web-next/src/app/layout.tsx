@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolsCta } from "@/components/tools-cta";
 import { FeatureBanner } from "@/components/feature-banner";
+import { FlagshipNudge } from "@/components/flagship-nudge";
 import { AccountProvider } from "@/components/account-provider";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/next";
@@ -102,6 +103,9 @@ export default function RootLayout({
               seen. Kept small enough to sit in one row on a phone. */}
           <ToolsCta />
           <main className="flex-1">{children}</main>
+          {/* Bottom-right suggestion card; engagement-triggered, capped, and
+              measured. See components/flagship-nudge.tsx for the rules. */}
+          <FlagshipNudge />
           <SiteFooter />
         </AccountProvider>
         <Analytics />

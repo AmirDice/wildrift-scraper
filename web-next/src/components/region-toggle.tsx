@@ -19,7 +19,10 @@ export function RegionToggle({
   return (
     <div className="inline-flex items-center gap-3">
       <span className="text-xs font-semibold uppercase tracking-wide text-faint">Region</span>
-      <div className="inline-flex rounded-full border border-line bg-white/[0.03] p-1">
+      {/* liquid-glass, not the flat strip it was: this control decides what
+          the whole page shows, and a quiet border on a dark ground was the
+          most-missed element on the tier list. */}
+      <div className="liquid-glass inline-flex rounded-full p-1">
         {regions.map((r) => {
           const hasData = REGIONS_WITH_DATA.includes(r);
           return (

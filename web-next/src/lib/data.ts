@@ -19,6 +19,13 @@ export interface Champion {
   meanWr: number | null;
   maxWr: number | null;
   winrateStd: number | null;
+  /** Raw win-rate movement since the previous collection (site.movementSince).
+   *  Null for champions absent from the earlier snapshot. */
+  wrDelta?: number | null;
+  /** "up" | "down" when the champion crossed a TIER boundary since the
+   *  previous collection; null inside the same tier. Gates the arrow badge. */
+  tierMoved?: string | null;
+  prevTier?: string | null;
   medianGames: number | null;
   totalGames: number | null;
   nPlayers: number | null;
@@ -35,6 +42,17 @@ export interface Champion {
   icon: string;
   splash: string;
   bestPlayer: BestPlayer | null;
+  /** Shallower pool slices for the tier list's depth toggle, keyed "25" |
+   *  "10" | "5". "All" is the top-level wr/tier. EU only: CN's numbers are
+   *  Tencent's bracket aggregates with no per-player rows to re-slice. */
+  pools?: Record<string, {
+    wr: number | null;
+    nPlayers: number | null;
+    tier: string;
+    tierCss: string;
+    tierRole: string;
+    tierRoleCss: string;
+  }> | null;
   /** No top-50 leaderboard yet, so every ranking field on this record is a
    *  placeholder and must not be rendered. Set only for champions surfaced
    *  from new_champions.json; see pendingChampion(). */
@@ -85,6 +103,7 @@ export interface MasteryEntry {
 
 export interface Site {
   collectedOn: string | null;
+  movementSince?: string | null;
   roles: string[];
   nChampions: number;
   nPlayers: number;
@@ -156,7 +175,8 @@ function pendingChampion(c: NewChampion): Champion {
     name: c.name, slug: c.slug, role: c.role, class: c.class,
     difficulty: c.difficulty, difficultyLabel: c.difficultyLabel,
     isHard: c.difficulty >= 7,
-    wr: NaN, meanWr: null, maxWr: null, winrateStd: null,
+    wr: NaN, meanWr: null, maxWr: null, winrateStd: null, wrDelta: null,
+    tierMoved: null, prevTier: null,
     medianGames: null, totalGames: null, nPlayers: null, medianMastery: null,
     maxScore: null, otpScore: null, isOtp: false, topPlayer: null,
     tier: "", tierCss: "", tierRole: "", tierRoleCss: "",

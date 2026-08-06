@@ -37,7 +37,7 @@ const STEPS: Record<string, Step> = {
     href: "/meta",
     title: "See the whole meta",
     body: "Cross-server win rates, the China versus Europe gap, skill-bracket splits, and the runes and items high elo actually runs.",
-    cta: "Open the meta report",
+    cta: "Open the meta overview",
   },
   tierList: {
     href: "/tier-list",

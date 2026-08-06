@@ -40,16 +40,21 @@ export default function MethodologyPage() {
           score is the games-weighted mean of these adjusted rates.
         </Section>
 
-        <Section title="Boosting accounts are excluded">
-          Some leaderboard accounts advertise a boosting service in their own name. They are
-          removed from every statistic on this site: champion win rates, tier placements, best
-          player, and all ladder records. The reason is accuracy before ethics. A boosting
-          account is a strong player deliberately playing on a weaker account, so its{" "}
-          <strong className="text-text">90%+ win rate measures a skill mismatch</strong>, not the
-          champion. Their rank still appears on the leaderboard, because the board is a mirror of
-          the game, but the name is hidden rather than advertised. Detection is deliberately
-          narrow and based only on what the account declares in its own name, so ordinary players
-          are never labelled.
+        <Section title="Boosting adverts and banned accounts">
+          Two kinds of account get special handling, and they lose different things.{" "}
+          <strong className="text-text">Accounts that advertise a boosting service in their own
+          name</strong> keep their rank and their games count toward every statistic -- an
+          advertising name says how an account is marketed, not how it is played, and many of
+          the people advertising are simply good. What they lose is the name: rendering it on a
+          public page is free marketing, so the board shows their rank with the name hidden, and
+          they are never crowned best player or given a Hall of Fame record, because a title is
+          a name. Detection is deliberately narrow and based only on what the account declares
+          about itself, so ordinary players are never labelled.{" "}
+          <strong className="text-text">Permanently banned accounts</strong> are the reverse:
+          their name stays visible with a Permabanned tag, because hiding it would quietly
+          rewrite the board, but their games are excluded from champion win rates, records and
+          every other statistic. That list is curated by hand from in-game evidence -- nothing
+          in a win rate alone proves misconduct, and we never infer a ban from performance.
         </Section>
 
         <Section title="Adaptive games floor">

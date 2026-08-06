@@ -30,6 +30,16 @@ const itemCost = (slug: string): number => DATA.items?.[slug]?.cost ?? 0;
 const itemIcon = (slug: string): string => DATA.items?.[slug]?.icon ?? `/items/${slug}.webp`;
 const runeIcon = (name: string): string | null => DATA.runes?.[name]?.icon ?? null;
 
+/** The player's own rank bracket. Spoken as ranks because that is the language
+ *  players use; sent as skill levels because that is what the advisor acts on.
+ *  The middle is the default and sends nothing -- the site cannot verify the
+ *  claim, so only the two ends are worth stating. */
+const SKILL_LEVELS = [
+  { key: "developing", label: "Emerald & below", description: "Forgiving, reliable choices: no stack-or-nothing keystones, no razor timing windows. The build should hold up in a rough game." },
+  { key: "average", label: "Diamond - Master", description: "The standard optimisation. No adjustment either way." },
+  { key: "high", label: "Grandmaster+", description: "Execution-gated, snowball-scaling choices are on the table: Dark Harvest where stacking is realistic, stacking items, greedy timings a skilled pilot converts." },
+] as const;
+
 /**
  * The items this one multiplies, or is multiplied by.
  *
@@ -631,6 +641,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [playstyle, setPlaystyle] = useState<string>(defaultPlaystyle);
   const [objective, setObjective] = useState<string>("balanced");
   const [gamePhase, setGamePhase] = useState<string>("balanced");
+  const [skillLevel, setSkillLevel] = useState<string>("average");
   const [damagePath, setDamagePath] = useState<string>("standard");
   const [championForm, setChampionForm] = useState<string>(presetForm || "shadow-assassin");
   const [enemies, setEnemies] = useState<(string | null)[]>(Array(5).fill(null));
@@ -727,6 +738,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           champion: champ, role, playstyle, objective, gamePhase, damagePath,
+          skillLevel,
           championForm: champ === "Kayn" ? championForm : "",
           aheadEnemy: isCounter ? safeAheadEnemy : "", mode,
           enemies: isCounter ? selectedEnemies : [],
@@ -817,6 +829,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               </select>
             </div>
           )}
+          <div>
+            <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Your rank</p>
+            <select value={skillLevel} onChange={(e) => setSkillLevel(e.target.value)}
+              title={SKILL_LEVELS.find((lvl) => lvl.key === skillLevel)?.description}
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+              {SKILL_LEVELS.map((lvl) => <option key={lvl.key} value={lvl.key}>{lvl.label}</option>)}
+            </select>
+          </div>
           <div data-tour="playstyle">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Playstyle</p>
             <select value={playstyle} onChange={(e) => setPlaystyle(e.target.value)} title={selectedPlaystyle?.description}
