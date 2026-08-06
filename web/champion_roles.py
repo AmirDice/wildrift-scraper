@@ -32,8 +32,10 @@ _JUNGLE: frozenset[str] = frozenset({
     "Amumu", "Diana", "Ekko", "Evelynn", "Fiddlesticks", "Fizz", "Gragas",
     "Graves", "Hecarim", "Jarvan IV", "Kayn", "Kha'Zix", "Kindred", "Lee Sin",
     "Lillia", "Master Yi", "Nidalee", "Nilah", "Nocturne", "Nunu & Willump",
-    "Pantheon", "Rammus", "Rengar", "Shyvana", "Skarner", "Talon",
+    "Pantheon", "Rammus", "Rengar", "Shyvana", "Talon",
     "Vi", "Viego", "Warwick", "Xin Zhao",
+    # Skarner is NOT here: in Wild Rift he is a Baron laner (owner
+    # correction, 2026-08-06), so he takes the Baron fallback below.
 })
 
 _MID: frozenset[str] = frozenset({

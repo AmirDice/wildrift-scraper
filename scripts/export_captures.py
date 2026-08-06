@@ -35,7 +35,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.tiers import canonical_tier  # noqa: E402
-from web.integrity import HIDDEN_LABEL, is_advertising_account  # noqa: E402
+from web.integrity import (  # noqa: E402
+    HIDDEN_LABEL, ban_reason, is_advertising_account, is_banned_account)
 
 CAPTURES = ROOT / "data" / "captures"
 WINRATES = ROOT / "data" / "winrates.csv"
@@ -203,18 +204,32 @@ def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
     csv_rows, enriched = [], []
     for r in sorted(rows, key=lambda x: int(x["rank"])):
         rank = int(r["rank"])
-        if not (r.get("winrate") or "").strip():
-            continue  # unextracted rank (manual-review leftovers)
-        csv_rows.append({c: r.get(c, "") for c in CSV_COLUMNS})
+        has_wr = bool((r.get("winrate") or "").strip())
+        # A rank whose win rate never extracted still gets its ROW. It used to
+        # be dropped here, which made the gaps invisible: the board renumbered
+        # around them and there was no way to see WHOSE number was missing --
+        # exactly the thing you need to know to go and read it by hand.
+        # winrates.csv still only takes rows with a number, because a blank one
+        # contributes nothing to a statistic.
+        if has_wr:
+            csv_rows.append({c: r.get(c, "") for c in CSV_COLUMNS})
         who = ids.get(rank) or {}
         # Boosting adverts keep their ROW (ranks stay contiguous and the board
         # stays a faithful mirror of the game) but lose their name and their
         # build: the name is the advertisement. web/integrity.py has the rest.
         hidden = is_advertising_account(r.get("player_name"))
+        # A permabanned account keeps its NAME and its row. The advert loses
+        # its name because the name IS the advertisement; a ban is the
+        # opposite -- the reader is better served knowing which account it
+        # was. What it loses is the credit for its number, everywhere it
+        # would otherwise be counted.
+        banned = is_banned_account(r.get("player_name"))
         enriched.append({
             "r": rank,
             "p": HIDDEN_LABEL if hidden else (r.get("player_name") or ""),
             "hidden": True if hidden else None,
+            "banned": True if banned else None,
+            "banReason": ban_reason(r.get("player_name")) if banned else None,
             "s": _int(r.get("score")),
             "g": _int(r.get("games")),
             "w": _float(r.get("winrate")),
@@ -305,7 +320,13 @@ def build_player_index(payloads: list[dict]) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--min-ranks", type=int, default=45,
+    # 40, down from 45. The bar exists to skip credit-starved sessions whose
+    # extraction failed wholesale -- those read 0-27 rows, so 40 still rejects
+    # every one of them. What 45 was ALSO rejecting was five boards (ashe,
+    # draven, gragas, nasus, sivir) sitting at 42-44 because a handful of taps
+    # missed: real data, owner-accepted (2026-08-06), and while they were shut
+    # out the site served their June rows instead -- older AND fewer.
+    ap.add_argument("--min-ranks", type=int, default=40,
                     help="Extraction rows a session needs to count as complete")
     ap.add_argument("--fresh", action="store_true",
                     help="Drop ALL existing winrates.csv rows instead of merging")

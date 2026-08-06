@@ -205,9 +205,12 @@ class TestTheAllowedPool:
     read, so the spells that answer a specific matchup are not offered blind.
     """
 
-    def test_studio_offers_only_the_four_that_are_never_wrong(self):
+    def test_studio_offers_the_five_the_typical_comp_justifies(self):
+        """The studio is not blind: the prompt assumes the typical ranked comp,
+        and Barrier is a read of the burst threat that comp guarantees mid.
+        Ignite stays out -- an archetype cannot tell you a lane is killable."""
         assert summoners.allowed_pool("Mid", enemies_known=False) == frozenset(
-            {"Flash", "Exhaust", "Ghost", "Cleanse"})
+            {"Flash", "Exhaust", "Ghost", "Cleanse", "Barrier"})
 
     def test_studio_withholds_heal_and_ignite(self):
         pool = summoners.allowed_pool("Bot", enemies_known=False)

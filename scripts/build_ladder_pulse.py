@@ -36,7 +36,7 @@ from scripts.export_captures import (  # noqa: E402
     find_sessions, _builds_by_rank, _stats_by_rank, _players_by_rank,
     _read_csv, _slug,
 )
-from web.integrity import is_advertising_account  # noqa: E402
+from web.integrity import counts_toward_aggregates, eligible_for_title  # noqa: E402
 from web.runes import canonical_rune, is_known_rune  # noqa: E402
 
 
@@ -91,7 +91,11 @@ def _median(a):
 
 
 def build() -> tuple[dict, dict]:
-    sessions = find_sessions(45)
+    # 40 matches export_captures --min-ranks: the same five owner-accepted
+    # boards (42-44 filled) were absent from every pulse table while their
+    # champions sat in the tier list, which is how "135 champions" met "we
+    # have 140".
+    sessions = find_sessions(40)
     item_global: Counter = Counter()
     keystone_global: Counter = Counter()
     spell_global: Counter = Counter()
@@ -124,11 +128,11 @@ def build() -> tuple[dict, dict]:
         stats = _stats_by_rank(sess)
         name_by_rank: dict[int, str] = {}
 
-        # Boosting accounts contribute to nothing: not a record, not a stat,
-        # not an item pick rate. Their ranks are blocked up front so every
-        # loop below skips them (web/integrity.py explains why).
+        # Boosting and permabanned accounts contribute to nothing: not a
+        # record, not a stat, not an item pick rate. Their ranks are blocked up
+        # front so every loop below skips them (web/integrity.py explains why).
         blocked = {int(r["rank"]) for r in rows
-                   if is_advertising_account(r.get("player_name"))}
+                   if not counts_toward_aggregates(r.get("player_name"))}
 
         ks: Counter = Counter()
         minors: Counter = Counter()
@@ -185,6 +189,9 @@ def build() -> tuple[dict, dict]:
                 exact[slugs] += 1
 
         wrs, r_wr, l_wr = [], [], []
+        # Paired legendary-vs-ranked differences: SAME player, both queues,
+        # both with enough games. See the legendaryTax comment below.
+        tax_pairs: list[float] = []
         kda, tf, gpm, dmg, taken, turret = [], [], [], [], [], []
         fb, mvp_rate, s_rate, games_r = [], [], [], []
         pentas = 0
@@ -192,7 +199,7 @@ def build() -> tuple[dict, dict]:
 
         for r in rows:
             name = r.get("player_name") or ""
-            if is_advertising_account(name):
+            if not counts_toward_aggregates(name):
                 continue
             try:
                 g = int(float(r["games"]))
@@ -203,17 +210,24 @@ def build() -> tuple[dict, dict]:
             name_by_rank[rank] = name
             n_players += 1
             wrs.append(w)
-            if name:
+            # The anonymous aggregates above take every counted row. The named
+            # pools below print the NAME, so they additionally require title
+            # eligibility -- an advert's games belong in the average, its name
+            # does not belong on a trophy. The mastery record went to
+            # 'Insta wrsamboost' the day this distinction was lost.
+            titled = eligible_for_title(name)
+            if name and titled:
                 cross[name].append({"champion": champ, "slug": _slug(champ),
                                     "rank": rank, "wr": w, "games": g})
-            pools["grinder"].append((g, name, champ, f"{w:.1f}% win rate"))
-            if g >= MIN_GAMES_FEATURED:
-                pools["perfectionist"].append((w, name, champ, f"{g} games"))
-            try:
-                score = int(float(r["score"]))
-                pools["masteryRecord"].append((score, name, champ, f"rank {rank} by mastery"))
-            except (TypeError, ValueError):
-                pass
+            if titled:
+                pools["grinder"].append((g, name, champ, f"{w:.1f}% win rate"))
+                if g >= MIN_GAMES_FEATURED:
+                    pools["perfectionist"].append((w, name, champ, f"{g} games"))
+                try:
+                    score = int(float(r["score"]))
+                    pools["masteryRecord"].append((score, name, champ, f"rank {rank} by mastery"))
+                except (TypeError, ValueError):
+                    pass
 
         for rank, who in ids.items():
             if rank in blocked:
@@ -224,13 +238,18 @@ def build() -> tuple[dict, dict]:
                 tier_global[fam] += 1
             if who.get("guild"):
                 guilds[who["guild"]] += 1
-            if who.get("level"):
+            if who.get("level") and eligible_for_title(name_by_rank.get(rank, "")):
                 pools["veteran"].append((who["level"], name_by_rank.get(rank, ""), champ, "account level"))
 
+        # Same split as the row loop: anonymous arrays take everyone, named
+        # pools require title eligibility. `fpools` is a discard sink for
+        # ineligible rows so the dozen appends below stay unconditional.
+        discard: dict = defaultdict(list)
         for rank, q in stats.items():
             if rank in blocked:
                 continue
             name = name_by_rank.get(rank, "")
+            fpools = pools if eligible_for_title(name) else discard
             r0 = q.get("ranked")
             l0 = q.get("legendary")
             if r0:
@@ -251,34 +270,37 @@ def build() -> tuple[dict, dict]:
                         s_rate.append(r0["sRating"] / g0 * 100)
                 if r0.get("penta"):
                     pentas += r0["penta"]
-                    pools["pentaKing"].append((r0["penta"], name, champ, f"{g0} games"))
+                    fpools["pentaKing"].append((r0["penta"], name, champ, f"{g0} games"))
                 if r0.get("quadra"):
-                    pools["quadraKing"].append((r0["quadra"], name, champ, f"{g0} games"))
+                    fpools["quadraKing"].append((r0["quadra"], name, champ, f"{g0} games"))
                 if g0 >= MIN_GAMES_FEATURED:
                     if r0.get("kda") is not None:
-                        pools["kdaKing"].append((r0["kda"], name, champ, f"{g0} games"))
+                        fpools["kdaKing"].append((r0["kda"], name, champ, f"{g0} games"))
                     if r0.get("mvp") is not None:
-                        pools["mvpMachine"].append((round(r0["mvp"] / g0 * 100, 1), name, champ,
+                        fpools["mvpMachine"].append((round(r0["mvp"] / g0 * 100, 1), name, champ,
                                                     f"{r0['mvp']} MVPs in {g0} games"))
                     if r0.get("taken") is not None:
-                        pools["wall"].append((r0["taken"], name, champ, "damage taken per match"))
+                        fpools["wall"].append((r0["taken"], name, champ, "damage taken per match"))
                     if r0.get("turret") is not None:
-                        pools["demolition"].append((r0["turret"], name, champ, "turret damage per match"))
+                        fpools["demolition"].append((r0["turret"], name, champ, "turret damage per match"))
                     if r0.get("dmg") is not None:
-                        pools["executioner"].append((r0["dmg"], name, champ, "damage per match"))
+                        fpools["executioner"].append((r0["dmg"], name, champ, "damage per match"))
                     if r0.get("gpm") is not None:
-                        pools["economist"].append((r0["gpm"], name, champ, "gold per minute"))
+                        fpools["economist"].append((r0["gpm"], name, champ, "gold per minute"))
                     if r0.get("tf") is not None:
-                        pools["teamfighter"].append((r0["tf"], name, champ, f"{g0} games"))
+                        fpools["teamfighter"].append((r0["tf"], name, champ, f"{g0} games"))
                     if r0.get("firstBlood") is not None:
-                        pools["firstStriker"].append((round(r0["firstBlood"] / g0 * 100, 1), name,
+                        fpools["firstStriker"].append((round(r0["firstBlood"] / g0 * 100, 1), name,
                                                       champ, f"{r0['firstBlood']} first bloods in {g0} games"))
                     if r0.get("sRating") is not None:
-                        pools["sCollector"].append((r0["sRating"], name, champ, f"{g0} games"))
+                        fpools["sCollector"].append((r0["sRating"], name, champ, f"{g0} games"))
             if l0 and (l0.get("games") or 0) >= 10 and l0.get("wr") is not None:
                 l_wr.append(l0["wr"])
+                if (r0 and (r0.get("games") or 0) >= 10
+                        and r0.get("wr") is not None):
+                    tax_pairs.append(l0["wr"] - r0["wr"])
             if l0 and (l0.get("games") or 0) >= 15 and l0.get("wr") is not None:
-                pools["legendKiller"].append((l0["wr"], name, champ,
+                fpools["legendKiller"].append((l0["wr"], name, champ,
                                               f"{l0['games']} Legendary Ranked games"))
 
         top_ks = ks.most_common(1)
@@ -292,8 +314,17 @@ def build() -> tuple[dict, dict]:
             "dmgDealt": _avg(dmg), "dmgTaken": _avg(taken), "turret": _avg(turret),
             "firstBlood": _avg(fb), "mvpRate": _avg(mvp_rate), "sRate": _avg(s_rate),
             "gamesMedian": _median(games_r),
-            "legendaryTax": (round(_avg(l_wr) - _avg(r_wr), 1)
-                             if _avg(l_wr) is not None and _avg(r_wr) is not None else None),
+            # PAIRED, per player, both queues at 10+ games, 5+ players -- or
+            # nothing. The old number was avg(legendary WR of whoever queues
+            # legendary) minus avg(ranked WR of everyone), which mixes three
+            # errors: the two averages cover different players, the ranked
+            # side had no games floor (one 1-game 100% entry moved it), and a
+            # single legendary player could mint a champion-wide "tax". A
+            # paired difference is immune to all three: each player is their
+            # own control.
+            "legendaryTax": (round(_avg(tax_pairs), 1)
+                             if len(tax_pairs) >= 5 else None),
+            "legendaryTaxN": len(tax_pairs) if len(tax_pairs) >= 5 else None,
             "keystone": ({"name": top_ks[0][0], "count": top_ks[0][1], "of": len(builds)}
                          if top_ks else None),
             "spells": ({"pair": top_sp[0][0], "count": top_sp[0][1], "of": len(builds)}

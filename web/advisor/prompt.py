@@ -630,8 +630,11 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict) -> str:
         "ENEMY TEAM: " + ", ".join(enemies),
         "TEAM THREAT PROFILE (categorical, weighted by class so a tank does not count as "
         "much damage as a carry): " + json.dumps(profile),
-        "PRIORITY THREATS (ranked; each names what items CAN answer and what only gameplay "
-        "can): " + json.dumps(priorities),
+        "PRIORITY THREATS (ranked by each enemy's MEASURED meta win rate weighted by how "
+        "much damage its class contributes -- metaWinrate is the number driving the order. "
+        "A 56% jungler is a bigger problem than a 49% support even when both have scary "
+        "kits. Each entry names what items CAN answer and what only gameplay can): "
+        + json.dumps(priorities),
     ]
     hard = [threats.hard_counter_warning(me, e, wrmeta) for e in enemies]
     hard = [h for h in hard if h]

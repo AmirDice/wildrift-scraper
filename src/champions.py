@@ -46,7 +46,7 @@ CHAMPIONS: list[str] = [
     "Volibear",
     "Warwick", "Wukong",
     "Xayah", "Xerath", "Xin Zhao",
-    "Yasuo", "Yone", "Yorick", "Yuumi",
+    "Yasuo", "Yone", "Yorick", "Yunara", "Yuumi",
     "Zac", "Zed", "Zeri", "Ziggs", "Zilean", "Zoe", "Zyra",
 ]
 

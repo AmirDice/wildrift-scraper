@@ -290,9 +290,19 @@ def validate(
             if not (summary.get("counterPriorities") or []):
                 report.fail("counterSummary",
                             "counterSummary.counterPriorities must name the 2-4 problems chosen")
-            if not (summary.get("threatResponses") or []):
+            responses = summary.get("threatResponses") or []
+            if not responses:
                 report.fail("counterSummary",
                             "counterSummary.threatResponses must say how the build answers them")
+            # The rune page is part of the counter, and the prompt demands at
+            # least one rune response (or a stated reason the usual page IS
+            # the counter). A WARNING, not a failure: the build itself may be
+            # right, and burning a repair round over missing commentary would
+            # cost 60 seconds to improve a sentence.
+            elif not any((r or {}).get("choiceType") == "rune" for r in responses
+                         if isinstance(r, dict)):
+                report.warn("counterSummary: no threatResponses entry explains the rune "
+                            "page; the prompt asks for at least one rune answer")
             summary.setdefault("acceptedTradeoffs", [])
             summary.setdefault("unansweredThreats", [])
             summary.setdefault("allyContextUsed", False)

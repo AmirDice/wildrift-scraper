@@ -162,12 +162,16 @@ def _otp_score(games: pd.Series) -> float | None:
 
 
 @st.cache_data(ttl=60)
-def load_leaderboard(include_boosters: bool = False) -> pd.DataFrame:
+def load_leaderboard(unfiltered: bool = False) -> pd.DataFrame:
     """Return the full scraped leaderboard CSV as a DataFrame.
 
-    `include_boosters=True` keeps advertising accounts in the frame. Only the
-    leaderboard EXPORT wants that -- it renders their rank with the name
-    hidden so the board stays contiguous. Every statistic uses the default.
+    `unfiltered=True` keeps every row, including permabanned accounts. Only the
+    leaderboard EXPORT wants that -- the board mirrors the game, so a banned
+    account keeps its rank (tagged) and an advertising account keeps its rank
+    with the name hidden. Every statistic uses the default.
+
+    It was called `include_boosters` while advertising accounts were the thing
+    being filtered. They are not any more; only bans are.
 
     Empty DataFrame (with the expected columns) if the file doesn't exist.
     Numeric columns are coerced to numbers; bad values become NaN.
@@ -202,15 +206,15 @@ def load_leaderboard(include_boosters: bool = False) -> pd.DataFrame:
     if "champion" in df.columns:
         df["champion"] = df["champion"].apply(_canonicalize_champion)
 
-    # Boosting accounts are dropped from EVERY statistic computed here (tier
-    # list, champion averages, best player, class and role strength). They
-    # play deliberately below their skill, so their 90%+ win rates measure a
-    # skill mismatch rather than the champion -- keeping them would make the
-    # tier list less accurate. See web/integrity.py; the raw CSV keeps them,
-    # and the leaderboard page still shows their rank with the name hidden.
-    if "player_name" in df.columns and not include_boosters:
-        from web.integrity import is_advertising_account
-        df = df[~df["player_name"].apply(is_advertising_account)].reset_index(drop=True)
+    # Permabanned accounts are dropped from EVERY statistic computed here
+    # (tier list, champion averages, best player, class and role strength).
+    # Boosting adverts are NOT: the regex finds accounts that advertise, which
+    # is not the same as accounts that are boosted, and most of the people
+    # advertising are playing their own account. They lose their name on the
+    # page and nothing else. See web/integrity.py; the raw CSV keeps every row.
+    if "player_name" in df.columns and not unfiltered:
+        from web.integrity import counts_toward_aggregates
+        df = df[df["player_name"].apply(counts_toward_aggregates)].reset_index(drop=True)
     return df
 
 
@@ -256,7 +260,16 @@ def data_collected_on(df: pd.DataFrame) -> str | None:
     """
     if df.empty or "captured_at" not in df.columns:
         return None
-    caps = pd.to_datetime(df["captured_at"], errors="coerce", utc=True).dropna()
+    # Two timestamp formats coexist in the CSV: carried rows from the June
+    # collection ("2026-06-13 21:48:08+00:00") and fresh extraction rows
+    # ("2026-08-03T13:50:57"). pandas locks onto one format and coerces the
+    # other to NaT -- which silently dropped all 6,113 fresh rows, dated the
+    # site "June 13" in August, and OVERWROTE the genuine June history
+    # snapshot with mixed data. Normalising to the first 19 characters gives
+    # both formats one shape.
+    stamps = (df["captured_at"].astype(str).str.slice(0, 19)
+              .str.replace("T", " ", regex=False))
+    caps = pd.to_datetime(stamps, format="%Y-%m-%d %H:%M:%S", errors="coerce").dropna()
     if caps.empty:
         return None
     d = caps.max()
@@ -332,7 +345,7 @@ def assign_tier_relative(wr: float, pool_wrs: list[float]) -> tuple[str, str]:
     return ("Ass", "tier-ass")
 
 
-def champion_summary(df: pd.DataFrame) -> pd.DataFrame:
+def champion_summary(df: pd.DataFrame, top_n: int = TOP_N_PLAYERS) -> pd.DataFrame:
     """Per-champion aggregate stats over the top-50 players of each champion.
 
     Key column is `weighted_winrate` — the confidence-adjusted champion WR.
@@ -364,14 +377,20 @@ def champion_summary(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=cols)
 
-    # Restrict to the top-N players per champion before aggregating.
-    top = df[df["rank"] <= TOP_N_PLAYERS].copy()
+    # Restrict to the top-N players per champion before aggregating. The
+    # default is the full scraped board; smaller depths (25/10/5) answer "who
+    # is strong at the very top", where a champion carried by its long tail
+    # falls away. The adaptive floor and cap recompute on the subset, so the
+    # same machinery serves every depth.
+    top = df[df["rank"] <= top_n].copy()
     if top.empty:
         top = df.copy()
 
     grouped = top.groupby("champion", as_index=False).agg(
         mean_winrate=("winrate", "mean"),
         max_winrate=("winrate", "max"),
+        # replaced below with EXCESS spread; kept here so the column exists
+        # even for champions whose pool never reaches the floor
         winrate_std=("winrate", "std"),
         max_score=("score", "max"),
         median_mastery=("score", "median"),
@@ -427,7 +446,38 @@ def champion_summary(df: pd.DataFrame) -> pd.DataFrame:
         agg[["champion", "weighted_winrate"]], on="champion", how="left"
     )
 
-    # top_player = the rank-1 player per champion (if present)
+    # --- Consistency: EXCESS spread, not raw spread -------------------------
+    # The raw std of a board's win rates is mostly a measurement of how MUCH
+    # its players play, not how consistently the champion performs: a player
+    # with 20 games carries +/-11 points of binomial noise on their own, so
+    # boards of low-game players read "inconsistent" no matter the champion.
+    # Measured across the roster, sampling noise explained over 70% of the raw
+    # std for 120 of 140 champions, and the raw metric correlated -0.49 with
+    # median games -- the "least consistent" list was the least-PLAYED list,
+    # with the three strongest boards on it.
+    #
+    # The honest number is the spread that sampling CANNOT explain:
+    #   excess_std = sqrt(max(0, Var(observed) - mean(p(1-p)/n)))
+    # Zero means "the differences between this board's players are within
+    # measurement noise" -- genuinely consistent. Computed on the same floored
+    # pool as the win rate, so the tiny samples the floor exists to exclude do
+    # not poison this either.
+    def _excess_std(sub: pd.DataFrame) -> float:
+        wr = sub["_wr"].astype(float) / 100.0
+        g = sub["_g"].astype(float).clip(lower=1.0)
+        if len(wr) < 5:
+            return float("nan")
+        observed = float(wr.var(ddof=1))
+        noise = float((wr * (1.0 - wr) / g).mean())
+        return round(math.sqrt(max(0.0, observed - noise)) * 100.0, 2)
+
+    excess = w.groupby("champion")[["_wr", "_g"]].apply(_excess_std).rename("winrate_std")
+    out = out.drop(columns=["winrate_std"]).merge(
+        excess.reset_index(), on="champion", how="left")
+
+    # top_player = the rank-1 player per champion (if present). The rank-1
+    # FACT belongs to whoever holds it, so an advert is not replaced by the
+    # rank-2 player; its name is hidden downstream like everywhere else.
     rank1 = df[df["rank"] == 1][["champion", "player_name"]].rename(columns={"player_name": "top_player"})
     out = out.merge(rank1, on="champion", how="left")
 
@@ -658,7 +708,15 @@ def best_player_per_champion(df: pd.DataFrame, z: float = 1.96) -> pd.DataFrame:
         _wilson_lower_bound(w, n, z) * 100.0 for w, n in zip(wins, games_f)
     ]
 
-    idx_best = out.groupby("champion")["confidence_wr"].idxmax()
+    # Every row gets its score; only title-eligible rows can be crowned. An
+    # advert's number counts in aggregates but a "best player" panel prints a
+    # NAME, and printing an advertising name there is the promotion the hiding
+    # exists to prevent. A champion whose whole pool is ineligible simply gets
+    # no best-player flag, which the export already renders as "being
+    # collected" -- honest, and better than crowning an advert.
+    from web.integrity import eligible_for_title
+    crownable = out["player_name"].apply(eligible_for_title)
+    idx_best = out[crownable].groupby("champion")["confidence_wr"].idxmax()
     out["is_best_for_champ"] = False
     out.loc[idx_best, "is_best_for_champ"] = True
     return out
@@ -843,6 +901,11 @@ def multi_champion_mains(df: pd.DataFrame, min_champions: int = 2) -> list[dict]
     # players the OCR couldn't read, so collapsing them into "one player on
     # 100+ champions" is wrong.
     pool = pool[pool["player_name"] != UNNAMED_PLACEHOLDER]
+    # A named showcase: adverts' games count in aggregates, but "strongest
+    # mechanics on the server" printed next to an advertising name is a
+    # testimonial. Same rule as the best-player flag.
+    from web.integrity import eligible_for_title
+    pool = pool[pool["player_name"].apply(eligible_for_title)]
     if pool.empty:
         return []
     grouped = pool.groupby("player_name", as_index=False).agg(

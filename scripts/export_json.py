@@ -20,7 +20,9 @@ import pandas as pd
 from web.champion_assets import icon_url, splash_url
 from web.champion_meta import champion_class, champion_difficulty, difficulty_label
 from web.champion_roles import ROLES, roles_for
+from web.integrity import display_name, eligible_for_title
 from web.data_loader import (
+    tier_order,
     assign_tier,
     assign_tier_relative,
     best_player_per_champion,
@@ -101,6 +103,21 @@ def build() -> dict:
     summary = summary[summary["weighted_winrate"].notna()].copy()
     summary["role"] = summary["champion"].apply(lambda c: roles_for(c)[0])
 
+    # Pool depths for the tier list's "All / Top 25 / Top 10 / Top 5" toggle.
+    # Each depth is the same pipeline on a shallower slice of the board, and
+    # each is centred with ITS OWN offset: shallower pools have higher raw
+    # averages (the best players of the best players), and reusing the
+    # 50-player offset would make every champion look 2-3 points stronger the
+    # moment the toggle moved. EU only -- the CN numbers are Tencent's own
+    # bracket aggregates, which have no per-player rows to re-slice.
+    POOL_DEPTHS = (25, 10, 5)
+    pool_summaries = {}
+    for depth in POOL_DEPTHS:
+        ps = champion_summary(df, top_n=depth)
+        ps = ps[ps["weighted_winrate"].notna()].copy()
+        ps["role"] = ps["champion"].apply(lambda c: roles_for(c)[0])
+        pool_summaries[depth] = ps
+
     # Per-role win-rate pools for role-relative tiers.
     role_pools = {
         role: summary[summary["role"] == role]["weighted_winrate"].astype(float).tolist()
@@ -125,6 +142,33 @@ def build() -> dict:
     # Off-meta champions (pickrate logic) — store as an ordered slug list.
     off_meta = off_meta_picks(df)
     off_meta_slugs = [_slug(str(c)) for c in off_meta["champion"].tolist()]
+
+    # Per-depth (wr, tier, tierRole), centred per depth, tiers from the same
+    # threshold functions as the main list so a toggle never invents a new
+    # tier scale.
+    pools_by_champ: dict[str, dict] = {}
+    for depth, ps in pool_summaries.items():
+        vals = ps["weighted_winrate"].astype(float)
+        offset = round(50 - vals.mean(), 1) if len(vals) else 0.0
+        # Tiers are assigned on RAW win rates -- assign_tier's buckets are
+        # raw-scale, exactly as the main list does it -- and only the DISPLAY
+        # value is centred. Centring first would land everything in the bottom
+        # tiers. assign_tier_relative is percentile-based, so raw vs centred
+        # is indifferent there; raw keeps the two calls consistent.
+        depth_role_pools = {
+            role: ps[ps["role"] == role]["weighted_winrate"].astype(float).tolist()
+            for role in ps["role"].unique()
+        }
+        for _, r in ps.iterrows():
+            wr_raw = float(r["weighted_winrate"])
+            label, css = assign_tier(wr_raw)
+            r_label, r_css = assign_tier_relative(wr_raw, depth_role_pools[r["role"]])
+            pools_by_champ.setdefault(str(r["champion"]), {})[str(depth)] = {
+                "wr": _f(wr_raw + offset),
+                "nPlayers": _i(r.get("n_players")),
+                "tier": label, "tierCss": css,
+                "tierRole": r_label, "tierRoleCss": r_css,
+            }
 
     champions = []
     for _, r in summary.sort_values("weighted_winrate", ascending=False).iterrows():
@@ -154,7 +198,9 @@ def build() -> dict:
             "maxScore": _i(r.get("max_score")),
             "otpScore": _f(r.get("otp_score")),
             "isOtp": bool(r.get("is_otp", False)),
-            "topPlayer": (str(r["top_player"]) if pd.notna(r.get("top_player")) else None),
+            # display_name, not raw: rank 1 is occasionally an advert, and this
+            # string lands on every champion card.
+            "topPlayer": (display_name(str(r["top_player"])) if pd.notna(r.get("top_player")) else None),
             "tier": tier_label,
             "tierCss": tier_css,
             "tierRole": tier_role_label,
@@ -163,6 +209,8 @@ def build() -> dict:
             "icon": icon_url(name),
             "splash": splash_url(name),
             "bestPlayer": best_by_champ.get(name),
+            # "All" is the top-level wr/tier; these are the shallower slices.
+            "pools": pools_by_champ.get(name) or None,
         })
 
     meta = [
@@ -224,6 +272,10 @@ def build() -> dict:
         name = str(r["player_name"]) if pd.notna(r.get("player_name")) else "—"
         if name in seen_players:
             continue
+        # Highest mastery is a named showcase; skip accounts that cannot be
+        # crowned rather than printing them with a hidden name.
+        if not eligible_for_title(name):
+            continue
         seen_players.add(name)
         champ = str(r["champion"])
         top_mastery.append({
@@ -236,6 +288,36 @@ def build() -> dict:
         })
         if len(top_mastery) >= 8:
             break
+
+    # EU movement since the previous collection, computed RAW vs RAW before any
+    # centering: both snapshots store raw win rates, and the display offset
+    # differs per collection, so centred-vs-centred would smuggle the offset
+    # difference into every delta. This is what the tier list's riser/faller
+    # badges read.
+    current_key = _snapshot_date(data_collected_on(df))
+    prev_date, prev_snap = None, {}
+    for f in sorted(HISTORY.glob("*.json")):
+        d = f.stem
+        if d < current_key:
+            try:
+                snap_champs = json.loads(f.read_text(encoding="utf-8"))["champions"]
+            except (json.JSONDecodeError, KeyError, OSError):
+                continue
+            prev_date, prev_snap = d, snap_champs
+    # Tier movement gates the ARROW badge; the wr delta is the fine print. A
+    # tier is what the list is ABOUT, so "riser" means crossed a tier boundary,
+    # not wobbled half a point inside one.
+    tier_rank = {label: i for i, (label, _css) in enumerate(tier_order())}
+    for c in champions:
+        prev = prev_snap.get(c["slug"]) or {}
+        prev_wr_val = prev.get("wr")
+        c["wrDelta"] = (round(c["wr"] - prev_wr_val, 1)
+                        if c.get("wr") is not None and prev_wr_val is not None else None)
+        prev_tier = prev.get("tier")
+        cur_i, prev_i = tier_rank.get(c.get("tier")), tier_rank.get(prev_tier)
+        c["prevTier"] = prev_tier if prev_tier and prev_i != cur_i else None
+        c["tierMoved"] = (None if cur_i is None or prev_i is None or cur_i == prev_i
+                          else ("up" if cur_i < prev_i else "down"))
 
     # Center the champion win-rate figures on 50% (relative to the pool average).
     # These are each champion's top-50 mains, so raw win rates all sit above 50%
@@ -270,6 +352,8 @@ def build() -> dict:
 
     return {
         "collectedOn": data_collected_on(df),
+        # the snapshot the tier list's riser/faller badges compare against
+        "movementSince": prev_date,
         "roles": list(ROLES),
         "nChampions": len(champions),
         "nPlayers": int(len(df)),
@@ -295,9 +379,8 @@ def build_players() -> dict:
     # The board is a mirror of the game, so boosting accounts keep their ROW
     # (ranks stay contiguous) with the name hidden -- unlike every statistic,
     # which drops them entirely. See web/integrity.py.
-    from web.integrity import display_name
 
-    df = load_leaderboard(include_boosters=True)
+    df = load_leaderboard(unfiltered=True)
     if df.empty:
         return {}
     top = df[df["rank"] <= TOP_N].copy()

@@ -93,6 +93,15 @@ def team_threat_profile(enemies: list[str]) -> dict:
     """A categorical threat picture of the whole enemy team."""
     records = [(_champ(e), _combat(e)) for e in enemies]
 
+    # The level thresholds are tuned for a full five-enemy team. A partial
+    # comp accumulates less by construction -- three enemies who ALL shield
+    # top out at 1.5, which read as "medium" while being the most
+    # shield-saturated answer three picks can give. Scaling by 5/n makes the
+    # profile describe the KNOWN enemies as a group: "if the team is like
+    # what you have named, this is what it is like". A full comp is
+    # unchanged (factor 1).
+    scale = 5.0 / max(1, len(records))
+
     phys = magic = true_dmg = 0.0
     basic_dps = burst = extended = crit = on_hit = 0.0
     hard_cc = slows = displace = 0.0
@@ -131,29 +140,48 @@ def team_threat_profile(enemies: list[str]) -> dict:
         if cls in ("Tank", "Bruiser", "Fighter"):
             durable += 1
 
+    def lv(score: float) -> str:
+        return _level(score * scale)
+
     return {
-        "physicalDamage": _level(phys),
-        "magicDamage": _level(magic),
-        "trueDamage": _level(true_dmg),
-        "basicAttackDps": _level(basic_dps),
-        "abilityBurst": _level(burst),
-        "extendedFightDps": _level(extended),
-        "criticalStrikeThreat": _level(crit),
-        "onHitThreat": _level(on_hit),
-        "hardCc": _level(hard_cc),
-        "slows": _level(slows),
-        "displacement": _level(displace),
-        "healing": _level(healing),
-        "shielding": _level(shielding),
+        "physicalDamage": lv(phys),
+        "magicDamage": lv(magic),
+        "trueDamage": lv(true_dmg),
+        "basicAttackDps": lv(basic_dps),
+        "abilityBurst": lv(burst),
+        "extendedFightDps": lv(extended),
+        "criticalStrikeThreat": lv(crit),
+        "onHitThreat": lv(on_hit),
+        "hardCc": lv(hard_cc),
+        "slows": lv(slows),
+        "displacement": lv(displace),
+        "healing": lv(healing),
+        "shielding": lv(shielding),
         "durableTargetCount": durable,
-        "armorStackingLikelihood": _level(durable * 0.7) if durable else "low",
-        "healthStackingLikelihood": _level(durable * 0.9) if durable else "low",
+        "armorStackingLikelihood": lv(durable * 0.7) if durable else "low",
+        "healthStackingLikelihood": lv(durable * 0.9) if durable else "low",
     }
 
 
 # Tier -> a severity floor. A GOD/S enemy is a bigger problem than a C one even
 # before looking at its kit, because it is winning its lane harder.
 _TIER_SEVERITY = {"GOD": 0.9, "S": 0.8, "A": 0.6, "B": 0.45, "C": 0.3, "D": 0.2}
+
+
+def _wr_severity(wr: float | None, tier: str) -> float:
+    """Base severity from the enemy's measured meta win rate.
+
+    The tier buckets above were the whole signal, and a bucket is a coarse
+    read of the number we actually have: a 55.7% Nilah and a 52.1% champion
+    could share a tier and read as identical threats. The measured win rate
+    (site.json, the same figure the tier list prints) maps linearly onto the
+    old bucket range -- 46% reads like a D-tier threat, 60% past GOD -- so
+    the scale the rest of severity was tuned against is unchanged. The tier
+    bucket stays as the fallback for champions with no board yet.
+    """
+    if wr is None:
+        return _TIER_SEVERITY.get(tier, 0.4)
+    return round(max(0.2, min(0.95, 0.2 + (float(wr) - 46.0) * 0.05)), 3)
 
 
 def priority_threats(enemies: list[str], me: str = "") -> list[dict]:
@@ -168,7 +196,7 @@ def priority_threats(enemies: list[str], me: str = "") -> list[dict]:
         cp = _combat(name)
         cls = rec.get("class", "")
         tier = str(rec.get("_tier") or "")
-        base = _TIER_SEVERITY.get(tier, 0.4)
+        base = _wr_severity(rec.get("_wr"), tier)
         contribution = _DAMAGE_WEIGHT.get(cls, 0.5)
         severity = round(min(1.0, base * (0.5 + contribution / 2)), 2)
 
@@ -209,6 +237,9 @@ def priority_threats(enemies: list[str], me: str = "") -> list[dict]:
         out.append({
             "champion": name,
             "severity": severity,
+            # the measured number behind the ranking, so the model can weigh
+            # "how fed is this pick right now" instead of trusting a bare score
+            "metaWinrate": rec.get("_wr"),
             "damageContribution": damage_contribution,
             "threats": sorted(set(threats)) or ["general_pressure"],
             "itemizableResponses": sorted(set(itemizable)),

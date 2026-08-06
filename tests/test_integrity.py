@@ -39,17 +39,34 @@ def test_display_name_hides_only_adverts():
     assert display_name("LetMeCarry") == "LetMeCarry"
 
 
-def test_statistics_exclude_boosters_but_the_board_keeps_the_row():
-    """The two surfaces differ on purpose: stats drop the account, the
-    leaderboard keeps its rank with the name hidden so ranks stay
-    contiguous."""
+def test_an_advert_keeps_its_STATISTICS_and_loses_only_its_name():
+    """The rule that changed on 2026-08-06.
+
+    The regex detects accounts that ADVERTISE boosting, which is not the same
+    as accounts that ARE boosted -- most of the people advertising are simply
+    good and playing their own account. Excluding their win rates inferred
+    something about how an account is played from how it is named. So the
+    advert now costs the account its name on the page and nothing else.
+    """
     from web.data_loader import load_leaderboard
+    from web.integrity import counts_toward_aggregates
 
     stats_df = load_leaderboard()
-    board_df = load_leaderboard(include_boosters=True)
-    if board_df.empty:
+    if stats_df.empty:
         return  # no scraped CSV in this checkout
-    flagged = board_df["player_name"].apply(is_advertising_account)
-    assert not stats_df["player_name"].apply(is_advertising_account).any()
-    if flagged.any():
+    assert counts_toward_aggregates("Insta wrboost25")
+    assert display_name("Insta wrboost25") == HIDDEN_LABEL
+
+
+def test_statistics_still_drop_permabanned_accounts():
+    """The other half: a ban IS a fact about the account, so its number goes."""
+    from web.data_loader import load_leaderboard
+    from web.integrity import is_banned_account
+
+    stats_df = load_leaderboard()
+    board_df = load_leaderboard(unfiltered=True)
+    if board_df.empty:
+        return
+    assert not stats_df["player_name"].apply(is_banned_account).any()
+    if board_df["player_name"].apply(is_banned_account).any():
         assert len(board_df) > len(stats_df)

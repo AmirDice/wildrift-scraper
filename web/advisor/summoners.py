@@ -101,12 +101,18 @@ def icons_for(names: list[str]) -> list[dict]:
 # what made this explicit rather than assumed.
 SUPPORT_ONLY = frozenset({"Heal"})
 
-# With NO enemy team, a summoner choice cannot be a read: there is nothing to
-# answer. The defensible set is the one that is never wrong -- Flash to escape,
-# Ghost to close or leave, Exhaust for whoever ends up threatening, Cleanse for
-# whatever lockdown appears. Ignite is a bet on a kill lane that has not been
-# described yet, so it is not offered blind.
-STUDIO_POOL = frozenset({"Flash", "Exhaust", "Ghost", "Cleanse"})
+# With no NAMED enemy team the studio does not go blind: the prompt tells the
+# model to assume the typical ranked comp (tank/bruiser top, bruiser/tank/AD
+# assassin jungle, mage or assassin mid, marksman bot, enchanter or tank
+# support -- prompt.UNKNOWN_ENEMY_BLOCK). The pool is what that comp can
+# justify. Flash, Ghost, Exhaust and Cleanse answer things every typical comp
+# has: escapes to make, targets to reach, a carry to blunt, some crowd
+# control. Barrier is in because the typical comp GUARANTEES one serious
+# magic/burst threat mid, so shielding the spike is a read of the assumed
+# comp, not a blind bet. Ignite stays out: it is a bet on a specific kill
+# lane, and an archetype cannot tell you the lane is killable. Heal is
+# support-only everywhere (see SUPPORT_ONLY).
+STUDIO_POOL = frozenset({"Flash", "Exhaust", "Ghost", "Cleanse", "Barrier"})
 
 
 def allowed_pool(role: str, enemies_known: bool) -> frozenset[str]:

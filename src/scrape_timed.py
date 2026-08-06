@@ -278,6 +278,16 @@ def main() -> int:
     parser.add_argument("--auto-extract", action="store_true",
                         help="Carousel: launch offline extraction for each finished champion in "
                              "the background, so capture and extraction overlap")
+    parser.add_argument("--manual-label", action="store_true",
+                        help="Carousel: when the champion label cannot be read, ASK instead of "
+                             "backing out. Types the name yourself and the capture proceeds. "
+                             "For the champions whose label never OCRs (Vi, Master Yi, ...); "
+                             "needs someone at the keyboard.")
+    parser.add_argument("--only", default="",
+                        help="Carousel: comma-separated champions to process, skipping every "
+                             "other row. Use for a targeted re-scrape ('Veigar,Shen,Nami'); "
+                             "unlike --skip-existing it does NOT care whether a champion "
+                             "already has a complete session, so it can redo one.")
     parser.add_argument("--skip-existing", action="store_true",
                         help="Carousel: skip champions that already have a near-complete capture "
                              "session under --capture-dir (resume overnight runs)")
@@ -293,6 +303,35 @@ def main() -> int:
     if args.champions and not (args.auto_scroll and args.capture_only):
         print("error: --champions requires --auto-scroll --capture-only", file=sys.stderr)
         return 1
+
+    # Resolve --only NOW, not at match time. A typo'd champion would otherwise
+    # be a silent no-op: the run would sweep the whole list, match nothing, and
+    # report "end of the champion list" after a quiet hour.
+    if args.manual_label and args.unattended:
+        print("note: --manual-label still blocks for the label prompt; --unattended covers "
+              "everything else (lost navigation, recovery).")
+
+    # Built unconditionally: --only resolves against it up front, and the
+    # --manual-label prompt resolves against it mid-run.
+    from .champions import CHAMPIONS
+    by_key = {re.sub(r"[^a-z]", "", c.lower()): c for c in CHAMPIONS}
+
+    only: set[str] = set()
+    if args.only:
+        unknown = []
+        for raw in args.only.split(","):
+            raw = raw.strip()
+            if not raw:
+                continue
+            hit = by_key.get(re.sub(r"[^a-z]", "", raw.lower()))
+            (only.add(hit) if hit else unknown.append(raw))
+        if unknown:
+            print(f"error: --only does not recognise {unknown}. Names must match "
+                  f"src/champions.py.", file=sys.stderr)
+            return 1
+        if not args.champions:
+            args.champions = len(only)
+        print(f"restricted to {len(only)} champion(s): {', '.join(sorted(only))}")
 
     capture_dir: Path | None = None
     if args.capture_only:
@@ -1249,6 +1288,12 @@ def main() -> int:
                         continue          # header overlap / bottom clip
                     if cname is not None and cname in scraped:
                         continue
+                    if only and cname is not None and cname not in only:
+                        continue
+                    # A row whose name did NOT read stays a candidate even
+                    # under --only: the champions worth targeting are often
+                    # exactly the ones whose label will not OCR, and screen 2
+                    # is what confirms identity anyway.
                     if any(abs(y - sy) < 40 for sy in skip_ys):
                         continue          # tapped before; resolved to a captured champion
                     cand = (y, cname)
@@ -1296,9 +1341,46 @@ def main() -> int:
                     if label is not None:
                         break
                     time.sleep(0.6)
+                if label is None and args.manual_label:
+                    # The label is on screen; only the OCR failed. A human can
+                    # read it in a second, and for the handful of champions
+                    # whose name never resolves that is the difference between
+                    # collecting them and not.
+                    path = _dump_frame(img_lbl, 0) if img_lbl is not None else None
+                    raw = ""
+                    if img_lbl is not None:
+                        try:
+                            from .ocr import GENERAL_TESSERACT_CONFIG, read_text
+                            lx, ly, lw, lh = SCREEN_2_CHAMP_LABEL_REGION
+                            raw = " ".join((read_text(img_lbl[ly:ly + lh, lx:lx + lw],
+                                                      GENERAL_TESSERACT_CONFIG).text or "").split())
+                        except Exception:  # noqa: BLE001 -- a hint, never a blocker
+                            raw = ""
+                    print()
+                    print(f"[carousel] could not read the champion label at y={y}.")
+                    if raw:
+                        print(f"           OCR saw: {raw!r}")
+                    if path:
+                        print(f"           frame:   {path}")
+                    if only:
+                        remaining = sorted(only - scraped)
+                        print(f"           still wanted: {', '.join(remaining) or 'none'}")
+                    while True:
+                        try:
+                            typed = input("           champion name (Enter to skip this row): ").strip()
+                        except EOFError:
+                            typed = ""
+                        if not typed:
+                            break
+                        hit = by_key.get(re.sub(r"[^a-z]", "", typed.lower()))
+                        if hit:
+                            label = hit
+                            print(f"           -> {label}")
+                            break
+                        print(f"           {typed!r} is not a champion name; try again or press Enter")
                 if label is None:
                     print(f"[carousel] no champion label after tapping y={y} -- backing out")
-                    if img_lbl is not None:
+                    if img_lbl is not None and not args.manual_label:
                         path = _dump_frame(img_lbl, 0)
                         if path:
                             print(f"[carousel] label-fail frame saved -> {path}")
@@ -1312,6 +1394,13 @@ def main() -> int:
                         if label_fails[cname] >= 2:
                             scraped.add(cname)   # twice broken: stop looping on it
                     skip_ys.append(y)
+                    back_to_champions()
+                    continue
+                if only and label not in only:
+                    print(f"[carousel] {label} is not in --only -- backing out")
+                    skip_ys.append(y)
+                    client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
+                    time.sleep(args.step_wait + 0.3)
                     back_to_champions()
                     continue
                 if label in scraped:

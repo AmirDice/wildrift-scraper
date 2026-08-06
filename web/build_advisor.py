@@ -320,15 +320,20 @@ def _summoner_block(role: str, enemies_known: bool = True, immobile: bool = Fals
                 "champions that win by running a target down and holding on, Flash for "
                 "everyone else. Do not return any other second spell.")
     elif not enemies_known:
-        # No enemy team means a summoner pick cannot be a read, so the pool is
-        # narrowed to the spells that are defensible without one. Heal is absent
-        # outside support (it is an ALLY heal; a solo laner gets a worse
-        # Barrier), and Ignite is a bet on a kill lane nobody has described.
-        rule = ("Not a jungler, and NO enemy team was supplied. Choose two from the pool "
-                "above and nothing else -- Heal and Ignite are deliberately not offered here, "
-                "because both are answers to a specific matchup and there is no matchup to "
-                "read. Flash is the usual anchor; Ghost for a champion that has to walk to "
-                "its target, Exhaust against whoever ends up carrying, Cleanse into lockdown.")
+        # No NAMED enemies, but not blind either: the prompt has the model
+        # assume the typical ranked comp, and the summoner choice should read
+        # THAT comp the same way the items and runes do. Ignite stays out (an
+        # archetype cannot tell you the lane is a kill lane) and Heal stays
+        # support-only (it is an ALLY heal; a solo laner gets a worse Barrier).
+        rule = ("Not a jungler. No enemy champions were NAMED, so read the TYPICAL RANKED "
+                "COMP assumed above the way your items and runes already do: it has a real "
+                "frontline, one serious magic or burst threat mid, a marksman, and some "
+                "crowd control. Choose two from the pool above against those archetypes -- "
+                "Flash is the usual anchor; Ghost for a champion that must walk to its "
+                "target; Exhaust to blunt the carry or assassin; Cleanse when THIS champion "
+                "is shut down by the comp's crowd control; Barrier when its burst threat "
+                "is the bigger danger to you. Heal and Ignite are deliberately not offered: "
+                "each answers a SPECIFIC lane, and archetypes cannot name one.")
     else:
         rule = ("Not a jungler: NEVER take Smite. Both slots are open and this is a real "
                 "matchup decision, so use the enemy team above. Flash is the usual anchor "
@@ -688,6 +693,28 @@ def kayn_form_block(form: str, playstyle: str) -> str:
             f"form and it GOVERNS the loadout: express that playstyle through what this "
             f"form's kit converts, not through the form's usual default build.")
 
+# The player's own rank. Build advice is not rank-neutral: Dark Harvest is a
+# different rune at 45% win rate than at Master, because stacking it requires
+# winning skirmishes you are not guaranteed to win. The default sends NOTHING --
+# the site cannot verify a claim, so the middle is silence, and the two ends
+# are the only statements worth making.
+SKILL_LEVEL = {
+    "developing": (
+        "PLAYER RANK: EMERALD OR BELOW. Prefer forgiving, reliable choices across the "
+        "whole loadout: keystones that pay out without a snowball (no Dark Harvest, no "
+        "stack-or-nothing patterns), items without razor-thin activation windows, and a "
+        "build that still performs on a rough game. Reliability outranks ceiling at this "
+        "rank -- the game that goes badly is the one the build must survive."),
+    "average": "",  # unverifiable middle: no line
+    "high": (
+        "PLAYER RANK: MASTER OR ABOVE. Execution-gated, snowball-scaling choices are ON "
+        "the table when they raise the ceiling: Dark Harvest where its stacking is "
+        "realistic for this kit, aggressive early-fight keystones, stacking items, and "
+        "greedy timings a skilled pilot converts. Do not pick the safe option purely for "
+        "reliability when the higher-ceiling choice is mechanically coherent -- this "
+        "player can execute it. Incoherent picks are still wrong at every rank."),
+}
+
 RISK_TOLERANCE = {
     "low": "RISK TOLERANCE LOW: favour reliable activation and safer completion curves, "
            "avoid highly conditional items, keep a defensive margin.",
@@ -703,7 +730,7 @@ def advise(champion: str, role: str, enemies: list[str],
            objective: str = "balanced", mode: str = "studio",
            game_phase: str = "balanced", damage_path: str = "standard",
            champion_form: str = "", ahead_enemy: str = "",
-           risk_tolerance: str = "medium",
+           risk_tolerance: str = "medium", skill_level: str = "average",
            locked_items: list[str] | None = None,
            locked_runes: list[str] | None = None,
            on_progress=None) -> dict:
@@ -762,6 +789,8 @@ def advise(champion: str, role: str, enemies: list[str],
     obj = OBJECTIVES.get(objective, "")
     risk_tolerance = risk_tolerance if risk_tolerance in RISK_TOLERANCE else "medium"
     risk = RISK_TOLERANCE[risk_tolerance]
+    skill_level = skill_level if skill_level in SKILL_LEVEL else "average"
+    skill = SKILL_LEVEL[skill_level]
     if mode == "studio":
         enemies = []
     enemies_known = bool(enemies)
@@ -855,6 +884,7 @@ def advise(champion: str, role: str, enemies: list[str],
          if mode == "studio" else ""),
         f"OPTIMIZE FOR: {obj}" if obj else "",
         risk,
+        skill,
         GAME_PHASES[game_phase],
         DAMAGE_PATHS[damage_path],
         kayn_form_block(champion_form, playstyle),
@@ -889,7 +919,15 @@ def advise(champion: str, role: str, enemies: list[str],
         ("COUNTER MODE: this build already targets the exact enemy comp above, so do NOT "
          "return any 'situational' item swaps or 'situationalRunes'. Bake every answer to "
          "this comp into the main five items and the rune page. Return situational and "
-         "situationalRunes as empty lists. SKIP the full build evaluation: a counter build "
+         "situationalRunes as empty lists. "
+         "THE RUNE PAGE IS PART OF THE COUNTER, not a default carried over: pick the "
+         "keystone and every minor against THIS comp the same way you pick items against "
+         "it -- a comp of shields and disengage, a comp of hard engage, and a comp of "
+         "sustained frontline each want a different page on the same champion. At least "
+         "one threatResponses entry must have choiceType 'rune' naming which enemy or "
+         "threat that rune answers; if you keep the champion's usual page, that entry "
+         "must say why the usual page IS the counter. "
+         "SKIP the full build evaluation: a counter build "
          "is wanted fast, so return buildScore as null and do not spend time scoring the "
          "eight categories. INSTEAD return a compact counterSummary that names the 2-4 "
          "problems you chose to solve, how each item/boot/rune choice answers them, the "
@@ -1062,6 +1100,7 @@ def advise(champion: str, role: str, enemies: list[str],
         "powerCurve": game_phase,
         "optimizationGoal": objective,
         "riskTolerance": risk_tolerance,
+        "skillLevel": skill_level,
         "enemyContext": "known" if enemies_known else "unknown",
         # Which transform form this build is for. The studio needs it to
         # show the matching kit: without it a Rhaast build was rendered
@@ -1218,6 +1257,7 @@ def main() -> None:
     ap.add_argument("--ahead-enemy", default="")
     ap.add_argument("--mode", choices=("studio", "counter"), default="studio")
     ap.add_argument("--risk-tolerance", choices=tuple(RISK_TOLERANCE), default="medium")
+    ap.add_argument("--skill-level", choices=tuple(SKILL_LEVEL), default="average")
     ap.add_argument("--locked-items", default="", help="comma-separated item slugs to pin")
     ap.add_argument("--locked-runes", default="", help="comma-separated rune names to pin")
     ap.add_argument("--runs", type=int, default=1,
@@ -1229,7 +1269,7 @@ def main() -> None:
                  runs=max(1, args.runs),
                  allies=[a.strip() for a in args.allies.split(",") if a.strip()],
                  playstyle=args.playstyle, objective=args.objective, mode=args.mode,
-                 risk_tolerance=args.risk_tolerance,
+                 risk_tolerance=args.risk_tolerance, skill_level=args.skill_level,
                  game_phase=args.game_phase, damage_path=args.damage_path,
                  champion_form=args.champion_form, ahead_enemy=args.ahead_enemy,
                  locked_items=[s.strip() for s in args.locked_items.split(",") if s.strip()],

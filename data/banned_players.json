@@ -1,0 +1,31 @@
+{
+  "_note": "Accounts permanently banned by Riot, recorded by the owner from in-game evidence rather than inferred from their numbers. Their rows stay on the leaderboard because the board mirrors the game, but their games are excluded from every champion aggregate. Matching is on the LEADERBOARD name (extracted.csv), never the popup-card name: a popup that fails to dismiss between taps reports the previous player's card, which put one of these names on two innocent players' rows.",
+  "_matching": "case- and punctuation-insensitive, same fold as the player index",
+  "players": [
+    {
+      "name": "Will Will Well",
+      "reason": "wintrading",
+      "recordedOn": "2026-08-06"
+    },
+    {
+      "name": "Mollo",
+      "reason": "wintrading",
+      "recordedOn": "2026-08-06"
+    },
+    {
+      "name": "SKT T1 Mika",
+      "reason": "banned",
+      "recordedOn": "2026-08-06"
+    },
+    {
+      "name": "beginner player",
+      "reason": "banned",
+      "recordedOn": "2026-08-06"
+    },
+    {
+      "name": "Insta YushinWR",
+      "reason": "banned",
+      "recordedOn": "2026-08-06"
+    }
+  ]
+}

@@ -65,3 +65,64 @@ class TestPriorityThreats:
     def test_damage_contribution_is_categorical(self):
         for t in threats.priority_threats(PHYS_HEAVY, "Hecarim"):
             assert t["damageContribution"] in ("low", "medium", "high")
+
+
+class TestPartialCompScaling:
+    """The level thresholds are tuned for five enemies; a partial comp must not
+    be graded against a denominator it cannot reach.
+
+    The reported case: Lee Sin, Riven, Karma -- every named enemy shields, the
+    most shield-saturated answer three picks can give -- and the team profile
+    said "medium", because three enemies accumulate at most 1.5 against a
+    "high" bar of 1.8 that assumes five contributors.
+    """
+
+    def test_a_comp_where_every_enemy_shields_reads_high(self):
+        profile = threats.team_threat_profile(["Karma", "Riven", "Lee Sin"])
+        assert profile["shielding"] in ("high", "very_high")
+
+    def test_a_full_team_is_unchanged_by_the_scaling(self):
+        # factor is 5/5=1, so the original expectations still hold
+        profile = threats.team_threat_profile(PHYS_HEAVY)
+        order = threats._LEVELS
+        assert order.index(profile["physicalDamage"]) > order.index(profile["magicDamage"])
+
+    def test_one_named_enemy_describes_that_enemy_not_a_guess_at_five(self):
+        """Naming only Karma means everything known about the comp IS Karma;
+        her shielding should read strong rather than being diluted by four
+        empty slots."""
+        profile = threats.team_threat_profile(["Karma"])
+        assert profile["shielding"] in ("high", "very_high")
+
+
+class TestWinrateDrivenSeverity:
+    """Severity runs on the MEASURED meta win rate, not a tier bucket.
+
+    The tier buckets collapsed real differences: a 56.5% Nidalee and a 52%
+    champion could share a bucket and read as equal threats. The measured
+    number was already loaded onto every enemy record (_wr) and then never
+    used.
+    """
+
+    def test_a_meta_tyrant_outranks_weak_picks_of_scarier_classes(self):
+        # Nidalee (56.5%) vs a comp of ~49% picks: she must rank first even
+        # though Lux and Corki contribute damage from "louder" classes.
+        ranked = threats.priority_threats(
+            ["Corki", "Lulu", "Lux", "Mordekaiser", "Nidalee"], "Graves")
+        assert ranked[0]["champion"] == "Nidalee"
+
+    def test_the_measured_winrate_is_shown_to_the_model(self):
+        ranked = threats.priority_threats(["Nidalee"], "Graves")
+        assert isinstance(ranked[0].get("metaWinrate"), (int, float))
+
+    def test_missing_winrate_falls_back_to_the_tier_bucket(self):
+        assert threats._wr_severity(None, "GOD") == 0.9
+        assert threats._wr_severity(None, "") == 0.4
+
+    def test_the_mapping_spans_the_old_bucket_range(self):
+        # 46% reads like the old D bucket, 60% past the old GOD bucket, and
+        # the clamps hold at the extremes.
+        assert threats._wr_severity(46.0, "") == 0.2
+        assert threats._wr_severity(60.0, "") == 0.9
+        assert threats._wr_severity(30.0, "") == 0.2
+        assert threats._wr_severity(99.0, "") == 0.95

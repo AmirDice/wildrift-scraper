@@ -106,6 +106,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             champion_form=_clean(body.get("championForm")),
             ahead_enemy=_clean(body.get("aheadEnemy")),
             risk_tolerance=_clean(body.get("riskTolerance")) or "medium",
+            skill_level=_clean(body.get("skillLevel")) or "average",
             locked_items=_clean_list(body.get("lockedItems"), limit=3),
             locked_runes=_clean_list(body.get("lockedRunes"), limit=2),
         )
@@ -169,5 +170,5 @@ class handler(BaseHTTPRequestHandler):
             "ok": True,
             "champions": len(advisor.CHAMPS),
             "items": len(advisor.ITEMS),
-            "hasApiKey": bool(advisor._api_key()),
+            "hasApiKey": bool(advisor._api_key(advisor.KEY_NAME)),
         })

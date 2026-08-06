@@ -1,0 +1,11 @@
+{
+  "_note": "Accounts the advertising regex flags whose names are shown anyway, decided by the owner per account. The regex stays narrow and unchanged; this is the override, so a decision about one account never loosens detection for the rest. Matching uses the same fold as the ban list: case- and punctuation-insensitive.",
+  "_why_a_list": "The regex answers 'does this name contain boost or lead with insta'. It cannot answer 'is this name actually selling something' -- 'Boosted As Fxxx' and 'Son Of Boosted' are players joking about themselves, and 'EgoBooster Adc' is not a service at all. Those are false positives worth naming individually rather than a reason to widen the pattern.",
+  "showName": [
+    {
+      "name": "DM For Boost",
+      "recordedOn": "2026-08-06",
+      "reason": "owner decision"
+    }
+  ]
+}
