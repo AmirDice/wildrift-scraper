@@ -455,9 +455,13 @@ def call_llm(key: str, champ: dict) -> dict:
     abils = "\n".join(f"[{a['slot']}] {a['name']}: {a['text']}" for a in champ["abilities"])
     prompt = f"CHAMPION: {champ['name']}\n{abils}\n\n{SCHEMA}"
     def _call(messages):
+        # max_tokens covers REASONING + content on this model, and reasoning
+        # alone has been measured past 23k on complex kits (Ambessa, Varus):
+        # at 16000 the whole budget went to reasoning and content came back
+        # empty with finish_reason=length.
         body = {"model": MODEL, "messages": messages,
                 "response_format": {"type": "json_object"},
-                "temperature": 0.1, "max_tokens": 16000, "stream": False}
+                "temperature": 0.1, "max_tokens": 32000, "stream": False}
         headers = {"Authorization": f"Bearer {key}"}
         for attempt in range(5):
             r = requests.post(DEEPSEEK_URL, json=body, headers=headers, timeout=300)

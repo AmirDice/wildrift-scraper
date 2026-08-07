@@ -160,7 +160,12 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Baron. v20 was bumped mid-batch, so an entry written in the gap carries a
   // prompt none of those saw. The v20 namespace is hours old and likely near
   // empty; retiring it costs nothing and removes the doubt.
-  return `build:v21:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v22: the champion and rune source data turned out to predate patch 7.2 --
+  // the Jul 6 scrape missed the 7.2 rune nerfs (~30 runes) and 14 champions'
+  // ability changes (Lee Sin's whole kit among them), and ability formulas
+  // were never re-extracted after the 7.2a / 7.2b text edits either. A v21
+  // entry for any affected champion was reasoned from pre-7.2 numbers.
+  return `build:v22:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
