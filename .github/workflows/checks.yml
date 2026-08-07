@@ -30,6 +30,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
+      # The champions-page OCR tests read committed fixture frames with real
+      # Tesseract; the wrapper is in requirements-dev but the binary is not
+      # pip-installable.
+      - name: Install Tesseract
+        run: sudo apt-get update -q && sudo apt-get install -y -q tesseract-ocr
+
       # No API keys are set, so nothing here can call an LLM or scrape. These
       # read the committed data files and fail on the properties that matter.
       - name: Run tests

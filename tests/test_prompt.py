@@ -34,6 +34,11 @@ def build_prompt(champion="Hecarim", role="Jungle", enemies=(), **kwargs) -> str
 @pytest.fixture(scope="module")
 def hecarim_unknown(monkeypatch_module=None):
     import os
+    # The capture intercepts advisor._call before any network use, but advise()
+    # checks for the DEFAULT model's key first -- which is Gemini now. Locally
+    # _ensure_gemini_key() finds the real key in web-next/.env.local; CI has
+    # neither, so without this the prompt comes back empty.
+    os.environ.setdefault("GEMINI_API_KEY", "test-key-not-used")
     os.environ.setdefault("DEEPSEEK_API_KEY", "test-key-not-used")
     return build_prompt()
 
@@ -41,6 +46,7 @@ def hecarim_unknown(monkeypatch_module=None):
 @pytest.fixture(scope="module")
 def hecarim_known():
     import os
+    os.environ.setdefault("GEMINI_API_KEY", "test-key-not-used")
     os.environ.setdefault("DEEPSEEK_API_KEY", "test-key-not-used")
     return build_prompt(enemies=["Ashe", "Master Yi", "Malphite"], mode="counter")
 
