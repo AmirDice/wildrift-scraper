@@ -33,7 +33,12 @@ import math
 from pathlib import Path
 
 import pandas as pd
-import streamlit as st
+# Streamlit's cache decorator survived the app it belonged to: this module is
+# now pipeline-and-tests only, and importing streamlit here forced the whole
+# scrape stack onto CI. Plain lru_cache gives the same "read the CSV once per
+# process" behaviour the callers relied on; the 60s TTL only mattered for the
+# long-lived Streamlit server, not for scripts that exit in seconds.
+from functools import lru_cache
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -161,8 +166,14 @@ def _otp_score(games: pd.Series) -> float | None:
     return round(50.0 * (math.tanh(raw) + 1.0), 1)
 
 
-@st.cache_data(ttl=60)
 def load_leaderboard(unfiltered: bool = False) -> pd.DataFrame:
+    # A copy per call, matching what st.cache_data used to return: callers
+    # that add columns must not poison the shared cached frame.
+    return _load_leaderboard_cached(unfiltered).copy()
+
+
+@lru_cache(maxsize=4)
+def _load_leaderboard_cached(unfiltered: bool = False) -> pd.DataFrame:
     """Return the full scraped leaderboard CSV as a DataFrame.
 
     `unfiltered=True` keeps every row, including permabanned accounts. Only the
