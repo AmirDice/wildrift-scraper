@@ -176,21 +176,30 @@ export async function kvList(key: string, limit = 100): Promise<string[]> {
   }
 }
 
-/** Adds a member to a set. Used to count UNIQUE signed-in accounts: an event
- *  counter goes up on every sign-in, a set only on the first. */
-export async function kvSetAdd(key: string, member: string): Promise<void> {
+/** Adds a member to a set and reports whether it was NEW. That return value
+ *  is what makes "new vs returning" computable without ever scanning the set:
+ *  an event counter goes up every time, the set only admits a member once.
+ *  `ttlSeconds` is applied only when first set (NX), like kvIncr's. */
+export async function kvSetAdd(key: string, member: string, ttlSeconds?: number): Promise<boolean> {
   if (!redis) {
     const list = memoryLists.get(key) ?? [];
-    if (!list.includes(member)) list.push(member);
+    if (list.includes(member)) return false;
+    list.push(member);
     memoryLists.set(key, list);
-    return;
+    return true;
   }
   try {
-    await redis.sadd(key, member);
+    const pipeline = redis.pipeline().sadd(key, member);
+    const [added] = ttlSeconds
+      ? await pipeline.expire(key, ttlSeconds, "NX").exec()
+      : await pipeline.exec();
+    return Number(added) === 1;
   } catch {
     const list = memoryLists.get(key) ?? [];
-    if (!list.includes(member)) list.push(member);
+    if (list.includes(member)) return false;
+    list.push(member);
     memoryLists.set(key, list);
+    return true;
   }
 }
 

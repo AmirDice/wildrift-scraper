@@ -6,10 +6,10 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
-import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, refundQuota } from "@/lib/quota";
+import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, refundQuota } from "@/lib/quota";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
 import { checkAbuseGuards } from "@/lib/build-guards";
-import { trackEvent } from "@/lib/stats";
+import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
 
 /**
  * Live build advisor. POST { champion, role, enemies[], allies[], playstyle, mode }
@@ -499,6 +499,12 @@ async function handlePost(request: Request) {
     // Usage counters: the public "builds generated" figure on the home page, and
     // the internal question of whether the build tools get used at all.
     void trackEvent(mode === "counter" ? "counter_generated" : "build_generated");
+    // Engagement: quota.used IS this generation's depth into the daily
+    // allowance (1..5, 6+ for unlimited), so the distribution of "stopped at
+    // one" vs "burned all five" and the new-vs-returning split fall straight
+    // out of the number we already have. Recorded only on success, so a
+    // refunded infrastructure failure never counts as usage.
+    void recordGenerationEngagement(quotaIdentity(user, ip), quota.used);
 
     return NextResponse.json(
       { ...data, quota, cached: false },

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { KV_CONFIGURED, kvGetNumber, kvList, kvSetCount } from "@/lib/kv";
 import { FEEDBACK_REASON_KEYS } from "@/lib/feedback-options";
-import { TRACKED_EVENTS, eventSummary } from "@/lib/stats";
+import { TRACKED_EVENTS, engagementSummary, eventSummary } from "@/lib/stats";
 
 /**
  * GET /api/admin/usage?token=... -- the internal read-out.
@@ -32,9 +32,10 @@ export async function GET(request: Request) {
     FEEDBACK_REASON_KEYS.map(async (reason) => [reason, await kvGetNumber(`feedback:build:reason:${reason}`)] as const),
   );
   const notes = await kvList("feedback:build:log", 50);
-  const [uniqueAccounts, signInsLog] = await Promise.all([
+  const [uniqueAccounts, signInsLog, engagement] = await Promise.all([
     kvSetCount("auth:google:subs"),
     kvList("auth:signins:log", 30),
+    engagementSummary(7),
   ]);
   const parse = (entry: string) => {
     try { return JSON.parse(entry) as unknown; } catch { return entry; }
@@ -60,5 +61,9 @@ export async function GET(request: Request) {
       unique: uniqueAccounts,
       recentSignIns: signInsLog.map(parse),
     },
+    // Per-day generation engagement (tracked from 2026-08-08): distinct
+    // generators, new vs returning, and how deep into the daily allowance
+    // each person went. Days before the deploy read as zeros, not as truth.
+    engagement,
   });
 }

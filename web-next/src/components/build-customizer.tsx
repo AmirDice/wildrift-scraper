@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { DuelPanel } from "@/components/duel-panel";
 import { visibleBuildVariants, type ChampionBuilds } from "@/lib/builds";
 import {
@@ -117,6 +117,18 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
     runes: { ...EMPTY_STATE.runes, tree: base?.runes.primaryTree || "Precision" },
   }));
   const [level, setLevel] = useState(15);
+  // "Is the lab actually used?" is invisible server-side: everything here is
+  // client state. One event on the FIRST edit per mount answers it without
+  // logging every click. State identity changes on any edit, so comparing to
+  // the mount-time object is the single choke point every handler flows into.
+  const initialState = useRef(state);
+  const editTracked = useRef(false);
+  useEffect(() => {
+    if (!editTracked.current && state !== initialState.current) {
+      editTracked.current = true;
+      track("custom_edited");
+    }
+  }, [state]);
   // Mirrors the stats panel's Guaranteed / Fully scaled switch so the fight
   // below it uses the same numbers the player is looking at.
   const [scaled, setScaled] = useState(false);

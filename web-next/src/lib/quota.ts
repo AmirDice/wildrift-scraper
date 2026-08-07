@@ -63,6 +63,13 @@ function keyFor(user: SessionUser | null, ip: string): string {
   return user ? `quota:build:u:${user.sub}:${day}` : `quota:build:ip:${ipKey(ip)}:${day}`;
 }
 
+/** The stable identity the quota is counted against -- Google sub when signed
+ *  in, hashed IP otherwise. Exported so engagement tracking attributes usage
+ *  to exactly the same person-ish unit the allowance itself uses. */
+export function quotaIdentity(user: SessionUser | null, ip: string): string {
+  return user ? `u:${user.sub}` : `ip:${ipKey(ip)}`;
+}
+
 function nextUtcMidnight(): number {
   const now = new Date();
   return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);

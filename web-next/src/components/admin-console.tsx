@@ -146,8 +146,17 @@ interface FeedbackEntry {
 
 interface SignInEntry { email?: string; name?: string; at?: string }
 
+interface EngagementDay {
+  day: string;
+  unique: number;
+  newUsers: number;
+  returning: number;
+  depth: number[];
+}
+
 interface UsageData {
   events: Record<string, { total: number; today: number; last7Days: number }>;
+  engagement?: EngagementDay[];
   feedback: {
     up: number;
     down: number;
@@ -169,6 +178,8 @@ const EVENT_LABELS: Record<string, string> = {
   build_shared: "Builds shared",
   build_liked: "Builds liked",
   build_feedback: "Feedback left",
+  custom_opened: "Custom Lab opened",
+  custom_edited: "Custom Lab edited",
 };
 
 function timeAgo(iso?: string): string {
@@ -260,6 +271,67 @@ function UsagePanel({ token }: { token: string }) {
           <p className="mt-1 text-xs text-muted">Thumbs on generated builds, lifetime.</p>
         </Card>
       </div>
+
+      {(() => {
+        const days = data.engagement ?? [];
+        const today = days[0];
+        const week = days.reduce((acc, d) => ({
+          newUsers: acc.newUsers + d.newUsers,
+          returning: acc.returning + d.returning,
+          depth: acc.depth.map((v, i) => v + (d.depth[i] ?? 0)),
+        }), { newUsers: 0, returning: 0, depth: [0, 0, 0, 0, 0, 0] });
+        // depth[i] = people who REACHED generation i+1; exactly-N = reached N minus reached N+1
+        const exactly = (depth: number[]) => depth.map((v, i) => i < depth.length - 1 ? v - (depth[i + 1] ?? 0) : v);
+        const todayExact = exactly(today?.depth ?? [0, 0, 0, 0, 0, 0]);
+        const weekExact = exactly(week.depth);
+        const weekTotal = week.newUsers + week.returning;
+        const depthLabel = ["1", "2", "3", "4", "5", "6+"];
+        return (
+          <Card className="mt-4 p-4">
+            <h3 className="text-sm font-semibold">Generation engagement</h3>
+            <p className="mt-1 text-xs text-muted">
+              Who generates, whether they come back, and how deep into the daily 5 they go.
+              Tracked from Aug 8, 2026 -- earlier days read as zero.
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <div>
+                <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Generators today</p>
+                <p className="mt-0.5 text-xl font-semibold tabular-nums">{today?.unique ?? 0}</p>
+                <p className="text-xs text-muted">{today?.newUsers ?? 0} new · {today?.returning ?? 0} returning</p>
+              </div>
+              <div>
+                <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Last 7 days</p>
+                <p className="mt-0.5 text-xl font-semibold tabular-nums">{weekTotal}</p>
+                <p className="text-xs text-muted">{week.newUsers} new · {week.returning} returning
+                  {weekTotal > 0 ? ` (${Math.round(100 * week.returning / weekTotal)}% return)` : ""}</p>
+              </div>
+              <div>
+                <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Used all 5 (7 days)</p>
+                <p className="mt-0.5 text-xl font-semibold tabular-nums">{(week.depth[4] ?? 0) + (week.depth[5] ?? 0)}</p>
+                <p className="text-xs text-muted">stopped at 1: {weekExact[0] ?? 0}</p>
+              </div>
+            </div>
+            <table className="mt-3 w-full text-sm">
+              <thead>
+                <tr className="border-b border-line text-left text-[0.65rem] uppercase tracking-wide text-faint">
+                  <th className="py-1.5">Generations used</th>
+                  {depthLabel.map((l) => <th key={l} className="text-right">{l}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-line/40">
+                  <td className="py-1.5 text-muted">People today</td>
+                  {todayExact.map((v, i) => <td key={i} className="text-right tabular-nums">{v}</td>)}
+                </tr>
+                <tr>
+                  <td className="py-1.5 text-muted">People, last 7 days</td>
+                  {weekExact.map((v, i) => <td key={i} className="text-right tabular-nums text-text">{v}</td>)}
+                </tr>
+              </tbody>
+            </table>
+          </Card>
+        );
+      })()}
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Card className="p-4">

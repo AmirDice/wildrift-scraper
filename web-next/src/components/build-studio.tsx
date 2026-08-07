@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildChampions,
   buildForms,
@@ -18,6 +18,7 @@ import { BuildCustomizer, type CustomBuildState as LabSeed } from "@/components/
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
 import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
+import { track } from "@/components/share-build";
 import { CounterBuilderCta, GenerateBuildCta } from "@/components/tool-crosslinks";
 import { BuildTour, type TourStep } from "@/components/build-tour";
 import { getChampions, pendingChampions } from "@/lib/data";
@@ -109,6 +110,10 @@ export function BuildStudio({ initialChampion, initialTab }: {
   )?.slug ?? champs[0]?.slug ?? "";
   const [slug, setSlug] = useState(initialSlug);
   const [tab, setTab] = useState<Tab>(initialTab ?? "generate");
+  // Counted once per visit, not per switch: the question is how many people
+  // ever see the lab, and a tab-flipper counting five times would answer a
+  // different one.
+  const labSeen = useRef(false);
   const [generatedAdvice, setGeneratedAdvice] = useState<Advice | null>(null);
   // A generated build handed to the Custom Build Lab so it can be run through
   // the damage check. The counter bumps on every send, and keys the Lab, so
@@ -153,6 +158,12 @@ export function BuildStudio({ initialChampion, initialTab }: {
   // for everyone.
   const availableTabs = builds ? TABS : TABS.filter((entry) => entry.id !== "customize");
   const effectiveTab = availableTabs.some((entry) => entry.id === tab) ? tab : "generate";
+  useEffect(() => {
+    if (effectiveTab === "customize" && !labSeen.current) {
+      labSeen.current = true;
+      track("custom_opened");
+    }
+  }, [effectiveTab]);
 
   const switchChamp = (s: string) => {
     setSlug(s);
