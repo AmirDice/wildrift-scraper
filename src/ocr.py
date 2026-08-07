@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import shlex
 import shutil
 import sys
 from dataclasses import dataclass
@@ -904,7 +905,16 @@ def read_champion_name(image: np.ndarray, region: tuple[int, int, int, int]) -> 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (57, 57))
     tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, kernel)
     _, pre = cv2.threshold(tophat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    config = "--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ'& "
+    # The whitelist needs the apostrophe for K'SANTE / CHO'GATH labels, and
+    # pytesseract splits config with shlex(posix=True) everywhere but Windows,
+    # where a bare ' is an unclosed quote ("No closing quotation" on CI).
+    # shlex.quote produces the POSIX-safe form; Windows splits non-posix and
+    # must keep the bare form it has always used.
+    _whitelist = "tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ'&"
+    if os.name == "nt":
+        config = f"--oem 3 --psm 7 -c {_whitelist} "
+    else:
+        config = f"--oem 3 --psm 7 -c {shlex.quote(_whitelist)}"
     text, _conf = _run_tesseract(pre, config)
     return _match(text)
 
