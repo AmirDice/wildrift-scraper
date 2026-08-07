@@ -1,8 +1,7 @@
 # Exactly what the test suite imports, transitively -- nothing more.
 #
-# Deliberately NOT "-r requirements.txt": the tests read committed JSON and
-# never open a browser, an image or a dataframe, so pulling in streamlit,
-# opencv, pandas and pytesseract would add minutes to every CI run for nothing.
+# Deliberately NOT "-r requirements.txt": the tests read committed JSON, so
+# pulling in the whole scrape stack would slow every CI run for nothing.
 #
 # If a new test imports something else, CI fails on ImportError. Add it here.
 pytest>=8.0.0
@@ -11,3 +10,13 @@ pytest>=8.0.0
 # the tests imports them even though no test makes a network call.
 requests>=2.31.0
 google-genai>=1.0.0
+
+# The scraper-pipeline tests (extraction guard, navigator, rank digits, icon
+# geometry) import src modules whose module scope needs these three. HEADLESS
+# opencv on purpose: CI has no display, and the full package needs libGL.
+# Locally requirements-scrape.txt installs the full opencv-python; if you
+# install this file afterwards and the coordinate-mapper GUI stops opening
+# windows, reinstall opencv-python to put the GUI build back.
+numpy>=1.26.0
+opencv-python-headless>=4.9.0
+pytesseract>=0.3.10
