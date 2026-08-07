@@ -22,6 +22,13 @@ KV contract (all under ops:):
 Run it in a spare terminal and leave it:
     python -m scripts.ops_runner
     python -m scripts.ops_runner --once   # drain the queue, then exit (testing)
+
+or install it as a logon task (hidden window, ~25 MB, idle CPU) with:
+    schtasks /Create /TN "WrTrueMeta Ops Runner" /SC ONLOGON /F
+             /TR "<pythonw.exe> <this file>"
+Under pythonw there is no console, so output goes to data/ops_runner.log.
+Only one instance runs at a time: a second start exits immediately (the
+singleton is a bound localhost port, which a crash releases automatically).
 """
 from __future__ import annotations
 
@@ -29,6 +36,7 @@ import argparse
 import json
 import os
 import re
+import socket
 import subprocess
 import sys
 import threading
@@ -38,6 +46,10 @@ from collections import deque
 from pathlib import Path
 
 import requests
+
+#: bound for the lifetime of the process; a second instance fails the bind and
+#: exits, so the queue is never LPOPped by two runners at once
+SINGLETON_PORT = 47831
 
 ROOT = Path(__file__).resolve().parent.parent
 ENV_LOCAL = ROOT / "web-next" / ".env.local"
@@ -76,10 +88,18 @@ KV_TOKEN = _cred("KV_REST_API_TOKEN") or _cred("UPSTASH_REDIS_REST_TOKEN")
 
 # ---------------------------------------------------------------------------
 # Upstash REST: one command per request, ["CMD", arg, ...]
+#
+# One SESSION for the process lifetime, not one connection per request. This
+# runner polls every couple of seconds forever, and on Windows each fresh TLS
+# handshake costs ~300ms of CPU -- measured at 25% of a core just idling.
+# With a kept-alive connection the same polling is a rounding error.
 # ---------------------------------------------------------------------------
 
+_session = requests.Session()
+
+
 def kv(*command: str) -> object:
-    r = requests.post(KV_URL, json=list(command),
+    r = _session.post(KV_URL, json=list(command),
                       headers={"Authorization": f"Bearer {KV_TOKEN}"}, timeout=15)
     r.raise_for_status()
     return r.json().get("result")
@@ -87,10 +107,17 @@ def kv(*command: str) -> object:
 
 def kv_safe(*command: str) -> object:
     """A KV hiccup must not kill the runner or the child it supervises."""
+    global _session
     try:
         return kv(*command)
     except Exception as error:  # noqa: BLE001
         print(f"  [kv] {error}", file=sys.stderr)
+        # A dead keep-alive connection poisons every later call; start fresh.
+        try:
+            _session.close()
+        except Exception:  # noqa: BLE001
+            pass
+        _session = requests.Session()
         return None
 
 # ---------------------------------------------------------------------------
@@ -265,6 +292,7 @@ def run_job(job: Job) -> None:
 
         last_push = 0.0
         last_beat = 0.0
+        last_stop_check = 0.0
         while process.poll() is None:
             time.sleep(0.5)
             now = time.time()
@@ -274,11 +302,15 @@ def run_job(job: Job) -> None:
             if now - last_beat >= HEARTBEAT_EVERY:
                 heartbeat(job)
                 last_beat = now
-            if kv_safe("GET", "ops:stop") == "1":
-                job.lines.append("stop requested -- killing the process tree")
-                _kill_tree(process)
-                kv_safe("DEL", "ops:stop")
-                stopped = True
+            # The 0.5s loop keeps process exit detection snappy; the KV round
+            # trips are throttled so a running job costs ~1 request a second.
+            if now - last_stop_check >= 2.0:
+                last_stop_check = now
+                if kv_safe("GET", "ops:stop") == "1":
+                    job.lines.append("stop requested -- killing the process tree")
+                    _kill_tree(process)
+                    kv_safe("DEL", "ops:stop")
+                    stopped = True
         reader.join(timeout=5)
         job.exit_code = process.returncode
 
@@ -314,6 +346,21 @@ def main() -> int:
     parser.add_argument("--once", action="store_true",
                         help="drain the queue, then exit (for testing)")
     args = parser.parse_args()
+
+    # Under pythonw (the hidden-window scheduled task) there is no console and
+    # sys.stdout is None, where the first print() would crash the process.
+    if sys.stdout is None or sys.stderr is None:
+        log = open(ROOT / "data" / "ops_runner.log", "a", encoding="utf-8", buffering=1)
+        sys.stdout = sys.stderr = log
+
+    # Singleton: hold a localhost port for the process lifetime. The OS
+    # releases it on ANY exit including a crash, so no stale lockfile states.
+    guard = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        guard.bind(("127.0.0.1", SINGLETON_PORT))
+    except OSError:
+        print("another ops runner is already active -- exiting")
+        return 0
 
     if not KV_URL or not KV_TOKEN:
         raise SystemExit("error: KV_REST_API_URL / KV_REST_API_TOKEN not found "
