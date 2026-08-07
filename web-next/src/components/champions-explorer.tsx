@@ -41,7 +41,7 @@ export function ChampionsExplorer({
   const [cls, setCls] = useState("All classes");
   const [sortKey, setSortKey] = useState<SortKey>("wr");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
-  const [region, setRegion] = useState<Region>("CN");
+  const [region, setRegion] = useState<Region>("EU");
 
   const isCN = region === "CN";
   const activeChampions: Champion[] = isCN ? cnChampions : champions;

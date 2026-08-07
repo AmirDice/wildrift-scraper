@@ -69,7 +69,7 @@ export default function TierListPage() {
           cnMeta={CN_META}
           globalChampions={getGlobalChampions()}
           globalRoles={globalRoles()}
-          initialRegion="CN"
+          initialRegion="EU"
         />
       </div>
       <NextStep steps={["build", "counter", "meta"]} />
