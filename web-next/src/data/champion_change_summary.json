@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "champions": {
     "Nidalee": {
-      "totalChanges": 5,
+      "totalChanges": 6,
       "modeOnlyChanges": 2,
-      "balanceChanges": 3,
-      "lastChangedPatch": "7.2a",
-      "lastChangedAt": "2026-07-15T09:00:00.000Z",
-      "lastBalancePatch": "7.2a",
-      "lastBalanceAt": "2026-07-15T09:00:00.000Z"
+      "balanceChanges": 4,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Warwick": {
       "totalChanges": 15,
@@ -146,13 +146,13 @@
       "lastBalanceAt": "2025-11-19T10:00:00.000Z"
     },
     "Ambessa": {
-      "totalChanges": 11,
+      "totalChanges": 12,
       "modeOnlyChanges": 3,
-      "balanceChanges": 8,
-      "lastChangedPatch": "7.1f",
-      "lastChangedAt": "2026-05-27T09:00:00.000Z",
-      "lastBalancePatch": "7.1f",
-      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Nunu & Willump": {
       "totalChanges": 20,
@@ -290,13 +290,13 @@
       "lastBalanceAt": "2026-07-08T09:00:00.000Z"
     },
     "Lee Sin": {
-      "totalChanges": 21,
+      "totalChanges": 22,
       "modeOnlyChanges": 3,
-      "balanceChanges": 18,
-      "lastChangedPatch": "7.2",
-      "lastChangedAt": "2026-07-08T09:00:00.000Z",
-      "lastBalancePatch": "7.2",
-      "lastBalanceAt": "2026-07-08T09:00:00.000Z"
+      "balanceChanges": 19,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Ahri": {
       "totalChanges": 16,
@@ -407,13 +407,13 @@
       "lastBalanceAt": "2026-06-24T09:00:00.000Z"
     },
     "Sona": {
-      "totalChanges": 19,
+      "totalChanges": 20,
       "modeOnlyChanges": 5,
-      "balanceChanges": 12,
-      "lastChangedPatch": "7.1h",
-      "lastChangedAt": "2026-06-24T09:00:00.000Z",
-      "lastBalancePatch": "7.1h",
-      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Nami": {
       "totalChanges": 10,
@@ -425,13 +425,13 @@
       "lastBalanceAt": "2025-01-08T17:00:00.000Z"
     },
     "Aurora": {
-      "totalChanges": 5,
+      "totalChanges": 6,
       "modeOnlyChanges": 0,
-      "balanceChanges": 4,
-      "lastChangedPatch": "7.1g",
-      "lastChangedAt": "2026-06-10T09:00:00.000Z",
-      "lastBalancePatch": "7.1g",
-      "lastBalanceAt": "2026-06-10T09:00:00.000Z"
+      "balanceChanges": 5,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Zoe": {
       "totalChanges": 19,
@@ -452,13 +452,13 @@
       "lastBalanceAt": "2026-06-10T09:00:00.000Z"
     },
     "Kayle": {
-      "totalChanges": 15,
+      "totalChanges": 16,
       "modeOnlyChanges": 3,
-      "balanceChanges": 12,
-      "lastChangedPatch": "7.1f",
-      "lastChangedAt": "2026-05-27T09:00:00.000Z",
-      "lastBalancePatch": "7.1f",
-      "lastBalanceAt": "2026-05-27T09:00:00.000Z"
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Gragas": {
       "totalChanges": 22,
@@ -812,13 +812,13 @@
       "lastBalanceAt": "2026-03-04T10:00:00.000Z"
     },
     "Hecarim": {
-      "totalChanges": 11,
+      "totalChanges": 12,
       "modeOnlyChanges": 3,
-      "balanceChanges": 8,
-      "lastChangedPatch": "7.0d",
-      "lastChangedAt": "2026-03-04T10:00:00.000Z",
-      "lastBalancePatch": "7.0d",
-      "lastBalanceAt": "2026-03-04T10:00:00.000Z"
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Nasus": {
       "totalChanges": 16,
@@ -857,13 +857,13 @@
       "lastBalanceAt": "2026-02-11T10:00:00.000Z"
     },
     "Zilean": {
-      "totalChanges": 2,
+      "totalChanges": 3,
       "modeOnlyChanges": 0,
-      "balanceChanges": 2,
-      "lastChangedPatch": "7.0a",
-      "lastChangedAt": "2026-01-28T10:00:00.000Z",
-      "lastBalancePatch": "7.0a",
-      "lastBalanceAt": "2026-01-28T10:00:00.000Z"
+      "balanceChanges": 3,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Evelynn": {
       "totalChanges": 21,
@@ -929,13 +929,13 @@
       "lastBalanceAt": "2025-12-03T10:00:00.000Z"
     },
     "Jayce": {
-      "totalChanges": 16,
+      "totalChanges": 17,
       "modeOnlyChanges": 2,
-      "balanceChanges": 11,
-      "lastChangedPatch": "6.3d",
-      "lastChangedAt": "2025-11-19T10:00:00.000Z",
-      "lastBalancePatch": "6.3d",
-      "lastBalanceAt": "2025-11-19T10:00:00.000Z"
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Lucian": {
       "totalChanges": 20,
@@ -1154,13 +1154,13 @@
       "lastBalanceAt": "2025-03-12T16:00:00.000Z"
     },
     "Ekko": {
-      "totalChanges": 11,
+      "totalChanges": 12,
       "modeOnlyChanges": 1,
-      "balanceChanges": 10,
-      "lastChangedPatch": "6.0d",
-      "lastChangedAt": "2025-03-12T16:00:00.000Z",
-      "lastBalancePatch": "6.0d",
-      "lastBalanceAt": "2025-03-12T16:00:00.000Z"
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.2b",
+      "lastChangedAt": "2026-07-29T09:00:00.000Z",
+      "lastBalancePatch": "7.2b",
+      "lastBalanceAt": "2026-07-29T09:00:00.000Z"
     },
     "Camille": {
       "totalChanges": 24,
