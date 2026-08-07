@@ -8,6 +8,7 @@ import {
   verifyGoogleIdToken,
 } from "@/lib/session";
 import { trackEvent } from "@/lib/stats";
+import { kvPushCapped, kvSetAdd } from "@/lib/kv";
 import { ACCESS_COOKIE, countSignIn, readAccessCookie } from "@/lib/access";
 
 /**
@@ -48,6 +49,15 @@ export async function POST(request: Request) {
   });
 
   void trackEvent("signed_in");
+
+  // The event above counts sign-INS; these two answer "how many PEOPLE".
+  // The set of Google subject ids gives the unique-account count (a person
+  // re-signing on a new device adds nothing), and the capped log lets the
+  // admin page show who arrived recently without a user table existing.
+  void kvSetAdd("auth:google:subs", profile.sub);
+  void kvPushCapped("auth:signins:log", JSON.stringify({
+    email: profile.email, name: profile.name, at: new Date().toISOString(),
+  }), 200);
 
   // Attribute the sign-in to whatever invite or referral link brought them.
   // Clicks measure reach and activations measure arrival, but a sponsor is

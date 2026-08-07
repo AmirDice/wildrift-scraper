@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui";
+import { FEEDBACK_REASONS } from "@/lib/feedback-options";
 
 interface AccessCodeRow {
   code: string;
@@ -124,11 +125,231 @@ export function AdminConsole() {
   return (
     <div className="space-y-8">
       <OperationsPanel token={token} />
+      <UsagePanel token={token} />
       <UnlimitedAccessPanel token={token} />
       <CodesPanel token={token} />
       <BestBuildsPanel token={token} />
       <CreatorsPanel token={token} />
     </div>
+  );
+}
+
+/* ── usage, feedback and accounts ────────────────────────────────────────── */
+
+interface FeedbackEntry {
+  verdict: "up" | "down";
+  reasons?: string[];
+  note?: string;
+  champion?: string;
+  at?: string;
+}
+
+interface SignInEntry { email?: string; name?: string; at?: string }
+
+interface UsageData {
+  events: Record<string, { total: number; today: number; last7Days: number }>;
+  feedback: {
+    up: number;
+    down: number;
+    reasons: Record<string, number>;
+    recent: FeedbackEntry[];
+  };
+  accounts: { unique: number; recentSignIns: SignInEntry[] };
+}
+
+const REASON_LABELS = Object.fromEntries(FEEDBACK_REASONS.map((r) => [r.key, r.label]));
+
+// The counters people actually ask about, in plain words. Everything else the
+// API returns still shows, below these, under its raw event name.
+const EVENT_LABELS: Record<string, string> = {
+  signed_in: "Google sign-ins",
+  build_generated: "Builds generated",
+  counter_generated: "Counter builds generated",
+  build_saved: "Builds saved",
+  build_shared: "Builds shared",
+  build_liked: "Builds liked",
+  build_feedback: "Feedback left",
+};
+
+function timeAgo(iso?: string): string {
+  if (!iso) return "";
+  const seconds = Math.round((Date.now() - Date.parse(iso)) / 1000);
+  if (!Number.isFinite(seconds) || seconds < 0) return "";
+  if (seconds < 3600) return `${Math.max(1, Math.round(seconds / 60))}m ago`;
+  if (seconds < 86400) return `${Math.round(seconds / 3600)}h ago`;
+  return `${Math.round(seconds / 86400)}d ago`;
+}
+
+/**
+ * What people are doing and saying: sign-in counts (events AND unique
+ * accounts -- they differ, and the difference is repeat sign-ins), every
+ * tracked usage counter, the thumbs tally with reasons, and the free-text
+ * feedback log that until now was only reachable with curl.
+ */
+function UsagePanel({ token }: { token: string }) {
+  const [data, setData] = useState<UsageData | null>(null);
+  const [showAllFeedback, setShowAllFeedback] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/usage?token=${encodeURIComponent(token)}`);
+      if (res.ok) setData(await res.json() as UsageData);
+    } catch {
+      /* transient */
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
+  }, [load]);
+
+  if (!data) {
+    return (
+      <section>
+        <h2 className="text-xl font-semibold tracking-tight">Usage &amp; feedback</h2>
+        <p className="mt-1 text-sm text-muted">Loading…</p>
+      </section>
+    );
+  }
+
+  const signIns = data.events.signed_in;
+  const eventRows = Object.entries(data.events)
+    .sort(([a], [b]) => (a in EVENT_LABELS ? 0 : 1) - (b in EVENT_LABELS ? 0 : 1) || a.localeCompare(b));
+  const feedbackEntries = data.feedback.recent.filter((entry) => entry && typeof entry === "object");
+  const shownFeedback = showAllFeedback ? feedbackEntries : feedbackEntries.slice(0, 10);
+  const reasonRows = Object.entries(data.feedback.reasons)
+    .filter(([, count]) => count > 0)
+    .sort(([, a], [, b]) => b - a);
+
+  return (
+    <section>
+      <div className="flex flex-wrap items-center gap-3">
+        <h2 className="text-xl font-semibold tracking-tight">Usage &amp; feedback</h2>
+        <button
+          onClick={() => void load()}
+          className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-muted transition hover:text-text"
+        >
+          Refresh
+        </button>
+      </div>
+      <p className="mt-1 max-w-2xl text-sm text-muted">
+        Who is signing in, what the tools are doing, and what people say about the builds.
+      </p>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <Card className="p-4">
+          <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Unique Google accounts</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">{data.accounts.unique}</p>
+          <p className="mt-1 text-xs text-muted">Counted per account since Aug 7, 2026.</p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Sign-ins (all time)</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">{signIns?.total ?? 0}</p>
+          <p className="mt-1 text-xs text-muted">
+            {signIns ? `${signIns.today} today · ${signIns.last7Days} in 7 days` : ""}
+          </p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Build feedback</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">
+            <span className="text-emerald-300">▲ {data.feedback.up}</span>
+            <span className="mx-2 text-faint">/</span>
+            <span className="text-bad">▼ {data.feedback.down}</span>
+          </p>
+          <p className="mt-1 text-xs text-muted">Thumbs on generated builds, lifetime.</p>
+        </Card>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card className="p-4">
+          <h3 className="text-sm font-semibold">Recent sign-ins</h3>
+          <div className="mt-2 divide-y divide-line/60">
+            {data.accounts.recentSignIns.slice(0, 12).map((entry, index) => (
+              <div key={`${entry.email}-${index}`} className="flex items-center gap-3 py-1.5 text-sm">
+                <span className="min-w-0 flex-1 truncate">{entry.name || entry.email || "(unknown)"}</span>
+                <span className="truncate font-mono text-xs text-faint">{entry.email}</span>
+                <span className="shrink-0 text-xs text-faint">{timeAgo(entry.at)}</span>
+              </div>
+            ))}
+            {data.accounts.recentSignIns.length === 0 && (
+              <p className="py-4 text-center text-sm text-faint">
+                No sign-ins recorded yet -- the log starts with the first sign-in after this deploy.
+              </p>
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <h3 className="text-sm font-semibold">Activity counters</h3>
+          <table className="mt-2 w-full text-sm">
+            <thead>
+              <tr className="border-b border-line text-left text-[0.65rem] uppercase tracking-wide text-faint">
+                <th className="py-1.5">Event</th>
+                <th className="text-right">Today</th>
+                <th className="text-right">7 days</th>
+                <th className="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {eventRows.map(([event, counts]) => (
+                <tr key={event} className="border-b border-line/40">
+                  <td className="py-1.5 text-muted">{EVENT_LABELS[event] ?? event.replaceAll("_", " ")}</td>
+                  <td className="text-right tabular-nums">{counts.today}</td>
+                  <td className="text-right tabular-nums">{counts.last7Days}</td>
+                  <td className="text-right tabular-nums text-text">{counts.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
+
+      <Card className="mt-4 p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <h3 className="text-sm font-semibold">What people said</h3>
+          {reasonRows.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {reasonRows.map(([reason, count]) => (
+                <span key={reason} className="rounded-full border border-line px-2 py-0.5 text-[0.65rem] text-muted">
+                  {REASON_LABELS[reason] ?? reason} · {count}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="mt-2 divide-y divide-line/60">
+          {shownFeedback.map((entry, index) => (
+            <div key={`${entry.at}-${index}`} className="py-2.5">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className={entry.verdict === "up" ? "font-bold text-emerald-300" : "font-bold text-bad"}>
+                  {entry.verdict === "up" ? "▲" : "▼"}
+                </span>
+                {entry.champion && <span className="font-medium text-text">{entry.champion}</span>}
+                {(entry.reasons ?? []).map((reason) => (
+                  <span key={reason} className="rounded-full border border-line px-2 py-0.5 text-[0.65rem] text-muted">
+                    {REASON_LABELS[reason] ?? reason}
+                  </span>
+                ))}
+                <span className="ml-auto text-faint">{timeAgo(entry.at)}</span>
+              </div>
+              {entry.note && <p className="mt-1 text-sm leading-relaxed text-muted">{entry.note}</p>}
+            </div>
+          ))}
+          {feedbackEntries.length === 0 && (
+            <p className="py-4 text-center text-sm text-faint">No feedback yet.</p>
+          )}
+        </div>
+        {feedbackEntries.length > 10 && (
+          <button
+            onClick={() => setShowAllFeedback((value) => !value)}
+            className="mt-2 rounded-md border border-line px-3 py-1 text-xs text-muted transition hover:text-text"
+          >
+            {showAllFeedback ? "Show fewer" : `Show all ${feedbackEntries.length}`}
+          </button>
+        )}
+      </Card>
+    </section>
   );
 }
 

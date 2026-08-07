@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { KV_CONFIGURED, kvGetNumber, kvList } from "@/lib/kv";
+import { KV_CONFIGURED, kvGetNumber, kvList, kvSetCount } from "@/lib/kv";
 import { FEEDBACK_REASON_KEYS } from "@/lib/feedback-options";
 import { TRACKED_EVENTS, eventSummary } from "@/lib/stats";
 
@@ -32,6 +32,13 @@ export async function GET(request: Request) {
     FEEDBACK_REASON_KEYS.map(async (reason) => [reason, await kvGetNumber(`feedback:build:reason:${reason}`)] as const),
   );
   const notes = await kvList("feedback:build:log", 50);
+  const [uniqueAccounts, signInsLog] = await Promise.all([
+    kvSetCount("auth:google:subs"),
+    kvList("auth:signins:log", 30),
+  ]);
+  const parse = (entry: string) => {
+    try { return JSON.parse(entry) as unknown; } catch { return entry; }
+  };
 
   return NextResponse.json({
     storage: KV_CONFIGURED ? "kv" : "memory (not persistent)",
@@ -45,13 +52,13 @@ export async function GET(request: Request) {
       up,
       down,
       reasons: Object.fromEntries(reasonCounts),
-      recent: notes.map((entry) => {
-        try {
-          return JSON.parse(entry) as unknown;
-        } catch {
-          return entry;
-        }
-      }),
+      recent: notes.map(parse),
+    },
+    accounts: {
+      // Unique Google accounts ever signed in (tracked from 2026-08-07; the
+      // signed_in EVENT total goes further back but counts repeat sign-ins).
+      unique: uniqueAccounts,
+      recentSignIns: signInsLog.map(parse),
     },
   });
 }

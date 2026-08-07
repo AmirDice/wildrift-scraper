@@ -176,6 +176,34 @@ export async function kvList(key: string, limit = 100): Promise<string[]> {
   }
 }
 
+/** Adds a member to a set. Used to count UNIQUE signed-in accounts: an event
+ *  counter goes up on every sign-in, a set only on the first. */
+export async function kvSetAdd(key: string, member: string): Promise<void> {
+  if (!redis) {
+    const list = memoryLists.get(key) ?? [];
+    if (!list.includes(member)) list.push(member);
+    memoryLists.set(key, list);
+    return;
+  }
+  try {
+    await redis.sadd(key, member);
+  } catch {
+    const list = memoryLists.get(key) ?? [];
+    if (!list.includes(member)) list.push(member);
+    memoryLists.set(key, list);
+  }
+}
+
+/** How many members a set written by {@link kvSetAdd} holds. */
+export async function kvSetCount(key: string): Promise<number> {
+  if (!redis) return (memoryLists.get(key) ?? []).length;
+  try {
+    return Number(await redis.scard(key)) || 0;
+  } catch {
+    return (memoryLists.get(key) ?? []).length;
+  }
+}
+
 export async function kvDelete(key: string): Promise<void> {
   if (!redis) {
     memory.delete(key);
