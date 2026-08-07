@@ -20,3 +20,7 @@ google-genai>=1.0.0
 numpy>=1.26.0
 opencv-python-headless>=4.9.0
 pytesseract>=0.3.10
+
+# test_banned_players exercises web/data_loader (the aggregate-exclusion
+# rules), and data_loader is built on pandas.
+pandas>=2.2.0
