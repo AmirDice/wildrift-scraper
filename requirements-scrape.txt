@@ -1,4 +1,4 @@
-# Scrapers, OCR, and the legacy Streamlit app.
+# Scrapers, OCR, and the local pipeline.
 #
 # Deliberately NOT in requirements.txt: that file is what Vercel installs into
 # the advisor serverless function, and none of these run there. Keeping them
@@ -10,10 +10,7 @@
 # scraping
 beautifulsoup4>=4.12.0
 
-# streamlit_app.py, retired in favour of web-next and not deployed anywhere.
-# Kept installable so the old script still runs, but it is a deletion
-# candidate along with the app itself.
-streamlit>=1.36.0
+# data_loader and the analysis pipeline
 pandas>=2.2.0
 
 # item-icon OCR and image work

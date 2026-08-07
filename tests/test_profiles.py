@@ -69,12 +69,19 @@ class TestHecarim:
         assert hecarim["buildPathStats"] == ["totalAD"]
 
     def test_warpath_survives_as_a_structured_effect(self, hecarim):
-        """The prose is malformed; the parsed conversion is not."""
+        """The prose is malformed; the parsed conversion is not.
+
+        Compared field by field rather than as one exact dict: re-extraction
+        may attach a free-text `note`, and the note's wording is not what this
+        test protects -- the conversion numbers are.
+        """
         warpath = [e for e in hecarim["structuredEffects"] if e["ability"] == "Warpath"]
-        assert warpath == [{
+        assert len(warpath) == 1
+        expected = {
             "ability": "Warpath", "slot": "P", "effectType": "stat-conversion",
             "outputStat": "totalAD", "ratio": 0.12, "inputStat": "movementSpeed",
-        }]
+        }
+        assert {key: warpath[0].get(key) for key in expected} == expected
 
     def test_malformed_ability_text_is_flagged_and_cleaned(self, hecarim):
         assert any("zero-equals" in a for a in hecarim["abilityTextArtifacts"])

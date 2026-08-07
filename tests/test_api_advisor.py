@@ -100,18 +100,16 @@ class TestDeploymentShape:
         assert callable(advisor_api.advise_best_of)
 
     def test_the_advisor_function_config_asks_for_a_long_enough_timeout(self):
-        """Read from vercel.json.advisor, which is NOT named vercel.json.
+        """Read from scripts/deploy_advisor.py, the config's source of truth.
 
-        A vercel.json at the repo root breaks the SITE project's build, even
-        though that project's Root Directory is web-next: its `functions`
-        pattern matches nothing there. Committing one failed the deployment
-        before any build ran, twice. So the advisor's intended function config
-        lives here as a record of the settings to apply, and the values are
-        applied in the Vercel dashboard instead.
+        It used to live in a root vercel.json.advisor file whose values were
+        applied by hand in the Vercel dashboard; deploy_advisor.py replaced
+        both by writing the real vercel.json into its staging directory, and
+        the file was removed in the 2026-08-07 cleanup. (It was never named
+        vercel.json: a repo-root vercel.json breaks the SITE project's build.)
         """
-        import json
-        config = json.loads((ROOT / "vercel.json.advisor").read_text(encoding="utf-8"))
-        fn = config["functions"]["api/advisor.py"]
+        from scripts.deploy_advisor import VERCEL_CONFIG
+        fn = VERCEL_CONFIG["functions"]["api/advisor.py"]
         # The TS route's own timeout is 240s; the function must outlast it.
         assert fn["maxDuration"] >= 240
         # No `runtime` key on purpose. Vercel detects Python from the .py

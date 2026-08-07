@@ -73,7 +73,12 @@ class TestAbilityExtraction:
 
         Fix the entry or add it deliberately; do not raise a threshold.
         """
-        known = {("Pyke", "4")}
+        # Warwick 4 joined with the 2026-08-07 re-extraction (patch 7.2 gaps):
+        # the model proposed an Eternal Hunger on-hit during Infinite Duress
+        # with a per-level base (46.0) that the tooltip never prints, and the
+        # grounding filter rightly dropped that component while keeping the
+        # rest of the ultimate.
+        known = {("Pyke", "4"), ("Warwick", "4")}
         found = {(c, s) for c, s, _, _ in audit.collect()["ungrounded"]}
         assert found <= known, f"new grounding rejections: {sorted(found - known)}"
 
