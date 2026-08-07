@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-06 19:23",
+ "generatedAt": "2026-08-07 05:14",
  "nChampions": 140,
  "nPlayers": 6814,
  "nBuilds": 6970,
@@ -6589,6 +6589,20 @@
    "champion": "Fiddlesticks",
    "slug": "fiddlesticks",
    "detail": "52.0% win rate"
+  },
+  "marathonRanked": {
+   "value": 821,
+   "player": "XdllaSauRRR",
+   "champion": "Singed",
+   "slug": "singed",
+   "detail": "47.1% win rate"
+  },
+  "marathonLegendary": {
+   "value": 245,
+   "player": "Ferret",
+   "champion": "Taliyah",
+   "slug": "taliyah",
+   "detail": "47.8% win rate"
   },
   "perfectionist": {
    "value": 97.4,

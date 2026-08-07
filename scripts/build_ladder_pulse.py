@@ -256,6 +256,12 @@ def build() -> tuple[dict, dict]:
                 g0 = r0.get("games") or 0
                 if r0.get("wr") is not None:
                     r_wr.append(r0["wr"])
+                # Account-level season totals, not per-champion: "who has
+                # played the most ranked, full stop". Grinder keeps the
+                # one-champion crown from the board rows.
+                if g0:
+                    fpools["marathonRanked"].append(
+                        (g0, name, champ, f"{r0['wr']:.1f}% win rate" if r0.get("wr") is not None else "ranked"))
                 for arr, key in ((kda, "kda"), (tf, "tf"), (gpm, "gpm"),
                                  (dmg, "dmg"), (taken, "taken"), (turret, "turret")):
                     if r0.get(key) is not None:
@@ -294,6 +300,10 @@ def build() -> tuple[dict, dict]:
                                                       champ, f"{r0['firstBlood']} first bloods in {g0} games"))
                     if r0.get("sRating") is not None:
                         fpools["sCollector"].append((r0["sRating"], name, champ, f"{g0} games"))
+            if l0 and (l0.get("games") or 0):
+                fpools["marathonLegendary"].append(
+                    ((l0.get("games") or 0), name, champ,
+                     f"{l0['wr']:.1f}% win rate" if l0.get("wr") is not None else "Legendary Ranked"))
             if l0 and (l0.get("games") or 0) >= 10 and l0.get("wr") is not None:
                 l_wr.append(l0["wr"])
                 if (r0 and (r0.get("games") or 0) >= 10
@@ -394,6 +404,8 @@ def build() -> tuple[dict, dict]:
         "baseline": baseline,
         "hallOfFame": {
             "grinder": top("grinder"),
+            "marathonRanked": top("marathonRanked"),
+            "marathonLegendary": top("marathonLegendary"),
             "perfectionist": top("perfectionist"),
             "kdaKing": top("kdaKing"),
             "pentaKing": top("pentaKing"),

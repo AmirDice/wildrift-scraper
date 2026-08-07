@@ -43,6 +43,8 @@ const CARDS: {
 }[] = [
   { key: "kdaKing", title: "The KDA King", blurb: "Best KDA in ranked this season, 30 games minimum", glyph: "gem", tone: "text-sky-300", fmt: (v) => `${v.toFixed(1)} KDA`, accountWide: true },
   { key: "grinder", title: "The Grinder", blurb: "Most ranked games on one champion", glyph: "hourglass", tone: "text-amber-300", fmt: (v) => `${v.toLocaleString()} games` },
+  { key: "marathonRanked", title: "The Marathon", blurb: "Most ranked games this season, whole account", glyph: "hourglass", tone: "text-sky-300", fmt: (v) => `${v.toLocaleString()} ranked games` },
+  { key: "marathonLegendary", title: "The Legendary Marathon", blurb: "Most Legendary Ranked games this season", glyph: "flame", tone: "text-rose-300", fmt: (v) => `${v.toLocaleString()} Legendary games` },
   { key: "mvpMachine", title: "The MVP Machine", blurb: "Highest MVP rate this season, 30 games minimum", glyph: "medal", tone: "text-gold", fmt: (v) => `${v.toFixed(1)}% of games`, accountWide: true },
   { key: "quadraKing", title: "The Quadra Collector", blurb: "Most ranked quadrakills this season", glyph: "cross", tone: "text-rose-300", fmt: (v) => `${v} quadrakills`, accountWide: true },
   { key: "executioner", title: "The Executioner", blurb: "Most damage dealt per match this season", glyph: "swords", tone: "text-red-300", fmt: (v) => `${Math.round(v / 100) / 10}k damage`, accountWide: true },
