@@ -61,10 +61,27 @@ export interface CnChampion extends Champion {
   cnBanRate: number;
 }
 
+/** The fallback order when a champion has no row in the requested bracket.
+ *  The CN source omits low-pick champions from thin samples, which silently
+ *  removed them from the whole CN view. Same-queue brackets are tried first
+ *  (widest sample outward); the OTHER queue is a deliberate last resort,
+ *  because Gragas has ranked rows in NO bracket at all -- only Legendary --
+ *  and a real number from the other queue beats a champion that simply
+ *  vanishes. A row borrowed across queues is still that champion's live CN
+ *  performance, just from the other ladder. */
+const BRACKET_FALLBACK: Record<CnBracketKey, CnBracketKey[]> = {
+  "1": ["1", "2", "3", "4"],
+  "2": ["2", "1", "3", "4"],
+  "3": ["3", "2", "1", "4"],
+  "4": ["4", "3", "2", "1"],
+};
+
 export function getCnChampions(bracket: CnBracketKey = CN_DEFAULT_BRACKET): CnChampion[] {
   const out: CnChampion[] = [];
   for (const c of CN.champions) {
-    const e = c.byBracket[bracket];
+    const e = BRACKET_FALLBACK[bracket]
+      .map((key) => c.byBracket[key])
+      .find(Boolean);
     const eu = getChampion(c.slug);
     const newcomer = getNewChampion(c.slug);
     if (!e || (!eu && !newcomer)) continue;

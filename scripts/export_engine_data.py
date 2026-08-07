@@ -237,6 +237,14 @@ def main() -> None:
     # enemy could pick, with the fields needed to derive a threat profile and a
     # real defensive target (damage type, kit mechanics, class, base stats).
     site_meta = {c["name"]: c for c in site.get("champions", [])}
+    # Champions with no leaderboard data yet are absent from site.json, so
+    # their class/role/icon would export EMPTY until the first scrape lands --
+    # Skarner and Yunara both shipped that way and looked broken in every
+    # picker. Release-day fallback; site.json wins the moment it knows them.
+    prerelease_meta = {
+        "Cho'Gath": {"class": "Tank", "role": "Baron",
+                     "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Chogath.png"},
+    }
     roster = {}
     # Forms are deliberately absent here. The roster is the list of champions
     # the site shows and the threat model iterates; a form is a kit, not an
@@ -246,7 +254,7 @@ def main() -> None:
         if c.get("formOf"):
             continue
         name = c["name"]
-        meta = site_meta.get(name, {})
+        meta = site_meta.get(name) or prerelease_meta.get(name, {})
         bs = c.get("baseStats", {})
         roster[name] = {
             "slug": c["slug"], "name": name,

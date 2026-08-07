@@ -8227,25 +8227,39 @@
           {
             "kind": "heal",
             "base": [
-              40,
-              82
+              16
             ],
             "ratios": []
           }
         ],
         "unmodeled": [
-          "Carnivore: on kill, recovers 40-82 health based on level."
+          "+2 per level Health restored (doubled vs champions/turrets/epic monsters); restores 4 + 0.35 per level Mana"
         ]
       },
       "1": {
         "name": "Rupture",
-        "cooldowns": [],
+        "cooldowns": [
+          6.0,
+          6.0,
+          6.0,
+          6.0
+        ],
         "damage": [
           {
             "name": "Rupture",
             "type": "magic",
-            "base": [],
-            "ratios": [],
+            "base": [
+              80,
+              135,
+              190,
+              245
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 100
+              }
+            ],
             "hits": 1,
             "when": "per cast"
           }
@@ -8253,18 +8267,33 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "AOE knock up and slow, magic damage (no numbers given)."
+          "knocks up for 1s, slows by 60% for 1.5s"
         ]
       },
       "2": {
         "name": "Feral Scream",
-        "cooldowns": [],
+        "cooldowns": [
+          12.0,
+          11.0,
+          10.0,
+          9.0
+        ],
         "damage": [
           {
             "name": "Feral Scream",
             "type": "magic",
-            "base": [],
-            "ratios": [],
+            "base": [
+              80,
+              130,
+              180,
+              230
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 70
+              }
+            ],
             "hits": 1,
             "when": "per cast"
           }
@@ -8272,18 +8301,42 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Cone magic damage and silence (no numbers given)."
+          "silences for 1.4/1.6/1.8/2s"
         ]
       },
       "3": {
         "name": "Vorpal Spikes",
-        "cooldowns": [],
+        "cooldowns": [
+          7.0,
+          6.0,
+          5.0,
+          4.0
+        ],
         "damage": [
           {
-            "name": "Vorpal Spikes",
+            "name": "Vorpal Spike",
             "type": "magic",
-            "base": [],
-            "ratios": [],
+            "base": [
+              15,
+              35,
+              55,
+              75
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 30
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": [
+                  2.15,
+                  2.5,
+                  2.85,
+                  3.2
+                ]
+              }
+            ],
             "hits": 1,
             "when": "per auto"
           }
@@ -8291,18 +8344,31 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive: basic attacks release cones of magic damage (no numbers given)."
+          "next 3 attacks launch spikes; slow 30/35/40/45% decaying over 1.5s; +0.5% target max Health per Feast stack; width increases with size; base damage vs minions/monsters capped at 100 (+30% AP)"
         ]
       },
       "4": {
         "name": "Feast",
-        "cooldowns": [],
+        "cooldowns": [
+          80.0,
+          80.0,
+          80.0
+        ],
         "damage": [
           {
             "name": "Feast",
             "type": "true",
-            "base": [],
-            "ratios": [],
+            "base": 300,
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 50
+              },
+              {
+                "stat": "bonusHealth",
+                "pct": 8
+              }
+            ],
             "hits": 1,
             "when": "per cast"
           }
@@ -8310,13 +8376,16 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Execute low health champions, instant kill minions. Each kill increases max health (max 6 stacks). No numbers given."
+          "If kill: gain a Feast stack. Each stack grants 80 max Health, 6% size (max 135%), 4.7 attack range (max 75), 2.5 cast range (max 25). Minion/non-epic stacks capped at 6. Deals 1200 base true damage to minions/monsters."
         ]
       }
     },
     "combo": [
       "1",
       "2",
+      "3",
+      "auto",
+      "auto",
       "auto",
       "4"
     ],

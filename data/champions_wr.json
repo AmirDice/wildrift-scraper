@@ -2628,65 +2628,69 @@
     "name": "Cho'Gath",
     "baseStats": {
       "hp": {
-        "base": 574.0,
-        "perLevel": 80.0,
-        "lvl15": 1694.0
+        "base": 690.0,
+        "perLevel": 128.0,
+        "lvl15": 2482.0
       },
       "hpRegen": {
-        "base": 9.0,
-        "perLevel": 0.0,
-        "lvl15": 9.0
+        "base": 8.0,
+        "perLevel": 0.857,
+        "lvl15": 20.0
       },
       "mana": {
-        "base": 272.0,
-        "perLevel": 40.0,
-        "lvl15": 832.0
+        "base": 380.0,
+        "perLevel": 50.0,
+        "lvl15": 1080.0
       },
       "manaRegen": {
-        "base": 7.0,
-        "perLevel": 0.0,
-        "lvl15": 7.0
+        "base": 12.0,
+        "perLevel": 0.857,
+        "lvl15": 24.0
       },
       "armor": {
-        "base": 29.0,
-        "perLevel": 4.0,
-        "lvl15": 85.0
+        "base": 46.0,
+        "perLevel": 4.5,
+        "lvl15": 109.0
       },
       "mr": {
-        "base": 32.0,
-        "perLevel": 0.0,
-        "lvl15": 32.0
+        "base": 40.0,
+        "perLevel": 2.0,
+        "lvl15": 68.0
       },
       "moveSpeed": {
-        "base": 355.0,
+        "base": 350.0,
         "perLevel": 0.0,
-        "lvl15": 355.0
+        "lvl15": 350.0
       },
       "ad": {
-        "base": 61.0,
+        "base": 62.0,
         "perLevel": 4.0,
-        "lvl15": 117.0
+        "lvl15": 118.0
       },
       "attackSpeed": {
-        "base": 1.0,
-        "perLevel": 0.0,
-        "lvl15": 1.0
+        "base": 0.8,
+        "perLevel": 0.015,
+        "lvl15": 1.01
       }
     },
     "primaryDamage": "magic",
     "physicalAbilities": 0,
-    "magicAbilities": 1,
-    "scalesWith": [],
+    "magicAbilities": 4,
+    "scalesWith": [
+      "ap",
+      "maxHp"
+    ],
     "mechanics": [
       "cc",
-      "heal"
+      "heal",
+      "onHit"
     ],
     "abilities": [
       {
         "slot": "P",
         "name": "Carnivore",
         "cooldowns": [],
-        "text": "Whenever Cho'Gath kills a unit, he recovers 40 - 82 (based on level) Health.",
+        "text": "Killing an enemy restores 16 + 2 per level Health and 4 + 0.35 per level Mana. The values restored are doubled if the unit is a champion, turret, or epic monster.",
         "damageTypes": [],
         "scales": [],
         "tags": [
@@ -2697,13 +2701,18 @@
         "slot": "1",
         "name": "Rupture",
         "cooldowns": [
-          "",
-          "",
-          ""
+          "6",
+          "6",
+          "6",
+          "6"
         ],
-        "text": "Ruptures the ground at target location, popping enemy units into the air, dealing damage and slowing them.",
-        "damageTypes": [],
-        "scales": [],
+        "text": "Ruptures the ground, knocking up enemies for 1 second, dealing 80 / 135 / 190 / 245 ( +100% AP ) magic damage and slowing them by 60% for 1.5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
         "tags": [
           "cc"
         ]
@@ -2712,44 +2721,60 @@
         "slot": "2",
         "name": "Feral Scream",
         "cooldowns": [
-          "",
-          "",
-          ""
+          "12",
+          "11",
+          "10",
+          "9"
         ],
-        "text": "Cho'Gath unleashes a terrible scream at enemies in a cone, dealing magic damage and Silencing enemies for a few seconds.",
+        "text": "Roars, silencing enemies in an area for 1.4 / 1.6 / 1.8 / 2 seconds and dealing 80 / 130 / 180 / 230 ( +70% AP ) magic damage.",
         "damageTypes": [
           "magic"
         ],
-        "scales": [],
-        "tags": []
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
       },
       {
         "slot": "3",
         "name": "Vorpal Spikes",
         "cooldowns": [
-          "",
-          "",
-          ""
+          "7",
+          "6",
+          "5",
+          "4"
         ],
-        "text": "Cho'gath's attacks passively release deadly spines, dealing damage to all enemy units in front of him.",
-        "damageTypes": [],
-        "scales": [],
-        "tags": []
+        "text": "Cho'Gath's next 3 attacks launch spikes that deal 15 / 35 / 55 / 75 ( +30% AP ) magic damage plus magic damage equal to ( 2.15% / 2.5% / 2.85% / 3.2% + 0.5% per Feast stack ) of the target's max Health, slowing them by 30% / 35% / 40% / 45% decaying over 1.5 seconds. Vorpal Spikes' width increases with Cho'Gath's size. Base damage against minions and monsters is capped at 100 ( +30% AP ).",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap",
+          "maxHp"
+        ],
+        "tags": [
+          "onHit"
+        ]
       },
       {
         "slot": "4",
         "name": "Feast",
         "cooldowns": [
-          "",
-          "",
-          ""
+          "80",
+          "80",
+          "80"
         ],
-        "text": "Devours an enemy unit, killng champions at low health and most minions instantly.  Every successful Feast increases Cho'Gath's health. Maximum 6 growths.",
-        "damageTypes": [],
-        "scales": [],
-        "tags": [
-          "heal"
-        ]
+        "text": "Devours an enemy, dealing 300 ( +50% AP + 8% of Cho'Gath's bonus Health ) true damage to champions, or 1200 ( +50% AP + 8% of Cho'Gath's bonus Health ) true damage to minions and monsters. If this kills the target, Cho'Gath gains a stack of Feast. Each stack grants 80 max Health, increases size by 6% up to a maximum of 135%, increases Attack Range by 4.7 up to a maximum of 75, and increases this ability's cast range by 2.5 up to a maximum of 25. Stacks gained from minions and non-epic monsters are capped at 6.",
+        "damageTypes": [
+          "true"
+        ],
+        "scales": [
+          "ap",
+          "maxHp"
+        ],
+        "tags": []
       }
     ]
   },
