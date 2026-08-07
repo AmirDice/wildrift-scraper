@@ -123,11 +123,266 @@ export function AdminConsole() {
 
   return (
     <div className="space-y-8">
+      <OperationsPanel token={token} />
       <UnlimitedAccessPanel token={token} />
       <CodesPanel token={token} />
       <BestBuildsPanel token={token} />
       <CreatorsPanel token={token} />
     </div>
+  );
+}
+
+/* ── operations ──────────────────────────────────────────────────────────── */
+
+interface OpsJob {
+  id: string;
+  op: string;
+  label?: string;
+  args?: Record<string, unknown>;
+  status?: string;
+  startedAt?: number;
+  finishedAt?: number;
+  exitCode?: number | null;
+  lines?: string[];
+  queuedAt?: number;
+}
+
+interface OpsStatus {
+  runnerOnline: boolean;
+  runner: { at: number; host: string; job: { id: string; op: string } | null } | null;
+  current: OpsJob | null;
+  queue: OpsJob[];
+  history: OpsJob[];
+}
+
+// What each button does, in the owner's words. The command lines these map to
+// live in scripts/ops_runner.py -- this list is display only.
+const OPS_BUTTONS: { op: string; label: string; description: string }[] = [
+  {
+    op: "scrape",
+    label: "Scrape leaderboards",
+    description: "Capture every champion board from the phone (skips ones already captured). Needs the phone plugged in with the game on the champion tab.",
+  },
+  {
+    op: "extract-pending",
+    label: "Extract pending captures",
+    description: "Read win rates, names and builds out of any capture session that has not been extracted yet.",
+  },
+  {
+    op: "refresh-data",
+    label: "Refresh site data",
+    description: "Merge finished captures and regenerate everything the site reads: leaderboards, tiers, pulse stats, champion details, engine data.",
+  },
+  {
+    op: "fetch-patches",
+    label: "Fetch patch notes",
+    description: "Pull the official patch archive from Riot and rebuild the champion change history.",
+  },
+  {
+    op: "publish",
+    label: "Publish to the site",
+    description: "Commit the regenerated data files and push, which deploys the site. Data paths only, never code.",
+  },
+  {
+    op: "deploy-advisor",
+    label: "Redeploy advisor",
+    description: "Restage and deploy the build advisor so it serves the freshest data. Run after every refresh.",
+  },
+];
+
+function opsDuration(job: OpsJob): string {
+  if (!job.startedAt) return "";
+  const end = job.finishedAt ?? Date.now() / 1000;
+  const seconds = Math.max(0, Math.round(end - job.startedAt));
+  if (seconds < 90) return `${seconds}s`;
+  return `${Math.round(seconds / 60)}m`;
+}
+
+function OpsStatusBadge({ status }: { status?: string }) {
+  const tone = status === "done" ? "bg-emerald-400/15 text-emerald-300"
+    : status === "running" ? "bg-accent/15 text-accent"
+    : status === "stopped" ? "bg-amber-400/15 text-amber-300"
+    : "bg-bad/15 text-bad";
+  return (
+    <span className={`rounded-md px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${tone}`}>
+      {status ?? "?"}
+    </span>
+  );
+}
+
+/**
+ * One-click pipeline control. The buttons enqueue jobs into KV; the ops
+ * runner on the collection machine executes them and streams the log tail
+ * back. The panel is honest about the machine being off: every button still
+ * works (the queue persists), but the offline banner says nothing will happen
+ * until the runner is started.
+ */
+function OperationsPanel({ token }: { token: string }) {
+  const [status, setStatus] = useState<OpsStatus | null>(null);
+  const [only, setOnly] = useState("");
+  const [note, setNote] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/ops?token=${encodeURIComponent(token)}`);
+      if (res.ok) setStatus(await res.json() as OpsStatus);
+    } catch {
+      /* transient -- next poll wins */
+    }
+  }, [token]);
+
+  // Poll faster while a job is live so the log tail reads like a terminal.
+  useEffect(() => {
+    void load();
+    const running = status?.current?.status === "running";
+    const timer = window.setInterval(() => void load(), running ? 2500 : 6000);
+    return () => window.clearInterval(timer);
+  }, [load, status?.current?.status]);
+
+  const post = async (body: Record<string, unknown>, message: string) => {
+    setBusy(true);
+    setNote(null);
+    try {
+      const res = await fetch(`/api/admin/ops?token=${encodeURIComponent(token)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json() as { error?: string };
+      setNote(res.ok ? message : data.error ?? "The server rejected that.");
+      await load();
+    } catch {
+      setNote("Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const enqueue = (op: string, extra: Record<string, unknown> = {}) =>
+    void post({ action: "enqueue", op, ...extra },
+      status?.runnerOnline ? "Queued." : "Queued. It will run once the runner is started.");
+
+  const current = status?.current ?? null;
+  const running = current?.status === "running";
+
+  return (
+    <section>
+      <div className="flex flex-wrap items-center gap-3">
+        <h2 className="text-xl font-semibold tracking-tight">Operations</h2>
+        {status && (
+          <span className={`rounded-md px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide ${
+            status.runnerOnline ? "bg-emerald-400/15 text-emerald-300" : "bg-bad/15 text-bad"}`}>
+            {status.runnerOnline ? `Runner online · ${status.runner?.host ?? ""}` : "Runner offline"}
+          </span>
+        )}
+        {running && (
+          <button
+            onClick={() => void post({ action: "stop" }, "Stop signal sent.")}
+            disabled={busy}
+            className="rounded-lg bg-bad/85 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-bad disabled:opacity-40"
+          >
+            Stop current job
+          </button>
+        )}
+      </div>
+      <p className="mt-1 max-w-2xl text-sm text-muted">
+        One-click pipeline control. Jobs run on the collection machine through{" "}
+        <code className="text-text">python -m scripts.ops_runner</code>; buttons queue up if it is offline.
+      </p>
+
+      {status && !status.runnerOnline && (
+        <p className="mt-3 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-200">
+          The runner is not reporting. Start it on the collection machine -- queued jobs wait, nothing is lost.
+        </p>
+      )}
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {OPS_BUTTONS.map((entry) => (
+          <Card key={entry.op} className="flex flex-col p-4">
+            <h3 className="text-sm font-semibold">{entry.label}</h3>
+            <p className="mt-1 flex-1 text-xs leading-relaxed text-muted">{entry.description}</p>
+            {entry.op === "scrape" && (
+              <input
+                value={only}
+                onChange={(event) => setOnly(event.target.value)}
+                placeholder="Only these champions (optional): Veigar, Shen"
+                className="mt-3 w-full rounded-lg border border-line bg-white/[0.04] px-3 py-2 text-xs text-text outline-none focus:border-accent/50"
+              />
+            )}
+            <button
+              onClick={() => enqueue(entry.op, entry.op === "scrape" && only.trim() ? { only: only.trim() } : {})}
+              disabled={busy}
+              className="mt-3 rounded-lg bg-accent px-3 py-2 text-xs font-bold text-black transition hover:opacity-90 disabled:opacity-40"
+            >
+              {entry.op === "scrape" && only.trim() ? "Queue targeted scrape" : "Run"}
+            </button>
+          </Card>
+        ))}
+      </div>
+
+      {note && <p className="mt-3 text-xs text-accent">{note}</p>}
+
+      {(current || (status?.queue.length ?? 0) > 0) && (
+        <Card className="mt-4 p-4">
+          {current && (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <OpsStatusBadge status={current.status} />
+                <span className="text-sm font-semibold">{current.label ?? current.op}</span>
+                <span className="text-xs text-faint">
+                  {opsDuration(current)}
+                  {typeof current.exitCode === "number" && current.status !== "done"
+                    ? ` · exit ${current.exitCode}` : ""}
+                </span>
+                {current.status !== "running" && (
+                  <button
+                    onClick={() => void post({ action: "reset" }, "Cleared.")}
+                    className="ml-auto rounded-md px-2 py-1 text-xs text-faint transition hover:text-text"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              {(current.lines?.length ?? 0) > 0 && (
+                <pre className="mt-3 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-lg bg-black/40 p-3 font-mono text-[0.7rem] leading-relaxed text-muted">
+                  {current.lines!.join("\n")}
+                </pre>
+              )}
+            </>
+          )}
+          {(status?.queue.length ?? 0) > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
+              <span className="font-semibold uppercase tracking-wide text-faint">Queued:</span>
+              {status!.queue.map((job) => (
+                <span key={job.id} className="rounded-md border border-line px-2 py-0.5">{job.op}</span>
+              ))}
+              <button
+                onClick={() => void post({ action: "clear-queue" }, "Queue cleared.")}
+                className="rounded-md px-2 py-1 text-faint transition hover:text-bad"
+              >
+                Clear queue
+              </button>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {(status?.history.length ?? 0) > 0 && (
+        <div className="mt-4 divide-y divide-line/60">
+          {status!.history.slice(0, 8).map((job) => (
+            <div key={`${job.id}-${job.finishedAt}`} className="flex flex-wrap items-center gap-3 py-2 text-sm">
+              <OpsStatusBadge status={job.status} />
+              <span className="font-medium">{job.label ?? job.op}</span>
+              <span className="text-xs text-faint">{opsDuration(job)}</span>
+              <span className="ml-auto text-xs text-faint">
+                {job.finishedAt ? new Date(job.finishedAt * 1000).toLocaleString() : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 

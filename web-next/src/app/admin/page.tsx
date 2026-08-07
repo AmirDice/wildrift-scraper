@@ -14,7 +14,8 @@ export default function AdminPage() {
     <Container className="py-10 sm:py-14">
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Admin</h1>
       <p className="mt-1 max-w-2xl text-sm text-muted">
-        Invite links, sponsorship tracking, hand-recorded best-player builds, and the creator directory.
+        Pipeline operations, invite links, sponsorship tracking, hand-recorded best-player builds,
+        and the creator directory.
       </p>
       <div className="mt-8">
         <AdminConsole />

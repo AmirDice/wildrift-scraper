@@ -147,6 +147,24 @@ export async function kvPushCapped(key: string, value: string, cap = 500): Promi
   }
 }
 
+/** Appends to the RIGHT of a list -- with {@link kvList} this makes a FIFO
+ *  queue (oldest entry first), which is what the ops job queue needs. */
+export async function kvRightPush(key: string, value: string): Promise<void> {
+  if (!redis) {
+    const list = memoryLists.get(key) ?? [];
+    list.push(value);
+    memoryLists.set(key, list);
+    return;
+  }
+  try {
+    await redis.rpush(key, value);
+  } catch {
+    const list = memoryLists.get(key) ?? [];
+    list.push(value);
+    memoryLists.set(key, list);
+  }
+}
+
 /** Reads back a capped list written by {@link kvPushCapped}. */
 export async function kvList(key: string, limit = 100): Promise<string[]> {
   if (!redis) return (memoryLists.get(key) ?? []).slice(0, limit);
