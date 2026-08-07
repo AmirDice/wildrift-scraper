@@ -11,215 +11,241 @@
     width: 1600px; height: 1000px;
     margin: 24px auto;
     position: relative;
+    /* Without an isolated stacking context the negative-z background layers
+       paint behind the page canvas and the art never shows. */
+    isolation: isolate;
     overflow: hidden;
-    background:
-      radial-gradient(1100px 620px at 82% -10%, rgba(79, 141, 255, 0.16), transparent 60%),
-      radial-gradient(900px 700px at -8% 110%, rgba(79, 141, 255, 0.10), transparent 55%),
-      linear-gradient(160deg, #0a1120 0%, #070d19 55%, #060a13 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 22px;
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: #e8edf6;
-    padding: 52px 58px 46px;
+    padding: 46px 54px 40px;
     display: flex;
     flex-direction: column;
   }
-  .grain {
-    position: absolute; inset: 0; pointer-events: none; border-radius: 22px;
-    background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);
+  /* The site's own backdrop: the art, the dark overlay, the corner vignette. */
+  .bg-art {
+    position: absolute; inset: 0; z-index: -3;
+    background: url(/ionia2.jpg) center / cover no-repeat;
+  }
+  .bg-dark {
+    position: absolute; inset: 0; z-index: -2;
+    background: linear-gradient(180deg, rgba(7,10,18,0.46) 0%, rgba(7,10,18,0.52) 45%, rgba(7,10,18,0.56) 100%);
+  }
+  .bg-vignette {
+    position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(125% 105% at 50% 45%, transparent 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%);
+  }
+
+  /* The site's liquid glass, sweep frozen at a pleasing position so a
+     screenshot never catches it mid-travel. */
+  .glass {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      linear-gradient(120deg, rgba(79, 141, 255, 0.10), rgba(255, 255, 255, 0.02) 40%, rgba(79, 141, 255, 0.08) 100%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.045) 45%, rgba(255, 255, 255, 0.08) 100%),
+      rgba(10, 14, 24, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.17);
+    backdrop-filter: blur(26px) saturate(200%);
+    border-radius: 18px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 8px 28px -10px rgba(0, 0, 0, 0.55),
+      0 0 26px -6px rgba(79, 141, 255, 0.3);
+  }
+  .glass::after {
+    content: "";
+    position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.13) 48%, rgba(255,255,255,0.045) 52%, transparent 65%);
+    background-size: 260% 100%;
+    background-position: 60% 0;
+  }
+  .glass-thin {
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(18px) saturate(180%);
+    border-radius: 14px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
   }
 
   /* header */
   .head { display: flex; align-items: flex-end; justify-content: space-between; }
-  .brand { font-size: 21px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #4f8dff; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #4f8dff; }
   .brand span { color: #e8edf6; }
-  h1 { font-size: 52px; font-weight: 800; letter-spacing: -0.015em; margin-top: 6px; }
-  .sub { margin-top: 10px; font-size: 17.5px; color: #93a0b6; max-width: 780px; line-height: 1.45; }
-  .sub b { color: #cfd9ea; font-weight: 600; }
-  .heroNums { display: flex; gap: 14px; }
-  .hero {
-    min-width: 148px; padding: 16px 20px 14px;
-    background: rgba(79, 141, 255, 0.09);
-    border: 1px solid rgba(79, 141, 255, 0.28);
-    border-radius: 14px; text-align: center;
-    box-shadow: 0 0 34px rgba(79, 141, 255, 0.13) inset, 0 6px 22px rgba(0, 0, 0, 0.25);
-  }
-  .hero .v { font-size: 33px; font-weight: 800; letter-spacing: -0.01em; color: #ffffff; font-variant-numeric: tabular-nums; }
-  .hero .k { margin-top: 3px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #7f9fd8; }
+  h1 { font-size: 48px; font-weight: 800; letter-spacing: -0.015em; margin-top: 4px; text-shadow: 0 2px 18px rgba(0,0,0,0.45); }
+  .sub { margin-top: 8px; font-size: 17px; color: #b6c1d4; max-width: 760px; line-height: 1.45; text-shadow: 0 1px 10px rgba(0,0,0,0.5); }
+  .sub b { color: #e8edf6; font-weight: 600; }
+  .heroNums { display: flex; gap: 12px; }
+  .hero { min-width: 138px; padding: 15px 18px 13px; text-align: center; }
+  .hero .v { font-size: 30px; font-weight: 800; color: #ffffff; font-variant-numeric: tabular-nums; }
+  .hero .k { margin-top: 2px; font-size: 11px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #9fb6e2; }
 
-  /* grid */
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 30px; flex: 1; }
-  .card {
-    background: rgba(255, 255, 255, 0.045);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 16px;
-    padding: 18px 20px 16px;
-    display: flex; flex-direction: column;
-  }
-  .card.blue { background: rgba(79, 141, 255, 0.10); border-color: rgba(79, 141, 255, 0.30); }
-  .card.up { border-color: rgba(93, 214, 162, 0.38); background: linear-gradient(180deg, rgba(93, 214, 162, 0.07), rgba(255,255,255,0.03)); }
-  .card.down { border-color: rgba(242, 112, 138, 0.35); background: linear-gradient(180deg, rgba(242, 112, 138, 0.06), rgba(255,255,255,0.03)); }
-  .label { font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7f8a9e; }
-  .card.blue .label { color: #8fb1ee; }
+  /* main grid */
+  .main { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 26px; flex: 1; }
+  .card { padding: 18px 20px 16px; display: flex; flex-direction: column; }
+  .label { font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #9aa7bd; }
+  .label.green { color: #6fdcae; }
+  .label.red { color: #f58aa0; }
 
-  .champRow { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
-  .portrait {
-    width: 64px; height: 64px; border-radius: 12px;
-    border: 2px solid rgba(79, 141, 255, 0.55);
-    object-fit: cover; background: #0d1526;
-  }
-  .big { font-size: 34px; font-weight: 800; letter-spacing: -0.01em; line-height: 1; font-variant-numeric: tabular-nums; }
-  .big.good { color: #5dd6a2; }
-  .big.bad { color: #f2708a; }
-  .who { font-size: 17px; font-weight: 700; margin-top: 5px; }
-  .runners { margin-top: auto; padding-top: 10px; font-size: 13px; color: #7f8a9e; line-height: 1.55; }
-  .runners b { color: #aeb9cc; font-weight: 600; font-variant-numeric: tabular-nums; }
+  /* top/bottom 5 lists */
+  .list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .lrow { display: flex; align-items: center; gap: 12px; padding: 7px 10px; }
+  .lrow .rank { width: 22px; font-size: 15px; font-weight: 800; color: #7f8a9e; font-variant-numeric: tabular-nums; }
+  .lrow img { width: 46px; height: 46px; border-radius: 10px; border: 1.5px solid rgba(79,141,255,0.5); object-fit: cover; background: #0d1526; }
+  .lrow .n { flex: 1; font-size: 18px; font-weight: 700; }
+  .lrow .wr { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .wr.good { color: #5dd6a2; }
+  .wr.bad { color: #f2708a; }
+  .lrow.first { border: 1px solid rgba(93,214,162,0.35); background: rgba(93,214,162,0.08); border-radius: 12px; }
+  .lrow.worst { border: 1px solid rgba(242,112,138,0.30); background: rgba(242,112,138,0.07); border-radius: 12px; }
 
-  .bigText { font-size: 27px; font-weight: 800; line-height: 1.08; margin-top: 12px; }
-  .pct { font-size: 16px; font-weight: 700; color: #4f8dff; margin-top: 5px; font-variant-numeric: tabular-nums; }
+  /* right column stack */
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+  .mover { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+  .mover img { width: 56px; height: 56px; border-radius: 12px; border: 2px solid rgba(79,141,255,0.55); object-fit: cover; background: #0d1526; }
+  .mover .d { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .mover .d.up { color: #5dd6a2; }
+  .mover .d.down { color: #f2708a; }
+  .mover .who { font-size: 16.5px; font-weight: 700; margin-top: 2px; }
+  .mover .tier { font-size: 13px; color: #b6c1d4; font-weight: 600; margin-top: 1px; }
 
-  .bars { margin-top: 12px; display: flex; flex-direction: column; gap: 7px; }
-  .bar { display: grid; grid-template-columns: 74px 1fr 46px; align-items: center; gap: 9px; font-size: 13.5px; }
-  .bar .n { color: #aeb9cc; font-weight: 600; }
-  .bar .track { height: 9px; border-radius: 5px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
-  .bar .fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, #2f5fb3, #4f8dff); }
-  .bar .v { text-align: right; color: #cfd9ea; font-weight: 700; font-variant-numeric: tabular-nums; }
+  /* bottom row */
+  .bottom { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .gods { display: flex; gap: 13px; margin-top: 12px; align-items: flex-start; }
+  .god { text-align: center; width: 74px; }
+  .god img { width: 58px; height: 58px; border-radius: 12px; border: 2px solid rgba(255, 215, 110, 0.65); object-fit: cover; background: #0d1526; box-shadow: 0 0 16px -4px rgba(255, 215, 110, 0.45); }
+  .god .n { font-size: 11.5px; font-weight: 700; color: #ffd76e; margin-top: 5px; line-height: 1.15; }
+  .champRow { display: flex; align-items: center; gap: 13px; margin-top: 12px; }
+  .portrait { width: 56px; height: 56px; border-radius: 12px; border: 2px solid rgba(79,141,255,0.55); object-fit: cover; background: #0d1526; }
+  .big { font-size: 30px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .who2 { font-size: 15.5px; font-weight: 700; margin-top: 4px; }
+  .who2 span { color: #9aa7bd; font-weight: 600; }
+  .runners { margin-top: auto; padding-top: 9px; font-size: 12.5px; color: #9aa7bd; line-height: 1.5; }
+  .runners b { color: #cfd9ea; font-weight: 600; font-variant-numeric: tabular-nums; }
 
   /* footer */
-  .foot {
-    margin-top: 26px; padding-top: 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.09);
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 14.5px; color: #7f8a9e;
-  }
+  .foot { margin-top: 22px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #b6c1d4; }
   .foot .site { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; color: #4f8dff; }
 </style>
 </head>
 <body>
 <div class="slide">
-  <div class="grain"></div>
+  <div class="bg-art"></div>
+  <div class="bg-dark"></div>
+  <div class="bg-vignette"></div>
 
   <div class="head">
     <div>
       <div class="brand">WrTrue<span>Meta</span></div>
       <h1>The EU Top-Ladder Census</h1>
       <p class="sub">We read the <b>top 50 players on every champion's EU leaderboard</b>, one by one,
-        straight from the game: their win rates, their runes, their builds. This is what the
-        top of the ladder actually plays on <b>patch 7.2b</b>.</p>
+        straight from the game. This is who actually wins at the top of the ladder on <b>patch 7.2b</b>.</p>
     </div>
     <div class="heroNums">
-      <div class="hero"><div class="v">140</div><div class="k">Champions</div></div>
-      <div class="hero"><div class="v">6,813</div><div class="k">Top players</div></div>
-      <div class="hero"><div class="v">518,280</div><div class="k">Ranked games</div></div>
+      <div class="hero glass-thin"><div class="v">140</div><div class="k">Champions</div></div>
+      <div class="hero glass-thin"><div class="v">6,813</div><div class="k">Top players</div></div>
+      <div class="hero glass-thin"><div class="v">518,280</div><div class="k">Ranked games</div></div>
     </div>
   </div>
 
-  <div class="grid">
-    <!-- row 1: champions -->
-    <div class="card up">
-      <div class="label">Highest win rate</div>
-      <div class="champRow">
-        <img class="portrait" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png" alt="">
-        <div><div class="big good">60.2%</div><div class="who">Hecarim</div></div>
+  <div class="main">
+    <div class="card glass">
+      <div class="label green">Highest win rates</div>
+      <div class="list">
+        <div class="lrow first"><span class="rank">1</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png" alt=""><span class="n">Hecarim</span><span class="wr good">60.2%</span></div>
+        <div class="lrow"><span class="rank">2</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10084.png" alt=""><span class="n">Nidalee</span><span class="wr good">56.5%</span></div>
+        <div class="lrow"><span class="rank">3</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10027.png" alt=""><span class="n">Nilah</span><span class="wr good">55.7%</span></div>
+        <div class="lrow"><span class="rank">4</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10103.png" alt=""><span class="n">Kassadin</span><span class="wr good">55.6%</span></div>
+        <div class="lrow"><span class="rank">5</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10025.png" alt=""><span class="n">Twisted Fate</span><span class="wr good">54.3%</span></div>
       </div>
-      <div class="runners">Nidalee <b>56.5%</b> &nbsp;&middot;&nbsp; Nilah <b>55.7%</b></div>
     </div>
 
-    <div class="card down">
-      <div class="label">Lowest win rate</div>
-      <div class="champRow">
-        <img class="portrait" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10020.png" alt="">
-        <div><div class="big bad">43.7%</div><div class="who">Yuumi</div></div>
+    <div class="card glass">
+      <div class="label red">Lowest win rates</div>
+      <div class="list">
+        <div class="lrow worst"><span class="rank">1</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10020.png" alt=""><span class="n">Yuumi</span><span class="wr bad">43.7%</span></div>
+        <div class="lrow"><span class="rank">2</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10140.png" alt=""><span class="n">Rumble</span><span class="wr bad">45.6%</span></div>
+        <div class="lrow"><span class="rank">3</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10116.png" alt=""><span class="n">Rell</span><span class="wr bad">46.3%</span></div>
+        <div class="lrow"><span class="rank">4</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10001.png" alt=""><span class="n">Garen</span><span class="wr bad">46.7%</span></div>
+        <div class="lrow"><span class="rank">5</span><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10051.png" alt=""><span class="n">Xayah</span><span class="wr bad">47.0%</span></div>
       </div>
-      <div class="runners">Rumble <b>45.6%</b> &nbsp;&middot;&nbsp; Rell <b>46.3%</b></div>
     </div>
 
-    <div class="card">
+    <div class="stack">
+      <div class="card glass" style="flex:1">
+        <div class="label green">Biggest riser since June</div>
+        <div class="mover">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10027.png" alt="">
+          <div>
+            <div class="d up">+5.6%</div>
+            <div class="who">Nilah</div>
+            <div class="tier">climbed A tier to GOD tier</div>
+          </div>
+        </div>
+      </div>
+      <div class="card glass" style="flex:1">
+        <div class="label red">Biggest faller since June</div>
+        <div class="mover">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10146.png" alt="">
+          <div>
+            <div class="d down">-4.5%</div>
+            <div class="who">Taliyah</div>
+            <div class="tier">dropped GOD tier to A tier</div>
+          </div>
+        </div>
+      </div>
+      <div class="card glass" style="flex:1">
+        <div class="label">The one-trick champion</div>
+        <div class="mover">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png" alt="">
+          <div>
+            <div class="d" style="color:#e8edf6">Hecarim</div>
+            <div class="tier">the most one-trick-dominated board in EU,<br>and the highest win rate. Not a coincidence.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="card glass">
+      <div class="label" style="color:#ffd76e">The GOD tier, right now</div>
+      <div class="gods">
+        <div class="god"><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png" alt=""><div class="n">Hecarim</div></div>
+        <div class="god"><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10084.png" alt=""><div class="n">Nidalee</div></div>
+        <div class="god"><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10027.png" alt=""><div class="n">Nilah</div></div>
+        <div class="god"><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10103.png" alt=""><div class="n">Kassadin</div></div>
+        <div class="god"><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10025.png" alt=""><div class="n">Twisted Fate</div></div>
+        <div class="god"><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10041.png" alt=""><div class="n">Kayle</div></div>
+        <div class="god"><img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10064.png" alt=""><div class="n">Rammus</div></div>
+      </div>
+    </div>
+
+    <div class="card glass">
       <div class="label">Most played</div>
       <div class="champRow">
         <img class="portrait" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10095.png" alt="">
-        <div><div class="big">5,695</div><div class="who">Katarina <span style="color:#7f8a9e;font-weight:600">games</span></div></div>
+        <div><div class="big">5,695</div><div class="who2">Katarina <span>games</span></div></div>
       </div>
       <div class="runners">Irelia <b>5,289</b> &nbsp;&middot;&nbsp; Fiddlesticks <b>5,035</b></div>
     </div>
 
-    <div class="card">
+    <div class="card glass">
       <div class="label">Least played</div>
       <div class="champRow">
         <img class="portrait" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10060.png" alt="">
-        <div><div class="big">2,138</div><div class="who">Corki <span style="color:#7f8a9e;font-weight:600">games</span></div></div>
+        <div><div class="big">2,138</div><div class="who2">Corki <span>games</span></div></div>
       </div>
       <div class="runners">Sivir <b>2,206</b> &nbsp;&middot;&nbsp; Mel <b>2,330</b></div>
     </div>
-
-    <!-- row 2: the meta -->
-    <div class="card blue">
-      <div class="label">Most popular keystone</div>
-      <div class="bigText">Conqueror</div>
-      <div class="pct">1 in 5 top players runs it</div>
-      <div class="runners">Lethal Tempo <b>701</b> &nbsp;&middot;&nbsp; Ice Overlord <b>696</b> &nbsp;&middot;&nbsp; Electrocute <b>622</b></div>
-    </div>
-
-    <div class="card blue">
-      <div class="label">Most popular rune tree</div>
-      <div class="bigText">Resolve</div>
-      <div class="pct">8,838 runes slotted across all pages</div>
-      <div class="bars">
-        <div class="bar"><span class="n">Resolve</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="v">8.8k</span></div>
-        <div class="bar"><span class="n">Precision</span><span class="track"><span class="fill" style="width:93%"></span></span><span class="v">8.2k</span></div>
-        <div class="bar"><span class="n">Sorcery</span><span class="track"><span class="fill" style="width:67%"></span></span><span class="v">5.9k</span></div>
-        <div class="bar"><span class="n">Domination</span><span class="track"><span class="fill" style="width:55%"></span></span><span class="v">4.9k</span></div>
-      </div>
-    </div>
-
-    <div class="card blue">
-      <div class="label">Most used minor rune</div>
-      <div class="bigText">Bone Plating</div>
-      <div class="pct">on 1 in 3 top players</div>
-      <div class="runners">Cut Down <b>1,823</b> &nbsp;&middot;&nbsp; Sudden Impact <b>1,650</b> &nbsp;&middot;&nbsp; Transcendence <b>1,630</b></div>
-    </div>
-
-    <div class="card blue">
-      <div class="label">Most built item</div>
-      <div class="bigText">Rabadon's Deathcap</div>
-      <div class="pct">built by 2,157 of 6,988 players</div>
-      <div class="runners">Spellslinger's Shoes <b>2,076</b> &nbsp;&middot;&nbsp; Infinity Orb <b>1,558</b></div>
-    </div>
-
-    <!-- row 3: flavor -->
-    <div class="card">
-      <div class="label">Strongest role</div>
-      <div class="bigText">Jungle</div>
-      <div class="pct">53.8% average win rate</div>
-      <div class="bars">
-        <div class="bar"><span class="n">Jungle</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="v">53.8</span></div>
-        <div class="bar"><span class="n">Baron</span><span class="track"><span class="fill" style="width:76%"></span></span><span class="v">52.0</span></div>
-        <div class="bar"><span class="n">Mid</span><span class="track"><span class="fill" style="width:75%"></span></span><span class="v">51.9</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="label">Everyone takes Flash</div>
-      <div class="bigText">94%</div>
-      <div class="pct">6,563 of 6,988 players run Flash</div>
-      <div class="runners">Ignite <b>2,339</b> &nbsp;&middot;&nbsp; Smite <b>1,351</b> &nbsp;&middot;&nbsp; Barrier <b>1,102</b></div>
-    </div>
-
-    <div class="card" style="grid-column: span 2;">
-      <div class="label">The marathon award</div>
-      <div class="champRow">
-        <img class="portrait" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10096.png" alt="">
-        <div>
-          <div class="big">821 games</div>
-          <div class="who">on Singed, on one account, this season <span style="color:#7f8a9e;font-weight:600">(47.1% win rate)</span></div>
-        </div>
-      </div>
-      <div class="runners">Legendary queue record: 245 games on Taliyah</div>
-    </div>
   </div>
 
-  <div class="foot">
-    <div>EU leaderboards, top 50 per champion &middot; collected August 2026 &middot; patch 7.2b</div>
+  <div class="foot glass-thin">
+    <div>EU leaderboards, top 50 per champion &middot; win rates from each player's own ranked record &middot; collected August 2026 &middot; patch 7.2b</div>
     <div class="site">wrtruemeta.com</div>
   </div>
 </div>
