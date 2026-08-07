@@ -117,7 +117,10 @@
   .bar { display: grid; grid-template-columns: 82px 1fr 44px; align-items: center; gap: 8px; font-size: 13px; }
   .bar .n { color: #cfd9ea; font-weight: 600; }
   .bar .track { height: 9px; border-radius: 5px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
-  .bar .fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, #2f5fb3, #4f8dff); }
+  /* both are spans: without display:block the width on .fill is ignored
+     and every bar renders empty */
+  .bar .track { display: block; }
+  .bar .fill { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, #2f5fb3, #4f8dff); }
   .bar .v { text-align: right; color: #ffffff; font-weight: 700; font-variant-numeric: tabular-nums; }
   .cardNote { margin-top: 9px; font-size: 11.5px; color: #9aa7bd; line-height: 1.45; }
 
