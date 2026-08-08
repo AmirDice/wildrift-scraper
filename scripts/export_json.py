@@ -43,6 +43,24 @@ OUT = ROOT / "web-next" / "src" / "data" / "site.json"
 PLAYERS_OUT = ROOT / "web-next" / "public" / "players.json"
 TOP_N = 50
 
+# Per-region inputs and outputs. EU keeps every unsuffixed path so the
+# existing pipeline, its history and its consumers are untouched.
+REGION_FILES = {
+    "eu": {
+        "csv": ROOT / "data" / "winrates.csv",
+        "site": ROOT / "web-next" / "src" / "data" / "site.json",
+        "players": ROOT / "web-next" / "public" / "players.json",
+        "history": ROOT / "data" / "history" / "eu",
+    },
+    "na": {
+        "csv": ROOT / "data" / "winrates_na.csv",
+        "site": ROOT / "web-next" / "src" / "data" / "site_na.json",
+        "players": ROOT / "web-next" / "public" / "players-na.json",
+        "history": ROOT / "data" / "history" / "na",
+    },
+}
+REGION_CSV: Path | None = None   # None = EU default inside data_loader
+
 
 HISTORY = ROOT / "data" / "history" / "eu"
 
@@ -78,7 +96,8 @@ def _save_snapshot(champions: list[dict], collected_on: str | None) -> None:
         },
     }
     (HISTORY / f"{d}.json").write_text(json.dumps(snap, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"  snapshot: data/history/eu/{d}.json ({len(snap['champions'])} champions)")
+    print(f"  snapshot: {HISTORY.relative_to(ROOT).as_posix()}/{d}.json "
+          f"({len(snap['champions'])} champions)")
 
 
 def _f(v, ndigits: int = 1):
@@ -95,9 +114,9 @@ def _i(v):
 
 
 def build() -> dict:
-    df = load_leaderboard()
+    df = load_leaderboard(csv_path=REGION_CSV)
     if df.empty:
-        raise SystemExit("data/winrates.csv is empty — scrape first.")
+        raise SystemExit(f"{(REGION_CSV or 'data/winrates.csv')} is empty — scrape first.")
 
     summary = champion_summary(df)
     summary = summary[summary["weighted_winrate"].notna()].copy()
@@ -380,7 +399,7 @@ def build_players() -> dict:
     # (ranks stay contiguous) with the name hidden -- unlike every statistic,
     # which drops them entirely. See web/integrity.py.
 
-    df = load_leaderboard(unfiltered=True)
+    df = load_leaderboard(unfiltered=True, csv_path=REGION_CSV)
     if df.empty:
         return {}
     top = df[df["rank"] <= TOP_N].copy()
@@ -400,6 +419,21 @@ def build_players() -> dict:
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--region", default="eu", choices=sorted(REGION_FILES),
+                    help="Which region's winrates to export (default: eu)")
+    args = ap.parse_args()
+
+    global OUT, PLAYERS_OUT, HISTORY, REGION_CSV
+    files = REGION_FILES[args.region]
+    # EU passes None so data_loader keeps its own default; a region passes its
+    # CSV explicitly.
+    REGION_CSV = None if args.region == "eu" else files["csv"]
+    OUT, PLAYERS_OUT, HISTORY = files["site"], files["players"], files["history"]
+    print(f"region: {args.region.upper()}")
+
     data = build()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")

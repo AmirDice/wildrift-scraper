@@ -4,8 +4,14 @@
     {
       "name": "web-next",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "web-next"],
-      "port": 3000
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "web-next"
+      ],
+      "port": 3000,
+      "autoPort": false
     }
   ]
 }

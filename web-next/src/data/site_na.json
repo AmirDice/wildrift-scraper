@@ -1,0 +1,4982 @@
+{
+  "collectedOn": "August 8, 2026",
+  "movementSince": null,
+  "roles": [
+    "Baron",
+    "Jungle",
+    "Mid",
+    "Dragon",
+    "Support"
+  ],
+  "nChampions": 74,
+  "nPlayers": 3643,
+  "wrOffset": -9.7,
+  "champions": [
+    {
+      "name": "Hecarim",
+      "slug": "hecarim",
+      "role": "Jungle",
+      "class": "Bruiser",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 58.7,
+      "meanWr": 60.5,
+      "maxWr": 95.5,
+      "winrateStd": 6.18,
+      "medianGames": 53,
+      "totalGames": 2898,
+      "nPlayers": 49,
+      "medianMastery": 11812,
+      "maxScore": 14536,
+      "otpScore": 5.6,
+      "isOtp": false,
+      "topPlayer": "GxT MasterClass",
+      "tier": "GOD",
+      "tierCss": "tier-god",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 8.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Hecarim_0.jpg",
+      "bestPlayer": {
+        "player": "Flame",
+        "rank": 50,
+        "confidence_wr": 78.2
+      },
+      "pools": {
+        "25": {
+          "wr": 58.6,
+          "nPlayers": 25,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 59.5,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 61.9,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Nilah",
+      "slug": "nilah",
+      "role": "Jungle",
+      "class": "Marksman",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 58.3,
+      "meanWr": 61.6,
+      "maxWr": 93.3,
+      "winrateStd": 7.77,
+      "medianGames": 56,
+      "totalGames": 3150,
+      "nPlayers": 50,
+      "medianMastery": 9736,
+      "maxScore": 15463,
+      "otpScore": 6.8,
+      "isOtp": true,
+      "topPlayer": "NXT Diplomata",
+      "tier": "GOD",
+      "tierCss": "tier-god",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 13.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10027.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nilah_0.jpg",
+      "bestPlayer": {
+        "player": "The promised愛",
+        "rank": 42,
+        "confidence_wr": 78.7
+      },
+      "pools": {
+        "25": {
+          "wr": 59.5,
+          "nPlayers": 25,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 55.8,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 53.3,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Sona",
+      "slug": "sona",
+      "role": "Support",
+      "class": "Enchanter",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 54.1,
+      "meanWr": 55.8,
+      "maxWr": 80.0,
+      "winrateStd": 4.26,
+      "medianGames": 78,
+      "totalGames": 3942,
+      "nPlayers": 49,
+      "medianMastery": 11369,
+      "maxScore": 17121,
+      "otpScore": 4.2,
+      "isOtp": false,
+      "topPlayer": "lune",
+      "tier": "GOD",
+      "tierCss": "tier-god",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 11.2,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10047.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sona_0.jpg",
+      "bestPlayer": {
+        "player": "DOPAMINA",
+        "rank": 10,
+        "confidence_wr": 67.1
+      },
+      "pools": {
+        "25": {
+          "wr": 53.4,
+          "nPlayers": 25,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 55.2,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 51.9,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Gwen",
+      "slug": "gwen",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 54.0,
+      "meanWr": 55.4,
+      "maxWr": 80.4,
+      "winrateStd": 4.22,
+      "medianGames": 95,
+      "totalGames": 5004,
+      "nPlayers": 50,
+      "medianMastery": 11303,
+      "maxScore": 16923,
+      "otpScore": 8.9,
+      "isOtp": false,
+      "topPlayer": "SÓ JOGO COM PEEL",
+      "tier": "GOD",
+      "tierCss": "tier-god",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 11.1,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10054.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Gwen_0.jpg",
+      "bestPlayer": {
+        "player": "饮尽香茶小蜜雪 今...",
+        "rank": 32,
+        "confidence_wr": 67.5
+      },
+      "pools": {
+        "25": {
+          "wr": 55.1,
+          "nPlayers": 25,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 53.3,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 52.4,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Kayle",
+      "slug": "kayle",
+      "role": "Baron",
+      "class": "Marksman",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 53.1,
+      "meanWr": 55.4,
+      "maxWr": 97.4,
+      "winrateStd": 5.61,
+      "medianGames": 61,
+      "totalGames": 4336,
+      "nPlayers": 49,
+      "medianMastery": 8953,
+      "maxScore": 16665,
+      "otpScore": 57.6,
+      "isOtp": true,
+      "topPlayer": "OUTKASTA",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 10.7,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10041.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kayle_0.jpg",
+      "bestPlayer": {
+        "player": "神WeaponJT YT光",
+        "rank": 5,
+        "confidence_wr": 86.5
+      },
+      "pools": {
+        "25": {
+          "wr": 53.5,
+          "nPlayers": 24,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 54.4,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 52.5,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Ahri",
+      "slug": "ahri",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 52.8,
+      "meanWr": 54.5,
+      "maxWr": 87.8,
+      "winrateStd": 4.01,
+      "medianGames": 71,
+      "totalGames": 3874,
+      "nPlayers": 46,
+      "medianMastery": 11168,
+      "maxScore": 16834,
+      "otpScore": 7.9,
+      "isOtp": false,
+      "topPlayer": "Time as Twilight",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 7.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10038.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_0.jpg",
+      "bestPlayer": {
+        "player": "Time as Twilight",
+        "rank": 1,
+        "confidence_wr": 74.5
+      },
+      "pools": {
+        "25": {
+          "wr": 52.5,
+          "nPlayers": 24,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 53.8,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 55.7,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Amumu",
+      "slug": "amumu",
+      "role": "Jungle",
+      "class": "Tank",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 52.3,
+      "meanWr": 53.2,
+      "maxWr": 76.7,
+      "winrateStd": 0.44,
+      "medianGames": 88,
+      "totalGames": 4407,
+      "nPlayers": 49,
+      "medianMastery": 8953,
+      "maxScore": 12299,
+      "otpScore": 3.7,
+      "isOtp": false,
+      "topPlayer": "Ricardo",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 6.4,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10004.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Amumu_0.jpg",
+      "bestPlayer": {
+        "player": "T C A B R A",
+        "rank": 32,
+        "confidence_wr": 62.3
+      },
+      "pools": {
+        "25": {
+          "wr": 50.8,
+          "nPlayers": 24,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 52.1,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 51.9,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Pantheon",
+      "slug": "pantheon",
+      "role": "Jungle",
+      "class": "Assassin",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 52.3,
+      "meanWr": 54.6,
+      "maxWr": 84.0,
+      "winrateStd": 4.01,
+      "medianGames": 93,
+      "totalGames": 5555,
+      "nPlayers": 49,
+      "medianMastery": 10719,
+      "maxScore": 17013,
+      "otpScore": 14.8,
+      "isOtp": false,
+      "topPlayer": "Lu Yunfei",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 10.2,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10030.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Pantheon_0.jpg",
+      "bestPlayer": {
+        "player": "NecroticDreams",
+        "rank": 33,
+        "confidence_wr": 69.7
+      },
+      "pools": {
+        "25": {
+          "wr": 52.9,
+          "nPlayers": 25,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 55.1,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 52.6,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Jax",
+      "slug": "jax",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 52.3,
+      "meanWr": 54.6,
+      "maxWr": 80.8,
+      "winrateStd": 4.24,
+      "medianGames": 88,
+      "totalGames": 4650,
+      "nPlayers": 50,
+      "medianMastery": 9522,
+      "maxScore": 15522,
+      "otpScore": 6.5,
+      "isOtp": false,
+      "topPlayer": "OwenLi",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 10.1,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10040.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jax_0.jpg",
+      "bestPlayer": {
+        "player": "Tryy and blessed",
+        "rank": 20,
+        "confidence_wr": 70.3
+      },
+      "pools": {
+        "25": {
+          "wr": 52.7,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 50.4,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 51.9,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Shyvana",
+      "slug": "shyvana",
+      "role": "Jungle",
+      "class": "Bruiser",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 52.1,
+      "meanWr": 54.4,
+      "maxWr": 89.7,
+      "winrateStd": 5.21,
+      "medianGames": 64,
+      "totalGames": 3902,
+      "nPlayers": 50,
+      "medianMastery": 9706,
+      "maxScore": 16811,
+      "otpScore": 17.4,
+      "isOtp": false,
+      "topPlayer": "Goblous",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 9.9,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10049.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Shyvana_0.jpg",
+      "bestPlayer": {
+        "player": "Black Sun",
+        "rank": 40,
+        "confidence_wr": 73.6
+      },
+      "pools": {
+        "25": {
+          "wr": 51.1,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 51.5,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 53.4,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Ambessa",
+      "slug": "ambessa",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 52.0,
+      "meanWr": 54.3,
+      "maxWr": 87.2,
+      "winrateStd": 4.54,
+      "medianGames": 50,
+      "totalGames": 3137,
+      "nPlayers": 49,
+      "medianMastery": 10547,
+      "maxScore": 14842,
+      "otpScore": 18.3,
+      "isOtp": false,
+      "topPlayer": "Alejo",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 12.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10082.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ambessa_0.jpg",
+      "bestPlayer": {
+        "player": "YUU",
+        "rank": 4,
+        "confidence_wr": 74.8
+      },
+      "pools": {
+        "25": {
+          "wr": 53.5,
+          "nPlayers": 25,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 53.3,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 55.4,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Jhin",
+      "slug": "jhin",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 52.0,
+      "meanWr": 54.2,
+      "maxWr": 93.8,
+      "winrateStd": 4.74,
+      "medianGames": 77,
+      "totalGames": 4666,
+      "nPlayers": 50,
+      "medianMastery": 11047,
+      "maxScore": 18180,
+      "otpScore": 16.5,
+      "isOtp": false,
+      "topPlayer": "FHG Aomine",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 10.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10022.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jhin_0.jpg",
+      "bestPlayer": {
+        "player": "半夏う晴天",
+        "rank": 45,
+        "confidence_wr": 73.4
+      },
+      "pools": {
+        "25": {
+          "wr": 51.8,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 50.5,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 52.2,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Rammus",
+      "slug": "rammus",
+      "role": "Jungle",
+      "class": "Tank",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 51.9,
+      "meanWr": 52.7,
+      "maxWr": 77.0,
+      "winrateStd": 0.0,
+      "medianGames": 72,
+      "totalGames": 3967,
+      "nPlayers": 48,
+      "medianMastery": 9257,
+      "maxScore": 14688,
+      "otpScore": 13.0,
+      "isOtp": false,
+      "topPlayer": "Kick Me",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 6.5,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10064.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rammus_0.jpg",
+      "bestPlayer": {
+        "player": "Maax W PB",
+        "rank": 32,
+        "confidence_wr": 65.1
+      },
+      "pools": {
+        "25": {
+          "wr": 52.4,
+          "nPlayers": 24,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 50.6,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 51.7,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Evelynn",
+      "slug": "evelynn",
+      "role": "Jungle",
+      "class": "Mage",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 51.8,
+      "meanWr": 54.2,
+      "maxWr": 93.8,
+      "winrateStd": 4.97,
+      "medianGames": 70,
+      "totalGames": 5366,
+      "nPlayers": 48,
+      "medianMastery": 9674,
+      "maxScore": 14039,
+      "otpScore": 100.0,
+      "isOtp": true,
+      "topPlayer": "Seductive shadow",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 13.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10029.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Evelynn_0.jpg",
+      "bestPlayer": {
+        "player": "Hurt Me Plenty",
+        "rank": 22,
+        "confidence_wr": 67.9
+      },
+      "pools": {
+        "25": {
+          "wr": 52.6,
+          "nPlayers": 24,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 50.9,
+          "nPlayers": 9,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 47.1,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Annie",
+      "slug": "annie",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 2,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 51.7,
+      "meanWr": 53.4,
+      "maxWr": 82.8,
+      "winrateStd": 0.0,
+      "medianGames": 76,
+      "totalGames": 3869,
+      "nPlayers": 50,
+      "medianMastery": 8178,
+      "maxScore": 13294,
+      "otpScore": 6.2,
+      "isOtp": false,
+      "topPlayer": "RCTL伯爵哥哥",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "GOD",
+      "tierRoleCss": "tier-god",
+      "skillSpread": 8.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10036.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Annie_0.jpg",
+      "bestPlayer": {
+        "player": "Marethyu",
+        "rank": 12,
+        "confidence_wr": 65.5
+      },
+      "pools": {
+        "25": {
+          "wr": 51.4,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 51.3,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 50.1,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Zilean",
+      "slug": "zilean",
+      "role": "Support",
+      "class": "Enchanter",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 51.6,
+      "meanWr": 54.0,
+      "maxWr": 88.2,
+      "winrateStd": 3.0,
+      "medianGames": 57,
+      "totalGames": 3455,
+      "nPlayers": 49,
+      "medianMastery": 7929,
+      "maxScore": 14148,
+      "otpScore": 20.5,
+      "isOtp": false,
+      "topPlayer": "osaka",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 7.5,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10080.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zilean_0.jpg",
+      "bestPlayer": {
+        "player": "Yulang 桜",
+        "rank": 18,
+        "confidence_wr": 67.4
+      },
+      "pools": {
+        "25": {
+          "wr": 50.7,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 51.2,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 49.6,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Kai'Sa",
+      "slug": "kaisa",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 51.6,
+      "meanWr": 53.3,
+      "maxWr": 82.5,
+      "winrateStd": 4.75,
+      "medianGames": 63,
+      "totalGames": 4024,
+      "nPlayers": 49,
+      "medianMastery": 10904,
+      "maxScore": 14846,
+      "otpScore": 86.8,
+      "isOtp": true,
+      "topPlayer": "minimeow",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 9.9,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10026.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kaisa_0.jpg",
+      "bestPlayer": {
+        "player": "minimeow",
+        "rank": 1,
+        "confidence_wr": 68.0
+      },
+      "pools": {
+        "25": {
+          "wr": 51.6,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 50.9,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 52.8,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Jarvan IV",
+      "slug": "jarvan-iv",
+      "role": "Jungle",
+      "class": "Bruiser",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 51.4,
+      "meanWr": 53.7,
+      "maxWr": 84.2,
+      "winrateStd": 4.75,
+      "medianGames": 53,
+      "totalGames": 3198,
+      "nPlayers": 50,
+      "medianMastery": 9318,
+      "maxScore": 14316,
+      "otpScore": 16.0,
+      "isOtp": false,
+      "topPlayer": "howard527",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 13.1,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10056.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/JarvanIV_0.jpg",
+      "bestPlayer": {
+        "player": "Vanessa777",
+        "rank": 46,
+        "confidence_wr": 62.4
+      },
+      "pools": {
+        "25": {
+          "wr": 51.0,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 50.4,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 49.2,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Twisted Fate",
+      "slug": "twisted-fate",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 51.3,
+      "meanWr": 52.5,
+      "maxWr": 88.9,
+      "winrateStd": 3.4,
+      "medianGames": 78,
+      "totalGames": 4562,
+      "nPlayers": 50,
+      "medianMastery": 9509,
+      "maxScore": 13864,
+      "otpScore": 18.1,
+      "isOtp": false,
+      "topPlayer": "Siyao",
+      "tier": "S",
+      "tierCss": "tier-s",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 7.4,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10025.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/TwistedFate_0.jpg",
+      "bestPlayer": {
+        "player": "玳培加威zhuzhuzhumi",
+        "rank": 2,
+        "confidence_wr": 74.7
+      },
+      "pools": {
+        "25": {
+          "wr": 50.2,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 51.1,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 53.6,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Zed",
+      "slug": "zed",
+      "role": "Mid",
+      "class": "Assassin",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 51.2,
+      "meanWr": 52.7,
+      "maxWr": 78.4,
+      "winrateStd": 1.53,
+      "medianGames": 66,
+      "totalGames": 4036,
+      "nPlayers": 50,
+      "medianMastery": 10372,
+      "maxScore": 14341,
+      "otpScore": 40.4,
+      "isOtp": false,
+      "topPlayer": "chamar 爱梅根",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 9.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10039.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zed_0.jpg",
+      "bestPlayer": {
+        "player": "erased",
+        "rank": 33,
+        "confidence_wr": 62.8
+      },
+      "pools": {
+        "25": {
+          "wr": 52.2,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "10": {
+          "wr": 52.8,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 54.2,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Zeri",
+      "slug": "zeri",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 51.2,
+      "meanWr": 53.3,
+      "maxWr": 80.0,
+      "winrateStd": 3.14,
+      "medianGames": 50,
+      "totalGames": 3444,
+      "nPlayers": 50,
+      "medianMastery": 10226,
+      "maxScore": 15521,
+      "otpScore": 36.6,
+      "isOtp": false,
+      "topPlayer": "FHG Aomine",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 11.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10067.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zeri_0.jpg",
+      "bestPlayer": {
+        "player": "Caio Caio",
+        "rank": 21,
+        "confidence_wr": 67.0
+      },
+      "pools": {
+        "25": {
+          "wr": 50.5,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 47.7,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 47.8,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Darius",
+      "slug": "darius",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 51.2,
+      "meanWr": 51.8,
+      "maxWr": 76.6,
+      "winrateStd": 0.47,
+      "medianGames": 102,
+      "totalGames": 5545,
+      "nPlayers": 50,
+      "medianMastery": 11756,
+      "maxScore": 15428,
+      "otpScore": 4.7,
+      "isOtp": false,
+      "topPlayer": "DunkaShow",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 6.2,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10071.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Darius_0.jpg",
+      "bestPlayer": {
+        "player": "上單霸豬",
+        "rank": 4,
+        "confidence_wr": 64.9
+      },
+      "pools": {
+        "25": {
+          "wr": 51.6,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 51.9,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 53.5,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Karma",
+      "slug": "karma",
+      "role": "Support",
+      "class": "Mage",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 51.1,
+      "meanWr": 52.5,
+      "maxWr": 76.6,
+      "winrateStd": 2.41,
+      "medianGames": 70,
+      "totalGames": 4129,
+      "nPlayers": 50,
+      "medianMastery": 11330,
+      "maxScore": 15825,
+      "otpScore": 34.9,
+      "isOtp": false,
+      "topPlayer": "Magnolias",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "S",
+      "tierRoleCss": "tier-s",
+      "skillSpread": 8.5,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10007.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Karma_0.jpg",
+      "bestPlayer": {
+        "player": "Magnolias",
+        "rank": 1,
+        "confidence_wr": 63.2
+      },
+      "pools": {
+        "25": {
+          "wr": 52.7,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 53.4,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 50.7,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Vi",
+      "slug": "vi",
+      "role": "Jungle",
+      "class": "Bruiser",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 51.0,
+      "meanWr": 52.9,
+      "maxWr": 83.3,
+      "winrateStd": 2.63,
+      "medianGames": 78,
+      "totalGames": 4645,
+      "nPlayers": 49,
+      "medianMastery": 10718,
+      "maxScore": 14949,
+      "otpScore": 21.2,
+      "isOtp": false,
+      "topPlayer": "雨与诗",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 8.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10050.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Vi_0.jpg",
+      "bestPlayer": {
+        "player": "邪恶金渐层",
+        "rank": 2,
+        "confidence_wr": 70.4
+      },
+      "pools": {
+        "25": {
+          "wr": 52.3,
+          "nPlayers": 24,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 51.1,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 53.5,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Orianna",
+      "slug": "orianna",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 50.9,
+      "meanWr": 52.7,
+      "maxWr": 90.0,
+      "winrateStd": 4.09,
+      "medianGames": 66,
+      "totalGames": 3359,
+      "nPlayers": 50,
+      "medianMastery": 9740,
+      "maxScore": 14692,
+      "otpScore": 4.7,
+      "isOtp": false,
+      "topPlayer": "Chovy",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 11.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10012.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Orianna_0.jpg",
+      "bestPlayer": {
+        "player": "玳培加威zhuzhuzhumi",
+        "rank": 5,
+        "confidence_wr": 74.4
+      },
+      "pools": {
+        "25": {
+          "wr": 50.5,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 50.7,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 51.6,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Volibear",
+      "slug": "volibear",
+      "role": "Baron",
+      "class": "Tank",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 50.9,
+      "meanWr": 52.6,
+      "maxWr": 76.6,
+      "winrateStd": 0.66,
+      "medianGames": 85,
+      "totalGames": 6378,
+      "nPlayers": 50,
+      "medianMastery": 11032,
+      "maxScore": 17131,
+      "otpScore": 100.0,
+      "isOtp": true,
+      "topPlayer": "Its Dawn",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 8.5,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10058.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Volibear_0.jpg",
+      "bestPlayer": {
+        "player": "Hxdes Pérez",
+        "rank": 2,
+        "confidence_wr": 62.8
+      },
+      "pools": {
+        "25": {
+          "wr": 50.6,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 55.6,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 56.2,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Vayne",
+      "slug": "vayne",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 50.9,
+      "meanWr": 52.9,
+      "maxWr": 88.9,
+      "winrateStd": 6.48,
+      "medianGames": 58,
+      "totalGames": 3961,
+      "nPlayers": 50,
+      "medianMastery": 9901,
+      "maxScore": 15829,
+      "otpScore": 28.3,
+      "isOtp": false,
+      "topPlayer": "纯困つ",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 9.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10010.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Vayne_0.jpg",
+      "bestPlayer": {
+        "player": "坏情绪",
+        "rank": 3,
+        "confidence_wr": 70.9
+      },
+      "pools": {
+        "25": {
+          "wr": 50.6,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 51.7,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 54.6,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Lee Sin",
+      "slug": "lee-sin",
+      "role": "Jungle",
+      "class": "Bruiser",
+      "difficulty": 10,
+      "difficultyLabel": "Very Hard",
+      "isHard": true,
+      "wr": 50.8,
+      "meanWr": 53.4,
+      "maxWr": 82.8,
+      "winrateStd": 4.87,
+      "medianGames": 56,
+      "totalGames": 3351,
+      "nPlayers": 50,
+      "medianMastery": 11540,
+      "maxScore": 15324,
+      "otpScore": 22.6,
+      "isOtp": false,
+      "topPlayer": "耶酥活着armas",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 11.2,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10059.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/LeeSin_0.jpg",
+      "bestPlayer": {
+        "player": "TikTok Polarwr",
+        "rank": 14,
+        "confidence_wr": 65.5
+      },
+      "pools": {
+        "25": {
+          "wr": 50.6,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 51.5,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 53.2,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Diana",
+      "slug": "diana",
+      "role": "Jungle",
+      "class": "Mage",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 50.7,
+      "meanWr": 52.6,
+      "maxWr": 83.9,
+      "winrateStd": 5.01,
+      "medianGames": 79,
+      "totalGames": 4976,
+      "nPlayers": 49,
+      "medianMastery": 11174,
+      "maxScore": 19289,
+      "otpScore": 25.1,
+      "isOtp": false,
+      "topPlayer": "Aguiar TTK",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 11.4,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10013.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Diana_0.jpg",
+      "bestPlayer": {
+        "player": "Aguiar TTK",
+        "rank": 1,
+        "confidence_wr": 69.8
+      },
+      "pools": {
+        "25": {
+          "wr": 50.6,
+          "nPlayers": 24,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 50.1,
+          "nPlayers": 9,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 50.4,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Nunu & Willump",
+      "slug": "nunu-and-willump",
+      "role": "Jungle",
+      "class": "Tank",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 50.7,
+      "meanWr": 53.1,
+      "maxWr": 77.9,
+      "winrateStd": 3.85,
+      "medianGames": 74,
+      "totalGames": 4738,
+      "nPlayers": 50,
+      "medianMastery": 9426,
+      "maxScore": 15059,
+      "otpScore": 19.1,
+      "isOtp": false,
+      "topPlayer": "TwTv VincenzoL65",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 14.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10008.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nunu_0.jpg",
+      "bestPlayer": {
+        "player": "VincenzoL65 TTV",
+        "rank": 31,
+        "confidence_wr": 66.7
+      },
+      "pools": {
+        "25": {
+          "wr": 50.3,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 49.1,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 48.1,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Yone",
+      "slug": "yone",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 50.6,
+      "meanWr": 52.5,
+      "maxWr": 75.0,
+      "winrateStd": 3.62,
+      "medianGames": 90,
+      "totalGames": 4889,
+      "nPlayers": 50,
+      "medianMastery": 11196,
+      "maxScore": 14686,
+      "otpScore": 6.1,
+      "isOtp": false,
+      "topPlayer": "EXO Targon ホ",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 9.9,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10069.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yone_0.jpg",
+      "bestPlayer": {
+        "player": "Sixx",
+        "rank": 6,
+        "confidence_wr": 61.5
+      },
+      "pools": {
+        "25": {
+          "wr": 51.5,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 50.2,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 47.4,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Rengar",
+      "slug": "rengar",
+      "role": "Jungle",
+      "class": "Assassin",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 50.6,
+      "meanWr": 52.6,
+      "maxWr": 89.5,
+      "winrateStd": 6.24,
+      "medianGames": 82,
+      "totalGames": 4734,
+      "nPlayers": 48,
+      "medianMastery": 9812,
+      "maxScore": 16028,
+      "otpScore": 19.8,
+      "isOtp": true,
+      "topPlayer": "Taco",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 11.5,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10006.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rengar_0.jpg",
+      "bestPlayer": {
+        "player": "Cat and Leopard",
+        "rank": 10,
+        "confidence_wr": 66.0
+      },
+      "pools": {
+        "25": {
+          "wr": 52.8,
+          "nPlayers": 24,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 51.4,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 50.1,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Nasus",
+      "slug": "nasus",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 50.4,
+      "meanWr": 51.9,
+      "maxWr": 81.2,
+      "winrateStd": 3.36,
+      "medianGames": 88,
+      "totalGames": 4713,
+      "nPlayers": 48,
+      "medianMastery": 9434,
+      "maxScore": 14712,
+      "otpScore": 7.0,
+      "isOtp": true,
+      "topPlayer": "Isaac O Lerdo",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 9.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10065.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nasus_0.jpg",
+      "bestPlayer": {
+        "player": "TROLLx118",
+        "rank": 20,
+        "confidence_wr": 64.7
+      },
+      "pools": {
+        "25": {
+          "wr": 50.6,
+          "nPlayers": 24,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 49.7,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 49.9,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Kha'Zix",
+      "slug": "khazix",
+      "role": "Jungle",
+      "class": "Assassin",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 50.4,
+      "meanWr": 53.8,
+      "maxWr": 92.9,
+      "winrateStd": 3.21,
+      "medianGames": 58,
+      "totalGames": 3991,
+      "nPlayers": 49,
+      "medianMastery": 8896,
+      "maxScore": 14140,
+      "otpScore": 68.7,
+      "isOtp": false,
+      "topPlayer": "SeteSaiasdeFiló",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 9.1,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10017.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Khazix_0.jpg",
+      "bestPlayer": {
+        "player": "Não sou JG",
+        "rank": 40,
+        "confidence_wr": 63.7
+      },
+      "pools": {
+        "25": {
+          "wr": 50.7,
+          "nPlayers": 24,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 50.0,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 47.3,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Lucian",
+      "slug": "lucian",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 50.4,
+      "meanWr": 53.2,
+      "maxWr": 85.0,
+      "winrateStd": 6.58,
+      "medianGames": 56,
+      "totalGames": 3183,
+      "nPlayers": 50,
+      "medianMastery": 10610,
+      "maxScore": 16225,
+      "otpScore": 9.6,
+      "isOtp": false,
+      "topPlayer": "Fael",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 14.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10042.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lucian_0.jpg",
+      "bestPlayer": {
+        "player": "坏情绪",
+        "rank": 2,
+        "confidence_wr": 65.2
+      },
+      "pools": {
+        "25": {
+          "wr": 50.7,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 49.4,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 51.4,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Xin Zhao",
+      "slug": "xin-zhao",
+      "role": "Jungle",
+      "class": "Bruiser",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 50.3,
+      "meanWr": 52.7,
+      "maxWr": 89.2,
+      "winrateStd": 4.89,
+      "medianGames": 61,
+      "totalGames": 3618,
+      "nPlayers": 48,
+      "medianMastery": 10039,
+      "maxScore": 13436,
+      "otpScore": 33.9,
+      "isOtp": false,
+      "topPlayer": "TSTN BABAYAGA",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 9.5,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10016.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/XinZhao_0.jpg",
+      "bestPlayer": {
+        "player": "YUU",
+        "rank": 2,
+        "confidence_wr": 75.3
+      },
+      "pools": {
+        "25": {
+          "wr": 49.0,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 51.4,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 52.7,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Zoe",
+      "slug": "zoe",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 50.2,
+      "meanWr": 50.9,
+      "maxWr": 80.0,
+      "winrateStd": 2.88,
+      "medianGames": 70,
+      "totalGames": 3957,
+      "nPlayers": 48,
+      "medianMastery": 8700,
+      "maxScore": 16171,
+      "otpScore": 16.7,
+      "isOtp": true,
+      "topPlayer": "YnaMaker",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 8.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10014.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zoe_0.jpg",
+      "bestPlayer": {
+        "player": "YnaMaker",
+        "rank": 1,
+        "confidence_wr": 65.3
+      },
+      "pools": {
+        "25": {
+          "wr": 50.7,
+          "nPlayers": 24,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 50.8,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 54.3,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Aurelion Sol",
+      "slug": "aurelion-sol",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 50.0,
+      "meanWr": 51.9,
+      "maxWr": 77.8,
+      "winrateStd": 0.87,
+      "medianGames": 76,
+      "totalGames": 4665,
+      "nPlayers": 50,
+      "medianMastery": 9666,
+      "maxScore": 13854,
+      "otpScore": 87.6,
+      "isOtp": true,
+      "topPlayer": "SGC ASOL",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 9.9,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10023.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/AurelionSol_0.jpg",
+      "bestPlayer": {
+        "player": "G59ツArtemisィ",
+        "rank": 10,
+        "confidence_wr": 59.0
+      },
+      "pools": {
+        "25": {
+          "wr": 50.4,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 53.5,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 50.5,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Blitzcrank",
+      "slug": "blitzcrank",
+      "role": "Support",
+      "class": "Tank",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 49.7,
+      "meanWr": 51.5,
+      "maxWr": 78.1,
+      "winrateStd": 3.57,
+      "medianGames": 53,
+      "totalGames": 3146,
+      "nPlayers": 49,
+      "medianMastery": 7644,
+      "maxScore": 11435,
+      "otpScore": 15.3,
+      "isOtp": false,
+      "topPlayer": "jason",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 10.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10033.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Blitzcrank_0.jpg",
+      "bestPlayer": {
+        "player": "jason",
+        "rank": 1,
+        "confidence_wr": 63.7
+      },
+      "pools": {
+        "25": {
+          "wr": 48.6,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 45.1,
+          "nPlayers": 10,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 43.7,
+          "nPlayers": 5,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Kayn",
+      "slug": "kayn",
+      "role": "Jungle",
+      "class": "Assassin",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 49.6,
+      "meanWr": 51.2,
+      "maxWr": 91.8,
+      "winrateStd": 5.37,
+      "medianGames": 101,
+      "totalGames": 5003,
+      "nPlayers": 49,
+      "medianMastery": 9290,
+      "maxScore": 14837,
+      "otpScore": 4.1,
+      "isOtp": false,
+      "topPlayer": "Pansinhaking",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 8.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10005.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kayn_0.jpg",
+      "bestPlayer": {
+        "player": "Ryo",
+        "rank": 22,
+        "confidence_wr": 82.2
+      },
+      "pools": {
+        "25": {
+          "wr": 50.1,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 47.9,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 51.7,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Sett",
+      "slug": "sett",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 49.5,
+      "meanWr": 51.5,
+      "maxWr": 85.2,
+      "winrateStd": 3.71,
+      "medianGames": 88,
+      "totalGames": 5246,
+      "nPlayers": 50,
+      "medianMastery": 10482,
+      "maxScore": 16502,
+      "otpScore": 18.1,
+      "isOtp": false,
+      "topPlayer": "Invecible",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 7.9,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10068.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sett_0.jpg",
+      "bestPlayer": {
+        "player": "The Mini Bausffs",
+        "rank": 47,
+        "confidence_wr": 67.5
+      },
+      "pools": {
+        "25": {
+          "wr": 50.5,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 48.3,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 50.1,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Xayah",
+      "slug": "xayah",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 49.5,
+      "meanWr": 51.3,
+      "maxWr": 77.8,
+      "winrateStd": 3.05,
+      "medianGames": 55,
+      "totalGames": 3267,
+      "nPlayers": 49,
+      "medianMastery": 9623,
+      "maxScore": 13145,
+      "otpScore": 12.0,
+      "isOtp": false,
+      "topPlayer": "元气元气",
+      "tier": "A",
+      "tierCss": "tier-a",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 12.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10051.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Xayah_0.jpg",
+      "bestPlayer": {
+        "player": "Constroy",
+        "rank": 29,
+        "confidence_wr": 61.9
+      },
+      "pools": {
+        "25": {
+          "wr": 51.7,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "10": {
+          "wr": 50.6,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 49.9,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Braum",
+      "slug": "braum",
+      "role": "Support",
+      "class": "Tank",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 49.2,
+      "meanWr": 51.9,
+      "maxWr": 84.2,
+      "winrateStd": 3.88,
+      "medianGames": 81,
+      "totalGames": 4518,
+      "nPlayers": 49,
+      "medianMastery": 9448,
+      "maxScore": 12500,
+      "otpScore": 12.0,
+      "isOtp": false,
+      "topPlayer": "TooFastTooGood",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 9.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10021.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Braum_0.jpg",
+      "bestPlayer": {
+        "player": "Asura阿修羅",
+        "rank": 17,
+        "confidence_wr": 65.8
+      },
+      "pools": {
+        "25": {
+          "wr": 49.2,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 46.7,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 45.5,
+          "nPlayers": 5,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Wukong",
+      "slug": "wukong",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 49.1,
+      "meanWr": 51.3,
+      "maxWr": 77.4,
+      "winrateStd": 3.87,
+      "medianGames": 60,
+      "totalGames": 4848,
+      "nPlayers": 49,
+      "medianMastery": 9201,
+      "maxScore": 13653,
+      "otpScore": 91.7,
+      "isOtp": true,
+      "topPlayer": "cuszeyue",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 13.2,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10009.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/MonkeyKing_0.jpg",
+      "bestPlayer": {
+        "player": "失手打死老公",
+        "rank": 10,
+        "confidence_wr": 64.5
+      },
+      "pools": {
+        "25": {
+          "wr": 50.7,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 51.3,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 47.5,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Poppy",
+      "slug": "poppy",
+      "role": "Baron",
+      "class": "Tank",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 49.1,
+      "meanWr": 50.8,
+      "maxWr": 75.0,
+      "winrateStd": 0.57,
+      "medianGames": 62,
+      "totalGames": 3997,
+      "nPlayers": 48,
+      "medianMastery": 9696,
+      "maxScore": 13760,
+      "otpScore": 17.4,
+      "isOtp": false,
+      "topPlayer": "TikTok DonElixir",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 9.5,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10076.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Poppy_0.jpg",
+      "bestPlayer": {
+        "player": "YOSUEH",
+        "rank": 43,
+        "confidence_wr": 60.6
+      },
+      "pools": {
+        "25": {
+          "wr": 48.4,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 46.7,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 43.5,
+          "nPlayers": 5,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Draven",
+      "slug": "draven",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 10,
+      "difficultyLabel": "Very Hard",
+      "isHard": true,
+      "wr": 49.0,
+      "meanWr": 51.3,
+      "maxWr": 81.9,
+      "winrateStd": 5.56,
+      "medianGames": 74,
+      "totalGames": 4509,
+      "nPlayers": 49,
+      "medianMastery": 8729,
+      "maxScore": 14363,
+      "otpScore": 16.6,
+      "isOtp": true,
+      "topPlayer": "Sco",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 13.1,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10077.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Draven_0.jpg",
+      "bestPlayer": {
+        "player": "Divine",
+        "rank": 2,
+        "confidence_wr": 72.3
+      },
+      "pools": {
+        "25": {
+          "wr": 50.9,
+          "nPlayers": 25,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 53.1,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        },
+        "5": {
+          "wr": 55.6,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Mordekaiser",
+      "slug": "mordekaiser",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 49.0,
+      "meanWr": 50.7,
+      "maxWr": 73.1,
+      "winrateStd": 2.18,
+      "medianGames": 69,
+      "totalGames": 3910,
+      "nPlayers": 50,
+      "medianMastery": 8853,
+      "maxScore": 13406,
+      "otpScore": 6.4,
+      "isOtp": false,
+      "topPlayer": "Kazzsie ねこ Zhei",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 10.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10035.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Mordekaiser_0.jpg",
+      "bestPlayer": {
+        "player": "Kazzsie ねこ Zhei",
+        "rank": 1,
+        "confidence_wr": 59.7
+      },
+      "pools": {
+        "25": {
+          "wr": 48.4,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 47.9,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 51.8,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Tristana",
+      "slug": "tristana",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 48.8,
+      "meanWr": 51.9,
+      "maxWr": 78.9,
+      "winrateStd": 4.91,
+      "medianGames": 52,
+      "totalGames": 3935,
+      "nPlayers": 50,
+      "medianMastery": 8594,
+      "maxScore": 13525,
+      "otpScore": 84.3,
+      "isOtp": false,
+      "topPlayer": "DSSY LP I Erick",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 10.7,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10045.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Tristana_0.jpg",
+      "bestPlayer": {
+        "player": "Maya",
+        "rank": 40,
+        "confidence_wr": 64.1
+      },
+      "pools": {
+        "25": {
+          "wr": 48.6,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 48.3,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 48.3,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Aatrox",
+      "slug": "aatrox",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 48.7,
+      "meanWr": 49.9,
+      "maxWr": 78.6,
+      "winrateStd": 4.46,
+      "medianGames": 73,
+      "totalGames": 4019,
+      "nPlayers": 50,
+      "medianMastery": 10120,
+      "maxScore": 14620,
+      "otpScore": 7.1,
+      "isOtp": false,
+      "topPlayer": "Hellboy",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 10.1,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10002.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg",
+      "bestPlayer": {
+        "player": "PHAAX",
+        "rank": 21,
+        "confidence_wr": 67.3
+      },
+      "pools": {
+        "25": {
+          "wr": 50.3,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 51.5,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 49.2,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Seraphine",
+      "slug": "seraphine",
+      "role": "Support",
+      "class": "Enchanter",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 48.6,
+      "meanWr": 51.2,
+      "maxWr": 88.9,
+      "winrateStd": 6.31,
+      "medianGames": 80,
+      "totalGames": 4578,
+      "nPlayers": 47,
+      "medianMastery": 9527,
+      "maxScore": 16320,
+      "otpScore": 95.7,
+      "isOtp": true,
+      "topPlayer": "O2DEPENDENT",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "A",
+      "tierRoleCss": "tier-a",
+      "skillSpread": 14.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10034.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Seraphine_0.jpg",
+      "bestPlayer": {
+        "player": "lioil",
+        "rank": 5,
+        "confidence_wr": 76.5
+      },
+      "pools": {
+        "25": {
+          "wr": 47.4,
+          "nPlayers": 23,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 52.2,
+          "nPlayers": 8,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 49.5,
+          "nPlayers": 4,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Leona",
+      "slug": "leona",
+      "role": "Support",
+      "class": "Tank",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 48.5,
+      "meanWr": 50.1,
+      "maxWr": 77.8,
+      "winrateStd": 0.0,
+      "medianGames": 78,
+      "totalGames": 4567,
+      "nPlayers": 50,
+      "medianMastery": 8092,
+      "maxScore": 12018,
+      "otpScore": 17.5,
+      "isOtp": false,
+      "topPlayer": "MaxiiBolsoo",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 8.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10044.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Leona_0.jpg",
+      "bestPlayer": {
+        "player": "didiOx",
+        "rank": 11,
+        "confidence_wr": 56.6
+      },
+      "pools": {
+        "25": {
+          "wr": 47.8,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "10": {
+          "wr": 46.8,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 47.3,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Ashe",
+      "slug": "ashe",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 48.5,
+      "meanWr": 51.2,
+      "maxWr": 83.9,
+      "winrateStd": 4.23,
+      "medianGames": 67,
+      "totalGames": 4138,
+      "nPlayers": 49,
+      "medianMastery": 9133,
+      "maxScore": 13919,
+      "otpScore": 36.5,
+      "isOtp": false,
+      "topPlayer": "Azh",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 11.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10079.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ashe_0.jpg",
+      "bestPlayer": {
+        "player": "Perfect",
+        "rank": 2,
+        "confidence_wr": 67.4
+      },
+      "pools": {
+        "25": {
+          "wr": 48.3,
+          "nPlayers": 24,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 51.8,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 53.3,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Syndra",
+      "slug": "syndra",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 48.4,
+      "meanWr": 51.2,
+      "maxWr": 90.9,
+      "winrateStd": 5.95,
+      "medianGames": 64,
+      "totalGames": 3958,
+      "nPlayers": 50,
+      "medianMastery": 9109,
+      "maxScore": 13259,
+      "otpScore": 10.5,
+      "isOtp": false,
+      "topPlayer": "runaway",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 9.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10024.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Syndra_0.jpg",
+      "bestPlayer": {
+        "player": "酒后少妇的梦",
+        "rank": 18,
+        "confidence_wr": 72.2
+      },
+      "pools": {
+        "25": {
+          "wr": 47.6,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 50.0,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 48.8,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Morgana",
+      "slug": "morgana",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 48.3,
+      "meanWr": 49.7,
+      "maxWr": 81.1,
+      "winrateStd": 3.82,
+      "medianGames": 71,
+      "totalGames": 3941,
+      "nPlayers": 50,
+      "medianMastery": 9488,
+      "maxScore": 15017,
+      "otpScore": 9.9,
+      "isOtp": false,
+      "topPlayer": "媽媽",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 8.7,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10028.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Morgana_0.jpg",
+      "bestPlayer": {
+        "player": "minimeow",
+        "rank": 7,
+        "confidence_wr": 65.8
+      },
+      "pools": {
+        "25": {
+          "wr": 49.2,
+          "nPlayers": 25,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 50.4,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 49.7,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Camille",
+      "slug": "camille",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 48.3,
+      "meanWr": 49.9,
+      "maxWr": 95.0,
+      "winrateStd": 3.78,
+      "medianGames": 58,
+      "totalGames": 3418,
+      "nPlayers": 50,
+      "medianMastery": 9586,
+      "maxScore": 13941,
+      "otpScore": 18.3,
+      "isOtp": false,
+      "topPlayer": "erick",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 7.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10055.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Camille_0.jpg",
+      "bestPlayer": {
+        "player": "dragonite",
+        "rank": 26,
+        "confidence_wr": 76.4
+      },
+      "pools": {
+        "25": {
+          "wr": 47.8,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 49.6,
+          "nPlayers": 10,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 48.8,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Garen",
+      "slug": "garen",
+      "role": "Baron",
+      "class": "Tank",
+      "difficulty": 2,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 48.2,
+      "meanWr": 49.6,
+      "maxWr": 76.9,
+      "winrateStd": 1.22,
+      "medianGames": 72,
+      "totalGames": 4899,
+      "nPlayers": 50,
+      "medianMastery": 9078,
+      "maxScore": 11892,
+      "otpScore": 92.9,
+      "isOtp": true,
+      "topPlayer": "ColonellMustang",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 8.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10001.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Garen_0.jpg",
+      "bestPlayer": {
+        "player": "Scofield12r",
+        "rank": 2,
+        "confidence_wr": 63.9
+      },
+      "pools": {
+        "25": {
+          "wr": 48.4,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 47.8,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 47.0,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Tryndamere",
+      "slug": "tryndamere",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 48.2,
+      "meanWr": 50.1,
+      "maxWr": 73.0,
+      "winrateStd": 0.99,
+      "medianGames": 80,
+      "totalGames": 5699,
+      "nPlayers": 50,
+      "medianMastery": 8526,
+      "maxScore": 13950,
+      "otpScore": 35.4,
+      "isOtp": false,
+      "topPlayer": "SnuKyy",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 9.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10015.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Tryndamere_0.jpg",
+      "bestPlayer": {
+        "player": "KΛΠΣΔΛ",
+        "rank": 22,
+        "confidence_wr": 59.0
+      },
+      "pools": {
+        "25": {
+          "wr": 47.9,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 45.1,
+          "nPlayers": 10,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        },
+        "5": {
+          "wr": 44.0,
+          "nPlayers": 5,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Teemo",
+      "slug": "teemo",
+      "role": "Baron",
+      "class": "Mage",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 48.2,
+      "meanWr": 50.0,
+      "maxWr": 84.8,
+      "winrateStd": 3.34,
+      "medianGames": 93,
+      "totalGames": 12756,
+      "nPlayers": 48,
+      "medianMastery": 9223,
+      "maxScore": 16600,
+      "otpScore": 100.0,
+      "isOtp": true,
+      "topPlayer": "KingMalt",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 8.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10046.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Teemo_0.jpg",
+      "bestPlayer": {
+        "player": "Chandles",
+        "rank": 21,
+        "confidence_wr": 69.1
+      },
+      "pools": {
+        "25": {
+          "wr": 47.9,
+          "nPlayers": 24,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 48.1,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 47.3,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Fiora",
+      "slug": "fiora",
+      "role": "Baron",
+      "class": "Bruiser",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 48.0,
+      "meanWr": 50.2,
+      "maxWr": 88.2,
+      "winrateStd": 2.5,
+      "medianGames": 74,
+      "totalGames": 4145,
+      "nPlayers": 49,
+      "medianMastery": 8521,
+      "maxScore": 12723,
+      "otpScore": 11.7,
+      "isOtp": false,
+      "topPlayer": "RipostarQueen",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 11.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10032.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Fiora_0.jpg",
+      "bestPlayer": {
+        "player": "FeniX",
+        "rank": 18,
+        "confidence_wr": 62.2
+      },
+      "pools": {
+        "25": {
+          "wr": 47.6,
+          "nPlayers": 24,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 45.6,
+          "nPlayers": 9,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 44.1,
+          "nPlayers": 5,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Yuumi",
+      "slug": "yuumi",
+      "role": "Support",
+      "class": "Enchanter",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 48.0,
+      "meanWr": 54.2,
+      "maxWr": 100.0,
+      "winrateStd": 12.22,
+      "medianGames": 50,
+      "totalGames": 3361,
+      "nPlayers": 48,
+      "medianMastery": 8942,
+      "maxScore": 12366,
+      "otpScore": 31.0,
+      "isOtp": false,
+      "topPlayer": "그의 마키아토",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 23.9,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10020.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yuumi_0.jpg",
+      "bestPlayer": {
+        "player": "美少女战士",
+        "rank": 31,
+        "confidence_wr": 79.0
+      },
+      "pools": {
+        "25": {
+          "wr": 47.6,
+          "nPlayers": 24,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 54.8,
+          "nPlayers": 10,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "S",
+          "tierRoleCss": "tier-s"
+        },
+        "5": {
+          "wr": 58.3,
+          "nPlayers": 5,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "GOD",
+          "tierRoleCss": "tier-god"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Lux",
+      "slug": "lux",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 4,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 48.0,
+      "meanWr": 49.7,
+      "maxWr": 81.0,
+      "winrateStd": 2.94,
+      "medianGames": 68,
+      "totalGames": 4212,
+      "nPlayers": 50,
+      "medianMastery": 9703,
+      "maxScore": 14816,
+      "otpScore": 57.4,
+      "isOtp": false,
+      "topPlayer": "Lux Yanderë",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 9.4,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10003.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lux_0.jpg",
+      "bestPlayer": {
+        "player": "Zzz",
+        "rank": 25,
+        "confidence_wr": 60.0
+      },
+      "pools": {
+        "25": {
+          "wr": 46.5,
+          "nPlayers": 25,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 45.7,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        },
+        "5": {
+          "wr": 41.3,
+          "nPlayers": 5,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Graves",
+      "slug": "graves",
+      "role": "Jungle",
+      "class": "Marksman",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 47.9,
+      "meanWr": 50.7,
+      "maxWr": 81.2,
+      "winrateStd": 4.18,
+      "medianGames": 68,
+      "totalGames": 3929,
+      "nPlayers": 50,
+      "medianMastery": 7672,
+      "maxScore": 14041,
+      "otpScore": 15.0,
+      "isOtp": true,
+      "topPlayer": "bear",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 11.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10072.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Graves_0.jpg",
+      "bestPlayer": {
+        "player": "Kid2nV",
+        "rank": 47,
+        "confidence_wr": 64.7
+      },
+      "pools": {
+        "25": {
+          "wr": 46.1,
+          "nPlayers": 25,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        },
+        "10": {
+          "wr": 45.2,
+          "nPlayers": 10,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        },
+        "5": {
+          "wr": 47.0,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Corki",
+      "slug": "corki",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 47.7,
+      "meanWr": 49.6,
+      "maxWr": 78.6,
+      "winrateStd": 0.0,
+      "medianGames": 39,
+      "totalGames": 2498,
+      "nPlayers": 45,
+      "medianMastery": 7363,
+      "maxScore": 12630,
+      "otpScore": 77.9,
+      "isOtp": false,
+      "topPlayer": "Arc no Prince",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 8.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10060.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Corki_0.jpg",
+      "bestPlayer": {
+        "player": "PAHENU",
+        "rank": 5,
+        "confidence_wr": 57.3
+      },
+      "pools": {
+        "25": {
+          "wr": 48.9,
+          "nPlayers": 22,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 50.6,
+          "nPlayers": 8,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        },
+        "5": {
+          "wr": 52.1,
+          "nPlayers": 4,
+          "tier": "GOD",
+          "tierCss": "tier-god",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Maokai",
+      "slug": "maokai",
+      "role": "Support",
+      "class": "Tank",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 47.7,
+      "meanWr": 49.5,
+      "maxWr": 72.0,
+      "winrateStd": 2.47,
+      "medianGames": 74,
+      "totalGames": 4447,
+      "nPlayers": 49,
+      "medianMastery": 7869,
+      "maxScore": 12474,
+      "otpScore": 25.7,
+      "isOtp": false,
+      "topPlayer": "Wembylong",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
+      "skillSpread": 10.0,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10074.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Maokai_0.jpg",
+      "bestPlayer": {
+        "player": "Wembylong",
+        "rank": 1,
+        "confidence_wr": 62.2
+      },
+      "pools": {
+        "25": {
+          "wr": 46.9,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 45.3,
+          "nPlayers": 10,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 44.4,
+          "nPlayers": 5,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Ekko",
+      "slug": "ekko",
+      "role": "Jungle",
+      "class": "Mage",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 47.6,
+      "meanWr": 50.0,
+      "maxWr": 88.9,
+      "winrateStd": 6.3,
+      "medianGames": 71,
+      "totalGames": 4611,
+      "nPlayers": 50,
+      "medianMastery": 10108,
+      "maxScore": 13691,
+      "otpScore": 21.7,
+      "isOtp": false,
+      "topPlayer": "Emerok",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 9.4,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10011.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ekko_0.jpg",
+      "bestPlayer": {
+        "player": "Joh Gutierrez",
+        "rank": 42,
+        "confidence_wr": 71.9
+      },
+      "pools": {
+        "25": {
+          "wr": 47.6,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 47.3,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 49.3,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Dr. Mundo",
+      "slug": "dr-mundo",
+      "role": "Baron",
+      "class": "Tank",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 47.5,
+      "meanWr": 49.8,
+      "maxWr": 73.8,
+      "winrateStd": 4.34,
+      "medianGames": 59,
+      "totalGames": 3419,
+      "nPlayers": 49,
+      "medianMastery": 8182,
+      "maxScore": 12483,
+      "otpScore": 29.3,
+      "isOtp": false,
+      "topPlayer": "TITAN",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "Ass",
+      "tierRoleCss": "tier-ass",
+      "skillSpread": 14.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10062.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/DrMundo_0.jpg",
+      "bestPlayer": {
+        "player": "Docinho",
+        "rank": 26,
+        "confidence_wr": 60.4
+      },
+      "pools": {
+        "25": {
+          "wr": 46.2,
+          "nPlayers": 25,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        },
+        "10": {
+          "wr": 46.4,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 46.3,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Yasuo",
+      "slug": "yasuo",
+      "role": "Mid",
+      "class": "Bruiser",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 47.4,
+      "meanWr": 48.9,
+      "maxWr": 75.0,
+      "winrateStd": 3.21,
+      "medianGames": 110,
+      "totalGames": 6443,
+      "nPlayers": 49,
+      "medianMastery": 9965,
+      "maxScore": 15571,
+      "otpScore": 7.9,
+      "isOtp": true,
+      "topPlayer": "le passion",
+      "tier": "B",
+      "tierCss": "tier-b",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 9.2,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10037.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yasuo_0.jpg",
+      "bestPlayer": {
+        "player": "HecmerOp",
+        "rank": 41,
+        "confidence_wr": 59.8
+      },
+      "pools": {
+        "25": {
+          "wr": 47.2,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 49.5,
+          "nPlayers": 10,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 48.0,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Janna",
+      "slug": "janna",
+      "role": "Support",
+      "class": "Enchanter",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 47.3,
+      "meanWr": 47.3,
+      "maxWr": 73.3,
+      "winrateStd": 0.0,
+      "medianGames": 56,
+      "totalGames": 2642,
+      "nPlayers": 47,
+      "medianMastery": 8503,
+      "maxScore": 12686,
+      "otpScore": 5.3,
+      "isOtp": false,
+      "topPlayer": "Red velvet",
+      "tier": "C",
+      "tierCss": "tier-c",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 7.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10075.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Janna_0.jpg",
+      "bestPlayer": {
+        "player": "Grey",
+        "rank": 35,
+        "confidence_wr": 55.9
+      },
+      "pools": {
+        "25": {
+          "wr": 46.2,
+          "nPlayers": 24,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 46.2,
+          "nPlayers": 9,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "5": {
+          "wr": 49.5,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "A",
+          "tierRoleCss": "tier-a"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Viego",
+      "slug": "viego",
+      "role": "Jungle",
+      "class": "Assassin",
+      "difficulty": 7,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 47.2,
+      "meanWr": 49.6,
+      "maxWr": 77.4,
+      "winrateStd": 5.11,
+      "medianGames": 62,
+      "totalGames": 5355,
+      "nPlayers": 50,
+      "medianMastery": 9318,
+      "maxScore": 15156,
+      "otpScore": 100.0,
+      "isOtp": true,
+      "topPlayer": "REN 芼",
+      "tier": "C",
+      "tierCss": "tier-c",
+      "tierRole": "Ass",
+      "tierRoleCss": "tier-ass",
+      "skillSpread": 11.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10057.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Viego_0.jpg",
+      "bestPlayer": {
+        "player": "чепуха",
+        "rank": 49,
+        "confidence_wr": 63.7
+      },
+      "pools": {
+        "25": {
+          "wr": 48.4,
+          "nPlayers": 25,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 47.1,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 50.2,
+          "nPlayers": 5,
+          "tier": "S",
+          "tierCss": "tier-s",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Kennen",
+      "slug": "kennen",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 47.1,
+      "meanWr": 48.9,
+      "maxWr": 73.3,
+      "winrateStd": 1.38,
+      "medianGames": 122,
+      "totalGames": 6538,
+      "nPlayers": 49,
+      "medianMastery": 8766,
+      "maxScore": 15752,
+      "otpScore": 13.2,
+      "isOtp": true,
+      "topPlayer": "Stranger Pings",
+      "tier": "C",
+      "tierCss": "tier-c",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 7.7,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10061.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kennen_0.jpg",
+      "bestPlayer": {
+        "player": "Whittelotus",
+        "rank": 32,
+        "confidence_wr": 58.0
+      },
+      "pools": {
+        "25": {
+          "wr": 46.1,
+          "nPlayers": 24,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 46.5,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 45.0,
+          "nPlayers": 5,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Rakan",
+      "slug": "rakan",
+      "role": "Support",
+      "class": "Enchanter",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 46.6,
+      "meanWr": 48.5,
+      "maxWr": 76.0,
+      "winrateStd": 2.51,
+      "medianGames": 63,
+      "totalGames": 4091,
+      "nPlayers": 50,
+      "medianMastery": 8612,
+      "maxScore": 12864,
+      "otpScore": 29.4,
+      "isOtp": false,
+      "topPlayer": "Ant",
+      "tier": "C",
+      "tierCss": "tier-c",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 8.1,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10052.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rakan_0.jpg",
+      "bestPlayer": {
+        "player": "Rakanzera",
+        "rank": 12,
+        "confidence_wr": 57.9
+      },
+      "pools": {
+        "25": {
+          "wr": 45.6,
+          "nPlayers": 25,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 43.8,
+          "nPlayers": 10,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 43.3,
+          "nPlayers": 5,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Jinx",
+      "slug": "jinx",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 46.6,
+      "meanWr": 49.0,
+      "maxWr": 78.3,
+      "winrateStd": 4.88,
+      "medianGames": 72,
+      "totalGames": 4683,
+      "nPlayers": 49,
+      "medianMastery": 9230,
+      "maxScore": 13706,
+      "otpScore": 43.7,
+      "isOtp": false,
+      "topPlayer": "Jan Buster",
+      "tier": "C",
+      "tierCss": "tier-c",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 12.2,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10018.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jinx_0.jpg",
+      "bestPlayer": {
+        "player": "Jan Buster",
+        "rank": 1,
+        "confidence_wr": 66.4
+      },
+      "pools": {
+        "25": {
+          "wr": 45.9,
+          "nPlayers": 25,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 45.9,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 42.5,
+          "nPlayers": 5,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Akali",
+      "slug": "akali",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "isHard": true,
+      "wr": 46.2,
+      "meanWr": 47.1,
+      "maxWr": 75.6,
+      "winrateStd": 0.45,
+      "medianGames": 105,
+      "totalGames": 6149,
+      "nPlayers": 50,
+      "medianMastery": 9732,
+      "maxScore": 16087,
+      "otpScore": 10.8,
+      "isOtp": true,
+      "topPlayer": "Time as Twilight",
+      "tier": "Ass",
+      "tierCss": "tier-ass",
+      "tierRole": "Ass",
+      "tierRoleCss": "tier-ass",
+      "skillSpread": 7.6,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10031.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Akali_0.jpg",
+      "bestPlayer": {
+        "player": "Time as Twilight",
+        "rank": 1,
+        "confidence_wr": 60.7
+      },
+      "pools": {
+        "25": {
+          "wr": 45.6,
+          "nPlayers": 25,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        },
+        "10": {
+          "wr": 45.9,
+          "nPlayers": 10,
+          "tier": "B",
+          "tierCss": "tier-b",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 46.6,
+          "nPlayers": 5,
+          "tier": "A",
+          "tierCss": "tier-a",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    },
+    {
+      "name": "Twitch",
+      "slug": "twitch",
+      "role": "Dragon",
+      "class": "Marksman",
+      "difficulty": 3,
+      "difficultyLabel": "Easy",
+      "isHard": false,
+      "wr": 45.6,
+      "meanWr": 48.0,
+      "maxWr": 73.1,
+      "winrateStd": 0.0,
+      "medianGames": 76,
+      "totalGames": 4607,
+      "nPlayers": 50,
+      "medianMastery": 9034,
+      "maxScore": 13984,
+      "otpScore": 36.0,
+      "isOtp": false,
+      "topPlayer": "Ichika Amasawa",
+      "tier": "Ass",
+      "tierCss": "tier-ass",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 10.4,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10053.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Twitch_0.jpg",
+      "bestPlayer": {
+        "player": "League of Lawyer",
+        "rank": 42,
+        "confidence_wr": 53.9
+      },
+      "pools": {
+        "25": {
+          "wr": 44.8,
+          "nPlayers": 25,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 42.8,
+          "nPlayers": 10,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 43.1,
+          "nPlayers": 5,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": null,
+      "prevTier": null,
+      "tierMoved": null
+    }
+  ],
+  "metaBreakdown": [
+    {
+      "class": "Bruiser",
+      "wr": 53.6,
+      "nChampions": 5,
+      "totalGames": 19591
+    },
+    {
+      "class": "Marksman",
+      "wr": 53.0,
+      "nChampions": 5,
+      "totalGames": 19620
+    },
+    {
+      "class": "Mage",
+      "wr": 51.7,
+      "nChampions": 5,
+      "totalGames": 21800
+    },
+    {
+      "class": "Tank",
+      "wr": 51.1,
+      "nChampions": 5,
+      "totalGames": 22636
+    },
+    {
+      "class": "Assassin",
+      "wr": 50.9,
+      "nChampions": 5,
+      "totalGames": 23319
+    },
+    {
+      "class": "Enchanter",
+      "wr": 50.1,
+      "nChampions": 5,
+      "totalGames": 17978
+    }
+  ],
+  "winrateByDifficulty": [
+    {
+      "difficulty": "Easy",
+      "wr": 49.7,
+      "nChampions": 19
+    },
+    {
+      "difficulty": "Moderate",
+      "wr": 50.3,
+      "nChampions": 37
+    },
+    {
+      "difficulty": "Hard",
+      "wr": 49.1,
+      "nChampions": 16
+    },
+    {
+      "difficulty": "Very Hard",
+      "wr": 49.8,
+      "nChampions": 2
+    }
+  ],
+  "roleStrength": {
+    "Baron": {
+      "wr": 51.2,
+      "lowConfidence": false
+    },
+    "Jungle": {
+      "wr": 52.8,
+      "lowConfidence": false
+    },
+    "Mid": {
+      "wr": 50.3,
+      "lowConfidence": false
+    },
+    "Dragon": {
+      "wr": 50.0,
+      "lowConfidence": false
+    },
+    "Support": {
+      "wr": 49.6,
+      "lowConfidence": false
+    }
+  },
+  "multiChampionMains": [
+    {
+      "player": "Hellboy",
+      "nChampions": 5,
+      "champions": [
+        "Aatrox",
+        "Ekko",
+        "Hecarim",
+        "Kha'Zix",
+        "Volibear"
+      ],
+      "avgWr": 63.0,
+      "bestRank": 1,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10002.png"
+    },
+    {
+      "player": "Lyxuz",
+      "nChampions": 4,
+      "champions": [
+        "Ashe",
+        "Corki",
+        "Kai'Sa",
+        "Zeri"
+      ],
+      "avgWr": 67.7,
+      "bestRank": 18,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10079.png"
+    },
+    {
+      "player": "bear",
+      "nChampions": 4,
+      "champions": [
+        "Camille",
+        "Graves",
+        "Shyvana",
+        "Xin Zhao"
+      ],
+      "avgWr": 59.2,
+      "bestRank": 1,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10055.png"
+    },
+    {
+      "player": "玳培加威zhuzhuzhumi",
+      "nChampions": 3,
+      "champions": [
+        "Ahri",
+        "Orianna",
+        "Twisted Fate"
+      ],
+      "avgWr": 88.0,
+      "bestRank": 2,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10038.png"
+    },
+    {
+      "player": "坏情绪",
+      "nChampions": 3,
+      "champions": [
+        "Kai'Sa",
+        "Lucian",
+        "Vayne"
+      ],
+      "avgWr": 77.2,
+      "bestRank": 2,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10026.png"
+    },
+    {
+      "player": "Time as Twilight",
+      "nChampions": 3,
+      "champions": [
+        "Ahri",
+        "Akali",
+        "Gwen"
+      ],
+      "avgWr": 76.7,
+      "bestRank": 1,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10038.png"
+    },
+    {
+      "player": "minimeow",
+      "nChampions": 3,
+      "champions": [
+        "Janna",
+        "Kai'Sa",
+        "Morgana"
+      ],
+      "avgWr": 74.0,
+      "bestRank": 1,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10075.png"
+    },
+    {
+      "player": "Sky",
+      "nChampions": 3,
+      "champions": [
+        "Ambessa",
+        "Gwen",
+        "Nilah"
+      ],
+      "avgWr": 70.4,
+      "bestRank": 3,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10082.png"
+    },
+    {
+      "player": "Kinn 빛",
+      "nChampions": 3,
+      "champions": [
+        "Annie",
+        "Orianna",
+        "Zed"
+      ],
+      "avgWr": 67.0,
+      "bestRank": 9,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10036.png"
+    },
+    {
+      "player": "d0pa",
+      "nChampions": 3,
+      "champions": [
+        "Twisted Fate",
+        "Yone",
+        "Zed"
+      ],
+      "avgWr": 66.6,
+      "bestRank": 5,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10025.png"
+    },
+    {
+      "player": "FHG Aomine",
+      "nChampions": 3,
+      "champions": [
+        "Jhin",
+        "Lucian",
+        "Zeri"
+      ],
+      "avgWr": 66.0,
+      "bestRank": 1,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10022.png"
+    },
+    {
+      "player": "Army",
+      "nChampions": 3,
+      "champions": [
+        "Hecarim",
+        "Kayle",
+        "Kha'Zix"
+      ],
+      "avgWr": 65.4,
+      "bestRank": 10,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png"
+    },
+    {
+      "player": "лdagger",
+      "nChampions": 3,
+      "champions": [
+        "Diana",
+        "Graves",
+        "Kha'Zix"
+      ],
+      "avgWr": 65.2,
+      "bestRank": 5,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10013.png"
+    },
+    {
+      "player": "Iceberg",
+      "nChampions": 3,
+      "champions": [
+        "Jhin",
+        "Lucian",
+        "Xayah"
+      ],
+      "avgWr": 65.1,
+      "bestRank": 2,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10022.png"
+    },
+    {
+      "player": "황혼의 별",
+      "nChampions": 3,
+      "champions": [
+        "Evelynn",
+        "Karma",
+        "Lux"
+      ],
+      "avgWr": 65.1,
+      "bestRank": 22,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10029.png"
+    },
+    {
+      "player": "Ghosthaunted",
+      "nChampions": 3,
+      "champions": [
+        "Jinx",
+        "Twitch",
+        "Vayne"
+      ],
+      "avgWr": 65.0,
+      "bestRank": 13,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10018.png"
+    },
+    {
+      "player": "Alejo",
+      "nChampions": 3,
+      "champions": [
+        "Aatrox",
+        "Ambessa",
+        "Yone"
+      ],
+      "avgWr": 64.6,
+      "bestRank": 1,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10002.png"
+    },
+    {
+      "player": "Yandere",
+      "nChampions": 3,
+      "champions": [
+        "Ahri",
+        "Camille",
+        "Gwen"
+      ],
+      "avgWr": 64.3,
+      "bestRank": 28,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10038.png"
+    }
+  ],
+  "funnyNames": [],
+  "offMetaSlugs": [
+    "kayle",
+    "amumu",
+    "rammus",
+    "annie",
+    "zilean"
+  ],
+  "topMastery": [
+    {
+      "player": "GxT MasterClass",
+      "champion": "Diana",
+      "slug": "diana",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10013.png",
+      "score": 19289,
+      "wr": 59.0
+    },
+    {
+      "player": "FHG Aomine",
+      "champion": "Jhin",
+      "slug": "jhin",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10022.png",
+      "score": 18180,
+      "wr": 77.5
+    },
+    {
+      "player": "Its Dawn",
+      "champion": "Volibear",
+      "slug": "volibear",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10058.png",
+      "score": 17131,
+      "wr": 69.1
+    },
+    {
+      "player": "lune",
+      "champion": "Sona",
+      "slug": "sona",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10047.png",
+      "score": 17121,
+      "wr": 66.4
+    },
+    {
+      "player": "Aguiar TTK",
+      "champion": "Diana",
+      "slug": "diana",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10013.png",
+      "score": 17101,
+      "wr": 76.8
+    },
+    {
+      "player": "Lu Yunfei",
+      "champion": "Pantheon",
+      "slug": "pantheon",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10030.png",
+      "score": 17013,
+      "wr": 68.4
+    },
+    {
+      "player": "EXO LEIRU",
+      "champion": "Pantheon",
+      "slug": "pantheon",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10030.png",
+      "score": 17010,
+      "wr": 64.4
+    },
+    {
+      "player": "SÓ JOGO COM PEEL",
+      "champion": "Gwen",
+      "slug": "gwen",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10054.png",
+      "score": 16923,
+      "wr": 69.0
+    }
+  ]
+}

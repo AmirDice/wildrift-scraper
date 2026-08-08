@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site, getChampions } from "@/lib/data";
+import { site, getChampions, regionBoard } from "@/lib/data";
 import { getCnChampions, cnRoles, CN_META, cnChampionsWithoutData } from "@/lib/cn";
 import rosterData from "@/data/roster.json";
 import { Container } from "@/components/ui";
@@ -41,6 +41,9 @@ export default function ChampionsPage() {
           champions={champions}
           roles={site.roles}
           cnChampions={getCnChampions()}
+          naChampions={regionBoard("NA").champions}
+          naRoles={regionBoard("NA").roles}
+          naUpdated={regionBoard("NA").collectedOn}
           cnRoles={cnRoles()}
           cnMeta={CN_META}
           euUpdated={site.collectedOn}

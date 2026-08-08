@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { site, getChampions } from "@/lib/data";
+import { site, getChampions, getChampionsNa } from "@/lib/data";
 import { Container, SectionHeading } from "@/components/ui";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
 import items from "@/data/items.json";
@@ -27,13 +27,14 @@ export const metadata: Metadata = {
 
 export default function LeaderboardPage() {
   const champions = getChampions();
+  const championsNa = getChampionsNa();
   // slug -> icon path, for the per-player build columns; slim on purpose so
   // the client bundle carries paths, not the whole item catalog
   const itemIcons: Record<string, string> = {};
   for (const it of items as { slug: string; icon?: string }[]) {
     if (it.icon) itemIcons[it.slug] = it.icon;
   }
-  const slim: SlimChampion[] = champions.map((c) => ({
+  const toSlim = (list: typeof champions): SlimChampion[] => list.map((c) => ({
     name: c.name,
     slug: c.slug,
     icon: c.icon,
@@ -45,6 +46,11 @@ export default function LeaderboardPage() {
     isHard: c.isHard,
     bestPlayer: c.bestPlayer,
   }));
+  const slim = toSlim(champions);
+  // NA's champion list is its OWN: collection is still running, so offering
+  // EU's list here would show champions NA has no board for and render an
+  // empty table that looks like a bug.
+  const slimNa = toSlim(championsNa);
 
   return (
     <Container className="py-12">
@@ -70,6 +76,7 @@ export default function LeaderboardPage() {
         <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table, with builds, ranked tiers and per-queue stats where freshly captured" />
         <LeaderboardView
           champions={slim}
+          championsNa={slimNa}
           itemIcons={itemIcons}
           runeIcons={runeIcons as Record<string, string>}
           spellIcons={Object.fromEntries(

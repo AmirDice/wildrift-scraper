@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site, getChampions } from "@/lib/data";
+import { site, getChampions, regionBoard } from "@/lib/data";
 import { getCnChampionsByBracket, getCnRolesByBracket, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
@@ -63,6 +63,9 @@ export default function TierListPage() {
       <div className="mt-8">
         <TierListView
           champions={champions}
+          naChampions={regionBoard("NA").champions}
+          naRoles={regionBoard("NA").roles}
+          naUpdated={regionBoard("NA").collectedOn}
           roles={site.roles}
           cnChampionsByBracket={getCnChampionsByBracket()}
           cnRolesByBracket={getCnRolesByBracket()}

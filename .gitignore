@@ -44,7 +44,12 @@ scratch/
 # staging directory built by scripts/deploy_advisor.py
 .advisor-deploy/
 
-# scraper capture sessions (hundreds of MB of frames; manifest-driven, local only)
+# scraper capture sessions (hundreds of MB of frames; manifest-driven, local only).
+# One pattern per region: data/captures_na/ is not matched by data/captures/.
 data/captures/
+data/captures_*/
+# source screenshots for hand-transcribed champion data (Cho'Gath's release
+# tooltips); the transcription is committed, the photos are not
+data/chogath/
 # navigator debug dumps -- rejected frames; pinned test fixtures are force-added
 data/debug_scans/

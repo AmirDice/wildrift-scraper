@@ -514,15 +514,21 @@ function ExpandedRow({ p, icons, runeIcons, spellIcons }: {
   );
 }
 
-export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }: {
+export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, spellIcons }: {
   champions: SlimChampion[];
+  championsNa: SlimChampion[];
   itemIcons: Record<string, string>;
   runeIcons: Record<string, string>;
   spellIcons: Record<string, string>;
 }) {
+  const [region, setRegion] = useState<Region>("EU");
+  // The champion list follows the region: NA covers fewer champions while its
+  // collection runs, and picking one it has no board for would render an
+  // empty table rather than an honest "not collected yet".
+  const regionChampions = region === "NA" ? championsNa : champions;
   const byName = useMemo(
-    () => [...champions].sort((a, b) => a.name.localeCompare(b.name)),
-    [champions]
+    () => [...regionChampions].sort((a, b) => a.name.localeCompare(b.name)),
+    [regionChampions]
   );
   const [slug, setSlug] = useState(champions[0]?.slug ?? "");
   const [data, setData] = useState<Record<string, Row[]> | null>(null);
@@ -530,7 +536,6 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
   const [expanded, setExpanded] = useState<number | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("r");
   const [dir, setDir] = useState<"asc" | "desc">("asc");
-  const [region, setRegion] = useState<Region>("EU");
   // one champion's enriched file is ~50 KB; keep what was already fetched
   const enrichedCache = useRef<Map<string, EnrichedPayload | null>>(new Map());
 
@@ -543,39 +548,55 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
       );
       if (match) setSlug(match.slug);
     }
-    fetch("/players.json")
-      .then((r) => r.json())
-      .then(setData)
-      .catch(() => setData({}));
   }, [champions]);
+
+  // The thin per-region table. Refetched when the region changes; each region
+  // publishes its own file from the same exporter.
+  useEffect(() => {
+    let cancelled = false;
+    setData(null);
+    fetch(region === "NA" ? "/players-na.json" : "/players.json")
+      .then((r) => r.json())
+      .then((payload) => { if (!cancelled) setData(payload); })
+      .catch(() => { if (!cancelled) setData({}); });
+    return () => { cancelled = true; };
+  }, [region]);
 
   // The per-champion enriched file exists only once that champion has been
   // recaptured with the extended pipeline; 404 simply means the thin table.
   useEffect(() => {
     setExpanded(null);
-    const cached = enrichedCache.current.get(slug);
+    const cached = enrichedCache.current.get(`${region}:${slug}`);
     if (cached !== undefined) {
       setEnriched(cached);
       return;
     }
     let cancelled = false;
     setEnriched(null);
-    fetch(`/players/${slug}.json`)
+    fetch(region === "NA" ? `/players/na/${slug}.json` : `/players/${slug}.json`)
       .then((r) => (r.ok ? r.json() : null))
       .then((payload: EnrichedPayload | null) => {
-        enrichedCache.current.set(slug, payload);
+        enrichedCache.current.set(`${region}:${slug}`, payload);
         if (!cancelled) setEnriched(payload);
       })
       .catch(() => {
-        enrichedCache.current.set(slug, null);
+        enrichedCache.current.set(`${region}:${slug}`, null);
         if (!cancelled) setEnriched(null);
       });
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, region]);
 
-  const champ = champions.find((c) => c.slug === slug);
+  // A champion selected on EU may not exist on NA yet; fall back to the
+  // region's first champion rather than showing an empty table.
+  useEffect(() => {
+    if (regionChampions.length && !regionChampions.some((c) => c.slug === slug)) {
+      setSlug(regionChampions[0].slug);
+    }
+  }, [regionChampions, slug]);
+
+  const champ = regionChampions.find((c) => c.slug === slug);
   const rows: (Row | EnrichedPlayer)[] = useMemo(() => {
     const base: (Row | EnrichedPlayer)[] = enriched?.players ?? data?.[slug] ?? [];
     // Two of the sort keys are DERIVED rather than fields on the row: the
@@ -611,7 +632,7 @@ export function LeaderboardView({ champions, itemIcons, runeIcons, spellIcons }:
         <RegionToggle region={region} onChange={setRegion} regions={["EU", "NA"] as const} />
       </div>
 
-      {region !== "EU" ? (
+      {regionChampions.length === 0 ? (
         <RegionComingSoon region={region} />
       ) : (
       <>

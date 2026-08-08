@@ -166,14 +166,17 @@ def _otp_score(games: pd.Series) -> float | None:
     return round(50.0 * (math.tanh(raw) + 1.0), 1)
 
 
-def load_leaderboard(unfiltered: bool = False) -> pd.DataFrame:
+def load_leaderboard(unfiltered: bool = False, csv_path: Path | None = None) -> pd.DataFrame:
+    """`csv_path` selects a non-default board (a region export). EU's
+    winrates.csv stays the default so every existing caller is unaffected."""
     # A copy per call, matching what st.cache_data used to return: callers
     # that add columns must not poison the shared cached frame.
-    return _load_leaderboard_cached(unfiltered).copy()
+    return _load_leaderboard_cached(unfiltered, csv_path).copy()
 
 
-@lru_cache(maxsize=4)
-def _load_leaderboard_cached(unfiltered: bool = False) -> pd.DataFrame:
+@lru_cache(maxsize=8)
+def _load_leaderboard_cached(unfiltered: bool = False,
+                             csv_path: Path | None = None) -> pd.DataFrame:
     """Return the full scraped leaderboard CSV as a DataFrame.
 
     `unfiltered=True` keeps every row, including permabanned accounts. Only the
@@ -191,15 +194,16 @@ def _load_leaderboard_cached(unfiltered: bool = False) -> pd.DataFrame:
     than crashing the whole page render.
     """
     cols = ["champion", "rank", "player_name", "score", "games", "winrate", "captured_at"]
-    if not LEADERBOARD_CSV.exists():
+    source = csv_path or LEADERBOARD_CSV
+    if not source.exists():
         return pd.DataFrame(columns=cols)
 
     try:
-        df = pd.read_csv(LEADERBOARD_CSV, on_bad_lines="skip")
+        df = pd.read_csv(source, on_bad_lines="skip")
     except Exception:
         # Last-resort fallback: the python engine is slower but far more
         # forgiving (e.g. tolerates inconsistent line endings).
-        df = pd.read_csv(LEADERBOARD_CSV, on_bad_lines="skip", engine="python")
+        df = pd.read_csv(source, on_bad_lines="skip", engine="python")
     for col in ("rank", "score", "games"):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")

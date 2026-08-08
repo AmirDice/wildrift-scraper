@@ -14,6 +14,9 @@ import { RegionUpdated } from "@/components/tierlist-updated";
 export function TierListView({
   champions,
   roles,
+  naChampions,
+  naRoles,
+  naUpdated,
   cnChampionsByBracket,
   cnRolesByBracket,
   cnMeta,
@@ -24,6 +27,9 @@ export function TierListView({
 }: {
   champions: Champion[];
   roles: string[];
+  naChampions: Champion[];
+  naRoles: string[];
+  naUpdated?: string | null;
   cnChampionsByBracket: Record<CnBracketKey, Champion[]>;
   cnRolesByBracket: Record<CnBracketKey, string[]>;
   cnMeta: {
@@ -57,10 +63,17 @@ export function TierListView({
 
   const isCN = region === "CN";
   const isGlobal = region === "Global";
+  const isNA = region === "NA";
   const activeCnChampions = cnChampionsByBracket[cnBracket];
   const activeCnRoles = cnRolesByBracket[cnBracket];
-  const activeChampions = isCN ? activeCnChampions : isGlobal ? globalChampions : champions;
-  const activeRoles = isCN ? activeCnRoles : isGlobal ? globalRoles : roles;
+  const activeChampions = isCN ? activeCnChampions
+    : isGlobal ? globalChampions
+    : isNA ? naChampions
+    : champions;
+  const activeRoles = isCN ? activeCnRoles
+    : isGlobal ? globalRoles
+    : isNA ? naRoles
+    : roles;
   const activeCnBracket = cnMeta.brackets.find((option) => option.key === cnBracket)
     ?? cnMeta.brackets.find((option) => option.key === cnMeta.defaultBracket)!;
   const options = useMemo(() => ["All roles", ...activeRoles], [activeRoles]);
@@ -101,10 +114,10 @@ export function TierListView({
       </div>
 
       <div className="mb-5">
-        <RegionUpdated region={region} euDate={site.collectedOn} cnDate={cnMeta.date} />
+        <RegionUpdated region={region} euDate={site.collectedOn} cnDate={cnMeta.date} naDate={naUpdated} />
       </div>
 
-      {region === "NA" ? (
+      {activeChampions.length === 0 ? (
         <RegionComingSoon region={region} />
       ) : (
         <>

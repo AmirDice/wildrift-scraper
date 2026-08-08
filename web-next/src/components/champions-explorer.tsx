@@ -21,6 +21,9 @@ export function ChampionsExplorer({
   roles,
   cnChampions,
   cnRoles,
+  naChampions,
+  naRoles,
+  naUpdated,
   cnMeta,
   euUpdated,
   absent,
@@ -30,6 +33,9 @@ export function ChampionsExplorer({
   roles: string[];
   cnChampions: CnChampion[];
   cnRoles: string[];
+  naChampions: Champion[];
+  naRoles: string[];
+  naUpdated?: string | null;
   cnMeta: { source: string; date: string | null; bracket: string };
   euUpdated?: string | null;
   /** Roster champions each region has no numbers for, so the page can say so. */
@@ -44,9 +50,15 @@ export function ChampionsExplorer({
   const [region, setRegion] = useState<Region>("EU");
 
   const isCN = region === "CN";
-  const activeChampions: Champion[] = isCN ? cnChampions : champions;
-  const activeRoles = isCN ? cnRoles : roles;
-  const missing = (isCN ? absent?.CN : absent?.EU) ?? [];
+  const isNA = region === "NA";
+  const activeChampions: Champion[] = isCN ? cnChampions : isNA ? naChampions : champions;
+  const activeRoles = isCN ? cnRoles : isNA ? naRoles : roles;
+  // NA's collection is still running, so the champions it has no board for
+  // are listed as not-yet-collected rather than silently missing.
+  const naAbsent = champions
+    .filter((c) => !naChampions.some((n) => n.slug === c.slug))
+    .map((c) => c.name);
+  const missing = (isCN ? absent?.CN : isNA ? naAbsent : absent?.EU) ?? [];
 
   const classes = useMemo(
     () => ["All classes", ...Array.from(new Set(activeChampions.map((c) => c.class))).sort()],
@@ -98,11 +110,18 @@ export function ChampionsExplorer({
         </p>
       )}
 
+      {isNA && (
+        <p className="mb-4 max-w-2xl text-muted">
+          Every champion tracked on NA, ranked by top-50 player win rates.
+          Collection is still in progress, so this list grows nightly.
+        </p>
+      )}
+
       <div className="mb-5">
-        <RegionUpdated region={region} euDate={euUpdated} cnDate={cnMeta.date} />
+        <RegionUpdated region={region} euDate={euUpdated} cnDate={cnMeta.date} naDate={naUpdated} />
       </div>
 
-      {region === "NA" ? (
+      {activeChampions.length === 0 ? (
         <RegionComingSoon region={region} />
       ) : (
         <>

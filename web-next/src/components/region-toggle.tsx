@@ -4,8 +4,11 @@ export const REGIONS = ["EU", "NA", "CN"] as const;
 /** "Global" is not a server; it's the combined EU+CN view (tier list only). */
 export type Region = (typeof REGIONS)[number] | "Global";
 
-/** Regions/views we currently have data for. Add "NA" here when collected. */
-export const REGIONS_WITH_DATA: Region[] = ["EU", "CN", "Global"];
+/** Regions/views we currently have data for. NA joined 2026-08-08; its
+ *  collection is still running, so it covers fewer champions than EU and the
+ *  pages that show it say which ones are missing rather than implying a
+ *  champion has no players. */
+export const REGIONS_WITH_DATA: Region[] = ["EU", "NA", "CN", "Global"];
 
 export function RegionToggle({
   region,

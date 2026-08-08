@@ -18,9 +18,16 @@ Two outputs, one scan:
 A champion's source session is the NEWEST capture directory whose extraction
 produced at least --min-ranks rows. Partial/abandoned sessions never export.
 
+REGIONS. --region na reads data/captures_na and writes region-suffixed
+outputs (data/winrates_na.csv, players/na/<slug>.json). Nothing is shared with
+EU: a region that overwrote another region's rows would silently republish one
+ladder's numbers under the other's name, and the capture directories are
+already separate for the same reason.
+
 Run after extractions finish:
-    python -m scripts.export_captures            # merge into winrates.csv
+    python -m scripts.export_captures            # EU, merge into winrates.csv
     python -m scripts.export_captures --fresh    # replace winrates.csv wholesale
+    python -m scripts.export_captures --region na
 """
 from __future__ import annotations
 
@@ -38,10 +45,27 @@ from src.tiers import canonical_tier  # noqa: E402
 from web.integrity import (  # noqa: E402
     HIDDEN_LABEL, ban_reason, is_advertising_account, is_banned_account)
 
-CAPTURES = ROOT / "data" / "captures"
-WINRATES = ROOT / "data" / "winrates.csv"
-PLAYERS_DIR = ROOT / "web-next" / "public" / "players"
-INDEX_FILE = ROOT / "web-next" / "public" / "player-index.json"
+# Per-region source and destinations. EU keeps the unsuffixed paths every
+# other script already reads; a new region gets its own everything.
+REGIONS = {
+    "eu": {
+        "captures": ROOT / "data" / "captures",
+        "winrates": ROOT / "data" / "winrates.csv",
+        "players": ROOT / "web-next" / "public" / "players",
+        "index": ROOT / "web-next" / "public" / "player-index.json",
+    },
+    "na": {
+        "captures": ROOT / "data" / "captures_na",
+        "winrates": ROOT / "data" / "winrates_na.csv",
+        "players": ROOT / "web-next" / "public" / "players" / "na",
+        "index": ROOT / "web-next" / "public" / "player-index-na.json",
+    },
+}
+
+CAPTURES = REGIONS["eu"]["captures"]
+WINRATES = REGIONS["eu"]["winrates"]
+PLAYERS_DIR = REGIONS["eu"]["players"]
+INDEX_FILE = REGIONS["eu"]["index"]
 
 CSV_COLUMNS = ["champion", "rank", "player_name", "score", "games", "winrate", "captured_at"]
 
@@ -333,11 +357,22 @@ def main() -> int:
     ap.add_argument("--players-only", action="store_true",
                     help="Write only the enriched players/<slug>.json files; leave "
                          "winrates.csv untouched (pre-release preview)")
+    ap.add_argument("--region", default="eu", choices=sorted(REGIONS),
+                    help="Which region's captures to export (default: eu)")
     args = ap.parse_args()
+
+    # Rebind the module-level paths to the requested region. Every helper
+    # below reads these globals, so one rebinding covers the whole export and
+    # no function needs to thread a region argument through.
+    global CAPTURES, WINRATES, PLAYERS_DIR, INDEX_FILE
+    paths = REGIONS[args.region]
+    CAPTURES, WINRATES = paths["captures"], paths["winrates"]
+    PLAYERS_DIR, INDEX_FILE = paths["players"], paths["index"]
+    print(f"region: {args.region.upper()}  (captures: {CAPTURES.relative_to(ROOT)})")
 
     sessions = find_sessions(args.min_ranks)
     if not sessions:
-        raise SystemExit("no complete extracted sessions found under data/captures")
+        raise SystemExit(f"no complete extracted sessions found under {CAPTURES.relative_to(ROOT)}")
     print(f"exporting {len(sessions)} champion(s): {', '.join(sorted(sessions))}")
 
     old_rows = [] if args.fresh else _read_csv(WINRATES)

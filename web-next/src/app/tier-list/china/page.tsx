@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site, getChampions } from "@/lib/data";
+import { site, getChampions, regionBoard } from "@/lib/data";
 import { getCnChampionsByBracket, getCnRolesByBracket, CN_BRACKETS, CN_META, getGlobalChampions, globalRoles, type CnBracketKey } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
@@ -73,6 +73,9 @@ export default async function ChinaTierListPage({
       <div className="mt-8">
         <TierListView
           champions={getChampions()}
+          naChampions={regionBoard("NA").champions}
+          naRoles={regionBoard("NA").roles}
+          naUpdated={regionBoard("NA").collectedOn}
           roles={site.roles}
           cnChampionsByBracket={getCnChampionsByBracket()}
           cnRolesByBracket={getCnRolesByBracket()}

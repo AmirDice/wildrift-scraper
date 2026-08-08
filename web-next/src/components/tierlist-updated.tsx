@@ -80,15 +80,20 @@ export function RegionUpdated({
   region,
   euDate,
   cnDate,
+  naDate,
 }: {
   region: Region;
   euDate?: string | null;
   cnDate?: string | null;
+  naDate?: string | null;
 }) {
   const eu = readableDate(euDate);
+  const na = readableDate(naDate);
   const today = useToday();
   const cn = today ?? readableDate(cnDate);
-  if (region === "NA") return null;
+  // NA used to return null here because it had no data; it collects on its
+  // own schedule now and reports its own date like everyone else.
+  if (region === "NA" && !na) return null;
 
   return (
     <span className="glass inline-flex flex-wrap items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-muted">
@@ -100,7 +105,7 @@ export function RegionUpdated({
           {cn && <><span className="text-faint">·</span><span className="text-text">CN {cn}</span></>}
         </>
       ) : (
-        <>Last updated <span className="text-faint">·</span> <span className="text-text">{region === "CN" ? cn : eu}</span></>
+        <>Last updated <span className="text-faint">·</span> <span className="text-text">{region === "CN" ? cn : region === "NA" ? na : eu}</span></>
       )}
     </span>
   );

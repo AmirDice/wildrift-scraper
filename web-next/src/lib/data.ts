@@ -1,4 +1,5 @@
 import siteData from "@/data/site.json";
+import siteDataNa from "@/data/site_na.json";
 import { getNewChampion, getNewChampions, type NewChampion } from "@/lib/new-champions";
 
 export interface BestPlayer {
@@ -151,8 +152,31 @@ export const tierText: Record<string, string> = {
   Ass: "tx-ass",
 };
 
+/** NA's own board, exported by the same pipeline into its own files. Shape is
+ *  identical to EU's; only the numbers differ. Collection is still in
+ *  progress, so this holds fewer champions than EU and the callers that show
+ *  it say so. */
+export const siteNa = siteDataNa as unknown as Site;
+
 export function getChampions(): Champion[] {
   return site.champions;
+}
+
+export function getChampionsNa(): Champion[] {
+  return siteNa.champions;
+}
+
+/** Champion rows for a region, plus the metadata a page needs to describe the
+ *  sample honestly (collection date, how many champions it covers). */
+export function regionBoard(region: "EU" | "NA") {
+  const source = region === "NA" ? siteNa : site;
+  return {
+    champions: source.champions,
+    roles: source.roles,
+    collectedOn: source.collectedOn,
+    nChampions: source.nChampions,
+    nPlayers: source.nPlayers,
+  };
 }
 
 // Built once. getChampion is called from every champion page, every matchup
