@@ -70,6 +70,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
       { href: "/ranks", label: "Win Rate by Skill Bracket", desc: "Diamond+ to Challenger trends" },
       { href: "/compare", label: "Compare Champions", desc: "Two champions side by side" },
       { href: "/rising", label: "Rising Picks", desc: "What China plays before the West" },
+      { href: "/regions", label: "EU vs NA vs China", badge: "new", desc: "Which champions are region-specific" },
       { href: "/global", label: "Global Win Rates", desc: "EU vs CN cross-server meta" },
       { href: "/consistency", label: "Consistency", desc: "Skill ceiling & reliability" },
     ],

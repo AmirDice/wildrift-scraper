@@ -1,5 +1,5 @@
 import cnData from "@/data/cn.json";
-import { getChampion, getChampions, tierClass, type Champion } from "@/lib/data";
+import { getChampion, getChampions, regionBoard, tierClass, type Champion } from "@/lib/data";
 import { getNewChampion } from "@/lib/new-champions";
 
 interface CnEntry {
@@ -202,13 +202,33 @@ export function globalTier(wr: number): string {
   return "Ass";
 }
 
-/** Champion objects with wr = combined EU+CN score and a global tier. */
+/** Champion objects with wr = the mean of every server that has measured
+ *  them, and a global tier.
+ *
+ *  NA joined the blend when its collection started (2026-08-08) and is still
+ *  partial, so the mean is taken over the servers that HAVE a number rather
+ *  than requiring all three: dropping a champion because one server has not
+ *  reached it yet would empty the list, and substituting a zero would invent
+ *  a result. A champion still needs at least TWO servers to appear at all --
+ *  a single-server number is not a global one, it is that server's number
+ *  wearing a different label.
+ *
+ *  The servers are not equally comparable (EU and NA are our own top-50
+ *  measurement, CN is Tencent's population aggregate); see lib/regions.ts.
+ *  This average is a "strong most places" heuristic, not a precise statistic,
+ *  which is what the tier bands here already assume. */
 export function getGlobalChampions(): Champion[] {
+  const na = new Map(regionBoard("NA").champions.map((c) => [c.slug, c]));
   const out: Champion[] = [];
   for (const eu of getChampions()) {
+    const parts: number[] = [];
+    if (Number.isFinite(eu.wr)) parts.push(eu.wr);
+    const naChamp = na.get(eu.slug);
+    if (naChamp && Number.isFinite(naChamp.wr)) parts.push(naChamp.wr);
     const cn = getCnBySlug(eu.slug);
-    if (!cn) continue;
-    const g = Math.round(((eu.wr + cn.wr) / 2) * 10) / 10;
+    if (cn && Number.isFinite(cn.wr)) parts.push(cn.wr);
+    if (parts.length < 2) continue;
+    const g = Math.round((parts.reduce((a, b) => a + b, 0) / parts.length) * 10) / 10;
     const tier = globalTier(g);
     out.push({ ...eu, wr: g, tier, tierRole: tier });
   }
