@@ -905,6 +905,17 @@ def main() -> int:
                 d = region(QUIT_DIALOG_REGION)
                 if "quit" in d or "notice" in d:
                     return "quit dialog"
+                # The leaderboard ROOT (champions list) ejection. A dismissed
+                # popup sometimes lands here, and before this check the
+                # navigator spent four cycles nudging what it thought was a
+                # stuck leaderboard -- scrolling the CHAMPIONS LIST instead,
+                # which moved the current champion's row away and made the
+                # subsequent recovery re-enter the wrong board (a live run
+                # captured an empty Rengar session hunting for Xin Zhao).
+                # 'collection'/'guild' appear only on the root tab bar.
+                tab = region(LEADERBOARD_TAB_BAR_REGION)
+                if any(w in tab for w in ("collection", "guild")):
+                    return "leaderboard root (champions tab)"
                 if _looks_like_main_menu(img):
                     return "main menu"
             except Exception:  # noqa: BLE001 -- never let detection break a run
@@ -973,6 +984,20 @@ def main() -> int:
 
                     tap_y = nav.ensure_visible(current_rank)
                     if tap_y is None:
+                        board_end = getattr(nav, "bottom_rank", None)
+                        if board_end is not None and board_end < end_rank:
+                            # Not a loss: the board simply has fewer entries
+                            # than asked for. Everything it has is captured,
+                            # so the champion is COMPLETE. The marker file
+                            # lets --skip-existing and the resume logic agree,
+                            # otherwise a short board would be redone -- and
+                            # die at its end the same way -- every night.
+                            print(f"\n[detect] {args.target}'s board ends at rank "
+                                  f"{board_end} -- {successes} profile(s) is everything it has")
+                            if capture_dir is not None:
+                                (capture_dir / "board_end.txt").write_text(
+                                    str(board_end), encoding="utf-8")
+                            break
                         print(f"\n[detect] lost position looking for rank {current_rank}.")
                         if args.unattended:
                             # Overnight runs cannot wait on a human. First
@@ -1106,7 +1131,11 @@ def main() -> int:
         if args.skip_existing:
             for mf in args.capture_dir.glob("*/manifest.jsonl"):
                 lines = [ln for ln in mf.read_text(encoding="utf-8").splitlines() if ln.strip()]
-                if len(lines) < max(1, int(args.n * 0.9)):
+                # A board_end marker means the session holds every rank the
+                # board HAS; the 90% bar would redo a genuinely short board
+                # (NA populations leave some boards under 45 entries) forever.
+                if len(lines) < max(1, int(args.n * 0.9)) \
+                        and not (mf.parent / "board_end.txt").exists():
                     continue
                 try:
                     ch = json.loads(lines[0]).get("champion")
@@ -1256,6 +1285,8 @@ def main() -> int:
                     continue
                 if len(ranks_seen) >= max(1, int(args.n * 0.9)):
                     continue    # complete: --skip-existing territory, not ours
+                if (mf.parent / "board_end.txt").exists():
+                    continue    # short BOARD, not short session -- also complete
                 if len(ranks_seen) < 3 or max(ranks_seen) >= args.n:
                     continue
                 # Never stitch two leaderboard weeks into one session: a
