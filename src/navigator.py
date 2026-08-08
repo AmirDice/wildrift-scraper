@@ -76,19 +76,7 @@ class LeaderboardNavigator:
 
     def ensure_visible(self, rank: int) -> int | None:
         """Return the on-screen y of `rank`, travelling to it if needed.
-        None = detection lost; the caller falls back to a manual prompt.
-
-        When None is returned WITH `self.bottom_rank` set, nothing is lost:
-        the list bottomed out with the target below its last row, meaning the
-        board simply has fewer entries than asked for. NA boards do this
-        routinely (Xin Zhao's ends at 45), and treating it as detection loss
-        sent a healthy overnight run into recovery against a screen that was
-        never wrong."""
-        self.bottom_rank: int | None = None
-        # (hi_r, y of hi_r) from the last good scan that wanted to go DOWN;
-        # two identical bottoms across a down-drag = the list cannot move.
-        last_bottom: tuple[int, int] | None = None
-        bottom_stalls = 0
+        None = detection lost; the caller falls back to a manual prompt."""
         empty_scans = 0
         prev_sign = 0
         no_fling = False
@@ -346,33 +334,6 @@ class LeaderboardNavigator:
                         self.last_center = center
                         self.last_frame = img
                         return y_inf
-            # END-OF-BOARD: the target is below the window, we dragged down,
-            # and the bottom row did not move a pixel. A board with fewer
-            # entries than requested is a fact about the ladder, not a
-            # detection failure -- report it as such instead of burning
-            # recovery attempts against a list that cannot scroll further.
-            # Guarded by the ledger: a TRUE bottom is reached within the
-            # journey's downward budget, while a frozen misread (the scan
-            # claiming ranks 1-6 forever as we scroll) has already spent more
-            # downward travel than the target could need -- that case belongs
-            # to the ledger lock and arbitration, not to end-of-board.
-            if rank > hi_r and (down_budget is None or net_down < down_budget):
-                bottom_sig = (hi_r, int(ranks[hi_r]))
-                if last_bottom is not None and bottom_sig[0] == last_bottom[0] \
-                        and abs(bottom_sig[1] - last_bottom[1]) <= 8:
-                    bottom_stalls += 1
-                    if bottom_stalls >= 2:
-                        self.log(f"  [detect] the list will not scroll below rank {hi_r} "
-                                 f"-- this board ends there (rank {rank} does not exist)")
-                        self.bottom_rank = hi_r
-                        self.last_center = (lo_r + hi_r) / 2
-                        return None
-                else:
-                    bottom_stalls = 0
-                last_bottom = bottom_sig
-            else:
-                bottom_stalls = 0
-                last_bottom = None
             delta = rank - hi_r if rank > hi_r else rank - lo_r
             sign = 1 if delta > 0 else -1
             # ACTION LEDGER: refuse impossible downward travel. If we already

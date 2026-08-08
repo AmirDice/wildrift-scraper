@@ -984,20 +984,6 @@ def main() -> int:
 
                     tap_y = nav.ensure_visible(current_rank)
                     if tap_y is None:
-                        board_end = getattr(nav, "bottom_rank", None)
-                        if board_end is not None and board_end < end_rank:
-                            # Not a loss: the board simply has fewer entries
-                            # than asked for. Everything it has is captured,
-                            # so the champion is COMPLETE. The marker file
-                            # lets --skip-existing and the resume logic agree,
-                            # otherwise a short board would be redone -- and
-                            # die at its end the same way -- every night.
-                            print(f"\n[detect] {args.target}'s board ends at rank "
-                                  f"{board_end} -- {successes} profile(s) is everything it has")
-                            if capture_dir is not None:
-                                (capture_dir / "board_end.txt").write_text(
-                                    str(board_end), encoding="utf-8")
-                            break
                         print(f"\n[detect] lost position looking for rank {current_rank}.")
                         if args.unattended:
                             # Overnight runs cannot wait on a human. First
@@ -1131,17 +1117,18 @@ def main() -> int:
         if args.skip_existing:
             for mf in args.capture_dir.glob("*/manifest.jsonl"):
                 lines = [ln for ln in mf.read_text(encoding="utf-8").splitlines() if ln.strip()]
-                # A board_end marker means the session holds every rank the
-                # board HAS; the 90% bar would redo a genuinely short board
-                # (NA populations leave some boards under 45 entries) forever.
-                if len(lines) < max(1, int(args.n * 0.9)) \
-                        and not (mf.parent / "board_end.txt").exists():
+                if not lines:
                     continue
+                # Complete means the journey REACHED rank n: top 50 means 50.
+                # The old 90% bar declared 45/50 done, which quietly shipped
+                # boards missing their last five ranks; with resume support
+                # finishing a partial costs minutes, so the bar buys nothing.
                 try:
                     ch = json.loads(lines[0]).get("champion")
-                except json.JSONDecodeError:
+                    top = max(int(json.loads(ln)["rank"]) for ln in lines)
+                except (json.JSONDecodeError, KeyError, ValueError):
                     continue
-                if ch:
+                if ch and top >= args.n:
                     scraped.add(ch)
             if scraped:
                 print(f"[carousel] resuming: {len(scraped)} champion(s) already captured")
@@ -1283,12 +1270,10 @@ def main() -> int:
                     ranks_seen = {int(json.loads(ln)["rank"]) for ln in lines}
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
-                if len(ranks_seen) >= max(1, int(args.n * 0.9)):
+                if max(ranks_seen) >= args.n:
                     continue    # complete: --skip-existing territory, not ours
-                if (mf.parent / "board_end.txt").exists():
-                    continue    # short BOARD, not short session -- also complete
-                if len(ranks_seen) < 3 or max(ranks_seen) >= args.n:
-                    continue
+                if len(ranks_seen) < 3:
+                    continue    # not worth the deep-rank journey bookkeeping
                 # Never stitch two leaderboard weeks into one session: a
                 # partial older than ~20h may predate a ranking reset, and
                 # its ranks 1..k would describe a different ladder than the
