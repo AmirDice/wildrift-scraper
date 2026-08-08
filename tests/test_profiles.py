@@ -239,9 +239,25 @@ def test_curated_override_wins():
 
 
 def test_stub_ability_data_is_reported_rather_than_guessed():
-    """Cho'Gath's scrape returned blurbs. Say so; do not invent scaling."""
-    artifacts = profiles.ability_artifacts("Cho'Gath")
+    """A kit whose cast abilities carry no numeric cooldowns is a stub scrape.
+    Say so; do not invent scaling. Cho'Gath was the live example until his
+    release data landed (2026-08-08), so the mechanism is now proven on a
+    synthetic stub -- and Cho'Gath doubles as the negative case: real data
+    must NOT be flagged."""
+    stub = {
+        "abilities": [
+            {"slot": "P", "name": "Blurb", "cooldowns": [], "text": "Grows stronger."},
+            {"slot": "1", "name": "Poke", "cooldowns": [], "text": "Pokes the enemy."},
+            {"slot": "2", "name": "Yell", "cooldowns": ["", "", ""], "text": "Yells loudly."},
+        ],
+    }
+    profiles.CHAMPIONS["__StubTest__"] = stub
+    try:
+        artifacts = profiles.ability_artifacts("__StubTest__")
+    finally:
+        del profiles.CHAMPIONS["__StubTest__"]
     assert any("numeric cooldown" in a for a in artifacts)
+    assert not any("numeric cooldown" in a for a in profiles.ability_artifacts("Cho'Gath"))
 
 
 def test_the_new_profile_is_far_more_selective_than_the_old_tag():
