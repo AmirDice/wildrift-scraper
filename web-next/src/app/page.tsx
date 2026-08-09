@@ -9,7 +9,6 @@ import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/com
 import { HomeSearch } from "@/components/home-search";
 import { InsightCard } from "@/components/insight-card";
 import { MoversHighlight } from "@/components/movers-highlight";
-import { Roadmap } from "@/components/roadmap";
 import { BuildsGeneratedCount, BuildsGeneratedPill } from "@/components/builds-counter";
 import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champion-change-ranking";
 
@@ -244,11 +243,6 @@ export default function HomePage() {
             </>
           )}
         </div>
-      </Container>
-
-      {/* Roadmap + countdown */}
-      <Container className="py-6">
-        <Roadmap />
       </Container>
 
       {/* Transparent coverage counters: these describe the current generated
