@@ -14,14 +14,13 @@ import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 // its own dismiss key).
 const FLAG_PROMO = BUILD_TOOLS_LIVE
   ? {
-      // The two headline facts of this release in one line: the EU win rates
-      // are freshly collected (the full roster, this patch) and the Build
-      // Studio is open. Key bumped to v5 so people who dismissed the old
-      // banner see this one once.
-      key: "wtm-feature-builders-v5",
+      // The headline facts of this release: both rosters are collected (EU and
+      // now NA, full 141 each) and the Build Studio is open. Key bumped to v6
+      // so people who dismissed the EU-only banner see this one once.
+      key: "wtm-feature-builders-v6",
       href: "/build",
-      lead: "EU win rates & Build Studio are live",
-      body: "fresh top-50 win rates for every champion, and a generator that builds around how you play.",
+      lead: "EU & NA win rates & Build Studio are live",
+      body: "fresh top-50 win rates for every champion on two servers, and a generator that builds around how you play.",
       hideOn: ["/build", "/counter"],  // /counter redirects into /build
       badges: ["New"],
       cta: "Try it",

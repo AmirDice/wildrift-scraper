@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site, getChampions, tierLabel, type Champion } from "@/lib/data";
+import { site, getChampions, tierLabel, type Champion, regionBoard } from "@/lib/data";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { getCnChampions, getGlobalChampions } from "@/lib/cn";
 import { risingPicks, overratedInEu } from "@/lib/gap";
@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   const champions = getChampions();
+  const naBoard = regionBoard("NA");
   const bySlug = new Map(champions.map((c) => [c.slug, c]));
   const byName = new Map(champions.map((c) => [c.name, c]));
   const ranked = champions.filter((c) => (c.nPlayers ?? 0) >= 20);
@@ -145,15 +146,16 @@ export default function HomePage() {
           <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
             <BuildsGeneratedPill />
-            {/* "live now" overstated it: the win rates are gathered in
-                batches, not streamed, so the honest word is collecting. */}
+            {/* Both rosters are fully collected now, so these read "collected"
+                with the date rather than "being collected" -- the pulse dot is
+                gone with it, since nothing is in progress to signal. */}
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 motion-safe:animate-pulse" />
-              EU win rates · being collected
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              EU win rates · collected {site.collectedOn}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent motion-safe:animate-pulse" />
-              NA win rates · being collected
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              NA win rates · collected {naBoard.collectedOn}
             </span>
             {!BUILD_TOOLS_LIVE && (
               <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
@@ -163,8 +165,8 @@ export default function HomePage() {
           </div>
           <p className="mt-6 text-sm text-faint">
             Every recommendation is grounded in {site.nChampions} champions and{" "}
-            {site.nPlayers.toLocaleString()} player records
-            {site.collectedOn ? `, collected ${site.collectedOn}` : ""}.
+            {(site.nPlayers + naBoard.nPlayers).toLocaleString()} player records
+            across EU and NA.
           </p>
 
           {/* Scroll cue. The hero fills the first screen, so without this the
