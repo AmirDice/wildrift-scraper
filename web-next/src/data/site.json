@@ -38,7 +38,7 @@
       "tierRoleCss": "tier-god",
       "skillSpread": 12.8,
       "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png",
-      "splash": "https://cdn.jsdelivr.net/gh/AmirDice/wildrift-scraper@main/static/champions/Hecarim_splash.jpg",
+      "splash": "/hecarim.jpg",
       "bestPlayer": {
         "player": "WorstPlayerEuw",
         "rank": 41,
@@ -4316,7 +4316,7 @@
       "tierRoleCss": "tier-b",
       "skillSpread": 6.4,
       "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10166.png",
-      "splash": "https://cdn.jsdelivr.net/gh/AmirDice/wildrift-scraper@main/static/champions/Norra.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Norra_0.jpg",
       "bestPlayer": {
         "player": "Wang Sung424",
         "rank": 48,

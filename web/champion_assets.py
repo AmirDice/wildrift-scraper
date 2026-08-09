@@ -84,26 +84,25 @@ def to_ddragon_key(name: str) -> str:
     return "".join(part[:1].upper() + part[1:].lower() for part in _WORD_RE.findall(name))
 
 
-# These two tables used to point at images bundled under static/champions/,
-# served by web.local_assets. Both static/ and local_assets belonged to the
-# retired Streamlit app and were removed in the 2026-08-07 cleanup, so the
-# overrides now have nothing to resolve to and every champion falls back to
-# the CDN chain (Wild Rift head icons first, then DDragon). Kept as empty
-# tables rather than deleted: the mechanism is the right place to hang a
-# local asset if one is ever bundled for web-next, and the fallback is what
-# the site has actually been serving since the cleanup either way.
+# Locally bundled champion art. These used to point at static/champions/ via
+# web.local_assets, both of which belonged to the retired Streamlit app and
+# were deleted in the 2026-08-07 cleanup -- which silently broke the Hecarim
+# splash on the home page, because the URL baked into site.json still pointed
+# at the removed directory through jsDelivr.
+#
+# They now name files served by web-next itself out of web-next/public, so the
+# asset ships with the site instead of through a CDN mirror of a path that may
+# not exist. Values are site-root paths.
 _LOCAL_ICON_KEYS: frozenset[str] = frozenset()
 
-_LOCAL_SPLASH_KEYS: dict[str, str] = {}
+_LOCAL_SPLASH_KEYS: dict[str, str] = {
+    "Hecarim": "/hecarim.jpg",
+}
 
 
 def _local_champion_asset(filename: str) -> str:
-    """Placeholder for a locally-bundled champion asset. Unreachable while
-    both override tables are empty; raises rather than importing the deleted
-    Streamlit helper, so a future entry fails loudly instead of at render."""
-    raise NotImplementedError(
-        f"no local asset pipeline for {filename}: static/ was removed with the "
-        "Streamlit app; add the file under web-next/public/ and serve it from there")
+    """A champion asset served by web-next from its own public directory."""
+    return filename if filename.startswith("/") else f"/{filename}"
 
 
 def icon_url(name: str, version: str = DDRAGON_VERSION) -> str:

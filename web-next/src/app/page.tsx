@@ -8,7 +8,6 @@ import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/components/ui";
 import { HomeSearch } from "@/components/home-search";
 import { InsightCard } from "@/components/insight-card";
-import { SeasonCard } from "@/components/season-card";
 import { MoversHighlight } from "@/components/movers-highlight";
 import { Roadmap } from "@/components/roadmap";
 import { BuildsGeneratedCount, BuildsGeneratedPill } from "@/components/builds-counter";
@@ -271,9 +270,17 @@ export default function HomePage() {
               valueClass="text-accent"
             />
           )}
-          <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU performance profiles" href="/champions" />
-          <StatCard label="Items catalogued" value="117" sub="stats, passives, and costs" href="/items" valueClass="text-gold" />
-          <StatCard label="Runes & spells" value="63" sub="53 runes · 10 spells" href="/runes-spells" />
+          <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU and NA performance profiles" href="/champions" />
+          {/* The headline of the whole project: every one of these is a real
+              player's record read off a leaderboard, not a modelled estimate. */}
+          <StatCard
+            label="Players tracked"
+            value={(site.nPlayers + naBoard.nPlayers).toLocaleString()}
+            sub={`${site.nPlayers.toLocaleString()} EU · ${naBoard.nPlayers.toLocaleString()} NA`}
+            href="/leaderboard"
+            valueClass="text-gold"
+          />
+          <StatCard label="Items catalogued" value="117" sub="stats, passives, and costs" href="/items" />
         </div>
       </Container>
 
@@ -285,11 +292,6 @@ export default function HomePage() {
           {strongestRole && <StatCard label="Strongest role" value={strongestRole[0]} sub={`${strongestRole[1].wr.toFixed(1)}% top picks`} href="/meta#roles" />}
           {lowest && <StatCard label="Lowest win rate" value={lowest.name} sub={`${lowest.wr.toFixed(1)}% win rate`} avatarSrc={lowest.icon} valueClass="text-bad" href="/win-rates?view=lowest" />}
         </div>
-      </Container>
-
-      {/* Season countdown */}
-      <Container className="py-6">
-        <SeasonCard />
       </Container>
 
       {/* Biggest winners & losers this patch */}

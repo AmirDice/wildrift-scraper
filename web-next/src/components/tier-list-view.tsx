@@ -218,7 +218,25 @@ export function TierListView({
           <div className="flex flex-col gap-2.5">
             {TIER_ORDER.map((t) => {
               const champs = buckets[t] ?? [];
-              if (champs.length === 0) return null;
+              // An empty tier keeps its row. Hiding it made the ladder look
+              // like it simply had no L tier -- spotted on Global/Baron, where
+              // nobody is bad enough to land there -- and a missing band reads
+              // as broken rendering rather than as the (interesting) fact that
+              // the band is genuinely unoccupied.
+              if (champs.length === 0) {
+                return (
+                  <div key={t} className="flex items-stretch gap-1.5 opacity-45 sm:gap-2.5">
+                    <div
+                      className={`grid w-11 shrink-0 place-items-center rounded-xl text-lg font-black sm:w-20 sm:text-2xl ${tierClass[t]}`}
+                    >
+                      {tierLabel(t)}
+                    </div>
+                    <div className="glass flex flex-1 items-center rounded-xl p-2 text-sm text-faint sm:p-4">
+                      No champions in this tier
+                    </div>
+                  </div>
+                );
+              }
               return (
                 <div key={t} className="flex items-stretch gap-1.5 sm:gap-2.5">
                   <div
