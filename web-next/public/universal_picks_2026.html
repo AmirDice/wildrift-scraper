@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<title>Strong on Every Server | WrTrueMeta</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #05080f; }
+  .slide {
+    width: 1600px; height: 1000px;
+    margin: 24px auto;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 22px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #e8edf6;
+    padding: 44px 54px 36px;
+    display: flex;
+    flex-direction: column;
+  }
+  /* The site's own backdrop: art, dark overlay, corner vignette. */
+  .bg-art { position: absolute; inset: 0; z-index: -3; background: url(/ionia2.jpg) center / cover no-repeat; }
+  .bg-dark { position: absolute; inset: 0; z-index: -2;
+    background: linear-gradient(180deg, rgba(7,10,18,0.46) 0%, rgba(7,10,18,0.52) 45%, rgba(7,10,18,0.56) 100%); }
+  .bg-vignette { position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(125% 105% at 50% 45%, transparent 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%); }
+
+  /* The site's liquid glass, sweep frozen so a screenshot never catches it mid-travel. */
+  .glass {
+    position: relative; isolation: isolate; overflow: hidden;
+    background:
+      linear-gradient(120deg, rgba(79,141,255,0.10), rgba(255,255,255,0.02) 40%, rgba(79,141,255,0.08) 100%),
+      linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.045) 45%, rgba(255,255,255,0.08) 100%),
+      rgba(10,14,24,0.38);
+    border: 1px solid rgba(255,255,255,0.17);
+    backdrop-filter: blur(26px) saturate(200%);
+    border-radius: 18px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.3),
+      0 1px 2px rgba(0,0,0,0.3), 0 8px 28px -10px rgba(0,0,0,0.55),
+      0 0 26px -6px rgba(79,141,255,0.3);
+  }
+  .glass::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.13) 48%, rgba(255,255,255,0.045) 52%, transparent 65%);
+    background-size: 260% 100%; background-position: 60% 0;
+  }
+  .glass-thin {
+    background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(18px) saturate(180%); border-radius: 14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+  }
+
+  /* header */
+  .head { display: flex; align-items: flex-end; justify-content: space-between; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #4f8dff; }
+  .brand span { color: #e8edf6; }
+  h1 { font-size: 46px; font-weight: 800; letter-spacing: -0.015em; margin-top: 4px; text-shadow: 0 2px 18px rgba(0,0,0,0.45); }
+  .sub { margin-top: 8px; font-size: 16.5px; color: #b6c1d4; max-width: 800px; line-height: 1.45; text-shadow: 0 1px 10px rgba(0,0,0,0.5); }
+  .sub b { color: #e8edf6; font-weight: 600; }
+  .heroNums { display: flex; gap: 12px; }
+  .hero { min-width: 132px; padding: 14px 18px 12px; text-align: center; }
+  .hero .v { font-size: 28px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+  .hero .k { margin-top: 2px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #9fb6e2; }
+
+  /* main split */
+  .main { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; margin-top: 22px; flex: 1; }
+  .card { padding: 18px 20px 16px; display: flex; flex-direction: column; }
+  .label { font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #9aa7bd; }
+  .label.gold { color: #ffd76e; }
+
+  /* the seven */
+  .list { margin-top: 12px; display: flex; flex-direction: column; gap: 7px; flex: 1; justify-content: center; }
+  .row { display: grid; grid-template-columns: 60px 1fr 84px 84px 84px; align-items: center; gap: 12px; padding: 8px 14px; border-radius: 12px; }
+  .row.head2 { padding-top: 0; padding-bottom: 4px; }
+  .row.head2 span { font-size: 10.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #7f8a9e; text-align: right; }
+  .row.head2 .who { text-align: left; }
+  .row img { width: 48px; height: 48px; border-radius: 10px; border: 2px solid rgba(255,215,110,0.55); object-fit: cover; background: #0d1526; }
+  .row .who { display: flex; flex-direction: column; }
+  .row .nm { font-size: 19.5px; font-weight: 700; }
+  .row .rl { font-size: 12px; color: #9aa7bd; }
+  .row .wr { text-align: right; font-size: 19.5px; font-weight: 700; font-variant-numeric: tabular-nums; color: #5dd6a2; }
+  .row.top { background: rgba(255,215,110,0.09); border: 1px solid rgba(255,215,110,0.32); }
+  .row.alt { background: rgba(255,255,255,0.035); }
+
+  .note { margin-top: 10px; font-size: 13px; color: #9aa7bd; line-height: 1.5; }
+  .note b { color: #e8edf6; font-weight: 600; }
+
+  /* right column */
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+  .bigStat { font-size: 40px; font-weight: 800; line-height: 1; margin-top: 8px; }
+  .bigStat.gold { color: #ffd76e; }
+  .kicker { font-size: 15px; font-weight: 700; margin-top: 6px; }
+  .body { font-size: 13.5px; color: #b6c1d4; line-height: 1.55; margin-top: 6px; }
+  .body b { color: #e8edf6; font-weight: 600; }
+
+  .hec { display: flex; align-items: center; gap: 13px; margin-top: 10px; }
+  .hec img { width: 54px; height: 54px; border-radius: 12px; border: 2px solid rgba(79,141,255,0.55); object-fit: cover; }
+  .hecNums { display: flex; gap: 16px; margin-top: 10px; }
+  .hecNums div { text-align: center; }
+  .hecNums .n { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .hecNums .l { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9aa7bd; margin-top: 2px; }
+
+  .bars { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+  .bar { display: grid; grid-template-columns: 66px 1fr 40px; align-items: center; gap: 8px; font-size: 12.5px; }
+  .bar .n { color: #cfd9ea; font-weight: 600; }
+  .bar .track { display: block; height: 8px; border-radius: 5px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .bar .fill { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, #2f5fb3, #4f8dff); }
+  .bar .v { text-align: right; color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* footer */
+  .foot { margin-top: 16px; padding: 13px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; color: #b6c1d4; }
+  .foot .site { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; color: #4f8dff; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="bg-art"></div>
+  <div class="bg-dark"></div>
+  <div class="bg-vignette"></div>
+
+  <div class="head">
+    <div>
+      <div class="brand">WrTrue<span>Meta</span></div>
+      <h1>Strong on every server</h1>
+      <p class="sub">I read the <b>top 50 players on every champion's leaderboard</b> on EU and NA, one by one,
+        straight from the game, and put both next to China's published ladder. Out of 140 champions, only
+        <b>seven</b> clear 52% on all three.</p>
+    </div>
+    <div class="heroNums">
+      <div class="hero glass-thin"><div class="v">140</div><div class="k">Champions</div></div>
+      <div class="hero glass-thin"><div class="v">13,700</div><div class="k">Players read</div></div>
+      <div class="hero glass-thin"><div class="v">3</div><div class="k">Servers</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="card glass">
+      <div class="label gold">The seven, by weakest server</div>
+      <div class="list">
+        <div class="row head2">
+          <span></span><span class="who">Champion</span><span>EU</span><span>NA</span><span>CN</span>
+        </div>
+        <div class="row top">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10041.png" alt="">
+          <span class="who"><span class="nm">Kayle</span><span class="rl">Baron</span></span>
+          <span class="wr">53.7%</span><span class="wr">53.3%</span><span class="wr">53.2%</span>
+        </div>
+        <div class="row alt">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10084.png" alt="">
+          <span class="who"><span class="nm">Nidalee</span><span class="rl">Jungle</span></span>
+          <span class="wr">56.5%</span><span class="wr">54.8%</span><span class="wr">52.5%</span>
+        </div>
+        <div class="row">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10047.png" alt="">
+          <span class="who"><span class="nm">Sona</span><span class="rl">Support</span></span>
+          <span class="wr">52.5%</span><span class="wr">54.3%</span><span class="wr">54.6%</span>
+        </div>
+        <div class="row alt">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10030.png" alt="">
+          <span class="who"><span class="nm">Pantheon</span><span class="rl">Jungle</span></span>
+          <span class="wr">53.3%</span><span class="wr">52.5%</span><span class="wr">53.3%</span>
+        </div>
+        <div class="row">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10004.png" alt="">
+          <span class="who"><span class="nm">Amumu</span><span class="rl">Jungle</span></span>
+          <span class="wr">53.3%</span><span class="wr">52.5%</span><span class="wr">52.5%</span>
+        </div>
+        <div class="row alt">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10064.png" alt="">
+          <span class="who"><span class="nm">Rammus</span><span class="rl">Jungle</span></span>
+          <span class="wr">53.6%</span><span class="wr">52.1%</span><span class="wr">55.3%</span>
+        </div>
+        <div class="row">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10027.png" alt="">
+          <span class="who"><span class="nm">Nilah</span><span class="rl">Jungle</span></span>
+          <span class="wr">55.7%</span><span class="wr">58.5%</span><span class="wr">52.0%</span>
+        </div>
+      </div>
+      <div class="note">
+        <b>Five of the seven are junglers.</b> That is not a coincidence: jungle is the strongest role on
+        both servers we measure ourselves, and it is the only role above 50%.
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card glass" style="flex:1.1">
+        <div class="label gold">The most consistent champion in the game</div>
+        <div class="bigStat gold">Kayle</div>
+        <div class="kicker">53.7 &middot; 53.3 &middot; 53.2</div>
+        <div class="body">
+          Half a point of spread across three servers on two completely different measurement methods.
+          Nothing else in the game is that stable.
+        </div>
+      </div>
+
+      <div class="card glass" style="flex:1.15">
+        <div class="label">But the best pick on your server is not the best everywhere</div>
+        <div class="hec">
+          <img src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png" alt="">
+          <div>
+            <div class="kicker" style="margin-top:0">Hecarim</div>
+            <div class="body" style="margin-top:2px">Number one on EU <i>and</i> NA. Ordinary in China.</div>
+          </div>
+        </div>
+        <div class="hecNums">
+          <div><div class="n" style="color:#5dd6a2">60.2%</div><div class="l">EU</div></div>
+          <div><div class="n" style="color:#5dd6a2">58.9%</div><div class="l">NA</div></div>
+          <div><div class="n" style="color:#f2708a">51.1%</div><div class="l">CN</div></div>
+        </div>
+      </div>
+
+      <div class="card glass" style="flex:1">
+        <div class="label">Average win rate by role</div>
+        <div class="bars">
+          <div class="bar"><span class="n">Jungle</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="v">51.2</span></div>
+          <div class="bar"><span class="n">Baron</span><span class="track"><span class="fill" style="width:47%"></span></span><span class="v">49.8</span></div>
+          <div class="bar"><span class="n">Mid</span><span class="track"><span class="fill" style="width:43%"></span></span><span class="v">49.7</span></div>
+          <div class="bar"><span class="n">Dragon</span><span class="track"><span class="fill" style="width:43%"></span></span><span class="v">49.7</span></div>
+          <div class="bar"><span class="n">Support</span><span class="track"><span class="fill" style="width:35%"></span></span><span class="v">49.5</span></div>
+        </div>
+        <div class="note" style="margin-top:8px">
+          EU shown; NA matches within 0.2 on every role. The servers disagree about
+          <b>champions</b>, not about <b>roles</b>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot glass-thin">
+    <div>EU &amp; NA: top 50 players per champion, read from the game &middot; CN: Tencent's published Challenger sample
+      &middot; patch 7.2b, August 2026</div>
+    <div class="site">wrtruemeta.com</div>
+  </div>
+</div>
+</body>
+</html>
