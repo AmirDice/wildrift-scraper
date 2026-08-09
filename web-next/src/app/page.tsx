@@ -10,6 +10,7 @@ import { HomeSearch } from "@/components/home-search";
 import { InsightCard } from "@/components/insight-card";
 import { MoversHighlight } from "@/components/movers-highlight";
 import { BuildsGeneratedCount, BuildsGeneratedPill } from "@/components/builds-counter";
+import { SeasonCard } from "@/components/season-card";
 import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champion-change-ranking";
 
 // The title and description come from the root layout; the home page only has
@@ -243,6 +244,11 @@ export default function HomePage() {
             </>
           )}
         </div>
+      </Container>
+
+      {/* Season countdown */}
+      <Container className="py-6">
+        <SeasonCard />
       </Container>
 
       {/* Transparent coverage counters: these describe the current generated
