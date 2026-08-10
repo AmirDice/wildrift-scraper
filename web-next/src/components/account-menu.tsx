@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "@/components/account-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in";
+import { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 
 /* eslint-disable @next/next/no-img-element */
 
 /**
  * Nav-bar account control. Signed out it offers Google sign-in (and says what
- * signing in buys you: another 10 build generations a day). Signed in it shows
+ * signing in buys you: another SIGNED_IN_DAILY_BUILDS a day). Signed in it shows
  * the avatar, today's remaining generations, and sign-out.
  */
 export function AccountMenu({ compact = false }: { compact?: boolean }) {
@@ -95,7 +96,8 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
             <>
               <p className="text-sm font-semibold text-text">Sign in with Google</p>
               <p className="mt-1 text-xs leading-relaxed text-muted">
-                Unlocks 10 more build generations each day, on top of the free 10.
+                Unlocks {SIGNED_IN_DAILY_BUILDS} more build generations each day, on top of the
+                free {ANON_DAILY_BUILDS}.
               </p>
               <div className="mt-3">
                 <GoogleSignInButton onDone={() => setOpen(false)} />

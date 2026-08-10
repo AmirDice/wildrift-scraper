@@ -14,10 +14,10 @@ import crypto from "node:crypto";
 import { dayKey, kvGetNumber, kvIncr } from "@/lib/kv";
 import type { SessionUser } from "@/lib/session";
 
-/** Anonymous allowance, per IP per UTC day. */
-export const ANON_DAILY_BUILDS = 5;
-/** Extra allowance unlocked by signing in, per Google account per UTC day. */
-export const SIGNED_IN_DAILY_BUILDS = 5;
+// Defined in lib/quota-limits.ts, which has no node-only imports, so client
+// components can read the same numbers instead of restating them in prose.
+export { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
+import { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 
 const DAY_SECONDS = 60 * 60 * 24;
 

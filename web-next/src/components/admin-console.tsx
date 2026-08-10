@@ -156,10 +156,18 @@ interface EngagementDay {
 
 interface CohortRow { week: string; size: number; d1: number; d7: number; d30: number }
 
+interface ActorSummary {
+  action: string;
+  allTime: number;
+  today: number;
+  daily: { day: string; unique: number }[];
+}
+
 interface UsageData {
   events: Record<string, { total: number; today: number; last7Days: number }>;
   engagement?: EngagementDay[];
   cohorts?: CohortRow[];
+  actors?: Record<string, ActorSummary>;
   feedback: {
     up: number;
     down: number;
@@ -366,6 +374,47 @@ function UsagePanel({ token }: { token: string }) {
                     <td className="text-right tabular-nums">{c.d1} <span className="text-faint">{pct(c.d1)}</span></td>
                     <td className="text-right tabular-nums">{c.d7} <span className="text-faint">{pct(c.d7)}</span></td>
                     <td className="text-right tabular-nums">{c.d30} <span className="text-faint">{pct(c.d30)}</span></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Card>
+      )}
+
+      {data.actors && (
+        <Card className="mt-4 p-4">
+          <h3 className="text-sm font-semibold">Savers and sharers</h3>
+          <p className="mt-1 text-xs text-muted">
+            Distinct PEOPLE, against the action totals above. One person sharing the same build
+            into four group chats is four shares but one sharer, and only the second number says
+            whether sharing is a channel worth building on. Counted from 2026-08-10; anything
+            before that reads as zero because nobody was counting, not because nobody shared.
+          </p>
+          <table className="mt-3 w-full text-sm">
+            <thead>
+              <tr className="border-b border-line text-left text-[0.65rem] uppercase tracking-wide text-faint">
+                <th className="py-1.5">Action</th>
+                <th className="text-right">People (all time)</th>
+                <th className="text-right">People today</th>
+                <th className="text-right">Actions (all time)</th>
+                <th className="text-right">Per person</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(["saved", "shared"] as const).map((action) => {
+                const actor = data.actors?.[action];
+                if (!actor) return null;
+                const actions = data.events[action === "saved" ? "build_saved" : "build_shared"]?.total ?? 0;
+                return (
+                  <tr key={action} className="border-b border-line/40">
+                    <td className="py-1.5 capitalize text-muted">{action}</td>
+                    <td className="text-right tabular-nums text-text">{actor.allTime}</td>
+                    <td className="text-right tabular-nums">{actor.today}</td>
+                    <td className="text-right tabular-nums text-faint">{actions}</td>
+                    <td className="text-right tabular-nums text-faint">
+                      {actor.allTime ? (actions / actor.allTime).toFixed(1) : "--"}
+                    </td>
                   </tr>
                 );
               })}

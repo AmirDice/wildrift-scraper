@@ -14,6 +14,7 @@ import { AddToAlbumButton } from "@/components/add-to-album";
 import { LockPicker } from "@/components/lock-picker";
 import { Tip } from "@/components/build-view";
 import { Disclosure } from "@/components/ui";
+import { SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -604,7 +605,7 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
       </p>
       <p className="mt-1 text-xs leading-relaxed text-muted">
         {canUpgrade
-          ? "Sign in with Google to unlock 10 more, right now. Every generation is a real model call, which is what the cap is protecting."
+          ? `Sign in with Google to unlock ${SIGNED_IN_DAILY_BUILDS} more, right now. Every generation is a real model call, which is what the cap is protecting.`
           : `Your allowance resets ${hours == null ? "at midnight UTC" : `in about ${hours} hours`}. Recommended builds and the Custom Build Lab stay open in the meantime.`}
       </p>
       {canUpgrade && (
@@ -1062,24 +1063,36 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                   against 760 generations, and this gap is the likeliest
                   reason. */}
               {champ && (
-                <div className="mt-3 flex items-center justify-between gap-3 border-t border-line/60 pt-3">
-                  <p className="text-xs text-muted">Keep this build for later?</p>
-                  <AddToAlbumButton
-                    build={{
-                      champion: champ,
-                      championSlug: championMeta?.slug ?? champ.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                      source: "generated",
-                      role: role || undefined,
-                      variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
-                      items: [
-                        ...(advice.items ?? []),
-                        ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),
-                      ],
-                      runes: advice.runes
-                        ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
-                        : [],
-                    }}
-                  />
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-3">
+                  <p className="text-xs text-muted">Keep this build, or send it to someone?</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <AddToAlbumButton
+                      build={{
+                        champion: champ,
+                        championSlug: championMeta?.slug ?? champ.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                        source: "generated",
+                        role: role || undefined,
+                        variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
+                        items: [
+                          ...(advice.items ?? []),
+                          ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),
+                        ],
+                        runes: advice.runes
+                          ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
+                          : [],
+                      }}
+                    />
+                    <ShareBuildButton
+                      path={isCounter
+                        ? `/build?champion=${encodeURIComponent(champ)}&tab=counter`
+                        : `/build?champion=${encodeURIComponent(champ)}&tab=generate`}
+                      title={`${champ} build on WrTrueMeta`}
+                      text={isCounter
+                        ? `${champ} build against ${selectedEnemies.join(", ") || "the enemy team"}, from WrTrueMeta.`
+                        : `${champ} ${selectedPlaystyle?.label ?? playstyle} build from WrTrueMeta.`}
+                      label="Share"
+                    />
+                  </div>
                 </div>
               )}
             </div>

@@ -7,7 +7,7 @@ import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
 /**
  * GET -- who is signed in, and how many build generations are left today.
  * The build tools poll this once on mount so they can show the remaining
- * count and the "sign in for 10 more" prompt without a generation attempt.
+ * count and the "sign in for more" prompt without a generation attempt.
  */
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

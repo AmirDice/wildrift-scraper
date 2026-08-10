@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { KV_CONFIGURED, kvGetNumber, kvList, kvSetCount } from "@/lib/kv";
 import { FEEDBACK_REASON_KEYS } from "@/lib/feedback-options";
-import { TRACKED_EVENTS, cohortSummary, engagementSummary, eventSummary } from "@/lib/stats";
+import { ACTOR_ACTIONS, TRACKED_EVENTS, actorSummary, cohortSummary, engagementSummary, eventSummary } from "@/lib/stats";
 
 /**
  * GET /api/admin/usage?token=... -- the internal read-out.
@@ -38,6 +38,7 @@ export async function GET(request: Request) {
     engagementSummary(7),
   ]);
   const cohorts = await cohortSummary(6);
+  const actors = await Promise.all(ACTOR_ACTIONS.map((action) => actorSummary(action)));
   const parse = (entry: string) => {
     try { return JSON.parse(entry) as unknown; } catch { return entry; }
   };
@@ -69,5 +70,9 @@ export async function GET(request: Request) {
     // Weekly cohorts: of the people who first generated in week W, how many
     // came back within 1 / 7 / 30 days. The question retention actually asks.
     cohorts,
+    // Distinct PEOPLE who saved / shared (tracked from 2026-08-10), against
+    // the build_saved / build_shared event totals above which count actions.
+    // The gap between the two is how much repeat behaviour there is.
+    actors: Object.fromEntries(actors.map((summary) => [summary.action, summary])),
   });
 }

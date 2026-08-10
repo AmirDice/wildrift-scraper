@@ -268,6 +268,61 @@ export async function engagementSummary(days = 7): Promise<EngagementDay[]> {
   return out;
 }
 
+/* ── who saves and who shares ────────────────────────────────────────────── */
+//
+// TRACKED_EVENTS counts ACTIONS: one person sharing the same build into four
+// group chats registers four. That is the right number for "is the button
+// used" and the wrong one for "how many people share", which is the question
+// that decides whether sharing is a growth channel worth building on. Three
+// albums against 760 generations was only alarming once it was clear it meant
+// three PEOPLE.
+//
+// So savers and sharers also land in sets, daily and lifetime, under the same
+// identity unit as the quota and the cohorts -- Google sub when signed in,
+// hashed IP otherwise -- so these figures can sit beside those without
+// quietly comparing two different things.
+
+export type ActorAction = "saved" | "shared";
+
+export const ACTOR_ACTIONS: readonly ActorAction[] = ["saved", "shared"];
+
+const actorDayKey = (action: ActorAction, day = dayKey()) => `actor:${action}:day:${day}`;
+const actorAllKey = (action: ActorAction) => `actor:${action}:all`;
+
+/** Files one person under an action. Repeats by the same person collapse. */
+export async function recordActor(action: ActorAction, identity: string): Promise<void> {
+  try {
+    await Promise.all([
+      kvSetAdd(actorDayKey(action), identity, DAY_BUCKET_TTL),
+      kvSetAdd(actorAllKey(action), identity),
+    ]);
+  } catch {
+    /* a counter is never worth failing the interaction over */
+  }
+}
+
+export interface ActorSummary {
+  action: ActorAction;
+  /** Distinct people who did it ever, and today. */
+  allTime: number;
+  today: number;
+  /** Distinct people per day, newest first. Not summable: the same person
+   *  appearing on three days is three entries but one human. */
+  daily: { day: string; unique: number }[];
+}
+
+export async function actorSummary(action: ActorAction, days = 7): Promise<ActorSummary> {
+  const daily: { day: string; unique: number }[] = [];
+  for (let offset = 0; offset < days; offset += 1) {
+    const date = new Date();
+    date.setUTCDate(date.getUTCDate() - offset);
+    const day = dayKey(date);
+    daily.push({ day, unique: await kvSetCount(actorDayKey(action, day)) });
+  }
+  const allTime = await kvSetCount(actorAllKey(action));
+  return { action, allTime, today: daily[0]?.unique ?? 0, daily };
+}
+
 /* ── likes ───────────────────────────────────────────────────────────────── */
 
 const likeKey = (buildId: string) => `like:${buildId}`;
