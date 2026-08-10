@@ -263,6 +263,9 @@ const ROLES = ["Baron", "Jungle", "Mid", "Dragon", "Support"] as const;
  *  Both the progress curve and the note under the bar read from this, so they
  *  can never drift apart again. */
 const EXPECTED_MS = 55_000;
+// Minimum time a CACHED build stays behind the progress bar. Long enough to
+// read as work, short enough that it never feels like a stall.
+const CACHED_MIN_MS = 5_000;
 
 /** Sparkles mark (Heroicons) on the generate buttons: the visual cue for a
  *  generated build. */
@@ -727,6 +730,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
 
   async function generate() {
     if (!champ || needsEnemy) return;
+    const startedAt = Date.now();
     setProgress(4);
     setElapsed(0);
     setLoading(true);
@@ -762,7 +766,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         throw new Error(`Build service returned an invalid response (HTTP ${res.status}).`);
       }
 
-      const payload = parsed as Advice;
+      const payload = parsed as Advice & { cached?: boolean };
       // Belt and braces: the server is supposed to send a string here, but an
       // upstream platform error can put an OBJECT in `error`, and interpolating
       // that produced "Could not build: [object Object]".
@@ -772,6 +776,18 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
       const nextAdvice = res.ok
         ? payload
         : { ...payload, error: `${reported} (HTTP ${res.status})` };
+      // A cache hit returns in milliseconds, which reads as "it didn't
+      // actually do anything" and undersells a build that is every bit as
+      // considered as a fresh one -- somebody else simply paid for it first.
+      // Hold the existing progress bar for a moment so the result lands the
+      // way a generated one does. Only ever a floor: a slow cache read is not
+      // delayed further, and a real generation never waits at all.
+      if (res.ok && payload.cached) {
+        const elapsed = Date.now() - startedAt;
+        if (elapsed < CACHED_MIN_MS) {
+          await new Promise((resolve) => setTimeout(resolve, CACHED_MIN_MS - elapsed));
+        }
+      }
       setAdvice(nextAdvice);
       onAdviceChange?.(nextAdvice);
     } catch (e) {

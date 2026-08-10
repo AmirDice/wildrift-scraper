@@ -425,7 +425,15 @@ async function handlePost(request: Request) {
   const cacheKey = buildCacheKey(advisorRequest);
   const cached = await readCachedBuild(cacheKey);
   if (cached) {
-    const quota = await peekQuota(user, clientIp(request), unlimited);
+    const cacheIp = clientIp(request);
+    const quota = await peekQuota(user, cacheIp, unlimited);
+    // A cache hit is still a build delivered to a player, so it counts. This
+    // path used to return before any tracking ran, which undercounted the
+    // public "builds generated" figure and hid returning players whose builds
+    // all came from cache. The quota is deliberately still NOT consumed: the
+    // work was already paid for by whoever missed first.
+    void trackEvent(mode === "counter" ? "counter_generated" : "build_generated");
+    void recordGenerationEngagement(quotaIdentity(user, cacheIp), null);
     return NextResponse.json(
       { ...cached, quota, cached: true },
       { headers: { "X-RateLimit-Remaining": String(quota.remaining), "X-Build-Cache": "hit" } },

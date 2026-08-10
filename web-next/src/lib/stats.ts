@@ -113,22 +113,41 @@ export async function eventSummary(event: TrackedEvent, days = 7) {
 /** Depths beyond the allowance (unlimited codes) all land in one bucket. */
 const DEPTH_CAP = 6;
 
-export async function recordGenerationEngagement(identity: string, depth: number): Promise<void> {
+/**
+ * A build was delivered to someone.
+ *
+ * `depth` is which generation of their daily allowance this was, or NULL for a
+ * CACHE HIT -- somebody else already paid for that exact build, so the player
+ * is charged nothing and no allowance is consumed.
+ *
+ * A cache hit still counts as usage. It was invisible here until 2026-08-09,
+ * because the route returned cached builds before any tracking ran, which
+ * undercounted the public "builds generated" figure and, worse, could not see
+ * a returning player whose builds all came from cache -- exactly the person
+ * retention is trying to measure. Only the DEPTH histogram excludes cache
+ * hits, and it must: depth measures consumption of an allowance a cache hit
+ * never touches, so counting it would corrupt the distribution.
+ */
+export async function recordGenerationEngagement(
+  identity: string,
+  depth: number | null,
+): Promise<void> {
   try {
     const day = dayKey();
-    const bucket = Math.min(Math.max(depth, 1), DEPTH_CAP);
-    const writes: Promise<unknown>[] = [
-      kvIncr(`stat:gen_depth:${day}:${bucket}`, 1, DAY_BUCKET_TTL),
-      kvSetAdd(`gen:users:${day}`, identity, DAY_BUCKET_TTL),
-    ];
-    if (depth === 1) {
-      // First generation of the day: settle new-vs-returning once per day.
-      writes.push((async () => {
-        const neverSeenBefore = await kvSetAdd("gen:users:all", identity);
-        await kvIncr(`stat:${neverSeenBefore ? "gen_new" : "gen_returning"}:day:${day}`, 1, DAY_BUCKET_TTL);
-      })());
+    const writes: Promise<unknown>[] = [recordCohort(identity)];
+    if (depth != null) {
+      const bucket = Math.min(Math.max(depth, 1), DEPTH_CAP);
+      writes.push(kvIncr(`stat:gen_depth:${day}:${bucket}`, 1, DAY_BUCKET_TTL));
     }
-    writes.push(recordCohort(identity));
+    // New-vs-returning keys off the DAILY set rather than depth === 1: a
+    // cache-hit-only visit has no depth, and gating on depth silently dropped
+    // those people from the split entirely.
+    writes.push((async () => {
+      const firstUseToday = await kvSetAdd(`gen:users:${day}`, identity, DAY_BUCKET_TTL);
+      if (!firstUseToday) return;
+      const neverSeenBefore = await kvSetAdd("gen:users:all", identity);
+      await kvIncr(`stat:${neverSeenBefore ? "gen_new" : "gen_returning"}:day:${day}`, 1, DAY_BUCKET_TTL);
+    })());
     await Promise.all(writes);
   } catch {
     /* engagement is never worth failing a generation over */
