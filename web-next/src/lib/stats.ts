@@ -11,7 +11,7 @@
  *
  * All writes are fire-and-forget: a counter must never fail a user request.
  */
-import { dayKey, kvGetNumber, kvGetNumbers, kvIncr, kvPushCapped, kvSetAdd, kvSetCount } from "@/lib/kv";
+import { dayKey, kvGet, kvGetNumber, kvGetNumbers, kvIncr, kvPushCapped, kvSet, kvSetAdd, kvSetCount } from "@/lib/kv";
 
 /** Events worth counting. Keep the list closed so a typo cannot create a key. */
 export const TRACKED_EVENTS = [
@@ -36,6 +36,12 @@ export const TRACKED_EVENTS = [
   // visitor actually changed something in it.
   "custom_opened",
   "custom_edited",
+  // Someone pressed Generate with nothing left in their allowance. The depth
+  // histogram cannot show this: it counts generations that HAPPENED, and the
+  // cap means a sixth never does. Demand above the ceiling is invisible
+  // without recording the refusal itself.
+  "limit_reached_anon",     // ...and signing in would give them 5 more
+  "limit_reached_signed_in", // ...and there is nothing left to unlock
 ] as const;
 
 export type TrackedEvent = (typeof TRACKED_EVENTS)[number];
@@ -122,10 +128,91 @@ export async function recordGenerationEngagement(identity: string, depth: number
         await kvIncr(`stat:${neverSeenBefore ? "gen_new" : "gen_returning"}:day:${day}`, 1, DAY_BUCKET_TTL);
       })());
     }
+    writes.push(recordCohort(identity));
     await Promise.all(writes);
   } catch {
     /* engagement is never worth failing a generation over */
   }
+}
+
+/* ── cohort retention ────────────────────────────────────────────────────── */
+//
+// The depth histogram says how hard someone used the tool on one day. It says
+// nothing about whether they came back, which is the question that decides
+// whether the Build Studio is worth marketing.
+//
+// So each identity's FIRST generation stamps them with a date and files them
+// into that ISO week's cohort. Every later generation measures the gap and
+// files them into the d1 / d7 / d30 bucket of the cohort they started in.
+// Retention is then a plain set ratio: |cohort:W:d7| / |cohort:W:new|.
+//
+// Sets, not counters, because a person who returns three times in week one
+// must count once. TTLs are long enough to see a 30-day window through.
+
+const COHORT_TTL = DAY_SECONDS * 200;
+
+/** ISO-week key (YYYY-Www) -- weekly buckets, because at ~40 generators a day
+ *  a daily cohort is too small to read a percentage off. */
+function weekKey(date = new Date()): string {
+  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  // ISO weeks start Monday and week 1 contains the first Thursday.
+  const dayNum = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - dayNum + 3);
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  const week = 1 + Math.round(
+    ((d.getTime() - firstThursday.getTime()) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7,
+  );
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+async function recordCohort(identity: string): Promise<void> {
+  const firstKey = `gen:first:${identity}`;
+  const seen = await kvGet(firstKey);
+  const today = dayKey();
+  if (!seen) {
+    // Brand new generator: stamp them and open their cohort.
+    await Promise.all([
+      kvSet(firstKey, today, COHORT_TTL),
+      kvSetAdd(`cohort:${weekKey()}:new`, identity, COHORT_TTL),
+    ]);
+    return;
+  }
+  const firstDate = new Date(`${seen}T00:00:00Z`);
+  if (Number.isNaN(firstDate.getTime())) return;
+  const days = Math.floor((Date.now() - firstDate.getTime()) / 86400000);
+  if (days < 1) return;             // same day as their first: not a return
+  const cohort = weekKey(firstDate); // always the cohort they STARTED in
+  const writes: Promise<unknown>[] = [];
+  if (days <= 2) writes.push(kvSetAdd(`cohort:${cohort}:d1`, identity, COHORT_TTL));
+  if (days <= 7) writes.push(kvSetAdd(`cohort:${cohort}:d7`, identity, COHORT_TTL));
+  if (days <= 30) writes.push(kvSetAdd(`cohort:${cohort}:d30`, identity, COHORT_TTL));
+  await Promise.all(writes);
+}
+
+export interface CohortRow {
+  week: string;
+  size: number;
+  d1: number;
+  d7: number;
+  d30: number;
+}
+
+/** The last N weekly cohorts, newest first. */
+export async function cohortSummary(weeks = 6): Promise<CohortRow[]> {
+  const out: CohortRow[] = [];
+  for (let back = 0; back < weeks; back += 1) {
+    const when = new Date();
+    when.setUTCDate(when.getUTCDate() - back * 7);
+    const week = weekKey(when);
+    const [size, d1, d7, d30] = await Promise.all([
+      kvSetCount(`cohort:${week}:new`),
+      kvSetCount(`cohort:${week}:d1`),
+      kvSetCount(`cohort:${week}:d7`),
+      kvSetCount(`cohort:${week}:d30`),
+    ]);
+    out.push({ week, size, d1, d7, d30 });
+  }
+  return out;
 }
 
 export interface EngagementDay {

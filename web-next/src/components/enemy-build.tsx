@@ -1037,6 +1037,35 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 ) : null}
               </div>
               <ItemStrip advice={advice} />
+              {/* Save sits HERE as well as in the actions row at the bottom.
+                  The bottom row is ~185 lines of rendered content further
+                  down -- past runes, summoners, situational items, the play
+                  guide and the build evaluation -- so on a phone the moment
+                  someone decides they like a build is nowhere near the moment
+                  they are offered somewhere to keep it. Three albums exist
+                  against 760 generations, and this gap is the likeliest
+                  reason. */}
+              {champ && (
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-line/60 pt-3">
+                  <p className="text-xs text-muted">Keep this build for later?</p>
+                  <AddToAlbumButton
+                    build={{
+                      champion: champ,
+                      championSlug: championMeta?.slug ?? champ.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                      source: "generated",
+                      role: role || undefined,
+                      variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
+                      items: [
+                        ...(advice.items ?? []),
+                        ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),
+                      ],
+                      runes: advice.runes
+                        ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
+                        : [],
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
 

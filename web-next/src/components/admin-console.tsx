@@ -154,9 +154,12 @@ interface EngagementDay {
   depth: number[];
 }
 
+interface CohortRow { week: string; size: number; d1: number; d7: number; d30: number }
+
 interface UsageData {
   events: Record<string, { total: number; today: number; last7Days: number }>;
   engagement?: EngagementDay[];
+  cohorts?: CohortRow[];
   feedback: {
     up: number;
     down: number;
@@ -180,6 +183,8 @@ const EVENT_LABELS: Record<string, string> = {
   build_feedback: "Feedback left",
   custom_opened: "Custom Lab opened",
   custom_edited: "Custom Lab edited",
+  limit_reached_anon: "Hit the cap (could sign in)",
+  limit_reached_signed_in: "Hit the cap (nothing left)",
 };
 
 function timeAgo(iso?: string): string {
@@ -332,6 +337,42 @@ function UsagePanel({ token }: { token: string }) {
           </Card>
         );
       })()}
+
+      {(data.cohorts?.length ?? 0) > 0 && (
+        <Card className="mt-4 p-4">
+          <h3 className="text-sm font-semibold">Retention by cohort</h3>
+          <p className="mt-1 text-xs text-muted">
+            Of the people who generated their FIRST build in a given week, how many came back.
+            A cohort needs its window to elapse before its number means anything: this week&rsquo;s
+            D30 will read 0 until 30 days have passed.
+          </p>
+          <table className="mt-3 w-full text-sm">
+            <thead>
+              <tr className="border-b border-line text-left text-[0.65rem] uppercase tracking-wide text-faint">
+                <th className="py-1.5">Week</th>
+                <th className="text-right">New</th>
+                <th className="text-right">D1</th>
+                <th className="text-right">D7</th>
+                <th className="text-right">D30</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.cohorts!.map((c) => {
+                const pct = (n: number) => (c.size ? `${Math.round((100 * n) / c.size)}%` : "--");
+                return (
+                  <tr key={c.week} className="border-b border-line/40">
+                    <td className="py-1.5 font-mono text-xs text-muted">{c.week}</td>
+                    <td className="text-right tabular-nums text-text">{c.size}</td>
+                    <td className="text-right tabular-nums">{c.d1} <span className="text-faint">{pct(c.d1)}</span></td>
+                    <td className="text-right tabular-nums">{c.d7} <span className="text-faint">{pct(c.d7)}</span></td>
+                    <td className="text-right tabular-nums">{c.d30} <span className="text-faint">{pct(c.d30)}</span></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Card>
+      )}
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Card className="p-4">

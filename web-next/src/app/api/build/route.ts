@@ -448,6 +448,13 @@ async function handlePost(request: Request) {
   try {
     const { ok, quota } = await consumeQuota(user, ip, unlimited);
     if (!ok) {
+      // Demand ABOVE the ceiling. The depth histogram can never show this --
+      // it counts generations that happened, and the cap means the sixth
+      // never does -- so the refusal itself is the only evidence that someone
+      // wanted more. Split by whether signing in would still unlock five
+      // more, because those are two different products decisions: one is a
+      // conversion prompt, the other is a real cap that is costing usage.
+      void trackEvent(quota.canUnlockBySigningIn ? "limit_reached_anon" : "limit_reached_signed_in");
       const hours = Math.max(1, Math.ceil((quota.resetAt - Date.now()) / 3_600_000));
       return NextResponse.json(
         {

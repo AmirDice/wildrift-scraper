@@ -207,13 +207,28 @@ export async function addBuild(
   if (album.builds.length >= MAX_BUILDS_PER_ALBUM) {
     return { error: `That album is full (${MAX_BUILDS_PER_ALBUM} builds).` };
   }
-  // The same champion + variant twice is a duplicate, not a second opinion.
+  // A duplicate is the same CONTENT, not the same label.
+  //
+  // This used to compare champion + variant + source, which rejected saves
+  // that were genuinely different builds: Pyke Mid and Pyke Support collided
+  // because role was never part of the key, and every counter build for a
+  // champion collided with every other one because they all carry
+  // variant="counter" -- even though a counter build exists precisely to
+  // answer one specific enemy team. Players reported it as "you can only save
+  // one build per champion", which was close enough to true.
+  //
+  // Comparing the items and runes instead means two saves collide only when
+  // they really are the same loadout, which is the only case worth refusing.
+  const sameLoadout = (a: readonly string[], b: readonly string[]) =>
+    a.length === b.length && a.every((value, index) => value === b[index]);
   const duplicate = album.builds.find(
     (entry) => entry.championSlug === build.championSlug
-      && entry.variant === build.variant
-      && entry.source === build.source,
+      && sameLoadout(entry.items, build.items)
+      && sameLoadout(entry.runes, build.runes),
   );
-  if (duplicate) return { error: `${build.champion} is already in this album.` };
+  if (duplicate) {
+    return { error: `That exact ${build.champion} build is already in this album.` };
+  }
 
   album.builds.unshift({ ...build, id: newId(6), addedAt: new Date().toISOString() });
   album.updatedAt = new Date().toISOString();
