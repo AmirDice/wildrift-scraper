@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
-import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, refundQuota } from "@/lib/quota";
+import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, refundQuota, type QuotaState } from "@/lib/quota";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
 import { checkAbuseGuards } from "@/lib/build-guards";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
@@ -164,6 +164,30 @@ type Body = {
  * way: it is wanted fast and the enemy comp already constrains the answer.
  */
 const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 1) || 1);
+
+/**
+ * The response for "you have nothing left today", shared by the cache path and
+ * the generation path so a player gets the same answer either way.
+ *
+ * Recording the refusal is the point: the depth histogram counts generations
+ * that HAPPENED, so demand above the ceiling is invisible unless the block
+ * itself is counted. Split by whether signing in would still unlock more,
+ * because those are different decisions -- one is a conversion prompt that is
+ * not working, the other is a cap costing real usage.
+ */
+function outOfAllowance(quota: QuotaState): NextResponse {
+  void trackEvent(quota.canUnlockBySigningIn ? "limit_reached_anon" : "limit_reached_signed_in");
+  const hours = Math.max(1, Math.ceil((quota.resetAt - Date.now()) / 3_600_000));
+  return NextResponse.json(
+    {
+      error: quota.canUnlockBySigningIn
+        ? `That is your ${ANON_DAILY_BUILDS} free builds for today. Sign in with Google for ${quota.limit} more, or come back in ~${hours}h.`
+        : `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h.`,
+      quota,
+    },
+    { status: 429, headers: { "X-RateLimit-Remaining": "0" } },
+  );
+}
 
 type AdvisorResult =
   | { ok: true; data: unknown }
@@ -426,14 +450,22 @@ async function handlePost(request: Request) {
   const cached = await readCachedBuild(cacheKey);
   if (cached) {
     const cacheIp = clientIp(request);
-    const quota = await peekQuota(user, cacheIp, unlimited);
-    // A cache hit is still a build delivered to a player, so it counts. This
-    // path used to return before any tracking ran, which undercounted the
-    // public "builds generated" figure and hid returning players whose builds
-    // all came from cache. The quota is deliberately still NOT consumed: the
-    // work was already paid for by whoever missed first.
+    // A cache hit spends an allowance exactly like a fresh generation.
+    //
+    // It used to be free, on the reasoning that a lookup costs us nothing and
+    // charging for it charges for work we did not do. That is true about COST
+    // and wrong about MEASUREMENT, which is what the allowance is really for
+    // here: nothing is being sold, so the five-a-day exists to tell us how
+    // much people want. Free cache hits meant a heavy user could take twenty
+    // builds a day, never reach the cap, and register as ordinary -- hiding
+    // exactly the person worth learning about before there is anything to
+    // monetise. Owner's call, 2026-08-09.
+    const { ok, quota } = await consumeQuota(user, cacheIp, unlimited);
+    if (!ok) return outOfAllowance(quota);
     void trackEvent(mode === "counter" ? "counter_generated" : "build_generated");
-    void recordGenerationEngagement(quotaIdentity(user, cacheIp), null);
+    // Real depth now, not null: the allowance WAS consumed, so this belongs in
+    // the distribution the "used all five" figure is read from.
+    void recordGenerationEngagement(quotaIdentity(user, cacheIp), quota.used);
     return NextResponse.json(
       { ...cached, quota, cached: true },
       { headers: { "X-RateLimit-Remaining": String(quota.remaining), "X-Build-Cache": "hit" } },
@@ -455,25 +487,7 @@ async function handlePost(request: Request) {
   const ip = clientIp(request);
   try {
     const { ok, quota } = await consumeQuota(user, ip, unlimited);
-    if (!ok) {
-      // Demand ABOVE the ceiling. The depth histogram can never show this --
-      // it counts generations that happened, and the cap means the sixth
-      // never does -- so the refusal itself is the only evidence that someone
-      // wanted more. Split by whether signing in would still unlock five
-      // more, because those are two different products decisions: one is a
-      // conversion prompt, the other is a real cap that is costing usage.
-      void trackEvent(quota.canUnlockBySigningIn ? "limit_reached_anon" : "limit_reached_signed_in");
-      const hours = Math.max(1, Math.ceil((quota.resetAt - Date.now()) / 3_600_000));
-      return NextResponse.json(
-        {
-          error: quota.canUnlockBySigningIn
-            ? `That is your ${ANON_DAILY_BUILDS} free builds for today. Sign in with Google for ${quota.limit} more, or come back in ~${hours}h.`
-            : `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h.`,
-          quota,
-        },
-        { status: 429, headers: { "X-RateLimit-Remaining": "0" } },
-      );
-    }
+    if (!ok) return outOfAllowance(quota);
 
     const res = await runAdvisor({
       ...advisorRequest,
