@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { clientIp, quotaIdentity } from "@/lib/quota";
 import { SESSION_COOKIE, readSession } from "@/lib/session";
 import { isTrackedEvent, recordActor, trackEvent } from "@/lib/stats";
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   if (action) {
     const store = await cookies();
     const user = readSession(store.get(SESSION_COOKIE)?.value);
-    void recordActor(action, quotaIdentity(user, clientIp(request)));
+    after(() => recordActor(action, quotaIdentity(user, clientIp(request))));
   }
   return NextResponse.json({ ok: true });
 }

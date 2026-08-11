@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { SESSION_COOKIE, readSession } from "@/lib/session";
 import { addBuild, removeBuild } from "@/lib/albums";
 import { recordActor, trackEvent } from "@/lib/stats";
@@ -53,9 +53,9 @@ export async function POST(request: Request, context: RouteContext<"/api/albums/
   if (result === null) return NextResponse.json({ error: "not your album" }, { status: 403 });
   if ("error" in result) return NextResponse.json(result, { status: 409 });
 
-  void trackEvent("build_saved");
+  after(() => trackEvent("build_saved"));
   // Saving into an album requires an account, so the actor is always the sub.
-  void recordActor("saved", `u:${user.sub}`);
+  after(() => recordActor("saved", `u:${user.sub}`));
   return NextResponse.json({ album: result });
 }
 

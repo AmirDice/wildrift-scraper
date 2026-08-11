@@ -116,17 +116,21 @@ const DEPTH_CAP = 6;
 /**
  * A build was delivered to someone.
  *
- * `depth` is which generation of their daily allowance this was, or NULL for a
- * CACHE HIT -- somebody else already paid for that exact build, so the player
- * is charged nothing and no allowance is consumed.
+ * `depth` is which generation of their daily allowance this was.
  *
  * A cache hit still counts as usage. It was invisible here until 2026-08-09,
  * because the route returned cached builds before any tracking ran, which
  * undercounted the public "builds generated" figure and, worse, could not see
  * a returning player whose builds all came from cache -- exactly the person
- * retention is trying to measure. Only the DEPTH histogram excludes cache
- * hits, and it must: depth measures consumption of an allowance a cache hit
- * never touches, so counting it would corrupt the distribution.
+ * retention is trying to measure.
+ *
+ * The depth histogram used to exclude cache hits, on the reasoning that depth
+ * measures consumption of an allowance a cache hit never touched. That stopped
+ * being true on 2026-08-10, when cache hits began spending the allowance like
+ * any other build: the quota is there to measure demand, not to bill for model
+ * calls, so a served build counts whoever served it. Depth is therefore passed
+ * for cache hits too, and NULL now means only "not counted against a quota"
+ * (unlimited-code holders), not "came from cache".
  */
 export async function recordGenerationEngagement(
   identity: string,

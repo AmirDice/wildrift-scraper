@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { addLike, likeCount, trackEvent } from "@/lib/stats";
 
 /**
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
   const liked = body.liked !== false;
   const count = await addLike(`build:${id}`, liked ? 1 : -1);
-  if (liked) void trackEvent("build_liked");
+  if (liked) after(() => trackEvent("build_liked"));
 
   return NextResponse.json({ count });
 }

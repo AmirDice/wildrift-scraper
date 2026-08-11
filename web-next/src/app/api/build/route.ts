@@ -3,7 +3,7 @@ import { readdirSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
 import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, refundQuota, type QuotaState } from "@/lib/quota";
@@ -176,7 +176,7 @@ const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 1)
  * not working, the other is a cap costing real usage.
  */
 function outOfAllowance(quota: QuotaState): NextResponse {
-  void trackEvent(quota.canUnlockBySigningIn ? "limit_reached_anon" : "limit_reached_signed_in");
+  after(() => trackEvent(quota.canUnlockBySigningIn ? "limit_reached_anon" : "limit_reached_signed_in"));
   const hours = Math.max(1, Math.ceil((quota.resetAt - Date.now()) / 3_600_000));
   return NextResponse.json(
     {
@@ -462,10 +462,10 @@ async function handlePost(request: Request) {
     // monetise. Owner's call, 2026-08-09.
     const { ok, quota } = await consumeQuota(user, cacheIp, unlimited);
     if (!ok) return outOfAllowance(quota);
-    void trackEvent(mode === "counter" ? "counter_generated" : "build_generated");
+    after(() => trackEvent(mode === "counter" ? "counter_generated" : "build_generated"));
     // Real depth now, not null: the allowance WAS consumed, so this belongs in
     // the distribution the "used all five" figure is read from.
-    void recordGenerationEngagement(quotaIdentity(user, cacheIp), quota.used);
+    after(() => recordGenerationEngagement(quotaIdentity(user, cacheIp), quota.used));
     return NextResponse.json(
       { ...cached, quota, cached: true },
       { headers: { "X-RateLimit-Remaining": String(quota.remaining), "X-Build-Cache": "hit" } },
@@ -527,13 +527,13 @@ async function handlePost(request: Request) {
 
     // Usage counters: the public "builds generated" figure on the home page, and
     // the internal question of whether the build tools get used at all.
-    void trackEvent(mode === "counter" ? "counter_generated" : "build_generated");
+    after(() => trackEvent(mode === "counter" ? "counter_generated" : "build_generated"));
     // Engagement: quota.used IS this generation's depth into the daily
     // allowance (1..5, 6+ for unlimited), so the distribution of "stopped at
     // one" vs "burned all five" and the new-vs-returning split fall straight
     // out of the number we already have. Recorded only on success, so a
     // refunded infrastructure failure never counts as usage.
-    void recordGenerationEngagement(quotaIdentity(user, ip), quota.used);
+    after(() => recordGenerationEngagement(quotaIdentity(user, ip), quota.used));
 
     return NextResponse.json(
       { ...data, quota, cached: false },

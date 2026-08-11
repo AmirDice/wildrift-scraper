@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import {
   AUTH_CONFIGURED,
   SESSION_COOKIE,
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     maxAge: SESSION_MAX_AGE,
   });
 
-  void trackEvent("signed_in");
+  after(() => trackEvent("signed_in"));
 
   // The event above counts sign-INS; these two answer "how many PEOPLE".
   // The set of Google subject ids gives the unique-account count (a person

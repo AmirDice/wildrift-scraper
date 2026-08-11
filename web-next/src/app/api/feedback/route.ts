@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { FEEDBACK_REASON_KEYS } from "@/lib/feedback-options";
 import { recordFeedback, trackEvent, type BuildFeedback } from "@/lib/stats";
 
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     at: new Date().toISOString(),
   };
   await recordFeedback(feedback);
-  void trackEvent("build_feedback");
+  after(() => trackEvent("build_feedback"));
 
   return NextResponse.json({ ok: true });
 }
