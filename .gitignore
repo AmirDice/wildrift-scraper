@@ -9,6 +9,9 @@ venv/
 data/*.png
 data/*.jpg
 data/*.csv.bak
+# Analytics exports: regenerate with scripts/export_analytics.py whenever they
+# are wanted. Committing one would pin a snapshot that is stale the next day.
+data/wrtruemeta_analytics_*.xlsx
 !data/winrates.csv
 !data/.gitkeep
 

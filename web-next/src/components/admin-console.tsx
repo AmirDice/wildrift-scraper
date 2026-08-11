@@ -571,6 +571,11 @@ const OPS_BUTTONS: { op: string; label: string; description: string }[] = [
     label: "Redeploy advisor",
     description: "Restage and deploy the build advisor so it serves the freshest data. Run after every refresh.",
   },
+  {
+    op: "export-analytics",
+    label: "Export analytics",
+    description: "Write every counter, cohort and feedback note to a dated Excel workbook. Reads with the read-only token and exports counts only, never identities. The file lands in data/ on the machine running the ops runner.",
+  },
 ];
 
 function opsDuration(job: OpsJob): string {

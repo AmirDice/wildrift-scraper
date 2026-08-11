@@ -20,6 +20,7 @@ export const dynamic = "force-dynamic";
 
 const OPS = new Set([
   "scrape", "extract-pending", "refresh-data", "fetch-patches", "publish", "deploy-advisor",
+  "export-analytics",
 ]);
 
 // Letters, spaces and the punctuation that occurs in champion names

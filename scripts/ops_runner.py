@@ -213,6 +213,11 @@ OPS: dict[str, dict] = {
         "label": "Redeploy the build advisor",
         "plan": lambda args: [[PY, str(ROOT / "scripts" / "deploy_advisor.py"), "--deploy"]],
     },
+    "export-analytics": {
+        "label": "Export analytics to Excel",
+        "plan": lambda args: [[PY, str(ROOT / "scripts" / "export_analytics.py")]],
+        "note": "writes data/wrtruemeta_analytics_<date>.xlsx on this machine",
+    },
 }
 
 # ---------------------------------------------------------------------------
