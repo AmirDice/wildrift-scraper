@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<title>Scales With Elo, Falls Off Up Top | WrTrueMeta</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #05080f; }
+  .slide {
+    width: 1600px; height: 1000px; margin: 24px auto;
+    position: relative; isolation: isolate; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.10); border-radius: 22px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #e8edf6; padding: 42px 50px 30px; display: flex; flex-direction: column;
+  }
+  /* The site's own backdrop, copied verbatim from app/layout.tsx: the same art,
+     the same three layers, the same opacities. A slide that is meant to look
+     like the site has to use the site's background, not one that merely
+     resembles it. */
+  .bg-art { position: absolute; inset: 0; z-index: -3; background: url(/ionia2.jpg) center / cover no-repeat; }
+  .bg-dark { position: absolute; inset: 0; z-index: -2;
+    background: linear-gradient(180deg, rgba(7,10,18,0.46) 0%, rgba(7,10,18,0.52) 45%, rgba(7,10,18,0.56) 100%); }
+  .bg-vignette { position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(125% 105% at 50% 45%, transparent 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%); }
+
+  .glass {
+    position: relative; isolation: isolate; overflow: hidden;
+    background:
+      linear-gradient(120deg, rgba(79,141,255,0.10), rgba(255,255,255,0.02) 40%, rgba(79,141,255,0.08) 100%),
+      linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.045) 45%, rgba(255,255,255,0.08) 100%),
+      rgba(10,14,24,0.38);
+    border: 1px solid rgba(255,255,255,0.17);
+    backdrop-filter: blur(26px) saturate(200%); border-radius: 18px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.3),
+      0 1px 2px rgba(0,0,0,0.3), 0 8px 28px -10px rgba(0,0,0,0.55), 0 0 26px -6px rgba(79,141,255,0.3);
+  }
+  .glass::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.13) 48%, rgba(255,255,255,0.045) 52%, transparent 65%);
+    background-size: 260% 100%; background-position: 60% 0;
+  }
+
+  .head { display: flex; align-items: flex-end; justify-content: space-between; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #4f8dff; }
+  .brand span { color: #e8edf6; }
+  h1 { font-size: 43px; font-weight: 800; letter-spacing: -0.015em; margin-top: 6px; text-shadow: 0 2px 18px rgba(0,0,0,0.45); }
+  .sub { margin-top: 8px; font-size: 16px; color: #b6c1d4; max-width: 900px; line-height: 1.45; text-shadow: 0 1px 10px rgba(0,0,0,0.5); }
+  .sub b { color: #e8edf6; font-weight: 600; }
+  .legend { text-align: right; font-size: 12.5px; color: #9fb6e2; line-height: 1.7; }
+  .legend b { color: #e8edf6; }
+
+  .main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; flex: 1; min-height: 0; }
+  .panel { padding: 16px 18px; display: flex; flex-direction: column; }
+  .ptitle { display: flex; align-items: baseline; gap: 9px; }
+  .ptitle .t { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; }
+  .ptitle .n { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #7f92b0; }
+  .psub { margin-top: 3px; font-size: 12.5px; color: #93a3bd; }
+  .up .t { color: #6ee7a8; }
+  .dn .t { color: #ff7a6b; }
+
+  .cols { display: grid; grid-template-columns: 40px 1fr 92px 104px 52px; gap: 11px; align-items: center;
+    margin-top: 11px; padding: 0 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.09);
+    font-size: 9.5px; font-weight: 800; letter-spacing: 0.11em; text-transform: uppercase; color: #7f92b0; }
+  .cols .c { text-align: center; } .cols .r { text-align: right; }
+
+  .row { display: grid; grid-template-columns: 40px 1fr 92px 104px 52px; gap: 11px; align-items: center;
+    padding: 6px 8px; border-radius: 10px; }
+  .row:nth-child(odd) { background: rgba(255,255,255,0.035); }
+  .ico { width: 38px; height: 38px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.18); display: block; }
+  .nm { font-size: 16px; font-weight: 700; line-height: 1.15; }
+  .ln { font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: #7f92b0; }
+  .sp { display: flex; justify-content: center; }
+
+  .wrs { display: flex; align-items: center; justify-content: center; gap: 5px; font-variant-numeric: tabular-nums; }
+  .wrs .a { font-size: 13.5px; font-weight: 650; color: #93a3bd; }
+  .wrs .t { font-size: 9px; font-weight: 700; color: #55637d; text-transform: uppercase; }
+  .wrs .b { font-size: 14.5px; font-weight: 750; }
+  .chg { text-align: right; font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .gain { color: #6ee7a8; } .loss { color: #ff7a6b; }
+
+  .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; font-size: 12.5px; color: #8798b3; }
+  .foot b { color: #4f8dff; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="bg-art"></div><div class="bg-dark"></div><div class="bg-vignette"></div>
+
+  <div class="head">
+    <div>
+      <div class="brand">WRTRUE<span>META</span></div>
+      <h1>Who Gets Better When The Lobby Does</h1>
+      <p class="sub">Every champion that moves at least <b>1.5 win rate points</b> between Diamond+ and
+        Challenger, in both directions. These are cumulative samples, so Diamond+ already contains the
+        players above it: this is the same champion measured in a pool, then inside the best slice of it.</p>
+    </div>
+    <div class="legend">
+      Sparkline runs<br><b>Diamond+ to Master+ to Challenger</b><br>
+      Change is Challenger minus Diamond+
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="panel glass">
+      <div class="ptitle up"><span class="t">Scales with elo</span><span class="n">12 champions</span></div>
+      <div class="psub">Better in stronger company. Reward for knowing the champion.</div>
+      <div class="cols"><div></div><div>Champion</div><div class="c">Curve</div><div class="c">D+ to Chal</div><div class="r">Chg</div></div>
+      
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10006.png" alt="">
+          <div><div class="nm">Rengar</div><div class="ln">Jungle</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,16.5 46.0,15.6 86.0,7.5" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="16.5" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="7.5" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">48.4</span><span class="t">to</span><span class="b gain">52.5</span></div>
+          <div class="chg gain">+4.0</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10095.png" alt="">
+          <div><div class="nm">Katarina</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,20.1 46.0,18.9 86.0,13.0" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="20.1" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="13.0" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">46.9</span><span class="t">to</span><span class="b gain">50.0</span></div>
+          <div class="chg gain">+3.2</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10105.png" alt="">
+          <div><div class="nm">Bard</div><div class="ln">Support</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,13.8 46.0,13.3 86.0,6.9" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="13.8" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="6.9" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">49.7</span><span class="t">to</span><span class="b gain">52.7</span></div>
+          <div class="chg gain">+3.1</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png" alt="">
+          <div><div class="nm">Hecarim</div><div class="ln">Jungle</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,16.0 46.0,15.1 86.0,10.9" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="16.0" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="10.9" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">48.6</span><span class="t">to</span><span class="b gain">50.9</span></div>
+          <div class="chg gain">+2.3</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10092.png" alt="">
+          <div><div class="nm">Riven</div><div class="ln">Baron</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,21.0 46.0,20.7 86.0,16.0" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="21.0" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="16.0" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">46.4</span><span class="t">to</span><span class="b gain">48.7</span></div>
+          <div class="chg gain">+2.3</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10036.png" alt="">
+          <div><div class="nm">Annie</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,13.6 46.0,13.5 86.0,9.0" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="13.6" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="9.0" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">49.7</span><span class="t">to</span><span class="b gain">51.8</span></div>
+          <div class="chg gain">+2.0</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10077.png" alt="">
+          <div><div class="nm">Draven</div><div class="ln">Dragon</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,18.5 46.0,17.9 86.0,14.1" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="18.5" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="14.1" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">47.5</span><span class="t">to</span><span class="b gain">49.5</span></div>
+          <div class="chg gain">+2.0</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10124.png" alt="">
+          <div><div class="nm">Pyke</div><div class="ln">Support</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,13.6 46.0,12.5 86.0,9.0" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="13.6" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="9.0" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">49.8</span><span class="t">to</span><span class="b gain">51.8</span></div>
+          <div class="chg gain">+2.0</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10031.png" alt="">
+          <div><div class="nm">Akali</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,28.0 46.0,27.7 86.0,23.7" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="28.0" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="23.7" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">43.3</span><span class="t">to</span><span class="b gain">45.2</span></div>
+          <div class="chg gain">+1.9</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10128.png" alt="">
+          <div><div class="nm">Talon</div><div class="ln">Jungle</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,14.3 46.0,13.8 86.0,10.0" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="14.3" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="10.0" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">49.4</span><span class="t">to</span><span class="b gain">51.3</span></div>
+          <div class="chg gain">+1.9</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10146.png" alt="">
+          <div><div class="nm">Taliyah</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,9.7 46.0,8.6 86.0,6.0" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="9.7" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="6.0" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">51.5</span><span class="t">to</span><span class="b gain">53.1</span></div>
+          <div class="chg gain">+1.7</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10084.png" alt="">
+          <div><div class="nm">Nidalee</div><div class="ln">Jungle</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,14.3 46.0,13.1 86.0,11.0" fill="none" stroke="#6ee7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="14.3" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="11.0" r="3.2" fill="#6ee7a8"/></svg></div>
+          <div class="wrs"><span class="a">49.4</span><span class="t">to</span><span class="b gain">50.9</span></div>
+          <div class="chg gain">+1.5</div>
+        </div>
+    </div>
+
+    <div class="panel glass">
+      <div class="ptitle dn"><span class="t">Falls off up top</span><span class="n">12 champions</span></div>
+      <div class="psub">Strong to climb with, then the answers get found.</div>
+      <div class="cols"><div></div><div>Champion</div><div class="c">Curve</div><div class="c">D+ to Chal</div><div class="r">Chg</div></div>
+      
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10062.png" alt="">
+          <div><div class="nm">Dr. Mundo</div><div class="ln">Baron</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,10.2 46.0,11.4 86.0,17.5" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="10.2" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="17.5" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">51.3</span><span class="t">to</span><span class="b loss">48.0</span></div>
+          <div class="chg loss">-3.3</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10070.png" alt="">
+          <div><div class="nm">Master Yi</div><div class="ln">Jungle</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,13.3 46.0,14.7 86.0,19.4" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="13.3" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="19.4" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">49.9</span><span class="t">to</span><span class="b loss">47.2</span></div>
+          <div class="chg loss">-2.7</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10086.png" alt="">
+          <div><div class="nm">Fizz</div><div class="ln">Jungle</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,15.6 46.0,16.5 86.0,20.5" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="15.6" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="20.5" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">48.9</span><span class="t">to</span><span class="b loss">46.6</span></div>
+          <div class="chg loss">-2.2</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10075.png" alt="">
+          <div><div class="nm">Janna</div><div class="ln">Support</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,14.0 46.0,13.5 86.0,18.7" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="14.0" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="18.7" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">49.6</span><span class="t">to</span><span class="b loss">47.5</span></div>
+          <div class="chg loss">-2.1</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10144.png" alt="">
+          <div><div class="nm">Viktor</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,10.1 46.0,11.0 86.0,14.6" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="10.1" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="14.6" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">51.3</span><span class="t">to</span><span class="b loss">49.3</span></div>
+          <div class="chg loss">-2.0</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10129.png" alt="">
+          <div><div class="nm">Vel'Koz</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,11.7 46.0,12.0 86.0,15.9" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="11.7" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="15.9" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">50.6</span><span class="t">to</span><span class="b loss">48.7</span></div>
+          <div class="chg loss">-1.9</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10046.png" alt="">
+          <div><div class="nm">Teemo</div><div class="ln">Baron</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,6.5 46.0,7.1 86.0,10.6" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="6.5" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="10.6" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">52.9</span><span class="t">to</span><span class="b loss">51.1</span></div>
+          <div class="chg loss">-1.8</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10072.png" alt="">
+          <div><div class="nm">Graves</div><div class="ln">Jungle</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,14.8 46.0,15.8 86.0,18.4" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="14.8" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="18.4" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">49.2</span><span class="t">to</span><span class="b loss">47.6</span></div>
+          <div class="chg loss">-1.6</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10028.png" alt="">
+          <div><div class="nm">Morgana</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,6.9 46.0,7.5 86.0,10.6" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="6.9" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="10.6" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">52.7</span><span class="t">to</span><span class="b loss">51.1</span></div>
+          <div class="chg loss">-1.6</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10166.png" alt="">
+          <div><div class="nm">Norra</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,11.8 46.0,12.6 86.0,15.5" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="11.8" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="15.5" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">50.5</span><span class="t">to</span><span class="b loss">48.9</span></div>
+          <div class="chg loss">-1.6</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10119.png" alt="">
+          <div><div class="nm">Brand</div><div class="ln">Mid</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,7.6 46.0,8.0 86.0,10.9" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="7.6" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="10.9" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">52.4</span><span class="t">to</span><span class="b loss">51.0</span></div>
+          <div class="chg loss">-1.5</div>
+        </div>
+        <div class="row">
+          <img class="ico" src="https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10041.png" alt="">
+          <div><div class="nm">Kayle</div><div class="ln">Baron</div></div>
+          <div class="sp"><svg width="92" height="34" viewBox="0 0 92 34" aria-hidden="true"><polyline points="6.0,8.5 46.0,9.5 86.0,11.8" fill="none" stroke="#ff7a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="6.0" cy="8.5" r="2.6" fill="#7f92b0"/><circle cx="86.0" cy="11.8" r="3.2" fill="#ff7a6b"/></svg></div>
+          <div class="wrs"><span class="a">52.0</span><span class="t">to</span><span class="b loss">50.5</span></div>
+          <div class="chg loss">-1.5</div>
+        </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div>China server, official published rates, 135 champions holding one lane across all three brackets</div>
+    <div><b>wrtruemeta.com/ranks</b></div>
+  </div>
+</div>
+</body>
+</html>
