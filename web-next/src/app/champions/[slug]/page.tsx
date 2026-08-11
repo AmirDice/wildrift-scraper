@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel } from "@/lib/data";
-import { getCnBySlug } from "@/lib/cn";
+import { getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel, regionBoard } from "@/lib/data";
+import { getCnBySlug, getGlobalBySlug } from "@/lib/cn";
 import { getMatchups, type ResolvedMatchup } from "@/lib/counters";
 import { getSkewBySlug } from "@/lib/skew";
 import { getBuild, type Build } from "@/lib/builds";
@@ -44,9 +44,12 @@ export async function generateMetadata(props: PageProps<"/champions/[slug]">): P
   // "counters" in the description are there to match real queries rather than
   // to describe the page to ourselves.
   const title = `${champion.name} Wild Rift Build, Counters & Win Rate`;
+  // Same blended figures the page itself shows, so the snippet in search
+  // results cannot quote a different tier from the one above the fold.
+  const meta = getGlobalBySlug(champion.slug) ?? champion;
   const description = champion.statsPending
     ? `${champion.name} in Wild Rift: full kit, ability numbers, base stats and item build. Win rate and tier arrive once there is a ranked sample to build them from.`
-    : `${champion.name} is ${tierLabel(champion.tier)} tier in Wild Rift with a ${champion.wr.toFixed(1)}% win rate across its 50 best EU players. Counters, matchups, abilities, runes, item build and full patch history.`;
+    : `${champion.name} is ${tierLabel(meta.tier)} tier in Wild Rift with a ${meta.wr.toFixed(1)}% win rate across its 50 best players in EU and NA. Counters, matchups, abilities, runes, item build and full patch history.`;
   return { title, description, alternates: { canonical: `/champions/${champion.slug}` }, openGraph: { title, description, images: [champion.splash] }, twitter: { card: "summary_large_image", title, description, images: [champion.splash] } };
 }
 
@@ -67,12 +70,19 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const standardBuild = standardKey ? built!.builds.builds[standardKey] : null;
   const playstyle = getPlaystyleProfile(champion);
   const history = getChampionHistory(champion.name);
+  const na = regionBoard("NA").champions.find((c) => c.slug === champion.slug);
+  // Headline figures come from the EU + NA blend so the top of the page
+  // agrees with the tier list. Falls back to EU when a champion is missing
+  // from a board, and the "Win rate by region" card below still shows each
+  // server on its own, so promoting the blend hides nothing.
+  const blended = getGlobalBySlug(champion.slug);
+  const headline = blended ?? champion;
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
   const stats = champion.statsPending ? [] : [
-    { label: "Tier", value: tierLabel(champion.tier), className: tierText[champion.tier] },
-    { label: "Win rate", value: `${champion.wr.toFixed(1)}%`, className: "text-accent" },
-    { label: "Ceiling WR", value: champion.maxWr != null ? `${champion.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
-    { label: "Median games", value: champion.medianGames != null ? champion.medianGames.toLocaleString() : "-", className: "" },
+    { label: "Tier", value: tierLabel(headline.tier), className: tierText[headline.tier] },
+    { label: "Win rate", value: `${headline.wr.toFixed(1)}%`, className: "text-accent" },
+    { label: "Ceiling WR", value: headline.maxWr != null ? `${headline.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
+    { label: "Median games", value: headline.medianGames != null ? Math.round(headline.medianGames).toLocaleString() : "-", className: "" },
   ];
 
   // Everything in the overview is leaderboard-derived, so a champion without
@@ -103,7 +113,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
       <Card className="p-5 sm:p-6">
         <h2 className="text-lg font-semibold">{champion.name} at a glance</h2>
         <p className="mt-2 leading-relaxed text-muted">
-          {champion.name} is currently <span className="font-medium text-text">{tierLabel(champion.tier)} tier</span> in EU Wild Rift, with a top-50-main win rate of <span className="font-medium text-accent">{champion.wr.toFixed(1)}%</span>. The best tracked main peaks at <span className="font-medium text-gold">{champion.maxWr != null ? `${champion.maxWr.toFixed(1)}%` : "-"}</span>.
+          {champion.name} is currently <span className="font-medium text-text">{tierLabel(headline.tier)} tier</span> across EU and NA, with a top-50-main win rate of <span className="font-medium text-accent">{headline.wr.toFixed(1)}%</span>. The best tracked main on either server peaks at <span className="font-medium text-gold">{headline.maxWr != null ? `${headline.maxWr.toFixed(1)}%` : "-"}</span>.
         </p>
       </Card>
       <Card className="p-5 sm:p-6">
@@ -112,7 +122,9 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
           <RegionStat label="EU" wr={champion.wr} sub={`${champion.tier} tier`} />
           {cn ? <RegionStat label="CN" wr={cn.wr} sub={`${cn.cnPickRate.toFixed(1)}% pick`} /> : <RegionStat label="CN" />}
-          <RegionStat label="NA" />
+          {na && Number.isFinite(na.wr)
+            ? <RegionStat label="NA" wr={na.wr} sub={`${na.tier} tier`} />
+            : <RegionStat label="NA" />}
         </div>
       </Card>
       {skew && (

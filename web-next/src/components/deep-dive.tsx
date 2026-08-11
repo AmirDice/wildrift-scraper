@@ -91,14 +91,14 @@ export function DeepDiveSections() {
       <Container className="py-6">
         <SectionHeading
           title="Across all servers"
-          subtitle="Combined EU + CN · who's genuinely strong everywhere"
+          subtitle="Combined EU + NA · who's genuinely strong on both western servers"
           href="/global"
           linkLabel="Cross-server comparison"
         />
         <div className="grid gap-4 md:grid-cols-2">
           <InsightCard
             title="Strongest globally"
-            subtitle="Highest combined EU + CN win rate"
+            subtitle="Highest combined EU + NA win rate"
             href="/tier-list"
             items={globalBest.map((c) => ({
               icon: c.icon,
@@ -111,7 +111,7 @@ export function DeepDiveSections() {
           />
           <InsightCard
             title="Weakest globally"
-            subtitle="Lowest combined EU + CN win rate"
+            subtitle="Lowest combined EU + NA win rate"
             href="/tier-list"
             items={globalWorst.map((c) => ({
               icon: c.icon,

@@ -99,10 +99,16 @@ export function RegionUpdated({
     <span className="glass inline-flex flex-wrap items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-muted">
       <CalendarIcon />
       {region === "Global" ? (
+        // Only the regions the Global number is actually built from. CN stopped
+        // feeding it on 2026-08-11, so printing a CN date here would advertise
+        // freshness the ranking does not draw on. Pages that really do compare
+        // against CN (/global, /rising) pass no naDate and keep their CN date.
         <>
           Data updated
           {eu && <><span className="text-faint">·</span><span className="text-text">EU {eu}</span></>}
-          {cn && <><span className="text-faint">·</span><span className="text-text">CN {cn}</span></>}
+          {na
+            ? <><span className="text-faint">·</span><span className="text-text">NA {na}</span></>
+            : cn && <><span className="text-faint">·</span><span className="text-text">CN {cn}</span></>}
         </>
       ) : (
         <>Last updated <span className="text-faint">·</span> <span className="text-text">{region === "CN" ? cn : region === "NA" ? na : eu}</span></>

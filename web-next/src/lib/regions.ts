@@ -17,8 +17,10 @@ import { getCnBySlug, CN_META } from "@/lib/cn";
  *   an EU-vs-NA gap isolates region. Every consumer of this module is expected
  *   to say so rather than presenting three interchangeable columns.
  *
- * NA is still being collected, so a champion may have EU and CN but no NA
- * number yet. Missing is `null`, never zero and never quietly averaged away.
+ * NA collection finished at 140 champions, so the gap now runs the other way:
+ * Gragas has EU and NA but no CN ranked rows, only Legendary. A champion can
+ * be missing any one region, so nothing here may assume all three are present.
+ * Missing is `null`, never zero and never quietly averaged away.
  */
 
 export type RegionKey = "EU" | "NA" | "CN";

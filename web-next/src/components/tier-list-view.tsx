@@ -56,8 +56,10 @@ export function TierListView({
   const [region, setRegion] = useState<Region>(initialRegion);
   // Pool depth: how many of each champion's top players feed the number.
   // EU only. CN offers no such slider because its figures are Tencent's own
-  // bracket aggregates -- there are no per-player rows to re-slice -- and
-  // Global inherits CN's limitation because it averages the two.
+  // bracket aggregates -- there are no per-player rows to re-slice. Global
+  // could support one in principle, since both halves are our own top-50
+  // scrape, but the blend carries only EU's pool slices, so re-slicing would
+  // silently rank a 5-deep EU number against a full-pool NA one.
   const [poolDepth, setPoolDepth] = useState<"all" | "25" | "10" | "5">("all");
   const [cnBracket, setCnBracket] = useState<CnBracketKey>(initialCnBracket ?? cnMeta.defaultBracket);
 
@@ -77,6 +79,22 @@ export function TierListView({
   const activeCnBracket = cnMeta.brackets.find((option) => option.key === cnBracket)
     ?? cnMeta.brackets.find((option) => option.key === cnMeta.defaultBracket)!;
   const options = useMemo(() => ["All roles", ...activeRoles], [activeRoles]);
+
+  // The whole EU field drifted up between the June and August collections: the
+  // median wrDelta is +1.20 and 104 of 138 champions are positive. Left raw,
+  // three quarters of the Global list would wear an up arrow, which says
+  // nothing about any of them. Subtracting the median makes movement mean
+  // "moved relative to the field", the same correction wrOffset applies to the
+  // win rates themselves. Computed from the data so it tracks each refresh.
+  const euDrift = useMemo(() => {
+    const deltas = champions
+      .map((c) => c.wrDelta)
+      .filter((d): d is number => typeof d === "number")
+      .sort((a, b) => a - b);
+    if (!deltas.length) return 0;
+    const mid = Math.floor(deltas.length / 2);
+    return deltas.length % 2 ? deltas[mid] : (deltas[mid - 1] + deltas[mid]) / 2;
+  }, [champions]);
 
   const buckets = useMemo(() => {
     const inRole = options.includes(role) ? role : "All roles";
@@ -163,8 +181,9 @@ export function TierListView({
           )}
           {isGlobal && (
             <p className="mb-5 text-sm text-muted">
-              Combined <span className="text-text">EU + CN Challenger</span> ranking of the champions
-              strongest across both servers. See the full{" "}
+              Combined <span className="text-text">EU + NA</span> ranking of the champions strongest
+              across both western servers. China measures a whole bracket rather than a champion&rsquo;s
+              best players, so it is kept separate. See the{" "}
               <Link href="/global" className="text-accent hover:underline">
                 side-by-side comparison
               </Link>
@@ -246,21 +265,28 @@ export function TierListView({
                   </div>
                   <div className="glass flex flex-1 flex-wrap content-center gap-x-1.5 gap-y-2 rounded-xl p-2 sm:gap-4 sm:p-4">
                     {champs.map((c) => {
-                      const movementBracket = isGlobal ? cnMeta.defaultBracket : cnBracket;
-                      const cnMovement = isCN || isGlobal ? moverBySlug(c.slug, movementBracket) : null;
-                      // Global is the average of EU and CN. Until the EU data is
-                      // refreshed, a CN move changes the combined score by half
-                      // of the CN delta. EU compares against its own previous
-                      // collection snapshot (site.movementSince) -- deltas are
-                      // computed raw-vs-raw at export so the display centering
-                      // never leaks into them.
-                      const mv = isGlobal && cnMovement
-                        ? {
-                            ...cnMovement,
-                            oldWr: Math.round((c.wr - cnMovement.delta / 2) * 100) / 100,
-                            newWr: c.wr,
-                            delta: Math.round((cnMovement.delta / 2) * 100) / 100,
-                          }
+                      const cnMovement = isCN ? moverBySlug(c.slug, cnBracket) : null;
+                      // Global movement comes from EU alone, halved because EU
+                      // is half of the EU + NA average. NA is deliberately not
+                      // blended in: its baseline is 2026-08-08 against EU's
+                      // 2026-06-13, and it carries a delta for only 74 of 140
+                      // champions, so averaging a three-day window with a
+                      // two-month one would produce a number measuring nothing.
+                      // Revisit once NA has a second collection behind it.
+                      // Deltas are computed raw-vs-raw at export, so the display
+                      // centering never leaks into them.
+                      const share = c.globalParts ?? 2;
+                      const globalDelta = c.wrDelta != null
+                        ? Math.round(((c.wrDelta - euDrift) / share) * 100) / 100
+                        : null;
+                      const mv = isGlobal
+                        ? globalDelta != null
+                          ? {
+                              oldWr: Math.round((c.wr - globalDelta) * 100) / 100,
+                              newWr: c.wr,
+                              delta: globalDelta,
+                            }
+                          : null
                         : isCN
                           ? cnMovement
                           : c.wrDelta != null
@@ -332,7 +358,7 @@ export function TierListView({
             ) : isGlobal ? (
               <p>
                 <span className="font-medium text-text">Global cutoffs</span>: the average of the
-                EU and CN win rates (both 50%-centred). GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B
+                EU and NA win rates (both 50%-centred). GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B
                 49.5–50.8% · C 48–49.5% · L under 48%.
               </p>
             ) : role === "All roles" ? (

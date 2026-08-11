@@ -202,21 +202,41 @@ export function globalTier(wr: number): string {
   return "Ass";
 }
 
-/** Champion objects with wr = the mean of every server that has measured
- *  them, and a global tier.
+/** Champion objects with wr = the mean of the EU and NA top-50 measurements,
+ *  and a global tier.
  *
- *  NA joined the blend when its collection started (2026-08-08) and is still
- *  partial, so the mean is taken over the servers that HAVE a number rather
- *  than requiring all three: dropping a champion because one server has not
- *  reached it yet would empty the list, and substituting a zero would invent
- *  a result. A champion still needs at least TWO servers to appear at all --
- *  a single-server number is not a global one, it is that server's number
- *  wearing a different label.
+ *  CN was part of this average until 2026-08-11 and was removed deliberately.
+ *  It is not a third region of the same measurement: EU and NA are our own
+ *  scrape of the 50 best players on a champion, while CN is Tencent's
+ *  published rate across a whole bracket population. Averaging them produced
+ *  a number that answered neither question, most visibly on Hecarim, who read
+ *  59.5 in the west, 50.9 in CN, and 55.2 blended, a figure no group of
+ *  players anywhere achieves.
  *
- *  The servers are not equally comparable (EU and NA are our own top-50
- *  measurement, CN is Tencent's population aggregate); see lib/regions.ts.
- *  This average is a "strong most places" heuristic, not a precise statistic,
- *  which is what the tier bands here already assume. */
+ *  The correlations said the same thing. EU and NA agree at r = +0.71, while
+ *  CN sits at +0.46 against EU and +0.44 against NA: roughly equally distant
+ *  from both, which points at the methodology rather than at a European
+ *  quirk. Dropping CN moved 47 of 140 champions across a tier boundary.
+ *
+ *  CN keeps its own tab, /ranks and /rising, where the disagreement is the
+ *  product rather than noise to be averaged away.
+ *
+ *  Both regions are required. A single-server number is not a global one, it
+ *  is that server's number wearing a different label. */
+/** Mean of the values that exist, or null when neither region has one. */
+function mean2(a: number | null | undefined, b: number | null | undefined): number | null {
+  const parts = [a, b].filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+  if (!parts.length) return null;
+  return Math.round((parts.reduce((x, y) => x + y, 0) / parts.length) * 100) / 100;
+}
+
+/** Sum of the values that exist, or null when neither region has one. */
+function sum2(a: number | null | undefined, b: number | null | undefined): number | null {
+  const parts = [a, b].filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+  if (!parts.length) return null;
+  return parts.reduce((x, y) => x + y, 0);
+}
+
 export function getGlobalChampions(): Champion[] {
   const na = new Map(regionBoard("NA").champions.map((c) => [c.slug, c]));
   const out: Champion[] = [];
@@ -225,14 +245,63 @@ export function getGlobalChampions(): Champion[] {
     if (Number.isFinite(eu.wr)) parts.push(eu.wr);
     const naChamp = na.get(eu.slug);
     if (naChamp && Number.isFinite(naChamp.wr)) parts.push(naChamp.wr);
-    const cn = getCnBySlug(eu.slug);
-    if (cn && Number.isFinite(cn.wr)) parts.push(cn.wr);
-    if (parts.length < 2) continue;
+    if (parts.length < 2 || !naChamp) continue;
     const g = Math.round((parts.reduce((a, b) => a + b, 0) / parts.length) * 10) / 10;
     const tier = globalTier(g);
-    out.push({ ...eu, wr: g, tier, tierRole: tier });
+
+    // Every displayed stat has to be blended too. Spreading the EU object and
+    // overwriting only wr used to leave a global win rate sitting beside EU's
+    // player count and EU's best player, with nothing marking the difference.
+    //
+    // Counts add, averages average, and the ceiling is the higher of the two
+    // ceilings -- with the player who set it, so "best tracked main" names the
+    // right person on the right server instead of always naming EU's.
+    const euCeiling = eu.maxWr ?? -Infinity;
+    const naCeiling = naChamp.maxWr ?? -Infinity;
+    const peak = naCeiling > euCeiling ? naChamp : eu;
+
+    out.push({
+      ...eu,
+      wr: g,
+      tier,
+      tierRole: tier,
+      globalParts: parts.length,
+      meanWr: mean2(eu.meanWr, naChamp.meanWr),
+      maxWr: peak.maxWr,
+      maxScore: peak.maxScore,
+      topPlayer: peak.topPlayer,
+      bestPlayer: peak.bestPlayer,
+      nPlayers: sum2(eu.nPlayers, naChamp.nPlayers),
+      totalGames: sum2(eu.totalGames, naChamp.totalGames),
+      medianGames: mean2(eu.medianGames, naChamp.medianGames),
+      medianMastery: mean2(eu.medianMastery, naChamp.medianMastery),
+      otpScore: mean2(eu.otpScore, naChamp.otpScore),
+      isOtp: eu.isOtp && naChamp.isOtp,
+
+      // Deliberately dropped rather than averaged.
+      //   winrateStd / skillSpread: pooling spread needs the per-player rows,
+      //     not two summary numbers. Averaging two standard deviations is not
+      //     the standard deviation of the combined pool.
+      //   pools: EU-only depth slices. Keeping them would let the pool-depth
+      //     slider rank a 5-deep EU number against a full-pool NA one.
+      //   tierMoved / prevTier: EU tier crossings, computed against EU bands.
+      //     A Global row can sit in a different band entirely.
+      winrateStd: null,
+      skillSpread: null,
+      pools: null,
+      tierMoved: null,
+      prevTier: null,
+    });
   }
   return out.sort((a, b) => b.wr - a.wr);
+}
+
+let _globalBySlug: Map<string, Champion> | null = null;
+
+/** The blended row for one champion, or undefined when a region is missing. */
+export function getGlobalBySlug(slug: string): Champion | undefined {
+  if (!_globalBySlug) _globalBySlug = new Map(getGlobalChampions().map((c) => [c.slug, c]));
+  return _globalBySlug.get(slug);
 }
 
 export function globalRoles(): string[] {

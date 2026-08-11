@@ -26,6 +26,12 @@ export interface Champion {
   /** "up" | "down" when the champion crossed a TIER boundary since the
    *  previous collection; null inside the same tier. Gates the arrow badge. */
   tierMoved?: string | null;
+  /** How many regional win rates were averaged into a Global row (2 or 3).
+   *  Set only by getGlobalChampions. A move in ONE region shifts the combined
+   *  score by its delta divided by this, so the figure has to travel with the
+   *  champion rather than being assumed: it was hardcoded to 2 when Global
+   *  meant EU and CN, and adding NA silently inflated every arrow by half. */
+  globalParts?: number;
   prevTier?: string | null;
   medianGames: number | null;
   totalGames: number | null;

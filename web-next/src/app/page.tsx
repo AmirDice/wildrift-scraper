@@ -28,6 +28,11 @@ export default function HomePage() {
   const ranked = champions.filter((c) => (c.nPlayers ?? 0) >= 20);
 
   const globalChamps = getGlobalChampions();
+  const globalBySlug = new Map(globalChamps.map((c) => [c.slug, c]));
+  // Global nPlayers is the SUM of both boards, so the old EU threshold of 20
+  // doubles to keep the same bar: roughly a full board on each server.
+  const globalRanked = globalChamps.filter((c) => (c.nPlayers ?? 0) >= 40);
+  const globalWeakestFirst = [...globalRanked].sort((a, b) => a.wr - b.wr);
   const globalBest = globalChamps.slice(0, 5);
   const globalWorst = [...globalChamps].slice(-5).reverse();
 
@@ -43,28 +48,30 @@ export default function HomePage() {
   const climbing = climbingPicks(5);
   const stompers = stomperPicks(5);
 
-  const featured = champions[0];
-  const topPick = champions[0];
-  const lowest = [...ranked].sort((a, b) => a.wr - b.wr)[0];
+  const featured = globalChamps[0];
+  const topPick = globalChamps[0];
+  const lowest = globalWeakestFirst[0];
   const topMetaClass = site.metaBreakdown[0];
   const strongestRole = Object.entries(site.roleStrength)
     .filter(([, s]) => !s.lowConfidence)
     .sort((a, b) => b[1].wr - a[1].wr)[0];
 
-  const topMeta = champions.slice(0, 6);
+  const topMeta = globalChamps.slice(0, 6);
   const topMastery = site.topMastery.slice(0, 6);
-  const highestWr = champions.slice(0, 5);
-  const lowestWr = [...ranked].sort((a, b) => a.wr - b.wr).slice(0, 5);
-  const offMeta = site.offMetaSlugs.map((s) => bySlug.get(s)).filter(Boolean).slice(0, 5) as Champion[];
+  const highestWr = globalChamps.slice(0, 5);
+  const lowestWr = globalWeakestFirst.slice(0, 5);
+  const offMeta = site.offMetaSlugs.map((s) => globalBySlug.get(s)).filter(Boolean).slice(0, 5) as Champion[];
 
   // Sort before slicing. Without it this took the first five OTP-flagged
   // champions in whatever order the source list happened to be in, so the card
   // showed a ranking that did not match the OTP score printed beside each name
   // -- and did not match /otp-champions, which has always sorted.
-  const bestOtp = champions
+  const bestOtp = globalChamps
     .filter((c) => c.isOtp && c.otpScore != null)
     .sort((left, right) => (right.otpScore ?? 0) - (left.otpScore ?? 0))
     .slice(0, 5);
+  // EU only, deliberately: the blend nulls skillSpread and winrateStd because
+  // pooling a spread needs the per-player rows, not two summary figures.
   const skillCeiling = [...ranked].filter((c) => c.skillSpread != null).sort((a, b) => (b.skillSpread ?? 0) - (a.skillSpread ?? 0)).slice(0, 5);
   const consistent = [...ranked].filter((c) => c.winrateStd != null).sort((a, b) => (a.winrateStd ?? 99) - (b.winrateStd ?? 99)).slice(0, 5);
   const longestUnchanged = getChampionChangeRanking(champions)

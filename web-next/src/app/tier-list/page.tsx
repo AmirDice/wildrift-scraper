@@ -11,13 +11,13 @@ import { NextStep } from "@/components/next-step";
 // 7.2a", and a tier list with no patch on it reads as undated to both a
 // searcher and a crawler. CURRENT_PATCH tracks the data, so this cannot drift.
 export const metadata: Metadata = {
-  title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU & China Win Rates`,
+  title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU, NA & China Win Rates`,
   description:
-    `The Wild Rift tier list for patch ${CURRENT_PATCH}, with real top-50 EU player win rates and official China server data from lolm.qq.com. Switch regions and filter by role from GOD to L tiers.`,
+    `The Wild Rift tier list for patch ${CURRENT_PATCH}, combining real top-50 player win rates from EU and NA with official China server data from lolm.qq.com. Switch regions and filter by role from GOD to L tiers.`,
   alternates: { canonical: "/tier-list" },
   openGraph: {
-    title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU & China Win Rates`,
-    description: `Every Wild Rift champion ranked for patch ${CURRENT_PATCH} by the real win rates of its 50 best players, plus the China server tier list.`,
+    title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU, NA & China Win Rates`,
+    description: `Every Wild Rift champion ranked for patch ${CURRENT_PATCH} by the real win rates of its 50 best players across EU, NA and China.`,
     url: "https://wrtruemeta.com/tier-list",
   },
 };
@@ -45,8 +45,8 @@ export default function TierListPage() {
       </div>
       <p className="mt-2 max-w-2xl text-muted">
         Every Wild Rift champion ranked for {CURRENT_PATCH ? `patch ${CURRENT_PATCH}` : "the current patch"} by
-        the confidence-adjusted win rate of their top players. Switch between CN, EU and Global data,
-        then filter by role for role-specific tiers.
+        the confidence-adjusted win rate of their top players. Global averages our EU and NA top-50 measurements;
+        switch to any one server, then filter by role for role-specific tiers.
       </p>
 
       <Link
@@ -72,7 +72,7 @@ export default function TierListPage() {
           cnMeta={CN_META}
           globalChampions={getGlobalChampions()}
           globalRoles={globalRoles()}
-          initialRegion="EU"
+          initialRegion="Global"
         />
       </div>
       <NextStep steps={["build", "counter", "meta"]} />

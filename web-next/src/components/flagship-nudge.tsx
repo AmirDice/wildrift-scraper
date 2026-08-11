@@ -72,7 +72,7 @@ const FLAGSHIPS: Flagship[] = [
     activeOn: ["/tier-list"],
     eyebrow: "Tier List",
     title: "Wondering who is actually strong right now?",
-    body: "Every champion ranked by the real win rates of their best players -- EU and CN, filterable by role.",
+    body: "Every champion ranked by the real win rates of their best players -- EU, NA and CN, filterable by role.",
     cta: "Open the tier list",
   },
 ];
