@@ -71,6 +71,26 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
     .filter(([, c]) => c.gamesMedian != null)
     .sort((a, b) => Number(b[1].gamesMedian) - Number(a[1].gamesMedian));
 
+  // Bars are a PERCENTAGE of the longest grind, not a pixel count. The old
+  // `gamesMedian / 1.4` reached 179px, which with the name column overflowed
+  // the card on a 375px screen; a percentage scales to whatever width the card
+  // actually has.
+  const longestGrind = Math.max(1, ...dedication.map(([, c]) => Number(c.gamesMedian) || 0));
+  const dedicationRow = ([slug, c]: (typeof dedication)[number]) => (
+    <div key={slug} className="flex items-center gap-2 text-sm">
+      <Link href={`/leaderboard?champion=${slug}`} className="w-24 shrink-0 truncate text-muted hover:text-text sm:w-36">
+        {c.name}
+      </Link>
+      <span className="min-w-0 flex-1">
+        <span
+          className="block h-2 rounded-full bg-gold/60"
+          style={{ width: `${Math.max(3, (Number(c.gamesMedian) / longestGrind) * 100)}%` }}
+        />
+      </span>
+      <span className="shrink-0 text-xs tabular-nums text-muted">{c.gamesMedian}</span>
+    </div>
+  );
+
   // Boards ranked by how much of the ladder's summit sits on them.
   const stacked = [...champs]
     .filter(([, c]) => eliteCount(c.tiers) > 0)
@@ -221,18 +241,21 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
           <p className="mt-1 text-xs text-faint">
             Median ranked games a top-50 spot costs on each board.
           </p>
+          {/* Top five, the rest behind a disclosure. This card used to render
+              all {dedication.length} champions, which made it by far the
+              tallest thing on the page and buried everything below it. */}
           <div className="mt-3 space-y-1">
-            {dedication.map(([slug, c]) => (
-              <div key={slug} className="flex items-center gap-2 text-sm">
-                <Link href={`/leaderboard?champion=${slug}`} className="w-36 truncate text-muted hover:text-text">
-                  {c.name}
-                </Link>
-                <span className="h-2 rounded-full bg-gold/60"
-                  style={{ width: `${Math.max(3, Number(c.gamesMedian) / 1.4)}px` }} />
-                <span className="text-xs tabular-nums text-muted">{c.gamesMedian}</span>
-              </div>
-            ))}
+            {dedication.slice(0, 5).map(dedicationRow)}
           </div>
+          {dedication.length > 5 && (
+            <details className="group mt-2">
+              <summary className="cursor-pointer list-none text-xs font-semibold text-accent hover:underline">
+                <span className="group-open:hidden">Show all {dedication.length} champions</span>
+                <span className="hidden group-open:inline">Show less</span>
+              </summary>
+              <div className="mt-2 space-y-1">{dedication.slice(5).map(dedicationRow)}</div>
+            </details>
+          )}
         </Card>
       </div>
 
