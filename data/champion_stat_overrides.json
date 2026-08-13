@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "targetPatch": "7.2b",
+  "targetPatch": "7.2c",
   "updated": "2026-07-21",
   "notes": "Patch-aware corrections layered over the third-party champion scrape. Official Riot deltas are preferred; exact in-game level-15 observations are marked as such.",
   "champions": {

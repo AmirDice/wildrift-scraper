@@ -1,9 +1,536 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-07-21T21:22:15.961Z",
+  "fetchedAt": "2026-08-13T10:57:17.049Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.2c",
+      "title": "Wild Rift Patch Notes 7.2c",
+      "publishedAt": "2026-08-12T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2c/",
+      "championChanges": [
+        {
+          "champion": "CHO'GATH",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Cho’Gath has been underperforming since his release, with his damage falling short of expectations. We’re boosting his damage and Feast scaling while making his ultimate available more often, helping each stack feel more impactful and strengthening his scaling and teamfight threat.",
+          "changes": [
+            {
+              "ability": "Vorpal Spikes",
+              "text": "Base Damage: 15/35/55/75 + (2.15/2.5/2.85/3.2% + 0.5% × Feast stack) ×Target’s Max Health → 20/45/70/95 + (2.3/2.7/3.1/3.5% + 0.6% × Feast stack) × Target’s Max Health"
+            },
+            {
+              "ability": "Feast",
+              "text": "Cooldown: 80/70/60s → 70/60/50s\n Bonus Health to Damage Ratio: 8% → 10%"
+            }
+          ]
+        },
+        {
+          "champion": "JINX",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Jinx is still struggling despite the crit item buffs, so we’re improving her laning and teamfight reset potential.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 58"
+            },
+            {
+              "ability": "Get Excited!",
+              "text": "Attack Speed: 12% → 25%"
+            }
+          ]
+        },
+        {
+          "champion": "NILAH",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Nilah has been dominating high-skill play, so we’re reducing her crit scaling and sustained ultimate damage to curb her late-game power.",
+          "changes": [
+            {
+              "ability": "Formless Blade",
+              "text": "Critical Rate to Armor Penetration Ratio: 35% → 28%"
+            },
+            {
+              "ability": "Apotheosis",
+              "text": "Dot Damage: 60/120/180 + 140% Bonus Attack Damage → 60/110/160 + 50% Bonus Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "LEONA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Leona has been a bit too durable during the laning phase, allowing her to shrug off poke without much consequence. We’re shifting some of that early-game durability into the late game, making her fairer to lane against while keeping her late-game performance intact.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Health: 750 → 690\n Base Armor: 55 → 50\n Health per level: 120 → 128"
+            },
+            {
+              "ability": "Eclipse",
+              "text": "Cooldown: 14/13/12/11s → 13/12/11/10s\n Bonus Armor: 40/60/80/100 →30/50/70/90\n Bonus Magic Resistance: 40/60/80/100 → 30/50/70/90"
+            }
+          ]
+        },
+        {
+          "champion": "RUMBLE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Rumble has been dealing too much damage without needing to invest in Ability Power. We’re shifting his damage profile to reward AP-heavy builds, particularly when burning through high-Health targets in the Danger Zone.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Health: 690 → 660\n Health per level: 120 → 128"
+            },
+            {
+              "ability": "Flamespitter",
+              "text": "Damage: 120/160/200/240 + 110% Ability Power + 6%/8%/10%/12% Target Max Health → 100/140/180/220 +125% Ability Power + 7%/8%/9%/10% Target Max Health\n Danger Zone Damage: 180/240/300/360 + 165% Ability Power + 9%/12%/15%/18%Target Max Health → 150/210/270/330 + 187.5% Ability Power + 10.5%/12%/13.5%/15% Target Max Health"
+            },
+            {
+              "ability": "Scrap Shield",
+              "text": "Shield: 40/70/100/130 + 6% Max Health → 40/80/120/160 + 4% Max Health\n Danger Zone Shield: 60/105/150/195 + 9% Max Health → 60/120/180/240 + 6% Max Health"
+            },
+            {
+              "ability": "Electro Harpoon",
+              "text": "Bonus Ability Power Damage: 40% →50%\n Danger Zone Bonus Ability Power Damage: 60% → 75%"
+            }
+          ]
+        },
+        {
+          "champion": "NASUS",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Like other scaling champions, Nasus has become too difficult to keep in check. We’re reducing his early-game durability and increasing his ultimate cooldown, giving opponents more opportunities to punish him and making Nasus more deliberate about when he commits to a fight.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Armor: 46 → 40"
+            },
+            {
+              "ability": "Fury of the Sands",
+              "text": "Cooldown: 75/70/65s → 90/80/70s"
+            }
+          ]
+        },
+        {
+          "champion": "RYZE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Ryze has been thriving since the updates to Archangel’s Staff and other mage items. We’re toning down his early-game combat power, giving opponents more opportunities to punish him and slow down his scaling.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Health: 660 → 630\n Base Armor: 40 → 37"
+            },
+            {
+              "ability": "Rune Prison",
+              "text": "Damage: 70/110/150/190 + 65% Ability Power + 4% Bonus Mana → 50/90/130/170 + 55% Ability Power + 3%Bonus Mana"
+            }
+          ]
+        },
+        {
+          "champion": "WARWICK",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Since the changes to his ultimate, Warwick has become too effective at picking off priority targets and taking control of the early and mid game. We’re dialing back his pick potential to give his prey a bit more room to fight back.",
+          "changes": [
+            {
+              "ability": "Infinite Duress",
+              "text": "Cooldown: 80/70/60s →100/90/80s\n Base Damage: 125/300/475 → 100/275/450"
+            }
+          ]
+        },
+        {
+          "champion": "KOG'MAW",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "The mage item overhaul has given AP Kog’Maw plenty of Ability Power and Mana to rain down damage from a safe distance. We’re adding some constraints to give opponents more opportunities to fight back while preserving the core artillery playstyle.",
+          "changes": [
+            {
+              "ability": "Living Artillery",
+              "text": "Mana Cost: 40 - 400 (Base on number of casts) → 50 - 500 (Base on number of casts)\n Range: 12/14/16 → 11/13/15\n Base Damage: 100/140/180 → 80/120/160"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Patch 7.2c brings champion and item balance updates, stronger Dragons, and changes to keep things from getting too frozen in Baron Lane.",
+        "Welcome to Patch 7.2c! We’re reining in a few champions that have been running the show, giving some love to those who could use a boost, and making adjustments to items across the board. Elemental Dragons and Dragon Soul are also getting some extra firepower to make objectives worth fighting for, while we thaw out some frustrating Baron Lane freezes.\n Reminder: content will be released throughout the patch.",
+        "Cho’Gath has been underperforming since his release, with his damage falling short of expectations. We’re boosting his damage and Feast scaling while making his ultimate available more often, helping each stack feel more impactful and strengthening his scaling and teamfight threat.",
+        "Base Damage: 15/35/55/75 + (2.15/2.5/2.85/3.2% + 0.5% × Feast stack) ×Target’s Max Health → 20/45/70/95 + (2.3/2.7/3.1/3.5% + 0.6% × Feast stack) × Target’s Max Health",
+        "Cooldown: 80/70/60s → 70/60/50s\n Bonus Health to Damage Ratio: 8% → 10%",
+        "Jinx is still struggling despite the crit item buffs, so we’re improving her laning and teamfight reset potential.",
+        "Base Attack Damage: 54 → 58",
+        "Attack Speed: 12% → 25%",
+        "Nilah has been dominating high-skill play, so we’re reducing her crit scaling and sustained ultimate damage to curb her late-game power.",
+        "Critical Rate to Armor Penetration Ratio: 35% → 28%",
+        "Dot Damage: 60/120/180 + 140% Bonus Attack Damage → 60/110/160 + 50% Bonus Attack Damage",
+        "Leona has been a bit too durable during the laning phase, allowing her to shrug off poke without much consequence. We’re shifting some of that early-game durability into the late game, making her fairer to lane against while keeping her late-game performance intact.",
+        "Base Health: 750 → 690\n Base Armor: 55 → 50\n Health per level: 120 → 128",
+        "Cooldown: 14/13/12/11s → 13/12/11/10s\n Bonus Armor: 40/60/80/100 →30/50/70/90\n Bonus Magic Resistance: 40/60/80/100 → 30/50/70/90",
+        "Rumble has been dealing too much damage without needing to invest in Ability Power. We’re shifting his damage profile to reward AP-heavy builds, particularly when burning through high-Health targets in the Danger Zone.",
+        "Base Health: 690 → 660\n Health per level: 120 → 128",
+        "Damage: 120/160/200/240 + 110% Ability Power + 6%/8%/10%/12% Target Max Health → 100/140/180/220 +125% Ability Power + 7%/8%/9%/10% Target Max Health\n Danger Zone Damage: 180/240/300/360 + 165% Ability Power + 9%/12%/15%/18%Target Max Health → 150/210/270/330 + 187.5% Ability Power + 10.5%/12%/13.5%/15% Target Max Health",
+        "Shield: 40/70/100/130 + 6% Max Health → 40/80/120/160 + 4% Max Health\n Danger Zone Shield: 60/105/150/195 + 9% Max Health → 60/120/180/240 + 6% Max Health",
+        "Bonus Ability Power Damage: 40% →50%\n Danger Zone Bonus Ability Power Damage: 60% → 75%",
+        "Like other scaling champions, Nasus has become too difficult to keep in check. We’re reducing his early-game durability and increasing his ultimate cooldown, giving opponents more opportunities to punish him and making Nasus more deliberate about when he commits to a fight.",
+        "Base Armor: 46 → 40",
+        "Cooldown: 75/70/65s → 90/80/70s",
+        "Ryze has been thriving since the updates to Archangel’s Staff and other mage items. We’re toning down his early-game combat power, giving opponents more opportunities to punish him and slow down his scaling.",
+        "Base Health: 660 → 630\n Base Armor: 40 → 37",
+        "Damage: 70/110/150/190 + 65% Ability Power + 4% Bonus Mana → 50/90/130/170 + 55% Ability Power + 3%Bonus Mana",
+        "Since the changes to his ultimate, Warwick has become too effective at picking off priority targets and taking control of the early and mid game. We’re dialing back his pick potential to give his prey a bit more room to fight back.",
+        "Cooldown: 80/70/60s →100/90/80s\n Base Damage: 125/300/475 → 100/275/450",
+        "The mage item overhaul has given AP Kog’Maw plenty of Ability Power and Mana to rain down damage from a safe distance. We’re adding some constraints to give opponents more opportunities to fight back while preserving the core artillery playstyle.",
+        "Mana Cost: 40 - 400 (Base on number of casts) → 50 - 500 (Base on number of casts)\n Range: 12/14/16 → 11/13/15\n Base Damage: 100/140/180 → 80/120/160",
+        "GAMEPLAY CHANGES\n ITEMS\n Berserker's Greaves\n We’re happy with the boots system overall, but the power gap between some Tier 2 and Tier 3 options has grown too large. We’re buffing select Tier 2 boots and trimming power from Tier 3 upgrades to give each one a clearer, more focused strength.\n Base Stats\n Attack Speed: 30% → 35%\n Mercury's Treads\n Base Stats\n Tenacity: 15% → 30%\n Plated Steelcaps\n Block\n Damage Reduction: 6% → 10%\n Gunmetal Greaves\n Noxian Gait\n Movement Speed: 15/12% (Melee/ Ranged) → 10/7% (Melee/ Ranged)\n Chainlaced Crushers\n Base Stats\n Magic Resistance: 35 → 30\n Armored Advance\n Base Stats\n Armor: 35 → 30\n Spellslinger's Shoes\n Base Stats\n Ability Power: 40 → 35\n Big Bully\n True Damage: 22 → 18\n Sunfire Aegis\n Sunfire Aegis has been falling behind as a first-item option, particularly against physical damage. We’re increasing its Armor to reinforce its identity as a high-Armor waveclear item and make it a more competitive early purchase.\n Base Stats\n Health: 425 → 350\n Armor: 20 → 40\n Build Path: Bami's Cinder (1300) + Ruby Crystal (500) + Cloth Armor (500) + 600 → Bami's Cinder (1300) + Chain Vest (900) + 700\n Stridebreaker\n Stridebreaker hasn’t been delivering enough power for its intended users, particularly champions who rely on higher Attack Speed. We’re giving it a boost to better support those champions and help the item reach its full potential.\n Base Stats\n Attack Speed: 15% → 25%\n\n Mikael's Blessing\n Mikael’s Blessing hasn’t quite lived up to its role as a powerful protective option. We’re giving it a straightforward buff to help it better compete with other support items.\n Base Stats\n Healing and Shield Value: 6% → 9%\n Purify\n Cooldown: 90s → 75s\n Kaenic Rookern\n Kaenic Rookern has fallen behind following the mage item overhaul. We’re giving it a boost to bring it back as a competitive Magic Resist option, particularly for champions stacking large amounts of Health.\n Base Stats\n Magic Resistance: 75→80\n Magebane\n Shield: 70 ~ 180 (Based on level) + 10% Max Health -> 50 ~ 150 (Based on level) + 14% Max Health\n Battlefield\n Infernal Dragon\n Elemental Dragons and Dragon Soul have lost some of their importance over time. We’re increasing their impact to make Dragons more meaningful strategic objectives and give teams more reason to fight for control over them.\n Stats Bonus\n Attack Damage and Ability Power: 3% → 4%\n Dragon Soul\n Adaptive Damage: 135 + 25% Bonus Attack Damage + 12.5% Ability Power → 180 + 35% Bonus Attack Damage + 15% Ability Power\n Mountain Dragon\n Dragon Soul\n Shield: 260 → 350\n Ocean Dragon\n Stats Bonus\n Missing Health restored every 5 seconds: 2% → 2.8%\n Dragon Soul\n Healing: 190 + 36% Bonus Attack Damage + 18% Ability Power + 7.5% Bonus Health → 250 + 48% Bonus Attack Damage + 25% Ability Power + 10% Bonus Health\n Baron Lane Minions\n Baron Lane minion damage reduction has created more frustrating lane states than intended, particularly through extended wave freezes. With Baron Laners gaining more ways to impact the map this patch, we’re reverting this mechanic to keep laning interactions healthier.\n Before 6:00, minion damage reduction against damage from other minions: Removed",
+        "GAME MODE CHANGES\n AAA ARAM\n This update, we’re giving some love to lower pick-rate champions. These buffs should open up more compelling options, give more champions a chance to shine, and bring greater diversity to the roster.\n Champion adjustments\n Bard\n (2) Caretaker's Shrine\n Cooldown: 15/14.5/14/13.5s → 8/7/6/5s\n Mana Cost: 70 → 35\n Nocturne\n (2) Shroud of Darkness\n Cooldown: 18/16/14/12s → 9/8/7/6s\n Mana Cost: 50 → 25\n Nunu & Willump\n (3) Snowball Barrage\n Cooldown: 12s → 6s\n Mana Cost: 55/60/65/70 → 25/30/35/40\n Annie\n (3) Molten Shield\n Cooldown: 14s → 7s\n Mana Cost: 60 → 30\n Gnar\n (3) Hop/ Crunch\n Cooldown: 21/18/15/12s → 10.5/9/7.5/6s\n Zilean\n (2) Twisted Timeflow\n Cooldown: 14.5/13.5/12.5/11.5s → 9.5/8.5/7.5/6.5s\n Mana Cost: 35 → 15\n Karma\n (2) Focused Resolve\n Cooldown: 15s → 7.5s\n Mana Cost: 55/60/65/70 → 25/30/35/40\n Orianna\n (3) Command: Protect\n Cooldown: 9s → 4.5s\n Mana Cost: 60 → 30\n Skarner\n （3）Ixtal's Impact\n Cooldown: 18/16/14/12s → 9/8/7/6s\n Mana Cost: 50/55/60/65 → 20/25/30/35\n Jarvan IV\n （2）Golden Aegis\n Cooldown: 10s → 5s\n Mana Cost: 30 → 15\n Olaf\n Damage taken: 85% → 80%\n Riven\n Damage taken: 85% → 80%\n Zoe\n Damage dealt: 120% → 125%\n Amumu\n Damage taken: 90% → 85%\n Viego\n Damage Taken: 85% → 80%\n Xin Zhao\n Damage Taken: 85% → 80%\n Shen\n Reduced Energy Cost: 33%\n Akali\n Reduced Energy Cost: 33%\n Kennen\n Reduced Energy Cost: 33%\n Zed\n Reduced Energy Cost: 33%\n Master Yi\n (1) Alpha Strike\n New: 120% Ability Power ratio\n (2) Meditate\n Ability Power ratio: 80% → 400%",
+        "Bug fixes\n Fixed an issue where Diana's damage reduction balance modifier was incorrectly changed to increased damage taken."
+      ],
+      "changeLines": [
+        "Base Damage: 15/35/55/75 + (2.15/2.5/2.85/3.2% + 0.5% × Feast stack) ×Target’s Max Health → 20/45/70/95 + (2.3/2.7/3.1/3.5% + 0.6% × Feast stack) × Target’s Max Health",
+        "Cooldown: 80/70/60s → 70/60/50s",
+        "Bonus Health to Damage Ratio: 8% → 10%",
+        "Base Attack Damage: 54 → 58",
+        "Attack Speed: 12% → 25%",
+        "Critical Rate to Armor Penetration Ratio: 35% → 28%",
+        "Dot Damage: 60/120/180 + 140% Bonus Attack Damage → 60/110/160 + 50% Bonus Attack Damage",
+        "Base Health: 750 → 690",
+        "Base Armor: 55 → 50",
+        "Health per level: 120 → 128",
+        "Cooldown: 14/13/12/11s → 13/12/11/10s",
+        "Bonus Armor: 40/60/80/100 →30/50/70/90",
+        "Bonus Magic Resistance: 40/60/80/100 → 30/50/70/90",
+        "Base Health: 690 → 660",
+        "Damage: 120/160/200/240 + 110% Ability Power + 6%/8%/10%/12% Target Max Health → 100/140/180/220 +125% Ability Power + 7%/8%/9%/10% Target Max Health",
+        "Danger Zone Damage: 180/240/300/360 + 165% Ability Power + 9%/12%/15%/18%Target Max Health → 150/210/270/330 + 187.5% Ability Power + 10.5%/12%/13.5%/15% Target Max Health",
+        "Shield: 40/70/100/130 + 6% Max Health → 40/80/120/160 + 4% Max Health",
+        "Danger Zone Shield: 60/105/150/195 + 9% Max Health → 60/120/180/240 + 6% Max Health",
+        "Bonus Ability Power Damage: 40% →50%",
+        "Danger Zone Bonus Ability Power Damage: 60% → 75%",
+        "Base Armor: 46 → 40",
+        "Cooldown: 75/70/65s → 90/80/70s",
+        "Base Health: 660 → 630",
+        "Base Armor: 40 → 37",
+        "Damage: 70/110/150/190 + 65% Ability Power + 4% Bonus Mana → 50/90/130/170 + 55% Ability Power + 3%Bonus Mana",
+        "Cooldown: 80/70/60s →100/90/80s",
+        "Base Damage: 125/300/475 → 100/275/450",
+        "Mana Cost: 40 - 400 (Base on number of casts) → 50 - 500 (Base on number of casts)",
+        "Range: 12/14/16 → 11/13/15",
+        "Base Damage: 100/140/180 → 80/120/160",
+        "Base Stats",
+        "Attack Speed: 30% → 35%",
+        "Tenacity: 15% → 30%",
+        "Damage Reduction: 6% → 10%",
+        "Movement Speed: 15/12% (Melee/ Ranged) → 10/7% (Melee/ Ranged)",
+        "Magic Resistance: 35 → 30",
+        "Armored Advance",
+        "Armor: 35 → 30",
+        "Ability Power: 40 → 35",
+        "True Damage: 22 → 18",
+        "Health: 425 → 350",
+        "Armor: 20 → 40",
+        "Build Path: Bami's Cinder (1300) + Ruby Crystal (500) + Cloth Armor (500) + 600 → Bami's Cinder (1300) + Chain Vest (900) + 700",
+        "Attack Speed: 15% → 25%",
+        "Healing and Shield Value: 6% → 9%",
+        "Cooldown: 90s → 75s",
+        "Magic Resistance: 75→80",
+        "Shield: 70 ~ 180 (Based on level) + 10% Max Health -> 50 ~ 150 (Based on level) + 14% Max Health",
+        "Attack Damage and Ability Power: 3% → 4%",
+        "Adaptive Damage: 135 + 25% Bonus Attack Damage + 12.5% Ability Power → 180 + 35% Bonus Attack Damage + 15% Ability Power",
+        "Shield: 260 → 350",
+        "Missing Health restored every 5 seconds: 2% → 2.8%",
+        "Healing: 190 + 36% Bonus Attack Damage + 18% Ability Power + 7.5% Bonus Health → 250 + 48% Bonus Attack Damage + 25% Ability Power + 10% Bonus Health",
+        "Cooldown: 15/14.5/14/13.5s → 8/7/6/5s",
+        "Mana Cost: 70 → 35",
+        "Cooldown: 18/16/14/12s → 9/8/7/6s",
+        "Mana Cost: 50 → 25",
+        "Cooldown: 12s → 6s",
+        "Mana Cost: 55/60/65/70 → 25/30/35/40",
+        "Cooldown: 14s → 7s",
+        "Mana Cost: 60 → 30",
+        "Cooldown: 21/18/15/12s → 10.5/9/7.5/6s",
+        "Cooldown: 14.5/13.5/12.5/11.5s → 9.5/8.5/7.5/6.5s",
+        "Mana Cost: 35 → 15",
+        "Cooldown: 15s → 7.5s",
+        "Cooldown: 9s → 4.5s",
+        "Mana Cost: 50/55/60/65 → 20/25/30/35",
+        "Cooldown: 10s → 5s",
+        "Mana Cost: 30 → 15",
+        "Damage taken: 85% → 80%",
+        "Damage dealt: 120% → 125%",
+        "Damage taken: 90% → 85%",
+        "Damage Taken: 85% → 80%",
+        "New: 120% Ability Power ratio",
+        "Ability Power ratio: 80% → 400%"
+      ]
+    },
+    {
+      "patch": "7.2b",
+      "title": "Wild Rift Patch Notes 7.2b",
+      "publishedAt": "2026-07-29T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2b/",
+      "championChanges": [
+        {
+          "champion": "JAYCE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Jayce has been too resilient in lane thanks to his high base Armor, making early trades safer than intended. We're lowering his base Armor to better match other ranged champions, making him think more carefully about when to trade while giving opponents clearer opportunities to fight back.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Armor: 46 → 37"
+            }
+          ]
+        },
+        {
+          "champion": "NIDALEE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Even after her previous round of nerfs, Nidalee is still overperforming. Her high Movement Speed and base Armor allow her to dominate most early jungle skirmishes, while her late-game mobility makes her difficult to pin down. We're looking to bring both her durability and mobility back in line.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Armor: 46 → 37\n Base Magic Resist: 40 → 36"
+            },
+            {
+              "ability": "Prowl",
+              "text": "Bonus Movement Speed in brush: 15% → 10%\n Bonus Movement Speed when an enemy’s marked: 15% → 10%"
+            }
+          ]
+        },
+        {
+          "champion": "AMBESSA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Ambessa's ultimate has been giving her too much finishing power against all types of targets, from fragile carries to durable frontliners. Since it's available relatively often, we're reducing its execute damage while also trimming some of the less obvious power elsewhere in her kit.",
+          "changes": [
+            {
+              "ability": "Public Execution",
+              "text": "Damage Reduction: 30%/40%/50% → 10%/20%/30%\n Base Damage based on Health lost: 20/30/40% → 10/17.5/25%"
+            }
+          ]
+        },
+        {
+          "champion": "AURORA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "The latest round of item and rune changes hit Aurora harder than we expected. To help bring her back to a healthier power level, we're increasing the damage on her first and third abilities.",
+          "changes": [
+            {
+              "ability": "Twofold Hex",
+              "text": "First Cast damage: 35/65/95/125+30% Ability Power → 40/70/100/130+33% Ability Power\n Recast damage: 35/65/95/125 + 30% Ability Power → 40/70/100/130 + 33%Ability Power"
+            },
+            {
+              "ability": "The Weirding",
+              "text": "Damage: 75/125/175/225 → 80/130/180/230"
+            }
+          ]
+        },
+        {
+          "champion": "SONA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Following her previous buffs and the changes to the Tear of the Goddess item line, Sona has been providing more power to her team than intended. We're happy with how well she's able to keep up with her allies, but we're dialing back some of the shielding and crowd control in her kit to reduce her overall impact.",
+          "changes": [
+            {
+              "ability": "Aria of Perseverance",
+              "text": "Heal: 45/60/75/90 → 35/50/65/80"
+            },
+            {
+              "ability": "Crescendo",
+              "text": "Cooldown: 80/70/60s → 80/75/70s"
+            }
+          ]
+        },
+        {
+          "champion": "EKKO",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Ekko has been underperforming across all of his builds since the latest patch. We're giving him a broad set of buffs to help bring his overall power back in line and keep him competitive with the rest of the roster.",
+          "changes": [
+            {
+              "ability": "Z-Drive Resonance",
+              "text": "Damage Ability Power ratio: 70% → 80%"
+            },
+            {
+              "ability": "Parallel Convergence",
+              "text": "Missing Health ratio: 2% + 0.015% Ability Power → 3% + 0.025% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "KAYLE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "With the new bounty system, Kayle has become a little too reliable at reaching her late-game power spikes. We're reducing some of her early-game sustain and trading power to give opponents more opportunities to punish her before she comes online. At the same time, we're smoothing out her Mana costs so she can focus more on executing her gameplay rather than managing her Mana.",
+          "changes": [
+            {
+              "ability": "Radiant Blast",
+              "text": "Mana Cost: 80/85/90/95 → 70/80/90/100\n Damage: 70/120/170/220 → 60/100/140/180"
+            },
+            {
+              "ability": "Celestial Blessing",
+              "text": "Mana Cost: 85/90/95/100 → 75/80/85/90\n Heal: 95/125/155/185 + 40% Ability Power → 60/95/130/165 + 30% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "HECARIM",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Hecarim has been clearing the jungle a little too efficiently and snowballing too reliably. We're adding a few constraints to slow down his early momentum and give opponents more opportunities to keep him in check.",
+          "changes": [
+            {
+              "ability": "Rampage",
+              "text": "Bonus Movement Speed on hit: 30% → 18%"
+            }
+          ]
+        },
+        {
+          "champion": "LEE SIN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Lee Sin has settled back into the fighter playstyle we want to see from him. To better support that identity, we're giving him a bit more durability so he can stay in the thick of combat longer.",
+          "changes": [
+            {
+              "ability": "Safeguard/Iron Will",
+              "text": "Shield: 80/140/200/260 → 100/160/220/280\n Omnivamp: 16/24/32/40% → 20/30/40/50%"
+            }
+          ]
+        },
+        {
+          "champion": "ZILEAN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Zilean has been dominating the Dragon Lane for far too long, especially in high-skill and professional play. We're reducing some of his lane poke and dialing back the impact of his ultimate in teamfights to bring him closer in line with other Dragon Lane picks.",
+          "changes": [
+            {
+              "ability": "Time Bomb",
+              "text": "Base Damage: 70/140/210/280 → 60/125/190/255"
+            },
+            {
+              "ability": "Chronoshift",
+              "text": "Cooldown: 100/85/70s → 110/95/80s"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Patch 7.2b is here with balance changes to champions, items, runes, and gameplay systems.",
+        "Welcome to Patch 7.2b! This patch is focused on follow-up balance adjustments across champions, items, runes, and systems. We're addressing a few standout performers, lifting up underperforming picks and items, and continuing to fine-tune recent gameplay changes based on how they've landed with players.\n Reminder: content will be released throughout the patch.",
+        "Jayce has been too resilient in lane thanks to his high base Armor, making early trades safer than intended. We're lowering his base Armor to better match other ranged champions, making him think more carefully about when to trade while giving opponents clearer opportunities to fight back.",
+        "Base Armor: 46 → 37",
+        "Even after her previous round of nerfs, Nidalee is still overperforming. Her high Movement Speed and base Armor allow her to dominate most early jungle skirmishes, while her late-game mobility makes her difficult to pin down. We're looking to bring both her durability and mobility back in line.",
+        "Base Armor: 46 → 37\n Base Magic Resist: 40 → 36",
+        "Bonus Movement Speed in brush: 15% → 10%\n Bonus Movement Speed when an enemy’s marked: 15% → 10%",
+        "Ambessa's ultimate has been giving her too much finishing power against all types of targets, from fragile carries to durable frontliners. Since it's available relatively often, we're reducing its execute damage while also trimming some of the less obvious power elsewhere in her kit.",
+        "Damage Reduction: 30%/40%/50% → 10%/20%/30%\n Base Damage based on Health lost: 20/30/40% → 10/17.5/25%",
+        "The latest round of item and rune changes hit Aurora harder than we expected. To help bring her back to a healthier power level, we're increasing the damage on her first and third abilities.",
+        "First Cast damage: 35/65/95/125+30% Ability Power → 40/70/100/130+33% Ability Power\n Recast damage: 35/65/95/125 + 30% Ability Power → 40/70/100/130 + 33%Ability Power",
+        "Damage: 75/125/175/225 → 80/130/180/230",
+        "Following her previous buffs and the changes to the Tear of the Goddess item line, Sona has been providing more power to her team than intended. We're happy with how well she's able to keep up with her allies, but we're dialing back some of the shielding and crowd control in her kit to reduce her overall impact.",
+        "Heal: 45/60/75/90 → 35/50/65/80",
+        "Cooldown: 80/70/60s → 80/75/70s",
+        "Ekko has been underperforming across all of his builds since the latest patch. We're giving him a broad set of buffs to help bring his overall power back in line and keep him competitive with the rest of the roster.",
+        "Damage Ability Power ratio: 70% → 80%",
+        "Missing Health ratio: 2% + 0.015% Ability Power → 3% + 0.025% Ability Power",
+        "With the new bounty system, Kayle has become a little too reliable at reaching her late-game power spikes. We're reducing some of her early-game sustain and trading power to give opponents more opportunities to punish her before she comes online. At the same time, we're smoothing out her Mana costs so she can focus more on executing her gameplay rather than managing her Mana.",
+        "Mana Cost: 80/85/90/95 → 70/80/90/100\n Damage: 70/120/170/220 → 60/100/140/180",
+        "Mana Cost: 85/90/95/100 → 75/80/85/90\n Heal: 95/125/155/185 + 40% Ability Power → 60/95/130/165 + 30% Ability Power",
+        "Hecarim has been clearing the jungle a little too efficiently and snowballing too reliably. We're adding a few constraints to slow down his early momentum and give opponents more opportunities to keep him in check.",
+        "Bonus Movement Speed on hit: 30% → 18%",
+        "Lee Sin has settled back into the fighter playstyle we want to see from him. To better support that identity, we're giving him a bit more durability so he can stay in the thick of combat longer.",
+        "Shield: 80/140/200/260 → 100/160/220/280\n Omnivamp: 16/24/32/40% → 20/30/40/50%",
+        "Zilean has been dominating the Dragon Lane for far too long, especially in high-skill and professional play. We're reducing some of his lane poke and dialing back the impact of his ultimate in teamfights to bring him closer in line with other Dragon Lane picks.",
+        "Base Damage: 70/140/210/280 → 60/125/190/255",
+        "Cooldown: 100/85/70s → 110/95/80s",
+        "GAMEPLAY CHANGES\n ITEMS\n Iceborn Gauntlet\n Iceborn Gauntlet has been underperforming, even on the champions it's designed for. To make it a more appealing first major purchase in lane, we're increasing its stat efficiency and improving the value it provides early in the game.\n Base stats\n Price: 3100 → 3000\n Max Health: 250 → 300\n Luden's Echo\n We're happy with the overall state of high-tier mage items, but Luden's Echo has fallen behind the rest. Despite its solid stat efficiency, it's underperforming across the board, so we're strengthening its passive to better reinforce the item's burst mage identity.\n Echo:\n Damage: 110 + 10% Ability Power → 140 + 15% Ability Power\n Cooldown: 10 → 9\n Magnetic Blaster\n Critical strike marksmen have been struggling to keep up. We're increasing their Attack Damage to improve their scaling, while avoiding additional Attack Speed or on-hit power that could benefit other builds disproportionately.\n Base Stats\n Attack Damage: 25 → 30\n\nLord Dominik's Regards\n Critical strike marksmen are a little too weak in the current meta, especially when it comes to cutting through front-line tanks. To better support their mid- and late-game scaling, we're increasing the Attack Damage on Lord Dominik's Regards.\n Base Stats\n Attack Damage: 25 → 30\n Navori Quickblades\n Navori Quickblades has been underperforming on the champions it's intended for. To help it come online earlier and better compete with other item choices, we're lowering its cost.\n Base Stats\n Price: 2800 → 2700\n RUNES\n Botanist\n Botanist was designed to reward players for making the most of plants around the Rift. Over time, however, it has become more of a universal scaling rune thanks to the amount of gold it provides. We're reducing its gold generation to bring the rune back toward its intended role and put greater emphasis on plant-focused gameplay.\n Gold gained from destroying plants: 30 → 10\n OTHER ADJUSTMENTS\n Champion Bounty System Adjustments\n Since the new Champion Bounty System launched, we've seen a significant drop in one-sided stomps while only slightly increasing the rate of comeback victories. That's a healthy outcome overall, but bounty generation from farming and kills has been a little too aggressive, making teams with a lead feel overly punished for playing well. We're reducing bounty accumulation so leading teams can press their advantage with more confidence.\n Positive Bounty / Neutral: Gold from minions, monsters, support items, Smite, and similar sources required for each 1 bounty: 20 → 25\n All States: Gold required from champion kills and assists to earn 1 Bounty: 3 → 3.5\n GAME MODE CHANGES\n AAA ARAM\n Champion adjustments\n Bard\n Healing provided: 100% → 120%\n Rakan\n Damage dealt: 100% → 105%\n Damage taken: 95% → 90%\n This change also applies to ARAM\n Irelia\n Damage dealt: 110% → 115%\n This change also applies to ARAM\n Nocturne\n Damage taken: 85% → 75%\n This change also applies to ARAM\n Diana\n Damage dealt: 110% → 115%\n Damage taken: 110% → 115%\n Riven\n Damage dealt: 110% → 115%\n Vex\n Damage dealt: 100% → 110%\n Kennen\n Damage taken: 100% → 85%\n This change also applies to ARAM\n Zilean\n ARAM:\n Damage taken: 100% → 110%\n Damage dealt: 100%→ 85%\n AAA ARAM:\n Damage taken: 100% → 85%\n Xin Zhao\n Damage taken: 105% →115%\n Jarvan IV\n Damage dealt: 100% → 85%\n This change also applies to ARAM\n Ahri\n Damage taken: 100% → 90%\n Galio\n Damage taken: 100% → 90%\n Lissandra\n Damage dealt: 100% → 105%\n ARAM:\n Damage taken:100% → 90%\n Pyke\n Damage taken: 110% → 120%\n Nasus\n (1) Ability stacks gained for killing a minion: 8 → 18\n (1) Ability stacks gained for killing a cannon minion or champion: 32 → 24\n This change also applies to ARAM.\n Be Magical\n Conversion ratio: 240% → 270%\n Cycle of Life\n Shield duration: 6s → 10s\n Covenant Pact\n Charge speed increased by 40%\n Bloodborne Valor\n Effect per stack: Doubled. Maximum stacks halved.\n Duration: 12s → 20s\n Arrowstorm: Mist\n The windup before the first stun is reduced, but the stun duration is shortened.\n Samadhi Wind\n Now pulls enemies toward the center, allowing it to trigger Shifting Debris/\n Thunderbolt\n Enhanced effect duration after casting the ultimate: 12s → 20s\n Quickcool\n Cooldown reduction each time: 1.5s → 2s\n Strength Through Steel\n Ability Haste per point of Armor and Magic Resist: 0.2 → 0.3\n Size gained per 20 Armor and Magic Resist: 1% → 2%\n Maximum Ability Haste: 100 → 150\n Maximum Size: 50% →100%\n Empowered Crowd Control\n Permanent Heal and Shield Power: 0.4% → 1%\n Permanent maximum Health: 4 + 1000% Heal and Shield Power → 10 + 2000% Heal and Shield Power\n Cooldown: 0.5s → 1s\n Slow Detonation\n Damage: 15 + 5/level → 20 + 8/level\n Calamitous Combo\n Permanent Adaptive Force: 0.2 → 0.4\n Mana Surge\n Healing: 150% of Mana spent → 200% of Mana spent\n Blood Pact: Armor\n Item Haste per 1% missing Health: 0.8 →1.2\n Blood Pact: Scorched\n Maximum Bonus Attack Damage: 60 → 80\n Maximum Bonus Ability power: 120 → 180\n Bug fixes\n Fixed an issue where some exclusive items' component stats were slightly stronger than the completed item. As a result, the affected items' stats or build paths have been adjusted.\n Fixed an issue where Ghostblade could not be activated after using a Legion Elixir.\n Further fixed an issue where some melee champions could randomly roll Show Me Your Blade.\n Unbound Frenzy\n Doomsday T-Hex\n Wild Trample\n Base Damage: 45/80/115/150→50/75/100/125\n Ability Power Ratio: 0.2 → 0.1\n Maximum Health Ratio: 3% → 2%\n （2） T-Hex Tailsweep\n Bonus Armor and Magic Resistance: 2/3/4/5% → 1.5/2/2.5/3%\n Shield ratio based on maximum Health: 2% → 1.5%\n （3） T-Hex Strike\n Cooldown: 18/17/16/15s → 20/19/18/17s\n （4） Doomsday Program/Impending Doom\n Initial shield base value: 200/400/600 → 150/300/450\n Initial shield Ability Power ratio: 0.4 → 0.2\n Initial shield maximum Health ratio: 10/15/20% → 10/12.5/15%\n SYSTEM CHANGES\n Legendary Ranked Weekend Challenge Adjustments\n The bonus Champion Score, Legendary Ranked Factor, and other related values players can earn in the Legendary Ranked Weekend Challenge will now be adjusted based on their current Legendary Ranked tier. The higher the tier, the higher the cap on those values.\n At the same time, we've slightly increased the conversion efficiency for lower-tier players gaining Legendary Ranked Factor, helping summoners join the challenge more smoothly and continue progressing.\n Ranked and Legendary Ranked Activity Rule Adjustments\n We will remove the old activity decay rule that applied to Master and above, meaning players will no longer lose marks or have their points decay for going seven consecutive days without playing Ranked or Legendary Ranked.\n After this adjustment, summoners can arrange their match time more flexibly based on their own schedule without being constrained by the activity decay rule.\n Thank you all for your continued attention and support. We wish everyone a great time in game and a smooth journey through the Rift!",
+        "BUG FIXES\n Fixed an issue where the screen would not rotate automatically after entering the game on some devices.\n Added a poster option to lobby character settings under out-of-match personalization.\n Optimized main interface support for iPhone 17 Pro Max.\n Added detailed champion stats to the Champions and Lane tabs in Profile."
+      ],
+      "changeLines": [
+        "Base Armor: 46 → 37",
+        "Base Magic Resist: 40 → 36",
+        "Bonus Movement Speed in brush: 15% → 10%",
+        "Bonus Movement Speed when an enemy’s marked: 15% → 10%",
+        "Damage Reduction: 30%/40%/50% → 10%/20%/30%",
+        "Base Damage based on Health lost: 20/30/40% → 10/17.5/25%",
+        "First Cast damage: 35/65/95/125+30% Ability Power → 40/70/100/130+33% Ability Power",
+        "Recast damage: 35/65/95/125 + 30% Ability Power → 40/70/100/130 + 33%Ability Power",
+        "Damage: 75/125/175/225 → 80/130/180/230",
+        "Heal: 45/60/75/90 → 35/50/65/80",
+        "Cooldown: 80/70/60s → 80/75/70s",
+        "Damage Ability Power ratio: 70% → 80%",
+        "Missing Health ratio: 2% + 0.015% Ability Power → 3% + 0.025% Ability Power",
+        "Mana Cost: 80/85/90/95 → 70/80/90/100",
+        "Damage: 70/120/170/220 → 60/100/140/180",
+        "Mana Cost: 85/90/95/100 → 75/80/85/90",
+        "Heal: 95/125/155/185 + 40% Ability Power → 60/95/130/165 + 30% Ability Power",
+        "Bonus Movement Speed on hit: 30% → 18%",
+        "Shield: 80/140/200/260 → 100/160/220/280",
+        "Omnivamp: 16/24/32/40% → 20/30/40/50%",
+        "Base Damage: 70/140/210/280 → 60/125/190/255",
+        "Cooldown: 100/85/70s → 110/95/80s",
+        "Base stats",
+        "Price: 3100 → 3000",
+        "Max Health: 250 → 300",
+        "Damage: 110 + 10% Ability Power → 140 + 15% Ability Power",
+        "Cooldown: 10 → 9",
+        "Base Stats",
+        "Attack Damage: 25 → 30",
+        "Price: 2800 → 2700",
+        "Gold gained from destroying plants: 30 → 10",
+        "Positive Bounty / Neutral: Gold from minions, monsters, support items, Smite, and similar sources required for each 1 bounty: 20 → 25",
+        "All States: Gold required from champion kills and assists to earn 1 Bounty: 3 → 3.5",
+        "Healing provided: 100% → 120%",
+        "Damage dealt: 100% → 105%",
+        "Damage taken: 95% → 90%",
+        "Damage dealt: 110% → 115%",
+        "Damage taken: 85% → 75%",
+        "Damage taken: 110% → 115%",
+        "Damage dealt: 100% → 110%",
+        "Damage taken: 100% → 85%",
+        "Damage taken: 100% → 110%",
+        "Damage dealt: 100%→ 85%",
+        "Damage taken: 105% →115%",
+        "Damage dealt: 100% → 85%",
+        "Damage taken: 100% → 90%",
+        "Damage taken:100% → 90%",
+        "Damage taken: 110% → 120%",
+        "(1) Ability stacks gained for killing a minion: 8 → 18",
+        "(1) Ability stacks gained for killing a cannon minion or champion: 32 → 24",
+        "Conversion ratio: 240% → 270%",
+        "Shield duration: 6s → 10s",
+        "Duration: 12s → 20s",
+        "Enhanced effect duration after casting the ultimate: 12s → 20s",
+        "Cooldown reduction each time: 1.5s → 2s",
+        "Ability Haste per point of Armor and Magic Resist: 0.2 → 0.3",
+        "Size gained per 20 Armor and Magic Resist: 1% → 2%",
+        "Maximum Ability Haste: 100 → 150",
+        "Maximum Size: 50% →100%",
+        "Permanent Heal and Shield Power: 0.4% → 1%",
+        "Permanent maximum Health: 4 + 1000% Heal and Shield Power → 10 + 2000% Heal and Shield Power",
+        "Cooldown: 0.5s → 1s",
+        "Damage: 15 + 5/level → 20 + 8/level",
+        "Permanent Adaptive Force: 0.2 → 0.4",
+        "Mana Surge",
+        "Healing: 150% of Mana spent → 200% of Mana spent",
+        "Item Haste per 1% missing Health: 0.8 →1.2",
+        "Maximum Bonus Attack Damage: 60 → 80",
+        "Maximum Bonus Ability power: 120 → 180",
+        "Base Damage: 45/80/115/150→50/75/100/125",
+        "Ability Power Ratio: 0.2 → 0.1",
+        "Maximum Health Ratio: 3% → 2%",
+        "Bonus Armor and Magic Resistance: 2/3/4/5% → 1.5/2/2.5/3%",
+        "Shield ratio based on maximum Health: 2% → 1.5%",
+        "Cooldown: 18/17/16/15s → 20/19/18/17s",
+        "Initial shield base value: 200/400/600 → 150/300/450",
+        "Initial shield Ability Power ratio: 0.4 → 0.2",
+        "Initial shield maximum Health ratio: 10/15/20% → 10/12.5/15%"
+      ]
+    },
     {
       "patch": "7.2a",
       "title": "Wild Rift Patch Notes 7.2a",

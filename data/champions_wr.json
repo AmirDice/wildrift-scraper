@@ -2746,7 +2746,7 @@
           "5",
           "4"
         ],
-        "text": "Cho'Gath's next 3 attacks launch spikes that deal 15 / 35 / 55 / 75 ( +30% AP ) magic damage plus magic damage equal to ( 2.15% / 2.5% / 2.85% / 3.2% + 0.5% per Feast stack ) of the target's max Health, slowing them by 30% / 35% / 40% / 45% decaying over 1.5 seconds. Vorpal Spikes' width increases with Cho'Gath's size. Base damage against minions and monsters is capped at 100 ( +30% AP ).",
+        "text": "Cho'Gath's next 3 attacks launch spikes that deal 20 / 45 / 70 / 95 ( +30% AP ) magic damage plus magic damage equal to ( 2.3% / 2.7% / 3.1% / 3.5% + 0.6% per Feast stack ) of the target's max Health, slowing them by 30% / 35% / 40% / 45% decaying over 1.5 seconds. Vorpal Spikes' width increases with Cho'Gath's size. Base damage against minions and monsters is capped at 100 ( +30% AP ).",
         "damageTypes": [
           "magic"
         ],
@@ -2762,11 +2762,11 @@
         "slot": "4",
         "name": "Feast",
         "cooldowns": [
-          "80",
-          "80",
-          "80"
+          "70",
+          "60",
+          "50"
         ],
-        "text": "Devours an enemy, dealing 300 ( +50% AP + 8% of Cho'Gath's bonus Health ) true damage to champions, or 1200 ( +50% AP + 8% of Cho'Gath's bonus Health ) true damage to minions and monsters. If this kills the target, Cho'Gath gains a stack of Feast. Each stack grants 80 max Health, increases size by 6% up to a maximum of 135%, increases Attack Range by 4.7 up to a maximum of 75, and increases this ability's cast range by 2.5 up to a maximum of 25. Stacks gained from minions and non-epic monsters are capped at 6.",
+        "text": "Devours an enemy, dealing 300 ( +50% AP + 10% of Cho'Gath's bonus Health ) true damage to champions, or 1200 ( +50% AP + 10% of Cho'Gath's bonus Health ) true damage to minions and monsters. If this kills the target, Cho'Gath gains a stack of Feast. Each stack grants 80 max Health, increases size by 6% up to a maximum of 135%, increases Attack Range by 4.7 up to a maximum of 75, and increases this ability's cast range by 2.5 up to a maximum of 25. Stacks gained from minions and non-epic monsters are capped at 6.",
         "damageTypes": [
           "true"
         ],
@@ -6774,9 +6774,9 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 54.0,
+        "base": 58.0,
         "perLevel": 4.0,
-        "lvl15": 110.0
+        "lvl15": 114.0
       },
       "attackSpeed": {
         "base": 0.83,
@@ -6803,7 +6803,7 @@
         "slot": "P",
         "name": "Get Excited!",
         "cooldowns": [],
-        "text": "Scoring a takedown on a champion or structure that Jinx has damaged within the last 3 seconds grants her 140% decaying Movement Speed and 12% Total Attack Speed for 6 seconds. While Excited, Jinx can exceed the Attack Speed cap. When Get Excited is triggered, restore 10% of missing mana.",
+        "text": "Scoring a takedown on a champion or structure that Jinx has damaged within the last 3 seconds grants her 140% decaying Movement Speed and 25% Total Attack Speed for 6 seconds. While Excited, Jinx can exceed the Attack Speed cap. When Get Excited is triggered, restore 10% of missing mana.",
         "damageTypes": [],
         "scales": [
           "attackSpeed"
@@ -8735,7 +8735,7 @@
           "1",
           "1"
         ],
-        "text": "Corrosion Specialist (Passive) : Gains 10% / 20% / 30% Attack Speed . Acid Shot (Active) : Shoots acid at an area, revealing the area for 2 seconds. Then deals 100 / 140 / 180 ( +25% AP +75% bonus AD ) magic damage to enemies within and reveals them for seconds. This ability's damage scales with the target's missing Health , increasing by 0% - 50% based on 0% - 60% missing Health . Enemies below 40% Health take 200 / 280 / 360 ( +50% AP +150% bonus AD ) magic damage instead. Subsequent shots within 8 seconds cost an additional 40 Mana (max 400 Mana). This ability's range increases by 200 units with each rank gained.",
+        "text": "Corrosion Specialist (Passive) : Gains 10% / 20% / 30% Attack Speed . Acid Shot (Active) : Shoots acid at an area, revealing the area for 2 seconds. Then deals 80 / 120 / 160 ( +25% AP +75% bonus AD ) magic damage to enemies within and reveals them for seconds. This ability's damage scales with the target's missing Health , increasing by 0% - 50% based on 0% - 60% missing Health . Enemies below 40% Health take 200 / 280 / 360 ( +50% AP +150% bonus AD ) magic damage instead. Subsequent shots within 8 seconds cost an additional 50 Mana (max 500 Mana). This ability's range increases by 200 units with each rank gained.",
         "damageTypes": [
           "magic"
         ],
@@ -9085,9 +9085,9 @@
     "name": "Leona",
     "baseStats": {
       "hp": {
-        "base": 750.0,
-        "perLevel": 112.0,
-        "lvl15": 2318.0
+        "base": 690.0,
+        "perLevel": 120.0,
+        "lvl15": 2370.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -9105,9 +9105,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 55.0,
+        "base": 50.0,
         "perLevel": 4.0,
-        "lvl15": 111.0
+        "lvl15": 106.0
       },
       "mr": {
         "base": 38.0,
@@ -9178,12 +9178,12 @@
         "slot": "2",
         "name": "Eclipse",
         "cooldowns": [
-          "14",
           "13",
           "12",
-          "11"
+          "11",
+          "10"
         ],
-        "text": "For 3 seconds gain 40 / 60 / 80 / 100 ( +20% bonus Armor ) Armor and 40 / 60 / 80 / 100 ( +20% bonus MR ) Magic Resist . After the effect ends nearby enemies take 80 / 115 / 150 / 185 ( +40% AP ) magic damage . If an enemy is hit, Leona retains her defensive bonuses for 3 seconds.",
+        "text": "For 3 seconds gain 30 / 50 / 70 / 90 ( +20% bonus Armor ) Armor and 30 / 50 / 70 / 90 ( +20% bonus MR ) Magic Resist . After the effect ends nearby enemies take 80 / 115 / 150 / 185 ( +40% AP ) magic damage . If an enemy is hit, Leona retains her defensive bonuses for 3 seconds.",
         "damageTypes": [
           "magic"
         ],
@@ -11423,9 +11423,9 @@
         "lvl15": 28.0
       },
       "armor": {
-        "base": 46.0,
+        "base": 40.0,
         "perLevel": 4.0,
-        "lvl15": 102.0
+        "lvl15": 96.0
       },
       "mr": {
         "base": 32.0,
@@ -11530,9 +11530,9 @@
         "slot": "4",
         "name": "Fury of the Sands",
         "cooldowns": [
-          "75",
-          "70",
-          "65"
+          "90",
+          "80",
+          "70"
         ],
         "text": "Enhances himself to gain 300 / 450 / 600 Health , 40 / 50 / 60 Armor and Magic Resist for 12 seconds. Deals 3% / 4% / 5% ( +0.01% AP ) magic damage",
         "damageTypes": [
@@ -11945,7 +11945,7 @@
           "4",
           "4"
         ],
-        "text": "Passive : Gains 35% of current Critical Strike Chance as Armor Pen Rate . Nilah cracks her whip-blade in a straight line, dealing 10 / 15 / 20 / 25 ( +90% / 100% / 110% / 120% AD ) physical damage to enemies hit along the way. Every 1% Critical Rate increases damage by 1% . After Formless Blade hits an enemy, Nilah gains 14% Attack Speed and 125 bonus Attack Range. Her attacks also deal 100% physical damage to enemies in a cone for 4 seconds. Damage against non-champion units is reduced by 80%. When Formless Blade is cast during Slipstream , Nilah leaves behind a wave that is sent towards her, dealing an equivalent amount of damage to all enemies hit. Damage ratio of Formless Blade to monsters: 25% .",
+        "text": "Passive : Gains 28% of current Critical Strike Chance as Armor Pen Rate . Nilah cracks her whip-blade in a straight line, dealing 10 / 15 / 20 / 25 ( +90% / 100% / 110% / 120% AD ) physical damage to enemies hit along the way. Every 1% Critical Rate increases damage by 1% . After Formless Blade hits an enemy, Nilah gains 14% Attack Speed and 125 bonus Attack Range. Her attacks also deal 100% physical damage to enemies in a cone for 4 seconds. Damage against non-champion units is reduced by 80%. When Formless Blade is cast during Slipstream , Nilah leaves behind a wave that is sent towards her, dealing an equivalent amount of damage to all enemies hit. Damage ratio of Formless Blade to monsters: 25% .",
         "damageTypes": [
           "physical"
         ],
@@ -12000,7 +12000,7 @@
           "70",
           "60"
         ],
-        "text": "Nilah whirls her whip-blade, dealing 60 / 120 / 180 ( +140% AD ) physical damage continuously over 1 second and reducing the enemy's Movement Speed by 10% for 3 seconds. When keeping her whip-blade, Nilah also deals 125 / 225 / 325 ( +120% AD ) physical damage and pulls nearby enemies toward her. Nilah also heals herself and nearby allied champions by 20% ( +30% Crit ) of the damage that she dealt to enemy champions. Excess healing is converted into a shield that lasts 6 seconds. Non-champion units are healed by 10% instead.",
+        "text": "Nilah whirls her whip-blade, dealing 60 / 110 / 160 ( +50% AD ) physical damage continuously over 1 second and reducing the enemy's Movement Speed by 10% for 3 seconds. When keeping her whip-blade, Nilah also deals 125 / 225 / 325 ( +120% AD ) physical damage and pulls nearby enemies toward her. Nilah also heals herself and nearby allied champions by 20% ( +30% Crit ) of the damage that she dealt to enemy champions. Excess healing is converted into a shield that lasts 6 seconds. Non-champion units are healed by 10% instead.",
         "damageTypes": [
           "physical"
         ],
@@ -14380,9 +14380,9 @@
     "name": "Rumble",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 89.0,
-        "lvl15": 1936.0
+        "base": 660.0,
+        "perLevel": 97.0,
+        "lvl15": 2018.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -14456,7 +14456,7 @@
           "6",
           "5"
         ],
-        "text": "Ignites his flamethrower, dealing 120 / 160 / 200 / 240 ( +110% AP ) plus 6% / 8% / 10% / 12% of the target's max Health as magic damage over 3 seconds. The flamethrower deals 105% of this damage against minions. Danger Zone : Deals 180 / 240 / 300 / 360 ( +165% AP ) plus 9% of the target's max Health as magic damage instead. Percent damage is limited to 65 - 150 damage on monsters.",
+        "text": "Ignites his flamethrower, dealing 100 / 140 / 180 / 220 ( +125% AP ) plus 7% / 8% / 9% / 10% of the target's max Health as magic damage over 3 seconds. The flamethrower deals 105% of this damage against minions. Danger Zone : Deals 150 / 210 / 270 / 330 ( +187.5% AP ) plus 10.5% / 12% / 13.5% / 15% of the target's max Health as magic damage instead. Percent damage is limited to 65 - 150 damage on monsters.",
         "damageTypes": [
           "magic"
         ],
@@ -14477,7 +14477,7 @@
           "5",
           "5"
         ],
-        "text": "Tosses up a barrier, gaining a shield that absorbs 40 / 70 / 100 / 130 ( +6% of max Health +35% AP ) damage for 1.5 seconds and 20% / 25% / 30% / 35% Movement Speed for 1 second. Danger Zone : Gains 30% / 35% / 40% / 45% Movement Speed and a shield that absorbs 60 / 105 / 150 / 195 ( +9% of max Health +45% AP ) damage instead.",
+        "text": "Tosses up a barrier, gaining a shield that absorbs 40 / 80 / 120 / 160 ( +4% of max Health +35% AP ) damage for 1.5 seconds and 20% / 25% / 30% / 35% Movement Speed for 1 second. Danger Zone : Gains 30% / 35% / 40% / 45% Movement Speed and a shield that absorbs 60 / 120 / 180 / 240 ( +6% of max Health +45% AP ) damage instead.",
         "damageTypes": [],
         "scales": [
           "ap",
@@ -14497,7 +14497,7 @@
           "1",
           "1"
         ],
-        "text": "Launches an electrified harpoon, dealing 60 / 90 / 120 / 150 ( +40% AP ) magic damage , slowing by 30% / 35% / 40% / 45% for 1.5 seconds, and reducing the enemy's Magic Resist by 8% / 12% / 16% / 20% for 4 seconds. Hitting an enemy who is already slowed by Electro Harpoon increases the slow to 45% / 52.5% / 60% / 67.5% and Magic Resist reduction to 12% / 18% / 24% / 30% . Danger Zone : The harpoon deals 90 / 135 / 180 / 225 ( +60% AP ) magic damage instead, and the slow and Magic Resist reduction are increased by 50% . Charge : Gains a charge every 6 seconds, storing up to 2 charges.",
+        "text": "Launches an electrified harpoon, dealing 60 / 90 / 120 / 150 ( +50% AP ) magic damage , slowing by 30% / 35% / 40% / 45% for 1.5 seconds, and reducing the enemy's Magic Resist by 8% / 12% / 16% / 20% for 4 seconds. Hitting an enemy who is already slowed by Electro Harpoon increases the slow to 45% / 52.5% / 60% / 67.5% and Magic Resist reduction to 12% / 18% / 24% / 30% . Danger Zone : The harpoon deals 90 / 135 / 180 / 225 ( +75% AP ) magic damage instead, and the slow and Magic Resist reduction are increased by 50% . Charge : Gains a charge every 6 seconds, storing up to 2 charges.",
         "damageTypes": [
           "magic"
         ],
@@ -14535,9 +14535,9 @@
     "name": "Ryze",
     "baseStats": {
       "hp": {
-        "base": 660.0,
+        "base": 630.0,
         "perLevel": 101.0,
-        "lvl15": 2074.0
+        "lvl15": 2044.0
       },
       "hpRegen": {
         "base": 12.0,
@@ -14555,9 +14555,9 @@
         "lvl15": 24.0
       },
       "armor": {
-        "base": 40.0,
+        "base": 37.0,
         "perLevel": 5.0,
-        "lvl15": 110.0
+        "lvl15": 107.0
       },
       "mr": {
         "base": 40.0,
@@ -14631,7 +14631,7 @@
           "8",
           "7"
         ],
-        "text": "Deals 70 / 110 / 150 / 190 ( + 65% AP + 4% bonus Mana ) magic damage and slows by 50% for 1.5 seconds. If the target has Flux, it is consumed, and Rune Prison roots instead of slowing.",
+        "text": "Deals 50 / 90 / 130 / 170 ( + 55% AP + 3% bonus Mana ) magic damage and slows by 50% for 1.5 seconds. If the target has Flux, it is consumed, and Rune Prison roots instead of slowing.",
         "damageTypes": [
           "magic"
         ],
@@ -20102,11 +20102,11 @@
         "slot": "4",
         "name": "Infinite Duress",
         "cooldowns": [
-          "80",
-          "70",
-          "60"
+          "100",
+          "90",
+          "80"
         ],
-        "text": "Warwick leaps a huge distance that scales with his Move Speed , 2.5 seconds within landing his next basic attack will be empowered. If the empowered basic attack hit target successfully, he leaps to the target, dealing damage while suppressing the target. He attacks that champion 4 times over the duration, applying On-Hit effects and dealing 125 / 300 / 475 ( + 167% bonus AD ) magic damage . Warwick restores 100% of all damage dealt during the channel as Health .",
+        "text": "Warwick leaps a huge distance that scales with his Move Speed , 2.5 seconds within landing his next basic attack will be empowered. If the empowered basic attack hit target successfully, he leaps to the target, dealing damage while suppressing the target. He attacks that champion 4 times over the duration, applying On-Hit effects and dealing 100 / 275 / 450 ( + 167% bonus AD ) magic damage . Warwick restores 100% of all damage dealt during the channel as Health .",
         "damageTypes": [
           "magic"
         ],

@@ -8226,14 +8226,17 @@
         "defensive": [
           {
             "kind": "heal",
-            "base": [
-              16
-            ],
+            "base": {
+              "lvlRange": [
+                18,
+                46
+              ]
+            },
             "ratios": []
           }
         ],
         "unmodeled": [
-          "+2 per level Health restored (doubled vs champions/turrets/epic monsters); restores 4 + 0.35 per level Mana"
+          "Restores 4 + 0.35 per level Mana; health and mana restored are doubled on champion, turret, or epic monster kills."
         ]
       },
       "1": {
@@ -8267,7 +8270,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "knocks up for 1s, slows by 60% for 1.5s"
+          "Knocks up enemies for 1 second and slows by 60% for 1.5 seconds."
         ]
       },
       "2": {
@@ -8301,7 +8304,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "silences for 1.4/1.6/1.8/2s"
+          "Silences enemies for 1.4 / 1.6 / 1.8 / 2 seconds."
         ]
       },
       "3": {
@@ -8314,26 +8317,35 @@
         ],
         "damage": [
           {
-            "name": "Vorpal Spike",
+            "name": "Vorpal Spikes Magic",
             "type": "magic",
             "base": [
-              15,
-              35,
-              55,
-              75
+              20,
+              45,
+              70,
+              95
             ],
             "ratios": [
               {
                 "stat": "ap",
                 "pct": 30
-              },
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          },
+          {
+            "name": "Vorpal Spikes Max Health",
+            "type": "magic",
+            "base": 0,
+            "ratios": [
               {
                 "stat": "targetMaxHp",
                 "pct": [
-                  2.15,
-                  2.5,
-                  2.85,
-                  3.2
+                  2.3,
+                  2.7,
+                  3.1,
+                  3.5
                 ]
               }
             ],
@@ -8344,15 +8356,15 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "next 3 attacks launch spikes; slow 30/35/40/45% decaying over 1.5s; +0.5% target max Health per Feast stack; width increases with size; base damage vs minions/monsters capped at 100 (+30% AP)"
+          "Empowers the next 3 basic attacks; max-health percent gains an additional 0.6% per Feast stack; slows by 30% / 35% / 40% / 45% decaying over 1.5 seconds; base damage vs minions and monsters is capped at 100 (+30% AP); spike width increases with Cho'Gath's size."
         ]
       },
       "4": {
         "name": "Feast",
         "cooldowns": [
-          80.0,
-          80.0,
-          80.0
+          70.0,
+          60.0,
+          50.0
         ],
         "damage": [
           {
@@ -8365,8 +8377,8 @@
                 "pct": 50
               },
               {
-                "stat": "bonusHealth",
-                "pct": 8
+                "stat": "ownBonusHp",
+                "pct": 10
               }
             ],
             "hits": 1,
@@ -8376,15 +8388,14 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "If kill: gain a Feast stack. Each stack grants 80 max Health, 6% size (max 135%), 4.7 attack range (max 75), 2.5 cast range (max 25). Minion/non-epic stacks capped at 6. Deals 1200 base true damage to minions/monsters."
+          "Deals 1200 (+50% AP + 10% bonus Health) true damage to minions and monsters; killing with Feast grants a stack; each stack grants 80 max Health, 6% size (max 135%), 4.7 attack range (max 75), and 2.5 cast range (max 25); stacks from minions and non-epic monsters are capped at 6."
         ]
       }
     },
     "combo": [
+      "3",
       "1",
       "2",
-      "3",
-      "auto",
       "auto",
       "auto",
       "4"
@@ -10862,19 +10873,18 @@
           {
             "stat": "moveSpeed",
             "pct": 140,
-            "note": "decaying over 6 seconds"
+            "note": "decaying over 6s"
           },
           {
             "stat": "attackSpeed",
-            "flat": [
-              12
-            ],
-            "note": "12% total attack speed for 6 seconds, can exceed cap"
+            "pct": 25,
+            "note": "Total Attack Speed for 6s; can exceed Attack Speed cap"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Restores 10% missing mana on trigger; can exceed attack speed cap"
+          "Triggers only on takedown of a champion or structure damaged within the last 3s.",
+          "Restores 10% of missing mana."
         ]
       },
       "1": {
@@ -10887,11 +10897,9 @@
         ],
         "damage": [
           {
-            "name": "Fishbones",
+            "name": "Fishbones Rocket Auto",
             "type": "physical",
-            "base": [
-              0
-            ],
+            "base": 0,
             "ratios": [
               {
                 "stat": "ad",
@@ -10912,13 +10920,14 @@
               85,
               110
             ],
-            "note": "Pow-Pow stacks up to 3 times",
-            "alt": true
+            "note": "Total bonus after 3 stacks; each stack lasts 2.5s; stacks fall off one at a time; only benefit the first Fishbones attack after swapping"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Fishbones: costs mana, gains range; Pow-Pow stacks fall off one at a time"
+          "Toggle between Fishbones and Pow-Pow.",
+          "Fishbones attacks cost mana and gain 80/95/110/125 range; splash damage to enemies around the target.",
+          "Pow-Pow stacks fall off one at a time."
         ]
       },
       "2": {
@@ -10931,7 +10940,7 @@
         ],
         "damage": [
           {
-            "name": "Zap!",
+            "name": "Zap",
             "type": "physical",
             "base": [
               10,
@@ -10952,7 +10961,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows target by 30-60% for 2 seconds, grants vision"
+          "Grants vision of the first enemy hit.",
+          "Slows target by 30/40/50/60% for 2s."
         ]
       },
       "3": {
@@ -10965,7 +10975,7 @@
         ],
         "damage": [
           {
-            "name": "Flame Chompers!",
+            "name": "Flame Chompers Explosion",
             "type": "magic",
             "base": [
               70,
@@ -10980,13 +10990,14 @@
               }
             ],
             "hits": 1,
-            "when": "per target"
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "3 chompers, root duration 1.45-1.75s, interrupts dashes, lasts 5s"
+          "Tosses 3 chompers that arm after a delay; last 5s; auto-explode if no champion triggers them.",
+          "Chompers interrupt dashes and root for 1.45/1.55/1.65/1.75s."
         ]
       },
       "4": {
@@ -10998,29 +11009,7 @@
         ],
         "damage": [
           {
-            "name": "Super Mega Death Rocket (min)",
-            "type": "physical",
-            "base": [
-              25,
-              35,
-              45
-            ],
-            "ratios": [
-              {
-                "stat": "ad",
-                "pct": 15
-              },
-              {
-                "stat": "targetMissingHp",
-                "pct": 25
-              }
-            ],
-            "hits": 1,
-            "when": "per cast",
-            "alt": true
-          },
-          {
-            "name": "Super Mega Death Rocket (max)",
+            "name": "Super Mega Death Rocket (max travel)",
             "type": "physical",
             "base": [
               250,
@@ -11031,30 +11020,64 @@
               {
                 "stat": "ad",
                 "pct": 150
-              },
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Super Mega Death Rocket (min travel)",
+            "type": "physical",
+            "base": [
+              25,
+              35,
+              45
+            ],
+            "ratios": [
               {
-                "stat": "targetMissingHp",
-                "pct": 25
+                "stat": "ad",
+                "pct": 15
               }
             ],
             "hits": 1,
             "when": "per cast",
             "alt": true
+          },
+          {
+            "name": "Super Mega Death Rocket Missing Health",
+            "type": "physical",
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "targetMissingHp",
+                "pct": [
+                  25,
+                  30,
+                  35
+                ]
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Damage and speed increase over first second; nearby enemies take 80% damage; max 500 vs epic monsters"
+          "Damage and AD ratio scale from min to max over the first second of travel.",
+          "Nearby enemies take 80% damage.",
+          "Deals a maximum of 500 damage to epic monsters."
         ]
       }
     },
     "combo": [
-      "4",
-      "2",
       "3",
       "auto",
-      "auto"
+      "2",
+      "auto",
+      "1",
+      "auto",
+      "4"
     ],
     "knowledge": {
       "source": "llm-knowledge",
@@ -13377,12 +13400,13 @@
           {
             "stat": "moveSpeed",
             "pct": 10,
-            "note": "Increases to 50% over 4 seconds after death."
+            "note": "increases to 50% over 4s after death"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Explosion damage may have an additional +35 flat or per-level scaling (unclear)."
+          "the +35 in '105 (+35) true damage' is left unmodeled because its scaling stat is unspecified",
+          "death effect lets Kog'Maw keep moving for 4s before the explosion"
         ]
       },
       "1": {
@@ -13416,7 +13440,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Shreds 20/24/28/32% Armor and Magic Resist for 4 seconds."
+          "shreds 20%/24%/28%/32% Armor and Magic Resist on the target for 4s"
         ]
       },
       "2": {
@@ -13429,27 +13453,18 @@
         ],
         "damage": [
           {
-            "name": "Bio-Arcane Barrage",
+            "name": "Bio-Arcane Barrage on-hit",
             "type": "magic",
-            "base": [
-              0
-            ],
+            "base": 0,
             "ratios": [
               {
                 "stat": "targetMaxHp",
-                "pct": 1.5
-              },
-              {
-                "stat": "targetMaxHp",
-                "pct": 2.5
-              },
-              {
-                "stat": "targetMaxHp",
-                "pct": 3.5
-              },
-              {
-                "stat": "targetMaxHp",
-                "pct": 4.5
+                "pct": [
+                  1.5,
+                  2.5,
+                  3.5,
+                  4.5
+                ]
               }
             ],
             "hits": 1,
@@ -13459,7 +13474,9 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Also adds +0.01% AP to the max health damage. Deals up to 100 damage to minions/monsters."
+          "gains 90/120/150/180 attack range for 8s",
+          "the +0.01% AP scaling on the max-health damage is not modeled",
+          "deals up to 100 damage against minions and monsters"
         ]
       },
       "3": {
@@ -13472,7 +13489,7 @@
         ],
         "damage": [
           {
-            "name": "Void Ooze",
+            "name": "Void Ooze impact",
             "type": "magic",
             "base": [
               80,
@@ -13493,7 +13510,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Leaves a trail that slows by 45/50/55/60% for 3.5 seconds."
+          "leaves an ooze trail for 3.5s that slows enemies by 45%/50%/55%/60% (no damage over time)"
         ]
       },
       "4": {
@@ -13508,9 +13525,9 @@
             "name": "Living Artillery",
             "type": "magic",
             "base": [
-              100,
-              140,
-              180
+              80,
+              120,
+              160
             ],
             "ratios": [
               {
@@ -13526,7 +13543,7 @@
             "when": "per cast"
           },
           {
-            "name": "Living Artillery (Execute)",
+            "name": "Living Artillery (enemy below 40% HP)",
             "type": "magic",
             "base": [
               200,
@@ -13555,22 +13572,26 @@
               10,
               20,
               30
-            ]
+            ],
+            "note": "passive Corrosion Specialist from Living Artillery"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Passive: gains AS as above. Active: damage increases by 0-50% based on missing health (0-60% missing). Enemies below 40% health take execute version instead. Reveals area for 2s."
+          "damage increases 0-50% based on target missing 0-60% Health",
+          "reveals the area for 2 seconds",
+          "subsequent shots within 8s cost an additional 50 Mana (max 500)",
+          "range increases by 200 units with each rank gained"
         ]
       }
     },
     "combo": [
       "2",
       "1",
-      "auto",
       "3",
-      "4",
-      "auto"
+      "auto",
+      "auto",
+      "4"
     ],
     "knowledge": {
       "source": "llm-knowledge",
@@ -13585,11 +13606,20 @@
       "P": {
         "name": "Sunlight",
         "cooldowns": [],
-        "damage": [],
+        "damage": [
+          {
+            "name": "Sunlight",
+            "type": "magic",
+            "base": 34,
+            "ratios": [],
+            "hits": 1,
+            "when": "once per target"
+          }
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Allied champions consume Sunlight to deal 34 bonus magic damage"
+          "Sunlight is consumed by allied champions' damage, not Leona's own; lasts 1.5 seconds after abilities hit."
         ]
       },
       "1": {
@@ -13616,26 +13646,27 @@
                 "pct": 30
               }
             ],
+            "hits": 1,
             "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Stuns for 1 second"
+          "Empowers the next basic attack to stun for 1 second."
         ]
       },
       "2": {
         "name": "Eclipse",
         "cooldowns": [
-          14.0,
           13.0,
           12.0,
-          11.0
+          11.0,
+          10.0
         ],
         "damage": [
           {
-            "name": "Eclipse Explosion",
+            "name": "Eclipse",
             "type": "magic",
             "base": [
               80,
@@ -13649,6 +13680,7 @@
                 "pct": 40
               }
             ],
+            "hits": 1,
             "when": "per cast"
           }
         ],
@@ -13656,29 +13688,31 @@
           {
             "stat": "armor",
             "flat": [
-              40,
-              60,
-              80,
-              100
+              30,
+              50,
+              70,
+              90
             ],
             "from": "bonusArmor",
-            "pct": 20
+            "pct": 20,
+            "note": "for 3 seconds"
           },
           {
             "stat": "mr",
             "flat": [
-              40,
-              60,
-              80,
-              100
+              30,
+              50,
+              70,
+              90
             ],
             "from": "bonusMr",
-            "pct": 20
+            "pct": 20,
+            "note": "for 3 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Retains defensive bonuses for 3 seconds if explosion hits an enemy"
+          "Damage occurs after the 3-second effect ends; if an enemy is hit, Leona retains the defensive bonuses for 3 seconds."
         ]
       },
       "3": {
@@ -13705,13 +13739,14 @@
                 "pct": 40
               }
             ],
+            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Roots last champion hit for 0.5s and dashes to them"
+          "Roots the last champion hit for 0.5 seconds and dashes to them."
         ]
       },
       "4": {
@@ -13736,13 +13771,14 @@
                 "pct": 80
               }
             ],
+            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows by 80% for 1.75s; center stuns instead"
+          "Slows by 80% for 1.75 seconds; enemies in the center are stunned instead of slowed."
         ]
       }
     },
@@ -13750,7 +13786,9 @@
       "2",
       "3",
       "1",
-      "4"
+      "auto",
+      "4",
+      "auto"
     ],
     "knowledge": {
       "source": "llm-knowledge",
@@ -17468,14 +17506,16 @@
         "defensive": [
           {
             "kind": "heal",
-            "base": 0,
+            "base": [
+              0
+            ],
             "ratios": [
               {
                 "stat": "damageDealt",
                 "pct": 20
               }
             ],
-            "note": "Only on crit; excess healing becomes shield"
+            "note": "only on critical strikes; excess healing becomes a shield lasting 6s"
           }
         ],
         "unmodeled": []
@@ -17510,22 +17550,37 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "note": "Each 1% crit rate increases damage by 1%; damage to monsters 25%"
+            "when": "per cast"
+          },
+          {
+            "name": "Formless Blade Cone Attacks",
+            "type": "physical",
+            "base": [
+              0
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 100
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
           }
         ],
         "steroids": [
           {
             "stat": "attackSpeed",
             "pct": 14,
-            "note": "After hitting an enemy with Formless Blade, lasts 4 seconds"
+            "note": "for 4 seconds after hitting an enemy; also grants 125 bonus Attack Range"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Gains 35% of crit chance as armor pen rate (passive part of ability)",
-          "After hit, gains 125 bonus attack range and attacks deal AoE 100% AD for 4s",
-          "When cast during Slipstream, leaves a wave that deals same damage"
+          "Passive: gains 28% of current Critical Strike Chance as Armor Pen Rate",
+          "Every 1% Critical Rate increases Formless Blade damage by 1%",
+          "When Formless Blade is cast during Slipstream, leaves a wave dealing equivalent damage",
+          "Cone attack damage against non-champion units is reduced by 80%"
         ]
       },
       "2": {
@@ -17545,18 +17600,19 @@
               20,
               25,
               30
-            ]
+            ],
+            "note": "lasts 1.75s; duration extended by 1s if allied champion is nearby"
           },
           {
             "stat": "damageReduction",
             "pct": 25,
-            "note": "Only magic damage reduction; also immune to non-tower attacks"
+            "note": "magic damage only"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Grants same effects to nearest allied champion and extends Nilah's duration by 1s",
-          "Duration 1.75s"
+          "becomes immune to non-tower attacks",
+          "nearest allied champion gains the same effects"
         ]
       },
       "3": {
@@ -17584,15 +17640,13 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "note": "Empowered attacks reduce cooldown; hitting champion further reduces"
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Cooldown cannot be refreshed again within 10s",
-          "If no unit hit, immediately enters cooldown"
+          "Empowered attacks reduce cooldown by 1s; hitting a champion further reduces by 1s; hitting any unit refreshes cooldown; cannot refresh again within 10s; if no unit hit, immediately enters cooldown"
         ]
       },
       "4": {
@@ -17608,21 +17662,21 @@
             "type": "physical",
             "base": [
               60,
-              120,
-              180
+              110,
+              160
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 140
+                "pct": 50
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "note": "Damage over 1s, also reduces MS by 10% for 3s"
+            "when": "dot total",
+            "durationS": 1
           },
           {
-            "name": "Apotheosis Slam",
+            "name": "Apotheosis Final Slash",
             "type": "physical",
             "base": [
               125,
@@ -17636,27 +17690,28 @@
               }
             ],
             "hits": 1,
-            "when": "per cast",
-            "alt": true,
-            "note": "Pulls enemies; occurs after whirl"
+            "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [
           {
             "kind": "heal",
-            "base": 0,
+            "base": [
+              0
+            ],
             "ratios": [
               {
                 "stat": "damageDealt",
                 "pct": 20
               }
             ],
-            "note": "Also scales with crit (30% crit chance?); excess becomes shield; heals allies fully, non-champions 10%"
+            "note": "heals self and nearby allies; +30% Crit chance additional heal; excess converted to shield lasting 6s; non-champion units healed 10% instead"
           }
         ],
         "unmodeled": [
-          "Excess healing converts to shield lasting 6s"
+          "reduces enemy Movement Speed by 10% for 3 seconds",
+          "pulls nearby enemies toward her"
         ]
       }
     },
@@ -17665,14 +17720,22 @@
       "1",
       "auto",
       "4",
+      "auto",
+      "1",
       "auto"
+    ],
+    "mechanics": [
+      {
+        "kind": "noResource",
+        "source": "llm-knowledge"
+      }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.2,
+      "asEfficiency": 0.8,
       "resource": "mana",
-      "abilitiesCanCrit": false,
-      "confidence": "high"
+      "abilitiesCanCrit": true,
+      "confidence": "medium"
     }
   },
   "Milio": {
@@ -18273,7 +18336,9 @@
         "damage": [],
         "steroids": [],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "Gains 6/12/18/24% Physical Vamp based on level."
+        ]
       },
       "1": {
         "name": "Siphoning Strike",
@@ -18293,14 +18358,14 @@
               80,
               110
             ],
-            "hits": 1,
+            "ratios": [],
             "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "permanently increases damage on kill (5 per minion, 14 per champion/large minion/large monster)"
+          "Siphoning Strike's damage permanently increases by 5 per kill (14 for champions, large minions, large monsters)."
         ]
       },
       "2": {
@@ -18315,7 +18380,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows enemy movement speed by 35% (increasing to 45%/60%/75%/90% over 5s) and attack speed by 22.49%/29.98%/37.48%/44.96% for 5 seconds"
+          "Wither: slows enemy Movement Speed by 35% (increasing to 45/60/75/90% over 5s) and Attack Speed by 22.49/29.98/37.48/44.96% for 5 seconds."
         ]
       },
       "3": {
@@ -18342,11 +18407,10 @@
                 "pct": 40
               }
             ],
-            "hits": 1,
             "when": "per cast"
           },
           {
-            "name": "Spirit Fire DoT",
+            "name": "Spirit Fire burn",
             "type": "magic",
             "base": [
               11,
@@ -18360,7 +18424,6 @@
                 "pct": 12
               }
             ],
-            "hits": 1,
             "when": "dot total",
             "durationS": 5
           }
@@ -18368,15 +18431,15 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Reduces enemy armor by 20%/25%/30%/35% while in zone"
+          "Zone reduces affected enemies' Armor by 20/25/30/35%."
         ]
       },
       "4": {
         "name": "Fury of the Sands",
         "cooldowns": [
-          75.0,
-          70.0,
-          65.0
+          90.0,
+          80.0,
+          70.0
         ],
         "damage": [
           {
@@ -18391,13 +18454,8 @@
                   4,
                   5
                 ]
-              },
-              {
-                "stat": "ap",
-                "pct": 0.01
               }
             ],
-            "hits": 1,
             "when": "dot total",
             "durationS": 12
           }
@@ -18409,7 +18467,8 @@
               300,
               450,
               600
-            ]
+            ],
+            "note": "for 12s"
           },
           {
             "stat": "armor",
@@ -18417,7 +18476,8 @@
               40,
               50,
               60
-            ]
+            ],
+            "note": "for 12s"
           },
           {
             "stat": "mr",
@@ -18425,27 +18485,28 @@
               40,
               50,
               60
-            ]
+            ],
+            "note": "for 12s"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Buff lasts 12 seconds"
+          "Aura also deals +0.01% AP of target's maximum Health per second as magic damage."
         ]
       }
     },
     "combo": [
       "4",
-      "3",
       "2",
+      "3",
       "1",
       "auto"
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.3,
+      "asEfficiency": 0.4,
       "resource": "mana",
-      "abilitiesCanCrit": false,
+      "abilitiesCanCrit": true,
       "confidence": "high"
     }
   },
@@ -20960,27 +21021,14 @@
         "cooldowns": [],
         "damage": [
           {
-            "name": "Overheated On-Hit",
+            "name": "Junkyard Titan Empowered Attack",
             "type": "magic",
-            "base": [
-              5
-            ],
+            "base": 5,
             "ratios": [
               {
                 "stat": "ap",
                 "pct": 20
-              }
-            ],
-            "hits": 1,
-            "when": "per auto"
-          },
-          {
-            "name": "Overheated Max Health On-Hit",
-            "type": "magic",
-            "base": [
-              0
-            ],
-            "ratios": [
+              },
               {
                 "stat": "targetMaxHp",
                 "pct": 5
@@ -20993,12 +21041,13 @@
         "steroids": [
           {
             "stat": "attackSpeed",
-            "pct": 55
+            "pct": 55,
+            "note": "Overheated for 4 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Heat system; Danger Zone condition; Overheated silence; percent damage cap 65-150 on monsters."
+          "Heat/Danger Zone: abilities generate Heat; above 50 Heat basic abilities gain bonus effects. Overheated silences self. Percent damage limited to 65-150 on monsters."
         ]
       },
       "1": {
@@ -21011,85 +21060,66 @@
         ],
         "damage": [
           {
-            "name": "Flamespitter Base DoT",
+            "name": "Flamespitter",
             "type": "magic",
             "base": [
-              120,
-              160,
-              200,
-              240
-            ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 110
-              }
-            ],
-            "when": "dot total",
-            "durationS": 3,
-            "hits": 1
-          },
-          {
-            "name": "Flamespitter Base Max Health DoT",
-            "type": "magic",
-            "base": [
-              0
-            ],
-            "ratios": [
-              {
-                "stat": "targetMaxHp",
-                "pct": 6
-              }
-            ],
-            "when": "dot total",
-            "durationS": 3,
-            "hits": 1,
-            "alt": true,
-            "note": "Percent scales with rank: 6/8/10/12%; only rank 1 modeled."
-          },
-          {
-            "name": "Flamespitter Danger Zone DoT",
-            "type": "magic",
-            "base": [
+              100,
+              140,
               180,
-              240,
-              300,
-              360
+              220
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 165
+                "pct": 125
+              },
+              {
+                "stat": "targetMaxHp",
+                "pct": [
+                  7,
+                  8,
+                  9,
+                  10
+                ]
               }
             ],
-            "when": "dot total",
-            "durationS": 3,
             "hits": 1,
-            "alt": true
+            "when": "dot total",
+            "durationS": 3
           },
           {
-            "name": "Flamespitter Danger Zone Max Health DoT",
+            "name": "Flamespitter Danger Zone",
             "type": "magic",
             "base": [
-              0
+              150,
+              210,
+              270,
+              330
             ],
             "ratios": [
               {
+                "stat": "ap",
+                "pct": 187.5
+              },
+              {
                 "stat": "targetMaxHp",
-                "pct": 9
+                "pct": [
+                  10.5,
+                  12,
+                  13.5,
+                  15
+                ]
               }
             ],
+            "hits": 1,
             "when": "dot total",
             "durationS": 3,
-            "hits": 1,
             "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "Deals 105% damage to minions."
-        ]
+        "unmodeled": []
       },
       "2": {
         "name": "Scrap Shield",
@@ -21103,13 +21133,23 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 20,
-            "note": "Base version: 20/25/30/35% for 1s; only rank 1 modeled."
+            "pct": [
+              20,
+              25,
+              30,
+              35
+            ],
+            "note": "1 second"
           },
           {
             "stat": "moveSpeed",
-            "pct": 30,
-            "note": "Danger Zone: 30/35/40/45% for 1s; only rank 1 modeled.",
+            "pct": [
+              30,
+              35,
+              40,
+              45
+            ],
+            "note": "Danger Zone, 1 second",
             "alt": true
           }
         ],
@@ -21118,14 +21158,14 @@
             "kind": "shield",
             "base": [
               40,
-              70,
-              100,
-              130
+              80,
+              120,
+              160
             ],
             "ratios": [
               {
                 "stat": "ownMaxHp",
-                "pct": 6
+                "pct": 4
               },
               {
                 "stat": "ap",
@@ -21137,14 +21177,14 @@
             "kind": "shield",
             "base": [
               60,
-              105,
-              150,
-              195
+              120,
+              180,
+              240
             ],
             "ratios": [
               {
                 "stat": "ownMaxHp",
-                "pct": 9
+                "pct": 6
               },
               {
                 "stat": "ap",
@@ -21155,7 +21195,7 @@
           }
         ],
         "unmodeled": [
-          "Shield duration 1.5s; movement speed duration 1s."
+          "Danger Zone gives bonus shield/move speed; requires Heat."
         ]
       },
       "3": {
@@ -21168,7 +21208,7 @@
         ],
         "damage": [
           {
-            "name": "Electro-Harpoon Base",
+            "name": "Electro-Harpoon",
             "type": "magic",
             "base": [
               60,
@@ -21179,7 +21219,7 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 40
+                "pct": 50
               }
             ],
             "hits": 1,
@@ -21197,7 +21237,7 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 75
               }
             ],
             "hits": 1,
@@ -21208,7 +21248,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slow (30-45% base, 45-67.5% on repeat, 50% increase in Danger Zone); MR reduction (8-20% base, 12-30% on repeat, 50% increase in Danger Zone); charge system (recharge 6s, max 2 charges); slow and MR reduction durations."
+          "Slows by 30/35/40/45% for 1.5s, increased to 45/52.5/60/67.5% on already slowed targets. Reduces Magic Resist by 8/12/16/20% for 4s, increased to 12/18/24/30%. Danger Zone increases slow and MR reduction by 50%. Stores up to 2 charges, gains a charge every 6s."
         ]
       },
       "4": {
@@ -21233,25 +21273,24 @@
                 "pct": 200
               }
             ],
+            "hits": 1,
             "when": "dot total",
-            "durationS": 5,
-            "hits": 1
+            "durationS": 5
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slow 45% over 5 seconds."
+          "Slows enemies in the trail by 45% over 5s."
         ]
       }
     },
     "combo": [
-      "3",
-      "1",
       "2",
+      "3",
       "4",
-      "auto",
-      "auto",
+      "1",
+      "3",
       "auto"
     ],
     "mechanics": [
@@ -21480,8 +21519,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Gains bonus mana equal to 10% of AP (tooltip: Gains 0% max Mana (10% AP)).",
-          "Abilities deal additional damage based on bonus mana (already included in ratios)."
+          "Gains bonus mana equal to 10% AP (mana not modeled).",
+          "Abilities deal additional damage based on bonus Mana (not modeled due to missing stat)."
         ]
       },
       "1": {
@@ -21494,7 +21533,7 @@
         ],
         "damage": [
           {
-            "name": "Magic Blast",
+            "name": "Overload Magic Blast",
             "type": "magic",
             "base": [
               70,
@@ -21506,14 +21545,29 @@
               {
                 "stat": "ap",
                 "pct": 45
-              },
-              {
-                "stat": "bonusMana",
-                "pct": 2
               }
             ],
             "hits": 1,
             "when": "per cast"
+          },
+          {
+            "name": "Overload Magic Blast (Flux consumed)",
+            "type": "magic",
+            "base": [
+              87.5,
+              118.75,
+              150,
+              181.25
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 56.25
+              }
+            ],
+            "hits": 1,
+            "when": "per cast",
+            "alt": true
           }
         ],
         "steroids": [
@@ -21525,15 +21579,15 @@
               35,
               42.5
             ],
-            "durationS": 2,
-            "note": "Runic Haste: when 2 runes charged"
+            "note": "Runic Haste: when two runes charged, discharge them for 2s bonus move speed."
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Passive: Rune Prison and Spell Flux refresh Overload cooldown and charge a rune (max 2).",
-          "If target has Flux, Overload deals 25% increased damage and bounces to nearby enemies with Flux (bonus increases with ult rank: 50%/75%/100%).",
-          "Runic Haste deals 40% damage to monsters."
+          "Passive: Rune Prison and Spell Flux refresh Overload's cooldown and charge a rune for 4s (max 2).",
+          "If target has Flux, it is consumed, Overload deals 25% increased damage and bounces to nearby enemies with Flux (bounce not modeled).",
+          "Deals 40% damage to monsters (ignored).",
+          "Additional damage from 2% bonus Mana not modeled."
         ]
       },
       "2": {
@@ -21549,19 +21603,15 @@
             "name": "Rune Prison",
             "type": "magic",
             "base": [
-              70,
-              110,
-              150,
-              190
+              50,
+              90,
+              130,
+              170
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 65
-              },
-              {
-                "stat": "bonusMana",
-                "pct": 4
+                "pct": 55
               }
             ],
             "hits": 1,
@@ -21571,7 +21621,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows by 50% for 1.5s; roots instead if target has Flux."
+          "Slows by 50% for 1.5s; if target has Flux, consume it and root instead.",
+          "Additional damage from 3% bonus Mana not modeled."
         ]
       },
       "3": {
@@ -21596,10 +21647,6 @@
               {
                 "stat": "ap",
                 "pct": 40
-              },
-              {
-                "stat": "bonusMana",
-                "pct": 2
               }
             ],
             "hits": 1,
@@ -21609,7 +21656,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Applies Flux to target and nearby enemies for 4s; if already Fluxed, duration refreshed and spreads further."
+          "Applies Flux for 4s to target and nearby enemies; if already Fluxed, refresh duration and spread further.",
+          "Additional damage from 2% bonus Mana not modeled."
         ]
       },
       "4": {
@@ -21623,8 +21671,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Passive: Increases Overload's damage bonus against targets with Flux to 50%/75%/100% based on ult rank.",
-          "Active: Opens portal to target location, after 2s teleports allied champions and minions, grants 35% Movement Speed for 2s, resets basic ability cooldowns. Canceled if Ryze is immobilized."
+          "Passive: increases Overload's Flux damage bonus to 50% / 75% / 100% (not modeled directly).",
+          "Active: opens portal to target location; after 2s teleports allied champions and minions, granting them 35% move speed for 2s; resets Ryze's basic ability cooldowns; canceled if immobilized/disabled."
         ]
       }
     },
@@ -21632,8 +21680,10 @@
       "3",
       "1",
       "2",
+      "auto",
       "3",
-      "1"
+      "1",
+      "auto"
     ],
     "knowledge": {
       "source": "llm-knowledge",
@@ -28085,14 +28135,16 @@
         "defensive": [
           {
             "kind": "heal",
-            "base": 0,
+            "base": [
+              0
+            ],
             "ratios": [
               {
                 "stat": "damageDealt",
                 "pct": 100
               }
             ],
-            "note": "while below 50% Health"
+            "note": "Only while below 50% health"
           }
         ],
         "unmodeled": []
@@ -28137,7 +28189,9 @@
         "defensive": [
           {
             "kind": "heal",
-            "base": 0,
+            "base": [
+              0
+            ],
             "ratios": [
               {
                 "stat": "damageDealt",
@@ -28149,13 +28203,11 @@
                 ]
               }
             ],
-            "note": "heal from damage dealt by this ability"
+            "note": "Heals for percentage of damage dealt"
           }
         ],
         "unmodeled": [
-          "Bonus max-health damage capped vs monsters",
-          "50% extra damage to minions and cooldown refund on kill",
-          "Drag follows targets"
+          "Max-health bonus damage capped at 100/125/150/175 against monsters. Deals 50% extra damage to minions and refunds 50% cooldown on minion kill."
         ]
       },
       "2": {
@@ -28169,16 +28221,6 @@
         "damage": [],
         "steroids": [
           {
-            "stat": "moveSpeed",
-            "pct": [
-              40,
-              45,
-              50,
-              55
-            ],
-            "note": "towards marked enemies; enhanced 150% vs targets below 35% Health"
-          },
-          {
             "stat": "attackSpeed",
             "pct": [
               60,
@@ -28186,13 +28228,22 @@
               80,
               90
             ],
-            "note": "against enemies below 50% Health; enhanced 150% vs targets below 35% Health"
+            "note": "Against enemies below 50% Health; enhanced to 150% of value vs targets below 35% Health"
+          },
+          {
+            "stat": "moveSpeed",
+            "pct": [
+              40,
+              45,
+              50,
+              55
+            ],
+            "note": "Towards marked enemies; enhanced to 150% of value vs targets below 35% Health"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Passively marks champions below 50% Health; active marks closest champion for 8s",
-          "Active cannot be used in combat with champions; vision range up to 1300"
+          "Active marks closest champion for 8 seconds, cannot be used while in combat with champions, increases vision range ignoring terrain up to 1300. Passive senses only enemies brought below 50% Health by allies."
         ]
       },
       "3": {
@@ -28213,30 +28264,29 @@
               45,
               50
             ],
-            "note": "for 2.5 seconds"
+            "note": "Duration 2.5 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "After duration, fears nearby enemies for 1s and slows 90%",
-          "Recast early can refund 45% cooldown if no fear"
+          "After duration or recast, howls fearing nearby enemies for 1 second and slowing them by 90%. Recasting within 1s does not trigger fear and refunds 45% cooldown; if fear is triggered, no refund."
         ]
       },
       "4": {
         "name": "Infinite Duress",
         "cooldowns": [
-          80.0,
-          70.0,
-          60.0
+          100.0,
+          90.0,
+          80.0
         ],
         "damage": [
           {
-            "name": "Infinite Duress magic damage",
+            "name": "Infinite Duress",
             "type": "magic",
             "base": [
-              125,
-              300,
-              475
+              100,
+              275,
+              450
             ],
             "ratios": [
               {
@@ -28252,37 +28302,37 @@
         "defensive": [
           {
             "kind": "heal",
-            "base": 0,
+            "base": [
+              0
+            ],
             "ratios": [
               {
                 "stat": "damageDealt",
                 "pct": 100
               }
             ],
-            "note": "during channel"
+            "note": "Restores 100% of all damage dealt during the channel as Health"
           }
         ],
         "unmodeled": [
-          "Leap distance scales with Move Speed; empowered next basic attack if it hits",
-          "Suppresses target for the 4 attacks",
-          "All other on-hit effects also apply to each of the 4 attacks",
-          "4/Eternal Hunger on-hit during Infinite Duress: ungrounded ['base 46.0']"
+          "Leap distance scales with Move Speed. Empowered basic attack must hit to trigger the suppression; channel attacks 4 times applying On-Hit effects."
         ]
       }
     },
     "combo": [
-      "3",
+      "2",
       "4",
       "1",
       "auto",
+      "3",
       "auto"
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 1.0,
-      "resource": "none",
+      "asEfficiency": 0.6,
+      "resource": "mana",
       "abilitiesCanCrit": false,
-      "confidence": "high"
+      "confidence": "medium"
     }
   },
   "Xayah": {
