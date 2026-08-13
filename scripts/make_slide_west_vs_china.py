@@ -1,4 +1,4 @@
-"""Build the "ranked 4th in the West, 107th in China" slide.
+"""Build the "4th in EU + NA, 110th in China" slide.
 
 Generated rather than hand-written so every number on the image comes straight
 out of site.json, site_na.json and cn.json.
@@ -9,7 +9,7 @@ Writes web-next/public/west_vs_china_2026.html at 1600x1000.
 
 WHY RANK, NOT WIN RATE:
 
-  The West figure is our own scrape of the 50 best players on a champion. The
+  The EU + NA figure is our own scrape of the 50 best players on a champion. The
   China figure is Tencent's published rate across the whole Challenger bracket.
   Those are different populations, so subtracting one win rate from the other
   compares two rulers with different markings: the EU spread runs 43.7 to 60.2
@@ -147,7 +147,7 @@ def build() -> str:
 <head>
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
-<title>{ordinal(top_w["westRank"])} in the West, {ordinal(top_w["cnRank"])} in China | WrTrueMeta</title>
+<title>{ordinal(top_w["westRank"])} in EU + NA, {ordinal(top_w["cnRank"])} in China | WrTrueMeta</title>
 <style>
   * {{ margin: 0; padding: 0; box-sizing: border-box; }}
   html, body {{ background: #05080f; }}
@@ -197,7 +197,9 @@ def build() -> str:
 
   .main {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; flex: 1; min-height: 0; }}
   .panel {{ padding: 16px 18px; display: flex; flex-direction: column; }}
+  .ptitle {{ display: flex; align-items: baseline; gap: 9px; }}
   .ptitle .t {{ font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }}
+  .ptitle .n {{ font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #7f92b0; }}
   .west .t {{ color: #7fd6ff; }}
   .china .t {{ color: #ff9a6b; }}
   .psub {{ margin-top: 3px; font-size: 12.5px; color: #93a3bd; }}
@@ -234,9 +236,9 @@ def build() -> str:
   <div class="head">
     <div>
       <div class="brand">WRTRUE<span>META</span></div>
-      <h1>{ordinal(top_w["westRank"])} in the West. {ordinal(top_w["cnRank"])} in China.</h1>
+      <h1>{ordinal(top_w["westRank"])} in EU + NA. {ordinal(top_w["cnRank"])} in China.</h1>
       <p class="sub">Every champion placed against its own peers on each server, then the two placings
-        compared. <b>Rank, not win rate</b>: the West figure is a champion&rsquo;s 50 best players, China&rsquo;s is a
+        compared. <b>Rank, not win rate</b>: the EU + NA figure is a champion&rsquo;s 50 best players, China&rsquo;s is a
         whole Challenger bracket, and those two scales should never be subtracted from each other.
         Position inside your own population is a question both can answer.</p>
     </div>
@@ -248,23 +250,23 @@ def build() -> str:
 
   <div class="main">
     <div class="panel glass west">
-      <div class="ptitle"><span class="t">The West rates them higher</span></div>
-      <div class="psub">Near the top here, nowhere near it in China.</div>
-      <div class="cols"><div></div><div>Champion</div><div class="c">West vs CN</div><div class="c">Placing</div><div class="r">Swing</div></div>
+      <div class="ptitle"><span class="t">Stronger in EU + NA</span><span class="n">Top 50 per champion</span></div>
+      <div class="psub">Near the top on our boards, nowhere near it in China.</div>
+      <div class="cols"><div></div><div>Champion</div><div class="c">EU+NA vs CN</div><div class="c">Placing</div><div class="r">Swing</div></div>
       {side(west_side, total, "#7fd6ff", "wc", True)}
     </div>
 
     <div class="panel glass china">
-      <div class="ptitle"><span class="t">China rates them higher</span></div>
-      <div class="psub">Top of the board there, ignored in the West.</div>
-      <div class="cols"><div></div><div>Champion</div><div class="c">CN vs West</div><div class="c">Placing</div><div class="r">Swing</div></div>
+      <div class="ptitle"><span class="t">Stronger in China</span><span class="n">Challenger bracket</span></div>
+      <div class="psub">Top of the board there, ignored on ours.</div>
+      <div class="cols"><div></div><div>Champion</div><div class="c">CN vs EU+NA</div><div class="c">Placing</div><div class="r">Swing</div></div>
       {side(china_side, total, "#ff9a6b", "cc", False)}
     </div>
   </div>
 
   <div class="foot">
-    <div>{total} champions ranked on both. West is the EU + NA top-50 average ({meta['euDate']} and
-      {meta['naDate']}); China is the official Challenger sample ({meta['cnDate']}).</div>
+    <div>{total} champions ranked on both. EU + NA is the average of our two top-50 boards
+      ({meta['euDate']} and {meta['naDate']}); China is the official Challenger sample ({meta['cnDate']}).</div>
     <div><b>wrtruemeta.com</b></div>
   </div>
 </div>
