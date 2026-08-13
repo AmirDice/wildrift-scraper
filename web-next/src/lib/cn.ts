@@ -237,6 +237,43 @@ function sum2(a: number | null | undefined, b: number | null | undefined): numbe
   return parts.reduce((x, y) => x + y, 0);
 }
 
+/**
+ * Depth slices for a Global row: the same 25 / 10 / 5 blend the top-level win
+ * rate gets, so the pool-depth filter works on Global too.
+ *
+ * This used to return null, and the filter was hidden for Global as a result.
+ * That was the safe call at the time, because keeping EU's slices unblended
+ * would have ranked a 5-deep EU number against a full-pool NA one. Blending
+ * them properly is the actual fix.
+ *
+ * Each depth carries its OWN offset (a shallower pool is centred harder), so
+ * the offsets are averaged alongside the win rates rather than assumed equal.
+ * A depth is emitted only when BOTH boards have it: half a blend is not a
+ * blend, and a champion with fewer than N counted players on one server would
+ * otherwise be silently represented by the other server alone.
+ */
+function blendPools(eu: Champion, na: Champion): Champion["pools"] {
+  if (!eu.pools || !na.pools) return null;
+  const out: NonNullable<Champion["pools"]> = {};
+  for (const depth of ["25", "10", "5"]) {
+    const a = eu.pools[depth];
+    const b = na.pools[depth];
+    if (!a || !b || a.wr == null || b.wr == null) continue;
+    const wr = Math.round(((a.wr + b.wr) / 2) * 10) / 10;
+    const tier = globalTier(wr);
+    out[depth] = {
+      wr,
+      wrOffset: Math.round((((a.wrOffset ?? 0) + (b.wrOffset ?? 0)) / 2) * 100) / 100,
+      nPlayers: (a.nPlayers ?? 0) + (b.nPlayers ?? 0),
+      tier,
+      tierCss: tierClass[tier],
+      tierRole: tier,
+      tierRoleCss: tierClass[tier],
+    };
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 export function getGlobalChampions(): Champion[] {
   const na = new Map(regionBoard("NA").champions.map((c) => [c.slug, c]));
   const out: Champion[] = [];
@@ -282,13 +319,12 @@ export function getGlobalChampions(): Champion[] {
       //   winrateStd / skillSpread: pooling spread needs the per-player rows,
       //     not two summary numbers. Averaging two standard deviations is not
       //     the standard deviation of the combined pool.
-      //   pools: EU-only depth slices. Keeping them would let the pool-depth
-      //     slider rank a 5-deep EU number against a full-pool NA one.
+      //   (pools are NOT dropped: they are blended below, same as wr.)
       //   tierMoved / prevTier: EU tier crossings, computed against EU bands.
       //     A Global row can sit in a different band entirely.
       winrateStd: null,
       skillSpread: null,
-      pools: null,
+      pools: blendPools(eu, naChamp),
       tierMoved: null,
       prevTier: null,
     });

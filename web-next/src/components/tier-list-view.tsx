@@ -55,11 +55,12 @@ export function TierListView({
   const [role, setRole] = useState<string>("All roles");
   const [region, setRegion] = useState<Region>(initialRegion);
   // Pool depth: how many of each champion's top players feed the number.
-  // EU and NA, which are both our own top-50 scrape and both export the same
-  // depth slices. CN offers no slider because its figures are Tencent's own
-  // bracket aggregates -- there are no per-player rows to re-slice. Global is
-  // excluded for a different reason: the blend carries only EU's pool slices,
-  // so re-slicing would rank a 5-deep EU number against a full-pool NA one.
+  // EU, NA and Global. The first two are our own top-50 scrape and export the
+  // same depth slices; Global blends those two slices per depth (see
+  // blendPools in lib/cn.ts), so its toggle compares like with like rather
+  // than a 5-deep EU number against a full-pool NA one. CN offers no slider:
+  // its figures are Tencent's bracket aggregates, with no per-player rows to
+  // re-slice at all.
   const [poolDepth, setPoolDepth] = useState<"all" | "25" | "10" | "5">("all");
   const [cnBracket, setCnBracket] = useState<CnBracketKey>(initialCnBracket ?? cnMeta.defaultBracket);
   // Win rates ship centred so 50% reads as "the average champion". The raw
@@ -80,7 +81,7 @@ export function TierListView({
     : isGlobal ? globalRoles
     : isNA ? naRoles
     : roles;
-  const depthActive = (region === "EU" || region === "NA") && poolDepth !== "all";
+  const depthActive = !isCN && poolDepth !== "all";
 
   // Undoing the centring needs the offset that was APPLIED, and that differs by
   // region and by pool depth: a shallower pool is the best players of the best
@@ -229,7 +230,7 @@ export function TierListView({
             </p>
           )}
 
-          {(region === "EU" || region === "NA") && (
+          {!isCN && (
             <div className="mb-5">
               <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="Player pool depth">
                 <span className="text-xs font-bold uppercase tracking-wide text-faint">Player pool</span>
@@ -368,10 +369,17 @@ export function TierListView({
                           <span className="mt-1.5 w-full truncate text-[0.7rem] font-medium leading-tight">
                             {c.name}
                           </span>
-                          <span className="text-[0.7rem] font-semibold text-accent">
+                          {/* The tile is 46px wide on mobile and the win rate
+                              plus its delta measured 54-64px, so the number
+                              spilled sideways into the neighbouring champions.
+                              The delta is therefore desktop-only: on mobile the
+                              direction is already on the avatar badge, the exact
+                              amount stays in the tooltip, and the win rate on its
+                              own fits. Nothing is lost that was legible anyway. */}
+                          <span className="w-full truncate text-[0.7rem] font-semibold text-accent">
                             {shownWr(c).toFixed(1)}%
                             {mv && (changed || (!isCN && !isGlobal && Math.abs(mv.delta) >= 0.5)) && (
-                              <span className={`ml-1 ${mv.delta > 0 ? "text-emerald-400" : "text-bad"}`}>
+                              <span className={`ml-1 hidden sm:inline ${mv.delta > 0 ? "text-emerald-400" : "text-bad"}`}>
                                 {mv.delta > 0 ? "+" : ""}{mv.delta}
                               </span>
                             )}
