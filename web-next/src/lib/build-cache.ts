@@ -176,7 +176,14 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // nothing to match on, so a targeted purge is not possible. Counter builds
   // would need it anyway, since one names enemies rather than the champion
   // being built. 270 entries retired.
-  return `build:v23:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v24: 7.2c turned out to carry ITEM changes as well, and v23 was cut before
+  // they were applied. The whole boots tier moved (Berserker's 30 to 35% attack
+  // speed, Mercury's tenacity 15 to 30%, Armored Advance 35 to 30 armor,
+  // Spellslinger's 40 to 35 AP) and five legendaries with it, including
+  // Sunfire Aegis going 20 to 40 armor for 425 to 350 health. A v23 entry
+  // priced items that no longer exist at those numbers, which is exactly what
+  // a build recommendation is built out of. Three entries retired.
+  return `build:v24:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

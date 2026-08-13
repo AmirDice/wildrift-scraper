@@ -1248,7 +1248,7 @@
         "percent": false
       },
       "attackSpeed": {
-        "value": 15.0,
+        "value": 25.0,
         "percent": true
       }
     },
@@ -2137,11 +2137,11 @@
     "cost": 2900,
     "stats": {
       "hp": {
-        "value": 425.0,
+        "value": 350.0,
         "percent": false
       },
       "armor": {
-        "value": 20.0,
+        "value": 40.0,
         "percent": false
       },
       "abilityHaste": {
@@ -2647,12 +2647,12 @@
         "percent": true
       },
       "mr": {
-        "value": 75.0,
+        "value": 80.0,
         "percent": false
       }
     },
     "passives": [
-      "Magebane: After not taking magic damage for 12 seconds, gain a magic shield that absorbs damage equal to 70-180 + 10% of max Health [hp]."
+      "Magebane: After not taking magic damage for 12 seconds, gain a magic shield that absorbs damage equal to 50-150 + 14% of max Health [hp]."
     ],
     "tags": [
       "shield",
@@ -3122,12 +3122,12 @@
         "percent": false
       },
       "healShieldPower": {
-        "value": 6.0,
+        "value": 9.0,
         "percent": true
       }
     },
     "passives": [
-      "Purify (Active): Remove all crowd control debuffs (excluding knock up and suppression) from an allied champion, grant them crowd control immunity for 0.2s, and heal them for 150–250 Health. (90s Cooldown)"
+      "Purify (Active): Remove all crowd control debuffs (excluding knock up and suppression) from an allied champion, grant them crowd control immunity for 0.2s, and heal them for 150–250 Health. (75s Cooldown)"
     ],
     "tags": [],
     "icon": "/items/mikaels-blessing.webp"
@@ -3290,7 +3290,7 @@
     "cost": 1200,
     "stats": {
       "attackSpeed": {
-        "value": 30.0,
+        "value": 35.0,
         "percent": true
       },
       "moveSpeed": {
@@ -3328,7 +3328,7 @@
         "percent": false
       },
       "tenacity": {
-        "value": 15.0,
+        "value": 30.0,
         "percent": false
       },
       "moveSpeed": {
@@ -3368,7 +3368,7 @@
       }
     },
     "passives": [
-      "Block: Basic attacks from champions deal 6% reduced damage to you."
+      "Block: Basic attacks from champions deal 10% reduced damage to you."
     ],
     "tags": [
       "sustain"
@@ -3539,7 +3539,7 @@
       }
     },
     "passives": [
-      "Noxian Gait: Basic attacks against enemy champions grant Movement Speed (15% for melee champions / 10% for ranged champions) for 2 seconds.",
+      "Noxian Gait: Basic attacks against enemy champions grant Movement Speed (10% for melee champions / 7% for ranged champions) for 2 seconds.",
       "Blessed Blade: Basic attacks restore 12 Health on hit."
     ],
     "tags": [],
@@ -3561,7 +3561,7 @@
         "percent": false
       },
       "mr": {
-        "value": 35.0,
+        "value": 30.0,
         "percent": false
       },
       "tenacity": {
@@ -3595,7 +3595,7 @@
         "percent": false
       },
       "armor": {
-        "value": 35.0,
+        "value": 30.0,
         "percent": false
       },
       "moveSpeed": {
@@ -3659,7 +3659,7 @@
     "cost": 2200,
     "stats": {
       "ap": {
-        "value": 40.0,
+        "value": 35.0,
         "percent": false
       },
       "magicPenFlat": {
@@ -3681,7 +3681,7 @@
     },
     "passives": [
       "Equilibrium: Champions without Mana gain 50% base Health Regen.",
-      "Big Bully: Attacks and active abilities deal 22 bonus true damage to minions."
+      "Big Bully: Attacks and active abilities deal 18 bonus true damage to minions."
     ],
     "tags": [],
     "icon": "/items/spellslingers-shoes.webp",
