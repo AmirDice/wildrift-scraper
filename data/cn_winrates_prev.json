@@ -1,6 +1,6 @@
 {
   "source": "lolm.qq.com (official China server data)",
-  "date": "20260706",
+  "date": "20260812",
   "bracketLabels": {
     "1": "Diamond+",
     "2": "Master+",
@@ -8,7 +8,7 @@
     "4": "Legendary"
   },
   "defaultBracket": "3",
-  "nChampions": 137,
+  "nChampions": 140,
   "champions": [
     {
       "name": "Aatrox",
@@ -16,38 +16,31 @@
       "heroId": "10002",
       "cnName": "亚托克斯",
       "byBracket": {
-        "0": {
-          "winRate": 47.95,
-          "pickRate": 7.05,
-          "banRate": 11.08,
-          "strength": 2,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.06,
-          "pickRate": 6.46,
-          "banRate": 7.88,
-          "strength": 2,
+          "winRate": 48.93,
+          "pickRate": 5.8,
+          "banRate": 7.78,
+          "strength": 3,
           "position": "Baron"
         },
         "2": {
-          "winRate": 48.94,
-          "pickRate": 6.48,
-          "banRate": 7.87,
+          "winRate": 49,
+          "pickRate": 5.87,
+          "banRate": 8.05,
           "strength": 3,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.16,
-          "pickRate": 6.95,
-          "banRate": 6.39,
-          "strength": 2,
+          "winRate": 50.02,
+          "pickRate": 6.78,
+          "banRate": 7.09,
+          "strength": 3,
           "position": "Baron"
         },
         "4": {
-          "winRate": 50.75,
-          "pickRate": 8.44,
-          "banRate": 6.86,
+          "winRate": 49.85,
+          "pickRate": 7.83,
+          "banRate": 7.02,
           "strength": 2,
           "position": "Baron"
         }
@@ -59,39 +52,32 @@
       "heroId": "10038",
       "cnName": "阿狸",
       "byBracket": {
-        "0": {
-          "winRate": 49.63,
-          "pickRate": 6.1,
-          "banRate": 0.45,
-          "strength": 4,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.59,
-          "pickRate": 4.72,
-          "banRate": 0.13,
-          "strength": 4,
+          "winRate": 52.1,
+          "pickRate": 6.3,
+          "banRate": 0.21,
+          "strength": 3,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.54,
-          "pickRate": 4.7,
-          "banRate": 0.13,
-          "strength": 4,
+          "winRate": 52.31,
+          "pickRate": 6.26,
+          "banRate": 0.22,
+          "strength": 3,
           "position": "Mid"
         },
         "3": {
-          "winRate": 51.93,
-          "pickRate": 4.45,
-          "banRate": 0.08,
-          "strength": 4,
+          "winRate": 52.44,
+          "pickRate": 6.28,
+          "banRate": 0.19,
+          "strength": 3,
           "position": "Mid"
         },
         "4": {
-          "winRate": 51.8,
-          "pickRate": 4.64,
-          "banRate": 0.08,
-          "strength": 5,
+          "winRate": 52.64,
+          "pickRate": 6.61,
+          "banRate": 0.21,
+          "strength": 3,
           "position": "Mid"
         }
       }
@@ -102,38 +88,46 @@
       "heroId": "10031",
       "cnName": "阿卡丽",
       "byBracket": {
-        "0": {
-          "winRate": 47.12,
-          "pickRate": 4.1,
-          "banRate": 0.59,
-          "strength": 4,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 45.36,
-          "pickRate": 2.9,
-          "banRate": 0.38,
+          "winRate": 43.21,
+          "pickRate": 4.9,
+          "banRate": 0.44,
           "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 45.48,
-          "pickRate": 2.83,
-          "banRate": 0.38,
+          "winRate": 43.23,
+          "pickRate": 4.68,
+          "banRate": 0.46,
           "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 45.39,
-          "pickRate": 2.69,
-          "banRate": 0.27,
+          "winRate": 44.54,
+          "pickRate": 4.51,
+          "banRate": 0.39,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 45.32,
-          "pickRate": 3.13,
-          "banRate": 0.42,
+          "winRate": 45.58,
+          "pickRate": 4.91,
+          "banRate": 0.43,
+          "strength": 5,
+          "position": "Mid"
+        }
+      }
+    },
+    {
+      "name": "Akshan",
+      "slug": "akshan",
+      "heroId": "10100",
+      "cnName": "阿克尚",
+      "byBracket": {
+        "3": {
+          "winRate": 50.09,
+          "pickRate": 1.03,
+          "banRate": 0.04,
           "strength": 5,
           "position": "Mid"
         }
@@ -145,39 +139,32 @@
       "heroId": "10081",
       "cnName": "阿利斯塔",
       "byBracket": {
-        "0": {
-          "winRate": 49.47,
-          "pickRate": 3.44,
-          "banRate": 0.7,
-          "strength": 4,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 49.52,
-          "pickRate": 4.4,
-          "banRate": 0.66,
+          "winRate": 50.2,
+          "pickRate": 4.08,
+          "banRate": 0.59,
           "strength": 4,
           "position": "Support"
         },
         "2": {
-          "winRate": 49.38,
-          "pickRate": 4.45,
-          "banRate": 0.67,
+          "winRate": 50.12,
+          "pickRate": 4.22,
+          "banRate": 0.62,
           "strength": 4,
           "position": "Support"
         },
         "3": {
-          "winRate": 49.4,
-          "pickRate": 4.63,
-          "banRate": 0.64,
+          "winRate": 51.17,
+          "pickRate": 4.61,
+          "banRate": 0.65,
           "strength": 4,
           "position": "Support"
         },
         "4": {
-          "winRate": 50.31,
-          "pickRate": 4.93,
-          "banRate": 0.49,
-          "strength": 4,
+          "winRate": 50.29,
+          "pickRate": 4.34,
+          "banRate": 0.4,
+          "strength": 5,
           "position": "Support"
         }
       }
@@ -188,39 +175,32 @@
       "heroId": "10082",
       "cnName": "安蓓萨",
       "byBracket": {
-        "0": {
-          "winRate": 52.9,
-          "pickRate": 2.86,
-          "banRate": 1.71,
-          "strength": 4,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 52.25,
-          "pickRate": 3.88,
-          "banRate": 3.25,
-          "strength": 3,
+          "winRate": 50.95,
+          "pickRate": 1.58,
+          "banRate": 1.37,
+          "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 52.33,
-          "pickRate": 3.97,
-          "banRate": 3.43,
-          "strength": 3,
+          "winRate": 50.77,
+          "pickRate": 1.64,
+          "banRate": 1.51,
+          "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 51.81,
-          "pickRate": 4.44,
-          "banRate": 4.17,
-          "strength": 3,
+          "winRate": 51.91,
+          "pickRate": 2.04,
+          "banRate": 1.89,
+          "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 52.73,
-          "pickRate": 6.09,
-          "banRate": 7.46,
-          "strength": 2,
+          "winRate": 50.78,
+          "pickRate": 2.83,
+          "banRate": 3.02,
+          "strength": 5,
           "position": "Baron"
         }
       }
@@ -231,38 +211,31 @@
       "heroId": "10004",
       "cnName": "阿木木",
       "byBracket": {
-        "0": {
-          "winRate": 54.98,
-          "pickRate": 3.15,
-          "banRate": 0.2,
+        "1": {
+          "winRate": 55.96,
+          "pickRate": 2.26,
+          "banRate": 0.08,
           "strength": 5,
           "position": "Jungle"
         },
-        "1": {
-          "winRate": 56.74,
-          "pickRate": 4.53,
-          "banRate": 0.21,
-          "strength": 3,
-          "position": "Jungle"
-        },
         "2": {
-          "winRate": 56.68,
-          "pickRate": 4.63,
-          "banRate": 0.22,
-          "strength": 3,
+          "winRate": 56.26,
+          "pickRate": 2.38,
+          "banRate": 0.08,
+          "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 56.03,
-          "pickRate": 4.72,
-          "banRate": 0.21,
-          "strength": 4,
+          "winRate": 56.34,
+          "pickRate": 2.44,
+          "banRate": 0.05,
+          "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 53.81,
-          "pickRate": 3.94,
-          "banRate": 0.27,
+          "winRate": 53.7,
+          "pickRate": 2.18,
+          "banRate": 0.09,
           "strength": 5,
           "position": "Jungle"
         }
@@ -274,38 +247,31 @@
       "heroId": "10036",
       "cnName": "安妮",
       "byBracket": {
-        "0": {
-          "winRate": 46.9,
-          "pickRate": 2.12,
-          "banRate": 0.17,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 48.98,
-          "pickRate": 1.92,
-          "banRate": 0.1,
+          "winRate": 49.88,
+          "pickRate": 2.58,
+          "banRate": 0.13,
           "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 49.44,
-          "pickRate": 1.95,
-          "banRate": 0.09,
+          "winRate": 50.18,
+          "pickRate": 2.64,
+          "banRate": 0.14,
           "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 49.92,
-          "pickRate": 2.15,
-          "banRate": 0.08,
+          "winRate": 52.06,
+          "pickRate": 3.14,
+          "banRate": 0.17,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 51.74,
-          "pickRate": 1.97,
-          "banRate": 0.09,
+          "winRate": 52.09,
+          "pickRate": 2.7,
+          "banRate": 0.18,
           "strength": 5,
           "position": "Mid"
         }
@@ -317,39 +283,32 @@
       "heroId": "10079",
       "cnName": "艾希",
       "byBracket": {
-        "0": {
-          "winRate": 51.12,
-          "pickRate": 9.61,
-          "banRate": 0.32,
-          "strength": 2,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 50.82,
-          "pickRate": 8.11,
-          "banRate": 0.16,
+          "winRate": 50.13,
+          "pickRate": 6.72,
+          "banRate": 0.11,
           "strength": 3,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 50.8,
-          "pickRate": 7.99,
-          "banRate": 0.16,
-          "strength": 3,
-          "position": "Dragon"
-        },
-        "3": {
-          "winRate": 50.69,
-          "pickRate": 7.04,
+          "winRate": 49.96,
+          "pickRate": 6.27,
           "banRate": 0.1,
           "strength": 3,
           "position": "Dragon"
         },
+        "3": {
+          "winRate": 49.45,
+          "pickRate": 4.55,
+          "banRate": 0.06,
+          "strength": 4,
+          "position": "Dragon"
+        },
         "4": {
-          "winRate": 49.82,
-          "pickRate": 5.73,
-          "banRate": 0.09,
-          "strength": 3,
+          "winRate": 49.8,
+          "pickRate": 4.22,
+          "banRate": 0.06,
+          "strength": 4,
           "position": "Dragon"
         }
       }
@@ -360,38 +319,31 @@
       "heroId": "10023",
       "cnName": "奥瑞利安·索尔",
       "byBracket": {
-        "0": {
-          "winRate": 49.64,
-          "pickRate": 5.73,
-          "banRate": 1.03,
-          "strength": 3,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.01,
-          "pickRate": 7.23,
-          "banRate": 4.43,
+          "winRate": 51.24,
+          "pickRate": 5.97,
+          "banRate": 4,
           "strength": 3,
           "position": "Mid"
         },
         "2": {
-          "winRate": 50.87,
-          "pickRate": 7.35,
-          "banRate": 4.81,
+          "winRate": 50.93,
+          "pickRate": 6.29,
+          "banRate": 4.67,
           "strength": 3,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.36,
-          "pickRate": 8.31,
-          "banRate": 5.96,
+          "winRate": 51.24,
+          "pickRate": 7.85,
+          "banRate": 6.3,
           "strength": 2,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.63,
-          "pickRate": 9.45,
-          "banRate": 6.67,
+          "winRate": 50.35,
+          "pickRate": 8.25,
+          "banRate": 5.25,
           "strength": 2,
           "position": "Mid"
         }
@@ -403,39 +355,32 @@
       "heroId": "10085",
       "cnName": "阿萝拉",
       "byBracket": {
-        "0": {
-          "winRate": 51.99,
-          "pickRate": 1.77,
-          "banRate": 1.31,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 50.11,
-          "pickRate": 2.52,
-          "banRate": 4.35,
-          "strength": 5,
+          "winRate": 49.14,
+          "pickRate": 3.91,
+          "banRate": 4.91,
+          "strength": 4,
           "position": "Mid"
         },
         "2": {
-          "winRate": 49.99,
-          "pickRate": 2.61,
-          "banRate": 4.72,
-          "strength": 5,
+          "winRate": 49.06,
+          "pickRate": 4.06,
+          "banRate": 5.62,
+          "strength": 4,
           "position": "Mid"
         },
         "3": {
-          "winRate": 49.8,
-          "pickRate": 3.19,
-          "banRate": 6.26,
-          "strength": 4,
+          "winRate": 48.74,
+          "pickRate": 5.12,
+          "banRate": 7.13,
+          "strength": 3,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.85,
-          "pickRate": 3.77,
-          "banRate": 6.51,
-          "strength": 4,
+          "winRate": 47.91,
+          "pickRate": 5.33,
+          "banRate": 7.27,
+          "strength": 3,
           "position": "Mid"
         }
       }
@@ -446,17 +391,31 @@
       "heroId": "10105",
       "cnName": "巴德",
       "byBracket": {
-        "3": {
-          "winRate": 46.52,
+        "1": {
+          "winRate": 50.22,
           "pickRate": 1.03,
-          "banRate": 0.29,
+          "banRate": 0.31,
+          "strength": 5,
+          "position": "Support"
+        },
+        "2": {
+          "winRate": 50.42,
+          "pickRate": 1.07,
+          "banRate": 0.33,
+          "strength": 5,
+          "position": "Support"
+        },
+        "3": {
+          "winRate": 49.52,
+          "pickRate": 1.22,
+          "banRate": 0.35,
           "strength": 5,
           "position": "Support"
         },
         "4": {
-          "winRate": 47.9,
-          "pickRate": 1.18,
-          "banRate": 0.45,
+          "winRate": 52.62,
+          "pickRate": 1.53,
+          "banRate": 0.38,
           "strength": 5,
           "position": "Support"
         }
@@ -468,39 +427,32 @@
       "heroId": "10033",
       "cnName": "布里茨",
       "byBracket": {
-        "0": {
-          "winRate": 49.53,
-          "pickRate": 10.68,
-          "banRate": 4.58,
-          "strength": 2,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 49.82,
-          "pickRate": 10.06,
-          "banRate": 3.21,
-          "strength": 2,
-          "position": "Support"
-        },
-        "2": {
-          "winRate": 49.76,
-          "pickRate": 10.06,
-          "banRate": 3.19,
-          "strength": 2,
-          "position": "Support"
-        },
-        "3": {
-          "winRate": 49.49,
-          "pickRate": 9.74,
-          "banRate": 2.28,
+          "winRate": 49.4,
+          "pickRate": 7.54,
+          "banRate": 2.51,
           "strength": 3,
           "position": "Support"
         },
+        "2": {
+          "winRate": 49.41,
+          "pickRate": 7.36,
+          "banRate": 2.5,
+          "strength": 3,
+          "position": "Support"
+        },
+        "3": {
+          "winRate": 50.73,
+          "pickRate": 6.49,
+          "banRate": 1.75,
+          "strength": 4,
+          "position": "Support"
+        },
         "4": {
-          "winRate": 50.02,
-          "pickRate": 9.27,
-          "banRate": 1.56,
-          "strength": 2,
+          "winRate": 49.63,
+          "pickRate": 6.12,
+          "banRate": 1.24,
+          "strength": 4,
           "position": "Support"
         }
       }
@@ -511,39 +463,32 @@
       "heroId": "10119",
       "cnName": "布兰德",
       "byBracket": {
-        "0": {
-          "winRate": 53.02,
-          "pickRate": 8.92,
-          "banRate": 10.79,
-          "strength": 1,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 52.21,
-          "pickRate": 11.56,
-          "banRate": 11.57,
+          "winRate": 52.05,
+          "pickRate": 10.24,
+          "banRate": 11.55,
           "strength": 1,
           "position": "Mid"
         },
         "2": {
-          "winRate": 52.14,
-          "pickRate": 11.76,
-          "banRate": 11.85,
-          "strength": 0,
-          "position": "Mid"
-        },
-        "3": {
-          "winRate": 52.24,
-          "pickRate": 11.21,
-          "banRate": 8.94,
+          "winRate": 51.95,
+          "pickRate": 10.28,
+          "banRate": 12.09,
           "strength": 1,
           "position": "Mid"
         },
-        "4": {
-          "winRate": 53.18,
-          "pickRate": 9.1,
-          "banRate": 5.28,
+        "3": {
+          "winRate": 50.99,
+          "pickRate": 8.28,
+          "banRate": 6.96,
           "strength": 2,
+          "position": "Mid"
+        },
+        "4": {
+          "winRate": 50.15,
+          "pickRate": 6.71,
+          "banRate": 4.35,
+          "strength": 3,
           "position": "Mid"
         }
       }
@@ -554,39 +499,32 @@
       "heroId": "10021",
       "cnName": "布隆",
       "byBracket": {
-        "0": {
-          "winRate": 54.32,
-          "pickRate": 3.87,
-          "banRate": 1.28,
-          "strength": 4,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 51.56,
-          "pickRate": 4.46,
-          "banRate": 1.25,
+          "winRate": 50.5,
+          "pickRate": 3.7,
+          "banRate": 0.97,
           "strength": 4,
           "position": "Support"
         },
         "2": {
-          "winRate": 51.39,
-          "pickRate": 4.52,
-          "banRate": 1.28,
-          "strength": 4,
+          "winRate": 50.64,
+          "pickRate": 3.75,
+          "banRate": 1,
+          "strength": 5,
           "position": "Support"
         },
         "3": {
-          "winRate": 50.54,
-          "pickRate": 4.38,
-          "banRate": 1.14,
-          "strength": 4,
+          "winRate": 52.13,
+          "pickRate": 3.38,
+          "banRate": 0.76,
+          "strength": 5,
           "position": "Support"
         },
         "4": {
-          "winRate": 50.5,
-          "pickRate": 4.75,
-          "banRate": 1.13,
-          "strength": 4,
+          "winRate": 49.88,
+          "pickRate": 3.57,
+          "banRate": 0.58,
+          "strength": 5,
           "position": "Support"
         }
       }
@@ -597,38 +535,31 @@
       "heroId": "10112",
       "cnName": "凯特琳",
       "byBracket": {
-        "0": {
-          "winRate": 49.9,
-          "pickRate": 23.83,
-          "banRate": 3.07,
-          "strength": 0,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 49.09,
-          "pickRate": 23.23,
-          "banRate": 3.55,
+          "winRate": 48.81,
+          "pickRate": 22.06,
+          "banRate": 2.66,
           "strength": 0,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 49.07,
-          "pickRate": 22.78,
-          "banRate": 3.57,
+          "winRate": 48.64,
+          "pickRate": 20.82,
+          "banRate": 2.58,
           "strength": 0,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 48.47,
-          "pickRate": 19.3,
-          "banRate": 2.17,
-          "strength": 1,
+          "winRate": 48.41,
+          "pickRate": 14.26,
+          "banRate": 1.11,
+          "strength": 2,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 48.24,
-          "pickRate": 15.51,
-          "banRate": 1.59,
+          "winRate": 47.42,
+          "pickRate": 11.7,
+          "banRate": 0.9,
           "strength": 2,
           "position": "Dragon"
         }
@@ -640,39 +571,68 @@
       "heroId": "10055",
       "cnName": "卡蜜尔",
       "byBracket": {
-        "0": {
-          "winRate": 47.35,
-          "pickRate": 1.5,
-          "banRate": 0.1,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.12,
-          "pickRate": 1.75,
-          "banRate": 0.08,
+          "winRate": 50.67,
+          "pickRate": 2.02,
+          "banRate": 0.15,
           "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.09,
-          "pickRate": 1.77,
-          "banRate": 0.09,
+          "winRate": 50.79,
+          "pickRate": 2.19,
+          "banRate": 0.18,
           "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 47.88,
-          "pickRate": 2.03,
-          "banRate": 0.1,
-          "strength": 5,
+          "winRate": 51.22,
+          "pickRate": 3.24,
+          "banRate": 0.31,
+          "strength": 4,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.05,
-          "pickRate": 2.9,
-          "banRate": 0.15,
-          "strength": 5,
+          "winRate": 50.56,
+          "pickRate": 4.64,
+          "banRate": 0.7,
+          "strength": 3,
+          "position": "Baron"
+        }
+      }
+    },
+    {
+      "name": "Cho'Gath",
+      "slug": "chogath",
+      "heroId": "10088",
+      "cnName": "科加斯",
+      "byBracket": {
+        "1": {
+          "winRate": 45.38,
+          "pickRate": 14.98,
+          "banRate": 22.68,
+          "strength": 0,
+          "position": "Baron"
+        },
+        "2": {
+          "winRate": 45.25,
+          "pickRate": 13.68,
+          "banRate": 24.37,
+          "strength": 0,
+          "position": "Baron"
+        },
+        "3": {
+          "winRate": 45,
+          "pickRate": 11.77,
+          "banRate": 21.72,
+          "strength": 0,
+          "position": "Baron"
+        },
+        "4": {
+          "winRate": 46.21,
+          "pickRate": 6.43,
+          "banRate": 16.98,
+          "strength": 2,
           "position": "Baron"
         }
       }
@@ -684,30 +644,30 @@
       "cnName": "库奇",
       "byBracket": {
         "1": {
-          "winRate": 49.64,
-          "pickRate": 1.43,
-          "banRate": 0.02,
+          "winRate": 49.1,
+          "pickRate": 1.02,
+          "banRate": 0.01,
           "strength": 4,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 49.39,
-          "pickRate": 1.47,
-          "banRate": 0.02,
+          "winRate": 49.25,
+          "pickRate": 1.07,
+          "banRate": 0.01,
           "strength": 4,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 50.72,
-          "pickRate": 1.8,
+          "winRate": 49.13,
+          "pickRate": 1.3,
           "banRate": 0.01,
           "strength": 4,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 50.25,
-          "pickRate": 2.65,
-          "banRate": 0.03,
+          "winRate": 47.51,
+          "pickRate": 1.71,
+          "banRate": 0.01,
           "strength": 4,
           "position": "Dragon"
         }
@@ -719,39 +679,32 @@
       "heroId": "10071",
       "cnName": "德莱厄斯",
       "byBracket": {
-        "0": {
-          "winRate": 49.9,
-          "pickRate": 19.1,
-          "banRate": 7.46,
+        "1": {
+          "winRate": 49.57,
+          "pickRate": 15.37,
+          "banRate": 13.14,
           "strength": 0,
           "position": "Baron"
         },
-        "1": {
-          "winRate": 48.3,
-          "pickRate": 16.4,
-          "banRate": 9.59,
-          "strength": 1,
-          "position": "Baron"
-        },
         "2": {
-          "winRate": 48.2,
-          "pickRate": 16.14,
-          "banRate": 9.86,
+          "winRate": 49.36,
+          "pickRate": 15.06,
+          "banRate": 14.19,
           "strength": 1,
           "position": "Baron"
         },
         "3": {
-          "winRate": 48.5,
-          "pickRate": 15.34,
-          "banRate": 7.95,
+          "winRate": 49.79,
+          "pickRate": 14.27,
+          "banRate": 12.18,
           "strength": 1,
           "position": "Baron"
         },
         "4": {
-          "winRate": 48.96,
-          "pickRate": 16.01,
-          "banRate": 8.23,
-          "strength": 1,
+          "winRate": 50.92,
+          "pickRate": 14.81,
+          "banRate": 12.28,
+          "strength": 0,
           "position": "Baron"
         }
       }
@@ -762,38 +715,31 @@
       "heroId": "10013",
       "cnName": "黛安娜",
       "byBracket": {
-        "0": {
-          "winRate": 54.21,
-          "pickRate": 2.02,
-          "banRate": 0.4,
-          "strength": 4,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 51.57,
-          "pickRate": 2.75,
-          "banRate": 0.41,
+          "winRate": 52.38,
+          "pickRate": 2.02,
+          "banRate": 0.36,
           "strength": 4,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 51.49,
-          "pickRate": 2.82,
-          "banRate": 0.43,
+          "winRate": 52.45,
+          "pickRate": 2.2,
+          "banRate": 0.4,
           "strength": 4,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.72,
-          "pickRate": 3.11,
-          "banRate": 0.38,
-          "strength": 4,
+          "winRate": 51.03,
+          "pickRate": 2.93,
+          "banRate": 0.52,
+          "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 53.48,
-          "pickRate": 3.83,
-          "banRate": 0.52,
+          "winRate": 51.47,
+          "pickRate": 3.75,
+          "banRate": 0.7,
           "strength": 4,
           "position": "Jungle"
         }
@@ -805,39 +751,32 @@
       "heroId": "10062",
       "cnName": "蒙多医生",
       "byBracket": {
-        "0": {
-          "winRate": 50.35,
-          "pickRate": 6.51,
-          "banRate": 1.78,
-          "strength": 2,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 50.41,
-          "pickRate": 6.21,
-          "banRate": 1.82,
+          "winRate": 50.7,
+          "pickRate": 5.68,
+          "banRate": 2.08,
           "strength": 2,
           "position": "Baron"
         },
         "2": {
-          "winRate": 50.4,
-          "pickRate": 6.16,
-          "banRate": 1.84,
+          "winRate": 50.28,
+          "pickRate": 5.62,
+          "banRate": 2.03,
           "strength": 2,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.77,
-          "pickRate": 5.4,
-          "banRate": 0.97,
+          "winRate": 48.49,
+          "pickRate": 4.64,
+          "banRate": 0.68,
           "strength": 2,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.84,
-          "pickRate": 4.15,
-          "banRate": 0.58,
-          "strength": 2,
+          "winRate": 49.01,
+          "pickRate": 3.94,
+          "banRate": 0.55,
+          "strength": 3,
           "position": "Baron"
         }
       }
@@ -848,39 +787,32 @@
       "heroId": "10077",
       "cnName": "德莱文",
       "byBracket": {
-        "0": {
-          "winRate": 48.67,
-          "pickRate": 12.55,
-          "banRate": 8.26,
-          "strength": 1,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 48.68,
-          "pickRate": 6.7,
-          "banRate": 3.15,
-          "strength": 2,
+          "winRate": 48.06,
+          "pickRate": 5.78,
+          "banRate": 2.42,
+          "strength": 3,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 48.98,
-          "pickRate": 6.31,
-          "banRate": 2.78,
-          "strength": 2,
+          "winRate": 48.28,
+          "pickRate": 5.38,
+          "banRate": 1.99,
+          "strength": 3,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 48.92,
-          "pickRate": 5.91,
-          "banRate": 0.98,
-          "strength": 2,
+          "winRate": 50.05,
+          "pickRate": 5.33,
+          "banRate": 0.66,
+          "strength": 3,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 49.06,
-          "pickRate": 5.98,
-          "banRate": 0.82,
-          "strength": 2,
+          "winRate": 51.71,
+          "pickRate": 5,
+          "banRate": 0.54,
+          "strength": 3,
           "position": "Dragon"
         }
       }
@@ -891,39 +823,32 @@
       "heroId": "10011",
       "cnName": "艾克",
       "byBracket": {
-        "0": {
-          "winRate": 53.05,
-          "pickRate": 1.79,
-          "banRate": 0.16,
+        "1": {
+          "winRate": 50.55,
+          "pickRate": 3.86,
+          "banRate": 0.75,
           "strength": 4,
           "position": "Jungle"
         },
-        "1": {
-          "winRate": 49.64,
-          "pickRate": 1.8,
-          "banRate": 0.12,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "2": {
-          "winRate": 49.42,
-          "pickRate": 1.82,
-          "banRate": 0.12,
-          "strength": 5,
+          "winRate": 50.47,
+          "pickRate": 3.99,
+          "banRate": 0.83,
+          "strength": 4,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 49.38,
-          "pickRate": 1.85,
-          "banRate": 0.07,
-          "strength": 5,
+          "winRate": 51.44,
+          "pickRate": 4.49,
+          "banRate": 0.84,
+          "strength": 4,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 51.01,
-          "pickRate": 2.26,
-          "banRate": 0.05,
-          "strength": 5,
+          "winRate": 51.04,
+          "pickRate": 5.37,
+          "banRate": 1.2,
+          "strength": 3,
           "position": "Jungle"
         }
       }
@@ -934,39 +859,32 @@
       "heroId": "10029",
       "cnName": "伊芙琳",
       "byBracket": {
-        "0": {
-          "winRate": 51.4,
-          "pickRate": 2.36,
-          "banRate": 0.52,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 51.45,
-          "pickRate": 3.39,
-          "banRate": 2.61,
+          "winRate": 49.15,
+          "pickRate": 2.32,
+          "banRate": 1.91,
           "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 51.39,
-          "pickRate": 3.48,
-          "banRate": 2.86,
-          "strength": 4,
+          "winRate": 49.32,
+          "pickRate": 2.38,
+          "banRate": 2.24,
+          "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.47,
-          "pickRate": 3.89,
-          "banRate": 4.29,
-          "strength": 4,
+          "winRate": 49.77,
+          "pickRate": 2.76,
+          "banRate": 3.44,
+          "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 51.08,
-          "pickRate": 4.77,
-          "banRate": 6.02,
-          "strength": 3,
+          "winRate": 49.41,
+          "pickRate": 3.38,
+          "banRate": 3.89,
+          "strength": 5,
           "position": "Jungle"
         }
       }
@@ -977,38 +895,31 @@
       "heroId": "10098",
       "cnName": "伊泽瑞尔",
       "byBracket": {
-        "0": {
-          "winRate": 52.56,
-          "pickRate": 9.63,
-          "banRate": 0.52,
-          "strength": 2,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 50.28,
-          "pickRate": 11.19,
-          "banRate": 0.38,
-          "strength": 2,
+          "winRate": 51.31,
+          "pickRate": 13.94,
+          "banRate": 0.87,
+          "strength": 1,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 50.31,
-          "pickRate": 11.29,
-          "banRate": 0.39,
-          "strength": 2,
+          "winRate": 51.34,
+          "pickRate": 14.38,
+          "banRate": 0.98,
+          "strength": 1,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 50.42,
-          "pickRate": 11.88,
-          "banRate": 0.3,
-          "strength": 2,
+          "winRate": 51.31,
+          "pickRate": 15.55,
+          "banRate": 1.26,
+          "strength": 1,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 51.03,
-          "pickRate": 14.7,
-          "banRate": 0.51,
+          "winRate": 50.87,
+          "pickRate": 19.64,
+          "banRate": 2.6,
           "strength": 1,
           "position": "Dragon"
         }
@@ -1020,39 +931,32 @@
       "heroId": "10133",
       "cnName": "费德提克",
       "byBracket": {
-        "0": {
-          "winRate": 51.1,
-          "pickRate": 2.17,
-          "banRate": 0.33,
+        "1": {
+          "winRate": 50.42,
+          "pickRate": 1.94,
+          "banRate": 1.79,
           "strength": 5,
           "position": "Jungle"
         },
-        "1": {
-          "winRate": 53.44,
-          "pickRate": 3.17,
-          "banRate": 3.45,
-          "strength": 4,
-          "position": "Jungle"
-        },
         "2": {
-          "winRate": 53.6,
-          "pickRate": 3.3,
-          "banRate": 3.83,
-          "strength": 4,
+          "winRate": 50.61,
+          "pickRate": 2.06,
+          "banRate": 2.14,
+          "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 53.66,
-          "pickRate": 4.23,
-          "banRate": 7.07,
-          "strength": 3,
+          "winRate": 50.71,
+          "pickRate": 2.69,
+          "banRate": 4.38,
+          "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 52.49,
-          "pickRate": 4.97,
-          "banRate": 12.69,
-          "strength": 2,
+          "winRate": 51.67,
+          "pickRate": 2.93,
+          "banRate": 5.34,
+          "strength": 5,
           "position": "Jungle"
         }
       }
@@ -1063,38 +967,31 @@
       "heroId": "10032",
       "cnName": "菲奥娜",
       "byBracket": {
-        "0": {
-          "winRate": 47.08,
-          "pickRate": 2.37,
-          "banRate": 0.37,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 46.74,
-          "pickRate": 2.06,
-          "banRate": 0.43,
+          "winRate": 47.91,
+          "pickRate": 2.11,
+          "banRate": 0.35,
           "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 46.95,
-          "pickRate": 2.04,
-          "banRate": 0.44,
+          "winRate": 47.85,
+          "pickRate": 2.08,
+          "banRate": 0.37,
           "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 46.91,
-          "pickRate": 2.04,
-          "banRate": 0.41,
+          "winRate": 49.68,
+          "pickRate": 2.14,
+          "banRate": 0.37,
           "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 45.68,
-          "pickRate": 2.22,
-          "banRate": 0.55,
+          "winRate": 51,
+          "pickRate": 2.69,
+          "banRate": 0.74,
           "strength": 5,
           "position": "Baron"
         }
@@ -1106,39 +1003,32 @@
       "heroId": "10086",
       "cnName": "菲兹",
       "byBracket": {
-        "0": {
-          "winRate": 52.58,
-          "pickRate": 2.6,
-          "banRate": 8.04,
-          "strength": 3,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 50.67,
-          "pickRate": 3.82,
-          "banRate": 4.4,
-          "strength": 4,
+          "winRate": 49.73,
+          "pickRate": 2.26,
+          "banRate": 2.98,
+          "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 50.63,
-          "pickRate": 3.93,
-          "banRate": 4.36,
+          "winRate": 49.37,
+          "pickRate": 2.32,
+          "banRate": 2.97,
           "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 50.85,
-          "pickRate": 4.16,
-          "banRate": 3.3,
+          "winRate": 48.58,
+          "pickRate": 2.01,
+          "banRate": 1.42,
           "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 50.39,
-          "pickRate": 4.58,
-          "banRate": 2.38,
-          "strength": 4,
+          "winRate": 46.26,
+          "pickRate": 2.5,
+          "banRate": 1.19,
+          "strength": 5,
           "position": "Jungle"
         }
       }
@@ -1149,39 +1039,32 @@
       "heroId": "10099",
       "cnName": "加里奥",
       "byBracket": {
-        "0": {
-          "winRate": 51.6,
-          "pickRate": 9.19,
-          "banRate": 2.1,
+        "1": {
+          "winRate": 51.53,
+          "pickRate": 10.98,
+          "banRate": 3.32,
           "strength": 2,
           "position": "Mid"
         },
-        "1": {
-          "winRate": 51.22,
-          "pickRate": 10.61,
-          "banRate": 2.53,
-          "strength": 1,
-          "position": "Mid"
-        },
         "2": {
-          "winRate": 51.08,
-          "pickRate": 10.65,
-          "banRate": 2.63,
+          "winRate": 51.42,
+          "pickRate": 11.21,
+          "banRate": 3.73,
           "strength": 1,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.81,
-          "pickRate": 10.62,
-          "banRate": 2.46,
+          "winRate": 51.27,
+          "pickRate": 12.02,
+          "banRate": 4.55,
           "strength": 1,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.61,
-          "pickRate": 10.31,
-          "banRate": 2.86,
-          "strength": 1,
+          "winRate": 50.23,
+          "pickRate": 11.64,
+          "banRate": 3.74,
+          "strength": 2,
           "position": "Mid"
         }
       }
@@ -1192,38 +1075,31 @@
       "heroId": "10001",
       "cnName": "盖伦",
       "byBracket": {
-        "0": {
-          "winRate": 51.36,
-          "pickRate": 11.99,
-          "banRate": 2.8,
+        "1": {
+          "winRate": 51.16,
+          "pickRate": 14.29,
+          "banRate": 4.17,
           "strength": 1,
           "position": "Baron"
         },
-        "1": {
-          "winRate": 51.22,
-          "pickRate": 17.39,
-          "banRate": 5.91,
-          "strength": 0,
-          "position": "Baron"
-        },
         "2": {
-          "winRate": 51.2,
-          "pickRate": 17.74,
-          "banRate": 6.36,
-          "strength": 0,
+          "winRate": 51.14,
+          "pickRate": 14.68,
+          "banRate": 4.69,
+          "strength": 1,
           "position": "Baron"
         },
         "3": {
-          "winRate": 51.24,
-          "pickRate": 18.53,
-          "banRate": 7.84,
-          "strength": 0,
+          "winRate": 50.23,
+          "pickRate": 14.51,
+          "banRate": 4.26,
+          "strength": 1,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.73,
-          "pickRate": 16.79,
-          "banRate": 6.91,
+          "winRate": 49.37,
+          "pickRate": 13.93,
+          "banRate": 3.38,
           "strength": 1,
           "position": "Baron"
         }
@@ -1235,76 +1111,33 @@
       "heroId": "10078",
       "cnName": "纳尔",
       "byBracket": {
-        "0": {
-          "winRate": 51.55,
-          "pickRate": 3.15,
-          "banRate": 0.38,
-          "strength": 4,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.43,
-          "pickRate": 4.69,
-          "banRate": 0.48,
+          "winRate": 51.39,
+          "pickRate": 3.51,
+          "banRate": 0.69,
           "strength": 4,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.28,
-          "pickRate": 4.74,
-          "banRate": 0.5,
+          "winRate": 50.95,
+          "pickRate": 3.61,
+          "banRate": 0.76,
           "strength": 4,
           "position": "Baron"
         },
         "3": {
-          "winRate": 48.91,
-          "pickRate": 4.56,
-          "banRate": 0.36,
-          "strength": 4,
+          "winRate": 50.37,
+          "pickRate": 3.53,
+          "banRate": 0.64,
+          "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 48.67,
-          "pickRate": 3.92,
-          "banRate": 0.37,
+          "winRate": 52.02,
+          "pickRate": 3.31,
+          "banRate": 0.65,
           "strength": 5,
           "position": "Baron"
-        }
-      }
-    },
-    {
-      "name": "Gragas",
-      "slug": "gragas",
-      "heroId": "10089",
-      "cnName": "古拉加斯",
-      "byBracket": {
-        "1": {
-          "winRate": 49.65,
-          "pickRate": 1.19,
-          "banRate": 0.11,
-          "strength": 5,
-          "position": "Jungle"
-        },
-        "2": {
-          "winRate": 49.55,
-          "pickRate": 1.25,
-          "banRate": 0.11,
-          "strength": 5,
-          "position": "Jungle"
-        },
-        "3": {
-          "winRate": 49.27,
-          "pickRate": 1.43,
-          "banRate": 0.15,
-          "strength": 5,
-          "position": "Jungle"
-        },
-        "4": {
-          "winRate": 51.44,
-          "pickRate": 1.39,
-          "banRate": 0.22,
-          "strength": 5,
-          "position": "Jungle"
         }
       }
     },
@@ -1314,39 +1147,32 @@
       "heroId": "10072",
       "cnName": "格雷福斯",
       "byBracket": {
-        "0": {
-          "winRate": 49.58,
-          "pickRate": 9.93,
-          "banRate": 1.64,
-          "strength": 1,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 49.23,
-          "pickRate": 9.55,
-          "banRate": 1.14,
-          "strength": 1,
-          "position": "Jungle"
-        },
-        "2": {
-          "winRate": 49.07,
-          "pickRate": 9.43,
-          "banRate": 1.12,
-          "strength": 1,
-          "position": "Jungle"
-        },
-        "3": {
-          "winRate": 47.83,
-          "pickRate": 8.48,
-          "banRate": 0.8,
+          "winRate": 48.79,
+          "pickRate": 8.2,
+          "banRate": 0.73,
           "strength": 2,
           "position": "Jungle"
         },
-        "4": {
-          "winRate": 48.37,
-          "pickRate": 6.9,
-          "banRate": 0.63,
+        "2": {
+          "winRate": 48.45,
+          "pickRate": 8.01,
+          "banRate": 0.72,
           "strength": 3,
+          "position": "Jungle"
+        },
+        "3": {
+          "winRate": 47.17,
+          "pickRate": 6.71,
+          "banRate": 0.42,
+          "strength": 3,
+          "position": "Jungle"
+        },
+        "4": {
+          "winRate": 46.04,
+          "pickRate": 5.37,
+          "banRate": 0.29,
+          "strength": 4,
           "position": "Jungle"
         }
       }
@@ -1357,39 +1183,32 @@
       "heroId": "10054",
       "cnName": "格温",
       "byBracket": {
-        "0": {
-          "winRate": 48.16,
-          "pickRate": 2.28,
-          "banRate": 0.47,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 48.39,
-          "pickRate": 1.66,
-          "banRate": 0.43,
-          "strength": 5,
+          "winRate": 51.24,
+          "pickRate": 4.79,
+          "banRate": 4.06,
+          "strength": 3,
           "position": "Baron"
         },
         "2": {
-          "winRate": 48.21,
-          "pickRate": 1.64,
-          "banRate": 0.44,
-          "strength": 5,
+          "winRate": 51.11,
+          "pickRate": 4.98,
+          "banRate": 4.76,
+          "strength": 3,
           "position": "Baron"
         },
         "3": {
-          "winRate": 48.47,
-          "pickRate": 1.59,
-          "banRate": 0.32,
-          "strength": 5,
+          "winRate": 51.21,
+          "pickRate": 5.62,
+          "banRate": 8.73,
+          "strength": 3,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.3,
-          "pickRate": 1.64,
-          "banRate": 0.36,
-          "strength": 5,
+          "winRate": 50.54,
+          "pickRate": 5.66,
+          "banRate": 7.71,
+          "strength": 3,
           "position": "Baron"
         }
       }
@@ -1400,38 +1219,31 @@
       "heroId": "10019",
       "cnName": "赫卡里姆",
       "byBracket": {
-        "0": {
-          "winRate": 48.83,
-          "pickRate": 2.73,
-          "banRate": 0.8,
-          "strength": 4,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 50.37,
-          "pickRate": 3.55,
-          "banRate": 5.62,
-          "strength": 3,
+          "winRate": 48.05,
+          "pickRate": 1.64,
+          "banRate": 6.28,
+          "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 50.63,
-          "pickRate": 3.65,
-          "banRate": 6.19,
-          "strength": 3,
+          "winRate": 48.26,
+          "pickRate": 1.74,
+          "banRate": 7.64,
+          "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.73,
-          "pickRate": 4.5,
-          "banRate": 10.82,
-          "strength": 2,
+          "winRate": 50.29,
+          "pickRate": 2.65,
+          "banRate": 19.4,
+          "strength": 3,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 55.48,
-          "pickRate": 5.33,
-          "banRate": 18.95,
+          "winRate": 51.84,
+          "pickRate": 3.37,
+          "banRate": 26.37,
           "strength": 1,
           "position": "Jungle"
         }
@@ -1443,38 +1255,31 @@
       "heroId": "10127",
       "cnName": "黑默丁格",
       "byBracket": {
-        "0": {
-          "winRate": 47.09,
-          "pickRate": 1.87,
-          "banRate": 1.84,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 48.83,
-          "pickRate": 1.66,
-          "banRate": 1.46,
+          "winRate": 49.4,
+          "pickRate": 1.58,
+          "banRate": 1.22,
           "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 48.78,
-          "pickRate": 1.63,
-          "banRate": 1.47,
+          "winRate": 49.37,
+          "pickRate": 1.52,
+          "banRate": 1.21,
           "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 48.76,
-          "pickRate": 1.52,
-          "banRate": 0.82,
+          "winRate": 49.71,
+          "pickRate": 1.36,
+          "banRate": 0.49,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 48.48,
-          "pickRate": 1.25,
-          "banRate": 0.41,
+          "winRate": 52.24,
+          "pickRate": 1.26,
+          "banRate": 0.28,
           "strength": 5,
           "position": "Mid"
         }
@@ -1486,39 +1291,32 @@
       "heroId": "10094",
       "cnName": "艾瑞莉娅",
       "byBracket": {
-        "0": {
-          "winRate": 50.1,
-          "pickRate": 2.3,
-          "banRate": 1.25,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.24,
-          "pickRate": 1.76,
-          "banRate": 1.12,
+          "winRate": 50.05,
+          "pickRate": 1.68,
+          "banRate": 1.23,
           "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.49,
-          "pickRate": 1.76,
-          "banRate": 1.14,
+          "winRate": 50.09,
+          "pickRate": 1.73,
+          "banRate": 1.33,
           "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 50.06,
-          "pickRate": 1.77,
-          "banRate": 0.91,
+          "winRate": 51.91,
+          "pickRate": 2.09,
+          "banRate": 1.47,
           "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 51.05,
-          "pickRate": 2.36,
-          "banRate": 1.22,
-          "strength": 5,
+          "winRate": 51.56,
+          "pickRate": 2.51,
+          "banRate": 2.77,
+          "strength": 4,
           "position": "Baron"
         }
       }
@@ -1529,38 +1327,31 @@
       "heroId": "10075",
       "cnName": "迦娜",
       "byBracket": {
-        "0": {
-          "winRate": 48.29,
-          "pickRate": 1.27,
-          "banRate": 0.2,
-          "strength": 5,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 49.82,
-          "pickRate": 1.49,
-          "banRate": 0.11,
+          "winRate": 49.42,
+          "pickRate": 1.24,
+          "banRate": 0.1,
           "strength": 5,
           "position": "Support"
         },
         "2": {
-          "winRate": 49.91,
-          "pickRate": 1.52,
-          "banRate": 0.11,
+          "winRate": 49.45,
+          "pickRate": 1.29,
+          "banRate": 0.1,
           "strength": 5,
           "position": "Support"
         },
         "3": {
-          "winRate": 49.42,
-          "pickRate": 1.84,
-          "banRate": 0.11,
+          "winRate": 48.75,
+          "pickRate": 1.79,
+          "banRate": 0.12,
           "strength": 5,
           "position": "Support"
         },
         "4": {
-          "winRate": 50.9,
-          "pickRate": 2.55,
-          "banRate": 0.07,
+          "winRate": 46.73,
+          "pickRate": 2.32,
+          "banRate": 0.11,
           "strength": 5,
           "position": "Support"
         }
@@ -1572,39 +1363,32 @@
       "heroId": "10056",
       "cnName": "嘉文四世",
       "byBracket": {
-        "0": {
-          "winRate": 52.35,
-          "pickRate": 4.59,
-          "banRate": 0.69,
+        "1": {
+          "winRate": 52.14,
+          "pickRate": 6.84,
+          "banRate": 0.49,
           "strength": 3,
           "position": "Jungle"
         },
-        "1": {
-          "winRate": 51.74,
-          "pickRate": 6.91,
-          "banRate": 0.5,
-          "strength": 2,
-          "position": "Jungle"
-        },
         "2": {
-          "winRate": 51.7,
-          "pickRate": 7.1,
-          "banRate": 0.5,
-          "strength": 2,
+          "winRate": 52.31,
+          "pickRate": 7.23,
+          "banRate": 0.52,
+          "strength": 3,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 52.09,
-          "pickRate": 7.39,
-          "banRate": 0.46,
+          "winRate": 51.69,
+          "pickRate": 7.84,
+          "banRate": 0.53,
           "strength": 2,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 49.31,
-          "pickRate": 6.31,
-          "banRate": 0.32,
-          "strength": 3,
+          "winRate": 50.29,
+          "pickRate": 6.48,
+          "banRate": 0.5,
+          "strength": 4,
           "position": "Jungle"
         }
       }
@@ -1615,39 +1399,32 @@
       "heroId": "10040",
       "cnName": "贾克斯",
       "byBracket": {
-        "0": {
-          "winRate": 46.79,
-          "pickRate": 2.73,
-          "banRate": 0.47,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 47.73,
-          "pickRate": 2.22,
-          "banRate": 0.22,
+          "winRate": 51.63,
+          "pickRate": 3.28,
+          "banRate": 0.48,
           "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 47.78,
-          "pickRate": 2.18,
-          "banRate": 0.21,
-          "strength": 5,
+          "winRate": 51.38,
+          "pickRate": 3.42,
+          "banRate": 0.5,
+          "strength": 4,
           "position": "Baron"
         },
         "3": {
-          "winRate": 48.48,
-          "pickRate": 2.04,
-          "banRate": 0.11,
+          "winRate": 51.82,
+          "pickRate": 4.19,
+          "banRate": 0.51,
           "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 46.9,
-          "pickRate": 2.3,
-          "banRate": 0.08,
-          "strength": 5,
+          "winRate": 50.06,
+          "pickRate": 4.66,
+          "banRate": 0.73,
+          "strength": 4,
           "position": "Baron"
         }
       }
@@ -1658,38 +1435,31 @@
       "heroId": "10101",
       "cnName": "杰斯",
       "byBracket": {
-        "0": {
-          "winRate": 52.17,
-          "pickRate": 2.09,
-          "banRate": 0.44,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 50.07,
-          "pickRate": 2.76,
-          "banRate": 0.89,
+          "winRate": 47.74,
+          "pickRate": 2.79,
+          "banRate": 1.15,
           "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 50.2,
-          "pickRate": 2.83,
-          "banRate": 0.95,
+          "winRate": 47.99,
+          "pickRate": 2.92,
+          "banRate": 1.33,
           "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 50.71,
-          "pickRate": 3.18,
-          "banRate": 1.32,
+          "winRate": 48.63,
+          "pickRate": 3.6,
+          "banRate": 2.32,
           "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.93,
-          "pickRate": 4.33,
-          "banRate": 2.78,
+          "winRate": 48.39,
+          "pickRate": 4.36,
+          "banRate": 4.1,
           "strength": 4,
           "position": "Baron"
         }
@@ -1701,39 +1471,32 @@
       "heroId": "10022",
       "cnName": "烬",
       "byBracket": {
-        "0": {
-          "winRate": 51.48,
-          "pickRate": 11.75,
-          "banRate": 0.97,
+        "1": {
+          "winRate": 51.24,
+          "pickRate": 13.65,
+          "banRate": 0.54,
           "strength": 2,
           "position": "Dragon"
         },
-        "1": {
-          "winRate": 51.61,
-          "pickRate": 16.48,
-          "banRate": 0.87,
-          "strength": 1,
-          "position": "Dragon"
-        },
         "2": {
-          "winRate": 51.64,
-          "pickRate": 16.82,
-          "banRate": 0.89,
-          "strength": 1,
+          "winRate": 51.22,
+          "pickRate": 14.09,
+          "banRate": 0.57,
+          "strength": 2,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 51.59,
-          "pickRate": 18.08,
-          "banRate": 0.83,
-          "strength": 1,
+          "winRate": 50.82,
+          "pickRate": 14.56,
+          "banRate": 0.43,
+          "strength": 2,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 50.62,
-          "pickRate": 20.02,
-          "banRate": 0.78,
-          "strength": 0,
+          "winRate": 50.85,
+          "pickRate": 16.08,
+          "banRate": 0.51,
+          "strength": 1,
           "position": "Dragon"
         }
       }
@@ -1744,38 +1507,31 @@
       "heroId": "10018",
       "cnName": "金克丝",
       "byBracket": {
-        "0": {
-          "winRate": 47.39,
-          "pickRate": 8.39,
-          "banRate": 0.98,
-          "strength": 3,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 48.82,
-          "pickRate": 8.91,
-          "banRate": 0.31,
-          "strength": 2,
+          "winRate": 47.64,
+          "pickRate": 6.54,
+          "banRate": 0.19,
+          "strength": 4,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 48.84,
-          "pickRate": 9.0,
-          "banRate": 0.29,
-          "strength": 2,
+          "winRate": 47.6,
+          "pickRate": 6.47,
+          "banRate": 0.17,
+          "strength": 4,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 48.4,
-          "pickRate": 9.03,
-          "banRate": 0.2,
-          "strength": 2,
+          "winRate": 47.08,
+          "pickRate": 6.21,
+          "banRate": 0.1,
+          "strength": 3,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 47.18,
-          "pickRate": 7.29,
-          "banRate": 0.09,
+          "winRate": 48.17,
+          "pickRate": 5.12,
+          "banRate": 0.08,
           "strength": 3,
           "position": "Dragon"
         }
@@ -1787,39 +1543,32 @@
       "heroId": "10152",
       "cnName": "奎桑提",
       "byBracket": {
-        "0": {
-          "winRate": 51.48,
-          "pickRate": 11.03,
-          "banRate": 28.57,
-          "strength": 0,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 51.44,
-          "pickRate": 7.78,
-          "banRate": 56.66,
-          "strength": 0,
+          "winRate": 48.75,
+          "pickRate": 6.13,
+          "banRate": 30.86,
+          "strength": 1,
           "position": "Baron"
         },
         "2": {
-          "winRate": 51.51,
-          "pickRate": 7.57,
-          "banRate": 58.78,
-          "strength": 0,
+          "winRate": 48.86,
+          "pickRate": 6.02,
+          "banRate": 32.69,
+          "strength": 1,
           "position": "Baron"
         },
         "3": {
-          "winRate": 51.87,
-          "pickRate": 8.05,
-          "banRate": 61.21,
-          "strength": 0,
+          "winRate": 48.6,
+          "pickRate": 6.6,
+          "banRate": 27.3,
+          "strength": 1,
           "position": "Baron"
         },
         "4": {
-          "winRate": 53.44,
-          "pickRate": 8.64,
-          "banRate": 67.73,
-          "strength": 0,
+          "winRate": 49.75,
+          "pickRate": 6.84,
+          "banRate": 28.96,
+          "strength": 1,
           "position": "Baron"
         }
       }
@@ -1830,38 +1579,31 @@
       "heroId": "10026",
       "cnName": "卡莎",
       "byBracket": {
-        "0": {
-          "winRate": 50.71,
-          "pickRate": 11.95,
-          "banRate": 0.31,
-          "strength": 2,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 48.55,
-          "pickRate": 12.52,
-          "banRate": 0.34,
+          "winRate": 48.82,
+          "pickRate": 15.19,
+          "banRate": 0.43,
           "strength": 1,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 48.42,
-          "pickRate": 12.73,
-          "banRate": 0.36,
-          "strength": 1,
-          "position": "Dragon"
-        },
-        "3": {
-          "winRate": 48.09,
-          "pickRate": 14.28,
+          "winRate": 48.73,
+          "pickRate": 15.63,
           "banRate": 0.49,
           "strength": 1,
           "position": "Dragon"
         },
+        "3": {
+          "winRate": 48.24,
+          "pickRate": 18.4,
+          "banRate": 0.69,
+          "strength": 1,
+          "position": "Dragon"
+        },
         "4": {
-          "winRate": 48.85,
-          "pickRate": 15.78,
-          "banRate": 0.59,
+          "winRate": 48.78,
+          "pickRate": 19.41,
+          "banRate": 0.76,
           "strength": 1,
           "position": "Dragon"
         }
@@ -1873,38 +1615,31 @@
       "heroId": "10134",
       "cnName": "卡莉丝塔",
       "byBracket": {
-        "0": {
-          "winRate": 52.0,
-          "pickRate": 8.2,
-          "banRate": 5.65,
-          "strength": 2,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 50.02,
-          "pickRate": 5.37,
-          "banRate": 4.65,
-          "strength": 2,
+          "winRate": 49.72,
+          "pickRate": 4.52,
+          "banRate": 3.76,
+          "strength": 3,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 49.97,
-          "pickRate": 5.13,
-          "banRate": 4.59,
-          "strength": 2,
+          "winRate": 49.43,
+          "pickRate": 4.33,
+          "banRate": 3.69,
+          "strength": 3,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 49.21,
-          "pickRate": 4.41,
-          "banRate": 2.24,
+          "winRate": 48.9,
+          "pickRate": 3.91,
+          "banRate": 1.36,
           "strength": 3,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 50.0,
-          "pickRate": 3.32,
-          "banRate": 1.25,
+          "winRate": 49.51,
+          "pickRate": 2.69,
+          "banRate": 0.7,
           "strength": 3,
           "position": "Dragon"
         }
@@ -1916,39 +1651,32 @@
       "heroId": "10007",
       "cnName": "卡尔玛",
       "byBracket": {
-        "0": {
-          "winRate": 49.51,
-          "pickRate": 2.55,
-          "banRate": 0.37,
-          "strength": 4,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 50.51,
-          "pickRate": 4.18,
-          "banRate": 0.4,
+          "winRate": 50.58,
+          "pickRate": 5.01,
+          "banRate": 0.48,
           "strength": 4,
           "position": "Support"
         },
         "2": {
-          "winRate": 50.5,
-          "pickRate": 4.31,
-          "banRate": 0.41,
+          "winRate": 50.53,
+          "pickRate": 5.4,
+          "banRate": 0.53,
           "strength": 4,
           "position": "Support"
         },
         "3": {
-          "winRate": 50.54,
-          "pickRate": 5.0,
-          "banRate": 0.34,
-          "strength": 4,
+          "winRate": 50.02,
+          "pickRate": 7.31,
+          "banRate": 0.47,
+          "strength": 3,
           "position": "Support"
         },
         "4": {
-          "winRate": 50.13,
-          "pickRate": 8.04,
-          "banRate": 0.37,
-          "strength": 3,
+          "winRate": 50.25,
+          "pickRate": 12.25,
+          "banRate": 0.79,
+          "strength": 1,
           "position": "Support"
         }
       }
@@ -1959,38 +1687,31 @@
       "heroId": "10103",
       "cnName": "卡萨丁",
       "byBracket": {
-        "0": {
-          "winRate": 53.94,
-          "pickRate": 1.44,
-          "banRate": 0.19,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.68,
-          "pickRate": 2.07,
-          "banRate": 0.49,
+          "winRate": 50.33,
+          "pickRate": 1.51,
+          "banRate": 0.66,
           "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.64,
-          "pickRate": 2.15,
-          "banRate": 0.53,
+          "winRate": 50.32,
+          "pickRate": 1.57,
+          "banRate": 0.8,
           "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 51.36,
-          "pickRate": 2.71,
-          "banRate": 0.84,
+          "winRate": 48.87,
+          "pickRate": 2.24,
+          "banRate": 1.8,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 53.94,
-          "pickRate": 3.29,
-          "banRate": 1.91,
+          "winRate": 53.14,
+          "pickRate": 3.31,
+          "banRate": 3.2,
           "strength": 4,
           "position": "Mid"
         }
@@ -2002,38 +1723,31 @@
       "heroId": "10095",
       "cnName": "卡特琳娜",
       "byBracket": {
-        "0": {
-          "winRate": 45.74,
-          "pickRate": 1.6,
-          "banRate": 0.74,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 46.79,
-          "pickRate": 1.46,
-          "banRate": 0.46,
+          "winRate": 46.55,
+          "pickRate": 1.54,
+          "banRate": 0.42,
           "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 46.74,
-          "pickRate": 1.46,
-          "banRate": 0.46,
+          "winRate": 46.93,
+          "pickRate": 1.57,
+          "banRate": 0.43,
           "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 48.01,
-          "pickRate": 1.57,
+          "winRate": 48.66,
+          "pickRate": 2.1,
           "banRate": 0.4,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 48.44,
-          "pickRate": 1.65,
-          "banRate": 0.27,
+          "winRate": 49.45,
+          "pickRate": 2.13,
+          "banRate": 0.36,
           "strength": 5,
           "position": "Mid"
         }
@@ -2045,38 +1759,31 @@
       "heroId": "10041",
       "cnName": "凯尔",
       "byBracket": {
-        "0": {
-          "winRate": 52.25,
-          "pickRate": 4.71,
-          "banRate": 0.57,
-          "strength": 4,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 51.91,
-          "pickRate": 3.23,
-          "banRate": 0.59,
-          "strength": 5,
-          "position": "Baron"
-        },
-        "2": {
-          "winRate": 51.73,
-          "pickRate": 3.09,
-          "banRate": 0.59,
-          "strength": 5,
-          "position": "Baron"
-        },
-        "3": {
-          "winRate": 51.09,
-          "pickRate": 2.61,
+          "winRate": 52.24,
+          "pickRate": 2.14,
           "banRate": 0.36,
           "strength": 5,
           "position": "Baron"
         },
+        "2": {
+          "winRate": 52.06,
+          "pickRate": 2.07,
+          "banRate": 0.37,
+          "strength": 5,
+          "position": "Baron"
+        },
+        "3": {
+          "winRate": 52.28,
+          "pickRate": 1.73,
+          "banRate": 0.21,
+          "strength": 5,
+          "position": "Baron"
+        },
         "4": {
-          "winRate": 51.16,
-          "pickRate": 2.29,
-          "banRate": 0.3,
+          "winRate": 49.4,
+          "pickRate": 1.84,
+          "banRate": 0.24,
           "strength": 5,
           "position": "Baron"
         }
@@ -2088,39 +1795,32 @@
       "heroId": "10005",
       "cnName": "凯隐",
       "byBracket": {
-        "0": {
-          "winRate": 50.97,
-          "pickRate": 4.46,
-          "banRate": 0.32,
-          "strength": 3,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 50.04,
-          "pickRate": 3.94,
-          "banRate": 0.38,
-          "strength": 4,
+          "winRate": 52.44,
+          "pickRate": 6.08,
+          "banRate": 1.64,
+          "strength": 2,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 49.96,
-          "pickRate": 3.94,
-          "banRate": 0.39,
-          "strength": 4,
+          "winRate": 52.23,
+          "pickRate": 6.38,
+          "banRate": 1.93,
+          "strength": 2,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 49.74,
-          "pickRate": 3.96,
-          "banRate": 0.37,
-          "strength": 4,
+          "winRate": 51.29,
+          "pickRate": 7.08,
+          "banRate": 2.87,
+          "strength": 2,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 49.16,
-          "pickRate": 4.17,
-          "banRate": 0.38,
-          "strength": 4,
+          "winRate": 50,
+          "pickRate": 6.64,
+          "banRate": 2.84,
+          "strength": 3,
           "position": "Jungle"
         }
       }
@@ -2131,38 +1831,31 @@
       "heroId": "10061",
       "cnName": "凯南",
       "byBracket": {
-        "0": {
-          "winRate": 52.9,
-          "pickRate": 1.1,
-          "banRate": 0.66,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 53.04,
-          "pickRate": 1.5,
-          "banRate": 0.46,
+          "winRate": 50.52,
+          "pickRate": 1.28,
+          "banRate": 0.4,
           "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 53.03,
-          "pickRate": 1.54,
-          "banRate": 0.47,
+          "winRate": 50.81,
+          "pickRate": 1.33,
+          "banRate": 0.42,
           "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 54.35,
-          "pickRate": 1.74,
+          "winRate": 51.33,
+          "pickRate": 1.63,
           "banRate": 0.36,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.51,
-          "pickRate": 2.13,
-          "banRate": 0.3,
+          "winRate": 53.57,
+          "pickRate": 1.83,
+          "banRate": 0.25,
           "strength": 5,
           "position": "Mid"
         }
@@ -2174,38 +1867,31 @@
       "heroId": "10017",
       "cnName": "卡兹克",
       "byBracket": {
-        "0": {
-          "winRate": 48.88,
-          "pickRate": 7.41,
-          "banRate": 0.32,
-          "strength": 3,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 47.5,
-          "pickRate": 4.2,
-          "banRate": 0.18,
-          "strength": 5,
+          "winRate": 49.7,
+          "pickRate": 4.18,
+          "banRate": 0.21,
+          "strength": 4,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 47.56,
-          "pickRate": 3.96,
-          "banRate": 0.17,
+          "winRate": 49.74,
+          "pickRate": 4.02,
+          "banRate": 0.21,
           "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 47.47,
-          "pickRate": 3.53,
-          "banRate": 0.13,
+          "winRate": 50.39,
+          "pickRate": 3.86,
+          "banRate": 0.15,
           "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 45.96,
-          "pickRate": 3.6,
-          "banRate": 0.08,
+          "winRate": 49.82,
+          "pickRate": 4.57,
+          "banRate": 0.12,
           "strength": 5,
           "position": "Jungle"
         }
@@ -2217,38 +1903,31 @@
       "heroId": "10073",
       "cnName": "千珏",
       "byBracket": {
-        "0": {
-          "winRate": 48.2,
-          "pickRate": 4.67,
-          "banRate": 0.23,
-          "strength": 4,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 48.82,
-          "pickRate": 3.18,
-          "banRate": 0.17,
+          "winRate": 50.92,
+          "pickRate": 2.45,
+          "banRate": 0.22,
           "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 48.87,
-          "pickRate": 3.02,
-          "banRate": 0.18,
+          "winRate": 50.77,
+          "pickRate": 2.48,
+          "banRate": 0.24,
           "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 48.54,
-          "pickRate": 2.82,
-          "banRate": 0.17,
+          "winRate": 51.86,
+          "pickRate": 2.68,
+          "banRate": 0.29,
           "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 48.85,
-          "pickRate": 2.32,
-          "banRate": 0.32,
+          "winRate": 51.92,
+          "pickRate": 2.65,
+          "banRate": 0.37,
           "strength": 5,
           "position": "Jungle"
         }
@@ -2260,39 +1939,32 @@
       "heroId": "10110",
       "cnName": "克格莫",
       "byBracket": {
-        "0": {
-          "winRate": 50.6,
-          "pickRate": 2.66,
-          "banRate": 0.45,
-          "strength": 3,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 51.49,
-          "pickRate": 3.2,
-          "banRate": 0.34,
-          "strength": 3,
+          "winRate": 52.18,
+          "pickRate": 3.17,
+          "banRate": 20.56,
+          "strength": 2,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 51.49,
-          "pickRate": 3.25,
-          "banRate": 0.34,
-          "strength": 3,
+          "winRate": 52.33,
+          "pickRate": 3.26,
+          "banRate": 24.87,
+          "strength": 2,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 51.51,
-          "pickRate": 3.84,
-          "banRate": 0.37,
-          "strength": 3,
+          "winRate": 52.48,
+          "pickRate": 3.33,
+          "banRate": 38.78,
+          "strength": 1,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 49.85,
-          "pickRate": 3.84,
-          "banRate": 0.27,
-          "strength": 3,
+          "winRate": 51.11,
+          "pickRate": 3.34,
+          "banRate": 33.17,
+          "strength": 1,
           "position": "Dragon"
         }
       }
@@ -2303,38 +1975,31 @@
       "heroId": "10059",
       "cnName": "李青",
       "byBracket": {
-        "0": {
-          "winRate": 48.44,
-          "pickRate": 13.61,
-          "banRate": 6.85,
-          "strength": 1,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 46.85,
-          "pickRate": 12.92,
-          "banRate": 7.37,
+          "winRate": 46.02,
+          "pickRate": 13.22,
+          "banRate": 8.73,
           "strength": 1,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 46.8,
-          "pickRate": 12.85,
-          "banRate": 7.49,
+          "winRate": 46.1,
+          "pickRate": 12.91,
+          "banRate": 9.33,
           "strength": 1,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 47.12,
-          "pickRate": 13.43,
-          "banRate": 7.52,
+          "winRate": 46.66,
+          "pickRate": 13.09,
+          "banRate": 11.27,
           "strength": 0,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 47.09,
-          "pickRate": 13.67,
-          "banRate": 11.53,
+          "winRate": 47.27,
+          "pickRate": 13.3,
+          "banRate": 16.38,
           "strength": 0,
           "position": "Jungle"
         }
@@ -2346,39 +2011,32 @@
       "heroId": "10044",
       "cnName": "蕾欧娜",
       "byBracket": {
-        "0": {
-          "winRate": 51.52,
-          "pickRate": 10.96,
-          "banRate": 6.49,
-          "strength": 2,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 51.57,
-          "pickRate": 11.76,
-          "banRate": 9.47,
-          "strength": 1,
+          "winRate": 51.05,
+          "pickRate": 11.08,
+          "banRate": 7.6,
+          "strength": 2,
           "position": "Support"
         },
         "2": {
-          "winRate": 51.46,
-          "pickRate": 11.83,
-          "banRate": 9.8,
-          "strength": 1,
+          "winRate": 51.02,
+          "pickRate": 10.74,
+          "banRate": 8.02,
+          "strength": 2,
           "position": "Support"
         },
         "3": {
-          "winRate": 51.64,
-          "pickRate": 10.85,
-          "banRate": 8.16,
-          "strength": 1,
+          "winRate": 50.68,
+          "pickRate": 7.87,
+          "banRate": 4.58,
+          "strength": 3,
           "position": "Support"
         },
         "4": {
-          "winRate": 50.43,
-          "pickRate": 7.72,
-          "banRate": 4.1,
-          "strength": 2,
+          "winRate": 49.7,
+          "pickRate": 5.51,
+          "banRate": 2.27,
+          "strength": 4,
           "position": "Support"
         }
       }
@@ -2389,39 +2047,32 @@
       "heroId": "10135",
       "cnName": "莉莉娅",
       "byBracket": {
-        "0": {
-          "winRate": 55.13,
-          "pickRate": 2.26,
-          "banRate": 0.75,
-          "strength": 2,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 55.16,
-          "pickRate": 3.28,
-          "banRate": 1.52,
+          "winRate": 52.62,
+          "pickRate": 2.67,
+          "banRate": 1.24,
           "strength": 3,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 55.03,
-          "pickRate": 3.4,
-          "banRate": 1.6,
+          "winRate": 52.52,
+          "pickRate": 2.86,
+          "banRate": 1.4,
           "strength": 3,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 55.07,
-          "pickRate": 4.24,
-          "banRate": 1.93,
-          "strength": 3,
+          "winRate": 52.25,
+          "pickRate": 3.59,
+          "banRate": 1.84,
+          "strength": 4,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 53.5,
-          "pickRate": 5.98,
-          "banRate": 2.98,
-          "strength": 2,
+          "winRate": 50.02,
+          "pickRate": 4.24,
+          "banRate": 1.93,
+          "strength": 4,
           "position": "Jungle"
         }
       }
@@ -2432,38 +2083,31 @@
       "heroId": "10109",
       "cnName": "丽桑卓",
       "byBracket": {
-        "0": {
-          "winRate": 49.53,
-          "pickRate": 2.68,
-          "banRate": 2.32,
+        "1": {
+          "winRate": 50.71,
+          "pickRate": 3.6,
+          "banRate": 6.01,
           "strength": 5,
           "position": "Mid"
         },
-        "1": {
-          "winRate": 49.48,
-          "pickRate": 4.23,
-          "banRate": 5.68,
-          "strength": 4,
-          "position": "Mid"
-        },
         "2": {
-          "winRate": 49.27,
-          "pickRate": 4.35,
-          "banRate": 6.12,
-          "strength": 4,
+          "winRate": 50.72,
+          "pickRate": 3.79,
+          "banRate": 7.01,
+          "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 49.29,
-          "pickRate": 4.92,
-          "banRate": 7.63,
-          "strength": 4,
+          "winRate": 50.49,
+          "pickRate": 4.89,
+          "banRate": 10.65,
+          "strength": 3,
           "position": "Mid"
         },
         "4": {
-          "winRate": 48.94,
-          "pickRate": 5.27,
-          "banRate": 7.7,
+          "winRate": 52.22,
+          "pickRate": 4.87,
+          "banRate": 9.69,
           "strength": 3,
           "position": "Mid"
         }
@@ -2475,38 +2119,31 @@
       "heroId": "10042",
       "cnName": "卢锡安",
       "byBracket": {
-        "0": {
-          "winRate": 48.74,
-          "pickRate": 6.94,
-          "banRate": 0.28,
-          "strength": 3,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 48.99,
-          "pickRate": 6.22,
-          "banRate": 0.27,
+          "winRate": 48.78,
+          "pickRate": 4.9,
+          "banRate": 0.13,
           "strength": 3,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 49.02,
-          "pickRate": 6.22,
-          "banRate": 0.28,
+          "winRate": 48.82,
+          "pickRate": 5.01,
+          "banRate": 0.14,
           "strength": 3,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 50.36,
-          "pickRate": 7.33,
-          "banRate": 0.49,
-          "strength": 2,
+          "winRate": 49.9,
+          "pickRate": 7.15,
+          "banRate": 0.31,
+          "strength": 3,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 49.01,
-          "pickRate": 8.11,
-          "banRate": 0.41,
+          "winRate": 48.83,
+          "pickRate": 8.26,
+          "banRate": 0.37,
           "strength": 2,
           "position": "Dragon"
         }
@@ -2518,39 +2155,32 @@
       "heroId": "10048",
       "cnName": "璐璐",
       "byBracket": {
-        "0": {
-          "winRate": 50.05,
-          "pickRate": 4.85,
-          "banRate": 2.46,
+        "1": {
+          "winRate": 48.89,
+          "pickRate": 7.48,
+          "banRate": 8.83,
           "strength": 5,
           "position": "Support"
         },
-        "1": {
-          "winRate": 49.7,
-          "pickRate": 7.45,
-          "banRate": 7.25,
-          "strength": 4,
-          "position": "Support"
-        },
         "2": {
-          "winRate": 49.76,
-          "pickRate": 7.85,
-          "banRate": 7.82,
+          "winRate": 48.86,
+          "pickRate": 8.31,
+          "banRate": 10.4,
           "strength": 4,
           "position": "Support"
         },
         "3": {
-          "winRate": 49.83,
-          "pickRate": 10.81,
-          "banRate": 11.26,
-          "strength": 3,
+          "winRate": 48.77,
+          "pickRate": 14.3,
+          "banRate": 19.18,
+          "strength": 1,
           "position": "Support"
         },
         "4": {
-          "winRate": 48.98,
-          "pickRate": 8.08,
-          "banRate": 8.64,
-          "strength": 4,
+          "winRate": 48.45,
+          "pickRate": 9.82,
+          "banRate": 14.18,
+          "strength": 2,
           "position": "Support"
         }
       }
@@ -2561,38 +2191,31 @@
       "heroId": "10003",
       "cnName": "拉克丝",
       "byBracket": {
-        "0": {
-          "winRate": 50.02,
-          "pickRate": 7.28,
-          "banRate": 17.73,
-          "strength": 1,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.09,
-          "pickRate": 7.87,
-          "banRate": 20.43,
+          "winRate": 50.59,
+          "pickRate": 8.26,
+          "banRate": 17.66,
           "strength": 2,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.1,
-          "pickRate": 8.03,
-          "banRate": 20.55,
+          "winRate": 50.48,
+          "pickRate": 8.25,
+          "banRate": 17.51,
           "strength": 2,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.85,
-          "pickRate": 7.84,
-          "banRate": 13.74,
-          "strength": 2,
+          "winRate": 49.27,
+          "pickRate": 6.75,
+          "banRate": 7.3,
+          "strength": 3,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.36,
-          "pickRate": 4.77,
-          "banRate": 7.9,
+          "winRate": 47.78,
+          "pickRate": 5.06,
+          "banRate": 5.05,
           "strength": 4,
           "position": "Mid"
         }
@@ -2604,38 +2227,31 @@
       "heroId": "10083",
       "cnName": "墨菲特",
       "byBracket": {
-        "0": {
-          "winRate": 51.88,
-          "pickRate": 4.1,
-          "banRate": 17.93,
-          "strength": 2,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 51.37,
-          "pickRate": 5.2,
-          "banRate": 20.75,
-          "strength": 2,
+          "winRate": 51.84,
+          "pickRate": 4.22,
+          "banRate": 19.85,
+          "strength": 3,
           "position": "Baron"
         },
         "2": {
-          "winRate": 51.26,
-          "pickRate": 5.3,
-          "banRate": 21.22,
-          "strength": 2,
+          "winRate": 51.74,
+          "pickRate": 4.47,
+          "banRate": 20.41,
+          "strength": 3,
           "position": "Baron"
         },
         "3": {
-          "winRate": 51.31,
-          "pickRate": 5.86,
-          "banRate": 18.2,
-          "strength": 2,
+          "winRate": 52.2,
+          "pickRate": 5.52,
+          "banRate": 12.59,
+          "strength": 3,
           "position": "Baron"
         },
         "4": {
-          "winRate": 51.6,
-          "pickRate": 5.57,
-          "banRate": 11.42,
+          "winRate": 50.62,
+          "pickRate": 5.23,
+          "banRate": 8.05,
           "strength": 3,
           "position": "Baron"
         }
@@ -2647,39 +2263,32 @@
       "heroId": "10074",
       "cnName": "茂凯",
       "byBracket": {
-        "0": {
-          "winRate": 49.44,
-          "pickRate": 2.45,
-          "banRate": 0.47,
-          "strength": 4,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 51.46,
-          "pickRate": 4.93,
-          "banRate": 0.62,
+          "winRate": 50.72,
+          "pickRate": 4.25,
+          "banRate": 0.49,
           "strength": 3,
           "position": "Support"
         },
         "2": {
-          "winRate": 51.38,
-          "pickRate": 5.12,
-          "banRate": 0.65,
+          "winRate": 50.77,
+          "pickRate": 4.48,
+          "banRate": 0.53,
           "strength": 3,
           "position": "Support"
         },
         "3": {
-          "winRate": 51.52,
-          "pickRate": 5.75,
-          "banRate": 0.7,
+          "winRate": 51.55,
+          "pickRate": 4.46,
+          "banRate": 0.52,
           "strength": 3,
           "position": "Support"
         },
         "4": {
-          "winRate": 50.7,
-          "pickRate": 6.8,
-          "banRate": 0.61,
-          "strength": 2,
+          "winRate": 50.95,
+          "pickRate": 4.76,
+          "banRate": 0.44,
+          "strength": 3,
           "position": "Support"
         }
       }
@@ -2690,38 +2299,31 @@
       "heroId": "10070",
       "cnName": "易",
       "byBracket": {
-        "0": {
-          "winRate": 54.63,
-          "pickRate": 23.25,
-          "banRate": 40.44,
-          "strength": 0,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 50.63,
-          "pickRate": 12.43,
-          "banRate": 65.05,
+          "winRate": 50.06,
+          "pickRate": 10.7,
+          "banRate": 64.66,
           "strength": 0,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 50.19,
-          "pickRate": 11.54,
-          "banRate": 66.66,
+          "winRate": 49.28,
+          "pickRate": 9.45,
+          "banRate": 66.6,
           "strength": 0,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 48.97,
-          "pickRate": 10.3,
-          "banRate": 62.3,
+          "winRate": 47.89,
+          "pickRate": 8.59,
+          "banRate": 53.71,
           "strength": 0,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 48.84,
-          "pickRate": 9.01,
-          "banRate": 54.62,
+          "winRate": 48.03,
+          "pickRate": 7.53,
+          "banRate": 47,
           "strength": 0,
           "position": "Jungle"
         }
@@ -2733,38 +2335,31 @@
       "heroId": "10139",
       "cnName": "梅尔",
       "byBracket": {
-        "0": {
-          "winRate": 50.54,
-          "pickRate": 13.92,
-          "banRate": 37.65,
-          "strength": 0,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 48.61,
-          "pickRate": 9.42,
-          "banRate": 76.18,
+          "winRate": 46.92,
+          "pickRate": 8.58,
+          "banRate": 59.42,
           "strength": 0,
           "position": "Mid"
         },
         "2": {
-          "winRate": 48.33,
-          "pickRate": 8.9,
-          "banRate": 78.8,
+          "winRate": 46.49,
+          "pickRate": 8.21,
+          "banRate": 63.07,
           "strength": 0,
           "position": "Mid"
         },
         "3": {
-          "winRate": 47.62,
-          "pickRate": 8.22,
-          "banRate": 80.76,
+          "winRate": 45.61,
+          "pickRate": 7.73,
+          "banRate": 54.37,
           "strength": 0,
           "position": "Mid"
         },
         "4": {
-          "winRate": 48.64,
-          "pickRate": 6.8,
-          "banRate": 80.01,
+          "winRate": 46.87,
+          "pickRate": 6.98,
+          "banRate": 51.46,
           "strength": 0,
           "position": "Mid"
         }
@@ -2776,38 +2371,31 @@
       "heroId": "10108",
       "cnName": "米利欧",
       "byBracket": {
-        "0": {
-          "winRate": 53.7,
-          "pickRate": 1.63,
-          "banRate": 0.73,
-          "strength": 5,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 50.62,
-          "pickRate": 3.07,
-          "banRate": 3.76,
+          "winRate": 50.2,
+          "pickRate": 2.75,
+          "banRate": 3.31,
           "strength": 5,
           "position": "Support"
         },
         "2": {
-          "winRate": 50.65,
-          "pickRate": 3.25,
-          "banRate": 4.14,
+          "winRate": 50.22,
+          "pickRate": 3.21,
+          "banRate": 3.97,
           "strength": 5,
           "position": "Support"
         },
         "3": {
-          "winRate": 51.0,
-          "pickRate": 5.26,
-          "banRate": 7.09,
+          "winRate": 49.95,
+          "pickRate": 7.36,
+          "banRate": 8.91,
           "strength": 5,
           "position": "Support"
         },
         "4": {
-          "winRate": 46.54,
-          "pickRate": 3.3,
-          "banRate": 4.73,
+          "winRate": 46.98,
+          "pickRate": 4.22,
+          "banRate": 5.45,
           "strength": 5,
           "position": "Support"
         }
@@ -2819,39 +2407,32 @@
       "heroId": "10066",
       "cnName": "厄运小姐",
       "byBracket": {
-        "0": {
-          "winRate": 51.62,
-          "pickRate": 19.81,
-          "banRate": 1.7,
-          "strength": 0,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 51.74,
-          "pickRate": 22.45,
-          "banRate": 4.02,
+          "winRate": 51.62,
+          "pickRate": 20.89,
+          "banRate": 3.97,
           "strength": 0,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 51.67,
-          "pickRate": 22.65,
-          "banRate": 4.27,
+          "winRate": 51.62,
+          "pickRate": 20.72,
+          "banRate": 4.37,
           "strength": 0,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 51.19,
-          "pickRate": 20.3,
-          "banRate": 3.54,
-          "strength": 0,
+          "winRate": 51.72,
+          "pickRate": 15.69,
+          "banRate": 2.76,
+          "strength": 1,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 51.45,
-          "pickRate": 15.9,
-          "banRate": 2.34,
-          "strength": 1,
+          "winRate": 49.73,
+          "pickRate": 12.16,
+          "banRate": 1.79,
+          "strength": 2,
           "position": "Dragon"
         }
       }
@@ -2862,39 +2443,32 @@
       "heroId": "10035",
       "cnName": "莫德凯撒",
       "byBracket": {
-        "0": {
-          "winRate": 50.8,
-          "pickRate": 12.22,
-          "banRate": 9.65,
-          "strength": 1,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.79,
-          "pickRate": 9.03,
-          "banRate": 17.31,
-          "strength": 1,
+          "winRate": 49.5,
+          "pickRate": 7.91,
+          "banRate": 17.18,
+          "strength": 2,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.83,
-          "pickRate": 8.8,
-          "banRate": 18.06,
-          "strength": 1,
+          "winRate": 49.32,
+          "pickRate": 7.66,
+          "banRate": 18.44,
+          "strength": 2,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.59,
-          "pickRate": 7.9,
-          "banRate": 15.47,
-          "strength": 1,
+          "winRate": 49.26,
+          "pickRate": 6.91,
+          "banRate": 14.95,
+          "strength": 2,
           "position": "Baron"
         },
         "4": {
-          "winRate": 48.8,
-          "pickRate": 7.5,
-          "banRate": 11.52,
-          "strength": 1,
+          "winRate": 49.09,
+          "pickRate": 6.9,
+          "banRate": 12.04,
+          "strength": 2,
           "position": "Baron"
         }
       }
@@ -2905,38 +2479,31 @@
       "heroId": "10028",
       "cnName": "莫甘娜",
       "byBracket": {
-        "0": {
-          "winRate": 53.44,
-          "pickRate": 3.73,
-          "banRate": 18.48,
-          "strength": 1,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.54,
-          "pickRate": 6.26,
-          "banRate": 31.08,
-          "strength": 1,
+          "winRate": 53.02,
+          "pickRate": 6.52,
+          "banRate": 39.71,
+          "strength": 0,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.53,
-          "pickRate": 6.4,
-          "banRate": 32.35,
-          "strength": 1,
+          "winRate": 52.84,
+          "pickRate": 6.51,
+          "banRate": 43.63,
+          "strength": 0,
           "position": "Mid"
         },
         "3": {
-          "winRate": 51.4,
-          "pickRate": 6.33,
-          "banRate": 32.8,
-          "strength": 1,
+          "winRate": 50.96,
+          "pickRate": 5.02,
+          "banRate": 46.23,
+          "strength": 0,
           "position": "Mid"
         },
         "4": {
-          "winRate": 51.0,
-          "pickRate": 5.14,
-          "banRate": 33.24,
+          "winRate": 51.44,
+          "pickRate": 4.96,
+          "banRate": 45.73,
           "strength": 1,
           "position": "Mid"
         }
@@ -2948,39 +2515,32 @@
       "heroId": "10091",
       "cnName": "娜美",
       "byBracket": {
-        "0": {
-          "winRate": 51.48,
-          "pickRate": 3.15,
-          "banRate": 0.48,
-          "strength": 5,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 50.57,
-          "pickRate": 4.84,
-          "banRate": 0.18,
+          "winRate": 51.03,
+          "pickRate": 4.34,
+          "banRate": 0.14,
           "strength": 5,
           "position": "Support"
         },
         "2": {
-          "winRate": 50.72,
-          "pickRate": 5.08,
-          "banRate": 0.17,
-          "strength": 5,
-          "position": "Support"
-        },
-        "3": {
-          "winRate": 50.59,
-          "pickRate": 6.69,
+          "winRate": 50.89,
+          "pickRate": 4.7,
           "banRate": 0.15,
           "strength": 5,
           "position": "Support"
         },
-        "4": {
-          "winRate": 51.8,
-          "pickRate": 7.02,
-          "banRate": 0.2,
+        "3": {
+          "winRate": 50.79,
+          "pickRate": 7.17,
+          "banRate": 0.16,
           "strength": 5,
+          "position": "Support"
+        },
+        "4": {
+          "winRate": 51.3,
+          "pickRate": 7.91,
+          "banRate": 0.12,
+          "strength": 4,
           "position": "Support"
         }
       }
@@ -2991,38 +2551,31 @@
       "heroId": "10065",
       "cnName": "内瑟斯",
       "byBracket": {
-        "0": {
-          "winRate": 49.9,
-          "pickRate": 9.37,
-          "banRate": 1.9,
-          "strength": 3,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.33,
-          "pickRate": 10.49,
-          "banRate": 7.35,
+          "winRate": 51.29,
+          "pickRate": 8.85,
+          "banRate": 8.61,
           "strength": 2,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.25,
-          "pickRate": 10.55,
-          "banRate": 7.96,
+          "winRate": 51.2,
+          "pickRate": 8.95,
+          "banRate": 10.09,
           "strength": 2,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.43,
-          "pickRate": 10.49,
-          "banRate": 10.2,
+          "winRate": 50.93,
+          "pickRate": 8.27,
+          "banRate": 13.45,
           "strength": 2,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.24,
-          "pickRate": 8.82,
-          "banRate": 9.61,
+          "winRate": 51.87,
+          "pickRate": 6.95,
+          "banRate": 11.48,
           "strength": 2,
           "position": "Baron"
         }
@@ -3034,39 +2587,32 @@
       "heroId": "10132",
       "cnName": "诺提勒斯",
       "byBracket": {
-        "0": {
-          "winRate": 49.3,
-          "pickRate": 8.97,
-          "banRate": 3.18,
-          "strength": 2,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 48.72,
-          "pickRate": 10.1,
-          "banRate": 6.08,
+          "winRate": 49.25,
+          "pickRate": 11.08,
+          "banRate": 2.94,
           "strength": 2,
           "position": "Support"
         },
         "2": {
-          "winRate": 48.75,
-          "pickRate": 10.21,
-          "banRate": 6.49,
-          "strength": 2,
+          "winRate": 49.11,
+          "pickRate": 10.82,
+          "banRate": 3.03,
+          "strength": 1,
           "position": "Support"
         },
         "3": {
-          "winRate": 48.86,
-          "pickRate": 9.46,
-          "banRate": 6.68,
-          "strength": 1,
+          "winRate": 49.85,
+          "pickRate": 8.4,
+          "banRate": 2.03,
+          "strength": 2,
           "position": "Support"
         },
         "4": {
-          "winRate": 48.07,
-          "pickRate": 8.73,
-          "banRate": 5.41,
-          "strength": 1,
+          "winRate": 49.02,
+          "pickRate": 7.86,
+          "banRate": 1.58,
+          "strength": 2,
           "position": "Support"
         }
       }
@@ -3077,39 +2623,32 @@
       "heroId": "10084",
       "cnName": "奈德丽",
       "byBracket": {
-        "0": {
-          "winRate": 48.78,
-          "pickRate": 2.89,
-          "banRate": 1.77,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 51.21,
-          "pickRate": 3.19,
-          "banRate": 4.27,
+          "winRate": 49.58,
+          "pickRate": 1.93,
+          "banRate": 6.72,
           "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 51.53,
-          "pickRate": 3.22,
-          "banRate": 4.59,
-          "strength": 5,
-          "position": "Jungle"
-        },
-        "3": {
-          "winRate": 53.0,
-          "pickRate": 3.65,
-          "banRate": 6.96,
+          "winRate": 50.33,
+          "pickRate": 1.99,
+          "banRate": 8.05,
           "strength": 4,
           "position": "Jungle"
         },
-        "4": {
-          "winRate": 54.55,
-          "pickRate": 3.66,
-          "banRate": 13.27,
+        "3": {
+          "winRate": 50.58,
+          "pickRate": 2.46,
+          "banRate": 19.35,
           "strength": 3,
+          "position": "Jungle"
+        },
+        "4": {
+          "winRate": 55.12,
+          "pickRate": 2.63,
+          "banRate": 31.52,
+          "strength": 1,
           "position": "Jungle"
         }
       }
@@ -3120,18 +2659,32 @@
       "heroId": "10027",
       "cnName": "尼菈",
       "byBracket": {
-        "3": {
-          "winRate": 52.14,
-          "pickRate": 1.21,
-          "banRate": 1.48,
+        "1": {
+          "winRate": 51.86,
+          "pickRate": 1.29,
+          "banRate": 3.61,
           "strength": 5,
           "position": "Jungle"
         },
-        "4": {
-          "winRate": 50.5,
-          "pickRate": 1.14,
-          "banRate": 1.66,
+        "2": {
+          "winRate": 51.72,
+          "pickRate": 1.4,
+          "banRate": 4.34,
           "strength": 5,
+          "position": "Jungle"
+        },
+        "3": {
+          "winRate": 52.18,
+          "pickRate": 2.13,
+          "banRate": 11.65,
+          "strength": 4,
+          "position": "Jungle"
+        },
+        "4": {
+          "winRate": 54.98,
+          "pickRate": 2.3,
+          "banRate": 16.43,
+          "strength": 3,
           "position": "Jungle"
         }
       }
@@ -3142,39 +2695,32 @@
       "heroId": "10151",
       "cnName": "魔腾",
       "byBracket": {
-        "0": {
-          "winRate": 50.33,
-          "pickRate": 3.12,
-          "banRate": 2.0,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 50.95,
-          "pickRate": 4.01,
-          "banRate": 9.03,
-          "strength": 4,
+          "winRate": 50.86,
+          "pickRate": 4.42,
+          "banRate": 17.47,
+          "strength": 3,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 50.84,
-          "pickRate": 4.11,
-          "banRate": 9.83,
-          "strength": 4,
+          "winRate": 50.99,
+          "pickRate": 4.68,
+          "banRate": 20.9,
+          "strength": 2,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.52,
-          "pickRate": 4.51,
-          "banRate": 13.96,
-          "strength": 3,
+          "winRate": 51.39,
+          "pickRate": 5.01,
+          "banRate": 38.21,
+          "strength": 1,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 48.59,
-          "pickRate": 4.19,
-          "banRate": 17.62,
-          "strength": 3,
+          "winRate": 53.11,
+          "pickRate": 4.83,
+          "banRate": 41.93,
+          "strength": 1,
           "position": "Jungle"
         }
       }
@@ -3185,39 +2731,32 @@
       "heroId": "10166",
       "cnName": "诺拉",
       "byBracket": {
-        "0": {
-          "winRate": 48.61,
-          "pickRate": 2.94,
-          "banRate": 8.88,
+        "1": {
+          "winRate": 50.1,
+          "pickRate": 1.61,
+          "banRate": 17.76,
           "strength": 4,
           "position": "Mid"
         },
-        "1": {
-          "winRate": 50.29,
-          "pickRate": 2.31,
-          "banRate": 39.06,
-          "strength": 2,
-          "position": "Mid"
-        },
         "2": {
-          "winRate": 50.12,
-          "pickRate": 2.26,
-          "banRate": 42.33,
-          "strength": 2,
+          "winRate": 49.91,
+          "pickRate": 1.59,
+          "banRate": 19.83,
+          "strength": 4,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.07,
-          "pickRate": 2.11,
-          "banRate": 50.76,
-          "strength": 2,
+          "winRate": 49.56,
+          "pickRate": 1.41,
+          "banRate": 15.75,
+          "strength": 4,
           "position": "Mid"
         },
         "4": {
-          "winRate": 46.4,
-          "pickRate": 1.87,
-          "banRate": 48.93,
-          "strength": 2,
+          "winRate": 49.25,
+          "pickRate": 1.29,
+          "banRate": 15.01,
+          "strength": 4,
           "position": "Mid"
         }
       }
@@ -3228,38 +2767,31 @@
       "heroId": "10008",
       "cnName": "努努和威朗普",
       "byBracket": {
-        "0": {
-          "winRate": 58.36,
-          "pickRate": 1.41,
-          "banRate": 0.07,
-          "strength": 4,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 55.12,
-          "pickRate": 1.72,
-          "banRate": 0.8,
+          "winRate": 52.08,
+          "pickRate": 1.71,
+          "banRate": 0.85,
           "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 55.02,
+          "winRate": 52.11,
           "pickRate": 1.76,
-          "banRate": 0.89,
+          "banRate": 1.04,
           "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 55.05,
-          "pickRate": 2.13,
-          "banRate": 1.76,
+          "winRate": 54.14,
+          "pickRate": 2.2,
+          "banRate": 2.96,
           "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 54.93,
-          "pickRate": 2.45,
-          "banRate": 2.88,
+          "winRate": 53.2,
+          "pickRate": 2.02,
+          "banRate": 4.04,
           "strength": 5,
           "position": "Jungle"
         }
@@ -3271,39 +2803,32 @@
       "heroId": "10106",
       "cnName": "奥拉夫",
       "byBracket": {
-        "0": {
-          "winRate": 48.14,
-          "pickRate": 1.35,
-          "banRate": 0.88,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 50.28,
-          "pickRate": 1.51,
-          "banRate": 1.07,
-          "strength": 5,
+          "winRate": 52.38,
+          "pickRate": 2.27,
+          "banRate": 1.65,
+          "strength": 4,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 50.84,
-          "pickRate": 1.51,
-          "banRate": 1.11,
-          "strength": 5,
+          "winRate": 52.64,
+          "pickRate": 2.29,
+          "banRate": 1.85,
+          "strength": 4,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.25,
-          "pickRate": 1.49,
-          "banRate": 1.21,
+          "winRate": 50,
+          "pickRate": 1.11,
+          "banRate": 2.93,
           "strength": 5,
-          "position": "Jungle"
+          "position": "Baron"
         },
         "4": {
-          "winRate": 54.01,
+          "winRate": 51.75,
           "pickRate": 1.3,
-          "banRate": 1.16,
-          "strength": 4,
+          "banRate": 3.05,
+          "strength": 5,
           "position": "Baron"
         }
       }
@@ -3314,39 +2839,32 @@
       "heroId": "10012",
       "cnName": "奥莉安娜",
       "byBracket": {
-        "0": {
-          "winRate": 48.72,
-          "pickRate": 2.48,
-          "banRate": 0.25,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 50.41,
-          "pickRate": 3.04,
-          "banRate": 0.19,
-          "strength": 5,
+          "winRate": 51.66,
+          "pickRate": 4.12,
+          "banRate": 0.29,
+          "strength": 4,
           "position": "Mid"
         },
         "2": {
-          "winRate": 50.26,
-          "pickRate": 3.06,
-          "banRate": 0.2,
-          "strength": 5,
+          "winRate": 51.59,
+          "pickRate": 4.31,
+          "banRate": 0.32,
+          "strength": 4,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.48,
-          "pickRate": 3.17,
-          "banRate": 0.16,
-          "strength": 5,
+          "winRate": 50.15,
+          "pickRate": 5.06,
+          "banRate": 0.37,
+          "strength": 4,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.32,
-          "pickRate": 3.75,
-          "banRate": 0.09,
-          "strength": 5,
+          "winRate": 50.16,
+          "pickRate": 6.06,
+          "banRate": 0.47,
+          "strength": 3,
           "position": "Mid"
         }
       }
@@ -3357,38 +2875,31 @@
       "heroId": "10136",
       "cnName": "奥恩",
       "byBracket": {
-        "0": {
-          "winRate": 50.66,
-          "pickRate": 1.38,
-          "banRate": 0.45,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 50.42,
-          "pickRate": 1.93,
-          "banRate": 0.25,
-          "strength": 5,
-          "position": "Baron"
-        },
-        "2": {
-          "winRate": 50.48,
-          "pickRate": 1.97,
-          "banRate": 0.25,
-          "strength": 5,
-          "position": "Baron"
-        },
-        "3": {
-          "winRate": 50.46,
-          "pickRate": 2.09,
+          "winRate": 50.87,
+          "pickRate": 1.6,
           "banRate": 0.18,
           "strength": 5,
           "position": "Baron"
         },
+        "2": {
+          "winRate": 50.86,
+          "pickRate": 1.7,
+          "banRate": 0.18,
+          "strength": 5,
+          "position": "Baron"
+        },
+        "3": {
+          "winRate": 50.87,
+          "pickRate": 2.15,
+          "banRate": 0.14,
+          "strength": 5,
+          "position": "Baron"
+        },
         "4": {
-          "winRate": 51.02,
-          "pickRate": 2.23,
-          "banRate": 0.15,
+          "winRate": 50.93,
+          "pickRate": 1.93,
+          "banRate": 0.14,
           "strength": 5,
           "position": "Baron"
         }
@@ -3400,39 +2911,32 @@
       "heroId": "10030",
       "cnName": "潘森",
       "byBracket": {
-        "0": {
-          "winRate": 49.36,
-          "pickRate": 4.82,
-          "banRate": 1.83,
-          "strength": 4,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 50.8,
-          "pickRate": 6.04,
-          "banRate": 3.11,
-          "strength": 3,
+          "winRate": 52.19,
+          "pickRate": 7.52,
+          "banRate": 5.28,
+          "strength": 2,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 50.97,
-          "pickRate": 6.11,
-          "banRate": 3.26,
-          "strength": 3,
+          "winRate": 52.03,
+          "pickRate": 7.83,
+          "banRate": 5.99,
+          "strength": 2,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.53,
-          "pickRate": 6.1,
-          "banRate": 2.88,
-          "strength": 3,
+          "winRate": 52.07,
+          "pickRate": 8.39,
+          "banRate": 7.05,
+          "strength": 1,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 51.09,
-          "pickRate": 6.27,
-          "banRate": 2.44,
-          "strength": 3,
+          "winRate": 52.01,
+          "pickRate": 8.33,
+          "banRate": 6.66,
+          "strength": 2,
           "position": "Jungle"
         }
       }
@@ -3444,30 +2948,30 @@
       "cnName": "波比",
       "byBracket": {
         "1": {
-          "winRate": 50.79,
-          "pickRate": 2.01,
-          "banRate": 0.24,
+          "winRate": 50.74,
+          "pickRate": 1.85,
+          "banRate": 0.28,
           "strength": 4,
           "position": "Baron"
         },
         "2": {
-          "winRate": 50.85,
-          "pickRate": 2.1,
-          "banRate": 0.25,
+          "winRate": 50.83,
+          "pickRate": 2.02,
+          "banRate": 0.32,
           "strength": 4,
           "position": "Baron"
         },
         "3": {
-          "winRate": 51.18,
-          "pickRate": 2.53,
-          "banRate": 0.26,
+          "winRate": 50.71,
+          "pickRate": 2.64,
+          "banRate": 0.35,
           "strength": 4,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.64,
-          "pickRate": 2.39,
-          "banRate": 0.5,
+          "winRate": 51.77,
+          "pickRate": 2.76,
+          "banRate": 0.48,
           "strength": 4,
           "position": "Baron"
         }
@@ -3479,39 +2983,32 @@
       "heroId": "10124",
       "cnName": "派克",
       "byBracket": {
-        "0": {
-          "winRate": 45.73,
-          "pickRate": 8.43,
-          "banRate": 2.55,
-          "strength": 3,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 47.65,
-          "pickRate": 5.27,
-          "banRate": 2.61,
+          "winRate": 50.03,
+          "pickRate": 4.97,
+          "banRate": 2.99,
           "strength": 4,
           "position": "Support"
         },
         "2": {
-          "winRate": 48.09,
-          "pickRate": 4.95,
-          "banRate": 2.61,
+          "winRate": 50.29,
+          "pickRate": 4.85,
+          "banRate": 3.13,
           "strength": 4,
           "position": "Support"
         },
         "3": {
-          "winRate": 49.29,
-          "pickRate": 4.68,
-          "banRate": 1.91,
+          "winRate": 51.31,
+          "pickRate": 4.84,
+          "banRate": 2.74,
           "strength": 4,
           "position": "Support"
         },
         "4": {
-          "winRate": 48.58,
-          "pickRate": 5.37,
-          "banRate": 2.19,
-          "strength": 4,
+          "winRate": 50.7,
+          "pickRate": 5.71,
+          "banRate": 2.92,
+          "strength": 3,
           "position": "Support"
         }
       }
@@ -3522,39 +3019,32 @@
       "heroId": "10052",
       "cnName": "洛",
       "byBracket": {
-        "0": {
-          "winRate": 50.04,
-          "pickRate": 2.57,
-          "banRate": 0.47,
-          "strength": 4,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 49.45,
-          "pickRate": 2.4,
+          "winRate": 50.44,
+          "pickRate": 3.03,
           "banRate": 0.28,
           "strength": 5,
           "position": "Support"
         },
         "2": {
-          "winRate": 49.39,
-          "pickRate": 2.39,
-          "banRate": 0.27,
+          "winRate": 50.35,
+          "pickRate": 3.1,
+          "banRate": 0.29,
           "strength": 5,
           "position": "Support"
         },
         "3": {
-          "winRate": 49.19,
-          "pickRate": 2.48,
-          "banRate": 0.21,
+          "winRate": 51.85,
+          "pickRate": 3.45,
+          "banRate": 0.26,
           "strength": 5,
           "position": "Support"
         },
         "4": {
-          "winRate": 49.54,
-          "pickRate": 3.75,
-          "banRate": 0.2,
-          "strength": 5,
+          "winRate": 51.91,
+          "pickRate": 4.84,
+          "banRate": 0.39,
+          "strength": 4,
           "position": "Support"
         }
       }
@@ -3565,39 +3055,32 @@
       "heroId": "10064",
       "cnName": "拉莫斯",
       "byBracket": {
-        "0": {
-          "winRate": 51.21,
-          "pickRate": 2.62,
-          "banRate": 1.29,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 54.69,
-          "pickRate": 4.87,
-          "banRate": 4.32,
-          "strength": 3,
+          "winRate": 54.65,
+          "pickRate": 3.98,
+          "banRate": 3.24,
+          "strength": 4,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 54.65,
-          "pickRate": 5.02,
-          "banRate": 4.64,
-          "strength": 3,
+          "winRate": 54.68,
+          "pickRate": 4.09,
+          "banRate": 3.67,
+          "strength": 4,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 54.31,
-          "pickRate": 5.54,
-          "banRate": 5.84,
-          "strength": 3,
+          "winRate": 54.85,
+          "pickRate": 4.64,
+          "banRate": 4.46,
+          "strength": 4,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 52.95,
-          "pickRate": 4.68,
-          "banRate": 5.0,
-          "strength": 4,
+          "winRate": 55.6,
+          "pickRate": 3.83,
+          "banRate": 3.31,
+          "strength": 5,
           "position": "Jungle"
         }
       }
@@ -3608,39 +3091,32 @@
       "heroId": "10116",
       "cnName": "芮尔",
       "byBracket": {
-        "0": {
-          "winRate": 51.86,
-          "pickRate": 2.51,
-          "banRate": 1.52,
+        "1": {
+          "winRate": 50.79,
+          "pickRate": 3.84,
+          "banRate": 2.15,
           "strength": 4,
           "position": "Support"
         },
-        "1": {
-          "winRate": 51.73,
-          "pickRate": 4.03,
-          "banRate": 2.94,
-          "strength": 3,
-          "position": "Support"
-        },
         "2": {
-          "winRate": 51.59,
-          "pickRate": 4.12,
-          "banRate": 3.11,
-          "strength": 3,
+          "winRate": 50.86,
+          "pickRate": 3.79,
+          "banRate": 2.33,
+          "strength": 4,
           "position": "Support"
         },
         "3": {
-          "winRate": 51.73,
-          "pickRate": 4.3,
-          "banRate": 3.02,
-          "strength": 3,
+          "winRate": 50.39,
+          "pickRate": 3.7,
+          "banRate": 1.98,
+          "strength": 4,
           "position": "Support"
         },
         "4": {
-          "winRate": 52.02,
-          "pickRate": 4.47,
-          "banRate": 2.25,
-          "strength": 3,
+          "winRate": 52.84,
+          "pickRate": 3.02,
+          "banRate": 1.48,
+          "strength": 4,
           "position": "Support"
         }
       }
@@ -3651,38 +3127,31 @@
       "heroId": "10121",
       "cnName": "雷克顿",
       "byBracket": {
-        "0": {
-          "winRate": 48.76,
-          "pickRate": 3.85,
-          "banRate": 0.94,
-          "strength": 4,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.45,
-          "pickRate": 4.1,
-          "banRate": 0.41,
+          "winRate": 48.92,
+          "pickRate": 4.18,
+          "banRate": 0.65,
           "strength": 4,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.55,
-          "pickRate": 4.12,
-          "banRate": 0.41,
+          "winRate": 49.11,
+          "pickRate": 4.2,
+          "banRate": 0.69,
           "strength": 4,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.51,
-          "pickRate": 4.22,
-          "banRate": 0.35,
+          "winRate": 49.2,
+          "pickRate": 4.56,
+          "banRate": 0.8,
           "strength": 4,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.14,
-          "pickRate": 4.96,
-          "banRate": 0.38,
+          "winRate": 48.85,
+          "pickRate": 5.71,
+          "banRate": 1.34,
           "strength": 3,
           "position": "Baron"
         }
@@ -3694,38 +3163,31 @@
       "heroId": "10006",
       "cnName": "雷恩加尔",
       "byBracket": {
-        "0": {
-          "winRate": 44.57,
-          "pickRate": 1.59,
-          "banRate": 1.42,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 47.51,
-          "pickRate": 1.58,
-          "banRate": 1.19,
+          "winRate": 47.88,
+          "pickRate": 1.43,
+          "banRate": 1.1,
           "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 47.66,
-          "pickRate": 1.59,
-          "banRate": 1.23,
+          "winRate": 48.11,
+          "pickRate": 1.47,
+          "banRate": 1.18,
           "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 47.05,
-          "pickRate": 1.69,
-          "banRate": 1.32,
+          "winRate": 51.08,
+          "pickRate": 1.76,
+          "banRate": 1.5,
           "strength": 5,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 51.62,
-          "pickRate": 2.17,
-          "banRate": 2.2,
+          "winRate": 53.06,
+          "pickRate": 1.91,
+          "banRate": 2.32,
           "strength": 5,
           "position": "Jungle"
         }
@@ -3737,38 +3199,31 @@
       "heroId": "10092",
       "cnName": "锐雯",
       "byBracket": {
-        "0": {
-          "winRate": 46.0,
-          "pickRate": 3.21,
-          "banRate": 1.0,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 47.62,
-          "pickRate": 1.83,
-          "banRate": 0.36,
-          "strength": 5,
-          "position": "Baron"
-        },
-        "2": {
-          "winRate": 47.53,
-          "pickRate": 1.75,
-          "banRate": 0.35,
-          "strength": 5,
-          "position": "Baron"
-        },
-        "3": {
-          "winRate": 48.74,
-          "pickRate": 1.64,
+          "winRate": 46.3,
+          "pickRate": 2.22,
           "banRate": 0.29,
           "strength": 5,
           "position": "Baron"
         },
+        "2": {
+          "winRate": 46.34,
+          "pickRate": 2.12,
+          "banRate": 0.27,
+          "strength": 5,
+          "position": "Baron"
+        },
+        "3": {
+          "winRate": 48.13,
+          "pickRate": 2.32,
+          "banRate": 0.24,
+          "strength": 5,
+          "position": "Baron"
+        },
         "4": {
-          "winRate": 50.91,
-          "pickRate": 2.2,
-          "banRate": 0.48,
+          "winRate": 50.88,
+          "pickRate": 2.18,
+          "banRate": 0.55,
           "strength": 5,
           "position": "Baron"
         }
@@ -3780,39 +3235,32 @@
       "heroId": "10140",
       "cnName": "兰博",
       "byBracket": {
-        "0": {
-          "winRate": 49.6,
-          "pickRate": 2.0,
-          "banRate": 0.55,
+        "1": {
+          "winRate": 50.45,
+          "pickRate": 3.2,
+          "banRate": 0.67,
           "strength": 4,
           "position": "Baron"
         },
-        "1": {
-          "winRate": 50.82,
-          "pickRate": 3.02,
-          "banRate": 0.64,
-          "strength": 3,
-          "position": "Baron"
-        },
         "2": {
-          "winRate": 50.85,
-          "pickRate": 3.08,
-          "banRate": 0.67,
-          "strength": 3,
+          "winRate": 50.46,
+          "pickRate": 3.29,
+          "banRate": 0.72,
+          "strength": 4,
           "position": "Baron"
         },
         "3": {
-          "winRate": 50.65,
+          "winRate": 50.52,
           "pickRate": 3.19,
-          "banRate": 0.6,
-          "strength": 3,
+          "banRate": 0.48,
+          "strength": 4,
           "position": "Baron"
         },
         "4": {
-          "winRate": 50.31,
-          "pickRate": 3.07,
-          "banRate": 0.52,
-          "strength": 3,
+          "winRate": 51.88,
+          "pickRate": 3.66,
+          "banRate": 0.48,
+          "strength": 4,
           "position": "Baron"
         }
       }
@@ -3823,39 +3271,32 @@
       "heroId": "10137",
       "cnName": "瑞兹",
       "byBracket": {
-        "0": {
-          "winRate": 53.21,
-          "pickRate": 4.54,
-          "banRate": 2.38,
-          "strength": 3,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.96,
-          "pickRate": 5.92,
-          "banRate": 5.13,
+          "winRate": 51.26,
+          "pickRate": 6.13,
+          "banRate": 9.69,
           "strength": 2,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.83,
-          "pickRate": 6.01,
-          "banRate": 5.5,
+          "winRate": 51.22,
+          "pickRate": 6.37,
+          "banRate": 11.36,
           "strength": 2,
           "position": "Mid"
         },
         "3": {
-          "winRate": 51.68,
-          "pickRate": 6.64,
-          "banRate": 7.13,
-          "strength": 2,
+          "winRate": 52.24,
+          "pickRate": 7.53,
+          "banRate": 21.71,
+          "strength": 1,
           "position": "Mid"
         },
         "4": {
-          "winRate": 51.55,
-          "pickRate": 8.3,
-          "banRate": 10.36,
-          "strength": 1,
+          "winRate": 50.32,
+          "pickRate": 8.09,
+          "banRate": 30.25,
+          "strength": 0,
           "position": "Mid"
         }
       }
@@ -3866,38 +3307,31 @@
       "heroId": "10104",
       "cnName": "莎弥拉",
       "byBracket": {
-        "0": {
-          "winRate": 50.23,
-          "pickRate": 10.47,
-          "banRate": 5.77,
-          "strength": 1,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 48.37,
-          "pickRate": 8.3,
-          "banRate": 6.41,
+          "winRate": 48.79,
+          "pickRate": 8.25,
+          "banRate": 5.79,
           "strength": 2,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 48.32,
-          "pickRate": 8.18,
-          "banRate": 6.47,
+          "winRate": 48.88,
+          "pickRate": 8.37,
+          "banRate": 5.99,
           "strength": 2,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 49.01,
-          "pickRate": 7.83,
-          "banRate": 3.94,
+          "winRate": 48.93,
+          "pickRate": 8.97,
+          "banRate": 4.15,
           "strength": 2,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 49.11,
-          "pickRate": 8.12,
-          "banRate": 2.85,
+          "winRate": 50.82,
+          "pickRate": 8.66,
+          "banRate": 2.96,
           "strength": 2,
           "position": "Dragon"
         }
@@ -3909,38 +3343,31 @@
       "heroId": "10123",
       "cnName": "赛娜",
       "byBracket": {
-        "0": {
-          "winRate": 52.23,
-          "pickRate": 4.74,
-          "banRate": 0.58,
-          "strength": 3,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 50.5,
-          "pickRate": 4.68,
-          "banRate": 0.76,
+          "winRate": 52.52,
+          "pickRate": 5.3,
+          "banRate": 0.83,
           "strength": 3,
           "position": "Support"
         },
         "2": {
-          "winRate": 50.74,
-          "pickRate": 4.57,
-          "banRate": 0.78,
+          "winRate": 52.51,
+          "pickRate": 5.16,
+          "banRate": 0.88,
           "strength": 3,
           "position": "Support"
         },
         "3": {
-          "winRate": 50.57,
-          "pickRate": 3.99,
-          "banRate": 0.66,
-          "strength": 4,
+          "winRate": 53.8,
+          "pickRate": 4.26,
+          "banRate": 0.62,
+          "strength": 3,
           "position": "Support"
         },
         "4": {
-          "winRate": 49.68,
-          "pickRate": 5.43,
-          "banRate": 0.63,
+          "winRate": 52.28,
+          "pickRate": 5.65,
+          "banRate": 0.81,
           "strength": 3,
           "position": "Support"
         }
@@ -3952,39 +3379,32 @@
       "heroId": "10034",
       "cnName": "萨勒芬妮",
       "byBracket": {
-        "0": {
-          "winRate": 49.85,
-          "pickRate": 15.64,
-          "banRate": 3.49,
-          "strength": 1,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 50.56,
-          "pickRate": 9.89,
-          "banRate": 1.56,
+          "winRate": 50.43,
+          "pickRate": 9.49,
+          "banRate": 1.48,
           "strength": 3,
           "position": "Support"
         },
         "2": {
-          "winRate": 50.38,
-          "pickRate": 9.6,
-          "banRate": 1.41,
+          "winRate": 50.54,
+          "pickRate": 9.25,
+          "banRate": 1.38,
           "strength": 3,
           "position": "Support"
         },
         "3": {
-          "winRate": 49.74,
-          "pickRate": 7.97,
-          "banRate": 0.58,
+          "winRate": 50.15,
+          "pickRate": 8.22,
+          "banRate": 0.67,
           "strength": 3,
           "position": "Support"
         },
         "4": {
-          "winRate": 50.96,
-          "pickRate": 7.61,
-          "banRate": 0.55,
-          "strength": 3,
+          "winRate": 51.43,
+          "pickRate": 10,
+          "banRate": 0.67,
+          "strength": 2,
           "position": "Support"
         }
       }
@@ -3995,38 +3415,31 @@
       "heroId": "10068",
       "cnName": "瑟提",
       "byBracket": {
-        "0": {
-          "winRate": 50.76,
-          "pickRate": 12.03,
-          "banRate": 2.03,
-          "strength": 1,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 51.03,
-          "pickRate": 12.9,
-          "banRate": 4.9,
+          "winRate": 50.07,
+          "pickRate": 10.53,
+          "banRate": 2.74,
           "strength": 1,
           "position": "Baron"
         },
         "2": {
-          "winRate": 50.94,
-          "pickRate": 13.14,
-          "banRate": 5.26,
+          "winRate": 49.98,
+          "pickRate": 10.74,
+          "banRate": 2.99,
           "strength": 1,
           "position": "Baron"
         },
         "3": {
-          "winRate": 50.58,
-          "pickRate": 13.73,
-          "banRate": 5.67,
+          "winRate": 49.95,
+          "pickRate": 11.37,
+          "banRate": 2.5,
           "strength": 1,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.97,
-          "pickRate": 14.83,
-          "banRate": 5.62,
+          "winRate": 49.18,
+          "pickRate": 11.9,
+          "banRate": 2.11,
           "strength": 1,
           "position": "Baron"
         }
@@ -4038,38 +3451,31 @@
       "heroId": "10118",
       "cnName": "慎",
       "byBracket": {
-        "0": {
-          "winRate": 55.2,
-          "pickRate": 1.0,
-          "banRate": 0.1,
-          "strength": 5,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 52.48,
-          "pickRate": 1.45,
-          "banRate": 0.13,
+          "winRate": 52.85,
+          "pickRate": 1.19,
+          "banRate": 0.09,
           "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 52.56,
-          "pickRate": 1.48,
-          "banRate": 0.14,
+          "winRate": 53.01,
+          "pickRate": 1.26,
+          "banRate": 0.1,
           "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 52.92,
-          "pickRate": 1.55,
-          "banRate": 0.13,
+          "winRate": 53.55,
+          "pickRate": 1.48,
+          "banRate": 0.08,
           "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 51.72,
-          "pickRate": 1.44,
-          "banRate": 0.14,
+          "winRate": 50.22,
+          "pickRate": 1.24,
+          "banRate": 0.06,
           "strength": 5,
           "position": "Baron"
         }
@@ -4081,39 +3487,32 @@
       "heroId": "10049",
       "cnName": "希瓦娜",
       "byBracket": {
-        "0": {
-          "winRate": 53.2,
-          "pickRate": 8.2,
-          "banRate": 2.31,
-          "strength": 1,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 52.17,
-          "pickRate": 9.35,
-          "banRate": 5.32,
-          "strength": 1,
+          "winRate": 51.79,
+          "pickRate": 7.12,
+          "banRate": 3.21,
+          "strength": 2,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 52.09,
-          "pickRate": 9.45,
-          "banRate": 5.67,
-          "strength": 1,
+          "winRate": 51.57,
+          "pickRate": 7.16,
+          "banRate": 3.6,
+          "strength": 2,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.53,
-          "pickRate": 9.05,
-          "banRate": 6.26,
-          "strength": 1,
+          "winRate": 50.21,
+          "pickRate": 6.32,
+          "banRate": 2.94,
+          "strength": 2,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 52.07,
-          "pickRate": 8.39,
-          "banRate": 5.56,
-          "strength": 1,
+          "winRate": 48.22,
+          "pickRate": 5.89,
+          "banRate": 2.56,
+          "strength": 3,
           "position": "Jungle"
         }
       }
@@ -4125,30 +3524,30 @@
       "cnName": "辛吉德",
       "byBracket": {
         "1": {
-          "winRate": 51.33,
-          "pickRate": 1.41,
-          "banRate": 0.32,
+          "winRate": 51.99,
+          "pickRate": 1.05,
+          "banRate": 0.31,
           "strength": 5,
           "position": "Baron"
         },
         "2": {
-          "winRate": 51.58,
-          "pickRate": 1.42,
-          "banRate": 0.34,
+          "winRate": 52.38,
+          "pickRate": 1.09,
+          "banRate": 0.35,
           "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 51.85,
-          "pickRate": 1.76,
-          "banRate": 0.38,
+          "winRate": 53.13,
+          "pickRate": 1.48,
+          "banRate": 0.62,
           "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 52.03,
-          "pickRate": 2.39,
-          "banRate": 0.57,
+          "winRate": 52.48,
+          "pickRate": 2.49,
+          "banRate": 0.95,
           "strength": 5,
           "position": "Baron"
         }
@@ -4160,39 +3559,32 @@
       "heroId": "10125",
       "cnName": "赛恩",
       "byBracket": {
-        "0": {
-          "winRate": 51.71,
-          "pickRate": 3.25,
-          "banRate": 0.48,
+        "1": {
+          "winRate": 51.09,
+          "pickRate": 2.98,
+          "banRate": 0.54,
           "strength": 2,
           "position": "Baron"
         },
-        "1": {
-          "winRate": 52.43,
-          "pickRate": 6.74,
-          "banRate": 1.59,
-          "strength": 1,
-          "position": "Baron"
-        },
         "2": {
-          "winRate": 52.33,
-          "pickRate": 7.07,
-          "banRate": 1.72,
-          "strength": 1,
+          "winRate": 51.16,
+          "pickRate": 3.25,
+          "banRate": 0.6,
+          "strength": 2,
           "position": "Baron"
         },
         "3": {
-          "winRate": 51.59,
-          "pickRate": 8.79,
-          "banRate": 2.0,
-          "strength": 1,
+          "winRate": 50.72,
+          "pickRate": 4.44,
+          "banRate": 0.6,
+          "strength": 2,
           "position": "Baron"
         },
         "4": {
-          "winRate": 52.31,
-          "pickRate": 11.0,
-          "banRate": 3.02,
-          "strength": 0,
+          "winRate": 48.89,
+          "pickRate": 4.79,
+          "banRate": 0.62,
+          "strength": 2,
           "position": "Baron"
         }
       }
@@ -4203,40 +3595,69 @@
       "heroId": "10107",
       "cnName": "希维尔",
       "byBracket": {
-        "0": {
-          "winRate": 49.43,
-          "pickRate": 4.37,
-          "banRate": 0.11,
-          "strength": 3,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 50.09,
-          "pickRate": 4.63,
-          "banRate": 0.1,
+          "winRate": 50,
+          "pickRate": 4.08,
+          "banRate": 0.06,
           "strength": 3,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 50.13,
-          "pickRate": 4.69,
-          "banRate": 0.1,
+          "winRate": 49.76,
+          "pickRate": 4.14,
+          "banRate": 0.06,
           "strength": 3,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 50.39,
-          "pickRate": 4.73,
-          "banRate": 0.08,
+          "winRate": 48.76,
+          "pickRate": 4.22,
+          "banRate": 0.04,
           "strength": 3,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 47.9,
-          "pickRate": 5.47,
-          "banRate": 0.03,
+          "winRate": 48.85,
+          "pickRate": 4.42,
+          "banRate": 0.06,
           "strength": 3,
           "position": "Dragon"
+        }
+      }
+    },
+    {
+      "name": "Skarner",
+      "slug": "skarner",
+      "heroId": "10117",
+      "cnName": "斯卡纳",
+      "byBracket": {
+        "1": {
+          "winRate": 49.81,
+          "pickRate": 1.41,
+          "banRate": 1.5,
+          "strength": 5,
+          "position": "Jungle"
+        },
+        "2": {
+          "winRate": 50.04,
+          "pickRate": 1.3,
+          "banRate": 1.59,
+          "strength": 5,
+          "position": "Jungle"
+        },
+        "3": {
+          "winRate": 49.88,
+          "pickRate": 1.11,
+          "banRate": 1.13,
+          "strength": 5,
+          "position": "Jungle"
+        },
+        "4": {
+          "winRate": 48.01,
+          "pickRate": 1.56,
+          "banRate": 1.17,
+          "strength": 5,
+          "position": "Baron"
         }
       }
     },
@@ -4246,38 +3667,31 @@
       "heroId": "10138",
       "cnName": "斯莫德",
       "byBracket": {
-        "0": {
-          "winRate": 52.11,
-          "pickRate": 11.56,
-          "banRate": 8.79,
-          "strength": 1,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 51.99,
-          "pickRate": 12.52,
-          "banRate": 15.41,
+          "winRate": 52.26,
+          "pickRate": 11.15,
+          "banRate": 11.19,
           "strength": 1,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 52.02,
-          "pickRate": 12.7,
-          "banRate": 16.19,
+          "winRate": 52.34,
+          "pickRate": 11.97,
+          "banRate": 12.59,
           "strength": 1,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 52.34,
-          "pickRate": 15.62,
-          "banRate": 19.51,
+          "winRate": 52.43,
+          "pickRate": 16.19,
+          "banRate": 18.91,
           "strength": 0,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 53.09,
-          "pickRate": 19.78,
-          "banRate": 30.23,
+          "winRate": 51.81,
+          "pickRate": 18.33,
+          "banRate": 25.02,
           "strength": 0,
           "position": "Dragon"
         }
@@ -4289,39 +3703,32 @@
       "heroId": "10047",
       "cnName": "娑娜",
       "byBracket": {
-        "0": {
-          "winRate": 52.09,
-          "pickRate": 4.47,
-          "banRate": 0.31,
-          "strength": 5,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 51.71,
-          "pickRate": 3.44,
-          "banRate": 0.1,
+          "winRate": 53.95,
+          "pickRate": 3.68,
+          "banRate": 0.91,
           "strength": 5,
           "position": "Support"
         },
         "2": {
-          "winRate": 51.7,
-          "pickRate": 3.5,
-          "banRate": 0.09,
+          "winRate": 54.33,
+          "pickRate": 4.17,
+          "banRate": 1.1,
           "strength": 5,
           "position": "Support"
         },
         "3": {
-          "winRate": 51.68,
-          "pickRate": 4.13,
-          "banRate": 0.08,
-          "strength": 5,
+          "winRate": 53.96,
+          "pickRate": 8.05,
+          "banRate": 3.08,
+          "strength": 4,
           "position": "Support"
         },
         "4": {
-          "winRate": 56.04,
-          "pickRate": 5.64,
-          "banRate": 0.13,
-          "strength": 5,
+          "winRate": 55.69,
+          "pickRate": 11.81,
+          "banRate": 6.41,
+          "strength": 1,
           "position": "Support"
         }
       }
@@ -4332,38 +3739,31 @@
       "heroId": "10097",
       "cnName": "索拉卡",
       "byBracket": {
-        "0": {
-          "winRate": 51.5,
-          "pickRate": 4.46,
-          "banRate": 2.0,
-          "strength": 5,
-          "position": "Support"
-        },
         "1": {
-          "winRate": 51.36,
-          "pickRate": 4.88,
-          "banRate": 2.13,
+          "winRate": 51.46,
+          "pickRate": 5.03,
+          "banRate": 2,
           "strength": 5,
           "position": "Support"
         },
         "2": {
-          "winRate": 51.32,
-          "pickRate": 4.92,
-          "banRate": 2.16,
+          "winRate": 51.28,
+          "pickRate": 5.27,
+          "banRate": 2.13,
           "strength": 5,
           "position": "Support"
         },
         "3": {
-          "winRate": 50.44,
-          "pickRate": 5.03,
-          "banRate": 1.64,
+          "winRate": 51.15,
+          "pickRate": 6.13,
+          "banRate": 1.53,
           "strength": 5,
           "position": "Support"
         },
         "4": {
-          "winRate": 51.28,
-          "pickRate": 4.61,
-          "banRate": 0.99,
+          "winRate": 49.92,
+          "pickRate": 5.5,
+          "banRate": 1.09,
           "strength": 5,
           "position": "Support"
         }
@@ -4375,38 +3775,31 @@
       "heroId": "10126",
       "cnName": "斯维因",
       "byBracket": {
-        "0": {
-          "winRate": 51.23,
-          "pickRate": 2.86,
-          "banRate": 5.73,
+        "1": {
+          "winRate": 52.56,
+          "pickRate": 3.55,
+          "banRate": 6.09,
           "strength": 2,
           "position": "Mid"
         },
-        "1": {
-          "winRate": 50.95,
-          "pickRate": 3.74,
-          "banRate": 5.25,
-          "strength": 3,
-          "position": "Mid"
-        },
         "2": {
-          "winRate": 50.75,
-          "pickRate": 3.83,
-          "banRate": 5.13,
-          "strength": 3,
+          "winRate": 52.8,
+          "pickRate": 3.79,
+          "banRate": 6.31,
+          "strength": 2,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.96,
-          "pickRate": 4.24,
-          "banRate": 3.47,
+          "winRate": 54.11,
+          "pickRate": 5.21,
+          "banRate": 6.13,
           "strength": 3,
           "position": "Mid"
         },
         "4": {
-          "winRate": 53.95,
-          "pickRate": 4.45,
-          "banRate": 2.9,
+          "winRate": 53.45,
+          "pickRate": 4.75,
+          "banRate": 5.29,
           "strength": 2,
           "position": "Mid"
         }
@@ -4418,39 +3811,32 @@
       "heroId": "10024",
       "cnName": "辛德拉",
       "byBracket": {
-        "0": {
-          "winRate": 48.81,
-          "pickRate": 3.33,
-          "banRate": 2.52,
+        "1": {
+          "winRate": 48.26,
+          "pickRate": 3.53,
+          "banRate": 2.29,
           "strength": 5,
           "position": "Mid"
         },
-        "1": {
-          "winRate": 49.14,
-          "pickRate": 4.47,
-          "banRate": 3.03,
-          "strength": 4,
-          "position": "Mid"
-        },
         "2": {
-          "winRate": 49.09,
-          "pickRate": 4.55,
-          "banRate": 3.16,
-          "strength": 4,
+          "winRate": 47.96,
+          "pickRate": 3.56,
+          "banRate": 2.45,
+          "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 48.86,
-          "pickRate": 4.64,
-          "banRate": 2.83,
+          "winRate": 47.53,
+          "pickRate": 3.57,
+          "banRate": 1.83,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 51.27,
-          "pickRate": 4.94,
-          "banRate": 2.75,
-          "strength": 4,
+          "winRate": 46.84,
+          "pickRate": 4.52,
+          "banRate": 2.07,
+          "strength": 5,
           "position": "Mid"
         }
       }
@@ -4461,39 +3847,32 @@
       "heroId": "10146",
       "cnName": "塔莉垭",
       "byBracket": {
-        "0": {
-          "winRate": 49.3,
-          "pickRate": 3.24,
-          "banRate": 3.42,
-          "strength": 4,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.04,
-          "pickRate": 3.43,
-          "banRate": 26.46,
-          "strength": 2,
+          "winRate": 51.94,
+          "pickRate": 2.57,
+          "banRate": 5.63,
+          "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.34,
-          "pickRate": 3.44,
-          "banRate": 29.11,
-          "strength": 2,
+          "winRate": 52.27,
+          "pickRate": 2.64,
+          "banRate": 6.51,
+          "strength": 4,
           "position": "Mid"
         },
         "3": {
-          "winRate": 51.75,
-          "pickRate": 3.62,
-          "banRate": 39.75,
-          "strength": 1,
+          "winRate": 53.01,
+          "pickRate": 3.07,
+          "banRate": 8.28,
+          "strength": 4,
           "position": "Mid"
         },
         "4": {
-          "winRate": 53.13,
-          "pickRate": 3.94,
-          "banRate": 48.13,
-          "strength": 1,
+          "winRate": 52.83,
+          "pickRate": 3.33,
+          "banRate": 9.13,
+          "strength": 4,
           "position": "Mid"
         }
       }
@@ -4504,39 +3883,32 @@
       "heroId": "10128",
       "cnName": "泰隆",
       "byBracket": {
-        "0": {
-          "winRate": 48.24,
-          "pickRate": 1.42,
-          "banRate": 0.41,
-          "strength": 5,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 48.71,
-          "pickRate": 1.6,
-          "banRate": 0.28,
+          "winRate": 49.48,
+          "pickRate": 1.98,
+          "banRate": 0.68,
           "strength": 5,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 48.46,
-          "pickRate": 1.64,
-          "banRate": 0.28,
+          "winRate": 49.63,
+          "pickRate": 2.13,
+          "banRate": 0.8,
           "strength": 5,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 48.29,
-          "pickRate": 2.08,
-          "banRate": 0.32,
-          "strength": 5,
+          "winRate": 50.28,
+          "pickRate": 3.76,
+          "banRate": 2,
+          "strength": 4,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 49.91,
-          "pickRate": 3.07,
-          "banRate": 0.68,
-          "strength": 5,
+          "winRate": 51.74,
+          "pickRate": 6,
+          "banRate": 4.9,
+          "strength": 3,
           "position": "Jungle"
         }
       }
@@ -4547,38 +3919,31 @@
       "heroId": "10046",
       "cnName": "提莫",
       "byBracket": {
-        "0": {
-          "winRate": 54.4,
-          "pickRate": 4.96,
-          "banRate": 19.27,
-          "strength": 1,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 53.39,
-          "pickRate": 4.53,
-          "banRate": 22.33,
-          "strength": 2,
+          "winRate": 52.53,
+          "pickRate": 3.65,
+          "banRate": 20.71,
+          "strength": 3,
           "position": "Baron"
         },
         "2": {
-          "winRate": 53.37,
-          "pickRate": 4.38,
-          "banRate": 22.29,
-          "strength": 2,
+          "winRate": 52.41,
+          "pickRate": 3.37,
+          "banRate": 20.36,
+          "strength": 3,
           "position": "Baron"
         },
         "3": {
-          "winRate": 53.2,
-          "pickRate": 4.06,
-          "banRate": 15.59,
-          "strength": 2,
+          "winRate": 51.65,
+          "pickRate": 2.43,
+          "banRate": 8.86,
+          "strength": 3,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.19,
-          "pickRate": 3.07,
-          "banRate": 9.22,
+          "winRate": 49.43,
+          "pickRate": 2.28,
+          "banRate": 6.63,
           "strength": 4,
           "position": "Baron"
         }
@@ -4590,38 +3955,31 @@
       "heroId": "10130",
       "cnName": "锤石",
       "byBracket": {
-        "0": {
-          "winRate": 53.48,
-          "pickRate": 14.32,
-          "banRate": 8.43,
+        "1": {
+          "winRate": 50.6,
+          "pickRate": 15.29,
+          "banRate": 13.67,
           "strength": 1,
           "position": "Support"
         },
-        "1": {
-          "winRate": 52.02,
-          "pickRate": 15.61,
-          "banRate": 8.17,
-          "strength": 0,
-          "position": "Support"
-        },
         "2": {
-          "winRate": 52.05,
-          "pickRate": 15.61,
-          "banRate": 8.34,
-          "strength": 0,
+          "winRate": 50.55,
+          "pickRate": 15.6,
+          "banRate": 15.33,
+          "strength": 1,
           "position": "Support"
         },
         "3": {
-          "winRate": 52.66,
-          "pickRate": 16.11,
-          "banRate": 7.44,
+          "winRate": 51.47,
+          "pickRate": 15.64,
+          "banRate": 20.34,
           "strength": 0,
           "position": "Support"
         },
         "4": {
-          "winRate": 51.14,
-          "pickRate": 17.79,
-          "banRate": 6.61,
+          "winRate": 49.92,
+          "pickRate": 15.32,
+          "banRate": 15.87,
           "strength": 0,
           "position": "Support"
         }
@@ -4633,38 +3991,31 @@
       "heroId": "10045",
       "cnName": "崔丝塔娜",
       "byBracket": {
-        "0": {
-          "winRate": 46.57,
-          "pickRate": 7.29,
-          "banRate": 0.19,
-          "strength": 3,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 48.3,
-          "pickRate": 7.37,
-          "banRate": 0.14,
+          "winRate": 49.26,
+          "pickRate": 5.91,
+          "banRate": 0.09,
           "strength": 3,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 48.32,
-          "pickRate": 7.33,
-          "banRate": 0.14,
+          "winRate": 49.29,
+          "pickRate": 5.7,
+          "banRate": 0.09,
           "strength": 3,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 48.37,
-          "pickRate": 6.46,
-          "banRate": 0.08,
+          "winRate": 47.62,
+          "pickRate": 4.37,
+          "banRate": 0.03,
           "strength": 3,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 49.47,
-          "pickRate": 5.4,
-          "banRate": 0.05,
+          "winRate": 49.87,
+          "pickRate": 3.78,
+          "banRate": 0.07,
           "strength": 3,
           "position": "Dragon"
         }
@@ -4676,39 +4027,32 @@
       "heroId": "10015",
       "cnName": "泰达米尔",
       "byBracket": {
-        "0": {
-          "winRate": 50.17,
-          "pickRate": 4.7,
-          "banRate": 17.72,
-          "strength": 2,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.09,
-          "pickRate": 2.86,
-          "banRate": 25.0,
+          "winRate": 49.67,
+          "pickRate": 2.32,
+          "banRate": 25.86,
           "strength": 3,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.0,
-          "pickRate": 2.71,
-          "banRate": 25.53,
+          "winRate": 49.14,
+          "pickRate": 2.14,
+          "banRate": 26.2,
           "strength": 3,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.37,
-          "pickRate": 2.53,
-          "banRate": 18.61,
-          "strength": 3,
+          "winRate": 48.46,
+          "pickRate": 1.9,
+          "banRate": 12.99,
+          "strength": 4,
           "position": "Baron"
         },
         "4": {
-          "winRate": 49.43,
-          "pickRate": 2.35,
-          "banRate": 13.82,
-          "strength": 3,
+          "winRate": 49.73,
+          "pickRate": 2.06,
+          "banRate": 10.62,
+          "strength": 4,
           "position": "Baron"
         }
       }
@@ -4719,39 +4063,32 @@
       "heroId": "10025",
       "cnName": "崔斯特",
       "byBracket": {
-        "0": {
-          "winRate": 52.66,
-          "pickRate": 3.41,
-          "banRate": 0.22,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.72,
-          "pickRate": 4.93,
-          "banRate": 0.48,
-          "strength": 4,
-          "position": "Mid"
-        },
-        "2": {
-          "winRate": 51.73,
-          "pickRate": 5.06,
-          "banRate": 0.52,
-          "strength": 4,
-          "position": "Mid"
-        },
-        "3": {
-          "winRate": 52.2,
-          "pickRate": 6.08,
-          "banRate": 0.8,
+          "winRate": 52.7,
+          "pickRate": 6.31,
+          "banRate": 1.71,
           "strength": 3,
           "position": "Mid"
         },
-        "4": {
-          "winRate": 51.54,
-          "pickRate": 8.87,
-          "banRate": 1.89,
+        "2": {
+          "winRate": 52.71,
+          "pickRate": 6.79,
+          "banRate": 2.06,
+          "strength": 3,
+          "position": "Mid"
+        },
+        "3": {
+          "winRate": 53.29,
+          "pickRate": 9.79,
+          "banRate": 5.84,
           "strength": 2,
+          "position": "Mid"
+        },
+        "4": {
+          "winRate": 53.05,
+          "pickRate": 11.34,
+          "banRate": 11.33,
+          "strength": 1,
           "position": "Mid"
         }
       }
@@ -4762,38 +4099,31 @@
       "heroId": "10053",
       "cnName": "图奇",
       "byBracket": {
-        "0": {
-          "winRate": 47.73,
-          "pickRate": 3.05,
-          "banRate": 0.34,
-          "strength": 4,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 48.51,
-          "pickRate": 4.29,
-          "banRate": 0.28,
+          "winRate": 47.88,
+          "pickRate": 3.04,
+          "banRate": 0.16,
           "strength": 4,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 48.47,
-          "pickRate": 4.4,
-          "banRate": 0.28,
+          "winRate": 47.65,
+          "pickRate": 3.13,
+          "banRate": 0.17,
           "strength": 4,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 48.26,
-          "pickRate": 4.71,
-          "banRate": 0.22,
+          "winRate": 47.73,
+          "pickRate": 3.56,
+          "banRate": 0.13,
           "strength": 4,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 45.85,
-          "pickRate": 4.1,
-          "banRate": 0.16,
+          "winRate": 45.72,
+          "pickRate": 2.91,
+          "banRate": 0.06,
           "strength": 4,
           "position": "Dragon"
         }
@@ -4805,39 +4135,32 @@
       "heroId": "10102",
       "cnName": "厄加特",
       "byBracket": {
-        "0": {
-          "winRate": 50.14,
-          "pickRate": 3.97,
-          "banRate": 1.55,
-          "strength": 3,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.82,
-          "pickRate": 5.12,
-          "banRate": 3.32,
+          "winRate": 50.38,
+          "pickRate": 4.08,
+          "banRate": 2.22,
           "strength": 3,
           "position": "Baron"
         },
         "2": {
-          "winRate": 50.0,
-          "pickRate": 5.15,
-          "banRate": 3.47,
+          "winRate": 50.26,
+          "pickRate": 4.1,
+          "banRate": 2.27,
           "strength": 3,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.71,
-          "pickRate": 4.71,
-          "banRate": 2.31,
+          "winRate": 49.75,
+          "pickRate": 3.43,
+          "banRate": 0.76,
           "strength": 3,
           "position": "Baron"
         },
         "4": {
-          "winRate": 50.44,
-          "pickRate": 3.64,
-          "banRate": 1.25,
-          "strength": 3,
+          "winRate": 47.65,
+          "pickRate": 2.43,
+          "banRate": 0.48,
+          "strength": 5,
           "position": "Baron"
         }
       }
@@ -4848,38 +4171,31 @@
       "heroId": "10093",
       "cnName": "韦鲁斯",
       "byBracket": {
-        "0": {
-          "winRate": 51.49,
-          "pickRate": 4.87,
-          "banRate": 0.83,
-          "strength": 3,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 50.71,
-          "pickRate": 6.03,
-          "banRate": 0.42,
-          "strength": 3,
+          "winRate": 51.75,
+          "pickRate": 7.1,
+          "banRate": 0.65,
+          "strength": 2,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 50.43,
-          "pickRate": 6.11,
-          "banRate": 0.41,
-          "strength": 3,
+          "winRate": 51.74,
+          "pickRate": 7.46,
+          "banRate": 0.69,
+          "strength": 2,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 49.82,
-          "pickRate": 6.3,
-          "banRate": 0.32,
-          "strength": 3,
+          "winRate": 51.25,
+          "pickRate": 8.64,
+          "banRate": 0.59,
+          "strength": 2,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 49.29,
-          "pickRate": 6.33,
-          "banRate": 0.21,
+          "winRate": 51.2,
+          "pickRate": 8.59,
+          "banRate": 0.59,
           "strength": 3,
           "position": "Dragon"
         }
@@ -4891,39 +4207,32 @@
       "heroId": "10010",
       "cnName": "薇恩",
       "byBracket": {
-        "0": {
-          "winRate": 49.79,
-          "pickRate": 8.86,
-          "banRate": 9.17,
-          "strength": 1,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 49.81,
-          "pickRate": 9.5,
-          "banRate": 13.11,
-          "strength": 1,
+          "winRate": 50.28,
+          "pickRate": 9.56,
+          "banRate": 10.27,
+          "strength": 2,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 49.92,
-          "pickRate": 9.54,
-          "banRate": 13.8,
-          "strength": 1,
+          "winRate": 50.28,
+          "pickRate": 9.66,
+          "banRate": 11.09,
+          "strength": 2,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 49.97,
-          "pickRate": 10.48,
-          "banRate": 16.06,
-          "strength": 1,
+          "winRate": 50.24,
+          "pickRate": 10.41,
+          "banRate": 11.37,
+          "strength": 2,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 50.84,
-          "pickRate": 11.91,
-          "banRate": 19.45,
-          "strength": 1,
+          "winRate": 50.32,
+          "pickRate": 10.14,
+          "banRate": 10.63,
+          "strength": 2,
           "position": "Dragon"
         }
       }
@@ -4934,39 +4243,32 @@
       "heroId": "10122",
       "cnName": "维迦",
       "byBracket": {
-        "0": {
-          "winRate": 51.42,
-          "pickRate": 13.09,
-          "banRate": 11.53,
-          "strength": 1,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.05,
-          "pickRate": 11.24,
-          "banRate": 16.72,
-          "strength": 1,
+          "winRate": 47.98,
+          "pickRate": 7.4,
+          "banRate": 12.2,
+          "strength": 3,
           "position": "Mid"
         },
         "2": {
-          "winRate": 50.98,
-          "pickRate": 11.1,
-          "banRate": 17.2,
-          "strength": 1,
+          "winRate": 47.51,
+          "pickRate": 6.95,
+          "banRate": 12.07,
+          "strength": 3,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.45,
-          "pickRate": 10.11,
-          "banRate": 13.33,
-          "strength": 2,
+          "winRate": 46.02,
+          "pickRate": 4.91,
+          "banRate": 4.85,
+          "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 50.11,
-          "pickRate": 7.61,
-          "banRate": 9.43,
-          "strength": 3,
+          "winRate": 45.72,
+          "pickRate": 3.94,
+          "banRate": 3.81,
+          "strength": 5,
           "position": "Mid"
         }
       }
@@ -4977,38 +4279,31 @@
       "heroId": "10129",
       "cnName": "维克兹",
       "byBracket": {
-        "0": {
-          "winRate": 50.09,
-          "pickRate": 2.58,
-          "banRate": 0.55,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 49.31,
-          "pickRate": 3.72,
-          "banRate": 0.86,
-          "strength": 5,
+          "winRate": 50.84,
+          "pickRate": 3.57,
+          "banRate": 0.93,
+          "strength": 4,
           "position": "Mid"
         },
         "2": {
-          "winRate": 49.2,
-          "pickRate": 3.77,
-          "banRate": 0.9,
-          "strength": 5,
+          "winRate": 50.84,
+          "pickRate": 3.68,
+          "banRate": 1.03,
+          "strength": 4,
           "position": "Mid"
         },
         "3": {
-          "winRate": 48.89,
-          "pickRate": 3.38,
-          "banRate": 0.61,
+          "winRate": 49.8,
+          "pickRate": 2.89,
+          "banRate": 0.52,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 48.25,
-          "pickRate": 2.5,
-          "banRate": 0.38,
+          "winRate": 48.88,
+          "pickRate": 2.02,
+          "banRate": 0.35,
           "strength": 5,
           "position": "Mid"
         }
@@ -5020,38 +4315,31 @@
       "heroId": "10141",
       "cnName": "薇古丝",
       "byBracket": {
-        "0": {
-          "winRate": 51.64,
-          "pickRate": 2.28,
-          "banRate": 0.64,
-          "strength": 5,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 49.37,
-          "pickRate": 2.69,
-          "banRate": 0.77,
+          "winRate": 49.43,
+          "pickRate": 2.27,
+          "banRate": 0.53,
           "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 49.29,
-          "pickRate": 2.71,
-          "banRate": 0.8,
+          "winRate": 49.53,
+          "pickRate": 2.27,
+          "banRate": 0.56,
           "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 49.71,
-          "pickRate": 2.49,
-          "banRate": 0.62,
+          "winRate": 49.74,
+          "pickRate": 2.13,
+          "banRate": 0.36,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.13,
-          "pickRate": 2.39,
-          "banRate": 0.51,
+          "winRate": 52.03,
+          "pickRate": 2.24,
+          "banRate": 0.3,
           "strength": 5,
           "position": "Mid"
         }
@@ -5063,39 +4351,32 @@
       "heroId": "10050",
       "cnName": "蔚",
       "byBracket": {
-        "0": {
-          "winRate": 52.64,
-          "pickRate": 5.6,
-          "banRate": 0.46,
-          "strength": 3,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 51.45,
-          "pickRate": 8.04,
-          "banRate": 0.92,
-          "strength": 2,
+          "winRate": 51.38,
+          "pickRate": 10.95,
+          "banRate": 2.21,
+          "strength": 1,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 51.52,
-          "pickRate": 8.23,
-          "banRate": 0.98,
-          "strength": 2,
+          "winRate": 51.44,
+          "pickRate": 11.41,
+          "banRate": 2.6,
+          "strength": 1,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.48,
-          "pickRate": 8.4,
-          "banRate": 1.19,
-          "strength": 2,
+          "winRate": 51.4,
+          "pickRate": 12.43,
+          "banRate": 5.07,
+          "strength": 1,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 50.97,
-          "pickRate": 8.49,
-          "banRate": 1.5,
-          "strength": 2,
+          "winRate": 51.71,
+          "pickRate": 11.76,
+          "banRate": 6.88,
+          "strength": 1,
           "position": "Jungle"
         }
       }
@@ -5106,39 +4387,32 @@
       "heroId": "10057",
       "cnName": "佛耶戈",
       "byBracket": {
-        "0": {
-          "winRate": 50.19,
-          "pickRate": 8.56,
-          "banRate": 3.3,
-          "strength": 2,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 49.62,
-          "pickRate": 5.61,
-          "banRate": 5.66,
-          "strength": 3,
-          "position": "Jungle"
-        },
-        "2": {
-          "winRate": 49.27,
-          "pickRate": 5.45,
-          "banRate": 6.01,
-          "strength": 3,
-          "position": "Jungle"
-        },
-        "3": {
-          "winRate": 48.1,
-          "pickRate": 5.3,
-          "banRate": 6.72,
+          "winRate": 47.49,
+          "pickRate": 5.28,
+          "banRate": 3.1,
           "strength": 4,
           "position": "Jungle"
         },
+        "2": {
+          "winRate": 47.2,
+          "pickRate": 4.93,
+          "banRate": 3.22,
+          "strength": 4,
+          "position": "Jungle"
+        },
+        "3": {
+          "winRate": 46.95,
+          "pickRate": 4.67,
+          "banRate": 2.53,
+          "strength": 5,
+          "position": "Jungle"
+        },
         "4": {
-          "winRate": 48.98,
-          "pickRate": 6.61,
-          "banRate": 9.65,
-          "strength": 2,
+          "winRate": 46.84,
+          "pickRate": 5.55,
+          "banRate": 3.34,
+          "strength": 4,
           "position": "Jungle"
         }
       }
@@ -5149,39 +4423,32 @@
       "heroId": "10144",
       "cnName": "维克托",
       "byBracket": {
-        "0": {
-          "winRate": 54.39,
-          "pickRate": 3.21,
-          "banRate": 1.89,
-          "strength": 4,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.78,
-          "pickRate": 4.76,
-          "banRate": 1.28,
-          "strength": 3,
+          "winRate": 51.25,
+          "pickRate": 3.64,
+          "banRate": 0.76,
+          "strength": 4,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.66,
-          "pickRate": 4.85,
-          "banRate": 1.28,
-          "strength": 3,
+          "winRate": 50.93,
+          "pickRate": 3.62,
+          "banRate": 0.76,
+          "strength": 4,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.23,
-          "pickRate": 4.49,
-          "banRate": 0.81,
-          "strength": 4,
+          "winRate": 49.41,
+          "pickRate": 3.14,
+          "banRate": 0.39,
+          "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 50.66,
-          "pickRate": 4.46,
-          "banRate": 0.65,
-          "strength": 4,
+          "winRate": 48.48,
+          "pickRate": 3.08,
+          "banRate": 0.26,
+          "strength": 5,
           "position": "Mid"
         }
       }
@@ -5192,39 +4459,32 @@
       "heroId": "10090",
       "cnName": "弗拉基米尔",
       "byBracket": {
-        "0": {
-          "winRate": 52.18,
-          "pickRate": 3.44,
-          "banRate": 1.16,
-          "strength": 3,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 49.12,
-          "pickRate": 3.38,
-          "banRate": 1.72,
-          "strength": 4,
+          "winRate": 46.04,
+          "pickRate": 3.14,
+          "banRate": 0.94,
+          "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 49.11,
-          "pickRate": 3.39,
-          "banRate": 1.79,
-          "strength": 4,
+          "winRate": 46.15,
+          "pickRate": 3.08,
+          "banRate": 0.99,
+          "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 49.11,
-          "pickRate": 3.68,
-          "banRate": 1.61,
+          "winRate": 46.99,
+          "pickRate": 3.49,
+          "banRate": 0.83,
           "strength": 4,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.84,
-          "pickRate": 4.21,
-          "banRate": 1.27,
-          "strength": 3,
+          "winRate": 45.08,
+          "pickRate": 3.34,
+          "banRate": 0.68,
+          "strength": 4,
           "position": "Mid"
         }
       }
@@ -5235,39 +4495,32 @@
       "heroId": "10058",
       "cnName": "沃利贝尔",
       "byBracket": {
-        "0": {
-          "winRate": 52.12,
-          "pickRate": 4.13,
-          "banRate": 4.99,
-          "strength": 3,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.51,
-          "pickRate": 4.38,
-          "banRate": 3.48,
-          "strength": 3,
+          "winRate": 51.97,
+          "pickRate": 6.17,
+          "banRate": 5.74,
+          "strength": 2,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.58,
-          "pickRate": 4.42,
-          "banRate": 3.51,
+          "winRate": 51.77,
+          "pickRate": 6.51,
+          "banRate": 6.17,
           "strength": 2,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.5,
-          "pickRate": 4.27,
-          "banRate": 2.31,
-          "strength": 3,
+          "winRate": 51.46,
+          "pickRate": 7.28,
+          "banRate": 5.3,
+          "strength": 2,
           "position": "Baron"
         },
         "4": {
-          "winRate": 47.79,
-          "pickRate": 4.09,
-          "banRate": 1.42,
-          "strength": 3,
+          "winRate": 52.44,
+          "pickRate": 7.45,
+          "banRate": 4.02,
+          "strength": 1,
           "position": "Baron"
         }
       }
@@ -5278,39 +4531,32 @@
       "heroId": "10131",
       "cnName": "沃里克",
       "byBracket": {
-        "0": {
-          "winRate": 50.43,
-          "pickRate": 3.14,
-          "banRate": 0.31,
-          "strength": 4,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 51.77,
-          "pickRate": 3.39,
-          "banRate": 0.79,
-          "strength": 5,
+          "winRate": 54.39,
+          "pickRate": 3.33,
+          "banRate": 2.66,
+          "strength": 4,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 51.81,
-          "pickRate": 3.44,
-          "banRate": 0.85,
-          "strength": 5,
+          "winRate": 54.39,
+          "pickRate": 3.57,
+          "banRate": 3.17,
+          "strength": 4,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 51.81,
-          "pickRate": 3.74,
-          "banRate": 1.05,
-          "strength": 5,
+          "winRate": 54.6,
+          "pickRate": 4.48,
+          "banRate": 6.49,
+          "strength": 3,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 53.27,
-          "pickRate": 4.71,
-          "banRate": 1.49,
-          "strength": 4,
+          "winRate": 53.84,
+          "pickRate": 5.67,
+          "banRate": 8.78,
+          "strength": 2,
           "position": "Jungle"
         }
       }
@@ -5321,39 +4567,32 @@
       "heroId": "10009",
       "cnName": "孙悟空",
       "byBracket": {
-        "0": {
-          "winRate": 52.92,
-          "pickRate": 1.17,
-          "banRate": 0.48,
+        "1": {
+          "winRate": 52.59,
+          "pickRate": 1.53,
+          "banRate": 0.38,
           "strength": 5,
           "position": "Baron"
         },
-        "1": {
-          "winRate": 52.84,
-          "pickRate": 2.31,
-          "banRate": 0.56,
-          "strength": 4,
-          "position": "Baron"
-        },
         "2": {
-          "winRate": 52.86,
-          "pickRate": 2.43,
-          "banRate": 0.57,
-          "strength": 4,
+          "winRate": 52.56,
+          "pickRate": 1.66,
+          "banRate": 0.42,
+          "strength": 5,
           "position": "Baron"
         },
         "3": {
-          "winRate": 52.34,
-          "pickRate": 2.89,
-          "banRate": 0.57,
-          "strength": 4,
+          "winRate": 52.3,
+          "pickRate": 2.07,
+          "banRate": 0.37,
+          "strength": 5,
           "position": "Baron"
         },
         "4": {
-          "winRate": 51.64,
-          "pickRate": 2.96,
-          "banRate": 0.46,
-          "strength": 4,
+          "winRate": 50.09,
+          "pickRate": 2.21,
+          "banRate": 0.24,
+          "strength": 5,
           "position": "Baron"
         }
       }
@@ -5364,39 +4603,32 @@
       "heroId": "10051",
       "cnName": "霞",
       "byBracket": {
-        "0": {
-          "winRate": 50.6,
-          "pickRate": 5.34,
-          "banRate": 0.31,
-          "strength": 3,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 51.27,
-          "pickRate": 4.77,
-          "banRate": 0.22,
+          "winRate": 50.34,
+          "pickRate": 4.84,
+          "banRate": 0.16,
           "strength": 3,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 51.22,
-          "pickRate": 4.77,
-          "banRate": 0.23,
+          "winRate": 50.2,
+          "pickRate": 4.88,
+          "banRate": 0.17,
           "strength": 3,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 51.2,
-          "pickRate": 5.13,
-          "banRate": 0.24,
+          "winRate": 49.41,
+          "pickRate": 5.63,
+          "banRate": 0.22,
           "strength": 3,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 51.95,
-          "pickRate": 5.86,
-          "banRate": 0.16,
-          "strength": 2,
+          "winRate": 51.32,
+          "pickRate": 5.92,
+          "banRate": 0.15,
+          "strength": 3,
           "position": "Dragon"
         }
       }
@@ -5407,39 +4639,32 @@
       "heroId": "10016",
       "cnName": "赵信",
       "byBracket": {
-        "0": {
-          "winRate": 49.43,
-          "pickRate": 9.38,
-          "banRate": 1.59,
-          "strength": 1,
-          "position": "Jungle"
-        },
         "1": {
-          "winRate": 49.9,
-          "pickRate": 9.75,
-          "banRate": 1.7,
+          "winRate": 50.39,
+          "pickRate": 9.25,
+          "banRate": 1.51,
           "strength": 1,
           "position": "Jungle"
         },
         "2": {
-          "winRate": 49.92,
-          "pickRate": 9.71,
-          "banRate": 1.74,
+          "winRate": 50.41,
+          "pickRate": 9.16,
+          "banRate": 1.6,
           "strength": 1,
           "position": "Jungle"
         },
         "3": {
-          "winRate": 50.35,
-          "pickRate": 8.75,
-          "banRate": 1.48,
+          "winRate": 50.9,
+          "pickRate": 8.41,
+          "banRate": 1.24,
           "strength": 1,
           "position": "Jungle"
         },
         "4": {
-          "winRate": 49.89,
-          "pickRate": 9.0,
-          "banRate": 1.3,
-          "strength": 1,
+          "winRate": 51.46,
+          "pickRate": 9.31,
+          "banRate": 1.11,
+          "strength": 2,
           "position": "Jungle"
         }
       }
@@ -5450,39 +4675,32 @@
       "heroId": "10037",
       "cnName": "亚索",
       "byBracket": {
-        "0": {
-          "winRate": 48.99,
-          "pickRate": 16.87,
-          "banRate": 10.19,
-          "strength": 0,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 48.26,
-          "pickRate": 11.85,
-          "banRate": 14.31,
-          "strength": 0,
+          "winRate": 48.12,
+          "pickRate": 10.15,
+          "banRate": 11.05,
+          "strength": 1,
           "position": "Mid"
         },
         "2": {
-          "winRate": 48.32,
-          "pickRate": 11.51,
-          "banRate": 14.84,
+          "winRate": 47.97,
+          "pickRate": 9.5,
+          "banRate": 11.68,
           "strength": 1,
           "position": "Mid"
         },
         "3": {
-          "winRate": 48.53,
-          "pickRate": 10.97,
-          "banRate": 13.94,
-          "strength": 0,
+          "winRate": 48.03,
+          "pickRate": 8.06,
+          "banRate": 9.13,
+          "strength": 2,
           "position": "Mid"
         },
         "4": {
-          "winRate": 48.54,
-          "pickRate": 11.39,
-          "banRate": 16.41,
-          "strength": 0,
+          "winRate": 49.45,
+          "pickRate": 8.87,
+          "banRate": 12.41,
+          "strength": 1,
           "position": "Mid"
         }
       }
@@ -5493,40 +4711,69 @@
       "heroId": "10069",
       "cnName": "永恩",
       "byBracket": {
-        "0": {
-          "winRate": 50.19,
-          "pickRate": 5.98,
-          "banRate": 4.38,
-          "strength": 3,
-          "position": "Baron"
-        },
         "1": {
-          "winRate": 49.58,
-          "pickRate": 5.59,
-          "banRate": 5.27,
-          "strength": 3,
+          "winRate": 53.19,
+          "pickRate": 11.44,
+          "banRate": 10.03,
+          "strength": 1,
           "position": "Baron"
         },
         "2": {
-          "winRate": 49.48,
-          "pickRate": 5.59,
-          "banRate": 5.41,
-          "strength": 3,
+          "winRate": 53.25,
+          "pickRate": 11.79,
+          "banRate": 11.12,
+          "strength": 0,
           "position": "Baron"
         },
         "3": {
-          "winRate": 49.3,
-          "pickRate": 5.6,
-          "banRate": 4.28,
-          "strength": 3,
+          "winRate": 52.96,
+          "pickRate": 13.56,
+          "banRate": 12.53,
+          "strength": 0,
           "position": "Baron"
         },
         "4": {
-          "winRate": 50.14,
-          "pickRate": 7.01,
-          "banRate": 4.46,
-          "strength": 2,
+          "winRate": 52.49,
+          "pickRate": 15.77,
+          "banRate": 13.95,
+          "strength": 0,
           "position": "Baron"
+        }
+      }
+    },
+    {
+      "name": "Yunara",
+      "slug": "yunara",
+      "heroId": "10148",
+      "cnName": "芸阿娜",
+      "byBracket": {
+        "1": {
+          "winRate": 50.01,
+          "pickRate": 10.84,
+          "banRate": 15.92,
+          "strength": 1,
+          "position": "Dragon"
+        },
+        "2": {
+          "winRate": 49.96,
+          "pickRate": 10.65,
+          "banRate": 16.25,
+          "strength": 1,
+          "position": "Dragon"
+        },
+        "3": {
+          "winRate": 50.61,
+          "pickRate": 13.26,
+          "banRate": 15.85,
+          "strength": 0,
+          "position": "Dragon"
+        },
+        "4": {
+          "winRate": 51.26,
+          "pickRate": 15.16,
+          "banRate": 16.28,
+          "strength": 0,
+          "position": "Dragon"
         }
       }
     },
@@ -5536,39 +4783,32 @@
       "heroId": "10020",
       "cnName": "悠米",
       "byBracket": {
-        "0": {
-          "winRate": 47.84,
-          "pickRate": 8.17,
-          "banRate": 18.87,
+        "1": {
+          "winRate": 42.53,
+          "pickRate": 8.53,
+          "banRate": 30.86,
           "strength": 3,
           "position": "Support"
         },
-        "1": {
-          "winRate": 46.04,
-          "pickRate": 7.37,
-          "banRate": 27.29,
-          "strength": 4,
-          "position": "Support"
-        },
         "2": {
-          "winRate": 46.15,
-          "pickRate": 7.56,
-          "banRate": 28.51,
-          "strength": 4,
+          "winRate": 42.71,
+          "pickRate": 9.05,
+          "banRate": 34.06,
+          "strength": 3,
           "position": "Support"
         },
         "3": {
-          "winRate": 46.77,
-          "pickRate": 9.42,
-          "banRate": 33.64,
-          "strength": 2,
+          "winRate": 43.18,
+          "pickRate": 13.4,
+          "banRate": 46.14,
+          "strength": 1,
           "position": "Support"
         },
         "4": {
-          "winRate": 44.01,
-          "pickRate": 4.97,
-          "banRate": 23.57,
-          "strength": 4,
+          "winRate": 40.46,
+          "pickRate": 7.16,
+          "banRate": 32.29,
+          "strength": 2,
           "position": "Support"
         }
       }
@@ -5579,38 +4819,31 @@
       "heroId": "10039",
       "cnName": "劫",
       "byBracket": {
-        "0": {
-          "winRate": 50.05,
-          "pickRate": 4.4,
-          "banRate": 1.44,
-          "strength": 4,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 50.12,
-          "pickRate": 3.95,
-          "banRate": 1.98,
-          "strength": 4,
+          "winRate": 49.12,
+          "pickRate": 3.27,
+          "banRate": 1.5,
+          "strength": 5,
           "position": "Mid"
         },
         "2": {
-          "winRate": 50.43,
-          "pickRate": 3.93,
-          "banRate": 2.08,
-          "strength": 4,
+          "winRate": 49.01,
+          "pickRate": 3.25,
+          "banRate": 1.68,
+          "strength": 5,
           "position": "Mid"
         },
         "3": {
-          "winRate": 50.83,
-          "pickRate": 4.29,
-          "banRate": 2.61,
+          "winRate": 49.61,
+          "pickRate": 3.64,
+          "banRate": 2.01,
           "strength": 4,
           "position": "Mid"
         },
         "4": {
-          "winRate": 50.35,
-          "pickRate": 5.75,
-          "banRate": 5.01,
+          "winRate": 50.83,
+          "pickRate": 4.31,
+          "banRate": 2.86,
           "strength": 3,
           "position": "Mid"
         }
@@ -5622,37 +4855,30 @@
       "heroId": "10067",
       "cnName": "泽丽",
       "byBracket": {
-        "0": {
-          "winRate": 49.41,
-          "pickRate": 1.53,
-          "banRate": 0.07,
-          "strength": 4,
-          "position": "Dragon"
-        },
         "1": {
-          "winRate": 50.12,
-          "pickRate": 1.67,
+          "winRate": 49.62,
+          "pickRate": 1.08,
           "banRate": 0.02,
           "strength": 4,
           "position": "Dragon"
         },
         "2": {
-          "winRate": 50.05,
-          "pickRate": 1.71,
-          "banRate": 0.02,
+          "winRate": 49.47,
+          "pickRate": 1.12,
+          "banRate": 0.01,
           "strength": 4,
           "position": "Dragon"
         },
         "3": {
-          "winRate": 50.04,
-          "pickRate": 2.04,
-          "banRate": 0.02,
+          "winRate": 50.06,
+          "pickRate": 1.56,
+          "banRate": 0.01,
           "strength": 4,
           "position": "Dragon"
         },
         "4": {
-          "winRate": 50.57,
-          "pickRate": 2.69,
+          "winRate": 49.33,
+          "pickRate": 1.96,
           "banRate": 0.01,
           "strength": 4,
           "position": "Dragon"
@@ -5665,39 +4891,32 @@
       "heroId": "10087",
       "cnName": "吉格斯",
       "byBracket": {
-        "0": {
-          "winRate": 49.3,
-          "pickRate": 4.53,
-          "banRate": 2.5,
-          "strength": 4,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 49.19,
-          "pickRate": 7.17,
-          "banRate": 3.14,
-          "strength": 3,
-          "position": "Mid"
-        },
-        "2": {
-          "winRate": 49.22,
-          "pickRate": 7.4,
-          "banRate": 3.3,
-          "strength": 3,
-          "position": "Mid"
-        },
-        "3": {
-          "winRate": 49.04,
-          "pickRate": 7.38,
+          "winRate": 48.49,
+          "pickRate": 5.82,
           "banRate": 2.62,
           "strength": 3,
           "position": "Mid"
         },
-        "4": {
-          "winRate": 48.41,
-          "pickRate": 6.12,
-          "banRate": 1.17,
+        "2": {
+          "winRate": 48.51,
+          "pickRate": 5.95,
+          "banRate": 2.82,
           "strength": 3,
+          "position": "Mid"
+        },
+        "3": {
+          "winRate": 47.66,
+          "pickRate": 5.14,
+          "banRate": 1.43,
+          "strength": 4,
+          "position": "Mid"
+        },
+        "4": {
+          "winRate": 48.57,
+          "pickRate": 4.77,
+          "banRate": 0.94,
+          "strength": 4,
           "position": "Mid"
         }
       }
@@ -5708,31 +4927,24 @@
       "heroId": "10080",
       "cnName": "基兰",
       "byBracket": {
-        "1": {
-          "winRate": 51.23,
-          "pickRate": 1.49,
-          "banRate": 1.85,
-          "strength": 5,
-          "position": "Support"
-        },
         "2": {
-          "winRate": 51.31,
-          "pickRate": 1.54,
-          "banRate": 1.97,
+          "winRate": 51.56,
+          "pickRate": 1.06,
+          "banRate": 1.77,
           "strength": 5,
           "position": "Support"
         },
         "3": {
-          "winRate": 50.97,
-          "pickRate": 1.84,
-          "banRate": 2.66,
+          "winRate": 52.54,
+          "pickRate": 1.57,
+          "banRate": 3.2,
           "strength": 5,
           "position": "Support"
         },
         "4": {
-          "winRate": 52.31,
-          "pickRate": 2.43,
-          "banRate": 4.26,
+          "winRate": 51.01,
+          "pickRate": 2.24,
+          "banRate": 5.92,
           "strength": 5,
           "position": "Support"
         }
@@ -5744,38 +4956,17 @@
       "heroId": "10014",
       "cnName": "佐伊",
       "byBracket": {
-        "0": {
-          "winRate": 45.57,
-          "pickRate": 1.41,
-          "banRate": 0.3,
-          "strength": 5,
-          "position": "Mid"
-        },
-        "1": {
-          "winRate": 46.08,
-          "pickRate": 1.22,
-          "banRate": 0.4,
-          "strength": 5,
-          "position": "Mid"
-        },
-        "2": {
-          "winRate": 46.48,
-          "pickRate": 1.19,
-          "banRate": 0.43,
-          "strength": 5,
-          "position": "Mid"
-        },
         "3": {
-          "winRate": 48.99,
-          "pickRate": 1.23,
-          "banRate": 0.48,
+          "winRate": 53,
+          "pickRate": 1.14,
+          "banRate": 0.44,
           "strength": 5,
           "position": "Mid"
         },
         "4": {
-          "winRate": 52.48,
+          "winRate": 53.46,
           "pickRate": 1.61,
-          "banRate": 0.61,
+          "banRate": 0.92,
           "strength": 5,
           "position": "Mid"
         }
@@ -5787,39 +4978,32 @@
       "heroId": "10063",
       "cnName": "婕拉",
       "byBracket": {
-        "0": {
-          "winRate": 52.99,
-          "pickRate": 1.79,
-          "banRate": 17.96,
-          "strength": 2,
-          "position": "Mid"
-        },
         "1": {
-          "winRate": 51.59,
-          "pickRate": 2.71,
-          "banRate": 28.82,
-          "strength": 2,
+          "winRate": 52.26,
+          "pickRate": 2.89,
+          "banRate": 41,
+          "strength": 1,
           "position": "Mid"
         },
         "2": {
-          "winRate": 51.45,
-          "pickRate": 2.78,
-          "banRate": 29.53,
-          "strength": 2,
+          "winRate": 52.28,
+          "pickRate": 2.9,
+          "banRate": 43.34,
+          "strength": 1,
           "position": "Mid"
         },
         "3": {
-          "winRate": 51.13,
-          "pickRate": 2.87,
-          "banRate": 23.71,
-          "strength": 3,
+          "winRate": 50.6,
+          "pickRate": 2.64,
+          "banRate": 30.99,
+          "strength": 2,
           "position": "Mid"
         },
         "4": {
-          "winRate": 49.04,
-          "pickRate": 2.18,
-          "banRate": 15.12,
-          "strength": 4,
+          "winRate": 52.9,
+          "pickRate": 2.68,
+          "banRate": 22.55,
+          "strength": 2,
           "position": "Mid"
         }
       }
