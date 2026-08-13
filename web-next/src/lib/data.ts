@@ -56,6 +56,7 @@ export interface Champion {
     wr: number | null;
     nPlayers: number | null;
     tier: string;
+    wrOffset?: number;
     tierCss: string;
     tierRole: string;
     tierRoleCss: string;

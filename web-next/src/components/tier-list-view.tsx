@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
 import type { CnBracketKey } from "@/lib/cn";
-import { TIER_ORDER, tierClass, tierLabel, site } from "@/lib/data";
+import { TIER_ORDER, tierClass, tierLabel, site, siteNa } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 import { CURRENT_PATCH } from "@/lib/patch";
@@ -55,13 +55,17 @@ export function TierListView({
   const [role, setRole] = useState<string>("All roles");
   const [region, setRegion] = useState<Region>(initialRegion);
   // Pool depth: how many of each champion's top players feed the number.
-  // EU only. CN offers no such slider because its figures are Tencent's own
-  // bracket aggregates -- there are no per-player rows to re-slice. Global
-  // could support one in principle, since both halves are our own top-50
-  // scrape, but the blend carries only EU's pool slices, so re-slicing would
-  // silently rank a 5-deep EU number against a full-pool NA one.
+  // EU and NA, which are both our own top-50 scrape and both export the same
+  // depth slices. CN offers no slider because its figures are Tencent's own
+  // bracket aggregates -- there are no per-player rows to re-slice. Global is
+  // excluded for a different reason: the blend carries only EU's pool slices,
+  // so re-slicing would rank a 5-deep EU number against a full-pool NA one.
   const [poolDepth, setPoolDepth] = useState<"all" | "25" | "10" | "5">("all");
   const [cnBracket, setCnBracket] = useState<CnBracketKey>(initialCnBracket ?? cnMeta.defaultBracket);
+  // Win rates ship centred so 50% reads as "the average champion". The raw
+  // number is what the players actually posted, and people keep asking for it,
+  // so it is a toggle rather than a rewrite of the scale.
+  const [showRaw, setShowRaw] = useState(false);
 
   const isCN = region === "CN";
   const isGlobal = region === "Global";
@@ -76,6 +80,20 @@ export function TierListView({
     : isGlobal ? globalRoles
     : isNA ? naRoles
     : roles;
+  const depthActive = (region === "EU" || region === "NA") && poolDepth !== "all";
+
+  // Undoing the centring needs the offset that was APPLIED, and that differs by
+  // region and by pool depth: a shallower pool is the best players of the best
+  // players, so it was centred harder (-9.5 at full board, -12.0 at top 5).
+  // Each depth therefore carries its own offset in the data.
+  const offsetFor = (c: Champion): number => {
+    if (isCN) return 0;                       // Tencent publishes raw already
+    if (depthActive) return c.pools?.[poolDepth]?.wrOffset ?? 0;
+    if (isGlobal) return ((site.wrOffset ?? 0) + (siteNa.wrOffset ?? 0)) / 2;
+    return (isNA ? siteNa.wrOffset : site.wrOffset) ?? 0;
+  };
+  const shownWr = (c: Champion): number => (showRaw ? c.wr - offsetFor(c) : c.wr);
+
   const activeCnBracket = cnMeta.brackets.find((option) => option.key === cnBracket)
     ?? cnMeta.brackets.find((option) => option.key === cnMeta.defaultBracket)!;
   const options = useMemo(() => ["All roles", ...activeRoles], [activeRoles]);
@@ -105,7 +123,6 @@ export function TierListView({
     // the RANKING, not just the printed number. A champion with no slice at
     // this depth (fewer counted players than the depth asks for) keeps its
     // full-pool values rather than vanishing.
-    const depthActive = region === "EU" && poolDepth !== "all";
     const view = (c: Champion) => {
       if (!depthActive) return c;
       const slice = c.pools?.[poolDepth];
@@ -122,7 +139,7 @@ export function TierListView({
       (map[tierOf(c)] ??= []).push(c);
     }
     return map;
-  }, [role, activeChampions, options, region, poolDepth]);
+  }, [role, activeChampions, options, region, poolDepth, depthActive]);
 
   return (
     <div>
@@ -131,9 +148,30 @@ export function TierListView({
         <RegionToggle region={region} onChange={(next) => { setRegion(next); setRole("All roles"); }} regions={["CN", "EU", "NA", "Global"]} />
       </div>
 
-      <div className="mb-5">
+      <div className="mb-5 flex flex-wrap items-center gap-3">
         <RegionUpdated region={region} euDate={site.collectedOn} cnDate={cnMeta.date} naDate={naUpdated} />
+        {/* CN is excluded: Tencent publishes raw rates, so there is no centring
+            to undo and the button would be a no-op that implies otherwise. */}
+        {!isCN && (
+          <button
+            type="button"
+            aria-pressed={showRaw}
+            onClick={() => setShowRaw((v) => !v)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+              showRaw ? "bg-accent text-[#07121f]" : "glass glass-hover text-muted"
+            }`}
+          >
+            {showRaw ? "Showing raw win rates" : "Show raw win rates"}
+          </button>
+        )}
       </div>
+      {showRaw && !isCN && (
+        <p className="mb-5 text-xs leading-relaxed text-faint">
+          Raw numbers: what these players actually posted, un-centred. A champion&rsquo;s top mains
+          win far more than half their games, so the whole field sits high and the tiers below still
+          come from the centred scale. Order and tier are unchanged either way.
+        </p>
+      )}
 
       {activeChampions.length === 0 ? (
         <RegionComingSoon region={region} />
@@ -191,7 +229,7 @@ export function TierListView({
             </p>
           )}
 
-          {region === "EU" && (
+          {(region === "EU" || region === "NA") && (
             <div className="mb-5">
               <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="Player pool depth">
                 <span className="text-xs font-bold uppercase tracking-wide text-faint">Player pool</span>
@@ -313,8 +351,8 @@ export function TierListView({
                           href={`/champions/${c.slug}`}
                           className="group flex w-[46px] flex-col items-center text-center transition sm:w-[68px]"
                           title={changed && mv
-                            ? `${c.name} · ${c.wr.toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : isCN ? "previous CN scrape" : `since ${site.movementSince ?? "the previous collection"}`}${!isCN && !isGlobal && c.prevTier ? ` ${c.prevTier} → ${c.tier},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
-                            : `${c.name} · ${c.wr.toFixed(1)}% WR`}
+                            ? `${c.name} · ${shownWr(c).toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : isCN ? "previous CN scrape" : `since ${site.movementSince ?? "the previous collection"}`}${!isCN && !isGlobal && c.prevTier ? ` ${c.prevTier} → ${c.tier},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
+                            : `${c.name} · ${shownWr(c).toFixed(1)}% WR`}
                         >
                           <span className="relative transition group-hover:-translate-y-0.5">
                             <ChampionAvatar champion={c} size={52} mobileSize={38} />
@@ -331,7 +369,7 @@ export function TierListView({
                             {c.name}
                           </span>
                           <span className="text-[0.7rem] font-semibold text-accent">
-                            {c.wr.toFixed(1)}%
+                            {shownWr(c).toFixed(1)}%
                             {mv && (changed || (!isCN && !isGlobal && Math.abs(mv.delta) >= 0.5)) && (
                               <span className={`ml-1 ${mv.delta > 0 ? "text-emerald-400" : "text-bad"}`}>
                                 {mv.delta > 0 ? "+" : ""}{mv.delta}

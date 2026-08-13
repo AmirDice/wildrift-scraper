@@ -184,6 +184,11 @@ def build() -> dict:
             r_label, r_css = assign_tier_relative(wr_raw, depth_role_pools[r["role"]])
             pools_by_champ.setdefault(str(r["champion"]), {})[str(depth)] = {
                 "wr": _f(wr_raw + offset),
+                # The offset this depth was centred with, so the UI can undo it
+                # and show the raw number. Each depth has its own (shallower
+                # pools average higher), and without it stored a centred value
+                # cannot be turned back into a raw one: the raw mean is gone.
+                "wrOffset": offset,
                 "nPlayers": _i(r.get("n_players")),
                 "tier": label, "tierCss": css,
                 "tierRole": r_label, "tierRoleCss": r_css,
