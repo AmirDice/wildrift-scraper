@@ -89,7 +89,7 @@ export function UsageTables() {
       />
 
       {(bestKeystone || bestItem || bestMinor) && (
-        <div className="mb-4 grid gap-3 sm:grid-cols-3">
+        <div className="mb-4 grid gap-3 sm:grid-cols-3 [&>*]:min-w-0">
           {[["Best keystone", bestKeystone], ["Best minor rune", bestMinor],
             ["Best item", bestItem]].map(([label, row]) => {
             const r = row as Row | undefined;
@@ -116,7 +116,7 @@ export function UsageTables() {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
         <Card className="p-5">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
             Rune trees by use

@@ -93,7 +93,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
         linkLabel="Browse the boards"
       />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
         <Card className="p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             Most equipped items in high elo
@@ -143,7 +143,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
         </Card>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
         {extremes.map(({ label, key, dir, fmt }) => {
           const hit = extreme(champs, key, dir);
           if (!hit) return null;
@@ -168,7 +168,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
         })}
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
         <Card className="p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             The Legendary tax
@@ -181,10 +181,10 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
           <div className="mt-3 space-y-1">
             {taxRows.slice(0, 5).map(([slug, c]) => (
               <div key={slug} className="flex items-center justify-between text-sm">
-                <Link href={`/leaderboard?champion=${slug}`} className="truncate text-muted hover:text-text">
+                <Link href={`/leaderboard?champion=${slug}`} className="min-w-0 truncate text-muted hover:text-text">
                   {c.name}
                 </Link>
-                <span className={`tabular-nums ${Number(c.legendaryTax) >= 0 ? "text-accent" : "text-bad"}`}>
+                <span className={`shrink-0 tabular-nums ${Number(c.legendaryTax) >= 0 ? "text-accent" : "text-bad"}`}>
                   {Number(c.legendaryTax) >= 0 ? "+" : ""}{Number(c.legendaryTax).toFixed(1)}pp
                   <span className="ml-1.5 text-[0.65rem] text-faint">{c.legendaryTaxN}p</span>
                 </span>
@@ -200,10 +200,10 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
               <div className="mt-2 space-y-1">
                 {taxRows.slice(5).map(([slug, c]) => (
                   <div key={slug} className="flex items-center justify-between text-sm">
-                    <Link href={`/leaderboard?champion=${slug}`} className="truncate text-muted hover:text-text">
+                    <Link href={`/leaderboard?champion=${slug}`} className="min-w-0 truncate text-muted hover:text-text">
                       {c.name}
                     </Link>
-                    <span className={`tabular-nums ${Number(c.legendaryTax) >= 0 ? "text-accent" : "text-bad"}`}>
+                    <span className={`shrink-0 tabular-nums ${Number(c.legendaryTax) >= 0 ? "text-accent" : "text-bad"}`}>
                       {Number(c.legendaryTax) >= 0 ? "+" : ""}{Number(c.legendaryTax).toFixed(1)}pp
                       <span className="ml-1.5 text-[0.65rem] text-faint">{c.legendaryTaxN}p</span>
                     </span>
@@ -236,7 +236,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
         </Card>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
         <Card className="p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             Most stacked boards
@@ -248,7 +248,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
           <div className="mt-3 space-y-1">
             {stacked.map(([slug, c]) => (
               <div key={slug} className="flex items-center justify-between gap-2 text-sm">
-                <Link href={`/leaderboard?champion=${slug}`} className="truncate text-muted hover:text-text">
+                <Link href={`/leaderboard?champion=${slug}`} className="min-w-0 truncate text-muted hover:text-text">
                   {c.name}
                 </Link>
                 <span className="flex shrink-0 items-center gap-1.5 text-xs tabular-nums">
