@@ -165,7 +165,18 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // ability changes (Lee Sin's whole kit among them), and ability formulas
   // were never re-extracted after the 7.2a / 7.2b text edits either. A v21
   // entry for any affected champion was reasoned from pre-7.2 numbers.
-  return `build:v22:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v23: patch 7.2c (2026-08-12) changed nine champions -- Cho'Gath, Jinx,
+  // Nilah, Leona, Rumble, Nasus, Ryze, Warwick, Kog'Maw -- and ability
+  // formulas were re-extracted for all nine, so a v22 entry for any of them
+  // was reasoned from 7.2b damage, cooldowns and base stats. Warwick's ult
+  // alone moved from 125/300/475 on 80/70/60 to 100/275/450 on 100/90/80.
+  //
+  // The whole namespace goes, not just those nine, because the key is a hash
+  // of the request shape and the stored value records no champion: there is
+  // nothing to match on, so a targeted purge is not possible. Counter builds
+  // would need it anyway, since one names enemies rather than the champion
+  // being built. 270 entries retired.
+  return `build:v23:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
