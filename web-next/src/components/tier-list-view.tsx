@@ -10,6 +10,8 @@ import { RegionToggle, RegionComingSoon, type Region } from "@/components/region
 import { CURRENT_PATCH } from "@/lib/patch";
 import { moverBySlug } from "@/lib/movers";
 import { RegionUpdated } from "@/components/tierlist-updated";
+import { PatchLagNotice } from "@/components/patch-lag-notice";
+import type { Freshness } from "@/lib/patch-freshness";
 
 export function TierListView({
   champions,
@@ -17,6 +19,8 @@ export function TierListView({
   naChampions,
   naRoles,
   naUpdated,
+  euFreshness = null,
+  naFreshness = null,
   cnChampionsByBracket,
   cnRolesByBracket,
   cnMeta,
@@ -30,6 +34,10 @@ export function TierListView({
   naChampions: Champion[];
   naRoles: string[];
   naUpdated?: string | null;
+  /** Whether each board was collected before the current patch. Computed on
+   *  the server so the 38KB change summary never reaches the client. */
+  euFreshness?: Freshness | null;
+  naFreshness?: Freshness | null;
   cnChampionsByBracket: Record<CnBracketKey, Champion[]>;
   cnRolesByBracket: Record<CnBracketKey, string[]>;
   cnMeta: {
@@ -82,6 +90,16 @@ export function TierListView({
     : isNA ? naRoles
     : roles;
   const depthActive = !isCN && poolDepth !== "all";
+
+  // CN is excluded: those are Tencent's own daily figures on China's own
+  // patch cycle. Global reports the STALER of its two halves, because a
+  // blend is only as current as the oldest board in it.
+  const activeFreshness = isCN ? null
+    : isNA ? naFreshness
+    : isGlobal
+      ? [euFreshness, naFreshness].filter((f): f is Freshness => Boolean(f?.stale))
+          .sort((a, b) => b.daysBefore - a.daysBefore)[0] ?? null
+      : euFreshness;
 
   // Undoing the centring needs the offset that was APPLIED, and that differs by
   // region and by pool depth: a shallower pool is the best players of the best
@@ -172,6 +190,10 @@ export function TierListView({
           win far more than half their games, so the whole field sits high and the tiers below still
           come from the centred scale. Order and tier are unchanged either way.
         </p>
+      )}
+
+      {activeFreshness?.stale && (
+        <PatchLagNotice freshness={activeFreshness} className="mb-5" />
       )}
 
       {activeChampions.length === 0 ? (

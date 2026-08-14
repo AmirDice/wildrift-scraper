@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site, getChampions, regionBoard } from "@/lib/data";
+import { freshness } from "@/lib/patch-freshness";
 import { getCnChampionsByBracket, getCnRolesByBracket, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
@@ -66,6 +67,8 @@ export default function TierListPage() {
           naChampions={regionBoard("NA").champions}
           naRoles={regionBoard("NA").roles}
           naUpdated={regionBoard("NA").collectedOn}
+          euFreshness={freshness(site.collectedOn)}
+          naFreshness={freshness(regionBoard("NA").collectedOn)}
           roles={site.roles}
           cnChampionsByBracket={getCnChampionsByBracket()}
           cnRolesByBracket={getCnRolesByBracket()}
