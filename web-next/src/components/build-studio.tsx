@@ -22,6 +22,7 @@ import { track } from "@/components/share-build";
 import { CounterBuilderCta, GenerateBuildCta } from "@/components/tool-crosslinks";
 import { BuildTour, type TourStep } from "@/components/build-tour";
 import { getChampions, pendingChampions } from "@/lib/data";
+import engineData from "@/data/engine.json";
 import { recommendedBuildsLive } from "@/lib/flags";
 
 /* eslint-disable @next/next/no-img-element */
@@ -81,8 +82,39 @@ const ARCHETYPE_LABEL: Record<string, string> = {
   weaver: "Weaver", onhitcaster: "On-hit caster",
 };
 
-export function BuildStudio({ initialChampion, initialTab }: {
+/** Rebuild a Lab seed from the flat item slugs and rune names an album build
+ *  stores. The Lab wants structure (boots slot, rune tree, keystone vs minor);
+ *  the album deliberately stores the flat truth, so the structure is
+ *  reconstructed here from the engine's own item and rune metadata. */
+function labSeedFromFlat(itemSlugs: string[], runeNames: string[]): LabSeed {
+  const eng = engineData as unknown as {
+    items?: Record<string, { category?: string }>;
+    runes?: Record<string, { type?: string | number; tree?: string }>;
+  };
+  const boots = itemSlugs.find((slug) => eng.items?.[slug]?.category === "Boots") ?? "";
+  const items = itemSlugs.filter((slug) => slug !== boots);
+  const slugOf = (n: string) => n.toLowerCase().replace(/['’:.]/g, "").replace(/\s+/g, "-");
+  // engine.json keys runes by display NAME ("Bone Plating"), with the slug
+  // only as a field, so the name lookup comes first and the slug is a fallback.
+  const entries = runeNames.map((n) => ({ name: n, meta: eng.runes?.[n] ?? eng.runes?.[slugOf(n)] }));
+  const keystone = entries.find((e) => e.meta?.type === "Keystone")?.name ?? "";
+  const minorsAll = entries.filter((e) => e.meta && e.meta.type !== "Keystone");
+  const byTree: Record<string, string[]> = {};
+  for (const e of minorsAll) (byTree[e.meta?.tree || "?"] ??= []).push(e.name);
+  const primary = Object.entries(byTree).sort((a, b) => b[1].length - a[1].length)[0];
+  const tree = primary && primary[0] !== "?" ? primary[0] : "Precision";
+  const minors = (primary?.[1] ?? []).slice(0, 3);
+  const flex = minorsAll.map((e) => e.name).find((n) => !minors.includes(n)) ?? "";
+  return {
+    items, boots,
+    runes: { keystone, tree, minors: [minors[0] ?? "", minors[1] ?? "", minors[2] ?? ""], flex },
+  };
+}
+
+export function BuildStudio({ initialChampion, initialTab, initialLab }: {
   initialChampion?: string; initialTab?: Tab;
+  /** A flat loadout to open in the Custom Build Lab, from an album build. */
+  initialLab?: { items: string[]; runes: string[] };
 } = {}) {
   const champs = useMemo(() => {
     const built = new Map(buildChampions().map((entry) => [entry.slug, entry]));
@@ -118,7 +150,8 @@ export function BuildStudio({ initialChampion, initialTab }: {
   // A generated build handed to the Custom Build Lab so it can be run through
   // the damage check. The counter bumps on every send, and keys the Lab, so
   // sending the SAME build twice still reopens it rather than doing nothing.
-  const [labSeed, setLabSeed] = useState<{ id: number; state: LabSeed } | null>(null);
+  const [labSeed, setLabSeed] = useState<{ id: number; state: LabSeed } | null>(
+    () => (initialLab ? { id: 0, state: labSeedFromFlat(initialLab.items, initialLab.runes) } : null));
   const [champQuery, setChampQuery] = useState("");
 
   const rec = champs.find((c) => c.slug === slug) ?? champs[0];

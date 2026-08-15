@@ -39,9 +39,13 @@ const SLOT_LABEL: Record<string, string> = { P: "Passive", "1": "Q", "2": "W", "
  * has bought nothing is at least a real, explainable scenario, whereas dressing
  * Ekko as a tank invents a matchup and then reports a confident number about it.
  */
-function enemyBuild(name: string): string[] {
+function enemyVariants(name: string): string[] {
+  return Object.keys(BUILDS[name]?.builds ?? {});
+}
+
+function enemyBuild(name: string, variant?: string): string[] {
   const variants = BUILDS[name]?.builds ?? {};
-  const chosen = variants["standard"] ?? Object.values(variants)[0];
+  const chosen = (variant && variants[variant]) ?? variants["standard"] ?? Object.values(variants)[0];
   if (!chosen) return [];
   const items = (chosen.coreBuild ?? []).map((i) => i.slug).filter(Boolean);
   const boots = chosen.boots?.slug;
@@ -80,6 +84,7 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
   const [enemy, setEnemy] = useState("Garen");
   const [dummyHp, setDummyHp] = useState(4000);
   const [engage, setEngage] = useState<Engage>("same");
+  const [enemyVariant, setEnemyVariant] = useState("standard");
   const [phase, setPhase] = useState<Phase>("idle");
   const [shown, setShown] = useState<DuelResult | null>(null);
   const [shownMutual, setShownMutual] = useState<MutualDuelResult | null>(null);
@@ -90,11 +95,16 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
     () => Object.fromEntries(roster.map((c) => [c.name, c.icon])) as Record<string, string>,
     [roster]);
 
+  const variants = useMemo(() => enemyVariants(enemy), [enemy]);
+  const activeVariant = variants.includes(enemyVariant)
+    ? enemyVariant
+    : variants.includes("standard") ? "standard" : variants[0] ?? "standard";
+
   const target: DuelTarget | null = useMemo(
     () => (mode === "dummy"
       ? dummyTarget(dummyHp)
-      : championTarget(enemy, level, enemyBuild(enemy)) ?? dummyTarget(dummyHp)),
-    [mode, dummyHp, enemy, level]);
+      : championTarget(enemy, level, enemyBuild(enemy, activeVariant)) ?? dummyTarget(dummyHp)),
+    [mode, dummyHp, enemy, level, activeVariant]);
 
   const result = useMemo(() => {
     if (!target || !itemSlugs.length) return null;
@@ -109,16 +119,16 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
   const mutual = useMemo(() => {
     if (mode !== "champion" || enemyLocked || !itemSlugs.length) return null;
     const head = engage === "you" ? ENGAGE_HEAD_START : engage === "them" ? -ENGAGE_HEAD_START : 0;
-    return mutualDuel(name, itemSlugs, runeNames, enemy, enemyBuild(enemy), [],
+    return mutualDuel(name, itemSlugs, runeNames, enemy, enemyBuild(enemy, activeVariant), [],
                       level, 20, scaled, head);
-  }, [mode, enemyLocked, name, itemSlugs, runeNames, enemy, level, scaled, engage]);
+  }, [mode, enemyLocked, name, itemSlugs, runeNames, enemy, level, scaled, engage, activeVariant]);
 
   // Any change to the build, level, scaling or opponent invalidates the last
   // fight, so the numbers on screen always belong to the setup above them.
   // Tracked as derived state rather than an effect: setting state inside an
   // effect just to follow a prop causes a second render pass for something the
   // current render already knows.
-  const setupKey = [name, mode, enemy, dummyHp, level, scaled, engage,
+  const setupKey = [name, mode, enemy, dummyHp, level, scaled, engage, activeVariant,
                     itemSlugs.join(","), runeNames.join(",")].join("|");
   const [lastSetup, setLastSetup] = useState(setupKey);
   if (lastSetup !== setupKey) {
@@ -179,16 +189,27 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
       </summary>
       <div className="p-4">
 
-        <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <Fighter name={name} icon={iconOf[name]} level={level} mine />
-          <VersusMark active={phase === "fighting"} />
-          {mode === "dummy" ? (
-            <DummyFighter hp={target?.hp ?? dummyHp} />
-          ) : (
-            <Fighter name={enemy} icon={iconOf[enemy]} level={level}
-                     hp={target?.hp} armor={target?.armor} mr={target?.mr} />
+        <div className="relative mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <div className={phase === "fighting" ? "motion-safe:animate-[duelLungeL_.55s_ease-in-out_infinite]" : ""}>
+            <Fighter name={name} icon={iconOf[name]} level={level} mine />
+          </div>
+          <div className="relative">
+            <VersusMark active={phase === "fighting"} />
+            {phase === "fighting" && <ClashSpark />}
+          </div>
+          <div className={phase === "fighting" ? "motion-safe:animate-[duelLungeR_.55s_ease-in-out_infinite_.12s]" : ""}>
+            {mode === "dummy" ? (
+              <DummyFighter hp={target?.hp ?? dummyHp} />
+            ) : (
+              <Fighter name={enemy} icon={iconOf[enemy]} level={level}
+                       hp={target?.hp} armor={target?.armor} mr={target?.mr} />
+            )}
+          </div>
+          {phase === "done" && (
+            <VerdictStamp mutual={shownMutual} killed={shown?.ttk != null} dummy={mode === "dummy"} />
           )}
         </div>
+        <DuelTheatreStyles />
 
         <div className="mt-3 flex justify-center gap-1.5">
           <ModeToggle active={mode === "champion"} onClick={() => setMode("champion")}>
@@ -210,7 +231,15 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
             >
               {roster.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
             </select>
-            <span className="text-xs text-faint">on their recommended build</span>
+            <span className="text-xs text-faint">on their</span>
+            <select
+              value={activeVariant} onChange={(e) => setEnemyVariant(e.target.value)}
+              aria-label="Enemy build variant"
+              className="rounded-lg border border-line bg-[#0e1322] px-2 py-1.5 text-xs text-text"
+            >
+              {variants.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+            <span className="text-xs text-faint">build</span>
             {!enemyLocked && (
               <div className="flex w-full flex-wrap items-center justify-center gap-1.5 pt-1">
                 <span className="text-xs uppercase tracking-wide text-faint">Who engages</span>
@@ -354,6 +383,50 @@ function DummyFighter({ hp }: { hp: number }) {
       <p className="text-[0.65rem] tabular-nums text-faint">
         {hp.toLocaleString()} hp · no resistances
       </p>
+    </div>
+  );
+}
+
+/** The keyframes the fight theatre uses. Scoped here rather than globals.css
+ *  because nothing outside this panel lunges, clashes or stamps. */
+function DuelTheatreStyles() {
+  return (
+    <style>{`
+      @keyframes duelLungeL { 0%,100% { transform: translateX(0) } 35% { transform: translateX(14px) rotate(2deg) } 45% { transform: translateX(10px) } }
+      @keyframes duelLungeR { 0%,100% { transform: translateX(0) } 35% { transform: translateX(-14px) rotate(-2deg) } 45% { transform: translateX(-10px) } }
+      @keyframes clashSpark { 0% { transform: scale(.4) rotate(0deg); opacity: 0 } 35% { transform: scale(1.25) rotate(18deg); opacity: 1 } 100% { transform: scale(.5) rotate(40deg); opacity: 0 } }
+      @keyframes stampIn { 0% { transform: scale(2.4) rotate(-14deg); opacity: 0 } 55% { transform: scale(.92) rotate(-7deg); opacity: 1 } 75% { transform: scale(1.06) rotate(-8deg) } 100% { transform: scale(1) rotate(-8deg); opacity: 1 } }
+    `}</style>
+  );
+}
+
+/** The spark that flies where the two champions meet. */
+function ClashSpark() {
+  return (
+    <svg width="46" height="46" viewBox="0 0 24 24" aria-hidden
+         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-gold motion-safe:animate-[clashSpark_.55s_ease-out_infinite]">
+      <path fill="currentColor" d="M12 0l2.4 7.2L22 6l-5.6 5L20 22l-8-4.8L4 22l3.6-11L2 6l7.6 1.2z" />
+    </svg>
+  );
+}
+
+/** The rubber stamp over the fighters when the fight resolves. Pure theatre:
+ *  every word on it is derived from the same verdict the results below show. */
+function VerdictStamp({ mutual, killed, dummy }: {
+  mutual: MutualDuelResult | null; killed: boolean; dummy: boolean;
+}) {
+  const [text, tone] = mutual
+    ? mutual.verdict === "you" ? ["VICTORY", "text-accent border-accent/70"]
+      : mutual.verdict === "them" ? ["DEFEAT", "text-bad border-bad/70"]
+      : mutual.verdict === "trade" ? ["DOUBLE KILL", "text-gold border-gold/70"]
+      : ["STALEMATE", "text-muted border-line"]
+    : killed ? [dummy ? "DUMMY DOWN" : "KILL", "text-accent border-accent/70"]
+    : ["SURVIVED", "text-bad border-bad/70"];
+  return (
+    <div className="pointer-events-none absolute inset-0 grid place-items-center">
+      <span className={`rounded-xl border-4 bg-black/55 px-5 py-1.5 text-2xl font-black tracking-[0.18em] backdrop-blur-sm motion-safe:animate-[stampIn_.5s_cubic-bezier(.2,1.6,.35,1)_both] ${tone}`}>
+        {text}
+      </span>
     </div>
   );
 }

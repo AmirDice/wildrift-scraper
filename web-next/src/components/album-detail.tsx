@@ -160,12 +160,23 @@ export function AlbumDetail({ id }: { id: string }) {
                 </div>
               )}
               {build.note && <p className="mt-2 text-xs text-muted">{build.note}</p>}
-              <Link
-                href={`/build?champion=${build.championSlug}${build.variant ? `&variant=${build.variant}` : ""}`}
-                className="mt-3 inline-block text-xs font-semibold text-accent transition hover:opacity-80"
-              >
-                Open in Build Studio →
-              </Link>
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                <Link
+                  href={`/build?champion=${build.championSlug}${build.variant ? `&variant=${build.variant}` : ""}`}
+                  className="text-xs font-semibold text-accent transition hover:opacity-80"
+                >
+                  Open in Build Studio →
+                </Link>
+                {build.items.length > 0 && (
+                  <Link
+                    href={`/build?champion=${build.championSlug}&tab=lab&items=${build.items.join(",")}&runes=${encodeURIComponent(build.runes.join(","))}`}
+                    className="text-xs font-semibold text-accent transition hover:opacity-80"
+                    title="Load this exact loadout into the Custom Build Lab"
+                  >
+                    Open in Custom Lab →
+                  </Link>
+                )}
+              </div>
             </Card>
           ))}
         </div>

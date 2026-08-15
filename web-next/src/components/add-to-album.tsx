@@ -68,6 +68,8 @@ export function AddToAlbumButton({ build, className = "" }: { build: AlbumBuildP
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
+  const [savedTo, setSavedTo] = useState<string | null>(null);
+
   const save = async (albumId: string) => {
     if (busy) return;
     setBusy(true);
@@ -81,7 +83,11 @@ export function AddToAlbumButton({ build, className = "" }: { build: AlbumBuildP
       const data = (await res.json()) as { error?: string };
       setStatus(res.ok ? "Saved" : data.error ?? "Could not save that.");
       if (res.ok) {
+        setSavedTo(albumId);
         await load();
+        // The popover closing used to take the only link to the album with it,
+        // which read as the save vanishing. The confirmation link below the
+        // button stays put instead.
         window.setTimeout(() => setOpen(false), 900);
       }
     } catch {
@@ -125,8 +131,14 @@ export function AddToAlbumButton({ build, className = "" }: { build: AlbumBuildP
         className={`inline-flex items-center gap-1.5 rounded-lg border border-line bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-accent/50 hover:text-text ${className}`}
       >
         <BookmarkIcon />
-        Save to album
+        {savedTo ? "Saved" : "Save to album"}
       </button>
+      {savedTo && (
+        <Link href={`/albums/${savedTo}`}
+              className="ml-2 inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:opacity-80">
+          View album →
+        </Link>
+      )}
 
       {open && (
         <div className="glass-menu absolute right-0 z-50 mt-2 w-72 rounded-xl p-3">

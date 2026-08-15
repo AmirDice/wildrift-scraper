@@ -23,6 +23,16 @@ export default async function BuildPage(props: PageProps<"/build">) {
   // at the standalone Counter Builder still lands on the right tool.
   const initialTab = search.tab === "generate" ? "generate" as const
     : search.tab === "counter" ? "counter" as const
+    : search.tab === "lab" ? "customize" as const
+    : undefined;
+  // ?items=slug,slug&runes=Name,Name imports a saved album build into the Lab.
+  const initialLab = typeof search.items === "string" && search.items
+    ? {
+        items: search.items.split(",").filter(Boolean).slice(0, 8),
+        runes: typeof search.runes === "string"
+          ? search.runes.split(",").filter(Boolean).slice(0, 6)
+          : [],
+      }
     : undefined;
   return (
     <Container className="py-8">
@@ -48,7 +58,7 @@ export default async function BuildPage(props: PageProps<"/build">) {
       <div className="mb-6 mt-3">
         <BuildsGeneratedPill />
       </div>
-      <BuildStudio initialChampion={initialChampion} initialTab={initialTab} />
+      <BuildStudio initialChampion={initialChampion} initialTab={initialTab} initialLab={initialLab} />
     </Container>
   );
 }
