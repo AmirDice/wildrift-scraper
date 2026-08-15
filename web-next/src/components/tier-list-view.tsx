@@ -11,7 +11,40 @@ import { CURRENT_PATCH } from "@/lib/patch";
 import { moverBySlug } from "@/lib/movers";
 import { RegionUpdated } from "@/components/tierlist-updated";
 import { PatchLagNotice } from "@/components/patch-lag-notice";
+import { BuildTour, type TourStep } from "@/components/build-tour";
 import type { Freshness } from "@/lib/patch-freshness";
+
+/** First-run tour. The page grew four regions, a depth slider, a raw toggle
+ *  and CN brackets faster than anyone could be expected to notice them, and
+ *  the toggles explain themselves only if you already know they exist. */
+const TIER_LIST_TOUR: TourStep[] = [
+  {
+    target: "tl-regions",
+    title: "Four boards, one list",
+    body: "EU and NA are our own scrape of each champion's 50 best players. CN is Tencent's official bracket data with its own rank picker. Global, the default, averages EU and NA.",
+  },
+  {
+    target: "tl-updated",
+    title: "Dates, and raw numbers",
+    body: "Every board says when it was collected, and a notice appears whenever a patch has landed since. Win rates are centred so 50% reads as the average champion; the raw toggle shows what the players actually posted.",
+  },
+  {
+    target: "tl-pool",
+    title: "Player pool depth",
+    optional: true,
+    body: "Re-rank by each champion's top 25, 10 or 5 players instead of the full board. A champion strong at top 5 but weak on all players is carried by its elite. EU, NA and Global only; CN has no per-player rows.",
+  },
+  {
+    target: "tl-roles",
+    title: "Role tiers",
+    body: "Pick a lane and the tiers become percentiles within that role, so a strong support is measured against supports rather than the whole roster.",
+  },
+  {
+    target: "tl-tiers",
+    title: "Reading the tiles",
+    body: "Arrows mark win-rate movement since the previous collection, the OTP badge marks one-trick champions, and every tile opens that champion's full page.",
+  },
+];
 
 export function TierListView({
   champions,
@@ -162,12 +195,13 @@ export function TierListView({
 
   return (
     <div>
+      <BuildTour storageKey="tour:tier-list:v1" steps={TIER_LIST_TOUR} label="Tour" />
       {/* Region */}
-      <div className="mb-5">
+      <div className="mb-5" data-tour="tl-regions">
         <RegionToggle region={region} onChange={(next) => { setRegion(next); setRole("All roles"); }} regions={["CN", "EU", "NA", "Global"]} />
       </div>
 
-      <div className="mb-5 flex flex-wrap items-center gap-3">
+      <div className="mb-5 flex flex-wrap items-center gap-3" data-tour="tl-updated">
         <RegionUpdated region={region} euDate={site.collectedOn} cnDate={cnMeta.date} naDate={naUpdated} />
         {/* CN is excluded: Tencent publishes raw rates, so there is no centring
             to undo and the button would be a no-op that implies otherwise. */}
@@ -253,7 +287,7 @@ export function TierListView({
           )}
 
           {!isCN && (
-            <div className="mb-5">
+            <div className="mb-5" data-tour="tl-pool">
               <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="Player pool depth">
                 <span className="text-xs font-bold uppercase tracking-wide text-faint">Player pool</span>
                 {([["all", "All players"], ["25", "Top 25"], ["10", "Top 10"], ["5", "Top 5"]] as const).map(([key, label]) => (
@@ -280,7 +314,7 @@ export function TierListView({
           )}
 
           {/* Role filter */}
-          <div className="mb-6 flex flex-wrap gap-2">
+          <div className="mb-6 flex flex-wrap gap-2" data-tour="tl-roles">
             {options.map((o) => (
               <button
                 key={o}
@@ -295,7 +329,7 @@ export function TierListView({
           </div>
 
           {/* Tiers */}
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2.5" data-tour="tl-tiers">
             {TIER_ORDER.map((t) => {
               const champs = buckets[t] ?? [];
               // An empty tier keeps its row. Hiding it made the ladder look
