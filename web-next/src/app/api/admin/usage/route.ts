@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { KV_CONFIGURED, kvGetNumber, kvList, kvSetCount } from "@/lib/kv";
 import { FEEDBACK_REASON_KEYS } from "@/lib/feedback-options";
-import { ACTOR_ACTIONS, TRACKED_EVENTS, actorSummary, cohortSummary, engagementSummary, eventSummary } from "@/lib/stats";
+import { ACTOR_ACTIONS, TRACKED_EVENTS, actorSummary, cohortSummary, engagementSummary, engagementTotals, eventSummary } from "@/lib/stats";
 
 /**
  * GET /api/admin/usage?token=... -- the internal read-out.
@@ -32,10 +32,11 @@ export async function GET(request: Request) {
     FEEDBACK_REASON_KEYS.map(async (reason) => [reason, await kvGetNumber(`feedback:build:reason:${reason}`)] as const),
   );
   const notes = await kvList("feedback:build:log", 50);
-  const [uniqueAccounts, signInsLog, engagement] = await Promise.all([
+  const [uniqueAccounts, signInsLog, engagement, engagementAll] = await Promise.all([
     kvSetCount("auth:google:subs"),
     kvList("auth:signins:log", 30),
-    engagementSummary(7),
+    engagementSummary(30),
+    engagementTotals(100),
   ]);
   const cohorts = await cohortSummary(6);
   const actors = await Promise.all(ACTOR_ACTIONS.map((action) => actorSummary(action)));
@@ -67,6 +68,7 @@ export async function GET(request: Request) {
     // generators, new vs returning, and how deep into the daily allowance
     // each person went. Days before the deploy read as zeros, not as truth.
     engagement,
+    engagementAll,
     // Weekly cohorts: of the people who first generated in week W, how many
     // came back within 1 / 7 / 30 days. The question retention actually asks.
     cohorts,

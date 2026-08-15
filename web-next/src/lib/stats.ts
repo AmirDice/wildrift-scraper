@@ -272,6 +272,55 @@ export async function engagementSummary(days = 7): Promise<EngagementDay[]> {
   return out;
 }
 
+export interface EngagementTotals {
+  /** Distinct identities that have EVER generated. A set, so it never expires
+   *  and never double-counts; the one all-time number that stays true. */
+  generators: number;
+  newUsers: number;
+  returning: number;
+  depth: number[];
+}
+
+/**
+ * Lifetime engagement, as close as the storage allows.
+ *
+ * The generators count is exact forever (a lifetime set). The new/returning
+ * split and the depth histogram come from per-day counters with a 100-day
+ * TTL, so they are complete while tracking (started 2026-08-08) is younger
+ * than 100 days and quietly become "the last 100 days" after mid-November.
+ * The caller's label should say so rather than promise an all-time it will
+ * slowly stop being.
+ */
+export async function engagementTotals(days = 100): Promise<EngagementTotals> {
+  const keys: string[] = [];
+  for (let offset = 0; offset < days; offset += 1) {
+    const date = new Date();
+    date.setUTCDate(date.getUTCDate() - offset);
+    const day = dayKey(date);
+    keys.push(
+      `stat:gen_new:day:${day}`,
+      `stat:gen_returning:day:${day}`,
+      ...Array.from({ length: DEPTH_CAP }, (_, i) => `stat:gen_depth:${day}:${i + 1}`),
+    );
+  }
+  const [generators, values] = await Promise.all([
+    kvSetCount("gen:users:all"),
+    kvGetNumbers(keys),
+  ]);
+  const stride = 2 + DEPTH_CAP;
+  const totals: EngagementTotals = {
+    generators, newUsers: 0, returning: 0, depth: Array(DEPTH_CAP).fill(0),
+  };
+  for (let d = 0; d < days; d += 1) {
+    totals.newUsers += values[d * stride] ?? 0;
+    totals.returning += values[d * stride + 1] ?? 0;
+    for (let i = 0; i < DEPTH_CAP; i += 1) {
+      totals.depth[i] += values[d * stride + 2 + i] ?? 0;
+    }
+  }
+  return totals;
+}
+
 /* ── who saves and who shares ────────────────────────────────────────────── */
 //
 // TRACKED_EVENTS counts ACTIONS: one person sharing the same build into four

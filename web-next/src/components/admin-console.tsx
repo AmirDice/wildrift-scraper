@@ -166,6 +166,7 @@ interface ActorSummary {
 interface UsageData {
   events: Record<string, { total: number; today: number; last7Days: number }>;
   engagement?: EngagementDay[];
+  engagementAll?: { generators: number; newUsers: number; returning: number; depth: number[] };
   cohorts?: CohortRow[];
   actors?: Record<string, ActorSummary>;
   feedback: {
@@ -288,16 +289,23 @@ function UsagePanel({ token }: { token: string }) {
       {(() => {
         const days = data.engagement ?? [];
         const today = days[0];
-        const week = days.reduce((acc, d) => ({
+        // The route sends 30 days, newest first; the 7-day view is its head.
+        const sumDays = (list: typeof days) => list.reduce((acc, d) => ({
           newUsers: acc.newUsers + d.newUsers,
           returning: acc.returning + d.returning,
           depth: acc.depth.map((v, i) => v + (d.depth[i] ?? 0)),
         }), { newUsers: 0, returning: 0, depth: [0, 0, 0, 0, 0, 0] });
+        const week = sumDays(days.slice(0, 7));
+        const month = sumDays(days);
+        const all = data.engagementAll;
         // depth[i] = people who REACHED generation i+1; exactly-N = reached N minus reached N+1
         const exactly = (depth: number[]) => depth.map((v, i) => i < depth.length - 1 ? v - (depth[i + 1] ?? 0) : v);
         const todayExact = exactly(today?.depth ?? [0, 0, 0, 0, 0, 0]);
         const weekExact = exactly(week.depth);
+        const monthExact = exactly(month.depth);
+        const allExact = exactly(all?.depth ?? [0, 0, 0, 0, 0, 0]);
         const weekTotal = week.newUsers + week.returning;
+        const monthTotal = month.newUsers + month.returning;
         const depthLabel = ["1", "2", "3", "4", "5", "6+"];
         return (
           <Card className="mt-4 p-4">
@@ -306,7 +314,7 @@ function UsagePanel({ token }: { token: string }) {
               Who generates, whether they come back, and how deep into the daily 5 they go.
               Tracked from Aug 8, 2026 -- earlier days read as zero.
             </p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               <div>
                 <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Generators today</p>
                 <p className="mt-0.5 text-xl font-semibold tabular-nums">{today?.unique ?? 0}</p>
@@ -317,6 +325,21 @@ function UsagePanel({ token }: { token: string }) {
                 <p className="mt-0.5 text-xl font-semibold tabular-nums">{weekTotal}</p>
                 <p className="text-xs text-muted">{week.newUsers} new · {week.returning} returning
                   {weekTotal > 0 ? ` (${Math.round(100 * week.returning / weekTotal)}% return)` : ""}</p>
+              </div>
+              <div>
+                <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Last 30 days</p>
+                <p className="mt-0.5 text-xl font-semibold tabular-nums">{monthTotal}</p>
+                <p className="text-xs text-muted">{month.newUsers} new · {month.returning} returning
+                  {monthTotal > 0 ? ` (${Math.round(100 * month.returning / monthTotal)}% return)` : ""}</p>
+              </div>
+              <div>
+                <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">All time</p>
+                <p className="mt-0.5 text-xl font-semibold tabular-nums">{all?.generators ?? 0}</p>
+                {/* The generators count is a lifetime set and exact forever.
+                    Return visits come from 100-day counters, so this line
+                    quietly becomes "last 100 days" once tracking is older
+                    than that (mid-November). */}
+                <p className="text-xs text-muted">distinct people · {all?.returning ?? 0} return visits</p>
               </div>
               <div>
                 <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Used all 5 (7 days)</p>
@@ -336,9 +359,17 @@ function UsagePanel({ token }: { token: string }) {
                   <td className="py-1.5 text-muted">People today</td>
                   {todayExact.map((v, i) => <td key={i} className="text-right tabular-nums">{v}</td>)}
                 </tr>
-                <tr>
+                <tr className="border-b border-line/40">
                   <td className="py-1.5 text-muted">People, last 7 days</td>
                   {weekExact.map((v, i) => <td key={i} className="text-right tabular-nums text-text">{v}</td>)}
+                </tr>
+                <tr className="border-b border-line/40">
+                  <td className="py-1.5 text-muted">People, last 30 days</td>
+                  {monthExact.map((v, i) => <td key={i} className="text-right tabular-nums text-text">{v}</td>)}
+                </tr>
+                <tr>
+                  <td className="py-1.5 text-muted">People, all time</td>
+                  {allExact.map((v, i) => <td key={i} className="text-right tabular-nums text-text">{v}</td>)}
                 </tr>
               </tbody>
             </table>
