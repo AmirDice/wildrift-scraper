@@ -1493,3 +1493,90 @@ export function duel(name: string, items: string[], runes: string[],
     dps: Math.round(detail.damage / window),
   };
 }
+
+export interface MutualDuelResult {
+  /** Your rotation against them, exactly as the one-sided duel reports it. */
+  you: DuelResult;
+  /** Their rotation against you, same calculator pointed the other way. */
+  them: DuelResult;
+  /**
+   * "you" or "them": that side's kill lands first. "trade": both kills land
+   * inside the same quarter-second tick, so the fight is decided by whoever
+   * actually engages first, and saying anything more confident would be
+   * inventing precision the model does not have. "stalemate": neither
+   * rotation reaches a kill inside the window.
+   */
+  verdict: "you" | "them" | "trade" | "stalemate";
+  /** Seconds between the two kill clocks when both sides would get there. */
+  margin: number | null;
+  /** Winner's remaining health fraction (0..1) at the moment the loser dies. */
+  survivorHp: number | null;
+}
+
+/**
+ * Both champions run their combo at once, and the clocks race.
+ *
+ * The one-sided duel answers "how fast do I kill a target that stands still".
+ * This runs that same calculator in both directions and compares the two kill
+ * times, which is the honest version of "the enemy fights back": nobody is
+ * dodging, kiting, healing or holding cooldowns in either direction, so the
+ * symmetry is fair and every number in it is one the one-sided panel already
+ * defends.
+ *
+ * Sequencing, which is the whole subtlety: a combo that kills at 3.2s beats a
+ * combo that kills at 5.4s regardless of order, so by default both rotations
+ * start at t=0 and the smaller clock simply wins. `headStart` shifts the OTHER
+ * side's clock later by that many seconds (positive = A engaged first) for the
+ * cases where the caller wants initiative made explicit. When the two clocks
+ * land within one 0.25s tick of each other the verdict is "trade", because at
+ * that distance the model cannot tell you who dies -- the engage does.
+ */
+export function mutualDuel(
+  aName: string, aItems: string[], aRunes: string[],
+  bName: string, bItems: string[], bRunes: string[],
+  level = 15, cap = 20, scaled = false, headStart = 0,
+): MutualDuelResult | null {
+  const targetB = championTarget(bName, level, bItems, bRunes);
+  const targetA = championTarget(aName, level, aItems, aRunes);
+  if (!targetA || !targetB) return null;
+  // The same scaling switch applies to both sides: a fully-scaled build racing
+  // a guaranteed-stats build would be comparing two different moments in time.
+  const you = duel(aName, aItems, aRunes, targetB, level, cap, scaled);
+  const them = duel(bName, bItems, bRunes, targetA, level, cap, scaled);
+  if (!you || !them) return null;
+
+  // Kill CLOCKS, not kill times: the side that engaged late has its whole
+  // rotation shifted, so its kill lands later on the shared clock.
+  const yourClock = you.ttk == null ? null : you.ttk + Math.max(0, -headStart);
+  const theirClock = them.ttk == null ? null : them.ttk + Math.max(0, headStart);
+
+  let verdict: MutualDuelResult["verdict"];
+  let margin: number | null = null;
+  if (yourClock == null && theirClock == null) verdict = "stalemate";
+  else if (theirClock == null) verdict = "you";
+  else if (yourClock == null) verdict = "them";
+  else {
+    margin = Math.round(Math.abs(yourClock - theirClock) * 100) / 100;
+    verdict = margin <= 0.25 ? "trade" : yourClock < theirClock ? "you" : "them";
+  }
+
+  // How much health the winner keeps: the loser's rotation ran only until the
+  // winner's kill landed, minus any time the loser lost to a late engage.
+  let survivorHp: number | null = null;
+  if (verdict === "you" || verdict === "them") {
+    const winClock = (verdict === "you" ? yourClock : theirClock) as number;
+    const loserDelay = verdict === "you" ? Math.max(0, headStart) : Math.max(0, -headStart);
+    const fought = winClock - loserDelay;
+    const winnerTarget = verdict === "you" ? targetA : targetB;
+    let dealt = 0;
+    if (fought >= 0.25) {
+      const partial = verdict === "you"
+        ? duel(bName, bItems, bRunes, targetA, level, fought, scaled)
+        : duel(aName, aItems, aRunes, targetB, level, fought, scaled);
+      dealt = partial?.damage ?? 0;
+    }
+    survivorHp = Math.max(0, Math.round(((winnerTarget.hp - dealt) / winnerTarget.hp) * 1000) / 1000);
+  }
+
+  return { you, them, verdict, margin, survivorHp };
+}

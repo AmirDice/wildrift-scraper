@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { duel, championTarget, dummyTarget, type DuelResult, type DuelTarget } from "@/lib/engine";
+import { duel, mutualDuel, championTarget, dummyTarget, type DuelResult, type DuelTarget, type MutualDuelResult } from "@/lib/engine";
 import { hasSimulatableKit } from "@/lib/customizer-data";
 import { rosterList } from "@/lib/threat";
 import engineData from "@/data/engine.json";
@@ -64,6 +64,9 @@ function lockReason(name: string): string | null {
 
 type Phase = "idle" | "fighting" | "done";
 type Mode = "champion" | "dummy";
+/** Who opens the fight. The engager's rotation starts this much earlier. */
+type Engage = "same" | "you" | "them";
+const ENGAGE_HEAD_START = 0.5;
 
 export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }: {
   name: string;
@@ -76,8 +79,10 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
   const [mode, setMode] = useState<Mode>("champion");
   const [enemy, setEnemy] = useState("Garen");
   const [dummyHp, setDummyHp] = useState(4000);
+  const [engage, setEngage] = useState<Engage>("same");
   const [phase, setPhase] = useState<Phase>("idle");
   const [shown, setShown] = useState<DuelResult | null>(null);
+  const [shownMutual, setShownMutual] = useState<MutualDuelResult | null>(null);
   const timers = useRef<number[]>([]);
 
   const roster = useMemo(() => rosterList(), []);
@@ -96,18 +101,31 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
     return duel(name, itemSlugs, runeNames, target, level, 20, scaled);
   }, [name, itemSlugs, runeNames, target, level, scaled]);
 
+  // The enemy fights back only when their kit is actually simulatable. A
+  // form-swapper or an unreleased champion would "fight back" with zero
+  // damage, and an uncontested win against a silent opponent is a lie with
+  // extra steps, so those matchups stay one-sided and say why.
+  const enemyLocked = mode === "champion" ? lockReason(enemy) : null;
+  const mutual = useMemo(() => {
+    if (mode !== "champion" || enemyLocked || !itemSlugs.length) return null;
+    const head = engage === "you" ? ENGAGE_HEAD_START : engage === "them" ? -ENGAGE_HEAD_START : 0;
+    return mutualDuel(name, itemSlugs, runeNames, enemy, enemyBuild(enemy), [],
+                      level, 20, scaled, head);
+  }, [mode, enemyLocked, name, itemSlugs, runeNames, enemy, level, scaled, engage]);
+
   // Any change to the build, level, scaling or opponent invalidates the last
   // fight, so the numbers on screen always belong to the setup above them.
   // Tracked as derived state rather than an effect: setting state inside an
   // effect just to follow a prop causes a second render pass for something the
   // current render already knows.
-  const setupKey = [name, mode, enemy, dummyHp, level, scaled,
+  const setupKey = [name, mode, enemy, dummyHp, level, scaled, engage,
                     itemSlugs.join(","), runeNames.join(",")].join("|");
   const [lastSetup, setLastSetup] = useState(setupKey);
   if (lastSetup !== setupKey) {
     setLastSetup(setupKey);
     setPhase("idle");
     setShown(null);
+    setShownMutual(null);
   }
 
   // A pending fight belongs to the setup that started it. Rather than cancel
@@ -130,6 +148,7 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
     timers.current.push(window.setTimeout(() => {
       if (currentSetup.current !== startedWith) return;
       setShown(result);
+      setShownMutual(mutual);
       setPhase("done");
     }, 1100));
   }
@@ -192,6 +211,14 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
               {roster.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
             </select>
             <span className="text-xs text-faint">on their recommended build</span>
+            {!enemyLocked && (
+              <div className="flex w-full flex-wrap items-center justify-center gap-1.5 pt-1">
+                <span className="text-xs uppercase tracking-wide text-faint">Who engages</span>
+                <ModeToggle active={engage === "you"} onClick={() => setEngage("you")}>You first</ModeToggle>
+                <ModeToggle active={engage === "same"} onClick={() => setEngage("same")}>Same time</ModeToggle>
+                <ModeToggle active={engage === "them"} onClick={() => setEngage("them")}>They first</ModeToggle>
+              </div>
+            )}
           </div>
         ) : (
           <div className="mt-3 flex items-center gap-3">
@@ -231,7 +258,8 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
           {phase === "fighting" ? <FightingBar /> : shown && (
             <Results result={shown} attacker={name}
                      enemy={mode === "dummy" ? "The dummy" : enemy}
-                     dummy={mode === "dummy"} scaled={scaled} />
+                     dummy={mode === "dummy"} scaled={scaled}
+                     mutual={shownMutual} enemyLocked={enemyLocked} />
           )}
         </div>
       )}
@@ -352,23 +380,30 @@ function FightingBar() {
   );
 }
 
-function Results({ result, attacker, enemy, scaled, dummy = false }: {
+function Results({ result, attacker, enemy, scaled, dummy = false, mutual = null, enemyLocked = null }: {
   result: DuelResult; attacker: string; enemy: string; scaled: boolean; dummy?: boolean;
+  mutual?: MutualDuelResult | null; enemyLocked?: string | null;
 }) {
   const killed = result.ttk !== null;
   const casts = result.casts.reduce((n, c) => n + c.casts, 0);
   return (
     <div className="motion-safe:animate-[fadeUp_.35s_ease-out]">
-      <p className={`text-center text-lg font-black tracking-tight ${
-        killed ? "text-accent" : "text-bad"}`}>
-        {killed ? `${enemy} down in ${result.ttk}s` : `${enemy} survives`}
-      </p>
-      <p className="mt-0.5 text-center text-xs text-faint">
-        {killed
-          ? `${result.autos} attacks and ${casts} abilities`
-          : `not enough damage inside 20 seconds`}
-        {scaled ? " · fully scaled" : ""}
-      </p>
+      {mutual ? (
+        <Verdict mutual={mutual} you={attacker} them={enemy} />
+      ) : (
+        <>
+          <p className={`text-center text-lg font-black tracking-tight ${
+            killed ? "text-accent" : "text-bad"}`}>
+            {killed ? `${enemy} down in ${result.ttk}s` : `${enemy} survives`}
+          </p>
+          <p className="mt-0.5 text-center text-xs text-faint">
+            {killed
+              ? `${result.autos} attacks and ${casts} abilities`
+              : `not enough damage inside 20 seconds`}
+            {scaled ? " · fully scaled" : ""}
+          </p>
+        </>
+      )}
 
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Stat label="Time to kill" value={killed ? `${result.ttk}s` : "—"} accent={killed} />
@@ -417,13 +452,101 @@ function Results({ result, attacker, enemy, scaled, dummy = false }: {
 
       <DamageSplit split={result.byType} total={result.damage} />
 
+      {mutual && (
+        <div className="mt-3 rounded-xl border border-bad/25 bg-bad/[0.05] p-3">
+          <p className="mb-1.5 text-[0.6rem] font-bold uppercase tracking-wide text-bad/90">
+            {enemy} fights back
+          </p>
+          <p className="text-xs leading-relaxed text-muted">
+            {mutual.them.ttk != null
+              ? <>Their combo kills you in <span className="font-bold text-text">{mutual.them.ttk}s</span> at {mutual.them.dps.toLocaleString()} damage per second.</>
+              : <>Their combo cannot kill you inside 20 seconds ({mutual.them.dps.toLocaleString()} damage per second).</>}
+          </p>
+          {mutual.them.combo.length > 0 && (
+            <div className="mt-2 flex flex-wrap items-center gap-1">
+              {mutual.them.combo.map((step, i) => (
+                <span key={i} className="flex items-center gap-1">
+                  {i > 0 && <span className="text-faint">›</span>}
+                  <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${
+                    step === "auto" ? "bg-white/[0.06] text-muted" : "bg-bad/15 text-bad"}`}>
+                    {step === "auto" ? "attack" : SLOT_LABEL[step] ?? step}
+                  </span>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <p className="mt-3 border-t border-line/60 pt-2.5 text-[0.7rem] leading-relaxed text-faint">
         {dummy
           ? "A bare target with no armor or magic resist, so this is the build's raw output."
-          : `${enemy} stands still on their recommended build and does not dodge, heal or fight back.`}
+          : mutual
+            ? `Both champions stand still and run their full rotation. Nobody dodges, heals, repositions or holds a cooldown.`
+            : enemyLocked
+              ? `${enemy} cannot fight back here: ${enemyLocked}`
+              : `${enemy} stands still on their recommended build and does not dodge, heal or fight back.`}
         {" "}A damage check, not a prediction of a real fight.
       </p>
     </div>
+  );
+}
+
+/** The headline of a two-sided fight, in the model's own terms. */
+function Verdict({ mutual, you, them }: { mutual: MutualDuelResult; you: string; them: string }) {
+  const { verdict, margin, survivorHp } = mutual;
+  const hpPct = survivorHp != null ? Math.round(survivorHp * 100) : null;
+  if (verdict === "you") {
+    return (
+      <>
+        <p className="text-center text-lg font-black tracking-tight text-accent">
+          {them} dies first · {mutual.you.ttk}s
+        </p>
+        <p className="mt-0.5 text-center text-xs text-faint">
+          {mutual.them.ttk != null
+            ? `their kill needed ${mutual.them.ttk}s, ${margin}s too slow`
+            : "their combo never gets there"}
+          {hpPct != null ? ` · you walk away at ${hpPct}% health` : ""}
+        </p>
+      </>
+    );
+  }
+  if (verdict === "them") {
+    return (
+      <>
+        <p className="text-center text-lg font-black tracking-tight text-bad">
+          {you} dies first · {mutual.them.ttk}s
+        </p>
+        <p className="mt-0.5 text-center text-xs text-faint">
+          {mutual.you.ttk != null
+            ? `your kill needed ${mutual.you.ttk}s, ${margin}s too slow`
+            : "your combo never gets there"}
+          {hpPct != null ? ` · they walk away at ${hpPct}% health` : ""}
+        </p>
+      </>
+    );
+  }
+  if (verdict === "trade") {
+    return (
+      <>
+        <p className="text-center text-lg font-black tracking-tight text-gold">
+          Double kill · both inside {Math.max(mutual.you.ttk ?? 0, mutual.them.ttk ?? 0)}s
+        </p>
+        <p className="mt-0.5 text-center text-xs text-faint">
+          the two kill clocks land within a quarter second, so whoever actually engages first wins this one
+        </p>
+      </>
+    );
+  }
+  return (
+    <>
+      <p className="text-center text-lg font-black tracking-tight text-muted">
+        Nobody dies
+      </p>
+      <p className="mt-0.5 text-center text-xs text-faint">
+        neither combo reaches a kill inside 20 seconds
+      </p>
+    </>
   );
 }
 
