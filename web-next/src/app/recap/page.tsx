@@ -14,7 +14,7 @@ import { CURRENT_PATCH } from "@/lib/patch";
 // poster that gets screenshotted is the worst place to discover a stale label.
 export const metadata: Metadata = {
   // The layout template appends "| WrTrueMeta" itself.
-  title: `Patch ${CURRENT_PATCH} Winners & Losers`,
+  title: `Patch ${CURRENT_PATCH} Day One Movers`,
   robots: { index: false, follow: false },
 };
 
@@ -47,7 +47,7 @@ export default function RecapPage() {
               WRTRUE<span className="text-text">META</span>
             </p>
             <h1 className="mt-1 text-3xl font-black leading-tight tracking-tight sm:text-4xl">
-              Patch {CURRENT_PATCH} · Who Won, Who Lost
+              Patch {CURRENT_PATCH} · Day One on the Ladder
             </h1>
             <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted">
               First day on the new patch, measured on the{" "}
@@ -74,7 +74,7 @@ export default function RecapPage() {
         {/* Winners / Losers */}
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-2 [&>*]:min-w-0">
           <MoverColumn
-            title="Winners"
+            title="Rising"
             tag={`Win rate rose on day one of ${CURRENT_PATCH}`}
             accent="#34d399"
             up
@@ -82,7 +82,7 @@ export default function RecapPage() {
             maxAbs={maxAbs}
           />
           <MoverColumn
-            title="Losers"
+            title="Falling"
             tag={`Win rate fell on day one of ${CURRENT_PATCH}`}
             accent="#ff6a6a"
             movers={losers}
