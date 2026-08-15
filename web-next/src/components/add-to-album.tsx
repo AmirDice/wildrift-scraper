@@ -60,6 +60,8 @@ export function AddToAlbumButton({ build, className = "" }: { build: AlbumBuildP
   }, [open, user, load]);
 
   useEffect(() => {
+    const card = ref.current?.closest<HTMLElement>(".glass");
+    if (card) card.style.zIndex = open ? "60" : "";
     if (!open) return;
     const onDoc = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);

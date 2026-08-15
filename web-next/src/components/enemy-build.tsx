@@ -114,7 +114,7 @@ function PlayGuide({ advice }: { advice: Advice }) {
   if (!rows.length) return null;
 
   return (
-    <details className="glass group rounded-2xl p-4">
+    <details open className="glass group rounded-2xl p-4">
       <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
         <span className="min-w-0">
           <span className="block text-sm font-bold text-text">How to play this build</span>
@@ -182,7 +182,7 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
   if (!hasDetail) return null;
 
   return (
-    <details className="glass group rounded-2xl p-4">
+    <details open className="glass group rounded-2xl p-4">
       <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
         <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Why this is the optimal build</p>
         <Disclosure />
@@ -659,6 +659,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [progress, setProgress] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [advice, setAdvice] = useState<Advice | null>(null);
+  // Folded after a successful generation so the result leads; the summary
+  // bar above brings it back. Hidden rather than unmounted, because the
+  // pickers hold state (locks, enemy team) that must survive the fold.
+  const [formOpen, setFormOpen] = useState(true);
 
   // the champion's home role, to flag off-role picks (Support Graves etc.)
   const championMeta = champ ? roster.find((c) => c.name === champ) : undefined;
@@ -791,6 +795,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
       }
       setAdvice(nextAdvice);
       onAdviceChange?.(nextAdvice);
+      // The form's job is done the moment a build renders below it; folding it
+      // moves the result to the top of the screen. An error keeps it open,
+      // because the fix for an error lives in the form.
+      if (!nextAdvice.error) setFormOpen(false);
     } catch (e) {
       const nextAdvice = { error: e instanceof Error ? e.message : String(e) };
       setAdvice(nextAdvice);
@@ -806,7 +814,24 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   return (
     <div className="space-y-6">
       {/* inputs */}
-      <div className="glass space-y-4 rounded-2xl p-4">
+      {!formOpen && (
+        <button
+          type="button"
+          onClick={() => setFormOpen(true)}
+          className="glass glass-hover flex w-full items-center justify-between gap-3 rounded-2xl p-4 text-left"
+        >
+          <span className="min-w-0">
+            <span className="block text-sm font-bold text-text">
+              {champ ? `Build settings · ${champ}` : "Build settings"}
+            </span>
+            <span className="mt-0.5 block text-xs text-muted">
+              Change champion, playstyle or role, then generate again.
+            </span>
+          </span>
+          <span aria-hidden className="shrink-0 text-accent">⌄</span>
+        </button>
+      )}
+      <div className={`glass space-y-4 rounded-2xl p-4 ${formOpen ? "" : "hidden"}`}>
         <div className="flex flex-wrap items-end gap-4">
           <div data-tour="your-champion">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Your champion</p>
@@ -1135,7 +1160,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             ) : null}
 
             {advice.situational?.length ? (
-              <details className="glass group rounded-2xl p-4">
+              <details open className="glass group rounded-2xl p-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
                   Situational swaps <span className="normal-case text-faint/60">· bought in place of that purchase, not added at the end</span>
@@ -1164,7 +1189,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             ) : null}
 
             {advice.situationalRunes?.length ? (
-              <details className="glass group rounded-2xl p-4">
+              <details open className="glass group rounded-2xl p-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
                   Situational runes <span className="normal-case text-faint/60">· sometimes a rune answers it cheaper than an item</span>
@@ -1202,7 +1227,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             ) : null}
 
             {advice.situationalBoots?.length ? (
-              <details className="glass group rounded-2xl p-4">
+              <details open className="glass group rounded-2xl p-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Situational boots</p>
                 <Disclosure />
