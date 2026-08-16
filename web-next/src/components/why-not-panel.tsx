@@ -34,6 +34,7 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
   buildBias: string;
 }) {
   const [candidate, setCandidate] = useState("");
+  const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
   const [asked, setAsked] = useState<{
     candidate: string; candidateName?: string; verdict?: string;
@@ -77,15 +78,37 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
         could be. Costs one generation, same as a build.
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <select
-          value={candidate}
-          onChange={(e) => setCandidate(e.target.value)}
-          aria-label="Item to ask about"
-          className="min-w-0 flex-1 rounded-lg border border-line bg-[#0e1322] px-3 py-2 text-sm text-text sm:max-w-xs"
-        >
-          <option value="">Choose an item…</option>
-          {options.map((o) => <option key={o.slug} value={o.slug}>{o.name}</option>)}
-        </select>
+        <div className="relative min-w-0 flex-1 sm:max-w-xs">
+          <input
+            value={candidate ? (DATA.items?.[candidate]?.name ?? candidate) : query}
+            onChange={(e) => { setCandidate(""); setQuery(e.target.value); }}
+            placeholder="Search an item…"
+            aria-label="Item to ask about"
+            className="w-full rounded-lg border border-line bg-[#0e1322] px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
+          />
+          {query.trim() && !candidate && (
+            <div className="absolute left-0 right-0 top-full z-40 mt-1 max-h-56 overflow-y-auto rounded-xl border border-line bg-[#0e1322] p-1 shadow-2xl">
+              {options
+                .filter((o) => o.name.toLowerCase().includes(query.trim().toLowerCase()))
+                .slice(0, 8)
+                .map((o) => (
+                  <button
+                    key={o.slug}
+                    onClick={() => { setCandidate(o.slug); setQuery(""); }}
+                    className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm text-muted transition hover:bg-white/[0.06] hover:text-text"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={DATA.items?.[o.slug]?.icon ?? `/items/${o.slug}.webp`} alt=""
+                         width={22} height={22} className="rounded" />
+                    {o.name}
+                  </button>
+                ))}
+              {options.filter((o) => o.name.toLowerCase().includes(query.trim().toLowerCase())).length === 0 && (
+                <p className="px-2.5 py-1.5 text-xs text-faint">Nothing matches.</p>
+              )}
+            </div>
+          )}
+        </div>
         <button
           onClick={ask}
           disabled={!candidate || busy}

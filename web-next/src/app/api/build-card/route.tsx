@@ -118,13 +118,16 @@ async function logoUri(): Promise<string | null> {
 /** Local item webp -> png data URI. Null when the art is missing: the card
  *  then renders a lettered tile rather than a broken image. */
 async function itemPng(slug: string): Promise<string | null> {
-  try {
-    const buf = await readFile(path.join(PUBLIC_DIR, "items", `${slug}.webp`));
-    const png = await sharp(buf).resize(96, 96).png().toBuffer();
-    return `data:image/png;base64,${png.toString("base64")}`;
-  } catch {
-    return null;
+  for (const ext of ["webp", "png"]) {
+    try {
+      const buf = await readFile(path.join(PUBLIC_DIR, "items", `${slug}.${ext}`));
+      const png = await sharp(buf).resize(96, 96).png().toBuffer();
+      return `data:image/png;base64,${png.toString("base64")}`;
+    } catch {
+      /* try the next extension */
+    }
   }
+  return null;
 }
 
 /** Rune icon (external PNG) -> inlined data URI, resized. Null on any failure:
@@ -148,7 +151,7 @@ async function runeIconUri(name: string): Promise<string | null> {
  *  720x630 with sharp's "attention" strategy, which crops toward the most
  *  salient region of the art -- in a splash that is the champion -- instead
  *  of blind centre-cropping, which cut Pantheon's face clean off. */
-const SPLASH_W = 720;
+const SPLASH_W = 347;
 async function splashUri(splash: string | undefined): Promise<string | null> {
   if (!splash) return null;
   try {
