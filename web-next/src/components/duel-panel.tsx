@@ -6,11 +6,13 @@ import { hasSimulatableKit } from "@/lib/customizer-data";
 import { rosterList } from "@/lib/threat";
 import engineData from "@/data/engine.json";
 import buildsData from "@/data/builds.json";
+import ladderBuildsData from "@/data/ladder_builds.json";
 
 /* eslint-disable @next/next/no-img-element */
 
 const DATA = engineData as {
-  items?: Record<string, { name?: string; icon?: string }>;
+  items?: Record<string, { name?: string; icon?: string; category?: string }>;
+  runes?: Record<string, { icon?: string; type?: string | number }>;
   formulas?: Record<string, {
     abilities?: Record<string, { name?: string; icon?: string }>;
     mechanics?: { kind?: string }[];
@@ -23,7 +25,21 @@ const BUILDS = buildsData as Record<string, {
   builds?: Record<string, {
     coreBuild?: { slug: string }[];
     boots?: { slug?: string } | null;
+    runes?: {
+      keystone?: { name?: string } | null;
+      treeMinors?: { name?: string }[];
+      flexMinor?: { name?: string } | null;
+    };
   }>;
+}>;
+
+/** What each champion's top-50 ladder players most commonly equip, trimmed by
+ *  scripts/export_ladder_builds.py. The most honest "standard" opponent there
+ *  is: not what we recommend, what the board actually runs. */
+const LADDER = ladderBuildsData as Record<string, {
+  items: { slug: string; count: number; of: number }[];
+  keystones: { name: string; count: number }[];
+  minors: { name: string; count: number }[];
 }>;
 
 const abilityName = (champ: string, slot: string): string =>
@@ -43,13 +59,40 @@ function enemyVariants(name: string): string[] {
   return Object.keys(BUILDS[name]?.builds ?? {});
 }
 
-function enemyBuild(name: string, variant?: string): string[] {
+function variantBuild(name: string, variant?: string): string[] {
   const variants = BUILDS[name]?.builds ?? {};
   const chosen = (variant && variants[variant]) ?? variants["standard"] ?? Object.values(variants)[0];
   if (!chosen) return [];
   const items = (chosen.coreBuild ?? []).map((i) => i.slug).filter(Boolean);
   const boots = chosen.boots?.slug;
   return boots ? [...items, boots] : items;
+}
+
+function variantRunes(name: string, variant?: string): string[] {
+  const variants = BUILDS[name]?.builds ?? {};
+  const chosen = (variant && variants[variant]) || variants["standard"] || Object.values(variants)[0];
+  if (!chosen?.runes) return [];
+  const r = chosen.runes;
+  return [r.keystone?.name, ...(r.treeMinors ?? []).map((m) => m.name), r.flexMinor?.name]
+    .filter((n): n is string => Boolean(n));
+}
+
+/** The most common top-50 loadout: the five most-equipped non-boots items plus
+ *  the most-equipped boots, in popularity order. */
+function ladderBuild(name: string): string[] {
+  const rec = LADDER[name];
+  if (!rec) return [];
+  const isBoots = (slug: string) => DATA.items?.[slug]?.category === "Boots";
+  const items = rec.items.filter((i) => !isBoots(i.slug)).slice(0, 5).map((i) => i.slug);
+  const boots = rec.items.find((i) => isBoots(i.slug))?.slug;
+  return boots ? [...items, boots] : items;
+}
+
+function ladderRunes(name: string): string[] {
+  const rec = LADDER[name];
+  if (!rec) return [];
+  return [rec.keystones[0]?.name, ...rec.minors.slice(0, 4).map((m) => m.name)]
+    .filter((n): n is string => Boolean(n));
 }
 
 /** Why the fight is unavailable for a champion, in the player's terms. */
@@ -84,7 +127,12 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
   const [enemy, setEnemy] = useState("Garen");
   const [dummyHp, setDummyHp] = useState(4000);
   const [engage, setEngage] = useState<Engage>("same");
-  const [enemyVariant, setEnemyVariant] = useState("standard");
+  // What the opponent stands on: "ladder" (their top-50 players' most common
+  // loadout, the default), "variant:<name>" (one of our recommended builds),
+  // or "custom" (the player picks every item and rune themselves).
+  const [enemySource, setEnemySource] = useState("ladder");
+  const [customItems, setCustomItems] = useState<string[]>([]);
+  const [customRunes, setCustomRunes] = useState<string[]>([]);
   const [phase, setPhase] = useState<Phase>("idle");
   const [shown, setShown] = useState<DuelResult | null>(null);
   const [shownMutual, setShownMutual] = useState<MutualDuelResult | null>(null);
@@ -96,15 +144,42 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
     [roster]);
 
   const variants = useMemo(() => enemyVariants(enemy), [enemy]);
-  const activeVariant = variants.includes(enemyVariant)
-    ? enemyVariant
-    : variants.includes("standard") ? "standard" : variants[0] ?? "standard";
+  const hasLadder = Boolean(LADDER[enemy]);
+  // An unavailable source falls back rather than erroring: no ladder record ->
+  // the standard recommended build; a variant the new enemy lacks -> ladder.
+  const activeSource = enemySource === "ladder"
+    ? (hasLadder ? "ladder" : `variant:${variants.includes("standard") ? "standard" : variants[0] ?? "standard"}`)
+    : enemySource === "custom"
+      ? "custom"
+      : variants.includes(enemySource.replace("variant:", ""))
+        ? enemySource
+        : hasLadder ? "ladder" : `variant:${variants[0] ?? "standard"}`;
+
+  // Switching enemies reseeds the custom loadout from the new enemy's ladder
+  // standard: a hand-picked Jinx loadout on Amumu is nobody's intention.
+  const [customFor, setCustomFor] = useState(enemy);
+  if (customFor !== enemy) {
+    setCustomFor(enemy);
+    setCustomItems(ladderBuild(enemy).length ? ladderBuild(enemy) : variantBuild(enemy));
+    setCustomRunes(ladderRunes(enemy).length ? ladderRunes(enemy) : variantRunes(enemy));
+  }
+
+  const enemyItems = useMemo(() => (
+    activeSource === "ladder" ? ladderBuild(enemy)
+    : activeSource === "custom" ? customItems
+    : variantBuild(enemy, activeSource.replace("variant:", ""))
+  ), [activeSource, enemy, customItems]);
+  const enemyRunes = useMemo(() => (
+    activeSource === "ladder" ? ladderRunes(enemy)
+    : activeSource === "custom" ? customRunes
+    : variantRunes(enemy, activeSource.replace("variant:", ""))
+  ), [activeSource, enemy, customRunes]);
 
   const target: DuelTarget | null = useMemo(
     () => (mode === "dummy"
       ? dummyTarget(dummyHp)
-      : championTarget(enemy, level, enemyBuild(enemy, activeVariant)) ?? dummyTarget(dummyHp)),
-    [mode, dummyHp, enemy, level, activeVariant]);
+      : championTarget(enemy, level, enemyItems, enemyRunes) ?? dummyTarget(dummyHp)),
+    [mode, dummyHp, enemy, level, enemyItems, enemyRunes]);
 
   const result = useMemo(() => {
     if (!target || !itemSlugs.length) return null;
@@ -119,16 +194,17 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
   const mutual = useMemo(() => {
     if (mode !== "champion" || enemyLocked || !itemSlugs.length) return null;
     const head = engage === "you" ? ENGAGE_HEAD_START : engage === "them" ? -ENGAGE_HEAD_START : 0;
-    return mutualDuel(name, itemSlugs, runeNames, enemy, enemyBuild(enemy, activeVariant), [],
+    return mutualDuel(name, itemSlugs, runeNames, enemy, enemyItems, enemyRunes,
                       level, 20, scaled, head);
-  }, [mode, enemyLocked, name, itemSlugs, runeNames, enemy, level, scaled, engage, activeVariant]);
+  }, [mode, enemyLocked, name, itemSlugs, runeNames, enemy, level, scaled, engage, enemyItems, enemyRunes]);
 
   // Any change to the build, level, scaling or opponent invalidates the last
   // fight, so the numbers on screen always belong to the setup above them.
   // Tracked as derived state rather than an effect: setting state inside an
   // effect just to follow a prop causes a second render pass for something the
   // current render already knows.
-  const setupKey = [name, mode, enemy, dummyHp, level, scaled, engage, activeVariant,
+  const setupKey = [name, mode, enemy, dummyHp, level, scaled, engage, activeSource,
+                    enemyItems.join(","), enemyRunes.join(","),
                     itemSlugs.join(","), runeNames.join(",")].join("|");
   const [lastSetup, setLastSetup] = useState(setupKey);
   if (lastSetup !== setupKey) {
@@ -233,13 +309,61 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
             </select>
             <span className="text-xs text-faint">on their</span>
             <select
-              value={activeVariant} onChange={(e) => setEnemyVariant(e.target.value)}
-              aria-label="Enemy build variant"
+              value={activeSource}
+              onChange={(e) => {
+                // Entering custom with nothing picked seeds from the loadout
+                // on screen, so "custom" means "tweak this", not "start from
+                // an empty shop". Later edits survive source round-trips.
+                if (e.target.value === "custom" && customItems.length === 0 && customRunes.length === 0) {
+                  setCustomItems(enemyItems);
+                  setCustomRunes(enemyRunes);
+                }
+                setEnemySource(e.target.value);
+              }}
+              aria-label="Enemy build source"
               className="rounded-lg border border-line bg-[#0e1322] px-2 py-1.5 text-xs text-text"
             >
-              {variants.map((v) => <option key={v} value={v}>{v}</option>)}
+              {hasLadder && <option value="ladder">most common (top 50)</option>}
+              {variants.map((v) => <option key={v} value={`variant:${v}`}>recommended: {v}</option>)}
+              <option value="custom">custom…</option>
             </select>
             <span className="text-xs text-faint">build</span>
+            {activeSource === "custom" ? (
+              <div className="flex w-full flex-col gap-2 pt-2 sm:flex-row">
+                <LoadoutEditor
+                  label="Their items (up to 6)"
+                  picked={customItems}
+                  max={6}
+                  onChange={setCustomItems}
+                  options={itemOptions()}
+                />
+                <LoadoutEditor
+                  label="Their runes (up to 5)"
+                  picked={customRunes}
+                  max={5}
+                  onChange={setCustomRunes}
+                  options={runeOptions()}
+                  round
+                />
+              </div>
+            ) : (
+              (enemyItems.length > 0 || enemyRunes.length > 0) && (
+                <div className="flex w-full flex-wrap items-center justify-center gap-1 pt-1.5">
+                  {enemyItems.map((slug, i) => (
+                    <img key={`${slug}-${i}`} src={DATA.items?.[slug]?.icon ?? `/items/${slug}.webp`}
+                         alt={DATA.items?.[slug]?.name ?? slug} title={DATA.items?.[slug]?.name ?? slug}
+                         width={22} height={22} className="rounded ring-1 ring-white/15" />
+                  ))}
+                  {enemyRunes.length > 0 && <span className="mx-1 h-4 w-px bg-line" />}
+                  {enemyRunes.map((rn) => (
+                    DATA.runes?.[rn]?.icon
+                      ? <img key={rn} src={DATA.runes[rn].icon!} alt={rn} title={rn}
+                             width={20} height={20} className="rounded-full" />
+                      : <span key={rn} title={rn} className="rounded bg-white/[0.06] px-1 text-[0.6rem] text-muted">{rn}</span>
+                  ))}
+                </div>
+              )
+            )}
             {!enemyLocked && (
               <div className="flex w-full flex-wrap items-center justify-center gap-1.5 pt-1">
                 <span className="text-xs uppercase tracking-wide text-faint">Who engages</span>
@@ -293,6 +417,86 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
         </div>
       )}
     </details>
+  );
+}
+
+/** Item / rune option lists for the custom opponent, built once per call from
+ *  the engine catalogue -- the same source of truth every other picker uses. */
+function itemOptions(): { key: string; name: string; icon?: string }[] {
+  return Object.entries(DATA.items ?? {})
+    .map(([slug, meta]) => ({ key: slug, name: meta.name ?? slug, icon: meta.icon ?? `/items/${slug}.webp` }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function runeOptions(): { key: string; name: string; icon?: string }[] {
+  return Object.entries(DATA.runes ?? {})
+    .map(([name, meta]) => ({ key: name, name, icon: meta.icon }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** A compact chip editor: current picks as removable chips, plus a search box
+ *  that offers the catalogue. Small on purpose -- it lives inside the duel
+ *  panel, not on its own page. */
+function LoadoutEditor({ label, picked, options, max, onChange, round = false }: {
+  label: string;
+  picked: string[];
+  options: { key: string; name: string; icon?: string }[];
+  max: number;
+  onChange: (next: string[]) => void;
+  round?: boolean;
+}) {
+  const [query, setQuery] = useState("");
+  const byKey = useMemo(() => new Map(options.map((o) => [o.key, o])), [options]);
+  const q = query.trim().toLowerCase();
+  const matches = q
+    ? options.filter((o) => !picked.includes(o.key) && o.name.toLowerCase().includes(q)).slice(0, 8)
+    : [];
+  return (
+    <div className="min-w-0 flex-1 rounded-xl border border-line/60 bg-white/[0.02] p-2 text-left">
+      <p className="mb-1 text-[0.6rem] font-bold uppercase tracking-wide text-faint">{label}</p>
+      <div className="flex flex-wrap items-center gap-1">
+        {picked.map((key) => {
+          const option = byKey.get(key);
+          return (
+            <button key={key} type="button"
+                    onClick={() => onChange(picked.filter((p) => p !== key))}
+                    title={`Remove ${option?.name ?? key}`}
+                    className="flex items-center gap-1 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-xs text-text transition hover:bg-bad/20">
+              {option?.icon && (
+                <img src={option.icon} alt="" width={18} height={18}
+                     className={round ? "rounded-full" : "rounded"} />
+              )}
+              {option?.name ?? key}
+              <span className="text-faint">×</span>
+            </button>
+          );
+        })}
+        {picked.length < max && (
+          <div className="relative">
+            <input
+              value={query} onChange={(e) => setQuery(e.target.value)}
+              placeholder="add…" aria-label={`${label} search`}
+              className="w-24 rounded-md border border-line bg-[#0e1322] px-2 py-0.5 text-xs text-text outline-none focus:border-accent/50"
+            />
+            {matches.length > 0 && (
+              <div className="absolute left-0 top-full z-30 mt-1 max-h-44 w-56 overflow-y-auto rounded-lg border border-line bg-[#0e1322] p-1 shadow-2xl">
+                {matches.map((option) => (
+                  <button key={option.key} type="button"
+                          onClick={() => { onChange([...picked, option.key]); setQuery(""); }}
+                          className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-xs text-muted transition hover:bg-white/[0.06] hover:text-text">
+                    {option.icon && (
+                      <img src={option.icon} alt="" width={18} height={18}
+                           className={round ? "rounded-full" : "rounded"} />
+                    )}
+                    {option.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -558,7 +762,7 @@ function Results({ result, attacker, enemy, scaled, dummy = false, mutual = null
             ? `Both champions stand still and run their full rotation. Nobody dodges, heals, repositions or holds a cooldown.`
             : enemyLocked
               ? `${enemy} cannot fight back here: ${enemyLocked}`
-              : `${enemy} stands still on their recommended build and does not dodge, heal or fight back.`}
+              : `${enemy} stands still on the selected build and does not dodge, heal or fight back.`}
         {" "}A damage check, not a prediction of a real fight.
       </p>
     </div>
