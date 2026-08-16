@@ -8,17 +8,24 @@ import { CURRENT_PATCH } from "@/lib/patch";
 
 /**
  * The tier list as a shareable 1200x630 card, sibling to the build card:
- * same footer voice, same full-bleed splash treatment, same "download OR
- * unfurl" size.
+ * same footer voice, same "download OR unfurl" size.
  *
  * GET /api/tier-card?region=Global|EU|NA|CN&role=Baron|Jungle|Mid|Dragon|Support
  *
  * Both params are validated against closed sets -- nothing caller-supplied is
  * ever fetched. Pool depth and the raw-number toggle are deliberately absent:
  * the card is the canonical full-pool board, not a screenshot of one person's
- * toggles. The background is the SITE's background (ionia2.jpg with the same
- * overlay recipe the layout uses), so the card reads as a piece of the site
- * rather than as one champion's poster.
+ * toggles.
+ *
+ * THE GLASS IS REAL, within Satori's limits. Satori has no backdrop-filter,
+ * so translucent panels over a photo normally read as flat tints. But this
+ * layout is deterministic: every row's card-space position is computed here
+ * before render, which means each panel can contain the PRE-BLURRED
+ * background image, absolutely offset by exactly minus its own position and
+ * clipped by the panel's rounded corners. What shows through each panel is
+ * the true frosted view of what sits behind it -- the same optical trick
+ * backdrop-filter performs, done by hand. A specular top edge, a diagonal
+ * sheen and a drop shadow finish the material.
  */
 
 export const runtime = "nodejs";
@@ -37,9 +44,8 @@ const TIER_STYLE: Record<string, { bg: string; fg: string }> = {
   C: { bg: "linear-gradient(135deg, #9aa2b6, #6a7286)", fg: "#0b0f18" },
   Ass: { bg: "linear-gradient(135deg, #424a60, #2b3142)", fg: "#aeb6ca" },
 };
-
 const TIER_TEXT: Record<string, string> = {
-  GOD: "#ff9a52", S: "#ff9a52", A: "#ffd45a", B: "#5b9dff", C: "#9aa2b6", Ass: "#6a7286",
+  GOD: "#ffb37a", S: "#ffb37a", A: "#ffd45a", B: "#8fb7ff", C: "#aeb6ca", Ass: "#8a92a6",
 };
 
 let LOGO_URI: string | null | undefined;
@@ -77,25 +83,98 @@ async function champIconUri(url: string | undefined): Promise<string | null> {
   return uri;
 }
 
-/** The site's background art (public/ionia2.jpg, 1295x729 -- almost the
- *  card's own aspect), inlined once per process like the logo. */
-let BG_URI: string | null | undefined;
-async function backgroundUri(): Promise<string | null> {
-  if (BG_URI !== undefined) return BG_URI;
+/** The site's background art (public/ionia2.jpg), prepared once per process
+ *  in the two states the glass needs: the scene itself, and the scene as it
+ *  looks THROUGH the glass -- heavily blurred, dimmer but more saturated,
+ *  which is the vibrancy trick frosted materials live on. */
+let SCENE: { base: string; frost: string } | null | undefined;
+async function sceneUris(): Promise<{ base: string; frost: string } | null> {
+  if (SCENE !== undefined) return SCENE;
   try {
     const buf = await readFile(path.join(PUBLIC_DIR, "ionia2.jpg"));
-    const jpg = await sharp(buf)
-      .resize(1200, 630, { fit: "cover", position: "centre" })
-      .jpeg({ quality: 74 })
-      .toBuffer();
-    BG_URI = `data:image/jpeg;base64,${jpg.toString("base64")}`;
+    const fitted = sharp(buf).resize(1200, 630, { fit: "cover", position: "centre" });
+    // The art is dark at its centre, so a straight blur gives the glass
+    // nothing to show. Soft ambient auras in the site's own accent colours
+    // are composited in BEFORE the blur -- after 32px of gaussian they stop
+    // being shapes and become the slow colour drift across the panels that
+    // makes frosted material read as liquid. The auras exist only in the
+    // frost layer; the scene between panels stays the honest art.
+    const auras = Buffer.from(`<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="b"><stop offset="0%" stop-color="#4f8dff" stop-opacity="0.55"/><stop offset="100%" stop-color="#4f8dff" stop-opacity="0"/></radialGradient>
+        <radialGradient id="g"><stop offset="0%" stop-color="#ffc75e" stop-opacity="0.5"/><stop offset="100%" stop-color="#ffc75e" stop-opacity="0"/></radialGradient>
+        <radialGradient id="t"><stop offset="0%" stop-color="#22d3aa" stop-opacity="0.42"/><stop offset="100%" stop-color="#22d3aa" stop-opacity="0"/></radialGradient>
+        <radialGradient id="v"><stop offset="0%" stop-color="#a78bfa" stop-opacity="0.4"/><stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/></radialGradient>
+      </defs>
+      <circle cx="170" cy="120" r="330" fill="url(#b)"/>
+      <circle cx="1060" cy="220" r="360" fill="url(#g)"/>
+      <circle cx="430" cy="600" r="330" fill="url(#t)"/>
+      <circle cx="820" cy="520" r="300" fill="url(#v)"/>
+    </svg>`);
+    const [base, frost] = await Promise.all([
+      fitted.clone().modulate({ brightness: 0.92, saturation: 1.22 }).jpeg({ quality: 74 }).toBuffer(),
+      fitted.clone()
+        .composite([{ input: auras }])
+        .blur(32)
+        .modulate({ brightness: 0.9, saturation: 1.42 })
+        .jpeg({ quality: 58 })
+        .toBuffer(),
+    ]);
+    SCENE = {
+      base: `data:image/jpeg;base64,${base.toString("base64")}`,
+      frost: `data:image/jpeg;base64,${frost.toString("base64")}`,
+    };
   } catch {
-    BG_URI = null;
+    SCENE = null;
   }
-  return BG_URI;
+  return SCENE;
 }
 
 const MAX_PER_ROW = 17;
+
+// Fixed geometry, so every panel knows its own position and can align its
+// slice of the frosted scene. All in card pixels.
+const PAD_X = 34;
+const ROWS_TOP = 92;
+const ROWS_BOTTOM = 586;
+const ROW_GAP = 10;
+const PANEL_W = 1200 - PAD_X * 2;
+
+/** One frosted panel: the blurred scene aligned to card space, a translucent
+ *  ink tint, a diagonal sheen, and a specular top edge. Children render above. */
+function GlassPanel({ x, y, w, h, r, frost, children }: {
+  x: number; y: number; w: number; h: number; r: number;
+  frost: string | null;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{
+      position: "absolute", top: y, left: x, width: w, height: h, display: "flex",
+      borderRadius: r, overflow: "hidden",
+      border: "1px solid rgba(255,255,255,0.18)",
+      boxShadow: "0 14px 34px rgba(2,4,10,0.5)",
+    }}>
+      {frost && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={frost} width={1200} height={630}
+             style={{ position: "absolute", top: -y, left: -x }} />
+      )}
+      <div style={{
+        position: "absolute", top: 0, left: 0, width: w, height: h, display: "flex",
+        background: "rgba(12,17,30,0.30)",
+      }} />
+      <div style={{
+        position: "absolute", top: 0, left: 0, width: w, height: h, display: "flex",
+        background: "linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.035) 34%, rgba(255,255,255,0) 55%, rgba(255,255,255,0.05) 100%)",
+      }} />
+      <div style={{
+        position: "absolute", top: 0, left: 0, width: w, height: 1.5, display: "flex",
+        background: "linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.4) 70%, rgba(255,255,255,0.05))",
+      }} />
+      {children}
+    </div>
+  );
+}
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -117,18 +196,24 @@ export async function GET(request: Request) {
   for (const c of [...pool].sort((a, b) => b.wr - a.wr)) {
     (buckets[role ? c.tierRole : c.tier] ??= []).push(c);
   }
-  const rows = TIER_ORDER
+  const tiers = TIER_ORDER
     .map((tier) => ({ tier, all: buckets[tier] ?? [] }))
     .filter((row) => row.all.length > 0)
     .map((row) => ({ ...row, shown: row.all.slice(0, MAX_PER_ROW), extra: row.all.length - Math.min(row.all.length, MAX_PER_ROW) }));
 
+  // Panel geometry: rows share the band between header and footer equally.
+  const n = Math.max(tiers.length, 1);
+  const rowH = Math.floor((ROWS_BOTTOM - ROWS_TOP - (n - 1) * ROW_GAP) / n);
+  const rows = tiers.map((row, i) => ({ ...row, y: ROWS_TOP + i * (rowH + ROW_GAP) }));
+
   const shownChamps = rows.flatMap((r) => r.shown);
-  const [logo, background, ...icons] = await Promise.all([
+  const [logo, scene, ...icons] = await Promise.all([
     logoUri(),
-    backgroundUri(),
+    sceneUris(),
     ...shownChamps.map((c) => champIconUri(c.icon)),
   ]);
   const iconBySlug = new Map(shownChamps.map((c, i) => [c.slug, icons[i]]));
+  const frost = scene?.frost ?? null;
 
   const bracketLabel = CN_META.brackets.find((b) => b.key === cnBracket)?.label ?? "";
   const regionLabel = region === "Global" ? "Global · EU + NA"
@@ -141,133 +226,141 @@ export async function GET(request: Request) {
   return new ImageResponse(
     (
       <div style={{
-        width: "100%", height: "100%", display: "flex", flexDirection: "column",
+        width: "100%", height: "100%", display: "flex",
         background: "#070a12", fontFamily: "sans-serif", position: "relative",
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {background && <img src={background} width={1200} height={630}
-                            style={{ position: "absolute", top: 0, left: 0 }} />}
-        {/* The site layout's own overlay recipe (dark wash + corner vignette),
-            weighted a little heavier because the card is dense with content. */}
+        {scene && <img src={scene.base} width={1200} height={630}
+                       style={{ position: "absolute", top: 0, left: 0 }} />}
+        {/* the layout's vignette, so the eye settles on the panels */}
         <div style={{
           position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
-          background: "linear-gradient(180deg, rgba(7,10,18,0.62) 0%, rgba(7,10,18,0.68) 45%, rgba(7,10,18,0.74) 100%)",
+          background: "linear-gradient(180deg, rgba(7,10,18,0.22) 0%, rgba(7,10,18,0.16) 45%, rgba(7,10,18,0.34) 100%)",
         }} />
         <div style={{
           position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
-          background: "radial-gradient(125% 105% at 50% 45%, rgba(3,5,11,0) 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%)",
-        }} />
-        <div style={{
-          position: "absolute", top: 0, left: 0, width: 1200, height: 5, display: "flex",
-          background: "linear-gradient(90deg, #4f8dff 0%, #7fd6ff 45%, #ffd76e 100%)",
+          background: "radial-gradient(125% 105% at 50% 45%, rgba(3,5,11,0) 55%, rgba(3,5,11,0.4) 88%, rgba(3,5,11,0.6) 100%)",
         }} />
 
+        {/* header: floats on the scene, no panel -- glass needs contrast with
+            something that is NOT glass to read as a material */}
         <div style={{
-          position: "relative", display: "flex", flexDirection: "column",
-          width: "100%", height: "100%", padding: "26px 34px 22px",
+          position: "absolute", top: 24, left: PAD_X, width: PANEL_W, height: 44,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          {/* header */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-              {logo
-                // eslint-disable-next-line @next/next/no-img-element
-                ? <img src={logo} height={34} />
-                : <div style={{ display: "flex", fontSize: 26, fontWeight: 800, color: "#eef2fb" }}>WRTRUEMETA</div>}
-              <div style={{ display: "flex", fontSize: 25, fontWeight: 800, color: "#eef2fb", letterSpacing: "0.01em" }}>
-                Tier List
-              </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+            {logo
+              // eslint-disable-next-line @next/next/no-img-element
+              ? <img src={logo} height={34} />
+              : <div style={{ display: "flex", fontSize: 26, fontWeight: 800, color: "#eef2fb" }}>WRTRUEMETA</div>}
+            <div style={{
+              display: "flex", fontSize: 25, fontWeight: 800, color: "#eef2fb",
+              letterSpacing: "0.01em", textShadow: "0 2px 12px rgba(0,0,0,0.7)",
+            }}>
+              Tier List
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{
+              display: "flex", fontSize: 16, fontWeight: 700, color: "#e6efff",
+              background: "rgba(79,141,255,0.22)", border: "1px solid rgba(159,198,255,0.5)",
+              borderRadius: 999, padding: "5px 14px", boxShadow: "0 4px 14px rgba(2,4,10,0.4)",
+            }}>
+              {regionLabel}{role ? ` · ${role}` : ""}
+            </div>
+            {CURRENT_PATCH && (
               <div style={{
-                display: "flex", fontSize: 16, fontWeight: 700, color: "#cfe0ff",
-                background: "rgba(79,141,255,0.16)", border: "1px solid rgba(79,141,255,0.4)",
-                borderRadius: 999, padding: "5px 14px",
+                display: "flex", fontSize: 16, fontWeight: 700, color: "#dfe7f5",
+                background: "rgba(16,22,38,0.4)", border: "1px solid rgba(255,255,255,0.28)",
+                borderRadius: 999, padding: "5px 14px", boxShadow: "0 4px 14px rgba(2,4,10,0.4)",
               }}>
-                {regionLabel}{role ? ` · ${role}` : ""}
+                Patch {CURRENT_PATCH}
               </div>
-              {CURRENT_PATCH && (
+            )}
+          </div>
+        </div>
+
+        {/* the frosted tier rows */}
+        {rows.map((row) => {
+          const style = TIER_STYLE[row.tier] ?? TIER_STYLE.C;
+          const wrColor = TIER_TEXT[row.tier] ?? "#aeb6ca";
+          return (
+            <GlassPanel key={row.tier} x={PAD_X} y={row.y} w={PANEL_W} h={rowH} r={20} frost={frost}>
+              <div style={{
+                position: "absolute", top: 0, left: 0, width: PANEL_W, height: rowH,
+                display: "flex", alignItems: "center", gap: 14, padding: "0 14px",
+              }}>
                 <div style={{
-                  display: "flex", fontSize: 16, fontWeight: 700, color: "#9fb6e2",
-                  border: "1px solid rgba(255,255,255,0.22)", borderRadius: 999, padding: "5px 14px",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: 58, height: 42, borderRadius: 13, background: style.bg,
+                  fontSize: tierLabel(row.tier as (typeof TIER_ORDER)[number]).length > 1 ? 19 : 23,
+                  fontWeight: 900, color: style.fg, letterSpacing: "0.02em", flexShrink: 0,
+                  border: "1px solid rgba(255,255,255,0.35)",
+                  boxShadow: "0 3px 12px rgba(0,0,0,0.45)",
                 }}>
-                  Patch {CURRENT_PATCH}
+                  {tierLabel(row.tier as (typeof TIER_ORDER)[number])}
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* tier rows */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16, flexGrow: 1 }}>
-            {rows.map((row) => {
-              const style = TIER_STYLE[row.tier] ?? TIER_STYLE.C;
-              const wrColor = TIER_TEXT[row.tier] ?? "#9aa2b6";
-              return (
-                <div key={row.tier} style={{
-                  display: "flex", alignItems: "center", gap: 14,
-                  background: "rgba(10,14,24,0.72)", border: "1px solid rgba(255,255,255,0.09)",
-                  borderRadius: 18, padding: "6px 14px", flexGrow: 1,
-                }}>
-                  <div style={{
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    width: 58, height: 42, borderRadius: 12, background: style.bg,
-                    fontSize: tierLabel(row.tier as (typeof TIER_ORDER)[number]).length > 1 ? 19 : 23,
-                    fontWeight: 900, color: style.fg, letterSpacing: "0.02em", flexShrink: 0,
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.45)",
-                  }}>
-                    {tierLabel(row.tier as (typeof TIER_ORDER)[number])}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "nowrap" }}>
-                    {row.shown.map((c) => {
-                      const icon = iconBySlug.get(c.slug);
-                      return (
-                        <div key={c.slug} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                          {icon ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={icon} width={42} height={42}
-                                 style={{ borderRadius: 10, border: "1px solid rgba(255,255,255,0.28)" }} />
-                          ) : (
-                            <div style={{
-                              display: "flex", width: 42, height: 42, borderRadius: 10,
-                              alignItems: "center", justifyContent: "center",
-                              background: "rgba(255,255,255,0.09)", border: "1px solid rgba(255,255,255,0.22)",
-                              fontSize: 14, fontWeight: 800, color: "#9fb6e2",
-                            }}>
-                              {c.name.slice(0, 2)}
-                            </div>
-                          )}
-                          <div style={{ display: "flex", fontSize: 11, fontWeight: 700, color: wrColor }}>
-                            {c.wr.toFixed(1)}%
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "nowrap" }}>
+                  {row.shown.map((c) => {
+                    const icon = iconBySlug.get(c.slug);
+                    return (
+                      <div key={c.slug} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                        {icon ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={icon} width={42} height={42}
+                               style={{
+                                 borderRadius: 11, border: "1px solid rgba(255,255,255,0.32)",
+                                 boxShadow: "0 3px 8px rgba(0,0,0,0.4)",
+                               }} />
+                        ) : (
+                          <div style={{
+                            display: "flex", width: 42, height: 42, borderRadius: 11,
+                            alignItems: "center", justifyContent: "center",
+                            background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.25)",
+                            fontSize: 14, fontWeight: 800, color: "#c9d4ea",
+                          }}>
+                            {c.name.slice(0, 2)}
                           </div>
+                        )}
+                        <div style={{
+                          display: "flex", fontSize: 11, fontWeight: 700, color: wrColor,
+                          textShadow: "0 1px 4px rgba(0,0,0,0.65)",
+                        }}>
+                          {c.wr.toFixed(1)}%
                         </div>
-                      );
-                    })}
-                    {row.extra > 0 && (
-                      <div style={{
-                        display: "flex", height: 42, alignItems: "center", justifyContent: "center",
-                        borderRadius: 10, padding: "0 10px", marginBottom: 15,
-                        background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.16)",
-                        fontSize: 15, fontWeight: 800, color: "#9fb6e2",
-                      }}>
-                        +{row.extra}
                       </div>
-                    )}
-                  </div>
+                    );
+                  })}
+                  {row.extra > 0 && (
+                    <div style={{
+                      display: "flex", height: 42, alignItems: "center", justifyContent: "center",
+                      borderRadius: 11, padding: "0 10px", marginBottom: 15,
+                      background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.22)",
+                      fontSize: 15, fontWeight: 800, color: "#c9d4ea",
+                    }}>
+                      +{row.extra}
+                    </div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            </GlassPanel>
+          );
+        })}
 
-          {/* footer */}
+        {/* footer */}
+        <div style={{
+          position: "absolute", top: 596, left: PAD_X, width: PANEL_W,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
           <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 14,
+            display: "flex", fontSize: 15, color: "#aeb9cf", letterSpacing: "0.02em",
+            textShadow: "0 1px 6px rgba(0,0,0,0.7)",
           }}>
-            <div style={{ display: "flex", fontSize: 15, color: "#7f8a9e", letterSpacing: "0.02em" }}>
-              {basis}
-            </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ fontSize: 18, color: "#9fb6e2" }}>Full tier list at</span>
-              <span style={{ fontSize: 22, fontWeight: 800, color: "#4f8dff" }}>wrtruemeta.com</span>
-            </div>
+            {basis}
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, textShadow: "0 1px 6px rgba(0,0,0,0.7)" }}>
+            <span style={{ fontSize: 18, color: "#c3d4f2" }}>Full tier list at</span>
+            <span style={{ fontSize: 22, fontWeight: 800, color: "#7fb2ff" }}>wrtruemeta.com</span>
           </div>
         </div>
       </div>
