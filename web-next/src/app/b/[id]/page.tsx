@@ -44,8 +44,9 @@ export async function generateMetadata(props: PageProps<"/b/[id]">): Promise<Met
     title,
     description,
     robots: { index: false, follow: true },
-    openGraph: { title, description, images: champ?.splash ? [champ.splash] : undefined },
-    twitter: { card: "summary_large_image", title, description, images: champ?.splash ? [champ.splash] : undefined },
+    // The build card itself, not the bare splash: the unfurl shows the items.
+    openGraph: { title, description, images: [`/api/build-card?id=${id}`] },
+    twitter: { card: "summary_large_image", title, description, images: [`/api/build-card?id=${id}`] },
   };
 }
 

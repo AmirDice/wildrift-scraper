@@ -55,18 +55,54 @@ export function ShareSnapshotButton({ build }: {
     }
   };
 
+  // The card rides in the URL itself (base64url JSON), so the image works
+  // with no server-side snapshot: right now that also means it works while
+  // the KV store is down, and forever it means the image never 404s.
+  const downloadImage = () => {
+    const payload = btoa(JSON.stringify(build))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const a = document.createElement("a");
+    a.href = `/api/build-card?d=${payload}`;
+    a.download = `${build.championSlug}-build.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    track("build_shared");
+  };
+
   return (
-    <button
-      onClick={share}
-      title="Create a permanent page for this exact build and copy its link"
-      className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-accent/50 hover:text-text"
-    >
-      <LinkIcon />
-      {state === "busy" ? "Creating…"
-        : state === "copied" ? "Link copied"
-        : state === "error" ? "Try again"
-        : "Permanent link"}
-    </button>
+    <>
+      <button
+        onClick={share}
+        title="Create a permanent page for this exact build and copy its link"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-accent/50 hover:text-text"
+      >
+        <LinkIcon />
+        {state === "busy" ? "Creating…"
+          : state === "copied" ? "Link copied"
+          : state === "error" ? "Try again"
+          : "Permanent link"}
+      </button>
+      <button
+        onClick={downloadImage}
+        title="Download this build as a 1200x630 card, made for Discord and Reddit"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-gold/60 hover:text-text"
+      >
+        <ImageIcon />
+        Share as image
+      </button>
+    </>
+  );
+}
+
+function ImageIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         strokeWidth="2" strokeLinecap="round" aria-hidden>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="M21 15l-5-5L5 21" />
+    </svg>
   );
 }
 
