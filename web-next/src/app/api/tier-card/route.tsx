@@ -93,31 +93,12 @@ async function sceneUris(): Promise<{ base: string; frost: string } | null> {
   try {
     const buf = await readFile(path.join(PUBLIC_DIR, "ionia2.jpg"));
     const fitted = sharp(buf).resize(1200, 630, { fit: "cover", position: "centre" });
-    // The art is dark at its centre, so a straight blur gives the glass
-    // nothing to show. Soft ambient auras in the site's own accent colours
-    // are composited in BEFORE the blur -- after 32px of gaussian they stop
-    // being shapes and become the slow colour drift across the panels that
-    // makes frosted material read as liquid. The auras exist only in the
-    // frost layer; the scene between panels stays the honest art.
-    const auras = Buffer.from(`<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="b"><stop offset="0%" stop-color="#4f8dff" stop-opacity="0.55"/><stop offset="100%" stop-color="#4f8dff" stop-opacity="0"/></radialGradient>
-        <radialGradient id="g"><stop offset="0%" stop-color="#ffc75e" stop-opacity="0.5"/><stop offset="100%" stop-color="#ffc75e" stop-opacity="0"/></radialGradient>
-        <radialGradient id="t"><stop offset="0%" stop-color="#22d3aa" stop-opacity="0.42"/><stop offset="100%" stop-color="#22d3aa" stop-opacity="0"/></radialGradient>
-        <radialGradient id="v"><stop offset="0%" stop-color="#a78bfa" stop-opacity="0.4"/><stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/></radialGradient>
-      </defs>
-      <circle cx="170" cy="120" r="330" fill="url(#b)"/>
-      <circle cx="1060" cy="220" r="360" fill="url(#g)"/>
-      <circle cx="430" cy="600" r="330" fill="url(#t)"/>
-      <circle cx="820" cy="520" r="300" fill="url(#v)"/>
-    </svg>`);
     const [base, frost] = await Promise.all([
-      fitted.clone().modulate({ brightness: 0.92, saturation: 1.22 }).jpeg({ quality: 74 }).toBuffer(),
+      fitted.clone().modulate({ brightness: 0.85, saturation: 1.12 }).jpeg({ quality: 74 }).toBuffer(),
       fitted.clone()
-        .composite([{ input: auras }])
-        .blur(32)
-        .modulate({ brightness: 0.9, saturation: 1.42 })
-        .jpeg({ quality: 58 })
+        .blur(16)
+        .modulate({ brightness: 0.9, saturation: 1.12 })
+        .jpeg({ quality: 60 })
         .toBuffer(),
     ]);
     SCENE = {
@@ -151,8 +132,8 @@ function GlassPanel({ x, y, w, h, r, frost, children }: {
     <div style={{
       position: "absolute", top: y, left: x, width: w, height: h, display: "flex",
       borderRadius: r, overflow: "hidden",
-      border: "1px solid rgba(255,255,255,0.18)",
-      boxShadow: "0 14px 34px rgba(2,4,10,0.5)",
+      border: "1.5px solid rgba(255,255,255,0.45)",
+      boxShadow: "0 18px 50px rgba(2,4,10,0.35)",
     }}>
       {frost && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -161,15 +142,23 @@ function GlassPanel({ x, y, w, h, r, frost, children }: {
       )}
       <div style={{
         position: "absolute", top: 0, left: 0, width: w, height: h, display: "flex",
-        background: "rgba(12,17,30,0.30)",
+        background: "rgba(10,14,24,0.22)",
       }} />
       <div style={{
         position: "absolute", top: 0, left: 0, width: w, height: h, display: "flex",
-        background: "linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.035) 34%, rgba(255,255,255,0) 55%, rgba(255,255,255,0.05) 100%)",
+        background: "rgba(236,242,252,0.12)",
       }} />
       <div style={{
-        position: "absolute", top: 0, left: 0, width: w, height: 1.5, display: "flex",
-        background: "linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.4) 70%, rgba(255,255,255,0.05))",
+        position: "absolute", top: 0, left: 0, width: w, height: h, display: "flex",
+        background: "linear-gradient(118deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 34%, rgba(255,255,255,0) 55%, rgba(255,255,255,0.08) 100%)",
+      }} />
+      <div style={{
+        position: "absolute", top: 0, left: 0, width: w, height: 2, display: "flex",
+        background: "linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.55) 30%, rgba(255,255,255,0.55) 70%, rgba(255,255,255,0.1))",
+      }} />
+      <div style={{
+        position: "absolute", top: 2, left: 2, width: w - 4, height: h - 4, display: "flex",
+        borderRadius: r - 3, border: "1px solid rgba(255,255,255,0.14)",
       }} />
       {children}
     </div>
@@ -232,14 +221,10 @@ export async function GET(request: Request) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {scene && <img src={scene.base} width={1200} height={630}
                        style={{ position: "absolute", top: 0, left: 0 }} />}
-        {/* the layout's vignette, so the eye settles on the panels */}
+        {/* the scene stays bright; just enough floor for the footer text */}
         <div style={{
           position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
-          background: "linear-gradient(180deg, rgba(7,10,18,0.22) 0%, rgba(7,10,18,0.16) 45%, rgba(7,10,18,0.34) 100%)",
-        }} />
-        <div style={{
-          position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
-          background: "radial-gradient(125% 105% at 50% 45%, rgba(3,5,11,0) 55%, rgba(3,5,11,0.4) 88%, rgba(3,5,11,0.6) 100%)",
+          background: "linear-gradient(180deg, rgba(7,10,18,0.2) 0%, rgba(7,10,18,0.06) 40%, rgba(7,10,18,0.38) 100%)",
         }} />
 
         {/* header: floats on the scene, no panel -- glass needs contrast with
@@ -262,17 +247,17 @@ export async function GET(request: Request) {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{
-              display: "flex", fontSize: 16, fontWeight: 700, color: "#e6efff",
-              background: "rgba(79,141,255,0.22)", border: "1px solid rgba(159,198,255,0.5)",
-              borderRadius: 999, padding: "5px 14px", boxShadow: "0 4px 14px rgba(2,4,10,0.4)",
+              display: "flex", fontSize: 16, fontWeight: 700, color: "#f5f9ff",
+              background: "rgba(10,14,24,0.5)", border: "1px solid rgba(255,255,255,0.45)",
+              borderRadius: 999, padding: "5px 14px", boxShadow: "0 6px 18px rgba(2,4,10,0.35)",
             }}>
               {regionLabel}{role ? ` · ${role}` : ""}
             </div>
             {CURRENT_PATCH && (
               <div style={{
-                display: "flex", fontSize: 16, fontWeight: 700, color: "#dfe7f5",
-                background: "rgba(16,22,38,0.4)", border: "1px solid rgba(255,255,255,0.28)",
-                borderRadius: 999, padding: "5px 14px", boxShadow: "0 4px 14px rgba(2,4,10,0.4)",
+                display: "flex", fontSize: 16, fontWeight: 700, color: "#f5f9ff",
+                background: "rgba(10,14,24,0.42)", border: "1px solid rgba(255,255,255,0.4)",
+                borderRadius: 999, padding: "5px 14px", boxShadow: "0 6px 18px rgba(2,4,10,0.35)",
               }}>
                 Patch {CURRENT_PATCH}
               </div>
@@ -285,7 +270,7 @@ export async function GET(request: Request) {
           const style = TIER_STYLE[row.tier] ?? TIER_STYLE.C;
           const wrColor = TIER_TEXT[row.tier] ?? "#aeb6ca";
           return (
-            <GlassPanel key={row.tier} x={PAD_X} y={row.y} w={PANEL_W} h={rowH} r={20} frost={frost}>
+            <GlassPanel key={row.tier} x={PAD_X} y={row.y} w={PANEL_W} h={rowH} r={24} frost={frost}>
               <div style={{
                 position: "absolute", top: 0, left: 0, width: PANEL_W, height: rowH,
                 display: "flex", alignItems: "center", gap: 14, padding: "0 14px",
@@ -324,7 +309,7 @@ export async function GET(request: Request) {
                         )}
                         <div style={{
                           display: "flex", fontSize: 11, fontWeight: 700, color: wrColor,
-                          textShadow: "0 1px 4px rgba(0,0,0,0.65)",
+                          textShadow: "0 1px 5px rgba(0,0,0,0.85)",
                         }}>
                           {c.wr.toFixed(1)}%
                         </div>
