@@ -37,6 +37,7 @@ export interface BuildRequestKey {
   aheadEnemy: string;
   mode: string;
   riskTolerance?: string;
+  buildBias?: string;
   /** The player's own rank bracket; a Master+ build and an Emerald build are
    *  different answers to the same champion. */
   skillLevel?: string;
@@ -66,6 +67,14 @@ export function buildCacheKey(request: BuildRequestKey): string {
     aheadEnemy: request.aheadEnemy,
     mode: request.mode,
     riskTolerance: request.riskTolerance ?? "medium",
+    // Only present when the slider moved. A balanced request must serialise to
+    // the exact shape it had before the slider existed: the balanced prompt is
+    // byte-identical to the pre-slider prompt, so every v24 entry stays valid,
+    // and adding the field unconditionally would have silently flushed the
+    // whole namespace for no behavioural difference.
+    ...(request.buildBias && request.buildBias !== "balanced"
+      ? { buildBias: request.buildBias }
+      : {}),
     skillLevel: request.skillLevel ?? "average",
     enemies: [...request.enemies].map((e) => e.toLowerCase()).sort(),
     allies: [...request.allies].map((a) => a.toLowerCase()).sort(),

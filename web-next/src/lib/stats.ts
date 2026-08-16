@@ -42,6 +42,10 @@ export const TRACKED_EVENTS = [
   // without recording the refusal itself.
   "limit_reached_anon",     // ...and signing in would give them 5 more
   "limit_reached_signed_in", // ...and there is nothing left to unlock
+  // The Build Bias slider was COMMITTED to a new category (not dragged
+  // through one). Divide by build_generated for "how many builds involve a
+  // deliberate bias choice"; the per-bias split lives in stat:gen_bias:*.
+  "build_bias_changed",
 ] as const;
 
 export type TrackedEvent = (typeof TRACKED_EVENTS)[number];
@@ -155,6 +159,21 @@ export async function recordGenerationEngagement(
     await Promise.all(writes);
   } catch {
     /* engagement is never worth failing a generation over */
+  }
+}
+
+/** Which Build Bias each generation used, daily + lifetime, so "what share of
+ *  builds are damage-leaning" is a lookup. The set is closed at the route, so
+ *  a forged body cannot mint keys. Cache hits count too: the bias was part of
+ *  the request either way. */
+export async function recordBiasUse(bias: string): Promise<void> {
+  try {
+    await Promise.all([
+      kvIncr(`stat:gen_bias:${dayKey()}:${bias}`, 1, DAY_BUCKET_TTL),
+      kvIncr(`stat:gen_bias:total:${bias}`, 1),
+    ]);
+  } catch {
+    /* counters are never worth failing a request over */
   }
 }
 

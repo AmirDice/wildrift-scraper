@@ -724,6 +724,51 @@ RISK_TOLERANCE = {
             "not confuse risk tolerance with off-meta randomness.",
 }
 
+# Damage <-> durability lean, set by the Build Bias slider. A TIE-BREAKER, not
+# a licence: it never outranks champion identity, the selected playstyle, the
+# role, or item/rune legality. The hierarchy is stated inside each entry
+# because the model reads these one at a time, and "balanced" is the empty
+# string on purpose -- the default request must build the exact prompt it
+# builds today, which also keeps every cached balanced build valid.
+_BIAS_GUARD = (
+    " This bias NEVER overrides champion identity, viable damage type, scaling, the "
+    "selected playstyle, role requirements, or item/rune legality. It decides between "
+    "viable alternatives that are otherwise close, nothing more. Do not invent an "
+    "off-meta archetype to satisfy it. Where the bias materially changed a pick, say so "
+    "in that item's or rune's reason -- once, where it mattered, not on every line.")
+
+BUILD_BIAS = {
+    "max_durability": (
+        "BUILD BIAS MAXIMUM DURABILITY: build the most durable competitive version of THIS "
+        "champion on THIS playstyle. That is not 'full tank': a damage champion stays a "
+        "damage champion and keeps the offensive core its kit scales from -- express the "
+        "bias through the most defensive VIABLE options instead: survivability-oriented "
+        "damage items, HP-carrying options of the right damage type, defensive boots, "
+        "protective actives, sustain and safety in the rune page, the less greedy choice "
+        "wherever two viable picks differ mainly in risk."
+        + _BIAS_GUARD),
+    "durability": (
+        "BUILD BIAS DURABILITY-LEANING: when two viable options are close, prefer the one "
+        "that adds survivability -- HP, resists, sustain, shields, defensive boots, safer "
+        "runes -- while keeping the offense this champion and playstyle need to function. "
+        "A bruiser stays a bruiser, on its safer side."
+        + _BIAS_GUARD),
+    "balanced": "",  # the default optimisation, no extra bias
+    "damage": (
+        "BUILD BIAS DAMAGE-LEANING: when two viable options are close, prefer the one that "
+        "adds damage -- but keep survivability that is load-bearing for this champion and "
+        "playstyle. A bruiser stays a bruiser, on its more aggressive side."
+        + _BIAS_GUARD),
+    "max_damage": (
+        "BUILD BIAS MAXIMUM DAMAGE: optimise aggressively toward this kit's damage -- "
+        "burst, sustained output, penetration and offensive scaling as THIS champion "
+        "expresses them. Keep defensive investment only where it is load-bearing: required "
+        "for the champion to function, or carrying unusually strong offensive synergy. "
+        "This does not mean glass cannon on champions it does not suit, and a tank asked "
+        "for maximum damage becomes the most offensive viable TANK, not a different class."
+        + _BIAS_GUARD),
+}
+
 
 def advise(champion: str, role: str, enemies: list[str],
            allies: list[str] | None = None, playstyle: str = "standard",
@@ -731,6 +776,7 @@ def advise(champion: str, role: str, enemies: list[str],
            game_phase: str = "balanced", damage_path: str = "standard",
            champion_form: str = "", ahead_enemy: str = "",
            risk_tolerance: str = "medium", skill_level: str = "average",
+           build_bias: str = "balanced",
            locked_items: list[str] | None = None,
            locked_runes: list[str] | None = None,
            on_progress=None) -> dict:
@@ -789,6 +835,8 @@ def advise(champion: str, role: str, enemies: list[str],
     obj = OBJECTIVES.get(objective, "")
     risk_tolerance = risk_tolerance if risk_tolerance in RISK_TOLERANCE else "medium"
     risk = RISK_TOLERANCE[risk_tolerance]
+    build_bias = build_bias if build_bias in BUILD_BIAS else "balanced"
+    bias = BUILD_BIAS[build_bias]
     skill_level = skill_level if skill_level in SKILL_LEVEL else "average"
     skill = SKILL_LEVEL[skill_level]
     if mode == "studio":
@@ -884,6 +932,7 @@ def advise(champion: str, role: str, enemies: list[str],
          if mode == "studio" else ""),
         f"OPTIMIZE FOR: {obj}" if obj else "",
         risk,
+        bias,
         skill,
         GAME_PHASES[game_phase],
         DAMAGE_PATHS[damage_path],
@@ -1101,6 +1150,7 @@ def advise(champion: str, role: str, enemies: list[str],
         "optimizationGoal": objective,
         "riskTolerance": risk_tolerance,
         "skillLevel": skill_level,
+        "buildBias": build_bias,
         "enemyContext": "known" if enemies_known else "unknown",
         # Which transform form this build is for. The studio needs it to
         # show the matching kit: without it a Rhaast build was rendered
@@ -1121,7 +1171,7 @@ def advise(champion: str, role: str, enemies: list[str],
     # validation went.
     print("[advisor] generated "
           f"mode={mode} champion={champion!r} role={role!r} playstyle={playstyle} "
-          f"risk={risk_tolerance} enemyContext={'known' if enemies_known else 'unknown'} "
+          f"risk={risk_tolerance} bias={build_bias} enemyContext={'known' if enemies_known else 'unknown'} "
           f"candidates={len(pool_slugs)} errors={len(report.flat())} "
           f"warnings={len(report.warnings)} schemaVersion=2", file=sys.stderr)
     return res
@@ -1257,6 +1307,7 @@ def main() -> None:
     ap.add_argument("--ahead-enemy", default="")
     ap.add_argument("--mode", choices=("studio", "counter"), default="studio")
     ap.add_argument("--risk-tolerance", choices=tuple(RISK_TOLERANCE), default="medium")
+    ap.add_argument("--build-bias", choices=tuple(BUILD_BIAS), default="balanced")
     ap.add_argument("--skill-level", choices=tuple(SKILL_LEVEL), default="average")
     ap.add_argument("--locked-items", default="", help="comma-separated item slugs to pin")
     ap.add_argument("--locked-runes", default="", help="comma-separated rune names to pin")
@@ -1270,6 +1321,7 @@ def main() -> None:
                  allies=[a.strip() for a in args.allies.split(",") if a.strip()],
                  playstyle=args.playstyle, objective=args.objective, mode=args.mode,
                  risk_tolerance=args.risk_tolerance, skill_level=args.skill_level,
+                 build_bias=args.build_bias,
                  game_phase=args.game_phase, damage_path=args.damage_path,
                  champion_form=args.champion_form, ahead_enemy=args.ahead_enemy,
                  locked_items=[s.strip() for s in args.locked_items.split(",") if s.strip()],

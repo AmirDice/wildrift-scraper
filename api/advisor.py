@@ -106,6 +106,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             champion_form=_clean(body.get("championForm")),
             ahead_enemy=_clean(body.get("aheadEnemy")),
             risk_tolerance=_clean(body.get("riskTolerance")) or "medium",
+            build_bias=_clean(body.get("buildBias")) or "balanced",
             skill_level=_clean(body.get("skillLevel")) or "average",
             locked_items=_clean_list(body.get("lockedItems"), limit=3),
             locked_runes=_clean_list(body.get("lockedRunes"), limit=2),

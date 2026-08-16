@@ -14,6 +14,7 @@ interface SavedBuild {
   source: "recommended" | "generated" | "custom";
   role?: string;
   variant?: string;
+  bias?: string;
   items: string[];
   runes: string[];
   note?: string;
@@ -125,6 +126,11 @@ export function AlbumDetail({ id }: { id: string }) {
                     <span className="rounded bg-white/[0.07] px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-muted">
                       {SOURCE_LABEL[build.source]}
                     </span>
+                    {build.bias && build.bias !== "balanced" && (
+                      <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.65rem] font-semibold text-gold">
+                        {build.bias.replace("max_", "max ").replace("_", " ")}
+                      </span>
+                    )}
                     {build.variant && (
                       <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-accent">
                         {build.variant}

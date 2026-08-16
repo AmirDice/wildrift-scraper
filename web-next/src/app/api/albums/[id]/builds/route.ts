@@ -46,6 +46,7 @@ export async function POST(request: Request, context: RouteContext<"/api/albums/
     source,
     role: text(body.role, 20) || undefined,
     variant: text(body.variant, 30) || undefined,
+    bias: text(body.bias, 20) || undefined,
     items: list(body.items),
     runes: list(body.runes, 6),
     note: text(body.note, 200) || undefined,

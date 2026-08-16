@@ -13,6 +13,8 @@ export interface AlbumBuildPayload {
   source: "recommended" | "generated" | "custom";
   role?: string;
   variant?: string;
+  /** Build Bias the build was generated with; absent means balanced. */
+  bias?: string;
   items: string[];
   runes: string[];
 }

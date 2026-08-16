@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { rosterList, type RosterChampion } from "@/lib/threat";
 import engineData from "@/data/engine.json";
 import playstyleData from "@/data/playstyles.json";
@@ -9,7 +9,7 @@ import { DAMAGE_PATHS, GAME_PHASES, HYBRID_DAMAGE_CHAMPIONS, KAYN_FORMS } from "
 import { useAccount, type QuotaState } from "@/components/account-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in";
 import { BuildFeedback } from "@/components/build-feedback";
-import { ShareBuildButton } from "@/components/share-build";
+import { ShareBuildButton, track } from "@/components/share-build";
 import { AddToAlbumButton } from "@/components/add-to-album";
 import { LockPicker } from "@/components/lock-picker";
 import { Tip } from "@/components/build-view";
@@ -248,6 +248,17 @@ function playstylesFor(champion: RosterChampion | undefined, mode: AdvisorMode):
 }
 
 // Orthogonal optimization axis, sent alongside the playstyle.
+/** The Build Bias slider's stops. Index 2 (Balanced) is the default: it adds
+ *  nothing to the request, the cache key or the prompt, so leaving the slider
+ *  alone is guaranteed to behave exactly like the pre-slider generator. */
+const BIAS_STOPS = [
+  { key: "max_durability", label: "Maximum Durability", blurb: "The most durable competitive version of this playstyle. Still not a full tank on a damage champion." },
+  { key: "durability", label: "Durability Leaning", blurb: "When two viable options are close, take the safer one." },
+  { key: "balanced", label: "Balanced", blurb: "The default optimisation. No lean either way." },
+  { key: "damage", label: "Damage Leaning", blurb: "When two viable options are close, take the more aggressive one." },
+  { key: "max_damage", label: "Maximum Damage", blurb: "As much damage as this champion can viably carry. Never an off-meta archetype." },
+] as const;
+
 const OBJECTIVES = [
   ["balanced", "Balanced"], ["maxstats", "Max stats"], ["maxsynergy", "Max synergy"],
 ] as const;
@@ -646,6 +657,12 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [objective, setObjective] = useState<string>("balanced");
   const [gamePhase, setGamePhase] = useState<string>("balanced");
   const [skillLevel, setSkillLevel] = useState<string>("average");
+  // Slider position, 0..4 into BIAS_STOPS. Deliberately NOT reset when the
+  // champion changes: the lean is a preference about how to itemise, not a
+  // fact about one champion. The committed ref is what analytics compares
+  // against, so dragging through categories fires nothing until release.
+  const [biasIdx, setBiasIdx] = useState(2);
+  const committedBias = useRef(2);
   const [damagePath, setDamagePath] = useState<string>("standard");
   const [championForm, setChampionForm] = useState<string>(presetForm || "shadow-assassin");
   const [enemies, setEnemies] = useState<(string | null)[]>(Array(5).fill(null));
@@ -694,6 +711,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     if (r?.role) setRole(r.role);
   };
 
+  const commitBias = () => {
+    if (committedBias.current === biasIdx) return;
+    committedBias.current = biasIdx;
+    // One event per SETTLED change. Dragging max-durability to max-damage in
+    // one motion is one decision, not four.
+    track("build_bias_changed");
+  };
+
   const reset = () => {
     setChamp(seedChampion ?? null);
     setRole(presetRole);
@@ -707,6 +732,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     setAheadEnemy("");
     setLockedItems([]);
     setLockedRunes([]);
+    setBiasIdx(2);
+    committedBias.current = 2;
     setAdvice(null);
     onAdviceChange?.(null);
   };
@@ -748,6 +775,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         body: JSON.stringify({
           champion: champ, role, playstyle, objective, gamePhase, damagePath,
           skillLevel,
+          buildBias: BIAS_STOPS[biasIdx].key,
           championForm: champ === "Kayn" ? championForm : "",
           aheadEnemy: isCounter ? safeAheadEnemy : "", mode,
           enemies: isCounter ? selectedEnemies : [],
@@ -902,6 +930,34 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             </select>
           </div>
         </div>
+        {/* Build bias: a lean between damage and durability, applied inside the
+            selected playstyle, never over it. The CATEGORY is the value; the
+            slider is just how you pick one of five. No percentages anywhere,
+            because "83% damage" would claim a precision the generator does
+            not have. */}
+        <div data-tour="build-bias" className="rounded-xl bg-white/[0.03] px-3 py-2.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
+              Build bias <span className="ml-1 font-normal normal-case opacity-70">optional</span>
+            </p>
+            <p className={`text-xs font-bold ${biasIdx === 2 ? "text-muted" : biasIdx > 2 ? "text-gold" : "text-accent"}`}>
+              {BIAS_STOPS[biasIdx].label}
+            </p>
+          </div>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="shrink-0 text-[0.65rem] text-faint">More durable</span>
+            <input
+              type="range" min={0} max={4} step={1} value={biasIdx}
+              onChange={(e) => setBiasIdx(Number(e.target.value))}
+              onPointerUp={commitBias} onKeyUp={commitBias} onBlur={commitBias}
+              aria-label="Build bias" aria-valuetext={BIAS_STOPS[biasIdx].label}
+              className="h-2 min-w-0 flex-1 cursor-pointer accent-[var(--color-accent)]"
+            />
+            <span className="shrink-0 text-[0.65rem] text-faint">More damage</span>
+          </div>
+          <p className="mt-1.5 text-xs text-muted">{BIAS_STOPS[biasIdx].blurb}</p>
+        </div>
+
         {roleMismatch && (
           <p className="text-xs text-amber-300">
             Not recommended: {champ} is usually played {naturalRole}, not {role}. The build may be off-meta.
@@ -1098,6 +1154,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                         source: "generated",
                         role: role || undefined,
                         variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
+                        bias: BIAS_STOPS[biasIdx].key,
                         items: [
                           ...(advice.items ?? []),
                           ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),
@@ -1294,6 +1351,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     source: "generated",
                     role: role || undefined,
                     variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
+                    bias: BIAS_STOPS[biasIdx].key,
                     items: [
                       ...(advice.items ?? []),
                       ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),

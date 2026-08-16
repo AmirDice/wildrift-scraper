@@ -28,6 +28,10 @@ export interface SavedBuild {
   role?: string;
   /** Playstyle variant for recommended builds ("standard", "crit", ...). */
   variant?: string;
+  /** Build Bias slider category ("damage", "max_durability", ...). Absent on
+   *  every build saved before the slider existed, which reads as balanced --
+   *  exactly what those builds were. No migration needed or wanted. */
+  bias?: string;
   items: string[];
   runes: string[];
   note?: string;

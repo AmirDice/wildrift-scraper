@@ -9,7 +9,7 @@ import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
 import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, refundQuota, type QuotaState } from "@/lib/quota";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
 import { checkAbuseGuards } from "@/lib/build-guards";
-import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
+import { recordBiasUse, recordGenerationEngagement, trackEvent } from "@/lib/stats";
 
 /**
  * Live build advisor. POST { champion, role, enemies[], allies[], playstyle, mode }
@@ -121,6 +121,9 @@ const ADVISOR_SECRET = process.env.ADVISOR_SECRET || "";
 // generation costs a real model call, so an unattended script could otherwise
 // run up the bill.
 
+/** The Build Bias slider's five stops. Anything else collapses to balanced. */
+const BIAS_VALUES = new Set(["max_durability", "durability", "balanced", "damage", "max_damage"]);
+
 type Body = {
   champion?: string;
   role?: string;
@@ -135,6 +138,10 @@ type Body = {
   mode?: string;
   riskTolerance?: string;
   skillLevel?: string;
+  /** Damage <-> durability lean from the Build Bias slider. Normalised to the
+   *  closed set before anything (cache key, spawn args, counters) reads it,
+   *  so a forged value cannot fragment the cache or invent a counter key. */
+  buildBias?: string;
   lockedItems?: string[];
   lockedRunes?: string[];
   /** How many times to sample the model before answering. Set by this route on
@@ -305,6 +312,8 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
       b.mode === "counter" ? "counter" : "studio",
       "--risk-tolerance",
       b.riskTolerance ?? "medium",
+      "--build-bias",
+      b.buildBias ?? "balanced",
       "--skill-level",
       b.skillLevel ?? "average",
       "--locked-items",
@@ -436,6 +445,11 @@ async function handlePost(request: Request) {
     mode,
     riskTolerance: clean(body.riskTolerance) || "medium",
     skillLevel: clean(body.skillLevel) || "average",
+    // NOT run through clean(): that strips underscores, which silently turned
+    // "max_damage" into "maxdamage" and every bias into balanced. Membership
+    // in the closed set is a stronger sanitizer than clean() anyway.
+    buildBias: typeof body.buildBias === "string" && BIAS_VALUES.has(body.buildBias)
+      ? body.buildBias : "balanced",
     // Slugs and rune names the player pinned; the advisor caps and resolves
     // them, so passing a few extra or unknown ones is harmless.
     lockedItems: cleanList(body.lockedItems),
@@ -463,6 +477,7 @@ async function handlePost(request: Request) {
     const { ok, quota } = await consumeQuota(user, cacheIp, unlimited);
     if (!ok) return outOfAllowance(quota);
     after(() => trackEvent(mode === "counter" ? "counter_generated" : "build_generated"));
+    after(() => recordBiasUse(advisorRequest.buildBias));
     // Real depth now, not null: the allowance WAS consumed, so this belongs in
     // the distribution the "used all five" figure is read from.
     after(() => recordGenerationEngagement(quotaIdentity(user, cacheIp), quota.used));
@@ -528,6 +543,7 @@ async function handlePost(request: Request) {
     // Usage counters: the public "builds generated" figure on the home page, and
     // the internal question of whether the build tools get used at all.
     after(() => trackEvent(mode === "counter" ? "counter_generated" : "build_generated"));
+    after(() => recordBiasUse(advisorRequest.buildBias));
     // Engagement: quota.used IS this generation's depth into the daily
     // allowance (1..5, 6+ for unlimited), so the distribution of "stopped at
     // one" vs "burned all five" and the new-vs-returning split fall straight
