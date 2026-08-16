@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // --- Edit these each patch/season ---------------------------------------
@@ -59,9 +58,6 @@ export function SeasonCard() {
         {/* Right: new champion + skin */}
         <div className="flex flex-col gap-2.5">
           <FeatureRow label="New champion" badge="#4f8dff" img={NEW_CHAMPION.icon} name={NEW_CHAMPION.name} round />
-          <Link href="/recap" className="flex items-center gap-2 self-start rounded-full border border-line bg-white/[0.05] py-1 pl-3 pr-3.5 transition hover:border-accent/50">
-            <span className="text-sm font-semibold text-accent">Biggest winners &amp; losers →</span>
-          </Link>
         </div>
       </div>
     </div>

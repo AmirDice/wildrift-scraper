@@ -24,8 +24,8 @@ export function MoversHighlight() {
           </h2>
           <p className="mt-0.5 text-xs text-muted">{MOVERS_META.scope} win rate</p>
         </div>
-        <Link href="/recap" className="rounded-lg border border-line bg-white/[0.04] px-3 py-1.5 text-sm font-semibold text-accent transition hover:border-accent/50">
-          See full recap →
+        <Link href="/champion-changes" className="rounded-lg border border-line bg-white/[0.04] px-3 py-1.5 text-sm font-semibold text-accent transition hover:border-accent/50">
+          Full balance report →
         </Link>
       </div>
 

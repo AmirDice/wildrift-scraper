@@ -39,6 +39,20 @@ const nextConfig: NextConfig = {
         destination: "https://wrtruemeta.com/:path*",
         permanent: true,
       },
+      {
+        // The Patch 7.2 slides and the Season 22 recap were removed
+        // 2026-08-16; both were indexed and linked from the nav, so their
+        // URLs land on the Balance Report -- the surviving page that answers
+        // the same question (what changed, who won, who lost).
+        source: "/patch",
+        destination: "/champion-changes",
+        permanent: true,
+      },
+      {
+        source: "/recap",
+        destination: "/champion-changes",
+        permanent: true,
+      },
     ];
   },
 

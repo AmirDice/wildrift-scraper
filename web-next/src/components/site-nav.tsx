@@ -82,9 +82,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
       { href: "/blog", label: "Guides", desc: "Best picks per role, climbing & meta reads" },
       { href: "/creators", label: "Creators", desc: "Wild Rift channels still uploading" },
       { href: "/news", label: "Latest News", desc: "Patches, champions & updates" },
-      { href: "/patch", label: "Patch 7.2 Breakdown", desc: "What changed this patch" },
       { href: "/champion-changes", label: "Balance Report", desc: "Most changed & never changed" },
-      { href: "/recap", label: "Season Recap", desc: "Season 22 in review" },
     ],
   },
   // Methodology lives in the FOOTER, not here. It is a trust page rather than
