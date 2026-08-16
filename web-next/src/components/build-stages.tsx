@@ -30,11 +30,14 @@ const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
  * Boots are inserted where the strip shows them landing (after the second
  * item), so the stages mirror the purchase order the player was just shown.
  */
-export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level = 15, bare = false }: {
+export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level = 15, bare = false }: {
   name: string;
   items: string[];
   boots?: string;
   bootsUpgrade?: string;
+  /** Model-chosen upgrade timing: tier-3 lands after this many completed
+   *  items; 0 = stays tier-2 all game. Absent on older builds (reads as 2). */
+  bootsUpgradeAfter?: number;
   runeNames: string[];
   level?: number;
   /** Renders without its own card chrome, for embedding inside "Your Build". */
@@ -46,11 +49,18 @@ export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level
     if ((DATA.formulas?.[name]?.mechanics ?? []).some((m) => m.kind === "transform")) return null;
 
     const finishedBoots = bootsUpgrade || boots || "";
+    // Boots join where the strip shows them landing: the model-chosen upgrade
+    // timing, or the old fixed 2 for builds that predate the field. A skipped
+    // upgrade (bootsUpgradeAfter 0) means finishedBoots is already the tier-2,
+    // which still joins after two items -- the timing decision is about the
+    // enchant, not about owning boots.
+    const bootsAt = bootsUpgradeAfter && bootsUpgradeAfter > 0
+      ? Math.min(bootsUpgradeAfter, Math.max(items.length, 1))
+      : 2;
     const order: string[][] = [];
     for (let k = 1; k <= items.length; k += 1) {
       const prefix = items.slice(0, k);
-      // Tier-3 boots land after ~2 items, matching the strip's "T3 @10:00".
-      if (k >= 2 && finishedBoots) prefix.splice(2, 0, finishedBoots);
+      if (k >= bootsAt && finishedBoots) prefix.splice(bootsAt, 0, finishedBoots);
       order.push(prefix);
     }
 
@@ -76,7 +86,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level
       if (gain > best) { best = gain; spike = i + 1; }
     }
     return { rows, spike };
-  }, [name, items, boots, bootsUpgrade, runeNames, level]);
+  }, [name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level]);
 
   if (!stages) return null;
   const maxDps = Math.max(...stages.rows.map((r) => r.dps), 1);
@@ -128,8 +138,8 @@ export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level
   const footnote = (
     <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
       Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
-      build&rsquo;s runes, tier-3 boots landing after the second item. The same maths as the
-      Custom Lab&rsquo;s fight, so the numbers agree across the site.
+      build&rsquo;s runes, boots joining where the strip shows them landing. The same maths
+      as the Custom Lab&rsquo;s fight, so the numbers agree across the site.
     </p>
   );
 

@@ -18,7 +18,11 @@ import {
 } from "@/components/build-details";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
 import { ShareBuildButton, track } from "@/components/share-build";
+import { ShareSnapshotButton } from "@/components/share-snapshot";
+import { useAccount } from "@/components/account-provider";
 import { getChampions } from "@/lib/data";
+import { CURRENT_PATCH } from "@/lib/patch";
+import engineData from "@/data/engine.json";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -34,6 +38,126 @@ type SavedCustomBuild = {
 
 
 const EMPTY_STATE: CustomBuildState = { items: [], boots: "", runes: { keystone: "", tree: "Precision", minors: ["", "", ""], flex: "" } };
+
+/** Rebuild a Lab seed from the flat item slugs and rune names an album build
+ *  stores. The Lab wants structure (boots slot, rune tree, keystone vs minor);
+ *  the album deliberately stores the flat truth, so the structure is
+ *  reconstructed here from the engine's own item and rune metadata. */
+export function labSeedFromFlat(itemSlugs: string[], runeNames: string[]): CustomBuildState {
+  const eng = engineData as unknown as {
+    items?: Record<string, { category?: string }>;
+    runes?: Record<string, { type?: string | number; tree?: string }>;
+  };
+  const boots = itemSlugs.find((slug) => eng.items?.[slug]?.category === "Boots") ?? "";
+  const items = itemSlugs.filter((slug) => slug !== boots);
+  const slugOf = (n: string) => n.toLowerCase().replace(/['’:.]/g, "").replace(/\s+/g, "-");
+  // engine.json keys runes by display NAME ("Bone Plating"), with the slug
+  // only as a field, so the name lookup comes first and the slug is a fallback.
+  const entries = runeNames.map((n) => ({ name: n, meta: eng.runes?.[n] ?? eng.runes?.[slugOf(n)] }));
+  const keystone = entries.find((e) => e.meta?.type === "Keystone")?.name ?? "";
+  const minorsAll = entries.filter((e) => e.meta && e.meta.type !== "Keystone");
+  const byTree: Record<string, string[]> = {};
+  for (const e of minorsAll) (byTree[e.meta?.tree || "?"] ??= []).push(e.name);
+  const primary = Object.entries(byTree).sort((a, b) => b[1].length - a[1].length)[0];
+  const tree = primary && primary[0] !== "?" ? primary[0] : "Precision";
+  const minors = (primary?.[1] ?? []).slice(0, 3);
+  const flex = minorsAll.map((e) => e.name).find((n) => !minors.includes(n)) ?? "";
+  return {
+    items, boots,
+    runes: { keystone, tree, minors: [minors[0] ?? "", minors[1] ?? "", minors[2] ?? ""], flex },
+  };
+}
+
+type AlbumBuildRow = { key: string; champion: string; label: string; items: string[]; runes: string[] };
+
+/** "Import from your albums", inside the Lab itself. Until now a saved album
+ *  build reached the Lab only through the link on the album page, so standing
+ *  IN the Lab there was no way to pull up something you had already saved.
+ *  Signed out it renders nothing: albums do not exist without an account. */
+function AlbumImportRow({ champion, onLoad }: {
+  champion: string;
+  onLoad: (items: string[], runes: string[]) => void;
+}) {
+  const { user } = useAccount();
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState<AlbumBuildRow[] | null>(null);
+
+  useEffect(() => {
+    if (!open || rows !== null || !user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/albums", { cache: "no-store" });
+        if (!res.ok) throw new Error("albums unavailable");
+        const { albums } = (await res.json()) as { albums: { id: string }[] };
+        const perAlbum = await Promise.all(albums.slice(0, 8).map(async (entry) => {
+          try {
+            const detail = await fetch(`/api/albums/${entry.id}`, { cache: "no-store" });
+            if (!detail.ok) return [] as AlbumBuildRow[];
+            const { album } = (await detail.json()) as {
+              album: { builds?: { id?: string; champion: string; source: string; variant?: string; bias?: string; items: string[]; runes: string[] }[] };
+            };
+            return (album.builds ?? []).map((build, index) => ({
+              key: `${entry.id}:${build.id ?? index}`,
+              champion: build.champion,
+              label: `${build.champion} · ${build.variant || build.source}${
+                build.bias ? ` · ${build.bias.replace(/_/g, " ")}` : ""}`,
+              items: build.items,
+              runes: build.runes,
+            }));
+          } catch {
+            return [] as AlbumBuildRow[];
+          }
+        }));
+        if (cancelled) return;
+        const flat = perAlbum.flat();
+        // This champion's saves first: a loadout is portable, its reasoning
+        // is not, and the Lab is already standing on a champion.
+        flat.sort((left, right) => Number(right.champion === champion) - Number(left.champion === champion));
+        setRows(flat);
+      } catch {
+        if (!cancelled) setRows([]);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [open, rows, user, champion]);
+
+  if (!user) return null;
+  return (
+    <div className="mt-2 border-t border-line/60 pt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        title="Load a build you saved to an album into the Lab"
+        className="text-xs font-semibold text-accent transition hover:opacity-80"
+      >
+        {open ? "Hide album builds" : "Import from your albums →"}
+      </button>
+      {open && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {rows === null && <p className="text-xs text-faint">Loading your albums…</p>}
+          {rows?.length === 0 && (
+            <p className="text-xs text-faint">No builds in your albums yet. Save one from the generator or a champion page first.</p>
+          )}
+          {rows?.map((row) => (
+            <button
+              key={row.key}
+              type="button"
+              onClick={() => onLoad(row.items, row.runes)}
+              title={`Load ${row.label} into the Lab`}
+              className={`rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
+                row.champion === champion
+                  ? "border-accent/40 bg-accent/[0.07] text-text"
+                  : "border-line bg-white/[0.03] text-muted hover:text-text"}`}
+            >
+              {row.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 // Wild Rift minor-rune paths. Keystone is chosen independently of these.
 const TREES = ["Domination", "Precision", "Resolve", "Sorcery"] as const;
 
@@ -377,6 +501,20 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
               .join(", ") || "work in progress"}.`}
             label="Share"
           />
+          {state.items.filter(Boolean).length > 0 && (
+            <ShareSnapshotButton
+              align="left"
+              build={{
+                champion: name,
+                championSlug: championSlug || name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                playstyle: "custom",
+                patch: CURRENT_PATCH,
+                items: state.items.filter(Boolean),
+                boots: state.boots || undefined,
+                runes: runeNames,
+              }}
+            />
+          )}
         </div>
         {savedBuilds.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -390,6 +528,14 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
             ))}
           </div>
         )}
+        <AlbumImportRow
+          champion={name}
+          onLoad={(itemSlugs, importedRunes) => {
+            setState(labSeedFromFlat(itemSlugs, importedRunes));
+            setLoadedSavedId(null);
+            setPicker(null);
+          }}
+        />
       </div>
 
       {/* level slider */}

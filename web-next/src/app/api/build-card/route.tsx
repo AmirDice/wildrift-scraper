@@ -250,6 +250,10 @@ export async function GET(request: Request) {
   ]);
   const spellArt = [spellArtA, spellArtB];
   const biasLabel = build.bias ? BIAS_LABEL[build.bias] : null;
+  // A Lab card is the player's own work: CORE tags describe an optimised
+  // purchase order it does not have, and "generated" would claim authorship
+  // the site does not deserve.
+  const isCustom = build.playstyle === "custom";
 
   return new ImageResponse(
     (
@@ -373,7 +377,7 @@ export async function GET(request: Request) {
                 }}>
                   {i + 1}
                 </div>
-                {i < 3 && (
+                {i < 3 && !isCustom && (
                   <div style={{ display: "flex", fontSize: 12, fontWeight: 800, color: "#7fb2ff", marginTop: 5, letterSpacing: "0.1em" }}>
                     CORE
                   </div>
@@ -455,7 +459,9 @@ export async function GET(request: Request) {
                 </div>
               )}
               <div style={{ display: "flex", fontSize: 15, color: "#7f8a9e", letterSpacing: "0.02em" }}>
-                Generated &amp; optimized by WRTrueMeta Build Studio
+                {isCustom
+                  ? "Built by hand in the WRTrueMeta Custom Lab"
+                  : "Generated & optimized by WRTrueMeta Build Studio"}
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>

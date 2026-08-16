@@ -213,7 +213,8 @@ SYSTEM = (
     '"synergyWith":["<slug in your five that this multiplies or is multiplied by>"]}],'
     '"mandatoryAuditScores":[{"item":"<slug>","score":0-100,"reason":"..."}],'
     '"items":["<slug>", 5 in PURCHASE ORDER],'
-    '"boots":"<tier-2 slug>","bootsUpgrade":"<tier-3 slug>",'
+    '"boots":"<tier-2 slug>","bootsUpgrade":"<tier-3 slug>","bootsUpgradeAfter":0-5,'
+    '"bootsUpgradeReason":"one line: why the tier-3 enchant lands there in THIS power curve",'
     '"situationalBoots":[{"boots":"<tier-2 slug>","when":"specific matchup condition"}],'
     '"buildScore":{"overall":0-100,"burst":0-100,"sustainedDamage":0-100,'
     '"survivability":0-100,"mobility":0-100,"utility":0-100,"earlyPower":0-100,'
@@ -694,12 +695,24 @@ def boots_block(champion_class: str, enemies_known: bool, damage_path: str = "st
             continue
         upgrade = ITEMS.get(item.get("upgradesTo")) or {}
         row = (f"{slug} ({item['cost']}g; stats={stats(item)}; passives={passives(item)}) "
-               f"-> upgrades at 10:00 to {item.get('upgradesTo')} "
+               f"-> upgrades for ~1000g to {item.get('upgradesTo')} "
                f"(stats={stats(upgrade)}; passives={passives(upgrade)})")
         (defensive if slug in DEFENSIVE_BOOTS else rows).append(row)
 
-    block = ("BOOTS (pick ONE tier-2; it upgrades to the listed tier-3 for ~1000g after "
-             "10:00 -- usually after your 2nd item):\n" + "\n".join(rows))
+    block = (
+        "BOOTS (pick ONE tier-2; the listed tier-3 upgrade costs ~1000g):\n" + "\n".join(rows)
+        + "\n\nBOOT UPGRADE TIMING -- your decision, not a fixed rule. Return "
+          "`bootsUpgradeAfter`: the number of completed items (0-5) after which the ~1000g "
+          "tier-3 upgrade is worth buying in THIS build's power curve.\n"
+          "- Early (after 1-2 items) when the tier-3's stats or active are part of the "
+          "build's spike, or the champion lives on tempo, roams and map speed.\n"
+          "- Late (after 3-5 items) when every 1000g is better spent racing the damage or "
+          "survivability spike, which is common on scaling builds.\n"
+          "- 0 when the upgrade is simply not worth its gold this game: the build stays on "
+          "tier-2 boots and finishes items sooner instead.\n"
+          "State the reason in `bootsUpgradeReason`. If that reason names no specific "
+          "feature of THIS build -- its spike item, its tempo needs, its gold curve -- you "
+          "have defaulted to a habit instead of deciding; reconsider before answering.")
 
     # The damage path was reaching the ITEM rules and stopping there. The hard
     # legality rule says plainly that boots are not one of the five items, so

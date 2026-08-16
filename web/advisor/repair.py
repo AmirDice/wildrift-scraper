@@ -24,7 +24,7 @@ from web.advisor import itemmeta, runemeta
 # allowed to return. A section missing from here falls back to regeneration.
 REPAIRABLE: dict[str, tuple[str, ...]] = {
     "runes": ("runes",),
-    "boots": ("boots", "bootsUpgrade", "situationalBoots"),
+    "boots": ("boots", "bootsUpgrade", "bootsUpgradeAfter", "bootsUpgradeReason", "situationalBoots"),
     "situational": ("situational",),
     "situationalRunes": ("situationalRunes",),
     "snowball": ("snowballSwap",),

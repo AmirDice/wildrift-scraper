@@ -353,6 +353,20 @@ def validate(
     else:
         res["boots"] = boots
         res["bootsUpgrade"] = ITEMS[boots].get("upgradesTo")
+        # The model times the ~1000g tier-3 upgrade itself (bootsUpgradeAfter:
+        # buy after that many completed items; 0 means it is not worth buying
+        # this game). Clamp rather than fail -- a bad number is a footnote, not
+        # a broken build -- and default to the old fixed timing of 2 so cached
+        # and repaired responses keep rendering. At 0 the tier-3 is dropped
+        # entirely, so every consumer (strip, stages, card, Lab seed) falls
+        # back to the tier-2 without knowing this field exists.
+        try:
+            up_after = int(res.get("bootsUpgradeAfter", 2))
+        except (TypeError, ValueError):
+            up_after = 2
+        res["bootsUpgradeAfter"] = max(0, min(5, up_after))
+        if res["bootsUpgradeAfter"] == 0:
+            res["bootsUpgrade"] = None
         # An AP request that comes back with attack-speed boots is not honouring
         # the request. Only OFF-PATH OFFENSIVE boots are rejected: neutral and
         # defensive boots (haste, armor, tenacity, omnivamp) are legitimate on

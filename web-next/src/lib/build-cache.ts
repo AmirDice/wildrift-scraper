@@ -192,7 +192,12 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Sunfire Aegis going 20 to 40 armor for 425 to 350 health. A v23 entry
   // priced items that no longer exist at those numbers, which is exactly what
   // a build recommendation is built out of. Three entries retired.
-  return `build:v24:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v25: the model now times the tier-3 boot upgrade itself (bootsUpgradeAfter:
+  // after how many completed items the ~1000g enchant is worth buying, 0 =
+  // never this game). A v24 entry has no timing and would render the old fixed
+  // "after 2 items" forever, and the evaluation section it was scored under
+  // has left the page.
+  return `build:v25:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

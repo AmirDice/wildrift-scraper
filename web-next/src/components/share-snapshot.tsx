@@ -15,7 +15,7 @@ import { track } from "@/components/share-build";
  * localStorage so it is typed once, and sanitised server-side regardless of
  * what the client sends.
  */
-export function ShareSnapshotButton({ build }: {
+export function ShareSnapshotButton({ build, align = "right" }: {
   build: {
     champion: string;
     championSlug: string;
@@ -29,6 +29,10 @@ export function ShareSnapshotButton({ build }: {
     runes: string[];
     summoners?: string[];
   };
+  /** Which edge of the button the popover hangs from. The advisor's save row
+   *  sits at the right edge of its card, the Lab's at the left; a popover
+   *  aligned to the wrong edge leaves the viewport. */
+  align?: "right" | "left";
 }) {
   const [open, setOpen] = useState(false);
   const [player, setPlayer] = useState("");
@@ -133,7 +137,7 @@ export function ShareSnapshotButton({ build }: {
       </button>
 
       {open && (
-        <div className="glass-menu absolute right-0 top-full z-50 mt-2 w-72 rounded-xl p-3">
+        <div className={`glass-menu absolute top-full z-50 mt-2 w-72 rounded-xl p-3 ${align === "left" ? "left-0" : "right-0"}`}>
           <p className="text-xs font-bold uppercase tracking-wide text-faint">Share this build</p>
           <label className="mt-2 block text-xs text-muted" htmlFor="share-player-name">
             Your name on the card <span className="text-faint">(optional)</span>

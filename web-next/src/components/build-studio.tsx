@@ -14,7 +14,7 @@ import {
 import { Tip } from "@/components/build-view";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { EnemyBuildAdvisor, type Advice } from "@/components/enemy-build";
-import { BuildCustomizer, type CustomBuildState as LabSeed } from "@/components/build-customizer";
+import { BuildCustomizer, labSeedFromFlat, type CustomBuildState as LabSeed } from "@/components/build-customizer";
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
 import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
@@ -23,7 +23,6 @@ import { track } from "@/components/share-build";
 import { CounterBuilderCta, GenerateBuildCta } from "@/components/tool-crosslinks";
 import { BuildTour, type TourStep } from "@/components/build-tour";
 import { getChampions, pendingChampions } from "@/lib/data";
-import engineData from "@/data/engine.json";
 import { recommendedBuildsLive } from "@/lib/flags";
 
 /* eslint-disable @next/next/no-img-element */
@@ -82,35 +81,6 @@ const ARCHETYPE_LABEL: Record<string, string> = {
   spellcaster: "Spell-caster", autoattacker: "Auto-attacker",
   weaver: "Weaver", onhitcaster: "On-hit caster",
 };
-
-/** Rebuild a Lab seed from the flat item slugs and rune names an album build
- *  stores. The Lab wants structure (boots slot, rune tree, keystone vs minor);
- *  the album deliberately stores the flat truth, so the structure is
- *  reconstructed here from the engine's own item and rune metadata. */
-function labSeedFromFlat(itemSlugs: string[], runeNames: string[]): LabSeed {
-  const eng = engineData as unknown as {
-    items?: Record<string, { category?: string }>;
-    runes?: Record<string, { type?: string | number; tree?: string }>;
-  };
-  const boots = itemSlugs.find((slug) => eng.items?.[slug]?.category === "Boots") ?? "";
-  const items = itemSlugs.filter((slug) => slug !== boots);
-  const slugOf = (n: string) => n.toLowerCase().replace(/['’:.]/g, "").replace(/\s+/g, "-");
-  // engine.json keys runes by display NAME ("Bone Plating"), with the slug
-  // only as a field, so the name lookup comes first and the slug is a fallback.
-  const entries = runeNames.map((n) => ({ name: n, meta: eng.runes?.[n] ?? eng.runes?.[slugOf(n)] }));
-  const keystone = entries.find((e) => e.meta?.type === "Keystone")?.name ?? "";
-  const minorsAll = entries.filter((e) => e.meta && e.meta.type !== "Keystone");
-  const byTree: Record<string, string[]> = {};
-  for (const e of minorsAll) (byTree[e.meta?.tree || "?"] ??= []).push(e.name);
-  const primary = Object.entries(byTree).sort((a, b) => b[1].length - a[1].length)[0];
-  const tree = primary && primary[0] !== "?" ? primary[0] : "Precision";
-  const minors = (primary?.[1] ?? []).slice(0, 3);
-  const flex = minorsAll.map((e) => e.name).find((n) => !minors.includes(n)) ?? "";
-  return {
-    items, boots,
-    runes: { keystone, tree, minors: [minors[0] ?? "", minors[1] ?? "", minors[2] ?? ""], flex },
-  };
-}
 
 export function BuildStudio({ initialChampion, initialTab, initialLab, initialConfig }: {
   initialChampion?: string; initialTab?: Tab;

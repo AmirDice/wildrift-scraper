@@ -313,6 +313,12 @@ export type Advice = {
   items?: string[];
   boots?: string;
   bootsUpgrade?: string;
+  /** Buy the tier-3 upgrade after this many completed items; 0 means it is not
+   *  worth buying this game (bootsUpgrade is absent then). Missing on builds
+   *  cached before the field existed, which read as the old fixed 2. */
+  bootsUpgradeAfter?: number;
+  /** One line on why the enchant lands there, shown as the marker's tooltip. */
+  bootsUpgradeReason?: string;
   situationalBoots?: { boots: string; bootsUpgrade?: string; when: string }[];
   runes?: { keystone: string; primaryTree: string; minors: string[]; flex: string };
   /** One-line reasons for the boots and each rune, so "Why this build" can
@@ -682,14 +688,23 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
   onToggleLock?: (slug: string) => void;
 }) {
   const items = advice.items ?? [];
-  const upAfter = 2; // tier-3 lands after ~2 items (matches the advisor's guidance)
+  // WHERE the tier-3 enchant lands is the model's call now, read from the
+  // build's own power curve; 0 means it is never worth its 1000g this game.
+  // Older cached builds carry no timing and read as the old fixed 2.
+  const stayT2 = advice.bootsUpgradeAfter === 0;
+  const upAfter = Math.min(Math.max(advice.bootsUpgradeAfter ?? 2, 1), Math.max(items.length, 1));
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       {advice.boots && (
         <ItemTip slug={advice.boots} advice={advice}>
           <span className="relative inline-flex flex-col items-center">
             <img src={itemIcon(advice.boots)} alt={itemName(advice.boots)} width={40} height={40} className="rounded-lg ring-1 ring-white/10" />
-            <span className="mt-0.5 text-[0.55rem] font-bold uppercase text-faint">T2 boots</span>
+            <span
+              title={stayT2 ? advice.bootsUpgradeReason : undefined}
+              className={`mt-0.5 text-[0.55rem] font-bold uppercase ${stayT2 ? "text-gold" : "text-faint"}`}
+            >
+              {stayT2 ? "T2 all game" : "T2 boots"}
+            </span>
           </span>
         </ItemTip>
       )}
@@ -727,7 +742,9 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
             <ItemTip slug={advice.bootsUpgrade} advice={advice}>
               <span className="relative inline-flex flex-col items-center">
                 <img src={itemIcon(advice.bootsUpgrade)} alt={itemName(advice.bootsUpgrade)} width={40} height={40} className="rounded-lg ring-1 ring-gold/40" />
-                <span className="mt-0.5 text-[0.55rem] font-bold uppercase text-gold">T3 @10:00</span>
+                <span title={advice.bootsUpgradeReason} className="mt-0.5 text-[0.55rem] font-bold uppercase text-gold">
+                  T3 after {ordinal(upAfter)}
+                </span>
               </span>
             </ItemTip>
           )}
@@ -1448,6 +1465,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     items={advice.items}
                     boots={advice.boots}
                     bootsUpgrade={advice.bootsUpgrade}
+                    bootsUpgradeAfter={advice.bootsUpgradeAfter}
                     runeNames={advice.runes
                       ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
                       : []}
@@ -1617,33 +1635,6 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             <PlayGuide advice={advice} />
 
             <WhyThisBuild advice={advice} />
-
-            {advice.buildScore && (
-              <details className="glass group rounded-2xl p-4">
-                <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
-                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Complete build evaluation</p>
-                  <Disclosure />
-                </summary>
-                <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
-                  {[
-                    ["Overall", advice.buildScore.overall],
-                    ["Early power", advice.buildScore.earlyPower],
-                    ["Burst", advice.buildScore.burst],
-                    ["Sustained", advice.buildScore.sustainedDamage],
-                    ["Survivability", advice.buildScore.survivability],
-                    ["Mobility", advice.buildScore.mobility],
-                    ["Utility", advice.buildScore.utility],
-                    ["Confidence", advice.buildScore.confidence],
-                  ].map(([label, value]) => (
-                    <div key={String(label)} className="rounded-lg bg-white/[0.04] px-2 py-2">
-                      <div className="text-lg font-bold text-accent">{value}</div>
-                      <div className="text-[0.58rem] font-bold uppercase tracking-wide text-faint">{label}</div>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-3 text-sm text-muted">{advice.buildScore.reason}</p>
-              </details>
-            )}
 
             <BiasCompare history={biasHistory} ck={`${champ}|${playstyle}`} currentBias={BIAS_STOPS[biasIdx].key} />
 
