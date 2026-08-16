@@ -1234,6 +1234,14 @@ def why_not(champion: str, items: list[str], boots: str,
 
     build_names = [ITEMS.get(i, {}).get("name", i) for i in (items or [])]
     boots_name = ITEMS.get(boots, {}).get("name", boots) if boots else "none"
+    # The champion's kit facts, from the same store the full generation reads.
+    # Without them this small call had NOTHING but the champion's name, so the
+    # model answered from its own priors -- which is how a live answer once
+    # described a mana champion as energy-based. Facts beat priors, stated so.
+    try:
+        kit_facts = " ".join(profiles.kit_mechanics(champion))
+    except Exception:
+        kit_facts = ""
     cand_stats = ", ".join(
         f"{k} {v.get('value')}" for k, v in (cand.get("stats") or {}).items())
     cand_passives = " | ".join(cand.get("passives") or [])[:600]
@@ -1244,7 +1252,9 @@ def why_not(champion: str, items: list[str], boots: str,
     prompt = (
         f"You are the build engine that produced a Wild Rift build for {champion} "
         f"(playstyle: {playstyle}). A player asks why one item was not chosen.\n\n"
-        f"THE BUILD: {', '.join(build_names)} with boots {boots_name}. "
+        + (f"KIT FACTS for {champion}, authoritative -- if your own recollection "
+           f"disagrees, these win: {kit_facts}\n\n" if kit_facts else "")
+        + f"THE BUILD: {', '.join(build_names)} with boots {boots_name}. "
         f"Runes: {', '.join(rune_names or []) or 'unknown'}.\n"
         + bias_line +
         f"\nTHE ITEM IN QUESTION: {cand.get('name', candidate)} "
