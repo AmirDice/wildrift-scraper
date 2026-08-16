@@ -143,19 +143,26 @@ async function runeIconUri(name: string): Promise<string | null> {
   }
 }
 
-/** Champion splash as a data URI, whether it lives in public/ or on ddragon. */
+/** Champion splash as a data URI, cropped to the card's right panel.
+ *
+ *  720x630 with sharp's "attention" strategy, which crops toward the most
+ *  salient region of the art -- in a splash that is the champion -- instead
+ *  of blind centre-cropping, which cut Pantheon's face clean off. */
+const SPLASH_W = 720;
 async function splashUri(splash: string | undefined): Promise<string | null> {
   if (!splash) return null;
   try {
-    if (splash.startsWith("/")) {
-      const buf = await readFile(path.join(PUBLIC_DIR, splash.slice(1)));
-      const jpg = await sharp(buf).resize(1200, 630, { fit: "cover" }).jpeg({ quality: 74 }).toBuffer();
-      return `data:image/jpeg;base64,${jpg.toString("base64")}`;
-    }
-    const res = await fetch(splash);
-    if (!res.ok) return null;
-    const buf = Buffer.from(await res.arrayBuffer());
-    const jpg = await sharp(buf).resize(1200, 630, { fit: "cover" }).jpeg({ quality: 74 }).toBuffer();
+    const buf = splash.startsWith("/")
+      ? await readFile(path.join(PUBLIC_DIR, splash.slice(1)))
+      : await (async () => {
+          const res = await fetch(splash);
+          if (!res.ok) throw new Error(String(res.status));
+          return Buffer.from(await res.arrayBuffer());
+        })();
+    const jpg = await sharp(buf)
+      .resize(SPLASH_W, 630, { fit: "cover", position: "attention" })
+      .jpeg({ quality: 76 })
+      .toBuffer();
     return `data:image/jpeg;base64,${jpg.toString("base64")}`;
   } catch {
     return null;
@@ -234,26 +241,35 @@ export async function GET(request: Request) {
         width: "100%", height: "100%", display: "flex", flexDirection: "column",
         background: "#070a12", fontFamily: "sans-serif", position: "relative",
       }}>
-        {/* the signature: a hairline accent-to-gold gradient across the top */}
+        {/* The art lives on the RIGHT PANEL over a solid ground, blended in on
+            three sides: left into the panel, top sealing the frame under the
+            hairline, bottom holding the footer. The old full-bleed version
+            centre-cropped the champion out and left a bright seam at the top. */}
+        {splash && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={splash} width={SPLASH_W} height={630}
+               style={{ position: "absolute", top: 0, left: 1200 - SPLASH_W }} />
+        )}
+        <div style={{
+          position: "absolute", top: 0, left: 1200 - SPLASH_W, width: SPLASH_W, height: 630, display: "flex",
+          background: "linear-gradient(90deg, #070a12 0%, rgba(7,10,18,0.55) 34%, rgba(7,10,18,0.12) 62%, rgba(7,10,18,0.30) 100%)",
+        }} />
+        <div style={{
+          position: "absolute", top: 0, left: 1200 - SPLASH_W, width: SPLASH_W, height: 200, display: "flex",
+          background: "linear-gradient(180deg, rgba(7,10,18,0.88) 0%, rgba(7,10,18,0.35) 55%, rgba(7,10,18,0) 100%)",
+        }} />
+        <div style={{
+          position: "absolute", top: 430, left: 1200 - SPLASH_W, width: SPLASH_W, height: 200, display: "flex",
+          background: "linear-gradient(0deg, rgba(3,5,11,0.88) 0%, rgba(3,5,11,0.30) 55%, rgba(3,5,11,0) 100%)",
+        }} />
+
+        {/* the signature: a hairline accent-to-gold gradient across the top.
+            Painted AFTER the splash and its seals so it spans the full width;
+            as an earlier sibling the top seal covered its right half. */}
         <div style={{
           position: "absolute", top: 0, left: 0, width: 1200, height: 5, display: "flex",
           background: "linear-gradient(90deg, #4f8dff 0%, #7fd6ff 45%, #ffd76e 100%)",
         }} />
-        {/* the art, then the site's dark wash so text holds */}
-        {splash && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={splash} width={1200} height={630}
-               style={{ position: "absolute", top: 0, left: 0, objectFit: "cover" }} />
-        )}
-        <div style={{
-          position: "absolute", top: 5, left: 0, width: 1200, height: 625, display: "flex",
-          background: "linear-gradient(100deg, rgba(5,8,15,0.94) 0%, rgba(5,8,15,0.82) 44%, rgba(7,10,18,0.38) 100%)",
-        }} />
-        <div style={{
-          position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
-          background: "linear-gradient(0deg, rgba(3,5,11,0.85) 0%, rgba(3,5,11,0.0) 38%)",
-        }} />
-
         <div style={{
           position: "relative", display: "flex", flexDirection: "column",
           height: "100%", padding: "44px 56px 36px",
@@ -404,11 +420,6 @@ export async function GET(request: Request) {
                   </div>
                 );
               })}
-              {runes.minorTree && (
-                <div style={{ display: "flex", fontSize: 15, fontWeight: 700, color: "#7f8a9e", letterSpacing: "0.08em" }}>
-                  {runes.minorTree.toUpperCase()} MINORS
-                </div>
-              )}
             </div>
           )}
 
