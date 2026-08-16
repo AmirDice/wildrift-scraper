@@ -16,8 +16,9 @@ import { CURRENT_PATCH } from "@/lib/patch";
  * Both params are validated against closed sets -- nothing caller-supplied is
  * ever fetched. Pool depth and the raw-number toggle are deliberately absent:
  * the card is the canonical full-pool board, not a screenshot of one person's
- * toggles. The background is the top-ranked champion's own splash, darkened
- * until the tier rows carry the image.
+ * toggles. The background is the SITE's background (ionia2.jpg with the same
+ * overlay recipe the layout uses), so the card reads as a piece of the site
+ * rather than as one champion's poster.
  */
 
 export const runtime = "nodejs";
@@ -35,6 +36,10 @@ const TIER_STYLE: Record<string, { bg: string; fg: string }> = {
   B: { bg: "linear-gradient(135deg, #5b9dff, #3a78e0)", fg: "#07121f" },
   C: { bg: "linear-gradient(135deg, #9aa2b6, #6a7286)", fg: "#0b0f18" },
   Ass: { bg: "linear-gradient(135deg, #424a60, #2b3142)", fg: "#aeb6ca" },
+};
+
+const TIER_TEXT: Record<string, string> = {
+  GOD: "#ff9a52", S: "#ff9a52", A: "#ffd45a", B: "#5b9dff", C: "#9aa2b6", Ass: "#6a7286",
 };
 
 let LOGO_URI: string | null | undefined;
@@ -72,20 +77,22 @@ async function champIconUri(url: string | undefined): Promise<string | null> {
   return uri;
 }
 
-/** The #1 champion's stored splash, cover-cropped to the card. Local file, so
- *  the background needs no network at all. */
-async function splashUri(splash: string | undefined): Promise<string | null> {
-  if (!splash || !splash.startsWith("/")) return null;
+/** The site's background art (public/ionia2.jpg, 1295x729 -- almost the
+ *  card's own aspect), inlined once per process like the logo. */
+let BG_URI: string | null | undefined;
+async function backgroundUri(): Promise<string | null> {
+  if (BG_URI !== undefined) return BG_URI;
   try {
-    const buf = await readFile(path.join(PUBLIC_DIR, splash.replace(/^\//, "")));
+    const buf = await readFile(path.join(PUBLIC_DIR, "ionia2.jpg"));
     const jpg = await sharp(buf)
-      .resize(1200, 630, { fit: "cover", position: "attention" })
-      .jpeg({ quality: 72 })
+      .resize(1200, 630, { fit: "cover", position: "centre" })
+      .jpeg({ quality: 74 })
       .toBuffer();
-    return `data:image/jpeg;base64,${jpg.toString("base64")}`;
+    BG_URI = `data:image/jpeg;base64,${jpg.toString("base64")}`;
   } catch {
-    return null;
+    BG_URI = null;
   }
+  return BG_URI;
 }
 
 const MAX_PER_ROW = 17;
@@ -115,11 +122,10 @@ export async function GET(request: Request) {
     .filter((row) => row.all.length > 0)
     .map((row) => ({ ...row, shown: row.all.slice(0, MAX_PER_ROW), extra: row.all.length - Math.min(row.all.length, MAX_PER_ROW) }));
 
-  const top = buckets.GOD?.[0] ?? pool[0];
   const shownChamps = rows.flatMap((r) => r.shown);
-  const [logo, splash, ...icons] = await Promise.all([
+  const [logo, background, ...icons] = await Promise.all([
     logoUri(),
-    splashUri(top?.splash),
+    backgroundUri(),
     ...shownChamps.map((c) => champIconUri(c.icon)),
   ]);
   const iconBySlug = new Map(shownChamps.map((c, i) => [c.slug, icons[i]]));
@@ -139,20 +145,21 @@ export async function GET(request: Request) {
         background: "#070a12", fontFamily: "sans-serif", position: "relative",
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {splash && <img src={splash} width={1200} height={630}
-                        style={{ position: "absolute", top: 0, left: 0 }} />}
-        {/* The rows carry the card; the splash is atmosphere, not subject. */}
+        {background && <img src={background} width={1200} height={630}
+                            style={{ position: "absolute", top: 0, left: 0 }} />}
+        {/* The site layout's own overlay recipe (dark wash + corner vignette),
+            weighted a little heavier because the card is dense with content. */}
         <div style={{
           position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
-          background: "rgba(6,9,17,0.85)",
+          background: "linear-gradient(180deg, rgba(7,10,18,0.62) 0%, rgba(7,10,18,0.68) 45%, rgba(7,10,18,0.74) 100%)",
         }} />
         <div style={{
           position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
-          background: "linear-gradient(95deg, rgba(6,9,17,0.6) 0%, rgba(6,9,17,0.05) 60%)",
+          background: "radial-gradient(125% 105% at 50% 45%, rgba(3,5,11,0) 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%)",
         }} />
         <div style={{
-          position: "absolute", top: 0, left: 0, width: 1200, height: 6, display: "flex",
-          background: "linear-gradient(90deg, #ffce4d, #4f8dff 45%, #22d3aa)",
+          position: "absolute", top: 0, left: 0, width: 1200, height: 5, display: "flex",
+          background: "linear-gradient(90deg, #4f8dff 0%, #7fd6ff 45%, #ffd76e 100%)",
         }} />
 
         <div style={{
@@ -190,47 +197,56 @@ export async function GET(request: Request) {
           </div>
 
           {/* tier rows */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 9, marginTop: 18, flexGrow: 1 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16, flexGrow: 1 }}>
             {rows.map((row) => {
               const style = TIER_STYLE[row.tier] ?? TIER_STYLE.C;
+              const wrColor = TIER_TEXT[row.tier] ?? "#9aa2b6";
               return (
                 <div key={row.tier} style={{
                   display: "flex", alignItems: "center", gap: 14,
-                  background: "rgba(10,14,24,0.66)", border: "1px solid rgba(255,255,255,0.10)",
-                  borderRadius: 16, padding: "7px 12px", flexGrow: 1,
+                  background: "rgba(10,14,24,0.72)", border: "1px solid rgba(255,255,255,0.09)",
+                  borderRadius: 18, padding: "6px 14px", flexGrow: 1,
                 }}>
                   <div style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    width: 62, height: 44, borderRadius: 11, background: style.bg,
-                    fontSize: tierLabel(row.tier as (typeof TIER_ORDER)[number]).length > 1 ? 20 : 24,
+                    width: 58, height: 42, borderRadius: 12, background: style.bg,
+                    fontSize: tierLabel(row.tier as (typeof TIER_ORDER)[number]).length > 1 ? 19 : 23,
                     fontWeight: 900, color: style.fg, letterSpacing: "0.02em", flexShrink: 0,
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.45)",
                   }}>
                     {tierLabel(row.tier as (typeof TIER_ORDER)[number])}
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "nowrap" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "nowrap" }}>
                     {row.shown.map((c) => {
                       const icon = iconBySlug.get(c.slug);
-                      return icon ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img key={c.slug} src={icon} width={46} height={46}
-                             style={{ borderRadius: 10, border: "1px solid rgba(255,255,255,0.28)" }} />
-                      ) : (
-                        <div key={c.slug} style={{
-                          display: "flex", width: 46, height: 46, borderRadius: 10,
-                          alignItems: "center", justifyContent: "center",
-                          background: "rgba(255,255,255,0.09)", border: "1px solid rgba(255,255,255,0.22)",
-                          fontSize: 15, fontWeight: 800, color: "#9fb6e2",
-                        }}>
-                          {c.name.slice(0, 2)}
+                      return (
+                        <div key={c.slug} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                          {icon ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={icon} width={42} height={42}
+                                 style={{ borderRadius: 10, border: "1px solid rgba(255,255,255,0.28)" }} />
+                          ) : (
+                            <div style={{
+                              display: "flex", width: 42, height: 42, borderRadius: 10,
+                              alignItems: "center", justifyContent: "center",
+                              background: "rgba(255,255,255,0.09)", border: "1px solid rgba(255,255,255,0.22)",
+                              fontSize: 14, fontWeight: 800, color: "#9fb6e2",
+                            }}>
+                              {c.name.slice(0, 2)}
+                            </div>
+                          )}
+                          <div style={{ display: "flex", fontSize: 11, fontWeight: 700, color: wrColor }}>
+                            {c.wr.toFixed(1)}%
+                          </div>
                         </div>
                       );
                     })}
                     {row.extra > 0 && (
                       <div style={{
-                        display: "flex", height: 46, alignItems: "center", justifyContent: "center",
-                        borderRadius: 10, padding: "0 10px",
+                        display: "flex", height: 42, alignItems: "center", justifyContent: "center",
+                        borderRadius: 10, padding: "0 10px", marginBottom: 15,
                         background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.16)",
-                        fontSize: 16, fontWeight: 800, color: "#9fb6e2",
+                        fontSize: 15, fontWeight: 800, color: "#9fb6e2",
                       }}>
                         +{row.extra}
                       </div>
