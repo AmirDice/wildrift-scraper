@@ -56,10 +56,12 @@ export default async function BuildPage(props: PageProps<"/build">) {
         <span className="rounded-md bg-emerald-400/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-300">
           New
         </span>
-        {/* Out of beta 2026-08-06: the full EU roster is collected and every
-            generator behaviour on this page is validated and cache-versioned. */}
+        {/* v2, 2026-08-16: the result page restructure, item and rune locks,
+            model-timed boots, the why-not challenge, bias variants, share
+            cards and Lab imports all landed as one batch. v1 went out of beta
+            2026-08-06 with the full EU roster collected. */}
         <span className="rounded-md bg-accent/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-accent">
-          v1
+          v2
         </span>
       </div>
       <p className="mt-1 max-w-xl text-sm text-muted">

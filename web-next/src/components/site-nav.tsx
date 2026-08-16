@@ -27,19 +27,19 @@ const buildsEntry = (live: boolean): NavEntry => (live
   ? {
       label: "Builds",
       items: [
-        { href: "/build", label: "Build Studio", badges: ["new", "v1"], desc: "Generate by playstyle or craft with live stats" },
-        { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: ["new", "v1"], desc: "The build that beats their exact five picks" },
-        { href: "/albums", label: "Build Albums", badge: "new", desc: "Save builds & blend with a friend" },
+        { href: "/build", label: "Build Studio", badges: ["new", "v2"], desc: "Generate by playstyle or craft with live stats" },
+        { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: ["v2"], desc: "The build that beats their exact five picks" },
+        { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
-        { href: "/runes-spells", label: "Runes & Spells", badge: "new", desc: "Effects, trees, cooldowns & uses" },
+        { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },
       ],
     }
   : {
       label: "Builds",
       items: [
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
-        { href: "/runes-spells", label: "Runes & Spells", badge: "new", desc: "Effects, trees, cooldowns & uses" },
-        { href: "/albums", label: "Build Albums", badge: "new", desc: "Save builds & blend with a friend" },
+        { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },
+        { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },
       ],
     });
 
@@ -58,19 +58,19 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
     label: "Players",
     items: [
       { href: "/leaderboard", label: "Leaderboards", desc: "Top 50 players per champion" },
-      { href: "/player", label: "Player Search", badge: "new", desc: "Find a player and every champion they rank on" },
-      { href: "/hall-of-fame", label: "Hall of Fame", badge: "new", desc: "Ladder records & guild rankings" },
+      { href: "/player", label: "Player Search", desc: "Find a player and every champion they rank on" },
+      { href: "/hall-of-fame", label: "Hall of Fame", desc: "Ladder records & guild rankings" },
     ],
   },
   buildsEntry(buildToolsLive),
   {
     label: "Meta",
     items: [
-      { href: "/meta", label: "Meta Overview", badge: "new", desc: "Builds, win rates & trends" },
+      { href: "/meta", label: "Meta Overview", desc: "Builds, win rates & trends" },
       { href: "/ranks", label: "Win Rate by Skill Bracket", desc: "Diamond+ to Challenger trends" },
       { href: "/compare", label: "Compare Champions", desc: "Two champions side by side" },
       { href: "/rising", label: "Rising Picks", desc: "What China plays before the West" },
-      { href: "/regions", label: "EU vs NA vs China", badge: "new", desc: "Which champions are region-specific" },
+      { href: "/regions", label: "EU vs NA vs China", desc: "Which champions are region-specific" },
       { href: "/global", label: "Global Win Rates", desc: "EU vs CN cross-server meta" },
       { href: "/consistency", label: "Consistency", desc: "Skill ceiling & reliability" },
     ],
@@ -79,11 +79,11 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
     label: "Updates",
     collapsed: true,
     items: [
-      { href: "/blog", label: "Guides", badge: "new", desc: "Best picks per role, climbing & meta reads" },
-      { href: "/creators", label: "Creators", badge: "new", desc: "Wild Rift channels still uploading" },
+      { href: "/blog", label: "Guides", desc: "Best picks per role, climbing & meta reads" },
+      { href: "/creators", label: "Creators", desc: "Wild Rift channels still uploading" },
       { href: "/news", label: "Latest News", desc: "Patches, champions & updates" },
       { href: "/patch", label: "Patch 7.2 Breakdown", desc: "What changed this patch" },
-      { href: "/champion-changes", label: "Balance Report", badge: "new", desc: "Most changed & never changed" },
+      { href: "/champion-changes", label: "Balance Report", desc: "Most changed & never changed" },
       { href: "/recap", label: "Season Recap", desc: "Season 22 in review" },
     ],
   },
