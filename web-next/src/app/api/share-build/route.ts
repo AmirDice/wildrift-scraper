@@ -32,6 +32,7 @@ export interface SharedBuild {
   boots?: string;
   bootsUpgrade?: string;
   runes: string[];
+  summoners?: string[];
   /** Optional display name the player chose to put on their card. */
   player?: string;
   createdAt: string;
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
     boots: slug(body.boots) || undefined,
     bootsUpgrade: slug(body.bootsUpgrade) || undefined,
     runes: list(body.runes, 6, (x) => text(x)),
+    summoners: list(body.summoners, 2, (x) => text(x, 12)),
     player: text(body.player, 24) || undefined,
     createdAt: new Date().toISOString(),
   };

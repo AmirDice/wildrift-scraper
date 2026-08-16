@@ -1410,6 +1410,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                         runes: advice.runes
                           ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
                           : [],
+                        summoners: advice.summoners?.map((sp) => sp.name) ?? [],
                       }}
                     />
                     <ShareBuildButton

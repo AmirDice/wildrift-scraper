@@ -110,6 +110,19 @@ export default async function SharedBuildPage(props: PageProps<"/b/[id]">) {
             )}
           </div>
 
+          {(build.summoners?.length ?? 0) > 0 && (
+            <>
+              <p className="mt-4 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Summoner spells</p>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {build.summoners!.map((spell) => (
+                  <span key={spell} className="rounded-lg border border-line bg-white/[0.04] px-2.5 py-1 text-xs font-medium">
+                    {spell}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+
           {build.runes.length > 0 && (
             <>
               <p className="mt-4 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Runes</p>

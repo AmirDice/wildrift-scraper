@@ -27,6 +27,7 @@ export function ShareSnapshotButton({ build }: {
     boots?: string;
     bootsUpgrade?: string;
     runes: string[];
+    summoners?: string[];
   };
 }) {
   const [open, setOpen] = useState(false);

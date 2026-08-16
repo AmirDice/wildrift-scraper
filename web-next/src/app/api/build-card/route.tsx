@@ -34,6 +34,29 @@ const DATA = engineData as {
 };
 const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
 
+/** Mirrors SUMMONERS in web/build_advisor.py: a CLOSED set, because the card
+ *  fetches these icons server-side and must never fetch a caller-supplied URL. */
+const DD_SPELL = "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell";
+const SUMMONER_DD: Record<string, string> = {
+  Flash: "SummonerFlash", Ignite: "SummonerDot", Ghost: "SummonerHaste",
+  Exhaust: "SummonerExhaust", Smite: "SummonerSmite", Cleanse: "SummonerBoost",
+  Heal: "SummonerHeal", Barrier: "SummonerBarrier",
+};
+
+async function spellIconUri(name: string): Promise<string | null> {
+  const dd = SUMMONER_DD[name];
+  if (!dd) return null;
+  try {
+    const res = await fetch(`${DD_SPELL}/${dd}.png`);
+    if (!res.ok) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+    const png = await sharp(buf).resize(80, 80).png().toBuffer();
+    return `data:image/png;base64,${png.toString("base64")}`;
+  } catch {
+    return null;
+  }
+}
+
 const BIAS_LABEL: Record<string, string> = {
   max_durability: "Maximum Durability",
   durability: "Durability Leaning",
@@ -42,6 +65,22 @@ const BIAS_LABEL: Record<string, string> = {
 };
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
+
+/** The site's actual wordmark (public/logo.png, 1549x217), inlined once per
+ *  process: it never changes between renders, so re-reading it per card would
+ *  be waste. */
+let LOGO_URI: string | null | undefined;
+async function logoUri(): Promise<string | null> {
+  if (LOGO_URI !== undefined) return LOGO_URI;
+  try {
+    const buf = await readFile(path.join(PUBLIC_DIR, "logo.png"));
+    const png = await sharp(buf).resize({ height: 68 }).png().toBuffer();
+    LOGO_URI = `data:image/png;base64,${png.toString("base64")}`;
+  } catch {
+    LOGO_URI = null;
+  }
+  return LOGO_URI;
+}
 
 /** Local item webp -> png data URI. Null when the art is missing: the card
  *  then renders a lettered tile rather than a broken image. */
@@ -112,6 +151,7 @@ function parsePayload(raw: string): SharedBuild | null {
       boots: sl(decoded.boots) || undefined,
       bootsUpgrade: sl(decoded.bootsUpgrade) || undefined,
       runes: list(decoded.runes, 6, (x) => t(x)),
+      summoners: list(decoded.summoners, 2, (x) => t(x, 12)).filter((n) => n in SUMMONER_DD),
       player: t(decoded.player, 24) || undefined,
       createdAt: "",
     };
@@ -137,16 +177,21 @@ export async function GET(request: Request) {
   if (!build) return new Response("not found", { status: 404 });
 
   const champ = getChampion(build.championSlug);
-  const [splash, champIcon, ...itemArt] = await Promise.all([
+  const [logo, splash, champIcon, ...itemArt] = await Promise.all([
+    logoUri(),
     splashUri(champ?.splash),
     champ?.icon && champ.icon.startsWith("http") ? champ.icon : null,
     ...build.items.map(itemPng),
   ]);
   const bootsFinal = build.bootsUpgrade || build.boots || "";
-  const [bootsArt, ...runeArt] = await Promise.all([
+  const spells = build.summoners ?? [];
+  const [bootsArt, spellArtA, spellArtB, ...runeArt] = await Promise.all([
     bootsFinal ? itemPng(bootsFinal) : Promise.resolve(null),
+    spells[0] ? spellIconUri(spells[0]) : Promise.resolve(null),
+    spells[1] ? spellIconUri(spells[1]) : Promise.resolve(null),
     ...build.runes.map(runeIconUri),
   ]);
+  const spellArt = [spellArtA, spellArtB];
   const biasLabel = build.bias ? BIAS_LABEL[build.bias] : null;
 
   return new ImageResponse(
@@ -181,10 +226,15 @@ export async function GET(request: Request) {
         }}>
           {/* brand */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", fontSize: 26, fontWeight: 800, letterSpacing: "0.14em" }}>
-              <span style={{ color: "#4f8dff" }}>WRTRUE</span>
-              <span style={{ color: "#eef2fb" }}>META</span>
-            </div>
+            {logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logo} height={34} width={Math.round(34 * (1549 / 217))} />
+            ) : (
+              <div style={{ display: "flex", fontSize: 26, fontWeight: 800, letterSpacing: "0.14em" }}>
+                <span style={{ color: "#4f8dff" }}>WRTRUE</span>
+                <span style={{ color: "#eef2fb" }}>META</span>
+              </div>
+            )}
             {build.patch && (
               <div style={{
                 display: "flex", fontSize: 20, fontWeight: 700, color: "#9fb6e2",
@@ -270,26 +320,54 @@ export async function GET(request: Request) {
                 </div>
               </div>
             )}
+            {spellArt.some(Boolean) && (
+              <div style={{
+                display: "flex", flexDirection: "column", alignItems: "center", marginLeft: 10,
+                paddingLeft: 18, borderLeft: "2px solid rgba(255,255,255,0.12)",
+              }}>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {spellArt.map((art, i) => art && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={i} src={art} width={56} height={56}
+                         style={{ borderRadius: 12, border: "2px solid rgba(127,214,255,0.5)" }} />
+                  ))}
+                </div>
+                <div style={{ display: "flex", fontSize: 13, fontWeight: 800, color: "#7fd6ff", marginTop: 5, letterSpacing: "0.08em" }}>
+                  SPELLS
+                </div>
+              </div>
+            )}
           </div>
 
           {/* runes */}
           {build.runes.length > 0 && (
-            <div style={{ display: "flex", gap: 10, marginTop: 22, flexWrap: "wrap", maxWidth: 820 }}>
-              {build.runes.map((rune, i) => (
-                <div key={rune} style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  fontSize: 19, fontWeight: 700, color: "#d9e2f5",
-                  background: "rgba(255,255,255,0.07)", border: "2px solid rgba(255,255,255,0.14)",
-                  borderRadius: 999, padding: runeArt[i] ? "4px 18px 4px 6px" : "6px 18px",
-                }}>
-                  {runeArt[i] && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={runeArt[i]!} width={34} height={34}
-                         style={{ borderRadius: 999, background: "rgba(0,0,0,0.35)" }} />
-                  )}
-                  {rune}
-                </div>
-              ))}
+            <div style={{ display: "flex", gap: 10, marginTop: 22, flexWrap: "wrap", maxWidth: 1000, alignItems: "center" }}>
+              {build.runes.map((rune, i) => {
+                const isKeystone = i === 0;
+                const isFlex = i === build.runes.length - 1 && build.runes.length >= 3;
+                return (
+                  <div key={rune} style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    fontSize: isKeystone ? 21 : 19, fontWeight: 700,
+                    color: isKeystone ? "#f4f7ff" : "#d9e2f5",
+                    background: isKeystone ? "rgba(79,141,255,0.16)" : "rgba(255,255,255,0.07)",
+                    border: isKeystone ? "2px solid rgba(79,141,255,0.6)" : "2px solid rgba(255,255,255,0.14)",
+                    borderRadius: 999, padding: runeArt[i] ? "4px 18px 4px 6px" : "6px 18px",
+                  }}>
+                    {runeArt[i] && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={runeArt[i]!} width={isKeystone ? 40 : 34} height={isKeystone ? 40 : 34}
+                           style={{ borderRadius: 999, background: "rgba(0,0,0,0.35)" }} />
+                    )}
+                    {rune}
+                    {isFlex && (
+                      <span style={{ fontSize: 13, fontWeight: 800, color: "#ffd76e", letterSpacing: "0.06em" }}>
+                        FLEX
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
 
