@@ -44,6 +44,8 @@ export function ShareSnapshotButton({ build }: {
   }, []);
 
   useEffect(() => {
+    const card = ref.current?.closest<HTMLElement>(".glass");
+    if (card) card.style.zIndex = open ? "60" : "";
     if (!open) return;
     const onDoc = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);

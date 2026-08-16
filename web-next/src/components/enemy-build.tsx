@@ -1348,6 +1348,19 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 ) : null}
               </div>
               <ItemStrip advice={advice} lockedItems={lockedItems} onToggleLock={toggleItemLock} />
+              {/* The padlocks on the strip lock what the build already has;
+                  this picker locks anything. People who want Eclipse do not
+                  reliably know it is called Eclipse, so the full catalogue is
+                  browsable and searchable -- the same component, and the same
+                  lock state, as the picker in the form above. */}
+              <div className="mt-3">
+                <LockPicker
+                  lockedItems={lockedItems}
+                  lockedRunes={lockedRunes}
+                  onItemsChange={setLockedItems}
+                  onRunesChange={setLockedRunes}
+                />
+              </div>
               {(lockedItems.length > 0 || lockedRunes.length > 0) && (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gold/25 bg-gold/[0.06] px-3 py-2">
                   <p className="text-xs text-muted">
