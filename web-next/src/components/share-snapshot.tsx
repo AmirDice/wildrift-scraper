@@ -1,15 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { track } from "@/components/share-build";
 
 /**
- * "Permanent link": snapshots the build server-side and copies /b/{id}.
+ * "Permanent link" and "Share as image": the two ways a build leaves the site.
  *
- * Different job from ShareBuildButton, which shares the GENERATOR page: that
- * link regenerates and can drift with the patch, while this one is the exact
- * build the player is looking at, frozen. Created lazily on first click and
- * remembered, so mashing the button never mints duplicate records.
+ * The permanent link snapshots the build server-side and copies /b/{id}; the
+ * image builds a 1200x630 card whose data rides in the URL itself, so it
+ * needs no snapshot and works even when the KV store is down.
+ *
+ * Both open a small popover first with one optional field: a display name,
+ * stamped on the card and the permalink as "Built by X". Remembered in
+ * localStorage so it is typed once, and sanitised server-side regardless of
+ * what the client sends.
  */
 export function ShareSnapshotButton({ build }: {
   build: {
@@ -25,19 +29,49 @@ export function ShareSnapshotButton({ build }: {
     runes: string[];
   };
 }) {
+  const [open, setOpen] = useState(false);
+  const [player, setPlayer] = useState("");
   const [state, setState] = useState<"idle" | "busy" | "copied" | "error">("idle");
   const [id, setId] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const share = async () => {
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("wtm_player_name");
+      if (saved) setPlayer(saved.slice(0, 24));
+    } catch { /* private mode */ }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  const rememberName = () => {
+    try {
+      const trimmed = player.trim().slice(0, 24);
+      if (trimmed) localStorage.setItem("wtm_player_name", trimmed);
+      else localStorage.removeItem("wtm_player_name");
+    } catch { /* ignore */ }
+  };
+
+  const payload = () => ({ ...build, player: player.trim().slice(0, 24) || undefined });
+
+  const copyLink = async () => {
     if (state === "busy") return;
     setState("busy");
+    rememberName();
     try {
       let shareId = id;
       if (!shareId) {
         const res = await fetch("/api/share-build", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(build),
+          body: JSON.stringify(payload()),
         });
         const data = (await res.json()) as { id?: string; error?: string };
         if (!res.ok || !data.id) throw new Error(data.error ?? "share failed");
@@ -45,8 +79,7 @@ export function ShareSnapshotButton({ build }: {
         setId(shareId);
         track("build_shared");
       }
-      const url = `${window.location.origin}/b/${shareId}`;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(`${window.location.origin}/b/${shareId}`);
       setState("copied");
       window.setTimeout(() => setState("idle"), 2000);
     } catch {
@@ -55,14 +88,13 @@ export function ShareSnapshotButton({ build }: {
     }
   };
 
-  // The card rides in the URL itself (base64url JSON), so the image works
-  // with no server-side snapshot: right now that also means it works while
-  // the KV store is down, and forever it means the image never 404s.
+  // The card's data rides in the URL (base64url JSON), validated server-side.
   const downloadImage = () => {
-    const payload = btoa(JSON.stringify(build))
+    rememberName();
+    const encoded = btoa(JSON.stringify(payload()))
       .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     const a = document.createElement("a");
-    a.href = `/api/build-card?d=${payload}`;
+    a.href = `/api/build-card?d=${encoded}`;
     a.download = `${build.championSlug}-build.png`;
     document.body.appendChild(a);
     a.click();
@@ -71,27 +103,56 @@ export function ShareSnapshotButton({ build }: {
   };
 
   return (
-    <>
+    <div ref={ref} className="relative inline-flex">
       <button
-        onClick={share}
-        title="Create a permanent page for this exact build and copy its link"
+        onClick={() => setOpen((v) => !v)}
+        title="Share this exact build: a permanent page or a card image"
         className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-accent/50 hover:text-text"
       >
-        <LinkIcon />
-        {state === "busy" ? "Creating…"
-          : state === "copied" ? "Link copied"
-          : state === "error" ? "Try again"
-          : "Permanent link"}
-      </button>
-      <button
-        onClick={downloadImage}
-        title="Download this build as a 1200x630 card, made for Discord and Reddit"
-        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-gold/60 hover:text-text"
-      >
         <ImageIcon />
-        Share as image
+        Share build
       </button>
-    </>
+
+      {open && (
+        <div className="glass-menu absolute right-0 top-full z-50 mt-2 w-72 rounded-xl p-3">
+          <p className="text-xs font-bold uppercase tracking-wide text-faint">Share this build</p>
+          <label className="mt-2 block text-xs text-muted" htmlFor="share-player-name">
+            Your name on the card <span className="text-faint">(optional)</span>
+          </label>
+          <input
+            id="share-player-name"
+            value={player}
+            onChange={(e) => setPlayer(e.target.value.slice(0, 24))}
+            placeholder="Summoner name…"
+            maxLength={24}
+            className="mt-1 w-full rounded-lg border border-line bg-white/[0.04] px-2.5 py-1.5 text-xs text-text outline-none focus:border-accent/50"
+          />
+          <div className="mt-3 flex gap-2">
+            <button
+              onClick={downloadImage}
+              title="Download a 1200x630 card, made for Discord and Reddit"
+              className="flex-1 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-black transition hover:opacity-90"
+            >
+              Download image
+            </button>
+            <button
+              onClick={copyLink}
+              title="Create a permanent page for this build and copy its link"
+              className="flex-1 rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-accent/50 hover:text-text"
+            >
+              {state === "busy" ? "Creating…"
+                : state === "copied" ? "Link copied"
+                : state === "error" ? "Try again"
+                : "Copy link"}
+            </button>
+          </div>
+          <p className="mt-2 text-[0.65rem] leading-relaxed text-faint">
+            The image carries the build itself; the link opens a permanent page that unfurls
+            as this card in Discord and Reddit.
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -102,16 +163,6 @@ function ImageIcon() {
       <rect x="3" y="3" width="18" height="18" rx="2" />
       <circle cx="8.5" cy="8.5" r="1.5" />
       <path d="M21 15l-5-5L5 21" />
-    </svg>
-  );
-}
-
-function LinkIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         strokeWidth="2" strokeLinecap="round" aria-hidden>
-      <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" />
-      <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
     </svg>
   );
 }

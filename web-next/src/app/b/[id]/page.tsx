@@ -125,6 +125,7 @@ export default async function SharedBuildPage(props: PageProps<"/b/[id]">) {
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-4">
             <p className="text-xs text-faint">
+              {build.player ? <>Built by <span className="font-bold text-text">{build.player}</span> · </> : null}
               Generated on WrTrueMeta{savedOn ? ` · ${savedOn}` : ""}
             </p>
             <Link
