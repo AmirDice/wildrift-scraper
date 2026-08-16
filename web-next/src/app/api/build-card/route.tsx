@@ -204,6 +204,9 @@ function parsePayload(raw: string): SharedBuild | null {
       items: list(decoded.items, 6, sl),
       boots: sl(decoded.boots) || undefined,
       bootsUpgrade: sl(decoded.bootsUpgrade) || undefined,
+      bootsUpgradeAfter: Number.isInteger(decoded.bootsUpgradeAfter)
+        && (decoded.bootsUpgradeAfter as number) >= 0 && (decoded.bootsUpgradeAfter as number) <= 5
+        ? (decoded.bootsUpgradeAfter as number) : undefined,
       runes: list(decoded.runes, 6, (x) => t(x)),
       summoners: list(decoded.summoners, 2, (x) => t(x, 12)).filter((n) => n in SUMMONER_DD),
       skin: Number.isInteger(decoded.skin) && (decoded.skin as number) >= 0 && (decoded.skin as number) <= 99
@@ -254,6 +257,16 @@ export async function GET(request: Request) {
   // purchase order it does not have, and "generated" would claim authorship
   // the site does not deserve.
   const isCustom = build.playstyle === "custom";
+  // The boots label carries the model's upgrade timing when the build has one:
+  // "T3 AFTER 2ND" mirrors the strip on the site, "T2 ALL GAME" is the
+  // deliberate skip, and a Lab card keeps the plain label.
+  const ORDS = ["", "1ST", "2ND", "3RD", "4TH", "5TH"];
+  const upAfter = build.bootsUpgradeAfter;
+  const bootsTag = build.bootsUpgrade && upAfter && upAfter >= 1
+    ? `T3 AFTER ${ORDS[upAfter]}`
+    : !build.bootsUpgrade && upAfter === 0
+      ? "T2 ALL GAME"
+      : "BOOTS";
 
   return new ImageResponse(
     (
@@ -389,8 +402,8 @@ export async function GET(request: Request) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={bootsArt} width={72} height={72}
                      style={{ borderRadius: 14, border: "2px solid rgba(255,215,110,0.55)" }} />
-                <div style={{ display: "flex", fontSize: 13, fontWeight: 800, color: "#ffd76e", marginTop: 4, letterSpacing: "0.08em" }}>
-                  BOOTS
+                <div style={{ display: "flex", fontSize: 12, fontWeight: 800, color: "#ffd76e", marginTop: 4, letterSpacing: "0.08em", whiteSpace: "nowrap" }}>
+                  {bootsTag}
                 </div>
               </div>
             )}

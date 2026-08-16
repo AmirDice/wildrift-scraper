@@ -1524,6 +1524,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                         items: advice.items ?? [],
                         boots: advice.boots,
                         bootsUpgrade: advice.bootsUpgrade,
+                        bootsUpgradeAfter: advice.bootsUpgradeAfter,
                         runes: advice.runes
                           ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
                           : [],

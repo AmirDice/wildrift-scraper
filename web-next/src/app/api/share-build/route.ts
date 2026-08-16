@@ -31,6 +31,8 @@ export interface SharedBuild {
   items: string[];
   boots?: string;
   bootsUpgrade?: string;
+  /** Tier-3 enchant lands after this many completed items; 0 = stays tier-2. */
+  bootsUpgradeAfter?: number;
   runes: string[];
   summoners?: string[];
   /** ddragon skin number for the card's splash; 0 is the base skin. */
@@ -65,6 +67,9 @@ export async function POST(request: Request) {
     items: list(body.items, 6, slug),
     boots: slug(body.boots) || undefined,
     bootsUpgrade: slug(body.bootsUpgrade) || undefined,
+    bootsUpgradeAfter: Number.isInteger(body.bootsUpgradeAfter)
+      && (body.bootsUpgradeAfter as number) >= 0 && (body.bootsUpgradeAfter as number) <= 5
+      ? (body.bootsUpgradeAfter as number) : undefined,
     runes: list(body.runes, 6, (x) => text(x)),
     summoners: list(body.summoners, 2, (x) => text(x, 12)),
     skin: Number.isInteger(body.skin) && (body.skin as number) >= 0 && (body.skin as number) <= 99

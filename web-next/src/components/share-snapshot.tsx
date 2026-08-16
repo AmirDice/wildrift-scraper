@@ -26,6 +26,8 @@ export function ShareSnapshotButton({ build, align = "right" }: {
     items: string[];
     boots?: string;
     bootsUpgrade?: string;
+    /** When the tier-3 enchant lands (after N items; 0 = stays tier-2). */
+    bootsUpgradeAfter?: number;
     runes: string[];
     summoners?: string[];
   };
