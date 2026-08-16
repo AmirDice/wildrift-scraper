@@ -35,7 +35,7 @@ from pathlib import Path
 # regardless of where the function is invoked from.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from web.build_advisor import advise_best_of  # noqa: E402
+from web.build_advisor import advise_best_of, why_not  # noqa: E402
 
 # Shared secret so only our own Next.js route can spend DeepSeek credit. Without
 # it this endpoint is an open, billable API.
@@ -71,11 +71,45 @@ def _clean_list(value, limit: int = 5) -> list[str]:
     return [c for c in (_clean(v) for v in value) if c][:limit]
 
 
+def _slug(value, limit: int = 60) -> str:
+    if not isinstance(value, str):
+        return ""
+    return "".join(c for c in value if c.isalnum() or c == "-")[:limit]
+
+
+def _rune(value, limit: int = 40) -> str:
+    """Rune names carry colons ("Legend: Alacrity"); _clean would eat them."""
+    if not isinstance(value, str):
+        return ""
+    return "".join(c for c in value if c.isalnum() or c in " .:'&-")[:limit].strip()
+
+
 def build_from_request(body: dict) -> tuple[int, dict]:
     """Validate the request and run the advisor. Returns (status, payload)."""
     champion = _clean(body.get("champion"))
     if not champion:
         return 400, {"error": "champion is required"}
+
+    # "Why is CANDIDATE not in this build?" -- a different, deliberately small
+    # call, handled before anything else. When this branch was missing the
+    # unknown key was silently ignored and a why-not request fell through to a
+    # FULL generation: the panel showed nothing (a build has no `answer`
+    # field) and the caller paid full model time for it. Local dev never saw
+    # the bug because the site spawns the CLI there instead of calling here.
+    why = body.get("whyNot")
+    if isinstance(why, dict):
+        candidate = _slug(why.get("candidate"))
+        if not candidate:
+            return 400, {"error": "candidate item is required"}
+        items = [s for s in (_slug(v) for v in (why.get("items") or [])[:6]) if s]
+        runes = [r for r in (_rune(v) for v in (why.get("runes") or [])[:6]) if r]
+        try:
+            out = why_not(champion, items, _slug(why.get("boots")), runes, candidate,
+                          playstyle=_clean(why.get("playstyle")) or "standard",
+                          build_bias=_clean(why.get("buildBias")) or "balanced")
+        except SystemExit as exc:            # missing API key, unknown champion
+            return 500, {"error": str(exc)}
+        return 200, out
 
     mode = "counter" if _clean(body.get("mode")) == "counter" else "studio"
     enemies = _clean_list(body.get("enemies"))

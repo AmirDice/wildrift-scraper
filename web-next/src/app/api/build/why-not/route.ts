@@ -135,7 +135,10 @@ export async function POST(request: Request) {
   const payload = {
     items: list(body.items, 6).map((s) => s.replace(/[^a-z0-9-]/g, "").slice(0, 60)),
     boots: typeof body.boots === "string" ? body.boots.replace(/[^a-z0-9-]/g, "").slice(0, 60) : "",
-    runes: list(body.runes, 6).map(clean),
+    // NOT `clean`: rune names carry colons ("Legend: Alacrity") and clean
+    // would eat them, degrading the context the model reasons against.
+    runes: list(body.runes, 6).map((s) =>
+      s.replace(/[^A-Za-z0-9 .:'&-]/g, "").slice(0, 40)),
     candidate,
     playstyle: clean(body.playstyle) || "standard",
     buildBias: rawBias,
