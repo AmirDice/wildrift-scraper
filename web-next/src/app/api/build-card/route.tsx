@@ -30,8 +30,41 @@ export const runtime = "nodejs";
 
 const DATA = engineData as {
   items?: Record<string, { name?: string; icon?: string }>;
-  runes?: Record<string, { icon?: string }>;
+  runes?: Record<string, { icon?: string; type?: string | number; tree?: string }>;
 };
+
+/**
+ * Keystone / minors / flex derived from the rune CATALOGUE, never from array
+ * position. The page structure is fixed (1 keystone, 3 minors from one tree,
+ * 1 flex from another) and the catalogue knows each rune's type and tree, so
+ * the card labels correctly however the payload happens to be ordered. The
+ * first version trusted position and a scrambled test payload promptly tagged
+ * a Resolve minor as the flex.
+ */
+function classifyRunes(names: string[]) {
+  const meta = names.map((name) => ({
+    name,
+    type: DATA.runes?.[name]?.type,
+    tree: DATA.runes?.[name]?.tree ?? "",
+  }));
+  const keystone = meta.find((m) => m.type === "Keystone") ?? null;
+  const rest = meta.filter((m) => m !== keystone);
+  const counts = new Map<string, number>();
+  for (const m of rest) counts.set(m.tree, (counts.get(m.tree) ?? 0) + 1);
+  let majorityTree = "";
+  let best = 0;
+  for (const [tree, n] of counts) if (n > best) { best = n; majorityTree = tree; }
+  const minors = rest.filter((m) => m.tree === majorityTree);
+  const flex = rest.find((m) => m.tree !== majorityTree) ?? null;
+  return {
+    ordered: [
+      ...(keystone ? [{ ...keystone, role: "keystone" as const }] : []),
+      ...minors.map((m) => ({ ...m, role: "minor" as const })),
+      ...(flex ? [{ ...flex, role: "flex" as const }] : []),
+    ],
+    minorTree: majorityTree,
+  };
+}
 const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
 
 /** Mirrors SUMMONERS in web/build_advisor.py: a CLOSED set, because the card
@@ -185,11 +218,12 @@ export async function GET(request: Request) {
   ]);
   const bootsFinal = build.bootsUpgrade || build.boots || "";
   const spells = build.summoners ?? [];
+  const runes = classifyRunes(build.runes);
   const [bootsArt, spellArtA, spellArtB, ...runeArt] = await Promise.all([
     bootsFinal ? itemPng(bootsFinal) : Promise.resolve(null),
     spells[0] ? spellIconUri(spells[0]) : Promise.resolve(null),
     spells[1] ? spellIconUri(spells[1]) : Promise.resolve(null),
-    ...build.runes.map(runeIconUri),
+    ...runes.ordered.map((r) => runeIconUri(r.name)),
   ]);
   const spellArt = [spellArtA, spellArtB];
   const biasLabel = build.bias ? BIAS_LABEL[build.bias] : null;
@@ -340,18 +374,20 @@ export async function GET(request: Request) {
           </div>
 
           {/* runes */}
-          {build.runes.length > 0 && (
+          {runes.ordered.length > 0 && (
             <div style={{ display: "flex", gap: 10, marginTop: 22, flexWrap: "wrap", maxWidth: 1000, alignItems: "center" }}>
-              {build.runes.map((rune, i) => {
-                const isKeystone = i === 0;
-                const isFlex = i === build.runes.length - 1 && build.runes.length >= 3;
+              {runes.ordered.map((rune, i) => {
+                const isKeystone = rune.role === "keystone";
+                const isFlex = rune.role === "flex";
                 return (
-                  <div key={rune} style={{
+                  <div key={rune.name} style={{
                     display: "flex", alignItems: "center", gap: 8,
                     fontSize: isKeystone ? 21 : 19, fontWeight: 700,
                     color: isKeystone ? "#f4f7ff" : "#d9e2f5",
                     background: isKeystone ? "rgba(79,141,255,0.16)" : "rgba(255,255,255,0.07)",
-                    border: isKeystone ? "2px solid rgba(79,141,255,0.6)" : "2px solid rgba(255,255,255,0.14)",
+                    border: isKeystone ? "2px solid rgba(79,141,255,0.6)"
+                      : isFlex ? "2px solid rgba(255,215,110,0.4)"
+                      : "2px solid rgba(255,255,255,0.14)",
                     borderRadius: 999, padding: runeArt[i] ? "4px 18px 4px 6px" : "6px 18px",
                   }}>
                     {runeArt[i] && (
@@ -359,7 +395,7 @@ export async function GET(request: Request) {
                       <img src={runeArt[i]!} width={isKeystone ? 40 : 34} height={isKeystone ? 40 : 34}
                            style={{ borderRadius: 999, background: "rgba(0,0,0,0.35)" }} />
                     )}
-                    {rune}
+                    {rune.name}
                     {isFlex && (
                       <span style={{ fontSize: 13, fontWeight: 800, color: "#ffd76e", letterSpacing: "0.06em" }}>
                         FLEX
@@ -368,6 +404,11 @@ export async function GET(request: Request) {
                   </div>
                 );
               })}
+              {runes.minorTree && (
+                <div style={{ display: "flex", fontSize: 15, fontWeight: 700, color: "#7f8a9e", letterSpacing: "0.08em" }}>
+                  {runes.minorTree.toUpperCase()} MINORS
+                </div>
+              )}
             </div>
           )}
 
