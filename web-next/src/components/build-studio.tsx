@@ -111,8 +111,10 @@ function labSeedFromFlat(itemSlugs: string[], runeNames: string[]): LabSeed {
   };
 }
 
-export function BuildStudio({ initialChampion, initialTab, initialLab }: {
+export function BuildStudio({ initialChampion, initialTab, initialLab, initialConfig }: {
   initialChampion?: string; initialTab?: Tab;
+  /** Playstyle / role / bias seeds from the URL (album re-optimize, quick start). */
+  initialConfig?: { playstyle?: string; role?: string; bias?: string };
   /** A flat loadout to open in the Custom Build Lab, from an album build. */
   initialLab?: { items: string[]; runes: string[] };
 } = {}) {
@@ -341,6 +343,7 @@ export function BuildStudio({ initialChampion, initialTab, initialLab }: {
               setTab("customize");
             }}
             comparisonChoices={comparisonChoices}
+            initialConfig={initialConfig}
           />
         )}
         {/* Keyed by champion so switching champions clears the enemy team and
@@ -549,9 +552,11 @@ function GenerateTab({
   setAdvice,
   comparisonChoices,
   onTestInLab,
+  initialConfig,
 }: {
   name: string;
   championForm?: string;
+  initialConfig?: { playstyle?: string; role?: string; bias?: string };
   advice: Advice | null;
   setAdvice: (advice: Advice | null) => void;
   comparisonChoices: ComparableBuild[];
@@ -574,7 +579,7 @@ function GenerateTab({
 
   return (
     <div className="flex flex-col gap-4">
-      <EnemyBuildAdvisor presetChampion={name} presetForm={championForm} mode="studio" onAdviceChange={setAdvice} />
+      <EnemyBuildAdvisor presetChampion={name} presetForm={championForm} mode="studio" initialConfig={initialConfig} onAdviceChange={setAdvice} />
       {itemSlugs.length > 0 && (
         <>
           {/* The generator has no fight of its own; the Lab does. Rebuilding a

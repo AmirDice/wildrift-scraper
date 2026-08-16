@@ -32,6 +32,9 @@ export interface SavedBuild {
    *  every build saved before the slider existed, which reads as balanced --
    *  exactly what those builds were. No migration needed or wanted. */
   bias?: string;
+  /** Patch the build was generated on. Absent on builds saved before patch
+   *  stamping; those show "saved before patch tracking" rather than a guess. */
+  patch?: string;
   items: string[];
   runes: string[];
   note?: string;

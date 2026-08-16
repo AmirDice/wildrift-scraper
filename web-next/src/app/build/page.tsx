@@ -34,6 +34,14 @@ export default async function BuildPage(props: PageProps<"/build">) {
           : [],
       }
     : undefined;
+  // Prefill from album re-optimize links and quick-start chips. Seeds only.
+  const BIAS_KEYS = new Set(["max_durability", "durability", "damage", "max_damage"]);
+  const initialConfig = {
+    playstyle: typeof search.variant === "string" ? search.variant.slice(0, 30) : undefined,
+    role: typeof search.role === "string" ? search.role.slice(0, 20) : undefined,
+    bias: typeof search.bias === "string" && BIAS_KEYS.has(search.bias) ? search.bias : undefined,
+  };
+  const hasConfig = Boolean(initialConfig.playstyle || initialConfig.role || initialConfig.bias);
   return (
     <Container className="py-8">
       <div className="flex flex-wrap items-center gap-3">
@@ -58,7 +66,7 @@ export default async function BuildPage(props: PageProps<"/build">) {
       <div className="mb-6 mt-3">
         <BuildsGeneratedPill />
       </div>
-      <BuildStudio initialChampion={initialChampion} initialTab={initialTab} initialLab={initialLab} />
+      <BuildStudio initialChampion={initialChampion} initialTab={initialTab} initialLab={initialLab} initialConfig={hasConfig ? initialConfig : undefined} />
     </Container>
   );
 }

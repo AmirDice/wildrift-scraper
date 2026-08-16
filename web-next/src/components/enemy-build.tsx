@@ -10,6 +10,10 @@ import { useAccount, type QuotaState } from "@/components/account-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in";
 import { BuildFeedback } from "@/components/build-feedback";
 import { ShareBuildButton, track } from "@/components/share-build";
+import { ShareSnapshotButton } from "@/components/share-snapshot";
+import { BuildStages } from "@/components/build-stages";
+import { WhyNotPanel } from "@/components/why-not-panel";
+import { CURRENT_PATCH } from "@/lib/patch";
 import { AddToAlbumButton } from "@/components/add-to-album";
 import { LockPicker } from "@/components/lock-picker";
 import { Tip } from "@/components/build-view";
@@ -555,7 +559,115 @@ function RuneTip({ name, advice, children }: {
   );
 }
 
-function ItemStrip({ advice }: { advice: Advice }) {
+/**
+ * Side-by-side of the biases the player has actually generated for this
+ * champion and playstyle. Nothing is generated for free here: each column
+ * exists because a generation was spent on it, which keeps the comparison
+ * honest and the allowance meaningful. Cells that differ from the column to
+ * their left are highlighted, because "what did the slider change" is the
+ * entire question.
+ */
+function BiasCompare({ history, ck, currentBias }: {
+  history: Record<string, { ck: string; items: string[]; boots?: string; bootsUpgrade?: string; runes: string[]; score?: Advice["buildScore"] }>;
+  ck: string;
+  currentBias: string;
+}) {
+  const order = BIAS_STOPS.map((b) => b.key).filter((k) => history[k]?.ck === ck);
+  if (order.length < 2) return null;
+  const cols = order.map((k) => ({ key: k, label: BIAS_STOPS.find((b) => b.key === k)!.label, ...history[k] }));
+  const slots = Math.max(...cols.map((c) => c.items.length));
+  return (
+    <details open className="glass group rounded-2xl p-4">
+      <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
+        <span className="min-w-0">
+          <span className="block text-sm font-bold text-text">Your biases, side by side</span>
+          <span className="text-xs font-normal text-faint">
+            Only the builds you generated; highlighted cells are what the slider changed
+          </span>
+        </span>
+        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">v</span>
+      </summary>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[420px] text-xs">
+          <thead>
+            <tr className="border-b border-line text-left text-[0.6rem] uppercase tracking-wide text-faint">
+              <th className="py-1.5 pr-2">Slot</th>
+              {cols.map((c) => (
+                <th key={c.key} className={`py-1.5 pr-2 ${c.key === currentBias ? "text-accent" : ""}`}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: slots }, (_, i) => (
+              <tr key={i} className="border-b border-line/40">
+                <td className="py-1.5 pr-2 font-bold text-faint">{i + 1}</td>
+                {cols.map((c, ci) => {
+                  const slug = c.items[i];
+                  const differs = ci > 0 && slug !== cols[ci - 1].items[i];
+                  return (
+                    <td key={c.key} className={`py-1.5 pr-2 ${differs ? "font-bold text-gold" : "text-muted"}`}>
+                      {slug ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <img src={itemIcon(slug)} alt="" width={20} height={20} className="rounded" />
+                          <span className="max-w-[9rem] truncate">{itemName(slug)}</span>
+                        </span>
+                      ) : "-"}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+            <tr className="border-b border-line/40">
+              <td className="py-1.5 pr-2 font-bold text-faint">Boots</td>
+              {cols.map((c, ci) => {
+                const b = c.bootsUpgrade || c.boots || "";
+                const prev = cols[ci - 1];
+                const differs = ci > 0 && b !== (prev.bootsUpgrade || prev.boots || "");
+                return (
+                  <td key={c.key} className={`py-1.5 pr-2 ${differs ? "font-bold text-gold" : "text-muted"}`}>
+                    {b ? itemName(b) : "-"}
+                  </td>
+                );
+              })}
+            </tr>
+            {cols.some((c) => c.score) && (
+              <tr>
+                <td className="py-1.5 pr-2 font-bold text-faint">Score</td>
+                {cols.map((c) => (
+                  <td key={c.key} className="py-1.5 pr-2 tabular-nums text-muted">
+                    {c.score
+                      ? `dmg ${c.score.sustainedDamage} / surv ${c.score.survivability} / early ${c.score.earlyPower}`
+                      : "-"}
+                  </td>
+                ))}
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  );
+}
+
+/** Padlock small enough to sit on an item corner. */
+function LockGlyphSmall({ open = false }: { open?: boolean }) {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         strokeWidth="2.6" aria-hidden>
+      <rect x="4" y="10" width="16" height="11" rx="2" fill={open ? "none" : "currentColor"} fillOpacity="0.35" />
+      {open ? <path d="M8 10V7a4 4 0 0 1 8 0" /> : <path d="M8 10V7a4 4 0 0 1 8 0v3" />}
+    </svg>
+  );
+}
+
+function ItemStrip({ advice, lockedItems, onToggleLock }: {
+  advice: Advice;
+  /** When provided, each item gets a lock toggle: locked items are pinned for
+   *  the NEXT generation, which is how "keep Trinity, rethink the rest" works
+   *  without rerolling blind. */
+  lockedItems?: string[];
+  onToggleLock?: (slug: string) => void;
+}) {
   const items = advice.items ?? [];
   const upAfter = 2; // tier-3 lands after ~2 items (matches the advisor's guidance)
   return (
@@ -570,12 +682,34 @@ function ItemStrip({ advice }: { advice: Advice }) {
       )}
       {items.map((slug, i) => (
         <span key={slug} className="inline-flex items-center gap-2.5">
-          <ItemTip slug={slug} advice={advice}>
-            <span className="relative">
-              <img src={itemIcon(slug)} alt={itemName(slug)} width={46} height={46} className="rounded-lg ring-1 ring-white/10" />
-              <span className="absolute -left-1.5 -top-1.5 grid h-[18px] w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{i + 1}</span>
-            </span>
-          </ItemTip>
+          <span className="inline-flex flex-col items-center">
+            <ItemTip slug={slug} advice={advice}>
+              <span className="relative">
+                <img src={itemIcon(slug)} alt={itemName(slug)} width={46} height={46}
+                     className={`rounded-lg ring-1 ${lockedItems?.includes(slug) ? "ring-2 ring-gold/70" : "ring-white/10"}`} />
+                <span className="absolute -left-1.5 -top-1.5 grid h-[18px] w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{i + 1}</span>
+                {onToggleLock && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleLock(slug); }}
+                    title={lockedItems?.includes(slug)
+                      ? `${itemName(slug)} is locked for the next generation; click to unlock`
+                      : `Lock ${itemName(slug)}: the next generation must keep it`}
+                    aria-pressed={lockedItems?.includes(slug)}
+                    className={`absolute -bottom-1.5 -right-1.5 grid h-[18px] w-[18px] place-items-center rounded-full ring-1 transition ${
+                      lockedItems?.includes(slug)
+                        ? "bg-gold text-black ring-gold"
+                        : "bg-[#0e1322] text-faint ring-line hover:text-text"}`}
+                  >
+                    <LockGlyphSmall open={!lockedItems?.includes(slug)} />
+                  </button>
+                )}
+              </span>
+            </ItemTip>
+            {/* The first three purchases are the build's core: the part worth
+                finishing even in a game that ends early. */}
+            {i < 3 && <span className="mt-0.5 text-[0.5rem] font-black uppercase tracking-wide text-accent/80">core</span>}
+          </span>
           {advice.bootsUpgrade && i + 1 === upAfter && (
             <ItemTip slug={advice.bootsUpgrade} advice={advice}>
               <span className="relative inline-flex flex-col items-center">
@@ -630,7 +764,10 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
 
 /** The AI build advisor. Counter mode always adapts to the selected enemies;
  *  Studio mode generates an enemy-agnostic personal build. */
-export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion, mode = "counter", onAdviceChange, onFormChange }: {
+export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion, initialConfig, mode = "counter", onAdviceChange, onFormChange }: {
+  /** Prefills playstyle / role / bias from a URL (album re-optimize links and
+   *  quick-start chips arrive this way). Seeds only; everything stays editable. */
+  initialConfig?: { playstyle?: string; role?: string; bias?: string };
   /** Locks the advisor to one champion (the studio embeds it this way). */
   presetChampion?: string;
   /** Transform form to generate for, when the embedder already picked one
@@ -652,8 +789,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const seedChampion = presetChampion ?? (initialChampion && roster.some((c) => c.name === initialChampion) ? initialChampion : undefined);
   const presetRole = seedChampion ? roster.find((c) => c.name === seedChampion)?.role ?? "" : "";
   const [champ, setChamp] = useState<string | null>(seedChampion ?? null);
-  const [role, setRole] = useState(presetRole);
-  const [playstyle, setPlaystyle] = useState<string>(defaultPlaystyle);
+  const [role, setRole] = useState(initialConfig?.role || presetRole);
+  const [playstyle, setPlaystyle] = useState<string>(initialConfig?.playstyle || defaultPlaystyle);
   const [objective, setObjective] = useState<string>("balanced");
   const [gamePhase, setGamePhase] = useState<string>("balanced");
   const [skillLevel, setSkillLevel] = useState<string>("average");
@@ -661,8 +798,28 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   // champion changes: the lean is a preference about how to itemise, not a
   // fact about one champion. The committed ref is what analytics compares
   // against, so dragging through categories fires nothing until release.
-  const [biasIdx, setBiasIdx] = useState(2);
-  const committedBias = useRef(2);
+  const initialBiasIdx = (() => {
+    const i = BIAS_STOPS.findIndex((b) => b.key === initialConfig?.bias);
+    return i >= 0 ? i : 2;
+  })();
+  const [biasIdx, setBiasIdx] = useState(initialBiasIdx);
+  const committedBias = useRef(initialBiasIdx);
+  /** One remembered build per bias for the CURRENT champion+playstyle, so
+   *  generating a second bias produces a side-by-side instead of amnesia. */
+  const [biasHistory, setBiasHistory] = useState<Record<string, {
+    ck: string; items: string[]; boots?: string; bootsUpgrade?: string;
+    runes: string[]; score?: Advice["buildScore"];
+  }>>({});
+  /** Quick-start chips: the last few generated setups, read once on mount. */
+  const [recents, setRecents] = useState<{
+    champ: string; slug: string; role?: string; playstyle?: string; bias?: string;
+  }[]>([]);
+  useEffect(() => {
+    try {
+      const raw = JSON.parse(localStorage.getItem("wtm_recent_setups") ?? "[]");
+      if (Array.isArray(raw)) setRecents(raw.filter((r) => r?.champ && r?.slug).slice(0, 6));
+    } catch { /* private mode */ }
+  }, []);
   const [damagePath, setDamagePath] = useState<string>("standard");
   const [championForm, setChampionForm] = useState<string>(presetForm || "shadow-assassin");
   const [enemies, setEnemies] = useState<(string | null)[]>(Array(5).fill(null));
@@ -709,6 +866,19 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     setAllies((current) => current.map((ally) => ally === name ? null : ally));
     const r = roster.find((c) => c.name === name);
     if (r?.role) setRole(r.role);
+  };
+
+  // Lock caps mirror the advisor's own (3 items, 2 runes): a lock the
+  // generator would silently drop is worse than a refused click.
+  const toggleItemLock = (slug: string) => {
+    setLockedItems((prev) => prev.includes(slug)
+      ? prev.filter((x) => x !== slug)
+      : prev.length >= 3 ? prev : [...prev, slug]);
+  };
+  const toggleRuneLock = (name: string) => {
+    setLockedRunes((prev) => prev.includes(name)
+      ? prev.filter((x) => x !== name)
+      : prev.length >= 2 ? prev : [...prev, name]);
   };
 
   const commitBias = () => {
@@ -826,7 +996,35 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
       // The form's job is done the moment a build renders below it; folding it
       // moves the result to the top of the screen. An error keeps it open,
       // because the fix for an error lives in the form.
-      if (!nextAdvice.error) setFormOpen(false);
+      if (!nextAdvice.error) {
+        setFormOpen(false);
+        const biasKey = BIAS_STOPS[biasIdx].key;
+        const runeList = nextAdvice.runes
+          ? [nextAdvice.runes.keystone, ...nextAdvice.runes.minors, nextAdvice.runes.flex].filter(Boolean)
+          : [];
+        setBiasHistory((h) => ({
+          ...h,
+          [biasKey]: {
+            ck: `${champ}|${playstyle}`,
+            items: [...(nextAdvice.items ?? [])],
+            boots: nextAdvice.boots,
+            bootsUpgrade: nextAdvice.bootsUpgrade,
+            runes: runeList,
+            score: nextAdvice.buildScore,
+          },
+        }));
+        // Quick-start memory: last few setups, newest first, one per champion.
+        try {
+          const raw = JSON.parse(localStorage.getItem("wtm_recent_setups") ?? "[]");
+          const prev = Array.isArray(raw) ? raw : [];
+          const entry = {
+            champ, slug: championMeta?.slug ?? champ.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            role, playstyle, bias: biasKey, at: Date.now(),
+          };
+          const next = [entry, ...prev.filter((r) => r?.champ !== champ)].slice(0, 6);
+          localStorage.setItem("wtm_recent_setups", JSON.stringify(next));
+        } catch { /* private mode: quick-start simply stays empty */ }
+      }
     } catch (e) {
       const nextAdvice = { error: e instanceof Error ? e.message : String(e) };
       setAdvice(nextAdvice);
@@ -842,6 +1040,21 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   return (
     <div className="space-y-6">
       {/* inputs */}
+      {!isCounter && recents.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Quick start</span>
+          {recents.map((r) => (
+            <Link
+              key={r.slug}
+              href={`/build?champion=${r.slug}&tab=generate${r.playstyle ? `&variant=${encodeURIComponent(r.playstyle)}` : ""}${r.bias && r.bias !== "balanced" ? `&bias=${r.bias}` : ""}${r.role ? `&role=${encodeURIComponent(r.role)}` : ""}`}
+              className="rounded-full border border-line bg-white/[0.03] px-2.5 py-1 text-xs font-medium text-muted transition hover:border-accent/50 hover:text-text"
+              title={`Generate ${r.champ} with your last setup${r.bias && r.bias !== "balanced" ? ` (${r.bias.replace("_", " ")})` : ""}`}
+            >
+              {r.champ}
+            </Link>
+          ))}
+        </div>
+      )}
       {!formOpen && (
         <button
           type="button"
@@ -1134,7 +1347,25 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                   </span>
                 ) : null}
               </div>
-              <ItemStrip advice={advice} />
+              <ItemStrip advice={advice} lockedItems={lockedItems} onToggleLock={toggleItemLock} />
+              {(lockedItems.length > 0 || lockedRunes.length > 0) && (
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gold/25 bg-gold/[0.06] px-3 py-2">
+                  <p className="text-xs text-muted">
+                    <span className="font-bold text-gold">{lockedItems.length + lockedRunes.length} locked</span>
+                    {" "}- the next generation keeps these and rethinks everything else
+                  </p>
+                  <span className="flex gap-2">
+                    <button onClick={() => { setLockedItems([]); setLockedRunes([]); }}
+                            className="rounded-lg border border-line px-2.5 py-1 text-xs text-muted transition hover:text-text">
+                      Clear
+                    </button>
+                    <button onClick={generate} disabled={loading || outOfBudget}
+                            className="rounded-lg bg-gold px-3 py-1 text-xs font-bold text-black transition hover:opacity-90 disabled:opacity-40">
+                      Regenerate around locks
+                    </button>
+                  </span>
+                </div>
+              )}
               {/* Save sits HERE as well as in the actions row at the bottom.
                   The bottom row is ~185 lines of rendered content further
                   down -- past runes, summoners, situational items, the play
@@ -1155,10 +1386,27 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                         role: role || undefined,
                         variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
                         bias: BIAS_STOPS[biasIdx].key,
+                        patch: CURRENT_PATCH,
                         items: [
                           ...(advice.items ?? []),
                           ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),
                         ],
+                        runes: advice.runes
+                          ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
+                          : [],
+                      }}
+                    />
+                    <ShareSnapshotButton
+                      build={{
+                        champion: champ,
+                        championSlug: championMeta?.slug ?? champ.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                        role: role || undefined,
+                        playstyle: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
+                        bias: BIAS_STOPS[biasIdx].key,
+                        patch: CURRENT_PATCH,
+                        items: advice.items ?? [],
+                        boots: advice.boots,
+                        bootsUpgrade: advice.bootsUpgrade,
                         runes: advice.runes
                           ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
                           : [],
@@ -1189,10 +1437,22 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 <div className="flex flex-wrap items-center gap-2">
                   {[advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].map((rn, i) => (
                     <RuneTip key={rn + i} name={rn} advice={advice}>
-                      <span className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => toggleRuneLock(rn)}
+                        aria-pressed={lockedRunes.includes(rn)}
+                        title={lockedRunes.includes(rn)
+                          ? `${rn} is locked for the next generation; click to unlock`
+                          : `Lock ${rn}: the next generation must keep it (up to 2 runes)`}
+                        className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-left text-xs transition ${
+                          lockedRunes.includes(rn)
+                            ? "bg-gold/15 ring-1 ring-gold/60"
+                            : "bg-white/5 hover:bg-white/10"}`}
+                      >
                         {runeIcon(rn) && <img src={runeIcon(rn)!} alt={rn} width={20} height={20} />}
                         {rn}{i === 0 && <span className="text-[0.6rem] font-bold text-accent"> KEY</span>}
-                      </span>
+                        {lockedRunes.includes(rn) && <LockGlyphSmall />}
+                      </button>
                     </RuneTip>
                   ))}
                 </div>
@@ -1305,6 +1565,33 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
 
             <WhyThisBuild advice={advice} />
 
+            {advice.items && advice.items.length > 0 && (
+                <BuildStages
+                  name={champ ?? ""}
+                  items={advice.items}
+                  boots={advice.boots}
+                  bootsUpgrade={advice.bootsUpgrade}
+                  runeNames={advice.runes
+                    ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
+                    : []}
+                />
+              )}
+
+              <BiasCompare history={biasHistory} ck={`${champ}|${playstyle}`} currentBias={BIAS_STOPS[biasIdx].key} />
+
+              {advice.items && advice.items.length > 0 && (
+                <WhyNotPanel
+                  champion={champ ?? ""}
+                  items={advice.items}
+                  boots={advice.bootsUpgrade || advice.boots}
+                  runeNames={advice.runes
+                    ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
+                    : []}
+                  playstyle={isCounter ? "counter" : playstyle}
+                  buildBias={BIAS_STOPS[biasIdx].key}
+                />
+              )}
+
             {advice.buildScore && (
               <details className="glass group rounded-2xl p-4">
                 <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
@@ -1352,6 +1639,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     role: role || undefined,
                     variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
                     bias: BIAS_STOPS[biasIdx].key,
+                    patch: CURRENT_PATCH,
                     items: [
                       ...(advice.items ?? []),
                       ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),

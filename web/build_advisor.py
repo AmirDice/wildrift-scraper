@@ -1205,6 +1205,71 @@ def _build_elements(res: dict) -> dict:
     }
 
 
+def why_not(champion: str, items: list[str], boots: str,
+            rune_names: list[str], candidate: str,
+            playstyle: str = "standard", build_bias: str = "balanced") -> dict:
+    """Answer "why is CANDIDATE not in this build" for a build we generated.
+
+    People disagree with builds constantly, and the difference between "this
+    generator is stupid" and "fair enough" is whether the disagreement gets an
+    answer. This is a deliberately SMALL call: one question, one comparison,
+    a few sentences -- not a second build generation.
+
+    The verdict is a closed set so the UI can colour it without parsing prose:
+      viable_alternative  the candidate works here; the build's pick was a
+                          preference, and the answer says what the trade is
+      situational         right against specific conditions, wrong as a default
+      worse_here          legal but beaten by what the build already does
+      not_viable          wrong damage type, role, or resource for this kit
+    """
+    candidate = (candidate or "").strip()
+    cand = ITEMS.get(candidate)
+    if not cand:
+        return {"error": f"unknown item {candidate!r}"}
+    if candidate in (items or []) or candidate == boots:
+        return {"error": f"{cand.get('name', candidate)} is already in this build"}
+    key = _api_key(KEY_NAME)
+    if not key:
+        raise SystemExit(advisor_env.missing_key_message(KEY_NAME))
+
+    build_names = [ITEMS.get(i, {}).get("name", i) for i in (items or [])]
+    boots_name = ITEMS.get(boots, {}).get("name", boots) if boots else "none"
+    cand_stats = ", ".join(
+        f"{k} {v.get('value')}" for k, v in (cand.get("stats") or {}).items())
+    cand_passives = " | ".join(cand.get("passives") or [])[:600]
+    bias_line = ("" if build_bias == "balanced"
+                 else "The build was generated with a "
+                      + build_bias.replace("_", " ") + " bias.\n")
+
+    prompt = (
+        f"You are the build engine that produced a Wild Rift build for {champion} "
+        f"(playstyle: {playstyle}). A player asks why one item was not chosen.\n\n"
+        f"THE BUILD: {', '.join(build_names)} with boots {boots_name}. "
+        f"Runes: {', '.join(rune_names or []) or 'unknown'}.\n"
+        + bias_line +
+        f"\nTHE ITEM IN QUESTION: {cand.get('name', candidate)} "
+        f"(cost {cand.get('cost')}, stats: {cand_stats or 'none'}; "
+        f"passives: {cand_passives or 'none'}).\n\n"
+        "Answer as the engine defending a judgement call, not a marketing voice. "
+        "2 to 4 sentences, concrete: name the item in the build it competes with "
+        "and the actual trade (damage type, spike timing, durability, synergy, "
+        "cost curve). If the candidate is genuinely fine here, say so plainly.\n\n"
+        'Return ONLY a JSON object: {"verdict": one of '
+        '"viable_alternative" | "situational" | "worse_here" | "not_viable", '
+        '"answer": string, "competesWith": item name from the build or null}'
+    )
+    data = _call(key, prompt)
+    verdict = str(data.get("verdict") or "").strip()
+    if verdict not in ("viable_alternative", "situational", "worse_here", "not_viable"):
+        verdict = "worse_here"
+    answer = " ".join(str(data.get("answer") or "").split())[:700]
+    if not answer:
+        return {"error": "the model returned no answer; ask again"}
+    competes = str(data.get("competesWith") or "").strip() or None
+    return {"verdict": verdict, "answer": answer, "competesWith": competes,
+            "candidate": candidate, "candidateName": cand.get("name", candidate)}
+
+
 def advise_best_of(champion: str, role: str, enemies: list[str],
                    runs: int = 3, on_progress=None, **kwargs) -> dict:
     """Sample `advise` `runs` times and return the sample the others agree with.
@@ -1308,6 +1373,7 @@ def main() -> None:
     ap.add_argument("--mode", choices=("studio", "counter"), default="studio")
     ap.add_argument("--risk-tolerance", choices=tuple(RISK_TOLERANCE), default="medium")
     ap.add_argument("--build-bias", choices=tuple(BUILD_BIAS), default="balanced")
+    ap.add_argument("--why-not", default="", help="JSON {items,boots,runes,candidate,playstyle,buildBias}: answer why the candidate is absent instead of generating")
     ap.add_argument("--skill-level", choices=tuple(SKILL_LEVEL), default="average")
     ap.add_argument("--locked-items", default="", help="comma-separated item slugs to pin")
     ap.add_argument("--locked-runes", default="", help="comma-separated rune names to pin")
@@ -1315,6 +1381,15 @@ def main() -> None:
                     help="sample the model this many times and return the build the "
                          "samples agree on (default 1: one sample, no vote)")
     args = ap.parse_args()
+    if args.why_not:
+        payload = json.loads(args.why_not)
+        out = why_not(args.champion,
+                      payload.get("items") or [], payload.get("boots") or "",
+                      payload.get("runes") or [], payload.get("candidate") or "",
+                      playstyle=payload.get("playstyle") or "standard",
+                      build_bias=payload.get("buildBias") or "balanced")
+        print(json.dumps(out, ensure_ascii=False))
+        return
     res = advise_best_of(args.champion, args.role,
                  [e.strip() for e in args.enemies.split(",") if e.strip()],
                  runs=max(1, args.runs),

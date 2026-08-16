@@ -15,6 +15,8 @@ export interface AlbumBuildPayload {
   variant?: string;
   /** Build Bias the build was generated with; absent means balanced. */
   bias?: string;
+  /** Patch the build was generated on, so a saved build can say when it went stale. */
+  patch?: string;
   items: string[];
   runes: string[];
 }

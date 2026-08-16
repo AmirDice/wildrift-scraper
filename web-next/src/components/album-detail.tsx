@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CURRENT_PATCH } from "@/lib/patch";
 import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui";
 import { ShareBuildButton } from "@/components/share-build";
@@ -15,6 +16,7 @@ interface SavedBuild {
   role?: string;
   variant?: string;
   bias?: string;
+  patch?: string;
   items: string[];
   runes: string[];
   note?: string;
@@ -166,6 +168,24 @@ export function AlbumDetail({ id }: { id: string }) {
                 </div>
               )}
               {build.note && <p className="mt-2 text-xs text-muted">{build.note}</p>}
+              {/* The retention loop: a patch lands, saved builds say so, and
+                  one click regenerates with the same champion, playstyle and
+                  bias. Only shown when we KNOW the build predates the current
+                  patch; builds saved before patch stamping say that instead of
+                  guessing. */}
+              {CURRENT_PATCH && build.patch && build.patch !== CURRENT_PATCH && (
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-amber-500/[0.08] px-2.5 py-1.5">
+                  <p className="text-xs text-amber-300">
+                    Saved on patch {build.patch}; the game is on {CURRENT_PATCH} now.
+                  </p>
+                  <Link
+                    href={`/build?champion=${build.championSlug}&tab=generate${build.variant && build.variant !== "counter" ? `&variant=${encodeURIComponent(build.variant)}` : ""}${build.bias && build.bias !== "balanced" ? `&bias=${build.bias}` : ""}`}
+                    className="text-xs font-bold text-amber-200 underline-offset-2 transition hover:underline"
+                  >
+                    Re-optimize for {CURRENT_PATCH} →
+                  </Link>
+                </div>
+              )}
               <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
                 <Link
                   href={`/build?champion=${build.championSlug}${build.variant ? `&variant=${build.variant}` : ""}`}

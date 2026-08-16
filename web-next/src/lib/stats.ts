@@ -46,6 +46,9 @@ export const TRACKED_EVENTS = [
   // through one). Divide by build_generated for "how many builds involve a
   // deliberate bias choice"; the per-bias split lives in stat:gen_bias:*.
   "build_bias_changed",
+  // "Why not this item" question answered. Costs a generation, so dividing by
+  // build_generated says how much of the allowance goes to challenges.
+  "why_not_asked",
 ] as const;
 
 export type TrackedEvent = (typeof TRACKED_EVENTS)[number];
