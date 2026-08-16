@@ -217,6 +217,20 @@ export function TierListView({
             {showRaw ? "Showing raw win rates" : "Show raw win rates"}
           </button>
         )}
+        <a
+          href={`/api/tier-card?region=${region}${role !== "All roles" ? `&role=${encodeURIComponent(role)}` : ""}`}
+          download={`wr-tier-list-${region.toLowerCase()}${role !== "All roles" ? `-${role.toLowerCase()}` : ""}.png`}
+          title="Download this board as a 1200x630 card, made for Discord and Reddit"
+          className="glass glass-hover inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-muted transition hover:text-text"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               strokeWidth="2" strokeLinecap="round" aria-hidden>
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+          Share as image
+        </a>
       </div>
       {showRaw && !isCN && (
         <p className="mb-5 text-xs leading-relaxed text-faint">

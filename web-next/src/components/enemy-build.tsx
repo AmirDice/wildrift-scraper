@@ -744,7 +744,7 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
               <span className="relative inline-flex flex-col items-center">
                 <img src={itemIcon(advice.bootsUpgrade)} alt={itemName(advice.bootsUpgrade)} width={40} height={40} className="rounded-lg ring-1 ring-gold/40" />
                 <span title={advice.bootsUpgradeReason} className="mt-0.5 text-[0.55rem] font-bold uppercase text-gold">
-                  T3 after {ordinal(upAfter)}
+                  {upAfter === 1 ? "T3 rush" : `T3 after ${ordinal(upAfter)}`}
                 </span>
               </span>
             </ItemTip>

@@ -263,7 +263,7 @@ export async function GET(request: Request) {
   const ORDS = ["", "1ST", "2ND", "3RD", "4TH", "5TH"];
   const upAfter = build.bootsUpgradeAfter;
   const bootsTag = build.bootsUpgrade && upAfter && upAfter >= 1
-    ? `T3 AFTER ${ORDS[upAfter]}`
+    ? upAfter === 1 ? "T3 RUSH" : `T3 AFTER ${ORDS[upAfter]}`
     : !build.bootsUpgrade && upAfter === 0
       ? "T2 ALL GAME"
       : "BOOTS";
