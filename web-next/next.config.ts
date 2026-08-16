@@ -50,7 +50,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/recap",
-        destination: "/champion-changes",
+        destination: "/movers",
         permanent: true,
       },
     ];

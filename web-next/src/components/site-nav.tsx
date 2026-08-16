@@ -67,6 +67,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
     label: "Meta",
     items: [
       { href: "/meta", label: "Meta Overview", desc: "Builds, win rates & trends" },
+      { href: "/movers", label: "Patch Movers", desc: "Biggest winners & losers right now" },
       { href: "/ranks", label: "Win Rate by Skill Bracket", desc: "Diamond+ to Challenger trends" },
       { href: "/compare", label: "Compare Champions", desc: "Two champions side by side" },
       { href: "/rising", label: "Rising Picks", desc: "What China plays before the West" },
