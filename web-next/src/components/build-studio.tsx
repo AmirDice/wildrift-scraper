@@ -18,6 +18,7 @@ import { BuildCustomizer, type CustomBuildState as LabSeed } from "@/components/
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
 import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
+import { BuildFeedback } from "@/components/build-feedback";
 import { track } from "@/components/share-build";
 import { CounterBuilderCta, GenerateBuildCta } from "@/components/tool-crosslinks";
 import { BuildTour, type TourStep } from "@/components/build-tour";
@@ -503,22 +504,27 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
       {
         target: "generate",
         title: "Generate, then read the reasoning",
-        body: "You get the full loadout in about 30 seconds: item order with boot timing, the rune page, and your summoner spells. Those three sit open at the top because they are the build. Everything under them starts folded -- tap Show on any panel to open it.",
+        body: "You get the full loadout in about 30 seconds, all in one card: item order with boot timing, the rune page, your summoner spells, and when the build spikes. Under it sit the swaps for games that go differently, then the guide; the deeper analysis stays folded until you want it.",
       },
       {
         target: "generate",
         title: "Read \"How to play this build\" before your game",
-        body: "Folded under the build is a guide written for THIS loadout, not for the champion in general: what your first item buys you, the moment the build turns on, how the fight opens, and the mistake that wastes it. Underneath that, \"Why this is the optimal build\" explains every individual pick, and the evaluation rates the finished result.",
+        body: "Under the build is a guide written for THIS loadout, not for the champion in general: what your first item buys you, the moment the build turns on, how the fight opens, and the mistake that wastes it. Underneath that, \"Why this build works\" explains every individual pick, and the evaluation rates the finished result.",
       },
       {
         target: "generate",
         title: "Tap anything you do not recognise",
         body: "Every item and rune in a generated build opens a card with its cost, its stats and the reason it was chosen for you. That works on a phone by tapping, not just by hovering.",
       },
-      // The stat panels only exist after a generation. Adding their steps
+      // The stats drawer only exists after a generation. Adding its step
       // before that would spotlight nothing, which is the thing this tour was
-      // getting wrong; once a build is on screen they are worth explaining.
-      ...(ctx.generated ? statSteps(ctx.transforms) : []),
+      // getting wrong; once a build is on screen it is worth explaining.
+      ...(ctx.generated ? [{
+        target: "stats-drawer",
+        title: "The numbers, when you want them",
+        body: "The full stat sheet and every ability's live value with this build, folded into one drawer. Stats is the whole build resolved onto the champion at level 15; Abilities recalculates each spell against those numbers. Guaranteed versus Fully scaled shows how greedy the build is."
+          + (ctx.transforms ? " This champion transforms, so the toggles inside read either state." : ""),
+      }] : []),
     ],
   },
   customize: {
@@ -576,12 +582,59 @@ function GenerateTab({
   const generatedForm =
     (advice?.requestMeta as { championForm?: string } | undefined)?.championForm || championForm;
   const panelName = formEngineName(name, generatedForm);
+  // Which side of the analytical drawer is showing. Both panels stay mounted
+  // so their internal toggles survive a tab flip.
+  const [statsTab, setStatsTab] = useState<"stats" | "abilities">("stats");
 
   return (
     <div className="flex flex-col gap-4">
-      <EnemyBuildAdvisor presetChampion={name} presetForm={championForm} mode="studio" initialConfig={initialConfig} onAdviceChange={setAdvice} />
+      <EnemyBuildAdvisor presetChampion={name} presetForm={championForm} mode="studio" initialConfig={initialConfig} onAdviceChange={setAdvice} deferFeedback />
       {itemSlugs.length > 0 && (
         <>
+          {/* Build first, decisions second, explanation third -- and the raw
+              numbers last, folded into one drawer so the page does not read
+              as a report. */}
+          <details className="glass group rounded-2xl p-4" data-tour="stats-drawer">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+              <span className="min-w-0">
+                <span className="block text-sm font-bold text-text">Build stats &amp; ability values</span>
+                <span className="block text-xs font-normal text-faint">
+                  The full stat sheet, and every ability&rsquo;s live numbers with this build
+                </span>
+              </span>
+              <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+            </summary>
+            <div className="mt-1 flex gap-1.5">
+              {([["stats", "Stats"], ["abilities", "Abilities"]] as const).map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setStatsTab(key)}
+                  aria-pressed={statsTab === key}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                    statsTab === key
+                      ? "bg-accent/15 text-accent ring-1 ring-accent/40"
+                      : "bg-white/[0.04] text-muted hover:text-text"}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {/* The FORM's kit, not the base champion's. These read `name` alone
+                until now, so a build generated for Rhaast was displayed against
+                Shadow Assassin's abilities and Shadow Assassin's base stats. */}
+            <div className={statsTab === "stats" ? "" : "hidden"}>
+              <BuildStatsPanel name={panelName} itemSlugs={itemSlugs} runeNames={runeNames} level={15} embedded />
+            </div>
+            <div className={statsTab === "abilities" ? "" : "hidden"}>
+              <ChampionAbilitiesPanel name={panelName} itemSlugs={itemSlugs} runeNames={runeNames} level={15} embedded />
+            </div>
+          </details>
+          <BuildComparison
+            champion={name}
+            current={{ id: "generated", label: "Generated build", itemSlugs, runeNames }}
+            choices={comparisonChoices}
+          />
           {/* The generator has no fight of its own; the Lab does. Rebuilding a
               generated loadout by hand to run it through the damage check was
               the only way across, which nobody was going to do. */}
@@ -615,16 +668,7 @@ function GenerateTab({
             </span>
             <span aria-hidden className="shrink-0 text-sm font-semibold text-accent">→</span>
           </button>
-          {/* The FORM's kit, not the base champion's. These read `name` alone
-              until now, so a build generated for Rhaast was displayed against
-              Shadow Assassin's abilities and Shadow Assassin's base stats. */}
-          <BuildStatsPanel name={panelName} itemSlugs={itemSlugs} runeNames={runeNames} level={15} />
-          <ChampionAbilitiesPanel name={panelName} itemSlugs={itemSlugs} runeNames={runeNames} level={15} />
-          <BuildComparison
-            champion={name}
-            current={{ id: "generated", label: "Generated build", itemSlugs, runeNames }}
-            choices={comparisonChoices}
-          />
+          <BuildFeedback champion={name} />
         </>
       )}
     </div>

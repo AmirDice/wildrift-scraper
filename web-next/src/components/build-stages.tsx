@@ -30,13 +30,15 @@ const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
  * Boots are inserted where the strip shows them landing (after the second
  * item), so the stages mirror the purchase order the player was just shown.
  */
-export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level = 15 }: {
+export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level = 15, bare = false }: {
   name: string;
   items: string[];
   boots?: string;
   bootsUpgrade?: string;
   runeNames: string[];
   level?: number;
+  /** Renders without its own card chrome, for embedding inside "Your Build". */
+  bare?: boolean;
 }) {
   const stages = useMemo(() => {
     if (!items.length || !hasSimulatableKit(name)) return null;
@@ -79,19 +81,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level
   if (!stages) return null;
   const maxDps = Math.max(...stages.rows.map((r) => r.dps), 1);
 
-  return (
-    <details open className="glass group rounded-2xl p-4">
-      <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
-        <span className="min-w-0">
-          <span className="block text-sm font-bold text-text">When this build spikes</span>
-          <span className="text-xs font-normal text-faint">
-            Engine-measured at each purchase, not a guess. Strongest spike:{" "}
-            <span className="font-semibold text-gold">{stages.spike} item{stages.spike > 1 ? "s" : ""}</span>
-          </span>
-        </span>
-        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
-      </summary>
-
+  const body = (
       <div className="space-y-2">
         {stages.rows.map((row) => (
           <div key={row.count}
@@ -124,11 +114,42 @@ export function BuildStages({ name, items, boots, bootsUpgrade, runeNames, level
           </div>
         ))}
       </div>
-      <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
-        Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
-        build&rsquo;s runes, tier-3 boots landing after the second item. The same maths as the
-        Custom Lab&rsquo;s fight, so the numbers agree across the site.
-      </p>
+  );
+
+  const heading = (
+    <>
+      <span className="block text-sm font-bold text-text">When this build spikes</span>
+      <span className="text-xs font-normal text-faint">
+        Engine-measured at each purchase, not a guess. Strongest spike:{" "}
+        <span className="font-semibold text-gold">{stages.spike} item{stages.spike > 1 ? "s" : ""}</span>
+      </span>
+    </>
+  );
+  const footnote = (
+    <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
+      Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
+      build&rsquo;s runes, tier-3 boots landing after the second item. The same maths as the
+      Custom Lab&rsquo;s fight, so the numbers agree across the site.
+    </p>
+  );
+
+  if (bare) {
+    return (
+      <div>
+        <div className="mb-2">{heading}</div>
+        {body}
+        {footnote}
+      </div>
+    );
+  }
+  return (
+    <details open className="glass group rounded-2xl p-4">
+      <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
+        <span className="min-w-0">{heading}</span>
+        <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
+      </summary>
+      {body}
+      {footnote}
     </details>
   );
 }

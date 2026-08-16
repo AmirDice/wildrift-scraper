@@ -185,10 +185,23 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
   const hasDetail = itemRows.length > 0 || bootRow || runeRows.length > 0;
   if (!hasDetail) return null;
 
+  // One sentence as a teaser; the full reasoning is a click away. Collapsed
+  // because by this point the reader has the build, the swaps and the guide --
+  // this is the "read once" layer, not the "before a game" layer.
+  const previewSource = (advice.why?.[0] ?? itemRows[0]?.reason ?? "").trim();
+  const preview = previewSource ? (previewSource.match(/^[^.!?]*[.!?]?/)?.[0] ?? "").trim() : "";
+
   return (
-    <details open className="glass group rounded-2xl p-4">
-      <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-2">
-        <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Why this is the optimal build</p>
+    <details className="glass group rounded-2xl p-4">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 group-open:mb-3">
+        <span className="min-w-0">
+          <span className="block text-sm font-bold text-text">Why this build works</span>
+          {preview && (
+            <span className="block text-xs font-normal text-faint group-open:hidden">
+              {preview} <span className="font-semibold text-accent">View full reasoning</span>
+            </span>
+          )}
+        </span>
         <Disclosure />
       </summary>
       {itemRows.length > 0 && (
@@ -764,7 +777,7 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
 
 /** The AI build advisor. Counter mode always adapts to the selected enemies;
  *  Studio mode generates an enemy-agnostic personal build. */
-export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion, initialConfig, mode = "counter", onAdviceChange, onFormChange }: {
+export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion, initialConfig, mode = "counter", onAdviceChange, onFormChange, deferFeedback = false }: {
   /** Prefills playstyle / role / bias from a URL (album re-optimize links and
    *  quick-start chips arrive this way). Seeds only; everything stays editable. */
   initialConfig?: { playstyle?: string; role?: string; bias?: string };
@@ -781,6 +794,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
    *  panels it renders around this one on the form actually selected rather
    *  than on the base champion. */
   onFormChange?: (form: string) => void;
+  /** The studio renders the feedback prompt itself, LAST on the page, after
+   *  the stats drawer and the Lab hand-off it appends below this component.
+   *  Inline it would sit in the middle of the page instead. */
+  deferFeedback?: boolean;
 }) {
   const roster = useMemo(() => rosterList(), []);
   const { quota, user, authConfigured, refresh } = useAccount();
@@ -1379,14 +1396,69 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                   </span>
                 </div>
               )}
-              {/* Save sits HERE as well as in the actions row at the bottom.
-                  The bottom row is ~185 lines of rendered content further
-                  down -- past runes, summoners, situational items, the play
-                  guide and the build evaluation -- so on a phone the moment
-                  someone decides they like a build is nowhere near the moment
-                  they are offered somewhere to keep it. Three albums exist
-                  against 760 generations, and this gap is the likeliest
-                  reason. */}
+              {(advice.runes || advice.summoners?.length) ? (
+                <div className="mt-4 grid gap-4 border-t border-line/60 pt-3 md:grid-cols-[1fr_auto]">
+                  {advice.runes && (
+                    <div>
+                      <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Runes · {advice.runes.primaryTree}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {[advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].map((rn, i) => (
+                          <RuneTip key={rn + i} name={rn} advice={advice}>
+                            <button
+                              type="button"
+                              onClick={() => toggleRuneLock(rn)}
+                              aria-pressed={lockedRunes.includes(rn)}
+                              title={lockedRunes.includes(rn)
+                                ? `${rn} is locked for the next generation; click to unlock`
+                                : `Lock ${rn}: the next generation must keep it (up to 2 runes)`}
+                              className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-left text-xs transition ${
+                                lockedRunes.includes(rn)
+                                  ? "bg-gold/15 ring-1 ring-gold/60"
+                                  : "bg-white/5 hover:bg-white/10"}`}
+                            >
+                              {runeIcon(rn) && <img src={runeIcon(rn)!} alt={rn} width={20} height={20} />}
+                              {rn}{i === 0 && <span className="text-[0.6rem] font-bold text-accent"> KEY</span>}
+                              {lockedRunes.includes(rn) && <LockGlyphSmall />}
+                            </button>
+                          </RuneTip>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {advice.summoners?.length ? (
+                    <div>
+                      <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Summoner spells</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {advice.summoners.map((spell) => (
+                          <span key={spell.name} className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-sm">
+                            {spell.icon && <img src={spell.icon} alt="" width={24} height={24} className="rounded" />}
+                            {spell.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+              {advice.items && advice.items.length > 0 && (
+                <div className="mt-4 border-t border-line/60 pt-3">
+                  <BuildStages
+                    bare
+                    name={champ ?? ""}
+                    items={advice.items}
+                    boots={advice.boots}
+                    bootsUpgrade={advice.bootsUpgrade}
+                    runeNames={advice.runes
+                      ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
+                      : []}
+                  />
+                </div>
+              )}
+              {/* The ONLY save/share row, and it closes the build card: the
+                  moment someone decides they like a build is right after
+                  reading it, not after the analysis below. A duplicate row
+                  used to sit at the very bottom of the page; it earned three
+                  albums against 760 generations. */}
               {champ && (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-3">
                   <p className="text-xs text-muted">Keep this build, or send it to someone?</p>
@@ -1442,62 +1514,18 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             </div>
 
 
-            {advice.runes && (
-              <details open className="glass group rounded-2xl p-4">
-                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
-                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Runes · {advice.runes.primaryTree}</p>
-                  <Disclosure />
-                </summary>
-                <div className="flex flex-wrap items-center gap-2">
-                  {[advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].map((rn, i) => (
-                    <RuneTip key={rn + i} name={rn} advice={advice}>
-                      <button
-                        type="button"
-                        onClick={() => toggleRuneLock(rn)}
-                        aria-pressed={lockedRunes.includes(rn)}
-                        title={lockedRunes.includes(rn)
-                          ? `${rn} is locked for the next generation; click to unlock`
-                          : `Lock ${rn}: the next generation must keep it (up to 2 runes)`}
-                        className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-left text-xs transition ${
-                          lockedRunes.includes(rn)
-                            ? "bg-gold/15 ring-1 ring-gold/60"
-                            : "bg-white/5 hover:bg-white/10"}`}
-                      >
-                        {runeIcon(rn) && <img src={runeIcon(rn)!} alt={rn} width={20} height={20} />}
-                        {rn}{i === 0 && <span className="text-[0.6rem] font-bold text-accent"> KEY</span>}
-                        {lockedRunes.includes(rn) && <LockGlyphSmall />}
-                      </button>
-                    </RuneTip>
-                  ))}
+            {advice.items && advice.items.length > 0 && (
+              <div className="glass rounded-2xl p-4">
+                <div className="mb-3">
+                  <p className="text-sm font-bold text-text">Adapt this build</p>
+                  <p className="text-xs text-faint">The default order wins most games; these swaps are for the games it does not</p>
                 </div>
-              </details>
-            )}
-
-            {advice.summoners?.length ? (
-              <details open className="glass group rounded-2xl p-4">
-                <summary className="mb-2 flex cursor-pointer list-none items-center justify-between gap-2">
-                  <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Summoner spells</p>
-                  <Disclosure />
-                </summary>
-                <div className="flex flex-wrap items-center gap-2">
-                  {advice.summoners.map((spell) => (
-                    <span key={spell.name} className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-sm">
-                      {spell.icon && <img src={spell.icon} alt="" width={24} height={24} className="rounded" />}
-                      {spell.name}
-                    </span>
-                  ))}
-                </div>
-              </details>
-            ) : null}
-
-            {advice.situational?.length ? (
-              <details open className="glass group rounded-2xl p-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+                <div className="space-y-4">
+                {advice.situational?.length ? (
+              <div>
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
                   Situational swaps <span className="normal-case text-faint/60">· bought in place of that purchase, not added at the end</span>
                 </p>
-                <Disclosure />
-              </summary>
                 <div className="space-y-2 text-sm">
                   {[...advice.situational]
                     .sort((left, right) => (left.atPosition ?? 9) - (right.atPosition ?? 9))
@@ -1516,17 +1544,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                       </div>
                     ))}
                 </div>
-              </details>
+              </div>
             ) : null}
 
             {advice.situationalRunes?.length ? (
-              <details open className="glass group rounded-2xl p-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+              <div>
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
                   Situational runes <span className="normal-case text-faint/60">· sometimes a rune answers it cheaper than an item</span>
                 </p>
-                <Disclosure />
-              </summary>
                 <div className="space-y-2 text-sm">
                   {advice.situationalRunes.map((s, i) => (
                     <div key={i} className="flex flex-wrap items-center gap-2">
@@ -1543,11 +1568,11 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     </div>
                   ))}
                 </div>
-              </details>
+              </div>
             ) : null}
 
             {advice.snowballSwap ? (
-              <div className="rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] p-4">
+              <div className="rounded-xl border border-amber-400/25 bg-amber-400/[0.06] p-3">
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-amber-300">If {safeAheadEnemy || "the threat"} is snowballing</p>
                 <div className="flex flex-wrap items-center gap-2 text-sm">
                   <img src={itemIcon(advice.snowballSwap.item)} alt={itemName(advice.snowballSwap.item)} width={28} height={28} className="rounded" />
@@ -1558,11 +1583,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             ) : null}
 
             {advice.situationalBoots?.length ? (
-              <details open className="glass group rounded-2xl p-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+              <div>
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Situational boots</p>
-                <Disclosure />
-              </summary>
                 <div className="space-y-1.5 text-sm">
                   {advice.situationalBoots.map((s) => (
                     <div key={s.boots} className="flex items-center gap-2">
@@ -1572,39 +1594,29 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     </div>
                   ))}
                 </div>
-              </details>
+              </div>
             ) : null}
+
+                <div className="border-t border-line/60 pt-4">
+                  <WhyNotPanel
+                    bare
+                    champion={champ ?? ""}
+                    items={advice.items}
+                    boots={advice.bootsUpgrade || advice.boots}
+                    runeNames={advice.runes
+                      ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
+                      : []}
+                    playstyle={isCounter ? "counter" : playstyle}
+                    buildBias={BIAS_STOPS[biasIdx].key}
+                  />
+                </div>
+                </div>
+              </div>
+            )}
 
             <PlayGuide advice={advice} />
 
             <WhyThisBuild advice={advice} />
-
-            {advice.items && advice.items.length > 0 && (
-                <BuildStages
-                  name={champ ?? ""}
-                  items={advice.items}
-                  boots={advice.boots}
-                  bootsUpgrade={advice.bootsUpgrade}
-                  runeNames={advice.runes
-                    ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
-                    : []}
-                />
-              )}
-
-              <BiasCompare history={biasHistory} ck={`${champ}|${playstyle}`} currentBias={BIAS_STOPS[biasIdx].key} />
-
-              {advice.items && advice.items.length > 0 && (
-                <WhyNotPanel
-                  champion={champ ?? ""}
-                  items={advice.items}
-                  boots={advice.bootsUpgrade || advice.boots}
-                  runeNames={advice.runes
-                    ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
-                    : []}
-                  playstyle={isCounter ? "counter" : playstyle}
-                  buildBias={BIAS_STOPS[biasIdx].key}
-                />
-              )}
 
             {advice.buildScore && (
               <details className="glass group rounded-2xl p-4">
@@ -1633,40 +1645,9 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               </details>
             )}
 
-            <div className="flex flex-wrap items-center gap-2">
-              <ShareBuildButton
-                path={isCounter
-                  ? `/build?champion=${encodeURIComponent(champ ?? "")}&tab=counter`
-                  : `/build?champion=${encodeURIComponent(champ ?? "")}&tab=generate`}
-                title={`${champ} build on WrTrueMeta`}
-                text={isCounter
-                  ? `${champ} build against ${selectedEnemies.join(", ") || "the enemy team"}, from WrTrueMeta.`
-                  : `${champ} ${selectedPlaystyle?.label ?? playstyle} build from WrTrueMeta.`}
-                label="Share this build"
-              />
-              {champ && (
-                <AddToAlbumButton
-                  build={{
-                    champion: champ,
-                    championSlug: championMeta?.slug ?? champ.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                    source: "generated",
-                    role: role || undefined,
-                    variant: isCounter ? "counter" : selectedPlaystyle?.key ?? playstyle,
-                    bias: BIAS_STOPS[biasIdx].key,
-                    patch: CURRENT_PATCH,
-                    items: [
-                      ...(advice.items ?? []),
-                      ...(advice.bootsUpgrade ? [advice.bootsUpgrade] : advice.boots ? [advice.boots] : []),
-                    ],
-                    runes: advice.runes
-                      ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
-                      : [],
-                  }}
-                />
-              )}
-            </div>
+            <BiasCompare history={biasHistory} ck={`${champ}|${playstyle}`} currentBias={BIAS_STOPS[biasIdx].key} />
 
-            <BuildFeedback champion={champ ?? undefined} />
+            {!deferFeedback && <BuildFeedback champion={champ ?? undefined} />}
           </div>
         )
       )}

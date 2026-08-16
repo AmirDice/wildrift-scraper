@@ -25,13 +25,15 @@ const VERDICT_LABEL: Record<string, { text: string; cls: string }> = {
  * trust than silence. A question spends one generation from the same daily
  * allowance as a build, and the button says so before anyone clicks.
  */
-export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buildBias }: {
+export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buildBias, bare = false }: {
   champion: string;
   items: string[];
   boots?: string;
   runeNames: string[];
   playstyle: string;
   buildBias: string;
+  /** Renders without its own card chrome, for embedding in "Adapt this build". */
+  bare?: boolean;
 }) {
   const [candidate, setCandidate] = useState("");
   const [query, setQuery] = useState("");
@@ -71,7 +73,7 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
   const verdict = asked?.verdict ? VERDICT_LABEL[asked.verdict] : null;
 
   return (
-    <div className="glass rounded-2xl p-4">
+    <div className={bare ? "" : "glass rounded-2xl p-4"}>
       <p className="text-sm font-bold text-text">Wondering about another item?</p>
       <p className="mt-0.5 text-xs text-muted">
         Pick one and the engine explains why it is not in this build, or concedes that it
@@ -97,7 +99,6 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
                     onClick={() => { setCandidate(o.slug); setQuery(""); }}
                     className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm text-muted transition hover:bg-white/[0.06] hover:text-text"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={DATA.items?.[o.slug]?.icon ?? `/items/${o.slug}.webp`} alt=""
                          width={22} height={22} className="rounded" />
                     {o.name}
