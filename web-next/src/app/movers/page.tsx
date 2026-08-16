@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Container } from "@/components/ui";
 import { getChampion } from "@/lib/data";
 import { topWinners, topLosers, MOVERS_META, type Mover } from "@/lib/movers";
-import { moverWhy } from "@/lib/mover-why";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { NextStep } from "@/components/next-step";
 
@@ -64,11 +63,8 @@ export default function MoversPage() {
 
       <p className="mt-6 text-xs leading-relaxed text-faint">
         Source: official China server data (lolm.qq.com). Champions below a 0.5% pick
-        rate are excluded so one-trick swings don&rsquo;t read as meta movement. Tags under
-        a champion tie the movement to its patch-note paper trail: a direct balance change,
-        or a changed item its recommended builds carry (hover either for the detail). A
-        mover with no tag is the meta moving around them, not Riot moving them. For the
-        full notes, see the{" "}
+        rate are excluded so one-trick swings don&rsquo;t read as meta movement. For what
+        the patch notes themselves changed, see the{" "}
         <Link href="/champion-changes" className="font-semibold text-accent transition hover:opacity-80">
           Balance Report
         </Link>.
@@ -94,54 +90,26 @@ function MoverColumn({ title, accent, movers, up = false }: {
       <div className="flex flex-col gap-1">
         {movers.map((m, i) => {
           const champ = getChampion(m.slug);
-          const why = moverWhy(m.name);
-          const hasWhy = Boolean(why?.direct || why?.items.length);
           return (
             <Link key={m.slug} href={`/champions/${m.slug}`}
-                  className="block rounded-lg px-1.5 py-1 transition hover:bg-white/[0.05]">
-              <span className="flex items-center gap-2.5">
-                <span className="w-6 shrink-0 text-right text-xs font-bold text-faint">{i + 1}</span>
-                {champ ? (
-                  <img src={champ.icon} alt="" width={30} height={30} className="shrink-0 rounded-full ring-1 ring-white/10" />
-                ) : (
-                  <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-white/10 text-[0.55rem] font-bold text-faint">
-                    {m.name.slice(0, 2)}
-                  </span>
-                )}
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{m.name}</span>
-                <span className="hidden shrink-0 text-xs text-faint sm:inline">pick {m.pickRate.toFixed(1)}%</span>
-                <span className="shrink-0 text-xs text-muted">
-                  {m.oldWr.toFixed(1)}<span className="text-faint"> → </span>
-                  <span className="font-semibold text-text">{m.newWr.toFixed(1)}%</span>
-                </span>
-                <span className="w-12 shrink-0 text-right text-sm font-black" style={{ color: accent }}>
-                  {m.delta > 0 ? "+" : ""}{m.delta}
-                </span>
-              </span>
-              {hasWhy && (
-                <span className="ml-[38px] mt-0.5 flex flex-wrap items-center gap-1 pl-2.5">
-                  {why?.direct && (
-                    <span
-                      title={why.direct.summary || undefined}
-                      className={`rounded px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide ${
-                        why.direct.direction === "buff"
-                          ? "bg-emerald-400/15 text-emerald-300"
-                          : why.direct.direction === "nerf"
-                            ? "bg-bad/15 text-bad"
-                            : "bg-accent/15 text-accent"}`}
-                    >
-                      {why.direct.direction === "buff" ? "Buffed" : why.direct.direction === "nerf" ? "Nerfed" : "Adjusted"} in {CURRENT_PATCH}
-                    </span>
-                  )}
-                  {why?.items.map((item) => (
-                    <span key={item.name} title={item.text}
-                          className={`rounded px-1.5 py-0.5 text-[0.6rem] font-semibold ${
-                            item.direction === "buff" ? "bg-emerald-400/10 text-emerald-300/90" : "bg-bad/10 text-bad/90"}`}>
-                      {item.name} {item.direction === "buff" ? "↑" : "↓"}
-                    </span>
-                  ))}
+                  className="flex items-center gap-2.5 rounded-lg px-1.5 py-1 transition hover:bg-white/[0.05]">
+              <span className="w-6 shrink-0 text-right text-xs font-bold text-faint">{i + 1}</span>
+              {champ ? (
+                <img src={champ.icon} alt="" width={30} height={30} className="shrink-0 rounded-full ring-1 ring-white/10" />
+              ) : (
+                <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-white/10 text-[0.55rem] font-bold text-faint">
+                  {m.name.slice(0, 2)}
                 </span>
               )}
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{m.name}</span>
+              <span className="hidden shrink-0 text-xs text-faint sm:inline">pick {m.pickRate.toFixed(1)}%</span>
+              <span className="shrink-0 text-xs text-muted">
+                {m.oldWr.toFixed(1)}<span className="text-faint"> → </span>
+                <span className="font-semibold text-text">{m.newWr.toFixed(1)}%</span>
+              </span>
+              <span className="w-12 shrink-0 text-right text-sm font-black" style={{ color: accent }}>
+                {m.delta > 0 ? "+" : ""}{m.delta}
+              </span>
             </Link>
           );
         })}
