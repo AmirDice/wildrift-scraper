@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import engineData from "@/data/engine.json";
 
 /* eslint-disable @next/next/no-img-element */
@@ -37,6 +37,7 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
 }) {
   const [candidate, setCandidate] = useState("");
   const [query, setQuery] = useState("");
+  const rootRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [asked, setAsked] = useState<{
     candidate: string; candidateName?: string; verdict?: string;
@@ -72,8 +73,20 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
 
   const verdict = asked?.verdict ? VERDICT_LABEL[asked.verdict] : null;
 
+  // Every .glass card is a stacking context (backdrop-filter), so this
+  // panel's suggestion list -- however high its own z-index -- paints under
+  // whichever glass sibling comes later in the page. While the list is open,
+  // the ENCLOSING card is lifted above its siblings, the same trick the
+  // share and album popovers use.
+  const listOpen = Boolean(query.trim() && !candidate);
+  useEffect(() => {
+    const card = rootRef.current?.closest<HTMLElement>(".glass");
+    if (card) card.style.zIndex = listOpen ? "60" : "";
+    return () => { if (card) card.style.zIndex = ""; };
+  }, [listOpen]);
+
   return (
-    <div className={bare ? "" : "glass rounded-2xl p-4"}>
+    <div ref={rootRef} className={bare ? "" : "glass rounded-2xl p-4"}>
       <p className="text-sm font-bold text-text">Wondering about another item?</p>
       <p className="mt-0.5 text-xs text-muted">
         Pick one and the engine explains why it is not in this build, or concedes that it
@@ -88,7 +101,7 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
             aria-label="Item to ask about"
             className="w-full rounded-lg border border-line bg-[#0e1322] px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
           />
-          {query.trim() && !candidate && (
+          {listOpen && (
             <div className="absolute left-0 right-0 top-full z-40 mt-1 max-h-56 overflow-y-auto rounded-xl border border-line bg-[#0e1322] p-1 shadow-2xl">
               {options
                 .filter((o) => o.name.toLowerCase().includes(query.trim().toLowerCase()))

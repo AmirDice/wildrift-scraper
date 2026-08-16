@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { rosterList, type RosterChampion } from "@/lib/threat";
+import { GlassSlider } from "@/components/glass-slider";
 import engineData from "@/data/engine.json";
 import playstyleData from "@/data/playstyles.json";
 import { DAMAGE_PATHS, GAME_PHASES, HYBRID_DAMAGE_CHAMPIONS, KAYN_FORMS } from "@/lib/build-options";
@@ -275,106 +276,6 @@ const BIAS_STOPS = [
   { key: "damage", label: "Damage Leaning", blurb: "When two viable options are close, take the more aggressive one." },
   { key: "max_damage", label: "Maximum Damage", blurb: "As much damage as this champion can viably carry. Never an off-meta archetype." },
 ] as const;
-
-/**
- * The bias slider, custom-drawn. The native range input renders the OS
- * widget: a tiny track, a themed thumb, and hard snapping between the five
- * stops mid-drag -- which read as "broken" rather than "discrete". This one
- * drags as a smooth float and animates onto the nearest stop on release, so
- * the hand gets a slider and the data still gets one of five categories.
- * A real (invisible) range input stays in the tree for keyboard and screen
- * readers; the pointer never touches it.
- */
-function BiasSlider({ value, onDrag, onCommit }: {
-  /** Committed stop index, 0..4 into BIAS_STOPS. */
-  value: number;
-  /** Fired with the nearest stop while dragging, so the label tracks the thumb. */
-  onDrag: (idx: number) => void;
-  /** Fired once on release / keyboard settle with the final stop. */
-  onCommit: (idx: number) => void;
-}) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  // Float 0..4 while a pointer drag is live; null otherwise. The thumb rides
-  // the float during the drag and animates to the snapped stop after it.
-  const [drag, setDrag] = useState<number | null>(null);
-  const visual = drag ?? value;
-  const pct = (visual / 4) * 100;
-  const side = Math.round(visual) === 2 ? "center" : Math.round(visual) > 2 ? "damage" : "durable";
-
-  const posFrom = (clientX: number) => {
-    const rect = trackRef.current!.getBoundingClientRect();
-    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-    return rect.width ? (x / rect.width) * 4 : 0;
-  };
-  const start = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-    const p = posFrom(e.clientX);
-    setDrag(p);
-    onDrag(Math.round(p));
-  };
-  const move = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (drag === null) return;
-    const p = posFrom(e.clientX);
-    setDrag(p);
-    onDrag(Math.round(p));
-  };
-  const end = () => {
-    if (drag === null) return;
-    const idx = Math.round(drag);
-    setDrag(null);
-    onCommit(idx);
-  };
-
-  return (
-    <div
-      ref={trackRef}
-      onPointerDown={start}
-      onPointerMove={move}
-      onPointerUp={end}
-      onPointerCancel={end}
-      className="relative min-w-0 flex-1 cursor-pointer touch-none select-none py-2.5"
-    >
-      {/* keyboard / screen-reader path; the pointer is handled by the div */}
-      <input
-        type="range" min={0} max={4} step={1} value={value}
-        onChange={(e) => onDrag(Number(e.target.value))}
-        onKeyUp={(e) => onCommit(Number((e.target as HTMLInputElement).value))}
-        onBlur={(e) => onCommit(Number(e.target.value))}
-        aria-label="Build bias" aria-valuetext={BIAS_STOPS[Math.round(visual)].label}
-        className="peer pointer-events-none absolute inset-0 h-full w-full opacity-0"
-      />
-      {/* track: durability blue into damage gold, glass over it */}
-      <div className="h-1.5 rounded-full bg-gradient-to-r from-accent/70 via-white/[0.14] to-gold/70 ring-1 ring-white/10" />
-      {/* the five stops */}
-      {[0, 1, 2, 3, 4].map((i) => (
-        <span
-          key={i}
-          aria-hidden
-          className={`absolute top-1/2 h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full transition ${
-            i === 2 ? "h-[9px] w-[9px] bg-white/50" : "bg-white/30"} ${
-            Math.round(visual) === i ? "opacity-0" : "opacity-100"}`}
-          style={{ left: `${(i / 4) * 100}%` }}
-        />
-      ))}
-      {/* thumb: exact under the finger while dragging, animates onto the stop after */}
-      <span
-        aria-hidden
-        className={`absolute top-1/2 z-10 h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-[#0e1322]/90 shadow-lg backdrop-blur transition-transform peer-focus-visible:ring-2 peer-focus-visible:ring-accent/70 ${
-          drag !== null ? "scale-125" : "scale-100"} ${
-          side === "damage" ? "border-gold shadow-gold/30" : side === "durable" ? "border-accent shadow-accent/30" : "border-white/50 shadow-black/40"}`}
-        style={{
-          left: `${pct}%`,
-          transition: drag === null
-            ? "left 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 120ms ease"
-            : "transform 120ms ease",
-        }}
-      >
-        <span className={`absolute inset-[3px] rounded-full ${
-          side === "damage" ? "bg-gold" : side === "durable" ? "bg-accent" : "bg-white/70"}`} />
-      </span>
-    </div>
-  );
-}
 
 const OBJECTIVES = [
   ["balanced", "Balanced"], ["maxstats", "Max stats"], ["maxsynergy", "Max synergy"],
@@ -1305,10 +1206,13 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           </div>
           <div className="mt-2 flex items-center gap-3">
             <span className="shrink-0 text-[0.65rem] text-faint">More durable</span>
-            <BiasSlider
-              value={biasIdx}
+            <GlassSlider
+              min={0} max={4} value={biasIdx}
               onDrag={setBiasIdx}
               onCommit={(idx) => { setBiasIdx(idx); commitBias(idx); }}
+              ariaLabel="Build bias"
+              ariaValueText={BIAS_STOPS[biasIdx].label}
+              variant="bias" ticks
             />
             <span className="shrink-0 text-[0.65rem] text-faint">More damage</span>
           </div>

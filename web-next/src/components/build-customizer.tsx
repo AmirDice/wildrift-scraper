@@ -17,6 +17,7 @@ import {
   RuneDetail,
 } from "@/components/build-details";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
+import { GlassSlider } from "@/components/glass-slider";
 import { ShareBuildButton, track } from "@/components/share-build";
 import { ShareSnapshotButton } from "@/components/share-snapshot";
 import { useAccount } from "@/components/account-provider";
@@ -541,8 +542,13 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
       {/* level slider */}
       <div className="mt-3 flex items-center gap-3 rounded-xl bg-white/[0.03] px-3 py-2">
         <span className="shrink-0 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Level</span>
-        <input type="range" min={1} max={15} value={level} onChange={(e) => { setLoadedSavedId(null); setLevel(Number(e.target.value)); }}
-               className="h-1.5 flex-1 cursor-pointer accent-[var(--color-accent)]" aria-label="Champion level" />
+        <GlassSlider
+          min={1} max={15} value={level}
+          onDrag={(v) => { setLoadedSavedId(null); setLevel(v); }}
+          onCommit={(v) => { setLoadedSavedId(null); setLevel(v); }}
+          ariaLabel="Champion level"
+          ariaValueText={`Level ${level}`}
+        />
         <span className="w-6 shrink-0 text-right text-sm font-bold text-accent">{level}</span>
       </div>
 
