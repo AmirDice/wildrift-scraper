@@ -2,60 +2,535 @@
   "date": "2026-08-15",
   "region": "cn",
   "champions": {
-    "aatrox": {
-      "wr": 50.04,
-      "pick": 7.06,
-      "ban": 7.29
+    "morgana": {
+      "wr": 52.29,
+      "pick": 5.11,
+      "ban": 47.23
+    },
+    "zyra": {
+      "wr": 52.47,
+      "pick": 2.64,
+      "ban": 32.29
+    },
+    "orianna": {
+      "wr": 51.53,
+      "pick": 5.21,
+      "ban": 0.42
+    },
+    "swain": {
+      "wr": 53.63,
+      "pick": 5.5,
+      "ban": 6.65
+    },
+    "twisted-fate": {
+      "wr": 52.08,
+      "pick": 10.26,
+      "ban": 6.24
+    },
+    "brand": {
+      "wr": 50.92,
+      "pick": 8.55,
+      "ban": 7.43
+    },
+    "yone": {
+      "wr": 52.75,
+      "pick": 11.16,
+      "ban": 16.02
     },
     "ahri": {
       "wr": 52.04,
       "pick": 6.03,
       "ban": 0.15
     },
-    "akali": {
-      "wr": 44.61,
-      "pick": 4.44,
-      "ban": 0.53
+    "nasus": {
+      "wr": 48.59,
+      "pick": 5.71,
+      "ban": 11.38
     },
-    "akshan": {
-      "wr": 50.29,
-      "pick": 1.02,
-      "ban": 0.06
+    "galio": {
+      "wr": 51.37,
+      "pick": 14.04,
+      "ban": 5.15
     },
-    "alistar": {
-      "wr": 49.5,
-      "pick": 4.31,
-      "ban": 0.67
+    "viktor": {
+      "wr": 49.68,
+      "pick": 3.48,
+      "ban": 0.41
     },
-    "ambessa": {
-      "wr": 50.07,
-      "pick": 1.92,
-      "ban": 1.85
+    "teemo": {
+      "wr": 51.38,
+      "pick": 2.54,
+      "ban": 8.99
     },
-    "amumu": {
-      "wr": 55.96,
-      "pick": 2.39,
-      "ban": 0.07
+    "taliyah": {
+      "wr": 51.42,
+      "pick": 3.2,
+      "ban": 8.06
     },
-    "annie": {
-      "wr": 51.99,
-      "pick": 2.94,
-      "ban": 0.17
-    },
-    "ashe": {
-      "wr": 48.89,
-      "pick": 4,
-      "ban": 0.05
+    "velkoz": {
+      "wr": 51.48,
+      "pick": 3.08,
+      "ban": 0.56
     },
     "aurelion-sol": {
       "wr": 50.13,
       "pick": 7.79,
       "ban": 6.31
     },
+    "norra": {
+      "wr": 48.75,
+      "pick": 1.41,
+      "ban": 16.57
+    },
+    "heimerdinger": {
+      "wr": 49.84,
+      "pick": 1.32,
+      "ban": 0.6
+    },
+    "kennen": {
+      "wr": 51.8,
+      "pick": 1.69,
+      "ban": 0.36
+    },
+    "lux": {
+      "wr": 49.58,
+      "pick": 5.44,
+      "ban": 8.14
+    },
+    "annie": {
+      "wr": 51.99,
+      "pick": 2.94,
+      "ban": 0.17
+    },
+    "lissandra": {
+      "wr": 50.71,
+      "pick": 4.95,
+      "ban": 10.68
+    },
+    "kassadin": {
+      "wr": 51.66,
+      "pick": 2.14,
+      "ban": 1.82
+    },
+    "vex": {
+      "wr": 49.81,
+      "pick": 2.15,
+      "ban": 0.41
+    },
     "aurora": {
       "wr": 50.38,
       "pick": 5.37,
       "ban": 7.32
+    },
+    "ziggs": {
+      "wr": 49.18,
+      "pick": 5.37,
+      "ban": 1.66
+    },
+    "ekko": {
+      "wr": 50.2,
+      "pick": 4.8,
+      "ban": 0.87
+    },
+    "yasuo": {
+      "wr": 49.4,
+      "pick": 10.9,
+      "ban": 10.6
+    },
+    "fizz": {
+      "wr": 48.27,
+      "pick": 2.2,
+      "ban": 1.56
+    },
+    "zed": {
+      "wr": 49.37,
+      "pick": 3.83,
+      "ban": 1.97
+    },
+    "diana": {
+      "wr": 51.76,
+      "pick": 3.77,
+      "ban": 0.55
+    },
+    "ryze": {
+      "wr": 48.43,
+      "pick": 4.74,
+      "ban": 16.72
+    },
+    "kogmaw": {
+      "wr": 49.73,
+      "pick": 1.68,
+      "ban": 19.68
+    },
+    "veigar": {
+      "wr": 46.38,
+      "pick": 5.23,
+      "ban": 5.27
+    },
+    "syndra": {
+      "wr": 46.81,
+      "pick": 3.68,
+      "ban": 2.02
+    },
+    "jayce": {
+      "wr": 47.54,
+      "pick": 2.85,
+      "ban": 2.13
+    },
+    "chogath": {
+      "wr": 50.05,
+      "pick": 15.2,
+      "ban": 27.86
+    },
+    "katarina": {
+      "wr": 48.59,
+      "pick": 2.14,
+      "ban": 0.41
+    },
+    "mel": {
+      "wr": 46.44,
+      "pick": 7.51,
+      "ban": 55.55
+    },
+    "vladimir": {
+      "wr": 45.96,
+      "pick": 2.82,
+      "ban": 0.81
+    },
+    "akali": {
+      "wr": 44.61,
+      "pick": 4.44,
+      "ban": 0.53
+    },
+    "wukong": {
+      "wr": 53.27,
+      "pick": 2.1,
+      "ban": 0.36
+    },
+    "vayne": {
+      "wr": 50.43,
+      "pick": 8.91,
+      "ban": 11.92
+    },
+    "kalista": {
+      "wr": 49.6,
+      "pick": 3.71,
+      "ban": 1.54
+    },
+    "shen": {
+      "wr": 51.34,
+      "pick": 1.54,
+      "ban": 0.1
+    },
+    "malphite": {
+      "wr": 52.75,
+      "pick": 5.5,
+      "ban": 13.43
+    },
+    "jax": {
+      "wr": 51.98,
+      "pick": 4.32,
+      "ban": 0.45
+    },
+    "smolder": {
+      "wr": 52.0,
+      "pick": 14.78,
+      "ban": 19.57
+    },
+    "gwen": {
+      "wr": 52.04,
+      "pick": 5.05,
+      "ban": 10.41
+    },
+    "kayle": {
+      "wr": 50.98,
+      "pick": 1.58,
+      "ban": 0.18
+    },
+    "volibear": {
+      "wr": 50.03,
+      "pick": 7.32,
+      "ban": 5.31
+    },
+    "poppy": {
+      "wr": 51.75,
+      "pick": 2.65,
+      "ban": 0.43
+    },
+    "singed": {
+      "wr": 51.82,
+      "pick": 1.46,
+      "ban": 0.54
+    },
+    "gnar": {
+      "wr": 50.18,
+      "pick": 3.76,
+      "ban": 0.63
+    },
+    "dr-mundo": {
+      "wr": 48.64,
+      "pick": 4.88,
+      "ban": 0.77
+    },
+    "garen": {
+      "wr": 50.0,
+      "pick": 14.68,
+      "ban": 4.42
+    },
+    "camille": {
+      "wr": 50.95,
+      "pick": 3.18,
+      "ban": 0.27
+    },
+    "sett": {
+      "wr": 50.51,
+      "pick": 11.23,
+      "ban": 2.6
+    },
+    "ornn": {
+      "wr": 50.58,
+      "pick": 2.19,
+      "ban": 0.17
+    },
+    "urgot": {
+      "wr": 48.95,
+      "pick": 3.27,
+      "ban": 0.97
+    },
+    "ambessa": {
+      "wr": 50.07,
+      "pick": 1.92,
+      "ban": 1.85
+    },
+    "sion": {
+      "wr": 49.77,
+      "pick": 4.25,
+      "ban": 0.5
+    },
+    "darius": {
+      "wr": 49.77,
+      "pick": 15.08,
+      "ban": 12.95
+    },
+    "tryndamere": {
+      "wr": 47.7,
+      "pick": 2.05,
+      "ban": 13.97
+    },
+    "irelia": {
+      "wr": 50.75,
+      "pick": 1.98,
+      "ban": 1.35
+    },
+    "aatrox": {
+      "wr": 50.04,
+      "pick": 7.06,
+      "ban": 7.29
+    },
+    "mordekaiser": {
+      "wr": 48.93,
+      "pick": 7.42,
+      "ban": 15.25
+    },
+    "rumble": {
+      "wr": 48.57,
+      "pick": 2.89,
+      "ban": 0.55
+    },
+    "ksante": {
+      "wr": 48.89,
+      "pick": 6.42,
+      "ban": 27.34
+    },
+    "renekton": {
+      "wr": 48.9,
+      "pick": 4.76,
+      "ban": 0.86
+    },
+    "fiora": {
+      "wr": 47.56,
+      "pick": 2.32,
+      "ban": 0.39
+    },
+    "riven": {
+      "wr": 49.59,
+      "pick": 1.64,
+      "ban": 0.25
+    },
+    "skarner": {
+      "wr": 47.58,
+      "pick": 1.58,
+      "ban": 1.07
+    },
+    "miss-fortune": {
+      "wr": 52.21,
+      "pick": 19.17,
+      "ban": 3.09
+    },
+    "varus": {
+      "wr": 51.01,
+      "pick": 7.88,
+      "ban": 0.68
+    },
+    "ezreal": {
+      "wr": 51.71,
+      "pick": 15.16,
+      "ban": 1.42
+    },
+    "xayah": {
+      "wr": 49.61,
+      "pick": 4.68,
+      "ban": 0.16
+    },
+    "jhin": {
+      "wr": 50.96,
+      "pick": 14.01,
+      "ban": 0.43
+    },
+    "yunara": {
+      "wr": 50.97,
+      "pick": 11.7,
+      "ban": 14.89
+    },
+    "zeri": {
+      "wr": 49.29,
+      "pick": 1.53,
+      "ban": 0.01
+    },
+    "ashe": {
+      "wr": 48.89,
+      "pick": 4.0,
+      "ban": 0.05
+    },
+    "sivir": {
+      "wr": 48.39,
+      "pick": 3.98,
+      "ban": 0.05
+    },
+    "jinx": {
+      "wr": 49.75,
+      "pick": 18.89,
+      "ban": 1.61
+    },
+    "kaisa": {
+      "wr": 47.62,
+      "pick": 15.48,
+      "ban": 0.75
+    },
+    "samira": {
+      "wr": 49.22,
+      "pick": 8.53,
+      "ban": 4.23
+    },
+    "caitlyn": {
+      "wr": 47.11,
+      "pick": 13.01,
+      "ban": 0.99
+    },
+    "lucian": {
+      "wr": 49.71,
+      "pick": 6.64,
+      "ban": 0.24
+    },
+    "tristana": {
+      "wr": 47.4,
+      "pick": 4.01,
+      "ban": 0.04
+    },
+    "twitch": {
+      "wr": 47.32,
+      "pick": 3.19,
+      "ban": 0.13
+    },
+    "draven": {
+      "wr": 49.62,
+      "pick": 4.91,
+      "ban": 0.61
+    },
+    "sona": {
+      "wr": 53.54,
+      "pick": 10.76,
+      "ban": 3.54
+    },
+    "senna": {
+      "wr": 53.27,
+      "pick": 4.49,
+      "ban": 0.69
+    },
+    "rell": {
+      "wr": 51.94,
+      "pick": 3.57,
+      "ban": 2.1
+    },
+    "soraka": {
+      "wr": 50.59,
+      "pick": 5.77,
+      "ban": 1.65
+    },
+    "karma": {
+      "wr": 50.09,
+      "pick": 6.95,
+      "ban": 0.48
+    },
+    "zilean": {
+      "wr": 52.28,
+      "pick": 1.44,
+      "ban": 2.9
+    },
+    "maokai": {
+      "wr": 50.85,
+      "pick": 4.54,
+      "ban": 0.44
+    },
+    "leona": {
+      "wr": 50.33,
+      "pick": 8.35,
+      "ban": 4.84
+    },
+    "braum": {
+      "wr": 50.71,
+      "pick": 3.58,
+      "ban": 0.92
+    },
+    "milio": {
+      "wr": 50.42,
+      "pick": 6.92,
+      "ban": 9.39
+    },
+    "thresh": {
+      "wr": 50.96,
+      "pick": 15.19,
+      "ban": 21.67
+    },
+    "rakan": {
+      "wr": 51.24,
+      "pick": 3.26,
+      "ban": 0.35
+    },
+    "nami": {
+      "wr": 50.35,
+      "pick": 8.79,
+      "ban": 0.2
+    },
+    "seraphine": {
+      "wr": 50.03,
+      "pick": 7.18,
+      "ban": 0.65
+    },
+    "pyke": {
+      "wr": 51.95,
+      "pick": 4.74,
+      "ban": 2.84
+    },
+    "alistar": {
+      "wr": 49.5,
+      "pick": 4.31,
+      "ban": 0.67
+    },
+    "janna": {
+      "wr": 49.05,
+      "pick": 1.65,
+      "ban": 0.1
     },
     "bard": {
       "wr": 49.46,
@@ -67,640 +542,165 @@
       "pick": 6.62,
       "ban": 1.81
     },
-    "brand": {
-      "wr": 50.92,
-      "pick": 8.55,
-      "ban": 7.43
-    },
-    "braum": {
-      "wr": 50.71,
-      "pick": 3.58,
-      "ban": 0.92
-    },
-    "caitlyn": {
-      "wr": 47.11,
-      "pick": 13.01,
-      "ban": 0.99
-    },
-    "camille": {
-      "wr": 50.95,
-      "pick": 3.18,
-      "ban": 0.27
-    },
-    "chogath": {
-      "wr": 50.05,
-      "pick": 15.2,
-      "ban": 27.86
-    },
-    "corki": {
-      "wr": 49.03,
-      "pick": 1.14,
-      "ban": 0.01
-    },
-    "darius": {
-      "wr": 49.77,
-      "pick": 15.08,
-      "ban": 12.95
-    },
-    "diana": {
-      "wr": 51.76,
-      "pick": 3.77,
-      "ban": 0.55
-    },
-    "dr-mundo": {
-      "wr": 48.64,
-      "pick": 4.88,
-      "ban": 0.77
-    },
-    "draven": {
-      "wr": 49.62,
-      "pick": 4.91,
-      "ban": 0.61
-    },
-    "ekko": {
-      "wr": 50.2,
-      "pick": 4.8,
-      "ban": 0.87
-    },
-    "evelynn": {
-      "wr": 49.42,
-      "pick": 2.58,
-      "ban": 3.37
-    },
-    "ezreal": {
-      "wr": 51.71,
-      "pick": 15.16,
-      "ban": 1.42
-    },
-    "fiddlesticks": {
-      "wr": 51.46,
-      "pick": 2.67,
-      "ban": 4.07
-    },
-    "fiora": {
-      "wr": 47.56,
-      "pick": 2.32,
-      "ban": 0.39
-    },
-    "fizz": {
-      "wr": 48.27,
-      "pick": 2.2,
-      "ban": 1.56
-    },
-    "galio": {
-      "wr": 51.37,
-      "pick": 14.04,
-      "ban": 5.15
-    },
-    "garen": {
-      "wr": 50,
-      "pick": 14.68,
-      "ban": 4.42
-    },
-    "gnar": {
-      "wr": 50.18,
-      "pick": 3.76,
-      "ban": 0.63
-    },
-    "graves": {
-      "wr": 46.8,
-      "pick": 6.99,
-      "ban": 0.38
-    },
-    "gwen": {
-      "wr": 52.04,
-      "pick": 5.05,
-      "ban": 10.41
-    },
-    "hecarim": {
-      "wr": 50.45,
-      "pick": 2.51,
-      "ban": 17.23
-    },
-    "heimerdinger": {
-      "wr": 49.84,
-      "pick": 1.32,
-      "ban": 0.6
-    },
-    "irelia": {
-      "wr": 50.75,
-      "pick": 1.98,
-      "ban": 1.35
-    },
-    "janna": {
-      "wr": 49.05,
-      "pick": 1.65,
-      "ban": 0.1
-    },
-    "jarvan-iv": {
-      "wr": 52.29,
-      "pick": 8.96,
-      "ban": 0.64
-    },
-    "jax": {
-      "wr": 51.98,
-      "pick": 4.32,
-      "ban": 0.45
-    },
-    "jayce": {
-      "wr": 47.54,
-      "pick": 2.85,
-      "ban": 2.13
-    },
-    "jhin": {
-      "wr": 50.96,
-      "pick": 14.01,
-      "ban": 0.43
-    },
-    "jinx": {
-      "wr": 49.75,
-      "pick": 18.89,
-      "ban": 1.61
-    },
-    "ksante": {
-      "wr": 48.89,
-      "pick": 6.42,
-      "ban": 27.34
-    },
-    "kaisa": {
-      "wr": 47.62,
-      "pick": 15.48,
-      "ban": 0.75
-    },
-    "kalista": {
-      "wr": 49.6,
-      "pick": 3.71,
-      "ban": 1.54
-    },
-    "karma": {
-      "wr": 50.09,
-      "pick": 6.95,
-      "ban": 0.48
-    },
-    "kassadin": {
-      "wr": 51.66,
-      "pick": 2.14,
-      "ban": 1.82
-    },
-    "katarina": {
-      "wr": 48.59,
-      "pick": 2.14,
-      "ban": 0.41
-    },
-    "kayle": {
-      "wr": 50.98,
-      "pick": 1.58,
-      "ban": 0.18
-    },
-    "kayn": {
-      "wr": 51.84,
-      "pick": 7.24,
-      "ban": 2.99
-    },
-    "kennen": {
-      "wr": 51.8,
-      "pick": 1.69,
-      "ban": 0.36
-    },
-    "khazix": {
-      "wr": 49.15,
-      "pick": 3.83,
-      "ban": 0.19
-    },
-    "kindred": {
-      "wr": 51.75,
-      "pick": 2.67,
-      "ban": 0.33
-    },
-    "kogmaw": {
-      "wr": 49.73,
-      "pick": 1.68,
-      "ban": 19.68
-    },
-    "lee-sin": {
-      "wr": 46.36,
-      "pick": 13.31,
-      "ban": 10.83
-    },
-    "leona": {
-      "wr": 50.33,
-      "pick": 8.35,
-      "ban": 4.84
-    },
-    "lillia": {
-      "wr": 51.21,
-      "pick": 3.95,
-      "ban": 1.92
-    },
-    "lissandra": {
-      "wr": 50.71,
-      "pick": 4.95,
-      "ban": 10.68
-    },
-    "lucian": {
-      "wr": 49.71,
-      "pick": 6.64,
-      "ban": 0.24
+    "nautilus": {
+      "wr": 48.52,
+      "pick": 8.59,
+      "ban": 2.23
     },
     "lulu": {
       "wr": 49.11,
       "pick": 13.95,
       "ban": 19.89
     },
-    "lux": {
-      "wr": 49.58,
-      "pick": 5.44,
-      "ban": 8.14
+    "yuumi": {
+      "wr": 43.97,
+      "pick": 11.62,
+      "ban": 46.39
     },
-    "malphite": {
-      "wr": 52.75,
-      "pick": 5.5,
-      "ban": 13.43
-    },
-    "maokai": {
-      "wr": 50.85,
-      "pick": 4.54,
-      "ban": 0.44
-    },
-    "master-yi": {
-      "wr": 48.7,
-      "pick": 8.49,
-      "ban": 56.03
-    },
-    "mel": {
-      "wr": 46.44,
-      "pick": 7.51,
-      "ban": 55.55
-    },
-    "milio": {
-      "wr": 50.42,
-      "pick": 6.92,
-      "ban": 9.39
-    },
-    "miss-fortune": {
-      "wr": 52.21,
-      "pick": 19.17,
-      "ban": 3.09
-    },
-    "mordekaiser": {
-      "wr": 48.93,
-      "pick": 7.42,
-      "ban": 15.25
-    },
-    "morgana": {
-      "wr": 52.29,
-      "pick": 5.11,
-      "ban": 47.23
-    },
-    "nami": {
-      "wr": 50.35,
-      "pick": 8.79,
-      "ban": 0.2
-    },
-    "nasus": {
-      "wr": 48.59,
-      "pick": 5.71,
-      "ban": 11.38
-    },
-    "nautilus": {
-      "wr": 48.52,
-      "pick": 8.59,
-      "ban": 2.23
-    },
-    "nidalee": {
-      "wr": 50.02,
-      "pick": 2.46,
-      "ban": 17.29
-    },
-    "nilah": {
-      "wr": 48.91,
-      "pick": 1.19,
-      "ban": 7.97
-    },
-    "nocturne": {
-      "wr": 50.62,
-      "pick": 5.06,
-      "ban": 38.19
-    },
-    "norra": {
-      "wr": 48.75,
-      "pick": 1.41,
-      "ban": 16.57
-    },
-    "nunu-and-willump": {
-      "wr": 53.25,
-      "pick": 2.15,
-      "ban": 2.72
-    },
-    "olaf": {
-      "wr": 52.83,
-      "pick": 1.18,
-      "ban": 3.12
-    },
-    "orianna": {
-      "wr": 51.53,
-      "pick": 5.21,
-      "ban": 0.42
-    },
-    "ornn": {
-      "wr": 50.58,
-      "pick": 2.19,
-      "ban": 0.17
-    },
-    "pantheon": {
-      "wr": 52.7,
-      "pick": 8.81,
-      "ban": 7.97
-    },
-    "poppy": {
-      "wr": 51.75,
-      "pick": 2.65,
-      "ban": 0.43
-    },
-    "pyke": {
-      "wr": 51.95,
-      "pick": 4.74,
-      "ban": 2.84
-    },
-    "rakan": {
-      "wr": 51.24,
-      "pick": 3.26,
-      "ban": 0.35
+    "amumu": {
+      "wr": 55.96,
+      "pick": 2.39,
+      "ban": 0.07
     },
     "rammus": {
       "wr": 54.75,
       "pick": 4.22,
       "ban": 4.74
     },
-    "rell": {
-      "wr": 51.94,
-      "pick": 3.57,
-      "ban": 2.1
+    "nunu-and-willump": {
+      "wr": 53.25,
+      "pick": 2.15,
+      "ban": 2.72
     },
-    "renekton": {
-      "wr": 48.9,
-      "pick": 4.76,
-      "ban": 0.86
+    "pantheon": {
+      "wr": 52.7,
+      "pick": 8.81,
+      "ban": 7.97
     },
-    "rengar": {
-      "wr": 48.99,
-      "pick": 1.75,
-      "ban": 1.61
+    "jarvan-iv": {
+      "wr": 52.29,
+      "pick": 8.96,
+      "ban": 0.64
     },
-    "riven": {
-      "wr": 49.59,
-      "pick": 1.64,
-      "ban": 0.25
-    },
-    "rumble": {
-      "wr": 48.57,
-      "pick": 2.89,
-      "ban": 0.55
-    },
-    "ryze": {
-      "wr": 48.43,
-      "pick": 4.74,
-      "ban": 16.72
-    },
-    "samira": {
-      "wr": 49.22,
-      "pick": 8.53,
-      "ban": 4.23
-    },
-    "senna": {
-      "wr": 53.27,
-      "pick": 4.49,
-      "ban": 0.69
-    },
-    "seraphine": {
-      "wr": 50.03,
-      "pick": 7.18,
-      "ban": 0.65
-    },
-    "sett": {
-      "wr": 50.51,
-      "pick": 11.23,
-      "ban": 2.6
-    },
-    "shen": {
-      "wr": 51.34,
-      "pick": 1.54,
-      "ban": 0.1
+    "kayn": {
+      "wr": 51.84,
+      "pick": 7.24,
+      "ban": 2.99
     },
     "shyvana": {
       "wr": 50.18,
       "pick": 6.61,
       "ban": 3.19
     },
-    "singed": {
-      "wr": 51.82,
-      "pick": 1.46,
-      "ban": 0.54
-    },
-    "sion": {
-      "wr": 49.77,
-      "pick": 4.25,
-      "ban": 0.5
-    },
-    "sivir": {
-      "wr": 48.39,
-      "pick": 3.98,
-      "ban": 0.05
-    },
-    "skarner": {
-      "wr": 51.3,
-      "pick": 1.1,
-      "ban": 1.07
-    },
-    "smolder": {
-      "wr": 52,
-      "pick": 14.78,
-      "ban": 19.57
-    },
-    "sona": {
-      "wr": 53.54,
-      "pick": 10.76,
-      "ban": 3.54
-    },
-    "soraka": {
-      "wr": 50.59,
-      "pick": 5.77,
-      "ban": 1.65
-    },
-    "swain": {
-      "wr": 53.63,
-      "pick": 5.5,
-      "ban": 6.65
-    },
-    "syndra": {
-      "wr": 46.81,
-      "pick": 3.68,
-      "ban": 2.02
-    },
-    "taliyah": {
-      "wr": 51.42,
-      "pick": 3.2,
-      "ban": 8.06
-    },
-    "talon": {
-      "wr": 50.25,
-      "pick": 3.63,
-      "ban": 2
-    },
-    "teemo": {
-      "wr": 51.38,
-      "pick": 2.54,
-      "ban": 8.99
-    },
-    "thresh": {
-      "wr": 50.96,
-      "pick": 15.19,
-      "ban": 21.67
-    },
-    "tristana": {
-      "wr": 47.4,
-      "pick": 4.01,
-      "ban": 0.04
-    },
-    "tryndamere": {
-      "wr": 47.7,
-      "pick": 2.05,
-      "ban": 13.97
-    },
-    "twisted-fate": {
-      "wr": 52.08,
-      "pick": 10.26,
-      "ban": 6.24
-    },
-    "twitch": {
-      "wr": 47.32,
-      "pick": 3.19,
-      "ban": 0.13
-    },
-    "urgot": {
-      "wr": 48.95,
-      "pick": 3.27,
-      "ban": 0.97
-    },
-    "varus": {
-      "wr": 51.01,
-      "pick": 7.88,
-      "ban": 0.68
-    },
-    "vayne": {
-      "wr": 50.43,
-      "pick": 8.91,
-      "ban": 11.92
-    },
-    "veigar": {
-      "wr": 46.38,
-      "pick": 5.23,
-      "ban": 5.27
-    },
-    "velkoz": {
-      "wr": 51.48,
-      "pick": 3.08,
-      "ban": 0.56
-    },
-    "vex": {
-      "wr": 49.81,
-      "pick": 2.15,
-      "ban": 0.41
-    },
     "vi": {
       "wr": 52.05,
       "pick": 10.23,
       "ban": 5.59
-    },
-    "viego": {
-      "wr": 46.36,
-      "pick": 4.16,
-      "ban": 2.48
-    },
-    "viktor": {
-      "wr": 49.68,
-      "pick": 3.48,
-      "ban": 0.41
-    },
-    "vladimir": {
-      "wr": 45.96,
-      "pick": 2.82,
-      "ban": 0.81
-    },
-    "volibear": {
-      "wr": 50.03,
-      "pick": 7.32,
-      "ban": 5.31
     },
     "warwick": {
       "wr": 51.33,
       "pick": 3.58,
       "ban": 5.05
     },
-    "wukong": {
-      "wr": 53.27,
-      "pick": 2.1,
-      "ban": 0.36
+    "lillia": {
+      "wr": 51.21,
+      "pick": 3.95,
+      "ban": 1.92
     },
-    "xayah": {
-      "wr": 49.61,
-      "pick": 4.68,
-      "ban": 0.16
+    "olaf": {
+      "wr": 52.83,
+      "pick": 1.18,
+      "ban": 3.12
     },
     "xin-zhao": {
       "wr": 51.54,
       "pick": 8.83,
       "ban": 1.35
     },
-    "yasuo": {
-      "wr": 49.4,
-      "pick": 10.9,
-      "ban": 10.6
+    "kindred": {
+      "wr": 51.75,
+      "pick": 2.67,
+      "ban": 0.33
     },
-    "yone": {
-      "wr": 52.75,
-      "pick": 11.16,
-      "ban": 16.02
+    "nocturne": {
+      "wr": 50.62,
+      "pick": 5.06,
+      "ban": 38.19
     },
-    "yunara": {
-      "wr": 50.97,
-      "pick": 11.7,
-      "ban": 14.89
+    "fiddlesticks": {
+      "wr": 51.46,
+      "pick": 2.67,
+      "ban": 4.07
     },
-    "yuumi": {
-      "wr": 43.97,
-      "pick": 11.62,
-      "ban": 46.39
+    "master-yi": {
+      "wr": 48.7,
+      "pick": 8.49,
+      "ban": 56.03
     },
-    "zed": {
-      "wr": 49.37,
+    "khazix": {
+      "wr": 49.15,
       "pick": 3.83,
-      "ban": 1.97
+      "ban": 0.19
     },
-    "zeri": {
-      "wr": 49.29,
-      "pick": 1.53,
-      "ban": 0.01
+    "nidalee": {
+      "wr": 50.02,
+      "pick": 2.46,
+      "ban": 17.29
     },
-    "ziggs": {
-      "wr": 49.18,
-      "pick": 5.37,
-      "ban": 1.66
+    "talon": {
+      "wr": 50.25,
+      "pick": 3.63,
+      "ban": 2.0
     },
-    "zilean": {
-      "wr": 52.28,
-      "pick": 1.44,
-      "ban": 2.9
+    "evelynn": {
+      "wr": 49.42,
+      "pick": 2.58,
+      "ban": 3.37
+    },
+    "graves": {
+      "wr": 46.8,
+      "pick": 6.99,
+      "ban": 0.38
+    },
+    "hecarim": {
+      "wr": 50.45,
+      "pick": 2.51,
+      "ban": 17.23
+    },
+    "rengar": {
+      "wr": 48.99,
+      "pick": 1.75,
+      "ban": 1.61
+    },
+    "viego": {
+      "wr": 46.36,
+      "pick": 4.16,
+      "ban": 2.48
+    },
+    "lee-sin": {
+      "wr": 46.36,
+      "pick": 13.31,
+      "ban": 10.83
     },
     "zoe": {
       "wr": 50.85,
       "pick": 1.12,
       "ban": 0.5
     },
-    "zyra": {
-      "wr": 52.47,
-      "pick": 2.64,
-      "ban": 32.29
+    "akshan": {
+      "wr": 50.29,
+      "pick": 1.02,
+      "ban": 0.06
+    },
+    "corki": {
+      "wr": 49.03,
+      "pick": 1.14,
+      "ban": 0.01
+    },
+    "nilah": {
+      "wr": 48.91,
+      "pick": 1.19,
+      "ban": 7.97
     }
   }
 }

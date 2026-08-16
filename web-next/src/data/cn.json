@@ -110,7 +110,7 @@
           "position": "Mid"
         },
         "4": {
-          "winRate": 46,
+          "winRate": 46.0,
           "pickRate": 4.99,
           "banRate": 0.68,
           "strength": 4,
@@ -306,7 +306,7 @@
         },
         "3": {
           "winRate": 48.89,
-          "pickRate": 4,
+          "pickRate": 4.0,
           "banRate": 0.05,
           "strength": 4,
           "position": "Dragon"
@@ -1083,7 +1083,7 @@
           "position": "Baron"
         },
         "3": {
-          "winRate": 50,
+          "winRate": 50.0,
           "pickRate": 14.68,
           "banRate": 4.42,
           "strength": 1,
@@ -1179,7 +1179,7 @@
         "1": {
           "winRate": 51.66,
           "pickRate": 4.26,
-          "banRate": 5,
+          "banRate": 5.0,
           "strength": 3,
           "position": "Baron"
         },
@@ -1429,7 +1429,7 @@
       "cnName": "杰斯",
       "byBracket": {
         "1": {
-          "winRate": 48,
+          "winRate": 48.0,
           "pickRate": 2.2,
           "banRate": 1.1,
           "strength": 5,
@@ -1796,7 +1796,7 @@
           "position": "Jungle"
         },
         "2": {
-          "winRate": 52,
+          "winRate": 52.0,
           "pickRate": 6.44,
           "banRate": 1.99,
           "strength": 3,
@@ -2014,7 +2014,7 @@
         "2": {
           "winRate": 50.45,
           "pickRate": 10.62,
-          "banRate": 8,
+          "banRate": 8.0,
           "strength": 2,
           "position": "Support"
         },
@@ -2581,14 +2581,14 @@
       "cnName": "诺提勒斯",
       "byBracket": {
         "1": {
-          "winRate": 49,
+          "winRate": 49.0,
           "pickRate": 11.11,
           "banRate": 3.13,
           "strength": 2,
           "position": "Support"
         },
         "2": {
-          "winRate": 49,
+          "winRate": 49.0,
           "pickRate": 10.78,
           "banRate": 3.2,
           "strength": 2,
@@ -3092,7 +3092,7 @@
           "position": "Support"
         },
         "4": {
-          "winRate": 51,
+          "winRate": 51.0,
           "pickRate": 3.46,
           "banRate": 1.31,
           "strength": 4,
@@ -3309,7 +3309,7 @@
         },
         "4": {
           "winRate": 50.72,
-          "pickRate": 9,
+          "pickRate": 9.0,
           "banRate": 3.41,
           "strength": 2,
           "position": "Dragon"
@@ -3611,25 +3611,25 @@
       "cnName": "斯卡纳",
       "byBracket": {
         "1": {
-          "winRate": 50.6,
-          "pickRate": 1.21,
+          "winRate": 46.73,
+          "pickRate": 1.29,
           "banRate": 1.36,
           "strength": 5,
-          "position": "Jungle"
+          "position": "Baron"
         },
         "2": {
-          "winRate": 50.72,
-          "pickRate": 1.16,
+          "winRate": 46.84,
+          "pickRate": 1.32,
           "banRate": 1.42,
           "strength": 5,
-          "position": "Jungle"
+          "position": "Baron"
         },
         "3": {
-          "winRate": 51.3,
-          "pickRate": 1.1,
+          "winRate": 47.58,
+          "pickRate": 1.58,
           "banRate": 1.07,
           "strength": 5,
-          "position": "Jungle"
+          "position": "Baron"
         },
         "4": {
           "winRate": 45.99,
@@ -3661,7 +3661,7 @@
           "position": "Dragon"
         },
         "3": {
-          "winRate": 52,
+          "winRate": 52.0,
           "pickRate": 14.78,
           "banRate": 19.57,
           "strength": 0,
@@ -3879,7 +3879,7 @@
         "3": {
           "winRate": 50.25,
           "pickRate": 3.63,
-          "banRate": 2,
+          "banRate": 2.0,
           "strength": 4,
           "position": "Jungle"
         },
@@ -4209,7 +4209,7 @@
         },
         "4": {
           "winRate": 50.72,
-          "pickRate": 9,
+          "pickRate": 9.0,
           "banRate": 11.15,
           "strength": 2,
           "position": "Dragon"
@@ -4568,7 +4568,7 @@
           "position": "Baron"
         },
         "4": {
-          "winRate": 50,
+          "winRate": 50.0,
           "pickRate": 2.39,
           "banRate": 0.26,
           "strength": 5,
@@ -4662,7 +4662,7 @@
           "position": "Mid"
         },
         "2": {
-          "winRate": 49,
+          "winRate": 49.0,
           "pickRate": 11.96,
           "banRate": 12.77,
           "strength": 1,
@@ -4988,7 +4988,7 @@
         "4": {
           "winRate": 52.25,
           "pickRate": 2.55,
-          "banRate": 23,
+          "banRate": 23.0,
           "strength": 2,
           "position": "Mid"
         }

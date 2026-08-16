@@ -95,8 +95,7 @@ def main() -> None:
     background: radial-gradient(125% 105% at 50% 45%, transparent 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%); }}
 
   .head {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; }}
-  .brand {{ font-size: 20px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #4f8dff; }}
-  .brand span {{ color: #e8edf6; }}
+  .brand img {{ height: 30px; display: block; filter: drop-shadow(0 2px 10px rgba(0,0,0,0.6)); }}
   h1 {{ font-size: 46px; font-weight: 800; letter-spacing: -0.015em; margin-top: 6px; text-shadow: 0 2px 18px rgba(0,0,0,0.45); }}
   .sub {{ margin-top: 7px; font-size: 16px; color: #b6c1d4; text-shadow: 0 1px 10px rgba(0,0,0,0.5); }}
   .site {{ font-size: 18px; font-weight: 800; color: #7fb2ff; text-shadow: 0 1px 10px rgba(0,0,0,0.6); padding-bottom: 6px; }}
@@ -143,7 +142,7 @@ def main() -> None:
   <div class="bg-art"></div><div class="bg-dark"></div><div class="bg-vignette"></div>
   <div class="head">
     <div>
-      <div class="brand">WR<span>TRUEMETA</span></div>
+      <div class="brand"><img src="/logo.png" alt="WrTrueMeta"></div>
       <h1>Patch {patch} · Biggest Movers</h1>
       <div class="sub">{scope} win rate · {before} → {after}</div>
     </div>
