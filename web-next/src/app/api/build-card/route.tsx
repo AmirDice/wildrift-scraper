@@ -6,6 +6,7 @@ import { kvGetJson } from "@/lib/kv";
 import { getChampion } from "@/lib/data";
 import type { SharedBuild } from "@/app/api/share-build/route";
 import engineData from "@/data/engine.json";
+import skinsData from "@/data/champion_skins.json";
 
 /**
  * The shareable build card, as an actual image.
@@ -99,6 +100,8 @@ const BIAS_LABEL: Record<string, string> = {
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 
+const SKINS = skinsData as Record<string, { key: string; skins: { num: number; name: string }[] }>;
+
 /** The site's actual wordmark (public/logo.png, 1549x217), inlined once per
  *  process: it never changes between renders, so re-reading it per card would
  *  be waste. */
@@ -146,24 +149,32 @@ async function runeIconUri(name: string): Promise<string | null> {
   }
 }
 
-/** Champion splash as a data URI, cropped to the card's right panel.
- *
- *  720x630 with sharp's "attention" strategy, which crops toward the most
- *  salient region of the art -- in a splash that is the champion -- instead
- *  of blind centre-cropping, which cut Pantheon's face clean off. */
-const SPLASH_W = 347;
-async function splashUri(splash: string | undefined): Promise<string | null> {
-  if (!splash) return null;
+/**
+ * Full-bleed background: the ddragon SPLASH (1215x717 cinematic horizontal),
+ * for the champion's chosen skin. Cover-cropping 1215x717 into 1200x630 trims
+ * only ~11% of the height, and "attention" spends that trim away from the
+ * subject, so the composition survives intact for the whole roster. Skin
+ * numbers are validated against the catalogue; anything unknown is the base
+ * skin. Champions absent from ddragon (Wild Rift exclusives) fall back to
+ * whatever art the site stores for them.
+ */
+async function splashUri(slug: string, skin: number, fallback: string | undefined): Promise<string | null> {
+  const entry = SKINS[slug];
+  const num = entry?.skins.some((k) => k.num === skin) ? skin : 0;
+  const url = entry
+    ? `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${entry.key}_${num}.jpg`
+    : fallback;
+  if (!url) return null;
   try {
-    const buf = splash.startsWith("/")
-      ? await readFile(path.join(PUBLIC_DIR, splash.slice(1)))
+    const buf = url.startsWith("/")
+      ? await readFile(path.join(PUBLIC_DIR, url.slice(1)))
       : await (async () => {
-          const res = await fetch(splash);
+          const res = await fetch(url);
           if (!res.ok) throw new Error(String(res.status));
           return Buffer.from(await res.arrayBuffer());
         })();
     const jpg = await sharp(buf)
-      .resize(SPLASH_W, 630, { fit: "cover", position: "attention" })
+      .resize(1200, 630, { fit: "cover", position: "attention" })
       .jpeg({ quality: 76 })
       .toBuffer();
     return `data:image/jpeg;base64,${jpg.toString("base64")}`;
@@ -195,6 +206,8 @@ function parsePayload(raw: string): SharedBuild | null {
       bootsUpgrade: sl(decoded.bootsUpgrade) || undefined,
       runes: list(decoded.runes, 6, (x) => t(x)),
       summoners: list(decoded.summoners, 2, (x) => t(x, 12)).filter((n) => n in SUMMONER_DD),
+      skin: Number.isInteger(decoded.skin) && (decoded.skin as number) >= 0 && (decoded.skin as number) <= 99
+        ? (decoded.skin as number) : 0,
       player: t(decoded.player, 24) || undefined,
       createdAt: "",
     };
@@ -222,7 +235,7 @@ export async function GET(request: Request) {
   const champ = getChampion(build.championSlug);
   const [logo, splash, champIcon, ...itemArt] = await Promise.all([
     logoUri(),
-    splashUri(champ?.splash),
+    splashUri(build.championSlug, build.skin ?? 0, champ?.splash),
     champ?.icon && champ.icon.startsWith("http") ? champ.icon : null,
     ...build.items.map(itemPng),
   ]);
@@ -244,26 +257,25 @@ export async function GET(request: Request) {
         width: "100%", height: "100%", display: "flex", flexDirection: "column",
         background: "#070a12", fontFamily: "sans-serif", position: "relative",
       }}>
-        {/* The art lives on the RIGHT PANEL over a solid ground, blended in on
-            three sides: left into the panel, top sealing the frame under the
-            hairline, bottom holding the footer. The old full-bleed version
-            centre-cropped the champion out and left a bright seam at the top. */}
+        {/* Full-bleed cinematic splash, washed just enough: a left gradient
+            under the text column, a slim top band under the brand row, a
+            bottom band under runes and footer. The art keeps the right side. */}
         {splash && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={splash} width={SPLASH_W} height={630}
-               style={{ position: "absolute", top: 0, left: 1200 - SPLASH_W }} />
+          <img src={splash} width={1200} height={630}
+               style={{ position: "absolute", top: 0, left: 0 }} />
         )}
         <div style={{
-          position: "absolute", top: 0, left: 1200 - SPLASH_W, width: SPLASH_W, height: 630, display: "flex",
-          background: "linear-gradient(90deg, #070a12 0%, rgba(7,10,18,0.55) 34%, rgba(7,10,18,0.12) 62%, rgba(7,10,18,0.30) 100%)",
+          position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex",
+          background: "linear-gradient(95deg, rgba(5,8,15,0.93) 0%, rgba(5,8,15,0.78) 36%, rgba(7,10,18,0.28) 66%, rgba(7,10,18,0.12) 100%)",
         }} />
         <div style={{
-          position: "absolute", top: 0, left: 1200 - SPLASH_W, width: SPLASH_W, height: 200, display: "flex",
-          background: "linear-gradient(180deg, rgba(7,10,18,0.88) 0%, rgba(7,10,18,0.35) 55%, rgba(7,10,18,0) 100%)",
+          position: "absolute", top: 0, left: 0, width: 1200, height: 150, display: "flex",
+          background: "linear-gradient(180deg, rgba(5,8,15,0.72) 0%, rgba(5,8,15,0) 100%)",
         }} />
         <div style={{
-          position: "absolute", top: 430, left: 1200 - SPLASH_W, width: SPLASH_W, height: 200, display: "flex",
-          background: "linear-gradient(0deg, rgba(3,5,11,0.88) 0%, rgba(3,5,11,0.30) 55%, rgba(3,5,11,0) 100%)",
+          position: "absolute", top: 400, left: 0, width: 1200, height: 230, display: "flex",
+          background: "linear-gradient(0deg, rgba(3,5,11,0.9) 0%, rgba(3,5,11,0.45) 55%, rgba(3,5,11,0) 100%)",
         }} />
 
         {/* the signature: a hairline accent-to-gold gradient across the top.

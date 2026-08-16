@@ -33,6 +33,8 @@ export interface SharedBuild {
   bootsUpgrade?: string;
   runes: string[];
   summoners?: string[];
+  /** ddragon skin number for the card's splash; 0 is the base skin. */
+  skin?: number;
   /** Optional display name the player chose to put on their card. */
   player?: string;
   createdAt: string;
@@ -65,6 +67,8 @@ export async function POST(request: Request) {
     bootsUpgrade: slug(body.bootsUpgrade) || undefined,
     runes: list(body.runes, 6, (x) => text(x)),
     summoners: list(body.summoners, 2, (x) => text(x, 12)),
+    skin: Number.isInteger(body.skin) && (body.skin as number) >= 0 && (body.skin as number) <= 99
+      ? (body.skin as number) : undefined,
     player: text(body.player, 24) || undefined,
     createdAt: new Date().toISOString(),
   };

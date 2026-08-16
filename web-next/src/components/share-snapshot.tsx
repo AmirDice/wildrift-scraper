@@ -32,6 +32,8 @@ export function ShareSnapshotButton({ build }: {
 }) {
   const [open, setOpen] = useState(false);
   const [player, setPlayer] = useState("");
+  const [skin, setSkin] = useState(0);
+  const [skins, setSkins] = useState<{ num: number; name: string }[]>([]);
   const [state, setState] = useState<"idle" | "busy" | "copied" | "error">("idle");
   const [id, setId] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -42,6 +44,16 @@ export function ShareSnapshotButton({ build }: {
       if (saved) setPlayer(saved.slice(0, 24));
     } catch { /* private mode */ }
   }, []);
+
+  // The skin list loads when the popover first opens: the full catalogue is
+  // half a megabyte, so the client asks for exactly one champion's dozen.
+  useEffect(() => {
+    if (!open || skins.length) return;
+    fetch(`/api/skins?champion=${encodeURIComponent(build.championSlug)}`)
+      .then((res) => res.json())
+      .then((data) => { if (Array.isArray(data.skins)) setSkins(data.skins); })
+      .catch(() => { /* picker simply stays hidden */ });
+  }, [open, skins.length, build.championSlug]);
 
   useEffect(() => {
     const card = ref.current?.closest<HTMLElement>(".glass");
@@ -62,7 +74,11 @@ export function ShareSnapshotButton({ build }: {
     } catch { /* ignore */ }
   };
 
-  const payload = () => ({ ...build, player: player.trim().slice(0, 24) || undefined });
+  const payload = () => ({
+    ...build,
+    player: player.trim().slice(0, 24) || undefined,
+    skin: skin || undefined,
+  });
 
   const copyLink = async () => {
     if (state === "busy") return;
@@ -130,6 +146,21 @@ export function ShareSnapshotButton({ build }: {
             maxLength={24}
             className="mt-1 w-full rounded-lg border border-line bg-white/[0.04] px-2.5 py-1.5 text-xs text-text outline-none focus:border-accent/50"
           />
+          {skins.length > 1 && (
+            <>
+              <label className="mt-2 block text-xs text-muted" htmlFor="share-skin">
+                Skin on the card
+              </label>
+              <select
+                id="share-skin"
+                value={skin}
+                onChange={(e) => setSkin(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-line bg-[#0e1322] px-2.5 py-1.5 text-xs text-text outline-none focus:border-accent/50"
+              >
+                {skins.map((s) => <option key={s.num} value={s.num}>{s.name}</option>)}
+              </select>
+            </>
+          )}
           <div className="mt-3 flex gap-2">
             <button
               onClick={downloadImage}
