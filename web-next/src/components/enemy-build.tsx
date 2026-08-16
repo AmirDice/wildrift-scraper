@@ -276,6 +276,106 @@ const BIAS_STOPS = [
   { key: "max_damage", label: "Maximum Damage", blurb: "As much damage as this champion can viably carry. Never an off-meta archetype." },
 ] as const;
 
+/**
+ * The bias slider, custom-drawn. The native range input renders the OS
+ * widget: a tiny track, a themed thumb, and hard snapping between the five
+ * stops mid-drag -- which read as "broken" rather than "discrete". This one
+ * drags as a smooth float and animates onto the nearest stop on release, so
+ * the hand gets a slider and the data still gets one of five categories.
+ * A real (invisible) range input stays in the tree for keyboard and screen
+ * readers; the pointer never touches it.
+ */
+function BiasSlider({ value, onDrag, onCommit }: {
+  /** Committed stop index, 0..4 into BIAS_STOPS. */
+  value: number;
+  /** Fired with the nearest stop while dragging, so the label tracks the thumb. */
+  onDrag: (idx: number) => void;
+  /** Fired once on release / keyboard settle with the final stop. */
+  onCommit: (idx: number) => void;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  // Float 0..4 while a pointer drag is live; null otherwise. The thumb rides
+  // the float during the drag and animates to the snapped stop after it.
+  const [drag, setDrag] = useState<number | null>(null);
+  const visual = drag ?? value;
+  const pct = (visual / 4) * 100;
+  const side = Math.round(visual) === 2 ? "center" : Math.round(visual) > 2 ? "damage" : "durable";
+
+  const posFrom = (clientX: number) => {
+    const rect = trackRef.current!.getBoundingClientRect();
+    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+    return rect.width ? (x / rect.width) * 4 : 0;
+  };
+  const start = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const p = posFrom(e.clientX);
+    setDrag(p);
+    onDrag(Math.round(p));
+  };
+  const move = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (drag === null) return;
+    const p = posFrom(e.clientX);
+    setDrag(p);
+    onDrag(Math.round(p));
+  };
+  const end = () => {
+    if (drag === null) return;
+    const idx = Math.round(drag);
+    setDrag(null);
+    onCommit(idx);
+  };
+
+  return (
+    <div
+      ref={trackRef}
+      onPointerDown={start}
+      onPointerMove={move}
+      onPointerUp={end}
+      onPointerCancel={end}
+      className="relative min-w-0 flex-1 cursor-pointer touch-none select-none py-2.5"
+    >
+      {/* keyboard / screen-reader path; the pointer is handled by the div */}
+      <input
+        type="range" min={0} max={4} step={1} value={value}
+        onChange={(e) => onDrag(Number(e.target.value))}
+        onKeyUp={(e) => onCommit(Number((e.target as HTMLInputElement).value))}
+        onBlur={(e) => onCommit(Number(e.target.value))}
+        aria-label="Build bias" aria-valuetext={BIAS_STOPS[Math.round(visual)].label}
+        className="peer pointer-events-none absolute inset-0 h-full w-full opacity-0"
+      />
+      {/* track: durability blue into damage gold, glass over it */}
+      <div className="h-1.5 rounded-full bg-gradient-to-r from-accent/70 via-white/[0.14] to-gold/70 ring-1 ring-white/10" />
+      {/* the five stops */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <span
+          key={i}
+          aria-hidden
+          className={`absolute top-1/2 h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full transition ${
+            i === 2 ? "h-[9px] w-[9px] bg-white/50" : "bg-white/30"} ${
+            Math.round(visual) === i ? "opacity-0" : "opacity-100"}`}
+          style={{ left: `${(i / 4) * 100}%` }}
+        />
+      ))}
+      {/* thumb: exact under the finger while dragging, animates onto the stop after */}
+      <span
+        aria-hidden
+        className={`absolute top-1/2 z-10 h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-[#0e1322]/90 shadow-lg backdrop-blur transition-transform peer-focus-visible:ring-2 peer-focus-visible:ring-accent/70 ${
+          drag !== null ? "scale-125" : "scale-100"} ${
+          side === "damage" ? "border-gold shadow-gold/30" : side === "durable" ? "border-accent shadow-accent/30" : "border-white/50 shadow-black/40"}`}
+        style={{
+          left: `${pct}%`,
+          transition: drag === null
+            ? "left 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 120ms ease"
+            : "transform 120ms ease",
+        }}
+      >
+        <span className={`absolute inset-[3px] rounded-full ${
+          side === "damage" ? "bg-gold" : side === "durable" ? "bg-accent" : "bg-white/70"}`} />
+      </span>
+    </div>
+  );
+}
+
 const OBJECTIVES = [
   ["balanced", "Balanced"], ["maxstats", "Max stats"], ["maxsynergy", "Max synergy"],
 ] as const;
@@ -915,9 +1015,9 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
       : prev.length >= 2 ? prev : [...prev, name]);
   };
 
-  const commitBias = () => {
-    if (committedBias.current === biasIdx) return;
-    committedBias.current = biasIdx;
+  const commitBias = (idx: number) => {
+    if (committedBias.current === idx) return;
+    committedBias.current = idx;
     // One event per SETTLED change. Dragging max-durability to max-damage in
     // one motion is one decision, not four.
     track("build_bias_changed");
@@ -1075,18 +1175,30 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     <div className="space-y-6">
       {/* inputs */}
       {!isCounter && recents.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Quick start</span>
-          {recents.map((r) => (
-            <Link
-              key={r.slug}
-              href={`/build?champion=${r.slug}&tab=generate${r.playstyle ? `&variant=${encodeURIComponent(r.playstyle)}` : ""}${r.bias && r.bias !== "balanced" ? `&bias=${r.bias}` : ""}${r.role ? `&role=${encodeURIComponent(r.role)}` : ""}`}
-              className="rounded-full border border-line bg-white/[0.03] px-2.5 py-1 text-xs font-medium text-muted transition hover:border-accent/50 hover:text-text"
-              title={`Generate ${r.champ} with your last setup${r.bias && r.bias !== "balanced" ? ` (${r.bias.replace("_", " ")})` : ""}`}
-            >
-              {r.champ}
-            </Link>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[0.65rem] font-bold uppercase tracking-wide text-muted">Quick start</span>
+          {recents.map((r) => {
+            const icon = roster.find((entry) => entry.name === r.champ)?.icon;
+            return (
+              <Link
+                key={r.slug}
+                href={`/build?champion=${r.slug}&tab=generate${r.playstyle ? `&variant=${encodeURIComponent(r.playstyle)}` : ""}${r.bias && r.bias !== "balanced" ? `&bias=${r.bias}` : ""}${r.role ? `&role=${encodeURIComponent(r.role)}` : ""}`}
+                className="glass glass-hover inline-flex items-center gap-2 rounded-full py-1 pl-1 pr-3 text-xs font-semibold text-text transition hover:ring-1 hover:ring-accent/60"
+                title={`Generate ${r.champ} with your last setup${r.bias && r.bias !== "balanced" ? ` (${r.bias.replace("_", " ")})` : ""}`}
+              >
+                {icon ? (
+                  <img src={icon} alt="" width={22} height={22}
+                       className="rounded-full object-cover ring-1 ring-white/25"
+                       style={{ width: 22, height: 22 }} />
+                ) : (
+                  <span className="grid h-[22px] w-[22px] place-items-center rounded-full bg-white/10 text-[0.6rem] font-bold text-faint">
+                    {r.champ.slice(0, 2)}
+                  </span>
+                )}
+                {r.champ}
+              </Link>
+            );
+          })}
         </div>
       )}
       {!formOpen && (
@@ -1193,12 +1305,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           </div>
           <div className="mt-2 flex items-center gap-3">
             <span className="shrink-0 text-[0.65rem] text-faint">More durable</span>
-            <input
-              type="range" min={0} max={4} step={1} value={biasIdx}
-              onChange={(e) => setBiasIdx(Number(e.target.value))}
-              onPointerUp={commitBias} onKeyUp={commitBias} onBlur={commitBias}
-              aria-label="Build bias" aria-valuetext={BIAS_STOPS[biasIdx].label}
-              className="h-2 min-w-0 flex-1 cursor-pointer accent-[var(--color-accent)]"
+            <BiasSlider
+              value={biasIdx}
+              onDrag={setBiasIdx}
+              onCommit={(idx) => { setBiasIdx(idx); commitBias(idx); }}
             />
             <span className="shrink-0 text-[0.65rem] text-faint">More damage</span>
           </div>

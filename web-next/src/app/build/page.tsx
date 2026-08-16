@@ -42,6 +42,13 @@ export default async function BuildPage(props: PageProps<"/build">) {
     bias: typeof search.bias === "string" && BIAS_KEYS.has(search.bias) ? search.bias : undefined,
   };
   const hasConfig = Boolean(initialConfig.playstyle || initialConfig.role || initialConfig.bias);
+  // The studio seeds its state from these props ONCE, at mount. A quick-start
+  // chip navigates to this same route with different params, which re-renders
+  // the page but leaves the mounted studio's state untouched -- the click
+  // "did nothing" until a hard refresh. Keying the studio by its seeds turns
+  // that navigation into a remount, which is exactly what opening a different
+  // setup means.
+  const studioKey = JSON.stringify([initialChampion, initialTab, initialLab, hasConfig ? initialConfig : null]);
   return (
     <Container className="py-8">
       <div className="flex flex-wrap items-center gap-3">
@@ -66,7 +73,7 @@ export default async function BuildPage(props: PageProps<"/build">) {
       <div className="mb-6 mt-3">
         <BuildsGeneratedPill />
       </div>
-      <BuildStudio initialChampion={initialChampion} initialTab={initialTab} initialLab={initialLab} initialConfig={hasConfig ? initialConfig : undefined} />
+      <BuildStudio key={studioKey} initialChampion={initialChampion} initialTab={initialTab} initialLab={initialLab} initialConfig={hasConfig ? initialConfig : undefined} />
     </Container>
   );
 }
