@@ -41,7 +41,7 @@ export interface SharedBuild {
 const slug = (s: unknown, max = 60) =>
   typeof s === "string" ? s.replace(/[^a-z0-9-]/g, "").slice(0, max) : "";
 const text = (s: unknown, max = 40) =>
-  typeof s === "string" ? s.replace(/[^A-Za-z0-9 .'&_-]/g, "").slice(0, max) : "";
+  typeof s === "string" ? s.replace(/[^A-Za-z0-9 .:'&_-]/g, "").slice(0, max) : "";
 const list = (a: unknown, limit: number, cleaner: (x: unknown) => string) =>
   Array.isArray(a) ? a.map(cleaner).filter(Boolean).slice(0, limit) : [];
 

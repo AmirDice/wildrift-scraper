@@ -163,7 +163,7 @@ async function splashUri(splash: string | undefined): Promise<string | null> {
 }
 
 const slugRe = /[^a-z0-9-]/g;
-const textRe = /[^A-Za-z0-9 .'&_-]/g;
+const textRe = /[^A-Za-z0-9 .:'&_-]/g;
 
 function parsePayload(raw: string): SharedBuild | null {
   if (raw.length > 2400) return null;
