@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Biggest Movers · Patch 7.2c</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #05080f; }
+  .slide {
+    width: 1600px; height: 1000px; margin: 24px auto;
+    position: relative; isolation: isolate; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.10); border-radius: 22px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #e8edf6; padding: 40px 50px 26px; display: flex; flex-direction: column;
+  }
+  .bg-art { position: absolute; inset: 0; z-index: -3; background: url(/ionia2.jpg) center / cover no-repeat; }
+  .bg-dark { position: absolute; inset: 0; z-index: -2;
+    background: linear-gradient(180deg, rgba(7,10,18,0.5) 0%, rgba(7,10,18,0.56) 45%, rgba(7,10,18,0.6) 100%); }
+  .bg-vignette { position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(125% 105% at 50% 45%, transparent 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%); }
+
+  .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #4f8dff; }
+  .brand span { color: #e8edf6; }
+  h1 { font-size: 46px; font-weight: 800; letter-spacing: -0.015em; margin-top: 6px; text-shadow: 0 2px 18px rgba(0,0,0,0.45); }
+  .sub { margin-top: 7px; font-size: 16px; color: #b6c1d4; text-shadow: 0 1px 10px rgba(0,0,0,0.5); }
+  .site { font-size: 18px; font-weight: 800; color: #7fb2ff; text-shadow: 0 1px 10px rgba(0,0,0,0.6); padding-bottom: 6px; }
+
+  .rows { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; flex: 1; min-height: 0; }
+  .row { flex: 1; display: flex; align-items: stretch; gap: 14px; min-height: 0; }
+  .tag {
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase;
+    border-radius: 14px; width: 46px; flex-shrink: 0;
+  }
+  .tag.up { background: rgba(34,197,94,0.16); color: #4ade80; border: 1px solid rgba(74,222,128,0.35); }
+  .tag.down { background: rgba(239,68,68,0.14); color: #f87171; border: 1px solid rgba(248,113,113,0.35); }
+
+  .cards { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; min-height: 0; }
+  .card {
+    position: relative; overflow: hidden; border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 10px 30px -8px rgba(0,0,0,0.6);
+  }
+  .card.up { border-color: rgba(74,222,128,0.45); }
+  .card.down { border-color: rgba(248,113,113,0.4); }
+  /* ddragon loading art is 308x560 with the face in the upper third; anchoring
+     the crop to the top keeps every face regardless of card height. */
+  .art { position: absolute; inset: 0; background-size: cover; background-position: top center; }
+  .fade { position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(5,8,15,0.05) 40%, rgba(5,8,15,0.42) 72%, rgba(5,8,15,0.9) 100%); }
+  .delta {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 30px; font-weight: 900; font-variant-numeric: tabular-nums;
+    padding: 4px 13px; border-radius: 999px; letter-spacing: -0.01em;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+  }
+  .up .delta { background: rgba(20,83,45,0.72); color: #6ff0a4; border: 1px solid rgba(74,222,128,0.5); }
+  .down .delta { background: rgba(88,18,18,0.72); color: #ff9d9d; border: 1px solid rgba(248,113,113,0.5); }
+  .foot { position: absolute; left: 14px; right: 14px; bottom: 11px; }
+  .name { font-size: 21px; font-weight: 800; letter-spacing: -0.01em; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+  .wr { margin-top: 1px; font-size: 13.5px; font-weight: 600; color: #c2cde2; text-shadow: 0 1px 8px rgba(0,0,0,0.8); }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="bg-art"></div><div class="bg-dark"></div><div class="bg-vignette"></div>
+  <div class="head">
+    <div>
+      <div class="brand">WR<span>TRUEMETA</span></div>
+      <h1>Patch 7.2c · Biggest Movers</h1>
+      <div class="sub">China · Challenger win rate · Aug 13 → Aug 14</div>
+    </div>
+    <div class="site">wrtruemeta.com/movers</div>
+  </div>
+  <div class="rows">
+    <div class="row">
+      <div class="tag up">Rising</div>
+      <div class="cards">
+      <div class="card up">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Olaf_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">+3.15</div>
+        <div class="foot">
+          <div class="name">Olaf</div>
+          <div class="wr">52.5% WR</div>
+        </div>
+      </div>
+      <div class="card up">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Fizz_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">+2.48</div>
+        <div class="foot">
+          <div class="name">Fizz</div>
+          <div class="wr">48.4% WR</div>
+        </div>
+      </div>
+      <div class="card up">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zed_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">+1.76</div>
+        <div class="foot">
+          <div class="name">Zed</div>
+          <div class="wr">50.7% WR</div>
+        </div>
+      </div>
+      <div class="card up">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ziggs_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">+1.73</div>
+        <div class="foot">
+          <div class="name">Ziggs</div>
+          <div class="wr">49.5% WR</div>
+        </div>
+      </div>
+      <div class="card up">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Maokai_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">+1.7</div>
+        <div class="foot">
+          <div class="name">Maokai</div>
+          <div class="wr">51.6% WR</div>
+        </div>
+      </div></div>
+    </div>
+    <div class="row">
+      <div class="tag down">Falling</div>
+      <div class="cards">
+      <div class="card down">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/KogMaw_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">-3.85</div>
+        <div class="foot">
+          <div class="name">Kog'Maw</div>
+          <div class="wr">46.6% WR</div>
+        </div>
+      </div>
+      <div class="card down">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Skarner_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">-2.33</div>
+        <div class="foot">
+          <div class="name">Skarner</div>
+          <div class="wr">50.5% WR</div>
+        </div>
+      </div>
+      <div class="card down">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nilah_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">-2.23</div>
+        <div class="foot">
+          <div class="name">Nilah</div>
+          <div class="wr">47.1% WR</div>
+        </div>
+      </div>
+      <div class="card down">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Viktor_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">-1.77</div>
+        <div class="foot">
+          <div class="name">Viktor</div>
+          <div class="wr">48.6% WR</div>
+        </div>
+      </div>
+      <div class="card down">
+        <div class="art" style="background-image:url('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Singed_0.jpg')"></div>
+        <div class="fade"></div>
+        <div class="delta">-1.73</div>
+        <div class="foot">
+          <div class="name">Singed</div>
+          <div class="wr">51.7% WR</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
