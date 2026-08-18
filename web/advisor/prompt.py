@@ -617,7 +617,7 @@ UNKNOWN_ENEMY_BLOCK = (
 )
 
 
-def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict) -> str:
+def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = "") -> str:
     """The structured team threat picture for a counter build.
 
     Replaces the old shallow per-enemy line. The team profile is weighted (a
@@ -642,6 +642,37 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict) -> str:
     if hard:
         lines.append("HARD-COUNTER WARNINGS (evidence, NOT an instruction to spend several "
                      "slots on one enemy): " + json.dumps(hard))
+    # The lane opponent gets their own paragraph, because the rune page is a
+    # laning-phase purchase and the team profile has no laning phase in it.
+    # Riven vs Teemo was the report: a melee bruiser into a ranged harasser
+    # kept its standard damage page because nothing framed the lane.
+    matchup = threats.lane_matchup(me, role, enemies)
+    if matchup:
+        kind = []
+        if matchup["rangedIntoMelee"]:
+            kind.append("RANGED INTO YOUR MELEE -- you eat free damage on every last-hit")
+        if matchup["sustainedHarass"]:
+            kind.append("sustained poke/harass rather than one-shot threat")
+        if matchup["burstAllIn"]:
+            kind.append("all-in burst threat -- short trades decide the lane")
+        if matchup["hardCc"]:
+            kind.append("carries hard CC to start or extend a trade")
+        wr = matchup.get("metaWinrate")
+        lines.append(
+            f"YOUR LANE OPPONENT: {matchup['enemy']} ({matchup['class']}, "
+            f"{matchup['damage']} damage"
+            + (f", meta win rate {wr}" if isinstance(wr, (int, float)) else "")
+            + "). You trade with THIS champion every wave for the first ten minutes; "
+              "the loadout must survive this lane before it wins any teamfight."
+            + (" Lane profile: " + "; ".join(kind) + "." if kind else "")
+            + " THE RUNE PAGE IS THE LANE'S ANSWER FIRST: runes are bought for the "
+              "laning phase. Into sustained poke or a ranged bully, sustain and "
+              "regeneration runes -- and a sustain-oriented keystone if the kit "
+              "supports one -- beat a raw damage page you are too low on health to "
+              "use; into burst all-ins, damage-mitigation minors do the same job. "
+              "Keep the champion's usual damage page ONLY when this lane is neutral "
+              "or favorable, and justify the keystone in runeReasons against THIS "
+              "opponent by name, not against the team in general.")
     lines.append(
         "CHOOSE 2-4 PROBLEMS TO SOLVE. You cannot answer every threat with five items. "
         "Pick the threats with the best combination of severity, frequency, relevance to "

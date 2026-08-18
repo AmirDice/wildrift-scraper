@@ -184,6 +184,48 @@ def _wr_severity(wr: float | None, tier: str) -> float:
     return round(max(0.2, min(0.95, 0.2 + (float(wr) - 46.0) * 0.05)), 3)
 
 
+_RANGED_CLASSES = {"Mage", "Marksman", "Enchanter"}
+
+
+def lane_matchup(me: str, my_role: str, enemies: list[str]) -> dict | None:
+    """The enemy you actually lane against, with the signals that decide runes.
+
+    The team profile treats the enemies as one aggregate, which is right for
+    items and wrong for the rune page: runes are bought for the laning phase,
+    and the laning phase is ONE specific opponent hitting you every time you
+    step up to a minion. Role-matching finds that opponent; the combat profile
+    says what kind of lane they run. Returns None when the opponent cannot be
+    identified unambiguously -- saying nothing beats guessing."""
+    if not my_role:
+        return None
+    matches = [e for e in enemies if (_champ(e).get("role") or "") == my_role]
+    if len(matches) != 1:
+        return None
+    enemy = matches[0]
+    rec, cp = _champ(enemy), _combat(enemy)
+    me_class = _champ(me).get("class") or ""
+    ranged_into_melee = (rec.get("class") in _RANGED_CLASSES
+                         and me_class not in _RANGED_CLASSES)
+    sustained_harass = (
+        (cp.get("basicAttackPattern") in ("repeated-attacks", "basic-attack-carry")
+         and cp.get("basicAttackFrequency") in ("medium", "high"))
+        or rec.get("class") == "Mage")
+    burst_all_in = rec.get("class") == "Assassin" or (
+        rec.get("class") in ("Bruiser", "Fighter")
+        and cp.get("basicAttackPattern") in ("caster", "ability-weaving"))
+    return {
+        "enemy": enemy,
+        "class": rec.get("class") or "?",
+        "damage": rec.get("primaryDamage") or "?",
+        "tier": rec.get("_tier"),
+        "metaWinrate": rec.get("_wr"),
+        "rangedIntoMelee": ranged_into_melee,
+        "sustainedHarass": sustained_harass,
+        "burstAllIn": burst_all_in,
+        "hardCc": _has(rec, "cc"),
+    }
+
+
 def priority_threats(enemies: list[str], me: str = "") -> list[dict]:
     """The enemies most worth building against, ranked by severity.
 

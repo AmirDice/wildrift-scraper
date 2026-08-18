@@ -939,7 +939,7 @@ def advise(champion: str, role: str, enemies: list[str],
         kayn_form_block(champion_form, playstyle),
         # Counter mode gets the structured, weighted threat picture; other modes
         # get the plain enemy line (usually "unknown" in studio).
-        prompt_mod.enemy_threat_block(enemies, champion, WRMETA) if enemies_known
+        prompt_mod.enemy_threat_block(enemies, champion, WRMETA, role) if enemies_known
         else _enemy_block(enemies or [], champion),
         prompt_mod.identity_threat_lines(enemies) if enemies_known else "",
         (f"SNOWBALL THREAT: {ahead_enemy} is ahead. If one main-build item should be "

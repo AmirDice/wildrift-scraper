@@ -197,7 +197,12 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // never this game). A v24 entry has no timing and would render the old fixed
   // "after 2 items" forever, and the evaluation section it was scored under
   // has left the page.
-  return `build:v25:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v26: counter builds gained the LANE OPPONENT block -- the enemy in your
+  // role is named, its lane profile (ranged-into-melee, sustained harass,
+  // burst, CC) is stated, and the rune page must answer that lane first. A
+  // v25 counter entry was reasoned against the team aggregate only (the
+  // reported Riven-vs-Teemo standard-runes case).
+  return `build:v26:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
