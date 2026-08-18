@@ -217,13 +217,120 @@ def probe(champ: str, verbose: bool = False) -> dict | None:
             "blind_core": blind_in_core}
 
 
+def probe_pairs(champ: str, focus: str = "") -> dict | None:
+    """PAIR mode: how much does a PARTNER item amplify each candidate?
+
+    Phase 0 failed because it measured items one at a time, which misprices
+    anything whose worth depends on what it is held with. This is the
+    complement of that mistake, not a repeat of it:
+
+        solo(X)      = value(base + X) - value(base)
+        pair(X, P)   = value(base + P + X) - value(base + P)
+        lift(X, P)   = pair(X, P) - solo(X)
+
+    A positive lift is a MEASURED multiplier: X is worth more because P is in
+    the build. Ranking by an item's value in its best partnership is what the
+    model's own synergy rubric asks for and what a one-at-a-time number cannot
+    express.
+    """
+    core, runes, counts = ladder_context(champ)
+    if len(core) < 3:
+        return None
+    tank = fe.CHAMP_CLASS.get(champ) == "Tank"
+    partners = core[:6]
+    pool = completed_non_boots()
+
+    # ONE base for every candidate. The first cut used `core minus this
+    # candidate`, which gives each item a DIFFERENT baseline -- and lifts
+    # measured against different baselines cannot be compared. It flattered
+    # Dusk and Dawn to rank 3; on an identical base it is rank 12.
+    fixed_base = [core[0]]
+    rows = []
+    for slug in pool:
+        base = fixed_base if slug not in fixed_base else [core[1]]
+        if slug in base or hard_exclusive_violation(base + [slug]):
+            continue
+        try:
+            base_v = value_of(champ, base, runes, tank)
+            solo = value_of(champ, base + [slug], runes, tank) - base_v
+        except Exception:
+            continue
+        if solo <= 0:
+            solo = 1e-9
+        best = None
+        for partner in partners:
+            if partner == slug:
+                continue
+            ctx = [s for s in base if s != partner] + [partner]
+            if hard_exclusive_violation(ctx + [slug]):
+                continue
+            try:
+                with_p = value_of(champ, ctx, runes, tank)
+                pair_v = value_of(champ, ctx + [slug], runes, tank) - with_p
+            except Exception:
+                continue
+            lift = pair_v - solo
+            if best is None or lift > best[1]:
+                best = (partner, lift, pair_v)
+        if best is None:
+            continue
+        rows.append({"slug": slug, "solo": solo, "partner": best[0],
+                     "lift": best[1], "paired": best[2],
+                     "ladder": counts.get(slug, 0)})
+
+    solo_rank = {r["slug"]: i + 1 for i, r in
+                 enumerate(sorted(rows, key=lambda r: -r["solo"]))}
+    pair_rank = {r["slug"]: i + 1 for i, r in
+                 enumerate(sorted(rows, key=lambda r: -r["paired"]))}
+    scored = [r for r in rows if r["ladder"] > 0]
+    rho_solo = spearman([(-solo_rank[r["slug"]], r["ladder"]) for r in scored])
+    rho_pair = spearman([(-pair_rank[r["slug"]], r["ladder"]) for r in scored])
+
+    print()
+    print(f"===== {champ} -- pair synergy =====")
+    print(f"  {'item':<24} {'solo':>8} {'best partner':<22} {'lift':>8} "
+          f"{'solo#':>6} {'pair#':>6} {'ladder':>7}")
+    top = sorted(rows, key=lambda r: -r["lift"])[:8]
+    for r in top:
+        print(f"  {r['slug']:<24} {r['solo']:>8.0f} {r['partner']:<22} "
+              f"{r['lift']:>+8.0f} {solo_rank[r['slug']]:>6} {pair_rank[r['slug']]:>6} "
+              f"{r['ladder']:>7}")
+    if focus:
+        hit = next((r for r in rows if r["slug"] == focus), None)
+        if hit:
+            print(f"  FOCUS {focus}: solo {hit['solo']:.0f} (rank {solo_rank[focus]}), "
+                  f"best partner {hit['partner']} lift {hit['lift']:+.0f}, "
+                  f"paired rank {pair_rank[focus]}, ladder {hit['ladder']}")
+    if rho_solo is not None and rho_pair is not None:
+        print(f"  Spearman vs ladder: solo {rho_solo:+.2f} -> paired {rho_pair:+.2f}")
+    return {"champion": champ, "rho_solo": rho_solo, "rho_pair": rho_pair}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--champions", default="")
     ap.add_argument("--verbose", action="store_true")
+    ap.add_argument("--pairs", action="store_true",
+                    help="measure PARTNER amplification instead of solo marginal value")
+    ap.add_argument("--focus", default="", help="always report this slug in pair mode")
     args = ap.parse_args()
     champs = ([c.strip() for c in args.champions.split(",") if c.strip()]
               or DEFAULT_CHAMPIONS)
+
+    if args.pairs:
+        paired = [r for r in (probe_pairs(c, args.focus) for c in champs) if r]
+        both = [(r["champion"], r["rho_solo"], r["rho_pair"]) for r in paired
+                if r["rho_solo"] is not None and r["rho_pair"] is not None]
+        print()
+        print("=" * 66)
+        print("SUMMARY -- does pairing beat solo marginal value?")
+        for champ, a, b in both:
+            print(f"  {champ:<12} solo {a:+.2f} -> paired {b:+.2f}  ({b - a:+.2f})")
+        if both:
+            print()
+            print(f"  mean solo {sum(a for _, a, _ in both) / len(both):+.2f}, "
+                  f"mean paired {sum(b for _, _, b in both) / len(both):+.2f}")
+        return 0
 
     results = [r for r in (probe(c, args.verbose) for c in champs) if r]
     rhos = [(r["champion"], r["rho"]) for r in results if r["rho"] is not None]
