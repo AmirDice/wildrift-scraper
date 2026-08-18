@@ -178,7 +178,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     burstProcs: [] as [number, number][], dotDps: 0, procMaxHpPct: 0, firstHit: 0,
-    armorShred: 0, vamp: 0, healOnHit: 0,
+    armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
     healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
     lifestealPct: 0, omnivampPct: 0,
@@ -234,6 +234,20 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.shieldPctBonusHp += g("shieldPctBonusHp") / 100;
     st.shieldPctMaxHp += g("shieldPctMaxHp") / 100;
     st.dr = Math.max(st.dr, g("drPct") / 100);
+    // "Gain 25 Attack Damage OR 50 Ability Power (Adaptive)" grants exactly
+    // ONE, picked by the kit's primary damage type -- mirrors the Python
+    // engine's _prefers_ap. Nashor's Tooth carried its whole AP grant here
+    // and the TS port dropped it, so AP builds undervalued the item.
+    if (fx.adaptiveAdFlat || fx.adaptiveApFlat) {
+      const prefersAp = c.primaryDamage
+        ? c.primaryDamage === "magic"
+        : (c.scalesWith ?? []).includes("ap") && !(c.scalesWith ?? []).includes("ad");
+      if (prefersAp) st.ap += g("adaptiveApFlat");
+      else st.bonusAd += g("adaptiveAdFlat");
+    }
+    // Rabadon's "Overkill": accumulated here, applied to TOTAL AP after
+    // every other AP source has landed.
+    st.apAmp += g("apAmpPct") / 100;
     st.bonusAd += g("adFlatPassive");
     st.ap += g("apFlatPassive");
     st.haste += g("hasteFlatPassive");
@@ -347,6 +361,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
         st.bonusAd += st.bonusMs * scaleVal(s.pct, 3, level) / 100;
     }
   }
+
+  // Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
+  // source above (item stats, adaptive grants, runes, kit steroids) -- same
+  // placement as the Python engine.
+  if (st.apAmp) st.ap *= 1 + st.apAmp;
 
   // kit mechanics (evidence-grounded): fixedAS / reload / doubleShot / noResource
   const mechs: Record<string, any> = {};
