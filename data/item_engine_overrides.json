@@ -59,5 +59,23 @@
   "black-cleaver": {
     "rampAttacks": 5,
     "_why_ramp": "Sunder stacks per physical hit, 5 to reach 30% shred."
+  },
+  "nashors-tooth": {
+    "onHitFlatPhys": 0,
+    "onHitFlatMagic": 0,
+    "adaptiveOnHitFlat": 15,
+    "adaptiveOnHitBonusAdPct": 20,
+    "adaptiveOnHitApPct": 30,
+    "_why_gnaw": "Gnaw is ONE adaptive on-hit of 15 + 20% bonus AD + 30% AP. Extraction stored the flat 15 as BOTH onHitFlatPhys and onHitFlatMagic (double count) and had no key for the scaling half, which on an AP on-hit champion is most of the item. The engines apply it once, with final stats, typed by the kit's damage."
+  },
+  "searing-crown": {
+    "dotPctMaxHpPerSec": 1.4,
+    "dotPctMaxHpPerSecRanged": 0.8,
+    "_why_burn": "Fiery Touch: attacks/abilities refresh a 3s burn of 1.4% target max HP per second (0.8% ranged) -- effectively continuous in a sustained fight. Was entirely unmodelled; the item scored as a bare 300hp/50armor statstick."
+  },
+  "amaranths-twinguard": {
+    "armorPctPassive": 20.6,
+    "mrPctPassive": 20.6,
+    "_why_endurance": "Endurance: +30% Armor and MR at 5 stacks (1 stack/s in combat). Pre-averaged over the 8s reference fight: stacks ramp linearly for 5s then cap, so the average multiplier is 30% x 0.6875 = 20.6%. The passive was worth zero before this."
   }
 }

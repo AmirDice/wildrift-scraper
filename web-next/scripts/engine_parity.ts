@@ -10,7 +10,8 @@ const battery: [string, string[], string[]][] = JSON.parse(
 const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
   "onHitPhys", "onHitMagic", "onHitPctMaxHp", "onHitPctCurrentHp",
   "mrShred", "mrShredFlat", "spellbladeApPct", "spellbladeMagic",
-  "cleaveFlat", "cleavePctBonusHp", "healShieldAmp", "shieldPctMaxHp", "apAmp"];
+  "cleaveFlat", "cleavePctBonusHp", "healShieldAmp", "shieldPctMaxHp", "apAmp",
+  "armor", "mr", "dotPctMaxHp"];
 const out: Record<string, Record<string, number>> = {};
 for (const [champ, items, runes] of battery) {
   const st = resolveStats(champ, 15, items, runes);

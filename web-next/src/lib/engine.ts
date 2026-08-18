@@ -180,7 +180,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     abilityAmp: 0, damageAmp: 0, giant: 0, execute: 0,
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
-    burstProcs: [] as [number, number][], dotDps: 0, procMaxHpPct: 0, firstHit: 0,
+    burstProcs: [] as [number, number][], dotDps: 0, dotPctMaxHp: 0, procMaxHpPct: 0, firstHit: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
     critDamagePerExcessCrit: 0, hastePct: 0, cdRefundPctPerAuto: 0,
@@ -201,6 +201,13 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     (sum, s) => sum + Number(DATA.items[s]?.stats?.attackSpeed?.value ?? 0), 0);
   const atkRate = Math.min(AS_CAP, (bs.attackSpeed?.base || 0.75) * (1 + asPctFromItems / 100));
   const rngd = RANGED_CLASSES.has(c.class ?? "");
+  const prefersAp = c.primaryDamage
+    ? c.primaryDamage === "magic"
+    : (c.scalesWith ?? []).includes("ap") && !(c.scalesWith ?? []).includes("ad");
+  // Adaptive on-hits (Nashor's Gnaw): the amount scales with FINAL AD/AP, so
+  // accumulation is deferred until every stat source (Overkill included) has
+  // landed; the damage TYPE follows the kit like the adaptive stat grant.
+  const adaptiveOnHit = { flat: 0, adPct: 0, apPct: 0 };
 
   for (const slug of itemSlugs) {
     const it = DATA.items[slug];
@@ -271,6 +278,15 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     if (fx.burstProcFlat || fx.burstProcApPct)
       st.burstProcs.push([g("burstProcFlat"), g("burstProcApPct") / 100]);
     st.dotDps += g("dotDps");
+    // %max-HP burns (Searing Crown) are target-scaled, so they are summed
+    // here and priced at fight time. Ranged users pay the reduced rate.
+    st.dotPctMaxHp += g(rngd && fx.dotPctMaxHpPerSecRanged
+      ? "dotPctMaxHpPerSecRanged" : "dotPctMaxHpPerSec") / 100;
+    if (fx.adaptiveOnHitFlat || fx.adaptiveOnHitBonusAdPct || fx.adaptiveOnHitApPct) {
+      adaptiveOnHit.flat += g("adaptiveOnHitFlat");
+      adaptiveOnHit.adPct += g("adaptiveOnHitBonusAdPct") / 100;
+      adaptiveOnHit.apPct += g("adaptiveOnHitApPct") / 100;
+    }
     st.vamp += (g("physVampPct") + g("omnivampPct") + g("lifestealPct")) / 100;
     st.lifestealPct += (g("physVampPct") + g("lifestealPct")) / 100;
     st.omnivampPct += g("omnivampPct") / 100;
@@ -300,9 +316,6 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // engine's _prefers_ap. Nashor's Tooth carried its whole AP grant here
     // and the TS port dropped it, so AP builds undervalued the item.
     if (fx.adaptiveAdFlat || fx.adaptiveApFlat) {
-      const prefersAp = c.primaryDamage
-        ? c.primaryDamage === "magic"
-        : (c.scalesWith ?? []).includes("ap") && !(c.scalesWith ?? []).includes("ad");
       if (prefersAp) st.ap += g("adaptiveApFlat");
       else st.bonusAd += g("adaptiveAdFlat");
     }
@@ -323,6 +336,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // MR shred mirrors armour shred (Abyssal Mask, Bloodletter's Curse).
     st.mrShred = Math.max(st.mrShred, g("mrShredPct") / 100);
     st.mrShredFlat += g("mrShredFlat");
+    // Percent resists from a PASSIVE (Amaranth's Endurance at average
+    // in-combat stacks; the override stores the pre-averaged value).
+    st.armor *= 1 + g("armorPctPassive") / 100;
+    st.mr *= 1 + g("mrPctPassive") / 100;
     st.hastePct += g("hastePctPassive") / 100;
     st.cdRefundPctPerAuto += g("cdRefundPctPerAuto");
     st.cleaveFlat += g("cleaveFlat");
@@ -470,6 +487,15 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   // Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
   // source above -- including Archangel's mana conversion just now.
   if (st.apAmp) st.ap *= 1 + st.apAmp;
+  // Adaptive on-hit (Gnaw) lands with FINAL stats. The old model paid the
+  // flat 15 twice (once physical, once magic) and dropped the scaling half
+  // entirely, which on an AP on-hit champion is most of the item.
+  if (adaptiveOnHit.flat || adaptiveOnHit.adPct || adaptiveOnHit.apPct) {
+    const dmg = adaptiveOnHit.flat + adaptiveOnHit.adPct * st.bonusAd
+      + adaptiveOnHit.apPct * st.ap;
+    if (prefersAp) st.onHitMagic += dmg;
+    else st.onHitPhys += dmg;
+  }
   st.doubleShotMult = mechs.doubleShot
     ? 1 + (Number(mechs.doubleShot.secondShotPct) || 50) / 100 * 0.6 : 1;
 
@@ -810,7 +836,10 @@ export function rotation(name: string, st: any, target: any, window: number,
       addT(sbMagic ? "magic" : "physical", sb);
     }
     total += oneTimes();
-    if (st.dotDps) { const d = st.dotDps * window * magicM; total += d; addT("magic", d); }
+    if (st.dotDps || st.dotPctMaxHp) {
+    const d = (st.dotDps + st.dotPctMaxHp * target.hp) * window * magicM;
+    total += d; addT("magic", d);
+  }
     if (st.graspPct) {
       const d = st.graspPct / 100 * target.hp * magicM * (1 + Math.floor(window / st.graspEvery));
       total += d; addT("magic", d);
@@ -879,7 +908,10 @@ export function rotation(name: string, st: any, target: any, window: number,
     addT(sbMagic ? "magic" : "physical", sb);
   }
   total += oneTimes();
-  if (st.dotDps) { const d = st.dotDps * window * magicM; total += d; addT("magic", d); }
+  if (st.dotDps || st.dotPctMaxHp) {
+    const d = (st.dotDps + st.dotPctMaxHp * target.hp) * window * magicM;
+    total += d; addT("magic", d);
+  }
   if (st.graspPct) {
     const d = st.graspPct / 100 * target.hp * magicM * (1 + Math.floor(window / st.graspEvery));
     total += d; addT("magic", d);

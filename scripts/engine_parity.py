@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parent.parent
 FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           "onHitPhys", "onHitMagic", "onHitPctMaxHp", "onHitPctCurrentHp",
           "mrShred", "mrShredFlat", "spellbladeApPct", "spellbladeMagic",
-          "cleaveFlat", "cleavePctBonusHp", "healShieldAmp", "shieldPctMaxHp", "apAmp"]
+          "cleaveFlat", "cleavePctBonusHp", "healShieldAmp", "shieldPctMaxHp", "apAmp",
+          "armor", "mr", "dotPctMaxHp"]
 
 
 def main() -> int:

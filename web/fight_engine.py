@@ -446,7 +446,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "spellbladeBaseAdPct": 0.0, "spellbladePctMaxHp": 0.0,
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
-        "burstProcs": [], "dotDps": 0.0, "procMaxHpPct": 0.0, "firstHit": 0.0,
+        "burstProcs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0, "procMaxHpPct": 0.0, "firstHit": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
         "apAmp": 0.0, "hastePct": 0.0, "cdRefundPctPerAuto": 0.0,
         "cleaveFlat": 0.0, "cleavePctBonusHp": 0.0,
@@ -461,6 +461,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
 
     # AD/AP/HP-from-mana percentages, applied after runes (see below).
     mana_conv = {"ad": 0.0, "ap": 0.0, "hp": 0.0}
+    # Adaptive on-hits (Nashor's Gnaw): the amount scales with FINAL AD/AP, so
+    # accumulation is deferred until every stat source (Overkill included) has
+    # landed; the damage TYPE follows the kit like the adaptive stat grant.
+    adaptive_onhit = {"flat": 0.0, "adPct": 0.0, "apPct": 0.0}
     # Attack-rate estimate for stack ramp-up, from the build's own AS items.
     # Deliberately rough (ignores runes and AS passives): it only decides how
     # fast stacking items reach max, a second-order effect.
@@ -533,6 +537,15 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         if fx.get("burstProcFlat") or fx.get("burstProcApPct"):
             st["burstProcs"].append((g("burstProcFlat"), g("burstProcApPct") / 100.0))
         st["dotDps"] += g("dotDps")
+        # %max-HP burns (Searing Crown) are target-scaled, so they are summed
+        # here and priced at fight time. Ranged users pay the reduced rate.
+        st["dotPctMaxHp"] += g("dotPctMaxHpPerSecRanged" if (_rngd and fx.get(
+            "dotPctMaxHpPerSecRanged")) else "dotPctMaxHpPerSec") / 100.0
+        if (fx.get("adaptiveOnHitFlat") or fx.get("adaptiveOnHitBonusAdPct")
+                or fx.get("adaptiveOnHitApPct")):
+            adaptive_onhit["flat"] += g("adaptiveOnHitFlat")
+            adaptive_onhit["adPct"] += g("adaptiveOnHitBonusAdPct") / 100.0
+            adaptive_onhit["apPct"] += g("adaptiveOnHitApPct") / 100.0
         st["vamp"] += (g("physVampPct") + g("omnivampPct") + g("lifestealPct")) / 100.0
         st["lifestealPct"] += (g("physVampPct") + g("lifestealPct")) / 100.0
         st["omnivampPct"] += g("omnivampPct") / 100.0
@@ -584,6 +597,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["ap"] += g("apFromBonusHpPct") / 100.0 * st["bonusHp"]
         st["mrShred"] = max(st["mrShred"], g("mrShredPct") / 100.0)
         st["mrShredFlat"] += g("mrShredFlat")
+        # Percent resists from a PASSIVE (Amaranth's Endurance at average
+        # in-combat stacks; the override stores the pre-averaged value).
+        st["armor"] *= 1 + g("armorPctPassive") / 100.0
+        st["mr"] *= 1 + g("mrPctPassive") / 100.0
         st["apAmp"] += g("apAmpPct") / 100.0
         st["hastePct"] += g("hastePctPassive") / 100.0
         st["cdRefundPctPerAuto"] += g("cdRefundPctPerAuto")
@@ -828,6 +845,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     # comment: Seraph's AP-from-mana escaped the 30% on every Deathcap build.
     if st["apAmp"]:
         st["ap"] *= 1 + st["apAmp"]
+    # Adaptive on-hit (Gnaw) lands with FINAL stats. The old model paid the
+    # flat 15 twice (once physical, once magic) and dropped the scaling half
+    # entirely, which on an AP on-hit champion is most of the item.
+    if adaptive_onhit["flat"] or adaptive_onhit["adPct"] or adaptive_onhit["apPct"]:
+        _dmg = (adaptive_onhit["flat"] + adaptive_onhit["adPct"] * st["bonusAd"]
+                + adaptive_onhit["apPct"] * st["ap"])
+        if _prefers_ap(name):
+            st["onHitMagic"] += _dmg
+        else:
+            st["onHitPhys"] += _dmg
     st["doubleShotMult"] = 1.0
     if "doubleShot" in mech:
         pct = float(mech["doubleShot"].get("secondShotPct", 50))
@@ -1309,8 +1336,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             add_t("physical", once_p)
             add_t("magic", once_m)
             total += once
-        if st["dotDps"]:
-            d = st["dotDps"] * window * magic_m
+        if st["dotDps"] or st["dotPctMaxHp"]:
+            d = (st["dotDps"] + st["dotPctMaxHp"] * target["hp"]) * window * magic_m
             add_t("magic", d)
             total += d
         amp = 1 + st["damageAmp"]
@@ -1412,8 +1439,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         add_t("physical", once_p)
         add_t("magic", once_m)
         total += once
-    if st["dotDps"]:
-        d = st["dotDps"] * window * magic_m
+    if st["dotDps"] or st["dotPctMaxHp"]:
+        d = (st["dotDps"] + st["dotPctMaxHp"] * target["hp"]) * window * magic_m
         parts.append(("burn", d))
         add_t("magic", d)
         total += d
