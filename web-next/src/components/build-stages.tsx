@@ -8,7 +8,7 @@ import engineData from "@/data/engine.json";
 /* eslint-disable @next/next/no-img-element */
 
 const DATA = engineData as {
-  items?: Record<string, { name?: string; icon?: string }>;
+  items?: Record<string, { name?: string; icon?: string; cost?: number }>;
   formulas?: Record<string, { mechanics?: { kind?: string }[] }>;
 };
 
@@ -88,6 +88,79 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     return { rows, spike };
   }, [name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level]);
 
+  // ENGINE ORDER CHECK: would any other purchase order of the SAME five
+  // items reach power earlier? Wild Rift games are short, so the curve's
+  // early half is what the order is for. DPS depends only on the SET of
+  // items owned, so the 120 orderings collapse onto a few dozen distinct
+  // simulations: for each ordering, walk the gold checkpoints, look up the
+  // owned set's dps (cached), and score early checkpoints hardest. The
+  // Gwen case that motivated this: Deathcap LAST is right (its cost starves
+  // the early game; the check proves it), but the ladder's opening order
+  // still left 5-12% early damage on the table.
+  const orderCheck = useMemo(() => {
+    if (!stages || items.length !== 5) return null;
+    const finishedBoots = bootsUpgrade || boots || "";
+    const bootsAt = bootsUpgradeAfter && bootsUpgradeAfter > 0
+      ? Math.min(bootsUpgradeAfter, items.length) : 2;
+    const cost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
+    const CHECKPOINTS = [3200, 6400, 9600];
+    const target = dummyTarget(3000, 60, 45);
+
+    const dpsCache = new Map<string, number>();
+    const dpsOf = (owned: string[]): number => {
+      if (!owned.length) return 0;
+      const key = [...owned].sort().join(",");
+      let v = dpsCache.get(key);
+      if (v === undefined) {
+        v = duel(name, owned, runeNames, target, level, 20, false)?.dps ?? 0;
+        dpsCache.set(key, v);
+      }
+      return v;
+    };
+
+    const score = (order: string[]): number => {
+      // Purchase sequence mirrors the strip: boots complete after `bootsAt`.
+      const seq = [...order];
+      if (finishedBoots) seq.splice(bootsAt, 0, finishedBoots);
+      let total = 0;
+      const weights = [3, 2, 1];
+      CHECKPOINTS.forEach((gold, i) => {
+        const owned: string[] = [];
+        let spent = 0;
+        for (const slug of seq) {
+          spent += cost(slug);
+          if (spent > gold) break;
+          owned.push(slug);
+        }
+        total += dpsOf(owned) * weights[i];
+      });
+      return total;
+    };
+
+    const perms: string[][] = [];
+    const permute = (rest: string[], acc: string[]) => {
+      if (!rest.length) { perms.push(acc); return; }
+      for (let i = 0; i < rest.length; i += 1) {
+        permute([...rest.slice(0, i), ...rest.slice(i + 1)], [...acc, rest[i]]);
+      }
+    };
+    permute(items, []);
+
+    const shown = score(items);
+    let best = shown;
+    let bestOrder = items;
+    for (const perm of perms) {
+      const sc = score(perm);
+      if (sc > best) { best = sc; bestOrder = perm; }
+    }
+    if (shown <= 0) return null;
+    const gain = (best - shown) / shown;
+    // Below 4% the reorder is noise against everything the sim cannot see
+    // (lane safety, mana, component sizes); the shown order stands.
+    if (gain < 0.04) return { verdict: "optimal" as const };
+    return { verdict: "reorder" as const, order: bestOrder, gainPct: Math.round(gain * 100) };
+  }, [stages, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, name, level]);
+
   if (!stages) return null;
   const maxDps = Math.max(...stages.rows.map((r) => r.dps), 1);
 
@@ -136,11 +209,31 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     </>
   );
   const footnote = (
-    <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
-      Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
-      build&rsquo;s runes, boots joining where the strip shows them landing. The same maths
-      as the Custom Lab&rsquo;s fight, so the numbers agree across the site.
-    </p>
+    <>
+      {orderCheck?.verdict === "optimal" && (
+        <p className="mt-2.5 rounded-lg bg-emerald-400/[0.07] px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-emerald-300/90">
+          Order check: the engine simulated all 120 purchase orders of these five items
+          at early-gold checkpoints; the shown order is already among the strongest
+          early curves.
+        </p>
+      )}
+      {orderCheck?.verdict === "reorder" && (
+        <p className="mt-2.5 rounded-lg bg-gold/[0.07] px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-gold/90">
+          Order check: the same items reach ~{orderCheck.gainPct}% more early damage
+          bought as{" "}
+          <span className="font-semibold">
+            {orderCheck.order.map((slug) => itemName(slug)).join(" → ")}
+          </span>
+          . Pure damage-per-gold against a reference target; the shown order may still
+          win on lane safety, mana or component costs.
+        </p>
+      )}
+      <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
+        Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
+        build&rsquo;s runes, boots joining where the strip shows them landing. The same maths
+        as the Custom Lab&rsquo;s fight, so the numbers agree across the site.
+      </p>
+    </>
   );
 
   if (bare) {
