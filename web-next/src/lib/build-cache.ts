@@ -206,7 +206,12 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Cryptbloom / Bloodletter's Curse -- no shared passive NAME, so the
   // passive-text extraction never formed it). A v26 entry could legally
   // carry Cryptbloom + Bloodletter's, a pair the game refuses.
-  return `build:v27:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v28: 7.2c fully landed on the DERIVED surfaces -- ability formulas
+  // re-extracted for the nine changed champions, stale item effects fixed
+  // (Kaenic's shield, Gunmetal's on-hit MS), and the Lucidity boots'
+  // summoner-spell haste no longer counts as ability CDR. A v27 entry was
+  // reasoned from pre-7.2c fight numbers.
+  return `build:v28:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

@@ -46,6 +46,102 @@ REPAIRABLE: dict[str, tuple[str, ...]] = {
 MAX_ATTEMPTS = 2
 
 
+def _completed_non_boots(slug: str) -> bool:
+    item = itemmeta.ITEMS.get(slug) or {}
+    return (item.get("category") != "Boots"
+            and not (set(item.get("categories") or []) & {"Basic", "MidTier"}))
+
+
+def mechanical_item_repair(build: dict, pool_slugs: list[str], enemies_known: bool,
+                           locked_items: list[str]) -> list[str]:
+    """Deterministic last-resort repair of the ITEMS list.
+
+    The LLM repair budget can run out with the model still insisting on an
+    illegal pair (a prod Riven run 502'd twice on Black Cleaver + Serylda's
+    despite the pool stamping the group on both rows). The violations this
+    handles are all mechanical -- two items from one exclusive group, two
+    actives, a reactive item with no enemy known, a non-completed item, an
+    item from outside the pool -- so the server fixes them mechanically:
+    keep the best-scored offender, drop the rest, refill from the model's own
+    scored alternatives. Returns log notes; empty means nothing was changed
+    (either no mechanical fault was found, or a legal refill was impossible)
+    and the caller's refusal stands.
+    """
+    items = [s for s in (build.get("items") or []) if isinstance(s, str)]
+    if len(items) != 5:
+        return []
+    locked = set(locked_items or [])
+    scores = {c.get("item"): c.get("score") or 0
+              for c in (build.get("candidateItemScores") or []) if isinstance(c, dict)}
+
+    def preference(slug: str) -> tuple:
+        # Locked beats scored beats earlier-listed (items are purchase order).
+        return (slug in locked, scores.get(slug, 0), -items.index(slug))
+
+    drops: list[str] = []
+    notes: list[str] = []
+
+    def drop_all_but_best(members: list[str], why: str) -> bool:
+        if len(members) < 2:
+            return True
+        if sum(1 for m in members if m in locked) > 1:
+            return False  # two locked items conflict: nothing mechanical can fix that
+        keep = max(members, key=preference)
+        for m in members:
+            if m is not keep and m not in drops:
+                drops.append(m)
+                notes.append(f"dropped {m} ({why}; kept {keep})")
+        return True
+
+    for name, group in itemmeta.HARD_EXCLUSIVE.items():
+        if not drop_all_but_best([s for s in items if s in group], f"exclusive group {name}"):
+            return []
+    if not drop_all_but_best(itemmeta.active_items_in(items), "only one active allowed"):
+        return []
+    for s in items:
+        if s in drops or s in locked:
+            continue
+        if not _completed_non_boots(s):
+            drops.append(s); notes.append(f"dropped {s} (boots or component in item slots)")
+        elif pool_slugs and s not in pool_slugs:
+            drops.append(s); notes.append(f"dropped {s} (outside the supplied pool)")
+        elif not enemies_known and s in itemmeta.SITUATIONAL_ONLY:
+            drops.append(s); notes.append(f"dropped {s} (reactive item with no enemy known)")
+    if not drops:
+        return []
+
+    kept = [s for s in items if s not in drops]
+    has_active = bool(itemmeta.active_items_in(kept))
+
+    def legal_fill(slug: str) -> bool:
+        if slug in kept or slug in drops or not _completed_non_boots(slug):
+            return False
+        if pool_slugs and slug not in pool_slugs:
+            return False
+        if not enemies_known and slug in itemmeta.SITUATIONAL_ONLY:
+            return False
+        if slug in itemmeta.LATE_STRATEGIC:
+            return False  # position rules make these poor mechanical fills
+        if has_active and itemmeta.active_items_in([slug]):
+            return False
+        return all(sum(1 for k in kept + [slug] if k in g) <= 1
+                   for g in itemmeta.HARD_EXCLUSIVE.values())
+
+    ranked = sorted(scores, key=lambda s: scores.get(s, 0), reverse=True)
+    fill_order = [s for s in ranked if s] + [s for s in pool_slugs if s not in ranked]
+    result = list(items)
+    for dropped in drops:
+        fill = next((s for s in fill_order if legal_fill(s)), None)
+        if fill is None:
+            return []  # cannot legally reach five items; let the refusal stand
+        result[result.index(dropped)] = fill
+        kept.append(fill)
+        has_active = has_active or bool(itemmeta.active_items_in([fill]))
+        notes.append(f"filled with {fill} (score {scores.get(fill, 0)})")
+    build["items"] = result
+    return notes
+
+
 def _pool_for(section: str, build: dict, allowed_items: list[str]) -> str:
     """The minimum context needed to fix this section, and nothing more."""
     if section == "runes":

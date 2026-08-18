@@ -77,5 +77,27 @@
     "armorPctPassive": 20.6,
     "mrPctPassive": 20.6,
     "_why_endurance": "Endurance: +30% Armor and MR at 5 stacks (1 stack/s in combat). Pre-averaged over the 8s reference fight: stacks ramp linearly for 5s then cap, so the average multiplier is 30% x 0.6875 = 20.6%. The passive was worth zero before this."
+  },
+  "kaenic-rookern": {
+    "shieldFlat": {
+      "lvlRange": [
+        50,
+        150
+      ]
+    },
+    "shieldPctMaxHp": 14,
+    "_why_72c": "7.2c changed Magebane from '70-180 + 10% of max Health' to '50-150 + 14%'. The apply script updated the TEXT but extraction was never re-run, so the engines shielded with the old numbers."
+  },
+  "gunmetal-greaves": {
+    "msPct": 10,
+    "_why_72c": "7.2c nerfed Noxian Gait on-hit MS from 15%/10% to 10%/7% (melee/ranged). The extraction stored the melee value as an always-on msPct; keep that convention at the new melee number."
+  },
+  "ionian-boots-of-lucidity": {
+    "hastePctPassive": 0,
+    "_why_summoner": "The passive is 15% SUMMONER SPELL haste (Flash, Ignite), not ability CDR. Extraction mapped it to hastePctPassive, which both engines convert to ability haste -- a phantom ~17 haste on every build with these boots. The stat-line abilityHaste is real and untouched."
+  },
+  "crimson-lucidity": {
+    "hastePctPassive": 0,
+    "_why_summoner": "Same as ionian-boots-of-lucidity: 20% summoner spell haste is not ability CDR."
   }
 }

@@ -1084,6 +1084,21 @@ def advise(champion: str, role: str, enemies: list[str],
     if not report.ok:
         CORE = ("items", "boots", "runes", "locks")
         broken_core = [s for s in report.sections() if s in CORE]
+        # When the ONLY core failure is the item list, try fixing it
+        # deterministically before refusing: exclusivity pairs, double actives
+        # and pool violations are mechanical faults with mechanical fixes, and
+        # the model has already supplied its own ranked alternatives to fill
+        # from. A prod Riven run 502'd twice on Cleaver + Serylda's with the
+        # LLM repair budget spent; the player should get the legal build, not
+        # the error.
+        if broken_core == ["items"]:
+            fixes = repair.mechanical_item_repair(res, pool_slugs, enemies_known,
+                                                  locked_items)
+            if fixes:
+                for note in fixes:
+                    print(f"[advisor] mechanical item repair: {note}", file=sys.stderr)
+                report = _check(res)
+                broken_core = [s for s in report.sections() if s in CORE]
         if broken_core:
             detail = "; ".join(report.flat()[:3])
             print(f"[advisor] REFUSING to return an invalid build; "
