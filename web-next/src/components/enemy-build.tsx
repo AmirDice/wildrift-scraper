@@ -151,8 +151,11 @@ function PlayGuide({ advice }: { advice: Advice }) {
  * candidateItemScores, the pairings from synergyWith, rune reasons from
  * runeReasons, and the boots reason -- each shown with its own icon and name,
  * so the reader can see WHICH piece each line is about rather than reading a
- * wall of prose. Counter mode returns none of this (skipped for speed), so the
- * whole block simply renders nothing then.
+ * wall of prose.
+ *
+ * STUDIO ONLY. Counter mode neither asks for these fields nor renders them:
+ * the counterSummary already explains the build against the named comp, and
+ * a counter build is wanted fast.
  */
 function WhyThisBuild({ advice }: { advice: Advice }) {
   const scoreBySlug = new Map(
@@ -1551,12 +1554,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
 
             {advice.items && advice.items.length > 0 && (
               <div className="glass rounded-2xl p-4">
-                <div className="mb-3">
-                  <p className="text-sm font-bold text-text">Adapt this build</p>
-                  <p className="text-xs text-faint">The default order wins most games; these swaps are for the games it does not</p>
-                </div>
+                {!isCounter && (
+                  <div className="mb-3">
+                    <p className="text-sm font-bold text-text">Adapt this build</p>
+                    <p className="text-xs text-faint">The default order wins most games; these swaps are for the games it does not</p>
+                  </div>
+                )}
                 <div className="space-y-4">
-                {advice.situational?.length ? (
+                {!isCounter && advice.situational?.length ? (
               <div>
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
                   Situational swaps <span className="normal-case text-faint/60">· bought in place of that purchase, not added at the end</span>
@@ -1582,7 +1587,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               </div>
             ) : null}
 
-            {advice.situationalRunes?.length ? (
+            {!isCounter && advice.situationalRunes?.length ? (
               <div>
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">
                   Situational runes <span className="normal-case text-faint/60">· sometimes a rune answers it cheaper than an item</span>
@@ -1617,7 +1622,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               </div>
             ) : null}
 
-            {advice.situationalBoots?.length ? (
+            {!isCounter && advice.situationalBoots?.length ? (
               <div>
                 <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Situational boots</p>
                 <div className="space-y-1.5 text-sm">
@@ -1632,7 +1637,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               </div>
             ) : null}
 
-                <div className="border-t border-line/60 pt-4">
+                <div className={isCounter && !advice.snowballSwap
+                  ? "" : "border-t border-line/60 pt-4"}>
                   <WhyNotPanel
                     bare
                     champion={champ ?? ""}
@@ -1651,7 +1657,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
 
             <PlayGuide advice={advice} />
 
-            <WhyThisBuild advice={advice} />
+            {!isCounter && <WhyThisBuild advice={advice} />}
 
             <BiasCompare history={biasHistory} ck={`${champ}|${playstyle}`} currentBias={BIAS_STOPS[biasIdx].key} />
 

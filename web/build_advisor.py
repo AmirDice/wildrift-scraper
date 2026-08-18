@@ -978,7 +978,11 @@ def advise(champion: str, role: str, enemies: list[str],
          "must say why the usual page IS the counter. "
          "SKIP the full build evaluation: a counter build "
          "is wanted fast, so return buildScore as null and do not spend time scoring the "
-         "eight categories. INSTEAD return a compact counterSummary that names the 2-4 "
+         "eight categories. SKIP the per-pick explanations for the same reason: "
+         "candidateItemScores rows carry `item` and `score` ONLY -- no `reason` and no "
+         "`synergyWith` -- and omit runeReasons and bootsReason entirely, returning "
+         "situationalBoots as an empty list. The counterSummary is where the reasoning "
+         "belongs in this mode; writing it twice only makes the player wait. INSTEAD return a compact counterSummary that names the 2-4 "
          "problems you chose to solve, how each item/boot/rune choice answers them, the "
          "trade-offs you accepted, and the threats no build can fully answer. Do not imply "
          "the build perfectly counters all five enemies. Schema: "
@@ -1052,6 +1056,23 @@ def advise(champion: str, role: str, enemies: list[str],
             for message in report.errors[section]:
                 print(f"[advisor] invalid {section}: {message}", file=sys.stderr)
         targeted, blocking = repair.plan(report.sections())
+        # An item list that is only MECHANICALLY wrong -- an exclusive pair, two
+        # actives, an out-of-pool or reactive pick -- does not need a fresh
+        # build, and regenerating for it is the single most expensive thing this
+        # function does. Measured on a Riven counter run: two full regenerations
+        # burned in a row, each returning the SAME illegal pair, before the
+        # mechanical fallback at the end fixed it in microseconds. So fix it in
+        # place first and only regenerate when that cannot.
+        if "items" in blocking:
+            fixes = repair.mechanical_item_repair(res, pool_slugs, enemies_known,
+                                                  locked_items)
+            if fixes:
+                for note in fixes:
+                    print(f"[advisor] mechanical item repair: {note}", file=sys.stderr)
+                report = _check(res)
+                if report.ok:
+                    break
+                targeted, blocking = repair.plan(report.sections())
         if blocking or not targeted:
             # The item selection is wrong, and everything else describes that
             # selection -- so there is nothing worth preserving.
@@ -1126,6 +1147,16 @@ def advise(champion: str, role: str, enemies: list[str],
     # The support item is guaranteed, not requested: a support build without it
     # has given up the role's gold income for the whole game. Runs before the
     # summoners so both corrections land on the same object.
+    # Counter mode does not display per-pick reasoning (the counterSummary
+    # carries it), so drop anything the model returned anyway rather than
+    # caching and shipping text nothing renders.
+    if mode == "counter":
+        res["situationalBoots"] = []
+        for _row in res.get("candidateItemScores") or []:
+            if isinstance(_row, dict):
+                _row.pop("reason", None)
+                _row.pop("synergyWith", None)
+
     fixed_items, changed = supportitem.enforce(
         res.get("items") or [], role, champion_class)
     if changed:
