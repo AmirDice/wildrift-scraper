@@ -84,6 +84,16 @@ def _rune(value, limit: int = 40) -> str:
     return "".join(c for c in value if c.isalnum() or c in " .:'&-")[:limit].strip()
 
 
+def _clean_text(value, limit: int = 160) -> str:
+    """A CONDITION, not a name: "when the enemy stacks armour" is a sentence,
+    so it keeps sentence punctuation and a sentence-sized budget."""
+    if not isinstance(value, str):
+        return ""
+    # "+" and "=" survive: conditions read "2+ healers", "armour >= 100".
+    kept = "".join(c for c in value if c.isalnum() or c in " .,:;'&%()/+=-")
+    return " ".join(kept.split())[:limit]
+
+
 def build_from_request(body: dict) -> tuple[int, dict]:
     """Validate the request and run the advisor. Returns (status, payload)."""
     champion = _clean(body.get("champion"))
@@ -103,10 +113,21 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             return 400, {"error": "candidate item is required"}
         items = [s for s in (_slug(v) for v in (why.get("items") or [])[:6]) if s]
         runes = [r for r in (_rune(v) for v in (why.get("runes") or [])[:6]) if r]
+        # The build's own conditional recommendations. Without these the answer
+        # could argue down an item the same page already offers as a swap.
+        swaps = [{"item": _slug(r.get("item")),
+                  "replaces": _slug(r.get("replaces")),
+                  "when": _clean_text(r.get("when"))}
+                 for r in (why.get("situational") or [])[:6] if isinstance(r, dict)]
+        swap_boots = [{"boots": _slug(r.get("boots")),
+                       "when": _clean_text(r.get("when"))}
+                      for r in (why.get("situationalBoots") or [])[:4] if isinstance(r, dict)]
         try:
             out = why_not(champion, items, _slug(why.get("boots")), runes, candidate,
                           playstyle=_clean(why.get("playstyle")) or "standard",
-                          build_bias=_clean(why.get("buildBias")) or "balanced")
+                          build_bias=_clean(why.get("buildBias")) or "balanced",
+                          situational=[s for s in swaps if s["item"]],
+                          situational_boots=[b for b in swap_boots if b["boots"]])
         except SystemExit as exc:            # missing API key, unknown champion
             return 500, {"error": str(exc)}
         return 200, out

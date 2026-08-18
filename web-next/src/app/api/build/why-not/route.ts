@@ -42,6 +42,31 @@ const PY = resolvePython();
 
 const BIAS_VALUES = new Set(["max_durability", "durability", "balanced", "damage", "max_damage"]);
 
+const slug = (v: unknown) =>
+  typeof v === "string" ? v.replace(/[^a-z0-9-]/g, "").slice(0, 60) : "";
+
+/** A CONDITION, not a name: "when the enemy stacks armour" is a sentence, so
+ *  it keeps sentence punctuation and a sentence-sized budget. "+" and "="
+ *  survive too, because conditions read "2+ healers" and "armour >= 100". */
+const condition = (v: unknown) =>
+  typeof v === "string" ? v.replace(/[^A-Za-z0-9 .,:;'&%()/+=-]/g, "").slice(0, 160) : "";
+
+const rows = (value: unknown) =>
+  Array.isArray(value)
+    ? value.filter((r): r is Record<string, unknown> => !!r && typeof r === "object").slice(0, 6)
+    : [];
+
+/** Situational swaps as the advisor wants them. */
+const itemSwaps = (value: unknown) =>
+  rows(value)
+    .map((r) => ({ item: slug(r.item), replaces: slug(r.replaces), when: condition(r.when) }))
+    .filter((r) => r.item);
+
+const bootSwaps = (value: unknown) =>
+  rows(value)
+    .map((r) => ({ boots: slug(r.boots), when: condition(r.when) }))
+    .filter((r) => r.boots);
+
 type WhyNotResult = {
   verdict?: string;
   answer?: string;
@@ -142,6 +167,11 @@ export async function POST(request: Request) {
     candidate,
     playstyle: clean(body.playstyle) || "standard",
     buildBias: rawBias,
+    // The build's own situational swaps. Without them the answer could argue
+    // an item down as "worse here" while the page above already offers it as
+    // a swap; the advisor clamps that case to a SITUATIONAL verdict.
+    situational: itemSwaps(body.situational),
+    situationalBoots: bootSwaps(body.situationalBoots),
   };
 
   const store = await cookies();

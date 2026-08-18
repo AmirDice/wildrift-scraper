@@ -25,13 +25,19 @@ const VERDICT_LABEL: Record<string, { text: string; cls: string }> = {
  * trust than silence. A question spends one generation from the same daily
  * allowance as a build, and the button says so before anyone clicks.
  */
-export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buildBias, bare = false }: {
+export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buildBias,
+                              situational, situationalBoots, bare = false }: {
   champion: string;
   items: string[];
   boots?: string;
   runeNames: string[];
   playstyle: string;
   buildBias: string;
+  /** The build's own situational swaps. An item listed here is one the build
+   *  already recommends against specific conditions, so the answer must say
+   *  WHEN it is right rather than argue it is worse. */
+  situational?: { item: string; replaces: string; when?: string }[];
+  situationalBoots?: { boots: string; when?: string }[];
   /** Renders without its own card chrome, for embedding in "Adapt this build". */
   bare?: boolean;
 }) {
@@ -60,7 +66,8 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
       const res = await fetch("/api/build/why-not", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ champion, items, boots, runes: runeNames, candidate, playstyle, buildBias }),
+        body: JSON.stringify({ champion, items, boots, runes: runeNames, candidate,
+                               playstyle, buildBias, situational, situationalBoots }),
       });
       const data = await res.json();
       setAsked({ candidate, ...data });

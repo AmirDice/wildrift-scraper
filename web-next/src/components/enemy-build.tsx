@@ -1643,6 +1643,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     bare
                     champion={champ ?? ""}
                     items={advice.items}
+                    situational={advice.situational}
+                    situationalBoots={advice.situationalBoots}
                     boots={advice.bootsUpgrade || advice.boots}
                     runeNames={advice.runes
                       ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)

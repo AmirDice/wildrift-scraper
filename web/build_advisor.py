@@ -1253,7 +1253,9 @@ def _build_elements(res: dict) -> dict:
 
 def why_not(champion: str, items: list[str], boots: str,
             rune_names: list[str], candidate: str,
-            playstyle: str = "standard", build_bias: str = "balanced") -> dict:
+            playstyle: str = "standard", build_bias: str = "balanced",
+            situational: list | None = None,
+            situational_boots: list | None = None) -> dict:
     """Answer "why is CANDIDATE not in this build" for a build we generated.
 
     People disagree with builds constantly, and the difference between "this
@@ -1267,6 +1269,13 @@ def why_not(champion: str, items: list[str], boots: str,
       situational         right against specific conditions, wrong as a default
       worse_here          legal but beaten by what the build already does
       not_viable          wrong damage type, role, or resource for this kit
+
+    The build's own situational swaps are passed in and checked FIRST. Without
+    them the call could not see that the build already recommends the queried
+    item against specific conditions, so it argued the item down as
+    `worse_here` while the page above it listed the same item as a swap. That
+    verdict is now impossible: a candidate the build recommends situationally
+    is clamped to `situational` no matter what the model returns.
     """
     candidate = (candidate or "").strip()
     cand = ITEMS.get(candidate)
@@ -1291,6 +1300,55 @@ def why_not(champion: str, items: list[str], boots: str,
     cand_stats = ", ".join(
         f"{k} {v.get('value')}" for k, v in (cand.get("stats") or {}).items())
     cand_passives = " | ".join(cand.get("passives") or [])[:600]
+
+    # The build's own conditional recommendations. The queried item being in
+    # here is the single most important fact about it, so it is established
+    # before the model is asked to judge anything.
+    def _name(slug: str) -> str:
+        return ITEMS.get(slug, {}).get("name", slug) if slug else ""
+
+    swap_lines: list[str] = []
+    candidate_swap: dict | None = None
+    for row in (situational or []):
+        if not isinstance(row, dict):
+            continue
+        slug = str(row.get("item") or "").strip()
+        if not slug:
+            continue
+        when = " ".join(str(row.get("when") or "").split())[:160]
+        replaces = str(row.get("replaces") or "").strip()
+        swap_lines.append(
+            f"- {_name(slug)} comes in for {_name(replaces) or 'a core item'}"
+            + (f" when {when}" if when else ""))
+        if slug == candidate:
+            candidate_swap = {"replaces": _name(replaces), "when": when}
+    for row in (situational_boots or []):
+        if not isinstance(row, dict):
+            continue
+        slug = str(row.get("boots") or "").strip()
+        if not slug:
+            continue
+        when = " ".join(str(row.get("when") or "").split())[:160]
+        swap_lines.append(f"- {_name(slug)} as alternative boots"
+                          + (f" when {when}" if when else ""))
+        if slug == candidate:
+            candidate_swap = {"replaces": boots_name, "when": when}
+
+    if candidate_swap:
+        swap_block = (
+            "THIS BUILD ALREADY RECOMMENDS THE QUERIED ITEM as a situational swap"
+            + (f", in place of {candidate_swap['replaces']}" if candidate_swap["replaces"] else "")
+            + (f", for when {candidate_swap['when']}" if candidate_swap["when"] else "")
+            + ".\nSo the verdict is SITUATIONAL and the answer must explain three "
+              "things: why the default pick is preferred in a normal game, the "
+              "specific conditions that make the queried item better, and which "
+              "item it replaces. Do NOT argue that it is worse; the build already "
+              "recommends it under those conditions.\n\n")
+    elif swap_lines:
+        swap_block = ("SITUATIONAL SWAPS this build already lists (the queried item is "
+                      "NOT among them):\n" + "\n".join(swap_lines) + "\n\n")
+    else:
+        swap_block = "This build lists no situational swaps.\n\n"
     bias_line = ("" if build_bias == "balanced"
                  else "The build was generated with a "
                       + build_bias.replace("_", " ") + " bias.\n")
@@ -1306,10 +1364,14 @@ def why_not(champion: str, items: list[str], boots: str,
         f"\nTHE ITEM IN QUESTION: {cand.get('name', candidate)} "
         f"(cost {cand.get('cost')}, stats: {cand_stats or 'none'}; "
         f"passives: {cand_passives or 'none'}).\n\n"
+        + swap_block +
         "Answer as the engine defending a judgement call, not a marketing voice. "
         "2 to 4 sentences, concrete: name the item in the build it competes with "
         "and the actual trade (damage type, spike timing, durability, synergy, "
-        "cost curve). If the candidate is genuinely fine here, say so plainly.\n\n"
+        "cost curve). If the candidate is genuinely fine here, say so plainly.\n"
+        "Reason ONLY from the stats, passives, kit facts, build and conditions "
+        "given above. Do not invent stats, ratios or interactions, and do not "
+        "assert anything this prompt has not told you.\n\n"
         'Return ONLY a JSON object: {"verdict": one of '
         '"viable_alternative" | "situational" | "worse_here" | "not_viable", '
         '"answer": string, "competesWith": item name from the build or null}'
@@ -1318,6 +1380,11 @@ def why_not(champion: str, items: list[str], boots: str,
     verdict = str(data.get("verdict") or "").strip()
     if verdict not in ("viable_alternative", "situational", "worse_here", "not_viable"):
         verdict = "worse_here"
+    # An item the build itself recommends conditionally cannot be "worse here",
+    # whatever the model decided. Asking was not enough: the instruction lives
+    # in the prompt, the guarantee lives here.
+    if candidate_swap:
+        verdict = "situational"
     answer = " ".join(str(data.get("answer") or "").split())[:700]
     if not answer:
         return {"error": "the model returned no answer; ask again"}
@@ -1443,7 +1510,9 @@ def main() -> None:
                       payload.get("items") or [], payload.get("boots") or "",
                       payload.get("runes") or [], payload.get("candidate") or "",
                       playstyle=payload.get("playstyle") or "standard",
-                      build_bias=payload.get("buildBias") or "balanced")
+                      build_bias=payload.get("buildBias") or "balanced",
+                      situational=payload.get("situational") or [],
+                      situational_boots=payload.get("situationalBoots") or [])
         print(json.dumps(out, ensure_ascii=False))
         return
     res = advise_best_of(args.champion, args.role,
