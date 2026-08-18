@@ -65,12 +65,18 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     }
 
     const target = dummyTarget(3000, 60, 45);
+    const itemCost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
     const rows = order.map((slugs, i) => {
       const st = resolveStats(name, level, slugs, runeNames);
       const fight = duel(name, slugs, runeNames, target, level, 20, false);
+      const gold = slugs.reduce((sum, slug) => sum + itemCost(slug), 0);
       return {
         count: i + 1,
         slugs,
+        gold,
+        // ~650 gold/min is a farming laner or jungler including passive
+        // income; precise enough for a minute MARK, not a promise.
+        minute: Math.round(gold / 650),
         hp: st ? Math.round(st.hp) : 0,
         dps: fight?.dps ?? 0,
         ttk: fight?.ttk ?? null,
@@ -78,10 +84,16 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     });
     if (rows.some((r) => !r.dps)) return null;
 
-    // Strongest spike = biggest marginal DPS gain from the previous stage.
+    // Strongest spike = biggest marginal DPS gain from the previous stage,
+    // but only among stages a real game REACHES. Lillia's full build costs
+    // 17,600g -- minute 27 at real income -- and calling that "your spike"
+    // points players at a game that will never be played. ~10.5k gold is
+    // roughly minute 16, the long end of a real Wild Rift game.
+    const REACHABLE_GOLD = 10500;
     let spike = 1;
     let best = 0;
     for (let i = 1; i < rows.length; i += 1) {
+      if (rows[i].gold > REACHABLE_GOLD) break;
       const gain = rows[i].dps - rows[i - 1].dps;
       if (gain > best) { best = gain; spike = i + 1; }
     }
@@ -103,7 +115,9 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     const bootsAt = bootsUpgradeAfter && bootsUpgradeAfter > 0
       ? Math.min(bootsUpgradeAfter, items.length) : 2;
     const cost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
-    const CHECKPOINTS = [3200, 6400, 9600];
+    // ~min 4.5 / 7.5 / 11.5 at real income. The first cut used 9.6k as the
+    // third checkpoint, which is minute ~15 -- too late to call "early".
+    const CHECKPOINTS = [3000, 5000, 7500];
     const target = dummyTarget(3000, 60, 45);
 
     const dpsCache = new Map<string, number>();
@@ -169,9 +183,14 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
         {stages.rows.map((row) => (
           <div key={row.count}
                className={`flex flex-wrap items-center gap-3 rounded-xl px-3 py-2 ${
-                 row.count === stages.spike ? "border border-gold/30 bg-gold/[0.06]" : "bg-white/[0.03]"}`}>
-            <span className="w-14 shrink-0 text-xs font-bold uppercase tracking-wide text-faint">
+                 row.count === stages.spike ? "border border-gold/30 bg-gold/[0.06]" : "bg-white/[0.03]"} ${
+                 row.minute > 16 ? "opacity-55" : ""}`}>
+            <span className="w-16 shrink-0 text-xs font-bold uppercase tracking-wide text-faint">
               {row.count === stages.rows.length ? "Full" : `${row.count} item${row.count > 1 ? "s" : ""}`}
+              <span className={`block text-[0.6rem] font-semibold normal-case ${
+                row.minute > 16 ? "text-bad/70" : "text-faint/80"}`}>
+                ~min {row.minute}
+              </span>
             </span>
             <span className="flex shrink-0 items-center gap-1">
               {row.slugs.map((slug, i) => (
@@ -230,8 +249,10 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       )}
       <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
         Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
-        build&rsquo;s runes, boots joining where the strip shows them landing. The same maths
-        as the Custom Lab&rsquo;s fight, so the numbers agree across the site.
+        build&rsquo;s runes, boots joining where the strip shows them landing. Minute marks
+        assume ~650 gold per minute of real income; dimmed stages are ones most games never
+        reach, and the spike is only awarded among stages a real game gets to. The same
+        maths as the Custom Lab&rsquo;s fight, so the numbers agree across the site.
       </p>
     </>
   );
