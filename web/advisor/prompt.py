@@ -791,8 +791,49 @@ def boots_block(champion_class: str, enemies_known: bool, damage_path: str = "st
 DEFENSIVE_BOOTS = {"mercurys-treads", "plated-steelcaps"}
 
 
-def item_pool_block(slugs: list[str]) -> str:
-    """The candidate pool, one line per item, with structured tags appended."""
+#: itemFx keys that MAKE an item a source of on-hit damage. Read from the
+#: engine's own effect data, so nothing here is asserted by hand.
+_ON_HIT_SOURCE_KEYS = ("onHitFlatMagic", "onHitFlatPhys", "onHitPctMaxHp",
+                       "onHitPctCurrentHp", "adaptiveOnHitFlat",
+                       "adaptiveOnHitApPct", "adaptiveOnHitBonusAdPct")
+
+
+def _on_hit_pairs(slugs: list[str]) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """Which items in this pool MULTIPLY on-hit damage, and which SUPPLY it.
+
+    An item that re-applies on-hits (Dusk and Dawn's "apply on-hits to the
+    target 1 additional time") is worth what the on-hits around it are worth,
+    so its value is invisible on its own stat line. The model was left to infer
+    that pairing and did not: it returned an empty `synergyWith` for Dusk and
+    Dawn and scored it 10/100 on Ekko, whose own ladder builds it in 43 games
+    of 50. So the pairing is now stated, derived from item_engine effect keys
+    rather than curated -- any future item carrying the same key is covered
+    with no further work, and no interaction is invented.
+    """
+    # The engine's own merged effect table (item_engine.json plus the
+    # overrides), imported lazily so the two cannot drift apart and so this
+    # module keeps its light import graph.
+    try:
+        from web.fight_engine import ENGINE_FX as fx
+    except Exception:
+        return {}, {}
+    multipliers = [s for s in slugs if (fx.get(s) or {}).get("extraOnHitOnSpellblade")]
+    sources = [s for s in slugs
+               if any((fx.get(s) or {}).get(k) for k in _ON_HIT_SOURCE_KEYS)]
+    multiplies = {m: [s for s in sources if s != m] for m in multipliers}
+    multiplied_by = {s: [m for m in multipliers if m != s] for s in sources}
+    return ({k: v for k, v in multiplies.items() if v},
+            {k: v for k, v in multiplied_by.items() if v})
+
+
+def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
+    """The candidate pool, one line per item, with structured tags appended.
+
+    `repeats_on_hit` says the CHAMPION applies an on-hit effect on every
+    attack, so an on-hit multiplier repeats the kit's own damage too, not just
+    the items'.
+    """
+    multiplies, multiplied_by = _on_hit_pairs(slugs)
     rows = []
     for slug in slugs:
         item = ITEMS[slug]
@@ -808,13 +849,31 @@ def item_pool_block(slugs: list[str]) -> str:
         # of choice nothing on either line said they share a group.
         excl = meta.get("exclusiveGroups") or []
         excl_note = f"; EXCLUSIVE-GROUP={','.join(excl)}" if excl else ""
+        # Same reasoning as EXCLUSIVE-GROUP: a pairing the item's own stat line
+        # cannot show belongs ON the row, at the moment of choice.
+        syn_note = ""
+        if slug in multiplies:
+            syn_note = ("; MULTIPLIES-ON-HIT=" + ",".join(multiplies[slug])
+                        + (",THIS CHAMPION'S OWN ON-HIT PASSIVE" if repeats_on_hit else ""))
+        elif slug in multiplied_by:
+            syn_note = "; MULTIPLIED-BY=" + ",".join(multiplied_by[slug])
         rows.append(f"{slug} [{item['category']}] {item['cost']}g {stats} "
-                    f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}) :: {passive}")
-    return ("ITEM POOL (the only items you may build; the description is the factual "
-            "source, the tags are an index into it). An item marked EXCLUSIVE-GROUP "
-            "cannot be built alongside ANY other item carrying the same group name -- "
-            "the game refuses the second purchase, so a build holding two is illegal, "
-            "not merely suboptimal:\n" + "\n".join(rows))
+                    f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}{syn_note}) "
+                    f":: {passive}")
+    header = ("ITEM POOL (the only items you may build; the description is the factual "
+              "source, the tags are an index into it). An item marked EXCLUSIVE-GROUP "
+              "cannot be built alongside ANY other item carrying the same group name -- "
+              "the game refuses the second purchase, so a build holding two is illegal, "
+              "not merely suboptimal.")
+    if multiplies:
+        header += (" MULTIPLIES-ON-HIT means the item RE-APPLIES the on-hit damage of "
+                   "the items listed after it, so its worth is those on-hits repeated "
+                   "and its own stat line understates it; MULTIPLIED-BY is the same "
+                   "relationship seen from the other side. Score the pair as it would "
+                   "actually be bought: together they are worth more than either alone, "
+                   "and neither multiplier is worth its price without a source to "
+                   "repeat.")
+    return header + "\n" + "\n".join(rows)
 
 
 def audit_block(slugs: list[str], combat_profile: dict) -> str:

@@ -995,7 +995,9 @@ def advise(champion: str, role: str, enemies: list[str],
         prompt_mod.rules_block(enemies_known, combat),
         prompt_mod.boots_block(champion_record.get("class", ""), enemies_known, damage_path),
         runemeta.pool_text_block(),
-        prompt_mod.item_pool_block(pool_slugs),
+        prompt_mod.item_pool_block(
+            pool_slugs,
+            repeats_on_hit=combat.get("repeatedOnHitReliance") == "high"),
         prompt_mod.filtered_note(withheld),
     ] if x)
 
