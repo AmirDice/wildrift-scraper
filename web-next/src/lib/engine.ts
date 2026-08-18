@@ -11,9 +11,9 @@ import type { BuildAnalysis } from "@/lib/builds";
 const DATA = engineData as any;
 
 const BASE_CRIT_MULT = 1.75;
-const BASE_MANA_ASSUMED = 500;
 const AS_CAP = 2.5;
 const SPELLBLADE_CD = 1.5;
+const CLEAVE_EVERY = 1.75;
 const MELEE_AUTO_UPTIME = 0.75;
 const RANGED_CLASSES = new Set(["Marksman", "Mage", "Enchanter"]);
 const AUTO_GATED_RUNES = new Set(["Empowerment", "Lethal Tempo"]);
@@ -171,7 +171,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     hp: base("hp", 1800), bonusHp: 0,
     armor: base("armor", 60), mr: base("mr", 45),
     baseAsPct: 0, baseAs: bs.attackSpeed?.base || 0.75,
-    crit: 0, critMult: BASE_CRIT_MULT, haste: 0, mana: BASE_MANA_ASSUMED,
+    // Real base mana from the champion's stat line (Python parity): mana
+    // feeds the AD/AP/HP-from-mana conversions, so a flat assumption
+    // short-changed every Manamune/Archangel's/Winter's build.
+    crit: 0, critMult: BASE_CRIT_MULT, haste: 0, mana: base("mana", 0),
     flatPen: 0, pctPenFactors: [] as number[], flatMagicPen: 0, pctMagicPen: 0,
     baseMs: bs.moveSpeed?.base || 330, bonusMs: 0,
     abilityAmp: 0, damageAmp: 0, giant: 0, execute: 0,
@@ -179,11 +182,25 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     burstProcs: [] as [number, number][], dotDps: 0, procMaxHpPct: 0, firstHit: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
+    mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
+    critDamagePerExcessCrit: 0, hastePct: 0, cdRefundPctPerAuto: 0,
+    cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
     healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
     lifestealPct: 0, omnivampPct: 0,
     runeOnHitFlat: 0, runeProcs: [] as [number, number, string][],
   };
+
+  // AD/AP/HP-from-mana percentages, applied after runes (see below): runes add
+  // mana (Manaflow Band's 300), and a resourceless kit zeroes it later still.
+  const manaConv = { ad: 0, ap: 0, hp: 0 };
+  // Attack-rate estimate for stack ramp-up, from the build's own AS items.
+  // Deliberately rough (ignores runes and AS passives): it only decides how
+  // fast stacking items reach max, a second-order effect.
+  const asPctFromItems = itemSlugs.reduce(
+    (sum, s) => sum + Number(DATA.items[s]?.stats?.attackSpeed?.value ?? 0), 0);
+  const atkRate = Math.min(AS_CAP, (bs.attackSpeed?.base || 0.75) * (1 + asPctFromItems / 100));
+  const rngd = RANGED_CLASSES.has(c.class ?? "");
 
   for (const slug of itemSlugs) {
     const it = DATA.items[slug];
@@ -205,7 +222,23 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       } else if (k === "physicalPen") st.flatPen += val;
       else if (k === "moveSpeed") st.bonusMs += pct ? st.baseMs * val / 100 : val;
     }
-    const fx = DATA.itemFx[slug] ?? {};
+    let fx = DATA.itemFx[slug] ?? {};
+    // STACK RAMP-UP: attack-stacked effects (Terminus' pen, Guinsoo's AS,
+    // Cleaver's shred) are not there from second zero. Scale the stack-built
+    // keys by the average stack fraction over the 8s window at this build's
+    // attack rate; always-on parts are untouched. Mirrors the Python engine.
+    if (fx.rampAttacks) {
+      const tau = Number(fx.rampAttacks) / Math.max(atkRate, 0.1);
+      const ramp = Math.max(0.35, Math.min(1, tau <= 8 ? 1 - tau / 16 : 4 / tau));
+      const scaled: any = { ...fx };
+      for (const k of ["pctPen", "mrShredPct", "armorShredPct", "asPctPassive"]) {
+        const v = fx[k];
+        if (typeof v === "number") scaled[k] = v * ramp;
+        else if (v && typeof v === "object" && "lvlRange" in v)
+          scaled[k] = { lvlRange: v.lvlRange.map((x: number) => x * ramp) };
+      }
+      fx = scaled;
+    }
     const g = (k: string) => (k in fx ? lvlRange(fx[k], level) : 0);
     st.flatPen += g("flatPen");
     if (fx.pctPen) st.pctPenFactors.push(g("pctPen") / 100);
@@ -216,11 +249,23 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.giant = Math.max(st.giant, g("giantSlayerPct") / 100);
     st.execute = Math.max(st.execute, g("executePct") / 100);
     st.spellbladeBaseAdPct = Math.max(st.spellbladeBaseAdPct, g("spellbladeBaseAdPct"));
-    st.spellbladePctMaxHp = Math.max(st.spellbladePctMaxHp, g("spellbladePctMaxHp"));
+    // Divine Sunderer pays ranged champions 7%, not the melee 10%.
+    st.spellbladePctMaxHp = Math.max(st.spellbladePctMaxHp,
+      rngd && fx.spellbladePctMaxHpRanged ? g("spellbladePctMaxHpRanged") : g("spellbladePctMaxHp"));
+    // Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; the AP half
+    // and the damage type were dropped by the port. spellbladeMagic is stamped
+    // at export time from the item's own passive text.
+    st.spellbladeApPct = Math.max(st.spellbladeApPct, g("spellbladeApPct"));
+    if ((fx.spellbladeBaseAdPct || fx.spellbladeApPct) && fx.spellbladeMagic)
+      st.spellbladeMagic = 1;
     st.onHitPhys += g("onHitFlatPhys");
     st.onHitMagic += g("onHitFlatMagic");
-    st.onHitPctCurrentHp += g("onHitPctCurrentHp") / 100;
-    st.onHitPctMaxHp += g("onHitPctMaxHp") / 100;
+    // Wild Rift %HP on-hits pay ranged champions less (BotRK: 10% melee, 8.5%
+    // ranged); prefer the "...Ranged" companion key where the item has one.
+    st.onHitPctCurrentHp += (rngd && fx.onHitPctCurrentHpRanged
+      ? g("onHitPctCurrentHpRanged") : g("onHitPctCurrentHp")) / 100;
+    st.onHitPctMaxHp += (rngd && fx.onHitPctMaxHpRanged
+      ? g("onHitPctMaxHpRanged") : g("onHitPctMaxHp")) / 100;
     st.procMaxHpPct += g("procMaxHpPct") / 100;
     st.firstHit += g("firstHit");
     if (fx.burstProcFlat || fx.burstProcApPct)
@@ -233,6 +278,22 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.shield += g("shieldFlat");
     st.shieldPctBonusHp += g("shieldPctBonusHp") / 100;
     st.shieldPctMaxHp += g("shieldPctMaxHp") / 100;
+    // A revive is, for EHP purposes, a shield worth X% of max HP: they have
+    // to kill you twice.
+    st.shieldPctMaxHp += g("reviveHpPct") / 100;
+    // Attack speed granted by a PASSIVE rather than the stat line (Guinsoo's
+    // 32%, Youmuu's 25%): the port had no channel for it at all.
+    st.baseAsPct += g("asPctPassive");
+    st.critDamagePerExcessCrit += g("critDamagePerExcessCrit");
+    // "Every Nth attack deals ..." (Hullbreaker, Kraken Slayer). NOT an
+    // on-hit: it fires once per N autos, so it is averaged across attacks,
+    // scaled by the ranged multiplier where the item has one.
+    const nth = g("everyNthAttack");
+    if (nth >= 2) {
+      const nthMult = rngd && fx.everyNthRangedMult ? g("everyNthRangedMult") / 100 : 1;
+      st.onHitPhys += g("everyNthBaseAdPct") / 100 * st.baseAd * nthMult / nth;
+      st.onHitPctMaxHp += g("everyNthPctMaxHp") / 100 * nthMult / nth;
+    }
     st.dr = Math.max(st.dr, g("drPct") / 100);
     // "Gain 25 Attack Damage OR 50 Ability Power (Adaptive)" grants exactly
     // ONE, picked by the kit's primary damage type -- mirrors the Python
@@ -253,8 +314,20 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.haste += g("hasteFlatPassive");
     st.hp += g("hpFlatPassive"); st.bonusHp += g("hpFlatPassive");
     st.bonusMs += g("msFlat") + st.baseMs * g("msPct") / 100;
-    st.bonusAd += g("adFromManaPct") / 100 * st.mana;
+    // Mana conversions are DEFERRED, not applied here: runes add mana after
+    // this loop, and a resourceless kit zeroes it later still.
+    manaConv.ad += g("adFromManaPct");
+    manaConv.ap += g("apFromManaPct");
+    manaConv.hp += g("hpFromManaPct");
     st.ap += g("apFromBonusHpPct") / 100 * st.bonusHp;
+    // MR shred mirrors armour shred (Abyssal Mask, Bloodletter's Curse).
+    st.mrShred = Math.max(st.mrShred, g("mrShredPct") / 100);
+    st.mrShredFlat += g("mrShredFlat");
+    st.hastePct += g("hastePctPassive") / 100;
+    st.cdRefundPctPerAuto += g("cdRefundPctPerAuto");
+    st.cleaveFlat += g("cleaveFlat");
+    st.cleavePctBonusHp += g("cleavePctBonusHp") / 100;
+    st.healShieldAmp += g("healShieldAmpPct") / 100;
   }
 
   // runes
@@ -285,8 +358,14 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       st.ap += g("bonusAp");
       st.haste += g("hasteFlat");
       st.hp += g("hpFlat"); st.bonusHp += g("hpFlat");
+      // Mana is not a dead stat: it feeds the AD/AP-from-mana conversions
+      // (Muramana, Archangel's). Manaflow Band's 300 was being dropped.
+      st.mana += g("manaFlat");
       st.armor += g("armorFlat");
       st.mr += g("mrFlat");
+      st.armor *= 1 + g("armorPct") / 100;
+      st.mr *= 1 + g("mrPct") / 100;
+      st.abilityAmp += g("abilityAmpPct") / 100;
       st.runeOnHitFlat += g("onHitFlat");
       st.damageAmp += g("ampPct") / 100;
       if (fx.burstProcFlat || fx.burstProcApRatio || fx.burstProcAdRatio)
@@ -362,10 +441,14 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     }
   }
 
-  // Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
-  // source above (item stats, adaptive grants, runes, kit steroids) -- same
-  // placement as the Python engine.
-  if (st.apAmp) st.ap *= 1 + st.apAmp;
+  // Percent CDR (Ionian boots) is not flat haste: X% CDR == 100X/(100-X) haste.
+  if (st.hastePct) {
+    const p = Math.min(st.hastePct, 0.9);
+    st.haste += 100 * p / (1 - p);
+  }
+  // Navori: each auto cuts remaining cooldowns, which is haste-equivalent
+  // uptime. Approximated as haste; a real model needs per-cast cooldown state.
+  if (st.cdRefundPctPerAuto) st.haste += st.cdRefundPctPerAuto * 2;
 
   // kit mechanics (evidence-grounded): fixedAS / reload / doubleShot / noResource
   const mechs: Record<string, any> = {};
@@ -373,13 +456,20 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   const know: any = DATA.formulas[name]?.knowledge ?? {};
   if (!mechs.noResource && (know.resource === "energy" || know.resource === "none"))
     mechs.noResource = { kind: "noResource" };
-  if (mechs.noResource) {
-    for (const slug of itemSlugs) {
-      const fx0 = DATA.itemFx[slug] ?? {};
-      if (fx0.adFromManaPct) st.bonusAd -= lvlRange(fx0.adFromManaPct, level) / 100 * st.mana;
-    }
-    st.mana = 0;
+  // Mana conversions land HERE: after items, after runes (Manaflow Band's
+  // 300), and after a resourceless kit has zeroed mana -- so Manamune simply
+  // grants nothing on Katarina rather than being granted and subtracted back.
+  if (mechs.noResource) st.mana = 0;
+  if (manaConv.ad) st.bonusAd += manaConv.ad / 100 * st.mana;
+  if (manaConv.ap) st.ap += manaConv.ap / 100 * st.mana;
+  if (manaConv.hp) {
+    const hpFromMana = manaConv.hp / 100 * st.mana;
+    st.hp += hpFromMana;
+    st.bonusHp += hpFromMana;
   }
+  // Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
+  // source above -- including Archangel's mana conversion just now.
+  if (st.apAmp) st.ap *= 1 + st.apAmp;
   st.doubleShotMult = mechs.doubleShot
     ? 1 + (Number(mechs.doubleShot.secondShotPct) || 50) / 100 * 0.6 : 1;
 
@@ -396,6 +486,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     const reloadS = Number(know.reloadSeconds) || 1.0; // Tier-2 or documented default
     st.as = mag / (mag / st.as + reloadS);
   }
+  // Infinity Edge "Limit Break": crit rate past 100% is wasted, so it converts
+  // to crit DAMAGE. Runs once every crit source (items, runes) is summed.
+  if (st.critDamagePerExcessCrit && st.crit > 1)
+    st.critMult += st.critDamagePerExcessCrit * (st.crit - 1);
   st.crit = Math.min(st.crit, 1);
   let pen = 1;
   for (const p of st.pctPenFactors) pen *= 1 - p;
@@ -406,7 +500,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
 function mults(st: any, target: any): [number, number] {
   let armor = target.armor * (1 - st.armorShred);
   armor = armor * (1 - st.pctPen) - st.flatPen;
-  const mr = target.mr * (1 - st.pctMagicPen) - st.flatMagicPen;
+  // MR shred mirrors armour shred (Abyssal Mask, Bloodletter's Curse). Only
+  // armour had a shred channel, so magic shred items did nothing.
+  let mr = target.mr * (1 - (st.mrShred ?? 0)) - (st.mrShredFlat ?? 0);
+  mr = mr * (1 - st.pctMagicPen) - st.flatMagicPen;
   return [100 / (100 + Math.max(armor, 0)), 100 / (100 + Math.max(mr, 0))];
 }
 
@@ -647,6 +744,12 @@ export function rotation(name: string, st: any, target: any, window: number,
     aPhys += st.onHitPhys * physM;
     aPhys += (st.onHitPctCurrentHp * target.hp * 0.7 + st.onHitPctMaxHp * target.hp) * physM;
     aPhys += st.runeOnHitFlat * physM;
+    // Titanic Cleave arms every CLEAVE_EVERY seconds, not every auto, so only
+    // a fraction of attacks carry it: faster attacks dilute it, not scale it.
+    if (st.cleaveFlat || st.cleavePctBonusHp) {
+      const cleave = st.cleaveFlat + st.cleavePctBonusHp * st.bonusHp;
+      aPhys += cleave * Math.min(1, (1 / CLEAVE_EVERY) / Math.max(st.as, 0.1)) * physM;
+    }
     let aMagic = st.onHitMagic * magicM;
     let aTrue = 0;
     for (const comp of perAuto) {
@@ -694,13 +797,17 @@ export function rotation(name: string, st: any, target: any, window: number,
     const dAutos = doAutos(nAutos);
     total += dAutos;
     autoDmg += dAutos;
-    if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp) {
+    if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp || st.spellbladeApPct) {
       const procs = Math.min(castsTotal, nAutos, 1 + Math.floor(window / SPELLBLADE_CD));
+      // Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; type
+      // follows the item.
+      const sbMagic = st.spellbladeMagic > 0;
       const sb = (st.spellbladeBaseAdPct / 100 * st.baseAd
-        + st.spellbladePctMaxHp / 100 * target.hp) * physM * procs;
+        + st.spellbladeApPct / 100 * st.ap
+        + st.spellbladePctMaxHp / 100 * target.hp) * (sbMagic ? magicM : physM) * procs;
       total += sb;
       autoDmg += sb;
-      addT("physical", sb);
+      addT(sbMagic ? "magic" : "physical", sb);
     }
     total += oneTimes();
     if (st.dotDps) { const d = st.dotDps * window * magicM; total += d; addT("magic", d); }
@@ -761,13 +868,15 @@ export function rotation(name: string, st: any, target: any, window: number,
   const dAutos = doAutos(nAutos);
   total += dAutos;
   autoDmg += dAutos;
-  if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp) {
+  if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp || st.spellbladeApPct) {
     const procs = Math.min(castsTotal, nAutos, 1 + Math.floor(window / SPELLBLADE_CD));
+    const sbMagic = st.spellbladeMagic > 0;
     const sb = (st.spellbladeBaseAdPct / 100 * st.baseAd
-      + st.spellbladePctMaxHp / 100 * target.hp) * physM * procs;
+      + st.spellbladeApPct / 100 * st.ap
+      + st.spellbladePctMaxHp / 100 * target.hp) * (sbMagic ? magicM : physM) * procs;
     total += sb;
     autoDmg += sb;
-    addT("physical", sb);
+    addT(sbMagic ? "magic" : "physical", sb);
   }
   total += oneTimes();
   if (st.dotDps) { const d = st.dotDps * window * magicM; total += d; addT("magic", d); }

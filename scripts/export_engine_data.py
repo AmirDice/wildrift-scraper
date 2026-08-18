@@ -165,6 +165,16 @@ def main() -> None:
         if isinstance(fx, dict):
             item_fx.setdefault(slug, {}).update({k: v for k, v in fx.items()
                                                  if not k.startswith("_")})
+    # A spellblade's damage TYPE is read from the item's own passive text
+    # (mirrors fight_engine's text scan). The TS engine ships no passives
+    # text, so the flag is stamped into itemFx here at export time.
+    for it in items:
+        fx = item_fx.get(it.get("slug") or "")
+        if not fx or not (fx.get("spellbladeBaseAdPct") or fx.get("spellbladeApPct")):
+            continue
+        txt = " ".join(it.get("passives") or []).lower()
+        if "spellblade" in txt and "magic damage" in txt:
+            fx["spellbladeMagic"] = 1
     rune_fx = _load("rune_effects.json")
     rune_engine = _load("rune_engine.json")
     runes = _load("runes.json")

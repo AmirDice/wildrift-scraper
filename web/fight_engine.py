@@ -783,12 +783,6 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             if s.get("from") == "bonusMs" and s.get("stat") == "ad" and s.get("pct") is not None:
                 st["bonusAd"] += st["bonusMs"] * _scale_val(s["pct"], 3, level) / 100.0
 
-    # Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
-    # source above (items, runes, adaptive grants, Archangel's mana conversion).
-    # It was unmodelled entirely: the strongest AP item in the game was scoring
-    # as a plain stat stick.
-    if st["apAmp"]:
-        st["ap"] *= 1 + st["apAmp"]
     # Percent CDR (Ionian) is not flat haste: X% CDR == haste of 100X/(100-X).
     if st["hastePct"]:
         p = min(st["hastePct"], 0.9)
@@ -828,6 +822,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         _hp_mana = mana_conv["hp"] / 100.0 * st["mana"]
         st["hp"] += _hp_mana
         st["bonusHp"] += _hp_mana
+    # Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
+    # source above (items, runes, adaptive grants, Archangel's mana conversion).
+    # It used to run BEFORE the mana conversions, contradicting this very
+    # comment: Seraph's AP-from-mana escaped the 30% on every Deathcap build.
+    if st["apAmp"]:
+        st["ap"] *= 1 + st["apAmp"]
     st["doubleShotMult"] = 1.0
     if "doubleShot" in mech:
         pct = float(mech["doubleShot"].get("secondShotPct", 50))
