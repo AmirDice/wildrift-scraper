@@ -192,7 +192,7 @@ def main() -> None:
             for n in names:
                 slot_of[n] = int(s)
 
-    from web.fight_engine import kit_adjust
+    from web.fight_engine import kit_adjust, repeats_on_hit
 
     out = {
         "champions": {
@@ -206,6 +206,10 @@ def main() -> None:
                 "statRules": c.get("statRules", {}),
                 # precomputed in Python (needs full ability text) for TS parity
                 "kitShift": kit_adjust(c["name"]),
+                # Does this kit's on-hit fire on EVERY attack? Decides whether
+                # an item that re-applies on-hits re-applies the kit's own
+                # (Gwen's Thousand Cuts, yes; Lux's consumed mark, no).
+                "repeatsOnHit": repeats_on_hit(c["name"]),
             }
             # Stats and skill ranks exist for the full roster. Structured
             # formulas are optional and only control live damage breakdowns.

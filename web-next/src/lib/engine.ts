@@ -541,13 +541,18 @@ function mults(st: any, target: any): [number, number] {
 
 /** One application of everything that fires ON HIT, by damage type. The
  *  attack's own AD is excluded: re-applying on-hits repeats Nashor's, Wit's
- *  End and the %HP on-hits, not the auto itself. Kit on-hit components are
- *  excluded too, which keeps the estimate conservative. */
-function onHitBundle(st: any, target: any, physM: number, magicM: number): [number, number] {
+ *  End and the %HP on-hits, not the auto itself.
+ *
+ *  `kit` carries the champion's OWN on-hit components (Gwen's Thousand Cuts,
+ *  Skip 'n Slash). In game "apply on-hits" includes those, and leaving them
+ *  out was the conservative first cut: on an on-hit caster they are most of
+ *  what a re-application is worth. */
+function onHitBundle(st: any, target: any, physM: number, magicM: number,
+                     kit?: [number, number, number]): [number, number, number] {
   const phys = (st.onHitPhys + st.runeOnHitFlat
     + st.onHitPctCurrentHp * target.hp * 0.7
     + st.onHitPctMaxHp * target.hp) * physM;
-  return [phys, st.onHitMagic * magicM];
+  return [phys + (kit?.[0] ?? 0), st.onHitMagic * magicM + (kit?.[1] ?? 0), kit?.[2] ?? 0];
 }
 
 function autoUptime(name: string, window: number, st?: any): number {
@@ -782,6 +787,21 @@ export function rotation(name: string, st: any, target: any, window: number,
     return 1;
   };
   const comboSeq: string[] = DATA.formulas[name]?.combo ?? [];
+  /** The KIT's own on-hit components, split by type. Gwen's Thousand Cuts and
+   *  Skip 'n Slash are on-hit effects the champion carries, not stats, so an
+   *  item that re-applies on-hits re-applies these too. Shared so the auto and
+   *  the extra-application path charge exactly the same damage. */
+  const kitPerAuto = (nAutos: number): [number, number, number] => {
+    let p = 0, m = 0, t = 0;
+    for (const comp of perAuto) {
+      const cd = compDmg(comp, 3) / Math.max(1, Math.floor(rankVal(comp.hits ?? 1, 3)) || 1)
+                 * perAutoShare(comp, nAutos);
+      if (comp.type === "magic") m += cd;
+      else if (comp.type === "true") t += cd;
+      else p += cd;
+    }
+    return [p, m, t];
+  };
   const doAutos = (nAutos: number) => {
     let aPhys = st.ad * critEv * physM * giant;
     aPhys += st.onHitPhys * physM;
@@ -795,13 +815,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     }
     let aMagic = st.onHitMagic * magicM;
     let aTrue = 0;
-    for (const comp of perAuto) {
-      const cd = compDmg(comp, 3) / Math.max(1, Math.floor(rankVal(comp.hits ?? 1, 3)) || 1)
-                 * perAutoShare(comp, nAutos);
-      if (comp.type === "magic") aMagic += cd;
-      else if (comp.type === "true") aTrue += cd;
-      else aPhys += cd;
-    }
+    const [kp, km, kt] = kitPerAuto(nAutos);
+    aPhys += kp; aMagic += km; aTrue += kt;
     const dsm = st.doubleShotMult ?? 1;
     addT("physical", aPhys * dsm * nAutos);
     addT("magic", aMagic * dsm * nAutos);
@@ -852,12 +867,14 @@ export function rotation(name: string, st: any, target: any, window: number,
       autoDmg += sb;
       addT(sbMagic ? "magic" : "physical", sb);
       if (st.extraOnHitApplications) {
-        const [ep, em] = onHitBundle(st, target, physM, magicM);
+        const [ep, em, et] = onHitBundle(st, target, physM, magicM,
+          DATA.champions[name]?.repeatsOnHit ? kitPerAuto(nAutos) : undefined);
         const mult = st.extraOnHitApplications * procs;
-        total += (ep + em) * mult;
-        autoDmg += (ep + em) * mult;
+        total += (ep + em + et) * mult;
+        autoDmg += (ep + em + et) * mult;
         addT("physical", ep * mult);
         addT("magic", em * mult);
+        addT("true", et * mult);
       }
     }
     total += oneTimes();
@@ -932,12 +949,14 @@ export function rotation(name: string, st: any, target: any, window: number,
     autoDmg += sb;
     addT(sbMagic ? "magic" : "physical", sb);
     if (st.extraOnHitApplications) {
-      const [ep, em] = onHitBundle(st, target, physM, magicM);
+      const [ep, em, et] = onHitBundle(st, target, physM, magicM,
+        DATA.champions[name]?.repeatsOnHit ? kitPerAuto(nAutos) : undefined);
       const mult = st.extraOnHitApplications * procs;
-      total += (ep + em) * mult;
-      autoDmg += (ep + em) * mult;
+      total += (ep + em + et) * mult;
+      autoDmg += (ep + em + et) * mult;
       addT("physical", ep * mult);
       addT("magic", em * mult);
+      addT("true", et * mult);
     }
   }
   total += oneTimes();

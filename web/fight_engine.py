@@ -1057,7 +1057,44 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
         cleave = st["cleaveFlat"] + st["cleavePctBonusHp"] * st["bonusHp"]
         a_phys += cleave * min(1.0, (1.0 / CLEAVE_EVERY) / max(st["as"], 0.1)) * phys_m
     a_magic = st["onHitMagic"] * magic_m
-    a_true = 0.0
+    k_phys, k_magic, k_true = _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+    return a_phys + k_phys, a_magic + k_magic, k_true
+
+
+_REPEAT_ON_HIT_CACHE: dict[str, bool] = {}
+
+
+def repeats_on_hit(name: str) -> bool:
+    """Whether this kit's on-hit component fires on EVERY attack.
+
+    The distinction matters for anything that re-applies on-hits. Gwen's
+    Thousand Cuts is on every auto, so re-applying it is real damage. Lux's
+    Illumination is a MARK consumed by one attack and Diana's Moonsilver is
+    every third, so re-applying those would invent damage the game does not
+    give. `repeatedOnHitReliance` already draws exactly this line ("applies an
+    on-hit effect ONCE" versus "over and over"), so it is reused rather than
+    curated again here.
+    """
+    if name not in _REPEAT_ON_HIT_CACHE:
+        value = False
+        try:
+            from web.advisor import profiles as _profiles
+            value = _profiles.combat_profile(name).get("repeatedOnHitReliance") == "high"
+        except Exception:
+            value = False
+        _REPEAT_ON_HIT_CACHE[name] = value
+    return _REPEAT_ON_HIT_CACHE[name]
+
+
+def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None):
+    """The KIT's own on-hit components, split by type.
+
+    Gwen's Thousand Cuts and Skip 'n Slash are on-hit effects the champion
+    carries, not stats: an item that re-applies on-hits re-applies these too.
+    Factored out of _auto_split so the extra-application path can charge the
+    same damage without restating the loop.
+    """
+    p = m = t = 0.0
     for comp, _slot in per_auto_comps:  # empowered-auto kit components
         # A multiShot kit's shotgun is already modelled by doubleShotMult, which
         # scales the WHOLE auto (so pellets crit and carry on-hit -- the better
@@ -1072,14 +1109,14 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
         cd = comp_dmg(comp, 3) / max(int(_rank_val(comp.get("hits", 1), 3) or 1), 1)
         if per_auto_share is not None:
             cd *= per_auto_share(_slot)
-        t = comp["type"]
-        if t == "magic":
-            a_magic += cd
-        elif t == "true":
-            a_true += cd
+        typ = comp["type"]
+        if typ == "magic":
+            m += cd
+        elif typ == "true":
+            t += cd
         else:
-            a_phys += cd
-    return a_phys, a_magic, a_true
+            p += cd
+    return p, m, t
 
 
 def _proc_split(st, target, phys_m, magic_m):
@@ -1093,18 +1130,28 @@ def _proc_split(st, target, phys_m, magic_m):
     return once_p, once_m
 
 
-def _on_hit_bundle(st, target, phys_m, magic_m):
+def _on_hit_bundle(st, target, phys_m, magic_m, kit=None):
     """One application of everything that fires ON HIT, by damage type.
 
     The attack itself is deliberately excluded: an effect that re-applies
     on-hits (Dusk and Dawn) repeats Nashor's, Wit's End and the %HP on-hits,
-    not the auto-attack's own AD. Kit on-hit components are excluded too,
-    which keeps the estimate conservative.
+    not the auto-attack's own AD.
+
+    `kit` carries the champion's OWN on-hit components (Gwen's Thousand Cuts,
+    Skip 'n Slash). In game "apply on-hits" includes those, and excluding them
+    was the conservative first cut: on an on-hit caster they are most of what
+    a re-application is worth.
     """
     on_p = (st["onHitPhys"] + st["runeOnHitFlat"]
             + st["onHitPctCurrentHp"] * target["hp"] * 0.7
             + st["onHitPctMaxHp"] * target["hp"]) * phys_m
-    return on_p, st["onHitMagic"] * magic_m
+    on_m = st["onHitMagic"] * magic_m
+    on_t = 0.0
+    if kit:
+        on_p += kit[0]
+        on_m += kit[1]
+        on_t += kit[2]
+    return on_p, on_m, on_t
 
 
 def _for_window(name: str, st: dict, window: float) -> dict:
@@ -1351,11 +1398,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             total += d
             auto_dmg += d
             if st["extraOnHitApplications"]:
-                _ep, _em = _on_hit_bundle(st, target, phys_m, magic_m)
-                _extra = (_ep + _em) * st["extraOnHitApplications"] * procs
+                _kit = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+                        if repeats_on_hit(name) else None)
+                _ep, _em, _et = _on_hit_bundle(st, target, phys_m, magic_m, _kit)
+                _mult = st["extraOnHitApplications"] * procs
+                _extra = (_ep + _em + _et) * _mult
                 parts.append((f"extra on-hit x{procs}", _extra))
-                add_t("physical", _ep * st["extraOnHitApplications"] * procs)
-                add_t("magic", _em * st["extraOnHitApplications"] * procs)
+                add_t("physical", _ep * _mult)
+                add_t("magic", _em * _mult)
+                add_t("true", _et * _mult)
                 total += _extra
                 auto_dmg += _extra
         once_p, once_m = _proc_split(st, target, phys_m, magic_m)
@@ -1464,11 +1515,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         total += d
         auto_dmg += d
         if st["extraOnHitApplications"]:
-            _ep, _em = _on_hit_bundle(st, target, phys_m, magic_m)
-            _extra = (_ep + _em) * st["extraOnHitApplications"] * procs
+            _kit = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+                    if repeats_on_hit(name) else None)
+            _ep, _em, _et = _on_hit_bundle(st, target, phys_m, magic_m, _kit)
+            _mult = st["extraOnHitApplications"] * procs
+            _extra = (_ep + _em + _et) * _mult
             parts.append((f"extra on-hit x{procs}", _extra))
-            add_t("physical", _ep * st["extraOnHitApplications"] * procs)
-            add_t("magic", _em * st["extraOnHitApplications"] * procs)
+            add_t("physical", _ep * _mult)
+            add_t("magic", _em * _mult)
+            add_t("true", _et * _mult)
             total += _extra
             auto_dmg += _extra
 
