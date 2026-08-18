@@ -56,30 +56,56 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     // Only the base form is modelled for transformers; skip rather than lie.
     if ((DATA.formulas?.[name]?.mechanics ?? []).some((m) => m.kind === "transform")) return null;
 
-    const finishedBoots = bootsUpgrade || boots || "";
-    // Boots join where the strip shows them landing: the model-chosen upgrade
-    // timing, or the old fixed 2 for builds that predate the field. A skipped
-    // upgrade (bootsUpgradeAfter 0) means finishedBoots is already the tier-2,
-    // which still joins after two items -- the timing decision is about the
-    // enchant, not about owning boots.
-    const bootsAt = bootsUpgradeAfter && bootsUpgradeAfter > 0
-      ? Math.min(bootsUpgradeAfter, Math.max(items.length, 1))
-      : 2;
-    const order: string[][] = [];
-    for (let k = 1; k <= items.length; k += 1) {
-      const prefix = items.slice(0, k);
-      if (k >= bootsAt && finishedBoots) prefix.splice(bootsAt, 0, finishedBoots);
-      order.push(prefix);
-    }
+    // EVERY purchase is its own measured step -- items, the tier-2 boots,
+    // and the tier-3 enchant separately. Bundling boots into an item stage
+    // handed that stage two purchases' worth of gain and the spike badge
+    // followed the boots rather than the item (the reported Lillia case:
+    // "2 items" quietly included Spellslinger's Shoes). Tier-2 boots land
+    // after the first item, the convention players actually follow; the
+    // tier-3 enchant lands where the model timed it and costs the DELTA
+    // (its listed cost is cumulative and it replaces the tier-2 in the set).
+    const t2 = boots || "";
+    const t3 = bootsUpgrade || "";
+    const itemCost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
+    const upgradeAt = t3
+      ? (bootsUpgradeAfter && bootsUpgradeAfter > 0
+          ? Math.min(bootsUpgradeAfter, items.length) : 2)
+      : 0;
+    const t3Delta = t3 ? Math.max(300, itemCost(t3) - (t2 ? itemCost(t2) : 0)) : 0;
+
+    type Purchase = { kind: "item" | "t2" | "t3"; slug: string; costG: number; itemCount: number };
+    const purchasesFor = (order: string[], at: number): Purchase[] => {
+      const seq: Purchase[] = [];
+      order.forEach((slug, i) => {
+        seq.push({ kind: "item", slug, costG: itemCost(slug), itemCount: i + 1 });
+        if (i === 0 && t2) seq.push({ kind: "t2", slug: t2, costG: itemCost(t2), itemCount: i + 1 });
+        if (i + 1 === at && t3) seq.push({ kind: "t3", slug: t3, costG: t3Delta, itemCount: i + 1 });
+      });
+      return seq;
+    };
 
     const target = dummyTarget(3000, 60, 45);
-    const itemCost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
-    const rows = order.map((slugs, i) => {
+    const purchases = purchasesFor(items, upgradeAt);
+    const owned: string[] = [];
+    let gold = 0;
+    const rows = purchases.map((purchase, i) => {
+      if (purchase.kind === "t3" && t2) {
+        const at = owned.indexOf(t2);
+        if (at >= 0) owned.splice(at, 1);
+      }
+      owned.push(purchase.slug);
+      gold += purchase.costG;
+      const slugs = [...owned];
       const st = resolveStats(name, level, slugs, runeNames);
       const fight = duel(name, slugs, runeNames, target, level, 20, false);
-      const gold = slugs.reduce((sum, slug) => sum + itemCost(slug), 0);
+      const label = purchase.kind === "item"
+        ? (i === purchases.length - 1 ? "Full"
+           : `${purchase.itemCount} item${purchase.itemCount > 1 ? "s" : ""}`)
+        : purchase.kind === "t2" ? "Boots" : "T3 boots";
       return {
-        count: i + 1,
+        idx: i + 1,
+        kind: purchase.kind,
+        label,
         slugs,
         gold,
         // ~650 gold/min is a farming laner or jungler including passive
@@ -112,7 +138,9 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
         : rows[i].dps - rows[i - 1].dps;
       if (gain > best) { best = gain; spike = i + 1; }
     }
-    return { rows, spike, spikeMetric: isTank ? ("durability" as const) : ("damage" as const) };
+    return { rows, spike, spikeLabel: rows[spike - 1]?.label ?? "",
+             purchasesFor, upgradeAt, t3,
+             spikeMetric: isTank ? ("durability" as const) : ("damage" as const) };
   }, [name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level]);
 
   // ENGINE ORDER CHECK: would any other purchase order of the SAME five
@@ -126,9 +154,6 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
   // still left 5-12% early damage on the table.
   const orderCheck = useMemo(() => {
     if (!stages || items.length !== 5) return null;
-    const finishedBoots = bootsUpgrade || boots || "";
-    const bootsAt = bootsUpgradeAfter && bootsUpgradeAfter > 0
-      ? Math.min(bootsUpgradeAfter, items.length) : 2;
     const cost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
     // Checkpoints and weights follow the REQUESTED power curve, per the
     // owner's definition: Early optimizes immediate strength and cheap fast
@@ -162,24 +187,50 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       return v;
     };
 
-    const score = (order: string[]): number => {
-      // Purchase sequence mirrors the strip: boots complete after `bootsAt`.
-      const seq = [...order];
-      if (finishedBoots) seq.splice(bootsAt, 0, finishedBoots);
+    // Boots are real purchases in the walk: tier-2 after the first item,
+    // the tier-3 enchant (delta-priced) wherever `at` says -- the same
+    // sequence the stage rows show, so the two never disagree.
+    const score = (order: string[], at = stages.upgradeAt): number => {
+      const seq = stages.purchasesFor(order, at);
       let total = 0;
       const weights = WEIGHTS;
       CHECKPOINTS.forEach((gold, i) => {
         const owned: string[] = [];
         let spent = 0;
-        for (const slug of seq) {
-          spent += cost(slug);
+        for (const purchase of seq) {
+          spent += purchase.costG;
           if (spent > gold) break;
-          owned.push(slug);
+          if (purchase.kind === "t3" && boots) {
+            const idx = owned.indexOf(boots);
+            if (idx >= 0) owned.splice(idx, 1);
+          }
+          owned.push(purchase.slug);
         }
         total += dpsOf(owned) * weights[i];
       });
       return total;
     };
+
+    // BOOTS TIMING CHECK: with boots as measured purchases, the engine can
+    // ask when the tier-3 enchant actually pays: score the SHOWN item order
+    // with the upgrade after 0 (never) through 5 items and compare against
+    // the model's timing. This is the engine's answer to "when do T3 boots
+    // give the best spike", including "not at all".
+    let bootsTiming: { best: number; gainPct: number } | null = null;
+    if (stages.t3) {
+      const shownTiming = score(items, stages.upgradeAt);
+      let bestAt = stages.upgradeAt;
+      let bestScore = shownTiming;
+      for (let at = 0; at <= items.length; at += 1) {
+        if (at === stages.upgradeAt) continue;
+        const sc = score(items, at);
+        if (sc > bestScore) { bestScore = sc; bestAt = at; }
+      }
+      const timingGain = (bestScore - shownTiming) / shownTiming;
+      if (bestAt !== stages.upgradeAt && timingGain >= 0.04) {
+        bootsTiming = { best: bestAt, gainPct: Math.round(timingGain * 100) };
+      }
+    }
 
     const bestOf = (set: string[]): { score: number; order: string[] } => {
       const perms: string[][] = [];
@@ -235,9 +286,9 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
 
     // Below 4% the reorder is noise against everything the sim cannot see
     // (lane safety, mana, component sizes); the shown order stands.
-    if (gain < 0.04) return { verdict: "optimal" as const, swap };
-    return { verdict: "reorder" as const, order: own.order, gainPct: Math.round(gain * 100), swap };
-  }, [stages, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, name, level, powerCurve, candidates]);
+    if (gain < 0.04) return { verdict: "optimal" as const, swap, bootsTiming };
+    return { verdict: "reorder" as const, order: own.order, gainPct: Math.round(gain * 100), swap, bootsTiming };
+  }, [stages, items, boots, runeNames, name, level, powerCurve, candidates]);
 
   if (!stages) return null;
   const maxDps = Math.max(...stages.rows.map((r) => r.dps), 1);
@@ -245,12 +296,12 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
   const body = (
       <div className="space-y-2">
         {stages.rows.map((row) => (
-          <div key={row.count}
+          <div key={row.idx}
                className={`flex flex-wrap items-center gap-3 rounded-xl px-3 py-2 ${
-                 row.count === stages.spike ? "border border-gold/30 bg-gold/[0.06]" : "bg-white/[0.03]"} ${
+                 row.idx === stages.spike ? "border border-gold/30 bg-gold/[0.06]" : "bg-white/[0.03]"} ${
                  row.minute > 16 ? "opacity-55" : ""}`}>
             <span className="w-16 shrink-0 text-xs font-bold uppercase tracking-wide text-faint">
-              {row.count === stages.rows.length ? "Full" : `${row.count} item${row.count > 1 ? "s" : ""}`}
+              {row.label}
               <span className={`block text-[0.6rem] font-semibold normal-case ${
                 row.minute > 16 ? "text-bad/70" : "text-faint/80"}`}>
                 ~min {row.minute}
@@ -273,7 +324,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
               <span className="text-faint"> dps</span>
               <span className="ml-2 font-semibold text-text">{row.hp.toLocaleString()}</span>
               <span className="text-faint"> hp</span>
-              {row.count === stages.spike && (
+              {row.idx === stages.spike && (
                 <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase text-gold">spike</span>
               )}
             </span>
@@ -288,7 +339,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       <span className="text-xs font-normal text-faint">
         Engine-measured at each purchase, not a guess. Strongest{" "}
         {stages.spikeMetric === "durability" ? "durability" : "damage"} spike:{" "}
-        <span className="font-semibold text-gold">{stages.spike} item{stages.spike > 1 ? "s" : ""}</span>
+        <span className="font-semibold text-gold">{stages.spikeLabel.toLowerCase()}</span>
       </span>
     </>
   );
@@ -312,6 +363,18 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
           win on lane safety, mana or component costs.
         </p>
       )}
+      {orderCheck?.bootsTiming && (
+        <p className="mt-2.5 rounded-lg bg-gold/[0.07] px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-gold/90">
+          Boots check: {orderCheck.bootsTiming.best === 0
+            ? "keeping tier-2 boots all game"
+            : `upgrading to ${itemName(stages.t3)} after ${orderCheck.bootsTiming.best} item${
+                orderCheck.bootsTiming.best > 1 ? "s" : ""}`} reaches
+          ~{orderCheck.bootsTiming.gainPct}% more early{" "}
+          {stages.spikeMetric === "durability" ? "durability" : "damage"} than the shown
+          timing. The ~1,000g enchant competes with your next item; this is when the
+          engine says it pays.
+        </p>
+      )}
       {orderCheck?.swap && (
         <p className="mt-2.5 rounded-lg bg-accent/[0.07] px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-accent/90">
           Early-spike check: for the Early game goal, swapping{" "}
@@ -325,7 +388,8 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       )}
       <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
         Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
-        build&rsquo;s runes, boots joining where the strip shows them landing. Minute marks
+        build&rsquo;s runes. Tier-2 boots and the tier-3 enchant are their own measured
+        purchases, so a stage&rsquo;s jump is one buy&rsquo;s worth of power. Minute marks
         assume ~650 gold per minute of real income; dimmed stages are ones most games never
         reach, and the spike is only awarded among stages a real game gets to. The same
         maths as the Custom Lab&rsquo;s fight, so the numbers agree across the site.

@@ -55,18 +55,43 @@ const CASES: Case[] = [
 for (const c of CASES) {
   const { name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, powerCurve, candidates } = c;
   const level = 15;
-  const finishedBoots = bootsUpgrade || boots || "";
-  const bootsAt = bootsUpgradeAfter && bootsUpgradeAfter > 0
-    ? Math.min(bootsUpgradeAfter, items.length) : 2;
 
-  // ---- stages (mirrors the stages memo)
-  const order = items.map((_, i) => items.slice(0, i + 1));
+  // ---- stages (mirrors the stages memo): every purchase its own step
+  const t2 = boots || "";
+  const t3 = bootsUpgrade || "";
+  const upgradeAt = t3
+    ? (bootsUpgradeAfter && bootsUpgradeAfter > 0
+        ? Math.min(bootsUpgradeAfter, items.length) : 2)
+    : 0;
+  const t3Delta = t3 ? Math.max(300, cost(t3) - (t2 ? cost(t2) : 0)) : 0;
+  type Purchase = { kind: string; slug: string; costG: number; itemCount: number };
+  const purchasesFor = (order: string[], at: number): Purchase[] => {
+    const seq: Purchase[] = [];
+    order.forEach((slug, i) => {
+      seq.push({ kind: "item", slug, costG: cost(slug), itemCount: i + 1 });
+      if (i === 0 && t2) seq.push({ kind: "t2", slug: t2, costG: cost(t2), itemCount: i + 1 });
+      if (i + 1 === at && t3) seq.push({ kind: "t3", slug: t3, costG: t3Delta, itemCount: i + 1 });
+    });
+    return seq;
+  };
   const target = dummyTarget(3000, 60, 45);
-  const rows = order.map((slugs, i) => {
+  const seqRows = purchasesFor(items, upgradeAt);
+  const ownedAcc: string[] = [];
+  let goldAcc = 0;
+  const rows = seqRows.map((purchase, i) => {
+    if (purchase.kind === "t3" && t2) {
+      const at = ownedAcc.indexOf(t2);
+      if (at >= 0) ownedAcc.splice(at, 1);
+    }
+    ownedAcc.push(purchase.slug);
+    goldAcc += purchase.costG;
+    const slugs = [...ownedAcc];
     const st = resolveStats(name, level, slugs, runeNames);
     const fight = duel(name, slugs, runeNames, target, level, 20, false);
-    const gold = slugs.reduce((sum, slug) => sum + cost(slug), 0);
-    return { count: i + 1, slugs, gold, minute: Math.round(gold / 650),
+    const label = purchase.kind === "item"
+      ? `${purchase.itemCount} item${purchase.itemCount > 1 ? "s" : ""}`
+      : purchase.kind === "t2" ? "Boots" : "T3 boots";
+    return { count: i + 1, label, slugs, gold: goldAcc, minute: Math.round(goldAcc / 650),
       hp: st ? Math.round(st.hp) : 0, dps: fight?.dps ?? 0 };
   });
   const isTank = roster()[name]?.class === "Tank";
@@ -81,7 +106,7 @@ for (const c of CASES) {
   console.log(`\n===== ${name} (${powerCurve}) =====`);
   for (const r of rows) {
     const mark = r.count === spike ? "  <-- SPIKE" : (r.minute > 16 ? "  (dimmed)" : "");
-    console.log(`${r.count} item${r.count > 1 ? "s" : " "} ~min ${String(r.minute).padStart(2)}  ${r.gold}g  dps ${Math.round(r.dps)}  hp ${r.hp}  [${itemName(r.slugs[r.slugs.length - 1])}]${mark}`);
+    console.log(`${r.label.padEnd(8)} ~min ${String(r.minute).padStart(2)}  ${r.gold}g  dps ${Math.round(r.dps)}  hp ${r.hp}  [${itemName(r.slugs[r.slugs.length - 1])}]${mark}`);
   }
   console.log(`spike metric: ${isTank ? "durability" : "damage"}`);
 
@@ -104,22 +129,42 @@ for (const c of CASES) {
     }
     return v;
   };
-  const score = (ord: string[]): number => {
-    const seq = [...ord];
-    if (finishedBoots) seq.splice(bootsAt, 0, finishedBoots);
+  const score = (ord: string[], at = upgradeAt): number => {
+    const seq = purchasesFor(ord, at);
     let total = 0;
     CHECKPOINTS.forEach((gold, i) => {
       const owned: string[] = [];
       let spent = 0;
-      for (const slug of seq) {
-        spent += cost(slug);
+      for (const purchase of seq) {
+        spent += purchase.costG;
         if (spent > gold) break;
-        owned.push(slug);
+        if (purchase.kind === "t3" && t2) {
+          const idx = owned.indexOf(t2);
+          if (idx >= 0) owned.splice(idx, 1);
+        }
+        owned.push(purchase.slug);
       }
       total += dpsOf(owned) * WEIGHTS[i];
     });
     return total;
   };
+
+  if (t3) {
+    const shownTiming = score(items, upgradeAt);
+    let bestAt = upgradeAt;
+    let bestScore = shownTiming;
+    for (let at = 0; at <= items.length; at += 1) {
+      if (at === upgradeAt) continue;
+      const sc = score(items, at);
+      if (sc > bestScore) { bestScore = sc; bestAt = at; }
+    }
+    const timingGain = (bestScore - shownTiming) / shownTiming;
+    if (bestAt !== upgradeAt && timingGain >= 0.04) {
+      console.log(`boots timing: T3 after ${bestAt} beats shown (after ${upgradeAt}) by +${Math.round(timingGain * 100)}%`);
+    } else {
+      console.log(`boots timing: shown (after ${upgradeAt}) is optimal (best alt ${(timingGain * 100).toFixed(1)}%)`);
+    }
+  }
   const bestOf = (set: string[]): { score: number; order: string[] } => {
     const perms: string[][] = [];
     const permute = (rest: string[], acc: string[]) => {
