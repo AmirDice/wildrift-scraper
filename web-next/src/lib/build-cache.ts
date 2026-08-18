@@ -202,7 +202,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // burst, CC) is stated, and the rune page must answer that lane first. A
   // v25 counter entry was reasoned against the team aggregate only (the
   // reported Riven-vs-Teemo standard-runes case).
-  return `build:v26:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v27: the magic-penetration hard-exclusive group exists (Void Staff /
+  // Cryptbloom / Bloodletter's Curse -- no shared passive NAME, so the
+  // passive-text extraction never formed it). A v26 entry could legally
+  // carry Cryptbloom + Bloodletter's, a pair the game refuses.
+  return `build:v27:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

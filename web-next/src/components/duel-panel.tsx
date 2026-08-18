@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { duel, mutualDuel, championTarget, dummyTarget, type DuelResult, type DuelTarget, type MutualDuelResult } from "@/lib/engine";
-import { hasSimulatableKit } from "@/lib/customizer-data";
+import { blockedItems, hasSimulatableKit } from "@/lib/customizer-data";
 import { rosterList } from "@/lib/threat";
 import engineData from "@/data/engine.json";
 import buildsData from "@/data/builds.json";
@@ -78,12 +78,23 @@ function variantRunes(name: string, variant?: string): string[] {
 }
 
 /** The most common top-50 loadout: the five most-equipped non-boots items plus
- *  the most-equipped boots, in popularity order. */
+ *  the most-equipped boots, in popularity order.
+ *
+ *  Popularity is aggregated across DIFFERENT players' games, so the raw top 5
+ *  can pair items no single game allows -- when half the ladder builds Lord
+ *  Dominik's and half builds Mortal Reminder, both make the cut. Each pick is
+ *  therefore checked against the exclusivity rules given what is already in
+ *  the build, exactly as the Lab's item picker does. */
 function ladderBuild(name: string): string[] {
   const rec = LADDER[name];
   if (!rec) return [];
   const isBoots = (slug: string) => DATA.items?.[slug]?.category === "Boots";
-  const items = rec.items.filter((i) => !isBoots(i.slug)).slice(0, 5).map((i) => i.slug);
+  const items: string[] = [];
+  for (const i of rec.items) {
+    if (items.length >= 5) break;
+    if (isBoots(i.slug) || blockedItems(items)[i.slug]) continue;
+    items.push(i.slug);
+  }
   const boots = rec.items.find((i) => isBoots(i.slug))?.slug;
   return boots ? [...items, boots] : items;
 }
@@ -336,6 +347,7 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
                   max={6}
                   onChange={setCustomItems}
                   options={itemOptions()}
+                  isBlocked={(owned, key) => Boolean(blockedItems(owned)[key])}
                 />
                 <LoadoutEditor
                   label="Their runes (up to 5)"
@@ -437,19 +449,24 @@ function runeOptions(): { key: string; name: string; icon?: string }[] {
 /** A compact chip editor: current picks as removable chips, plus a search box
  *  that offers the catalogue. Small on purpose -- it lives inside the duel
  *  panel, not on its own page. */
-function LoadoutEditor({ label, picked, options, max, onChange, round = false }: {
+function LoadoutEditor({ label, picked, options, max, onChange, round = false, isBlocked }: {
   label: string;
   picked: string[];
   options: { key: string; name: string; icon?: string }[];
   max: number;
   onChange: (next: string[]) => void;
   round?: boolean;
+  /** Legality gate given what is already picked -- the enemy obeys the same
+   *  exclusivity rules the game enforces, or the fight is against a loadout
+   *  no real opponent can hold. */
+  isBlocked?: (picked: string[], key: string) => boolean;
 }) {
   const [query, setQuery] = useState("");
   const byKey = useMemo(() => new Map(options.map((o) => [o.key, o])), [options]);
   const q = query.trim().toLowerCase();
   const matches = q
-    ? options.filter((o) => !picked.includes(o.key) && o.name.toLowerCase().includes(q)).slice(0, 8)
+    ? options.filter((o) => !picked.includes(o.key) && !isBlocked?.(picked, o.key)
+        && o.name.toLowerCase().includes(q)).slice(0, 8)
     : [];
   return (
     <div className="min-w-0 flex-1 rounded-xl border border-line/60 bg-white/[0.02] p-2 text-left">
