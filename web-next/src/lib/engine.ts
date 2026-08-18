@@ -183,6 +183,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     burstProcs: [] as [number, number][], dotDps: 0, dotPctMaxHp: 0, procMaxHpPct: 0, firstHit: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
+    extraOnHitApplications: 0,
     critDamagePerExcessCrit: 0, hastePct: 0, cdRefundPctPerAuto: 0,
     cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
@@ -263,6 +264,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // and the damage type were dropped by the port. spellbladeMagic is stamped
     // at export time from the item's own passive text.
     st.spellbladeApPct = Math.max(st.spellbladeApPct, g("spellbladeApPct"));
+    // Dusk and Dawn's second clause: "apply on-hits to the target 1 additional
+    // time", on the same spellblade proc. Worth more than its small spellblade
+    // half to an on-hit build, and invisible before this key existed.
+    st.extraOnHitApplications = Math.max(st.extraOnHitApplications,
+      g("extraOnHitOnSpellblade"));
     if ((fx.spellbladeBaseAdPct || fx.spellbladeApPct) && fx.spellbladeMagic)
       st.spellbladeMagic = 1;
     st.onHitPhys += g("onHitFlatPhys");
@@ -531,6 +537,17 @@ function mults(st: any, target: any): [number, number] {
   let mr = target.mr * (1 - (st.mrShred ?? 0)) - (st.mrShredFlat ?? 0);
   mr = mr * (1 - st.pctMagicPen) - st.flatMagicPen;
   return [100 / (100 + Math.max(armor, 0)), 100 / (100 + Math.max(mr, 0))];
+}
+
+/** One application of everything that fires ON HIT, by damage type. The
+ *  attack's own AD is excluded: re-applying on-hits repeats Nashor's, Wit's
+ *  End and the %HP on-hits, not the auto itself. Kit on-hit components are
+ *  excluded too, which keeps the estimate conservative. */
+function onHitBundle(st: any, target: any, physM: number, magicM: number): [number, number] {
+  const phys = (st.onHitPhys + st.runeOnHitFlat
+    + st.onHitPctCurrentHp * target.hp * 0.7
+    + st.onHitPctMaxHp * target.hp) * physM;
+  return [phys, st.onHitMagic * magicM];
 }
 
 function autoUptime(name: string, window: number, st?: any): number {
@@ -834,6 +851,14 @@ export function rotation(name: string, st: any, target: any, window: number,
       total += sb;
       autoDmg += sb;
       addT(sbMagic ? "magic" : "physical", sb);
+      if (st.extraOnHitApplications) {
+        const [ep, em] = onHitBundle(st, target, physM, magicM);
+        const mult = st.extraOnHitApplications * procs;
+        total += (ep + em) * mult;
+        autoDmg += (ep + em) * mult;
+        addT("physical", ep * mult);
+        addT("magic", em * mult);
+      }
     }
     total += oneTimes();
     if (st.dotDps || st.dotPctMaxHp) {
@@ -906,6 +931,14 @@ export function rotation(name: string, st: any, target: any, window: number,
     total += sb;
     autoDmg += sb;
     addT(sbMagic ? "magic" : "physical", sb);
+    if (st.extraOnHitApplications) {
+      const [ep, em] = onHitBundle(st, target, physM, magicM);
+      const mult = st.extraOnHitApplications * procs;
+      total += (ep + em) * mult;
+      autoDmg += (ep + em) * mult;
+      addT("physical", ep * mult);
+      addT("magic", em * mult);
+    }
   }
   total += oneTimes();
   if (st.dotDps || st.dotPctMaxHp) {

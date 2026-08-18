@@ -99,5 +99,9 @@
   "crimson-lucidity": {
     "hastePctPassive": 0,
     "_why_summoner": "Same as ionian-boots-of-lucidity: 20% summoner spell haste is not ability CDR."
+  },
+  "dusk-and-dawn": {
+    "extraOnHitOnSpellblade": 1,
+    "_why_onhit": "The passive is TWO effects and extraction captured only the first: 'After a brief delay, apply on-hits to the target 1 additional time' on the same 1.5s spellblade proc. For an on-hit build (Nashor's, Wit's End) that re-application is worth more than the item's small 10% AP spellblade half, so the engines scored the item as a weak Lich Bane. Owner-approved 2026-08-18. NOTE: Zhonya's Stasis remains unmodelled by the owner's decision, so the two are not scored on equal footing."
   }
 }

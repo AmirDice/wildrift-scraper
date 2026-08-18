@@ -11,7 +11,7 @@ const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "crit
   "onHitPhys", "onHitMagic", "onHitPctMaxHp", "onHitPctCurrentHp",
   "mrShred", "mrShredFlat", "spellbladeApPct", "spellbladeMagic",
   "cleaveFlat", "cleavePctBonusHp", "healShieldAmp", "shieldPctMaxHp", "apAmp",
-  "armor", "mr", "dotPctMaxHp"];
+  "armor", "mr", "dotPctMaxHp", "extraOnHitApplications"];
 const out: Record<string, Record<string, number>> = {};
 for (const [champ, items, runes] of battery) {
   const st = resolveStats(champ, 15, items, runes);

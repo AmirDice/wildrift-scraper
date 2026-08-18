@@ -445,6 +445,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "conditionalProcs": [], "ultAmp": 0.0,
         "spellbladeBaseAdPct": 0.0, "spellbladePctMaxHp": 0.0,
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
+        "extraOnHitApplications": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "burstProcs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0, "procMaxHpPct": 0.0, "firstHit": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
@@ -516,6 +517,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             _sb_max = g("spellbladePctMaxHpRanged")
         st["spellbladePctMaxHp"] = max(st["spellbladePctMaxHp"], _sb_max)
         st["spellbladeApPct"] = max(st["spellbladeApPct"], g("spellbladeApPct"))
+        # Dusk and Dawn's second clause: "apply on-hits to the target 1
+        # additional time", on the same spellblade proc. Worth more than its
+        # small spellblade half to an on-hit build (Nashor's, Wit's End), and
+        # invisible before this key existed.
+        st["extraOnHitApplications"] = max(st["extraOnHitApplications"],
+                                           g("extraOnHitOnSpellblade"))
         # Damage TYPE is read from the item's own text, not asked of the model: a
         # flag key would have to be grounded, and the literal "1" of a boolean
         # never appears in a tooltip, so it could never survive the filter.
@@ -1086,6 +1093,20 @@ def _proc_split(st, target, phys_m, magic_m):
     return once_p, once_m
 
 
+def _on_hit_bundle(st, target, phys_m, magic_m):
+    """One application of everything that fires ON HIT, by damage type.
+
+    The attack itself is deliberately excluded: an effect that re-applies
+    on-hits (Dusk and Dawn) repeats Nashor's, Wit's End and the %HP on-hits,
+    not the auto-attack's own AD. Kit on-hit components are excluded too,
+    which keeps the estimate conservative.
+    """
+    on_p = (st["onHitPhys"] + st["runeOnHitFlat"]
+            + st["onHitPctCurrentHp"] * target["hp"] * 0.7
+            + st["onHitPctMaxHp"] * target["hp"]) * phys_m
+    return on_p, st["onHitMagic"] * magic_m
+
+
 def _for_window(name: str, st: dict, window: float) -> dict:
     """The stat block as it averages over a fight of this length.
 
@@ -1329,6 +1350,14 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             add_t("magic" if _magic else "physical", d)
             total += d
             auto_dmg += d
+            if st["extraOnHitApplications"]:
+                _ep, _em = _on_hit_bundle(st, target, phys_m, magic_m)
+                _extra = (_ep + _em) * st["extraOnHitApplications"] * procs
+                parts.append((f"extra on-hit x{procs}", _extra))
+                add_t("physical", _ep * st["extraOnHitApplications"] * procs)
+                add_t("magic", _em * st["extraOnHitApplications"] * procs)
+                total += _extra
+                auto_dmg += _extra
         once_p, once_m = _proc_split(st, target, phys_m, magic_m)
         once = once_p + once_m
         if once:
@@ -1421,15 +1450,27 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     total += d_autos
     auto_dmg += d_autos
 
-    # spellblade
-    if st["spellbladeBaseAdPct"] or st["spellbladePctMaxHp"]:
+    # spellblade -- same maths as the rotation path above, which had gained the
+    # AP half and the magic typing while this copy was left on the old model.
+    if st["spellbladeBaseAdPct"] or st["spellbladePctMaxHp"] or st["spellbladeApPct"]:
         procs = min(casts_total, n_autos, 1 + int(window / SPELLBLADE_CD))
+        _magic = st["spellbladeMagic"] > 0
+        _m = magic_m if _magic else phys_m
         d = (st["spellbladeBaseAdPct"] / 100.0 * st["baseAd"]
-             + st["spellbladePctMaxHp"] / 100.0 * target["hp"]) * phys_m * procs
+             + st["spellbladeApPct"] / 100.0 * st["ap"]
+             + st["spellbladePctMaxHp"] / 100.0 * target["hp"]) * _m * procs
         parts.append((f"spellblade x{procs}", d))
-        add_t("physical", d)
+        add_t("magic" if _magic else "physical", d)
         total += d
         auto_dmg += d
+        if st["extraOnHitApplications"]:
+            _ep, _em = _on_hit_bundle(st, target, phys_m, magic_m)
+            _extra = (_ep + _em) * st["extraOnHitApplications"] * procs
+            parts.append((f"extra on-hit x{procs}", _extra))
+            add_t("physical", _ep * st["extraOnHitApplications"] * procs)
+            add_t("magic", _em * st["extraOnHitApplications"] * procs)
+            total += _extra
+            auto_dmg += _extra
 
     # one-time procs + burn
     once_p, once_m = _proc_split(st, target, phys_m, magic_m)
