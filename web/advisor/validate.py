@@ -16,11 +16,55 @@ without regenerating the item build. See repair.py for how that is used.
 """
 from __future__ import annotations
 
+import re
+import unicodedata
 from dataclasses import dataclass, field
 
 from web.advisor import itemmeta, runemeta
 
 ITEMS = itemmeta.ITEMS
+
+
+def _norm_text(value: str) -> str:
+    """Fold text to bare words so a name matches however it was written.
+
+    Accents are stripped (a guide may write "Coup de Grace"), apostrophes are
+    deleted rather than spaced so "Rabadon's" and the curly-quoted
+    "Rabadon’s" both fold to "rabadons", and every other punctuation mark
+    becomes a space so "Legend: Bloodline" folds to "legend bloodline".
+    """
+    text = unicodedata.normalize("NFKD", str(value))
+    text = "".join(c for c in text if not unicodedata.combining(c))
+    text = text.lower().replace("’", "").replace("ʼ", "").replace("'", "")
+    text = re.sub(r"[^a-z0-9 ]+", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _aliases(name: str) -> list[str]:
+    """The forms a play guide may legitimately use for one item or rune.
+
+    The guide check exists to catch advice that never mentions the loadout at
+    all; it must not fail a guide that names a piece the way players do. So a
+    rune answers to its full name, to the distinctive half after a colon
+    ("Legend: Alacrity" -> "alacrity"), and to the part before "of"
+    ("Grasp of the Undying" -> "grasp").
+    """
+    full = _norm_text(name)
+    out = {full} if full else set()
+    if ":" in name:
+        tail = _norm_text(name.split(":", 1)[1])
+        if len(tail) >= 4:
+            out.add(tail)
+    head = _norm_text(re.split(r"\s+of\s+", name, maxsplit=1, flags=re.I)[0])
+    if head and head != full and len(head) >= 4:
+        out.add(head)
+    return sorted(out)
+
+
+def _guide_mentions(blob_norm: str, name: str) -> bool:
+    """Whether a normalised guide names this item or rune, on word boundaries."""
+    return any(re.search(rf"\b{re.escape(alias)}\b", blob_norm)
+               for alias in _aliases(name))
 
 # Sections a repair can target independently. Ordering matters only for display.
 # `summoners` is absent even though the model now picks them. They are not
@@ -727,6 +771,7 @@ def validate(
     # choice made against the enemy comp and fall back to the static table.
 
     # ---- play guide ---------------------------------------------------------
+    # (matching helpers live at module level: _norm_text / _guide_mentions)
     # Checked for SUBSTANCE, not just presence. The failure mode for a written
     # section is not a missing key, it is four paragraphs of advice that would
     # be true of any build on this champion -- which is worse than nothing,
@@ -746,12 +791,19 @@ def validate(
                         f"{', '.join(thin)}. Each needs two or three real sentences about "
                         f"THIS build.")
         else:
-            blob = " ".join(str(guide.get(k) or "") for k in _GUIDE_KEYS).lower()
-            named = [s for s in main_items + [boots] if s
-                     and (ITEMS.get(s, {}).get("name", "") or "").lower().split()[0] in blob]
+            blob = _norm_text(" ".join(str(guide.get(k) or "") for k in _GUIDE_KEYS))
+            def _named_item(slug: str) -> bool:
+                # First word only, as before: "Black Cleaver" answers to
+                # "black", and normalisation means "Rabadon's Deathcap"
+                # answers to "rabadons" however the apostrophe was typed.
+                tokens = _norm_text((ITEMS.get(slug) or {}).get("name") or "").split()
+                return bool(tokens) and bool(
+                    re.search(rf"\b{re.escape(tokens[0])}\b", blob))
+
+            named = [s for s in main_items + [boots] if s and _named_item(s)]
             page = res.get("runes") or {}
             rune_names = [page.get("keystone"), *(page.get("minors") or []), page.get("flex")]
-            named_runes = [r for r in rune_names if r and str(r).lower() in blob]
+            named_runes = [r for r in rune_names if r and _guide_mentions(blob, str(r))]
             if not named:
                 report.fail("playGuide",
                             "the playGuide never names an item from this build, so it is "
