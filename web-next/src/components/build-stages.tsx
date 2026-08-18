@@ -2,13 +2,14 @@
 
 import { useMemo } from "react";
 import { duel, dummyTarget, resolveStats } from "@/lib/engine";
-import { hasSimulatableKit } from "@/lib/customizer-data";
+import { blockedItems, hasSimulatableKit } from "@/lib/customizer-data";
+import { roster } from "@/lib/threat";
 import engineData from "@/data/engine.json";
 
 /* eslint-disable @next/next/no-img-element */
 
 const DATA = engineData as {
-  items?: Record<string, { name?: string; icon?: string; cost?: number }>;
+  items?: Record<string, { name?: string; icon?: string; cost?: number; category?: string }>;
   formulas?: Record<string, { mechanics?: { kind?: string }[] }>;
 };
 
@@ -30,7 +31,7 @@ const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
  * Boots are inserted where the strip shows them landing (after the second
  * item), so the stages mirror the purchase order the player was just shown.
  */
-export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level = 15, bare = false }: {
+export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level = 15, bare = false, powerCurve, candidates }: {
   name: string;
   items: string[];
   boots?: string;
@@ -42,6 +43,13 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
   level?: number;
   /** Renders without its own card chrome, for embedding inside "Your Build". */
   bare?: boolean;
+  /** The request's power-curve goal ("early" | "balanced" | ...). The
+   *  substitution check only runs for an EARLY goal: trading late power for
+   *  an earlier spike is exactly what that goal asks for, and exactly what
+   *  it would be wrong to suggest under any other goal. */
+  powerCurve?: string;
+  /** The model's scored item alternatives, the substitution candidate pool. */
+  candidates?: { item: string; score?: number }[];
 }) {
   const stages = useMemo(() => {
     if (!items.length || !hasSimulatableKit(name)) return null;
@@ -84,20 +92,27 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     });
     if (rows.some((r) => !r.dps)) return null;
 
-    // Strongest spike = biggest marginal DPS gain from the previous stage,
-    // but only among stages a real game REACHES. Lillia's full build costs
+    // Strongest spike = biggest marginal gain from the previous stage, but
+    // only among stages a real game REACHES. Lillia's full build costs
     // 17,600g -- minute 27 at real income -- and calling that "your spike"
     // points players at a game that will never be played. ~10.5k gold is
     // roughly minute 16, the long end of a real Wild Rift game.
+    //
+    // WHAT counts as the gain follows the champion's job: damage dealers
+    // spike on DPS, tanks spike on DURABILITY -- Malphite's spike is the
+    // fight he survives, not the fight he out-damages.
+    const isTank = roster()[name]?.class === "Tank";
     const REACHABLE_GOLD = 10500;
     let spike = 1;
     let best = 0;
     for (let i = 1; i < rows.length; i += 1) {
       if (rows[i].gold > REACHABLE_GOLD) break;
-      const gain = rows[i].dps - rows[i - 1].dps;
+      const gain = isTank
+        ? rows[i].hp - rows[i - 1].hp
+        : rows[i].dps - rows[i - 1].dps;
       if (gain > best) { best = gain; spike = i + 1; }
     }
-    return { rows, spike };
+    return { rows, spike, spikeMetric: isTank ? ("durability" as const) : ("damage" as const) };
   }, [name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level]);
 
   // ENGINE ORDER CHECK: would any other purchase order of the SAME five
@@ -115,19 +130,34 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     const bootsAt = bootsUpgradeAfter && bootsUpgradeAfter > 0
       ? Math.min(bootsUpgradeAfter, items.length) : 2;
     const cost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
-    // ~min 4.5 / 7.5 / 11.5 at real income. The first cut used 9.6k as the
-    // third checkpoint, which is minute ~15 -- too late to call "early".
-    const CHECKPOINTS = [3000, 5000, 7500];
+    // Checkpoints and weights follow the REQUESTED power curve, per the
+    // owner's definition: Early optimizes immediate strength and cheap fast
+    // spikes, Mid optimizes around 1-3 completed items, Late deliberately
+    // trades the early game for scaling -- so a late-goal build must not be
+    // reordered (or scored) as if it wanted an early spike. Gold-to-minute
+    // at ~650/min: 3k=min 4.5, 5k=min 7.5, 7.5k=min 11.5, 10k=min 15.5,
+    // 13k=min 20.
+    const [CHECKPOINTS, WEIGHTS] =
+      powerCurve === "early" ? [[3000, 5000, 7500], [3, 2, 1]]
+      : powerCurve === "mid" ? [[4500, 7000, 9500], [1, 3, 2]]
+      : powerCurve === "late" ? [[6000, 9500, 13000], [1, 2, 3]]
+      : [[3000, 6000, 9000], [2, 2, 1]];
     const target = dummyTarget(3000, 60, 45);
 
-    const dpsCache = new Map<string, number>();
+    // Tanks are scored on the HP curve, damage dealers on the DPS curve --
+    // the same metric the spike badge uses, so the order check never tells a
+    // Malphite to buy for damage.
+    const tank = stages.spikeMetric === "durability";
+    const valueCache = new Map<string, number>();
     const dpsOf = (owned: string[]): number => {
       if (!owned.length) return 0;
       const key = [...owned].sort().join(",");
-      let v = dpsCache.get(key);
+      let v = valueCache.get(key);
       if (v === undefined) {
-        v = duel(name, owned, runeNames, target, level, 20, false)?.dps ?? 0;
-        dpsCache.set(key, v);
+        v = tank
+          ? Number(resolveStats(name, level, owned, runeNames)?.hp ?? 0)
+          : duel(name, owned, runeNames, target, level, 20, false)?.dps ?? 0;
+        valueCache.set(key, v);
       }
       return v;
     };
@@ -137,7 +167,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       const seq = [...order];
       if (finishedBoots) seq.splice(bootsAt, 0, finishedBoots);
       let total = 0;
-      const weights = [3, 2, 1];
+      const weights = WEIGHTS;
       CHECKPOINTS.forEach((gold, i) => {
         const owned: string[] = [];
         let spent = 0;
@@ -151,29 +181,63 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       return total;
     };
 
-    const perms: string[][] = [];
-    const permute = (rest: string[], acc: string[]) => {
-      if (!rest.length) { perms.push(acc); return; }
-      for (let i = 0; i < rest.length; i += 1) {
-        permute([...rest.slice(0, i), ...rest.slice(i + 1)], [...acc, rest[i]]);
+    const bestOf = (set: string[]): { score: number; order: string[] } => {
+      const perms: string[][] = [];
+      const permute = (rest: string[], acc: string[]) => {
+        if (!rest.length) { perms.push(acc); return; }
+        for (let i = 0; i < rest.length; i += 1) {
+          permute([...rest.slice(0, i), ...rest.slice(i + 1)], [...acc, rest[i]]);
+        }
+      };
+      permute(set, []);
+      let bestScore = -1;
+      let bestOrder = set;
+      for (const perm of perms) {
+        const sc = score(perm);
+        if (sc > bestScore) { bestScore = sc; bestOrder = perm; }
       }
+      return { score: bestScore, order: bestOrder };
     };
-    permute(items, []);
 
     const shown = score(items);
-    let best = shown;
-    let bestOrder = items;
-    for (const perm of perms) {
-      const sc = score(perm);
-      if (sc > best) { best = sc; bestOrder = perm; }
-    }
     if (shown <= 0) return null;
-    const gain = (best - shown) / shown;
+    const own = bestOf(items);
+    const gain = (own.score - shown) / shown;
+
+    // EARLY-GOAL SUBSTITUTION CHECK: with an early power curve requested, the
+    // build's most expensive pieces are the suspects -- a cheaper item in
+    // that slot may reach the spike sooner for the same gold. Candidates are
+    // the model's own scored alternatives, filtered to legal, cheaper,
+    // non-boots items. Compared best-order vs best-order, so a substitution
+    // only wins on the ITEM, never on ordering luck.
+    let swap: { out: string; in: string; gainPct: number } | null = null;
+    if (powerCurve === "early" && candidates?.length) {
+      const targets = items.filter((slug) => cost(slug) >= 3200);
+      const pool = candidates
+        .map((c) => c.item)
+        .filter((slug) => slug && !items.includes(slug)
+          && DATA.items?.[slug] && DATA.items[slug].category !== "Boots");
+      for (const target of targets) {
+        const rest = items.filter((s) => s !== target);
+        for (const cand of pool) {
+          if (cost(cand) > cost(target) - 200) continue;
+          if (blockedItems([...rest])[cand]) continue;
+          const sub = bestOf([...rest, cand]);
+          const subGain = (sub.score - own.score) / own.score;
+          if (subGain >= 0.05 && (!swap || subGain * own.score > 0)) {
+            if (!swap || sub.score > own.score * (1 + swap.gainPct / 100)) {
+              swap = { out: target, in: cand, gainPct: Math.round(subGain * 100) };
+            }
+          }
+        }
+      }
+    }
+
     // Below 4% the reorder is noise against everything the sim cannot see
     // (lane safety, mana, component sizes); the shown order stands.
-    if (gain < 0.04) return { verdict: "optimal" as const };
-    return { verdict: "reorder" as const, order: bestOrder, gainPct: Math.round(gain * 100) };
-  }, [stages, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, name, level]);
+    if (gain < 0.04) return { verdict: "optimal" as const, swap };
+    return { verdict: "reorder" as const, order: own.order, gainPct: Math.round(gain * 100), swap };
+  }, [stages, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, name, level, powerCurve, candidates]);
 
   if (!stages) return null;
   const maxDps = Math.max(...stages.rows.map((r) => r.dps), 1);
@@ -222,7 +286,8 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     <>
       <span className="block text-sm font-bold text-text">When this build spikes</span>
       <span className="text-xs font-normal text-faint">
-        Engine-measured at each purchase, not a guess. Strongest spike:{" "}
+        Engine-measured at each purchase, not a guess. Strongest{" "}
+        {stages.spikeMetric === "durability" ? "durability" : "damage"} spike:{" "}
         <span className="font-semibold text-gold">{stages.spike} item{stages.spike > 1 ? "s" : ""}</span>
       </span>
     </>
@@ -238,13 +303,24 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       )}
       {orderCheck?.verdict === "reorder" && (
         <p className="mt-2.5 rounded-lg bg-gold/[0.07] px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-gold/90">
-          Order check: the same items reach ~{orderCheck.gainPct}% more early damage
-          bought as{" "}
+          Order check: the same items reach ~{orderCheck.gainPct}% more early{" "}
+          {stages.spikeMetric === "durability" ? "durability" : "damage"} bought as{" "}
           <span className="font-semibold">
             {orderCheck.order.map((slug) => itemName(slug)).join(" → ")}
           </span>
-          . Pure damage-per-gold against a reference target; the shown order may still
+          . Pure value-per-gold against a reference target; the shown order may still
           win on lane safety, mana or component costs.
+        </p>
+      )}
+      {orderCheck?.swap && (
+        <p className="mt-2.5 rounded-lg bg-accent/[0.07] px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-accent/90">
+          Early-spike check: for the Early game goal, swapping{" "}
+          <span className="font-semibold">{itemName(orderCheck.swap.out)}</span> for{" "}
+          <span className="font-semibold">{itemName(orderCheck.swap.in)}</span> reaches
+          ~{orderCheck.swap.gainPct}% more{" "}
+          {stages.spikeMetric === "durability" ? "durability" : "damage"} inside the
+          early window at the same gold. {itemName(orderCheck.swap.out)} still wins long games; this is the
+          trade the Early goal asks about.
         </p>
       )}
       <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">

@@ -1480,6 +1480,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     boots={advice.boots}
                     bootsUpgrade={advice.bootsUpgrade}
                     bootsUpgradeAfter={advice.bootsUpgradeAfter}
+                    powerCurve={(advice.requestMeta as { powerCurve?: string } | undefined)?.powerCurve}
+                    candidates={advice.candidateItemScores}
                     runeNames={advice.runes
                       ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
                       : []}
