@@ -802,10 +802,19 @@ def item_pool_block(slugs: list[str]) -> str:
             for k, v in item["stats"].items())
         passive = " | ".join(_norm(p) for p in item["passives"])
         tags = ",".join(meta["passiveTags"]) or "none"
+        # Exclusivity stamped ON the row, not only in the rules hundreds of
+        # lines earlier: a measured max-damage Riven counter build picked
+        # Black Cleaver AND Serylda's twice in a row, because at the moment
+        # of choice nothing on either line said they share a group.
+        excl = meta.get("exclusiveGroups") or []
+        excl_note = f"; EXCLUSIVE-GROUP={','.join(excl)}" if excl else ""
         rows.append(f"{slug} [{item['category']}] {item['cost']}g {stats} "
-                    f"(tempo={meta['tempoProfile']}; tags={tags}) :: {passive}")
+                    f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}) :: {passive}")
     return ("ITEM POOL (the only items you may build; the description is the factual "
-            "source, the tags are an index into it):\n" + "\n".join(rows))
+            "source, the tags are an index into it). An item marked EXCLUSIVE-GROUP "
+            "cannot be built alongside ANY other item carrying the same group name -- "
+            "the game refuses the second purchase, so a build holding two is illegal, "
+            "not merely suboptimal:\n" + "\n".join(rows))
 
 
 def audit_block(slugs: list[str], combat_profile: dict) -> str:
