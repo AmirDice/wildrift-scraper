@@ -84,6 +84,12 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       return seq;
     };
 
+    // A Wild Rift game runs about 20 minutes on average, and income runs
+    // ~650 gold per minute, so ~13,000 gold is everything a typical game
+    // actually gets to buy. Stages past that line are dimmed and cannot win
+    // the spike badge: Lillia's full build costs 17,600g, and calling that
+    // "your spike" points players at a game that will never be played.
+    const REACHABLE_GOLD = 13000;
     const target = dummyTarget(3000, 60, 45);
     const purchases = purchasesFor(items, upgradeAt);
     const owned: string[] = [];
@@ -108,9 +114,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
         label,
         slugs,
         gold,
-        // ~650 gold/min is a farming laner or jungler including passive
-        // income; precise enough for a minute MARK, not a promise.
-        minute: Math.round(gold / 650),
+        unreachable: gold > REACHABLE_GOLD,
         hp: st ? Math.round(st.hp) : 0,
         dps: fight?.dps ?? 0,
         ttk: fight?.ttk ?? null,
@@ -119,20 +123,16 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     if (rows.some((r) => !r.dps)) return null;
 
     // Strongest spike = biggest marginal gain from the previous stage, but
-    // only among stages a real game REACHES. Lillia's full build costs
-    // 17,600g -- minute 27 at real income -- and calling that "your spike"
-    // points players at a game that will never be played. ~10.5k gold is
-    // roughly minute 16, the long end of a real Wild Rift game.
+    // only among stages a real game REACHES (see REACHABLE_GOLD above).
     //
     // WHAT counts as the gain follows the champion's job: damage dealers
     // spike on DPS, tanks spike on DURABILITY -- Malphite's spike is the
     // fight he survives, not the fight he out-damages.
     const isTank = roster()[name]?.class === "Tank";
-    const REACHABLE_GOLD = 10500;
     let spike = 1;
     let best = 0;
     for (let i = 1; i < rows.length; i += 1) {
-      if (rows[i].gold > REACHABLE_GOLD) break;
+      if (rows[i].unreachable) break;
       const gain = isTank
         ? rows[i].hp - rows[i - 1].hp
         : rows[i].dps - rows[i - 1].dps;
@@ -299,13 +299,9 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
           <div key={row.idx}
                className={`flex flex-wrap items-center gap-3 rounded-xl px-3 py-2 ${
                  row.idx === stages.spike ? "border border-gold/30 bg-gold/[0.06]" : "bg-white/[0.03]"} ${
-                 row.minute > 16 ? "opacity-55" : ""}`}>
+                 row.unreachable ? "opacity-55" : ""}`}>
             <span className="w-16 shrink-0 text-xs font-bold uppercase tracking-wide text-faint">
               {row.label}
-              <span className={`block text-[0.6rem] font-semibold normal-case ${
-                row.minute > 16 ? "text-bad/70" : "text-faint/80"}`}>
-                ~min {row.minute}
-              </span>
             </span>
             <span className="flex shrink-0 items-center gap-1">
               {row.slugs.map((slug, i) => (
@@ -389,10 +385,10 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
       <p className="mt-2.5 text-[0.7rem] leading-relaxed text-faint">
         Damage per second against a reference target (3,000 HP, 60 armor, 45 MR) with this
         build&rsquo;s runes. Tier-2 boots and the tier-3 enchant are their own measured
-        purchases, so a stage&rsquo;s jump is one buy&rsquo;s worth of power. Minute marks
-        assume ~650 gold per minute of real income; dimmed stages are ones most games never
-        reach, and the spike is only awarded among stages a real game gets to. The same
-        maths as the Custom Lab&rsquo;s fight, so the numbers agree across the site.
+        purchases, so a stage&rsquo;s jump is one buy&rsquo;s worth of power. Dimmed stages
+        cost more gold than an average 20-minute game provides, and the spike is only
+        awarded among the stages a real game reaches. The same maths as the Custom
+        Lab&rsquo;s fight, so the numbers agree across the site.
       </p>
     </>
   );

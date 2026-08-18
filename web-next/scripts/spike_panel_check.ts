@@ -95,7 +95,7 @@ for (const c of CASES) {
       hp: st ? Math.round(st.hp) : 0, dps: fight?.dps ?? 0 };
   });
   const isTank = roster()[name]?.class === "Tank";
-  const REACHABLE_GOLD = 10500;
+  const REACHABLE_GOLD = 13000;  // ~20 minutes at ~650 gold/min
   let spike = 1; let best = 0;
   for (let i = 1; i < rows.length; i += 1) {
     if (rows[i].gold > REACHABLE_GOLD) break;
@@ -105,7 +105,7 @@ for (const c of CASES) {
 
   console.log(`\n===== ${name} (${powerCurve}) =====`);
   for (const r of rows) {
-    const mark = r.count === spike ? "  <-- SPIKE" : (r.minute > 16 ? "  (dimmed)" : "");
+    const mark = r.count === spike ? "  <-- SPIKE" : (r.gold > REACHABLE_GOLD ? "  (dimmed)" : "");
     console.log(`${r.label.padEnd(8)} ~min ${String(r.minute).padStart(2)}  ${r.gold}g  dps ${Math.round(r.dps)}  hp ${r.hp}  [${itemName(r.slugs[r.slugs.length - 1])}]${mark}`);
   }
   console.log(`spike metric: ${isTank ? "durability" : "damage"}`);
