@@ -25,6 +25,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -53,14 +54,26 @@ SLUG_TO_NAME = {c["slug"]: c["name"] for c in
                 json.loads((ROOT / "data" / "champions_wr.json").read_text(encoding="utf-8"))}
 
 
+#: Capture directories and the roster spell slugs DIFFERENTLY: the directory
+#: says kai-sa / kog-maw / nunu-willump where champions_wr.json says kaisa /
+#: kogmaw / nunu-amp-willump. A plain dict lookup therefore missed every
+#: champion with an apostrophe or an ampersand and dropped them from this
+#: analysis with no warning at all. Normalising both sides to letters and
+#: digits is what actually matches them.
+def _norm_slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", text.lower().replace("&", "").replace("amp", ""))
+
+
+BY_NORM = {_norm_slug(k): v for k, v in SLUG_TO_NAME.items()}
+
+
 def sessions():
     """{champion name: newest session dir} keyed off the directory slug."""
     best: dict[str, Path] = {}
     for d in sorted(CAPTURES.iterdir()):
         if not d.is_dir() or not (d / "builds.jsonl").exists():
             continue
-        slug = d.name.rsplit("_", 2)[0]
-        name = SLUG_TO_NAME.get(slug)
+        name = BY_NORM.get(_norm_slug(d.name.rsplit("_", 2)[0]))
         if name:
             best[name] = d          # sorted order means the newest wins
     return best
