@@ -110,6 +110,23 @@ def _save_snapshot(champions: list[dict], collected_on: str | None) -> None:
           f"({len(snap['champions'])} champions)")
 
 
+def _is_otp(name: str, row) -> bool:
+    """OTP badge, decided by the share measure the card now shows.
+
+    Curated intent is preserved: KNOWN_OTP_CHAMPIONS still badges a champion the
+    share does not catch, and NON_OTP_CHAMPIONS still overrules everything. A
+    champion with no specialisation record keeps whatever the pipeline decided,
+    so a partial capture set never silently strips badges.
+    """
+    from web.data_loader import KNOWN_OTP_CHAMPIONS, NON_OTP_CHAMPIONS
+    if name in NON_OTP_CHAMPIONS:
+        return False
+    spec = _SPEC.get(name)
+    if not spec:
+        return bool(row.get("is_otp", False))
+    return "otp" in (spec.get("tags") or []) or name in KNOWN_OTP_CHAMPIONS
+
+
 def _f(v, ndigits: int = 1):
     """Float or None, rounded."""
     if v is None or pd.isna(v):
@@ -247,7 +264,15 @@ def build() -> dict:
             # otp / comfort / contested / generalist -- see the _tags block in
             # data/champion_specialisation.json for what each one means.
             "playerTags": (_SPEC.get(name) or {}).get("tags") or [],
-            "isOtp": bool(r.get("is_otp", False)),
+            # The badge follows the SAME measure the card displays. It used to
+            # run off the old skew score, which disagreed with the new one on 5
+            # of 19 badged champions and rated Kennen -- the most specialised
+            # board on the roster -- at 12.1. The curated lists still win:
+            # KNOWN_OTP_CHAMPIONS can badge a champion the share misses, and
+            # NON_OTP_CHAMPIONS overrules everything. Champions with no
+            # specialisation record keep the old flag rather than losing a badge
+            # to missing data.
+            "isOtp": _is_otp(name, r),
             # display_name, not raw: rank 1 is occasionally an advert, and this
             # string lands on every champion card.
             "topPlayer": (display_name(str(r["top_player"])) if pd.notna(r.get("top_player")) else None),

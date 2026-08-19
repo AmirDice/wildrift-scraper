@@ -321,7 +321,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Hết Bia Bóp Lón",
       "tier": "GOD",
       "tierCss": "tier-god",
@@ -889,7 +889,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Leon Kennedy",
       "tier": "S",
       "tierCss": "tier-s",
@@ -3663,7 +3663,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "NAI DOBRIQ WE",
       "tier": "A",
       "tierCss": "tier-a",
@@ -3735,7 +3735,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "YT HolyWR",
       "tier": "A",
       "tierCss": "tier-a",
@@ -3879,7 +3879,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": null,
       "tier": "A",
       "tierCss": "tier-a",
@@ -4523,7 +4523,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": null,
       "tier": "A",
       "tierCss": "tier-a",
@@ -4953,7 +4953,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "W o S",
       "tier": "A",
       "tierCss": "tier-a",
@@ -5380,7 +5380,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "VegePollo",
       "tier": "A",
       "tierCss": "tier-a",
@@ -5881,7 +5881,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "什么糖炒茄支",
       "tier": "B",
       "tierCss": "tier-b",
@@ -6521,7 +6521,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Scuttle Crab",
       "tier": "B",
       "tierCss": "tier-b",
@@ -6665,7 +6665,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": null,
       "tier": "B",
       "tierCss": "tier-b",
@@ -7377,7 +7377,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "0 pH",
       "tier": "B",
       "tierCss": "tier-b",
@@ -7592,7 +7592,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Эдвард Каллен",
       "tier": "B",
       "tierCss": "tier-b",
@@ -7738,7 +7738,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "菜而自知",
       "tier": "B",
       "tierCss": "tier-b",
@@ -8599,7 +8599,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "KVCPERO",
       "tier": "B",
       "tierCss": "tier-b",
@@ -8888,7 +8888,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Darklighted",
       "tier": "B",
       "tierCss": "tier-b",
@@ -9460,7 +9460,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Alphabet",
       "tier": "C",
       "tierCss": "tier-c",
@@ -9747,7 +9747,7 @@
         "otp",
         "comfort"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Xx 盖世绝伦 xX",
       "tier": "C",
       "tierCss": "tier-c",
@@ -9891,7 +9891,7 @@
       "playerTags": [
         "otp"
       ],
-      "isOtp": false,
+      "isOtp": true,
       "topPlayer": "Raidboss",
       "tier": "Ass",
       "tierCss": "tier-ass",

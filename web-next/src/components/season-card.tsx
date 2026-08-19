@@ -8,7 +8,8 @@ const SEASON_TITLE = "Feast On";
 const PATCH = "7.2";
 const SEASON_START = new Date("2026-07-09T00:00:00Z");
 const SEASON_END = new Date("2026-10-09T00:00:00Z"); // ~3 month season
-const NEW_CHAMPION = { name: "Yunara", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Yunara_0.jpg" };
+// Cho'Gath is "Chogath" in Riot's asset keys -- the apostrophe is not in the URL.
+const NEW_CHAMPION = { name: "Cho'Gath", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Chogath_0.jpg" };
 // ------------------------------------------------------------------------
 
 const WARM = "#4f8dff";
