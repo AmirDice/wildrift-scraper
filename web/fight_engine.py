@@ -435,6 +435,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "baseAs": attack_speed_ratio(
             name, bs.get("attackSpeed", {}).get("base", 0.75) or 0.75),
         "crit": 0.0, "critMult": BASE_CRIT_MULT, "critDamagePerExcessCrit": 0.0,
+        "critDisabled": 0.0,
         # Real per-champion mana, scraped at last. A manaless kit has no entry
         # and correctly starts at 0, so Muramana's "AD = % of max mana" grants
         # it nothing without any special-casing.
@@ -506,6 +507,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["pctPenFactors"].append(g("pctPen") / 100.0)
         st["armorShred"] = max(st["armorShred"], g("armorShredPct") / 100.0)
         st["critMult"] = max(st["critMult"], float(fx.get("critMult", 0)) or 0)
+        if fx.get("disablesCrit"):
+            st["critDisabled"] = 1.0
         st["abilityAmp"] += g("abilityAmpPct") / 100.0
         st["damageAmp"] += g("damageAmpPct") / 100.0
         st["giant"] = max(st["giant"], g("giantSlayerPct") / 100.0)
@@ -816,6 +819,14 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     # uptime. Approximated as haste; a real model needs per-cast cooldown state.
     if st["cdRefundPctPerAuto"]:
         st["haste"] += st["cdRefundPctPerAuto"] * 2.0
+
+    # Guinsoo's Wrath: "Attacks ... no longer Critical Strike". The converted
+    # magic damage is already in the item's onHitFlatMagic, so leaving crit
+    # standing paid for the same conversion twice.
+    if st.get("critDisabled"):
+        st["crit"] = 0.0
+        st["critMult"] = BASE_CRIT_MULT
+        st["critDamagePerExcessCrit"] = 0.0
 
     # Infinity Edge "Limit Break": crit rate past 100% is wasted, so it converts
     # to crit DAMAGE. Runs here, once every crit source (items, runes) is summed.

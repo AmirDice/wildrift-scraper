@@ -175,7 +175,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // Real base mana from the champion's stat line (Python parity): mana
     // feeds the AD/AP/HP-from-mana conversions, so a flat assumption
     // short-changed every Manamune/Archangel's/Winter's build.
-    crit: 0, critMult: BASE_CRIT_MULT, haste: 0, mana: base("mana", 0),
+    crit: 0, critMult: BASE_CRIT_MULT, critDisabled: 0, haste: 0, mana: base("mana", 0),
     flatPen: 0, pctPenFactors: [] as number[], flatMagicPen: 0, pctMagicPen: 0,
     baseMs: bs.moveSpeed?.base || 330, bonusMs: 0,
     abilityAmp: 0, damageAmp: 0, giant: 0, execute: 0,
@@ -253,6 +253,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     if (fx.pctPen) st.pctPenFactors.push(g("pctPen") / 100);
     st.armorShred = Math.max(st.armorShred, g("armorShredPct") / 100);
     st.critMult = Math.max(st.critMult, Number(fx.critMult) || 0);
+    if (fx.disablesCrit) st.critDisabled = 1;
     st.abilityAmp += g("abilityAmpPct") / 100;
     st.damageAmp += g("damageAmpPct") / 100;
     st.giant = Math.max(st.giant, g("giantSlayerPct") / 100);
@@ -526,6 +527,15 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     const reloadS = Number(know.reloadSeconds) || 1.0; // Tier-2 or documented default
     st.as = mag / (mag / st.as + reloadS);
   }
+  // Guinsoo's Wrath: "Attacks ... no longer Critical Strike". The converted
+  // magic damage already sits in the item's onHitFlatMagic, so leaving crit
+  // standing paid for the same conversion twice.
+  if (st.critDisabled) {
+    st.crit = 0;
+    st.critMult = BASE_CRIT_MULT;
+    st.critDamagePerExcessCrit = 0;
+  }
+
   // Infinity Edge "Limit Break": crit rate past 100% is wasted, so it converts
   // to crit DAMAGE. Runs once every crit source (items, runes) is summed.
   if (st.critDamagePerExcessCrit && st.crit > 1)

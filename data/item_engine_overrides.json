@@ -54,7 +54,9 @@
   },
   "guinsoos-rageblade": {
     "rampAttacks": 4,
-    "_why_ramp": "Seething Strike stacks per attack, max 4: the 32% AS is not there from second zero."
+    "_why_ramp": "Seething Strike stacks per attack, max 4: the 32% AS is not there from second zero.",
+    "disablesCrit": 1,
+    "_why_wrath": "Wrath reads 'Attacks deal 30 magic damage but no longer Critical Strike'. The engine was giving a Guinsoo build full crit rate AND full crit damage while ALSO paying the onHitFlatMagic 105, which already bakes in the converted maximum (30 base + 75 at 50% crit) -- the same value counted twice. Crit is now zeroed when this item is held."
   },
   "black-cleaver": {
     "rampAttacks": 5,

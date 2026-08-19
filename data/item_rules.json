@@ -51,6 +51,13 @@
       ],
       "evidence": "All three print the named passive 'Lifeline'."
     },
+    "immolate": {
+      "slugs": [
+        "sunfire-aegis",
+        "hollow-radiance"
+      ],
+      "evidence": "Both print the named passive 'Immolate', the same standard that formed the spellblade and lifeline groups. Surfaced by an external 7.2c synergy dataset (enforce=true, high confidence, citing Riot's 7.0 notes) and then confirmed against our own scraped item text. TO CONFIRM in game: Sion's ladder top-6 lists both, though that aggregates different players' games and is not proof either way."
+    },
     "mana-awe": {
       "slugs": [
         "manamune",

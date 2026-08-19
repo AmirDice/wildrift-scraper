@@ -798,6 +798,34 @@ _ON_HIT_SOURCE_KEYS = ("onHitFlatMagic", "onHitFlatPhys", "onHitPctMaxHp",
                        "adaptiveOnHitApPct", "adaptiveOnHitBonusAdPct")
 
 
+def _crit_conflicts(slugs: list[str]) -> tuple[list[str], list[str]]:
+    """Items that DISABLE critical strikes, and the items whose value depends
+    on critting.
+
+    Guinsoo's Wrath reads "Attacks deal 30 magic damage but no longer Critical
+    Strike", which silently kills Soul Transfer's clone, Mortal Reminder's
+    bonus penetration and Bloodthirster's bonus vamp. Both halves are read off
+    our own item text -- the disabling item from its effect key, the dependent
+    items from the phrase "Critically Strike" in their passives -- so nothing
+    here is asserted beyond what the tooltips say.
+    """
+    try:
+        from web.fight_engine import ENGINE_FX as fx
+    except Exception:
+        return [], []
+    disablers = [s for s in slugs if (fx.get(s) or {}).get("disablesCrit")]
+    if not disablers:
+        return [], []
+    dependent = []
+    for slug in slugs:
+        if slug in disablers:
+            continue
+        text = " ".join((ITEMS.get(slug) or {}).get("passives") or []).lower()
+        if "critically strike" in text or "critical strike" in text:
+            dependent.append(slug)
+    return disablers, dependent
+
+
 def _on_hit_pairs(slugs: list[str]) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
     """Which items in this pool MULTIPLY on-hit damage, and which SUPPLY it.
 
@@ -834,6 +862,7 @@ def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
     the items'.
     """
     multiplies, multiplied_by = _on_hit_pairs(slugs)
+    crit_disablers, crit_dependent = _crit_conflicts(slugs)
     rows = []
     for slug in slugs:
         item = ITEMS[slug]
@@ -857,6 +886,10 @@ def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
                         + (",THIS CHAMPION'S OWN ON-HIT PASSIVE" if repeats_on_hit else ""))
         elif slug in multiplied_by:
             syn_note = "; MULTIPLIED-BY=" + ",".join(multiplied_by[slug])
+        if slug in crit_disablers:
+            syn_note += "; DISABLES-CRIT (your attacks stop critting entirely)"
+        elif slug in crit_dependent and crit_disablers:
+            syn_note += "; NEEDS-CRIT=dead alongside " + ",".join(crit_disablers)
         rows.append(f"{slug} [{item['category']}] {item['cost']}g {stats} "
                     f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}{syn_note}) "
                     f":: {passive}")
@@ -873,6 +906,11 @@ def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
                    "actually be bought: together they are worth more than either alone, "
                    "and neither multiplier is worth its price without a source to "
                    "repeat.")
+    if crit_disablers:
+        header += (" DISABLES-CRIT means the item stops your attacks critting at all, so "
+                   "every item marked NEEDS-CRIT loses the part of its value that only "
+                   "fires on a critical strike. Building both is paying twice for one "
+                   "effect; pick a side.")
     return header + "\n" + "\n".join(rows)
 
 
