@@ -146,6 +146,7 @@ def run(champ):
             "dps8": full["dps8"],
             "ehp": full["ehp"],
             "early": early,
+            "aoe8": full.get("aoe8", 0),
             "gold": sum(RAW[s]["cost"] for s in build),
             "blind": [s for s in build if engine_blind(s)],
             "exact": exact,
@@ -162,12 +163,13 @@ def run(champ):
     print(f"legal 5-item combinations scored: {len(rows)}   "
           f"captured human builds available: {len(humans)}")
     print(bar)
-    print(f"{'#':>2} {'build':<60} {key:>8} {'early3':>7} {'burst3':>7} "
-          f"{'dps8':>6} {'ehp':>5} {'gold':>6}")
+    print(f"{'#':>2} {'build':<58} {key:>8} {'early3':>7} {'burst3':>7} "
+          f"{'dps8':>6} {'aoe8':>6} {'ehp':>5} {'gold':>6}")
     for i, r in enumerate(rows[:TOP_ROWS], 1):
-        label = " + ".join(s.split("-")[0][:10] for s in r["items"])
-        print(f"{i:>2} {label:<60} {r['primary']:>8.0f} {r['early']:>7.0f} "
-              f"{r['burst3']:>7.0f} {r['dps8']:>6.0f} {r['ehp']:>5.0f} {r['gold']:>6}")
+        label = " + ".join(s.split("-")[0][:9] for s in r["items"])
+        print(f"{i:>2} {label:<58} {r['primary']:>8.0f} {r['early']:>7.0f} "
+              f"{r['burst3']:>7.0f} {r['dps8']:>6.0f} {r['aoe8']:>6.0f} "
+              f"{r['ehp']:>5.0f} {r['gold']:>6}")
         if r["blind"]:
             print(f"     engine cannot fully measure: {', '.join(r['blind'])}")
         if r["exact"]:

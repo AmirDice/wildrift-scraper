@@ -448,6 +448,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "spellbladeBaseAdPct": 0.0, "spellbladePctMaxHp": 0.0,
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
         "extraOnHitApplications": 0.0,
+        "extraBolts": 0.0, "extraBoltAdPct": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "burstProcs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0, "procMaxHpPct": 0.0, "firstHit": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
@@ -527,6 +528,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # invisible before this key existed.
         st["extraOnHitApplications"] = max(st["extraOnHitApplications"],
                                            g("extraOnHitOnSpellblade"))
+        # Runaan's bolts. These land on OTHER enemies, so they must never enter
+        # the single-target total -- they are reported separately as the AoE
+        # axis instead. Recorded by extraction since the beginning and marked
+        # INERT because the engine had nowhere to put them.
+        st["extraBolts"] = max(st["extraBolts"], g("extraBolts"))
+        st["extraBoltAdPct"] = max(st["extraBoltAdPct"], g("extraBoltAdPct"))
         # Damage TYPE is read from the item's own text, not asked of the model: a
         # flag key would have to be grounded, and the literal "1" of a boolean
         # never appears in a tooltip, so it could never survive the filter.
@@ -1295,6 +1302,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
 
     total = 0.0
     auto_dmg = 0.0  # damage gated by attacking: autos + on-hit + spellblade
+    bolt_dmg = 0.0  # damage landing on OTHER targets (Runaan's), never in total
     by_type = {"physical": 0.0, "magic": 0.0, "true": 0.0}
     # Damage per ability slot, so an effect that amplifies ONE ability (Axiom
     # Arcanist's ultimate, Smolder's per-ability empowerments) has something to
@@ -1470,6 +1478,16 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         total += auto
         auto_dmg += auto
         parts.append((f"autos x{n_autos}", auto))
+        # Damage the bolts put on OTHER targets. Deliberately not added to
+        # `total`: it is returned as bolt_dmg so callers can measure a
+        # multi-target fight without corrupting the single-target one.
+        if st["extraBolts"] and st["extraBoltAdPct"]:
+            _kit_b = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+                      if repeats_on_hit(name) else None)
+            _bp, _bm, _bt = _on_hit_bundle(st, target, phys_m, magic_m, _kit_b)
+            _per_bolt = (st["extraBoltAdPct"] / 100.0 * st["ad"] * crit_ev * phys_m
+                         + _bp + _bm + _bt)
+            bolt_dmg += _per_bolt * st["extraBolts"] * n_autos
         if st["spellbladeBaseAdPct"] or st["spellbladePctMaxHp"] or st["spellbladeApPct"]:
             procs = min(casts_total, n_autos, 1 + int(window / SPELLBLADE_CD))
             # Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; there
@@ -1509,7 +1527,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             total += d
         amp = 1 + st["damageAmp"]
         total += kit_amps(total)
-        return {"total": total * amp, "parts": parts, "nAutos": n_autos, "bySlot": dict(by_slot_dmg),
+        return {"total": total * amp, "parts": parts, "nAutos": n_autos,
+                "boltDmg": bolt_dmg * amp, "bySlot": dict(by_slot_dmg),
                 "autoDmg": auto_dmg * amp,
                 "byType": {k: v * amp for k, v in by_type.items()}}
 
@@ -1585,6 +1604,16 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     add_t("magic", a_magic * dsm * n_autos)
     add_t("true", a_true * dsm * n_autos)
     parts.append((f"autos x{n_autos}", d_autos))
+    # Bolt damage on OTHER targets, mirroring the combo path above. Both paths
+    # need it for the same reason spellblade lives in both: whichever one a
+    # champion takes has to produce the same accounting.
+    if st["extraBolts"] and st["extraBoltAdPct"]:
+        _kit_b = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+                  if repeats_on_hit(name) else None)
+        _bp, _bm, _bt = _on_hit_bundle(st, target, phys_m, magic_m, _kit_b)
+        _per_bolt = (st["extraBoltAdPct"] / 100.0 * st["ad"] * crit_ev * phys_m
+                     + _bp + _bm + _bt)
+        bolt_dmg += _per_bolt * st["extraBolts"] * n_autos
     total += d_autos
     auto_dmg += d_autos
 
@@ -1641,7 +1670,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     n_autos_ideal = max(1, int(window * st["as"]))  # no uptime discount
     return {"total": total, "parts": parts, "nAutos": n_autos,
             "nAutosIdeal": n_autos_ideal, "castLog": cast_log, "bySlot": dict(by_slot_dmg),
-            "autoDmg": auto_dmg * amp,
+            "autoDmg": auto_dmg * amp, "boltDmg": bolt_dmg * amp,
             "byType": {k: v * amp for k, v in by_type.items()}}
 
 
@@ -1825,6 +1854,11 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
                + st["healOnHit"] * r8["nAutos"])
 
     return {"burst3": round(burst3), "dps8": round(dps8), "ttk": ttk,
+            # Damage the build puts on OTHER targets over the same 8s window
+            # (Runaan's bolts). Reported separately, never folded into dps8:
+            # a marksman buys Runaan's for the wave and the teamfight spread,
+            # and a single-target number can only ever call that item weak.
+            "aoe8": round(r8.get("boltDmg", 0.0)),
             "ehp": round(ehp), "sustain": round(sustain),
             "support": round(support_value(name, item_slugs, rune_names, level)),
             "ad": round(st["ad"]), "ap": round(st["ap"]), "hp": round(st["hp"]),
