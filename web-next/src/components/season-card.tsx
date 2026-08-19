@@ -1,11 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CURRENT_PATCH } from "@/lib/patch";
 
 // --- Edit these each patch/season ---------------------------------------
 const SEASON_NUM = "22";
 const SEASON_TITLE = "Feast On";
-const PATCH = "7.2";
+// NOT hardcoded. This card said "Patch 7.2" while the rest of the site said
+// 7.2c, which is the exact failure CURRENT_PATCH exists to prevent: a version
+// string copied into six files goes stale in five. It comes from the same
+// stat_rules.json the item and rune data is validated against, so it moves
+// with the pipeline.
+const PATCH = CURRENT_PATCH;
 const SEASON_START = new Date("2026-07-09T00:00:00Z");
 const SEASON_END = new Date("2026-10-09T00:00:00Z"); // ~3 month season
 // Cho'Gath is "Chogath" in Riot's asset keys -- the apostrophe is not in the URL.

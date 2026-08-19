@@ -81,6 +81,12 @@
       "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2b/",
       "evidence": "11.25% → 9% Movement speed bonus per stack: 3.75% → 3% FREE-TO-PLAY CHAMPION ROTATION April 29 - May 5 : Ezreal, Jarvan IV, Jhin, Leona, Lee Sin, Malphite, Orianna, Seraphine, Rakan, Teemo May 6 - May 12 : Amumu, Camille, Draven, Katarina, "
     },
+    "Cho'Gath": {
+      "patch": "7.2c",
+      "releasedAt": "2026-08-12T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2c/",
+      "evidence": "Wild Rift Patch Notes 7.2c. Release patch taken from the 7.2c notes, the same date champion_change_history.json records for that patch (2026-08-12T09:00:00Z)."
+    },
     "Corki": {
       "patch": "2.0",
       "releasedAt": "2021-01-05T01:00:00.000Z",

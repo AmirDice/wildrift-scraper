@@ -3172,11 +3172,11 @@
       "cnName": "锐雯",
       "byBracket": {
         "1": {
-          "winRate": 45.62,
-          "pickRate": 1.51,
+          "winRate": 45.95,
+          "pickRate": 1.01,
           "banRate": 0.28,
           "strength": 5,
-          "position": "Baron"
+          "position": "Jungle"
         },
         "2": {
           "winRate": 45.9,
@@ -3186,18 +3186,18 @@
           "position": "Baron"
         },
         "3": {
-          "winRate": 47.54,
-          "pickRate": 1.52,
+          "winRate": 49.52,
+          "pickRate": 1.31,
           "banRate": 0.23,
           "strength": 5,
-          "position": "Baron"
+          "position": "Jungle"
         },
         "4": {
-          "winRate": 48.61,
-          "pickRate": 1.64,
+          "winRate": 48.04,
+          "pickRate": 1.96,
           "banRate": 0.51,
           "strength": 5,
-          "position": "Baron"
+          "position": "Jungle"
         }
       }
     },

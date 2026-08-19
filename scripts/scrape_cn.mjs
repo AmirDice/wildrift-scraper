@@ -10,6 +10,23 @@ const OUT = path.join(ROOT, "data", "cn_winrates.json");
 const WEB_OUT = path.join(ROOT, "web-next", "src", "data", "cn.json");
 const PREVIOUS_OUT = path.join(ROOT, "data", "cn_winrates_prev.json");
 const MOVERS_OUT = path.join(ROOT, "web-next", "src", "data", "cn_movers.json");
+const HISTORY_DIR = path.join(ROOT, "data", "history", "cn");
+
+// PINNED BASELINE for the home page's patch movers.
+//
+// The default bracket used to be compared against yesterday's scrape, which
+// made "Patch 7.2c Biggest Winners & Losers" a one-day drift measurement --
+// both ends sat days after the patch and it said nothing about 7.2c. This pins
+// it to the last pre-patch snapshot instead, so the window widens by a day with
+// every daily run and always measures the patch.
+//
+// 7.2c went live 2026-08-12 09:00 UTC and this job runs at 06:00 UTC, so the
+// 12th snapshot was taken three hours BEFORE the patch landed: a genuinely
+// clean baseline. Update this the next time a patch ships.
+const MOVERS_BASELINE_DATE = "2026-08-12";
+// History snapshots only carry the DEFAULT bracket, so only that bracket can be
+// pinned. The rest keep the day-over-day comparison, and every bracket now
+// reports which baseline it used so the UI cannot mislabel them.
 
 const HERO_LIST_URL = "https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js";
 const RANK_URL = "https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2";
@@ -116,26 +133,44 @@ async function main() {
   let previous = checkedInPrevious;
   if (!previous || previous.date === date) previous = await jsonFile(PREVIOUS_OUT).catch(() => null);
   const previousBySlug = new Map((previous?.champions ?? []).map((champion) => [champion.slug, champion]));
+
+  // The pinned pre-patch snapshot, for the default bracket only.
+  const baseline = await jsonFile(path.join(HISTORY_DIR, `${MOVERS_BASELINE_DATE}.json`))
+    .catch(() => null);
+  if (!baseline) {
+    console.warn(`No pinned baseline at ${MOVERS_BASELINE_DATE}; the default bracket falls back to day-over-day.`);
+  }
+  const baselineDates = {};
   const moversByBracket = {};
   for (const bracket of Object.keys(BRACKET_LABELS)) {
+    // Only the default bracket has a pinned pre-patch baseline available,
+    // because history snapshots store that bracket alone.
+    const pinned = bracket === DEFAULT_BRACKET && baseline;
+    baselineDates[bracket] = pinned ? MOVERS_BASELINE_DATE.replace(/-/g, "") : (previous?.date ?? "");
     moversByBracket[bracket] = sorted.flatMap((champion) => {
-      const oldEntry = previousBySlug.get(champion.slug)?.byBracket?.[bracket];
+      const oldWr = pinned
+        ? baseline.champions?.[champion.slug]?.wr
+        : previousBySlug.get(champion.slug)?.byBracket?.[bracket]?.winRate;
       const newEntry = champion.byBracket[bracket];
-      if (!oldEntry || !newEntry) return [];
+      if (oldWr == null || !newEntry) return [];
       return [{
         slug: champion.slug,
         name: champion.name,
-        oldWr: oldEntry.winRate,
+        oldWr,
         newWr: newEntry.winRate,
-        delta: Math.round((newEntry.winRate - oldEntry.winRate) * 100) / 100,
+        delta: Math.round((newEntry.winRate - oldWr) * 100) / 100,
         pickRate: newEntry.pickRate,
       }];
     }).sort((left, right) => right.delta - left.delta);
   }
   const movers = moversByBracket[DEFAULT_BRACKET];
   await writeFile(MOVERS_OUT, `${JSON.stringify({
-    beforeDate: previous?.date ?? "",
+    // The default bracket's window, which is what the home page shows.
+    beforeDate: baselineDates[DEFAULT_BRACKET] || (previous?.date ?? ""),
     afterDate: date,
+    // Per-bracket baselines: the default bracket is pinned pre-patch, the rest
+    // are day-over-day, and the UI needs to know which is which.
+    baselineByBracket: baselineDates,
     patch: "",
     scope: "China · Challenger",
     defaultBracket: DEFAULT_BRACKET,
@@ -153,6 +188,17 @@ async function main() {
   for (const champion of sorted) {
     const entry = champion.byBracket[DEFAULT_BRACKET];
     if (entry) snapshotChampions[champion.slug] = { wr: entry.winRate, pick: entry.pickRate, ban: entry.banRate };
+    // Every bracket, not just the default one. Snapshots used to store the
+    // default alone, which is why only that bracket can be pinned to a
+    // pre-patch baseline today. Recording all four means the next patch can
+    // pin every bracket instead of one.
+    const byBracket = {};
+    for (const [bracket, value] of Object.entries(champion.byBracket ?? {})) {
+      if (value) byBracket[bracket] = { wr: value.winRate, pick: value.pickRate, ban: value.banRate };
+    }
+    if (Object.keys(byBracket).length && snapshotChampions[champion.slug]) {
+      snapshotChampions[champion.slug].byBracket = byBracket;
+    }
   }
   await writeFile(
     path.join(historyDir, `${snapshotDate}.json`),
