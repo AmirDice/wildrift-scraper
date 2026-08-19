@@ -1086,6 +1086,45 @@ def repeats_on_hit(name: str) -> bool:
     return _REPEAT_ON_HIT_CACHE[name]
 
 
+_METRIC_CACHE: dict[str, str] = {}
+
+
+def damage_metric(name: str) -> str:
+    """Which axis this champion is actually judged on: burst, sustained, or
+    durability.
+
+    Everything used to be ranked on 8-second sustained damage, which is the
+    wrong yardstick for half the roster and quietly favours attack-speed and
+    on-hit items on champions who never fight that long. Measured on the right
+    axis the engine already knows better: on BURST it prefers Luden's Echo over
+    Nashor's Tooth for Ekko, Diana and Fiddlesticks, and only on SUSTAINED does
+    that invert.
+
+    Class decides, because that is what the axis means -- a mage or assassin
+    wins by removing someone inside a few seconds, a bruiser or marksman by
+    still swinging at second eight. The attack pattern overrides it for the
+    on-hit casters (Teemo, Kennen) whose damage genuinely is repeated attacks.
+    """
+    if name not in _METRIC_CACHE:
+        cls = CHAMP_CLASS.get(name, "")
+        pattern = ""
+        try:
+            from web.advisor import profiles as _profiles
+            pattern = _profiles.combat_profile(name).get("basicAttackPattern") or ""
+        except Exception:
+            pattern = ""
+        if cls == "Tank":
+            metric = "durability"
+        elif pattern in ("basic-attack-carry", "repeated-attacks"):
+            metric = "sustained"
+        elif cls in ("Mage", "Assassin"):
+            metric = "burst"
+        else:
+            metric = "sustained"
+        _METRIC_CACHE[name] = metric
+    return _METRIC_CACHE[name]
+
+
 def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None):
     """The KIT's own on-hit components, split by type.
 

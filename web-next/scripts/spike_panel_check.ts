@@ -4,13 +4,18 @@
  * without burning generation quota. Same modules, same thresholds -- if this
  * prints it, the UI renders it.
  */
-import { duel, dummyTarget, resolveStats } from "../src/lib/engine";
+import { duel, dummyTarget, resolveStats, rotation } from "../src/lib/engine";
 import { blockedItems } from "../src/lib/customizer-data";
-import { roster } from "../src/lib/threat";
 import engineData from "../src/data/engine.json";
 
 const DATA = engineData as {
   items?: Record<string, { name?: string; icon?: string; cost?: number; category?: string }>;
+  champions?: Record<string, { damageMetric?: string }>;
+};
+const BURST_WINDOW = 3;
+const metricOf = (n: string) => {
+  const m = DATA.champions?.[n]?.damageMetric;
+  return m === "burst" || m === "durability" ? m : "sustained";
 };
 const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
 const cost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
@@ -55,6 +60,7 @@ const CASES: Case[] = [
 for (const c of CASES) {
   const { name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, powerCurve, candidates } = c;
   const level = 15;
+  const metric = metricOf(name);
 
   // ---- stages (mirrors the stages memo): every purchase its own step
   const t2 = boots || "";
@@ -91,24 +97,29 @@ for (const c of CASES) {
     const label = purchase.kind === "item"
       ? `${purchase.itemCount} item${purchase.itemCount > 1 ? "s" : ""}`
       : purchase.kind === "t2" ? "Boots" : "T3 boots";
+    const burst = metric === "burst" && st
+      ? Math.round(rotation(name, st, target, BURST_WINDOW, level)) : 0;
     return { count: i + 1, label, slugs, gold: goldAcc, minute: Math.round(goldAcc / 650),
-      hp: st ? Math.round(st.hp) : 0, dps: fight?.dps ?? 0 };
+      hp: st ? Math.round(st.hp) : 0, dps: fight?.dps ?? 0, burst };
   });
-  const isTank = roster()[name]?.class === "Tank";
+  const isTank = metric === "durability";
   const REACHABLE_GOLD = 13000;  // ~20 minutes at ~650 gold/min
   let spike = 1; let best = 0;
   for (let i = 1; i < rows.length; i += 1) {
     if (rows[i].gold > REACHABLE_GOLD) break;
-    const gain = isTank ? rows[i].hp - rows[i - 1].hp : rows[i].dps - rows[i - 1].dps;
+    const valOf = (r: typeof rows[number]) =>
+      metric === "durability" ? r.hp : metric === "burst" ? r.burst : r.dps;
+    const gain = valOf(rows[i]) - valOf(rows[i - 1]);
     if (gain > best) { best = gain; spike = i + 1; }
   }
 
   console.log(`\n===== ${name} (${powerCurve}) =====`);
   for (const r of rows) {
     const mark = r.count === spike ? "  <-- SPIKE" : (r.gold > REACHABLE_GOLD ? "  (dimmed)" : "");
-    console.log(`${r.label.padEnd(8)} ~min ${String(r.minute).padStart(2)}  ${r.gold}g  dps ${Math.round(r.dps)}  hp ${r.hp}  [${itemName(r.slugs[r.slugs.length - 1])}]${mark}`);
+    const shown = metric === "burst" ? `burst ${r.burst}` : `dps ${Math.round(r.dps)}`;
+    console.log(`${r.label.padEnd(8)} ~min ${String(r.minute).padStart(2)}  ${r.gold}g  ${shown}  hp ${r.hp}  [${itemName(r.slugs[r.slugs.length - 1])}]${mark}`);
   }
-  console.log(`spike metric: ${isTank ? "durability" : "damage"}`);
+  console.log(`spike metric: ${metric}`);
 
   // ---- order check (mirrors the orderCheck memo)
   const [CHECKPOINTS, WEIGHTS] =
@@ -122,9 +133,14 @@ for (const c of CASES) {
     const key = [...owned].sort().join(",");
     let v = valueCache.get(key);
     if (v === undefined) {
-      v = isTank
-        ? Number(resolveStats(name, level, owned, runeNames)?.hp ?? 0)
-        : (duel(name, owned, runeNames, target, level, 20, false)?.dps ?? 0);
+      if (metric === "durability") {
+        v = Number(resolveStats(name, level, owned, runeNames)?.hp ?? 0);
+      } else if (metric === "burst") {
+        const s2 = resolveStats(name, level, owned, runeNames);
+        v = s2 ? rotation(name, s2, target, BURST_WINDOW, level) : 0;
+      } else {
+        v = duel(name, owned, runeNames, target, level, 20, false)?.dps ?? 0;
+      }
       valueCache.set(key, v);
     }
     return v;

@@ -192,7 +192,7 @@ def main() -> None:
             for n in names:
                 slot_of[n] = int(s)
 
-    from web.fight_engine import kit_adjust, repeats_on_hit
+    from web.fight_engine import kit_adjust, repeats_on_hit, damage_metric
 
     out = {
         "champions": {
@@ -210,6 +210,10 @@ def main() -> None:
                 # an item that re-applies on-hits re-applies the kit's own
                 # (Gwen's Thousand Cuts, yes; Lux's consumed mark, no).
                 "repeatsOnHit": repeats_on_hit(c["name"]),
+                # Which axis this champion is judged on: burst / sustained /
+                # durability. Ranking a burst mage on 8-second sustained damage
+                # is what made on-hit items look strong on casters.
+                "damageMetric": damage_metric(c["name"]),
             }
             # Stats and skill ranks exist for the full roster. Structured
             # formulas are optional and only control live damage breakdowns.
