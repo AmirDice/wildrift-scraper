@@ -118,7 +118,7 @@ def build_pool(champ, runes):
     return ladder + extras, extras
 
 
-def run(champ):
+def run(champ, want_block=False):
     rec = LADDER.get(champ) or {}
     runes = [k["name"] for k in (rec.get("keystones") or [])[:1]]
     runes += [m["name"] for m in (rec.get("minors") or [])[:4]]
@@ -197,17 +197,85 @@ def run(champ):
         else:
             print("  no captured human build appears anywhere in this pool "
                   "(they use items outside it)")
+    if want_block:
+        print("")
+        print("-" * 92)
+        print("WHAT THE MODEL WOULD RECEIVE")
+        print("-" * 92)
+        print(prompt_block(champ, rows, pool))
+
+
+def unmeasured_note(slug):
+    """What the engine cannot see about this item, quoted from its own text.
+
+    The model is handed the effect verbatim rather than a label, because
+    "unmeasured" tells it nothing while "2.5s of invulnerability" tells it
+    everything it needs to overrule a number.
+    """
+    passives = [p for p in (RAW.get(slug) or {}).get("passives") or []
+                if any(c.isdigit() for c in p)]
+    text = " | ".join(" ".join(p.split()) for p in passives)
+    return text[:190]
+
+
+def prompt_block(champ, rows, pool, top=5):
+    """The engine's measurements as the model would receive them.
+
+    Two halves, and the second is the point: a ranked table on its own would
+    quietly bury every item the engine cannot score, which for a tank is most
+    of what its players actually build. So the unmeasured items are listed
+    beside the table with their real effect text and an explicit licence to
+    substitute one in.
+    """
+    key = metric_key(champ)
+    metric = fe.damage_metric(champ)
+    unmeasured = [(s, RAW[s].get("name", s), unmeasured_note(s))
+                  for s in pool if engine_blind(s)]
+    lines = []
+    lines.append(f"ENGINE-MEASURED BUILDS for {champ}. Every legal five-item combination "
+                 f"from this champion's pool was simulated; these are the strongest on "
+                 f"{metric.upper()}, which is the axis this kit is decided on. The numbers "
+                 f"are measurements, not a recommendation -- they are what the simulation "
+                 f"produced, and they are blind to everything listed under CANNOT MEASURE "
+                 f"below.")
+    for i, r in enumerate(rows[:top], 1):
+        played = (f" [played by top-50 rank {r['exact'][0]}]" if r["exact"]
+                  else " [no captured top-50 player runs this exact five]")
+        lines.append(
+            f"  {i}. {', '.join(r['items'])}"
+            f"\n     {key}={r['primary']:.0f}  early3={r['early']:.0f}  "
+            f"burst3={r['burst3']:.0f}  dps8={r['dps8']:.0f}  aoe8={r['aoe8']:.0f}  "
+            f"ehp={r['ehp']:.0f}  gold={r['gold']}{played}")
+    if unmeasured:
+        lines.append("")
+        lines.append("ITEMS THE SIMULATION CANNOT MEASURE. Each of these carries an effect "
+                     "with no damage number the engine can compute -- invulnerability, a "
+                     "spell shield, a cleanse, an aura, a slow. They were therefore ABSENT "
+                     "from the scoring above, and their absence is not evidence against "
+                     "them. You can reason about these effects and the engine cannot:")
+        for slug, name, note in unmeasured:
+            lines.append(f"  - {slug} ({name}): {note}")
+        lines.append("YOU MAY SUBSTITUTE. If one of these answers something this specific "
+                     "game demands -- a burst threat that Stasis blanks, a hook or a "
+                     "suppression that a spell shield eats, healing that only an aura "
+                     "reaches -- swap it in for the weakest measured item above and say in "
+                     "your reasoning which measured item you gave up and what the effect "
+                     "buys instead. Do not substitute to be safe by default: the measured "
+                     "build is the baseline and the burden is on the swap.")
+    return "\n".join(lines)
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--champions", default="Gwen,Diana,Ekko")
+    ap.add_argument("--block", action="store_true",
+                    help="print the prompt block the model would receive")
     args = ap.parse_args()
     for champ in [c.strip() for c in args.champions.split(",") if c.strip()]:
         if champ not in fe.CHAMPS:
             print(f"{champ}: not in roster")
             continue
-        run(champ)
+        run(champ, want_block=args.block)
     return 0
 
 
