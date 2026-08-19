@@ -1,7 +1,7 @@
 """Structured rune metadata and page legality.
 
 A Wild Rift rune page is 1 keystone + 3 minors drawn from ONE tree, one per
-slot, + 1 flex from anywhere. That is a small, closed rule set, so there is no
+slot, + 1 flex minor from a different tree. That is a small, closed rule set, so there is no
 excuse for an illegal page reaching the user -- and equally no reason to throw
 away an otherwise good build because one minor sits in the wrong slot. This
 module supplies the legality facts for both: what the model is shown, and what
@@ -155,6 +155,19 @@ def page_errors(page: dict) -> list[str]:
     elif flex in known_minors or flex == keystone:
         errors.append(f"flex rune {flex} is already on the page; the flex must be a "
                       "rune the page does not already run")
+    elif BY_NAME.get(flex, {}).get("type") == "Keystone":
+        # A KEYSTONE IN THE FLEX SLOT. Reported from the live site: a Sorcery
+        # page ran Phase Rush as its keystone AND Conqueror as its flex, which
+        # is two keystones on one page and cannot be equipped.
+        #
+        # The different-tree rule below could never catch it. Keystones are
+        # stored with tree "Keystone" rather than a real tree, so the comparison
+        # "flex tree is not the primary tree" was trivially TRUE for every
+        # keystone in the game, and each one sailed through as a legal flex.
+        errors.append(
+            f"flex rune {flex} is a KEYSTONE; a page has exactly one keystone "
+            f"({keystone or 'the one you chose'}) and the flex must be a MINOR rune "
+            "from a different tree")
     else:
         # The flex (secondary) rune must come from a DIFFERENT tree than the
         # primary. A Resolve page cannot take a Resolve flex -- a page runs two
@@ -188,8 +201,13 @@ def legal_swap_error(incoming: str, outgoing: str, page: dict) -> str | None:
         return None
 
     if outgoing == flex:
-        # A flex swap may bring in any rune, but it still cannot pull the page
-        # into a single tree: the replacement must stay off the primary tree.
+        # A flex swap may bring in any MINOR rune, but it still cannot pull the
+        # page into a single tree: the replacement must stay off the primary
+        # tree. A keystone is never a legal flex -- the page already has one.
+        if BY_NAME.get(incoming, {}).get("type") == "Keystone":
+            return (f"{incoming} is a keystone and cannot go in the flex slot; a page runs "
+                    f"exactly one keystone ({keystone or 'the one on the page'}), so a flex "
+                    "replacement must be a MINOR rune from a different tree")
         if tree in TREES and SLOT_OF.get(incoming, ("", 0))[0] == tree:
             return (f"{incoming} is in the primary tree {tree}; a flex replacement must stay "
                     "in a different tree")
@@ -253,7 +271,8 @@ def pool_text_block() -> str:
     of them is an item.
     """
     return ("RUNES (page = 1 keystone + 3 minors from ONE tree, one from each of that "
-            "tree's 3 slots, + 1 flex from any tree):\n" + pool_text()
+            "tree's 3 slots, + 1 FLEX, which is a MINOR rune from a DIFFERENT tree -- a page "
+            "carries exactly ONE keystone, so a keystone can never be the flex):\n" + pool_text()
             + "\n\nMINORS BY SLOT -- take exactly one name from each of the three "
               "lists for your chosen tree. Two from the same slot is not a legal "
               "page:\n" + slot_groups_text()

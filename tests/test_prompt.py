@@ -242,6 +242,38 @@ class TestRuneMetadata:
     def test_the_pool_block_states_the_page_rule(self):
         assert "1 keystone + 3 minors from ONE tree" in runemeta.pool_text_block()
 
+    def test_a_keystone_is_never_a_legal_flex(self):
+        """Two keystones on one page cannot be equipped in game.
+
+        Reported from the live site: a Lillia page ran Phase Rush as its
+        keystone AND Conqueror as its flex. Nothing caught it, because
+        keystones carry the tree "Keystone" rather than a real tree, so the
+        "flex must come from a DIFFERENT tree" rule was trivially true for
+        every keystone in the game and each one passed as a legal flex.
+        """
+        page = {"keystone": "Phase Rush", "primaryTree": "Sorcery",
+                "minors": ["Manaflow Band", "Transcendence", "Gathering Storm"],
+                "flex": "Conqueror"}
+        errors = runemeta.page_errors(dict(page))
+        assert errors and "KEYSTONE" in errors[0]
+
+        # ... and the same slot cannot be reached through a situational swap.
+        legal = dict(page, flex="Cut Down")
+        assert runemeta.page_errors(dict(legal)) == []
+        assert runemeta.legal_swap_error("Conqueror", "Cut Down", legal)
+        assert runemeta.legal_swap_error("Bone Plating", "Cut Down", legal) is None
+
+    def test_the_model_is_told_the_flex_is_a_minor_from_another_tree(self):
+        """The validator only repairs what the prompt failed to prevent.
+
+        The rune pool header used to read "+ 1 flex from any tree", which is
+        both wrong about the tree and silent about the flex being a minor.
+        """
+        block = runemeta.pool_text_block()
+        assert "MINOR rune from a DIFFERENT tree" in block
+        assert "exactly ONE keystone" in block
+        assert "flex from any tree" not in block
+
 
 class TestThePlaystyleReachesTheRunes:
     """A playstyle is a brief for the whole build, not just the item list.

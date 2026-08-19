@@ -91,7 +91,7 @@ SYSTEM = (
     "is genuinely competitive; 5) choose the best FIVE items from your candidate list, "
     "maximising synergy, respecting the scaling profile, and optimising PURCHASE ORDER; "
     "6) pick tier-2 boots and note the tier-3 they become; 7) build a LEGAL rune page "
-    "(1 keystone + 3 minors from ONE tree, one per slot, + 1 flex FROM A DIFFERENT TREE) -- cross-check the "
+    "(1 keystone + 3 minors from ONE tree, one per slot, + 1 flex that is a MINOR rune FROM A DIFFERENT TREE, never a second keystone) -- cross-check the "
     "keystone against the supplied ability text and combat profile: a keystone scaling a "
     "stat the kit cannot use is a wasted keystone; 8) score the COMPLETE loadout; "
     "9) only after deciding, explain -- and the explanation must cover the RUNES and "
@@ -528,8 +528,10 @@ def rules_block(enemies_known: bool, combat_profile: dict) -> str:
         lines.append(f"    {name}: {', '.join(group['slugs'])}")
     lines += [
         "- The rune page is 1 keystone + 3 minors from ONE tree, one from each of that "
-        "tree's 3 slots, + 1 flex from any tree. The flex must not duplicate a rune "
-        "already on the page.",
+        "tree's 3 slots, + 1 flex. The flex is a MINOR rune from a DIFFERENT tree than "
+        "your primary: exactly one keystone goes on a page, so a second keystone in the "
+        "flex slot is not a legal page and cannot be equipped in game. The flex must "
+        "also not duplicate a rune already on the page.",
     ]
 
     # Redundancy groups are empty by owner decision (see item_rules.json): the
