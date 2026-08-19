@@ -192,7 +192,8 @@ def main() -> None:
             for n in names:
                 slot_of[n] = int(s)
 
-    from web.fight_engine import kit_adjust, repeats_on_hit, damage_metric
+    from web.fight_engine import (kit_adjust, repeats_on_hit, damage_metric,
+                                  attack_speed_ratio, AS_CURVE)
 
     out = {
         "champions": {
@@ -214,6 +215,14 @@ def main() -> None:
                 # durability. Ranking a burst mage on 8-second sustained damage
                 # is what made on-hit items look strong on casters.
                 "damageMetric": damage_metric(c["name"]),
+                # Attack speed RATIO (what % bonuses multiply) and per-level
+                # growth, verified in game. Absent growth means the champion
+                # has not been measured, and the TS engine must then behave
+                # exactly as before: no level scaling.
+                "asRatio": attack_speed_ratio(
+                    c["name"],
+                    (c.get("baseStats", {}).get("attackSpeed", {}) or {}).get("base", 0.75) or 0.75),
+                "asGrowth": float((AS_CURVE.get(c["name"]) or {}).get("attackSpeedGrowth") or 0.0),
             }
             # Stats and skill ranks exist for the full roster. Structured
             # formulas are optional and only control live damage breakdowns.

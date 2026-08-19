@@ -432,7 +432,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "hp": base("hp", 1800), "bonusHp": 0.0,
         "armor": base("armor", 60), "mr": base("mr", 45),
         "baseAsPct": 0.0,  # bonus attack speed %
-        "baseAs": bs.get("attackSpeed", {}).get("base", 0.75) or 0.75,
+        "baseAs": attack_speed_ratio(
+            name, bs.get("attackSpeed", {}).get("base", 0.75) or 0.75),
         "crit": 0.0, "critMult": BASE_CRIT_MULT, "critDamagePerExcessCrit": 0.0,
         # Real per-champion mana, scraped at last. A manaless kit has no entry
         # and correctly starts at 0, so Muramana's "AD = % of max mana" grants
@@ -884,7 +885,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # WITHOUT an explicit reload model (reload takes precedence; no double dip)
         if not st["reloadMag"]:
             as_pct *= know.get("asEfficiency", 1.0)
-        st["as"] = min(st["baseAs"] * (1 + as_pct / 100.0), AS_CAP)
+        # Attack speed GROWS with level, and the engine used to ignore that
+        # entirely -- every champion fought at its level-1 rate. The bonus from
+        # levels is innate, so asEfficiency (which discounts ITEM attack speed
+        # on kits that convert it poorly) must not touch it.
+        st["as"] = min(st["baseAs"] * (1 + level_as_bonus(name, level) + as_pct / 100.0),
+                       AS_CAP)
     if st["reloadMag"]:
         # magazine of M shots then reload: throughput = M / (M/AS + reload).
         # Reload seconds from Tier-2 knowledge when available (tooltips are
@@ -1084,6 +1090,37 @@ def repeats_on_hit(name: str) -> bool:
             value = False
         _REPEAT_ON_HIT_CACHE[name] = value
     return _REPEAT_ON_HIT_CACHE[name]
+
+
+#: Verified attack speed ratios and per-level growth (data/champion_attack_speed.json).
+#: A champion absent from here keeps the old behaviour: no level scaling at all.
+AS_CURVE = (_load("champion_attack_speed.json") or {}).get("champions", {})
+
+
+def attack_speed_ratio(name: str, fallback: float) -> float:
+    """The champion's attack speed RATIO -- the number percentage bonuses
+    multiply. Falls back to the scraped level-1 value, which is the same thing
+    for any champion with no starting bonus attack speed."""
+    entry = AS_CURVE.get(name) or {}
+    value = entry.get("attackSpeedRatio")
+    return float(value) if value else fallback
+
+
+def level_as_bonus(name: str, level: int) -> float:
+    """Bonus attack speed from LEVELS, as a fraction.
+
+    Wild Rift kept League's curve, confirmed in game against Ekko, Akali, Lux
+    and Fiddlesticks:
+
+        bonus = growth * (L-1) * (0.7025 + 0.0175 * (L-1))
+
+    Returns 0 for champions we have not measured, so their numbers do not move
+    until someone reads the real values off the client.
+    """
+    growth = float((AS_CURVE.get(name) or {}).get("attackSpeedGrowth") or 0.0)
+    if not growth or level <= 1:
+        return 0.0
+    return growth * (level - 1) * (0.7025 + 0.0175 * (level - 1))
 
 
 _METRIC_CACHE: dict[str, str] = {}

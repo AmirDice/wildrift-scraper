@@ -170,7 +170,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     baseAd: base("ad", 60), bonusAd: 0, ap: 0,
     hp: base("hp", 1800), bonusHp: 0,
     armor: base("armor", 60), mr: base("mr", 45),
-    baseAsPct: 0, baseAs: bs.attackSpeed?.base || 0.75,
+    // The RATIO percentage bonuses multiply, not the level-1 display value.
+    baseAsPct: 0, baseAs: c.asRatio || bs.attackSpeed?.base || 0.75,
     // Real base mana from the champion's stat line (Python parity): mana
     // feeds the AD/AP/HP-from-mana conversions, so a flat assumption
     // short-changed every Manamune/Archangel's/Winter's build.
@@ -511,7 +512,14 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   } else {
     let asPct = st.baseAsPct;
     if (!mechs.reload) asPct *= know.asEfficiency ?? 1; // Tier-2, no double dip with reload
-    st.as = Math.min(st.baseAs * (1 + asPct / 100), AS_CAP);
+    // Attack speed GROWS with level; the port ignored that entirely and fought
+    // every champion at its level-1 rate. Level bonus is innate, so
+    // asEfficiency (an ITEM discount) must not touch it. Mirrors
+    // fight_engine.level_as_bonus.
+    const growth = Number(c.asGrowth) || 0;
+    const levelBonus = growth && level > 1
+      ? growth * (level - 1) * (0.7025 + 0.0175 * (level - 1)) : 0;
+    st.as = Math.min(st.baseAs * (1 + levelBonus + asPct / 100), AS_CAP);
   }
   if (mechs.reload) {
     const mag = Number(mechs.reload.magazine) || 2;

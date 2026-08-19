@@ -1,0 +1,19 @@
+{
+  "_note": "Attack speed ratio and per-level growth, VERIFIED IN GAME by the owner. Wild Rift keeps League's formula: AS(level) = ratio * (1 + growth * (L-1) * (0.7025 + 0.0175 * (L-1))). The engines applied no level scaling at all before this file existed, simulating every champion at its level-1 attack speed -- roughly 20-25% too slow at level 15.",
+  "_why_not_derived": "Neither class nor attack pattern predicts growth. Every champion below except Gwen is class Mage and they span 0.0% to 2.1%; among 'caster' kits Ahri is 0.0% and Fiddlesticks 2.1%. It is a per-champion Riot stat, so entries are added only when measured, never extrapolated. A champion absent from this file keeps the old behaviour exactly.",
+  "_how_to_add": "In game with no items, read attack speed at level 1 (that is the ratio) and at level 15. growth = (as15/ratio - 1) / 13.265. Check an intermediate level against the formula before trusting it.",
+  "champions": {
+    "Lux": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat 0.75 at every level" },
+    "Ahri": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
+    "Annie": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
+    "Aurelion Sol": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
+    "Brand": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
+    "Akali": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.019, "verified": "2026-08-19, 0.79 at 5, 0.86 at 10, 0.94 at 15" },
+    "Aurora": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.019, "verified": "2026-08-19, same curve as Akali" },
+    "Ekko": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, 0.85 at 5, 0.92 at 10, 1.01 at 15" },
+    "Diana": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, same curve as Ekko" },
+    "Evelynn": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, same curve as Ekko" },
+    "Gwen": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, reported as the same curve as Ekko", "_confirm": "our scrape says her level-1 attack speed is 0.82, not 0.80. If the in-game level-1 value is 0.82 then the ratio here is wrong and level 15 should read 1.04 rather than 1.01. Worth one more look." },
+    "Fiddlesticks": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.021, "verified": "2026-08-19, 0.96 at 15" }
+  }
+}

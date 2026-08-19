@@ -19,7 +19,7 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           "onHitPhys", "onHitMagic", "onHitPctMaxHp", "onHitPctCurrentHp",
           "mrShred", "mrShredFlat", "spellbladeApPct", "spellbladeMagic",
           "cleaveFlat", "cleavePctBonusHp", "healShieldAmp", "shieldPctMaxHp", "apAmp",
-          "armor", "mr", "dotPctMaxHp", "extraOnHitApplications"]
+          "armor", "mr", "dotPctMaxHp", "extraOnHitApplications", "as", "baseAs"]
 
 
 def main() -> int:
