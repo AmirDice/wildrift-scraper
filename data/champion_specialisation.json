@@ -1,0 +1,1949 @@
+{
+ "_note": "Per-champion specialisation from captured top-50 boards. otpScore here is the MEDIAN SHARE of a main's ranked games spent on this champion, replacing the old games-distribution skew score. Built by scripts/build_specialisation.py.",
+ "_tags": {
+  "otp": "share in the top quartile: the board is genuinely specialists",
+  "comfort": "specialised and high volume but a sub-median win rate",
+  "contested": "strong, low share, low volume -- looks ban-pressured, though we hold no ban data to confirm it",
+  "generalist": "low share, nothing else remarkable"
+ },
+ "champions": {
+  "Aatrox": {
+   "specialisationShare": 23.0,
+   "heavyOtpShare": 12.0,
+   "nPlayers": 50,
+   "medianChampGames": 72,
+   "medianRankedGames": 318,
+   "sharePercentile": 20,
+   "winratePercentile": 69,
+   "contestedGap": 48,
+   "gamesPercentile": 41,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.0
+  },
+  "Ahri": {
+   "specialisationShare": 30.4,
+   "heavyOtpShare": 12.0,
+   "nPlayers": 50,
+   "medianChampGames": 84,
+   "medianRankedGames": 368,
+   "sharePercentile": 63,
+   "winratePercentile": 86,
+   "contestedGap": 22,
+   "gamesPercentile": 72,
+   "tags": [],
+   "otpScore": 30.4
+  },
+  "Akali": {
+   "specialisationShare": 42.3,
+   "heavyOtpShare": 40.0,
+   "nPlayers": 50,
+   "medianChampGames": 72,
+   "medianRankedGames": 209,
+   "sharePercentile": 95,
+   "winratePercentile": 4,
+   "contestedGap": -90,
+   "gamesPercentile": 41,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 42.3
+  },
+  "Akshan": {
+   "specialisationShare": 43.4,
+   "heavyOtpShare": 40.8,
+   "nPlayers": 49,
+   "medianChampGames": 83,
+   "medianRankedGames": 235,
+   "sharePercentile": 97,
+   "winratePercentile": 24,
+   "contestedGap": -73,
+   "gamesPercentile": 70,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 43.4
+  },
+  "Alistar": {
+   "specialisationShare": 32.2,
+   "heavyOtpShare": 34.0,
+   "nPlayers": 50,
+   "medianChampGames": 88,
+   "medianRankedGames": 315,
+   "sharePercentile": 75,
+   "winratePercentile": 28,
+   "contestedGap": -48,
+   "gamesPercentile": 80,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 32.2
+  },
+  "Ambessa": {
+   "specialisationShare": 28.7,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 70,
+   "medianRankedGames": 291,
+   "sharePercentile": 51,
+   "winratePercentile": 77,
+   "contestedGap": 26,
+   "gamesPercentile": 37,
+   "tags": [],
+   "otpScore": 28.7
+  },
+  "Amumu": {
+   "specialisationShare": 25.9,
+   "heavyOtpShare": 10.4,
+   "nPlayers": 48,
+   "medianChampGames": 73,
+   "medianRankedGames": 367,
+   "sharePercentile": 42,
+   "winratePercentile": 95,
+   "contestedGap": 53,
+   "gamesPercentile": 45,
+   "tags": [],
+   "otpScore": 25.9
+  },
+  "Annie": {
+   "specialisationShare": 30.6,
+   "heavyOtpShare": 31.2,
+   "nPlayers": 48,
+   "medianChampGames": 81,
+   "medianRankedGames": 331,
+   "sharePercentile": 66,
+   "winratePercentile": 75,
+   "contestedGap": 9,
+   "gamesPercentile": 66,
+   "tags": [],
+   "otpScore": 30.6
+  },
+  "Ashe": {
+   "specialisationShare": 21.3,
+   "heavyOtpShare": 16.0,
+   "nPlayers": 50,
+   "medianChampGames": 74,
+   "medianRankedGames": 342,
+   "sharePercentile": 10,
+   "winratePercentile": 31,
+   "contestedGap": 20,
+   "gamesPercentile": 49,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 21.3
+  },
+  "Aurelion Sol": {
+   "specialisationShare": 26.0,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 98,
+   "medianRankedGames": 350,
+   "sharePercentile": 43,
+   "winratePercentile": 90,
+   "contestedGap": 47,
+   "gamesPercentile": 88,
+   "tags": [],
+   "otpScore": 26.0
+  },
+  "Aurora": {
+   "specialisationShare": 24.0,
+   "heavyOtpShare": 4.0,
+   "nPlayers": 50,
+   "medianChampGames": 82,
+   "medianRankedGames": 410,
+   "sharePercentile": 30,
+   "winratePercentile": 19,
+   "contestedGap": -11,
+   "gamesPercentile": 68,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 24.0
+  },
+  "Bard": {
+   "specialisationShare": 19.4,
+   "heavyOtpShare": 6.0,
+   "nPlayers": 50,
+   "medianChampGames": 61,
+   "medianRankedGames": 300,
+   "sharePercentile": 3,
+   "winratePercentile": 89,
+   "contestedGap": 86,
+   "gamesPercentile": 16,
+   "tags": [
+    "contested"
+   ],
+   "otpScore": 19.4
+  },
+  "Blitzcrank": {
+   "specialisationShare": 29.1,
+   "heavyOtpShare": 32.6,
+   "nPlayers": 46,
+   "medianChampGames": 81,
+   "medianRankedGames": 242,
+   "sharePercentile": 54,
+   "winratePercentile": 28,
+   "contestedGap": -27,
+   "gamesPercentile": 66,
+   "tags": [],
+   "otpScore": 29.1
+  },
+  "Brand": {
+   "specialisationShare": 33.5,
+   "heavyOtpShare": 28.0,
+   "nPlayers": 50,
+   "medianChampGames": 94,
+   "medianRankedGames": 321,
+   "sharePercentile": 79,
+   "winratePercentile": 12,
+   "contestedGap": -67,
+   "gamesPercentile": 84,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 33.5
+  },
+  "Braum": {
+   "specialisationShare": 22.3,
+   "heavyOtpShare": 12.5,
+   "nPlayers": 48,
+   "medianChampGames": 75,
+   "medianRankedGames": 355,
+   "sharePercentile": 15,
+   "winratePercentile": 54,
+   "contestedGap": 39,
+   "gamesPercentile": 54,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.3
+  },
+  "Caitlyn": {
+   "specialisationShare": 22.7,
+   "heavyOtpShare": 8.0,
+   "nPlayers": 50,
+   "medianChampGames": 80,
+   "medianRankedGames": 377,
+   "sharePercentile": 17,
+   "winratePercentile": 15,
+   "contestedGap": -2,
+   "gamesPercentile": 64,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.7
+  },
+  "Camille": {
+   "specialisationShare": 21.1,
+   "heavyOtpShare": 6.4,
+   "nPlayers": 47,
+   "medianChampGames": 73,
+   "medianRankedGames": 369,
+   "sharePercentile": 10,
+   "winratePercentile": 69,
+   "contestedGap": 59,
+   "gamesPercentile": 45,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 21.1
+  },
+  "Corki": {
+   "specialisationShare": 15.9,
+   "heavyOtpShare": 2.1,
+   "nPlayers": 47,
+   "medianChampGames": 54,
+   "medianRankedGames": 334,
+   "sharePercentile": 1,
+   "winratePercentile": 28,
+   "contestedGap": 27,
+   "gamesPercentile": 3,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 15.9
+  },
+  "Darius": {
+   "specialisationShare": 30.4,
+   "heavyOtpShare": 19.1,
+   "nPlayers": 47,
+   "medianChampGames": 100,
+   "medianRankedGames": 357,
+   "sharePercentile": 63,
+   "winratePercentile": 83,
+   "contestedGap": 19,
+   "gamesPercentile": 91,
+   "tags": [],
+   "otpScore": 30.4
+  },
+  "Diana": {
+   "specialisationShare": 26.7,
+   "heavyOtpShare": 24.0,
+   "nPlayers": 50,
+   "medianChampGames": 77,
+   "medianRankedGames": 306,
+   "sharePercentile": 46,
+   "winratePercentile": 69,
+   "contestedGap": 23,
+   "gamesPercentile": 59,
+   "tags": [],
+   "otpScore": 26.7
+  },
+  "Dr. Mundo": {
+   "specialisationShare": 30.3,
+   "heavyOtpShare": 21.7,
+   "nPlayers": 46,
+   "medianChampGames": 53,
+   "medianRankedGames": 181,
+   "sharePercentile": 61,
+   "winratePercentile": 32,
+   "contestedGap": -29,
+   "gamesPercentile": 1,
+   "tags": [],
+   "otpScore": 30.3
+  },
+  "Draven": {
+   "specialisationShare": 39.0,
+   "heavyOtpShare": 38.8,
+   "nPlayers": 49,
+   "medianChampGames": 100,
+   "medianRankedGames": 260,
+   "sharePercentile": 92,
+   "winratePercentile": 64,
+   "contestedGap": -28,
+   "gamesPercentile": 91,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 39.0
+  },
+  "Ekko": {
+   "specialisationShare": 34.7,
+   "heavyOtpShare": 34.0,
+   "nPlayers": 50,
+   "medianChampGames": 106,
+   "medianRankedGames": 316,
+   "sharePercentile": 85,
+   "winratePercentile": 42,
+   "contestedGap": -43,
+   "gamesPercentile": 95,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 34.7
+  },
+  "Evelynn": {
+   "specialisationShare": 31.0,
+   "heavyOtpShare": 24.5,
+   "nPlayers": 49,
+   "medianChampGames": 96,
+   "medianRankedGames": 302,
+   "sharePercentile": 69,
+   "winratePercentile": 42,
+   "contestedGap": -27,
+   "gamesPercentile": 86,
+   "tags": [
+    "comfort"
+   ],
+   "otpScore": 31.0
+  },
+  "Ezreal": {
+   "specialisationShare": 23.5,
+   "heavyOtpShare": 6.0,
+   "nPlayers": 50,
+   "medianChampGames": 88,
+   "medianRankedGames": 399,
+   "sharePercentile": 25,
+   "winratePercentile": 91,
+   "contestedGap": 66,
+   "gamesPercentile": 80,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.5
+  },
+  "Fiddlesticks": {
+   "specialisationShare": 30.6,
+   "heavyOtpShare": 21.3,
+   "nPlayers": 47,
+   "medianChampGames": 89,
+   "medianRankedGames": 323,
+   "sharePercentile": 66,
+   "winratePercentile": 13,
+   "contestedGap": -54,
+   "gamesPercentile": 82,
+   "tags": [
+    "comfort"
+   ],
+   "otpScore": 30.6
+  },
+  "Fiora": {
+   "specialisationShare": 28.4,
+   "heavyOtpShare": 22.9,
+   "nPlayers": 48,
+   "medianChampGames": 70,
+   "medianRankedGames": 251,
+   "sharePercentile": 49,
+   "winratePercentile": 51,
+   "contestedGap": 1,
+   "gamesPercentile": 37,
+   "tags": [],
+   "otpScore": 28.4
+  },
+  "Fizz": {
+   "specialisationShare": 29.2,
+   "heavyOtpShare": 22.0,
+   "nPlayers": 50,
+   "medianChampGames": 71,
+   "medianRankedGames": 291,
+   "sharePercentile": 55,
+   "winratePercentile": 59,
+   "contestedGap": 3,
+   "gamesPercentile": 38,
+   "tags": [],
+   "otpScore": 29.2
+  },
+  "Galio": {
+   "specialisationShare": 27.7,
+   "heavyOtpShare": 12.8,
+   "nPlayers": 47,
+   "medianChampGames": 60,
+   "medianRankedGames": 237,
+   "sharePercentile": 48,
+   "winratePercentile": 9,
+   "contestedGap": -38,
+   "gamesPercentile": 12,
+   "tags": [],
+   "otpScore": 27.7
+  },
+  "Garen": {
+   "specialisationShare": 34.4,
+   "heavyOtpShare": 36.0,
+   "nPlayers": 50,
+   "medianChampGames": 95,
+   "medianRankedGames": 327,
+   "sharePercentile": 84,
+   "winratePercentile": 3,
+   "contestedGap": -81,
+   "gamesPercentile": 85,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 34.4
+  },
+  "Gnar": {
+   "specialisationShare": 29.1,
+   "heavyOtpShare": 16.0,
+   "nPlayers": 50,
+   "medianChampGames": 63,
+   "medianRankedGames": 296,
+   "sharePercentile": 54,
+   "winratePercentile": 62,
+   "contestedGap": 8,
+   "gamesPercentile": 21,
+   "tags": [],
+   "otpScore": 29.1
+  },
+  "Gragas": {
+   "specialisationShare": 25.7,
+   "heavyOtpShare": 19.6,
+   "nPlayers": 46,
+   "medianChampGames": 58,
+   "medianRankedGames": 272,
+   "sharePercentile": 40,
+   "winratePercentile": 19,
+   "contestedGap": -22,
+   "gamesPercentile": 7,
+   "tags": [],
+   "otpScore": 25.7
+  },
+  "Graves": {
+   "specialisationShare": 34.7,
+   "heavyOtpShare": 35.4,
+   "nPlayers": 48,
+   "medianChampGames": 59,
+   "medianRankedGames": 190,
+   "sharePercentile": 85,
+   "winratePercentile": 47,
+   "contestedGap": -38,
+   "gamesPercentile": 10,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 34.7
+  },
+  "Gwen": {
+   "specialisationShare": 31.6,
+   "heavyOtpShare": 19.6,
+   "nPlayers": 46,
+   "medianChampGames": 91,
+   "medianRankedGames": 310,
+   "sharePercentile": 72,
+   "winratePercentile": 66,
+   "contestedGap": -6,
+   "gamesPercentile": 83,
+   "tags": [],
+   "otpScore": 31.6
+  },
+  "Hecarim": {
+   "specialisationShare": 17.7,
+   "heavyOtpShare": 2.1,
+   "nPlayers": 48,
+   "medianChampGames": 56,
+   "medianRankedGames": 289,
+   "sharePercentile": 2,
+   "winratePercentile": 100,
+   "contestedGap": 98,
+   "gamesPercentile": 5,
+   "tags": [
+    "contested"
+   ],
+   "otpScore": 17.7
+  },
+  "Heimerdinger": {
+   "specialisationShare": 32.0,
+   "heavyOtpShare": 26.1,
+   "nPlayers": 46,
+   "medianChampGames": 72,
+   "medianRankedGames": 244,
+   "sharePercentile": 75,
+   "winratePercentile": 86,
+   "contestedGap": 11,
+   "gamesPercentile": 41,
+   "tags": [],
+   "otpScore": 32.0
+  },
+  "Irelia": {
+   "specialisationShare": 44.3,
+   "heavyOtpShare": 42.6,
+   "nPlayers": 47,
+   "medianChampGames": 115,
+   "medianRankedGames": 310,
+   "sharePercentile": 99,
+   "winratePercentile": 51,
+   "contestedGap": -48,
+   "gamesPercentile": 99,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 44.3
+  },
+  "Janna": {
+   "specialisationShare": 21.5,
+   "heavyOtpShare": 13.3,
+   "nPlayers": 45,
+   "medianChampGames": 59,
+   "medianRankedGames": 277,
+   "sharePercentile": 11,
+   "winratePercentile": 9,
+   "contestedGap": -2,
+   "gamesPercentile": 10,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 21.5
+  },
+  "Jarvan IV": {
+   "specialisationShare": 20.2,
+   "heavyOtpShare": 10.4,
+   "nPlayers": 48,
+   "medianChampGames": 65,
+   "medianRankedGames": 346,
+   "sharePercentile": 6,
+   "winratePercentile": 59,
+   "contestedGap": 53,
+   "gamesPercentile": 25,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 20.2
+  },
+  "Jax": {
+   "specialisationShare": 30.2,
+   "heavyOtpShare": 12.8,
+   "nPlayers": 47,
+   "medianChampGames": 68,
+   "medianRankedGames": 325,
+   "sharePercentile": 60,
+   "winratePercentile": 93,
+   "contestedGap": 32,
+   "gamesPercentile": 31,
+   "tags": [],
+   "otpScore": 30.2
+  },
+  "Jayce": {
+   "specialisationShare": 24.1,
+   "heavyOtpShare": 18.4,
+   "nPlayers": 49,
+   "medianChampGames": 62,
+   "medianRankedGames": 279,
+   "sharePercentile": 31,
+   "winratePercentile": 79,
+   "contestedGap": 49,
+   "gamesPercentile": 19,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 24.1
+  },
+  "Jhin": {
+   "specialisationShare": 25.6,
+   "heavyOtpShare": 16.0,
+   "nPlayers": 50,
+   "medianChampGames": 98,
+   "medianRankedGames": 337,
+   "sharePercentile": 40,
+   "winratePercentile": 83,
+   "contestedGap": 43,
+   "gamesPercentile": 88,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.6
+  },
+  "Jinx": {
+   "specialisationShare": 22.9,
+   "heavyOtpShare": 14.3,
+   "nPlayers": 49,
+   "medianChampGames": 67,
+   "medianRankedGames": 374,
+   "sharePercentile": 18,
+   "winratePercentile": 24,
+   "contestedGap": 6,
+   "gamesPercentile": 31,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.9
+  },
+  "Kalista": {
+   "specialisationShare": 33.4,
+   "heavyOtpShare": 30.0,
+   "nPlayers": 50,
+   "medianChampGames": 103,
+   "medianRankedGames": 271,
+   "sharePercentile": 78,
+   "winratePercentile": 31,
+   "contestedGap": -48,
+   "gamesPercentile": 93,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 33.4
+  },
+  "Karma": {
+   "specialisationShare": 23.2,
+   "heavyOtpShare": 4.2,
+   "nPlayers": 48,
+   "medianChampGames": 69,
+   "medianRankedGames": 378,
+   "sharePercentile": 22,
+   "winratePercentile": 71,
+   "contestedGap": 49,
+   "gamesPercentile": 34,
+   "tags": [
+    "contested"
+   ],
+   "otpScore": 23.2
+  },
+  "Kassadin": {
+   "specialisationShare": 26.5,
+   "heavyOtpShare": 8.3,
+   "nPlayers": 48,
+   "medianChampGames": 75,
+   "medianRankedGames": 301,
+   "sharePercentile": 45,
+   "winratePercentile": 98,
+   "contestedGap": 53,
+   "gamesPercentile": 54,
+   "tags": [],
+   "otpScore": 26.5
+  },
+  "Katarina": {
+   "specialisationShare": 41.1,
+   "heavyOtpShare": 37.0,
+   "nPlayers": 46,
+   "medianChampGames": 136,
+   "medianRankedGames": 382,
+   "sharePercentile": 93,
+   "winratePercentile": 7,
+   "contestedGap": -86,
+   "gamesPercentile": 100,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 41.1
+  },
+  "Kayle": {
+   "specialisationShare": 22.4,
+   "heavyOtpShare": 12.5,
+   "nPlayers": 48,
+   "medianChampGames": 72,
+   "medianRankedGames": 321,
+   "sharePercentile": 16,
+   "winratePercentile": 96,
+   "contestedGap": 81,
+   "gamesPercentile": 41,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.4
+  },
+  "Kayn": {
+   "specialisationShare": 30.6,
+   "heavyOtpShare": 16.0,
+   "nPlayers": 50,
+   "medianChampGames": 86,
+   "medianRankedGames": 285,
+   "sharePercentile": 66,
+   "winratePercentile": 75,
+   "contestedGap": 9,
+   "gamesPercentile": 75,
+   "tags": [],
+   "otpScore": 30.6
+  },
+  "Kennen": {
+   "specialisationShare": 50.0,
+   "heavyOtpShare": 51.0,
+   "nPlayers": 49,
+   "medianChampGames": 101,
+   "medianRankedGames": 244,
+   "sharePercentile": 100,
+   "winratePercentile": 62,
+   "contestedGap": -38,
+   "gamesPercentile": 92,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 50.0
+  },
+  "Kindred": {
+   "specialisationShare": 26.9,
+   "heavyOtpShare": 26.5,
+   "nPlayers": 49,
+   "medianChampGames": 78,
+   "medianRankedGames": 271,
+   "sharePercentile": 46,
+   "winratePercentile": 42,
+   "contestedGap": -4,
+   "gamesPercentile": 62,
+   "tags": [],
+   "otpScore": 26.9
+  },
+  "Lee Sin": {
+   "specialisationShare": 25.3,
+   "heavyOtpShare": 10.0,
+   "nPlayers": 50,
+   "medianChampGames": 78,
+   "medianRankedGames": 308,
+   "sharePercentile": 36,
+   "winratePercentile": 79,
+   "contestedGap": 43,
+   "gamesPercentile": 62,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.3
+  },
+  "Leona": {
+   "specialisationShare": 31.9,
+   "heavyOtpShare": 30.6,
+   "nPlayers": 49,
+   "medianChampGames": 98,
+   "medianRankedGames": 299,
+   "sharePercentile": 74,
+   "winratePercentile": 51,
+   "contestedGap": -23,
+   "gamesPercentile": 88,
+   "tags": [],
+   "otpScore": 31.9
+  },
+  "Lillia": {
+   "specialisationShare": 20.2,
+   "heavyOtpShare": 14.6,
+   "nPlayers": 48,
+   "medianChampGames": 55,
+   "medianRankedGames": 275,
+   "sharePercentile": 6,
+   "winratePercentile": 66,
+   "contestedGap": 60,
+   "gamesPercentile": 4,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 20.2
+  },
+  "Lissandra": {
+   "specialisationShare": 23.6,
+   "heavyOtpShare": 8.2,
+   "nPlayers": 49,
+   "medianChampGames": 77,
+   "medianRankedGames": 328,
+   "sharePercentile": 26,
+   "winratePercentile": 54,
+   "contestedGap": 28,
+   "gamesPercentile": 59,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.6
+  },
+  "Lucian": {
+   "specialisationShare": 19.5,
+   "heavyOtpShare": 0.0,
+   "nPlayers": 49,
+   "medianChampGames": 67,
+   "medianRankedGames": 368,
+   "sharePercentile": 4,
+   "winratePercentile": 79,
+   "contestedGap": 76,
+   "gamesPercentile": 31,
+   "tags": [
+    "contested"
+   ],
+   "otpScore": 19.5
+  },
+  "Lulu": {
+   "specialisationShare": 23.0,
+   "heavyOtpShare": 0.0,
+   "nPlayers": 49,
+   "medianChampGames": 88,
+   "medianRankedGames": 345,
+   "sharePercentile": 20,
+   "winratePercentile": 44,
+   "contestedGap": 23,
+   "gamesPercentile": 80,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.0
+  },
+  "Lux": {
+   "specialisationShare": 23.8,
+   "heavyOtpShare": 22.4,
+   "nPlayers": 49,
+   "medianChampGames": 85,
+   "medianRankedGames": 353,
+   "sharePercentile": 28,
+   "winratePercentile": 54,
+   "contestedGap": 27,
+   "gamesPercentile": 74,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.8
+  },
+  "Malphite": {
+   "specialisationShare": 22.5,
+   "heavyOtpShare": 29.8,
+   "nPlayers": 47,
+   "medianChampGames": 83,
+   "medianRankedGames": 336,
+   "sharePercentile": 16,
+   "winratePercentile": 21,
+   "contestedGap": 4,
+   "gamesPercentile": 70,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.5
+  },
+  "Maokai": {
+   "specialisationShare": 33.6,
+   "heavyOtpShare": 27.1,
+   "nPlayers": 48,
+   "medianChampGames": 89,
+   "medianRankedGames": 292,
+   "sharePercentile": 80,
+   "winratePercentile": 15,
+   "contestedGap": -65,
+   "gamesPercentile": 82,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 33.6
+  },
+  "Master Yi": {
+   "specialisationShare": 38.8,
+   "heavyOtpShare": 29.2,
+   "nPlayers": 48,
+   "medianChampGames": 77,
+   "medianRankedGames": 222,
+   "sharePercentile": 91,
+   "winratePercentile": 69,
+   "contestedGap": -22,
+   "gamesPercentile": 59,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 38.8
+  },
+  "Mel": {
+   "specialisationShare": 17.3,
+   "heavyOtpShare": 0.0,
+   "nPlayers": 48,
+   "medianChampGames": 55,
+   "medianRankedGames": 362,
+   "sharePercentile": 1,
+   "winratePercentile": 6,
+   "contestedGap": 5,
+   "gamesPercentile": 4,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 17.3
+  },
+  "Milio": {
+   "specialisationShare": 23.9,
+   "heavyOtpShare": 6.1,
+   "nPlayers": 49,
+   "medianChampGames": 66,
+   "medianRankedGames": 289,
+   "sharePercentile": 29,
+   "winratePercentile": 21,
+   "contestedGap": -8,
+   "gamesPercentile": 26,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.9
+  },
+  "Miss Fortune": {
+   "specialisationShare": 25.0,
+   "heavyOtpShare": 18.8,
+   "nPlayers": 48,
+   "medianChampGames": 93,
+   "medianRankedGames": 355,
+   "sharePercentile": 34,
+   "winratePercentile": 42,
+   "contestedGap": 9,
+   "gamesPercentile": 84,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.0
+  },
+  "Mordekaiser": {
+   "specialisationShare": 28.5,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 75,
+   "medianRankedGames": 305,
+   "sharePercentile": 51,
+   "winratePercentile": 28,
+   "contestedGap": -23,
+   "gamesPercentile": 54,
+   "tags": [],
+   "otpScore": 28.5
+  },
+  "Morgana": {
+   "specialisationShare": 23.9,
+   "heavyOtpShare": 6.4,
+   "nPlayers": 47,
+   "medianChampGames": 81,
+   "medianRankedGames": 369,
+   "sharePercentile": 29,
+   "winratePercentile": 59,
+   "contestedGap": 29,
+   "gamesPercentile": 66,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.9
+  },
+  "Nami": {
+   "specialisationShare": 25.5,
+   "heavyOtpShare": 2.0,
+   "nPlayers": 49,
+   "medianChampGames": 110,
+   "medianRankedGames": 388,
+   "sharePercentile": 37,
+   "winratePercentile": 93,
+   "contestedGap": 56,
+   "gamesPercentile": 97,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.5
+  },
+  "Nasus": {
+   "specialisationShare": 36.3,
+   "heavyOtpShare": 34.7,
+   "nPlayers": 49,
+   "medianChampGames": 89,
+   "medianRankedGames": 282,
+   "sharePercentile": 88,
+   "winratePercentile": 71,
+   "contestedGap": -17,
+   "gamesPercentile": 82,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 36.3
+  },
+  "Nautilus": {
+   "specialisationShare": 22.0,
+   "heavyOtpShare": 27.7,
+   "nPlayers": 47,
+   "medianChampGames": 62,
+   "medianRankedGames": 240,
+   "sharePercentile": 13,
+   "winratePercentile": 9,
+   "contestedGap": -3,
+   "gamesPercentile": 19,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.0
+  },
+  "Nidalee": {
+   "specialisationShare": 20.4,
+   "heavyOtpShare": 8.0,
+   "nPlayers": 50,
+   "medianChampGames": 58,
+   "medianRankedGames": 300,
+   "sharePercentile": 7,
+   "winratePercentile": 99,
+   "contestedGap": 92,
+   "gamesPercentile": 7,
+   "tags": [
+    "contested"
+   ],
+   "otpScore": 20.4
+  },
+  "Nilah": {
+   "specialisationShare": 26.1,
+   "heavyOtpShare": 25.5,
+   "nPlayers": 47,
+   "medianChampGames": 54,
+   "medianRankedGames": 260,
+   "sharePercentile": 43,
+   "winratePercentile": 99,
+   "contestedGap": 55,
+   "gamesPercentile": 3,
+   "tags": [],
+   "otpScore": 26.1
+  },
+  "Nocturne": {
+   "specialisationShare": 30.6,
+   "heavyOtpShare": 16.3,
+   "nPlayers": 49,
+   "medianChampGames": 65,
+   "medianRankedGames": 262,
+   "sharePercentile": 66,
+   "winratePercentile": 5,
+   "contestedGap": -61,
+   "gamesPercentile": 25,
+   "tags": [],
+   "otpScore": 30.6
+  },
+  "Norra": {
+   "specialisationShare": 33.7,
+   "heavyOtpShare": 25.0,
+   "nPlayers": 48,
+   "medianChampGames": 60,
+   "medianRankedGames": 207,
+   "sharePercentile": 81,
+   "winratePercentile": 51,
+   "contestedGap": -30,
+   "gamesPercentile": 12,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 33.7
+  },
+  "Olaf": {
+   "specialisationShare": 25.1,
+   "heavyOtpShare": 13.3,
+   "nPlayers": 45,
+   "medianChampGames": 75,
+   "medianRankedGames": 326,
+   "sharePercentile": 34,
+   "winratePercentile": 86,
+   "contestedGap": 52,
+   "gamesPercentile": 54,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.1
+  },
+  "Orianna": {
+   "specialisationShare": 23.8,
+   "heavyOtpShare": 10.0,
+   "nPlayers": 50,
+   "medianChampGames": 70,
+   "medianRankedGames": 356,
+   "sharePercentile": 28,
+   "winratePercentile": 59,
+   "contestedGap": 31,
+   "gamesPercentile": 37,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.8
+  },
+  "Ornn": {
+   "specialisationShare": 35.4,
+   "heavyOtpShare": 23.9,
+   "nPlayers": 46,
+   "medianChampGames": 88,
+   "medianRankedGames": 317,
+   "sharePercentile": 86,
+   "winratePercentile": 54,
+   "contestedGap": -32,
+   "gamesPercentile": 80,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 35.4
+  },
+  "Pantheon": {
+   "specialisationShare": 31.9,
+   "heavyOtpShare": 26.5,
+   "nPlayers": 49,
+   "medianChampGames": 105,
+   "medianRankedGames": 341,
+   "sharePercentile": 74,
+   "winratePercentile": 95,
+   "contestedGap": 21,
+   "gamesPercentile": 94,
+   "tags": [],
+   "otpScore": 31.9
+  },
+  "Poppy": {
+   "specialisationShare": 20.3,
+   "heavyOtpShare": 12.2,
+   "nPlayers": 49,
+   "medianChampGames": 74,
+   "medianRankedGames": 351,
+   "sharePercentile": 7,
+   "winratePercentile": 47,
+   "contestedGap": 40,
+   "gamesPercentile": 49,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 20.3
+  },
+  "Pyke": {
+   "specialisationShare": 42.7,
+   "heavyOtpShare": 38.8,
+   "nPlayers": 49,
+   "medianChampGames": 69,
+   "medianRankedGames": 200,
+   "sharePercentile": 96,
+   "winratePercentile": 77,
+   "contestedGap": -19,
+   "gamesPercentile": 34,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 42.7
+  },
+  "Rakan": {
+   "specialisationShare": 22.2,
+   "heavyOtpShare": 24.5,
+   "nPlayers": 49,
+   "medianChampGames": 67,
+   "medianRankedGames": 277,
+   "sharePercentile": 14,
+   "winratePercentile": 47,
+   "contestedGap": 33,
+   "gamesPercentile": 31,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.2
+  },
+  "Rammus": {
+   "specialisationShare": 23.6,
+   "heavyOtpShare": 19.6,
+   "nPlayers": 46,
+   "medianChampGames": 99,
+   "medianRankedGames": 375,
+   "sharePercentile": 26,
+   "winratePercentile": 96,
+   "contestedGap": 70,
+   "gamesPercentile": 89,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.6
+  },
+  "Rell": {
+   "specialisationShare": 25.0,
+   "heavyOtpShare": 4.2,
+   "nPlayers": 48,
+   "medianChampGames": 78,
+   "medianRankedGames": 332,
+   "sharePercentile": 34,
+   "winratePercentile": 2,
+   "contestedGap": -31,
+   "gamesPercentile": 62,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.0
+  },
+  "Renekton": {
+   "specialisationShare": 23.3,
+   "heavyOtpShare": 22.9,
+   "nPlayers": 48,
+   "medianChampGames": 64,
+   "medianRankedGames": 286,
+   "sharePercentile": 23,
+   "winratePercentile": 12,
+   "contestedGap": -11,
+   "gamesPercentile": 22,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.3
+  },
+  "Rengar": {
+   "specialisationShare": 31.2,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 74,
+   "medianRankedGames": 283,
+   "sharePercentile": 70,
+   "winratePercentile": 86,
+   "contestedGap": 16,
+   "gamesPercentile": 49,
+   "tags": [],
+   "otpScore": 31.2
+  },
+  "Riven": {
+   "specialisationShare": 25.6,
+   "heavyOtpShare": 14.3,
+   "nPlayers": 49,
+   "medianChampGames": 59,
+   "medianRankedGames": 285,
+   "sharePercentile": 40,
+   "winratePercentile": 88,
+   "contestedGap": 48,
+   "gamesPercentile": 10,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.6
+  },
+  "Rumble": {
+   "specialisationShare": 32.8,
+   "heavyOtpShare": 30.0,
+   "nPlayers": 50,
+   "medianChampGames": 62,
+   "medianRankedGames": 190,
+   "sharePercentile": 76,
+   "winratePercentile": 1,
+   "contestedGap": -75,
+   "gamesPercentile": 19,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 32.8
+  },
+  "Ryze": {
+   "specialisationShare": 25.6,
+   "heavyOtpShare": 6.1,
+   "nPlayers": 49,
+   "medianChampGames": 69,
+   "medianRankedGames": 245,
+   "sharePercentile": 40,
+   "winratePercentile": 71,
+   "contestedGap": 31,
+   "gamesPercentile": 34,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.6
+  },
+  "Samira": {
+   "specialisationShare": 31.0,
+   "heavyOtpShare": 28.0,
+   "nPlayers": 50,
+   "medianChampGames": 107,
+   "medianRankedGames": 339,
+   "sharePercentile": 69,
+   "winratePercentile": 31,
+   "contestedGap": -39,
+   "gamesPercentile": 96,
+   "tags": [
+    "comfort"
+   ],
+   "otpScore": 31.0
+  },
+  "Senna": {
+   "specialisationShare": 28.5,
+   "heavyOtpShare": 24.0,
+   "nPlayers": 50,
+   "medianChampGames": 74,
+   "medianRankedGames": 259,
+   "sharePercentile": 51,
+   "winratePercentile": 88,
+   "contestedGap": 37,
+   "gamesPercentile": 49,
+   "tags": [],
+   "otpScore": 28.5
+  },
+  "Seraphine": {
+   "specialisationShare": 28.9,
+   "heavyOtpShare": 22.2,
+   "nPlayers": 45,
+   "medianChampGames": 82,
+   "medianRankedGames": 318,
+   "sharePercentile": 52,
+   "winratePercentile": 31,
+   "contestedGap": -22,
+   "gamesPercentile": 68,
+   "tags": [],
+   "otpScore": 28.9
+  },
+  "Sett": {
+   "specialisationShare": 30.2,
+   "heavyOtpShare": 18.8,
+   "nPlayers": 48,
+   "medianChampGames": 107,
+   "medianRankedGames": 364,
+   "sharePercentile": 60,
+   "winratePercentile": 42,
+   "contestedGap": -18,
+   "gamesPercentile": 96,
+   "tags": [
+    "comfort"
+   ],
+   "otpScore": 30.2
+  },
+  "Shen": {
+   "specialisationShare": 23.4,
+   "heavyOtpShare": 11.6,
+   "nPlayers": 43,
+   "medianChampGames": 80,
+   "medianRankedGames": 358,
+   "sharePercentile": 24,
+   "winratePercentile": 60,
+   "contestedGap": 36,
+   "gamesPercentile": 64,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.4
+  },
+  "Shyvana": {
+   "specialisationShare": 20.8,
+   "heavyOtpShare": 13.0,
+   "nPlayers": 46,
+   "medianChampGames": 73,
+   "medianRankedGames": 315,
+   "sharePercentile": 9,
+   "winratePercentile": 81,
+   "contestedGap": 72,
+   "gamesPercentile": 45,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 20.8
+  },
+  "Singed": {
+   "specialisationShare": 36.9,
+   "heavyOtpShare": 36.4,
+   "nPlayers": 44,
+   "medianChampGames": 100,
+   "medianRankedGames": 320,
+   "sharePercentile": 89,
+   "winratePercentile": 19,
+   "contestedGap": -70,
+   "gamesPercentile": 91,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 36.9
+  },
+  "Sion": {
+   "specialisationShare": 29.6,
+   "heavyOtpShare": 16.3,
+   "nPlayers": 49,
+   "medianChampGames": 75,
+   "medianRankedGames": 242,
+   "sharePercentile": 57,
+   "winratePercentile": 42,
+   "contestedGap": -15,
+   "gamesPercentile": 54,
+   "tags": [],
+   "otpScore": 29.6
+  },
+  "Sivir": {
+   "specialisationShare": 20.7,
+   "heavyOtpShare": 18.2,
+   "nPlayers": 44,
+   "medianChampGames": 63,
+   "medianRankedGames": 298,
+   "sharePercentile": 8,
+   "winratePercentile": 42,
+   "contestedGap": 34,
+   "gamesPercentile": 21,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 20.7
+  },
+  "Skarner": {
+   "specialisationShare": 44.3,
+   "heavyOtpShare": 41.7,
+   "nPlayers": 48,
+   "medianChampGames": 61,
+   "medianRankedGames": 169,
+   "sharePercentile": 99,
+   "winratePercentile": 36,
+   "contestedGap": -63,
+   "gamesPercentile": 16,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 44.3
+  },
+  "Smolder": {
+   "specialisationShare": 25.9,
+   "heavyOtpShare": 8.2,
+   "nPlayers": 49,
+   "medianChampGames": 73,
+   "medianRankedGames": 273,
+   "sharePercentile": 42,
+   "winratePercentile": 86,
+   "contestedGap": 44,
+   "gamesPercentile": 45,
+   "tags": [],
+   "otpScore": 25.9
+  },
+  "Sona": {
+   "specialisationShare": 25.2,
+   "heavyOtpShare": 6.2,
+   "nPlayers": 48,
+   "medianChampGames": 86,
+   "medianRankedGames": 342,
+   "sharePercentile": 35,
+   "winratePercentile": 90,
+   "contestedGap": 55,
+   "gamesPercentile": 75,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.2
+  },
+  "Soraka": {
+   "specialisationShare": 23.2,
+   "heavyOtpShare": 8.9,
+   "nPlayers": 45,
+   "medianChampGames": 74,
+   "medianRankedGames": 308,
+   "sharePercentile": 22,
+   "winratePercentile": 75,
+   "contestedGap": 53,
+   "gamesPercentile": 49,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.2
+  },
+  "Swain": {
+   "specialisationShare": 30.9,
+   "heavyOtpShare": 28.0,
+   "nPlayers": 50,
+   "medianChampGames": 64,
+   "medianRankedGames": 220,
+   "sharePercentile": 68,
+   "winratePercentile": 34,
+   "contestedGap": -34,
+   "gamesPercentile": 22,
+   "tags": [],
+   "otpScore": 30.9
+  },
+  "Syndra": {
+   "specialisationShare": 23.3,
+   "heavyOtpShare": 14.0,
+   "nPlayers": 50,
+   "medianChampGames": 70,
+   "medianRankedGames": 312,
+   "sharePercentile": 23,
+   "winratePercentile": 60,
+   "contestedGap": 37,
+   "gamesPercentile": 37,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.3
+  },
+  "Taliyah": {
+   "specialisationShare": 29.1,
+   "heavyOtpShare": 16.3,
+   "nPlayers": 49,
+   "medianChampGames": 67,
+   "medianRankedGames": 261,
+   "sharePercentile": 54,
+   "winratePercentile": 54,
+   "contestedGap": 0,
+   "gamesPercentile": 31,
+   "tags": [],
+   "otpScore": 29.1
+  },
+  "Talon": {
+   "specialisationShare": 30.8,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 45,
+   "medianRankedGames": 183,
+   "sharePercentile": 67,
+   "winratePercentile": 75,
+   "contestedGap": 8,
+   "gamesPercentile": 1,
+   "tags": [],
+   "otpScore": 30.8
+  },
+  "Teemo": {
+   "specialisationShare": 39.8,
+   "heavyOtpShare": 22.4,
+   "nPlayers": 49,
+   "medianChampGames": 70,
+   "medianRankedGames": 190,
+   "sharePercentile": 93,
+   "winratePercentile": 63,
+   "contestedGap": -30,
+   "gamesPercentile": 37,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 39.8
+  },
+  "Thresh": {
+   "specialisationShare": 35.9,
+   "heavyOtpShare": 26.5,
+   "nPlayers": 49,
+   "medianChampGames": 79,
+   "medianRankedGames": 241,
+   "sharePercentile": 87,
+   "winratePercentile": 47,
+   "contestedGap": -40,
+   "gamesPercentile": 63,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 35.9
+  },
+  "Tristana": {
+   "specialisationShare": 30.0,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 85,
+   "medianRankedGames": 284,
+   "sharePercentile": 58,
+   "winratePercentile": 10,
+   "contestedGap": -48,
+   "gamesPercentile": 74,
+   "tags": [],
+   "otpScore": 30.0
+  },
+  "Tryndamere": {
+   "specialisationShare": 46.8,
+   "heavyOtpShare": 44.0,
+   "nPlayers": 50,
+   "medianChampGames": 76,
+   "medianRankedGames": 172,
+   "sharePercentile": 99,
+   "winratePercentile": 34,
+   "contestedGap": -65,
+   "gamesPercentile": 56,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 46.8
+  },
+  "Twisted Fate": {
+   "specialisationShare": 33.1,
+   "heavyOtpShare": 34.0,
+   "nPlayers": 50,
+   "medianChampGames": 61,
+   "medianRankedGames": 203,
+   "sharePercentile": 78,
+   "winratePercentile": 97,
+   "contestedGap": 20,
+   "gamesPercentile": 16,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 33.1
+  },
+  "Twitch": {
+   "specialisationShare": 22.2,
+   "heavyOtpShare": 13.0,
+   "nPlayers": 46,
+   "medianChampGames": 66,
+   "medianRankedGames": 329,
+   "sharePercentile": 14,
+   "winratePercentile": 32,
+   "contestedGap": 18,
+   "gamesPercentile": 26,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 22.2
+  },
+  "Urgot": {
+   "specialisationShare": 42.4,
+   "heavyOtpShare": 41.7,
+   "nPlayers": 48,
+   "medianChampGames": 120,
+   "medianRankedGames": 304,
+   "sharePercentile": 96,
+   "winratePercentile": 15,
+   "contestedGap": -81,
+   "gamesPercentile": 99,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 42.4
+  },
+  "Varus": {
+   "specialisationShare": 31.6,
+   "heavyOtpShare": 16.0,
+   "nPlayers": 50,
+   "medianChampGames": 76,
+   "medianRankedGames": 244,
+   "sharePercentile": 72,
+   "winratePercentile": 47,
+   "contestedGap": -24,
+   "gamesPercentile": 56,
+   "tags": [],
+   "otpScore": 31.6
+  },
+  "Vayne": {
+   "specialisationShare": 21.7,
+   "heavyOtpShare": 14.3,
+   "nPlayers": 49,
+   "medianChampGames": 76,
+   "medianRankedGames": 397,
+   "sharePercentile": 12,
+   "winratePercentile": 81,
+   "contestedGap": 69,
+   "gamesPercentile": 56,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 21.7
+  },
+  "Veigar": {
+   "specialisationShare": 37.5,
+   "heavyOtpShare": 30.6,
+   "nPlayers": 49,
+   "medianChampGames": 60,
+   "medianRankedGames": 168,
+   "sharePercentile": 90,
+   "winratePercentile": 62,
+   "contestedGap": -27,
+   "gamesPercentile": 12,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 37.5
+  },
+  "Vex": {
+   "specialisationShare": 31.8,
+   "heavyOtpShare": 28.6,
+   "nPlayers": 49,
+   "medianChampGames": 63,
+   "medianRankedGames": 195,
+   "sharePercentile": 72,
+   "winratePercentile": 12,
+   "contestedGap": -60,
+   "gamesPercentile": 21,
+   "tags": [],
+   "otpScore": 31.8
+  },
+  "Vi": {
+   "specialisationShare": 23.0,
+   "heavyOtpShare": 10.0,
+   "nPlayers": 50,
+   "medianChampGames": 88,
+   "medianRankedGames": 392,
+   "sharePercentile": 20,
+   "winratePercentile": 59,
+   "contestedGap": 38,
+   "gamesPercentile": 80,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 23.0
+  },
+  "Viego": {
+   "specialisationShare": 25.4,
+   "heavyOtpShare": 22.4,
+   "nPlayers": 49,
+   "medianChampGames": 65,
+   "medianRankedGames": 266,
+   "sharePercentile": 37,
+   "winratePercentile": 36,
+   "contestedGap": -1,
+   "gamesPercentile": 25,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 25.4
+  },
+  "Viktor": {
+   "specialisationShare": 30.1,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 58,
+   "medianRankedGames": 220,
+   "sharePercentile": 59,
+   "winratePercentile": 44,
+   "contestedGap": -15,
+   "gamesPercentile": 7,
+   "tags": [],
+   "otpScore": 30.1
+  },
+  "Vladimir": {
+   "specialisationShare": 34.4,
+   "heavyOtpShare": 28.6,
+   "nPlayers": 49,
+   "medianChampGames": 88,
+   "medianRankedGames": 330,
+   "sharePercentile": 84,
+   "winratePercentile": 6,
+   "contestedGap": -78,
+   "gamesPercentile": 80,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 34.4
+  },
+  "Volibear": {
+   "specialisationShare": 33.8,
+   "heavyOtpShare": 18.4,
+   "nPlayers": 49,
+   "medianChampGames": 105,
+   "medianRankedGames": 378,
+   "sharePercentile": 81,
+   "winratePercentile": 24,
+   "contestedGap": -58,
+   "gamesPercentile": 94,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 33.8
+  },
+  "Warwick": {
+   "specialisationShare": 41.4,
+   "heavyOtpShare": 39.6,
+   "nPlayers": 48,
+   "medianChampGames": 83,
+   "medianRankedGames": 252,
+   "sharePercentile": 94,
+   "winratePercentile": 93,
+   "contestedGap": -1,
+   "gamesPercentile": 70,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 41.4
+  },
+  "Wukong": {
+   "specialisationShare": 27.8,
+   "heavyOtpShare": 18.4,
+   "nPlayers": 49,
+   "medianChampGames": 75,
+   "medianRankedGames": 259,
+   "sharePercentile": 49,
+   "winratePercentile": 19,
+   "contestedGap": -30,
+   "gamesPercentile": 54,
+   "tags": [],
+   "otpScore": 27.8
+  },
+  "Xayah": {
+   "specialisationShare": 24.7,
+   "heavyOtpShare": 14.6,
+   "nPlayers": 48,
+   "medianChampGames": 73,
+   "medianRankedGames": 310,
+   "sharePercentile": 31,
+   "winratePercentile": 4,
+   "contestedGap": -27,
+   "gamesPercentile": 45,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 24.7
+  },
+  "Xin Zhao": {
+   "specialisationShare": 24.9,
+   "heavyOtpShare": 20.4,
+   "nPlayers": 49,
+   "medianChampGames": 67,
+   "medianRankedGames": 314,
+   "sharePercentile": 32,
+   "winratePercentile": 34,
+   "contestedGap": 2,
+   "gamesPercentile": 31,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 24.9
+  },
+  "Yasuo": {
+   "specialisationShare": 38.8,
+   "heavyOtpShare": 30.6,
+   "nPlayers": 49,
+   "medianChampGames": 112,
+   "medianRankedGames": 337,
+   "sharePercentile": 91,
+   "winratePercentile": 24,
+   "contestedGap": -67,
+   "gamesPercentile": 98,
+   "tags": [
+    "otp",
+    "comfort"
+   ],
+   "otpScore": 38.8
+  },
+  "Yone": {
+   "specialisationShare": 29.6,
+   "heavyOtpShare": 18.4,
+   "nPlayers": 49,
+   "medianChampGames": 78,
+   "medianRankedGames": 333,
+   "sharePercentile": 57,
+   "winratePercentile": 94,
+   "contestedGap": 36,
+   "gamesPercentile": 62,
+   "tags": [],
+   "otpScore": 29.6
+  },
+  "Yunara": {
+   "specialisationShare": 29.6,
+   "heavyOtpShare": 0.0,
+   "nPlayers": 50,
+   "medianChampGames": 84,
+   "medianRankedGames": 275,
+   "sharePercentile": 57,
+   "winratePercentile": 42,
+   "contestedGap": -15,
+   "gamesPercentile": 72,
+   "tags": [],
+   "otpScore": 29.6
+  },
+  "Yuumi": {
+   "specialisationShare": 26.2,
+   "heavyOtpShare": 8.3,
+   "nPlayers": 48,
+   "medianChampGames": 85,
+   "medianRankedGames": 374,
+   "sharePercentile": 44,
+   "winratePercentile": 1,
+   "contestedGap": -43,
+   "gamesPercentile": 74,
+   "tags": [],
+   "otpScore": 26.2
+  },
+  "Zed": {
+   "specialisationShare": 30.4,
+   "heavyOtpShare": 14.3,
+   "nPlayers": 49,
+   "medianChampGames": 77,
+   "medianRankedGames": 287,
+   "sharePercentile": 63,
+   "winratePercentile": 72,
+   "contestedGap": 9,
+   "gamesPercentile": 59,
+   "tags": [],
+   "otpScore": 30.4
+  },
+  "Zeri": {
+   "specialisationShare": 27.5,
+   "heavyOtpShare": 16.3,
+   "nPlayers": 49,
+   "medianChampGames": 61,
+   "medianRankedGames": 258,
+   "sharePercentile": 47,
+   "winratePercentile": 51,
+   "contestedGap": 4,
+   "gamesPercentile": 16,
+   "tags": [],
+   "otpScore": 27.5
+  },
+  "Ziggs": {
+   "specialisationShare": 19.9,
+   "heavyOtpShare": 10.2,
+   "nPlayers": 49,
+   "medianChampGames": 75,
+   "medianRankedGames": 338,
+   "sharePercentile": 4,
+   "winratePercentile": 19,
+   "contestedGap": 14,
+   "gamesPercentile": 54,
+   "tags": [
+    "generalist"
+   ],
+   "otpScore": 19.9
+  },
+  "Zilean": {
+   "specialisationShare": 35.9,
+   "heavyOtpShare": 27.1,
+   "nPlayers": 48,
+   "medianChampGames": 67,
+   "medianRankedGames": 204,
+   "sharePercentile": 87,
+   "winratePercentile": 55,
+   "contestedGap": -32,
+   "gamesPercentile": 31,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 35.9
+  },
+  "Zoe": {
+   "specialisationShare": 32.9,
+   "heavyOtpShare": 30.6,
+   "nPlayers": 49,
+   "medianChampGames": 61,
+   "medianRankedGames": 185,
+   "sharePercentile": 77,
+   "winratePercentile": 21,
+   "contestedGap": -55,
+   "gamesPercentile": 16,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 32.9
+  },
+  "Zyra": {
+   "specialisationShare": 33.9,
+   "heavyOtpShare": 18.8,
+   "nPlayers": 48,
+   "medianChampGames": 62,
+   "medianRankedGames": 194,
+   "sharePercentile": 82,
+   "winratePercentile": 64,
+   "contestedGap": -18,
+   "gamesPercentile": 19,
+   "tags": [
+    "otp"
+   ],
+   "otpScore": 33.9
+  }
+ }
+}

@@ -20,6 +20,16 @@ import pandas as pd
 from web.champion_assets import icon_url, splash_url
 from web.champion_meta import champion_class, champion_difficulty, difficulty_label
 from web.champion_roles import ROLES, roles_for
+
+#: Per-champion specialisation and player tags, built from the captured
+#: boards by scripts/build_specialisation.py. Absent champions fall back
+#: to the old skew score so a partial build never blanks the field.
+_SPEC_PATH = Path(__file__).resolve().parent.parent / "data" / "champion_specialisation.json"
+_SPEC: dict = {}
+if _SPEC_PATH.exists():
+    import json as _json
+    _SPEC = _json.loads(_SPEC_PATH.read_text(encoding="utf-8")).get("champions", {})
+
 from web.integrity import display_name, eligible_for_title
 from web.data_loader import (
     tier_order,
@@ -220,7 +230,23 @@ def build() -> dict:
             "nPlayers": _i(r.get("n_players")),
             "medianMastery": _i(r.get("median_mastery")),
             "maxScore": _i(r.get("max_score")),
-            "otpScore": _f(r.get("otp_score")),
+            # otpScore is now the MEDIAN SHARE of a main's ranked games spent on
+            # this champion (data/champion_specialisation.json), which answers
+            # "is this board specialists" directly. The previous score measured
+            # skew WITHIN a board -- a property of the player pool, not the
+            # champion -- and misfired badly: Hecarim scored 78.6 on it while
+            # only 18% of a Hecarim main's ranked games are on Hecarim. It is
+            # kept as otpScoreSkew rather than deleted, because the tier
+            # explanations and the OTP badge were built against its scale.
+            "otpScore": _f((_SPEC.get(name) or {}).get("otpScore"),
+                           ) if _SPEC.get(name) else _f(r.get("otp_score")),
+            "otpScoreSkew": _f(r.get("otp_score")),
+            "specialisationShare": _f((_SPEC.get(name) or {}).get("specialisationShare")),
+            "heavyOtpShare": _f((_SPEC.get(name) or {}).get("heavyOtpShare")),
+            "contestedGap": _i((_SPEC.get(name) or {}).get("contestedGap")),
+            # otp / comfort / contested / generalist -- see the _tags block in
+            # data/champion_specialisation.json for what each one means.
+            "playerTags": (_SPEC.get(name) or {}).get("tags") or [],
             "isOtp": bool(r.get("is_otp", False)),
             # display_name, not raw: rank 1 is occasionally an advert, and this
             # string lands on every champion card.

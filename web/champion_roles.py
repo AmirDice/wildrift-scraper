@@ -34,6 +34,16 @@ _JUNGLE: frozenset[str] = frozenset({
     "Lillia", "Master Yi", "Nidalee", "Nilah", "Nocturne", "Nunu & Willump",
     "Pantheon", "Rammus", "Rengar", "Shyvana", "Talon",
     "Vi", "Viego", "Warwick", "Xin Zhao",
+    # Moved from Baron on capture evidence (scripts/role_from_captures.py,
+    # 2026-08-19). Equipment is the tell: a player who took Smite was in the
+    # jungle, and the top-50 boards say so. Riven splits EXACTLY 50/50, so the
+    # win rate broke the tie -- 63.8% for the Smite half against 61.3% for the
+    # laners. She is genuinely dual-role and this strict single-role model has
+    # to place her somewhere.
+    #
+    # Wukong was considered and REJECTED: 44% take Smite, and 44 against 56 is
+    # a minority, not a coin flip. He stays Baron.
+    "Riven",
     # Skarner is NOT here: in Wild Rift he is a Baron laner (owner
     # correction, 2026-08-06), so he takes the Baron fallback below.
 })
