@@ -9,9 +9,12 @@ venv/
 data/*.png
 data/*.jpg
 data/*.csv.bak
-# Analytics exports: regenerate with scripts/export_analytics.py whenever they
-# are wanted. Committing one would pin a snapshot that is stale the next day.
-data/wrtruemeta_analytics_*.xlsx
+# Analytics exports: regenerate with scripts/export_analytics.py or
+# scripts/export_web_analytics.py whenever they are wanted. Committing one
+# would pin a snapshot that is stale the next day. The web-analytics exporter
+# writes wrtruemeta_web_analytics_*, which the narrower pattern above did not
+# match, so its first run left an .xlsx staged for commit.
+data/wrtruemeta_*analytics_*.xlsx
 !data/winrates.csv
 !data/.gitkeep
 
@@ -24,6 +27,11 @@ images/
 
 # scraper raw-HTML cache
 data/wrf_cache/
+
+# Per-device calibration screenshots. Written while aligning tap coordinates
+# for one emulator and meaningless on any other machine; a single check.png is
+# 2.7MB. The calibration JSON beside them IS tracked -- the images are not.
+coords/*/shots/
 
 # Local scratch: prompt dumps and one-off debug scripts, never committed.
 scratch/
