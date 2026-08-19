@@ -42,6 +42,12 @@ from .config import (
     SCREEN_5_OCR_REGION,
     load_calibration,
 )
+from .stats_ocr import read_stats_page_ocr, stats_confidence
+
+#: Below this share of readable fields, a stats page is worth a model
+#: call. 40 unseen frames read at 0.986 mean confidence, worst 0.88.
+STATS_OCR_MIN_CONFIDENCE = 0.85
+
 from .ocr import (
     find_champion_winrates,
     find_target_data,
@@ -91,6 +97,25 @@ def _winrate_count(csv_path: Path) -> int:
 
 def _norm_name(s: str) -> str:
     return "".join(ch for ch in s.casefold() if ch.isalnum())
+
+
+def _usable_ocr_name(s: str) -> bool:
+    """Whether a Tesseract name read is worth believing, so the model is only
+    paid for the ones it is not.
+
+    Two failure shapes to reject. Tesseract garbles CJK entirely, which shows
+    up as a low ASCII share. And it emits whitespace fragments on a bad crop
+    ("oe eee iar immm Ae") that are mostly-ASCII and would sail past an ASCII
+    filter alone, so a usable read must also contain a real four-character
+    word. Same test the tap verification already applies further down.
+    """
+    s = (s or "").strip()
+    if len(s) < 3:
+        return False
+    ascii_share = sum(c.isascii() for c in s) / len(s)
+    if ascii_share < 0.7 or s.count(" ") / len(s) > 0.3:
+        return False
+    return bool(re.search(r"[A-Za-z0-9]{4}", s))
 
 
 def verify_taps(
@@ -244,6 +269,12 @@ def main() -> int:
             except Exception as exc:  # noqa: BLE001 -- keep extracting without names
                 print(f"  [names] {lb_path.name}: {exc}")
     else:
+        # OCR first, and Gemini ONLY for the names OCR could not read. Tesseract
+        # is free and handles ASCII names fine; it garbles CJK and occasionally
+        # returns fragments ("oe eee iar immm Ae"). Those are the only ranks
+        # worth paying a model for, and one page read covers 4-5 of them, so the
+        # bill is a handful of calls per champion rather than one per rank.
+        needs_model: list[dict] = []
         for e in entries:
             lb_path = args.capture_dir / e.get("lb_frame", "")
             tap_y = e.get("tap_y")
@@ -255,8 +286,43 @@ def main() -> int:
             x0, x1 = SCREEN_2_NAME_X_RANGE
             region = (x0, max(0, int(tap_y) + SCREEN_2_NAME_Y_OFFSET), x1 - x0, SCREEN_2_NAME_HEIGHT)
             name = read_player_name(img, region)
-            if name:
+            if name and _usable_ocr_name(name):
                 names[e["rank"]] = name
+            else:
+                needs_model.append(e)
+                if name:
+                    print(f"  [names] rank {e['rank']}: OCR read {name!r}, "
+                          f"low confidence -> model")
+
+        if needs_model:
+            try:
+                from .gemini_ocr import read_leaderboard
+                from .scrape_timed import _ensure_gemini_key
+                if not _ensure_gemini_key():
+                    raise RuntimeError("GEMINI_API_KEY not found")
+                seen_frames: set[str] = set()
+                calls = 0
+                for e in needs_model:
+                    if e["rank"] in names:
+                        continue          # a previous page read already covered it
+                    frame = e.get("lb_frame", "")
+                    if not frame or frame in seen_frames:
+                        continue
+                    seen_frames.add(frame)
+                    lb_path = args.capture_dir / frame
+                    img = cv2.imread(str(lb_path))
+                    if img is None:
+                        continue
+                    calls += 1
+                    for row in read_leaderboard(img, model=args.model):
+                        names.setdefault(row.rank, row.player_name)
+                        if row.score is not None:
+                            lb_scores.setdefault(row.rank, row.score)
+                print(f"  [names] {len(needs_model)} rank(s) needed the model, "
+                      f"covered by {calls} page read(s)")
+            except Exception as exc:  # noqa: BLE001 -- no key/network: keep the OCR names
+                print(f"  [names] model fallback unavailable ({exc}); "
+                      f"{len(needs_model)} name(s) left unread")
     print(f"names resolved: {len(names)}/{len(entries)}")
 
     # ---- winrate/score/games from the strip frames (parallel) ----
@@ -407,8 +473,19 @@ def main() -> int:
         fp = args.capture_dir / name
         return cv2.imread(str(fp)) if fp.exists() else None
 
-    if args.engine == "gemini":
-        from .gemini_ocr import read_rank_popup, read_stats_page
+    if True:
+        # Extras used to sit behind `engine == "gemini"`, which silently
+        # produced no stats.csv and no builds.jsonl on an OCR run -- and builds
+        # are icon-matched, so they never needed a model at all. Stats now read
+        # by OCR with a model fallback; the popup still needs the model, so it
+        # is skipped rather than faked when there is no key.
+        model_stats = args.engine == "gemini"
+        read_rank_popup = read_stats_page = None
+        try:
+            from .gemini_ocr import read_rank_popup, read_stats_page  # noqa: F811
+        except Exception as exc:  # noqa: BLE001
+            print(f"  [extras] model reader unavailable ({exc}); "
+                  f"OCR only, popups skipped")
 
         # canonical item-slug resolution against the site's item catalog
         items_path = Path(__file__).resolve().parent.parent / "data" / "items.json"
@@ -443,7 +520,7 @@ def main() -> int:
             popup = stats = build = None
             stats_by_queue: dict[str, dict] = {}
             img = _read_frame_file(e.get("popup_frame"))
-            if img is not None:
+            if img is not None and read_rank_popup is not None:
                 try:
                     popup = read_rank_popup(img, model=args.model)
                 except Exception as exc:  # noqa: BLE001
@@ -451,6 +528,24 @@ def main() -> int:
             for queue, fn in (e.get("stats_frames") or {}).items():
                 img = _read_frame_file(fn)
                 if img is None:
+                    continue
+                # OCR FIRST. The stats page is a fixed grid of large numerals,
+                # which reads at ~99% of fields for a hundredth of the cost of
+                # a model call, and there are two of these pages per player.
+                # The model is only paid when OCR leaves real holes.
+                if not model_stats:
+                    try:
+                        read = read_stats_page_ocr(img)
+                        conf = stats_confidence(read)
+                        if conf >= STATS_OCR_MIN_CONFIDENCE:
+                            read.setdefault("queue", None)
+                            stats_by_queue[queue] = read
+                            continue
+                        print(f"  [stats/{queue}] rank {rank}: OCR confidence "
+                              f"{conf:.2f} below {STATS_OCR_MIN_CONFIDENCE} -> model")
+                    except Exception as exc:  # noqa: BLE001
+                        print(f"  [stats/{queue}] rank {rank}: OCR failed ({exc}) -> model")
+                if read_stats_page is None:
                     continue
                 try:
                     stats_by_queue[queue] = read_stats_page(img, model=args.model)
