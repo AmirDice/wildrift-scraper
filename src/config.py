@@ -50,7 +50,19 @@ SCREEN_5_OCR_REGION: tuple[int, int, int, int] = (779, 729, 1561, 201)
 #   -> X range:  (1341, 1341+345) = (1341, 1686)
 #   -> Y offset: 196 - 246 = -50 (name top sits 50px above row tap-y)
 #   -> Height:   53
-SCREEN_2_NAME_X_RANGE: tuple[int, int] = (1341, 1686)
+#
+# LEFT EDGE, measured rather than eyeballed. The 1341 above came from picking
+# the region by hand off one row, and it lands INSIDE the first glyph: across
+# 420 sampled rows the name's first ink sits at x 1334-1343, so 1341 clipped
+# 419 of them. The damage is invisible for round letters and destroys any
+# first letter whose ink is a vertical stem -- "Eclipsa" read as "-clipsa",
+# "Dogskii" as "Jogskii", "GGWP" as "3GWP" -- and the result still looks like
+# a plausible name, so no confidence check rejected it.
+#
+# 1328 is the middle of the real gutter: the avatar's right edge reaches at
+# most x=1322 and the earliest name ink is x=1334, so this clears every
+# avatar and keeps every glyph. Leading background costs Tesseract nothing.
+SCREEN_2_NAME_X_RANGE: tuple[int, int] = (1328, 1686)
 SCREEN_2_NAME_Y_OFFSET: int = -50
 SCREEN_2_NAME_HEIGHT: int = 53
 

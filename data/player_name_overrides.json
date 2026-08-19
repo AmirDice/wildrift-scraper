@@ -1,0 +1,108 @@
+{
+ "_note": "Player names read by eye from the leaderboard screenshots, for rows where no other source could supply one. Highest precedence in export_captures: this file, then the rank popup's name, then the leaderboard OCR.",
+ "_why": "Two automatic readers cover almost everything. The rank popup gives a model-read name for 94% of players, and Tesseract on the leaderboard row handles plain Latin text. What is left over is the intersection of the two failures: a player whose popup never resolved AND whose name Tesseract cannot represent -- CJK, Hangul, Cyrillic, and Latin styled with Greek or small-cap glyphs. That was 58 rows out of 6294, so they were transcribed by eye rather than paid for.",
+ "_truncated": "A name ending in '...' is truncated BY THE GAME. The leaderboard row clips long names and there is no wider render of them to read, so the ellipsis is what the player's name looks like in this UI, not a reading failure.",
+ "_key": "capture session directory -> rank (string) -> name",
+ "overrides": {
+  "irelia_20260818_2342": {
+   "24": "Easy",
+   "31": "Nolan",
+   "36": "宝马刀妹",
+   "38": "奶香小土豆",
+   "39": "Evan",
+   "43": "aeroLite",
+   "44": "loc",
+   "47": "Tualet TerliğiX"
+  },
+  "janna_20260818_1629": {
+   "23": "唯 一",
+   "35": "Blue Foundation",
+   "44": "GayGuy"
+  },
+  "jarvan-iv_20260818_1058": {
+   "37": "CườnginParis",
+   "42": "Hai Duong Dang"
+  },
+  "jayce_20260819_0130": {
+   "33": "G9AN"
+  },
+  "jinx_20260818_0043": {
+   "26": "NejatJobs"
+  },
+  "kennen_20260818_1309": {
+   "13": "YEG"
+  },
+  "kha-zix_20260818_0028": {
+   "47": "Guardianmovie69",
+   "50": "kızlar eklesin"
+  },
+  "kog-maw_20260819_0436": {
+   "9": "legi"
+  },
+  "malphite_20260818_2036": {
+   "7": "I Q"
+  },
+  "miss-fortune_20260818_1356": {
+   "34": "këshi",
+   "39": "Rox"
+  },
+  "nunu-willump_20260817_2022": {
+   "9": "doncondon",
+   "13": "Gaabb",
+   "22": "Ranked is deadx5",
+   "27": "Lazy2TryharD",
+   "34": "fιαmε Øf Jusτisε",
+   "41": "JokeOnYou",
+   "42": "sleipnirdu28",
+   "47": "nowait"
+  },
+  "olaf_20260819_0347": {
+   "26": "voli ayı",
+   "29": "Yang",
+   "33": "五条悟",
+   "48": "Kirisagi"
+  },
+  "orianna_20260817_2337": {
+   "16": "TiLTED PiG"
+  },
+  "pantheon_20260817_1628": {
+   "17": "皇帝傷Sombra",
+   "25": "UAE",
+   "27": "Zhou Mingrui",
+   "42": "MonoRadiance"
+  },
+  "poppy_20260818_1647": {
+   "20": "汝之雕仿若那绣花之...",
+   "30": "The Alfea",
+   "42": "Creepy"
+  },
+  "rammus_20260818_1325": {
+   "26": "Monaroz95",
+   "41": "Dokil"
+  },
+  "sivir_20260819_0403": {
+   "2": "火雲邪神",
+   "7": "SaberSaber",
+   "8": "caiser",
+   "11": "T1 KataWild",
+   "21": "xBunker",
+   "30": "P1nk PanTera",
+   "35": "Sudi123"
+  },
+  "sona_20260818_0840": {
+   "19": "ЩегольГлазастик",
+   "20": "i11"
+  },
+  "twitch_20260818_1010": {
+   "31": "Türk"
+  },
+  "viego_20260818_1202": {
+   "17": "despair",
+   "22": "discord kiryu156",
+   "23": "404"
+  },
+  "yasuo_20260818_0638": {
+   "31": "HuevoFrito"
+  }
+ }
+}

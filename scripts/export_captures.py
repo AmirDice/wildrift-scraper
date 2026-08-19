@@ -164,6 +164,13 @@ def _builds_by_rank(session: Path) -> dict[int, dict]:
     return out
 
 
+#: Names transcribed by eye, for the rows neither reader could supply. Keyed by
+#: capture session directory then rank. See the file's own _why.
+_NAME_OVERRIDES: dict[str, dict[str, str]] = json.loads(
+    (ROOT / "data" / "player_name_overrides.json").read_text(encoding="utf-8")
+).get("overrides", {}) if (ROOT / "data" / "player_name_overrides.json").exists() else {}
+
+
 def _players_by_rank(session: Path) -> dict[int, dict]:
     out: dict[int, dict] = {}
     for r in _read_csv(session / "players.csv"):
@@ -172,6 +179,10 @@ def _players_by_rank(session: Path) -> dict[int, dict]:
             continue
         tag = (r.get("riot_tag") or "").strip()
         out[rank] = {
+            # The popup's NAME, which until now was read and thrown away. It is
+            # the better of the two readings we already hold -- see the note in
+            # export_champion.
+            "name": (r.get("player_name") or "").strip() or None,
             "tag": tag if tag and tag.lower() != "error" else None,
             # Canonicalised on the way out as well as on the way in, so
             # sessions extracted before the tier rules existed are cleaned
@@ -225,9 +236,29 @@ def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
     builds = _builds_by_rank(session)
     stats = _stats_by_rank(session)
 
-    csv_rows, enriched = [], []
+    csv_rows, enriched, renamed = [], [], 0
     for r in sorted(rows, key=lambda x: int(x["rank"])):
         rank = int(r["rank"])
+        # THE NAME COMES FROM THE POPUP WHERE WE HAVE ONE.
+        #
+        # Two readings of every player exist. extracted.csv holds Tesseract on
+        # a narrow crop of the leaderboard row; players.csv holds the model's
+        # read of the rank popup, which is captured for the tier/level/guild
+        # anyway. Across 5921 players they disagreed on 66%, and 41% of those
+        # differed in the FIRST CHARACTER ALONE -- the signature of a crop that
+        # started inside the first glyph (fixed in config, but only for
+        # captures taken after it). The popup read is right in every case
+        # checked by hand, and it is the only one of the two that survives CJK
+        # and accented characters at all.
+        #
+        # Set on the row itself rather than only on the output, so the advert
+        # and ban checks below test the real name too: a mangled name evades
+        # both, and those lists are matched against what the player actually
+        # calls themselves.
+        best = (_NAME_OVERRIDES.get(session.name) or {}).get(str(rank))             or (ids.get(rank) or {}).get("name")
+        if best and best != (r.get("player_name") or "").strip():
+            renamed += 1
+            r["player_name"] = best
         has_wr = bool((r.get("winrate") or "").strip())
         # A rank whose win rate never extracted still gets its ROW. It used to
         # be dropped here, which made the gaps invisible: the board renumbered
@@ -269,6 +300,8 @@ def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
         "capturedAt": (rows[0].get("captured_at") or "")[:10],
         "players": enriched,
     }
+    if renamed:
+        print(f"    {renamed} name(s) taken from the rank popup over the leaderboard OCR")
     return csv_rows, payload
 
 
