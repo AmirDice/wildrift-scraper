@@ -11,6 +11,7 @@ can be read while the batch is still going.
 """
 from __future__ import annotations
 
+import argparse
 import io
 import subprocess
 import sys
@@ -47,7 +48,29 @@ def _last_write(session: Path) -> float:
     return (time.time() - newest) / 60.0 if newest else 1e9
 
 
+#: Where each region's capture sessions live. The batch used to hard-code the
+#: EU directory, so an NA collection sat un-extracted with the runner cheerfully
+#: reporting "0 pending".
+REGION_CAPTURES = {
+    "eu": ROOT / "data" / "captures",
+    "na": ROOT / "data" / "captures_na",
+}
+
+
 def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--region", default="eu", choices=sorted(REGION_CAPTURES),
+                    help="which region's captures to extract (default: eu)")
+    args = ap.parse_args()
+
+    global CAPTURES, LOG
+    CAPTURES = REGION_CAPTURES[args.region]
+    LOG = CAPTURES / "_batch_log.txt"
+    if not CAPTURES.exists():
+        print(f"no capture directory for {args.region}: {CAPTURES}")
+        return 1
+    note(f"region: {args.region.upper()}  ({CAPTURES.relative_to(ROOT).as_posix()})")
+
     candidates = [d for d in sorted(CAPTURES.iterdir())
                   if d.is_dir() and (d / "manifest.jsonl").exists()
                   and not (d / "extracted.csv").exists()]
