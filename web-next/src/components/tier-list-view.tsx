@@ -16,6 +16,23 @@ import { moverBySlug } from "@/lib/movers";
  *  to a smaller index is moving up. An unknown label yields null rather than a
  *  wrong arrow.
  */
+/** "+1.2" / "-0.4" / "0.0". A measured no-change is shown as 0.0 rather than
+ *  "+0", which reads as a bug, and rather than being hidden, which reads as
+ *  missing data. */
+function deltaText(delta: number): string {
+  // Always one decimal. JSON drops the trailing zero, so a champion that moved
+  // a whole point printed "+1" in a row of "+0.3"s and read like a different
+  // kind of number.
+  return `${delta > 0 ? "+" : delta < 0 ? "−" : ""}${Math.abs(delta).toFixed(1)}`;
+}
+
+/** Green up, red down, muted for no change -- a grey zero does not claim a
+ *  direction it does not have. */
+function deltaClass(delta: number): string {
+  if (delta === 0) return "text-faint";
+  return delta > 0 ? "text-emerald-400" : "text-bad";
+}
+
 function crossing(before: string, after: string): "up" | "down" | null {
   if (before === after) return null;
   const a = (TIER_ORDER as readonly string[]).indexOf(before);
@@ -481,21 +498,35 @@ export function TierListView({
                           <span className="mt-1.5 w-full truncate text-[0.7rem] font-medium leading-tight">
                             {c.name}
                           </span>
-                          {/* The tile is 46px wide on mobile and the win rate
-                              plus its delta measured 54-64px, so the number
-                              spilled sideways into the neighbouring champions.
-                              The delta is therefore desktop-only: on mobile the
-                              direction is already on the avatar badge, the exact
-                              amount stays in the tooltip, and the win rate on its
-                              own fits. Nothing is lost that was legible anyway. */}
+                          {/* EVERY champion with a measurement shows it.
+                              There used to be a |delta| >= 0.5 threshold, on
+                              the reasoning that smaller movement is noise. It
+                              is not noise once the delta is measured in the
+                              units on the page -- and the threshold hid 27
+                              champions, including every one that moved a
+                              tenth. Under a role filter it hid them even when
+                              they had crossed a band, because the tier-change
+                              escape hatch reads the ROLE crossing there.
+
+                              Width was the other reason: the tile is 46px on
+                              mobile and win rate plus delta measured 54-64px,
+                              so it spilled into the next champion. Stacking
+                              the delta on its own line costs height, which
+                              this layout has, instead of width, which it does
+                              not -- so mobile keeps the number now too. */}
                           <span className="w-full truncate text-[0.7rem] font-semibold text-accent">
                             {shownWr(c).toFixed(1)}%
-                            {mv && (changed || (!isCN && !isGlobal && Math.abs(mv.delta) >= 0.5)) && (
-                              <span className={`ml-1 hidden sm:inline ${mv.delta > 0 ? "text-emerald-400" : "text-bad"}`}>
-                                {mv.delta > 0 ? "+" : ""}{mv.delta}
+                            {mv && (
+                              <span className={`ml-1 hidden sm:inline ${deltaClass(mv.delta)}`}>
+                                {deltaText(mv.delta)}
                               </span>
                             )}
                           </span>
+                          {mv && (
+                            <span className={`w-full truncate text-[0.6rem] font-semibold leading-tight sm:hidden ${deltaClass(mv.delta)}`}>
+                              {deltaText(mv.delta)}
+                            </span>
+                          )}
                         </Link>
                       );
                     })}
