@@ -110,18 +110,26 @@ OTP_BADGE_THRESHOLD = 85.0
 # community knowledge of "this champion attracts one-tricks" is hard to fully
 # encode in a single statistic.
 KNOWN_OTP_CHAMPIONS: frozenset[str] = frozenset({
-    "Akali", "Draven", "Graves", "Irelia", "Kalista", "Katarina", "Kayle",
-    "Kennen", "Kindred", "Master Yi", "Nasus", "Nilah", "Pyke", "Rengar",
-    "Riven", "Singed", "Urgot", "Yasuo", "Zoe",
+    # Owner review, 2026-08-20. Added Annie, Fiddlesticks, Kayn and Ornn;
+    # removed Kayle, Kindred, Nilah, Riven and Zoe, which the score had been
+    # badging but which do not read as one-trick picks in play.
+    "Akali", "Annie", "Draven", "Fiddlesticks", "Graves", "Irelia", "Kalista",
+    "Katarina", "Kayn", "Kennen", "Master Yi", "Nasus", "Ornn", "Pyke",
+    "Rengar", "Singed", "Urgot", "Yasuo",
+})
+
+#: Champions the algorithmic score badges but the owner has ruled out. This
+#: overrules KNOWN_OTP_CHAMPIONS and the score alike, so a champion the tag
+#: rule keeps re-flagging stays off the list without the rule being weakened.
+OWNER_NOT_OTP: frozenset[str] = frozenset({
+    "Kayle", "Kindred", "Nilah", "Riven", "Zoe",
 })
 
 # Champions the algorithmic score sometimes flags but community knowledge says
 # aren't OTP picks (utility frontliners that happen to have a heavy-tail games
 # distribution because the top engage tanks grind a LOT). Explicit blocklist
 # wins over both the algorithm AND the KNOWN_OTP_CHAMPIONS set.
-NON_OTP_CHAMPIONS: frozenset[str] = frozenset({
-    "Ornn",
-})
+NON_OTP_CHAMPIONS: frozenset[str] = OWNER_NOT_OTP
 
 
 def _gini_coefficient(values: list[float]) -> float:

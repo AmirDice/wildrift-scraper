@@ -207,10 +207,27 @@ function ChampionSpotlight({
               {bp.rank != null && (
                 <span className="font-semibold text-text">#{bp.rank} on the board</span>
               )}
-              {bp.confidence_wr != null && (
-                <span className="tabular-nums">{bp.confidence_wr.toFixed(1)}% adjusted</span>
-              )}
+              {/* THIS PLAYER'S OWN WIN RATE, not the shrunk one.
+                  The card used to print only "67.6% adjusted", which is a
+                  Bayesian estimate pulled toward the mean by how few games
+                  they have played. That number exists to RANK players fairly
+                  -- it is why this player was picked as the best -- but it is
+                  not what they achieved, and presenting it as their win rate
+                  with a word like "adjusted" invites exactly the question of
+                  why we are editing somebody's record. So: their real rate
+                  first, and the estimate kept beside it under the name of the
+                  thing it actually measures. */}
+              {best?.w != null ? (
+                <span className="tabular-nums font-semibold text-text">{best.w.toFixed(1)}% win rate</span>
+              ) : bp.confidence_wr != null ? (
+                <span className="tabular-nums font-semibold text-text">{bp.confidence_wr.toFixed(1)}%</span>
+              ) : null}
               {best?.g != null && <span className="tabular-nums">{best.g} games</span>}
+              {best?.w != null && bp.confidence_wr != null && (
+                <span className="tabular-nums" title="Win rate adjusted for how many games it is based on. Used to rank players against each other, so a 100% run over 5 games does not outrank a long record.">
+                  {bp.confidence_wr.toFixed(1)}% confidence
+                </span>
+              )}
               {best?.tier && <TierBadge tier={best.tier} size={18} />}
             </div>
           </div>

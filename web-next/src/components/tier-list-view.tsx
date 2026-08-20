@@ -540,6 +540,27 @@ export function TierListView({
                 keep every tier populated.
               </p>
             )}
+            {/* What the two movement marks mean, and why they can disagree.
+                A reader seeing a green arrow above a red -0.4 has found a real
+                thing, not a bug: role tiers are PERCENTILE ranks, so a champion
+                can lose win rate and still rise a band because the rest of its
+                role lost more. Saying so here is cheaper than being asked. */}
+            <p className="mt-3 border-t border-line pt-3">
+              <span className="font-medium text-text">The marks on each champion</span>: the{" "}
+              <span className="font-semibold text-emerald-400">&#9650;</span>/
+              <span className="font-semibold text-bad">&#9660;</span> badge means the champion{" "}
+              <span className="font-medium text-text">changed tier</span> since{" "}
+              {isCN ? "the previous China scrape"
+                : isGlobal ? "the previous collection"
+                : site.movementSince ?? "the previous collection"}
+              {role === "All roles" ? "" : ` (within ${role})`}. The small{" "}
+              <span className="font-semibold text-emerald-400">+</span>/
+              <span className="font-semibold text-bad">&minus;</span> after the win rate is how much
+              that win rate moved. They answer different questions, so they can disagree: a champion
+              can lose win rate and still gain a tier when the rest of its role lost more, and it can
+              gain win rate without moving band at all. Hover a champion for the exact before and
+              after.
+            </p>
           </div>
         </>
       )}

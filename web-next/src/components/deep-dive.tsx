@@ -33,9 +33,15 @@ export function DeepDiveSections() {
   const climbing = climbingPicks(5);
   const stompers = stomperPicks(5);
 
+  // Ranked by WIN RATE, not by OTP score. The two answer different questions
+  // and this card asks the second one: the score says how concentrated a
+  // champion's board is around specialists, which is a fact about the player
+  // base, while a reader looking at "best OTP champions" is asking which one
+  // is worth committing to. Sorting by the score put the most one-tricked
+  // champion on top whether or not one-tricking it wins games.
   const bestOtp = champions
-    .filter((c) => c.isOtp && c.otpScore != null)
-    .sort((left, right) => (right.otpScore ?? 0) - (left.otpScore ?? 0))
+    .filter((c) => c.isOtp && Number.isFinite(c.wr))
+    .sort((left, right) => right.wr - left.wr)
     .slice(0, 5);
   const skillCeiling = [...ranked].filter((c) => c.skillSpread != null)
     .sort((a, b) => (b.skillSpread ?? 0) - (a.skillSpread ?? 0)).slice(0, 5);
@@ -205,7 +211,7 @@ export function DeepDiveSections() {
       <Container className="py-6">
         <SectionHeading title="Champion insights" subtitle="Cut the data a few different ways" />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <InsightCard href="/otp-champions" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.otpScore?.toFixed(1) ?? "-"}`, metricClass: "text-gold" }))} />
+          <InsightCard href="/otp-champions" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
           <InsightCard href="/consistency" title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
           <InsightCard href="/consistency" title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
           <InsightCard
