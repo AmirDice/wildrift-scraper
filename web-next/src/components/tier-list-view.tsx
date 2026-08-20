@@ -180,6 +180,10 @@ export function TierListView({
     return deltas.length % 2 ? deltas[mid] : (deltas[mid - 1] + deltas[mid]) / 2;
   }, [champions]);
 
+  // A role filter changes which BAND a champion is shown in -- buckets sort by
+  // tierRole, not tier -- so it has to change which movement is reported too.
+  const roleActive = options.includes(role) && role !== "All roles";
+
   const buckets = useMemo(() => {
     const inRole = options.includes(role) ? role : "All roles";
     const pool =
@@ -438,7 +442,8 @@ export function TierListView({
                           ? crossing(globalTier(mv.oldWr), globalTier(mv.newWr))
                           : isCN
                             ? crossing(cnTier(mv.oldWr), cnTier(mv.newWr))
-                            : (c.tierMoved as "up" | "down" | null) ?? null
+                            : ((roleActive ? c.tierRoleMoved : c.tierMoved) as
+                                "up" | "down" | null) ?? null
                         : null;
                       const up = tierMove === "up";
                       const changed = Boolean(tierMove);
@@ -448,11 +453,11 @@ export function TierListView({
                       const bandsBefore = !mv ? null
                         : isGlobal ? globalTier(mv.oldWr)
                         : isCN ? cnTier(mv.oldWr)
-                        : c.prevTier ?? null;
+                        : (roleActive ? c.prevTierRole : c.prevTier) ?? null;
                       const bandsAfter = !mv ? null
                         : isGlobal ? globalTier(mv.newWr)
                         : isCN ? cnTier(mv.newWr)
-                        : c.tier;
+                        : roleActive ? c.tierRole : c.tier;
                       return (
                         <Link
                           key={c.slug}

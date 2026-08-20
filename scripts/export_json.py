@@ -37,6 +37,7 @@ from web.data_loader import (
     assign_tier_relative,
     best_player_per_champion,
     champion_summary,
+    collection_started_on,
     data_collected_on,
     funny_names,
     load_leaderboard,
@@ -92,6 +93,42 @@ def _snapshot_date(collected_on: str | None) -> str:
     return date.today().isoformat()
 
 
+def _prev_role_tiers(prev_snap: dict, champions: list[dict]) -> dict[str, str]:
+    """{slug: role tier} for the baseline snapshot.
+
+    Role tiers are PERCENTILE ranks inside a role's pool, not absolute bands,
+    so they cannot be read off a champion's own win rate alone -- the whole
+    cohort has to be rebuilt. Snapshots written before this change stored only
+    the all-roles tier, so the pool is reconstructed from the win rates they
+    did store and re-ranked with the same function that assigns the live ones.
+
+    The role each champion is ranked IN comes from the snapshot when it has
+    one, and otherwise from the champion's role today. That is the one
+    approximation here: a champion who has since been reassigned (Riven to
+    Jungle) is ranked in its current role on both sides of the comparison,
+    which is what makes the two comparable at all.
+    """
+    role_of, wr_of = {}, {}
+    current_role = {c["slug"]: c.get("role") for c in champions}
+    for slug, row in prev_snap.items():
+        wr = row.get("wr")
+        if wr is None:
+            continue
+        role = row.get("role") or current_role.get(slug)
+        if not role:
+            continue
+        role_of[slug], wr_of[slug] = role, float(wr)
+    stored = {slug: row["tierRole"] for slug, row in prev_snap.items()
+              if row.get("tierRole")}
+    if len(stored) == len(role_of):
+        return stored          # a snapshot new enough to have them already
+    pools: dict[str, list[float]] = {}
+    for slug, role in role_of.items():
+        pools.setdefault(role, []).append(wr_of[slug])
+    return {slug: assign_tier_relative(wr_of[slug], pools[role_of[slug]])[0]
+            for slug in role_of}
+
+
 def _save_snapshot(champions: list[dict], collected_on: str | None) -> None:
     """Write a dated, raw-win-rate snapshot so we can chart patch-over-patch later.
     Keyed by data date, so re-running on the same scrape overwrites (idempotent)."""
@@ -100,8 +137,14 @@ def _save_snapshot(champions: list[dict], collected_on: str | None) -> None:
     snap = {
         "date": d,
         "region": "eu",
+        # role and tierRole are stored as well as the all-roles tier, because
+        # the ROLE tier is the one a reader is looking at whenever a role
+        # filter is on, and 63 of 141 champions currently sit in a different
+        # band there than they do in the combined list. Older snapshots predate
+        # these keys; _prev_role_tiers rebuilds them from the win rates.
         "champions": {
-            c["slug"]: {"wr": c["wr"], "tier": c["tier"]}
+            c["slug"]: {"wr": c["wr"], "tier": c["tier"],
+                        "tierRole": c.get("tierRole"), "role": c.get("role")}
             for c in champions if c.get("wr") is not None
         },
     }
@@ -369,11 +412,26 @@ def build() -> dict:
     # differs per collection, so centred-vs-centred would smuggle the offset
     # difference into every delta. This is what the tier list's riser/faller
     # badges read.
+    # The cutoff is when this collection STARTED, not when it finished.
+    #
+    # A collection is a multi-day run -- the 141-champion August pass ran from
+    # the 17th to the 20th -- and export_json writes a snapshot every time it
+    # is run. Cutting at the finish date therefore selected a snapshot from
+    # INSIDE the same run as the baseline: on 2026-08-20 it picked 2026-08-19,
+    # which held the same captures, so Diana read S -> S with a 0.0 delta and
+    # wore no badge, when against the previous real collection she had gone
+    # A -> S. Only the 15 champions extracted between the two exports showed
+    # any movement at all, which is a report on our scraping schedule rather
+    # than on the meta.
+    #
+    # Cutting at the start date skips every snapshot belonging to this run and
+    # lands on the previous collection, which is what "since" means to a reader.
     current_key = _snapshot_date(data_collected_on(df))
+    cutoff = collection_started_on(df) or current_key
     prev_date, prev_snap = None, {}
     for f in sorted(HISTORY.glob("*.json")):
         d = f.stem
-        if d < current_key:
+        if d < cutoff:
             try:
                 snap_champs = json.loads(f.read_text(encoding="utf-8"))["champions"]
             except (json.JSONDecodeError, KeyError, OSError):
@@ -383,16 +441,28 @@ def build() -> dict:
     # tier is what the list is ABOUT, so "riser" means crossed a tier boundary,
     # not wobbled half a point inside one.
     tier_rank = {label: i for i, (label, _css) in enumerate(tier_order())}
+    # The ROLE tier is what the reader sees whenever a role filter is on, and
+    # it is a different band for 63 of 141 champions. Comparing the all-roles
+    # tier there produced a badge that contradicted the list it sat in:
+    # Kassadin shows GOD under Mid, and wore a "GOD -> S" arrow taken from the
+    # combined ranking, where he really had dropped.
+    prev_role_tier = _prev_role_tiers(prev_snap, champions)
     for c in champions:
         prev = prev_snap.get(c["slug"]) or {}
         prev_wr_val = prev.get("wr")
         c["wrDelta"] = (round(c["wr"] - prev_wr_val, 1)
                         if c.get("wr") is not None and prev_wr_val is not None else None)
-        prev_tier = prev.get("tier")
-        cur_i, prev_i = tier_rank.get(c.get("tier")), tier_rank.get(prev_tier)
-        c["prevTier"] = prev_tier if prev_tier and prev_i != cur_i else None
-        c["tierMoved"] = (None if cur_i is None or prev_i is None or cur_i == prev_i
-                          else ("up" if cur_i < prev_i else "down"))
+
+        def _move(prev_label, cur_label):
+            """(prevTier or None, "up"/"down"/None) for one pair of bands."""
+            a, b = tier_rank.get(prev_label), tier_rank.get(cur_label)
+            if a is None or b is None or a == b:
+                return None, None
+            return prev_label, ("up" if b < a else "down")
+
+        c["prevTier"], c["tierMoved"] = _move(prev.get("tier"), c.get("tier"))
+        c["prevTierRole"], c["tierRoleMoved"] = _move(
+            prev_role_tier.get(c["slug"]), c.get("tierRole"))
 
     # Center the champion win-rate figures on 50% (relative to the pool average).
     # These are each champion's top-50 mains, so raw win rates all sit above 50%

@@ -327,6 +327,8 @@ export function getGlobalChampions(): Champion[] {
       pools: blendPools(eu, naChamp),
       tierMoved: null,
       prevTier: null,
+      tierRoleMoved: null,
+      prevTierRole: null,
     });
   }
   return out.sort((a, b) => b.wr - a.wr);

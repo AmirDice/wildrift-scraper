@@ -26,6 +26,7 @@ export interface Champion {
   /** "up" | "down" when the champion crossed a TIER boundary since the
    *  previous collection; null inside the same tier. Gates the arrow badge. */
   tierMoved?: string | null;
+  tierRoleMoved?: string | null;
   /** How many regional win rates were averaged into a Global row (2 or 3).
    *  Set only by getGlobalChampions. A move in ONE region shifts the combined
    *  score by its delta divided by this, so the figure has to travel with the
@@ -33,6 +34,7 @@ export interface Champion {
    *  meant EU and CN, and adding NA silently inflated every arrow by half. */
   globalParts?: number;
   prevTier?: string | null;
+  prevTierRole?: string | null;
   medianGames: number | null;
   totalGames: number | null;
   nPlayers: number | null;
@@ -207,7 +209,7 @@ function pendingChampion(c: NewChampion): Champion {
     difficulty: c.difficulty, difficultyLabel: c.difficultyLabel,
     isHard: c.difficulty >= 7,
     wr: NaN, meanWr: null, maxWr: null, winrateStd: null, wrDelta: null,
-    tierMoved: null, prevTier: null,
+    tierMoved: null, prevTier: null, tierRoleMoved: null, prevTierRole: null,
     medianGames: null, totalGames: null, nPlayers: null, medianMastery: null,
     maxScore: null, otpScore: null, isOtp: false, topPlayer: null,
     tier: "", tierCss: "", tierRole: "", tierRoleCss: "",

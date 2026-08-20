@@ -291,6 +291,23 @@ def data_collected_on(df: pd.DataFrame) -> str | None:
     return f"{d.strftime('%B')} {d.day}, {d.year}"
 
 
+def collection_started_on(df: pd.DataFrame) -> str | None:
+    """ISO date of the EARLIEST capture in the data, or None.
+
+    A collection is not a day, it is a run: the 141-champion August pass took
+    from the 17th to the 20th. data_collected_on names when it FINISHED, which
+    is the right thing to print on the site. This names when it STARTED, which
+    is what movement has to be measured against -- a baseline picked as merely
+    "older than the finish date" lands inside the same run.
+    """
+    if df.empty or "captured_at" not in df.columns:
+        return None
+    stamps = (df["captured_at"].astype(str).str.slice(0, 19)
+              .str.replace("T", " ", regex=False))
+    caps = pd.to_datetime(stamps, format="%Y-%m-%d %H:%M:%S", errors="coerce").dropna()
+    return caps.min().date().isoformat() if not caps.empty else None
+
+
 # Tier cutoffs are calibrated for the GAMES-WEIGHTED top-50 winrate, which
 # clusters roughly 55-65% in practice once smurf inflation is stripped out.
 # Bands tightened so the bottom actually populates instead of leaving Ass
