@@ -3,12 +3,26 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
-import type { CnBracketKey } from "@/lib/cn";
+import { cnTier, globalTier, type CnBracketKey } from "@/lib/cn";
 import { TIER_ORDER, tierClass, tierLabel, site, siteNa } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { moverBySlug } from "@/lib/movers";
+
+/** "up" / "down" if two tier labels differ, else null.
+ *
+ *  TIER_ORDER runs best-first, so a SMALLER index is a better tier and moving
+ *  to a smaller index is moving up. An unknown label yields null rather than a
+ *  wrong arrow.
+ */
+function crossing(before: string, after: string): "up" | "down" | null {
+  if (before === after) return null;
+  const a = (TIER_ORDER as readonly string[]).indexOf(before);
+  const b = (TIER_ORDER as readonly string[]).indexOf(after);
+  if (a < 0 || b < 0) return null;
+  return b < a ? "up" : "down";
+}
 import { RegionUpdated } from "@/components/tierlist-updated";
 import { PatchLagNotice } from "@/components/patch-lag-notice";
 import { BuildTour, type TourStep } from "@/components/build-tour";
@@ -405,24 +419,47 @@ export function TierListView({
                                 delta: c.wrDelta,
                               }
                             : null;
-                      // The EU arrow means "crossed a tier boundary", nothing
-                      // less: a tier is what this list ranks, so half a point
-                      // of wobble inside GOD is fine print (the small +/-
-                      // under the win rate), not a badge. CN keeps its
-                      // delta-based badge: its brackets re-rank week to week
-                      // and tier labels are not comparable across them.
-                      const euTierMove = !isCN && !isGlobal ? c.tierMoved : null;
-                      const up = isCN || isGlobal ? Boolean(mv && mv.delta > 0) : euTierMove === "up";
-                      const changed = isCN || isGlobal
-                        ? Boolean(mv && Math.abs(mv.delta) >= 0.05)
-                        : Boolean(euTierMove);
+                      // The arrow means "crossed a tier boundary", in EVERY
+                      // view, and nothing less. A tier is what this list ranks,
+                      // so movement inside a tier is fine print -- the small
+                      // +/- under the win rate -- not a badge.
+                      //
+                      // Global and CN used to badge on the delta alone, at a
+                      // threshold of 0.05. That put an arrow on Skarner for
+                      // five hundredths of a point and on 17 champions at once,
+                      // which tells the reader a champion moved without telling
+                      // them it moved anywhere. Both now cross their OWN bands:
+                      // Global reads the blended win rate through globalTier,
+                      // CN reads its bracket win rate through cnTier, and the
+                      // before/after numbers are the same pair already shown in
+                      // the tooltip, so the badge and the text cannot disagree.
+                      const tierMove = mv
+                        ? isGlobal
+                          ? crossing(globalTier(mv.oldWr), globalTier(mv.newWr))
+                          : isCN
+                            ? crossing(cnTier(mv.oldWr), cnTier(mv.newWr))
+                            : (c.tierMoved as "up" | "down" | null) ?? null
+                        : null;
+                      const up = tierMove === "up";
+                      const changed = Boolean(tierMove);
+                      // The tier pair to name in the tooltip, from whichever
+                      // band set this view ranks by, so the words match the
+                      // arrow rather than restating EU's crossing everywhere.
+                      const bandsBefore = !mv ? null
+                        : isGlobal ? globalTier(mv.oldWr)
+                        : isCN ? cnTier(mv.oldWr)
+                        : c.prevTier ?? null;
+                      const bandsAfter = !mv ? null
+                        : isGlobal ? globalTier(mv.newWr)
+                        : isCN ? cnTier(mv.newWr)
+                        : c.tier;
                       return (
                         <Link
                           key={c.slug}
                           href={`/champions/${c.slug}`}
                           className="group flex w-[46px] flex-col items-center text-center transition sm:w-[68px]"
                           title={changed && mv
-                            ? `${c.name} · ${shownWr(c).toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : isCN ? "previous CN scrape" : `since ${site.movementSince ?? "the previous collection"}`}${!isCN && !isGlobal && c.prevTier ? ` ${c.prevTier} → ${c.tier},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
+                            ? `${c.name} · ${shownWr(c).toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : isCN ? "previous CN scrape" : `since ${site.movementSince ?? "the previous collection"}`}${bandsBefore && bandsAfter ? ` ${tierLabel(bandsBefore)} → ${tierLabel(bandsAfter)},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
                             : `${c.name} · ${shownWr(c).toFixed(1)}% WR`}
                         >
                           <span className="relative transition group-hover:-translate-y-0.5">

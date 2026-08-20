@@ -45,7 +45,7 @@ export const CN_META = {
 };
 
 /** CN win rates cluster near 50% (whole-ladder), so tiers use CN-specific cutoffs. */
-function cnTier(wr: number): string {
+export function cnTier(wr: number): string {
   if (wr >= 53.5) return "GOD";
   if (wr >= 52) return "S";
   if (wr >= 50.8) return "A";
