@@ -1,38 +1,96 @@
 {
  "_note": "Player names read by eye from the leaderboard screenshots, for rows where no other source could supply one. Highest precedence in export_captures: this file, then the rank popup's name, then the leaderboard OCR.",
- "_why": "Two automatic readers cover almost everything. The rank popup gives a model-read name for 94% of players, and Tesseract on the leaderboard row handles plain Latin text. What is left over is the intersection of the two failures: a player whose popup never resolved AND whose name Tesseract cannot represent -- CJK, Hangul, Cyrillic, and Latin styled with Greek or small-cap glyphs. That was 58 rows out of 6294, so they were transcribed by eye rather than paid for.",
+ "_why": "Names read by eye from the leaderboard screenshots. Highest precedence in export_captures: this file, then the rank popup's name, then the leaderboard OCR.\nTwo groups are here. The first is rows no automatic reader could supply at all. The second is rows where Tesseract produced something that LOOKED like a name and was therefore believed -- the installed Tesseract has only the 'eng' model, so it cannot render Turkish, Cyrillic, Greek or CJK at all and substitutes Latin letters that pass every plausibility check. 'ISAK' was really CJK; 'BENZE' was spaced capitals; 'syOpamies' was Finnish with umlauts. Nothing mechanical can catch that, because the wrong answer is a well-formed word.",
  "_truncated": "A name ending in '...' is truncated BY THE GAME. The leaderboard row clips long names and there is no wider render of them to read, so the ellipsis is what the player's name looks like in this UI, not a reading failure.",
  "_key": "capture session directory -> rank (string) -> name",
  "overrides": {
+  "ekko_20260817_2321": {
+   "2": "BoughatshI"
+  },
+  "graves_20260818_1525": {
+   "33": "DRAGONS RAGEシ",
+   "36": "Venom",
+   "48": "Переборхес"
+  },
+  "hecarim_20260818_0059": {
+   "20": "insta jwlakdemir",
+   "35": "AureliaHirsch"
+  },
+  "heimerdinger_20260819_0805": {
+   "4": "DeadCowTellNoMoo",
+   "7": "Тележка из Ашана",
+   "11": "124448474884"
+  },
   "irelia_20260818_2342": {
    "24": "Easy",
+   "26": "蛤鸡米",
+   "27": "乂SeXwithMe乂",
+   "28": "kepsiz",
    "31": "Nolan",
+   "33": "irelant",
+   "35": "illusense",
    "36": "宝马刀妹",
    "38": "奶香小土豆",
    "39": "Evan",
+   "41": "teittas",
    "43": "aeroLite",
    "44": "loc",
-   "47": "Tualet TerliğiX"
+   "45": "Yonko",
+   "47": "Tualet TerliğiX",
+   "48": "额发内 S Class 欧美..."
   },
   "janna_20260818_1629": {
+   "1": "syöpämies",
+   "3": "FuryEmotion",
+   "5": "Mor Kedi",
    "23": "唯 一",
+   "33": "Mari み",
+   "34": "DAVY D XEBEC",
    "35": "Blue Foundation",
-   "44": "GayGuy"
+   "38": "sunda",
+   "44": "GayGuy",
+   "50": "SkyTears"
   },
   "jarvan-iv_20260818_1058": {
    "37": "CườnginParis",
+   "38": "今朝多烦忧",
    "42": "Hai Duong Dang"
   },
+  "jax_20260818_0724": {
+   "27": "deviljin"
+  },
   "jayce_20260819_0130": {
-   "33": "G9AN"
+   "33": "G9AN",
+   "39": "大英警察到比利时"
+  },
+  "jhin_20260818_0305": {
+   "36": "PhilxSolitudee1",
+   "42": "TTV Ezem",
+   "46": "NFO乂KISSU"
   },
   "jinx_20260818_0043": {
-   "26": "NejatJobs"
+   "26": "NejatJobs",
+   "32": "Puki Style ツ",
+   "35": "WHY SO SERIOUS"
+  },
+  "kai-sa_20260818_0359": {
+   "4": "Bermix ツ"
+  },
+  "karma_20260817_2005": {
+   "50": "no just the tip"
   },
   "kennen_20260818_1309": {
-   "13": "YEG"
+   "6": "TNI RikyIlPapà",
+   "13": "YEG",
+   "15": "Dracarys",
+   "17": "Mozao",
+   "27": "Insane Skills",
+   "31": "Сатори",
+   "33": "KENNEN KOMUTAN",
+   "46": "Dönmedin Ki"
   },
   "kha-zix_20260818_0028": {
+   "35": "ISOLATED IRL",
    "47": "Guardianmovie69",
    "50": "kızlar eklesin"
   },
@@ -40,45 +98,120 @@
    "9": "legi"
   },
   "malphite_20260818_2036": {
-   "7": "I Q"
+   "7": "I Q",
+   "8": "MaDMaX55"
+  },
+  "master-yi_20260819_2156": {
+   "9": "B E N Z E",
+   "16": "MÂSTERBASYON",
+   "48": "TrolnikXD"
   },
   "miss-fortune_20260818_1356": {
+   "21": "Rufitorques",
+   "23": "冥界深影adc杀神",
+   "32": "leomikranda",
    "34": "këshi",
+   "37": "StillWizz",
    "39": "Rox"
+  },
+  "mordekaiser_20260818_0558": {
+   "19": "LiveSolo DieSolo"
+  },
+  "morgana_20260818_0439": {
+   "16": "Cừu Đáng Ghét",
+   "35": "Roku Jin 重视觉",
+   "38": "HellCât",
+   "43": "只有你弗坎弗坎"
+  },
+  "nilah_20260818_0420": {
+   "47": "tarumaredici"
   },
   "nunu-willump_20260817_2022": {
    "9": "doncondon",
+   "10": "MayLight",
+   "11": "Oner戈牙",
    "13": "Gaabb",
+   "20": "Ιυετη",
    "22": "Ranked is deadx5",
    "27": "Lazy2TryharD",
+   "31": "BASUR UZMANI",
+   "32": "Gothfather",
    "34": "fιαmε Øf Jusτisε",
+   "38": "Igetlizzy",
    "41": "JokeOnYou",
    "42": "sleipnirdu28",
-   "47": "nowait"
+   "47": "nowait",
+   "49": "Koja"
   },
   "olaf_20260819_0347": {
+   "3": "Instgrm wrprime7",
+   "13": "aıygıwgwu",
+   "23": "xXRaY5FiVeXx",
    "26": "voli ayı",
    "29": "Yang",
    "33": "五条悟",
-   "48": "Kirisagi"
+   "48": "Kirisagi",
+   "50": "ınstawrboost100"
   },
   "orianna_20260817_2337": {
+   "5": "蒲公英的约定",
+   "12": "Insta wrboost25",
    "16": "TiLTED PiG"
   },
   "pantheon_20260817_1628": {
+   "9": "RobeaT",
    "17": "皇帝傷Sombra",
    "25": "UAE",
+   "26": "Murphy",
    "27": "Zhou Mingrui",
-   "42": "MonoRadiance"
+   "42": "MonoRadiance",
+   "48": "Leaxy"
   },
   "poppy_20260818_1647": {
+   "1": "Lakatown",
+   "5": "Daredevil",
+   "6": "Son Of Boosted",
+   "13": "iToteZ",
    "20": "汝之雕仿若那绣花之...",
    "30": "The Alfea",
    "42": "Creepy"
   },
+  "rakan_20260818_0955": {
+   "3": "NeverForgetULove",
+   "43": "YasouDz"
+  },
   "rammus_20260818_1325": {
+   "1": "Mecha7ttv",
+   "13": "LvL 2 Snorlax",
+   "17": "Rico",
+   "21": "PARANØÏA",
    "26": "Monaroz95",
+   "31": "DummyJr",
+   "32": "till i collapse",
    "41": "Dokil"
+  },
+  "sett_20260818_1411": {
+   "4": "Sett Ψ HEAVEN",
+   "26": "TT F3RİTWr",
+   "29": "Chronos",
+   "39": "ツ CRIT",
+   "40": "inwiyer",
+   "43": "SETTOJI全員",
+   "50": "Legasy"
+  },
+  "shen_20260819_0524": {
+   "4": "ImanTroll",
+   "12": "PrivateIvanov",
+   "13": "JrPetrucci",
+   "17": "話 clown fiesta 本",
+   "25": "天道无始亦无终",
+   "30": "LAZRAİL61",
+   "45": "breakingdark"
+  },
+  "singed_20260819_0017": {
+   "21": "3eqpupp",
+   "36": "Brain chemistry",
+   "44": "buff Singed"
   },
   "sivir_20260819_0403": {
    "2": "火雲邪神",
@@ -87,19 +220,51 @@
    "11": "T1 KataWild",
    "21": "xBunker",
    "30": "P1nk PanTera",
-   "35": "Sudi123"
+   "31": "htfkliyszeomvw",
+   "33": "YMON",
+   "35": "Sudi123",
+   "46": "Wiciu1988"
   },
   "sona_20260818_0840": {
    "19": "ЩегольГлазастик",
    "20": "i11"
   },
+  "soraka_20260819_0035": {
+   "27": "炎Zelda"
+  },
+  "syndra_20260818_0342": {
+   "27": "KRAKEN"
+  },
+  "tristana_20260818_0825": {
+   "2": "幺DΞLTΔ幺AD",
+   "12": "RONÏN",
+   "19": "TexaSLıVayne",
+   "21": "Geouk"
+  },
   "twitch_20260818_1010": {
-   "31": "Türk"
+   "6": "QQSKYQQ",
+   "7": "Last Warning",
+   "16": "DeMonteKristo",
+   "18": "Płaczę po Cichu",
+   "22": "乂NightHunter乂",
+   "31": "Türk",
+   "34": "0 10 gavno"
+  },
+  "varus_20260819_2227": {
+   "3": "EgoBooster Adc",
+   "4": "K A C P E R E K",
+   "18": "奇迹NSZoe疯狂ツ",
+   "26": "Bay Anderson"
   },
   "viego_20260818_1202": {
    "17": "despair",
+   "18": "B A B A V O S S",
+   "21": "El Pacino",
    "22": "discord kiryu156",
    "23": "404"
+  },
+  "xayah_20260818_0940": {
+   "21": "SokoL"
   },
   "yasuo_20260818_0638": {
    "31": "HuevoFrito"
