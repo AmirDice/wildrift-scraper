@@ -93,43 +93,31 @@ def _snapshot_date(collected_on: str | None) -> str:
     return date.today().isoformat()
 
 
-def _prev_role_tiers(prev_snap: dict, champions: list[dict]) -> dict[str, str]:
-    """{slug: role tier} for the baseline snapshot.
+def _prev_role_tiers(prev_snap: dict) -> dict[str, str]:
+    """{slug: role tier} for the baseline snapshot, from what it STORED.
 
-    Role tiers are PERCENTILE ranks inside a role's pool, not absolute bands,
-    so they cannot be read off a champion's own win rate alone -- the whole
-    cohort has to be rebuilt. Snapshots written before this change stored only
-    the all-roles tier, so the pool is reconstructed from the win rates they
-    did store and re-ranked with the same function that assigns the live ones.
+    This used to rebuild the cohort from the snapshot's win rates and re-rank
+    it. That cannot work, for two reasons found by checking the output against
+    the deployed site:
 
-    The role each champion is ranked IN comes from the snapshot when it has
-    one, and otherwise from the champion's role today. That is the one
-    approximation here: a champion who has since been reassigned (Riven to
-    Jungle) is ranked in its current role on both sides of the comparison,
-    which is what makes the two comparable at all.
+      * role tiers are percentile ranks WITHIN a role, so one champion changing
+        role moves everyone's rank. Riven alone moving Baron -> Jungle between
+        the August collections re-banded five of the six champions spot-checked.
+      * snapshots store win rates rounded to one decimal, and the live ranking
+        uses full precision. Rounding creates ties exactly at the boundaries
+        where the band is decided.
+
+    So the role tier is stored, not derived. Snapshots older than that key were
+    backfilled from the deployed site they produced; anything that still lacks
+    it reports no role movement at all, which is honest, rather than a
+    reconstructed guess that reads as fact.
     """
-    role_of, wr_of = {}, {}
-    current_role = {c["slug"]: c.get("role") for c in champions}
-    for slug, row in prev_snap.items():
-        wr = row.get("wr")
-        if wr is None:
-            continue
-        role = row.get("role") or current_role.get(slug)
-        if not role:
-            continue
-        role_of[slug], wr_of[slug] = role, float(wr)
-    stored = {slug: row["tierRole"] for slug, row in prev_snap.items()
-              if row.get("tierRole")}
-    if len(stored) == len(role_of):
-        return stored          # a snapshot new enough to have them already
-    pools: dict[str, list[float]] = {}
-    for slug, role in role_of.items():
-        pools.setdefault(role, []).append(wr_of[slug])
-    return {slug: assign_tier_relative(wr_of[slug], pools[role_of[slug]])[0]
-            for slug in role_of}
+    return {slug: row["tierRole"] for slug, row in prev_snap.items()
+            if row.get("tierRole")}
 
 
-def _save_snapshot(champions: list[dict], collected_on: str | None) -> None:
+def _save_snapshot(champions: list[dict], collected_on: str | None,
+                   wr_offset: float = 0.0) -> None:
     """Write a dated, raw-win-rate snapshot so we can chart patch-over-patch later.
     Keyed by data date, so re-running on the same scrape overwrites (idempotent)."""
     HISTORY.mkdir(parents=True, exist_ok=True)
@@ -137,6 +125,10 @@ def _save_snapshot(champions: list[dict], collected_on: str | None) -> None:
     snap = {
         "date": d,
         "region": "eu",
+        # The offset this collection was centred with. Win rates below are RAW;
+        # the site shows raw + offset. Movement has to be measured in the units
+        # the reader is looking at, so the delta needs both collections' offsets.
+        "wrOffset": wr_offset,
         # role and tierRole are stored as well as the all-roles tier, because
         # the ROLE tier is the one a reader is looking at whenever a role
         # filter is on, and 63 of 141 champions currently sit in a different
@@ -428,15 +420,20 @@ def build() -> dict:
     # lands on the previous collection, which is what "since" means to a reader.
     current_key = _snapshot_date(data_collected_on(df))
     cutoff = collection_started_on(df) or current_key
-    prev_date, prev_snap = None, {}
+    # Computed here rather than at the centering step below, because movement
+    # is measured in centred units and needs it before the comparison.
+    _valid = [c["wr"] for c in champions if c["wr"] is not None]
+    wr_offset = round(50 - sum(_valid) / len(_valid), 1) if _valid else 0.0
+    prev_date, prev_snap, prev_snap_meta = None, {}, {}
     for f in sorted(HISTORY.glob("*.json")):
         d = f.stem
         if d < cutoff:
             try:
-                snap_champs = json.loads(f.read_text(encoding="utf-8"))["champions"]
+                doc = json.loads(f.read_text(encoding="utf-8"))
+                snap_champs = doc["champions"]
             except (json.JSONDecodeError, KeyError, OSError):
                 continue
-            prev_date, prev_snap = d, snap_champs
+            prev_date, prev_snap, prev_snap_meta = d, snap_champs, doc
     # Tier movement gates the ARROW badge; the wr delta is the fine print. A
     # tier is what the list is ABOUT, so "riser" means crossed a tier boundary,
     # not wobbled half a point inside one.
@@ -446,11 +443,29 @@ def build() -> dict:
     # tier there produced a badge that contradicted the list it sat in:
     # Kassadin shows GOD under Mid, and wore a "GOD -> S" arrow taken from the
     # combined ranking, where he really had dropped.
-    prev_role_tier = _prev_role_tiers(prev_snap, champions)
+    prev_role_tier = _prev_role_tiers(prev_snap)
+
+    # THE DELTA IS IN THE UNITS THE READER SEES.
+    #
+    # Both snapshots store RAW win rates, and the site shows raw + a per-
+    # collection offset that centres the field on 50%. Subtracting raw from raw
+    # produced a number that cannot be checked against anything on the page:
+    # Jayce reads 51.6% on the previous collection and 52.8% on this one, an
+    # obvious +1.2, and the badge said +0.4 because the offset moved 0.8 between
+    # them. Worse, +0.4 fell under the 0.5 display threshold, so the champion
+    # showed no movement at all.
+    #
+    # Centred-vs-centred is also the more honest measure for a list that
+    # presents every number as "relative to the average champion": it says this
+    # champion gained a point ON THE FIELD, not that the whole field drifted.
+    prev_offset = prev_snap_meta.get("wrOffset")
+    if prev_offset is None:
+        prev_offset = wr_offset          # nothing better; delta stays raw-vs-raw
+        print(f"  note: snapshot {prev_date} has no wrOffset; movement measured raw")
     for c in champions:
         prev = prev_snap.get(c["slug"]) or {}
         prev_wr_val = prev.get("wr")
-        c["wrDelta"] = (round(c["wr"] - prev_wr_val, 1)
+        c["wrDelta"] = (round((c["wr"] + wr_offset) - (prev_wr_val + prev_offset), 1)
                         if c.get("wr") is not None and prev_wr_val is not None else None)
 
         def _move(prev_label, cur_label):
@@ -471,12 +486,10 @@ def build() -> dict:
     # Player-level metrics (best player, top mastery, the leaderboard) stay raw —
     # those are explicit "this player's actual record" contexts.
     # Snapshot raw (pre-centering) win rates for patch-over-patch history.
-    _save_snapshot(champions, data_collected_on(df))
+    _save_snapshot(champions, data_collected_on(df), wr_offset)
 
     # Shift only the champion *average* (wr, meanWr). maxWr is the ceiling — a
     # single best player's real win rate — and stays raw like the best-player stat.
-    valid = [c["wr"] for c in champions if c["wr"] is not None]
-    wr_offset = round(50 - sum(valid) / len(valid), 1) if valid else 0.0
     for c in champions:
         for k in ("wr", "meanWr"):
             if c.get(k) is not None:

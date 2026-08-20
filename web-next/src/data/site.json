@@ -80,7 +80,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -3.4,
+      "wrDelta": -2.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -152,7 +152,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 0.9,
+      "wrDelta": 1.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -224,7 +224,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 1.8,
+      "wrDelta": 2.6,
       "prevTier": "S",
       "tierMoved": "up",
       "prevTierRole": null,
@@ -298,7 +298,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.7,
+      "wrDelta": -0.9,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -370,7 +370,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": "GOD",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -442,7 +442,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -516,7 +516,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": "GOD",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -590,7 +590,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 1.3,
+      "wrDelta": 2.1,
       "prevTier": "A",
       "tierMoved": "up",
       "prevTierRole": "S",
@@ -662,7 +662,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.0,
+      "wrDelta": 0.8,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -734,7 +734,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -2.8,
+      "wrDelta": -2.0,
       "prevTier": "GOD",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -808,7 +808,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -1.3,
+      "wrDelta": -0.5,
       "prevTier": "GOD",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -880,7 +880,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -952,7 +952,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1024,7 +1024,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.3,
+      "wrDelta": 0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "GOD",
@@ -1098,7 +1098,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 1.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1172,7 +1172,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.4,
+      "wrDelta": -0.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1246,7 +1246,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": 0.2,
+      "wrDelta": 1.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "S",
@@ -1318,10 +1318,10 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 1.0,
+      "wrDelta": 1.8,
       "prevTier": "A",
       "tierMoved": "up",
-      "prevTierRole": "B",
+      "prevTierRole": "A",
       "tierRoleMoved": "up"
     },
     {
@@ -1390,7 +1390,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1462,7 +1462,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1536,7 +1536,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 1.0,
+      "wrDelta": 1.8,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "A",
@@ -1610,11 +1610,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": "S",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Darius",
@@ -1682,7 +1682,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": 0.3,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -1754,7 +1754,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -1828,7 +1828,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -1.5,
+      "wrDelta": -0.7,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": "GOD",
@@ -1902,7 +1902,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.2,
+      "wrDelta": -0.4,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -1976,7 +1976,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.1,
+      "wrDelta": 0.9,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2050,7 +2050,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -0.3,
+      "wrDelta": 0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2122,7 +2122,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -2196,11 +2196,11 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Yunara",
@@ -2268,7 +2268,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 1.6,
+      "wrDelta": 2.4,
       "prevTier": "B",
       "tierMoved": "up",
       "prevTierRole": "A",
@@ -2342,7 +2342,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.8,
+      "wrDelta": 0.0,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -2416,7 +2416,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": 0.1,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -2490,7 +2490,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2564,7 +2564,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.1,
+      "wrDelta": -0.3,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -2636,7 +2636,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -1.4,
+      "wrDelta": -0.6,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -2710,7 +2710,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 1.5,
+      "wrDelta": 2.3,
       "prevTier": "B",
       "tierMoved": "up",
       "prevTierRole": "B",
@@ -2782,7 +2782,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2856,7 +2856,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 1.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2930,7 +2930,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 1.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -3002,7 +3002,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -2.2,
+      "wrDelta": -1.4,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": "GOD",
@@ -3076,7 +3076,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 1.1,
+      "wrDelta": 1.9,
       "prevTier": "B",
       "tierMoved": "up",
       "prevTierRole": "B",
@@ -3150,7 +3150,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -3222,7 +3222,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.2,
+      "wrDelta": 1.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "A",
@@ -3296,7 +3296,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -3368,7 +3368,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.9,
+      "wrDelta": -1.1,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -3440,7 +3440,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.7,
+      "wrDelta": 1.5,
       "prevTier": "B",
       "tierMoved": "up",
       "prevTierRole": "C",
@@ -3512,7 +3512,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -2.1,
+      "wrDelta": -1.3,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -3584,7 +3584,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.5,
+      "wrDelta": 1.3,
       "prevTier": "B",
       "tierMoved": "up",
       "prevTierRole": "B",
@@ -3658,7 +3658,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.5,
+      "wrDelta": 1.3,
       "prevTier": "B",
       "tierMoved": "up",
       "prevTierRole": "B",
@@ -3730,7 +3730,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.3,
+      "wrDelta": 0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -3804,7 +3804,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.2,
+      "wrDelta": 0.6,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -3878,7 +3878,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.2,
+      "wrDelta": 0.6,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -3950,7 +3950,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -2.1,
+      "wrDelta": -1.3,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -4024,7 +4024,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.7,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -4098,7 +4098,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -2.4,
+      "wrDelta": -1.6,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -4170,7 +4170,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": 0.4,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -4242,7 +4242,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -2.1,
+      "wrDelta": -1.3,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -4316,7 +4316,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -2.1,
+      "wrDelta": -1.3,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -4390,7 +4390,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -1.1,
+      "wrDelta": -0.3,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -4464,7 +4464,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": 0.3,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -4538,7 +4538,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.6,
+      "wrDelta": -0.8,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -4612,7 +4612,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -1.7,
+      "wrDelta": -0.9,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -4684,7 +4684,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -2.0,
+      "wrDelta": -1.2,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -4758,7 +4758,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -4832,7 +4832,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -4906,10 +4906,10 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.6,
+      "wrDelta": -0.8,
       "prevTier": "A",
       "tierMoved": "down",
-      "prevTierRole": "S",
+      "prevTierRole": "A",
       "tierRoleMoved": "down"
     },
     {
@@ -4980,7 +4980,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.2,
+      "wrDelta": 1.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -5054,11 +5054,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": 0.1,
       "prevTier": "A",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Veigar",
@@ -5128,7 +5128,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -1.3,
+      "wrDelta": -0.5,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -5202,7 +5202,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -5276,7 +5276,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -5350,7 +5350,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -5425,11 +5425,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": "A",
       "tierMoved": "down",
-      "prevTierRole": "A",
-      "tierRoleMoved": "down"
+      "prevTierRole": null,
+      "tierRoleMoved": null
     },
     {
       "name": "Alistar",
@@ -5500,7 +5500,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -5572,7 +5572,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -5647,11 +5647,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Ashe",
@@ -5721,7 +5721,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.2,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -5793,7 +5793,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -5868,7 +5868,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -1.5,
+      "wrDelta": -0.7,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -5942,7 +5942,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.2,
+      "wrDelta": -0.4,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -6016,7 +6016,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.0,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -6090,7 +6090,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.4,
+      "wrDelta": -0.6,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -6162,11 +6162,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Karma",
@@ -6236,7 +6236,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -2.4,
+      "wrDelta": -1.6,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -6308,7 +6308,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 1.1,
+      "wrDelta": 1.9,
       "prevTier": "C",
       "tierMoved": "up",
       "prevTierRole": "Ass",
@@ -6382,7 +6382,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.6,
+      "wrDelta": -0.8,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -6456,7 +6456,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.7,
+      "wrDelta": 1.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -6528,7 +6528,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": 0.1,
+      "wrDelta": 0.9,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -6600,7 +6600,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -6675,7 +6675,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -1.1,
+      "wrDelta": -0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -6749,7 +6749,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.1,
+      "wrDelta": -0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -6824,7 +6824,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.3,
+      "wrDelta": 0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -6898,7 +6898,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 0.6,
+      "wrDelta": 1.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -6970,7 +6970,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7044,7 +7044,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7118,7 +7118,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "Ass",
@@ -7192,7 +7192,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -7267,7 +7267,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7342,7 +7342,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -1.7,
+      "wrDelta": -0.9,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -7414,7 +7414,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -1.0,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7488,7 +7488,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.2,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -7562,7 +7562,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.2,
+      "wrDelta": 1.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7636,7 +7636,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7708,7 +7708,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7780,7 +7780,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "B",
@@ -7854,7 +7854,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.6,
+      "wrDelta": -0.8,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7929,7 +7929,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": 0.0,
+      "wrDelta": 0.8,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -8003,7 +8003,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": -2.1,
+      "wrDelta": -1.3,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -8077,7 +8077,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -1.3,
+      "wrDelta": -0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -8149,7 +8149,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -2.2,
+      "wrDelta": -1.4,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -8224,7 +8224,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -8296,7 +8296,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.8,
+      "wrDelta": -1.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "A",
@@ -8370,7 +8370,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -2.5,
+      "wrDelta": -1.7,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -8516,7 +8516,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -2.8,
+      "wrDelta": -2.0,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "S",
@@ -8590,7 +8590,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": -1.0,
+      "wrDelta": -0.2,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "C",
@@ -8662,7 +8662,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -2.0,
+      "wrDelta": -1.2,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -8736,7 +8736,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -3.0,
+      "wrDelta": -2.2,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -8811,7 +8811,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.6,
+      "wrDelta": -0.8,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -8886,7 +8886,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": 0.1,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -8960,11 +8960,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": "B",
       "tierMoved": "down",
-      "prevTierRole": "B",
-      "tierRoleMoved": "down"
+      "prevTierRole": null,
+      "tierRoleMoved": null
     },
     {
       "name": "Lux",
@@ -9034,7 +9034,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -2.5,
+      "wrDelta": -1.7,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": "A",
@@ -9108,7 +9108,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 1.4,
+      "wrDelta": 2.2,
       "prevTier": "Ass",
       "tierMoved": "up",
       "prevTierRole": "Ass",
@@ -9182,7 +9182,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.2,
+      "wrDelta": -0.4,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "C",
@@ -9257,7 +9257,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "Ass",
@@ -9331,7 +9331,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -1.2,
+      "wrDelta": -0.4,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -9403,7 +9403,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": -1.2,
+      "wrDelta": -0.4,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "C",
@@ -9477,7 +9477,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.8,
+      "wrDelta": 0.0,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -9551,7 +9551,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -1.4,
+      "wrDelta": -0.6,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -9626,7 +9626,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.8,
+      "wrDelta": 0.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -9698,7 +9698,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -2.0,
+      "wrDelta": -1.2,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "B",
@@ -9773,7 +9773,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.4,
+      "wrDelta": -0.6,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -9847,7 +9847,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "Ass",
@@ -9919,7 +9919,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.2,
+      "wrDelta": 1.0,
       "prevTier": "Ass",
       "tierMoved": "up",
       "prevTierRole": null,
@@ -9993,7 +9993,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": "C",
@@ -10067,10 +10067,10 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -3.3,
+      "wrDelta": -2.5,
       "prevTier": "B",
       "tierMoved": "down",
-      "prevTierRole": "A",
+      "prevTierRole": "B",
       "tierRoleMoved": "down"
     },
     {
@@ -10141,7 +10141,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -2.1,
+      "wrDelta": -1.3,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": "C",
@@ -10216,7 +10216,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.7,
+      "wrDelta": -0.9,
       "prevTier": "C",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -10291,7 +10291,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": -1.5,
+      "wrDelta": -0.7,
       "prevTier": "C",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -10363,7 +10363,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,

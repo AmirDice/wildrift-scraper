@@ -1,6 +1,7 @@
 {
   "date": "2026-08-20",
   "region": "eu",
+  "wrOffset": -8.7,
   "champions": {
     "hecarim": {
       "wr": 66.3,
