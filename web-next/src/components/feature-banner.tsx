@@ -14,16 +14,18 @@ import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 // its own dismiss key).
 const FLAG_PROMO = BUILD_TOOLS_LIVE
   ? {
-      // The headline facts of this release: both rosters are collected (EU and
-      // now NA, full 141 each) and the Build Studio is open. Key bumped to v6
-      // so people who dismissed the EU-only banner see this one once.
-      key: "wtm-feature-builders-v6",
-      href: "/build",
-      lead: "EU & NA win rates & Build Studio are live",
-      body: "fresh top-50 win rates for every champion on two servers, and a generator that builds around how you play.",
-      hideOn: ["/build", "/counter"],  // /counter redirects into /build
-      badges: ["New"],
-      cta: "Try it",
+      // The EU roster was re-collected 2026-08-17 to 2026-08-20, all 141
+      // champions including Cho'Gath, so the banner leads with the refresh --
+      // that is the news, and it is the thing a returning reader wants to know
+      // before they trust a number they saw last week. Key bumped to v7 so
+      // everyone who dismissed v6 sees this one once.
+      key: "wtm-feature-eu-refresh-v7",
+      href: "/tier-list",
+      lead: "EU data has been refreshed",
+      body: "every champion re-collected from the live EU leaderboard, with fresh win rates, builds and tier movement since the last collection.",
+      hideOn: ["/tier-list"],
+      badges: ["Updated"],
+      cta: "See it",
     }
   : {
       key: "wtm-feature-meta-report-v1",
