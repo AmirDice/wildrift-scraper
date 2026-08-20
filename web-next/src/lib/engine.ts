@@ -740,6 +740,15 @@ export function rotation(name: string, st: any, target: any, window: number,
   };
   const empowerLimit = new Map<string, number>();
   for (const [slot, ab] of Object.entries(DATA.formulas[name]?.abilities ?? {})) {
+    // An explicit limit from the corrections overlay wins outright: when a
+    // correction rewrites the damage list, the empowerment sentence leaves the
+    // unmodeled prose and the regex below has nothing to read -- Camille's Q
+    // then rode EVERY auto of the window.
+    const explicit = (ab as any).empowerLimit;
+    if (explicit) {
+      empowerLimit.set(slot, Math.max(1, Number(explicit) || 1));
+      continue;
+    }
     for (const u of ((ab as any).unmodeled ?? [])) {
       const m = String(u).match(
         /empower\w*\s+(?:the\s+|his\s+|her\s+|their\s+)?next\s+(\w+)\s+(?:basic\s+)?attack/i);

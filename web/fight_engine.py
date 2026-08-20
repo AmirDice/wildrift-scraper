@@ -109,6 +109,17 @@ def _apply_formula_corrections(formulas: dict) -> int:
             kept = [m for m in rec.get("mechanics") or [] if m.get("kind") not in drop]
             applied += len(rec.get("mechanics") or []) - len(kept)
             rec["mechanics"] = kept
+        # Per-slot ability overrides: `damage` replaces the slot's damage list
+        # wholesale. Added for Camille's Q, whose scraped text was missing the
+        # recast sentence and with it the 40% true-damage conversion.
+        for slot, patch in (entry.get("abilities") or {}).items():
+            ability = (rec.get("abilities") or {}).get(slot)
+            if ability is not None and "damage" in patch:
+                ability["damage"] = patch["damage"]
+                applied += 1
+            if ability is not None and "empowerLimit" in patch:
+                ability["empowerLimit"] = patch["empowerLimit"]
+                applied += 1
     return applied
 
 
@@ -1039,6 +1050,13 @@ def empower_limits(name: str) -> dict[str, int]:
     """
     out: dict[str, int] = {}
     for slot, ab in (FORMULAS.get(name, {}).get("abilities") or {}).items():
+        # An explicit limit from the corrections overlay wins outright: when a
+        # correction rewrites the damage list, the empowerment sentence leaves
+        # the unmodeled prose and the regex below has nothing to read --
+        # Camille's Q then rode EVERY auto of the window.
+        if ab.get("empowerLimit"):
+            out[slot] = int(ab["empowerLimit"])
+            continue
         for u in ab.get("unmodeled") or []:
             m = re.search(r"empower\w*\s+(?:the\s+|his\s+|her\s+|their\s+)?next\s+"
                           r"(\w+)\s+(?:basic\s+)?attack", str(u), re.I)

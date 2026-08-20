@@ -3,25 +3,82 @@
   "_schema": {
     "knowledge": "keys merged over the champion's knowledge block (resource, asEfficiency, abilitiesCanCrit, ...)",
     "removeMechanics": "list of mechanic kinds to delete from the champion's mechanics list",
-    "reason": "why the extraction is wrong here. Required."
+    "reason": "why the extraction is wrong here. Required.",
+    "abilities": "per-slot overrides folded into the extracted ability. Supported: damage (REPLACES the slot's damage list wholesale) and empowerLimit (how many following attacks one cast empowers -- read by both engines ahead of the prose heuristic). Requires reason quoting the source text."
   },
   "champions": {
     "Garen": {
-      "knowledge": { "resource": "none" },
+      "knowledge": {
+        "resource": "none"
+      },
       "reason": "Extraction says resource=mana; Garen has no resource. Base stats carry mana=null and no ability lists a cost. The error was masked by a correct noResource mechanic, but anything reading the resource field directly sees the wrong answer."
     },
     "Mordekaiser": {
-      "knowledge": { "resource": "none" },
+      "knowledge": {
+        "resource": "none"
+      },
       "reason": "Extraction says resource=mana; Mordekaiser is manaless (base mana=null, no costs). Unlike Garen he has NO noResource mechanic either, so nothing told the model mana stats are dead on him."
     },
     "Graves": {
-      "knowledge": { "resource": "mana" },
-      "removeMechanics": ["noResource"],
+      "knowledge": {
+        "resource": "mana"
+      },
+      "removeMechanics": [
+        "noResource"
+      ],
       "reason": "Extraction says resource=none plus a noResource mechanic, and the prompt told the model Graves 'has NO mana'. He has 390 base mana and pays per cast (Q 65/70/75/80) -- wildriftfire and wr-meta agree. The reload/magazine mechanic likely got conflated with resourcelessness."
     },
     "Nilah": {
-      "knowledge": { "asEfficiency": 0.9 },
+      "knowledge": {
+        "asEfficiency": 0.9
+      },
       "reason": "Was 0.2. She is a melee Marksman with a basic-attack-carry pattern whose attacks cleave; her damage is attacks per second. 0.9 matches Kai'Sa's tier."
+    },
+    "Camille": {
+      "abilities": {
+        "1": {
+          "damage": [
+            {
+              "name": "Precision Protocol (per empowered attack, physical part)",
+              "type": "physical",
+              "base": 0,
+              "ratios": [
+                {
+                  "stat": "ad",
+                  "pct": [
+                    104,
+                    112,
+                    120,
+                    128
+                  ]
+                }
+              ],
+              "hits": 1,
+              "when": "per auto"
+            },
+            {
+              "name": "Precision Protocol (per empowered attack, true part)",
+              "type": "true",
+              "base": 0,
+              "ratios": [
+                {
+                  "stat": "ad",
+                  "pct": [
+                    26,
+                    28,
+                    30,
+                    32
+                  ]
+                }
+              ],
+              "hits": 1,
+              "when": "per auto"
+            }
+          ],
+          "empowerLimit": 2
+        }
+      },
+      "reason": "The scraped Q text carries only the FIRST empowered attack; the recast sentence is missing, so extraction modelled one physical hit and flagged nothing unmodeled. Tencent's hero data (10055): '第一次攻击的1.6秒后，精准礼仪会自动强化下一次普通攻击，将伤害的40%转化为真实伤害' -- one cast empowers TWO attacks, the second converting 40% of its damage to true. ENCODING: the engines charge every per-auto component on every empowered attack (empowerLimit x casts), so the two unequal hits are stored as their PER-ATTACK AVERAGE -- hit1 130-160% AD physical plus hit2 60/40 phys/true averages to 104-128% physical + 26-32% true per empowered attack, exact in total with empowerLimit 2. Writing the hits separately double-counted (each comp rode both empowered attacks). Owner-approved 2026-08-20."
     }
   },
   "_revertNote": "Twisted Fate (asEfficiency 0.8) and Kennen (0.7) corrections were applied on 2026-07-29 and REVERTED the same day on owner meta-judgment: with the raised values the model built Nashor's Tooth as an effective core item on both (slot 2 in consecutive Twisted Fate runs), and neither champion builds it as a staple in the live meta. Their every-N-hit passives are real, but the extraction's 0.2 produces the builds that match reality. If this comes up again, re-litigate with N-run evidence against real meta builds, not from ability text alone."

@@ -81,6 +81,17 @@ def apply_formula_corrections(formulas: dict) -> int:
             kept = [m for m in rec.get("mechanics") or [] if m.get("kind") not in drop]
             applied += len(rec.get("mechanics") or []) - len(kept)
             rec["mechanics"] = kept
+        # Per-slot ability overrides: `damage` replaces the slot's damage list
+        # wholesale. Added for Camille's Q, whose scraped text was missing the
+        # recast sentence and with it the 40% true-damage conversion.
+        for slot, patch in (entry.get("abilities") or {}).items():
+            ability = (rec.get("abilities") or {}).get(slot)
+            if ability is not None and "damage" in patch:
+                ability["damage"] = patch["damage"]
+                applied += 1
+            if ability is not None and "empowerLimit" in patch:
+                ability["empowerLimit"] = patch["empowerLimit"]
+                applied += 1
     return applied
 
 
