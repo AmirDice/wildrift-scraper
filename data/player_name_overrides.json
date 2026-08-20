@@ -104,5 +104,184 @@
   "yasuo_20260818_0638": {
    "31": "HuevoFrito"
   }
+ },
+ "_recovered_why": "Names recovered mechanically by re-reading the ORIGINAL leaderboard frame with the corrected crop, for sessions extracted before the crop was fixed. Accepted only on the clipping fingerprint: the new read is identical to the stored one except for the first character. That is the exact shape of the bug, so nothing else can be overwritten by it. Verified by eye on a sample of 12 -- all 12 first characters correct.",
+ "_recovered_limit": "Tesseract still drops Turkish diacritics on some of these (OCAK SONDURENN is really OCAK SONDURENN with O-umlaut and U-umlaut; KURDI ends in a dotted capital I). Those names were ALREADY wrong in that respect before this repair, which only fixes the first character, so each is strictly better than what it replaces -- not perfect.",
+ "recovered": {
+  "graves_20260818_1525": {
+   "31": "Emekli Graves",
+   "43": "BENVIETNAM",
+   "44": "KC Tarzan"
+  },
+  "hecarim_20260818_0059": {
+   "18": "beni buffla askm",
+   "27": "Flower",
+   "43": "2 flakon tren"
+  },
+  "heimerdinger_20260819_0805": {
+   "16": "Put2miguel"
+  },
+  "irelia_20260818_2342": {
+   "20": "OCAK SONDURENN",
+   "32": "Fidelio"
+  },
+  "janna_20260818_1629": {
+   "4": "s2 shanti",
+   "6": "Duch",
+   "9": "Anthyste"
+  },
+  "jhin_20260818_0305": {
+   "3": "CheckMySpeed",
+   "20": "Etobitmis",
+   "33": "Chow ‘7",
+   "34": "AmirXLuminosity",
+   "41": "ALT F JHIN 4"
+  },
+  "jinx_20260818_0043": {
+   "1": "VE ABINIZ",
+   "2": "Far3on",
+   "13": "XNotEvenClosex",
+   "21": "StarBoy",
+   "25": "FeelMe ®& Beyond",
+   "43": "ScoobyTheDo",
+   "49": "KURDI"
+  },
+  "kennen_20260818_1309": {
+   "7": "Valor",
+   "9": "KoksOLO",
+   "11": "PaekD X Zoro",
+   "14": "BaronCalan",
+   "24": "Laners",
+   "26": "T Injected",
+   "32": "YTZ UndertakeR",
+   "44": "KOBAL"
+  },
+  "kha-zix_20260818_0028": {
+   "10": "Gwyndolin"
+  },
+  "kindred_20260818_1547": {
+   "6": "E36TDKnight",
+   "18": "Yuseong",
+   "23": "Batsy117"
+  },
+  "malphite_20260818_2036": {
+   "24": "DILDA",
+   "32": "ArualAtac"
+  },
+  "miss-fortune_20260818_1356": {
+   "9": "CROSSFORDO",
+   "17": "easyDeath"
+  },
+  "morgana_20260818_0439": {
+   "46": "Sovetnik"
+  },
+  "nidalee_20260818_2054": {
+   "26": "BarkForMeDawg",
+   "34": "Zenri",
+   "42": "PingvinNijeCava",
+   "48": "VIE DouYin"
+  },
+  "nilah_20260818_0420": {
+   "48": "Leoddi"
+  },
+  "nunu-willump_20260817_2022": {
+   "28": "SSS Swindler",
+   "29": "Reckless",
+   "33": "Slace Hardight",
+   "43": "CORUMLU JUNGLE"
+  },
+  "olaf_20260819_0347": {
+   "37": "D=MOLISH"
+  },
+  "pantheon_20260817_1628": {
+   "11": "Withice",
+   "18": "1Bros and 9bot",
+   "24": "MD Pentakill"
+  },
+  "poppy_20260818_1647": {
+   "35": "LAaaAAAAAAAAAAPS"
+  },
+  "rakan_20260818_0955": {
+   "7": "ZEAN",
+   "24": "Yao Ming"
+  },
+  "rammus_20260818_1325": {
+   "33": "BATUR",
+   "35": "Yone Wick"
+  },
+  "samira_20260819_0311": {
+   "29": "LORD MOMEN#?#",
+   "46": "Arthur Morgan"
+  },
+  "sett_20260818_1411": {
+   "5": "Settup",
+   "24": "YasouDz",
+   "31": "Greedy",
+   "38": "Kiler clouns"
+  },
+  "shen_20260819_0524": {
+   "3": "Yone Wick",
+   "15": "Find the truth",
+   "21": "win 1 thesoldier",
+   "26": "ZukSona",
+   "40": "4imbeciles"
+  },
+  "shyvana_20260818_0909": {
+   "4": "DriFyuZ",
+   "5": "TittelinTuure"
+  },
+  "singed_20260819_0017": {
+   "2": "Chase4SumMilk",
+   "15": "Glory of Shimmer",
+   "20": "Haisey",
+   "25": "SeraQueen",
+   "31": "Rank1Feeder",
+   "32": "Rank1Feeder",
+   "42": "WorldDevour",
+   "46": "Eng Ronin"
+  },
+  "sivir_20260819_0403": {
+   "20": "BLS YeahYo17",
+   "22": "Aranan sahis",
+   "24": "Weedismycheat",
+   "28": "Rihanito16",
+   "32": "HulmihoUkolenCZ",
+   "34": "BTF Tufa",
+   "44": "Tayser"
+  },
+  "sona_20260818_0840": {
+   "16": "KS YUNGBOO",
+   "18": "Freekill GG WP",
+   "21": "DrJohn Parkinson",
+   "30": "Lasda1926",
+   "39": "Toxic Jeager",
+   "46": "Wielebny"
+  },
+  "soraka_20260819_0035": {
+   "30": "s2 shanti",
+   "32": "JustCallMeMina",
+   "34": "Johanjwz2",
+   "46": "Barrankas"
+  },
+  "tristana_20260818_0825": {
+   "10": "ALAYINA MOKOKO",
+   "18": "SrTroya",
+   "24": "Cigaras"
+  },
+  "twitch_20260818_1010": {
+   "1": "DSL Witsssz",
+   "12": "TDI Kekse",
+   "19": "Tarre Pecarici",
+   "29": "UnKnOwn CocoNut"
+  },
+  "vayne_20260817_2304": {
+   "43": "Berk"
+  },
+  "viego_20260818_1202": {
+   "24": "be not afraid"
+  },
+  "wukong_20260817_2040": {
+   "25": "Tenroujima"
+  }
  }
 }

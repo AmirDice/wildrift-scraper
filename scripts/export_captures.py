@@ -164,11 +164,27 @@ def _builds_by_rank(session: Path) -> dict[int, dict]:
     return out
 
 
-#: Names transcribed by eye, for the rows neither reader could supply. Keyed by
-#: capture session directory then rank. See the file's own _why.
-_NAME_OVERRIDES: dict[str, dict[str, str]] = json.loads(
-    (ROOT / "data" / "player_name_overrides.json").read_text(encoding="utf-8")
-).get("overrides", {}) if (ROOT / "data" / "player_name_overrides.json").exists() else {}
+def _load_name_overrides() -> dict[str, dict[str, str]]:
+    """Curated names by capture session then rank, highest precedence of all.
+
+    Two kinds live in the file and merge here. `recovered` are re-read
+    mechanically from the original frames with the corrected crop, for sessions
+    extracted while the crop was still clipping the first letter. `overrides`
+    are transcribed by eye, for the rows no automatic reader could supply at
+    all -- those win, because a person looked at them.
+    """
+    path = ROOT / "data" / "player_name_overrides.json"
+    if not path.exists():
+        return {}
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    merged: dict[str, dict[str, str]] = {}
+    for key in ("recovered", "overrides"):
+        for session, names in (doc.get(key) or {}).items():
+            merged.setdefault(session, {}).update(names)
+    return merged
+
+
+_NAME_OVERRIDES: dict[str, dict[str, str]] = _load_name_overrides()
 
 
 def _players_by_rank(session: Path) -> dict[int, dict]:
