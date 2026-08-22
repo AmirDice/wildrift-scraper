@@ -27,6 +27,12 @@ OUT = ROOT / "web-next" / "public" / "global_top_bottom.html"
 
 SHOWN = 5
 
+# site.json points a few champions at a custom local image whose crop hides
+# the face at card size; the slide wants the base loading art for those.
+BASE_ART = {
+    "hecarim": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Hecarim_0.jpg",
+}
+
 
 def load() -> tuple[list[dict], str]:
     eu = json.loads((DATA / "site.json").read_text(encoding="utf-8"))
@@ -37,7 +43,8 @@ def load() -> tuple[list[dict], str]:
         n = na_by.get(c["slug"])
         if c.get("wr") is None or n is None:
             continue
-        merged.append({"name": c["name"], "slug": c["slug"], "splash": c.get("splash") or "",
+        merged.append({"name": c["name"], "slug": c["slug"],
+                       "splash": BASE_ART.get(c["slug"]) or c.get("splash") or "",
                        "eu": c["wr"], "na": n["wr"], "global": round((c["wr"] + n["wr"]) / 2, 1)})
     stat_rules = json.loads((DATA / "stat_rules.json").read_text(encoding="utf-8"))
     patch = eu.get("patch") or stat_rules.get("targetPatch", "")
