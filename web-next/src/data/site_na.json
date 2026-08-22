@@ -1,6 +1,6 @@
 {
   "collectedOn": "August 22, 2026",
-  "movementSince": "2026-08-08",
+  "movementSince": "2026-08-09",
   "roles": [
     "Baron",
     "Jungle",
@@ -78,7 +78,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.3,
+      "wrDelta": -0.9,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -152,7 +152,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -2.6,
+      "wrDelta": -2.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -226,7 +226,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -298,7 +298,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -370,7 +370,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -442,7 +442,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.8,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -514,7 +514,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.1,
+      "wrDelta": -0.7,
       "prevTier": "GOD",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -586,11 +586,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 1.9,
+      "wrDelta": 2.3,
       "prevTier": "A",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Volibear",
@@ -660,11 +660,11 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": 1.4,
+      "wrDelta": 1.8,
       "prevTier": "A",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Talon",
@@ -734,7 +734,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -808,11 +808,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 1.2,
+      "wrDelta": 1.6,
       "prevTier": "A",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Amumu",
@@ -880,7 +880,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.3,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -952,11 +952,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.0,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Olaf",
@@ -1024,11 +1024,11 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.5,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "GOD",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Pantheon",
@@ -1098,7 +1098,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.3,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1172,11 +1172,11 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -2.1,
+      "wrDelta": -1.7,
       "prevTier": "GOD",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "GOD",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Jax",
@@ -1244,7 +1244,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1318,11 +1318,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.4,
+      "wrDelta": -1.0,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "GOD",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Ryze",
@@ -1392,7 +1392,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1464,7 +1464,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 0.8,
       "prevTier": "A",
       "tierMoved": "up",
       "prevTierRole": null,
@@ -1538,11 +1538,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.5,
+      "wrDelta": 0.9,
       "prevTier": "A",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Vi",
@@ -1612,11 +1612,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 0.8,
       "prevTier": "A",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Warwick",
@@ -1684,9 +1684,9 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
+      "wrDelta": 0.9,
+      "prevTier": "A",
+      "tierMoved": "up",
       "prevTierRole": null,
       "tierRoleMoved": null
     },
@@ -1756,7 +1756,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.5,
+      "wrDelta": 0.9,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -1831,7 +1831,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": -0.2,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -1903,11 +1903,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.6,
+      "wrDelta": -1.2,
       "prevTier": "S",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "GOD",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Shyvana",
@@ -1977,11 +1977,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.0,
+      "wrDelta": -0.6,
       "prevTier": "S",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Jhin",
@@ -2049,7 +2049,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.0,
+      "wrDelta": -0.6,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -2123,7 +2123,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.5,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -2195,7 +2195,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.3,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2269,11 +2269,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Diana",
@@ -2341,7 +2341,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.2,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2415,7 +2415,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.1,
+      "wrDelta": 0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2487,11 +2487,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 1.2,
+      "wrDelta": 1.6,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Taliyah",
@@ -2559,9 +2559,9 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
+      "wrDelta": -0.6,
+      "prevTier": "S",
+      "tierMoved": "down",
       "prevTierRole": null,
       "tierRoleMoved": null
     },
@@ -2633,11 +2633,11 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": 1.8,
+      "wrDelta": 2.2,
       "prevTier": "B",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Heimerdinger",
@@ -2707,11 +2707,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Nami",
@@ -2779,7 +2779,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2851,7 +2851,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": -0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2925,7 +2925,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -2997,11 +2997,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.1,
+      "wrDelta": -0.7,
       "prevTier": "S",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "GOD",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Kai'Sa",
@@ -3071,7 +3071,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -1.2,
+      "wrDelta": -0.8,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -3143,7 +3143,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.5,
       "prevTier": "S",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -3217,11 +3217,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Aurelion Sol",
@@ -3289,11 +3289,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Thresh",
@@ -3363,11 +3363,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 1.0,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Ezreal",
@@ -3437,11 +3437,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -1.1,
+      "prevTier": "S",
+      "tierMoved": "down",
+      "prevTierRole": "S",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Nasus",
@@ -3511,7 +3511,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": 0.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -3585,11 +3585,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.5,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Annie",
@@ -3657,11 +3657,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -1.7,
+      "wrDelta": -1.3,
       "prevTier": "S",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Kha'Zix",
@@ -3731,7 +3731,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -3805,7 +3805,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.0,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -3879,11 +3879,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 1.4,
+      "wrDelta": 1.8,
       "prevTier": "B",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Zoe",
@@ -3951,7 +3951,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -4025,11 +4025,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 1.3,
+      "wrDelta": 1.7,
       "prevTier": "B",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Aatrox",
@@ -4099,11 +4099,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.9,
+      "wrDelta": 1.3,
       "prevTier": "B",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Gnar",
@@ -4171,11 +4171,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": 1.1,
+      "prevTier": "B",
+      "tierMoved": "up",
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Braum",
@@ -4245,7 +4245,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 0.8,
       "prevTier": "B",
       "tierMoved": "up",
       "prevTierRole": null,
@@ -4317,7 +4317,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -4389,7 +4389,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -4463,7 +4463,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -4537,11 +4537,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.3,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Gragas",
@@ -4609,7 +4609,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -4683,11 +4683,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Galio",
@@ -4757,11 +4757,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.0,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Viktor",
@@ -4831,7 +4831,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.9,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -4905,11 +4905,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -1.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "S",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Lulu",
@@ -4979,11 +4979,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Swain",
@@ -5053,7 +5053,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -5127,11 +5127,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Blitzcrank",
@@ -5199,7 +5199,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": -0.2,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -5273,7 +5273,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.4,
+      "wrDelta": -0.0,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -5347,11 +5347,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -2.4,
+      "wrDelta": -2.0,
       "prevTier": "S",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Xin Zhao",
@@ -5421,7 +5421,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": -1.3,
+      "wrDelta": -0.9,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -5496,11 +5496,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -0.7,
+      "prevTier": "A",
+      "tierMoved": "down",
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Sett",
@@ -5570,7 +5570,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": -0.1,
       "prevTier": "A",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -5642,7 +5642,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -5717,11 +5717,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 1.5,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Singed",
@@ -5792,11 +5792,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 1.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Fiddlesticks",
@@ -5866,11 +5866,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.0,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Seraphine",
@@ -5938,7 +5938,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -6012,11 +6012,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 1.8,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Nocturne",
@@ -6084,11 +6084,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -0.8,
+      "prevTier": "A",
+      "tierMoved": "down",
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Renekton",
@@ -6158,9 +6158,9 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
+      "wrDelta": -0.8,
+      "prevTier": "A",
+      "tierMoved": "down",
       "prevTierRole": null,
       "tierRoleMoved": null
     },
@@ -6232,11 +6232,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 0.2,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Riven",
@@ -6304,11 +6304,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Kog'Maw",
@@ -6378,9 +6378,9 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
+      "wrDelta": -1.5,
+      "prevTier": "A",
+      "tierMoved": "down",
       "prevTierRole": null,
       "tierRoleMoved": null
     },
@@ -6452,9 +6452,9 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
+      "wrDelta": -0.4,
+      "prevTier": "A",
+      "tierMoved": "down",
       "prevTierRole": null,
       "tierRoleMoved": null
     },
@@ -6598,11 +6598,11 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -0.8,
+      "prevTier": "A",
+      "tierMoved": "down",
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Graves",
@@ -6672,7 +6672,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": 0.7,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -6744,11 +6744,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.5,
+      "wrDelta": 0.9,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Aurora",
@@ -6818,11 +6818,11 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -1.9,
+      "prevTier": "A",
+      "tierMoved": "down",
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Ornn",
@@ -6893,7 +6893,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -6965,11 +6965,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.5,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Irelia",
@@ -7040,11 +7040,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Camille",
@@ -7114,7 +7114,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": 0.0,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7186,11 +7186,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.7,
+      "wrDelta": -0.3,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Dr. Mundo",
@@ -7258,11 +7258,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.7,
+      "wrDelta": 1.1,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "Ass",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Zyra",
@@ -7330,7 +7330,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7404,7 +7404,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": 0.0,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7478,7 +7478,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7552,7 +7552,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.0,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7627,7 +7627,7 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7701,11 +7701,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -1.2,
+      "prevTier": "A",
+      "tierMoved": "down",
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Maokai",
@@ -7776,7 +7776,7 @@
           "tierRoleCss": "tier-god"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7850,7 +7850,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7925,7 +7925,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -7997,11 +7997,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.6,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Varus",
@@ -8069,11 +8069,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.8,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Tristana",
@@ -8143,7 +8143,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.9,
+      "wrDelta": -0.5,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -8218,11 +8218,11 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Samira",
@@ -8293,7 +8293,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.4,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -8367,7 +8367,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -8439,7 +8439,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": 0.5,
+      "wrDelta": 0.9,
       "prevTier": "C",
       "tierMoved": "up",
       "prevTierRole": null,
@@ -8513,11 +8513,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.4,
+      "wrDelta": -1.0,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Garen",
@@ -8588,11 +8588,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -0.6,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Ekko",
@@ -8663,7 +8663,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -0.1,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -8738,11 +8738,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 0.8,
       "prevTier": "C",
       "tierMoved": "up",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "Ass",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Sion",
@@ -8810,11 +8810,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "Ass",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Urgot",
@@ -8885,11 +8885,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Rumble",
@@ -8959,11 +8959,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -0.8,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Vladimir",
@@ -9034,11 +9034,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": -1.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Akshan",
@@ -9108,7 +9108,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.3,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -9182,11 +9182,11 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -1.2,
+      "prevTier": "B",
+      "tierMoved": "down",
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Veigar",
@@ -9256,11 +9256,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -1.1,
+      "prevTier": "B",
+      "tierMoved": "down",
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Leona",
@@ -9330,7 +9330,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.5,
+      "wrDelta": -1.1,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -9404,11 +9404,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -0.5,
+      "prevTier": "B",
+      "tierMoved": "down",
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Lux",
@@ -9478,7 +9478,7 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -1.1,
+      "wrDelta": -0.7,
       "prevTier": "B",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -9552,9 +9552,9 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
+      "wrDelta": -0.2,
+      "prevTier": "B",
+      "tierMoved": "down",
       "prevTierRole": null,
       "tierRoleMoved": null
     },
@@ -9627,7 +9627,7 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.4,
+      "wrDelta": 0.8,
       "prevTier": "Ass",
       "tierMoved": "up",
       "prevTierRole": null,
@@ -9701,11 +9701,11 @@
           "tierRoleCss": "tier-a"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -2.4,
+      "prevTier": "A",
+      "tierMoved": "down",
+      "prevTierRole": "A",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Nautilus",
@@ -9775,11 +9775,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.1,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Soraka",
@@ -9849,9 +9849,9 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
+      "wrDelta": -0.8,
+      "prevTier": "B",
+      "tierMoved": "down",
       "prevTierRole": null,
       "tierRoleMoved": null
     },
@@ -9923,7 +9923,7 @@
           "tierRoleCss": "tier-s"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": -0.1,
       "prevTier": "C",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -9997,7 +9997,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": -0.5,
+      "wrDelta": -0.1,
       "prevTier": "C",
       "tierMoved": "down",
       "prevTierRole": null,
@@ -10071,7 +10071,7 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -10145,11 +10145,11 @@
           "tierRoleCss": "tier-ass"
         }
       },
-      "wrDelta": null,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "wrDelta": -1.5,
+      "prevTier": "B",
+      "tierMoved": "down",
+      "prevTierRole": "C",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Rell",
@@ -10217,11 +10217,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": null,
+      "wrDelta": 0.8,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "Ass",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Yuumi",
@@ -10289,11 +10289,11 @@
           "tierRoleCss": "tier-b"
         }
       },
-      "wrDelta": -2.9,
+      "wrDelta": -2.5,
       "prevTier": "B",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "B",
+      "tierRoleMoved": "down"
     },
     {
       "name": "Janna",
@@ -10363,11 +10363,11 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": -2.7,
+      "wrDelta": -2.3,
       "prevTier": "C",
       "tierMoved": "down",
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "down"
     }
   ],
   "metaBreakdown": [

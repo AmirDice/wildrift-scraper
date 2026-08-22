@@ -299,6 +299,11 @@ def data_collected_on(df: pd.DataFrame) -> str | None:
     return f"{d.strftime('%B')} {d.day}, {d.year}"
 
 
+# Capture days further apart than this belong to different collections. A run
+# pauses for a night or a weekend, never for a week.
+COLLECTION_GAP_DAYS = 5
+
+
 def collection_started_on(df: pd.DataFrame) -> str | None:
     """ISO date of the EARLIEST capture in the data, or None.
 
@@ -313,7 +318,21 @@ def collection_started_on(df: pd.DataFrame) -> str | None:
     stamps = (df["captured_at"].astype(str).str.slice(0, 19)
               .str.replace("T", " ", regex=False))
     caps = pd.to_datetime(stamps, format="%Y-%m-%d %H:%M:%S", errors="coerce").dropna()
-    return caps.min().date().isoformat() if not caps.empty else None
+    if caps.empty:
+        return None
+    # The CSV also carries rows from the PREVIOUS run for champions not yet
+    # re-captured, stamped with that run's dates. The earliest stamp overall
+    # therefore named the old run (NA: 8 August, for a collection that began
+    # on the 20th), and the baseline landed on a half-finished snapshot of that
+    # old run. A collection is the latest cluster of capture days: walk back
+    # from the newest day while the gap to the previous day stays short.
+    days = sorted(set(caps.dt.date))
+    start = days[-1]
+    for earlier, later in zip(reversed(days[:-1]), reversed(days)):
+        if (later - earlier).days > COLLECTION_GAP_DAYS:
+            break
+        start = earlier
+    return start.isoformat()
 
 
 # Tier cutoffs are calibrated for the GAMES-WEIGHTED top-50 winrate, which

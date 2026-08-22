@@ -74,6 +74,7 @@ REGION_CSV: Path | None = None   # None = EU default inside data_loader
 
 
 HISTORY = ROOT / "data" / "history" / "eu"
+REGION = "eu"
 
 
 def _slug(name: str) -> str:
@@ -124,7 +125,7 @@ def _save_snapshot(champions: list[dict], collected_on: str | None,
     d = _snapshot_date(collected_on)
     snap = {
         "date": d,
-        "region": "eu",
+        "region": REGION,
         # The offset this collection was centred with. Win rates below are RAW;
         # the site shows raw + offset. Movement has to be measured in the units
         # the reader is looking at, so the delta needs both collections' offsets.
@@ -433,6 +434,14 @@ def build() -> dict:
                 snap_champs = doc["champions"]
             except (json.JSONDecodeError, KeyError, OSError):
                 continue
+            # export_json writes a snapshot every time it runs, including the
+            # mid-collection runs that exist to publish partial data early.
+            # Such a snapshot covers a fraction of the roster (NA 8 August: 74
+            # of 141) and is not a collection to measure against.
+            if len(snap_champs) < 0.9 * len(champions):
+                print(f"  note: snapshot {d} covers {len(snap_champs)} of "
+                      f"{len(champions)} champions; not a baseline")
+                continue
             prev_date, prev_snap, prev_snap_meta = d, snap_champs, doc
     # Tier movement gates the ARROW badge; the wr delta is the fine print. A
     # tier is what the list is ABOUT, so "riser" means crossed a tier boundary,
@@ -459,9 +468,16 @@ def build() -> dict:
     # presents every number as "relative to the average champion": it says this
     # champion gained a point ON THE FIELD, not that the whole field drifted.
     prev_offset = prev_snap_meta.get("wrOffset")
-    if prev_offset is None:
-        prev_offset = wr_offset          # nothing better; delta stays raw-vs-raw
-        print(f"  note: snapshot {prev_date} has no wrOffset; movement measured raw")
+    if prev_offset is None and prev_snap:
+        # Older snapshots predate the key, but they store the raw win rates the
+        # offset is a function of, and the formula is the one line above: the
+        # baseline's offset is recomputed the same way, so the delta stays in
+        # centred units instead of quietly reverting to raw-vs-raw.
+        _prev_valid = [row.get("wr") for row in prev_snap.values() if row.get("wr") is not None]
+        prev_offset = round(50 - sum(_prev_valid) / len(_prev_valid), 1) if _prev_valid else wr_offset
+        print(f"  note: snapshot {prev_date} has no wrOffset; recomputed as {prev_offset}")
+    elif prev_offset is None:
+        prev_offset = wr_offset
     for c in champions:
         prev = prev_snap.get(c["slug"]) or {}
         prev_wr_val = prev.get("wr")
@@ -565,7 +581,8 @@ def main() -> None:
                     help="Which region's winrates to export (default: eu)")
     args = ap.parse_args()
 
-    global OUT, PLAYERS_OUT, HISTORY, REGION_CSV
+    global OUT, PLAYERS_OUT, HISTORY, REGION_CSV, REGION
+    REGION = args.region
     files = REGION_FILES[args.region]
     # EU passes None so data_loader keeps its own default; a region passes its
     # CSV explicitly.

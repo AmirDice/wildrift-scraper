@@ -1,5 +1,5 @@
 import cnData from "@/data/cn.json";
-import { getChampion, getChampions, regionBoard, tierClass, type Champion } from "@/lib/data";
+import { getChampion, getChampions, regionBoard, tierClass, TIER_ORDER, type Champion } from "@/lib/data";
 import { getNewChampion } from "@/lib/new-champions";
 
 interface CnEntry {
@@ -193,14 +193,37 @@ export function getCnBySlug(
 }
 
 /** Combined-server tier from the average of the two (50%-centered) win rates. */
-export function globalTier(wr: number): string {
-  if (wr >= 53.5) return "GOD";
-  if (wr >= 52) return "S";
-  if (wr >= 50.8) return "A";
-  if (wr >= 49.5) return "B";
-  if (wr >= 48) return "C";
+/** Percentile bands, the same cutoffs export_json uses for role tiers
+ *  (assign_tier_relative): the share of the pool strictly ABOVE a champion
+ *  decides its band, so every pool spreads GOD to L whatever its range.
+ *
+ *  Global used absolute cutoffs (GOD from 53.5, S from 52, ...) tuned to one
+ *  EU collection. The blend of two centred boards has a narrower spread than
+ *  either board on its own -- averaging pulls every champion toward the
+ *  middle -- so the top and bottom bands went empty while EU and NA, ranked
+ *  by the same percentiles within roles, always filled theirs. */
+const RELATIVE_CUTOFFS: ReadonlyArray<readonly [string, number]> = [
+  ["GOD", 0.08], ["S", 0.25], ["A", 0.5], ["B", 0.75], ["C", 0.92], ["Ass", 1.01],
+];
+
+export function relativeTier(wr: number, pool: number[]): string {
+  if (!pool.length || !Number.isFinite(wr)) return "?";
+  const better = pool.reduce((n, v) => (v > wr ? n + 1 : n), 0);
+  const pct = better / pool.length;
+  for (const [label, cut] of RELATIVE_CUTOFFS) if (pct < cut) return label;
   return "Ass";
 }
+
+/** "up" when `after` is a better band than `before`, null when no crossing. */
+export function tierCrossing(before: string | null, after: string | null): "up" | "down" | null {
+  if (!before || !after || before === after) return null;
+  const a = (TIER_ORDER as readonly string[]).indexOf(before);
+  const b = (TIER_ORDER as readonly string[]).indexOf(after);
+  if (a < 0 || b < 0) return null;
+  return b < a ? "up" : "down";
+}
+
+const r1 = (n: number) => Math.round(n * 10) / 10;
 
 /** Champion objects with wr = the mean of the EU and NA top-50 measurements,
  *  and a global tier.
@@ -252,23 +275,21 @@ function sum2(a: number | null | undefined, b: number | null | undefined): numbe
  * blend, and a champion with fewer than N counted players on one server would
  * otherwise be silently represented by the other server alone.
  */
-function blendPools(eu: Champion, na: Champion): Champion["pools"] {
+type DepthValue = { wr: number; wrOffset: number; nPlayers: number };
+
+/** The blended numbers for each pool depth, tiers assigned later once the
+ *  whole pool is known (a percentile band needs everyone else's number). */
+function blendPoolValues(eu: Champion, na: Champion): Record<string, DepthValue> | null {
   if (!eu.pools || !na.pools) return null;
-  const out: NonNullable<Champion["pools"]> = {};
+  const out: Record<string, DepthValue> = {};
   for (const depth of ["25", "10", "5"]) {
     const a = eu.pools[depth];
     const b = na.pools[depth];
     if (!a || !b || a.wr == null || b.wr == null) continue;
-    const wr = Math.round(((a.wr + b.wr) / 2) * 10) / 10;
-    const tier = globalTier(wr);
     out[depth] = {
-      wr,
+      wr: r1((a.wr + b.wr) / 2),
       wrOffset: Math.round((((a.wrOffset ?? 0) + (b.wrOffset ?? 0)) / 2) * 100) / 100,
       nPlayers: (a.nPlayers ?? 0) + (b.nPlayers ?? 0),
-      tier,
-      tierCss: tierClass[tier],
-      tierRole: tier,
-      tierRoleCss: tierClass[tier],
     };
   }
   return Object.keys(out).length ? out : null;
@@ -276,15 +297,58 @@ function blendPools(eu: Champion, na: Champion): Champion["pools"] {
 
 export function getGlobalChampions(): Champion[] {
   const na = new Map(regionBoard("NA").champions.map((c) => [c.slug, c]));
-  const out: Champion[] = [];
+  type Entry = {
+    eu: Champion; na: Champion; g: number; delta: number | null;
+    depths: Record<string, DepthValue> | null;
+  };
+  const entries: Entry[] = [];
   for (const eu of getChampions()) {
-    const parts: number[] = [];
-    if (Number.isFinite(eu.wr)) parts.push(eu.wr);
     const naChamp = na.get(eu.slug);
-    if (naChamp && Number.isFinite(naChamp.wr)) parts.push(naChamp.wr);
-    if (parts.length < 2 || !naChamp) continue;
-    const g = Math.round((parts.reduce((a, b) => a + b, 0) / parts.length) * 10) / 10;
-    const tier = globalTier(g);
+    if (!naChamp || !Number.isFinite(eu.wr) || !Number.isFinite(naChamp.wr)) continue;
+    const g = r1((eu.wr + naChamp.wr) / 2);
+    // Movement is the mean of the two regional deltas, each measured in
+    // centred units against ITS OWN previous collection (EU since 6 August,
+    // NA since 9 August, both before 7.2c). Half a blend is not a blend: a
+    // champion with a delta on one board only reports none, rather than one
+    // region's move scaled down and presented as the world's.
+    const delta = typeof eu.wrDelta === "number" && typeof naChamp.wrDelta === "number"
+      ? Math.round(((eu.wrDelta + naChamp.wrDelta) / 2) * 100) / 100
+      : null;
+    entries.push({ eu, na: naChamp, g, delta, depths: blendPoolValues(eu, naChamp) });
+  }
+
+  // Every band is a rank inside a pool: the whole blend for the tier, the
+  // champion's role for the role tier, and the same two pools rebuilt from
+  // each champion's PREVIOUS blended number for the tier it came from.
+  const finite = (vs: (number | null | undefined)[]) => vs.filter((v): v is number => v != null);
+  const inRole = (role: string) => entries.filter((e) => e.eu.role === role);
+  const prevOf = (e: Entry) => (e.delta == null ? null : r1(e.g - e.delta));
+  const all = entries.map((e) => e.g);
+  const prevAll = finite(entries.map(prevOf));
+  const depthAll = (depth: string) => finite(entries.map((e) => e.depths?.[depth]?.wr));
+
+  const out: Champion[] = [];
+  for (const e of entries) {
+    const { eu, na: naChamp, g } = e;
+    const roleEntries = inRole(eu.role);
+    const tier = relativeTier(g, all);
+    const tierRole = relativeTier(g, roleEntries.map((x) => x.g));
+    const prev = prevOf(e);
+    const prevTier = prev == null ? null : relativeTier(prev, prevAll);
+    const prevTierRole = prev == null ? null : relativeTier(prev, finite(roleEntries.map(prevOf)));
+
+    let pools: Champion["pools"] = null;
+    if (e.depths) {
+      pools = {};
+      for (const [depth, v] of Object.entries(e.depths)) {
+        const t = relativeTier(v.wr, depthAll(depth));
+        const tr = relativeTier(v.wr, finite(roleEntries.map((x) => x.depths?.[depth]?.wr)));
+        pools[depth] = {
+          wr: v.wr, wrOffset: v.wrOffset, nPlayers: v.nPlayers,
+          tier: t, tierCss: tierClass[t], tierRole: tr, tierRoleCss: tierClass[tr],
+        };
+      }
+    }
 
     // Every displayed stat has to be blended too. Spreading the EU object and
     // overwriting only wr used to leave a global win rate sitting beside EU's
@@ -301,8 +365,10 @@ export function getGlobalChampions(): Champion[] {
       ...eu,
       wr: g,
       tier,
-      tierRole: tier,
-      globalParts: parts.length,
+      tierCss: tierClass[tier],
+      tierRole,
+      tierRoleCss: tierClass[tierRole],
+      globalParts: 2,
       meanWr: mean2(eu.meanWr, naChamp.meanWr),
       maxWr: peak.maxWr,
       maxScore: peak.maxScore,
@@ -315,20 +381,20 @@ export function getGlobalChampions(): Champion[] {
       otpScore: mean2(eu.otpScore, naChamp.otpScore),
       isOtp: eu.isOtp && naChamp.isOtp,
 
-      // Deliberately dropped rather than averaged.
-      //   winrateStd / skillSpread: pooling spread needs the per-player rows,
-      //     not two summary numbers. Averaging two standard deviations is not
-      //     the standard deviation of the combined pool.
-      //   (pools are NOT dropped: they are blended below, same as wr.)
-      //   tierMoved / prevTier: EU tier crossings, computed against EU bands.
-      //     A Global row can sit in a different band entirely.
+      // Deliberately dropped rather than averaged: pooling a spread needs the
+      // per-player rows, not two summary numbers. Averaging two standard
+      // deviations is not the standard deviation of the combined pool.
       winrateStd: null,
       skillSpread: null,
-      pools: blendPools(eu, naChamp),
-      tierMoved: null,
-      prevTier: null,
-      tierRoleMoved: null,
-      prevTierRole: null,
+      pools,
+
+      // Movement in Global's OWN bands, from the same before/after pair the
+      // tooltip shows, so the badge and the text cannot disagree.
+      wrDelta: e.delta,
+      prevTier,
+      tierMoved: tierCrossing(prevTier, tier),
+      prevTierRole,
+      tierRoleMoved: tierCrossing(prevTierRole, tierRole),
     });
   }
   return out.sort((a, b) => b.wr - a.wr);

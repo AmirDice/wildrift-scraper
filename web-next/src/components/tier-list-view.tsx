@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
-import { cnTier, globalTier, type CnBracketKey } from "@/lib/cn";
+import { cnTier, type CnBracketKey } from "@/lib/cn";
 import { TIER_ORDER, tierClass, tierLabel, site, siteNa } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
@@ -180,22 +180,6 @@ export function TierListView({
   const activeCnBracket = cnMeta.brackets.find((option) => option.key === cnBracket)
     ?? cnMeta.brackets.find((option) => option.key === cnMeta.defaultBracket)!;
   const options = useMemo(() => ["All roles", ...activeRoles], [activeRoles]);
-
-  // The whole EU field drifted up between the June and August collections: the
-  // median wrDelta is +1.20 and 104 of 138 champions are positive. Left raw,
-  // three quarters of the Global list would wear an up arrow, which says
-  // nothing about any of them. Subtracting the median makes movement mean
-  // "moved relative to the field", the same correction wrOffset applies to the
-  // win rates themselves. Computed from the data so it tracks each refresh.
-  const euDrift = useMemo(() => {
-    const deltas = champions
-      .map((c) => c.wrDelta)
-      .filter((d): d is number => typeof d === "number")
-      .sort((a, b) => a - b);
-    if (!deltas.length) return 0;
-    const mid = Math.floor(deltas.length / 2);
-    return deltas.length % 2 ? deltas[mid] : (deltas[mid - 1] + deltas[mid]) / 2;
-  }, [champions]);
 
   // A role filter changes which BAND a champion is shown in -- buckets sort by
   // tierRole, not tier -- so it has to change which movement is reported too.
@@ -410,36 +394,20 @@ export function TierListView({
                   <div className="glass flex flex-1 flex-wrap content-center gap-x-1.5 gap-y-2 rounded-xl p-2 sm:gap-4 sm:p-4">
                     {champs.map((c) => {
                       const cnMovement = isCN ? moverBySlug(c.slug, cnBracket) : null;
-                      // Global movement comes from EU alone, halved because EU
-                      // is half of the EU + NA average. NA is deliberately not
-                      // blended in: its baseline is 2026-08-08 against EU's
-                      // 2026-06-13, and it carries a delta for only 74 of 140
-                      // champions, so averaging a three-day window with a
-                      // two-month one would produce a number measuring nothing.
-                      // Revisit once NA has a second collection behind it.
-                      // Deltas are computed raw-vs-raw at export, so the display
-                      // centering never leaks into them.
-                      const share = c.globalParts ?? 2;
-                      const globalDelta = c.wrDelta != null
-                        ? Math.round(((c.wrDelta - euDrift) / share) * 100) / 100
-                        : null;
-                      const mv = isGlobal
-                        ? globalDelta != null
+                      // EU, NA and Global all carry wrDelta in centred units
+                      // against their own previous collection. Global's is the
+                      // mean of the two regional deltas, present only when both
+                      // boards have one (see getGlobalChampions), so the blend
+                      // never reports one region's move as the world's.
+                      const mv = isCN
+                        ? cnMovement
+                        : c.wrDelta != null
                           ? {
-                              oldWr: Math.round((c.wr - globalDelta) * 100) / 100,
+                              oldWr: Math.round((c.wr - c.wrDelta) * 10) / 10,
                               newWr: c.wr,
-                              delta: globalDelta,
+                              delta: c.wrDelta,
                             }
-                          : null
-                        : isCN
-                          ? cnMovement
-                          : c.wrDelta != null
-                            ? {
-                                oldWr: Math.round((c.wr - c.wrDelta) * 10) / 10,
-                                newWr: c.wr,
-                                delta: c.wrDelta,
-                              }
-                            : null;
+                          : null;
                       // The arrow means "crossed a tier boundary", in EVERY
                       // view, and nothing less. A tier is what this list ranks,
                       // so movement inside a tier is fine print -- the small
@@ -449,18 +417,17 @@ export function TierListView({
                       // threshold of 0.05. That put an arrow on Skarner for
                       // five hundredths of a point and on 17 champions at once,
                       // which tells the reader a champion moved without telling
-                      // them it moved anywhere. Both now cross their OWN bands:
-                      // Global reads the blended win rate through globalTier,
+                      // them it moved anywhere. Every view now crosses its OWN
+                      // bands: EU, NA and Global export the crossing with the
+                      // data (Global's bands are percentile ranks of the blend),
                       // CN reads its bracket win rate through cnTier, and the
                       // before/after numbers are the same pair already shown in
                       // the tooltip, so the badge and the text cannot disagree.
                       const tierMove = mv
-                        ? isGlobal
-                          ? crossing(globalTier(mv.oldWr), globalTier(mv.newWr))
-                          : isCN
-                            ? crossing(cnTier(mv.oldWr), cnTier(mv.newWr))
-                            : ((roleActive ? c.tierRoleMoved : c.tierMoved) as
-                                "up" | "down" | null) ?? null
+                        ? isCN
+                          ? crossing(cnTier(mv.oldWr), cnTier(mv.newWr))
+                          : ((roleActive ? c.tierRoleMoved : c.tierMoved) as
+                              "up" | "down" | null) ?? null
                         : null;
                       const up = tierMove === "up";
                       const changed = Boolean(tierMove);
@@ -468,11 +435,9 @@ export function TierListView({
                       // band set this view ranks by, so the words match the
                       // arrow rather than restating EU's crossing everywhere.
                       const bandsBefore = !mv ? null
-                        : isGlobal ? globalTier(mv.oldWr)
                         : isCN ? cnTier(mv.oldWr)
                         : (roleActive ? c.prevTierRole : c.prevTier) ?? null;
                       const bandsAfter = !mv ? null
-                        : isGlobal ? globalTier(mv.newWr)
                         : isCN ? cnTier(mv.newWr)
                         : roleActive ? c.tierRole : c.tier;
                       return (
@@ -481,7 +446,7 @@ export function TierListView({
                           href={`/champions/${c.slug}`}
                           className="group flex w-[46px] flex-col items-center text-center transition sm:w-[68px]"
                           title={changed && mv
-                            ? `${c.name} · ${shownWr(c).toFixed(1)}% WR · ${isGlobal ? "CN update impact on Global" : isCN ? "previous CN scrape" : `since ${site.movementSince ?? "the previous collection"}`}${bandsBefore && bandsAfter ? ` ${tierLabel(bandsBefore)} → ${tierLabel(bandsAfter)},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
+                            ? `${c.name} · ${shownWr(c).toFixed(1)}% WR · ${isGlobal ? `since the previous EU (${site.movementSince ?? "collection"}) and NA (${siteNa.movementSince ?? "collection"}) collections` : isCN ? "previous CN scrape" : `since ${(isNA ? siteNa.movementSince : site.movementSince) ?? "the previous collection"}`}${bandsBefore && bandsAfter ? ` ${tierLabel(bandsBefore)} → ${tierLabel(bandsAfter)},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
                             : `${c.name} · ${shownWr(c).toFixed(1)}% WR`}
                         >
                           <span className="relative transition group-hover:-translate-y-0.5">
@@ -582,8 +547,8 @@ export function TierListView({
               <span className="font-semibold text-bad">&#9660;</span> badge means the champion{" "}
               <span className="font-medium text-text">changed tier</span> since{" "}
               {isCN ? "the previous China scrape"
-                : isGlobal ? "the previous collection"
-                : site.movementSince ?? "the previous collection"}
+                : isGlobal ? `the previous EU (${site.movementSince ?? "collection"}) and NA (${siteNa.movementSince ?? "collection"}) collections`
+                : (isNA ? siteNa.movementSince : site.movementSince) ?? "the previous collection"}
               {role === "All roles" ? "" : ` (within ${role})`}. The small{" "}
               <span className="font-semibold text-emerald-400">+</span>/
               <span className="font-semibold text-bad">&minus;</span> after the win rate is how much
