@@ -14,15 +14,16 @@ import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 // its own dismiss key).
 const FLAG_PROMO = BUILD_TOOLS_LIVE
   ? {
-      // The EU roster was re-collected 2026-08-17 to 2026-08-20, all 141
-      // champions including Cho'Gath, so the banner leads with the refresh --
-      // that is the news, and it is the thing a returning reader wants to know
-      // before they trust a number they saw last week. Key bumped to v7 so
-      // everyone who dismissed v6 sees this one once.
-      key: "wtm-feature-eu-refresh-v7",
+      // The NA roster was re-collected 2026-08-20 to 2026-08-22 (all 141
+      // champions, following EU's 17-20 August pass), and the Global blend,
+      // its tiers and its movement were rebuilt on both fresh boards, so the
+      // banner leads with that refresh -- the news a returning reader wants
+      // before trusting a number they saw last week. Key bumped to v8 so
+      // everyone who dismissed v7 (the EU refresh) sees this one once.
+      key: "wtm-feature-na-global-refresh-v8",
       href: "/tier-list",
-      lead: "EU data has been refreshed",
-      body: "every champion re-collected from the live EU leaderboard, with fresh win rates, builds and tier movement since the last collection.",
+      lead: "NA and Global data have been refreshed",
+      body: "every champion re-collected from the live NA leaderboard, and the Global tier list rebuilt on fresh EU and NA numbers, with win rates, builds and tier movement since the last collection.",
       hideOn: ["/tier-list"],
       badges: ["Updated"],
       cta: "See it",
