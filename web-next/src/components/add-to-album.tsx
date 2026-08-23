@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useAccount } from "@/components/account-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in";
 
@@ -63,15 +64,37 @@ export function AddToAlbumButton({ build, className = "" }: { build: AlbumBuildP
     return () => window.clearTimeout(timer);
   }, [open, user, load]);
 
+  // The menu renders in a portal at <body>, positioned from the button's
+  // rect. Inside the card it was an `absolute z-50` child of a .glass panel,
+  // and backdrop-filter makes every glass panel its own stacking context:
+  // z-index inside one cannot climb over a sibling panel painted later, so
+  // the menu slid under the next glass block (and under the glass nav bar).
+  // Raising the card's own z-index papered over one case and not the others.
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   useEffect(() => {
-    const card = ref.current?.closest<HTMLElement>(".glass");
-    if (card) card.style.zIndex = open ? "60" : "";
-    if (!open) return;
+    if (!open) { setPos(null); return; }
+    const place = () => {
+      const r = ref.current?.getBoundingClientRect();
+      if (!r) return;
+      const width = 288;                                   // w-72
+      const left = Math.max(8, Math.min(r.right - width, window.innerWidth - width - 8));
+      setPos({ top: r.bottom + 8, left });
+    };
+    place();
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
     const onDoc = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+      const t = event.target as Node;
+      if (ref.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setOpen(false);
     };
     document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+      document.removeEventListener("mousedown", onDoc);
+    };
   }, [open]);
 
   const [savedTo, setSavedTo] = useState<string | null>(null);
@@ -146,8 +169,9 @@ export function AddToAlbumButton({ build, className = "" }: { build: AlbumBuildP
         </Link>
       )}
 
-      {open && (
-        <div className="glass-menu absolute right-0 z-50 mt-2 w-72 rounded-xl p-3">
+      {open && pos && typeof document !== "undefined" && createPortal(
+        <div ref={menuRef} style={{ position: "fixed", top: pos.top, left: pos.left }}
+             className="glass-menu z-[90] w-72 rounded-xl p-3">
           {!user ? (
             <>
               <p className="text-sm font-semibold text-text">Keep this build</p>
@@ -207,7 +231,8 @@ export function AddToAlbumButton({ build, className = "" }: { build: AlbumBuildP
               </Link>
             </>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
