@@ -111,3 +111,62 @@ export function regionCoverage() {
     cnBracket: CN_META.bracket,
   };
 }
+
+/* ── skill ceiling, the way the shorts rank it ─────────────────────────── */
+
+export interface SkillCeilingRow {
+  slug: string;
+  name: string;
+  icon: string;
+  role: string;
+  /** Regional gaps: how many win-rate points the champion's strongest
+   *  top-50 players (90th percentile, games-gated) sit above its ordinary
+   *  top-50 player. */
+  eu: number;
+  na: number;
+  /** Mean of the two gaps. */
+  blended: number;
+  /** EU + NA win rate (centred), for the gate. */
+  wr: number;
+  euWr: number;
+  naWr: number;
+  /** The two regions measured a similar gap (within 8 points). For a champion
+   *  few people play, one outlier account sets the "ceiling" on one board
+   *  and not the other; a gap the regions disagree on that much is noise. */
+  agree: boolean;
+}
+
+const CEILING_AGREEMENT = 8;
+
+/** Every champion with a gap on both boards, blended. */
+export function getSkillCeilingRows(): SkillCeilingRow[] {
+  const rows: SkillCeilingRow[] = [];
+  for (const eu of getChampions()) {
+    const na = naBySlug(eu.slug);
+    if (!na || eu.skillSpread == null || na.skillSpread == null) continue;
+    if (!Number.isFinite(eu.wr) || !Number.isFinite(na.wr)) continue;
+    rows.push({
+      slug: eu.slug,
+      name: eu.name,
+      icon: eu.icon,
+      role: eu.role,
+      eu: eu.skillSpread,
+      na: na.skillSpread,
+      blended: round1((eu.skillSpread + na.skillSpread) / 2),
+      wr: round1((eu.wr + na.wr) / 2),
+      euWr: eu.wr,
+      naWr: na.wr,
+      agree: Math.abs(eu.skillSpread - na.skillSpread) <= CEILING_AGREEMENT,
+    });
+  }
+  return rows.sort((a, b) => b.blended - a.blended);
+}
+
+/** The ranking the shorts show: regions agree, and the champion wins at or
+ *  above average on both boards -- a "skill ceiling" on a champion whose
+ *  best players still lose is not a ceiling worth climbing. */
+export function topSkillCeilings(n = 5): SkillCeilingRow[] {
+  return getSkillCeilingRows()
+    .filter((r) => r.agree && r.euWr >= 50 && r.naWr >= 50)
+    .slice(0, n);
+}
