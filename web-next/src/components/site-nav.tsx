@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useBuildToolsVisible } from "@/lib/use-build-tools";
 import { DiscordNavLink, DISCORD_URL, DiscordIcon } from "@/components/discord";
+import { TIKTOK_URL, YOUTUBE_URL, TikTokIcon, YouTubeIcon } from "@/components/socials";
 import { SupportNavLink, BUYMEACOFFEE_URL, CoffeeIcon } from "@/components/support";
 import { AccountMenu } from "@/components/account-menu";
 import { ChampionCombobox, type ComboItem } from "@/components/champion-combobox";
@@ -404,6 +405,26 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
             >
               <DiscordIcon className="h-5 w-5" />
               Join our Discord
+            </Link>
+            <Link
+              href={TIKTOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center gap-2 rounded-lg bg-white/[0.08] px-3 py-2.5 text-sm font-semibold text-text transition hover:bg-white/[0.14]"
+            >
+              <TikTokIcon className="h-5 w-5" />
+              TikTok
+            </Link>
+            <Link
+              href={YOUTUBE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center gap-2 rounded-lg bg-[#FF0000]/15 px-3 py-2.5 text-sm font-semibold text-[#ff8a8a] transition hover:bg-[#FF0000]/25"
+            >
+              <YouTubeIcon className="h-5 w-5" />
+              YouTube
             </Link>
             <Link
               href={BUYMEACOFFEE_URL}

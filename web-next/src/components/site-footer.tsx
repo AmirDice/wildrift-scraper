@@ -2,6 +2,7 @@ import Link from "next/link";
 import { site } from "@/lib/data";
 import { DiscordButton } from "@/components/discord";
 import { SupportButton } from "@/components/support";
+import { TikTokButton, YouTubeButton } from "@/components/socials";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 
 const FOOTER_LINKS = [
@@ -36,6 +37,8 @@ export function SiteFooter() {
         </nav>
         <div className="mb-6 flex flex-wrap items-center justify-center gap-3">
           <DiscordButton>Join our Discord</DiscordButton>
+          <TikTokButton>TikTok</TikTokButton>
+          <YouTubeButton>YouTube</YouTubeButton>
           <SupportButton>Buy me a coffee</SupportButton>
         </div>
         <p>
