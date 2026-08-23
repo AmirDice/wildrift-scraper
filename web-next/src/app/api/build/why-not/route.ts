@@ -172,6 +172,42 @@ export async function POST(request: Request) {
     // a swap; the advisor clamps that case to a SITUATIONAL verdict.
     situational: itemSwaps(body.situational),
     situationalBoots: bootSwaps(body.situationalBoots),
+    // The rest of what the page knows, so the engine answers from the same
+    // facts it built with: enemies and role, its own item reasons and
+    // synergies, the rune and boots reasons, and its earlier score for the
+    // queried item if it scored it.
+    enemies: list(body.enemies, 5).map(clean).filter(Boolean),
+    role: clean(body.role),
+    itemReasons: Array.isArray(body.itemReasons)
+      ? body.itemReasons.slice(0, 6).flatMap((r: unknown) => {
+          if (!r || typeof r !== "object") return [];
+          const row = r as Record<string, unknown>;
+          const item = typeof row.item === "string" ? row.item.replace(/[^a-z0-9-]/g, "").slice(0, 60) : "";
+          if (!item) return [];
+          return [{
+            item,
+            reason: typeof row.reason === "string" ? row.reason.slice(0, 300) : "",
+            synergyWith: list(row.synergyWith, 4).map((s) => s.replace(/[^a-z0-9-]/g, "").slice(0, 60)),
+          }];
+        })
+      : [],
+    runeReasons: body.runeReasons && typeof body.runeReasons === "object"
+      ? {
+          keystone: typeof (body.runeReasons as Record<string, unknown>).keystone === "string"
+            ? ((body.runeReasons as Record<string, unknown>).keystone as string).slice(0, 300) : "",
+          minors: list((body.runeReasons as Record<string, unknown>).minors, 4).map((s) => s.slice(0, 200)),
+          flex: typeof (body.runeReasons as Record<string, unknown>).flex === "string"
+            ? ((body.runeReasons as Record<string, unknown>).flex as string).slice(0, 200) : "",
+        }
+      : undefined,
+    bootsReason: typeof body.bootsReason === "string" ? body.bootsReason.slice(0, 300) : "",
+    candidateScore: body.candidateScore && typeof body.candidateScore === "object"
+      ? {
+          score: Number((body.candidateScore as Record<string, unknown>).score) || 0,
+          reason: typeof (body.candidateScore as Record<string, unknown>).reason === "string"
+            ? ((body.candidateScore as Record<string, unknown>).reason as string).slice(0, 300) : "",
+        }
+      : undefined,
   };
 
   const store = await cookies();

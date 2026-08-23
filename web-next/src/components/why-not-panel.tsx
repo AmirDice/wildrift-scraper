@@ -26,13 +26,23 @@ const VERDICT_LABEL: Record<string, { text: string; cls: string }> = {
  * allowance as a build, and the button says so before anyone clicks.
  */
 export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buildBias,
-                              situational, situationalBoots, bare = false }: {
+                              situational, situationalBoots, bare = false,
+                              enemies = [], role = "", itemReasons = [], runeReasons,
+                              bootsReason = "", candidateScores = [] }: {
   champion: string;
   items: string[];
   boots?: string;
   runeNames: string[];
   playstyle: string;
   buildBias: string;
+  /** Everything else the build page knows, so the engine answers from the
+   *  same facts it built with rather than from item names alone. */
+  enemies?: string[];
+  role?: string;
+  itemReasons?: { item: string; reason: string; synergyWith?: string[] }[];
+  runeReasons?: { keystone?: string; minors?: string[]; flex?: string };
+  bootsReason?: string;
+  candidateScores?: { item: string; score: number; reason: string }[];
   /** The build's own situational swaps. An item listed here is one the build
    *  already recommends against specific conditions, so the answer must say
    *  WHEN it is right rather than argue it is worse. */
@@ -67,7 +77,9 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ champion, items, boots, runes: runeNames, candidate,
-                               playstyle, buildBias, situational, situationalBoots }),
+                               playstyle, buildBias, situational, situationalBoots,
+                               enemies, role, itemReasons, runeReasons, bootsReason,
+                               candidateScore: candidateScores?.find((r) => r.item === candidate) }),
       });
       const data = await res.json();
       setAsked({ candidate, ...data });

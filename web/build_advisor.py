@@ -1257,7 +1257,10 @@ def why_not(champion: str, items: list[str], boots: str,
             rune_names: list[str], candidate: str,
             playstyle: str = "standard", build_bias: str = "balanced",
             situational: list | None = None,
-            situational_boots: list | None = None) -> dict:
+            situational_boots: list | None = None,
+            enemies: list[str] | None = None, role: str = "",
+            item_reasons: list | None = None, rune_reasons: dict | None = None,
+            boots_reason: str = "", candidate_score: dict | None = None) -> dict:
     """Answer "why is CANDIDATE not in this build" for a build we generated.
 
     People disagree with builds constantly, and the difference between "this
@@ -1291,14 +1294,73 @@ def why_not(champion: str, items: list[str], boots: str,
 
     build_names = [ITEMS.get(i, {}).get("name", i) for i in (items or [])]
     boots_name = ITEMS.get(boots, {}).get("name", boots) if boots else "none"
-    # The champion's kit facts, from the same store the full generation reads.
-    # Without them this small call had NOTHING but the champion's name, so the
-    # model answered from its own priors -- which is how a live answer once
-    # described a mana champion as energy-based. Facts beat priors, stated so.
+    # The whole brief the full generation reasons from -- the champion block
+    # (abilities, ratios, stat profile), the meta identity card and the enemy
+    # threat lines -- rather than a one-line kit summary. "Why not this item"
+    # is the same judgement as "why these items", and it needs the same facts.
+    # Each block is optional so an unknown champion or a missing card degrades
+    # to a shorter prompt, never a crash.
     try:
         kit_facts = " ".join(profiles.kit_mechanics(champion))
     except Exception:
         kit_facts = ""
+    brief: list[str] = []
+    try:
+        brief.append(prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA,
+                                              profiles.profile(champion)))
+    except Exception:
+        pass
+    try:
+        identity_key = "Kayn (Rhaast)" if champion == "Kayn" and playstyle == "rhaast" else champion
+        brief.append(prompt_mod.meta_identity_block(identity_key))
+    except Exception:
+        pass
+    enemies = [e for e in (enemies or []) if e]
+    if enemies:
+        try:
+            brief.append(prompt_mod.enemy_threat_block(enemies, champion, WRMETA, role))
+            brief.append(prompt_mod.identity_threat_lines(enemies))
+        except Exception:
+            pass
+    brief_block = "\n\n".join(b for b in brief if b)
+
+    # The build's own words: what it said about each item it chose, which items
+    # it said multiply each other, why these runes and these boots. The answer
+    # has to be consistent with them -- a verdict that contradicts the reason
+    # printed three lines above it on the page is worse than no verdict.
+    reasons_by: dict[str, dict] = {}
+    for row in (item_reasons or []):
+        if isinstance(row, dict) and row.get("item"):
+            reasons_by[str(row["item"])] = row
+    item_lines = []
+    for slug in (items or []):
+        it = ITEMS.get(slug) or {}
+        stats = ", ".join(f"{k} {v.get('value')}" for k, v in (it.get("stats") or {}).items())
+        passives = " | ".join(it.get("passives") or [])[:300]
+        row = reasons_by.get(slug) or {}
+        partners = [ITEMS.get(p, {}).get("name", p) for p in (row.get("synergyWith") or [])]
+        line = f"- {it.get('name', slug)} (cost {it.get('cost')}; {stats or 'no stats'}"
+        if passives:
+            line += f"; {passives}"
+        line += ")"
+        if row.get("reason"):
+            line += f" -- your reason: {str(row['reason'])[:300]}"
+        if partners:
+            line += f" -- synergy with {', '.join(partners)}"
+        item_lines.append(line)
+    rune_lines = []
+    rr = rune_reasons or {}
+    if rr.get("keystone"):
+        rune_lines.append(f"- keystone: {str(rr['keystone'])[:300]}")
+    for m in (rr.get("minors") or [])[:4]:
+        rune_lines.append(f"- minor: {str(m)[:200]}")
+    if rr.get("flex"):
+        rune_lines.append(f"- flex: {str(rr['flex'])[:200]}")
+    boots_line = f"Boots: {boots_name}" + (f" -- your reason: {boots_reason[:300]}" if boots_reason else "")
+    scored_line = ""
+    if isinstance(candidate_score, dict) and candidate_score.get("reason"):
+        scored_line = (f"You already scored this item {candidate_score.get('score')}/100 when "
+                       f"building: {str(candidate_score['reason'])[:300]}\n")
     cand_stats = ", ".join(
         f"{k} {v.get('value')}" for k, v in (cand.get("stats") or {}).items())
     cand_passives = " | ".join(cand.get("passives") or [])[:600]
@@ -1358,22 +1420,29 @@ def why_not(champion: str, items: list[str], boots: str,
     prompt = (
         f"You are the build engine that produced a Wild Rift build for {champion} "
         f"(playstyle: {playstyle}). A player asks why one item was not chosen.\n\n"
+        + (brief_block + "\n\n" if brief_block else "")
         + (f"KIT FACTS for {champion}, authoritative -- if your own recollection "
            f"disagrees, these win: {kit_facts}\n\n" if kit_facts else "")
-        + f"THE BUILD: {', '.join(build_names)} with boots {boots_name}. "
-        f"Runes: {', '.join(rune_names or []) or 'unknown'}.\n"
+        + "THE BUILD YOU PRODUCED, in purchase order, with your own reasons:\n"
+        + ("\n".join(item_lines) if item_lines else f"- {', '.join(build_names)}") + "\n"
+        + boots_line + "\n"
+        + f"Runes: {', '.join(rune_names or []) or 'unknown'}.\n"
+        + ("\n".join(rune_lines) + "\n" if rune_lines else "")
         + bias_line +
         f"\nTHE ITEM IN QUESTION: {cand.get('name', candidate)} "
         f"(cost {cand.get('cost')}, stats: {cand_stats or 'none'}; "
-        f"passives: {cand_passives or 'none'}).\n\n"
+        f"passives: {cand_passives or 'none'}).\n"
+        + scored_line + "\n"
         + swap_block +
         "Answer as the engine defending a judgement call, not a marketing voice. "
         "2 to 4 sentences, concrete: name the item in the build it competes with "
         "and the actual trade (damage type, spike timing, durability, synergy, "
         "cost curve). If the candidate is genuinely fine here, say so plainly.\n"
-        "Reason ONLY from the stats, passives, kit facts, build and conditions "
-        "given above. Do not invent stats, ratios or interactions, and do not "
-        "assert anything this prompt has not told you.\n\n"
+        "Reason ONLY from the champion facts, stats, passives, your own stated "
+        "reasons, the enemies and the conditions given above, and stay consistent "
+        "with the reasons you already gave for the build. Do not invent stats, "
+        "ratios or interactions, and do not assert anything this prompt has not "
+        "told you.\n\n"
         'Return ONLY a JSON object: {"verdict": one of '
         '"viable_alternative" | "situational" | "worse_here" | "not_viable", '
         '"answer": string, "competesWith": item name from the build or null}'

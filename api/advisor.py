@@ -122,12 +122,32 @@ def build_from_request(body: dict) -> tuple[int, dict]:
         swap_boots = [{"boots": _slug(r.get("boots")),
                        "when": _clean_text(r.get("when"))}
                       for r in (why.get("situationalBoots") or [])[:4] if isinstance(r, dict)]
+        # Everything else the page knows: enemies, role, and the build's own
+        # reasons and synergies, so the answer is argued from the same facts
+        # the build was.
+        enemies_q = [e for e in (_clean(v) for v in (why.get("enemies") or [])[:5]) if e]
+        item_reasons = [{"item": _slug(r.get("item")),
+                         "reason": _clean_text(r.get("reason")),
+                         "synergyWith": [s for s in (_slug(v) for v in (r.get("synergyWith") or [])[:4]) if s]}
+                        for r in (why.get("itemReasons") or [])[:6] if isinstance(r, dict)]
+        rr = why.get("runeReasons") if isinstance(why.get("runeReasons"), dict) else {}
+        rune_reasons = {"keystone": _clean_text(rr.get("keystone")),
+                        "minors": [_clean_text(m) for m in (rr.get("minors") or [])[:4]],
+                        "flex": _clean_text(rr.get("flex"))}
+        cs = why.get("candidateScore") if isinstance(why.get("candidateScore"), dict) else None
+        candidate_score = ({"score": cs.get("score"), "reason": _clean_text(cs.get("reason"))}
+                           if cs else None)
         try:
             out = why_not(champion, items, _slug(why.get("boots")), runes, candidate,
                           playstyle=_clean(why.get("playstyle")) or "standard",
                           build_bias=_clean(why.get("buildBias")) or "balanced",
                           situational=[s for s in swaps if s["item"]],
-                          situational_boots=[b for b in swap_boots if b["boots"]])
+                          situational_boots=[b for b in swap_boots if b["boots"]],
+                          enemies=enemies_q, role=_clean(why.get("role")) or "",
+                          item_reasons=[r for r in item_reasons if r["item"]],
+                          rune_reasons=rune_reasons,
+                          boots_reason=_clean_text(why.get("bootsReason")),
+                          candidate_score=candidate_score)
         except SystemExit as exc:            # missing API key, unknown champion
             return 500, {"error": str(exc)}
         return 200, out

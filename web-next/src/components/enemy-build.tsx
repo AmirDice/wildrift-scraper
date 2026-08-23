@@ -1662,6 +1662,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                       : []}
                     playstyle={isCounter ? "counter" : playstyle}
                     buildBias={BIAS_STOPS[biasIdx].key}
+                    enemies={isCounter ? selectedEnemies : []}
+                    role={role}
+                    itemReasons={(advice.candidateItemScores ?? [])
+                      .filter((r) => (advice.items ?? []).includes(r.item))
+                      .map((r) => ({ item: r.item, reason: r.reason, synergyWith: r.synergyWith }))}
+                    runeReasons={advice.runeReasons}
+                    bootsReason={advice.bootsReason}
+                    candidateScores={advice.candidateItemScores}
                   />
                 </div>
                 </div>
