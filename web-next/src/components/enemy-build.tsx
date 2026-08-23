@@ -172,9 +172,20 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
     }))
     .filter((row) => row.reason);
 
-  const bootSlug = advice.bootsUpgrade ?? advice.boots;
-  const bootRow = bootSlug && advice.bootsReason
-    ? { icon: itemIcon(bootSlug), name: itemName(bootSlug), reason: advice.bootsReason }
+  // The reason is written for the tier-2 boots, so the row leads with them
+  // and shows the upgrade as the path, instead of the upgrade's name over a
+  // sentence about different boots ("Immortal Treads -- Plated Steelcaps...").
+  const bootBase = advice.boots ?? advice.bootsUpgrade;
+  const bootRow = bootBase && advice.bootsReason
+    ? {
+        icon: itemIcon(bootBase),
+        name: advice.bootsUpgrade && advice.boots
+          ? `${itemName(advice.boots)} \u2192 ${itemName(advice.bootsUpgrade)}`
+          : itemName(bootBase),
+        reason: advice.bootsUpgradeReason
+          ? `${advice.bootsReason} Upgrade: ${advice.bootsUpgradeReason}`
+          : advice.bootsReason,
+      }
     : null;
 
   const rr = advice.runeReasons;

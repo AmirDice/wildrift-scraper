@@ -24,7 +24,11 @@ from web.advisor import itemmeta, runemeta
 # allowed to return. A section missing from here falls back to regeneration.
 REPAIRABLE: dict[str, tuple[str, ...]] = {
     "runes": ("runes",),
-    "boots": ("boots", "bootsUpgrade", "bootsUpgradeAfter", "bootsUpgradeReason", "situationalBoots"),
+    # bootsReason rides with the boots: a repair that swaps the boots and keeps
+    # the old justification shipped "Immortal Treads -- Plated Steelcaps
+    # mitigate physical damage" to a reader (7 such builds in the cache).
+    "boots": ("boots", "bootsReason", "bootsUpgrade", "bootsUpgradeAfter",
+              "bootsUpgradeReason", "situationalBoots"),
     "situational": ("situational",),
     "situationalRunes": ("situationalRunes",),
     "snowball": ("snowballSwap",),
@@ -161,7 +165,10 @@ def _pool_for(section: str, build: dict, allowed_items: list[str]) -> str:
     if section == "boots":
         rows = [f"{slug} -> upgrades to {item.get('upgradesTo')}"
                 for slug, item in itemmeta.ITEMS.items() if item.get("bootsTier") == 2]
-        return "LEGAL BOOTS (tier-2 only; the tier-3 follows automatically):\n" + "\n".join(rows)
+        return ("LEGAL BOOTS (tier-2 only; the tier-3 follows automatically):\n" + "\n".join(rows)
+                + "\n\nWrite `bootsReason` and `bootsUpgradeReason` for the boots you return "
+                  "NOW, naming them, in the context of this champion, this build and these "
+                  "enemies; a reason written for a different pair of boots is wrong.")
 
     if section == "scores":
         chosen = build.get("items") or []
@@ -180,13 +187,33 @@ def _pool_for(section: str, build: dict, allowed_items: list[str]) -> str:
             + ", ".join(build.get("items") or []))
 
 
+ACCEPTED_KEYS = ("items", "boots", "bootsUpgrade", "runes", "summoners", "situational",
+                 "situationalBoots", "snowballSwap")
+
+
 def repair_prompt(section: str, build: dict, errors: list[str],
-                  allowed_items: list[str]) -> str:
-    """One section, its errors, and the pool required to fix them."""
+                  allowed_items: list[str], context: str = "") -> str:
+    """One section, its errors, the pool required to fix them -- and the whole
+    picture it has to fit.
+
+    `context` is the ORIGINAL build prompt: champion, abilities, stat profile,
+    identity, enemies, item pool. A repair used to get none of it, which is
+    fine for choosing a legal rune page and wrong for writing a reason: "why
+    these boots" cannot be answered without knowing who is wearing them and
+    what else they bought. The accepted parts of the build are restated too,
+    so the section is repaired to fit THIS build, not a build in general.
+    """
     keys = REPAIRABLE[section]
     current = {key: build.get(key) for key in keys}
-    return "\n\n".join([
+    accepted = {k: build.get(k) for k in ACCEPTED_KEYS if k in build and k not in keys}
+    parts = []
+    if context:
+        parts.append("THE FULL BRIEF YOU ANSWERED (champion, kit, numbers, enemies, item pool):\n"
+                     + context)
+    parts += [
         f"Your previous answer was valid except for one section: {section}.",
+        "THE REST OF YOUR BUILD, accepted and kept as is:\n"
+        + json.dumps(accepted, ensure_ascii=False, indent=2),
         "THE INVALID SECTION, exactly as you returned it:\n"
         + json.dumps(current, ensure_ascii=False, indent=2),
         "WHAT IS WRONG WITH IT:\n- " + "\n- ".join(errors),
@@ -195,7 +222,22 @@ def repair_prompt(section: str, build: dict, errors: list[str],
         + " and ".join(f"`{k}`" for k in keys)
         + ". Do not restate or change any other part of the build -- the rest of it was "
           "accepted and will be kept. Do not explain; return the JSON object alone.",
-    ])
+    ]
+    return "\n\n".join(parts)
+
+
+def boots_reason_fits(build: dict) -> bool:
+    """False when bootsReason names a different tier-2 boots than `boots`."""
+    reason = str(build.get("bootsReason") or "").lower()
+    if not reason:
+        return True
+    own = itemmeta.ITEMS.get(build.get("boots") or "", {}).get("name", "").lower()
+    for slug, item in itemmeta.ITEMS.items():
+        if item.get("bootsTier") == 2 and slug != build.get("boots"):
+            name = item.get("name", "").lower()
+            if name and name in reason and own not in reason:
+                return False
+    return True
 
 
 def apply_repair(build: dict, section: str, patch: dict) -> bool:
@@ -210,6 +252,11 @@ def apply_repair(build: dict, section: str, patch: dict) -> bool:
         if key in patch:
             build[key] = patch[key]
             changed = True
+    if section == "boots" and not boots_reason_fits(build):
+        # the repair returned new boots with the old justification (or none):
+        # no reason beats a reason about different boots
+        build["bootsReason"] = ""
+        changed = True
     if not changed:
         print(f"[advisor] repair for {section} returned none of {REPAIRABLE.get(section)}; "
               f"got keys {sorted(patch)}", file=sys.stderr)

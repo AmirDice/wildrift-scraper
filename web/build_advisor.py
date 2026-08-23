@@ -1089,7 +1089,7 @@ def advise(champion: str, role: str, enemies: list[str],
             print(f"[advisor] targeted repair: {section} ({len(errors)} errors)",
                   file=sys.stderr)
             emit({"stage": "repairing", "section": section})
-            patch = call(repair.repair_prompt(section, res, errors, pool_slugs))
+            patch = call(repair.repair_prompt(section, res, errors, pool_slugs, context=prompt))
             repair.apply_repair(res, section, patch)
         report = _check(res)
 
