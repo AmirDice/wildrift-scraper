@@ -1,0 +1,81 @@
+{
+ "generatedAt": "2026-08-09T14:17:39+00:00",
+ "model": "gemini-3.6-flash",
+ "champions": {
+  "hecarim": {
+   "text": "Despite patch 7.2b reducing Rampage movement speed 11 days ago, Hecarim gained 5.7 points to reach a 60.2% win rate in EU. That elite performance is heavily driven by dedicated one-tricks rather than typical players, with individual results varying sharply up to a peak player win rate of 93.5%. In contrast to these high-tier results, China's whole-population sample sits at 50.36%.",
+   "tier": "GOD",
+   "wr": 60.2
+  },
+  "garen": {
+   "text": "Garen performs noticeably better outside of Europe, reaching a 50.52% win rate in China and 48.2% in North America compared to 46.7% in EU. Across a sample of 4522 games in Europe, results among top players are remarkably consistent, with the top 50 averaging a 49.6% win rate. Left untouched for 88 days since patch 7.1e, these regional differences represent a settled baseline rather than the impact of recent changes.",
+   "tier": "C",
+   "wr": 46.7
+  },
+  "yuumi": {
+   "text": "North American players pull off a 48.0% win rate on Yuumi compared to 43.7% in Europe, creating a 4.3 point gap between the two servers. Performance within Europe depends heavily on the individual player, ranging from a 48.8% average among the top 50 to a 90.9% win rate for the best single player. European results dropped by 2.5 points since the previous collection, 25 days after patch 7.2a.",
+   "tier": "Ass",
+   "wr": 43.7
+  },
+  "nilah": {
+   "text": "Without a balance change in 577 days since patch 6.0, Nilah leaped from A tier to GOD tier in EU with a +5.6 point win rate jump to 55.7%. That high mark extends to NA at 58.3%, though China's whole-population sample sits lower at 51.64%. Across 3011 total games measured from 50 players, the standout result is a top individual holding a 100.0% win rate.",
+   "tier": "GOD",
+   "wr": 55.7
+  },
+  "corki": {
+   "text": "Corki's sub-50% win rates in Europe (48.8%) and North America (47.7%) stem from an unusually wide spread of casual users rather than a concentrated core of specialists. The champion has gone 124 days without balance adjustments since patch 7.1, though China's whole-population metric sits slightly higher at 50.24%. Across the 2138 games sampled from 47 top European players, individual results show standard variation, topped by a single player's peak record of 85.7%.",
+   "tier": "B",
+   "wr": 48.8
+  },
+  "kayle": {
+   "text": "Kayle jumped from B tier straight to GOD tier in EU following a +4.5 point win rate surge after patch 7.2b 11 days ago. Her 53.7% EU win rate across 3765 games is remarkably consistent across players rather than driven by specialists, drawing from an unusually evenly distributed player base with few one-tricks. That strong performance holds in NA at 53.1%, though China's full-population sample records a more modest 51.26%.",
+   "tier": "GOD",
+   "wr": 53.7
+  },
+  "rammus": {
+   "text": "Despite going 116 days without a balance change since patch 7.1b, Rammus moved up to EU's GOD tier with a 53.6% win rate after a 1.1 point gain. Unusually, this high win rate is spread across a broad pool of players rather than being driven by specialists, though the top individual player reached a 93.8% win rate. That strength extends to China with a 55.04% whole-population win rate, whereas NA trails at 51.9%.",
+   "tier": "GOD",
+   "wr": 53.6
+  },
+  "sona": {
+   "text": "Despite patch 7.2b reducing healing and raising ultimate cooldowns at later ranks 11 days ago, Sona leaped from B to S tier in EU with a +3.4 point win rate rise to 52.5%. Unusually few one-tricks populate the 47 measured players, showing that these results come from typical players rather than specialists. Win rates reach even higher elsewhere, hitting 54.1% in NA and 55.34% in China.",
+   "tier": "S",
+   "wr": 52.5
+  },
+  "twitch": {
+   "text": "Despite going 116 days without balance changes since patch 7.1b, Twitch climbed from C to B tier in EU after a +1.9 point gain to a 49.0% win rate. That result is unusually consistent across 49 players and 3698 total games, driven by generalists rather than a pool of one-tricks. That EU success does not carry over to other regions, where win rates fall to 45.6% in NA and 46.39% in China.",
+   "tier": "B",
+   "wr": 49.0
+  },
+  "katarina": {
+   "text": "Top players show remarkable consistency across an unusually evenly distributed player base, keeping the top 50 European mean win rate at 48.0% across 5695 games. This closely reflects her overall 47.5% European win rate and her 46.84% whole-population mark in China. Unchanged for 179 days since patch 7.0c, Katarina has gained 1.0 points since the last collection, even while the best individual player sits at 70.8%.",
+   "tier": "C",
+   "wr": 47.5
+  },
+  "mel": {
+   "text": "Despite being played unusually evenly with few one-tricks, a single player reaches a 74.2% win rate on Mel while the overall EU sample averages 47.4%. Her performance recently dropped 1.0 points into C tier across 2,330 measured games. Unchanged for 103 days since patch 7.1d, her results show a similar struggle in China, where the whole-population win rate sits at 45.76%.",
+   "tier": "C",
+   "wr": 47.4
+  },
+  "xayah": {
+   "text": "European performance for Xayah sits at a 47.0% win rate in C tier, trailing North America's 49.5% win rate by 2.5 points. China aligns closer to North America with a 49.09% win rate across its full-population sample. These figures have remained essentially unchanged throughout 158 days since patch 7.0d, backed by a sample of 3773 European games across 48 measured players.",
+   "tier": "C",
+   "wr": 47.0
+  },
+  "nasus": {
+   "text": "Few one-tricks drive Nasus's profile, as top players select the champion unusually evenly and achieve nearly identical results. That high level of consistency makes the 50.9% EU win rate across 4288 games a reliable baseline for average performance rather than an artifact of specialist mastery. Untouched for 179 days since patch 7.0c, results remain steady across regions, landing at 50.4% in NA and 51.91% in China.",
+   "tier": "A",
+   "wr": 50.9
+  },
+  "lux": {
+   "text": "Untouched by balance changes for 480 days since patch 6.1, Lux jumped 3.7 win rate points in EU to reach 49.7%, moving her out of Ass tier and up to A tier. That rise is remarkably steady across a broad player base, with few dedicated specialists and almost all top players securing similar results over a 3,472-game sample. Her performance remains close across borders, dipping slightly to 48.73% in China and 48.0% in NA.",
+   "tier": "A",
+   "wr": 49.7
+  },
+  "ashe": {
+   "text": "Without a balance change in 179 days, Ashe produces unusually predictable results, with nearly every top player achieving a similar win rate rather than a few specialists driving the numbers. Her performance sits closely aligned between Europe at 48.9% and North America at 48.5%, despite a 1.0 point rise since the previous collection. Across the entire player population in China, that mark rests at an even 50%.",
+   "tier": "B",
+   "wr": 48.9
+  }
+ }
+}

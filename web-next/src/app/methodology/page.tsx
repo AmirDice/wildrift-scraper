@@ -77,9 +77,44 @@ export default function MethodologyPage() {
           range means we switch to percentile cutoffs so every tier stays populated.
         </Section>
 
+        <Section title="Roles">
+          A champion&rsquo;s role comes from what its best players actually equip, not from a fixed
+          list we maintain by hand. Someone carrying Smite was in the jungle; someone carrying a
+          support item was the support. When a champion is genuinely played in two roles we compare
+          how each group performs and go with the stronger one, so a champion that has quietly
+          moved lanes follows the players rather than waiting for us to notice.
+        </Section>
+
+        <Section title="OTP score and player tags">
+          The OTP score answers one question: how much of a player&rsquo;s ranked play is actually
+          spent on this champion. If a champion&rsquo;s best players spend a large share of their
+          games on it, that board is made of specialists. If they spread their time across many
+          champions, it isn&rsquo;t, however hard the top few grind. The score is that share taken
+          across the whole board, so it is a number you can read directly rather than an index.
+          <br /><br />
+          Three signals (that share, the win rate, and how much the champion is played) tend to
+          fall into recognisable shapes, which we surface as tags.{" "}
+          <strong className="text-text">OTP</strong> means the board really is specialists.{" "}
+          <strong className="text-text">Comfort</strong> means heavily played and heavily
+          specialised but winning below average: people pick it because they enjoy it.{" "}
+          <strong className="text-text">Contested</strong> means a strong win rate with few games
+          and few specialists, the shape of a champion people often cannot get. We do not hold
+          ban data, so treat that one as a pattern rather than a fact.
+        </Section>
+
+        <Section title="Patch winners and losers">
+          This compares the current numbers against a snapshot taken just before the patch went
+          live, not against yesterday. Comparing two consecutive days would mostly measure daily
+          noise; measuring from the patch itself is what tells you whether a change landed. The
+          window therefore grows a little each day as new data arrives. This section reads the
+          Chinese Challenger ladder, which updates daily, while the tier list is built from
+          European data, so the two are answering different questions on purpose.
+        </Section>
+
         <Section title="Updates">
           Data is refreshed roughly twice a month. Each refresh re-scrapes the top 50 players of
-          every champion and recomputes everything above.
+          every champion and recomputes everything above. The Chinese win rates behind the patch
+          winners and losers refresh daily.
         </Section>
       </div>
     </Container>
