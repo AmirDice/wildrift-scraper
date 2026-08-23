@@ -584,6 +584,17 @@ def main() -> None:
     global OUT, PLAYERS_OUT, HISTORY, REGION_CSV, REGION
     REGION = args.region
     files = REGION_FILES[args.region]
+    # the specialisation table is per region (scripts/build_specialisation.py
+    # --region na); fall back to the EU table only when NA's was never built
+    global _SPEC
+    if args.region != "eu":
+        regional = _SPEC_PATH.with_name(f"champion_specialisation_{args.region}.json")
+        if regional.exists():
+            import json as _json
+            _SPEC = _json.loads(regional.read_text(encoding="utf-8")).get("champions", {})
+            print(f"specialisation: {regional.name}")
+        else:
+            print(f"WARNING: {regional.name} missing; one-trick shares fall back to the EU table")
     # EU passes None so data_loader keeps its own default; a region passes its
     # CSV explicitly.
     REGION_CSV = None if args.region == "eu" else files["csv"]
