@@ -20,10 +20,11 @@ const HISTORY_DIR = path.join(ROOT, "data", "history", "cn");
 // it to the last pre-patch snapshot instead, so the window widens by a day with
 // every daily run and always measures the patch.
 //
-// 7.2c went live 2026-08-12 09:00 UTC and this job runs at 06:00 UTC, so the
-// 12th snapshot was taken three hours BEFORE the patch landed: a genuinely
-// clean baseline. Update this the next time a patch ships.
-const MOVERS_BASELINE_DATE = "2026-08-12";
+// Tencent's feed is a day behind: the file dated the 25th holds the 25th's
+// games. 7.2d shipped 2026-08-26, so the 25th's snapshot is the last one no
+// 7.2d game can be in -- the clean pre-patch baseline, the same way the 12th
+// was for 7.2c. Update this the next time a patch ships.
+const MOVERS_BASELINE_DATE = "2026-08-25";
 // History snapshots only carry the DEFAULT bracket, so only that bracket can be
 // pinned. The rest keep the day-over-day comparison, and every bracket now
 // reports which baseline it used so the UI cannot mislabel them.
