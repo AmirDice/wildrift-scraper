@@ -241,7 +241,7 @@ export function DraftAssistant() {
     ) : (
       <span
         key={`empty-${label}`}
-        className="grid shrink-0 place-items-center rounded-full border border-dashed border-line text-[10px] text-faint"
+        className="grid shrink-0 place-items-center rounded-full border border-dashed border-white/20 bg-white/[0.05] text-[10px] text-faint"
         style={{ width: size, height: size }}
       >
         {label}
@@ -279,7 +279,7 @@ export function DraftAssistant() {
       </div>
 
       {poolOpen && (
-        <div className="rounded-2xl border border-gold/30 bg-gold/5 p-3">
+        <div className="glass rounded-2xl p-4 ring-1 ring-gold/30">
           <p className="mb-2 text-xs text-muted">
             Tap the champions you actually play. Pick suggestions come from this pool
             (it is saved on this device); leave it empty to rank the whole roster.
@@ -304,7 +304,7 @@ export function DraftAssistant() {
       )}
 
       {/* the draft board */}
-      <div className="space-y-3 rounded-2xl border border-line p-3">
+      <div className="glass space-y-3 rounded-2xl p-4">
         <div>
           <div className="mb-1.5 flex items-baseline gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-faint">
@@ -374,9 +374,10 @@ export function DraftAssistant() {
         <span className="self-center text-[11px] text-faint">then tap champions below</span>
       </div>
 
-      {/* suggestions */}
+      {/* suggestions -- the page's one must-not-miss control, so it wears the
+          emphasized liquid-glass material */}
       {suggestions.length > 0 && (
-        <div>
+        <div className="liquid-glass rounded-2xl p-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-gold">
             {mode === "ban" ? "Worth banning" : pool.length ? "From your pool" : "Suggested picks"}
           </span>
@@ -385,7 +386,7 @@ export function DraftAssistant() {
               <button
                 key={s.champion.slug}
                 onClick={() => assign(s.champion.slug)}
-                className="glass flex shrink-0 items-center gap-2 rounded-xl px-2.5 py-2 text-left transition hover:ring-1 hover:ring-accent/60"
+                className="glass-thin flex shrink-0 items-center gap-2 rounded-xl px-2.5 py-2 text-left transition hover:ring-1 hover:ring-accent/60"
               >
                 <ChampionAvatar champion={s.champion} size={36} showBadges={false} />
                 <span className="min-w-0">
@@ -404,7 +405,7 @@ export function DraftAssistant() {
       )}
 
       {/* roster grid */}
-      <div>
+      <div className="glass rounded-2xl p-4">
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <input
             value={search}
@@ -447,7 +448,7 @@ export function DraftAssistant() {
 
       {/* the build sheet */}
       {me && (
-        <div className="space-y-3 rounded-2xl border border-line p-4">
+        <div className="glass space-y-3 rounded-2xl p-4">
           <div className="flex flex-wrap items-center gap-3">
             <ChampionAvatar champion={me} size={44} showBadges={false} />
             <div>
