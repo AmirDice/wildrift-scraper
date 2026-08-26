@@ -1,9 +1,281 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-08-13T10:57:17.049Z",
+  "fetchedAt": "2026-08-26T10:52:46.265Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.2d",
+      "title": "Wild Rift Patch Notes 7.2d",
+      "publishedAt": "2026-08-26T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2d/",
+      "championChanges": [
+        {
+          "champion": "SYNDRA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Following the mage item changes, Syndra has struggled to keep up due to her relatively low Ability Power scaling. We're improving her damage scaling and early-game pressure, while lowering the cooldown of her third ability to give her more opportunities to punish her opponents.",
+          "changes": [
+            {
+              "ability": "Dark Sphere",
+              "text": "Base damage: 70/115/160/205 → 80/130/180/230"
+            },
+            {
+              "ability": "Force of Will",
+              "text": "Damage Ability Power ratio: 45% → 60%"
+            },
+            {
+              "ability": "Scatter the Weak",
+              "text": "Cooldown: 17s → 15s\n Damage Ability Power ratio: 35% → 50%"
+            }
+          ]
+        },
+        {
+          "champion": "YUUMI",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Yuumi has been struggling to keep both herself and her allies safe. We're giving her a few buffs to strengthen her supportive tools and help her land on her paws.",
+          "changes": [
+            {
+              "ability": "You and Me!",
+              "text": "Cooldown: 10/5/0s → 8/4/0s\n Heal and Shield Power granted by Passive: 6/7/8/9% → 8/9/10/11%"
+            },
+            {
+              "ability": "Zoomies",
+              "text": "Cooldown: 10s → 9s\n Shield value: 85/110/135/160 + 30% Ability Power → 80/110/140/170 + 40% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "VLADIMIR",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Vladimir has been a little too reliant on items to get going, making it difficult for him to come online in time. We're improving his stat conversion and ability damage to give him more power throughout the game.",
+          "changes": [
+            {
+              "ability": "Crimson Pact",
+              "text": "Bonus Health to Ability Power conversion ratio: 4.5%→5%\n Ability Power to Health conversion ratio: 140%→150%"
+            },
+            {
+              "ability": "Transfusion",
+              "text": "Crimson Rush bonus damage ratio: 75% → 85%"
+            },
+            {
+              "ability": "Tides of Blood",
+              "text": "Minimum Damage: 20/40/60/80 + 35% Ability Power + 2.5% Maximum Health → 30/50/70/90 + 35% Ability Power + 3% Maximum Health"
+            }
+          ]
+        },
+        {
+          "champion": "VEIGAR",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Veigar has plenty of damage, but getting through the laning phase and stacking safely can be a challenge. We're increasing the cast range of his first ability to give him more room to scale when under pressure.",
+          "changes": [
+            {
+              "ability": "Baleful Strike",
+              "text": "Range: 7.75 → 9"
+            }
+          ]
+        },
+        {
+          "champion": "PANTHEON",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Pantheon's early-game execution power is a little too reliable, especially when contesting epic monsters and securing takedowns. We're lowering the Health threshold for his first ability to critically strike, giving opponents more room to play around him.",
+          "changes": [
+            {
+              "ability": "Comet Spear",
+              "text": "Critical Strike threshold based on health: 35% →25%"
+            }
+          ]
+        },
+        {
+          "champion": "MORDEKAISER",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Mordekaiser took a hit after losing access to Magic Penetration from items. We're increasing his innate Magic Penetration and lowering the cooldown of his third ability to help him stay competitive later in the game.",
+          "changes": [
+            {
+              "ability": "Darkness Rise",
+              "text": "Magic Penetration: 1/3/5/7% → 3/6/9/12%"
+            },
+            {
+              "ability": "Death's Grasp",
+              "text": "Cooldown: 17.5/15/12.5/10s → 15/13/11/9s"
+            }
+          ]
+        },
+        {
+          "champion": "TWISTED FATE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Twisted Fate's third ability is scaling a little too well with Ability Power, allowing certain builds to deal more burst and sustained damage than intended. We're lowering its damage ceiling while keeping these alternative builds viable.",
+          "changes": [
+            {
+              "ability": "Stacked Deck",
+              "text": "Ability Power Ratio: 45% Ability Power → 35% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "FIORA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Following the boots changes, basic attack-reliant fighters like Fiora have been struggling against Plated Steelcaps. We're reverting some of her previous nerfs to help her cut through tougher opponents again.",
+          "changes": [
+            {
+              "ability": "Duelist's Dance",
+              "text": "Damage: 3.5% + 0.05% Bonus Attack Damage → 4% + 0.055% Bonus Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "GWEN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Gwen has been one of the biggest winners of the Dusk and Dawn and boots changes. We're slightly reducing the Ability Power scaling of her first ability, along with its damage to monsters, to bring down her strength in both lane and the jungle.",
+          "changes": [
+            {
+              "ability": "Snip Snip!",
+              "text": "Ability Power ratio per hit: 7% → 6%\n Final hit Ability Power ratio: 35% → 30%\n Damage modifier against jungle monsters: 105%→100%"
+            }
+          ]
+        },
+        {
+          "champion": "YONE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Yone has been scaling a little too safely in the Baron Lane. We're lowering his base Armor to give opponents more opportunities to punish him early before he reaches his power spikes.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Armor: 43 → 37"
+            }
+          ]
+        },
+        {
+          "champion": "RENEKTON",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Like Fiora, Renekton has been struggling following the boots changes. We're increasing his ability damage to help him regain some of the power he lost.",
+          "changes": [
+            {
+              "ability": "Cull the Meek",
+              "text": "Bonus Attack Damage ratio for normal damage: 90% →100%"
+            },
+            {
+              "ability": "Ruthless Predator",
+              "text": "Base Damage: 24/48/72/96 → 20/60/100/140\n Reign of Anger Base Damage: 36/72/108/144→ 30/90/150/210"
+            }
+          ]
+        },
+        {
+          "champion": "CAITLYN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Caitlyn's late-game damage has been falling a little short, while her traps haven't given her enough control over the battlefield. We're improving her Passive scaling and reducing her trap recharge time to give her more presence later in the game.",
+          "changes": [
+            {
+              "ability": "Headshot",
+              "text": "Damage: 50% - 100% (Based on level) Attack Damage + 125* Critical Rate → 60% - 110% (Based on level) Attack Damage + 200 * Critical Rate"
+            },
+            {
+              "ability": "Yordle Snap Trap",
+              "text": "Charge time: 27/22/17/12s → 25/20/15/10s"
+            }
+          ]
+        },
+        {
+          "champion": "THRESH",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Thresh has been able to throw out hooks a little too frequently after landing his first ability. We're reducing its cooldown refund when hitting a champion, giving opponents a clearer window to fight back.",
+          "changes": [
+            {
+              "ability": "Death Sentence",
+              "text": "Cooldown reduction on-hit: 3s → 2s"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Patch 7.2d brings balance updates to champions and items across the Rift.",
+        "Snip, snip! Patch 7.2d is cutting down a few overperformers while stitching some power back into champions and items that could use the help.\n Reminder: content will be released throughout the patch.",
+        "Following the mage item changes, Syndra has struggled to keep up due to her relatively low Ability Power scaling. We're improving her damage scaling and early-game pressure, while lowering the cooldown of her third ability to give her more opportunities to punish her opponents.",
+        "Base damage: 70/115/160/205 → 80/130/180/230",
+        "Damage Ability Power ratio: 45% → 60%",
+        "Cooldown: 17s → 15s\n Damage Ability Power ratio: 35% → 50%",
+        "Yuumi has been struggling to keep both herself and her allies safe. We're giving her a few buffs to strengthen her supportive tools and help her land on her paws.",
+        "Cooldown: 10/5/0s → 8/4/0s\n Heal and Shield Power granted by Passive: 6/7/8/9% → 8/9/10/11%",
+        "Cooldown: 10s → 9s\n Shield value: 85/110/135/160 + 30% Ability Power → 80/110/140/170 + 40% Ability Power",
+        "Vladimir has been a little too reliant on items to get going, making it difficult for him to come online in time. We're improving his stat conversion and ability damage to give him more power throughout the game.",
+        "Bonus Health to Ability Power conversion ratio: 4.5%→5%\n Ability Power to Health conversion ratio: 140%→150%",
+        "Crimson Rush bonus damage ratio: 75% → 85%",
+        "Minimum Damage: 20/40/60/80 + 35% Ability Power + 2.5% Maximum Health → 30/50/70/90 + 35% Ability Power + 3% Maximum Health",
+        "Veigar has plenty of damage, but getting through the laning phase and stacking safely can be a challenge. We're increasing the cast range of his first ability to give him more room to scale when under pressure.",
+        "Range: 7.75 → 9",
+        "Pantheon's early-game execution power is a little too reliable, especially when contesting epic monsters and securing takedowns. We're lowering the Health threshold for his first ability to critically strike, giving opponents more room to play around him.",
+        "Critical Strike threshold based on health: 35% →25%",
+        "Mordekaiser took a hit after losing access to Magic Penetration from items. We're increasing his innate Magic Penetration and lowering the cooldown of his third ability to help him stay competitive later in the game.",
+        "Magic Penetration: 1/3/5/7% → 3/6/9/12%",
+        "Cooldown: 17.5/15/12.5/10s → 15/13/11/9s",
+        "Twisted Fate's third ability is scaling a little too well with Ability Power, allowing certain builds to deal more burst and sustained damage than intended. We're lowering its damage ceiling while keeping these alternative builds viable.",
+        "Ability Power Ratio: 45% Ability Power → 35% Ability Power",
+        "Following the boots changes, basic attack-reliant fighters like Fiora have been struggling against Plated Steelcaps. We're reverting some of her previous nerfs to help her cut through tougher opponents again.",
+        "Damage: 3.5% + 0.05% Bonus Attack Damage → 4% + 0.055% Bonus Attack Damage",
+        "Gwen has been one of the biggest winners of the Dusk and Dawn and boots changes. We're slightly reducing the Ability Power scaling of her first ability, along with its damage to monsters, to bring down her strength in both lane and the jungle.",
+        "Ability Power ratio per hit: 7% → 6%\n Final hit Ability Power ratio: 35% → 30%\n Damage modifier against jungle monsters: 105%→100%",
+        "Yone has been scaling a little too safely in the Baron Lane. We're lowering his base Armor to give opponents more opportunities to punish him early before he reaches his power spikes.",
+        "Armor: 43 → 37",
+        "Like Fiora, Renekton has been struggling following the boots changes. We're increasing his ability damage to help him regain some of the power he lost.",
+        "Bonus Attack Damage ratio for normal damage: 90% →100%",
+        "Base Damage: 24/48/72/96 → 20/60/100/140\n Reign of Anger Base Damage: 36/72/108/144→ 30/90/150/210",
+        "Caitlyn's late-game damage has been falling a little short, while her traps haven't given her enough control over the battlefield. We're improving her Passive scaling and reducing her trap recharge time to give her more presence later in the game.",
+        "Damage: 50% - 100% (Based on level) Attack Damage + 125* Critical Rate → 60% - 110% (Based on level) Attack Damage + 200 * Critical Rate",
+        "Charge time: 27/22/17/12s → 25/20/15/10s",
+        "Thresh has been able to throw out hooks a little too frequently after landing his first ability. We're reducing its cooldown refund when hitting a champion, giving opponents a clearer window to fight back.",
+        "Cooldown reduction on-hit: 3s → 2s",
+        "Akali\n Loadout Adjustments\n Build 2: Stormsurge, Infinity Orb, Rabadon's Deathcap, Void Staff, Zhonya's Hourglass, Spellslinger's Shoes\n\n Vladimir\n Loadout Adjustments\n Build 1: Hextech Rocketbelt, Riftmaker, Rabadon's Deathcap, Cryptbloom, Infinity Orb, Crimson Lucidity\n Build 2: Hextech Rocketbelt, Stormsurge, Rabadon's Deathcap, Void Staff, Infinity Orb, Spellslinger's Shoes\n Build 3: Cosmic Drive, Riftmaker, Rabadon's Deathcap, Void Staff, Zhonya's Hourglass, Spellslinger's Shoes\n\n Lee sin\n Loadout Adjustments\n Build 1: Trinity Force, Eclipse, Black Cleaver, Guardian Angel, Death's Dance, Armored Advance\n Build 2: Youmuu's Ghostblade, Trinity Force, Serpent's Fang, Serylda's Grudge, Guardian Angel, Immortal Treads\n Rune 3: Battle Zeal, Cut Down, Legend: Alacrity，Overgrowth",
+        "GAMEPLAY CHANGES\n ITEMS\n Edge of Night\n Even after its price reduction, Edge of Night hasn't been competitive with other Armor Penetration options. We're increasing its flat Armor Penetration so its defensive utility doesn't come at such a steep damage tradeoff.\n Base Stats\n Armor Penetration: 8 → 12\n Stormsurge\n Stormsurge's high price has made it difficult to fit smoothly into many builds. We're lowering its cost to make it a more accessible option.\n Base Stats\n Price: 2900 → 2800",
+        "GAME MODE CHANGES\n AAA ARAM\n In this update, AAA ARAM is getting a content rotation, along with a new Spellbook feature that lets you choose Spellbook abilities in-game.\n Gameplay Update\n On August 27, the Nostalgia Series Augments will be removed with the update.\n On August 28, the Ultimate Spellbook feature and the \"Windborne Spirit Sword\" Easter egg will officially become available.\n New Augments\n New Augments: Poro King's Leap, Poro Blaster, Poro Head, Final City Transit, Spin Me Right Round, Mana Enchantment, Upgrade Sword of Blossoming Dawn, Empowered By The Faithful, Zealot, Double Tap. For details on their effects, check the Augment Archive after the update."
+      ],
+      "changeLines": [
+        "Base damage: 70/115/160/205 → 80/130/180/230",
+        "Damage Ability Power ratio: 45% → 60%",
+        "Cooldown: 17s → 15s",
+        "Damage Ability Power ratio: 35% → 50%",
+        "Cooldown: 10/5/0s → 8/4/0s",
+        "Heal and Shield Power granted by Passive: 6/7/8/9% → 8/9/10/11%",
+        "Cooldown: 10s → 9s",
+        "Shield value: 85/110/135/160 + 30% Ability Power → 80/110/140/170 + 40% Ability Power",
+        "Bonus Health to Ability Power conversion ratio: 4.5%→5%",
+        "Ability Power to Health conversion ratio: 140%→150%",
+        "Crimson Rush bonus damage ratio: 75% → 85%",
+        "Minimum Damage: 20/40/60/80 + 35% Ability Power + 2.5% Maximum Health → 30/50/70/90 + 35% Ability Power + 3% Maximum Health",
+        "Range: 7.75 → 9",
+        "Critical Strike threshold based on health: 35% →25%",
+        "Magic Penetration: 1/3/5/7% → 3/6/9/12%",
+        "Cooldown: 17.5/15/12.5/10s → 15/13/11/9s",
+        "Ability Power Ratio: 45% Ability Power → 35% Ability Power",
+        "Damage: 3.5% + 0.05% Bonus Attack Damage → 4% + 0.055% Bonus Attack Damage",
+        "Ability Power ratio per hit: 7% → 6%",
+        "Final hit Ability Power ratio: 35% → 30%",
+        "Damage modifier against jungle monsters: 105%→100%",
+        "Armor: 43 → 37",
+        "Bonus Attack Damage ratio for normal damage: 90% →100%",
+        "Base Damage: 24/48/72/96 → 20/60/100/140",
+        "Reign of Anger Base Damage: 36/72/108/144→ 30/90/150/210",
+        "Damage: 50% - 100% (Based on level) Attack Damage + 125* Critical Rate → 60% - 110% (Based on level) Attack Damage + 200 * Critical Rate",
+        "Charge time: 27/22/17/12s → 25/20/15/10s",
+        "Cooldown reduction on-hit: 3s → 2s",
+        "Base Stats",
+        "Armor Penetration: 8 → 12",
+        "Price: 2900 → 2800",
+        "New Augments",
+        "New Augments: Poro King's Leap, Poro Blaster, Poro Head, Final City Transit, Spin Me Right Round, Mana Enchantment, Upgrade Sword of Blossoming Dawn, Empowered By The Faithful, Zealot, Double Tap. For details on their effects, check the Augment Archive after the update."
+      ]
+    },
     {
       "patch": "7.2c",
       "title": "Wild Rift Patch Notes 7.2c",
