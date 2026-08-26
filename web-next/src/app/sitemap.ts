@@ -40,6 +40,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...(BUILD_TOOLS_LIVE
       ? ([
           { url: `${BASE}/build`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.9 },
+          { url: `${BASE}/draft`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
         ])
       : []),
     { url: `${BASE}/items`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },

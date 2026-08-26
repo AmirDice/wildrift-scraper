@@ -30,6 +30,7 @@ const buildsEntry = (live: boolean): NavEntry => (live
       items: [
         { href: "/build", label: "Build Studio", badges: ["new", "v2"], desc: "Generate by playstyle or craft with live stats" },
         { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: ["v2"], desc: "The build that beats their exact five picks" },
+        { href: "/draft", label: "Draft Assistant", badges: ["new"], desc: "Bans, picks and the counter build, live in lobby" },
         { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },
