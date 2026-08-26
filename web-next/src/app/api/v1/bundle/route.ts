@@ -74,6 +74,8 @@ export async function GET() {
     slug: c.slug,
     name: c.name,
     role: c.role,
+    // the class powers the overlay's comp-fit pick suggestions
+    class: c.class,
     tier: c.tier,
     wr: Number.isFinite(c.wr) ? c.wr : null,
     icon: c.icon,
