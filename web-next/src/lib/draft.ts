@@ -118,11 +118,19 @@ function metaReason(c: Champion): string[] {
 /**
  * Rank what the player should pick right now.
  *
- * Candidates come from the player's pool when one exists (nobody can play
- * all 141 champions); an empty pool falls back to the whole roster. Ranking
- * is meta strength, then what the ally comp still needs, then a light read
- * of the enemy comp's damage profile. Off-role pool champions stay listed --
+ * Two questions, not one. "What is the strongest pick for this game" and
+ * "what is the strongest pick I can actually play" have different answers,
+ * and only the second one is actionable for most players -- nobody has all
+ * 141 champions. Pass a pool to answer the second, pass an empty pool to
+ * answer the first; the draft page asks both and shows them side by side.
+ *
+ * Scoring is meta strength, then what the ally comp still needs, then what
+ * the enemy comp is actually made of. Off-role pool champions stay listed --
  * flexing is real -- but marked and behind on points.
+ *
+ * What it deliberately does NOT do is claim a matchup. The site has no
+ * per-matchup win rates, so nothing here says "this beats that"; the lane
+ * note compares two measured ladder win rates and says exactly that much.
  */
 export function suggestPicks(
   state: DraftState,
@@ -130,13 +138,16 @@ export function suggestPicks(
   champions: Champion[],
   bySlug: Map<string, Champion>,
   limit = 6,
+  enemyTraits?: EnemyTraits,
 ): Suggestion[] {
   const gone = unavailable(state);
   const poolSet = new Set(pool);
   const fromPool = pool.length > 0;
-  const allySlugs = state.allies.slice();
-  const allyProfile = compProfile(allySlugs, bySlug);
+  const allyProfile = compProfile(state.allies, bySlug);
   const enemyProfile = compProfile(state.enemies, bySlug);
+  const lane = state.myRole
+    ? state.enemies.map((s) => bySlug.get(s)).find((e) => e && e.role === state.myRole)
+    : undefined;
 
   const out: Suggestion[] = [];
   for (const c of champions) {
@@ -165,7 +176,7 @@ export function suggestPicks(
       }
     }
 
-    // what their comp telegraphs
+    // what their comp is made of
     if (enemyProfile.size >= 3) {
       if (enemyProfile.ad >= 3 && isFrontline(c)) {
         score += 1.2;
@@ -174,6 +185,25 @@ export function suggestPicks(
         score += 0.9;
         reasons.push("they are AP heavy");
       }
+    }
+    // A heavy enemy frontline is answered by damage that scales with their
+    // health, and that is a property of the kit rather than the class: Fiora
+    // and Gwen carry it where most bruisers do not.
+    if (enemyTraits && enemyProfile.frontline >= 2 && enemyTraits.pctHp.has(c.slug)) {
+      score += 1.5;
+      reasons.push(`${enemyProfile.frontline} durable enemies, you cut max health`);
+    }
+    // Being dived is survived by being hard to kill, not by out-damaging it.
+    if (enemyTraits && enemyTraits.assassins >= 2 && isFrontline(c)) {
+      score += 0.8;
+      reasons.push("they have multiple divers");
+    }
+
+    // The lane note is a comparison of two MEASURED ladder win rates, never a
+    // matchup claim -- we have no per-matchup data and must not imply we do.
+    if (lane && !offRole && typeof c.wr === "number" && typeof lane.wr === "number"
+        && c.wr > lane.wr + 2) {
+      reasons.push(`ahead of ${lane.name} on the ladder (${c.wr}% vs ${lane.wr}%)`);
     }
 
     out.push({
@@ -186,6 +216,13 @@ export function suggestPicks(
   }
   out.sort((a, b) => b.score - a.score);
   return out.slice(0, limit);
+}
+
+/** Kit facts about the enemy comp that class alone cannot express. */
+export interface EnemyTraits {
+  /** Slugs of candidates whose damage scales with the target's max health. */
+  pctHp: Set<string>;
+  assassins: number;
 }
 
 /**

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getChampions, type Champion } from "@/lib/data";
 import { getBuildsFor, visibleBuildVariants, type Build } from "@/lib/builds";
-import { counterSwaps, threatProfile, type CounterRecScored } from "@/lib/threat";
+import { counterSwaps, roster, threatProfile, type CounterRecScored } from "@/lib/threat";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { CounterReasoning, EnemyRead, type CounterSummary } from "@/components/counter-intel";
 import {
@@ -15,6 +15,7 @@ import {
   unavailable,
   type DraftRole,
   type DraftState,
+  type Suggestion,
 } from "@/lib/draft";
 import itemsData from "@/data/items.json";
 
@@ -97,6 +98,32 @@ function load<T>(store: "local" | "session", key: string, fallback: T): T {
   }
 }
 
+function SuggestionCard({ s, onPick, dim = false }: {
+  s: Suggestion;
+  onPick: () => void;
+  dim?: boolean;
+}) {
+  return (
+    <button
+      onClick={onPick}
+      className={`glass-thin flex shrink-0 items-center gap-2 rounded-xl px-2.5 py-2 text-left transition hover:ring-1 hover:ring-accent/60 ${
+        dim ? "opacity-70" : ""
+      }`}
+    >
+      <ChampionAvatar champion={s.champion} size={dim ? 30 : 36} showBadges={false} />
+      <span className="min-w-0">
+        <span className="flex items-center gap-1.5 text-sm font-semibold">
+          {s.champion.name}
+          <TierChip tier={s.champion.tier} />
+        </span>
+        <span className="block max-w-44 truncate text-[11px] text-muted">
+          {s.reasons.join(" · ") || `${s.champion.wr}% win rate`}
+        </span>
+      </span>
+    </button>
+  );
+}
+
 export function DraftAssistant() {
   const champions = useMemo(() => getChampions(), []);
   const bySlug = useMemo(() => new Map(champions.map((c) => [c.slug, c])), [champions]);
@@ -144,11 +171,38 @@ export function DraftAssistant() {
   const gone = useMemo(() => unavailable(state), [state]);
   const me = state.me ? bySlug.get(state.me) : undefined;
 
+  // Kit facts the champion class cannot express, read off the roster.
+  const enemyTraits = useMemo(() => {
+    const r = roster();
+    return {
+      pctHp: new Set(
+        Object.values(r).filter((c) => (c as { pctHpDamage?: boolean }).pctHpDamage)
+          .map((c) => c.slug)),
+      assassins: state.enemies
+        .map((s) => bySlug.get(s))
+        .filter((c) => c?.class === "Assassin").length,
+    };
+  }, [state.enemies, bySlug]);
+
   const suggestions = useMemo(() => {
     if (mode === "ban") return suggestBans(state, pool, champions);
-    if (mode === "me" && !state.me) return suggestPicks(state, pool, champions, bySlug);
+    if (mode === "me" && !state.me) {
+      return suggestPicks(state, pool, champions, bySlug, 6, enemyTraits);
+    }
     return [];
-  }, [mode, state, pool, champions, bySlug]);
+  }, [mode, state, pool, champions, bySlug, enemyTraits]);
+
+  /**
+   * The other question. "Strongest pick in the game" and "strongest pick I
+   * can actually play" are different answers, and a player with a four
+   * champion jungle pool needs the second one -- but still deserves to see
+   * what they are giving up by not owning the first.
+   */
+  const overallPicks = useMemo(() => {
+    if (mode !== "me" || state.me || pool.length === 0) return [];
+    return suggestPicks(state, [], champions, bySlug, 4, enemyTraits)
+      .filter((s) => !pool.includes(s.champion.slug));
+  }, [mode, state, pool, champions, bySlug, enemyTraits]);
 
   const standardBuild: Build | null = useMemo(() => {
     if (!me) return null;
@@ -428,28 +482,33 @@ export function DraftAssistant() {
       {suggestions.length > 0 && (
         <div className="liquid-glass rounded-2xl p-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-gold">
-            {mode === "ban" ? "Worth banning" : pool.length ? "From your pool" : "Suggested picks"}
+            {mode === "ban" ? "Worth banning" : pool.length ? "Best from your pool" : "Suggested picks"}
           </span>
+          {mode !== "ban" && pool.length > 0 && (
+            <span className="ml-2 text-[11px] text-faint">
+              ranked for this game, not overall
+            </span>
+          )}
           <div className="-mx-1 mt-1.5 flex gap-2 overflow-x-auto pb-1">
             {suggestions.map((s) => (
-              <button
-                key={s.champion.slug}
-                onClick={() => assign(s.champion.slug)}
-                className="glass-thin flex shrink-0 items-center gap-2 rounded-xl px-2.5 py-2 text-left transition hover:ring-1 hover:ring-accent/60"
-              >
-                <ChampionAvatar champion={s.champion} size={36} showBadges={false} />
-                <span className="min-w-0">
-                  <span className="flex items-center gap-1.5 text-sm font-semibold">
-                    {s.champion.name}
-                    <TierChip tier={s.champion.tier} />
-                  </span>
-                  <span className="block max-w-44 truncate text-[11px] text-muted">
-                    {s.reasons.join(" · ") || `${s.champion.wr}% win rate`}
-                  </span>
-                </span>
-              </button>
+              <SuggestionCard key={s.champion.slug} s={s} onPick={() => assign(s.champion.slug)} />
             ))}
           </div>
+
+          {/* The other question: what they would pick if they owned anything. */}
+          {overallPicks.length > 0 && (
+            <div className="mt-2 border-t border-white/10 pt-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-faint">
+                Stronger overall, outside your pool
+              </span>
+              <div className="-mx-1 mt-1 flex gap-2 overflow-x-auto pb-1">
+                {overallPicks.map((s) => (
+                  <SuggestionCard key={s.champion.slug} s={s} dim
+                    onPick={() => assign(s.champion.slug)} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

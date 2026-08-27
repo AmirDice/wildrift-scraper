@@ -298,6 +298,20 @@ def main() -> None:
         r"\b(stun\w*|root\w*|snar\w*|knock\s?up|knock\s?back|knocking|airborne"
         r"|charm\w*|taunt\w*|fear\w*|suppress\w*|silenc\w*|immobiliz\w*)", re.I)
 
+    def deals_pct_hp(name: str) -> bool:
+        """Damage that scales with the target's max health.
+
+        The one property that decides whether a pick answers a heavy enemy
+        frontline, and it cannot be read off a class: Fiora and Gwen carry it,
+        most bruisers do not. 45 of 142 champions have it, so it discriminates
+        where "is a bruiser" does not.
+        """
+        for ability in ((formulas.get(name) or {}).get("abilities") or {}).values():
+            for dmg in (ability.get("damage") or []):
+                if any(r.get("stat") == "targetMaxHp" for r in (dmg.get("ratios") or [])):
+                    return True
+        return False
+
     def derived_mechanics(champ: dict) -> list[str]:
         kept = [m for m in (champ.get("mechanics") or []) if m in ("dash", "onHit")]
         formula = (formulas.get(champ["name"]) or {}).get("abilities") or {}
@@ -332,6 +346,7 @@ def main() -> None:
             "primaryDamage": c.get("primaryDamage", ""),
             "scalesWith": c.get("scalesWith", []),
             "mechanics": derived_mechanics(c),
+            "pctHpDamage": deals_pct_hp(name),
             "baseStats": {k: bs.get(k, {}) for k in ("hp", "armor", "mr", "ad")},
         }
     ROSTER_OUT.write_text(json.dumps(roster, ensure_ascii=False), encoding="utf-8")
