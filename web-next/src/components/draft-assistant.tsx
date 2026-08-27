@@ -31,6 +31,7 @@ type Mode = "ban" | "me" | "ally" | "enemy";
 
 const POOL_KEY = "draft:pool";
 const ROLE_KEY = "draft:role";
+const MAIN_ROLE_KEY = "draft:mainRole";
 const STATE_KEY = "draft:state";
 const DEVICE_KEY = "wrtm-device-id";
 
@@ -135,6 +136,8 @@ export function DraftAssistant() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<DraftRole | "All">("All");
   const [hydrated, setHydrated] = useState(false);
+  /** Who the player actually is, as opposed to what this game assigned them. */
+  const [mainRole, setMainRole] = useState<DraftRole | null>(null);
 
   const [advice, setAdvice] = useState<V1Advice | null>(null);
   const [adviceFor, setAdviceFor] = useState("");
@@ -148,19 +151,28 @@ export function DraftAssistant() {
     try {
       setPool(JSON.parse(localStorage.getItem(POOL_KEY) ?? "[]") as string[]);
     } catch {}
-    const role = localStorage.getItem(ROLE_KEY);
-    if (role && (DRAFT_ROLES as string[]).includes(role)) {
-      setState((s) => ({ ...s, myRole: role as DraftRole }));
-    }
+    // Two roles, two stores. The MAIN role is who you are and lives in
+    // localStorage; THIS GAME's role lives in the session draft, because
+    // being filled is a property of one game and must not follow you into
+    // the next. Older saves only knew one role, so it seeds the main and
+    // nobody has to re-declare themselves.
+    const legacyRole = localStorage.getItem(ROLE_KEY);
+    const main = localStorage.getItem(MAIN_ROLE_KEY) ?? legacyRole;
+    const validMain = main && (DRAFT_ROLES as string[]).includes(main)
+      ? (main as DraftRole) : null;
+    if (validMain) setMainRole(validMain);
+    // A fresh draft starts you in your main role; a resumed one keeps
+    // whatever this game assigned.
+    setState((s) => (s.myRole ? s : { ...s, myRole: validMain }));
     setHydrated(true);
   }, []);
   useEffect(() => {
     if (!hydrated) return;
     try {
       sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
-      if (state.myRole) localStorage.setItem(ROLE_KEY, state.myRole);
+      if (mainRole) localStorage.setItem(MAIN_ROLE_KEY, mainRole);
     } catch {}
-  }, [state, hydrated]);
+  }, [state, mainRole, hydrated]);
   useEffect(() => {
     if (!hydrated) return;
     try {
@@ -170,6 +182,20 @@ export function DraftAssistant() {
 
   const gone = useMemo(() => unavailable(state), [state]);
   const me = state.me ? bySlug.get(state.me) : undefined;
+
+  /**
+   * Autofill: this game put you somewhere other than your main role.
+   *
+   * It matters here because a champion pool is built around a role. A jungle
+   * main filled to Support has a pool that answers a question nobody asked,
+   * so the tool has to say so rather than quietly ranking four junglers for
+   * a Support slot.
+   */
+  const filled = Boolean(mainRole && state.myRole && state.myRole !== mainRole);
+  const poolCoversRole = useMemo(
+    () => pool.some((slug) => bySlug.get(slug)?.role === state.myRole),
+    [pool, bySlug, state.myRole],
+  );
 
   // Kit facts the champion class cannot express, read off the roster.
   const enemyTraits = useMemo(() => {
@@ -200,9 +226,13 @@ export function DraftAssistant() {
    */
   const overallPicks = useMemo(() => {
     if (mode !== "me" || state.me || pool.length === 0) return [];
-    return suggestPicks(state, [], champions, bySlug, 4, enemyTraits)
+    // Filled into a role the pool does not cover, the "outside your pool"
+    // list stops being a curiosity and becomes the actual answer, so it gets
+    // more of them.
+    const limit = poolCoversRole ? 4 : 6;
+    return suggestPicks(state, [], champions, bySlug, limit, enemyTraits)
       .filter((s) => !pool.includes(s.champion.slug));
-  }, [mode, state, pool, champions, bySlug, enemyTraits]);
+  }, [mode, state, pool, champions, bySlug, enemyTraits, poolCoversRole]);
 
   const standardBuild: Build | null = useMemo(() => {
     if (!me) return null;
@@ -355,16 +385,26 @@ export function DraftAssistant() {
     <div className="space-y-4">
       {/* role + pool + reset */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-faint">My role</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-faint">
+          {filled ? "Filled to" : "My role"}
+        </span>
         {DRAFT_ROLES.map((r) => (
           <button
             key={r}
-            onClick={() => setState((s) => ({ ...s, myRole: s.myRole === r ? null : r }))}
+            onClick={() => {
+              // The first role you ever choose becomes your main; after that
+              // these chips set THIS GAME's role, so being autofilled is one
+              // tap and does not overwrite who you actually are.
+              setState((s) => ({ ...s, myRole: s.myRole === r ? null : r }));
+              if (!mainRole) setMainRole(r);
+            }}
             className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
               state.myRole === r ? "bg-accent text-white" : "glass text-muted hover:text-text"
             }`}
+            title={r === mainRole ? "your main role" : undefined}
           >
             {r === "Dragon" ? "ADC" : r}
+            {r === mainRole && <span className="ml-1 text-[9px] opacity-70">main</span>}
           </button>
         ))}
         <span className="grow" />
@@ -482,12 +522,30 @@ export function DraftAssistant() {
       {suggestions.length > 0 && (
         <div className="liquid-glass rounded-2xl p-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-gold">
-            {mode === "ban" ? "Worth banning" : pool.length ? "Best from your pool" : "Suggested picks"}
+            {mode === "ban" ? "Worth banning"
+              : pool.length ? (poolCoversRole ? "Best from your pool" : "Your pool, off-role")
+              : "Suggested picks"}
           </span>
           {mode !== "ban" && pool.length > 0 && (
             <span className="ml-2 text-[11px] text-faint">
-              ranked for this game, not overall
+              {poolCoversRole
+                ? "ranked for this game, not overall"
+                : `nothing in your pool plays ${state.myRole === "Dragon" ? "ADC" : state.myRole}`}
             </span>
+          )}
+          {mode !== "ban" && filled && (
+            <p className="mt-1 text-[11px] text-amber-300">
+              Filled to {state.myRole === "Dragon" ? "ADC" : state.myRole} from{" "}
+              {mainRole === "Dragon" ? "ADC" : mainRole}
+              {!poolCoversRole && " — the list below is what actually plays here"}
+              {" "}
+              <button
+                onClick={() => state.myRole && setMainRole(state.myRole)}
+                className="underline decoration-dotted underline-offset-2 hover:text-text"
+              >
+                make {state.myRole === "Dragon" ? "ADC" : state.myRole} my main
+              </button>
+            </p>
           )}
           <div className="-mx-1 mt-1.5 flex gap-2 overflow-x-auto pb-1">
             {suggestions.map((s) => (
@@ -498,8 +556,12 @@ export function DraftAssistant() {
           {/* The other question: what they would pick if they owned anything. */}
           {overallPicks.length > 0 && (
             <div className="mt-2 border-t border-white/10 pt-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-faint">
-                Stronger overall, outside your pool
+              <span className={`text-[11px] font-semibold uppercase tracking-wide ${
+                poolCoversRole ? "text-faint" : "text-gold"
+              }`}>
+                {poolCoversRole
+                  ? "Stronger overall, outside your pool"
+                  : `Best ${state.myRole === "Dragon" ? "ADC" : state.myRole} picks available`}
               </span>
               <div className="-mx-1 mt-1 flex gap-2 overflow-x-auto pb-1">
                 {overallPicks.map((s) => (
