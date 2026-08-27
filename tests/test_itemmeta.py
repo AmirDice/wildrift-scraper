@@ -224,3 +224,48 @@ class TestItemTextCorrections:
                 continue
             assert entry.get("_source"), f"{slug} has no _source"
             assert entry.get("_was"), f"{slug} does not record what it replaced"
+
+
+class TestThreatResponseItems:
+    """threats.py names WHAT answers a comp; this turns that into items.
+
+    Before this bridge existed the enemy composition reached the item choice
+    as prose alone, and the model had to recall unprompted which item applies
+    anti-heal.
+    """
+
+    def test_every_category_the_threat_model_can_raise_resolves_to_items(self):
+        # The categories threats.py appends to itemizableResponses.
+        for category in ("armor", "magic_resist", "anti_basic_attack",
+                         "burst_survival", "grievous_wounds", "shield_reduction",
+                         "tenacity"):
+            got = itemmeta.items_answering(category)
+            assert got, f"{category} resolves to no items, so naming it says nothing"
+
+    def test_anti_heal_names_the_items_that_actually_apply_it(self):
+        got = itemmeta.items_answering("grievous_wounds")
+        assert "morellonomicon" in got
+        assert "chempunk-chainsword" in got
+
+    def test_shield_reduction_is_the_two_items_that_do_it(self):
+        assert set(itemmeta.items_answering("shield_reduction")) == {
+            "serpents-fang", "oceanids-trident"}
+
+    def test_boots_answer_categories_even_though_they_are_not_in_the_pool(self):
+        """Mercury's Treads IS the tenacity answer, and Plated Steelcaps IS the
+        answer to a lane of basic attacks. Boots occupy their own slot, so the
+        five-slot candidate pool must not hide them."""
+        assert "mercurys-treads" in itemmeta.items_answering("tenacity", pool=[])
+        assert "plated-steelcaps" in itemmeta.items_answering("anti_basic_attack", pool=[])
+
+    def test_a_pool_restricts_the_non_boot_answers(self):
+        """A marksman must never be told Thornmail answers the enemy sustain."""
+        got = itemmeta.items_answering("grievous_wounds", pool=["morellonomicon"])
+        assert got == ["morellonomicon"]
+
+    def test_stat_categories_lead_with_the_most_of_the_stat(self):
+        """Cheapest-first put Knight's Vow above Randuin's Omen, which is not
+        an armor answer anyone wants."""
+        armor = itemmeta.items_answering("armor")
+        assert armor[0] in ("frozen-heart", "thornmail", "randuins-omen")
+        assert armor.index("randuins-omen") < armor.index("knights-vow")

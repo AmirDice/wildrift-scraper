@@ -225,7 +225,12 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // 141. A v29 counter build was reasoned against a picture where every comp
   // sustained and every comp had maximum crowd control; the namespace is a
   // few hours old, so retiring it costs almost nothing.
-  return `build:v30:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v31: counter prompts now carry the items that answer each threat category
+  // this comp actually raised, drawn from the champion's own legal pool. A v30
+  // build was chosen while the categories were prose -- "apply grievous
+  // wounds" with no statement of which items do -- so it could answer a
+  // sustain comp with nothing that cuts healing and still read as complete.
+  return `build:v31:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

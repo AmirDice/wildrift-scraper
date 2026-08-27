@@ -259,6 +259,104 @@ def _is_manaless(champion_record: dict) -> bool:
     return not float(base.get("base") or 0)
 
 
+# --------------------------------------------------------------------------
+# threat responses: the categories threats.py names, as actual items
+# --------------------------------------------------------------------------
+
+# threats.py decides WHAT an enemy comp needs answering and speaks in
+# categories ("grievous_wounds", "tenacity"). Nothing translated those into
+# items, so the enemy comp reached the item choice purely as prose and the
+# model had to remember, unprompted, which item applies anti-heal. These
+# patterns close that gap.
+#
+# Narrow on purpose, and evidence-first: a category is satisfied by a stat the
+# item actually carries or a passive that actually says so. Where a category
+# has no mechanical signature at all it is left out rather than guessed at --
+# an empty list tells the caller to stay quiet, which is better than naming a
+# plausible item the game does not back up.
+_RESPONSE_PATTERNS: dict[str, re.Pattern] = {
+    # Randuin's "Critically Struck deal 30% less damage", Plated Steelcaps'
+    # "Basic attacks from champions deal 10% reduced damage", Frozen Heart's
+    # attack-speed Chill, Thornmail's reflect.
+    "anti_basic_attack": re.compile(
+        r"(?:basic attacks?|critically struck|when struck)[^.]{0,70}"
+        r"(?:reduced damage|less damage|damage to the attacker)"
+        r"|slows? enemy attack speed", re.I),
+    # Guardian Angel, Maw, Sterak's, Zhonya's: the ones that answer being
+    # deleted rather than being worn down.
+    "burst_survival": re.compile(
+        r"lifeline|fatal damage|would (?:take|have taken) fatal|resurrect|stasis", re.I),
+    "tenacity": re.compile(r"tenacity", re.I),
+}
+
+_RESPONSE_STATS: dict[str, tuple[str, float]] = {
+    "armor": ("armor", 30.0),
+    "magic_resist": ("mr", 25.0),
+    "tenacity": ("tenacity", 1.0),
+}
+
+_RESPONSE_TAGS: dict[str, str] = {
+    "grievous_wounds": "grievous-wounds",
+    "shield_reduction": "anti-shield",
+}
+
+
+def items_answering(category: str, pool: list[str] | None = None) -> list[str]:
+    """Completed items that mechanically answer one threat category.
+
+    `pool` restricts the answer to what this champion may actually build, so a
+    marksman is never told Thornmail answers the enemy sustain.
+
+    Ordering differs by what the category means. A stat category (armor, magic
+    resist) is answered by the items that carry the MOST of it, so those sort
+    by magnitude -- cheapest-first put Knight's Vow above Randuin's Omen,
+    which is not an armor answer anyone wants. A mechanical category
+    (grievous wounds, tenacity) is satisfied outright by any member, so those
+    sort cheapest-first, where affordability is the real question.
+    """
+    allowed = set(pool) if pool is not None else None
+    tag = _RESPONSE_TAGS.get(category)
+    stat_key, stat_min = _RESPONSE_STATS.get(category, ("", 0.0))
+    pattern = _RESPONSE_PATTERNS.get(category)
+    # Boots belong here even though they are not part of the main five: the
+    # tenacity answer to a crowd-control comp IS Mercury's Treads, and the
+    # answer to a lane of basic attacks IS Plated Steelcaps. The prompt asks
+    # for boots separately, so naming them is useful rather than confusing.
+    universe = dict(completed_items())
+    universe.update({
+        slug: item for slug, item in ITEMS.items()
+        if item.get("category") == "Boots"
+        and not (set(item.get("categories") or []) & {"Basic", "MidTier"})
+    })
+    out = []
+    for slug, item in universe.items():
+        # `pool` is the five-slot candidate list, which never contains boots;
+        # boots are chosen from their own slot, so they are always eligible.
+        if (allowed is not None and slug not in allowed
+                and item.get("category") != "Boots"):
+            continue
+        stats = item.get("stats") or {}
+        blob = " ".join(item.get("passives") or [])
+        hit = False
+        if tag and tag in (metadata(slug).get("passiveTags") or []):
+            hit = True
+        if stat_key and float((stats.get(stat_key) or {}).get("value") or 0) >= stat_min:
+            hit = True
+        if pattern and pattern.search(blob):
+            hit = True
+        if hit:
+            magnitude = float((stats.get(stat_key) or {}).get("value") or 0) if stat_key else 0.0
+            out.append((magnitude, int(item.get("cost") or 0), slug))
+    # Stat categories: most of the stat first. Mechanical ones carry no
+    # magnitude at all, so they fall through to cheapest-first.
+    by_magnitude = category in _RESPONSE_STATS and category not in _RESPONSE_TAGS
+    if by_magnitude and any(m for m, _c, _s in out):
+        out.sort(key=lambda row: (-row[0], row[1]))
+    else:
+        out.sort(key=lambda row: (row[1], row[2]))
+    return [slug for _m, _cost, slug in out]
+
+
 def filter_candidates(
     champion_record: dict,
     combat_profile: dict,

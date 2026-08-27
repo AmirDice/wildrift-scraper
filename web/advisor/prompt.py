@@ -619,7 +619,8 @@ UNKNOWN_ENEMY_BLOCK = (
 )
 
 
-def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = "") -> str:
+def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = "",
+                       pool: list[str] | None = None) -> str:
     """The structured team threat picture for a counter build.
 
     Replaces the old shallow per-enemy line. The team profile is weighted (a
@@ -639,6 +640,26 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = ""
         "kits. Each entry names what items CAN answer and what only gameplay can): "
         + json.dumps(priorities),
     ]
+    # The categories above name what CAN answer each threat; without this the
+    # model had to recall unprompted which item applies anti-heal, and the
+    # enemy comp reached the item choice as prose alone. Only the categories
+    # this comp actually raised are listed, and only items this champion may
+    # legally build.
+    raised = {resp
+              for threat in priorities
+              for resp in (threat.get("itemizableResponses") or [])}
+    answers = {}
+    for category in sorted(raised):
+        slugs = itemmeta.items_answering(category, pool)
+        if slugs:
+            answers[category] = slugs[:6]
+    if answers:
+        lines.append(
+            "ITEMS THAT ANSWER THOSE CATEGORIES (from this champion's own legal pool, "
+            "cheapest first; boots are included because they are a separate slot). This "
+            "is the menu, NOT an instruction -- an item still has to earn its slot on "
+            "kit synergy and the build's shape, and answering three threats badly loses "
+            "to answering two well: " + json.dumps(answers))
     hard = [threats.hard_counter_warning(me, e, wrmeta) for e in enemies]
     hard = [h for h in hard if h]
     if hard:
