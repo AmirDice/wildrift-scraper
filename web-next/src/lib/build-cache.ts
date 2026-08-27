@@ -218,7 +218,14 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // A v28 entry was reasoned from 7.2c numbers: it would still rate Twisted
   // Fate's Stacked Deck at 45% AP and price Stormsurge out of builds it now
   // fits.
-  return `build:v29:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v30: the enemy threat profile the counter prompt argues from changed
+  // underneath it. Healing and shielding are now derived from the extracted
+  // formulas rather than a scrape tag that sat on 109 of 141 champions, and
+  // hard crowd control from the ability tooltips rather than one on 134 of
+  // 141. A v29 counter build was reasoned against a picture where every comp
+  // sustained and every comp had maximum crowd control; the namespace is a
+  // few hours old, so retiring it costs almost nothing.
+  return `build:v30:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
