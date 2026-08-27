@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getChampions, site } from "@/lib/data";
 import { getPosts } from "@/lib/blog";
-import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 
 const BASE = "https://wrtruemeta.com";
 
@@ -40,7 +40,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...(BUILD_TOOLS_LIVE
       ? ([
           { url: `${BASE}/build`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.9 },
-          { url: `${BASE}/draft`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
+          ...(DRAFT_TOOL_LIVE
+            ? [{ url: `${BASE}/draft`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 }]
+            : []),
         ])
       : []),
     { url: `${BASE}/items`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useBuildToolsVisible } from "@/lib/use-build-tools";
+import { DRAFT_TOOL_LIVE } from "@/lib/flags";
 import { DiscordNavLink, DISCORD_URL, DiscordIcon } from "@/components/discord";
 import { TIKTOK_URL, YOUTUBE_URL, TikTokIcon, YouTubeIcon } from "@/components/socials";
 import { SupportNavLink, BUYMEACOFFEE_URL, CoffeeIcon } from "@/components/support";
@@ -30,7 +31,10 @@ const buildsEntry = (live: boolean): NavEntry => (live
       items: [
         { href: "/build", label: "Build Studio", badges: ["new", "v2"], desc: "Generate by playstyle or craft with live stats" },
         { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: ["v2"], desc: "The build that beats their exact five picks" },
-        { href: "/draft", label: "Draft Assistant", badges: ["new"], desc: "Bans, picks and the counter build, live in lobby" },
+        // held back while the draft flow is tested against real lobbies
+        ...(DRAFT_TOOL_LIVE
+          ? [{ href: "/draft", label: "Draft Assistant", badges: ["new"], desc: "Bans, picks and the counter build, live in lobby" }]
+          : []),
         { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },

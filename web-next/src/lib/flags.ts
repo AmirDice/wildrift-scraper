@@ -22,6 +22,27 @@ const _flag = process.env.NEXT_PUBLIC_BUILD_TOOLS?.toLowerCase();
 
 export const BUILD_TOOLS_LIVE = !(_flag === "0" || _flag === "false");
 
+// DRAFT_TOOL_LIVE gates the Draft Assistant (/draft) SEPARATELY from the rest
+// of the build tools, which are launched and must stay up.
+//
+// It is held back while the draft flow is still being tested against real
+// lobbies: the page, its nav entry and its sitemap entry all disappear
+// together, and the route redirects home. Local development keeps it on, which
+// is where the testing happens.
+//
+// Turn it on in production by setting NEXT_PUBLIC_DRAFT_TOOL=1 in the Vercel
+// environment and redeploying, or by flipping this default once the tool has
+// earned it. NEXT_PUBLIC_ vars are inlined at build time, so either way it
+// needs a redeploy rather than a restart.
+const _draftFlag = process.env.NEXT_PUBLIC_DRAFT_TOOL?.toLowerCase();
+
+export const DRAFT_TOOL_LIVE =
+  _draftFlag === "1" || _draftFlag === "true"
+    ? true
+    : _draftFlag === "0" || _draftFlag === "false"
+      ? false
+      : process.env.NODE_ENV === "development";
+
 /**
  * Champions whose Recommended Builds tab is open.
  *

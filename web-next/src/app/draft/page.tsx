@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DraftAssistant } from "@/components/draft-assistant";
 import { Container } from "@/components/ui";
-import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 import { buildToolsVisible } from "@/lib/access";
 
 export const metadata: Metadata = {
@@ -10,11 +10,13 @@ export const metadata: Metadata = {
   description:
     "A live-draft companion for Wild Rift: track all ten bans and both teams' picks, get pick suggestions from the champions you actually play, and generate the counter build for the enemy comp in one tap.",
   alternates: { canonical: "/draft" },
-  robots: BUILD_TOOLS_LIVE ? undefined : { index: false, follow: false },
+  robots: BUILD_TOOLS_LIVE && DRAFT_TOOL_LIVE ? undefined : { index: false, follow: false },
 };
 
 export default async function DraftPage() {
-  // Same curtain as the rest of the Build Studio tools.
+  // Held back while the draft flow is tested against real lobbies, on top of
+  // the same curtain as the rest of the Build Studio tools.
+  if (!DRAFT_TOOL_LIVE) redirect("/");
   if (!(await buildToolsVisible())) redirect("/");
   return (
     <Container>
