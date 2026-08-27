@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getChampions, type Champion } from "@/lib/data";
 import { getBuildsFor, visibleBuildVariants, type Build } from "@/lib/builds";
+import { counterSwaps, threatProfile, type CounterRecScored } from "@/lib/threat";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { CounterReasoning, EnemyRead, type CounterSummary } from "@/components/counter-intel";
 import {
@@ -156,6 +157,52 @@ export function DraftAssistant() {
     const variant = visibleBuildVariants(cb)[0];
     return variant ? (cb.builds[variant] ?? null) : null;
   }, [me]);
+
+  /**
+   * What to change about the standard build for THIS comp, scored through the
+   * fight engine in the browser.
+   *
+   * It costs no generation: a counter build spends one of the day's five and
+   * takes up to half a minute, while this runs on the build already on screen.
+   * It only reports swaps that measurably improve, and never touches the first
+   * item, which is the build's core rather than a slot to trade away.
+   *
+   * ON DEMAND, because it is not cheap. Scoring every candidate against every
+   * slot is ~125 full build evaluations and measured 1.8 SECONDS of blocked
+   * main thread on a desktop; running it on every enemy tap would freeze the
+   * grid mid-draft on a phone, which is the one place this has to stay quick.
+   */
+  const compKey = `${state.me}|${[...state.enemies].sort().join(",")}`;
+  const [swaps, setSwaps] = useState<CounterRecScored[]>([]);
+  const [swapsFor, setSwapsFor] = useState("");
+  const [measuring, setMeasuring] = useState(false);
+
+  function measureSwaps() {
+    if (!me || !standardBuild || measuring) return;
+    setMeasuring(true);
+    // let the button's own state paint before the main thread goes away
+    setTimeout(() => {
+      try {
+        const profile = threatProfile(
+          state.enemies.map((s) => bySlug.get(s)?.name ?? s), 15, state.myRole ?? "");
+        const items = standardBuild.coreBuild.map((it) => it.slug).filter(Boolean);
+        const runeNames = [
+          standardBuild.runes?.keystone?.name,
+          ...(standardBuild.runes?.treeMinors ?? []).map((r) => r.name),
+        ].filter((n): n is string => Boolean(n));
+        setSwaps(profile
+          ? counterSwaps(me.name, items, runeNames, profile, 15, items.slice(0, 1))
+          : []);
+      } catch {
+        setSwaps([]);
+      } finally {
+        setSwapsFor(compKey);
+        setMeasuring(false);
+      }
+    }, 30);
+  }
+
+  const swapsCurrent = swapsFor === compKey;
 
   function assign(slug: string) {
     if (mode === "ban") {
@@ -505,6 +552,46 @@ export function DraftAssistant() {
                     ? `  —  ${standardBuild.summoners.map((s) => s.name).join(" + ")}`
                     : ""}
                 </p>
+              )}
+              {state.enemies.length > 0 && !swapsCurrent && (
+                <button
+                  onClick={measureSwaps}
+                  disabled={measuring}
+                  className="glass mt-3 w-full rounded-xl px-3 py-2 text-xs font-semibold text-accent transition hover:text-text disabled:opacity-60"
+                >
+                  {measuring
+                    ? "Measuring against their comp…"
+                    : "What should I change for this comp? · free"}
+                </button>
+              )}
+              {swapsCurrent && swaps.length === 0 && (
+                <p className="mt-3 border-t border-line/60 pt-3 text-xs text-faint">
+                  Nothing in the standard build measurably improves against this comp.
+                  Generate a counter build for a full rethink.
+                </p>
+              )}
+              {swapsCurrent && swaps.length > 0 && (
+                <div className="mt-3 border-t border-line/60 pt-3">
+                  <p className="mb-1.5 text-[0.65rem] font-bold uppercase tracking-wide text-gold">
+                    Change for this comp · free, measured here
+                  </p>
+                  <div className="space-y-1.5">
+                    {swaps.slice(0, 3).map((s) => s.swap && (
+                      <div key={s.key} className="text-xs">
+                        <span className="font-semibold text-text">
+                          {itemName(s.swap.add)}
+                        </span>
+                        <span className="text-muted"> in for {itemName(s.swap.remove)}</span>
+                        <span className="ml-1 text-gold">+{s.swap.delta}</span>
+                        <span className="block text-faint">{s.reason}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-1.5 text-[0.65rem] text-faint">
+                    Generate a counter build for a full rethink; these are swaps into the
+                    standard one.
+                  </p>
+                </div>
               )}
             </div>
           )}
