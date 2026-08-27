@@ -16,6 +16,8 @@ honest, weighted picture to reason over.
 from __future__ import annotations
 
 import json
+import re
+from functools import lru_cache
 from pathlib import Path
 
 from web.advisor import profiles
@@ -85,7 +87,47 @@ def _combat(name: str) -> dict:
         return {}
 
 
+_FORMULAS = _load("ability_formulas.json", {}) or {}
+_HARD_CC = re.compile(
+    r"\b(stun\w*|root\w*|snar\w*|knock\s?up|knock\s?back|knocking|airborne"
+    r"|charm\w*|taunt\w*|fear\w*|suppress\w*|silenc\w*|immobiliz\w*)", re.I)
+
+
+@lru_cache(maxsize=256)
+def _derived_mechanics(name: str) -> frozenset[str]:
+    """heal / shield / cc, re-derived from evidence rather than scrape tags.
+
+    The scraped tags describe almost the whole roster -- `heal` on 109 of 141
+    champions and `cc` on 134 -- so any five enemies read as "everyone
+    sustains, everyone has crowd control" and the profile could not
+    discriminate. Healing and shielding come from the extracted formulas,
+    where a `defensive` component is real evidence; hard crowd control comes
+    from the ability tooltips, which name the effect (the formulas' unmodeled
+    notes miss Malphite's ultimate entirely). Jinx counted as a healer on the
+    tag alone.
+    """
+    out = set()
+    kinds = {d.get("kind")
+             for ability in ((_FORMULAS.get(name) or {}).get("abilities") or {}).values()
+             for d in (ability.get("defensive") or [])}
+    if "heal" in kinds:
+        out.add("heal")
+    if "shield" in kinds:
+        out.add("shield")
+    record = _champ(name) or {}
+    text = " ".join((a.get("text") or "") + " " + (a.get("name") or "")
+                    for a in (record.get("abilities") or []))
+    if _HARD_CC.search(text):
+        out.add("cc")
+    return frozenset(out)
+
+
 def _has(record: dict, mech: str) -> bool:
+    # dash and onHit stay on the scraped tags: those are already specific.
+    if mech in ("heal", "shield", "cc"):
+        name = record.get("name") or ""
+        if name and (_FORMULAS.get(name) or record.get("abilities")):
+            return mech in _derived_mechanics(name)
     return mech in (record.get("mechanics") or [])
 
 

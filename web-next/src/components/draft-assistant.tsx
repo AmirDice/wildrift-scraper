@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getChampions, type Champion } from "@/lib/data";
 import { getBuildsFor, visibleBuildVariants, type Build } from "@/lib/builds";
 import { ChampionAvatar, TierChip } from "@/components/ui";
+import { CounterReasoning, EnemyRead, type CounterSummary } from "@/components/counter-intel";
 import {
   DRAFT_ROLES,
   EMPTY_DRAFT,
@@ -60,6 +61,7 @@ interface V1Advice {
   } | null;
   summoners?: ({ name?: string } | string)[] | null;
   situational?: { slug?: string; name?: string; when?: string }[] | null;
+  counterSummary?: CounterSummary | null;
 }
 interface V1Response {
   build?: V1Advice;
@@ -446,6 +448,15 @@ export function DraftAssistant() {
         </div>
       </div>
 
+      {/* The read on their comp, derived locally: it is worth most DURING the
+          draft, so it must not wait on a generation. */}
+      {state.enemies.length > 0 && (
+        <EnemyRead
+          enemies={state.enemies.map((s) => bySlug.get(s)?.name ?? s)}
+          myRole={state.myRole ?? ""}
+        />
+      )}
+
       {/* the build sheet */}
       {me && (
         <div className="glass space-y-3 rounded-2xl p-4">
@@ -551,6 +562,9 @@ export function DraftAssistant() {
                 )}
               </div>
             </div>
+          )}
+          {advice?.counterSummary && (
+            <CounterReasoning summary={advice.counterSummary} />
           )}
 
           <div className="flex flex-wrap items-center gap-3">

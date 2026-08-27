@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { rosterList, type RosterChampion } from "@/lib/threat";
+import { CounterReasoning, EnemyRead } from "@/components/counter-intel";
 import { GlassSlider } from "@/components/glass-slider";
 import engineData from "@/data/engine.json";
 import playstyleData from "@/data/playstyles.json";
@@ -1293,6 +1294,13 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               ))}
             </div>
             {needsEnemy && <p className="mt-2 text-xs text-amber-300">Select at least one enemy to generate a counter build.</p>}
+            {/* Derived on the spot, so it answers while the comp is still
+                being picked rather than after a 20-second generation. */}
+            {selectedEnemies.length > 0 && (
+              <div className="mt-3">
+                <EnemyRead enemies={selectedEnemies} myRole={role} />
+              </div>
+            )}
             {selectedEnemies.length > 0 && (
               <div className="mt-3 max-w-sm">
                 <label className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wide text-faint" htmlFor="ahead-enemy">
@@ -1679,6 +1687,12 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             <PlayGuide advice={advice} />
 
             {!isCounter && <WhyThisBuild advice={advice} />}
+            {/* Counter mode's equivalent. The advisor has always returned this
+                object; until now nothing rendered it, so the mode with the most
+                reasoning behind it showed the least of it. */}
+            {isCounter && advice.counterSummary && (
+              <CounterReasoning summary={advice.counterSummary} />
+            )}
 
             <BiasCompare history={biasHistory} ck={`${champ}|${playstyle}`} currentBias={BIAS_STOPS[biasIdx].key} />
 

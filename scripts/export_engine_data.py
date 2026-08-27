@@ -13,6 +13,7 @@ Run after any data refresh:
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -283,6 +284,36 @@ def main() -> None:
         "Cho'Gath": {"class": "Tank", "role": "Baron",
                      "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Chogath.png"},
     }
+    # The scraped `mechanics` tags are too blunt to describe a threat: `heal`
+    # sits on 109 of 141 champions and `cc` on 134, so a comp of any five reads
+    # "everyone sustains, everyone has crowd control" and the threat panel says
+    # nothing. Jinx shipped as a healer on the strength of that tag.
+    #
+    # Healing and shielding are re-derived from the extracted formulas, where a
+    # `defensive` component is real evidence rather than a keyword; hard crowd
+    # control is re-derived from the ability tooltips, which name the effect
+    # (the formulas' unmodeled notes miss Malphite's ultimate entirely). dash
+    # and onHit keep their scraped tags -- those are already specific.
+    hard_cc = re.compile(
+        r"\b(stun\w*|root\w*|snar\w*|knock\s?up|knock\s?back|knocking|airborne"
+        r"|charm\w*|taunt\w*|fear\w*|suppress\w*|silenc\w*|immobiliz\w*)", re.I)
+
+    def derived_mechanics(champ: dict) -> list[str]:
+        kept = [m for m in (champ.get("mechanics") or []) if m in ("dash", "onHit")]
+        formula = (formulas.get(champ["name"]) or {}).get("abilities") or {}
+        kinds = {d.get("kind")
+                 for ability in formula.values()
+                 for d in (ability.get("defensive") or [])}
+        if "heal" in kinds:
+            kept.append("heal")
+        if "shield" in kinds:
+            kept.append("shield")
+        text = " ".join((a.get("text") or "") + " " + (a.get("name") or "")
+                        for a in (champ.get("abilities") or []))
+        if hard_cc.search(text):
+            kept.append("cc")
+        return kept
+
     roster = {}
     # Forms are deliberately absent here. The roster is the list of champions
     # the site shows and the threat model iterates; a form is a kit, not an
@@ -300,7 +331,7 @@ def main() -> None:
             "icon": meta.get("icon", ""),
             "primaryDamage": c.get("primaryDamage", ""),
             "scalesWith": c.get("scalesWith", []),
-            "mechanics": c.get("mechanics", []),
+            "mechanics": derived_mechanics(c),
             "baseStats": {k: bs.get(k, {}) for k in ("hp", "armor", "mr", "ad")},
         }
     ROSTER_OUT.write_text(json.dumps(roster, ensure_ascii=False), encoding="utf-8")

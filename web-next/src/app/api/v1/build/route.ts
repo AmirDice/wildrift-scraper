@@ -66,6 +66,10 @@ function trim(advice: Advice) {
     situational: advice.situational ?? null,
     situationalBoots: advice.situationalBoots ?? null,
     buildScore: advice.buildScore ?? null,
+    // Why this build beats these five. The draft page and the overlay show a
+    // build with no room for prose around it, so the one thing worth carrying
+    // is the reasoning that names which piece answers which enemy.
+    counterSummary: advice.counterSummary ?? null,
   };
 }
 
