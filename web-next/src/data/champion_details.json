@@ -1972,7 +1972,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Headshot",
-        "text": "Every 6 attacks fires a Headshot , dealing 27 ( 50% AD + 125 Critical chance ) bonus physical damage . Trapped or netted enemies trigger a Headshot that has double range. Attacking from brush builds Headshot twice as fast.",
+        "text": "Every 6 attacks fires a Headshot , dealing 27 ( 60% AD + 200 Critical chance ) bonus physical damage . Trapped or netted enemies trigger a Headshot that has double range. Attacking from brush builds Headshot twice as fast.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -1999,7 +1999,7 @@
         "slot": "2",
         "key": "W",
         "name": "Yordle Snap Trap",
-        "text": "Sets a trap that enemy champions can spring, immobilizing them for 1.5 seconds and Revealing them for a short duration. Traps last for 30 seconds and 2 / 3 / 4 / 5 can be active at once. Trap charging time: 27 / 22 / 17 / 12 seconds.",
+        "text": "Sets a trap that enemy champions can spring, immobilizing them for 1.5 seconds and Revealing them for a short duration. Traps last for 30 seconds and 2 / 3 / 4 / 5 can be active at once. Trap charging time: 25 / 20 / 15 / 10 seconds.",
         "cooldowns": [
           "1",
           "1",
@@ -3507,7 +3507,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Duelist's Dance",
-        "text": "After 2 seconds (scales with Grand Challenge's level), reveals Vitals on a nearby enemy champion. Striking a Vital deals 3.5% ( +0.05% bonus AD ) of the target's max Health as true damage , heals Fiora for 45 Health and grants her 3 0% Movement Speed (scales with Grand Challenge's level) decaying over 1.75 seconds. Reveals a new Vital after striking one or after 16.75 seconds.",
+        "text": "After 2 seconds (scales with Grand Challenge's level), reveals Vitals on a nearby enemy champion. Striking a Vital deals 4% ( +0.055% bonus AD ) of the target's max Health as true damage , heals Fiora for 45 Health and grants her 3 0% Movement Speed (scales with Grand Challenge's level) decaying over 1.75 seconds. Reveals a new Vital after striking one or after 16.75 seconds.",
         "cooldowns": [],
         "damageTypes": [
           "true"
@@ -4420,7 +4420,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Snip Snip!",
-        "text": "Passive : Gains 1 stack per attack hit (max 4, lasts 6 seconds. Active : Snips her scissors twice, snipping an extra time for each stack consumed. Each snip deals 14 / 18 / 22 / 26 ( +7% AP ) magic damage with the final snip dealing 70 / 90 / 110 / 130 ( +35% AP ) magic damage instead. The center of each strike deals true damage instead and applies Thousand Cuts . Damage to monsters: 105% .",
+        "text": "Passive : Gains 1 stack per attack hit (max 4, lasts 6 seconds. Active : Snips her scissors twice, snipping an extra time for each stack consumed. Each snip deals 14 / 18 / 22 / 26 ( +6% AP ) magic damage with the final snip dealing 70 / 90 / 110 / 130 ( +30% AP ) magic damage instead. The center of each strike deals true damage instead and applies Thousand Cuts . Damage to monsters: 100% .",
         "cooldowns": [
           "6",
           "5",
@@ -8909,7 +8909,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Darkness Rise",
-        "text": "Gains 1% Magic Pen . Attacks deal 30% bonus magic damage . When Mordekaiser gets a takedown, or his basic abilities or attacks hit an enemy champion or large monster, he gains 1 stack of Darkness Rise for 5 seconds. At 3 stacks, he cloaks himself in a negative energy field. The negative energy field deals magic damage equal to 4.75 ( + 0.25 per level + 25% AP ) plus 1% of the target's max Health per second and grants him 3% Movement Speed for 5 seconds. Takedowns and basic ability or attack hits against enemy champions or large monsters refresh the negative energy field's duration. Darkness Rise deals a maximum of 24 damage to monsters per second.",
+        "text": "Gains 3% / 6% / 9% / 12% Magic Pen . Attacks deal 30% bonus magic damage . When Mordekaiser gets a takedown, or his basic abilities or attacks hit an enemy champion or large monster, he gains 1 stack of Darkness Rise for 5 seconds. At 3 stacks, he cloaks himself in a negative energy field. The negative energy field deals magic damage equal to 4.75 ( + 0.25 per level + 25% AP ) plus 1% of the target's max Health per second and grants him 3% Movement Speed for 5 seconds. Takedowns and basic ability or attack hits against enemy champions or large monsters refresh the negative energy field's duration. Darkness Rise deals a maximum of 24 damage to monsters per second.",
         "cooldowns": [],
         "damageTypes": [
           "magic"
@@ -8952,10 +8952,10 @@
         "name": "Death's Grasp",
         "text": "Pulls the enemy toward him, dealing 60 / 80 / 100 / 120 ( +55% AP ) magic damage and slowing them by 30% for 1 second.",
         "cooldowns": [
-          "17",
           "15",
-          "12",
-          "10"
+          "13",
+          "11",
+          "9"
         ],
         "damageTypes": [
           "magic"
@@ -10604,7 +10604,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Comet Spear",
-        "text": "Tap Cast : Stabs forward, dealing 80 / 120 / 160 / 200 ( +120% AD ) physical damage . Refunds 60% of Comet Spear's Cooldown. Charge Cast : Hurls the spear, dealing the same damage to the first enemy hit and 50% less to subsequent targets. Enemies below 35% Health are critically hit for 120 / 210 / 300 / 390 ( +180% AD ) physical damage instead. Mortal Will : Deals an additional 30 ( +120%AD ) physical damage. Damage to minions is reduced by 20% . Deals 110% damage to monsters.",
+        "text": "Tap Cast : Stabs forward, dealing 80 / 120 / 160 / 200 ( +120% AD ) physical damage . Refunds 60% of Comet Spear's Cooldown. Charge Cast : Hurls the spear, dealing the same damage to the first enemy hit and 50% less to subsequent targets. Enemies below 25% Health are critically hit for 120 / 210 / 300 / 390 ( +180% AD ) physical damage instead. Mortal Will : Deals an additional 30 ( +120%AD ) physical damage. Damage to minions is reduced by 20% . Deals 110% damage to monsters.",
         "cooldowns": [
           "9",
           "8",
@@ -11367,7 +11367,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Cull the Meek",
-        "text": "Deal 80 / 130 / 180 / 230 ( +90% AD ) physical damage to nearby enemies, generating 5 Fury or 10 Fury if the enemy hit is a champion and healing 4 / 6 / 8 / 10 ( +5% bonus AD ) per enemy hit, if the enemy hit is a champion, restore 16 / 24 / 32 / 40 ( +20% bonus AD ) Health . Reign of Anger : Damage increases to 120 / 195 / 270 / 345 ( +135% AD ) physical damage and healing is increased by 200% .",
+        "text": "Deal 80 / 130 / 180 / 230 ( +100% AD ) physical damage to nearby enemies, generating 5 Fury or 10 Fury if the enemy hit is a champion and healing 4 / 6 / 8 / 10 ( +5% bonus AD ) per enemy hit, if the enemy hit is a champion, restore 16 / 24 / 32 / 40 ( +20% bonus AD ) Health . Reign of Anger : Damage increases to 120 / 195 / 270 / 345 ( +135% AD ) physical damage and healing is increased by 200% .",
         "cooldowns": [
           "7",
           "7",
@@ -11383,7 +11383,7 @@
         "slot": "2",
         "key": "W",
         "name": "Ruthless Predator",
-        "text": "Empowers the next attack to strike twice, stunning for 0.75 seconds and dealing 24 / 48 / 72 / 96 ( +150% AD ) physical damage . Reign of Anger : Strikes three times, stunning for 1.5 seconds and dealing 36 / 72 / 108 / 144 ( +225% AD ) physical damage . Under the effect of Red Fury, clear all shields on the target. Gain an additional 10 Fury when an enemy champion is hit.",
+        "text": "Empowers the next attack to strike twice, stunning for 0.75 seconds and dealing 20 / 60 / 100 / 140 ( +150% AD ) physical damage . Reign of Anger : Strikes three times, stunning for 1.5 seconds and dealing 30 / 90 / 150 / 210 ( +225% AD ) physical damage . Under the effect of Red Fury, clear all shields on the target. Gain an additional 10 Fury when an enemy champion is hit.",
         "cooldowns": [
           "14",
           "12",
@@ -13761,7 +13761,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Dark Sphere",
-        "text": "Conjures a Dark Sphere , dealing 70 / 115 / 160 / 205 ( +65% AP ) magic damage . The Sphere remains for 6 seconds and can be manipulated by Syndra's other abilities. Transcendent : Stores a charge of Dark Sphere every 7 seconds, up to a maximum of 2. This ability can be cast wile moving.",
+        "text": "Conjures a Dark Sphere , dealing 80 / 130 / 180 / 230 ( +65% AP ) magic damage . The Sphere remains for 6 seconds and can be manipulated by Syndra's other abilities. Transcendent : Stores a charge of Dark Sphere every 7 seconds, up to a maximum of 2. This ability can be cast wile moving.",
         "cooldowns": [
           "7",
           "7",
@@ -13777,7 +13777,7 @@
         "slot": "2",
         "key": "W",
         "name": "Force of Will",
-        "text": "Grabs the nearest Dark Sphere and hurls it at a target location, dealing 60 / 100 / 140 / 180 ( +45% AP ) magic damage to enemies within the area and slowing them by 20% / 25% / 30% / 35% for 1.5 seconds. If there isn't any Dark Sphere nearby, Syndra generates one and hurls it at the target location. Damage from the Sphere is reduced to 80% . Transcendent : This ability deals an additional 12% ( +2% AP ) true damage .",
+        "text": "Grabs the nearest Dark Sphere and hurls it at a target location, dealing 60 / 100 / 140 / 180 ( +60% AP ) magic damage to enemies within the area and slowing them by 20% / 25% / 30% / 35% for 1.5 seconds. If there isn't any Dark Sphere nearby, Syndra generates one and hurls it at the target location. Damage from the Sphere is reduced to 80% . Transcendent : This ability deals an additional 12% ( +2% AP ) true damage .",
         "cooldowns": [
           "12",
           "11",
@@ -13794,12 +13794,12 @@
         "slot": "3",
         "key": "E",
         "name": "Scatter the Weak",
-        "text": "Projects a wave of force in a cone, knocking back enemies and Dark Spheres and dealing 70 / 110 / 150 / 190 ( +35% AP ) magic damage . Dark Spheres that are knocked back stun and knock back enemies hit along the way for 1.25 seconds, dealing 70 / 110 / 150 / 1 90 ( +35% AP ) magic damage . Transcendent : Increases the angle of the wave of force's cone by 50% and its radius to 720 . Enemies can only take damage and be knocked back from this ability once per cast.",
+        "text": "Projects a wave of force in a cone, knocking back enemies and Dark Spheres and dealing 70 / 110 / 150 / 190 ( +50% AP ) magic damage . Dark Spheres that are knocked back stun and knock back enemies hit along the way for 1.25 seconds, dealing 70 / 110 / 150 / 1 90 ( +50% AP ) magic damage . Transcendent : Increases the angle of the wave of force's cone by 50% and its radius to 720 . Enemies can only take damage and be knocked back from this ability once per cast.",
         "cooldowns": [
-          "17",
-          "17",
-          "17",
-          "17"
+          "15",
+          "15",
+          "15",
+          "15"
         ],
         "damageTypes": [
           "magic"
@@ -14273,7 +14273,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Death Sentence",
-        "text": "Throws out a scythe, stunning the first unit hit and pulling them in for 1.5 seconds. The scythe does 100 / 160 / 220 / 280 ( +80% AP ) magic damage and grants True Sight for the duration. Recast : Dashes to the bound enemy. Cooldown is reduced by 3 seconds if it hits an enemy.",
+        "text": "Throws out a scythe, stunning the first unit hit and pulling them in for 1.5 seconds. The scythe does 100 / 160 / 220 / 280 ( +80% AP ) magic damage and grants True Sight for the duration. Recast : Dashes to the bound enemy. Cooldown is reduced by 2 seconds if it hits an enemy.",
         "cooldowns": [
           "18",
           "15",
@@ -14673,7 +14673,7 @@
         "slot": "3",
         "key": "E",
         "name": "Stacked Deck",
-        "text": "Passive : Gains 15% / 20% / 25% / 30% Attack Speed . Every 4th attack deals 50 / 80 / 110 / 140 ( +45% AP ) magic damage . Active : Gain 20% / 25% / 30% / 35% Attack Speed for 3 seconds. During this time, attacking enemy champions rolls Loaded Dice .",
+        "text": "Passive : Gains 15% / 20% / 25% / 30% Attack Speed . Every 4th attack deals 50 / 80 / 110 / 140 ( +35% AP ) magic damage . Active : Gain 20% / 25% / 30% / 35% Attack Speed for 3 seconds. During this time, attacking enemy champions rolls Loaded Dice .",
         "cooldowns": [
           "17",
           "16",
@@ -16024,7 +16024,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Crimson Pact",
-        "text": "Gains Ability Power equal to 4.5% of Health and Bonus Health equal to 140% Ability Power . (Both effects do not mutually stack)",
+        "text": "Gains Ability Power equal to 5% of Health and Bonus Health equal to 150% Ability Power . (Both effects do not mutually stack)",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/vladimir-crimson-pact.png"
@@ -16033,7 +16033,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Transfusion",
-        "text": "Drains life from enemies, dealing 70 / 100 / 130 / 160 ( +60% AP ) magic damage and restoring 15 / 20 / 25 / 30 ( +35% AP ) Health . When this ability's cooldown ends, generates a stack of Bloodthirst. At 2 stacks, gain 1 0% bonus Movement Speed for 0.5 seconds and enters Crimson Rush for 2.5 seconds, gradually depleting all Bloodthirst stacks over this time. Crims Rush : While in this state, empowers the next cast of Transfusion to deal 75% bonus damage and heal himself for 30 - 170 + ( 5% +0.03% AP ) of missing Health . When cast, consumes all Bloodthirst stacks and ends Crimson Rush. The empowered version of this ability heals for 35% against minions.",
+        "text": "Drains life from enemies, dealing 70 / 100 / 130 / 160 ( +60% AP ) magic damage and restoring 15 / 20 / 25 / 30 ( +35% AP ) Health . When this ability's cooldown ends, generates a stack of Bloodthirst. At 2 stacks, gain 1 0% bonus Movement Speed for 0.5 seconds and enters Crimson Rush for 2.5 seconds, gradually depleting all Bloodthirst stacks over this time. Crims Rush : While in this state, empowers the next cast of Transfusion to deal 85% bonus damage and heal himself for 30 - 170 + ( 5% +0.03% AP ) of missing Health . When cast, consumes all Bloodthirst stacks and ends Crimson Rush. The empowered version of this ability heals for 35% against minions.",
         "cooldowns": [
           "9",
           "8",
@@ -16065,7 +16065,7 @@
         "slot": "3",
         "key": "E",
         "name": "Tides of Blood",
-        "text": "Charges for up to 1.5 seconds at the cost of 2 - 8% of his Health , dealing 20 / 40 / 60 / 80 ( +35% AP +2.5% of max Health ) magic damage to nearby enemies, increased by up to 100% after charging. Charging for 1 second or more consumes the max possible Health cost, but if he is below 12% of his Health , charging will not cost any Health. After charging for 1 second, he becomes slowed by 20% and also slows enemies hit by 40% / 45% / 50% / 55% .",
+        "text": "Charges for up to 1.5 seconds at the cost of 2 - 8% of his Health , dealing 30 / 50 / 70 / 90 ( +35% AP +3% of max Health ) magic damage to nearby enemies, increased by up to 100% after charging. Charging for 1 second or more consumes the max possible Health cost, but if he is below 12% of his Health , charging will not cost any Health. After charging for 1 second, he becomes slowed by 20% and also slows enemies hit by 40% / 45% / 50% / 55% .",
         "cooldowns": [
           "13",
           "10",
@@ -16883,9 +16883,9 @@
         "lvl15": 23.0
       },
       "armor": {
-        "base": 43.0,
+        "base": 37.0,
         "perLevel": 4.0,
-        "lvl15": 99.0
+        "lvl15": 93.0
       },
       "mr": {
         "base": 38.0,
@@ -17204,7 +17204,7 @@
         "slot": "2",
         "key": "W",
         "name": "You and Me!",
-        "text": "Best Friend Bonus (Passive) : While on her Best Friend , Yuumi gains an additional 6% / 7% / 8% / 9% ( +0.02% AP ) Heal and Shield Power . Attach (Active) : Dashes to an allied champion and Attaches to them. While Attached , she follows her partner's movement and is untargetable except by turrets. Immobilizing effects on Yuumi place this ability on a 5 seconds cooldown.",
+        "text": "Best Friend Bonus (Passive) : While on her Best Friend , Yuumi gains an additional 8% / 9% / 10% / 11% ( +0.02% AP ) Heal and Shield Power . Attach (Active) : Dashes to an allied champion and Attaches to them. While Attached , she follows her partner's movement and is untargetable except by turrets. Immobilizing effects on Yuumi place this ability on a 5 seconds cooldown.",
         "cooldowns": [
           "10",
           "10",
@@ -17218,12 +17218,12 @@
         "slot": "3",
         "key": "E",
         "name": "Zoomies",
-        "text": "Gains a shield that absorbs 85 / 110 / 135 / 160 ( +30% AP ) damage and 24% / 28% / 32% / 36% ( +8% AP ) Attack Speed for 3 seconds. While the shield persists, she also gains 20% Movement Speed . If Yuumi is Attached , this ability affects her ally instead.",
+        "text": "Gains a shield that absorbs 80 / 110 / 140 / 170 ( +40% AP ) damage and 24% / 28% / 32% / 36% ( +8% AP ) Attack Speed for 3 seconds. While the shield persists, she also gains 20% Movement Speed . If Yuumi is Attached , this ability affects her ally instead.",
         "cooldowns": [
-          "10",
-          "10",
-          "10",
-          "10"
+          "9",
+          "9",
+          "9",
+          "9"
         ],
         "damageTypes": [],
         "icon": "/abilities/yuumi-zoomies.png"

@@ -15,9 +15,10 @@
     },
     "Mordekaiser": {
       "knowledge": {
-        "resource": "none"
+        "resource": "none",
+        "asEfficiency": 0.3
       },
-      "reason": "Extraction says resource=mana; Mordekaiser is manaless (base mana=null, no costs). Unlike Garen he has NO noResource mechanic either, so nothing told the model mana stats are dead on him."
+      "reason": "Extraction says resource=mana; Mordekaiser is manaless (base mana=null, no costs). Unlike Garen he has NO noResource mechanic either, so nothing told the model mana stats are dead on him. 7.2d drift: asEfficiency 0.3 -> 0.2. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.3 -> asEfficiency 0.3 -> 0.2); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
     },
     "Graves": {
       "knowledge": {
@@ -79,6 +80,39 @@
         }
       },
       "reason": "The scraped Q text carries only the FIRST empowered attack; the recast sentence is missing, so extraction modelled one physical hit and flagged nothing unmodeled. Tencent's hero data (10055): '第一次攻击的1.6秒后，精准礼仪会自动强化下一次普通攻击，将伤害的40%转化为真实伤害' -- one cast empowers TWO attacks, the second converting 40% of its damage to true. ENCODING: the engines charge every per-auto component on every empowered attack (empowerLimit x casts), so the two unequal hits are stored as their PER-ATTACK AVERAGE -- hit1 130-160% AD physical plus hit2 60/40 phys/true averages to 104-128% physical + 26-32% true per empowered attack, exact in total with empowerLimit 2. Writing the hits separately double-counted (each comp rode both empowered attacks). Owner-approved 2026-08-20."
+    },
+    "Twisted Fate": {
+      "knowledge": {
+        "asEfficiency": 0.2,
+        "abilitiesCanCrit": false
+      },
+      "reason": "7.2d drift: asEfficiency 0.2 -> 0.6 and abilitiesCanCrit false -> true. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.2 -> asEfficiency 0.2 -> 0.6 and abilitiesCanCrit false -> true); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
+    },
+    "Fiora": {
+      "knowledge": {
+        "asEfficiency": 0.6,
+        "abilitiesCanCrit": false
+      },
+      "reason": "7.2d drift: asEfficiency 0.6 -> 0.7 and abilitiesCanCrit false -> true. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.6 -> asEfficiency 0.6 -> 0.7 and abilitiesCanCrit false -> true); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
+    },
+    "Gwen": {
+      "knowledge": {
+        "asEfficiency": 0.6
+      },
+      "reason": "7.2d drift: asEfficiency 0.6 -> 0.8. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.6 -> asEfficiency 0.6 -> 0.8); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
+    },
+    "Renekton": {
+      "knowledge": {
+        "asEfficiency": 0.3,
+        "abilitiesCanCrit": false
+      },
+      "reason": "7.2d drift: asEfficiency 0.3 -> 0.4 and abilitiesCanCrit false -> true. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.3 -> asEfficiency 0.3 -> 0.4 and abilitiesCanCrit false -> true); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
+    },
+    "Caitlyn": {
+      "knowledge": {
+        "asEfficiency": 0.8
+      },
+      "reason": "7.2d drift: asEfficiency 0.8 -> 1.0. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.8 -> asEfficiency 0.8 -> 1.0); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
     }
   },
   "_revertNote": "Twisted Fate (asEfficiency 0.8) and Kennen (0.7) corrections were applied on 2026-07-29 and REVERTED the same day on owner meta-judgment: with the raised values the model built Nashor's Tooth as an effective core item on both (slot 2 in consecutive Twisted Fate runs), and neither champion builds it as a staple in the live meta. Their every-N-hit passives are real, but the extraction's 0.2 produces the builds that match reality. If this comes up again, re-litigate with N-run evidence against real meta builds, not from ability text alone."

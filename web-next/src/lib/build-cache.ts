@@ -211,7 +211,14 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // (Kaenic's shield, Gunmetal's on-hit MS), and the Lucidity boots'
   // summoner-spell haste no longer counts as ability CDR. A v27 entry was
   // reasoned from pre-7.2c fight numbers.
-  return `build:v28:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v29: patch 7.2d (2026-08-26). Thirteen champions and two items moved, and
+  // the derived surfaces moved with them -- ability formulas re-extracted for
+  // the eleven whose text changed, Yone's base armor cut 43 -> 37, Edge of
+  // Night's flat armor penetration 8 -> 12 and Stormsurge 2900 -> 2800 gold.
+  // A v28 entry was reasoned from 7.2c numbers: it would still rate Twisted
+  // Fate's Stacked Deck at 45% AP and price Stormsurge out of builds it now
+  // fits.
+  return `build:v29:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

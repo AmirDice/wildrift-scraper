@@ -1712,37 +1712,6 @@
     ]
   },
   {
-    "slug": "stormsurge",
-    "name": "Stormsurge",
-    "cost": 2900,
-    "icon": "/items/stormsurge.webp",
-    "category": "Magic",
-    "categories": [
-      "Magic"
-    ],
-    "tags": [],
-    "stats": {
-      "ap": {
-        "value": 90.0,
-        "percent": false
-      },
-      "magicPenFlat": {
-        "value": 15.0,
-        "percent": false
-      },
-      "moveSpeed": {
-        "value": 6.0,
-        "percent": true
-      }
-    },
-    "scopedStats": {},
-    "statRules": {},
-    "passives": [
-      "Stormraider: When damaging a champion, dealing damage equal to 25% of their max Health within 2.5 seconds applies Squall to them and grants you 25% bonus Movement Speed for 2.5s. (25s Cooldown)",
-      "Squall: After 2 seconds, strike the target, dealing magic damage equal to 125 plus 10% Ap. If the target is killed before the strike, it detonates immediately in a large area and grants 25 gold."
-    ]
-  },
-  {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "cost": 2800,
@@ -1835,6 +1804,37 @@
     "statRules": {},
     "passives": [
       "Echo: Your next damaging ability or empowered attack deals an additional 140 + 15% Ap magic damage to the target and up to 3 nearby enemies. (9s Cooldown)"
+    ]
+  },
+  {
+    "slug": "stormsurge",
+    "name": "Stormsurge",
+    "cost": 2800,
+    "icon": "/items/stormsurge.webp",
+    "category": "Magic",
+    "categories": [
+      "Magic"
+    ],
+    "tags": [],
+    "stats": {
+      "ap": {
+        "value": 90.0,
+        "percent": false
+      },
+      "magicPenFlat": {
+        "value": 15.0,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 6.0,
+        "percent": true
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Stormraider: When damaging a champion, dealing damage equal to 25% of their max Health within 2.5 seconds applies Squall to them and grants you 25% bonus Movement Speed for 2.5s. (25s Cooldown)",
+      "Squall: After 2 seconds, strike the target, dealing magic damage equal to 125 plus 10% Ap. If the target is killed before the strike, it detonates immediately in a large area and grants 25 gold."
     ]
   },
   {
@@ -2959,7 +2959,7 @@
         "percent": false
       },
       "physicalPenFlat": {
-        "value": 8.0,
+        "value": 12.0,
         "percent": false
       }
     },
