@@ -2,6 +2,7 @@ import { after } from "next/server";
 import { NextResponse } from "next/server";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
 import { clientIp, consumeQuota, isOwnerKey, ownerKeyStatus, refundQuota } from "@/lib/quota";
+import { kvGet, kvSet, kvDelete } from "@/lib/kv";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
 
 /**
@@ -73,6 +74,33 @@ function trim(advice: Advice) {
   };
 }
 
+/** How long an items call may follow its runes call without paying again.
+ *  Long enough for a draft, short enough that it cannot be hoarded. */
+const PAIR_WINDOW_SECONDS = 15 * 60;
+
+/** Remember that this exact build already paid, via its runes half. */
+async function openPair(key: string): Promise<void> {
+  try {
+    await kvSet(key, "1", PAIR_WINDOW_SECONDS);
+  } catch {
+    // A missing KV must not break generation: the worst case is that the
+    // items half is charged too, which is the behaviour before this existed.
+  }
+}
+
+/** Spend the pairing, if there is one. Single-use: the follow-up is free
+ *  once, not for every request that reuses the signature afterwards. */
+async function claimPair(key: string): Promise<boolean> {
+  try {
+    const seen = await kvGet(key);
+    if (!seen) return false;
+    await kvDelete(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try {
@@ -95,6 +123,11 @@ export async function POST(request: Request) {
   if (mode === "counter" && enemies.length === 0) {
     return json({ error: "at least one enemy is required for a counter build" }, 400);
   }
+  // Runes and summoners alone, when the caller wants the half of the build
+  // that has a deadline before the half that does not. A rune page cannot be
+  // changed after champion select; items can be bought for the next twenty
+  // minutes.
+  const only = clean(body.only) === "runes" ? "runes" : "";
   const advisorRequest = {
     champion,
     role: clean(body.role),
@@ -113,6 +146,7 @@ export async function POST(request: Request) {
       ? body.buildBias : "balanced",
     lockedItems: cleanList(body.lockedItems),
     lockedRunes: cleanList(body.lockedRunes),
+    ...(only ? { only } : {}),
   };
 
   // The device id is the quota identity. It rides through consumeQuota's ip
@@ -130,11 +164,17 @@ export async function POST(request: Request) {
   // lifted, the meter is not switched off.
   const ownerHeader = request.headers.get("x-owner-key");
   const unlimited = isOwnerKey(ownerHeader);
+  // Runes-first splits ONE build across two requests, and charging both would
+  // silently halve everyone's allowance the day the overlay started using it.
+  // The runes call pays; the items call that follows it is free, recognised
+  // by the same request signature within a short window.
+  const pairKey = `pair:${identity}:${cacheKey}`;
+  const paired = only === "runes" ? false : await claimPair(pairKey);
   // Say why a key was refused. A silent rejection is indistinguishable from a
   // stale deployment or an unset variable, and there is nothing secret in the
   // reason -- neither key appears in it.
   const ownerKey = ownerHeader ? ownerKeyStatus(ownerHeader) : undefined;
-  const { ok, quota } = await consumeQuota(null, identity, unlimited);
+  const { ok, quota } = await consumeQuota(null, identity, unlimited || paired);
   if (!ok) {
     after(() => trackEvent("limit_reached_anon"));
     return json({
@@ -144,6 +184,7 @@ export async function POST(request: Request) {
       ownerKey,
     }, 429);
   }
+  if (only === "runes") after(() => openPair(pairKey));
   after(() => trackEvent(mode === "counter" ? "counter_generated" : "build_generated"));
   after(() => recordGenerationEngagement(identity, quota.used));
   if (cached) {
