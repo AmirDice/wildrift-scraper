@@ -157,8 +157,18 @@ export async function POST(request: Request) {
   const identity = device ? `device:${device}` : clientIp(request);
 
   // Cache first: someone may have paid for this exact build already.
-  const cacheKey = buildCacheKey(advisorRequest);
-  const cached = await readCachedBuild(cacheKey);
+  //
+  // buildCacheKey deliberately does not know about `only`, so a runes-only
+  // answer must NOT be stored under the full build's key -- it would be
+  // served to the next caller asking for a whole build, which would arrive
+  // with no items at all. It gets its own suffixed slot instead, and existing
+  // entries keep their keys.
+  const fullKey = buildCacheKey(advisorRequest);
+  const cacheKey = only ? `${fullKey}:${only}` : fullKey;
+  // A cached FULL build already contains the rune page, so it answers a
+  // runes-only request too, faster and for free. Prefer it.
+  const cached = (only ? await readCachedBuild(fullKey) : null)
+    ?? await readCachedBuild(cacheKey);
   // The owner's own phone is not rate-limited against them. Usage is still
   // COUNTED either way, so what the beta costs stays visible: the cap is
   // lifted, the meter is not switched off.
@@ -168,7 +178,7 @@ export async function POST(request: Request) {
   // silently halve everyone's allowance the day the overlay started using it.
   // The runes call pays; the items call that follows it is free, recognised
   // by the same request signature within a short window.
-  const pairKey = `pair:${identity}:${cacheKey}`;
+  const pairKey = `pair:${identity}:${fullKey}`;
   const paired = only === "runes" ? false : await claimPair(pairKey);
   // Say why a key was refused. A silent rejection is indistinguishable from a
   // stale deployment or an unset variable, and there is nothing secret in the
