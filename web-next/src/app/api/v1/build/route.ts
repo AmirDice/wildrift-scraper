@@ -1,7 +1,7 @@
 import { after } from "next/server";
 import { NextResponse } from "next/server";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
-import { clientIp, consumeQuota, isOwnerKey, refundQuota } from "@/lib/quota";
+import { clientIp, consumeQuota, isOwnerKey, ownerKeyStatus, refundQuota } from "@/lib/quota";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
 
 /**
@@ -128,13 +128,20 @@ export async function POST(request: Request) {
   // The owner's own phone is not rate-limited against them. Usage is still
   // COUNTED either way, so what the beta costs stays visible: the cap is
   // lifted, the meter is not switched off.
-  const unlimited = isOwnerKey(request.headers.get("x-owner-key"));
+  const ownerHeader = request.headers.get("x-owner-key");
+  const unlimited = isOwnerKey(ownerHeader);
+  // Say why a key was refused. A silent rejection is indistinguishable from a
+  // stale deployment or an unset variable, and there is nothing secret in the
+  // reason -- neither key appears in it.
+  const ownerKey = ownerHeader ? ownerKeyStatus(ownerHeader) : undefined;
   const { ok, quota } = await consumeQuota(null, identity, unlimited);
   if (!ok) {
     after(() => trackEvent("limit_reached_anon"));
     return json({
       error: `That is your ${quota.limit} free builds for today.`,
-      quota: { used: quota.used, limit: quota.limit },
+      quota: { used: quota.used, limit: Number.isFinite(quota.limit) ? quota.limit : null,
+               unlimited: Boolean(quota.unlimited) },
+      ownerKey,
     }, 429);
   }
   after(() => trackEvent(mode === "counter" ? "counter_generated" : "build_generated"));
@@ -143,7 +150,9 @@ export async function POST(request: Request) {
     return json({
       v: 1, cached: true, mode, champion,
       build: trim(cached as Advice),
-      quota: { used: quota.used, limit: quota.limit },
+      quota: { used: quota.used, limit: Number.isFinite(quota.limit) ? quota.limit : null,
+               unlimited: Boolean(quota.unlimited) },
+      ownerKey,
     });
   }
 
@@ -169,7 +178,9 @@ export async function POST(request: Request) {
     return json({
       v: 1, cached: false, mode, champion,
       build: trim(data),
-      quota: { used: quota.used, limit: quota.limit },
+      quota: { used: quota.used, limit: Number.isFinite(quota.limit) ? quota.limit : null,
+               unlimited: Boolean(quota.unlimited) },
+      ownerKey,
     });
   } catch {
     await refundQuota(null, identity, unlimited);

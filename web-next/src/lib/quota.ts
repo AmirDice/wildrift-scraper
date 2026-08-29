@@ -165,12 +165,23 @@ export async function refundQuota(
  * out of the repository for the same reason ADMIN_EMAILS is: this one is
  * public.
  */
+/** Shortest secret worth honouring. Low on purpose: see isOwnerKey. */
+const OWNER_KEY_MIN = 8;
+
 export function isOwnerKey(key: string | null | undefined): boolean {
   const secret = (process.env.OVERLAY_OWNER_KEY ?? "").trim();
-  // An unset variable must not mean "everyone is the owner": without this
-  // floor, an empty header would match an empty secret and uncap the world.
-  if (secret.length < 16) return false;
   const given = (key ?? "").trim();
+  // Both must be non-empty. This, not a length floor, is what stops an unset
+  // variable from matching an absent header and uncapping everyone.
+  //
+  // The floor used to be sixteen characters, and that was a mistake: a real
+  // key shorter than that was refused with no signal anywhere, which looks
+  // exactly like a wrong key, a stale deployment or a missing variable. An
+  // arbitrary minimum that silently rejects valid configuration costs more
+  // than the weak keys it prevents. Eight is kept as a floor against a
+  // one-character "secret", and the caller now reports a rejection.
+  if (!secret || !given) return false;
+  if (secret.length < OWNER_KEY_MIN) return false;
   if (given.length !== secret.length) return false;
   // Compare every character rather than stopping at the first mismatch, so a
   // wrong key cannot be narrowed down by how quickly it is rejected.
@@ -180,3 +191,18 @@ export function isOwnerKey(key: string | null | undefined): boolean {
   }
   return diff === 0;
 }
+
+/** Why an owner key was refused, in terms safe to put in a response.
+ *
+ *  Names the reason without echoing either key: "no key on the server" and
+ *  "the key you sent is wrong" are different problems with the same symptom,
+ *  and guessing between them from the outside is what made this hard to set
+ *  up in the first place. */
+export function ownerKeyStatus(key: string | null | undefined):
+  "accepted" | "no-server-key" | "server-key-too-short" | "mismatch" {
+  const secret = (process.env.OVERLAY_OWNER_KEY ?? "").trim();
+  if (!secret) return "no-server-key";
+  if (secret.length < OWNER_KEY_MIN) return "server-key-too-short";
+  return isOwnerKey(key) ? "accepted" : "mismatch";
+}
+
