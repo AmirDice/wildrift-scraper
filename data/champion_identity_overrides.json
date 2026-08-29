@@ -1,0 +1,86 @@
+{
+  "_note": "Owner-verified corrections to champion_identity.json, applied on top of it at load time by web/advisor/prompt.py::_identity_store(). Whole cards are replaced, not deep-merged. Use this ONLY when the generator cannot produce a correct card on its own: generate_champion_identity.py feeds the measured ladder builds into its prompt AND rejects any card that recommends an item the ladder does not build, so a champion here is one where that enforcement could not converge.",
+  "_no_popularity_in_notes": "The notes are quoted VERBATIM into the build prompt, so they must never cite how many players build anything: no percentages, no counts, no mention of a ladder or a top-50. An argument from popularity is one the build model defers to instead of scoring the item on its merits, and free scoring is the whole point of using a model. Record the evidence in _source and _why_here, which are metadata and are never sent. scripts/generate_champion_identity.py::popularity_problems() enforces the same rule on generated cards.",
+  "_history": "Viego was corrected here on 2026-08-27 and REMOVED the same day. His generated card had called Blade of the Ruined King mandatory and crit too squishy, while the overwhelming majority of his strongest players build Essence Reaver and Infinity Edge; once the generator was fixed it reached crit on its own, so a hand-written duplicate would only have frozen him against the next meta shift.",
+  "champions": {
+    "Shen": {
+      "_source": "ladder consensus, top 50 Shen players, read 2026-08-27: heartsteel 93%, sunfire-aegis 88%, thornmail 84%, armored-advance 66%, unending-despair 46%, amaranths-twinguard 40%, divine-sunderer 26%, randuins-omen 22%. Wit's End, Titanic Hydra and Iceborn Gauntlet: 0%.",
+      "_why_here": "The only champion where the enforced generator could not converge: six attempts each insisted on Wit's End, Titanic Hydra and Iceborn Gauntlet, which none of his strongest players build. That is PC League Shen, not Wild Rift Shen. Generation refused rather than shipping it, which left the stale card in place, so the card is written here by hand instead.",
+      "archetypes": [
+        {
+          "path": "Full Tank / Health Stacker",
+          "status": "primary",
+          "note": "Bonus health is the whole build: it feeds his Q damage, the size of his ultimate's shield, and his ability to stay in the fight he taunted."
+        },
+        {
+          "path": "Anti-Carry Armour",
+          "status": "viable",
+          "note": "Against a basic-attack carry, armour and reflected damage are a second item rather than a late reaction, because he is the one standing in front of that carry."
+        },
+        {
+          "path": "Sustain Frontline",
+          "status": "flex_one_item",
+          "note": "One sustain or second-resistance slot late, once the health and armour core is down."
+        },
+        {
+          "path": "Split-Push Bruiser",
+          "status": "situational",
+          "note": "Only when the game is a split-push game. It trades the team's frontline for map pressure, so it needs the map to be the win condition."
+        },
+        {
+          "path": "Health-Damage Bruiser",
+          "status": "off_meta",
+          "note": "The trap. Turning bonus health into attack damage looks like it suits a health stacker, but it buys no resistances, and without those he dies before the taunt pays off."
+        },
+        {
+          "path": "Attack Speed On-Hit",
+          "status": "off_meta",
+          "note": "His Q already delivers the magic damage on his attacks; attack speed adds to that and buys none of the durability the kit exists for."
+        },
+        {
+          "path": "AP Utility Shielding",
+          "status": "off_meta",
+          "note": "AP scales Q damage and the ultimate's shield, but giving up resistances leaves him unable to survive the engage he taunts into."
+        },
+        {
+          "path": "Lethality Burst",
+          "status": "never",
+          "note": "His damage is magic and scales with health; lethality does nothing at all."
+        },
+        {
+          "path": "Crit Damage",
+          "status": "never",
+          "note": "Empowered magic autos and defensive scaling; crit has no functional value in the kit."
+        }
+      ],
+      "identitySummary": "A health-stacking utility tank who turns bonus HP into damage, shield strength and staying power, and uses global pressure to peel rather than to duel.",
+      "signatureItems": [
+        "Heartsteel",
+        "Sunfire Aegis",
+        "Thornmail",
+        "Unending Despair",
+        "Amaranth's Twinguard",
+        "Randuin's Omen"
+      ],
+      "statPriorities": [
+        "hp",
+        "armor",
+        "mr",
+        "ability_haste"
+      ],
+      "avoidStats": [
+        "mana",
+        "crit",
+        "lethality",
+        "magic_pen",
+        "lifesteal"
+      ],
+      "flexPatterns": [
+        "Armour and reflected damage early against a basic-attack carry or heavy healing, rather than as a late reaction.",
+        "One sustain or second-resistance item late, after the health and armour core.",
+        "The split-push item only when the map, not the teamfight, is the win condition."
+      ],
+      "confidence": "high"
+    }
+  }
+}
