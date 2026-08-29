@@ -1,7 +1,7 @@
 import { after } from "next/server";
 import { NextResponse } from "next/server";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
-import { clientIp, consumeQuota, refundQuota } from "@/lib/quota";
+import { clientIp, consumeQuota, isOwnerKey, refundQuota } from "@/lib/quota";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
 
 /**
@@ -28,7 +28,7 @@ const ADVISOR_SECRET = process.env.ADVISOR_SECRET || "";
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "content-type, x-device-id",
+  "Access-Control-Allow-Headers": "content-type, x-device-id, x-owner-key",
 };
 
 const BIAS_VALUES = new Set([
@@ -125,7 +125,11 @@ export async function POST(request: Request) {
   // Cache first: someone may have paid for this exact build already.
   const cacheKey = buildCacheKey(advisorRequest);
   const cached = await readCachedBuild(cacheKey);
-  const { ok, quota } = await consumeQuota(null, identity, false);
+  // The owner's own phone is not rate-limited against them. Usage is still
+  // COUNTED either way, so what the beta costs stays visible: the cap is
+  // lifted, the meter is not switched off.
+  const unlimited = isOwnerKey(request.headers.get("x-owner-key"));
+  const { ok, quota } = await consumeQuota(null, identity, unlimited);
   if (!ok) {
     after(() => trackEvent("limit_reached_anon"));
     return json({
@@ -144,7 +148,7 @@ export async function POST(request: Request) {
   }
 
   if (!ADVISOR_URL) {
-    await refundQuota(null, identity);
+    await refundQuota(null, identity, unlimited);
     return json({ error: "the generator is not available right now; try again shortly" }, 503);
   }
   try {
@@ -158,7 +162,7 @@ export async function POST(request: Request) {
     });
     const data = (await res.json()) as Advice;
     if (!res.ok || data.error) {
-      await refundQuota(null, identity);
+      await refundQuota(null, identity, unlimited);
       return json({ error: String(data.error || `generator error (${res.status})`) }, 502);
     }
     after(() => writeCachedBuild(cacheKey, data));
@@ -168,7 +172,7 @@ export async function POST(request: Request) {
       quota: { used: quota.used, limit: quota.limit },
     });
   } catch {
-    await refundQuota(null, identity);
+    await refundQuota(null, identity, unlimited);
     return json({ error: "the generator did not answer; try again" }, 502);
   }
 }

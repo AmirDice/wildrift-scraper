@@ -148,3 +148,35 @@ export async function refundQuota(
 
   return unlimited ? unlimitedState(next, Boolean(user)) : state(next, user);
 }
+
+/**
+ * The owner's key for the external clients, which have no session to be an
+ * admin on.
+ *
+ * ADMIN_EMAILS cannot serve here: /api/v1 identifies a caller by an anonymous
+ * device id in a header, and there is no signed-in account to check an email
+ * against. The device id itself is the wrong thing to allowlist -- it is an
+ * IDENTIFIER, sent in the clear on every request and already the quota key,
+ * so treating it as a secret would mean anyone who saw one could spend the
+ * generation budget.
+ *
+ * A separate key is a secret on purpose: never returned, never logged, and
+ * held only in the server's environment and on the owner's own phone. Kept
+ * out of the repository for the same reason ADMIN_EMAILS is: this one is
+ * public.
+ */
+export function isOwnerKey(key: string | null | undefined): boolean {
+  const secret = (process.env.OVERLAY_OWNER_KEY ?? "").trim();
+  // An unset variable must not mean "everyone is the owner": without this
+  // floor, an empty header would match an empty secret and uncap the world.
+  if (secret.length < 16) return false;
+  const given = (key ?? "").trim();
+  if (given.length !== secret.length) return false;
+  // Compare every character rather than stopping at the first mismatch, so a
+  // wrong key cannot be narrowed down by how quickly it is rejected.
+  let diff = 0;
+  for (let i = 0; i < secret.length; i++) {
+    diff |= secret.charCodeAt(i) ^ given.charCodeAt(i);
+  }
+  return diff === 0;
+}
