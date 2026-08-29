@@ -22,14 +22,41 @@ const CORS = {
   "Access-Control-Allow-Headers": "content-type",
 };
 
+/** A named thing the client has to DRAW -- a rune, a summoner spell.
+ *  Enough to render it, not just enough to name it. */
+type BundleNamed = { name: string; slug?: string; icon?: string };
+
 type BundleBuild = {
   label: string;
   items: string[];
   boots?: string;
   bootsUpgrade?: string;
-  runes?: { keystone?: string; minors?: string[]; flex?: string; tree?: string };
-  summoners?: string[];
+  runes?: {
+    keystone?: BundleNamed;
+    minors?: BundleNamed[];
+    flex?: BundleNamed;
+    tree?: string;
+  };
+  summoners?: BundleNamed[];
 };
+
+/** Keep the icon and slug, not only the name.
+ *
+ *  Accepts either shape: the source is an object per rune, but older curated
+ *  entries are bare strings, and a client that gets a name-only rune should
+ *  still show the name rather than nothing. */
+function toNamed(v: unknown): BundleNamed | undefined {
+  if (typeof v === "string") return v ? { name: v } : undefined;
+  if (!v || typeof v !== "object") return undefined;
+  const o = v as Record<string, unknown>;
+  const name = String(o.name ?? "");
+  if (!name) return undefined;
+  return {
+    name,
+    slug: typeof o.slug === "string" ? o.slug : undefined,
+    icon: typeof o.icon === "string" ? o.icon : undefined,
+  };
+}
 
 function trimBuild(v: Record<string, unknown>): BundleBuild | null {
   const core = Array.isArray(v.coreBuild) ? (v.coreBuild as Record<string, unknown>[]) : [];
@@ -45,8 +72,9 @@ function trimBuild(v: Record<string, unknown>): BundleBuild | null {
   const minorSrc = runes && (Array.isArray(runes.treeMinors) ? runes.treeMinors
     : Array.isArray(runes.minors) ? runes.minors : null);
   const minors = minorSrc
-    ? (minorSrc as (string | Record<string, unknown>)[]).map((m) =>
-        typeof m === "string" ? m : String(m.name ?? "")).filter(Boolean)
+    ? (minorSrc as (string | Record<string, unknown>)[])
+        .map(toNamed)
+        .filter((r): r is BundleNamed => r !== undefined)
     : undefined;
   return {
     label: String(v.label ?? "Standard"),
@@ -55,17 +83,17 @@ function trimBuild(v: Record<string, unknown>): BundleBuild | null {
     bootsUpgrade: ench && typeof ench.slug === "string" ? ench.slug : undefined,
     runes: runes
       ? {
-          keystone: typeof runes.keystone === "object" && runes.keystone
-            ? String((runes.keystone as Record<string, unknown>).name ?? "")
-            : String(runes.keystone ?? ""),
+          keystone: toNamed(runes.keystone),
           minors,
-          flex: typeof runes.flex === "object" && runes.flex
-            ? String((runes.flex as Record<string, unknown>).name ?? "")
-            : runes.flex ? String(runes.flex) : undefined,
+          // flexMinor is what the data calls it. Reading `flex` found nothing
+          // every single time, so the fifth rune never reached any client.
+          flex: toNamed(runes.flexMinor ?? runes.flex),
           tree: runes.primaryTree ? String(runes.primaryTree) : undefined,
         }
       : undefined,
-    summoners: summs.map((s2) => String(s2.name ?? "")).filter(Boolean),
+    // Summoners lost their icons the same way the runes did: mapped down to
+    // bare names, so anything wanting to show the spell had nothing to show.
+    summoners: summs.map(toNamed).filter((x): x is BundleNamed => x !== undefined),
   };
 }
 
