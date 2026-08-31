@@ -159,7 +159,9 @@ export function FlagshipNudge() {
     <div
       role="complementary"
       aria-label="Suggested page"
-      className="fixed bottom-4 right-4 z-40 w-[min(21rem,calc(100vw-2rem))] motion-safe:animate-[nudge-in_0.35s_ease-out]"
+      // bottom-20, not bottom-4: the social dock now occupies that corner,
+      // and two cards stacked on the same pixels is one card hiding another.
+      className="fixed bottom-20 right-4 z-40 w-[min(21rem,calc(100vw-2rem))] motion-safe:animate-[nudge-in_0.35s_ease-out]"
     >
       <div className="liquid-glass rounded-2xl p-4">
         <div className="flex items-start justify-between gap-2">

@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ToolsCta } from "@/components/tools-cta";
 import { FeatureBanner } from "@/components/feature-banner";
 import { FlagshipNudge } from "@/components/flagship-nudge";
+import { SocialDock } from "@/components/social-dock";
 import { AccountProvider } from "@/components/account-provider";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/next";
@@ -106,6 +107,7 @@ export default function RootLayout({
           {/* Bottom-right suggestion card; engagement-triggered, capped, and
               measured. See components/flagship-nudge.tsx for the rules. */}
           <FlagshipNudge />
+          <SocialDock />
           <SiteFooter />
         </AccountProvider>
         <Analytics />
