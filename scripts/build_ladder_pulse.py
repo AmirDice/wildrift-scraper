@@ -472,9 +472,44 @@ def _carry_forward(pulse: dict) -> dict:
     return pulse
 
 
+def _carry_consensus(consensus: dict) -> dict:
+    """Keep each champion's last known build consensus when this run saw no
+    builds for them.
+
+    The same failure as _carry_forward, with a worse blast radius. This file is
+    where the advisor's REQUIRED CANDIDATES block comes from, so an empty entry
+    does not show up as a gap on a page that somebody would notice -- it
+    silently removes the ladder anchor from the prompt and leaves the build
+    model to invent a core out of nothing. The 2026-09-03 win-rate-only
+    collection emptied all 141 champions and it went unnoticed until a test
+    asked Vayne for hers and got back an empty list.
+
+    Carried per champion rather than wholesale, so a collection that read
+    builds for some of the roster keeps every champion it actually measured.
+    """
+    if not CONSENSUS_OUT.exists():
+        return consensus
+    try:
+        prior = json.loads(CONSENSUS_OUT.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return consensus
+    carried = 0
+    for champ, rec in consensus.items():
+        if rec.get("items"):
+            continue
+        old = prior.get(champ)
+        if old and old.get("items"):
+            consensus[champ] = old
+            carried += 1
+    if carried:
+        print(f"  no builds for {carried} champions: carried their consensus forward")
+    return consensus
+
+
 def main() -> int:
     pulse, consensus = build()
     pulse = _carry_forward(pulse)
+    consensus = _carry_consensus(consensus)
     PULSE_OUT.write_text(json.dumps(pulse, ensure_ascii=False, indent=1), encoding="utf-8")
     CONSENSUS_OUT.write_text(json.dumps(consensus, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"ladder_pulse.json: {pulse['nChampions']} champions, {pulse['nPlayers']} players, "
