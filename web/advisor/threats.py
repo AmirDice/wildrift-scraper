@@ -39,6 +39,22 @@ _SITE_BY_NAME = {
     c["name"]: c for c in (_SITE.get("champions") if isinstance(_SITE, dict) else _SITE) or []
 }
 
+# Owner corrections to the scraped class and damage type. The scrape calls
+# Warwick an assassin and Jayce a magic champion, and both feed straight into
+# the damage-threat weighting -- a "magic" Jayce made a physical poke comp read
+# as a magic one. The browser applies the same file, so the advisor and the
+# draft page describe the same champion.
+_META = (_load("champion_meta_overrides.json", {}) or {}).get("champions", {})
+for _name, _fix in _META.items():
+    _row = _SITE_BY_NAME.get(_name)
+    if _row is None:
+        continue
+    if _fix.get("class"):
+        _row["class"] = _fix["class"]
+    if _fix.get("roles"):
+        _row["role"] = _fix["roles"][0]
+        _row["roles"] = _fix["roles"]
+
 # How much each class contributes to raw damage threat. A tank on the enemy team
 # is a durability problem, not a damage one; a marksman is the opposite. Without
 # this weighting, "three magic champions" reads as heavy magic threat even when
@@ -72,9 +88,19 @@ def _level(score: float) -> str:
 def _champ(name: str) -> dict:
     record = dict(profiles.CHAMPIONS.get(name) or {})
     site = _SITE_BY_NAME.get(name) or {}
-    # class/role live in site.json, not the raw champion scrape.
-    record.setdefault("class", site.get("class") or "")
-    record.setdefault("role", site.get("role") or "")
+    # class/role live in site.json, not the raw champion scrape. Corrections
+    # are already folded into site.json above, so setdefault would keep the
+    # scrape's wrong class when the raw record happens to carry one: assign.
+    record["class"] = site.get("class") or record.get("class") or ""
+    record["role"] = site.get("role") or record.get("role") or ""
+    if site.get("roles"):
+        record["roles"] = site["roles"]
+    # The damage type is read from the raw scrape, which called Jayce and
+    # Ezreal magic champions; a physical poke comp then measured as a magic
+    # one and the build answered the wrong resistance.
+    fix = _META.get(name) or {}
+    if fix.get("damage"):
+        record["primaryDamage"] = fix["damage"]
     record["_wr"] = site.get("wr")
     record["_tier"] = site.get("tier")
     return record
@@ -91,6 +117,22 @@ _FORMULAS = _load("ability_formulas.json", {}) or {}
 _HARD_CC = re.compile(
     r"\b(stun\w*|root\w*|snar\w*|knock\s?up|knock\s?back|knocking|airborne"
     r"|charm\w*|taunt\w*|fear\w*|suppress\w*|silenc\w*|immobiliz\w*)", re.I)
+
+
+# The effect must be something this champion does TO ENEMIES. Without this,
+# any tooltip that merely mentions crowd control counted: Kai'Sa's passive
+# reads "nearby ALLIES apply 1 stack to champions they Immobilize" and she
+# was scored as a crowd-control threat, which pushed a comp over the tenacity
+# threshold.
+_CC_NOT_MINE = re.compile(
+    r"\b(all(?:y|ies)|immune|immunity|cleanse|remove[sd]?|tenacity|cannot be|reduc\w*|resist\w*|shrug)", re.I)
+
+
+def _has_hard_cc(text: str) -> bool:
+    for m in _HARD_CC.finditer(text):
+        if not _CC_NOT_MINE.search(text[max(0, m.start() - 90):m.start()]):
+            return True
+    return False
 
 
 @lru_cache(maxsize=256)
@@ -117,7 +159,7 @@ def _derived_mechanics(name: str) -> frozenset[str]:
     record = _champ(name) or {}
     text = " ".join((a.get("text") or "") + " " + (a.get("name") or "")
                     for a in (record.get("abilities") or []))
-    if _HARD_CC.search(text):
+    if _has_hard_cc(text):
         out.add("cc")
     return frozenset(out)
 
@@ -175,8 +217,33 @@ def team_threat_profile(enemies: list[str]) -> dict:
             slows += 0.4
         if _has(rec, "dash"):
             displace += 0.4
-        if _has(rec, "heal") or cp.get("healingReliance") in ("medium", "high"):
-            healing += 0.6 if cls in ("Enchanter",) else 0.4
+        # Healing is weighted by HOW MUCH the kit heals, not by class. A flat
+        # 0.4 for everyone outside Enchanter put Soraka, Warwick and Aatrox --
+        # three of the heaviest healers in the game, all high tier -- at
+        # "medium", and a build that reads medium healing does not buy
+        # anti-heal. healingReliance is already derived from the kit's own
+        # ability text, so use its magnitude. Raised on owner instruction,
+        # 2026-08-27.
+        # Gate on the FORMULA-derived heal flag, which is the discriminating
+        # signal, and take the magnitude from healingReliance, which is not:
+        # it reads "medium" for Jinx and "high" for Lissandra on tags alone.
+        # Amumu really does heal, for 1 to 7 health; Warwick restores 100% of
+        # the damage he deals. Those cannot count the same.
+        reliance = cp.get("healingReliance")
+        if not _has(rec, "heal"):
+            mine = 0.0
+        elif reliance == "high":
+            mine = 0.75
+        elif reliance == "medium":
+            mine = 0.5
+        else:
+            mine = 0.15
+        # Team-wide healing is worse to play into than self-sustain: it heals
+        # the target you are trying to kill, not just its owner. Keyed on THIS
+        # champion's own contribution, not the running total.
+        if mine and cls in ("Enchanter",):
+            mine += 0.15
+        healing += mine
         if _has(rec, "shield"):
             shielding += 0.5
         if cls in ("Tank", "Bruiser", "Fighter"):
@@ -185,9 +252,34 @@ def team_threat_profile(enemies: list[str]) -> dict:
     def lv(score: float) -> str:
         return _level(score * scale)
 
+    # WHICH RESISTANCE THIS COMP CALLS FOR.
+    #
+    # Until this existed, a resistance was only ever requested from an enemy
+    # who was a basic-attack carry, so a team of ability mages and magic tanks
+    # asked for nothing: Hecarim met four magic-damage enemies and built 165
+    # armour and no magic resistance, because armour was the only resistance
+    # anyone had put on the table. Damage that arrives from abilities needs
+    # answering exactly as much as damage that arrives from attacks.
+    #
+    # The split is the class-weighted damage already accumulated above, so a
+    # tank's magic damage counts a quarter of a mage's. A near-even comp asks
+    # for both and lets the build decide.
+    total = phys + magic
+    if total <= 0:
+        resistance = "none"
+    elif phys >= total * 0.65:
+        resistance = "armor"
+    elif magic >= total * 0.65:
+        resistance = "magic_resist"
+    else:
+        resistance = "both"
+
     return {
         "physicalDamage": lv(phys),
         "magicDamage": lv(magic),
+        "resistanceNeeded": resistance,
+        "damageSplitPct": {"physical": round(100 * phys / total) if total else 0,
+                           "magic": round(100 * magic / total) if total else 0},
         "trueDamage": lv(true_dmg),
         "basicAttackDps": lv(basic_dps),
         "abilityBurst": lv(burst),
@@ -195,6 +287,11 @@ def team_threat_profile(enemies: list[str]) -> dict:
         "criticalStrikeThreat": lv(crit),
         "onHitThreat": lv(on_hit),
         "hardCc": lv(hard_cc),
+        # The categorical level cannot gate a purchase: "medium" reads the same
+        # whether one enemy stuns or three do, and tenacity was being bought
+        # against a single hard crowd-control effect. This is the raw count of
+        # enemies who actually have one.
+        "hardCcCount": sum(1 for rec, _c in records if _has(rec, "cc")),
         "slows": lv(slows),
         "displacement": lv(displace),
         "healing": lv(healing),

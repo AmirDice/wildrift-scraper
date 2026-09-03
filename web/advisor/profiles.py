@@ -62,6 +62,19 @@ FORMULAS: dict[str, dict] = _load("ability_formulas.json", {}) or {}
 ARCHETYPES: dict[str, dict] = _load("champion_archetypes.json", {}) or {}
 OVERRIDES: dict[str, dict] = (_load("combat_profiles.json", {}) or {}).get("champions", {})
 
+# Owner corrections to the scraped class and damage type, applied at load so
+# every consumer sees one champion. The class is a FIGHT role, not a shopping
+# list -- Pantheon is a bruiser who buys lethality -- so the prompt states the
+# curated primary archetype next to it rather than letting the word itemise.
+for _name, _fix in (_load("champion_meta_overrides.json", {}) or {}).get("champions", {}).items():
+    _rec = CHAMPIONS.get(_name)
+    if _rec is None:
+        continue
+    if _fix.get("class"):
+        _rec["class"] = _fix["class"]
+    if _fix.get("damage"):
+        _rec["primaryDamage"] = _fix["damage"]
+
 
 def _apply_formula_corrections(formulas: dict) -> int:
     """Fold data/formula_corrections.json into the formulas.

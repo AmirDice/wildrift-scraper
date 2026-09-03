@@ -252,9 +252,22 @@ def champion_block(name: str, champions: dict, archetypes: dict, wrmeta: dict,
         raise ValueError(f"unknown champion {name!r}")
 
     derived = derived if derived is not None else profiles.profile(name)
+    # The class word is a fight ROLE, not a shopping list, and on its own it
+    # itemises badly: Pantheon, Viego, Master Yi, Warwick and Kayn are bruisers
+    # in the fight and assassins at the shop -- lethality and crit, not Black
+    # Cleaver and Sterak's. Naming the curated primary archetype on the same
+    # line stops "class=Bruiser" from being read as "build bruiser items".
+    card = identity_card(name) or {}
+    primary = next((a for a in card.get("archetypes", [])
+                    if a.get("status") == "primary"), None)
+    class_line = (f"class={champion.get('class', '?')} "
+                  f"primaryDamage={champion.get('primaryDamage', '?')}")
+    if primary:
+        class_line += (f" -- class is how it FIGHTS, not what it BUYS; this one builds "
+                       f"{_norm(primary.get('path', ''))}")
     lines = [
         f"CHAMPION: {name}",
-        f"class={champion.get('class', '?')} primaryDamage={champion.get('primaryDamage', '?')}",
+        class_line,
         "COMBAT PROFILE (derived from this kit's ability text, cooldowns and ratios): "
         + json.dumps(derived["combatProfile"]),
         "SCALING PROFILE (share of this kit's ratio weight, cooldown-adjusted): "
@@ -333,12 +346,32 @@ _IDENTITY_CACHE: dict | None = None
 
 
 def _identity_store() -> dict:
-    """Cards keyed by the same display names as champion_builds.json."""
+    """Cards keyed by the same display names as champion_builds.json.
+
+    champion_identity.json was written by an LLM in a single pass and is a
+    guess; where it contradicts the measured ladder consensus the guess is
+    simply wrong, and it is enforced hard enough to matter -- the card feeds
+    the prompt AND the validator rejects items from a path it marks "never".
+    Viego's card called Blade of the Ruined King mandatory and crit too
+    squishy, while 47 of the top 50 Viego players build Essence Reaver and
+    Infinity Edge and none of them build Blade of the Ruined King.
+
+    Corrections therefore live in an overlay that is applied here, so
+    `generate_champion_identity.py --force` cannot quietly restore the guess.
+    Whole cards are replaced rather than deep-merged: a half-corrected card
+    with new archetypes and stale signatureItems is its own kind of wrong.
+    """
     global _IDENTITY_CACHE
     if _IDENTITY_CACHE is None:
         p = DATA / "champion_identity.json"
-        _IDENTITY_CACHE = (json.loads(p.read_text(encoding="utf-8")).get("champions", {})
-                           if p.exists() else {})
+        cards = (json.loads(p.read_text(encoding="utf-8")).get("champions", {})
+                 if p.exists() else {})
+        over = DATA / "champion_identity_overrides.json"
+        if over.exists():
+            fixes = json.loads(over.read_text(encoding="utf-8")).get("champions", {})
+            for name, card in fixes.items():
+                cards[name] = {**cards.get(name, {}), **card}
+        _IDENTITY_CACHE = cards
     return _IDENTITY_CACHE
 
 
@@ -355,7 +388,15 @@ def meta_identity_block(name: str) -> str:
     traps. It exists because the measured failure mode of every model tried is
     identity drift: a build that is internally coherent but that nobody who
     plays the champion would recognise. Verdicts marked "never" are hard
-    constraints; the validator enforces them after generation too."""
+    constraints; the validator enforces them after generation too.
+
+    The notes name ITEMS, and that is where the cards do damage: Pantheon's
+    reads "higher durability using Black Cleaver and Sterak's" and neither is
+    built by a single one of the top 50 Pantheon players. 97 of 139 cards name
+    at least one item the ladder does not build. The prose cannot be repaired
+    automatically, so every item it names is checked against the measured
+    consensus and the ones nobody builds are contradicted in place -- which
+    also stops a stale card from quietly outranking the measured block."""
     card = _identity_store().get(name)
     if not card:
         return ""
@@ -363,7 +404,8 @@ def meta_identity_block(name: str) -> str:
         f"{a['path']}={a['status'].upper()}" + (f" ({_norm(a['note'])})" if a.get("note") else "")
         for a in card.get("archetypes", []))
     lines = [
-        "META ITEMIZATION IDENTITY (curated, cross-checked against top-ladder builds; "
+        "META ITEMIZATION IDENTITY (a curated description of this champion's build "
+        "identity; where it names an item, the CORRECTION below outranks it. "
         "this CONSTRAINS which archetype the build may express -- the kit profiles above "
         "decide the details INSIDE the allowed archetypes, never outside them):",
         f"  is: {_norm(card.get('identitySummary', ''))}",
@@ -378,7 +420,102 @@ def meta_identity_block(name: str) -> str:
         lines.append("  never build around: " + ", ".join(card["avoidStats"]))
     if card.get("flexPatterns"):
         lines.append("  accepted flexes: " + "; ".join(_norm(f) for f in card["flexPatterns"]))
+    contradicted = _card_items_the_ladder_rejects(name, card)
+    if contradicted:
+        # No percentages and no provenance. The owner's call, and the right
+        # one: telling the model how many strong players build something is an
+        # argument from popularity, and a model given one defers to it instead
+        # of scoring the item. The measurement decides WHICH items are named
+        # here; it is never quoted to the model.
+        lines.append(
+            "  CORRECTION -- the wording above names these, and they are NOT part of this "
+            "champion's build identity: " + ", ".join(n for n, _pct in contradicted)
+            + ". Never pick one to express the archetype or because the wording above "
+            "recommends it. A specific threat in THIS match may still justify one, and then "
+            "the reason must name that threat -- 'their team heals' is a reason, 'it suits "
+            "the archetype' is not.")
     return "\n".join(lines)
+
+
+#: A card's item is contradicted when this share or fewer of the ladder build
+#: it. Not zero: an item three players in fifty take is a preference, not the
+#: champion's identity, and the cards state them as identity.
+CARD_ITEM_CONTRADICTED_AT = 0.10
+
+#: Threat categories an item can ONLY be bought to answer. Anti-heal is not
+#: part of any champion's identity, so the ladder not building it says nothing
+#: about whether it is right here -- Vayne's card names Mortal Reminder, 0% of
+#: her ladder builds take it, and into a Soraka it is still correct. Armour,
+#: magic resist and burst survival are deliberately NOT on this list: generic
+#: durability is exactly what the drifting identity items (Sterak's Gage,
+#: Death's Dance) also provide, so exempting it would re-open the hole.
+#:
+#: Tenacity is off the list for the same reason even though it is mechanical:
+#: its members are Sterak's Gage and Amaranth's Twinguard, big defensive items
+#: that happen to grant it, and exempting the category let Sterak's back onto
+#: Pantheon through the side door. The item that actually answers a
+#: crowd-control comp is the boot, and boots are already exempt.
+_PURE_COUNTER_CATEGORIES = ("grievous_wounds", "shield_reduction",
+                            "anti_basic_attack")
+
+_COUNTER_ITEM_CACHE: set | None = None
+
+
+def _pure_counter_items() -> set:
+    """Slugs whose entire purpose is answering an enemy property."""
+    global _COUNTER_ITEM_CACHE
+    if _COUNTER_ITEM_CACHE is None:
+        out: set = set()
+        for cat in _PURE_COUNTER_CATEGORIES:
+            out.update(itemmeta.items_answering(cat))
+        _COUNTER_ITEM_CACHE = out
+    return _COUNTER_ITEM_CACHE
+
+
+_CATALOG_CACHE: dict | None = None
+
+
+def _item_catalog() -> dict:
+    """Display name -> slug, for finding item names inside curated prose."""
+    global _CATALOG_CACHE
+    if _CATALOG_CACHE is None:
+        p = DATA / "items.json"
+        rows = json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+        _CATALOG_CACHE = {r["name"]: r["slug"] for r in rows if r.get("name")}
+    return _CATALOG_CACHE
+
+
+def _card_items_the_ladder_rejects(name: str, card: dict) -> list[tuple[str, int]]:
+    """Items the curated prose recommends that the measured ladder does not build.
+
+    Only returns anything when there IS a consensus record: with no measurement
+    the honest answer is silence, not an accusation that everything is wrong.
+    Boots are exempt -- the ladder's boot choice is a lane decision and a
+    counter build overriding it is the point of the tool, not a mistake.
+    """
+    rec = _consensus_store().get(name.split(" (")[0])
+    if not rec or not rec.get("items"):
+        return []
+    measured = {i["name"]: (i["count"] / i["of"]) for i in rec["items"] if i.get("of")}
+    # Only prose that RECOMMENDS. A "never" note names items to warn against
+    # them -- Vayne's card names Rabadon's Deathcap and Thornmail as traps --
+    # and contradicting a warning would argue the wrong side of it.
+    prose = " ".join(
+        [_norm(card.get("identitySummary", ""))]
+        + [_norm(a.get("note", "")) for a in card.get("archetypes", [])
+           if a.get("status") not in ("never", "off_meta")]
+        + [_norm(f) for f in card.get("flexPatterns", [])])
+    counters = _pure_counter_items()
+    out = []
+    for item_name, slug in _item_catalog().items():
+        if item_name not in prose or "boots" in slug or "greaves" in slug:
+            continue
+        if slug in counters:
+            continue
+        rate = measured.get(item_name, 0.0)
+        if rate <= CARD_ITEM_CONTRADICTED_AT:
+            out.append((item_name, round(rate * 100)))
+    return sorted(out, key=lambda x: x[1])
 
 
 _CONSENSUS_CACHE: dict | None = None
@@ -648,6 +785,15 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = ""
     raised = {resp
               for threat in priorities
               for resp in (threat.get("itemizableResponses") or [])}
+    # A resistance used to be requested only from a basic-attack carry, so a
+    # team of ability mages and magic tanks asked for none and the build
+    # answered with armour it did not need. The team's own damage split asks
+    # for it now.
+    needed = profile.get("resistanceNeeded")
+    if needed == "both":
+        raised |= {"armor", "magic_resist"}
+    elif needed in ("armor", "magic_resist"):
+        raised.add(needed)
     answers = {}
     for category in sorted(raised):
         slugs = itemmeta.items_answering(category, pool)
@@ -702,6 +848,38 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = ""
               "champion's usual damage page ONLY when this lane is neutral or "
               "favorable, and justify the keystone in runeReasons against THIS "
               "opponent by name, not against the team in general.")
+    # Tenacity was appearing on six builds in eleven, including against a
+    # single hard crowd-control effect and on a champion whose ultimate
+    # already clears all of it. A rune slot spent on tenacity is a rune slot
+    # not spent on damage or survival.
+    lines.append(
+        f"THEIR DAMAGE IS {profile.get('damageSplitPct', {}).get('physical', 0)}% PHYSICAL / "
+        f"{profile.get('damageSplitPct', {}).get('magic', 0)}% MAGIC, weighted so a tank's "
+        "damage counts less than a carry's. That split decides which resistance is worth "
+        "buying, and it counts damage from ABILITIES exactly as much as damage from "
+        "attacks: a team of mages and magic tanks needs magic resistance even though not "
+        "one of them auto-attacks you to death. Buying the resistance their damage is NOT "
+        "made of is a wasted slot.")
+    lines.append(
+        f"TENACITY IS NOT A DEFAULT. {profile.get('hardCcCount', 0)} of these enemies have "
+        "hard crowd control (stun, root, knockup, charm, taunt, suppress, silence). A "
+        "tenacity rune or item is only worth its slot at THREE or more, or at two when "
+        "one of them is a point-and-click lockdown you cannot dodge. Below that, take "
+        "damage, survival or sustain instead. If this champion's own kit already clears "
+        "crowd control, tenacity is wasted at any count -- say so in the trade-offs "
+        "rather than buying it.")
+    # Rune pages were being chosen without reading the enemy at all: a
+    # conditional damage rune arrived on builds whose condition the comp never
+    # meets. These are the facts that decide which condition actually fires.
+    lines.append(
+        f"THE RUNE PAGE MUST READ THIS COMP TOO. {profile.get('durableTargetCount', 0)} of "
+        "these enemies are durable (tank, bruiser or fighter), and the damage split and "
+        "crowd-control count are stated above. Every CONDITIONAL rune has to be checked "
+        "against those facts before it takes a slot: a rune that rewards hitting enemies "
+        "at high health, one that rewards finishing them below a threshold, and one that "
+        "rewards YOU being low are three different bets on how these fights will go. "
+        "Pick the one this comp actually produces and say which fact decided it in "
+        "runeReasons; if none of them fits, take flat damage or sustain instead.")
     lines.append(
         "CHOOSE 2-4 PROBLEMS TO SOLVE. You cannot answer every threat with five items. "
         "Pick the threats with the best combination of severity, frequency, relevance to "

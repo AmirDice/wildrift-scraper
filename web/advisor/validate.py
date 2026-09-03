@@ -291,6 +291,22 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
     return out
 
 
+#: Items that apply Grievous Wounds, resolved from the item metadata rather
+#: than hard-coded, so a patch that adds one is covered without an edit here.
+GRIEVOUS_WOUNDS_ITEMS = frozenset(itemmeta.items_answering("grievous_wounds"))
+
+#: Items that remove crowd control outright, as opposed to shortening it.
+#: Tenacity reduces a duration; these end the effect, which is the answer
+#: to a point-and-click lockdown that tenacity cannot help with.
+#: Self-targeting only: Mikael's Blessing removes crowd control from an ALLIED
+#: champion, which does not answer being locked down yourself.
+CLEANSE_ITEMS = frozenset(
+    slug for slug in itemmeta.ITEMS
+    if any(re.search(r"remove[sd]? all (?:crowd control|cc)", line, re.I)
+           and not re.search(r"allied? champion|an ally", line, re.I)
+           for line in (itemmeta.ITEMS[slug].get("passives") or [])))
+
+
 def validate(
     res: dict,
     *,
@@ -309,6 +325,8 @@ def validate(
     summoner_icons: dict | None = None,
     identity: dict | None = None,
     ladder_core: list[str] | None = None,
+    hard_cc_count: int | None = None,
+    healing_level: str = "",
 ) -> Report:
     """Check and normalise the model's build in place. Returns a Report."""
     report = Report()
@@ -327,6 +345,72 @@ def validate(
         # the two things that make it useful: what problems were chosen, and how
         # they were answered. Missing pieces are a repairable counterSummary
         # failure, not a whole-build failure.
+        # TENACITY GATE. The prompt states how many enemies have hard crowd
+        # control and that a tenacity rune is only worth its slot at three or
+        # more. The model took Legend: Tenacity against ONE anyway, on six
+        # builds in eleven, so this is the teeth behind the sentence. Runes
+        # are repairable, so the cost of being wrong here is one targeted
+        # retry rather than a refusal.
+        if hard_cc_count is not None and hard_cc_count < 3:
+            page = res.get("runes") or {}
+            names = [page.get("keystone"), page.get("flex"),
+                     *(page.get("minors") or []), *(page.get("treeMinors") or [])]
+            worn = sorted({
+                (n.get("name") if isinstance(n, dict) else n) for n in names
+                if "tenacity" in str(n.get("name") if isinstance(n, dict) else n).lower()
+            })
+            if worn:
+                report.fail("runes",
+                            f"{', '.join(worn)} is on the page, but only {hard_cc_count} "
+                            "enemy has hard crowd control. Tenacity earns a rune slot at "
+                            "three or more; below that the slot belongs to damage, "
+                            "survival or sustain. Replace it.")
+
+        # BLUE BUFF GATE. A jungler holds blue buff from the first clear, so
+        # a rune slot spent on mana buys what the map hands over for free.
+        # Same shape as the tenacity gate, and for the same reason: the pool
+        # block says so in prose, and prose has lost this argument before.
+        # Runes are a targeted repair, so being wrong costs one short call.
+        if role == "Jungle":
+            page = res.get("runes") or {}
+            names = [page.get("keystone"), page.get("flex"),
+                     *(page.get("minors") or []), *(page.get("treeMinors") or [])]
+            worn = sorted({
+                str(n.get("name") if isinstance(n, dict) else n) for n in names
+                if str(n.get("name") if isinstance(n, dict) else n)
+                in runemeta.MANA_RUNES
+            })
+            if worn:
+                report.fail("runes",
+                            f"{', '.join(worn)} is on the page of a JUNGLE build. The "
+                            "jungler takes blue buff on spawn and keeps taking it, so a "
+                            "rune bought purely for mana is a wasted slot. Replace it "
+                            "with damage, survival or tempo.")
+
+        # ANTI-HEAL GATE, the mirror of the tenacity one. Against Soraka,
+        # Warwick and Aatrox -- three of the heaviest healers in the game --
+        # the model built no Grievous Wounds at all, identically across three
+        # runs, and raising the healing signal to "high" did not change it. It
+        # is not being blocked: every anti-heal item is in the pool and named
+        # in the prompt, and it scored one of them at 75 and took five items
+        # scoring 88+. Prose loses to a scoring contest, so this is the teeth.
+        #
+        # Ignite counts: 50% Grievous Wounds out of a summoner slot is the
+        # answer, and demanding an item as well would be demanding two.
+        if healing_level in ("high", "very_high"):
+            carried = {s for s in (res.get("items") or []) if s in GRIEVOUS_WOUNDS_ITEMS}
+            spells = " ".join(str(s.get("name") if isinstance(s, dict) else s)
+                              for s in (res.get("summoners") or [])).lower()
+            if not carried and "ignite" not in spells:
+                report.fail("items",
+                            "the enemy team's healing is "
+                            f"{healing_level.replace('_', ' ')} and this build carries no "
+                            "Grievous Wounds. Anti-heal is not a luxury against sustain "
+                            "this heavy: take one of "
+                            f"{', '.join(sorted(GRIEVOUS_WOUNDS_ITEMS))}, or Ignite. If a "
+                            "crit-carrying option is dead alongside this build's core, "
+                            "choose one of the others rather than skipping anti-heal.")
+
         summary = res.get("counterSummary")
         if not isinstance(summary, dict):
             report.fail("counterSummary", "counter mode must return a counterSummary object")
@@ -350,6 +434,46 @@ def validate(
             summary.setdefault("acceptedTradeoffs", [])
             summary.setdefault("unansweredThreats", [])
             summary.setdefault("allyContextUsed", False)
+            # DO NOT CALL A THREAT UNANSWERABLE WHILE HOLDING THE ANSWER.
+            # A Hecarim build declared Lissandra's point-and-click ultimate
+            # unanswerable with Mercurial Scimitar sitting in its own pool --
+            # an item whose entire text is "removes all crowd control debuffs
+            # from you". The item data was never the problem: actives reach
+            # the prompt with their full text. Saying so is the problem, and
+            # it teaches the reader the tool has not read its own item list.
+            # A FAILURE, not a warning, because counterSummary repairs in
+            # isolation -- one small call, no regeneration -- and a warning
+            # leaves the wrong sentence on the reader's screen, which is the
+            # whole complaint.
+            unanswered = " ".join(
+                str(u) for u in (summary.get("unansweredThreats") or []))
+            if unanswered and CLEANSE_ITEMS:
+                claims_cc = re.search(
+                    r"crowd control|stun|root|charm|taunt|suppress|knock|lock ?down"
+                    # "ultimate" alone is not a crowd-control word: it matched
+                    # "their global ultimate covers the whole map", which a
+                    # cleanse genuinely does not answer.
+                    r"|point[- ]and[- ]click|immobili[sz]|silence", unanswered, re.I)
+                owned = sorted(CLEANSE_ITEMS & set(res.get("items") or []))
+                offered = sorted(CLEANSE_ITEMS & set(allowed_items or []))
+                # Naming the item and saying why it lost IS the second branch
+                # the message asks for, so complying must not keep failing.
+                # Without this the model wrote "items like Mercurial Scimitar
+                # would compromise the core damage engine" -- exactly what was
+                # asked -- and the gate rejected it twice more.
+                addressed = any(
+                    _guide_mentions(_norm_text(unanswered), (ITEMS.get(c) or {}).get("name", c))
+                    for c in (owned or offered))
+                if claims_cc and (owned or offered) and not addressed:
+                    have = owned or offered
+                    report.fail(
+                        "counterSummary",
+                        "counterSummary.unansweredThreats calls a crowd-control threat "
+                        f"unanswerable while {', '.join(have)} "
+                        + ("is in the build" if owned else "is in this champion's pool")
+                        + " and removes crowd control outright. Either build it, or say "
+                        "why it is not worth the slot -- do not report it as having no "
+                        "answer.")
 
     # ---- the five main items ------------------------------------------------
     items = [resolve(s) for s in (res.get("items") or [])]
@@ -731,8 +855,12 @@ def validate(
         s for s in (ladder_core or [])
         if s not in scored and _completed_non_boots(s) and s not in _SUPPORT_ITEMS)
     if missing_core:
-        report.fail("scores", "these required candidates must each appear in "
-                              "candidateItemScores with a score and a reason, whether or "
+        # Counter mode returns scores without prose, so do not demand a reason
+        # there: the requirement is that the champion's staple items were
+        # CONSIDERED, not that they were written about.
+        needs = "a score" if mode == "counter" else "a score and a reason"
+        report.fail("scores", f"these required candidates must each appear in "
+                              f"candidateItemScores with {needs}, whether or "
                               "not they made your build: " + ", ".join(missing_core))
     if candidates and len(candidates) < 12:
         report.warn(f"only {len(candidates)} competitive candidates were scored; the brief asks "

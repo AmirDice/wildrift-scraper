@@ -23,6 +23,15 @@ def _load(name: str, default=None):
 
 
 RUNES: list[dict] = _load("wrmeta_runes.json", []) or []
+
+#: Runes bought FOR mana, and nothing else.
+#:
+#: Deliberately just the one. Triumph restores mana on a takedown but is taken
+#: for the health, and Fleet Footwork's mana line is incidental to a keystone
+#: about movement and healing -- excluding either would cost a jungler a good
+#: rune to solve a problem it does not have.
+MANA_RUNES = ("Manaflow Band",)
+MANA_RUNES_TEXT = ", ".join(MANA_RUNES)
 TREES: dict[str, dict] = (_load("rune_slots.json", {}) or {}).get("trees", {})
 RUNE_SCALING: dict = (_load("rune_scaling.json", {}) or {})
 
@@ -259,7 +268,7 @@ def slot_groups_text() -> str:
     return "\n".join(out)
 
 
-def pool_text_block() -> str:
+def pool_text_block(role: str = "") -> str:
     """The rune pool with the page-construction rule stated alongside it.
 
     The playstyle used to reach only the items. It is stated at the top of the
@@ -270,6 +279,19 @@ def pool_text_block() -> str:
     Footwork, Grasp, Legend: Bloodline and Revitalize are all sustain, and none
     of them is an item.
     """
+    # A jungler starts on blue buff and keeps taking it, so a rune slot spent
+    # on mana buys what the map already hands over. Said here because the pool
+    # is otherwise presented with no notion of who is reading it.
+    jungle_note = ""
+    if role == "Jungle":
+        jungle_note = (
+            "\n\nBLUE BUFF. This is a JUNGLE build, so mana is not a constraint "
+            "worth a rune slot: the jungler takes blue buff on spawn and keeps "
+            "taking it. " + MANA_RUNES_TEXT + " is bought purely for mana and is "
+            "a wasted slot here -- spend it on damage, survival or tempo. Runes "
+            "that merely MENTION mana while being taken for something else "
+            "(Triumph for the health on a takedown, Fleet Footwork for the "
+            "movement and the heal) are unaffected.")
     return ("RUNES (page = 1 keystone + 3 minors from ONE tree, one from each of that "
             "tree's 3 slots, + 1 FLEX, which is a MINOR rune from a DIFFERENT tree -- a page "
             "carries exactly ONE keystone, so a keystone can never be the flex):\n" + pool_text()
@@ -286,4 +308,4 @@ def pool_text_block() -> str:
               "the way THIS kit can express it -- the same rule as the items, so a rune "
               "whose trigger this champion cannot meet is not serving the request no "
               "matter what its text promises. Say in the rune reasons how the page "
-              "serves what was asked for.")
+              "serves what was asked for." + jungle_note)

@@ -146,6 +146,64 @@ def mechanical_item_repair(build: dict, pool_slugs: list[str], enemies_known: bo
     return notes
 
 
+def anti_heal_repair(build: dict, pool_slugs: list[str],
+                     locked_items: list[str]) -> list[str]:
+    """Put Grievous Wounds into a build that needs it, without regenerating.
+
+    The anti-heal gate is a REQUIREMENT rather than an illegality, so
+    mechanical_item_repair -- which only ever drops offending items -- cannot
+    satisfy it, and a miss cost a full regeneration. Regenerations dominate
+    counter-mode latency, so this swaps instead: drop the weakest item the
+    model itself scored lowest, and buy the best anti-heal option it is
+    allowed to hold.
+
+    Returns log notes; empty means no legal swap existed and the caller's
+    regeneration stands.
+    """
+    from web.advisor.validate import GRIEVOUS_WOUNDS_ITEMS
+
+    items = [s for s in (build.get("items") or []) if isinstance(s, str)]
+    if len(items) != 5 or any(s in GRIEVOUS_WOUNDS_ITEMS for s in items):
+        return []
+    locked = set(locked_items or [])
+    scores = {c.get("item"): c.get("score") or 0
+              for c in (build.get("candidateItemScores") or []) if isinstance(c, dict)}
+
+    from web.advisor.prompt import _crit_conflicts
+    _disablers, _dependent = _crit_conflicts(list(items) + list(GRIEVOUS_WOUNDS_ITEMS))
+    crit_dead = set(_dependent) if any(d in items for d in _disablers) else set()
+
+    def legal(slug: str) -> bool:
+        if slug in items or not _completed_non_boots(slug):
+            return False
+        if pool_slugs and slug not in pool_slugs:
+            return False
+        # An item whose value depends on critting is dead weight beside a core
+        # that cancels crit -- Mortal Reminder's penetration does nothing
+        # alongside Guinsoo's Rageblade, which is exactly why the model
+        # skipped anti-heal on Vayne rather than taking the wrong answer.
+        if slug in crit_dead:
+            return False
+        rest = [s for s in items if s not in locked]
+        return any(
+            all(sum(1 for k in [x for x in items if x is not drop] + [slug] if k in g) <= 1
+                for g in itemmeta.HARD_EXCLUSIVE.values())
+            for drop in rest)
+
+    options = [s for s in GRIEVOUS_WOUNDS_ITEMS if legal(s)]
+    if not options:
+        return []
+    # The model's own opinion first; failing that, the cheapest answer.
+    pick = max(options, key=lambda s: (scores.get(s, 0),
+                                       -(itemmeta.ITEMS.get(s) or {}).get("cost", 0)))
+    droppable = [s for s in items if s not in locked]
+    if not droppable:
+        return []
+    drop = min(droppable, key=lambda s: (scores.get(s, 0), -items.index(s)))
+    build["items"] = [pick if s == drop else s for s in items]
+    return [f"swapped {drop} for {pick} (enemy healing needs Grievous Wounds)"]
+
+
 def _pool_for(section: str, build: dict, allowed_items: list[str]) -> str:
     """The minimum context needed to fix this section, and nothing more."""
     if section == "runes":

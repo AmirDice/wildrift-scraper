@@ -35,7 +35,7 @@ from pathlib import Path
 # regardless of where the function is invoked from.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from web.build_advisor import advise_best_of, why_not  # noqa: E402
+from web.build_advisor import advise_runes, advise_best_of, why_not  # noqa: E402
 
 # Shared secret so only our own Next.js route can spend DeepSeek credit. Without
 # it this endpoint is an open, billable API.
@@ -154,6 +154,29 @@ def build_from_request(body: dict) -> tuple[int, dict]:
 
     mode = "counter" if _clean(body.get("mode")) == "counter" else "studio"
     enemies = _clean_list(body.get("enemies"))
+
+    # Runes and summoners alone, for the caller that needs them before the
+    # items: they are entered in champion select and cannot be changed once
+    # the game starts, so they are the half of a build with a deadline.
+    if _clean(body.get("only")) == "runes":
+        try:
+            return 200, advise_runes(
+                champion=champion,
+                role=_clean(body.get("role")),
+                enemies=enemies,
+                allies=_clean_list(body.get("allies")),
+                playstyle=_clean(body.get("playstyle")) or "standard",
+                objective=_clean(body.get("objective")) or "balanced",
+                mode=mode,
+                champion_form=_clean(body.get("championForm")),
+                locked_runes=_clean_list(body.get("lockedRunes"), limit=2),
+            )
+        except SystemExit as exc:
+            return 500, {"error": str(exc)}
+        except Exception as exc:  # noqa: BLE001
+            traceback.print_exc(file=sys.stderr)
+            return 502, {"error": f"advisor failed: {type(exc).__name__}: {exc}"}
+
     if mode == "counter" and not enemies:
         return 400, {"error": "at least one enemy is required for a counter build"}
 
