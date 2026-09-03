@@ -432,8 +432,49 @@ def build() -> tuple[dict, dict]:
     return pulse, consensus
 
 
+# Sections computed ENTIRELY from player builds. A win-rate-only collection
+# has no builds in it, so these come back empty -- not because the meta is
+# empty, but because this run never looked at it.
+BUILD_DERIVED = ("itemMeta", "keystoneMeta", "spellMeta", "treeMeta",
+                 "keystoneAll", "minorMeta", "itemAll")
+
+
+def _carry_forward(pulse: dict) -> dict:
+    """Keep the last known build meta when this run collected no builds.
+
+    EU and NA are sometimes scraped for win rates alone, which is far quicker
+    than reading every player's items. That run still produces a complete and
+    current win-rate board, and it must not take the item and rune tables down
+    with it: zeroing them replaces real, if slightly older, data with nothing,
+    empties those sections on the site, and -- because an empty JSON array
+    infers as never[] -- fails the production typecheck outright.
+
+    So when a run sees no builds at all, the build-derived sections are carried
+    over from the previous file and nBuilds reports what was carried, with
+    buildsFrom saying when it was measured. Everything else on the page is
+    still this run's.
+    """
+    if pulse["nBuilds"] or not PULSE_OUT.exists():
+        return pulse
+    try:
+        prior = json.loads(PULSE_OUT.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return pulse
+    if not prior.get("nBuilds"):
+        return pulse
+    for key in BUILD_DERIVED:
+        if prior.get(key):
+            pulse[key] = prior[key]
+    pulse["nBuilds"] = prior["nBuilds"]
+    pulse["buildsFrom"] = prior.get("buildsFrom") or prior.get("generatedAt")
+    print(f"  no builds in this collection: carried {pulse['nBuilds']} builds "
+          f"forward from {pulse['buildsFrom']}")
+    return pulse
+
+
 def main() -> int:
     pulse, consensus = build()
+    pulse = _carry_forward(pulse)
     PULSE_OUT.write_text(json.dumps(pulse, ensure_ascii=False, indent=1), encoding="utf-8")
     CONSENSUS_OUT.write_text(json.dumps(consensus, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"ladder_pulse.json: {pulse['nChampions']} champions, {pulse['nPlayers']} players, "
