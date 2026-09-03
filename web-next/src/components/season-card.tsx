@@ -13,7 +13,7 @@ const SEASON_TITLE = "Feast On";
 // with the pipeline.
 const PATCH = CURRENT_PATCH;
 const SEASON_START = new Date("2026-07-09T00:00:00Z");
-const SEASON_END = new Date("2026-10-09T00:00:00Z"); // ~3 month season
+const SEASON_END = new Date("2026-09-22T00:00:00Z"); // 75 days, not the usual ~3 months
 // Cho'Gath is "Chogath" in Riot's asset keys -- the apostrophe is not in the URL.
 const NEW_CHAMPION = { name: "Cho'Gath", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Chogath_0.jpg" };
 // ------------------------------------------------------------------------
