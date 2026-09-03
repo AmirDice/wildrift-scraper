@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useBuildToolsVisible } from "@/lib/use-build-tools";
-import { DRAFT_TOOL_LIVE } from "@/lib/flags";
+import { DRAFT_TOOL_LIVE, OVERLAY_DOWNLOAD_LIVE } from "@/lib/flags";
 import { DiscordNavLink, DISCORD_URL, DiscordIcon } from "@/components/discord";
 import { TIKTOK_URL, YOUTUBE_URL, TikTokIcon, YouTubeIcon } from "@/components/socials";
 import { SupportNavLink, BUYMEACOFFEE_URL, CoffeeIcon } from "@/components/support";
@@ -35,6 +35,9 @@ const buildsEntry = (live: boolean): NavEntry => (live
         ...(DRAFT_TOOL_LIVE
           ? [{ href: "/draft", label: "Draft Assistant", badges: ["new"], desc: "Bans, picks and the counter build, live in lobby" }]
           : []),
+        // Public whether or not the download is open: the page is where people
+        // are pointed from Discord and YouTube, and it collects the notify list.
+        { href: "/overlay", label: "Draft Overlay", badges: OVERLAY_DOWNLOAD_LIVE ? ["new"] : ["soon"], desc: "The draft assistant, on top of the game" },
         { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },
@@ -43,6 +46,9 @@ const buildsEntry = (live: boolean): NavEntry => (live
   : {
       label: "Builds",
       items: [
+        // Public whether or not the download is open: the page is where people
+        // are pointed from Discord and YouTube, and it collects the notify list.
+        { href: "/overlay", label: "Draft Overlay", badges: OVERLAY_DOWNLOAD_LIVE ? ["new"] : ["soon"], desc: "The draft assistant, on top of the game" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },
         { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },

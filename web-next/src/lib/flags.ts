@@ -43,6 +43,29 @@ export const DRAFT_TOOL_LIVE =
       ? false
       : process.env.NODE_ENV === "development";
 
+// OVERLAY_DOWNLOAD_LIVE gates the APK download on /overlay, and ONLY that.
+// The page itself is always public: it is the thing people are pointed at from
+// Discord and YouTube, and it collects the notify list, both of which work
+// before there is anything to download.
+//
+// It is off by default on purpose. Handing out an APK is a one-way door in a
+// way that shipping a web page is not: the signing key you publish first is
+// the key you are stuck with, because Android refuses to update an app whose
+// signature changed and the only way out is asking every user to uninstall.
+// So the download stays shut until there is a release build signed with a key
+// that is kept, rather than the throwaway debug keystore build.bat generates
+// when it cannot find one.
+//
+// Open it with NEXT_PUBLIC_OVERLAY_DOWNLOAD=1 and a redeploy.
+const _overlayFlag = process.env.NEXT_PUBLIC_OVERLAY_DOWNLOAD?.toLowerCase();
+
+export const OVERLAY_DOWNLOAD_LIVE = _overlayFlag === "1" || _overlayFlag === "true";
+
+/** Filename served from /public. Kept here so the page and the build script
+ *  cannot drift apart silently. */
+export const OVERLAY_APK = "/wrtruemeta-overlay.apk";
+export const OVERLAY_VERSION = "2.5";
+
 /**
  * Champions whose Recommended Builds tab is open.
  *

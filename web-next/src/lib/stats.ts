@@ -49,6 +49,9 @@ export const TRACKED_EVENTS = [
   // "Why not this item" question answered. Costs a generation, so dividing by
   // build_generated says how much of the allowance goes to challenges.
   "why_not_asked",
+  // Joined the notify list. Counted so the overlay page can be judged on
+  // whether it collects anyone, not on whether it looks finished.
+  "notify_signup",
 ] as const;
 
 export type TrackedEvent = (typeof TRACKED_EVENTS)[number];

@@ -45,6 +45,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
             : []),
         ])
       : []),
+    // Listed unconditionally: the overlay page is public before the download
+    // is, and it is the page search is meant to find.
+    { url: `${BASE}/overlay`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/items`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/runes-spells`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/news`, lastModified: now, changeFrequency: "daily", priority: 0.75 },
