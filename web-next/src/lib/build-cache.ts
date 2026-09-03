@@ -230,7 +230,15 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // build was chosen while the categories were prose -- "apply grievous
   // wounds" with no statement of which items do -- so it could answer a
   // sustain comp with nothing that cuts healing and still read as complete.
-  return `build:v31:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v32: the comp's own damage split now decides the resistance. A resistance
+  // was previously requested only from an enemy who carries with basic
+  // attacks, so a team of ability mages asked for none: the model was shown no
+  // magic resist item at all and reached for the one it could name unprompted,
+  // Mercury's Treads. Every v31 counter build against a magic comp is boots
+  // and nothing else. Tenacity also stopped being bought against a single
+  // stun, and hard crowd control stopped counting effects an enemy applies to
+  // their own allies.
+  return `build:v32:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
