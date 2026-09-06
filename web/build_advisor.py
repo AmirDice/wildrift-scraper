@@ -43,6 +43,7 @@ import requests
 from web.advisor import env as advisor_env
 from web.advisor import itemmeta, profiles, repair, runemeta, summoners, supportitem
 from web.advisor import prompt as prompt_mod
+from web.advisor import threats as threats_mod
 from web.advisor import validate as validate_mod
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -110,6 +111,13 @@ def _complex_champions() -> frozenset[str]:
                 out.add(name)
         except Exception:  # noqa: BLE001 -- a broken profile must not kill import
             continue
+    # Champions whose scraped class or damage type had to be corrected by hand.
+    # Needing an override IS the evidence that the kit is confusing, and it is
+    # the same reasoning as the curated-identity group above. Garen reached
+    # this set as a "tank" until he was reclassified a bruiser, which would
+    # otherwise have silently dropped him to the cheap model; the five
+    # assassin-bruisers whose class and shopping list disagree join him.
+    out |= set((_load("champion_meta_overrides.json", {}) or {}).get("champions", {}))
     return frozenset(out)
 
 
@@ -785,6 +793,14 @@ def advise(champion: str, role: str, enemies: list[str],
     # whether anyone is listening.
     emit = on_progress or (lambda _event: None)
     mode = "counter" if mode == "counter" else "studio"
+    # A blank role is not "no role", it is a role nobody told us. Every rule
+    # keyed on it then quietly does not apply -- most visibly Smite, which is
+    # imposed on jungle builds and which a Hecarim counter came back without
+    # because the request carried no role and the advisor therefore did not
+    # know it was a jungle build. An explicit role always wins; this only
+    # fills the blank, from the champion's own primary role.
+    if not (role or "").strip():
+        role = (CHAMPS.get(champion) or {}).get("role") or ""
     # Legacy playstyle aliases from older saved builds. 'sustain' predates the
     # split into damage variants; map it to the sustained-DPS preset (the app has
     # no 'sustained_damage' id -- 'dps' is that build). 'burst' and 'damage'
@@ -978,10 +994,17 @@ def advise(champion: str, role: str, enemies: list[str],
          "must say why the usual page IS the counter. "
          "SKIP the full build evaluation: a counter build "
          "is wanted fast, so return buildScore as null and do not spend time scoring the "
-         "eight categories. SKIP the per-pick explanations for the same reason: "
-         "candidateItemScores rows carry `item` and `score` ONLY -- no `reason` and no "
-         "`synergyWith` -- and omit runeReasons and bootsReason entirely, returning "
-         "situationalBoots as an empty list. The counterSummary is where the reasoning "
+         "eight categories. SKIP the per-pick PROSE for the same reason: "
+         "candidateItemScores rows carry `item`, `score` and `synergyWith` only -- no "
+         "`reason` -- and omit runeReasons and bootsReason entirely, returning "
+         "situationalBoots as an empty list. "
+         "KEEP `synergyWith`. It is a list of slugs, not prose, so it costs nothing to "
+         "write, and a counter build is exactly where it matters most: five items chosen "
+         "against a comp still have to work as ONE build on THIS champion. An item that "
+         "answers an enemy but multiplies nothing in your kit is a slot spent on them "
+         "rather than on winning, and the synergy share of the item rubric is what "
+         "catches that. "
+         "The counterSummary is where the prose "
          "belongs in this mode; writing it twice only makes the player wait. INSTEAD return a compact counterSummary that names the 2-4 "
          "problems you chose to solve, how each item/boot/rune choice answers them, the "
          "trade-offs you accepted, and the threats no build can fully answer. Do not imply "
@@ -1040,10 +1063,21 @@ def advise(champion: str, role: str, enemies: list[str],
             # down rather than fight the request it was told to honour.
             identity=identity_card if damage_path == "standard" else None,
             # The REQUIRED CANDIDATES block demands a score for each ladder
-            # core item; this is the teeth behind that prose. Studio only:
-            # counter mode trades scoring depth for speed on purpose.
-            ladder_core=(prompt_mod.ladder_core_slugs(identity_key)
-                         if mode != "counter" else None),
+            # core item. Counter mode receives that block already -- it was
+            # only the enforcement that was studio-only, so a counter build
+            # could quietly skip the champion's staple items and nothing
+            # objected. That is identity drift, and it is the failure the
+            # ladder core exists to catch; answering an enemy comp is not a
+            # licence to stop playing the champion. Now enforced in both.
+            ladder_core=prompt_mod.ladder_core_slugs(identity_key),
+            # How many enemies actually have hard crowd control, so the
+            # validator can reject a tenacity rune bought against one.
+            hard_cc_count=(threats_mod.team_threat_profile(enemies).get("hardCcCount")
+                           if mode == "counter" and enemies else None),
+            # How much the enemy team heals, so the validator can reject a
+            # build that answers three heavy healers with nothing.
+            healing_level=(threats_mod.team_threat_profile(enemies).get("healing", "")
+                           if mode == "counter" and enemies else ""),
         )
 
     report = _check(res)
@@ -1068,6 +1102,12 @@ def advise(champion: str, role: str, enemies: list[str],
         if "items" in blocking:
             fixes = repair.mechanical_item_repair(res, pool_slugs, enemies_known,
                                                   locked_items)
+            # A missing requirement is not an illegality, so the repair above
+            # cannot satisfy it -- it only ever drops offending items. Anti-heal
+            # was costing a full regeneration, and regenerations dominate
+            # counter-mode latency, so buy it with a swap instead.
+            if not fixes and any("Grievous Wounds" in m for m in report.flat()):
+                fixes = repair.anti_heal_repair(res, pool_slugs, locked_items)
             if fixes:
                 for note in fixes:
                     print(f"[advisor] mechanical item repair: {note}", file=sys.stderr)
@@ -1149,15 +1189,18 @@ def advise(champion: str, role: str, enemies: list[str],
     # The support item is guaranteed, not requested: a support build without it
     # has given up the role's gold income for the whole game. Runs before the
     # summoners so both corrections land on the same object.
-    # Counter mode does not display per-pick reasoning (the counterSummary
-    # carries it), so drop anything the model returned anyway rather than
-    # caching and shipping text nothing renders.
+    # Counter mode does not display per-pick PROSE (the counterSummary carries
+    # it), so drop the reason text rather than caching and shipping something
+    # nothing renders. `synergyWith` stays: it is the record of which of the
+    # five items multiply each other, it costs a list of slugs rather than a
+    # sentence, and stripping it turned the chemistry rule off in the one mode
+    # where five items are picked against an enemy and still have to work as
+    # one build.
     if mode == "counter":
         res["situationalBoots"] = []
         for _row in res.get("candidateItemScores") or []:
             if isinstance(_row, dict):
                 _row.pop("reason", None)
-                _row.pop("synergyWith", None)
 
     fixed_items, changed = supportitem.enforce(
         res.get("items") or [], role, champion_class)
@@ -1463,6 +1506,135 @@ def why_not(champion: str, items: list[str], boots: str,
     return {"verdict": verdict, "answer": answer, "competesWith": competes,
             "candidate": candidate, "candidateName": cand.get("name", candidate)}
 
+
+
+RUNES_ONLY_SCHEMA = (
+    'Return ONLY this JSON, no prose around it: '
+    '{"runes":{"keystone":"<name>","primaryTree":"<tree>",'
+    '"minors":["<name>","<name>","<name>"],"flex":"<name>"},'
+    '"runeReasons":{"<rune name>":"<=14 words why, against THIS comp"},'
+    '"summoners":["<name>","<name>"]}'
+)
+
+
+def advise_runes(champion: str, role: str, enemies: list[str],
+                 allies: list[str] | None = None, playstyle: str = "standard",
+                 objective: str = "balanced", mode: str = "counter",
+                 champion_form: str = "", locked_runes: list[str] | None = None,
+                 on_progress=None) -> dict:
+    """The rune page and the summoner spells, and nothing else.
+
+    WHY THIS EXISTS, separately from advise().
+
+    Runes and summoners are the only part of a build with a DEADLINE. They are
+    chosen in champion select and cannot be changed once the game starts, while
+    items are bought over the following twenty minutes. A full build takes
+    fifteen to thirty seconds, which is most of a draft, so the player was
+    waiting on item advice they could not use yet to get rune advice they had
+    minutes to enter.
+
+    Splitting it helps for two reasons rather than one. The obvious one is
+    output length: a rune page is a fraction of five items with reasons, boots,
+    situational swaps and a counter summary. The larger one is that full
+    REGENERATIONS dominate this function's latency -- the item validator has
+    many ways to reject a build, and each rejection can cost another whole
+    call. A rune page answers to one narrow validator, so it far more often
+    passes first time.
+
+    The follow-up item call should be given these runes as locks, so the items
+    are chosen to fit the page the player has already entered rather than a
+    different one the second call invented.
+    """
+    emit = on_progress or (lambda _event: None)
+    if not (role or "").strip():
+        role = (CHAMPS.get(champion) or {}).get("role") or ""
+    champion_record = CHAMPS.get(champion) or {}
+    if not champion_record:
+        raise SystemExit(f"unknown champion: {champion}")
+    enemies = [e for e in (enemies or []) if e]
+    enemies_known = bool(enemies)
+    allies = [a for a in (allies or []) if a]
+    key = _api_key()
+
+    combat = (champion_record.get("combat") or {})
+    abilities_text = " ".join((a.get("text") or "")
+                              for a in (champion_record.get("abilities") or []))
+
+    prompt = "\n\n".join(x for x in [
+        "You are picking the RUNE PAGE and the SUMMONER SPELLS for one player, "
+        "right now, in champion select. They cannot be changed after the game "
+        "starts, so this answer is needed in seconds, not after a full build.",
+        f"CHAMPION: {champion}" + (f" ({role})" if role else ""),
+        f"PLAYSTYLE: {playstyle}" if playstyle and playstyle != "standard" else "",
+        f"OPTIMIZE FOR: {objective}" if objective and objective != "balanced" else "",
+        kayn_form_block(champion_form, playstyle),
+        _meta_block(champion),
+        # The full threat picture, minus the item suggestions: this call is not
+        # choosing items, and naming them would invite it to.
+        prompt_mod.enemy_threat_block(enemies, champion, WRMETA, role)
+        if enemies_known else _enemy_block(enemies, champion),
+        prompt_mod.identity_threat_lines(enemies) if enemies_known else "",
+        (f"ALLY TEAM: {', '.join(allies)}" if allies else ""),
+        ("THE RUNE PAGE IS THE COUNTER, not a default carried over: pick the "
+         "keystone and every minor against THIS comp -- a comp of shields and "
+         "disengage, one of hard engage, and one of sustained frontline each "
+         "want a different page on the same champion. If the champion's usual "
+         "page IS the right answer here, say why in its reasons."
+         if enemies_known else ""),
+        _summoner_block(role, enemies_known,
+                        immobile=not summoners.has_mobility(champion, abilities_text)),
+        _lock_block([], "", [r for r in (locked_runes or []) if r]),
+        runemeta.pool_text_block(role),
+        "Keep every reason under fourteen words. No prose outside the JSON.",
+        RUNES_ONLY_SCHEMA,
+    ] if x)
+
+    emit({"stage": "model", "chars": 0})
+    request_model = model_for_request(playstyle, champion)
+
+    def call(text: str) -> dict:
+        kwargs = {}
+        if on_progress:
+            kwargs["on_progress"] = on_progress
+        if request_model != MODEL:
+            kwargs["model"] = request_model
+        return _call(key, text, **kwargs)
+
+    res = call(prompt)
+    emit({"stage": "validating"})
+
+    page = res.get("runes") if isinstance(res, dict) else None
+    errors = runemeta.page_errors(page if isinstance(page, dict) else {})
+    if errors:
+        # One targeted repair, never a full regeneration: there is nothing else
+        # in this answer worth throwing away to fix a rune page.
+        for message in errors:
+            print(f"[advisor] runes-only invalid: {message}", file=sys.stderr)
+        emit({"stage": "repairing", "section": "runes"})
+        fixed = call(prompt + "\n\nYour previous rune page had ERRORS. Return the "
+                     "corrected JSON only:\n- " + "\n- ".join(errors))
+        if isinstance(fixed, dict) and isinstance(fixed.get("runes"), dict):
+            if not runemeta.page_errors(fixed["runes"]):
+                res = fixed
+                page = fixed["runes"]
+                errors = []
+
+    if not isinstance(page, dict) or errors:
+        return {"error": "could not produce a legal rune page",
+                "details": errors[:4]}
+
+    picks = [p for p in (res.get("summoners") or []) if isinstance(p, str)]
+    legal = summoners.enforce(picks, role, enemies_known)
+    if legal is None:
+        legal, _why = summoners.summoners_for(
+            champion, role, champion_record.get("class", ""))
+
+    return {
+        "runes": page,
+        "runeReasons": res.get("runeReasons") or {},
+        "summoners": summoners.icons_for(legal),
+        "partial": "runes",
+    }
 
 def advise_best_of(champion: str, role: str, enemies: list[str],
                    runs: int = 3, on_progress=None, **kwargs) -> dict:
