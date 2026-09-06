@@ -20,7 +20,7 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
-from web.advisor import profiles
+from web.advisor import hardcc, profiles
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 DATA = ROOT / "data"
@@ -114,25 +114,13 @@ def _combat(name: str) -> dict:
 
 
 _FORMULAS = _load("ability_formulas.json", {}) or {}
-_HARD_CC = re.compile(
-    r"\b(stun\w*|root\w*|snar\w*|knock\s?up|knock\s?back|knocking|airborne"
-    r"|charm\w*|taunt\w*|fear\w*|suppress\w*|silenc\w*|immobiliz\w*)", re.I)
-
-
-# The effect must be something this champion does TO ENEMIES. Without this,
-# any tooltip that merely mentions crowd control counted: Kai'Sa's passive
-# reads "nearby ALLIES apply 1 stack to champions they Immobilize" and she
-# was scored as a crowd-control threat, which pushed a comp over the tenacity
-# threshold.
-_CC_NOT_MINE = re.compile(
-    r"\b(all(?:y|ies)|immune|immunity|cleanse|remove[sd]?|tenacity|cannot be|reduc\w*|resist\w*|shrug)", re.I)
-
-
-def _has_hard_cc(text: str) -> bool:
-    for m in _HARD_CC.finditer(text):
-        if not _CC_NOT_MINE.search(text[max(0, m.start() - 90):m.start()]):
-            return True
-    return False
+# Hard crowd control lives in advisor/hardcc.py now, which the overlay's
+# bundle exporter imports as well. It used to be a regex pair copied into
+# both files, and copies drift. That pair tagged 97 of 141 champions, threw
+# away Pantheon's stun because the word "reduced" appeared in a DIFFERENT
+# ability, and never matched "knocks up" at all -- so Wukong, Fizz, Jayce
+# and Shyvana all read as harmless while Kha'Zix counted as a fear threat
+# on the strength of an ability NAME.
 
 
 @lru_cache(maxsize=256)
@@ -157,9 +145,7 @@ def _derived_mechanics(name: str) -> frozenset[str]:
     if "shield" in kinds:
         out.add("shield")
     record = _champ(name) or {}
-    text = " ".join((a.get("text") or "") + " " + (a.get("name") or "")
-                    for a in (record.get("abilities") or []))
-    if _has_hard_cc(text):
+    if hardcc.has_hard_cc(record.get("abilities"), name):
         out.add("cc")
     return frozenset(out)
 
@@ -292,6 +278,15 @@ def team_threat_profile(enemies: list[str]) -> dict:
         # against a single hard crowd-control effect. This is the raw count of
         # enemies who actually have one.
         "hardCcCount": sum(1 for rec, _c in records if _has(rec, "cc")),
+        # And how DEEP it goes. The head count still cannot tell Sona -- one
+        # stun, on a long ultimate -- from Alistar, who has three and lands
+        # them on demand, and "three enemies have crowd control" reads the
+        # same either way. This is the number of abilities across the enemy
+        # team that actually stop you acting; an average five-stack sits near
+        # six, so meaningfully more than that is a comp built around lockdown.
+        "hardCcDepth": sum(hardcc.hard_cc_depth(rec.get("abilities"),
+                                                rec.get("name") or "")
+                           for rec, _c in records),
         "slows": lv(slows),
         "displacement": lv(displace),
         "healing": lv(healing),

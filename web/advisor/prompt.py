@@ -862,12 +862,15 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = ""
         "made of is a wasted slot.")
     lines.append(
         f"TENACITY IS NOT A DEFAULT. {profile.get('hardCcCount', 0)} of these enemies have "
-        "hard crowd control (stun, root, knockup, charm, taunt, suppress, silence). A "
-        "tenacity rune or item is only worth its slot at THREE or more, or at two when "
-        "one of them is a point-and-click lockdown you cannot dodge. Below that, take "
-        "damage, survival or sustain instead. If this champion's own kit already clears "
-        "crowd control, tenacity is wasted at any count -- say so in the trade-offs "
-        "rather than buying it.")
+        "hard crowd control (stun, root, knockup, charm, taunt, suppress, silence), and "
+        f"between them they have {profile.get('hardCcDepth', 0)} abilities that apply it. "
+        "Read BOTH numbers: five enemies who each carry one stun on a long cooldown is "
+        "not the problem that two enemies with three apiece are. An average team totals "
+        "about six. A tenacity rune or item is only worth its slot at THREE or more "
+        "enemies, or at two when one of them is a point-and-click lockdown you cannot "
+        "dodge. Below that, take damage, survival or sustain instead. If this champion's "
+        "own kit already clears crowd control, tenacity is wasted at any count -- say so "
+        "in the trade-offs rather than buying it.")
     # Rune pages were being chosen without reading the enemy at all: a
     # conditional damage rune arrived on builds whose condition the comp never
     # meets. These are the facts that decide which condition actually fires.

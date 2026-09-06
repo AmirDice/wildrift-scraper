@@ -25,6 +25,18 @@ export interface RosterChampion {
   primaryDamage: string; // "physical" | "magic"
   scalesWith: string[];
   mechanics: string[]; // cc | dash | heal | onHit | shield
+  /** Damage that scales with the target's max health. Answers a frontline. */
+  pctHpDamage?: boolean;
+  /** Damage that ignores resistances. Olaf answers a stacked frontline this
+   *  way and carries no percent-health damage at all. */
+  trueDamage?: boolean;
+  /** Removes or ignores crowd control (Olaf's ultimate, Sivir's spell
+   *  shield). Decides a pick against a lockdown comp; invisible to class. */
+  ccImmune?: boolean;
+  /** How many of this champion's abilities apply HARD crowd control. Presence
+   *  alone put Sona -- one stun, on her ultimate -- level with Alistar, who
+   *  has three and lands them on demand. */
+  ccDepth?: number;
   baseStats: Record<string, { base?: number; perLevel?: number }>;
 }
 

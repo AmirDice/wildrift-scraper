@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getChampions } from "@/lib/data";
+import { getChampions, type Champion } from "@/lib/data";
+import { roster } from "@/lib/threat";
 import { CURRENT_PATCH } from "@/lib/patch";
 import buildsData from "@/data/builds.json";
 import itemsData from "@/data/items.json";
@@ -98,16 +99,38 @@ function trimBuild(v: Record<string, unknown>): BundleBuild | null {
 }
 
 export async function GET() {
-  const champions = getChampions().map((c) => ({
-    slug: c.slug,
-    name: c.name,
-    role: c.role,
-    // the class powers the overlay's comp-fit pick suggestions
-    class: c.class,
-    tier: c.tier,
-    wr: Number.isFinite(c.wr) ? c.wr : null,
-    icon: c.icon,
-  }));
+  const R = roster();
+  const champions = getChampions().map((c) => {
+    const kit = R[c.name];
+    return {
+      slug: c.slug,
+      name: c.name,
+      role: c.role,
+      // Every role the champion is really played in, primary first. Without
+      // this the overlay ranked a support main's Nami above their own
+      // junglers for a jungle game, because a flex pick has one role here.
+      roles: (c as Champion & { roles?: string[] }).roles ?? [c.role],
+      // the class powers the overlay's comp-fit pick suggestions
+      class: c.class,
+      tier: c.tier,
+      wr: Number.isFinite(c.wr) ? c.wr : null,
+      icon: c.icon,
+      // Kit facts class cannot express, and the ones that decide a pick
+      // against a specific composition. Three booleans and a short array per
+      // champion, roughly 6 KB across the roster: the overlay cannot rank
+      // Olaf against a lockdown comp without them, and it has no other way
+      // to learn them offline.
+      pctHpDamage: Boolean(kit?.pctHpDamage),
+      trueDamage: Boolean(kit?.trueDamage),
+      ccImmune: Boolean(kit?.ccImmune),
+      mechanics: kit?.mechanics ?? [],
+      // HOW MUCH lockdown, not just whether there is any. A boolean put Sona
+      // -- one stun, on her ultimate -- level with Alistar, who has three and
+      // lands them on demand, and the draft panel drew them as the same
+      // threat. One number per champion, so the overlay can show an intensity.
+      ccDepth: Number((kit as { ccDepth?: number } | undefined)?.ccDepth ?? 0),
+    };
+  });
   const items = (itemsData as Record<string, unknown>[]).map((it) => ({
     slug: it.slug,
     name: it.name,

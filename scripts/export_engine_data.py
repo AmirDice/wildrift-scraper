@@ -14,7 +14,11 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from web.advisor import hardcc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web-next" / "src" / "data" / "engine.json"
@@ -294,9 +298,19 @@ def main() -> None:
     # control is re-derived from the ability tooltips, which name the effect
     # (the formulas' unmodeled notes miss Malphite's ultimate entirely). dash
     # and onHit keep their scraped tags -- those are already specific.
-    hard_cc = re.compile(
-        r"\b(stun\w*|root\w*|snar\w*|knock\s?up|knock\s?back|knocking|airborne"
-        r"|charm\w*|taunt\w*|fear\w*|suppress\w*|silenc\w*|immobiliz\w*)", re.I)
+    # The effect must be something the champion does TO ENEMIES: Kai'Sa's
+    # passive mentions what nearby ALLIES immobilise and she counted as a
+    # crowd-control threat because of it.
+    # The hard-crowd-control regexes that used to sit here were a verbatim
+    # copy of the advisor's, and the copies had already drifted apart in
+    # what they were asked to do. One module now, imported by both.
+
+    # Owner corrections to the scraped class / roles / damage type. The scrape
+    # allows one class and one role each, which mislabels kits (Warwick is not
+    # an assassin) and pretends nobody flexes (Olaf is Baron only, so a jungle
+    # main was never offered the best answer in the game to a crowd-control
+    # composition). See data/champion_meta_overrides.json.
+    meta_overrides = (_load("champion_meta_overrides.json") or {}).get("champions", {})
 
     def deals_pct_hp(name: str) -> bool:
         """Damage that scales with the target's max health.
@@ -312,6 +326,56 @@ def main() -> None:
                     return True
         return False
 
+    #: Kits that shrug off crowd control rather than merely surviving it:
+    #: Olaf's ultimate removes every debuff and makes him immune, Sivir's
+    #: spell shield eats the ability outright. Read from the champion's own
+    #: ability text, and only when the sentence is about the champion --
+    #: "reduces the duration of" or "immune to" applied to an ALLY is somebody
+    #: else's answer, and the word "cleanse" shows up in enemy-facing text too.
+    cc_immunity = re.compile(
+        r"(immune to (?:all )?(?:crowd control|cc)|crowd[- ]control immunity"
+        r"|remove[sd]? all (?:crowd control|cc|debuff)"
+        r"|becomes? (?:unstoppable|untargetable)|cannot be (?:stopped|interrupted)"
+        r"|spell shield|blocks? the next enemy ability)", re.I)
+
+    #: Same trap as the hard-crowd-control scan: the sentence has to be about
+    #: the CHAMPION. Darius's ultimate text lists "the target ... becomes
+    #: untargetable" as a case where his reset FAILS, and Zilean's revives an
+    #: ally who "become[s] untargetable". Both read as self-immunity without
+    #: this guard.
+    immunity_not_mine = re.compile(r"\b(target|ally|allies|enemy|enemies|they)\b", re.I)
+
+    def clears_cc(champ: dict) -> bool:
+        """Whether this champion's own kit answers being locked down.
+
+        The single most decision-relevant fact against a crowd-control comp,
+        and invisible to class: Olaf is a bruiser like a dozen others and is
+        the one who ignores the whole composition. Reported as a trait because
+        the pick ranker had NO representation of it and put three champions
+        above Olaf into five enemies who all lock you down.
+        """
+        text = " ".join((a.get("text") or "") + " " + (a.get("name") or "")
+                        for a in (champ.get("abilities") or []))
+        for m in cc_immunity.finditer(text):
+            if not immunity_not_mine.search(text[max(0, m.start() - 80):m.start()]):
+                return True
+        return False
+
+    def with_forms(champ: dict) -> list[str]:
+        """This champion's formula key plus every form it can transform into."""
+        return [champ["name"]] + [f["name"] for f in (champ.get("forms") or [])]
+
+    def deals_true_damage(name: str) -> bool:
+        """True damage ignores resistances, so it answers a stacked frontline
+        the way percent-health damage does. Olaf carries it on Reckless Swing
+        and carries no percent-health damage at all, which is why he never
+        registered as an answer to a team of tanks."""
+        for ability in ((formulas.get(name) or {}).get("abilities") or {}).values():
+            for dmg in (ability.get("damage") or []):
+                if dmg.get("type") == "true":
+                    return True
+        return False
+
     def derived_mechanics(champ: dict) -> list[str]:
         kept = [m for m in (champ.get("mechanics") or []) if m in ("dash", "onHit")]
         formula = (formulas.get(champ["name"]) or {}).get("abilities") or {}
@@ -322,11 +386,18 @@ def main() -> None:
             kept.append("heal")
         if "shield" in kinds:
             kept.append("shield")
-        text = " ".join((a.get("text") or "") + " " + (a.get("name") or "")
-                        for a in (champ.get("abilities") or []))
-        if hard_cc.search(text):
+        if hardcc.has_hard_cc(champ.get("abilities"), champ["name"]):
             kept.append("cc")
         return kept
+
+    def cc_depth(champ: dict) -> int:
+        """How many of this champion's abilities lock somebody down.
+
+        Presence alone cannot tell Sona -- one stun, on a long ultimate --
+        from Alistar, who has three and lands them on demand, and the overlay
+        was drawing both as the same threat. The bundle carries the number so
+        the draft panel can show an intensity instead of a boolean."""
+        return hardcc.hard_cc_depth(champ.get("abilities"), champ["name"])
 
     roster = {}
     # Forms are deliberately absent here. The roster is the list of champions
@@ -339,17 +410,48 @@ def main() -> None:
         name = c["name"]
         meta = site_meta.get(name) or prerelease_meta.get(name, {})
         bs = c.get("baseStats", {})
+        override = meta_overrides.get(name) or {}
+        primary_role = meta.get("role", "")
+        roles = override.get("roles") or ([primary_role] if primary_role else [])
         roster[name] = {
             "slug": c["slug"], "name": name,
-            "class": meta.get("class", ""), "role": meta.get("role", ""),
+            "class": override.get("class") or meta.get("class", ""),
+            # Every class the kit really is, primary first. Kayn is both, and
+            # which one depends on the form he transforms into.
+            "classes": override.get("classes")
+                or ([override.get("class") or meta.get("class", "")]
+                    if (override.get("class") or meta.get("class")) else []),
+            "role": roles[0] if roles else primary_role,
+            # Every role the champion is actually played in, primary first.
+            "roles": roles,
             "icon": meta.get("icon", ""),
-            "primaryDamage": c.get("primaryDamage", ""),
+            "primaryDamage": override.get("damage") or c.get("primaryDamage", ""),
             "scalesWith": c.get("scalesWith", []),
             "mechanics": derived_mechanics(c),
-            "pctHpDamage": deals_pct_hp(name),
+            "ccDepth": cc_depth(c),
+            # Traits union over the champion's TRANSFORM FORMS. Kayn's
+            # percent-health damage lives entirely on Rhaast, and the roster
+            # excludes forms, so base Kayn read as no answer to a team of
+            # tanks -- while a player drafting Kayn is choosing Rhaast as part
+            # of the pick. What the pick can become is what the pick offers.
+            "pctHpDamage": any(deals_pct_hp(n) for n in with_forms(c)),
+            "trueDamage": any(deals_true_damage(n) for n in with_forms(c)),
+            "ccImmune": clears_cc(c) or any(
+                clears_cc(f) for f in (c.get("forms") or [])),
             "baseStats": {k: bs.get(k, {}) for k in ("hp", "armor", "mr", "ad")},
         }
     ROSTER_OUT.write_text(json.dumps(roster, ensure_ascii=False), encoding="utf-8")
+
+    # The same corrections have to reach lib/data.ts, which builds every
+    # champion the SITE renders from site.json and would otherwise still call
+    # Garen a tank and hide Olaf from the jungle.
+    meta_out = ROSTER_OUT.parent / "champion_meta_overrides.json"
+    # Keep the {"champions": {...}} shape the source file has: lib/data.ts
+    # reads .champions, and writing the bare map made every override silently
+    # no-op there while still applying to roster.json.
+    meta_out.write_text(json.dumps({"champions": meta_overrides},
+                                   ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"wrote {meta_out.relative_to(ROOT)} ({len(meta_overrides)} champions)")
     print(f"wrote {ROSTER_OUT.relative_to(ROOT)} ({ROSTER_OUT.stat().st_size/1024:.0f} KB, "
           f"{len(roster)} champions)")
 

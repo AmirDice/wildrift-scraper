@@ -1,0 +1,31 @@
+{
+  "_comment": [
+    "Hard crowd control the ability TEXT cannot support, one way or the other.",
+    "",
+    "web/advisor/hardcc.py reads the effect out of the tooltip, which is the",
+    "right source: it survives a re-scrape and it does not need a human to",
+    "keep 141 champions in their head. What it cannot do is read text that is",
+    "not there. Three tooltips in the scrape are truncated mid-sentence, and",
+    "all three are truncated exactly where the crowd control was:",
+    "",
+    "  Diana     Moonfall's text ends at 'slowing targets by 20%' and never",
+    "            reaches the drag that is the whole point of the ultimate.",
+    "  Jhin      Deadly Flourish ends at 'If the t' -- the root is the rest",
+    "            of that sentence.",
+    "  Shyvana   Dragon's Descent ends at 'Active' before the knockback.",
+    "",
+    "These are corrections to the SOURCE, not tuning. Each names the ability",
+    "so it stays checkable, and each should be deleted the day the scrape",
+    "carries the full tooltip -- run scripts/audit_hard_cc.py to find out.",
+    "",
+    "'remove' is for the opposite case and is deliberately empty: the deriver",
+    "currently has no false positives on the labelled set, and an entry here",
+    "should be justified by a specific tooltip, not by a hunch about a kit."
+  ],
+  "add": {
+    "Diana": ["Moonfall"],
+    "Jhin": ["Deadly Flourish"],
+    "Shyvana": ["Dragon's Descent"]
+  },
+  "remove": {}
+}

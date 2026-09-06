@@ -1,0 +1,64 @@
+{
+ "champions": {
+  "Garen": {
+   "class": "Bruiser",
+   "reason": "Scraped as Tank. He builds and plays as a bruiser: damage-first items, a percent-health execute, no team-wide tank utility."
+  },
+  "Kayn": {
+   "class": "Assassin",
+   "classes": [
+    "Assassin",
+    "Bruiser"
+   ],
+   "reason": "Both, and which one depends on the form he transforms into: Shadow Assassin is an assassin, Rhaast is a bruiser. One label cannot describe him.",
+   "roles": [
+    "Jungle"
+   ]
+  },
+  "Viego": {
+   "class": "Bruiser",
+   "reason": "Scraped as Assassin. Sustains through fights and possesses rather than bursting once and leaving."
+  },
+  "Master Yi": {
+   "class": "Bruiser",
+   "reason": "Scraped as Assassin. Wins by sustained attack damage over a fight, not by a burst rotation."
+  },
+  "Pantheon": {
+   "class": "Bruiser",
+   "reason": "Scraped as Assassin. Builds bruiser and fights through damage rather than deleting a target and disengaging."
+  },
+  "Warwick": {
+   "class": "Bruiser",
+   "reason": "Scraped as Assassin. Lifesteal-driven duelist who wins extended fights."
+  },
+  "Jayce": {
+   "damage": "physical",
+   "reason": "Scraped as magic. His damage is attack damage in both forms; the scrape read the hammer's magic component as the whole kit."
+  },
+  "Ezreal": {
+   "damage": "physical",
+   "reason": "Scraped as magic. Attack damage carry; only his ultimate and W carry magic scaling."
+  },
+  "Olaf": {
+   "roles": [
+    "Baron",
+    "Jungle"
+   ],
+   "reason": "Scraped Baron only. He is a standard jungle pick and the best answer in the game to a crowd-control composition, so a jungle main was never offered him."
+  },
+  "Shyvana": {
+   "roles": [
+    "Jungle",
+    "Baron"
+   ],
+   "reason": "Played in both; the jungle is primary."
+  },
+  "Graves": {
+   "roles": [
+    "Jungle",
+    "Dragon"
+   ],
+   "reason": "Jungle primary, still picked bot."
+  }
+ }
+}

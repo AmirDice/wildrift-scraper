@@ -7,17 +7,21 @@ import { counterSwaps, roster, threatProfile, type CounterRecScored } from "@/li
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { CounterReasoning, EnemyRead, type CounterSummary } from "@/components/counter-intel";
 import {
+  buildEnemyTraits,
   DRAFT_ROLES,
   EMPTY_DRAFT,
   MAX_BANS,
+  playsRole,
   suggestBans,
   suggestPicks,
   unavailable,
   type DraftRole,
   type DraftState,
   type Suggestion,
+  buildAllyNeeds,
 } from "@/lib/draft";
 import itemsData from "@/data/items.json";
+import runeIconsData from "@/data/rune_icons.json";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -61,8 +65,14 @@ interface V1Advice {
     keystone?: { name?: string } | string | null;
     minors?: ({ name?: string } | string)[] | null;
     treeMinors?: ({ name?: string } | string)[] | null;
+    // The advisor has always returned a flex rune. This type omitted it, so
+    // the page below could not render it even though the data was there.
+    flex?: { name?: string } | string | null;
+    primaryTree?: string | null;
   } | null;
-  summoners?: ({ name?: string } | string)[] | null;
+  // The API returns {name, icon}. Typing these as bare names threw the
+  // icon away at the type boundary, so no rendering code could use it.
+  summoners?: ({ name?: string; icon?: string } | string)[] | null;
   situational?: { slug?: string; name?: string; when?: string }[] | null;
   counterSummary?: CounterSummary | null;
 }
@@ -76,6 +86,15 @@ interface V1Response {
 const ITEMS = new Map(
   (itemsData as { slug: string; name: string; icon: string }[]).map((it) => [it.slug, it]),
 );
+
+const RUNE_ICONS = runeIconsData as Record<string, string>;
+
+/** A rune's icon, by name. Same map the Counter Builder reads; the draft page
+ *  was showing bare text next to items that all had pictures. */
+function runeIcon(name: string | null | undefined): string | null {
+  if (!name) return null;
+  return RUNE_ICONS[name] ?? null;
+}
 
 function itemName(slug: string | null | undefined): string {
   if (!slug) return "";
@@ -193,30 +212,38 @@ export function DraftAssistant() {
    */
   const filled = Boolean(mainRole && state.myRole && state.myRole !== mainRole);
   const poolCoversRole = useMemo(
-    () => pool.some((slug) => bySlug.get(slug)?.role === state.myRole),
+    () => pool.some((slug) => {
+      const c = bySlug.get(slug);
+      return c ? playsRole(c, state.myRole) : false;
+    }),
     [pool, bySlug, state.myRole],
   );
 
-  // Kit facts the champion class cannot express, read off the roster.
-  const enemyTraits = useMemo(() => {
-    const r = roster();
-    return {
-      pctHp: new Set(
-        Object.values(r).filter((c) => (c as { pctHpDamage?: boolean }).pctHpDamage)
-          .map((c) => c.slug)),
-      assassins: state.enemies
-        .map((s) => bySlug.get(s))
-        .filter((c) => c?.class === "Assassin").length,
-    };
-  }, [state.enemies, bySlug]);
+  // Kit facts the champion class cannot express, read off the roster. The
+  // builder lives in lib/draft.ts because this was written twice -- here and
+  // in the report harness -- and the copies drifted, so a trait added for one
+  // was silently missing from the other.
+  // What YOUR half of the draft is still missing -- read the same way the
+  // enemy's is, from the roster's kit facts rather than from class alone.
+  // Without it the ranking answered three yes/no questions about the ally
+  // comp, a team with one of each answered no to all three, and three
+  // completely different allied drafts produced identical suggestions.
+  const allyNeeds = useMemo(
+    () => buildAllyNeeds(state.allies, Object.values(roster()), bySlug),
+    [state.allies, bySlug],
+  );
+  const enemyTraits = useMemo(
+    () => buildEnemyTraits(state.enemies, Object.values(roster()), bySlug),
+    [state.enemies, bySlug],
+  );
 
   const suggestions = useMemo(() => {
     if (mode === "ban") return suggestBans(state, pool, champions);
     if (mode === "me" && !state.me) {
-      return suggestPicks(state, pool, champions, bySlug, 6, enemyTraits);
+      return suggestPicks(state, pool, champions, bySlug, 6, enemyTraits, allyNeeds);
     }
     return [];
-  }, [mode, state, pool, champions, bySlug, enemyTraits]);
+  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds]);
 
   /**
    * The other question. "Strongest pick in the game" and "strongest pick I
@@ -230,9 +257,9 @@ export function DraftAssistant() {
     // list stops being a curiosity and becomes the actual answer, so it gets
     // more of them.
     const limit = poolCoversRole ? 4 : 6;
-    return suggestPicks(state, [], champions, bySlug, limit, enemyTraits)
+    return suggestPicks(state, [], champions, bySlug, limit, enemyTraits, allyNeeds)
       .filter((s) => !pool.includes(s.champion.slug));
-  }, [mode, state, pool, champions, bySlug, enemyTraits, poolCoversRole]);
+  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds, poolCoversRole]);
 
   const standardBuild: Build | null = useMemo(() => {
     if (!me) return null;
@@ -356,7 +383,7 @@ export function DraftAssistant() {
     const q = search.trim().toLowerCase();
     return champions.filter(
       (c) =>
-        (roleFilter === "All" || c.role === roleFilter) &&
+        (roleFilter === "All" || playsRole(c, roleFilter)) &&
         (!q || c.name.toLowerCase().includes(q)),
     );
   }, [champions, roleFilter, search]);
@@ -737,28 +764,75 @@ export function DraftAssistant() {
                   </div>
                 ))}
                 {advice.boots && (
-                  <p className="text-xs text-muted">
-                    <span className="font-semibold text-text">Boots:</span> {itemName(advice.boots)}
-                    {advice.bootsUpgrade ? ` → ${itemName(advice.bootsUpgrade)}` : ""}
-                    {advice.bootsReason ? ` — ${advice.bootsReason}` : ""}
-                  </p>
+                  <div className="text-xs text-muted">
+                    <span className="font-semibold text-text">Boots</span>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                      {[advice.boots, advice.bootsUpgrade].filter(Boolean).map((slug, i) => (
+                        <span key={`${slug}-${i}`} className="flex items-center gap-1.5">
+                          {i > 0 && <span className="text-faint">→</span>}
+                          {itemIcon(slug) && (
+                            <img src={itemIcon(slug)!} alt="" className="h-6 w-6 rounded-md border border-line" />
+                          )}
+                          <span>{itemName(slug)}</span>
+                        </span>
+                      ))}
+                    </div>
+                    {advice.bootsReason && <div className="mt-0.5">{advice.bootsReason}</div>}
+                  </div>
                 )}
-                {advice.runes && (
-                  <p className="text-xs text-muted">
-                    <span className="font-semibold text-text">Runes:</span> {nameOf(advice.runes.keystone)}
-                    {(() => {
-                      const minors = (advice.runes?.minors ?? advice.runes?.treeMinors ?? [])
-                        .map(nameOf)
-                        .filter(Boolean);
-                      return minors.length ? ` · ${minors.join(" · ")}` : "";
-                    })()}
-                  </p>
-                )}
+                {advice.runes && (() => {
+                  const keystone = nameOf(advice.runes.keystone);
+                  const minors = (advice.runes.minors ?? advice.runes.treeMinors ?? [])
+                    .map(nameOf)
+                    .filter(Boolean);
+                  const flex = nameOf(advice.runes.flex);
+                  const page = [keystone, ...minors].filter(Boolean);
+                  if (!page.length && !flex) return null;
+                  return (
+                    <div className="text-xs text-muted">
+                      <span className="font-semibold text-text">Runes</span>
+                      {advice.runes.primaryTree ? ` · ${advice.runes.primaryTree}` : ""}
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                        {page.map((rn, i) => (
+                          <span key={`${rn}-${i}`} className="flex items-center gap-1.5">
+                            {runeIcon(rn) && (
+                              <img src={runeIcon(rn)!} alt="" className="h-6 w-6 rounded-full" />
+                            )}
+                            <span className={i === 0 ? "font-semibold text-text" : ""}>{rn}</span>
+                          </span>
+                        ))}
+                        {flex && (
+                          <span className="flex items-center gap-1.5">
+                            {runeIcon(flex) && (
+                              <img src={runeIcon(flex)!} alt="" className="h-6 w-6 rounded-full" />
+                            )}
+                            <span>
+                              {flex}
+                              <span className="ml-1 text-faint">(flex)</span>
+                            </span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
                 {(advice.summoners ?? []).length > 0 && (
-                  <p className="text-xs text-muted">
-                    <span className="font-semibold text-text">Summoners:</span>{" "}
-                    {(advice.summoners ?? []).map(nameOf).filter(Boolean).join(" + ")}
-                  </p>
+                  <div className="text-xs text-muted">
+                    <span className="font-semibold text-text">Summoners</span>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                      {(advice.summoners ?? []).map((sp, i) => {
+                        const name = nameOf(sp);
+                        const icon = typeof sp === "string" ? null : (sp.icon ?? null);
+                        if (!name) return null;
+                        return (
+                          <span key={`${name}-${i}`} className="flex items-center gap-1.5">
+                            {icon && <img src={icon} alt="" className="h-6 w-6 rounded-md" />}
+                            <span>{name}</span>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
                 {(advice.situational ?? []).length > 0 && (
                   <p className="text-xs text-muted">

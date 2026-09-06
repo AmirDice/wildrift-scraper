@@ -9,7 +9,12 @@ from __future__ import annotations
 from web.advisor import threats
 
 # A comp with two physical carries, two tanks, one mage.
-PHYS_HEAVY = ["Ashe", "Master Yi", "Malphite", "Leona", "Ahri"]
+#
+# Zed rather than Master Yi since 2026-08-27: the owner reclassified Yi as a
+# bruiser, which is right for how he builds but drops his damage weight and
+# makes him count as a durable target, so he no longer isolates what these
+# tests are about. The intent is unchanged -- tanks must not out-weigh carries.
+PHYS_HEAVY = ["Ashe", "Zed", "Malphite", "Leona", "Ahri"]
 
 
 class TestTeamThreatProfile:
@@ -17,8 +22,16 @@ class TestTeamThreatProfile:
         levels = set(threats._LEVELS)
         profile = threats.team_threat_profile(PHYS_HEAVY)
         for key, value in profile.items():
-            if key == "durableTargetCount":
+            if key in ("durableTargetCount", "hardCcCount", "hardCcDepth"):
                 assert isinstance(value, int)
+            elif key == "resistanceNeeded":
+                # Not a level: which resistance this comp's damage calls for.
+                assert value in ("armor", "magic_resist", "both", "none")
+            elif key == "damageSplitPct":
+                # The raw split, because a categorical level cannot tell you
+                # whether to buy armour or magic resistance.
+                assert set(value) == {"physical", "magic"}
+                assert 99 <= sum(value.values()) <= 101 or sum(value.values()) == 0
             else:
                 assert value in levels, f"{key}={value}"
 
@@ -126,3 +139,52 @@ class TestWinrateDrivenSeverity:
         assert threats._wr_severity(60.0, "") == 0.9
         assert threats._wr_severity(30.0, "") == 0.2
         assert threats._wr_severity(99.0, "") == 0.95
+
+
+class TestOwnerClassCorrections:
+    """The scraped class and role are wrong often enough to matter, and the
+    corrections live in data/champion_meta_overrides.json. Pinned here so a
+    re-scrape cannot quietly put "Warwick, Assassin" back."""
+
+    def test_the_reclassified_bruisers_are_bruisers(self):
+        for name in ("Garen", "Viego", "Master Yi", "Pantheon", "Warwick"):
+            assert threats._champ(name)["class"] == "Bruiser", name
+
+    def test_misread_damage_types_are_physical(self):
+        """A magic Jayce made a physical poke comp measure as a magic one."""
+        for name in ("Jayce", "Ezreal"):
+            assert threats._champ(name).get("primaryDamage") == "physical", name
+
+    def test_flex_picks_carry_every_role_they_are_played_in(self):
+        """Olaf was Baron-only, so a jungle main was never shown the best
+        answer in the game to a crowd-control composition."""
+        assert "Jungle" in (threats._champ("Olaf").get("roles") or [])
+        assert "Baron" in (threats._champ("Olaf").get("roles") or [])
+
+
+class TestResistanceAndTenacityGates:
+    """The two signals that decide a defensive purchase, both added after a
+    test run bought the wrong resistance and a tenacity rune nobody needed."""
+
+    def test_a_magic_comp_asks_for_magic_resist(self):
+        """Four of these five deal magic damage from ABILITIES, not attacks.
+        Resistances used to be requested only from basic-attack carries, so
+        this comp asked for none and the build took 165 armour and no magic
+        resistance."""
+        profile = threats.team_threat_profile(
+            ["Malphite", "Amumu", "Lissandra", "Leona", "Syndra"])
+        assert profile["resistanceNeeded"] in ("magic_resist", "both")
+        assert profile["damageSplitPct"]["magic"] > profile["damageSplitPct"]["physical"]
+
+    def test_a_physical_comp_asks_for_armor(self):
+        profile = threats.team_threat_profile(
+            ["Darius", "Master Yi", "Zed", "Samira", "Pyke"])
+        assert profile["resistanceNeeded"] == "armor"
+
+    def test_crowd_control_counts_only_what_the_enemy_does_to_you(self):
+        """Kai'Sa's passive reads "nearby ALLIES apply 1 stack to champions
+        they Immobilize" and she was counted as a crowd-control threat, which
+        pushed a comp over the tenacity threshold."""
+        assert not threats._has(threats._champ("Kai'Sa"), "cc")
+        assert threats._has(threats._champ("Pyke"), "cc")       # his E stuns
+        assert not threats._has(threats._champ("Master Yi"), "cc")
