@@ -43,6 +43,10 @@ export interface KitSource {
   protectsAllies?: boolean;
   /** Curated draft tags: aoeUlt, duelist, globalPressure, poke. */
   archetypes?: string[];
+  /** Hand-authored capability values. Merged over the derived vector one
+   *  field at a time, so rating a champion on one axis does not oblige
+   *  anyone to rate it on all eleven, and an unrated champion is unaffected. */
+  draftKit?: Record<string, number>;
   pctHpDamage?: boolean;
   trueDamage?: boolean;
   ccImmune?: boolean;
@@ -80,6 +84,19 @@ function damageOf(k: KitSource): "AP" | "AD" | "mixed" {
 }
 
 export function kitOf(k: KitSource): Kit {
+  const derived = derive(k);
+  const authored = k.draftKit;
+  if (!authored) return derived;
+  const out = { ...derived };
+  for (const [field, value] of Object.entries(authored)) {
+    if (field in out && typeof value === "number") {
+      (out as Record<string, number>)[field] = clamp(value);
+    }
+  }
+  return out;
+}
+
+function derive(k: KitSource): Kit {
   const cls = k.class ?? "";
   const tank = cls === "Tank";
   const bruiser = cls === "Bruiser";
@@ -193,13 +210,21 @@ export function readEnemy(slugs: string[], src: Map<string, KitSource>): EnemyRe
   // The plan is whichever reading stands out, and it has to stand out: a comp
   // that is mildly everything is a teamfight comp, and saying otherwise would
   // invent a strategy to counter.
+  // Ordered least-common first, and the sort is stable, so a tie resolves to
+  // the more distinctive reading. Dive scores something on almost any comp
+  // containing a bruiser, which made it win every tie by accident: a Fiora
+  // and Twisted Fate draft read "dive 0.75" over "splitPush 0.75" and was
+  // answered with peel instead of with a global.
   const named: [GamePlan, number][] = [
-    ["dive", threats.dive],
-    ["wombo", threats.wombo],
     ["splitPush", threats.splitPush],
     ["poke", threats.poke],
+    ["wombo", threats.wombo],
+    ["dive", threats.dive],
   ];
-  named.sort((a, b) => b[1] - a[1]);
+  // Compared at three decimals, because these are sums of thirds and fifths:
+  // this comp scores dive exactly 0.75 and splitPush 0.7499999999999999, and
+  // an exact comparison hands the tie to dive over a difference of 1e-16.
+  named.sort((a, b) => Math.round(b[1] * 1000) - Math.round(a[1] * 1000));
   const [plan, strength] = named[0];
   return strength >= 0.5
     ? { threats, plan, planStrength: strength }

@@ -129,6 +129,13 @@ export async function GET() {
       // lands them on demand, and the draft panel drew them as the same
       // threat. One number per champion, so the overlay can show an intensity.
       ccDepth: Number((kit as { ccDepth?: number } | undefined)?.ccDepth ?? 0),
+      // A shield or heal that lands on somebody else, and the hand-authored
+      // capability values. The overlay ranks the same champions from the same
+      // data as the site, so it needs the same inputs or the two disagree in
+      // front of the player.
+      protectsAllies: Boolean((kit as { protectsAllies?: boolean } | undefined)?.protectsAllies),
+      archetypes: (kit as { archetypes?: string[] } | undefined)?.archetypes ?? [],
+      draftKit: (kit as { draftKit?: Record<string, number> } | undefined)?.draftKit ?? {},
     };
   });
   const items = (itemsData as Record<string, unknown>[]).map((it) => ({

@@ -407,6 +407,13 @@ def main() -> None:
     # follow-up, not "a bruiser and a mage". Owner-maintained, and absence
     # means "not this", so a missing entry costs sensitivity and never invents
     # a threat.
+    # Hand-authored capability values, merged per FIELD in kitOf so a champion
+    # with one number here keeps the derived value for the other ten. Exists
+    # because derivation cannot separate an archetype: Galio, Alistar and Rell
+    # all come out as "a Tank that protects allies and has three lockdown
+    # abilities", identical to the last decimal, and the ranking then falls
+    # back to ladder strength and picks whichever is strongest this patch.
+    draft_kit = (_load("champion_draft_kit.json") or {}).get("champions", {})
     archetypes = (_load("draft_archetypes.json") or {}).get("tags", {})
     archetype_of = {}
     for tag, names in archetypes.items():
@@ -475,6 +482,7 @@ def main() -> None:
             "ccDepth": cc_depth(c),
             "protectsAllies": protects_allies(c),
             "archetypes": sorted(archetype_of.get(name, [])),
+            "draftKit": draft_kit.get(name) or {},
             # Traits union over the champion's TRANSFORM FORMS. Kayn's
             # percent-health damage lives entirely on Rhaast, and the roster
             # excludes forms, so base Kayn read as no answer to a team of

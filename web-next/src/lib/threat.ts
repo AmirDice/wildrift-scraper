@@ -37,6 +37,12 @@ export interface RosterChampion {
    *  alone put Sona -- one stun, on her ultimate -- level with Alistar, who
    *  has three and lands them on demand. */
   ccDepth?: number;
+  /** A shield or heal that lands on somebody ELSE. */
+  protectsAllies?: boolean;
+  /** Curated draft tags: aoeUlt, duelist, globalPressure, poke. */
+  archetypes?: string[];
+  /** Hand-authored capability values; override what kitOf derives, per field. */
+  draftKit?: Record<string, number>;
   baseStats: Record<string, { base?: number; perLevel?: number }>;
 }
 
