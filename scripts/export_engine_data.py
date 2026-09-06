@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from web.advisor import hardcc  # noqa: E402
+from web.advisor import hardcc, mobility  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web-next" / "src" / "data" / "engine.json"
@@ -377,7 +377,18 @@ def main() -> None:
         return False
 
     def derived_mechanics(champ: dict) -> list[str]:
-        kept = [m for m in (champ.get("mechanics") or []) if m in ("dash", "onHit")]
+        # `onHit` still comes from the scrape tags; it is specific enough.
+        # `dash` does not any more. The scrape scanned for dash / blink / leap /
+        # lunge / vault / teleport / charge and tagged 96 of 141 champions,
+        # because "charge" is usually a stored ability charge or part of a
+        # skill's name -- Nautilus's Depth Charge, Viktor's Turbocharge -- and
+        # because a dash in the text is not always the champion's own: Jinx
+        # reads "interrupting their dashes", which made the most immobile
+        # marksman in the game register as mobile. That trait decides who
+        # counts as a diver and how much backline access a composition has.
+        kept = [m for m in (champ.get("mechanics") or []) if m == "onHit"]
+        if mobility.has_dash(champ.get("abilities"), champ["name"]):
+            kept.append("dash")
         formula = (formulas.get(champ["name"]) or {}).get("abilities") or {}
         kinds = {d.get("kind")
                  for ability in formula.values()
