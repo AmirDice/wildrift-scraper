@@ -110,6 +110,10 @@ export async function consumeQuota(
   user: SessionUser | null,
   ip: string,
   unlimited = false,
+  // An explicit ceiling for callers who have earned a different one -- today
+  // that is an alpha tester, whose device is on the invite register and who
+  // would otherwise share the anonymous five with the public.
+  limitOverride?: number,
 ): Promise<{ ok: boolean; quota: QuotaState }> {
   const key = keyFor(user, ip);
   const used = await kvGetNumber(key);
@@ -117,7 +121,8 @@ export async function consumeQuota(
     const next = await kvIncr(key, 1, DAY_SECONDS);
     return { ok: true, quota: unlimitedState(next, Boolean(user)) };
   }
-  const limit = user ? SIGNED_IN_DAILY_BUILDS : ANON_DAILY_BUILDS;
+  const limit = limitOverride
+    ?? (user ? SIGNED_IN_DAILY_BUILDS : ANON_DAILY_BUILDS);
   if (used >= limit) return { ok: false, quota: state(used, user) };
   const next = await kvIncr(key, 1, DAY_SECONDS);
   return { ok: true, quota: state(next, user) };

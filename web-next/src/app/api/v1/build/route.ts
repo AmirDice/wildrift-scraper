@@ -2,6 +2,7 @@ import { after } from "next/server";
 import { NextResponse } from "next/server";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
 import { clientIp, consumeQuota, isOwnerKey, ownerKeyStatus, refundQuota } from "@/lib/quota";
+import { ALPHA_DAILY_BUILDS, deviceAllowed, isAlphaDevice } from "@/lib/alpha";
 import { kvGet, kvSet, kvDelete } from "@/lib/kv";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
 
@@ -156,6 +157,16 @@ export async function POST(request: Request) {
   const device = rawDevice.replace(/[^A-Za-z0-9-]/g, "").slice(0, 64);
   const identity = device ? `device:${device}` : clientIp(request);
 
+  // The alpha gate. Enforced HERE rather than in the app, because the app is a
+  // file people pass on and every install that reaches this line spends real
+  // generation credit. The owner's own key still walks through, so a phone
+  // testing the build cannot be locked out by its own gate.
+  const alphaTester = await isAlphaDevice(device);
+  if (!isOwnerKey(request.headers.get("x-owner-key")) && !(await deviceAllowed(device))) {
+    return json({ error: "This build is in closed testing. Enter your invite code in the app.",
+                  needsActivation: true }, 403);
+  }
+
   // Cache first: someone may have paid for this exact build already.
   //
   // buildCacheKey deliberately does not know about `only`, so a runes-only
@@ -184,7 +195,8 @@ export async function POST(request: Request) {
   // stale deployment or an unset variable, and there is nothing secret in the
   // reason -- neither key appears in it.
   const ownerKey = ownerHeader ? ownerKeyStatus(ownerHeader) : undefined;
-  const { ok, quota } = await consumeQuota(null, identity, unlimited || paired);
+  const { ok, quota } = await consumeQuota(null, identity, unlimited || paired,
+                                          alphaTester ? ALPHA_DAILY_BUILDS : undefined);
   if (!ok) {
     after(() => trackEvent("limit_reached_anon"));
     return json({
