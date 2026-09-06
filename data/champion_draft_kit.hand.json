@@ -1,0 +1,264 @@
+{
+  "_comment": [
+    "Authored capability values, for what derivation cannot resolve.",
+    "",
+    "kitOf() turns a roster row into eleven 0-1 capability numbers using class, five",
+    "boolean mechanics and a crowd-control depth. That is enough to place most",
+    "champions, and not enough to tell three tank supports apart: Galio, Alistar and",
+    "Rell come out with the IDENTICAL vector, because all three are a Tank that",
+    "protects allies and carries three lockdown abilities. When vectors tie the",
+    "ranking falls back to ladder strength, so whichever member of an archetype is",
+    "strongest that patch wins every draft that calls for the archetype.",
+    "",
+    "These are hand-authored overrides, merged per FIELD, so a champion with one",
+    "number here keeps the derived value for the other ten and a champion absent",
+    "entirely is unaffected. It is deliberately partial: the supports the benchmark",
+    "exercises, plus the marksmen the anti-tank draft needs. Extend it where the",
+    "ranking is visibly wrong rather than trying to complete it.",
+    "",
+    "The numbers are judgements, not measurements. They should be argued with."
+  ],
+  "schemaVersion": 1,
+  "champions": {
+    "Leona": {
+      "frontline": 1.0,
+      "peel": 0.35,
+      "engage": 1.0,
+      "antiDive": 0.55,
+      "disruption": 0.7,
+      "disengage": 0.05
+    },
+    "Nautilus": {
+      "frontline": 1.0,
+      "peel": 0.4,
+      "engage": 1.0,
+      "antiDive": 0.6,
+      "disruption": 0.75,
+      "disengage": 0.1
+    },
+    "Rell": {
+      "frontline": 1.0,
+      "peel": 0.5,
+      "engage": 1.0,
+      "antiDive": 0.5,
+      "disruption": 0.8,
+      "disengage": 0.1
+    },
+    "Blitzcrank": {
+      "frontline": 0.7,
+      "peel": 0.3,
+      "engage": 0.9,
+      "antiDive": 0.35,
+      "disruption": 0.5,
+      "disengage": 0.1
+    },
+    "Maokai": {
+      "frontline": 0.9,
+      "peel": 0.5,
+      "engage": 0.8,
+      "antiDive": 0.6,
+      "disruption": 0.7,
+      "disengage": 0.2
+    },
+    "Pyke": {
+      "frontline": 0.3,
+      "peel": 0.25,
+      "engage": 0.9,
+      "antiDive": 0.3,
+      "disruption": 0.5,
+      "disengage": 0.2
+    },
+    "Alistar": {
+      "frontline": 0.95,
+      "peel": 0.9,
+      "engage": 1.0,
+      "antiDive": 0.95,
+      "disruption": 0.9,
+      "disengage": 0.6
+    },
+    "Braum": {
+      "frontline": 0.95,
+      "peel": 0.85,
+      "engage": 0.6,
+      "antiDive": 0.9,
+      "disruption": 0.5,
+      "disengage": 0.4
+    },
+    "Poppy": {
+      "frontline": 0.9,
+      "peel": 0.75,
+      "engage": 0.7,
+      "antiDive": 0.85,
+      "disruption": 0.7,
+      "disengage": 0.6
+    },
+    "Thresh": {
+      "frontline": 0.6,
+      "peel": 0.85,
+      "engage": 0.9,
+      "antiDive": 0.8,
+      "disruption": 0.6,
+      "disengage": 0.5
+    },
+    "Galio": {
+      "frontline": 0.9,
+      "peel": 0.7,
+      "engage": 0.85,
+      "antiDive": 0.8,
+      "disruption": 0.75,
+      "disengage": 0.3
+    },
+    "Rakan": {
+      "frontline": 0.4,
+      "peel": 0.75,
+      "engage": 0.95,
+      "antiDive": 0.7,
+      "disruption": 0.6,
+      "disengage": 0.6
+    },
+    "Lulu": {
+      "frontline": 0.05,
+      "peel": 1.0,
+      "engage": 0.1,
+      "antiDive": 1.0,
+      "disruption": 0.35,
+      "disengage": 0.85
+    },
+    "Janna": {
+      "frontline": 0.05,
+      "peel": 0.95,
+      "engage": 0.1,
+      "antiDive": 0.9,
+      "disruption": 0.5,
+      "disengage": 1.0
+    },
+    "Milio": {
+      "frontline": 0.05,
+      "peel": 0.9,
+      "engage": 0.05,
+      "antiDive": 0.8,
+      "disruption": 0.3,
+      "disengage": 0.7
+    },
+    "Zilean": {
+      "frontline": 0.0,
+      "peel": 0.9,
+      "engage": 0.15,
+      "antiDive": 0.95,
+      "disruption": 0.4,
+      "disengage": 0.6
+    },
+    "Morgana": {
+      "frontline": 0.15,
+      "peel": 0.85,
+      "engage": 0.3,
+      "antiDive": 0.85,
+      "disruption": 0.5,
+      "disengage": 0.4
+    },
+    "Soraka": {
+      "frontline": 0.0,
+      "peel": 0.85,
+      "engage": 0.05,
+      "antiDive": 0.6,
+      "disruption": 0.2,
+      "disengage": 0.5
+    },
+    "Nami": {
+      "frontline": 0.1,
+      "peel": 0.8,
+      "engage": 0.4,
+      "antiDive": 0.65,
+      "disruption": 0.4,
+      "disengage": 0.5
+    },
+    "Sona": {
+      "frontline": 0.05,
+      "peel": 0.75,
+      "engage": 0.35,
+      "antiDive": 0.55,
+      "disruption": 0.5,
+      "disengage": 0.5
+    },
+    "Karma": {
+      "frontline": 0.15,
+      "peel": 0.75,
+      "engage": 0.3,
+      "antiDive": 0.6,
+      "disruption": 0.4,
+      "disengage": 0.6
+    },
+    "Seraphine": {
+      "frontline": 0.05,
+      "peel": 0.7,
+      "engage": 0.4,
+      "antiDive": 0.5,
+      "disruption": 0.6,
+      "disengage": 0.4
+    },
+    "Bard": {
+      "frontline": 0.1,
+      "peel": 0.6,
+      "engage": 0.5,
+      "antiDive": 0.5,
+      "disruption": 0.7,
+      "disengage": 0.6
+    },
+    "Senna": {
+      "frontline": 0.05,
+      "peel": 0.6,
+      "engage": 0.2,
+      "antiDive": 0.5,
+      "disruption": 0.3,
+      "disengage": 0.4
+    },
+    "Vayne": {
+      "antiTank": 1.0,
+      "sustained": 1.0
+    },
+    "Kog'Maw": {
+      "antiTank": 0.95,
+      "sustained": 1.0
+    },
+    "Twitch": {
+      "antiTank": 0.7,
+      "sustained": 0.95
+    },
+    "Varus": {
+      "antiTank": 0.7,
+      "sustained": 0.8
+    },
+    "Kai'Sa": {
+      "antiTank": 0.7,
+      "sustained": 0.85
+    },
+    "Jinx": {
+      "antiTank": 0.5,
+      "sustained": 0.95
+    },
+    "Caitlyn": {
+      "antiTank": 0.4,
+      "sustained": 0.8
+    },
+    "Lucian": {
+      "antiTank": 0.45,
+      "sustained": 0.7
+    },
+    "Jhin": {
+      "antiTank": 0.4,
+      "sustained": 0.5
+    },
+    "Ezreal": {
+      "antiTank": 0.4,
+      "sustained": 0.6
+    },
+    "Xayah": {
+      "antiTank": 0.55,
+      "sustained": 0.9
+    },
+    "Zeri": {
+      "antiTank": 0.6,
+      "sustained": 0.9
+    }
+  }
+}
