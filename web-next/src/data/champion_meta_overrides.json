@@ -59,6 +59,20 @@
     "Dragon"
    ],
    "reason": "Jungle primary, still picked bot."
+  },
+  "Wukong": {
+   "roles": [
+    "Jungle",
+    "Baron"
+   ],
+   "reason": "Scraped Baron only. He is a standard Wild Rift jungler and is drafted there more often than top; listing one seat made him unpickable for the other."
+  },
+  "Galio": {
+   "roles": [
+    "Mid",
+    "Support"
+   ],
+   "reason": "Scraped Mid only. He is played support as an anti-AP frontline with a global roam, and the support seat is where a draft asks for him against heavy magic damage."
   }
  }
 }

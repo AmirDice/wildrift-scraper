@@ -1,4 +1,8 @@
 import type { Champion } from "@/lib/data";
+import {
+  buildKits, readAllies, readEnemy, scoreCandidate, explain, metaUnit,
+  type AllyRead, type EnemyRead, type Kit, type KitSource,
+} from "@/lib/draft-score";
 
 /**
  * Draft-assistant logic: availability, comp profiling and pick/ban ranking.
@@ -182,6 +186,29 @@ export function buildAllyNeeds(
   return needs;
 }
 
+/**
+ * Everything the ranker needs to know about this draft, computed once.
+ *
+ * Built here rather than inside the scoring loop because all three parts are
+ * properties of the DRAFT, not of the candidate: recomputing an enemy read
+ * 141 times would give the same answer 141 times.
+ */
+export interface DraftAnalysis {
+  kits: Map<string, Kit>;
+  ally: AllyRead;
+  enemy: EnemyRead;
+}
+
+export function analyseDraft(
+  allies: string[],
+  enemies: string[],
+  roster: KitSource[],
+): DraftAnalysis {
+  const src = new Map(roster.map((r) => [r.slug, r]));
+  const enemy = readEnemy(enemies, src);
+  return { kits: buildKits(roster), ally: readAllies(allies, src, enemy.threats), enemy };
+}
+
 export interface Suggestion {
   champion: Champion;
   score: number;
@@ -245,6 +272,7 @@ export function suggestPicks(
   limit = 6,
   enemyTraits?: EnemyTraits,
   allyNeeds?: AllyNeeds,
+  analysis?: DraftAnalysis,
 ): Suggestion[] {
   const gone = unavailable(state);
   const poolSet = new Set(pool);
@@ -262,133 +290,47 @@ export function suggestPicks(
     if (fromPool && !poolSet.has(c.slug)) continue;
     const offRole = !playsRole(c, state.myRole);
     if (!fromPool && offRole) continue; // full-roster mode stays on-role
-    let score = metaScore(c);
-    const reasons = metaReason(c);
+    // ---- the score, as separate components ----
+    //
+    // Ladder strength, fit with your own four, and an answer to what they are
+    // trying to do, each on its own 0-1 scale and weighted once in
+    // draft-score.ts. Adding them as one running total is what let a tier of
+    // win rate outweigh every composition signal put together.
+    let score: number;
+    let reasons: string[];
+    const kit = analysis?.kits.get(c.slug);
+    if (kit && analysis) {
+      const bd = scoreCandidate(kit, metaUnit(c, tierScore), analysis.ally, analysis.enemy);
+      score = bd.total;
+      reasons = explain(kit, analysis.ally, analysis.enemy);
+      if (reasons.length < 2) reasons = [...reasons, ...metaReason(c)];
+
+      // CONFLICTS, which are not the absence of a bonus. A carry with no way
+      // out of a dive composition is a sitting duck however strong it is, and
+      // ranking without this kept offering an immobile marksman into three
+      // champions built to jump on one.
+      if (analysis.enemy.threats.dive >= 0.66 && kit.frontline === 0 && kit.peel < 0.4) {
+        score -= 2.2;
+        reasons = ["no escape from their dive", ...reasons];
+      }
+      // Ignoring the enemy's whole win condition. Kept as an explicit rule
+      // rather than folded into a component because it is a measured one:
+      // without it a five-enemy lockdown comp ranked Hecarim, Pantheon and
+      // Diana above Olaf, whose ultimate removes every debuff.
+      if (enemyTraits && analysis.enemy.threats.hardCc >= 0.66
+          && enemyTraits.ccImmune.has(c.slug)) {
+        score += 1.4;
+        reasons = ["their lockdown does not stick to you", ...reasons];
+      }
+      reasons = reasons.slice(0, 3);
+    } else {
+      // No roster traits available (an older caller). Meta only, which is what
+      // this did everywhere before the composition layer existed.
+      score = metaScore(c);
+      reasons = metaReason(c);
+    }
 
     if (offRole) score -= 4;
-
-    // what your team still needs
-    const needs: AllyNeeds = allyNeeds ?? {
-      ...allyProfile, tanks: 0, bruisers: 0,
-      immobileCarries: [], engage: 0, divers: 0,
-    };
-    if (needs.size >= 2) {
-      // FRONTLINE, WEIGHTED. A Tank is a frontline; a Bruiser is half of one.
-      // Counting them equally made a Malphite team and a Camille/Yasuo team
-      // look identical, and they want opposite things from the last pick.
-      const front = needs.tanks + needs.bruisers * 0.5;
-      const frontNeed = Math.max(0, 1.5 - front);
-      if (frontNeed > 0.01 && isFrontline(c)) {
-        score += frontNeed * 1.1;
-        reasons.push(needs.tanks === 0
-          ? "nobody on your team holds the front" : "your frontline is thin");
-      }
-      // DAMAGE BALANCE, BY RATIO. A team of three physical and one magic is
-      // itemised against as cheaply as a team of four, and it answered "no"
-      // to the old question because AP was not literally zero.
-      const dmg = damageKind(c);
-      if (needs.ap === 0 && dmg === "AP") {
-        score += 1.4;
-        reasons.push("your team has no AP");
-      } else if (needs.ad === 0 && dmg === "AD") {
-        score += 1.1;
-        reasons.push("your team has no AD");
-      } else if (needs.ad >= needs.ap * 2 && dmg === "AP") {
-        score += 0.8;
-        reasons.push("your damage is nearly all physical");
-      } else if (needs.ap >= needs.ad * 2 && dmg === "AD") {
-        score += 0.7;
-        reasons.push("your damage is nearly all magic");
-      }
-      // PEEL vs ENGAGE -- the two answers a last pick can be, and the whole
-      // reason the old ranking could not tell three drafts apart. Every
-      // candidate had crowd control, so a bonus keyed on crowd control lifted
-      // all of them equally and moved nobody. These key on what the champion
-      // brings INSTEAD: a shield or a heal is protection, a frontliner with
-      // lockdown is an opener.
-      const protects = protective.has(c.slug);
-      const opens = isFrontline(c) && (enemyTraits?.lockdown.has(c.slug) ?? false);
-
-      if (needs.tanks === 0 && needs.size >= 3 && opens) {
-        // Nobody to start a fight and nobody to survive being in one. This
-        // outranks peel: protecting a carry behind a line that does not exist
-        // is protecting them in the open.
-        score += 1.8;
-        reasons.push("your team has nobody to open a fight");
-      } else if (needs.immobileCarries.length > 0 && protects) {
-        // The front is held, so the last pick's job is keeping the carry
-        // alive behind it -- and it names who.
-        const dived = (enemyTraits?.divers ?? 0) >= 2;
-        score += dived ? 1.6 : 1.0;
-        reasons.push(dived
-          ? `peel for ${needs.immobileCarries[0]} against their dive`
-          : `peel for ${needs.immobileCarries[0]}`);
-      }
-      // A wombo wants more of itself on top, whoever else is picked.
-      if (needs.engage >= 2 && opens) {
-        score += 0.9;
-        reasons.push("follow-up for your engage");
-      }
-    }
-
-    // what their comp is made of
-    if (enemyProfile.size >= 3) {
-      if (enemyProfile.ad >= 3 && isFrontline(c)) {
-        score += 1.2;
-        reasons.push("they are AD heavy");
-      } else if (enemyProfile.ap >= 3 && isFrontline(c)) {
-        score += 0.9;
-        reasons.push("they are AP heavy");
-      }
-    }
-    // Ignoring the enemy's entire win condition is worth more than being a
-    // tier stronger. This is the exact mirror of the "no escape from their
-    // dive" penalty below, and it is weighted the same: two tiers. Without it
-    // a five-enemy lockdown composition produced Hecarim, Pantheon and Diana
-    // ABOVE Olaf, whose ultimate removes every debuff and makes him immune --
-    // the best answer in the game to that draft, ranked fourth on tier alone.
-    // Gated on DEPTH as well as head count. Three champions with one stun
-    // each is an ordinary team, and it was reading as a lockdown composition
-    // worth throwing the draft at -- which, back when the `cc` trait fired on
-    // the word "slow" and covered two thirds of the roster, was most teams.
-    if (enemyTraits && enemyTraits.ccEnemies >= 3 && enemyTraits.ccDepth >= 6
-        && enemyTraits.ccImmune.has(c.slug)) {
-      score += enemyTraits.ccDepth >= 9 ? 4 : 2.5;
-      reasons.push(`${enemyTraits.ccEnemies} of them lock you down, you clear it`);
-    }
-    // A heavy enemy frontline is answered by damage that ignores how much
-    // health they stacked, whether that is percent-health or true damage.
-    // True damage was missing, which is why Olaf never registered against a
-    // team of tanks: he carries no percent-health damage at all.
-    if (enemyTraits && enemyProfile.frontline >= 2
-        && (enemyTraits.pctHp.has(c.slug) || enemyTraits.trueDamage.has(c.slug))) {
-      score += 1.5;
-      const how = enemyTraits.pctHp.has(c.slug) ? "you cut max health" : "your damage is true";
-      reasons.push(`${enemyProfile.frontline} durable enemies, ${how}`);
-    }
-    // Being dived is survived by being hard to kill, not by out-damaging it.
-    if (enemyTraits && enemyTraits.assassins >= 2 && isFrontline(c)) {
-      score += 0.8;
-      reasons.push("they have multiple divers");
-    }
-    // A carry with no way out of a dive composition is a sitting duck, and
-    // ranking on tier alone kept offering exactly that: a immobile marksman
-    // into three champions built to jump on it. Win rate is measured across
-    // all games, not across this one.
-    if (enemyTraits && enemyTraits.divers >= 3 && !isFrontline(c)
-        && !enemyTraits.mobile.has(c.slug)) {
-      // Two tiers' worth. Being unable to survive the enemy's whole plan is a
-      // bigger problem than being one tier weaker, and at half this weight an
-      // S-tier immobile marksman still came second into a three-diver comp.
-      score -= 4;
-      reasons.push("no escape from their dive");
-    }
-    // Skillshots miss champions who can dash out of them, so a comp full of
-    // mobility is caught by lockdown that does not have to be aimed.
-    if (enemyTraits && enemyTraits.mobileEnemies >= 3 && enemyTraits.lockdown.has(c.slug)) {
-      score += 1.0;
-      reasons.push("lockdown for a mobile comp");
-    }
 
     // The lane note is a comparison of two MEASURED ladder win rates, never a
     // matchup claim -- we have no per-matchup data and must not imply we do.

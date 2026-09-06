@@ -19,6 +19,7 @@ import {
   type DraftState,
   type Suggestion,
   buildAllyNeeds,
+  analyseDraft,
 } from "@/lib/draft";
 import itemsData from "@/data/items.json";
 import runeIconsData from "@/data/rune_icons.json";
@@ -232,6 +233,13 @@ export function DraftAssistant() {
     () => buildAllyNeeds(state.allies, Object.values(roster()), bySlug),
     [state.allies, bySlug],
   );
+  // The composition read: what they threaten, what they are trying to do, and
+  // what our own four still lack. Computed once per draft rather than per
+  // candidate, because none of it depends on the candidate.
+  const analysis = useMemo(
+    () => analyseDraft(state.allies, state.enemies, Object.values(roster())),
+    [state.allies, state.enemies],
+  );
   const enemyTraits = useMemo(
     () => buildEnemyTraits(state.enemies, Object.values(roster()), bySlug),
     [state.enemies, bySlug],
@@ -240,10 +248,10 @@ export function DraftAssistant() {
   const suggestions = useMemo(() => {
     if (mode === "ban") return suggestBans(state, pool, champions);
     if (mode === "me" && !state.me) {
-      return suggestPicks(state, pool, champions, bySlug, 6, enemyTraits, allyNeeds);
+      return suggestPicks(state, pool, champions, bySlug, 6, enemyTraits, allyNeeds, analysis);
     }
     return [];
-  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds]);
+  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds, analysis]);
 
   /**
    * The other question. "Strongest pick in the game" and "strongest pick I
@@ -257,9 +265,9 @@ export function DraftAssistant() {
     // list stops being a curiosity and becomes the actual answer, so it gets
     // more of them.
     const limit = poolCoversRole ? 4 : 6;
-    return suggestPicks(state, [], champions, bySlug, limit, enemyTraits, allyNeeds)
+    return suggestPicks(state, [], champions, bySlug, limit, enemyTraits, allyNeeds, analysis)
       .filter((s) => !pool.includes(s.champion.slug));
-  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds, poolCoversRole]);
+  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds, analysis, poolCoversRole]);
 
   const standardBuild: Build | null = useMemo(() => {
     if (!me) return null;

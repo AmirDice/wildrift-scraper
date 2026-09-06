@@ -390,6 +390,39 @@ def main() -> None:
             kept.append("cc")
         return kept
 
+    # What a COMPOSITION is trying to do, which no tooltip states. A draft is
+    # usually beaten by answering the plan rather than the five champions
+    # separately: Fiora plus Twisted Fate is side-lane pressure with a global
+    # follow-up, not "a bruiser and a mage". Owner-maintained, and absence
+    # means "not this", so a missing entry costs sensitivity and never invents
+    # a threat.
+    archetypes = (_load("draft_archetypes.json") or {}).get("tags", {})
+    archetype_of = {}
+    for tag, names in archetypes.items():
+        for name in names:
+            archetype_of.setdefault(name, []).append(tag)
+
+    #: A shield or a heal that lands on somebody ELSE. Blitzcrank's passive
+    #: reads "Blitzcrank gains a shield that absorbs 90 damage upon falling
+    #: below 35% Health" -- that is him surviving, not him protecting a carry,
+    #: and counting it as protection made him the top recommendation for
+    #: keeping an immobile hypercarry alive against a dive composition.
+    #:
+    #: Lulu says "On Allies: Grants a shield", Janna "Blesses herself and the
+    #: allied champion", Alistar "heals himself for 27 and nearby allied
+    #: champions for 54". Naming an ally in the same ability is the whole
+    #: discrimination, and it is a reliable one: a defensive ability that
+    #: mentions allies is doing something for them.
+    protective_word = re.compile(r"\b(shield\w*|heal\w*|restor\w*)", re.I)
+    ally_word = re.compile(r"\ball(?:y|ies|ied)\b", re.I)
+
+    def protects_allies(champ: dict) -> bool:
+        for ability in champ.get("abilities") or []:
+            text = ability.get("text") or ""
+            if protective_word.search(text) and ally_word.search(text):
+                return True
+        return False
+
     def cc_depth(champ: dict) -> int:
         """How many of this champion's abilities lock somebody down.
 
@@ -429,6 +462,8 @@ def main() -> None:
             "scalesWith": c.get("scalesWith", []),
             "mechanics": derived_mechanics(c),
             "ccDepth": cc_depth(c),
+            "protectsAllies": protects_allies(c),
+            "archetypes": sorted(archetype_of.get(name, [])),
             # Traits union over the champion's TRANSFORM FORMS. Kayn's
             # percent-health damage lives entirely on Rhaast, and the roster
             # excludes forms, so base Kayn read as no answer to a team of
