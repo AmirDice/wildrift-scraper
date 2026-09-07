@@ -413,6 +413,14 @@ def main() -> None:
     # all come out as "a Tank that protects allies and has three lockdown
     # abilities", identical to the last decimal, and the ranking then falls
     # back to ladder strength and picks whichever is strongest this patch.
+    icon_dir = ROOT / "web-next" / "public" / "champions"
+
+    def local_icon(slug: str) -> str:
+        for ext in (".png", ".jpg"):
+            if (icon_dir / (slug + ext)).exists():
+                return "/champions/%s%s" % (slug, ext)
+        return ""
+
     draft_kit = (_load("champion_draft_kit.json") or {}).get("champions", {})
     archetypes = (_load("draft_archetypes.json") or {}).get("tags", {})
     archetype_of = {}
@@ -483,6 +491,12 @@ def main() -> None:
             "protectsAllies": protects_allies(c),
             "archetypes": sorted(archetype_of.get(name, [])),
             "draftKit": draft_kit.get(name) or {},
+            # Our own copy of the head icon. The CDN one takes about 1.2s
+            # from Europe, which is fine for a page showing a few and fatal
+            # for the PC second screen, which loads all 141 before it can
+            # match anything. Set from what is actually on disk so a missing
+            # file degrades to the CDN rather than to a broken image.
+            **({"iconLocal": local_icon(c["slug"])} if local_icon(c["slug"]) else {}),
             # Traits union over the champion's TRANSFORM FORMS. Kayn's
             # percent-health damage lives entirely on Rhaast, and the roster
             # excludes forms, so base Kayn read as no answer to a team of
