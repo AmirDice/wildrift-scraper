@@ -24,12 +24,19 @@ export function SecondScreen() {
   const patchRef = useRef<HTMLCanvasElement | null>(null);
   const refsRef = useRef<Reference[] | null>(null);
   const timerRef = useRef<number | null>(null);
+  const frames = useRef(0);
 
   const [status, setStatus] = useState("Load the champion icons to begin.");
   const [ready, setReady] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [scan, setScan] = useState<ScanResult | null>(null);
   const [tick, setTick] = useState({ ms: 0, count: 0 });
+  // What the reader is actually looking at. Without this a live mirror that
+  // reads nothing is indistinguishable from a live mirror that is framed
+  // wrong, and the second is far more likely: a shared WINDOW carries its own
+  // chrome, and the slot fractions are measured against the phone screen
+  // alone.
+  const [shot, setShot] = useState<{ url: string; rect: string } | null>(null);
 
   // The icons are the reference set: 141 champion portraits, normalised once
   // and reused every frame. Normalising inside the match loop would redo all
@@ -149,6 +156,22 @@ export function SecondScreen() {
                                  refsRef.current!);
         setTick((prev) => ({ ms: Math.round(performance.now() - t0), count: prev.count + 1 }));
         setScan(result);
+
+        // A thumbnail of exactly the pixels being read, every couple of
+        // seconds. If the phone screen does not fill this, the share is
+        // wrong -- not the reader.
+        if (frames.current % 3 === 0) {
+          const thumb = document.createElement("canvas");
+          thumb.width = 150;
+          thumb.height = Math.max(1, Math.round(150 * readCtx.canvas.height / readCtx.canvas.width));
+          thumb.getContext("2d")!.drawImage(readCtx.canvas, 0, 0, thumb.width, thumb.height);
+          setShot({
+            url: thumb.toDataURL("image/jpeg", 0.6),
+            rect: `${readCtx.canvas.width}x${readCtx.canvas.height}`
+              + (readCtx === ctx ? " (whole share)" : ` trimmed from ${frame.width}x${frame.height}`),
+          });
+        }
+        frames.current += 1;
       }, 600);
     } catch (err) {
       setStatus(`Share cancelled or unavailable: ${(err as Error).message}`);
@@ -203,6 +226,22 @@ export function SecondScreen() {
         <p className="text-xs text-faint">
           {tick.count} frames read, {tick.ms}ms each, {READER.PATCH}px patches.
         </p>
+      )}
+
+      {shot && (
+        <div className="flex items-start gap-3 rounded-xl border border-white/10 p-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={shot.url} alt="what the reader sees" className="rounded border border-white/15" />
+          <div className="text-xs text-faint">
+            <div className="font-bold text-muted">What the reader sees</div>
+            <div className="mt-1">{shot.rect}</div>
+            <div className="mt-2 max-w-xs">
+              The phone screen should fill this box edge to edge. If you can see the
+              mirror app&apos;s toolbar or desktop around it, share just the mirror
+              window instead.
+            </div>
+          </div>
+        </div>
       )}
 
       {scan && (
