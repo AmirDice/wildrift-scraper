@@ -787,12 +787,26 @@ def advise(champion: str, role: str, enemies: list[str],
            build_bias: str = "balanced",
            locked_items: list[str] | None = None,
            locked_runes: list[str] | None = None,
+           ladder_anchor: bool = True,
            on_progress=None) -> dict:
     # on_progress(event) is called with {"stage": ...} as the generation moves.
     # It is optional and side-effect free: nothing about the build depends on
     # whether anyone is listening.
     emit = on_progress or (lambda _event: None)
     mode = "counter" if mode == "counter" else "studio"
+    # ladder_anchor=False is the "what would you build on your own" switch.
+    #
+    # The ladder block hands the model the items, keystones, spells and minors
+    # the top fifty players run, as candidates it must score and argue away.
+    # That is a strong anchor by design -- it stops identity drift, and the
+    # validator enforces it -- but it means an answer is never purely the
+    # model's own reading of the kit. Turning it off asks exactly that
+    # question, and the difference between the two is itself informative: on
+    # Graves into four tanks the anchored build and the free one agreed on the
+    # keystone and on four of five items.
+    #
+    # The validator's ladder_core check is skipped with it, because demanding
+    # a build justify skipping items it was never shown is incoherent.
     # A blank role is not "no role", it is a role nobody told us. Every rule
     # keyed on it then quietly does not apply -- most visibly Smite, which is
     # imposed on jungle builds and which a Hecarim counter came back without
@@ -918,7 +932,7 @@ def advise(champion: str, role: str, enemies: list[str],
     prompt = "\n\n".join(x for x in [
         prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
         prompt_mod.meta_identity_block(identity_key),
-        prompt_mod.ladder_consensus_block(identity_key),
+        prompt_mod.ladder_consensus_block(identity_key) if ladder_anchor else "",
         f"ROLE: {role}",
         # Every selected option governs the WHOLE loadout. Stated once here
         # rather than repeated inside each option's own text: those are written
@@ -1069,7 +1083,8 @@ def advise(champion: str, role: str, enemies: list[str],
             # objected. That is identity drift, and it is the failure the
             # ladder core exists to catch; answering an enemy comp is not a
             # licence to stop playing the champion. Now enforced in both.
-            ladder_core=prompt_mod.ladder_core_slugs(identity_key),
+            ladder_core=(prompt_mod.ladder_core_slugs(identity_key)
+                         if ladder_anchor else []),
             # How many enemies actually have hard crowd control, so the
             # validator can reject a tenacity rune bought against one.
             hard_cc_count=(threats_mod.team_threat_profile(enemies).get("hardCcCount")

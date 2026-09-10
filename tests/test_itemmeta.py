@@ -238,7 +238,8 @@ class TestThreatResponseItems:
         # The categories threats.py appends to itemizableResponses.
         for category in ("armor", "magic_resist", "anti_basic_attack",
                          "burst_survival", "grievous_wounds", "shield_reduction",
-                         "tenacity"):
+                         "tenacity", "armor_penetration", "magic_penetration",
+                         "lethality", "cc_immunity"):
             got = itemmeta.items_answering(category)
             assert got, f"{category} resolves to no items, so naming it says nothing"
 
@@ -250,6 +251,66 @@ class TestThreatResponseItems:
     def test_shield_reduction_is_the_two_items_that_do_it(self):
         assert set(itemmeta.items_answering("shield_reduction")) == {
             "serpents-fang", "oceanids-trident"}
+
+    def test_percentage_penetration_is_the_anti_tank_answer(self):
+        """The one category that was missing entirely.
+
+        Every other response category is defensive or anti-sustain, so a comp
+        of four tanks used to be handed the assassin comp's menu minus one
+        entry: buy resistances, buy anti-heal, nothing that shreds. Measured
+        2026-09-07, durableTargetCount went 1 -> 4 across ten test comps and
+        changed nothing about the build.
+        """
+        got = itemmeta.items_answering("armor_penetration")
+        assert "lord-dominiks-regard" in got
+        assert "seryldas-grudge" in got
+        # Sorted by magnitude, so the most penetration leads.
+        assert got[0] == "lord-dominiks-regard"
+        assert "void-staff" in itemmeta.items_answering("magic_penetration")
+
+    def test_lethality_is_not_offered_as_anti_tank(self):
+        """Flat and percentage penetration answer OPPOSITE problems.
+
+        Percentage penetration scales with the target's armor; lethality is
+        worth most against the target with the least of it. Collapsing them
+        into one "penetration" category would answer a four-tank comp with
+        Youmuu's Ghostblade.
+        """
+        anti_tank = set(itemmeta.items_answering("armor_penetration"))
+        anti_squishy = set(itemmeta.items_answering("lethality"))
+        assert not (anti_tank & anti_squishy)
+        assert "youmuus-ghostblade" in anti_squishy
+        assert "youmuus-ghostblade" not in anti_tank
+
+    def test_cc_immunity_is_clearing_not_shortening(self):
+        """Tenacity shortens crowd control; this ends it or stops it landing.
+
+        The two are different answers and only one of them helps against a
+        point-and-click lockdown. Sterak's counts because triggering Lifeline
+        removes all crowd control, and the spell shields count because an
+        ability that never lands needs no cleansing.
+        """
+        got = set(itemmeta.items_answering("cc_immunity"))
+        assert {"mercurial-scimitar", "steraks-gage", "edge-of-night",
+                "banshees-veil"} <= got
+
+    def test_cc_immunity_ignores_items_that_cleanse_an_ALLY(self):
+        """Mikael's Blessing removes crowd control from an allied champion,
+        which does not answer being locked down yourself. Matched per line
+        rather than over the joined passive text, or the ally wording and the
+        cleanse wording sit in one blob and the veto never fires."""
+        assert "mikaels-blessing" not in itemmeta.items_answering("cc_immunity")
+
+    def test_edge_of_night_was_only_reachable_as_a_lethality_item(self):
+        """The bug this category fixes.
+
+        Lethality is raised when the enemy team is SQUISHY, so against four
+        durable enemies with nine crowd-control abilities -- the comp its
+        spell shield is most wanted against -- Edge of Night was never put on
+        the menu at all.
+        """
+        assert "edge-of-night" in itemmeta.items_answering("lethality")
+        assert "edge-of-night" in itemmeta.items_answering("cc_immunity")
 
     def test_boots_answer_categories_even_though_they_are_not_in_the_pool(self):
         """Mercury's Treads IS the tenacity answer, and Plated Steelcaps IS the

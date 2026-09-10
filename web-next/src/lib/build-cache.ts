@@ -238,7 +238,26 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // and nothing else. Tenacity also stopped being bought against a single
   // stun, and hard crowd control stopped counting effects an enemy applies to
   // their own allies.
-  return `build:v32:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v33: the counter prompt can finally say how to KILL what they built. Every
+  // response category was defensive or anti-sustain, so a comp of four tanks
+  // was handed the assassin comp's menu minus one entry and returned the same
+  // five items: durableTargetCount went 1 -> 4 across ten test comps and
+  // changed nothing. Percentage penetration, flat penetration and magic
+  // penetration are now separate categories raised from that count. Measured:
+  // between-comp item overlap fell from 60.6% to 45.5% against a 55.7%
+  // same-comp noise floor, so a v32 counter build was chosen by a generator
+  // that could not express the answer to a frontline.
+  // v34: the ladder block stopped deciding builds. It printed only the single
+  // most common keystone and cut every item under a 30% pick rate, so Graves
+  // was handed Fleet Footwork and nothing else, and took it into four tanks
+  // four times out of four; removing the block entirely flipped that to
+  // Conqueror 4/4. Every variation the top fifty actually ran is now offered,
+  // still with no counts and no provenance. Mercurial Scimitar (5/50) came
+  // back with it, which is the only anti-crowd-control item those players buy.
+  // Also new: percentage/flat penetration split, a cc_immunity category, and
+  // fight-length guidance on the rune page. Every v33 counter build was
+  // chosen from a menu that could not express most of this.
+  return `build:v34:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

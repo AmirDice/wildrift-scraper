@@ -529,8 +529,12 @@ def _consensus_store() -> dict:
     return _CONSENSUS_CACHE
 
 
-#: pick rate at which a ladder item is put in front of the model at all
-LADDER_CORE_RATE = 0.30
+#: Retired. Every line a top-50 board actually ran is now put in front of the
+#: model, because a 30% floor was deciding builds rather than informing them:
+#: Mercurial Scimitar sits at 5/50 on Graves and was cut, which removed the
+#: only anti-crowd-control item real Graves players buy from a prompt facing
+#: nine crowd-control abilities. Kept as a name so nothing importing it breaks.
+LADDER_CORE_RATE = 0.0
 
 
 def ladder_core_slugs(name: str) -> list[str]:
@@ -541,8 +545,7 @@ def ladder_core_slugs(name: str) -> list[str]:
     rec = _consensus_store().get(name.split(" (")[0])
     if not rec or not rec.get("items"):
         return []
-    return [i["slug"] for i in rec["items"]
-            if i.get("of") and i["count"] / i["of"] >= LADDER_CORE_RATE]
+    return [i["slug"] for i in rec["items"] if i.get("slug")]
 
 
 def ladder_consensus_block(name: str) -> str:
@@ -574,8 +577,7 @@ def ladder_consensus_block(name: str) -> str:
     rec = _consensus_store().get(name.split(" (")[0])
     if not rec or not rec.get("items"):
         return ""
-    core = [i for i in rec["items"]
-            if i.get("of") and i["count"] / i["of"] >= LADDER_CORE_RATE]
+    core = [i for i in rec["items"] if i.get("name")]
     if not core:
         return ""
     lines = [
@@ -583,12 +585,25 @@ def ladder_consensus_block(name: str) -> str:
         "judge them exactly like every other candidate):",
         "  items: " + ", ".join(sorted(i["name"] for i in core)),
     ]
+    # EVERY keystone and spell pair, not the most common one.
+    #
+    # This printed rec["keystones"][0] and was the only place a keystone was
+    # named anywhere in the prompt, so one line decided the rune page for every
+    # comp. Graves into four tanks took Fleet Footwork four times out of four;
+    # with this block removed entirely it took Conqueror four out of four. The
+    # board itself runs both -- Conqueror was in the data the whole time and
+    # the [0] threw it away.
+    #
+    # Still no counts and still no provenance, for the reason in the docstring:
+    # the model defers to a named authority instead of evaluating. A list of
+    # equals is a menu; a list with a headline is an instruction.
     if rec.get("keystones"):
-        lines.append("  keystone: " + rec["keystones"][0]["name"])
+        lines.append("  keystones: " + ", ".join(k["name"] for k in rec["keystones"]))
     if rec.get("minors"):
         lines.append("  minor runes: " + ", ".join(m["name"] for m in rec["minors"]))
     if rec.get("spells"):
-        lines.append("  summoner spells: " + rec["spells"][0]["pair"])
+        lines.append("  summoner spells: "
+                     + ", ".join(sp["pair"] for sp in rec["spells"]))
     lines.append(
         "  None of these has to reach your final build. For any that does not, "
         "state why it lost to what you chose instead.")
@@ -794,6 +809,39 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = ""
         raised |= {"armor", "magic_resist"}
     elif needed in ("armor", "magic_resist"):
         raised.add(needed)
+    # HOW TO KILL WHAT THEY BUILT. Every category above answers what the enemy
+    # does TO you; none answered what you do to them, so a comp of four tanks
+    # and a comp of five assassins were handed the same menu and returned the
+    # same five items. Measured 2026-09-07: durableTargetCount went 1 -> 4
+    # across the test comps and changed nothing in the build.
+    #
+    # Penetration is keyed on the damage YOU deal, not the damage they deal.
+    # The candidate pool cannot make this choice: it is 98 items wide for
+    # Wukong and still contains Void Staff, because it filters on range, role
+    # and kit rather than on damage type. `build_identity` is the function the
+    # rest of the advisor already itemises by, and it says "physical" for the
+    # AD bruisers that scrape as magic.
+    # CLEARING crowd control, as opposed to shortening it. Tenacity is already
+    # raised per-enemy by threats.py, but tenacity is the wrong answer to a
+    # point-and-click lockdown and to a comp that simply has more crowd control
+    # than tenacity can absorb. Keyed on DEPTH rather than the enemy count: the
+    # prompt already tells the model an average team totals about six
+    # abilities, so seven is where shortening stops being enough and removing
+    # starts to earn a slot.
+    if (profile.get("hardCcDepth") or 0) >= 7:
+        raised.add("cc_immunity")
+
+    durable = profile.get("durableTargetCount") or 0
+    magical = profiles.build_identity(me) == "magic"
+    if durable >= 2:
+        raised.add("magic_penetration" if magical else "armor_penetration")
+    elif not magical:
+        # Nothing to shred. Flat penetration is worth most against the target
+        # with the least armour, so a squishy comp asks the opposite question.
+        # Physical only: Wild Rift's flat magic penetration sits on items
+        # (Infinity Orb, Stormsurge) that are burst mage cores rather than an
+        # answer to anything, so raising it as a "response" would be noise.
+        raised.add("lethality")
     answers = {}
     for category in sorted(raised):
         slugs = itemmeta.items_answering(category, pool)
@@ -860,6 +908,27 @@ def enemy_threat_block(enemies: list[str], me: str, wrmeta: dict, role: str = ""
         "attacks: a team of mages and magic tanks needs magic resistance even though not "
         "one of them auto-attacks you to death. Buying the resistance their damage is NOT "
         "made of is a wasted slot.")
+    # HOW LONG THE FIGHTS RUN. The comp's durability was stated for items and
+    # never connected to the rune page, so a keystone was chosen with no view
+    # of the fight it would be used in: a Graves build into four tanks took
+    # Fleet Footwork, which is legal, unmotivated, and beaten by anything that
+    # stacks over a fight that cannot end quickly.
+    durable_n = profile.get("durableTargetCount") or 0
+    if durable_n >= 3:
+        lines.append(
+            f"THESE FIGHTS WILL BE LONG. {durable_n} of these enemies are "
+            "durable, so they do not die to one rotation and they do not let "
+            "you leave. A keystone that STACKS or scales over a drawn-out "
+            "fight is worth more here than one that pays out once on an "
+            "opener or rewards poking and disengaging, because the poke "
+            "window closes and the fight does not. Say which it is in the "
+            "trade-offs.")
+    elif durable_n <= 1:
+        lines.append(
+            "THESE FIGHTS WILL BE SHORT. Almost nothing on this team is "
+            "durable, so fights are decided in the first rotation. A keystone "
+            "that pays out immediately beats one that needs a long fight to "
+            "stack, which is a fight this comp will not give you.")
     lines.append(
         f"TENACITY IS NOT A DEFAULT. {profile.get('hardCcCount', 0)} of these enemies have "
         "hard crowd control (stun, root, knockup, charm, taunt, suppress, silence), and "

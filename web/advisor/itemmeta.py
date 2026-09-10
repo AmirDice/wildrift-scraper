@@ -293,12 +293,56 @@ _RESPONSE_STATS: dict[str, tuple[str, float]] = {
     "armor": ("armor", 30.0),
     "magic_resist": ("mr", 25.0),
     "tenacity": ("tenacity", 1.0),
+    # PENETRATION. Every other category here is defensive or anti-sustain,
+    # which meant the answer to a comp of four tanks was the answer to a comp
+    # of five assassins minus one entry: buy resistances, buy anti-heal. The
+    # actual answer to a tank is to shred it, and the system had no way to say
+    # so -- Serylda's Grudge reached the prompt only as a grievous-wounds item.
+    #
+    # Percentage and flat are SEPARATE categories because they answer opposite
+    # problems. Percentage penetration scales with the target's resistance and
+    # is the anti-tank stat; flat penetration (lethality) is worth most against
+    # a target with little armour and least against the tank, so raising them
+    # together would answer a four-tank comp with Youmuu's Ghostblade.
+    "armor_penetration": ("physicalPen", 15.0),
+    "magic_penetration": ("magicPen", 15.0),
+    "lethality": ("physicalPenFlat", 10.0),
 }
 
 _RESPONSE_TAGS: dict[str, str] = {
     "grievous_wounds": "grievous-wounds",
     "shield_reduction": "anti-shield",
 }
+
+
+def _breaks_crowd_control(item: dict) -> bool:
+    """Items that CLEAR or PREVENT crowd control on YOURSELF.
+
+    Tenacity shortens crowd control; this ends it or stops it landing, which
+    is a different answer and the only one that helps against a point-and-
+    click lockdown. Before this existed the only route to Edge of Night was
+    the `lethality` category, which is raised when the enemy team is SQUISHY
+    -- so against the comp its spell shield is most wanted, four durable
+    enemies with nine crowd-control abilities, it was never offered at all.
+
+    Matched per LINE, not over the joined text, because Mikael's Blessing
+    removes crowd control from an ALLIED champion and that does not answer
+    being locked down yourself.
+    """
+    for line in (item.get("passives") or []):
+        if re.search(r"allied? champion|an ally|nearby all", line, re.I):
+            continue
+        if re.search(r"removes? all (?:crowd control|cc)"
+                     r"|immunity to crowd control"
+                     r"|spell shield"
+                     r"|blocks the next hostile ability", line, re.I):
+            return True
+    return False
+
+
+# Categories that need real logic rather than a tag, a stat or one regex over
+# the joined passive text.
+_RESPONSE_FUNCS = {"cc_immunity": _breaks_crowd_control}
 
 
 def items_answering(category: str, pool: list[str] | None = None) -> list[str]:
@@ -318,6 +362,7 @@ def items_answering(category: str, pool: list[str] | None = None) -> list[str]:
     tag = _RESPONSE_TAGS.get(category)
     stat_key, stat_min = _RESPONSE_STATS.get(category, ("", 0.0))
     pattern = _RESPONSE_PATTERNS.get(category)
+    func = _RESPONSE_FUNCS.get(category)
     # Boots belong here even though they are not part of the main five: the
     # tenacity answer to a crowd-control comp IS Mercury's Treads, and the
     # answer to a lane of basic attacks IS Plated Steelcaps. The prompt asks
@@ -343,6 +388,8 @@ def items_answering(category: str, pool: list[str] | None = None) -> list[str]:
         if stat_key and float((stats.get(stat_key) or {}).get("value") or 0) >= stat_min:
             hit = True
         if pattern and pattern.search(blob):
+            hit = True
+        if func and func(item):
             hit = True
         if hit:
             magnitude = float((stats.get(stat_key) or {}).get("value") or 0) if stat_key else 0.0

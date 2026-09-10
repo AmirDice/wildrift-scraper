@@ -343,14 +343,28 @@ def build() -> tuple[dict, dict]:
             "pentas": pentas,
             "tiers": dict(tiers.most_common()),
         }
+        # EVERYTHING the top 50 ran, not the head of the distribution.
+        #
+        # These were most_common(10) and most_common(4), and the truncation
+        # decided builds. Graves' board runs Fleet Footwork 42 times and
+        # Conqueror 4, so only Fleet survived to reach the advisor -- which
+        # then took it against four tanks in four runs out of four, because it
+        # was the only keystone named anywhere in the prompt. Cutting the
+        # block entirely flipped that to Conqueror 4/4.
+        #
+        # Mercurial Scimitar was cut the same way at 5/50: the one anti-crowd
+        # -control item real Graves players buy, filtered out before the model
+        # could consider it against a comp with nine crowd-control abilities.
+        #
+        # A rare line is still evidence. Keeping the whole tail costs a few
+        # hundred kilobytes and lets the model see that the alternatives are
+        # things people actually play, rather than inferring they do not exist.
         consensus[champ] = {
             "items": [{"slug": s, "name": ITEMS.get(s, s), "count": c, "of": len(builds)}
-                      for s, c in items.most_common(10)],
-            "keystones": [{"name": k, "count": c, "of": len(builds)} for k, c in ks.most_common(4)],
-            "spells": [{"pair": p, "count": c, "of": len(builds)} for p, c in spells.most_common(3)],
-            # The three minors the board converges on, so the advisor can be
-            # shown a complete rune page rather than a keystone in isolation.
-            "minors": [{"name": m, "count": c, "of": len(builds)} for m, c in minors.most_common(3)],
+                      for s, c in items.most_common()],
+            "keystones": [{"name": k, "count": c, "of": len(builds)} for k, c in ks.most_common()],
+            "spells": [{"pair": p, "count": c, "of": len(builds)} for p, c in spells.most_common()],
+            "minors": [{"name": m, "count": c, "of": len(builds)} for m, c in minors.most_common()],
         }
 
     def top(pool: str, n: int = 1, reverse: bool = True):
