@@ -608,6 +608,21 @@ OBJECTIVES = {
     "maxsynergy": "OPTIMIZE FOR SYNERGY: favor items and runes that combo with the kit's "
                   "mechanics and with each other (spellblade on weavers, on-hit on on-hit "
                   "casters, actives that chain into the kit), even at some raw-stat cost.",
+    # The other objectives each pick an AXIS to optimise along. This one names
+    # no axis: it asks for the strongest loadout the kit can support, and lets
+    # the model decide what "strongest" means for this champion. Paired with
+    # ladder_anchor=False below, because a question about the best possible
+    # build cannot be asked while handing over the list of what is popular.
+    "best": "BUILD THE STRONGEST LOADOUT THIS CHAMPION CAN HAVE. Not the "
+            "conventional one, not the popular one: the one that makes this "
+            "specific kit as strong as it can be, judged on the whole package "
+            "-- items, boots, runes and summoners working together. Decide "
+            "for yourself which axis matters most for this kit rather than "
+            "spreading power evenly, and commit to it. If the strongest "
+            "answer is something the average player would not build, that is "
+            "an acceptable answer: say plainly in the reasoning what it beats "
+            "and what it gives up. Do not reach for an unusual pick to be "
+            "interesting -- justify it or take the ordinary one.",
 }
 
 # Timing is a preference, not permission to discard a champion's core synergy.
@@ -863,6 +878,14 @@ def advise(champion: str, role: str, enemies: list[str],
         ahead_enemy = ""
     style = PLAYSTYLES.get(playstyle, PLAYSTYLES["standard"])
     obj = OBJECTIVES.get(objective, "")
+    # "best" answers "what is the strongest build for this champion", and the
+    # ladder block answers "what do the top fifty run". Asking the first while
+    # supplying the second gets the second: measured on Graves, the block's
+    # single named keystone was taken 4 runs out of 4 against a comp it did
+    # not suit. So the anchor comes off with this objective unless the caller
+    # has explicitly asked for it back.
+    if objective == "best":
+        ladder_anchor = False
     risk_tolerance = risk_tolerance if risk_tolerance in RISK_TOLERANCE else "medium"
     risk = RISK_TOLERANCE[risk_tolerance]
     build_bias = build_bias if build_bias in BUILD_BIAS else "balanced"
@@ -931,7 +954,7 @@ def advise(champion: str, role: str, enemies: list[str],
 
     prompt = "\n\n".join(x for x in [
         prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
-        prompt_mod.meta_identity_block(identity_key),
+        prompt_mod.meta_identity_block(identity_key, constrain=(objective != "best")),
         prompt_mod.ladder_consensus_block(identity_key) if ladder_anchor else "",
         f"ROLE: {role}",
         # Every selected option governs the WHOLE loadout. Stated once here

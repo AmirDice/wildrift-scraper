@@ -380,60 +380,106 @@ def identity_card(name: str) -> dict | None:
     return _identity_store().get(name)
 
 
-def meta_identity_block(name: str) -> str:
-    """How this champion is ACTUALLY itemized at high rank.
+def meta_identity_block(name: str, constrain: bool = True) -> str:
+    """What this kit NEEDS, stated as needs rather than as a shopping list.
 
-    The kit-derived profiles above say what the abilities could use; this card
-    says what the meta has settled on -- including which tempting paths are
-    traps. It exists because the measured failure mode of every model tried is
-    identity drift: a build that is internally coherent but that nobody who
-    plays the champion would recognise. Verdicts marked "never" are hard
-    constraints; the validator enforces them after generation too.
+    The cards used to name items -- 420 archetype notes across the roster read
+    like "using essence-reaver, bloodthirster, and infinity-edge" -- and this
+    block handed that to the model as a hard constraint. So the model recited:
+    every Graves build came back as those three items, and an explicit "build
+    the strongest loadout you can" objective produced Guardian Angel fifth,
+    which the same card listed as an accepted flex in that exact slot.
 
-    The notes name ITEMS, and that is where the cards do damage: Pantheon's
-    reads "higher durability using Black Cleaver and Sterak's" and neither is
-    built by a single one of the top 50 Pantheon players. 97 of 139 cards name
-    at least one item the ladder does not build. The prose cannot be repaired
-    automatically, so every item it names is checked against the measured
-    consensus and the ones nobody builds are contradicted in place -- which
-    also stops a stale card from quietly outranking the measured block."""
+    Now the champion says what it needs by CATEGORY (penetration against
+    resists, anti-heal against healing, tenacity against crowd control) and
+    items_answering() resolves each to real slugs from this champion's own
+    legal pool. The champion states the problem; the item layer answers it.
+
+    What survives from the old cards is the part that is a fact about the kit
+    rather than an opinion about the meta: the NEVER verdicts and the stats
+    never to build around. Graves has no AP ratios at any level of ambition,
+    and the validator enforces that after generation too.
+
+    `constrain=False` (objective="best") drops even the role and team framing,
+    leaving only the hard limits, so the archetype is genuinely the model's to
+    choose.
+
+    traitPriors are in the data and deliberately not here. They are 0-1
+    opinions that correlate at rho=0.45 with our own measured crowd-control
+    depth, because they answer a different question; anything the advisor can
+    measure is measured.
+    """
     card = _identity_store().get(name)
     if not card:
         return ""
-    verdicts = "; ".join(
-        f"{a['path']}={a['status'].upper()}" + (f" ({_norm(a['note'])})" if a.get("note") else "")
-        for a in card.get("archetypes", []))
-    lines = [
-        "META ITEMIZATION IDENTITY (a curated description of this champion's build "
-        "identity; where it names an item, the CORRECTION below outranks it. "
-        "this CONSTRAINS which archetype the build may express -- the kit profiles above "
-        "decide the details INSIDE the allowed archetypes, never outside them):",
-        f"  is: {_norm(card.get('identitySummary', ''))}",
-        f"  archetype verdicts: {verdicts}",
-        "  statuses: PRIMARY anchors the default build; VIABLE is a legitimate alternative; "
-        "SITUATIONAL only under its stated condition; FLEX_ONE_ITEM allows exactly ONE item "
-        "of that archetype; OFF_META must not be recommended; NEVER is a hard constraint.",
-    ]
+
+    limits = card.get("hardLimits") or {}
+    never = limits.get("neverArchetypes") or []
+    lines: list[str] = []
+
+    def add_limits():
+        if never:
+            lines.append("  NEVER, at any cost: " + "; ".join(
+                f"{a.get('path','')}" + (f" ({_norm(a.get('why',''))})" if a.get("why") else "")
+                for a in never))
+        if limits.get("avoidStats"):
+            lines.append("  never build around: " + ", ".join(limits["avoidStats"]))
+
+    if not constrain:
+        lines.append("BUILD IDENTITY (hard limits only -- the archetype is YOURS to choose):")
+        if card.get("identitySummary"):
+            lines.append(f"  is: {_norm(card['identitySummary'])}")
+        add_limits()
+        lines.append(
+            "  Nothing else about this champion's usual build is given to you on "
+            "purpose. Decide the archetype and every item in it from the kit "
+            "profiles above. If the strongest answer is the conventional one, "
+            "build it and say so; if it is not, say what it beats.")
+        return "\n".join(lines)
+
+    lines.append(
+        "BUILD IDENTITY (what this kit NEEDS. It names no items on purpose: the "
+        "item lists elsewhere in this prompt are where you find what provides "
+        "each need, and the choice between them is yours to argue):")
+    if card.get("identitySummary"):
+        lines.append(f"  is: {_norm(card['identitySummary'])}")
+    if card.get("classes") or card.get("roles"):
+        lines.append("  plays as: " + "/".join(card.get("classes") or [])
+                     + " in " + "/".join(card.get("roles") or []))
+
+    combat = card.get("combat") or {}
+    if combat:
+        bits = [f"{k.replace('_', ' ')}: "
+                + (", ".join(v) if isinstance(v, list) else str(v))
+                for k, v in combat.items() if v]
+        lines.append("  fights: " + "; ".join(bits))
+
+    needs = card.get("itemizationNeeds") or {}
+    if needs.get("primary_damage"):
+        lines.append(f"  damage type: {needs['primary_damage']}")
+    if needs.get("scaling_priority"):
+        lines.append("  spend gold on, in order: " + " > ".join(needs["scaling_priority"]))
+    if needs.get("defensive_priority"):
+        lines.append("  when it buys defence, in order: "
+                     + " > ".join(needs["defensive_priority"]))
+    if needs.get("situational_needs"):
+        # Conditions, not instructions: each one only applies if the enemy
+        # team actually presents it, which the threat block above states.
+        lines.append(
+            "  conditional needs, each ONLY if this match presents it: "
+            + ", ".join(n.replace("_", " ") for n in needs["situational_needs"]))
     if card.get("statPriorities"):
         lines.append("  stat priorities: " + " > ".join(card["statPriorities"]))
-    if card.get("avoidStats"):
-        lines.append("  never build around: " + ", ".join(card["avoidStats"]))
-    if card.get("flexPatterns"):
-        lines.append("  accepted flexes: " + "; ".join(_norm(f) for f in card["flexPatterns"]))
-    contradicted = _card_items_the_ladder_rejects(name, card)
-    if contradicted:
-        # No percentages and no provenance. The owner's call, and the right
-        # one: telling the model how many strong players build something is an
-        # argument from popularity, and a model given one defers to it instead
-        # of scoring the item. The measurement decides WHICH items are named
-        # here; it is never quoted to the model.
-        lines.append(
-            "  CORRECTION -- the wording above names these, and they are NOT part of this "
-            "champion's build identity: " + ", ".join(n for n, _pct in contradicted)
-            + ". Never pick one to express the archetype or because the wording above "
-            "recommends it. A specific threat in THIS match may still justify one, and then "
-            "the reason must name that threat -- 'their team heals' is a reason, 'it suits "
-            "the archetype' is not.")
+
+    team = card.get("teamComp") or {}
+    if team:
+        wants = [k.replace("_", " ") for k, v in team.items() if v is True]
+        if wants:
+            lines.append("  wants from its team: " + ", ".join(wants))
+        if team.get("primary_team_role"):
+            lines.append(f"  its job in a fight: {team['primary_team_role'].replace('_',' ')}")
+
+    add_limits()
     return "\n".join(lines)
 
 

@@ -336,3 +336,201 @@ class TestEverySelectedOptionGovernsTheWholeLoadout:
 
     def test_every_section_defers_to_the_kit_rather_than_the_description(self, hecarim_unknown):
         assert "is not serving the request whatever" in hecarim_unknown
+
+
+class TestIdentityOverrides:
+    """champion_identity.json is an LLM guess and is enforced hard: the card
+    feeds the prompt AND the validator rejects items from any path it marks
+    "never". Where the guess contradicts the MEASURED ladder consensus, the
+    overlay wins -- and must keep winning after a --force regenerate.
+
+    The case: Shen. The generator now feeds the measured ladder builds into
+    its prompt AND rejects a card that recommends an item the ladder does not
+    build, and on Shen it could not converge -- six attempts each insisted on
+    Wit's End, Titanic Hydra and Iceborn Gauntlet, which ZERO of his top 50
+    build. It refused rather than shipping, which left the stale card in
+    place, so his card is written by hand here instead.
+
+    Viego was the first entry and was removed the same day: once the generator
+    was fixed he came out as a crit champion on his own, and a hand-written
+    duplicate would only have frozen him against the next meta shift.
+    """
+
+    def test_the_overlay_replaces_the_generated_card(self):
+        from web.advisor import prompt
+        primary = [a["path"] for a in prompt.identity_card("Shen")["archetypes"]
+                   if a["status"] == "primary"]
+        assert primary == ["Full Tank / Health Stacker"]
+
+    def test_the_path_the_ladder_never_builds_is_demoted(self):
+        from web.advisor import prompt
+        card = prompt.identity_card("Shen")
+        off = {a["path"] for a in card["archetypes"] if a["status"] == "off_meta"}
+        assert "Health-Damage Bruiser" in off
+
+    def test_signature_items_are_the_ones_the_ladder_actually_builds(self):
+        """Not a style question: signatureItems is quoted into the prompt."""
+        from web.advisor import prompt
+        sig = prompt.identity_card("Shen")["signatureItems"]
+        assert "Heartsteel" in sig and "Sunfire Aegis" in sig
+        assert "Titanic Hydra" not in sig
+        assert "Iceborn Gauntlet" not in sig
+
+    def test_the_overlay_agrees_with_the_measured_consensus(self):
+        """Pins the two together, so a re-scrape that moves the meta shows up
+        here rather than silently leaving the overlay stale."""
+        from web.advisor import prompt
+        rec = prompt._consensus_store().get("Shen") or {}
+        catalog = prompt._item_catalog()
+        built = {i["name"] for i in rec.get("items", [])
+                 if i.get("of") and i["count"] / i["of"] >= 0.5
+                 and not any(b in catalog.get(i["name"], "")
+                             for b in ("boots", "greaves", "advance"))}
+        sig = set(prompt.identity_card("Shen")["signatureItems"])
+        assert built <= sig, f"the ladder builds {built - sig} and the card omits it"
+
+    def test_viego_is_no_longer_overridden(self):
+        """He was, and the generator now reaches the same answer unaided; an
+        override left in place would stop tracking the ladder."""
+        from web.advisor import prompt
+        import json
+        over = json.loads((prompt.DATA / "champion_identity_overrides.json")
+                          .read_text(encoding="utf-8"))["champions"]
+        assert "Viego" not in over
+        # The archetype assertion that used to live here read card
+        # ["archetypes"], which the needs-based schema does not have. What is
+        # still checkable is that he has a card at all and that it states a
+        # damage type rather than a shopping list.
+        card = prompt.identity_card("Viego")
+        assert card and card.get("itemizationNeeds", {}).get("primary_damage")
+
+    def test_champions_without_an_override_are_untouched(self):
+        """The generated card reaches the advisor unchanged when nothing
+        overrides it. Asserting the archetype STRING here was a mistake once
+        already -- it pinned wording the generator is free to rewrite, and
+        broke the moment the cards were regenerated."""
+        import json
+        from web.advisor import prompt
+        base = json.loads((prompt.DATA / "champion_identity.json")
+                          .read_text(encoding="utf-8"))["champions"]
+        over = json.loads((prompt.DATA / "champion_identity_overrides.json")
+                          .read_text(encoding="utf-8"))["champions"]
+        plain = next(n for n in ("Yasuo", "Ahri", "Jinx") if n not in over)
+        assert prompt.identity_card(plain) == base[plain]
+
+
+class TestTheIdentityCardDoesNotPrescribeItems:
+    """The cards used to name what to buy, and the block called that a rule.
+
+    420 archetype notes across the roster read like "using essence-reaver,
+    bloodthirster, and infinity-edge", and the block introduced them with
+    "this CONSTRAINS which archetype the build may express ... never outside
+    them". So the model recited: every Graves build came back as those three,
+    and an explicit "build the strongest loadout you can" objective produced
+    Guardian Angel fifth, which the same card listed as an accepted flex in
+    that exact slot.
+
+    The cards now state NEEDS by category and the item layer answers them.
+    This is the net under that: an item may still be named to forbid it, and
+    nowhere else.
+    """
+
+    @staticmethod
+    def _slugs_in(block, itemmeta):
+        return {s for s in itemmeta.ITEMS if s in block}
+
+    def test_no_champion_is_told_which_items_to_build(self):
+        import json, pathlib as _p
+        from web.advisor import prompt, itemmeta
+        doc = json.loads(_p.Path("data/champion_identity.json")
+                         .read_text(encoding="utf-8"))
+        offenders = {}
+        for name in doc["champions"]:
+            block = prompt.meta_identity_block(name)
+            for line in block.splitlines():
+                if "NEVER" in line or "never build around" in line:
+                    continue          # forbidding an item is the opposite
+                hits = self._slugs_in(line, itemmeta)
+                if hits:
+                    offenders.setdefault(name, set()).update(hits)
+        assert not offenders, f"identity block prescribes items: {offenders}"
+
+    def test_needs_are_stated_as_categories_the_item_layer_can_answer(self):
+        """The categories have to be ones items_answering() can resolve, or
+        the champion states a need nothing can meet."""
+        from web.advisor import prompt
+        block = prompt.meta_identity_block("Graves")
+        assert "conditional needs" in block
+        assert "penetration vs resists" in block
+        assert "anti heal vs healing" in block
+
+    def test_hard_limits_survive_the_migration(self):
+        """The NEVER verdicts are the one part of the old cards that is a fact
+        about the kit rather than an opinion about the meta. Graves has no AP
+        ratios at any level of ambition."""
+        from web.advisor import prompt
+        block = prompt.meta_identity_block("Graves")
+        assert "NEVER, at any cost" in block
+        assert "Ability Power" in block
+        assert "never build around" in block
+
+    def test_the_best_objective_drops_everything_except_the_hard_limits(self):
+        from web.advisor import prompt
+        free = prompt.meta_identity_block("Graves", constrain=False)
+        assert "NEVER, at any cost" in free
+        assert "spend gold on" not in free
+        assert "stat priorities" not in free
+
+class TestNoArgumentFromPopularity:
+    """The build model must never be told what is POPULAR.
+
+    Owner's call, 2026-08-27, and the right one: the measurement decides what
+    the cards SAY, but quoting it -- "94% of the top 50 build this" -- is an
+    argument from popularity, and a model handed one defers to it instead of
+    scoring the item on its merits. Free scoring is the entire reason a model
+    is doing this job rather than a lookup table.
+
+    The evidence still lives in the repo, in _source/_why_here metadata and in
+    the generator's own prompt. It just never reaches the build prompt.
+    """
+
+    def test_no_card_cites_popularity(self):
+        import json
+        import pathlib
+        import sys
+        root = pathlib.Path(__file__).resolve().parent.parent
+        sys.path.insert(0, str(root))
+        from scripts.generate_champion_identity import popularity_problems
+        from web.advisor import prompt
+        names = json.loads((root / "data" / "champion_identity.json")
+                           .read_text(encoding="utf-8"))["champions"]
+        bad = [n for n in names if popularity_problems(prompt.identity_card(n) or {})]
+        assert bad == [], f"{len(bad)} cards argue from popularity: {sorted(bad)[:10]}"
+
+    def test_the_identity_block_never_cites_popularity(self):
+        """This used to test a CORRECTION line that contradicted items the
+        cards named. The cards state needs by category now and name nothing to
+        contradict, so the invariant moves to the block as a whole: it may say
+        what a kit needs and what it must never build, and it may never say
+        what is popular."""
+        import json
+        import pathlib as _p
+        from web.advisor import prompt
+        doc = json.loads(_p.Path("data/champion_identity.json")
+                         .read_text(encoding="utf-8"))
+        for name in list(doc["champions"])[:40]:
+            block = prompt.meta_identity_block(name).lower()
+            assert "%" not in block, name
+            assert "top 50" not in block, name
+            assert "ladder" not in block, name
+            assert "popular" not in block, name
+
+    def test_the_required_candidates_block_hides_where_it_came_from(self):
+        """It is a menu, not a mandate, and it must not say who plays it."""
+        from web.advisor import prompt
+        block = prompt.ladder_consensus_block("Vayne")
+        low = block.lower()
+        for phrase in ("top 50", "top fifty", "ladder", "popular", "%"):
+            assert phrase not in low, f"{phrase!r} leaked into the candidate block"
+        assert "does not have to reach your final build" in low \
+            or "none of these has to reach your final build" in low
