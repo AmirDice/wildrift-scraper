@@ -654,6 +654,17 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   }
   st.doubleShotMult = mechs.doubleShot
     ? 1 + (Number(mechs.doubleShot.secondShotPct) || 50) / 100 * 0.6 : 1;
+  // multiShot: one attack fires N projectiles (Graves' shotgun, Ashe's Volley,
+  // Twitch, Lulu). Each pellet rolls crit and carries on-hit, so this scales
+  // the whole auto. Python has modelled it since the mechanic was extracted and
+  // the port never had it at all, so the TS engine thought these champions
+  // barely auto-attacked: Ashe measured 6.0% below Python over an 8s window
+  // while the other seven champions tested agreed to the decimal.
+  if (mechs.multiShot) {
+    const shots = Number(mechs.multiShot.shots) || 1;
+    const per = Number(mechs.multiShot.damagePerShotPct) || 100;
+    st.doubleShotMult *= Math.max(1, shots * per / 100);
+  }
 
   st.ad = st.baseAd + st.bonusAd;
   if (mechs.fixedAttackSpeed) {
@@ -998,6 +1009,14 @@ export function rotation(name: string, st: any, target: any, window: number,
   const kitPerAuto = (nAutos: number): [number, number, number] => {
     let p = 0, m = 0, t = 0;
     for (const comp of perAuto) {
+      // A multiShot kit's shotgun is already priced by doubleShotMult, which
+      // scales the WHOLE auto so the pellets crit and carry on-hit -- the
+      // better model. The passive tooltip describes those same pellets again as
+      // a per-auto AD ratio, so counting both charges the shotgun twice.
+      // Mirrors the identical guard in fight_engine._kit_per_auto.
+      if ((st.doubleShotMult ?? 1) > 1 && perAutoSlot.get(comp) === "P"
+          && ((comp.ratios ?? []) as any[]).every(
+            (r) => r.stat === "ad" || r.stat === "bonusAd")) continue;
       const cd = compDmg(comp, 3) / Math.max(1, Math.floor(rankVal(comp.hits ?? 1, 3)) || 1)
                  * perAutoShare(comp, nAutos);
       if (comp.type === "magic") m += cd;

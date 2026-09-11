@@ -31,7 +31,13 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           # Target-side, crowd-control and clone channels, all added at once
           # and all previously unreadable by either engine.
           "grievousWounds", "shieldCut", "basicAttackDr", "targetAsSlow",
-          "ccRemoval", "stasisSec"]
+          "ccRemoval", "stasisSec",
+          # The damage path itself, not only the stats feeding it.
+          "rot8", "rot8Autos"]
+
+# A plain stat block, so the two engines are compared on their own maths
+# rather than on whatever championTarget currently returns.
+PARITY_TARGET = {"hp": 2600, "armor": 90, "mr": 60, "bonusHp": 900}
 
 
 def main() -> int:
@@ -43,7 +49,16 @@ def main() -> int:
         pen = 1.0
         for factor in st.get("pctPenFactors") or []:
             pen *= 1 - factor
-        st = dict(st, pctPen=1 - pen)
+        # ROTATION DAMAGE, not just resolved stats. The harness diffed only
+        # resolve_stats, so the entire damage path was unguarded in both
+        # directions: Ashe's multiShot was modelled here and missing from the
+        # TS port for as long as the mechanic has existed, worth 6% of her
+        # output over an 8s window, and parity was green the whole time.
+        # A fixed dummy target keeps this a pure engine comparison.
+        rot = fe.rotation(champ, st, dict(PARITY_TARGET), 8.0, 15)
+        st = dict(st, pctPen=1 - pen,
+                  rot8=round(float(rot["total"]), 2),
+                  rot8Autos=round(float(rot.get("autoDmg", 0.0)), 2))
         key = f"{champ}|{'+'.join(items)}|{'+'.join(runes)}"
         py[key] = {f: round(float(st.get(f, 0)), 4) for f in FIELDS}
 

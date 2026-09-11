@@ -1,6 +1,6 @@
 /** TS half of scripts/engine_parity.py -- resolves the shared battery and
  *  writes the stats for the Python side to diff. Run via the Python script. */
-import { resolveStats } from "../src/lib/engine";
+import { resolveStats, rotationDetail } from "../src/lib/engine";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -18,10 +18,21 @@ const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "crit
   "vamp", "lifestealPct", "omnivampPct", "tenacity",
   "dr", "giant", "execute", "armorShred",
   "grievousWounds", "shieldCut", "basicAttackDr", "targetAsSlow",
-  "ccRemoval", "stasisSec"];
+  "ccRemoval", "stasisSec",
+  // See the note on the Python half: the damage path itself, not only the
+  // stats feeding it.
+  "rot8", "rot8Autos"];
+
+/** Must match PARITY_TARGET in scripts/engine_parity.py. */
+const PARITY_TARGET = { label: "parity", hp: 2600, armor: 90, mr: 60, bonusHp: 900 };
 const out: Record<string, Record<string, number>> = {};
 for (const [champ, items, runes] of battery) {
-  const st = resolveStats(champ, 15, items, runes);
+  const st: any = resolveStats(champ, 15, items, runes);
+  if (st) {
+    const rot = rotationDetail(champ, st, PARITY_TARGET, 8, 15);
+    st.rot8 = Math.round(rot.damage * 100) / 100;
+    st.rot8Autos = Math.round(rot.autoDamage * 100) / 100;
+  }
   out[`${champ}|${items.join("+")}|${runes.join("+")}`] = Object.fromEntries(
     FIELDS.map((f) => [f, Math.round((Number(st?.[f]) || 0) * 10000) / 10000]));
 }
