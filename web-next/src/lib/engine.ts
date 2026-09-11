@@ -1009,7 +1009,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       rankOf[s] = Math.max(0, (so[s] ?? []).filter((lv: number) => lv <= level).length - 1);
   } else {
     const prio = [...basicSlots].sort((a, b) => {
-      const d = (slot: string) => (f[slot].damage ?? []).filter((c: any) => !c.alt)
+      const d = (slot: string) => (f[slot].damage ?? []).filter((c: any) => !c.alt && !c.dropped)
         .reduce((acc: number, c: any) => acc + compDmg(c, 3), 0);
       return d(b) - d(a);
     });
@@ -1268,7 +1268,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     for (const slot of seq) {
       if (slot === "auto") { nAutosSeq++; continue; }
       if (!(slot in f)) continue;
-      const comps = (f[slot].damage ?? []).filter((c: any) => !c.alt && c.when !== "per auto");
+      const comps = (f[slot].damage ?? []).filter((c: any) => !c.alt && !c.dropped && c.when !== "per auto");
       for (const c of (f[slot].damage ?? []))
         if (!c.alt && c.when === "per auto" && !c.dropped) addPerAuto(c, slot);
       const rank = slot === "4" ? 2 : 3;
@@ -1364,7 +1364,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   const slots = Object.keys(f).sort((a, b) => (a === "4" ? -1 : 0) - (b === "4" ? -1 : 0));
   for (const slot of slots) {
     const ab = f[slot];
-    const comps = (ab.damage ?? []).filter((c: any) => !c.alt);
+    const comps = (ab.damage ?? []).filter((c: any) => !c.alt && !c.dropped);
     const dmgComps = comps.filter((c: any) => c.when !== "per auto");
     for (const c of comps) if (c.when === "per auto" && !c.dropped) addPerAuto(c, slot);
     // An ability whose damage is ALL per-auto still gets cast -- that is what
@@ -2049,7 +2049,7 @@ export function abilityBreakdown(name: string, items: string[], runes: string[],
   const out: AbilityInfo[] = [];
   for (const slot of Object.keys(f).sort()) {
     const ab = f[slot];
-    const comps = (ab.damage ?? []).filter((c: any) => !c.alt && c.when !== "per auto");
+    const comps = (ab.damage ?? []).filter((c: any) => !c.alt && !c.dropped && c.when !== "per auto");
     if (!comps.length) continue;
     const levelsTaken = (so[slot] ?? []).filter((lv: number) => lv <= level).length;
     const rank = so[slot] ? Math.max(0, levelsTaken - 1)

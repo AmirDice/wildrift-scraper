@@ -177,6 +177,14 @@ def _apply_auto_replacement(formulas: dict) -> int:
             record["mechanics"] = [m for m in (record.get("mechanics") or [])
                                    if m.get("kind") not in drop]
             applied += 1
+        for mech in entry.get("addMechanics") or []:
+            # Never duplicate a kind the extraction already produced: the
+            # engines key mechanics by kind and the last one silently wins.
+            if any(m.get("kind") == mech.get("kind")
+                   for m in record.get("mechanics") or []):
+                continue
+            record.setdefault("mechanics", []).append(mech)
+            applied += 1
         if entry.get("autoBonus"):
             record["autoBonus"] = entry["autoBonus"]
             applied += 1
@@ -200,8 +208,19 @@ def _apply_auto_replacement(formulas: dict) -> int:
                     # its partner instead, so the flag stays.
                 if spec.get("dropComponent"):
                     comp["dropped"] = True
+                if spec.get("unsetAlt"):
+                    # Reviving exactly one component of an ability whose
+                    # components were ALL flagged alt, and which therefore
+                    # scored zero. The rest stay alt so nothing doubles up.
+                    comp.pop("alt", None)
+                if spec.get("baseOverride") is not None:
+                    comp["base"] = spec["baseOverride"]
+                if spec.get("hitsOverride") is not None:
+                    comp["hits"] = spec["hitsOverride"]
                 if spec.get("ratioOverride") is not None:
                     for ratio in comp.get("ratios") or []:
+                        # A list is a per-rank sequence, the shape every other
+                        # rank-scaling ratio in the data already uses.
                         ratio["pct"] = spec["ratioOverride"]
                 applied += 1
     return applied
@@ -1913,10 +1932,22 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     # "3s burst" is a real combo, not an infinite instantaneous rotation.
     cast_budget = max(1, int(window / 0.45))
     for slot, ab in sorted(f.items(), key=lambda kv: kv[0] != "4"):  # ult first
-        comps = [c for c in ab.get("damage") or [] if not c.get("alt")]
+        comps = [c for c in ab.get("damage") or []
+                 if not c.get("alt") and not c.get("dropped")]
         dmg_comps = [c for c in comps if c.get("when") != "per auto"]
         per_auto_comps += [(c, slot) for c in comps if c.get("when") == "per auto" and not c.get("dropped")]
-        if not dmg_comps or cast_budget <= 0:
+        # An ability whose damage is ALL per-auto still gets CAST -- that is
+        # what empowers the attacks. Skipping it here left Xin Zhao's Q out of
+        # the cast log entirely, and Ashe's Ranger's Focus after it, so the
+        # combo said "press Q" and the fight reported the other abilities only.
+        # It also under-counts spellblade, which is capped by the cast count.
+        # engine.ts has carried this since the empowered-auto work; this half
+        # never got it, and the two engines disagreed on Ashe by exactly one
+        # spellblade proc once her Q became visible.
+        # Slot P excluded: a passive is not cast.
+        empowers_autos = slot != "P" and any(
+            c.get("when") == "per auto" for c in comps)
+        if (not dmg_comps and not empowers_autos) or cast_budget <= 0:
             continue
         cds = ab.get("cooldowns") or []
         rank = rank_of.get(slot, 3)

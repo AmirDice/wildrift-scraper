@@ -135,10 +135,165 @@
               "reason": "Extraction stored the passive as a flat '110% AD' per-auto component. It is not flat AD at all: it is a percentage OF THE ATTACK scaling with crit chance, which autoBonus above now carries. Left in place it would double-count the same passive."
             }
           }
+        },
+        "1": {
+          "components": {
+            "Ranger's Focus Flurry (Rank1)": {
+              "unsetAlt": true,
+              "replacesAuto": true,
+              "ratioOverride": [
+                115,
+                120,
+                125,
+                130
+              ],
+              "reason": "Four components, one per rank, ALL flagged alt, so Ashe's Q scored nothing. Collapsed into one rank-scaled ratio, which is what extraction should have produced. 'While active, her attack is TRANSFORMED into a flurry of arrows, dealing 115-130% physical damage', so it replaces the attack. Treated as continuous: the ability has no cooldown, it is gated on four attack stacks which a marksman builds in about two seconds, and it lasts six -- the same assumption already baked into its attack-speed steroid."
+            }
+          }
+        },
+        "2": {
+          "components": {
+            "Volley Arrow (Rank1)": {
+              "baseOverride": [
+                20,
+                35,
+                50,
+                65
+              ],
+              "hitsOverride": 1,
+              "reason": "The mirror image of the all-alt bug. Volley's four rank variants are all flagged live, so the engine summed ALL FOUR at once, and then multiplied each by its own arrow count. 'Ashe fires 5/7/9/11 arrows IN A CONE' -- a single target is hit by one arrow, not all of them, so the count belongs to an area-damage model the engine does not have. Collapsed to one rank-scaled component at one hit. Volley was reading 6,470 damage over two casts against a 2,600 HP target, which is 86% of her simulated output and why the optimiser wanted ability haste on a crit marksman."
+            },
+            "Volley Arrow (Rank2)": {
+              "dropComponent": true,
+              "reason": "Rank 2 of the same ability; rank scaling now lives on the Rank1 component's base sequence."
+            },
+            "Volley Arrow (Rank3)": {
+              "dropComponent": true,
+              "reason": "Rank 3 of the same ability; rank scaling now lives on the Rank1 component's base sequence."
+            },
+            "Volley Arrow (Rank4)": {
+              "dropComponent": true,
+              "reason": "Rank 4 of the same ability; rank scaling now lives on the Rank1 component's base sequence."
+            }
+          }
+        }
+      }
+    },
+    "Gnar": {
+      "abilities": {
+        "4": {
+          "components": {
+            "GNAR!": {
+              "unsetAlt": true,
+              "reason": "The ultimate's only damage component. Nothing to double-count."
+            }
+          }
+        }
+      }
+    },
+    "Lissandra": {
+      "abilities": {
+        "4": {
+          "components": {
+            "Frozen Tomb (Enemy)": {
+              "unsetAlt": true,
+              "reason": "The enemy-facing half of the ultimate, and its only damage component. The self-cast half is not damage."
+            }
+          }
+        }
+      }
+    },
+    "Nidalee": {
+      "abilities": {
+        "3": {
+          "components": {
+            "Swipe": {
+              "unsetAlt": true,
+              "reason": "The cougar-form half of a dual ability. Its only damage component; Primal Surge is a heal."
+            }
+          }
+        }
+      }
+    },
+    "Jax": {
+      "abilities": {
+        "2": {
+          "components": {
+            "Empower": {
+              "unsetAlt": true,
+              "reason": "Jax's W and his only W damage. 'Empowers the NEXT ATTACK or Leap Strike to deal an additional 55/100/145/190 (+60% AP)'."
+            }
+          },
+          "empowerLimit": 1,
+          "_why_empower_limit": "'Empowers the next attack' -- one attack per cast."
+        }
+      }
+    },
+    "Rell": {
+      "abilities": {
+        "3": {
+          "components": {
+            "Full Tilt Empower": {
+              "unsetAlt": true,
+              "reason": "Full Tilt's empowered attack, its only damage component."
+            }
+          },
+          "empowerLimit": 1,
+          "_why_empower_limit": "An empowered next attack, one per cast."
+        }
+      }
+    },
+    "Jinx": {
+      "abilities": {
+        "1": {
+          "components": {
+            "Switcheroo! Fishbones": {
+              "unsetAlt": true,
+              "replacesAuto": true,
+              "reason": "Fishbones is a WEAPON STANCE, not a bonus: 'Attacks cost mana but gain range and explode to deal 112% damage to the target'. The 112% is what the attack deals, so it replaces rather than adds. Treated as continuous because it is a toggle with no cooldown; the single-target difference from the minigun is only 12%, so the choice of stance barely moves the number either way."
+            }
+          }
+        }
+      }
+    },
+    "Jhin": {
+      "abilities": {
+        "P": {
+          "components": {
+            "Whisper 4th Shot": {
+              "unsetAlt": true,
+              "reason": "'The final bullet will critically strike and deal additional 11% missing Health physical damage.' Jhin's defining passive, scoring zero purely because of the alt flag. His everyNHit n=4 gate already existed and was correct, so the fourth-shot timing needed nothing."
+            }
+          }
+        }
+      }
+    },
+    "Heimerdinger": {
+      "abilities": {
+        "4": {
+          "components": {
+            "Lightning Grenade Total": {
+              "unsetAlt": true,
+              "reason": "UPGRADE!!! empowers ONE next ability, so only one of its four components can apply per cast and reviving them all would be wrong. The two turret components are per-auto and belong to his turret rather than his own attacks. Of the two per-cast options this is the smaller (300 + 180% AP against Rocket Swarm's 524 + 175%), so it is the conservative choice."
+            }
+          }
+        }
+      }
+    },
+    "Riven": {
+      "abilities": {
+        "4": {
+          "components": {
+            "Wind Slash (min)": {
+              "unsetAlt": true,
+              "reason": "Wind Slash is charged, dealing 100-300 base and 60-180% AD depending on how long it is held, and BOTH ends were flagged alt so her ultimate scored nothing. The minimum is taken on purpose: assuming a fully charged ult on every cast flatters the champion, and under-rating is the safer error in a build optimiser."
+            }
+          }
         }
       }
     }
   },
   "_why_empower_limit": "perAutoShare returns 1 -- every auto -- unless the ability declares an empowerLimit, and that limit is recovered by a regex looking for 'empowers the next THREE attacks'. An ability that empowers 'the next attack', singular, has no word for the regex to read, so it matched nothing and the empowered swing was applied to EVERY auto in the fight. Stated explicitly here instead. The engines already prefer an explicit empowerLimit over the regex, so nothing in them had to change for this.",
-  "_why_auto_bonus": "A champion whose CRIT CHANCE converts into flat bonus attack damage, and whose critical strikes therefore deal no extra damage. Only Ashe. Modelled as a multiplier on the attack plus a hard crit-damage disable, because that is literally what the tooltip describes."
+  "_why_auto_bonus": "A champion whose CRIT CHANCE converts into flat bonus attack damage, and whose critical strikes therefore deal no extra damage. Only Ashe. Modelled as a multiplier on the attack plus a hard crit-damage disable, because that is literally what the tooltip describes.",
+  "_why_unset_alt": "An ability whose damage components are ALL flagged `alt` scores ZERO. The engines filter on `!alt` to stop a base-plus-variant pair being counted twice, which is right when there is a base to keep; when every component is a variant it deletes the ability outright. Ten abilities across ten champions were in that state, including Jhin's passive, Jinx's rocket launcher, Jax's W and Riven's ultimate. Exactly ONE component is revived per ability, chosen below, and the rest stay alt so nothing double-counts."
 }

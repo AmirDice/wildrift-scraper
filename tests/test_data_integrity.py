@@ -196,6 +196,35 @@ class TestDerivedDataIsFresh:
         assert load(WEB / "engine.json")["formulas"] == expected, (
             "engine.json is stale; re-run python -m scripts.export_engine_data")
 
+    def test_no_ability_scores_zero_because_every_component_is_alt(self):
+        """An ability whose damage components are ALL flagged `alt` is invisible.
+
+        Both engines filter on `!alt` to stop a base-plus-variant pair being
+        counted twice. That is right when there is a base to keep; when every
+        component is a variant it deletes the ability outright, silently. Ten
+        abilities were in that state at once, including Jhin's passive, Jinx's
+        rocket launcher, Jax's W and Riven's ultimate, and nothing anywhere
+        said so. Each is now revived through data/auto_replacement.json, which
+        picks exactly ONE component per ability.
+
+        This guards the class rather than those ten: a re-extraction that
+        produces a new all-alt ability fails here instead of quietly costing a
+        champion an ability's worth of damage.
+        """
+        formulas = load(WEB / "engine.json")["formulas"]
+        dead = [
+            f"{name}[{slot}] {ability.get('name')}"
+            for name, record in formulas.items()
+            for slot, ability in (record.get("abilities") or {}).items()
+            if (ability.get("damage") or [])
+            and all(c.get("alt") for c in ability["damage"])
+        ]
+        assert not dead, (
+            "these abilities contribute no damage because every component is "
+            "flagged alt; revive exactly one of each in "
+            f"data/auto_replacement.json: {dead}"
+        )
+
     def test_owner_verified_cooldowns_reach_the_engine(self):
         """A cooldown read off the game must be what the engine ships.
 

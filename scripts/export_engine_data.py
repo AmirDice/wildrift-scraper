@@ -84,6 +84,14 @@ def apply_auto_replacement(formulas: dict) -> int:
             record["mechanics"] = [m for m in (record.get("mechanics") or [])
                                    if m.get("kind") not in drop]
             applied += 1
+        for mech in entry.get("addMechanics") or []:
+            # Never duplicate a kind the extraction already produced: the
+            # engines key mechanics by kind and the last one silently wins.
+            if any(m.get("kind") == mech.get("kind")
+                   for m in record.get("mechanics") or []):
+                continue
+            record.setdefault("mechanics", []).append(mech)
+            applied += 1
         if entry.get("autoBonus"):
             record["autoBonus"] = entry["autoBonus"]
             applied += 1
@@ -107,8 +115,19 @@ def apply_auto_replacement(formulas: dict) -> int:
                     # its partner instead, so the flag stays.
                 if spec.get("dropComponent"):
                     comp["dropped"] = True
+                if spec.get("unsetAlt"):
+                    # Reviving exactly one component of an ability whose
+                    # components were ALL flagged alt, and which therefore
+                    # scored zero. The rest stay alt so nothing doubles up.
+                    comp.pop("alt", None)
+                if spec.get("baseOverride") is not None:
+                    comp["base"] = spec["baseOverride"]
+                if spec.get("hitsOverride") is not None:
+                    comp["hits"] = spec["hitsOverride"]
                 if spec.get("ratioOverride") is not None:
                     for ratio in comp.get("ratios") or []:
+                        # A list is a per-rank sequence, the shape every other
+                        # rank-scaling ratio in the data already uses.
                         ratio["pct"] = spec["ratioOverride"]
                 applied += 1
     return applied
