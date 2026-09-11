@@ -19,7 +19,19 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           "onHitPhys", "onHitMagic", "onHitPctMaxHp", "onHitPctCurrentHp",
           "mrShred", "mrShredFlat", "spellbladeApPct", "spellbladeMagic",
           "cleaveFlat", "cleavePctBonusHp", "healShieldAmp", "shieldPctMaxHp", "apAmp",
-          "armor", "mr", "dotPctMaxHp", "extraOnHitApplications", "as", "baseAs"]
+          "armor", "mr", "dotPctMaxHp", "extraOnHitApplications", "as", "baseAs",
+          # Penetration, vamp and tenacity. Added after the two engines were found
+          # to disagree on every one of them with nothing here to catch it: the
+          # item stat line and the extracted itemFx both carried the same effect,
+          # Python applied both and the TS port applied neither (or, for
+          # physicalPen, ignored the percent flag and charged 36% as 36 flat).
+          "flatPen", "pctPen", "flatMagicPen", "pctMagicPen",
+          "vamp", "lifestealPct", "omnivampPct", "tenacity",
+          "dr", "giant", "execute", "armorShred",
+          # Target-side, crowd-control and clone channels, all added at once
+          # and all previously unreadable by either engine.
+          "grievousWounds", "shieldCut", "basicAttackDr", "targetAsSlow",
+          "ccRemoval", "stasisSec"]
 
 
 def main() -> int:
@@ -28,7 +40,12 @@ def main() -> int:
     py = {}
     for champ, items, runes in battery:
         st = fe.resolve_stats(champ, 15, items, runes)
-        py[f"{champ}|{'+'.join(items)}"] = {f: round(float(st.get(f, 0)), 4) for f in FIELDS}
+        pen = 1.0
+        for factor in st.get("pctPenFactors") or []:
+            pen *= 1 - factor
+        st = dict(st, pctPen=1 - pen)
+        key = f"{champ}|{'+'.join(items)}|{'+'.join(runes)}"
+        py[key] = {f: round(float(st.get(f, 0)), 4) for f in FIELDS}
 
     ts_out = ROOT / "scratch_ts_stats.json"
     subprocess.run(["npx", "tsx", "scripts/engine_parity.ts"],

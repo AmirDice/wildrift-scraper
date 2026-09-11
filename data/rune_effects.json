@@ -7,15 +7,23 @@
           40,
           210
         ],
-        "adRatio": 0.1,
-        "apRatio": 0.05,
-        "type": "physical"
+        "adRatio": 10.0,
+        "apRatio": 5.0,
+        "type": "adaptive",
+        "cdSec": {
+          "lvlRange": [
+            20,
+            13
+          ]
+        },
+        "armSec": 3
       },
       "_patch": [
         "7.2 burstProc.adRatio: 0.35 -> 0.1",
         "7.2 burstProc.apRatio: 0.2 -> 0.05",
         "7.2 burstProc.baseRange: [40, 194] -> [40, 210]"
-      ]
+      ],
+      "_why_units": "adRatio/apRatio converted from fractions to PERCENT to match rune_engine.json; both engines now divide by 100 exactly once. type was 'physical' here and 'magic' in rune_engine.json for the same rune -- the description says Adaptive, so it is adaptive."
     },
     "Conqueror": {
       "bonusAdPerStackRange": [
@@ -32,14 +40,16 @@
         "type": "adaptive",
         "adRatio": 10,
         "apRatio": 5,
-        "perSoul": 10,
+        "perSoul": 11,
         "assumedSouls": 8,
-        "condition": "targetBelowHalfInWindow"
+        "condition": "targetBelowHalfInWindow",
+        "cdSec": 20
       },
       "_why": "35 (+10% bonus AD / +5% AP) adaptive, +10 per soul permanently. The condition is CHECKED, not assumed: the proc only counts when the simulated rotation actually takes the target below 50% Health, which is what separates a champion who can farm souls from one who cannot. assumedSouls=8 is an ESTIMATE, not measured data -- no site publishes average souls per game. It follows the reported 4-6 souls by minute 5 carried to the 10-15 minute mark of a Wild Rift game. Stacks are linear, so halving this halves the rune's contribution.",
       "_patch": [
         "7.2a"
-      ]
+      ],
+      "_why_cd": "'(20 second cooldown. Resets to 1 second on takedown.)' The 20s is used: a takedown mid-duel is not something the model can know about. perSoul 10 -> 11 to match the rune's own text, 'permanently increasing Dark Harvest's damage by 11'."
     },
     "First Strike": {
       "ampPct": 0.07,
@@ -86,11 +96,13 @@
           15,
           65
         ],
-        "type": "true"
+        "type": "true",
+        "cdSec": 10
       },
       "_patch": [
         "7.2 burstProc.baseRange: [10, 80] -> [15, 65]"
-      ]
+      ],
+      "_why_cd": "'(10s cooldown)'"
     },
     "Eyeball Collector": {
       "bonusAdAtStacks": 12,

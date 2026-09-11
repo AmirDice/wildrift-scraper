@@ -191,6 +191,11 @@ def main() -> None:
         txt = " ".join(it.get("passives") or []).lower()
         if "spellblade" in txt and "magic damage" in txt:
             fx["spellbladeMagic"] = 1
+    # Who a kit's heal lands on. Python has had this since the ally-value model
+    # went in; the TS engine had no way to tell a self-heal from an ally-heal,
+    # so it could not model an enemy's own sustain at all -- and with no sustain
+    # to deny, Grievous Wounds was inert on the site.
+    heal_targets = (_load("heal_targets.json") or {}).get("champions", {})
     rune_fx = _load("rune_effects.json")
     rune_engine = _load("rune_engine.json")
     runes = _load("runes.json")
@@ -208,6 +213,9 @@ def main() -> None:
             for n in names:
                 slot_of[n] = int(s)
 
+    _ccd = _load("hard_cc_durations.json") or {}
+    cc_durations = _ccd.get("champions", {})
+    cc_median = _ccd.get("_median", 1.5)
     from web.fight_engine import (kit_adjust, repeats_on_hit, damage_metric,
                                   attack_speed_ratio, AS_CURVE)
 
@@ -216,6 +224,17 @@ def main() -> None:
             c["name"]: {
                 "baseStats": c.get("baseStats", {}),
                 "mechanics": c.get("mechanics", []),
+                # How many abilities in this kit actually lock somebody down.
+                # The `mechanics` list above is the RAW SCRAPED tag and puts
+                # "cc" on 135 of 142 champions, which is why nothing could use
+                # it; this is the derived count from web/advisor/hardcc.py, the
+                # same number roster.json and the draft panel already read, and
+                # it deliberately excludes slows. 0 for 32 champions, max 4.
+                "ccDepth": hardcc.hard_cc_depth(c.get("abilities"), c["name"]),
+                # Mean stated duration of this kit's hard CC, in seconds,
+                # scraped from the ability text. 82 champions state one; the
+                # rest fall back to the corpus median in the engine.
+                "ccSeconds": cc_durations.get(c["name"], 0),
                 "class": champ_class.get(c["name"], ""),
                 "primaryDamage": c.get("primaryDamage", ""),
                 "scalesWith": c.get("scalesWith", []),
@@ -271,6 +290,8 @@ def main() -> None:
         },
         "situationalOnly": (rules.get("situationalOnly") or {}).get("slugs", []),
     }
+    out["healTargets"] = heal_targets
+    out["ccMedianSeconds"] = cc_median
     OUT.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size/1024:.0f} KB, "
           f"{len(out['champions'])} champions, {len(out['items'])} items, "

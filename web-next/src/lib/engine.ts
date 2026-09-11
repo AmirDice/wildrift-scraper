@@ -15,6 +15,9 @@ const AS_CAP = 2.5;
 const SPELLBLADE_CD = 1.5;
 const CLEAVE_EVERY = 1.75;
 const MELEE_AUTO_UPTIME = 0.75;
+// A champion mid-fight is not at full health. The one assumption in the kit
+// sustain model, and the same value fight_engine.py uses.
+const MISSING_HP_IN_FIGHT = 0.4;
 const RANGED_CLASSES = new Set(["Marksman", "Mage", "Enchanter"]);
 const AUTO_GATED_RUNES = new Set(["Empowerment", "Lethal Tempo"]);
 const REF_BURST = 2400, REF_DPS = 700, REF_DEF = 7000;
@@ -107,6 +110,42 @@ const VARIANT_WEIGHTS: Record<string, [number, number]> = {
   balanced: [0.55, 0.45], tanky: [0.3, 0.7], utility: [0.25, 0.75],
 };
 
+/**
+ * A discrete hit: keystone procs, item actives, first-hit bonuses, %max-HP
+ * strikes. Anything that fires on its own clock instead of riding autos.
+ *
+ * These used to live in four separate fields (burstProcs, runeProcs, firstHit,
+ * procMaxHpPct) and every one of them was charged EXACTLY ONCE per fight, no
+ * matter how long the fight ran. Aery, which can re-proc every 2 seconds, was
+ * therefore worth the same as Dark Harvest on its 20-second cooldown, and a
+ * 20-second fight paid for neither of them more than a 2-second one did.
+ * Measured on Zed: adding Electrocute moved rotation damage by +143 at a 2s
+ * window and by exactly +143 at 20s.
+ *
+ * `cd` is the cooldown the effect's own description states; Infinity means
+ * once per fight, which is both the correct answer for the effects whose text
+ * states no repeat (Empowerment lasts "until you exit combat") and the default
+ * for anything with no evidence either way -- so nothing moves without a
+ * quoted source.
+ */
+export interface Proc {
+  flat: number;
+  /** Fractions, not percents: 0.10 means 10% bonus AD. */
+  adRatio: number;
+  apRatio: number;
+  /** Fraction of the TARGET's max health. */
+  pctMaxHp: number;
+  /** physical | magic | true | adaptive */
+  type: string;
+  /** Seconds between procs; Infinity == once per fight. */
+  cd: number;
+  /** Seconds of build-up before the first one can land. */
+  arm: number;
+  /** 0 = unconditional. 0.5 = target must be under half health. */
+  need: number;
+  label: string;
+}
+
 export interface LiveMetrics {
   burst3: number; dps8: number; ttk: number | null; ehp: number; sustain: number;
   score: number; ad: number; ap: number; hp: number; armor: number; mr: number;
@@ -177,11 +216,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // short-changed every Manamune/Archangel's/Winter's build.
     crit: 0, critMult: BASE_CRIT_MULT, critDisabled: 0, haste: 0, mana: base("mana", 0),
     flatPen: 0, pctPenFactors: [] as number[], flatMagicPen: 0, pctMagicPen: 0,
-    baseMs: bs.moveSpeed?.base || 330, bonusMs: 0,
+    baseMs: bs.moveSpeed?.base || 330, bonusMs: 0, tenacity: 0,
     abilityAmp: 0, damageAmp: 0, giant: 0, execute: 0,
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
-    burstProcs: [] as [number, number][], dotDps: 0, dotPctMaxHp: 0, procMaxHpPct: 0, firstHit: 0,
+    procs: [] as Proc[], dotDps: 0, dotPctMaxHp: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
     extraOnHitApplications: 0,
@@ -189,8 +228,16 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
     healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
+    // Carried BY THIS BUILD and applied to whoever it is fighting.
+    grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
+    cloneAdPct: 0, cloneAsFromCritPct: 0, cloneLifetimeS: 0, cloneMaxCount: 0,
+    // Carried by this build and applied to whoever is fighting IT. They reach
+    // the damage path through championTarget, not from here.
+    basicAttackDr: 0, targetAsSlow: 0,
+    // Set by duel() from the target's own build; 1 means untouched.
+    externalAsMult: 1, autoDamageMult: 1,
     lifestealPct: 0, omnivampPct: 0,
-    runeOnHitFlat: 0, runeProcs: [] as [number, number, string][],
+    runeOnHitFlat: 0,
   };
 
   // AD/AP/HP-from-mana percentages, applied after runes (see below): runes add
@@ -210,6 +257,25 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   // accumulation is deferred until every stat source (Overkill included) has
   // landed; the damage TYPE follows the kit like the adaptive stat grant.
   const adaptiveOnHit = { flat: 0, adPct: 0, apPct: 0 };
+  const addProc = (e: Partial<Proc>) => {
+    const flat = e.flat ?? 0, adRatio = e.adRatio ?? 0;
+    const apRatio = e.apRatio ?? 0, pctMaxHp = e.pctMaxHp ?? 0;
+    if (!flat && !adRatio && !apRatio && !pctMaxHp) return;
+    st.procs.push({
+      flat, adRatio, apRatio, pctMaxHp,
+      type: e.type ?? "magic",
+      // A missing or zero cooldown means "no repeat stated", which is charged
+      // once per fight -- exactly what the engine did before this existed.
+      cd: e.cd && e.cd > 0 ? e.cd : Infinity,
+      arm: e.arm ?? 0, need: e.need ?? 0, label: e.label ?? "",
+    });
+  };
+  // Crit-GATED increments (Last Whisper's "+6% Armor Penetration on Critical
+  // Strike", Bloody's "+4% Physical Vamp on Critical Strike"). Deferred like the
+  // adaptive on-hits above, because crit is still accumulating inside the item
+  // loop: applying them inline would price them against whatever crit the
+  // earlier items happened to have contributed.
+  const onCrit = { pctPen: 0, physVampPct: 0 };
 
   for (const slug of itemSlugs) {
     const it = DATA.items[slug];
@@ -228,8 +294,25 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       else if (k === "magicPen") {
         if (pct) st.pctMagicPen = 1 - (1 - st.pctMagicPen) * (1 - val / 100);
         else st.flatMagicPen += val;
-      } else if (k === "physicalPen") st.flatPen += val;
+      } else if (k === "magicPenFlat") st.flatMagicPen += val;
+      else if (k === "physicalPen") {
+        // PERCENT penetration is multiplicative against armour; FLAT subtracts.
+        // Both used to land in flatPen, so Lord Dominik's "36%" was charged as
+        // 36 lethality -- worth roughly triple against a 100-armour target and
+        // nothing at all against a naked one. Python fixed this; the port did not.
+        if (pct) st.pctPenFactors.push(val / 100);
+        else st.flatPen += val;
+      } else if (k === "physicalPenFlat") st.flatPen += val;
+      else if (k === "physicalVamp") { st.vamp += val / 100; st.lifestealPct += val / 100; }
+      else if (k === "omnivamp") { st.vamp += val / 100; st.omnivampPct += val / 100; }
+      else if (k === "healShieldPower") st.healShieldAmp += val / 100;
+      // Tenacity is always a percentage, but the two items that carry it disagree
+      // on the flag -- Mercury's Treads is percent:false and Chainlaced Crushers
+      // percent:true, both meaning 30%. So the flag is deliberately ignored here.
+      else if (k === "tenacity") st.tenacity = 1 - (1 - st.tenacity) * (1 - val / 100);
       else if (k === "moveSpeed") st.bonusMs += pct ? st.baseMs * val / 100 : val;
+      // manaRegen and hpRegen are read and dropped on purpose: a duel has no
+      // out-of-combat regeneration channel, so they would be dead weight.
     }
     let fx = DATA.itemFx[slug] ?? {};
     // STACK RAMP-UP: attack-stacked effects (Terminus' pen, Guinsoo's AS,
@@ -251,6 +334,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     const g = (k: string) => (k in fx ? lvlRange(fx[k], level) : 0);
     st.flatPen += g("flatPen");
     if (fx.pctPen) st.pctPenFactors.push(g("pctPen") / 100);
+    onCrit.pctPen += g("pctPenOnCrit");
+    onCrit.physVampPct += g("physVampPctOnCrit");
     st.armorShred = Math.max(st.armorShred, g("armorShredPct") / 100);
     st.critMult = Math.max(st.critMult, Number(fx.critMult) || 0);
     if (fx.disablesCrit) st.critDisabled = 1;
@@ -281,10 +366,14 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       ? g("onHitPctCurrentHpRanged") : g("onHitPctCurrentHp")) / 100;
     st.onHitPctMaxHp += (rngd && fx.onHitPctMaxHpRanged
       ? g("onHitPctMaxHpRanged") : g("onHitPctMaxHp")) / 100;
-    st.procMaxHpPct += g("procMaxHpPct") / 100;
-    st.firstHit += g("firstHit");
-    if (fx.burstProcFlat || fx.burstProcApPct)
-      st.burstProcs.push([g("burstProcFlat"), g("burstProcApPct") / 100]);
+    addProc({ pctMaxHp: g("procMaxHpPct") / 100, label: slug,
+              type: fx.procMaxHpType ?? "physical",
+              cd: g("procMaxHpCdSec"), arm: g("procMaxHpArmSec") });
+    addProc({ flat: g("firstHit"), label: slug, type: "physical",
+              cd: g("firstHitCdSec"), arm: g("firstHitArmSec") });
+    addProc({ flat: g("burstProcFlat"), apRatio: g("burstProcApPct") / 100,
+              label: slug, type: fx.burstProcType ?? "magic",
+              cd: g("burstProcCdSec"), arm: g("burstProcArmSec") });
     st.dotDps += g("dotDps");
     // %max-HP burns (Searing Crown) are target-scaled, so they are summed
     // here and priced at fight time. Ranged users pay the reduced rate.
@@ -317,6 +406,16 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       const nthMult = rngd && fx.everyNthRangedMult ? g("everyNthRangedMult") / 100 : 1;
       st.onHitPhys += g("everyNthBaseAdPct") / 100 * st.baseAd * nthMult / nth;
       st.onHitPctMaxHp += g("everyNthPctMaxHp") / 100 * nthMult / nth;
+      // Flat every-Nth damage (Kraken Slayer's "Every third attack deals
+      // 120-160"). There was no channel for it, so the whole value sat on the
+      // once-per-fight proc list and a core marksman item paid out once in a
+      // twenty-second fight instead of about seven times. Ranged users have
+      // their own stated number rather than a multiplier.
+      // NOT modelled: Kraken's "increased by 1% per 1% Health the target is
+      // missing, up to 70%". Average missing health is not available here and
+      // assuming a value would be a guess, so this is the floor of the item.
+      st.onHitPhys += (rngd && fx.everyNthRangedFlat
+        ? g("everyNthRangedFlat") : g("everyNthFlat")) / nth;
     }
     st.dr = Math.max(st.dr, g("drPct") / 100);
     // "Gain 25 Attack Damage OR 50 Ability Power (Adaptive)" grants exactly
@@ -353,6 +452,26 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.cleaveFlat += g("cleaveFlat");
     st.cleavePctBonusHp += g("cleavePctBonusHp") / 100;
     st.healShieldAmp += g("healShieldAmpPct") / 100;
+    // These four had no reader at all. grievousWoundsPct has been exported on
+    // five items since anti-heal went in and was consumed by nothing, so the
+    // Counter Builder recommended Morellonomicon and then scored it with an
+    // engine that could not see healing. None of the four stack in this game,
+    // so they take the best value rather than summing.
+    st.grievousWounds = Math.max(st.grievousWounds, g("grievousWoundsPct") / 100);
+    st.shieldCut = Math.max(st.shieldCut, g("shieldCutPct") / 100);
+    st.basicAttackDr = Math.max(st.basicAttackDr, g("basicAttackDrPct") / 100);
+    st.targetAsSlow = Math.max(st.targetAsSlow, g("targetAsSlowPct") / 100);
+    // Spell shields and cleanses: how many instances of lockdown this build can
+    // shrug off in a fight. These DO stack -- two spell shields block two
+    // abilities -- so unlike the four above they sum.
+    st.ccRemoval += g("ccRemoval");
+    st.cloneAdPct = Math.max(st.cloneAdPct, g("cloneAdPct"));
+    st.cloneAsFromCritPct = Math.max(st.cloneAsFromCritPct, g("cloneAsFromCritPct"));
+    st.cloneLifetimeS = Math.max(st.cloneLifetimeS, g("cloneLifetimeS"));
+    st.cloneMaxCount = Math.max(st.cloneMaxCount, g("cloneMaxCount"));
+    // Their own stasis, which is time the person fighting THEM cannot deal
+    // damage. Read off the target's build, not the attacker's.
+    st.stasisSec = Math.max(st.stasisSec, g("stasisSec"));
   }
 
   // runes
@@ -388,14 +507,25 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       st.mana += g("manaFlat");
       st.armor += g("armorFlat");
       st.mr += g("mrFlat");
+      // Legend: Tenacity shipped as an empty {} and never reached the bundle at
+      // all, so the rune the advisor picks against heavy-CC comps did nothing.
+      st.tenacity = 1 - (1 - st.tenacity) * (1 - g("tenacityPct") / 100);
       st.armor *= 1 + g("armorPct") / 100;
       st.mr *= 1 + g("mrPct") / 100;
       st.abilityAmp += g("abilityAmpPct") / 100;
       st.runeOnHitFlat += g("onHitFlat");
       st.damageAmp += g("ampPct") / 100;
       if (fx.burstProcFlat || fx.burstProcApRatio || fx.burstProcAdRatio)
-        st.runeProcs.push([g("burstProcFlat"), g("burstProcAdRatio") / 100,
-                           fx.burstProcType ?? "magic"]);
+        addProc({
+          flat: g("burstProcFlat"),
+          adRatio: g("burstProcAdRatio") / 100,
+          // AP scaling was being dropped outright: six generated entries carry
+          // burstProcApRatio and no engine has ever read it, so every AP build
+          // undervalued Aery, Arcane Comet, Tyrant and Chain Assault.
+          apRatio: g("burstProcApRatio") / 100,
+          type: fx.burstProcType ?? "magic", label: rn,
+          cd: g("burstProcCdSec"), arm: g("burstProcArmSec"),
+        });
       continue;
     }
     const gate = AUTO_GATED_RUNES.has(rn) && !autoCentric ? 0.45 : 1;
@@ -423,7 +553,25 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     if (r.burstProc && r.burstProc.condition !== "targetBelow50") {
       const p = r.burstProc;
       const flat = p.baseRange ? p.baseRange[0] + (p.baseRange[1] - p.baseRange[0]) * (level - 1) / 14 : (p.flat ?? 0);
-      st.runeProcs.push([flat, p.adRatio ?? 0, p.type ?? "physical"]);
+      const cond = p.condition === "targetBelowHalfInWindow";
+      addProc({
+        // Souls are a permanent stack, so they belong in the base value.
+        flat: flat + (cond ? (p.perSoul ?? 0) * (p.assumedSouls ?? 0) : 0),
+        // PERCENT, divided once here. This file used to store Electrocute as a
+        // fraction (0.1) and Dark Harvest as a percent (10) for the same 10%,
+        // and this line divided by nothing -- so Dark Harvest was charged ten
+        // times bonus AD instead of a tenth of it, +1385 flat damage on a Zed
+        // build, unconditionally, as unmitigated TRUE damage.
+        adRatio: (p.adRatio ?? 0) / 100,
+        apRatio: (p.apRatio ?? 0) / 100,
+        type: p.type ?? "physical", label: rn,
+        cd: lvlRange(p.cdSec, level), arm: lvlRange(p.armSec, level),
+        // Dark Harvest only fires on a target under half health. The gate read
+        // `!== "targetBelow50"` and the real condition string is
+        // "targetBelowHalfInWindow", so it never matched and the proc was
+        // granted for free. Mirrors fight_engine.py's conditionalProcs.
+        need: cond ? 0.5 : 0,
+      });
     }
     st.damageAmp += r.ampPct ?? 0;
   }
@@ -541,6 +689,30 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   if (st.critDamagePerExcessCrit && st.crit > 1)
     st.critMult += st.critDamagePerExcessCrit * (st.crit - 1);
   st.crit = Math.min(st.crit, 1);
+
+  // Soul Transfer's Shadow Dance: clones that attack alongside you. A real,
+  // in-combat physical damage stream that nothing modelled at all.
+  //
+  // Crits per second is crit rate x attack rate, each clone lives 4 seconds,
+  // and at most two exist at once -- so the population is spawn rate x
+  // lifetime, capped. Their damage is then folded into the on-hit bundle
+  // DIVIDED BY attack speed, the same way Titanic Cleave converts a
+  // per-second effect into a per-auto one: a faster attacker dilutes a
+  // time-based stream across more autos rather than multiplying it.
+  if (st.cloneAdPct) {
+    const alive = Math.min(st.cloneMaxCount || 1, st.crit * st.as * (st.cloneLifetimeS || 0));
+    const cloneAs = Math.min(AS_CAP, st.baseAs * (1 + (st.cloneAsFromCritPct || 0) / 100 * st.crit));
+    const cloneDps = alive * cloneAs * (st.cloneAdPct / 100) * st.ad;
+    st.onHitPhys += cloneDps / Math.max(st.as, 0.1);
+  }
+  // Now that crit is final, pay the crit-gated increments at the rate the build
+  // actually crits. The values they replaced were folded in at 100% uptime.
+  if (onCrit.pctPen) st.pctPenFactors.push(onCrit.pctPen / 100 * st.crit);
+  if (onCrit.physVampPct) {
+    const v = onCrit.physVampPct / 100 * st.crit;
+    st.vamp += v;
+    st.lifestealPct += v;
+  }
   let pen = 1;
   for (const p of st.pctPenFactors) pen *= 1 - p;
   st.pctPen = 1 - pen;
@@ -643,6 +815,11 @@ function forWindow(name: string, st: any, window: number, level: number): any {
 export function rotation(name: string, st: any, target: any, window: number,
                          level = 13): number {
   st = forWindow(name, st, window, level);
+  // An enemy Frozen Heart's Chill is a real attack-speed cut and belongs here,
+  // after forWindow has finished deriving attack speed from the steroids.
+  if (st.externalAsMult && st.externalAsMult !== 1) {
+    st = { ...st, as: st.as * st.externalAsMult };
+  }
   const f = DATA.formulas[name]?.abilities ?? {};
   const [physM, magicM] = mults(st, target);
   const giant = 1 + st.giant * Math.min(1, target.bonusHp / 1700);
@@ -845,20 +1022,49 @@ export function rotation(name: string, st: any, target: any, window: number,
     const [kp, km, kt] = kitPerAuto(nAutos);
     aPhys += kp; aMagic += km; aTrue += kt;
     const dsm = st.doubleShotMult ?? 1;
-    addT("physical", aPhys * dsm * nAutos);
-    addT("magic", aMagic * dsm * nAutos);
-    addT("true", aTrue * dsm * nAutos);
-    return (aPhys + aMagic + aTrue) * dsm * nAutos;
+    // Plated Steelcaps' Block reduces BASIC ATTACK damage only, which is why
+    // it rides here and not on st.dr (all damage). 1 when the target has none.
+    const adm = st.autoDamageMult ?? 1;
+    addT("physical", aPhys * dsm * nAutos * adm);
+    addT("magic", aMagic * dsm * nAutos * adm);
+    addT("true", aTrue * dsm * nAutos * adm);
+    return (aPhys + aMagic + aTrue) * dsm * nAutos * adm;
   };
-  const oneTimes = () => {
-    let p = st.firstHit * physM + st.procMaxHpPct * target.hp * physM;
-    let t = 0;
-    for (const [flat, adR, type] of st.runeProcs) {
-      if (type === "physical") p += (flat + adR * st.bonusAd) * physM;
-      else t += flat + adR * st.bonusAd;
+  /**
+   * Discrete procs, charged at the rate their own descriptions state.
+   *
+   * `damageSoFar` is this rotation's damage before procs, read only by procs
+   * gated on the target's health.
+   */
+  const oneTimes = (damageSoFar: number) => {
+    let p = 0, m = 0, t = 0;
+    for (const pr of st.procs as Proc[]) {
+      // Nothing lands before the effect has armed: Electrocute needs three
+      // stacks inside three seconds, Heartsteel charges for 2.5.
+      if (window + 1e-9 < pr.arm) continue;
+      const times = pr.cd === Infinity
+        ? 1
+        : 1 + Math.floor((window - pr.arm) / pr.cd);
+      // A proc gated on the target's health is earned only when this
+      // champion's own damage in this window actually gets them there. Tapered
+      // rather than a cliff, so a 4% damage change cannot flip a keystone on
+      // and send the item search chasing the discontinuity. Mirrors the
+      // `reach` taper in fight_engine.py's conditionalProcs.
+      const reach = pr.need
+        ? Math.min(1, damageSoFar / Math.max(target.hp * pr.need, 1e-9))
+        : 1;
+      if (reach <= 0) continue;
+      let dtype = pr.type;
+      if (dtype === "adaptive") dtype = st.ap >= st.bonusAd ? "magic" : "physical";
+      const val = (pr.flat + pr.adRatio * st.bonusAd + pr.apRatio * st.ap
+                   + pr.pctMaxHp * target.hp) * times * reach;
+      // The old routing was "physical goes through armour, everything else is
+      // true damage", so every magic and adaptive proc bypassed magic resist
+      // entirely -- Dark Harvest's whole contribution arrived unmitigated.
+      if (dtype === "magic") m += val * magicM;
+      else if (dtype === "true") t += val;
+      else p += val * physM;
     }
-    let m = 0;
-    for (const [flat, apR] of st.burstProcs) m += (flat + apR * st.ap) * magicM;
     addT("physical", p); addT("magic", m); addT("true", t);
     return p + m + t;
   };
@@ -904,7 +1110,7 @@ export function rotation(name: string, st: any, target: any, window: number,
         addT("true", et * mult);
       }
     }
-    total += oneTimes();
+    total += oneTimes(total);
     if (st.dotDps || st.dotPctMaxHp) {
     const d = (st.dotDps + st.dotPctMaxHp * target.hp) * window * magicM;
     total += d; addT("magic", d);
@@ -986,7 +1192,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       addT("true", et * mult);
     }
   }
-  total += oneTimes();
+  total += oneTimes(total);
   if (st.dotDps || st.dotPctMaxHp) {
     const d = (st.dotDps + st.dotPctMaxHp * target.hp) * window * magicM;
     total += d; addT("magic", d);
@@ -1440,7 +1646,21 @@ export interface CompScore {
   score: number;           // combined, defense-leaning (counters are defensive)
 }
 
-export interface CompTarget { name: string; hp: number; armor: number; mr: number; bonusHp: number; }
+export interface CompTarget {
+  name: string; hp: number; armor: number; mr: number; bonusHp: number;
+  // Same optional enrichment DuelTarget carries, and for the same reason: the
+  // Counter Builder scores its swaps through scoreVsComp, so anti-heal,
+  // shield-cut and crowd control have to be visible HERE too or the builder
+  // recommends Morellonomicon and then ranks it with an engine that cannot see
+  // healing. All default to zero, so an un-enriched comp scores as before.
+  sustainPerSec?: number;
+  shield?: number;
+  ccDepth?: number;
+  ccSeconds?: number;
+  basicAttackDr?: number;
+  asSlow?: number;
+  stasisSec?: number;
+}
 
 /** Score a build against a specific enemy comp: how fast it kills their carry
  *  and how much effective HP it has versus their actual damage mix. */
@@ -1449,10 +1669,26 @@ export function scoreVsComp(name: string, items: string[], runes: string[],
   const { carry, adShare, apShare, level = 15 } = opts;
   const st = resolveStats(name, level, items, runes);
   if (!st) return { ttkCarry: null, ehpVsComp: 0, score: 0 };
-  const need = carry.hp * (1 - st.execute);
+  // Mirrors duel(): the carry's shielding and sustain are part of what has to
+  // be removed, and their crowd control is time this build is not acting.
+  const foe = (carry.basicAttackDr || carry.asSlow)
+    ? { ...st,
+        autoDamageMult: 1 - (carry.basicAttackDr ?? 0),
+        externalAsMult: 1 - (carry.asSlow ?? 0) }
+    : st;
+  const fixedNeed = carry.hp * (1 - st.execute)
+    + (carry.shield ?? 0) * (1 - (st.shieldCut ?? 0));
+  const healRate = (carry.sustainPerSec ?? 0) * (1 - (st.grievousWounds ?? 0));
+  const ccLeft = Math.max(0, (carry.ccDepth ?? 0) - (st.ccRemoval ?? 0));
+  const lockdown = ccLeft * (carry.ccSeconds ?? 1.5) * (1 - (st.tenacity ?? 0))
+    + (carry.stasisSec ?? 0);
   let ttk: number | null = null;
   for (let t = 0.25; t <= 15; t += 0.25) {
-    if (rotation(name, st, carry, t, level) >= need) { ttk = Math.round(t * 100) / 100; break; }
+    const acting = Math.max(0, t - lockdown);
+    if (acting > 0
+        && rotation(name, foe, carry, acting, level) >= fixedNeed + healRate * t) {
+      ttk = Math.round(t * 100) / 100; break;
+    }
   }
   let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
   shield *= 1 + st.healShieldAmp;
@@ -1581,6 +1817,16 @@ export function championBehavior(name: string): ChampionBehavior | null {
   return b ? (b as ChampionBehavior) : null;
 }
 
+/**
+ * Mean stated duration of one of this champion's hard-CC abilities, in seconds.
+ * 82 champions state one in their ability text; the rest fall back to the
+ * median of the 112 stated figures across the roster.
+ */
+export function championCcSeconds(name: string): number {
+  return Number(DATA.champions[name]?.ccSeconds)
+    || Number(DATA.ccMedianSeconds) || 1.5;
+}
+
 export function engineChampions(): string[] {
   return Object.keys(DATA.champions);
 }
@@ -1627,6 +1873,58 @@ function applyScaling(name: string, items: string[], runes: string[],
   }
 }
 
+/** Seconds of fight the sustain rate below is linearised against. */
+const SUSTAIN_REF_WINDOW = 8;
+
+/**
+ * Healing and shielding this kit produces for `audience` over a fight.
+ *
+ * A port of fight_engine.kit_heal, which the TS engine simply did not have: it
+ * knew 85 champions carry a heal or shield component and could not evaluate
+ * one, so an enemy's own sustain did not exist and Grievous Wounds -- exported
+ * on five items and read by nothing -- had nothing to deny.
+ */
+export function kitSustain(name: string, st: any, level: number,
+                           window: number, audience: "self" | "ally"): number {
+  const f = DATA.formulas[name]?.abilities ?? {};
+  const amp = 1 + st.healShieldAmp;
+  const hasteM = 100 / (100 + st.haste);
+  const who = (DATA.healTargets?.[name] ?? {}) as Record<string, string>;
+  let total = 0;
+  for (const [slot, ab] of Object.entries<any>(f)) {
+    // Hand-verified list; anything unlisted keeps the ally-facing read.
+    const aud = who[slot] ?? "ally";
+    if (aud !== "both" && aud !== audience) continue;
+    const comps = (ab.defensive ?? []).filter(
+      (c: any) => !c.alt && (c.kind === "heal" || c.kind === "shield"));
+    if (!comps.length) continue;
+    const cds = ab.cooldowns ?? [];
+    const cd = (cds.length ? rankVal(cds, 3) : 8) * hasteM;
+    const casts = slot === "4" ? 1
+      : Math.max(1, 1 + Math.floor(window / Math.max(cd, 0.75)));
+    for (const c of comps) {
+      let v = scaleVal(c.base, 3, level);
+      for (const r of c.ratios ?? []) {
+        const pct = scaleVal(r.pct ?? 0, 3, level) / 100;
+        const src: Record<string, number> = {
+          ap: st.ap, ad: st.ad, bonusAd: st.bonusAd,
+          ownMaxHp: st.hp, ownBonusHp: st.bonusHp,
+          // Darius heals off MISSING health, which only exists once he has
+          // been hurt.
+          ownMissingHp: st.hp * MISSING_HP_IN_FIGHT,
+        };
+        // `damageDealt` needs per-slot damage this caller does not have, so it
+        // contributes nothing rather than something invented -- the same
+        // choice fight_engine makes when dmg_by_slot is absent.
+        v += pct * (src[r.stat] ?? 0);
+      }
+      if (c.when === "dot total" && c.durationS) v *= Number(c.durationS);
+      total += v * casts;
+    }
+  }
+  return total * amp;
+}
+
 export interface DuelTarget {
   label: string;
   hp: number;
@@ -1634,6 +1932,29 @@ export interface DuelTarget {
   mr: number;
   /** Health from items only. Some kits scale off the bonus, not the total. */
   bonusHp: number;
+  // ---- Everything below is optional and defaults to zero, so every target
+  // built before these existed produces exactly the numbers it always did.
+  /**
+   * Health this champion restores per second of fight, from their own kit and
+   * from healing items. Vamp is NOT in here: it needs their damage output,
+   * which a one-way calculator does not have. mutualDuel adds it, because
+   * there both sides are simulated.
+   */
+  sustainPerSec?: number;
+  /** Shielding their kit puts up across a fight. */
+  shield?: number;
+  /** Hard-CC abilities in their kit, 0-4, from web/advisor/hardcc.py. */
+  ccDepth?: number;
+  /** Their tenacity, 0..1, which shortens the lockdown they inflict. */
+  tenacity?: number;
+  /** Plated Steelcaps: YOUR basic attacks deal this much less to them. */
+  basicAttackDr?: number;
+  /** Frozen Heart: their Chill cuts YOUR attack speed by this fraction. */
+  asSlow?: number;
+  /** Mean stated duration of one of their hard-CC abilities, in seconds. */
+  ccSeconds?: number;
+  /** Zhonya's / Seeker's: seconds they spend untargetable. */
+  stasisSec?: number;
 }
 
 export interface DuelResult {
@@ -1652,6 +1973,11 @@ export interface DuelResult {
   /** Damage past the kill: high overkill means the last cast was wasted. */
   overkill: number;
   dps: number;
+  /**
+   * Seconds of this fight spent unable to act: the target's hard CC, minus
+   * what this build cleanses, shortened by tenacity, plus their stasis.
+   */
+  lockdown: number;
 }
 
 /** A champion as a target: their real defensive stats at a level and build. */
@@ -1662,12 +1988,33 @@ export function championTarget(name: string, level: number, items: string[],
   // Bonus health is what the items added, so it has to be measured against the
   // same champion at the same level with nothing equipped.
   const naked = resolveStats(name, level, [], []);
+  const st = withBuild;
+  // Kit heals are linearised against a reference fight: cast counts are not
+  // linear in window length, so this is a rate, not an exact integral.
+  const kit = kitSustain(name, st, level, SUSTAIN_REF_WINDOW, "self") / SUSTAIN_REF_WINDOW;
+  const bonusHp = Math.max(0, withBuild.hp - (naked?.hp ?? withBuild.hp));
   return {
     label: name,
     hp: Math.round(withBuild.hp),
     armor: Math.round(withBuild.armor),
     mr: Math.round(withBuild.mr),
-    bonusHp: Math.max(0, Math.round(withBuild.hp - (naked?.hp ?? withBuild.hp))),
+    bonusHp: Math.round(bonusHp),
+    // Their own sustain, so an attacker's Grievous Wounds finally has
+    // something to deny. Vamp is excluded on purpose -- see DuelTarget.
+    sustainPerSec: Math.max(0, kit + st.runeHealPerSec + st.healOnHit * st.as),
+    // Item shielding, so a shield-cut item has something to cut. Sterak's,
+    // Maw, Kaenic Rookern and Guardian Angel's revive all land here.
+    shield: Math.max(0, st.shield + st.shieldPctBonusHp * bonusHp
+                        + st.shieldPctMaxHp * withBuild.hp),
+    ccDepth: Number(DATA.champions[name]?.ccDepth) || 0,
+    // 82 champions state a duration in their ability text; the rest fall back
+    // to the corpus median of those 112 stated figures.
+    ccSeconds: Number(DATA.champions[name]?.ccSeconds)
+      || Number(DATA.ccMedianSeconds) || 1.5,
+    stasisSec: st.stasisSec ?? 0,
+    tenacity: st.tenacity ?? 0,
+    basicAttackDr: st.basicAttackDr ?? 0,
+    asSlow: st.targetAsSlow ?? 0,
   };
 }
 
@@ -1696,18 +2043,56 @@ export function duel(name: string, items: string[], runes: string[],
   // would be quietly contradicting the panel directly above it.
   if (scaled) applyScaling(name, items, runes, level, st);
 
-  const need = target.hp * (1 - (st.execute ?? 0));
+  // What the target's own build does to MY output. Both default to no change,
+  // so a target built before these fields existed fights exactly as before.
+  const foe = (target.basicAttackDr || target.asSlow)
+    ? { ...st,
+        autoDamageMult: 1 - (target.basicAttackDr ?? 0),
+        externalAsMult: 1 - (target.asSlow ?? 0) }
+    : st;
+
+  // Health that has to be removed BEFORE their sustain is counted: the bar
+  // itself, less any execute, plus shielding my build cannot strip.
+  const fixedNeed = target.hp * (1 - (st.execute ?? 0))
+    + (target.shield ?? 0) * (1 - (st.shieldCut ?? 0));
+  // ...and the part that grows with the fight, because a target who heals is
+  // a moving target. This is what Grievous Wounds is for.
+  const healRate = (target.sustainPerSec ?? 0) * (1 - (st.grievousWounds ?? 0));
+
+  // CROWD CONTROL, as dead time.
+  //
+  // The engine had no concept of it anywhere: zero references to stun, root,
+  // knockup, stasis, spell shield, cleanse or tenacity across 1821 lines. So
+  // Mercury's Treads was health and magic resist, Legend: Tenacity was inert,
+  // and Banshee's, Quicksilver, Mercurial and Sterak's bought nothing at all.
+  //
+  // The honest minimum is that lockdown is time you are not acting. Each of
+  // the target's hard-CC abilities lands once, for the duration its own text
+  // states; the cleanses and spell shields in this build remove that many
+  // instances outright; tenacity shortens what is left; and their stasis is
+  // added on top, because an untargetable enemy is dead time for the same
+  // reason. Hard CC only -- slows are deliberately excluded, matching
+  // web/advisor/hardcc.py, because a slow is not what tenacity is for.
+  const ccLeft = Math.max(0, (target.ccDepth ?? 0) - (st.ccRemoval ?? 0));
+  const lockdown = ccLeft * (target.ccSeconds ?? 1.5) * (1 - (st.tenacity ?? 0))
+    + (target.stasisSec ?? 0);
+
   let ttk: number | null = null;
   // 0.25s steps match ttkOf, so this agrees with the number shown elsewhere.
   for (let t = 0.25; t <= cap; t += 0.25) {
-    if (rotation(name, st, target, t, level) >= need) {
+    // At wall-clock t this champion has only been ACTING for t - lockdown.
+    const acting = Math.max(0, t - lockdown);
+    if (acting > 0
+        && rotation(name, foe, target, acting, level) >= fixedNeed + healRate * t) {
       ttk = Math.round(t * 100) / 100;
       break;
     }
   }
 
   const window = ttk ?? cap;
-  const detail = rotationDetail(name, st, target, window, level);
+  const acting = Math.max(0.25, window - lockdown);
+  const need = fixedNeed + healRate * window;
+  const detail = rotationDetail(name, foe, target, acting, level);
   const casts = Object.entries(detail.casts)
     .map(([slot, v]) => ({ slot, name: v.name, casts: v.casts }))
     .filter((c) => c.casts > 0)
@@ -1729,7 +2114,10 @@ export function duel(name: string, items: string[], runes: string[],
       true: Math.round(detail.byType.true),
     },
     overkill: Math.max(0, Math.round(detail.damage - need)),
+    // Damage per second of WALL CLOCK, not per second of acting: a fight you
+    // spent half of stunned really did take that long.
     dps: Math.round(detail.damage / window),
+    lockdown: Math.round(lockdown * 100) / 100,
   };
 }
 

@@ -11,7 +11,8 @@
  * the champions that have generated builds.
  */
 import rosterData from "@/data/roster.json";
-import { bestCounterSwap, type CounterSwap } from "@/lib/engine";
+import { bestCounterSwap, championCcSeconds, kitSustain, resolveStats,
+  type CounterSwap } from "@/lib/engine";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const ROSTER = rosterData as Record<string, RosterChampion>;
@@ -52,6 +53,12 @@ export interface DefensiveTarget {
   armor: number;
   mr: number;
   bonusHp: number;
+  /** Health this kit restores per second, so anti-heal has something to deny. */
+  sustainPerSec?: number;
+  /** Hard-CC abilities in the kit, 0-4, from web/advisor/hardcc.py. */
+  ccDepth?: number;
+  /** Mean stated duration of one of them, in seconds. */
+  ccSeconds?: number;
 }
 
 export interface ThreatProfile {
@@ -96,8 +103,18 @@ function ehp(c: RosterChampion, level: number): number {
 }
 function asTarget(c: RosterChampion, level: number): DefensiveTarget {
   const hp = stat(c, "hp", level);
+  // The enemy's own kit, resolved with no items: their sustain and lockdown are
+  // properties of the champion, not of a build we do not know. Without these
+  // the counter scorer could not see healing to deny or crowd control to
+  // cleanse, which is most of what a counter build is for.
+  const bare = resolveStats(c.name, level, [], []);
+  const sustain = bare ? kitSustain(c.name, bare, level, 8, "self") / 8 : 0;
   return { name: c.name, hp: Math.round(hp), armor: Math.round(stat(c, "armor", level)),
-    mr: Math.round(stat(c, "mr", level)), bonusHp: Math.round(hp * 0.45) };
+    mr: Math.round(stat(c, "mr", level)), bonusHp: Math.round(hp * 0.45),
+    sustainPerSec: Math.max(0, sustain),
+    ccDepth: Number(c.ccDepth) || 0,
+    ccSeconds: championCcSeconds(c.name),
+  };
 }
 
 /** Derive the enemy team's threat profile at a reference level. When your lane

@@ -423,6 +423,17 @@ def _apply_stat(st: dict, k: str, val: float, pct: bool = False) -> None:
         # Mirrors the physVampPct item effect.
         st["vamp"] += val / 100.0
         st["lifestealPct"] += val / 100.0
+    elif k == "omnivamp":
+        # Mirrors the omnivampPct item effect. The stat line is canonical: the
+        # fx key duplicated it and on Gluttonous/Immortal Treads carried double
+        # the real value, read off stale passive prose.
+        st["vamp"] += val / 100.0
+        st["omnivampPct"] += val / 100.0
+    elif k == "tenacity":
+        # Always a percentage, but the two items carrying it disagree on the
+        # flag -- Mercury's Treads is percent:false and Chainlaced Crushers
+        # percent:true, both meaning 30%. So the flag is ignored on purpose.
+        st["tenacity"] = 1 - (1 - st["tenacity"]) * (1 - val / 100.0)
 
 
 def resolve_stats(name: str, level: int, item_slugs: list[str],
@@ -452,6 +463,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # it nothing without any special-casing.
         "haste": 0.0, "mana": base("mana", 0.0),
         "flatPen": 0.0, "pctPenFactors": [], "flatMagicPen": 0.0, "pctMagicPen": 0.0,
+        "tenacity": 0.0, "grievousWounds": 0.0, "shieldCut": 0.0,
+        "ccRemoval": 0.0, "stasisSec": 0.0, "basicAttackDr": 0.0, "targetAsSlow": 0.0,
+        "cloneAdPct": 0.0, "cloneAsFromCritPct": 0.0,
+        "cloneLifetimeS": 0.0, "cloneMaxCount": 0.0,
         "baseMs": bs.get("moveSpeed", {}).get("base", 330) or 330, "bonusMs": 0.0,
         "abilityAmp": 0.0, "damageAmp": 0.0, "giant": 0.0, "execute": 0.0,
         # Procs whose condition the rotation has to verify, and ult-only amp.
@@ -461,7 +476,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
-        "burstProcs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0, "procMaxHpPct": 0.0, "firstHit": 0.0,
+        "procs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
         "apAmp": 0.0, "hastePct": 0.0, "cdRefundPctPerAuto": 0.0,
         "cleaveFlat": 0.0, "cleavePctBonusHp": 0.0,
@@ -480,6 +495,23 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     # accumulation is deferred until every stat source (Overkill included) has
     # landed; the damage TYPE follows the kit like the adaptive stat grant.
     adaptive_onhit = {"flat": 0.0, "adPct": 0.0, "apPct": 0.0}
+    # Crit-GATED increments (Last Whisper's "+6% Armor Penetration on Critical
+    # Strike", Bloody's "+4% Physical Vamp on Critical Strike"). Deferred like
+    # the adaptive on-hits, because crit is still accumulating inside the item
+    # loop and pricing them inline would charge whatever crit happened to have
+    # landed so far.
+    on_crit = {"pctPen": 0.0, "physVampPct": 0.0}
+
+    def add_proc(flat=0.0, adRatio=0.0, apRatio=0.0, pctMaxHp=0.0,
+                 type="magic", cd=0.0, arm=0.0, label=""):
+        """A discrete proc. cd <= 0 means 'no repeat stated' -> once per fight."""
+        if not (flat or adRatio or apRatio or pctMaxHp):
+            return
+        st["procs"].append({
+            "flat": flat, "adRatio": adRatio, "apRatio": apRatio,
+            "pctMaxHp": pctMaxHp, "type": type, "arm": arm, "label": label,
+            "cd": cd if cd and cd > 0 else float("inf"),
+        })
     # Attack-rate estimate for stack ramp-up, from the build's own AS items.
     # Deliberately rough (ignores runes and AS passives): it only decides how
     # fast stacking items reach max, a second-order effect.
@@ -517,6 +549,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["flatPen"] += g("flatPen")
         if fx.get("pctPen"):
             st["pctPenFactors"].append(g("pctPen") / 100.0)
+        on_crit["pctPen"] += g("pctPenOnCrit")
+        on_crit["physVampPct"] += g("physVampPctOnCrit")
         st["armorShred"] = max(st["armorShred"], g("armorShredPct") / 100.0)
         st["critMult"] = max(st["critMult"], float(fx.get("critMult", 0)) or 0)
         if fx.get("disablesCrit"):
@@ -561,10 +595,14 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         for _base in ("onHitPctCurrentHp", "onHitPctMaxHp"):
             _k = _base + "Ranged" if (_rngd and (_base + "Ranged") in fx) else _base
             st[_base] += g(_k) / 100.0
-        st["procMaxHpPct"] += g("procMaxHpPct") / 100.0
-        st["firstHit"] += g("firstHit")
-        if fx.get("burstProcFlat") or fx.get("burstProcApPct"):
-            st["burstProcs"].append((g("burstProcFlat"), g("burstProcApPct") / 100.0))
+        add_proc(pctMaxHp=g("procMaxHpPct") / 100.0, label=slug,
+                 type=fx.get("procMaxHpType", "physical"),
+                 cd=g("procMaxHpCdSec"), arm=g("procMaxHpArmSec"))
+        add_proc(flat=g("firstHit"), label=slug, type="physical",
+                 cd=g("firstHitCdSec"), arm=g("firstHitArmSec"))
+        add_proc(flat=g("burstProcFlat"), apRatio=g("burstProcApPct") / 100.0,
+                 label=slug, type=fx.get("burstProcType", "magic"),
+                 cd=g("burstProcCdSec"), arm=g("burstProcArmSec"))
         st["dotDps"] += g("dotDps")
         # %max-HP burns (Searing Crown) are target-scaled, so they are summed
         # here and priced at fight time. Ranged users pay the reduced rate.
@@ -600,6 +638,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                      if (_rngd and fx.get("everyNthRangedMult")) else 1.0)
             st["onHitPhys"] += g("everyNthBaseAdPct") / 100.0 * st["baseAd"] * _mult / _n
             st["onHitPctMaxHp"] += g("everyNthPctMaxHp") / 100.0 * _mult / _n
+            # Flat every-Nth damage (Kraken Slayer's "Every third attack deals
+            # 120-160"). No channel existed, so the value rode the once-per-fight
+            # proc list and paid out once per fight instead of once per 3 autos.
+            # NOT modelled: its "+1% per 1% missing Health, up to 70%" scaling.
+            st["onHitPhys"] += (g("everyNthRangedFlat") if (_rngd and fx.get("everyNthRangedFlat"))
+                                else g("everyNthFlat")) / _n
         # "Gain 25 Attack Damage OR 50 Ability Power (Adaptive)" grants exactly
         # ONE. Storing both as adFlatPassive+apFlatPassive handed Lucian 25 AD
         # AND 50 AP off Nashor's. Pick by the kit's primary damage type; using
@@ -635,13 +679,27 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["cdRefundPctPerAuto"] += g("cdRefundPctPerAuto")
         st["cleaveFlat"] += g("cleaveFlat")
         st["cleavePctBonusHp"] += g("cleavePctBonusHp") / 100.0
-        st["healShieldAmp"] += g("healShieldAmpPct") / 100.0  # e.g. Harmonic Echo
+        st["healShieldAmp"] += g("healShieldAmpPct") / 100.0
+        # Target-side and CC channels. None of these had a reader in either
+        # engine; grievousWoundsPct in particular has been exported on five
+        # items since anti-heal went in and was consumed by nothing.
+        st["grievousWounds"] = max(st["grievousWounds"], g("grievousWoundsPct") / 100.0)
+        st["shieldCut"] = max(st["shieldCut"], g("shieldCutPct") / 100.0)
+        st["basicAttackDr"] = max(st["basicAttackDr"], g("basicAttackDrPct") / 100.0)
+        st["targetAsSlow"] = max(st["targetAsSlow"], g("targetAsSlowPct") / 100.0)
+        # Cleanses and spell shields DO stack: two shields block two abilities.
+        st["ccRemoval"] += g("ccRemoval")
+        st["stasisSec"] = max(st["stasisSec"], g("stasisSec"))
+        st["cloneAdPct"] = max(st["cloneAdPct"], g("cloneAdPct"))
+        st["cloneAsFromCritPct"] = max(st["cloneAsFromCritPct"], g("cloneAsFromCritPct"))
+        st["cloneLifetimeS"] = max(st["cloneLifetimeS"], g("cloneLifetimeS"))
+        st["cloneMaxCount"] = max(st["cloneMaxCount"], g("cloneMaxCount"))  # e.g. Harmonic Echo
 
     for _k, _v in (bonus or {}).items():  # marginal-value probe
         _apply_stat(st, _k, _v)
 
     # runes (numeric models: bonus AD, on-hit, procs, amp, move speed, haste)
-    ragg = {"bonusAd": 0.0, "onHitFlat": 0.0, "onHitAdRatio": 0.0, "procs": [], "ampPct": 0.0}
+    ragg = {"bonusAd": 0.0, "onHitFlat": 0.0, "onHitAdRatio": 0.0, "ampPct": 0.0}
     ms_amp = 0.0
     _champ = CHAMPS.get(name) or {}
     auto_centric = (CHAMP_CLASS.get(name) == "Marksman"
@@ -695,6 +753,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["mana"] += g("manaFlat")
             st["armor"] += g("armorFlat")
             st["mr"] += g("mrFlat")
+            # Legend: Tenacity shipped as an empty {} in rune_engine.json, so
+            # the exporter dropped it and the rune the advisor picks against
+            # heavy-CC comps never reached the bundle at all.
+            st["tenacity"] = 1 - (1 - st["tenacity"]) * (1 - g("tenacityPct") / 100.0)
             st["armor"] *= 1 + g("armorPct") / 100.0
             st["mr"] *= 1 + g("mrPct") / 100.0
             # Font of Life: a self+ally heal. The ally half is priced by
@@ -722,9 +784,14 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["abilityAmp"] += g("abilityAmpPct") / 100.0
             st["ultAmp"] += (g("ultAmpPctAoe") if name in AOE_ULTS
                              else g("ultAmpPct")) / 100.0
-            if fx.get("burstProcFlat") or fx.get("burstProcApRatio") or fx.get("burstProcAdRatio"):
-                ragg["procs"].append((g("burstProcFlat"), g("burstProcAdRatio") / 100.0,
-                                      fx.get("burstProcType", "magic")))
+            add_proc(flat=g("burstProcFlat"),
+                     adRatio=g("burstProcAdRatio") / 100.0,
+                     # burstProcApRatio was read by neither engine, so every AP
+                     # build undervalued Aery, Arcane Comet, Tyrant and Chain
+                     # Assault by their entire AP half.
+                     apRatio=g("burstProcApRatio") / 100.0,
+                     type=fx.get("burstProcType", "magic"), label=rn,
+                     cd=g("burstProcCdSec"), arm=g("burstProcArmSec"))
             continue
         gate = 0.45 if (rn in AUTO_GATED_RUNES and not auto_centric) else 1.0
         st["bonusMs"] += st["baseMs"] * r.get("msPctAvg", 0) / 100.0
@@ -766,15 +833,24 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 flat = p.get("flat", 0) + p.get("perSoul", 0) * p.get("assumedSouls", 0)
                 st["conditionalProcs"].append(
                     {"need": 0.5, "flat": flat, "adRatio": p.get("adRatio", 0),
-                     "apRatio": p.get("apRatio", 0), "type": p.get("type", "magic")})
+                     "apRatio": p.get("apRatio", 0), "type": p.get("type", "magic"),
+                     "cd": _lvl_range(p.get("cdSec") or 0, level) or float("inf"),
+                     "arm": _lvl_range(p.get("armSec") or 0, level)})
             elif cond != "targetBelow50":
                 lo, hi = p.get("baseRange", [p.get("flat", 0)] * 2)
-                ragg["procs"].append((lo + (hi - lo) * (level - 1) / 14.0,
-                                      p.get("adRatio", 0), p.get("type", "physical")))
+                add_proc(flat=lo + (hi - lo) * (level - 1) / 14.0,
+                         # PERCENT, divided once here. This file used to store
+                         # Electrocute as a fraction (0.1) and Dark Harvest as a
+                         # percent (10) for the same 10%; each engine was right
+                         # about one of them and wrong about the other.
+                         adRatio=p.get("adRatio", 0) / 100.0,
+                         apRatio=p.get("apRatio", 0) / 100.0,
+                         type=p.get("type", "physical"), label=rn,
+                         cd=_lvl_range(p.get("cdSec") or 0, level),
+                         arm=_lvl_range(p.get("armSec") or 0, level))
         ragg["ampPct"] += r.get("ampPct", 0)
     st["bonusAd"] += ragg["bonusAd"]
     st["runeOnHitFlat"] = ragg["onHitFlat"] + ragg["onHitAdRatio"] * st["bonusAd"]
-    st["runeProcs"] = ragg["procs"]
     st["damageAmp"] += ragg["ampPct"]
     st["bonusMs"] *= 1 + ms_amp  # Celerity amplifies all MS bonuses
 
@@ -853,6 +929,15 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["critMult"] += st["critDamagePerExcessCrit"] * excess_pct / 100.0
     st["crit"] = min(st["crit"], 1.0)
 
+    # Crit is final, so the crit-gated increments can be paid at the rate this
+    # build actually crits. The fx values they replaced folded them in at 100%.
+    if on_crit["pctPen"]:
+        st["pctPenFactors"].append(on_crit["pctPen"] / 100.0 * st["crit"])
+    if on_crit["physVampPct"]:
+        _v = on_crit["physVampPct"] / 100.0 * st["crit"]
+        st["vamp"] += _v
+        st["lifestealPct"] += _v
+
     # Kit mechanics (extracted with evidence grounding) that change item math:
     #   fixedAttackSpeed — AS items don't speed this champion's attacks
     #   noResource       — mana items give nothing (Manamune conversion dies)
@@ -927,6 +1012,24 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         reload_s = know.get("reloadSeconds", 1.0)
         st["as"] = st["reloadMag"] / (st["reloadMag"] / st["as"] + reload_s)
     st["crit"] = min(st["crit"], 1.0)
+
+    # Soul Transfer's Shadow Dance: clones that attack alongside you. A real,
+    # in-combat physical damage stream that nothing modelled at all.
+    #
+    # Crits per second is crit rate x attack rate, each clone lives 4 seconds
+    # and at most two exist at once, so the population is spawn rate x lifetime,
+    # capped. Their damage is folded into the on-hit bundle DIVIDED BY attack
+    # speed, the same way Titanic Cleave converts a per-second effect into a
+    # per-auto one: a faster attacker dilutes a time-based stream across more
+    # autos rather than multiplying it.
+    if st["cloneAdPct"]:
+        _alive = min(st["cloneMaxCount"] or 1,
+                     st["crit"] * st["as"] * st["cloneLifetimeS"])
+        _clone_as = min(AS_CAP, st["baseAs"]
+                        * (1 + st["cloneAsFromCritPct"] / 100.0 * st["crit"]))
+        _clone_dps = _alive * _clone_as * (st["cloneAdPct"] / 100.0) * st["ad"]
+        st["onHitPhys"] += _clone_dps / max(st["as"], 0.1)
+
     pct_pen = 1.0
     for p in st["pctPenFactors"]:
         pct_pen *= (1 - p)
@@ -1231,15 +1334,40 @@ def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None):
     return p, m, t
 
 
-def _proc_split(st, target, phys_m, magic_m):
-    """One-time procs (first-hit, %max-HP, rune procs, burst procs), by type."""
-    once_p = st["firstHit"] * phys_m + st["procMaxHpPct"] * target["hp"] * phys_m
-    for flat, ap_pct in [(p[0], p[1]) for p in st["runeProcs"]]:
-        once_p += (flat + ap_pct * st["bonusAd"]) * phys_m
-    once_m = 0.0
-    for flat, ap_r in st["burstProcs"]:
-        once_m += (flat + ap_r * st["ap"]) * magic_m
-    return once_p, once_m
+def _proc_split(st, target, phys_m, magic_m, window):
+    """Discrete procs, charged at the rate their own descriptions state.
+
+    Every one of these used to be charged EXACTLY ONCE per fight however long
+    the fight ran, so Aery (2s cooldown) was worth the same as Dark Harvest
+    (20s) and a 20-second fight paid for neither more than a 2-second one.
+    `cd` is Infinity when the effect's text states no repeat, which keeps the
+    old behaviour for anything with no evidence either way.
+
+    Returns (physical, magic, true).
+    """
+    once_p = once_m = once_t = 0.0
+    for pr in st["procs"]:
+        arm = pr.get("arm", 0.0)
+        if window + 1e-9 < arm:
+            continue
+        cd = pr.get("cd") or float("inf")
+        times = 1 if cd == float("inf") else 1 + int((window - arm) // cd)
+        dtype = pr.get("type", "magic")
+        if dtype == "adaptive":
+            dtype = "magic" if st["ap"] >= st["bonusAd"] else "physical"
+        val = (pr.get("flat", 0.0)
+               + pr.get("adRatio", 0.0) * st["bonusAd"]
+               + pr.get("apRatio", 0.0) * st["ap"]
+               + pr.get("pctMaxHp", 0.0) * target["hp"]) * times
+        # Everything used to be charged as PHYSICAL through phys_m, so magic
+        # procs were mitigated by armour and true procs were mitigated at all.
+        if dtype == "magic":
+            once_m += val * magic_m
+        elif dtype == "true":
+            once_t += val
+        else:
+            once_p += val * phys_m
+    return once_p, once_m, once_t
 
 
 def _on_hit_bundle(st, target, phys_m, magic_m, kit=None):
@@ -1394,7 +1522,14 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             dtype = pr["type"]
             if dtype == "adaptive":
                 dtype = "magic" if st["ap"] >= st["bonusAd"] else "physical"
-            dmg *= (magic_m if dtype == "magic" else phys_m) * reach
+            # Charged at its stated cooldown, like every other proc.
+            _arm = pr.get("arm", 0.0)
+            _cd = pr.get("cd") or float("inf")
+            _times = 0 if window + 1e-9 < _arm else (
+                1 if _cd == float("inf") else 1 + int((window - _arm) // _cd))
+            if not _times:
+                continue
+            dmg *= (magic_m if dtype == "magic" else phys_m) * reach * _times
             parts.append(("Dark Harvest", dmg))
             add_t(dtype, dmg)
             added += dmg
@@ -1532,12 +1667,13 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
                 add_t("true", _et * _mult)
                 total += _extra
                 auto_dmg += _extra
-        once_p, once_m = _proc_split(st, target, phys_m, magic_m)
-        once = once_p + once_m
+        once_p, once_m, once_t = _proc_split(st, target, phys_m, magic_m, window)
+        once = once_p + once_m + once_t
         if once:
             parts.append(("procs", once))
             add_t("physical", once_p)
             add_t("magic", once_m)
+            add_t("true", once_t)
             total += once
         if st["dotDps"] or st["dotPctMaxHp"]:
             d = (st["dotDps"] + st["dotPctMaxHp"] * target["hp"]) * window * magic_m
@@ -1662,12 +1798,13 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             auto_dmg += _extra
 
     # one-time procs + burn
-    once_p, once_m = _proc_split(st, target, phys_m, magic_m)
-    once = once_p + once_m
+    once_p, once_m, once_t = _proc_split(st, target, phys_m, magic_m, window)
+    once = once_p + once_m + once_t
     if once:
         parts.append(("procs", once))
         add_t("physical", once_p)
         add_t("magic", once_m)
+        add_t("true", once_t)
         total += once
     if st["dotDps"] or st["dotPctMaxHp"]:
         d = (st["dotDps"] + st["dotPctMaxHp"] * target["hp"]) * window * magic_m

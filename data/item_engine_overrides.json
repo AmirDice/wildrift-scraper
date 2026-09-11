@@ -10,7 +10,9 @@
   },
   "steraks-gage": {
     "shieldPctBonusHp": 75,
-    "_why": "LIFELINE: shield = 75% bonus HP, once per fight"
+    "_why": "LIFELINE: shield = 75% bonus HP, once per fight",
+    "ccRemoval": 1,
+    "_why_cc": "Sterak's Fury: 'Triggering Lifeline ... REMOVES ALL CROWD CONTROL EFFECTS ON YOU (except Airborne), and grants 30% Tenacity for 4 seconds.' Lifeline is once per fight on a 75s cooldown, so one instance removed."
   },
   "maw-of-malmortius": {
     "shieldFlat": 300,
@@ -31,7 +33,9 @@
   },
   "essence-reaver": {
     "spellbladeBaseAdPct": 70,
-    "_why": "wr-meta writes 'dealing 70 bonus <ad icon>' with the % dropped, so the extractor reads a flat 70 proc. Patch 7.2a is explicit: 'Spellblade damage: 90% -> 70% base AD'."
+    "_why": "wr-meta writes 'dealing 70 bonus <ad icon>' with the % dropped, so the extractor reads a flat 70 proc. Patch 7.2a is explicit: 'Spellblade damage: 90% -> 70% base AD'.",
+    "burstProcFlat": 0,
+    "_why_stale_proc": "The spellbladeBaseAdPct:70 correction above was meant to REPLACE the extractor's flat-70 misread, but the override merge in export_engine_data.py only .update()s keys and never removes them, so burstProcFlat:70 survived into engine.json alongside it and the item was charged twice -- once through the one-shot proc channel and again every spellblade cycle."
   },
   "sunfire-aegis": {
     "damageAmpPct": 0,
@@ -105,5 +109,182 @@
   "dusk-and-dawn": {
     "extraOnHitOnSpellblade": 1,
     "_why_onhit": "The passive is TWO effects and extraction captured only the first: 'After a brief delay, apply on-hits to the target 1 additional time' on the same 1.5s spellblade proc. For an on-hit build (Nashor's, Wit's End) that re-application is worth more than the item's small 10% AP spellblade half, so the engines scored the item as a weak Lich Bane. Owner-approved 2026-08-18. NOTE: Zhonya's Stasis remains unmodelled by the owner's decision, so the two are not scored on equal footing."
+  },
+  "duskblade-of-draktharr": {
+    "flatPen": 0,
+    "_why_dedupe": "stat physicalPenFlat 18; fx flatPen 18 was the same Nightstalker line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "firstHitCdSec": 10,
+    "_why_cd": "Nightstalker: 'The first attack against a champion deals 60-160 bonus physical damage ... (10s cooldown)'. Was charged once per fight at any window length."
+  },
+  "youmuus-ghostblade": {
+    "flatPen": 0,
+    "_why_dedupe": "stat physicalPenFlat 15; fx flatPen 15 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+  },
+  "serpents-fang": {
+    "flatPen": 0,
+    "_why_dedupe": "stat physicalPenFlat 15; fx flatPen 15 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "shieldCutPct": 50,
+    "_why_target_side": "Shield Reaver: 'Melee champions apply (10% of bonus AD + 40)% shield reduction, capped at 60%; while ranged champions apply (10% of bonus AD + 25)% shield reduction, capped at 45%.' 50% is the midpoint of the two caps and is used because the bonus-AD term is not available at the seam that consumes this. Flagged: this is the one number here not read verbatim off the text."
+  },
+  "the-collector": {
+    "flatPen": 0,
+    "_why_dedupe": "stat physicalPenFlat 10; fx flatPen 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+  },
+  "edge-of-night": {
+    "flatPen": 0,
+    "_why_dedupe": "stat physicalPenFlat 12; fx flatPen 8 came from the STALE Gouge prose. Patch notes: 'Edge of Night / Base Stats / Armor Penetration: 8 -> 12'. The delta updated the stat and left the passive sentence at 8. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "ccRemoval": 1,
+    "_why_cc": "Annul: same spell shield on a 35s cooldown."
+  },
+  "seryldas-grudge": {
+    "pctPen": 0,
+    "_why_dedupe": "stat physicalPen 33% (percent:true); fx pctPen 33 was the same Frostbite line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+  },
+  "blade-of-the-ruined-king": {
+    "omnivampPct": 0,
+    "_why_dedupe": "stat omnivamp 10%; fx omnivampPct 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+  },
+  "goredrinker": {
+    "omnivampPct": 0,
+    "_why_dedupe": "stat omnivamp 8%; fx omnivampPct 8 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+  },
+  "gluttonous-greaves": {
+    "omnivampPct": 0,
+    "_why_dedupe": "stat omnivamp 5%; fx omnivampPct 10 was stale prose, double the real value. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+  },
+  "immortal-treads": {
+    "omnivampPct": 0,
+    "_why_dedupe": "stat omnivamp 5%; fx omnivampPct 10 was stale prose, double the real value. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+  },
+  "mortal-reminder": {
+    "pctPen": 0,
+    "pctPenOnCrit": 6,
+    "_why_dedupe": "stat physicalPen 30% (percent:true) is Last Whisper's base. The old fx pctPen 36 folded in the '+6% on Critical Strike' clause at 100% uptime and then got applied ON TOP of the stat in Python. Base now comes from the stat line; the 6% rides pctPenOnCrit and is scaled by the build's actual crit rate."
+  },
+  "bloodthirster": {
+    "physVampPct": 0,
+    "physVampPctOnCrit": 4,
+    "_why_dedupe": "stat physicalVamp 8% is Bloody's base. The old fx physVampPct 12 folded in '+4% Physical Vamp on Critical Strike' at 100% uptime; Python then added both for 20%. Base from the stat line, the 4% scaled by crit rate."
+  },
+  "ludens-echo": {
+    "burstProcCdSec": 9,
+    "_why_cd": "Echo: '(9s Cooldown)'"
+  },
+  "unending-despair": {
+    "procMaxHpCdSec": 4,
+    "procMaxHpType": "magic",
+    "_why_cd": "Anguish: 'EVERY 4 SECONDS while in combat with a champion, deal 3% of your max Health as MAGIC damage'. It was charged once per fight and as physical."
+  },
+  "dawnshroud": {
+    "burstProcCdSec": 3,
+    "_why_cd": "Dawnbringer: '(3s Cooldown)'"
+  },
+  "imperial-mandate": {
+    "burstProcCdSec": 6,
+    "_why_cd": "Coordinated Fire: '(6 seconds cooldown per enemy champion)'"
+  },
+  "stormsurge": {
+    "burstProcCdSec": 25,
+    "burstProcArmSec": 2,
+    "_why_cd": "Stormraider '(25s Cooldown)'; Squall strikes 'after 2 seconds'."
+  },
+  "hextech-rocketbelt": {
+    "burstProcCdSec": 30,
+    "_why_cd": "Protobelt: '(30s Cooldown)'"
+  },
+  "zekes-convergence": {
+    "burstProcCdSec": 30,
+    "_why_cd": "Harbinger: '(30s Cooldown)'"
+  },
+  "heartsteel": {
+    "procMaxHpArmSec": 2.5,
+    "burstProcArmSec": 2.5,
+    "_why_arm": "Colossal Consumption 'charges for 2.5 seconds before dealing' the strike, so it cannot land inside a shorter window. No repeat cooldown is stated."
+  },
+  "eclipse": {
+    "procMaxHpArmSec": 1.8,
+    "_why_arm": "Ever Rising Moon needs '2 separate attacks or abilities within 1.8s'. No repeat cooldown is stated in the text, so it stays once per fight."
+  },
+  "galeforce": {
+    "burstProcType": "physical",
+    "_why_type": "Cloudburst: 'Deal PHYSICAL damage equal to 40-125'. The burstProc channel defaults to magic, so it was being mitigated by the wrong resistance."
+  },
+  "redemption": {
+    "procMaxHpType": "true",
+    "_why_type": "Intervention: 'deal 10% of max Health as TRUE damage to enemy champions'. The procMaxHp channel defaults to physical."
+  },
+  "kraken-slayer": {
+    "burstProcFlat": 0,
+    "everyNthBaseAdPct": 0,
+    "_why_channel": "'Bring it Down: EVERY THIRD ATTACK deals 120-160 bonus physical damage'. The item already carried everyNthAttack:3, but with no everyNth* damage key the nth block contributed exactly zero and the whole 120-160 rode the once-per-fight proc channel instead -- so a core marksman item paid out once in a 20-second fight instead of roughly seven times. Moved to everyNthFlat, which the resolver averages across autos.",
+    "everyNthFlat": {
+      "lvlRange": [
+        120,
+        160
+      ]
+    },
+    "everyNthRangedFlat": {
+      "lvlRange": [
+        110,
+        150
+      ]
+    },
+    "_why_channel2": "Ranged users get 110-150 by the same sentence."
+  },
+  "liandrys-torment": {
+    "procMaxHpPct": 0,
+    "dotPctMaxHpPerSec": 0.667,
+    "_why_channel": "Torment: 'burn enemies for 2% max Health magic damage FOR 3 SECONDS'. That is a damage-over-time, not a one-shot proc, and the dotPctMaxHpPerSec channel already exists and is priced per second of the window. 2% over 3s is 0.667%/s."
+  },
+  "thornmail": {
+    "burstProcFlat": 0,
+    "_why_not_outgoing": "Thorns: 'WHEN STRUCK BY AN ATTACK, deal 20 + ... magic damage to THE ATTACKER.' This is reflect damage taken, not damage this build deals. Charged as outgoing champion damage, which its own text says it is not."
+  },
+  "hollow-radiance": {
+    "burstProcFlat": 0,
+    "_why_not_outgoing": "Desolate: 'KILLING a neutral monster or an enemy deals magic damage ... in an area'. It fires on a kill that has already happened, so it cannot contribute to the time-to-kill it is being charged against. Charged as outgoing champion damage, which its own text says it is not."
+  },
+  "knights-vow": {
+    "burstProcFlat": 0,
+    "_why_not_outgoing": "Sacrifice: same on-KILL clause as hollow-radiance. Charged as outgoing champion damage, which its own text says it is not."
+  },
+  "plated-steelcaps": {
+    "basicAttackDrPct": 10,
+    "_why_target_side": "Block: 'Basic attacks from champions deal 10% reduced damage to you.' Unmodelled because it needs the TARGET to be the one attacking, which the one-way damage calculator had no way to express. Deliberately NOT drPct, which is all damage -- Block is basic attacks only."
+  },
+  "frozen-heart": {
+    "targetAsSlowPct": 36,
+    "_why_target_side": "Winter's Caress: 'Each stack of Chill slows enemy attack speed by 9%, up to a maximum of 4 stacks or 36% attack speed reduction.' Charged at max stacks, the same convention Terminus/Black Cleaver use for stacked passives -- see rampAttacks. The item had an empty fx entry."
+  },
+  "oceanids-trident": {
+    "shieldCutPct": 45,
+    "_why_target_side": "Lethal Weapon: 'Area of effect abilities apply (5% of bonus AP + 25)% shield reduction, capped at 45%; while single target abilities apply (5% of bonus AP + 40)% shield reduction, capped at 60%.' Capped value for the area-of-effect case, the commoner one on the kits that build it."
+  },
+  "banshees-veil": {
+    "ccRemoval": 1,
+    "_why_cc": "Annul: 'Grants a spell shield that blocks the next hostile ability. (30s Cooldown)'. One hostile ability per fight, so one instance of lockdown removed."
+  },
+  "quicksilver-sash": {
+    "ccRemoval": 1,
+    "_why_cc": "Quicksilver: 'Removes ALL crowd control effects currently affecting you, and become immune to crowd control for 0.25 seconds.' (60s) One activation per fight. The 30% Tenacity / 1.5s Perseverance tail is left out: 1.5 seconds of tenacity inside a 20-second fight is below the resolution of this model."
+  },
+  "mercurial-scimitar": {
+    "ccRemoval": 1,
+    "_why_cc": "Quicksilver Sash active: identical cleanse to quicksilver-sash."
+  },
+  "zhonyas-hourglass": {
+    "stasisSec": 2.5,
+    "_why_cc": "Stasis: 'Become invulnerable and untargetable for 2.5 seconds, but unable to move, attack, cast abilities or use items. (120s Cooldown)'. Modelled as 2.5 seconds the ATTACKER cannot damage them -- which is exactly what it buys."
+  },
+  "seekers-armguard": {
+    "stasisSec": 2.5,
+    "_why_cc": "Stasis: identical active to zhonyas-hourglass."
+  },
+  "soul-transfer": {
+    "cloneAdPct": 20,
+    "cloneAsFromCritPct": 30,
+    "cloneLifetimeS": 4,
+    "cloneMaxCount": 2,
+    "_why_clone": "Shadow Dance: 'When your attack Critically Strikes an enemy champion or a large monster, summon a clone that lasts 4 SECONDS to attack nearby enemies. The clone inherits 20% OF YOUR ATTACK DAMAGE and additionally gains 30% OF YOUR CRITICAL RATE AS ATTACK SPEED. UP TO TWO CLONES can exist at one time.' Every number here is from that sentence. The item shipped with an empty fx entry, so a legendary item's entire passive was worth nothing. The one figure the text does NOT give is the clone's base attack speed; it is a clone, so it uses the owner's own base."
   }
 }
