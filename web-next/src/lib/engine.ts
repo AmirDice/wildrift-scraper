@@ -1587,7 +1587,9 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   const sustain = st.vamp * dps8 * 8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp);
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
   wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
-  const off = BURSTY.has(variant) ? burst3 / REF_BURST : dps8 / REF_DPS;
+  // Bruisers are scored on damage DELIVERED, not damage theoretically dealt.
+  const off = (BURSTY.has(variant) ? burst3 / REF_BURST : dps8 / REF_DPS)
+    * deliveredShare(ehp, sustain, name);
   const deff = durabilityTerm(ehp, sustain);
   return 100 * (wOff * off + (1 - wOff) * deff) * Math.pow(buildEfficiency(name, items), EFFICIENCY_ALPHA);
 }
@@ -1826,6 +1828,31 @@ const CLASS_PRESET: Record<string, string> = {
   Fighter: "bruiser", Tank: "tank", Support: "default",
 };
 const REF_TTK = 4, REF_SURV = 6, REF_HEAL = 1500;
+/** Enemy damage per second on one focused target: roughly three attackers. */
+const FOCUS_DPS = 2200;
+/** The fight the offensive term integrates over; matches the dps8 window. */
+const REF_FIGHT = 8;
+
+/**
+ * Share of an 8-second rotation a build survives long enough to deal.
+ *
+ * A tank benefits from surviving; a BRUISER benefits from what he does while
+ * surviving. Darius' damage lives in Hemorrhage stacks and the ult reset, not
+ * in his items, so it is a function of time alive in melee. Scored as damage
+ * plus separate durability, real top-50 Darius builds sat at the 86th
+ * percentile of what the engine could reach.
+ *
+ * Bruisers only: applying this to marksmen (44.1% -> 58.4%) and mages
+ * (9.6% -> 33.4%) makes them worse, because their damage is gated on
+ * positioning rather than on durability.
+ *
+ * Mirrors fight_engine.delivered_share, which carries the measurements.
+ */
+function deliveredShare(ehp: number, sustain: number, name: string): number {
+  if ((DATA.champions[name]?.class ?? "") !== "Bruiser") return 1;
+  return Math.min(1, (ehp + 0.5 * sustain) / FOCUS_DPS / REF_FIGHT);
+}
+
 /** Effective health past which durability stops paying. See durabilityTerm. */
 const REF_DURABILITY_CUT = 14000;
 

@@ -2384,6 +2384,72 @@ def durability_term(ehp: float, sustain: float) -> float:
     return min(1.0, (ehp + 0.5 * sustain) / REF_DURABILITY_CUT)
 
 
+# How much damage a champion is under while it fights. 650 is one attacker (the
+# existing _INCOMING_DPS["bruiser"]); 2200 is roughly three, which is what
+# actually happens to a diving bruiser and does not happen to a marksman kiting
+# at max range.
+FOCUS_DPS = 2200.0
+# The fight the offensive term integrates over. Matches the dps8 window, so
+# "delivered" is a share of a number the engine already computes.
+REF_FIGHT = 8.0
+
+
+def delivered_share(m: dict, name: str) -> float:
+    """Share of an 8-second rotation this build survives long enough to deal.
+
+    A tank benefits from surviving. A BRUISER benefits from what he does while
+    surviving, and the difference is not a matter of degree: a bruiser's damage
+    is gated on standing in melee range of people who are hitting him.
+
+    Darius is the clearest case in the game. His damage is not in his items, it
+    is in Hemorrhage stacking to Noxian Might and the ult reset, so it is a
+    function of TIME ALIVE IN MELEE rather than of what he bought. Top-50 Darius
+    players build accordingly: Sterak's Gage in 41 of 49 captured builds,
+    Trinity Force in 39, and then Amaranth's Twinguard (26) and Force of Nature
+    (25), two magic resist items, in roughly half. Scored as damage plus
+    separate durability, those builds sat at the 86th percentile of everything
+    the engine could reach; the engine preferred four damage items and one
+    defensive one.
+
+    So for bruisers the offensive term is DELIVERED damage: dps8 times the share
+    of the fight survived. Durability keeps its own term -- this is not a
+    replacement for it -- but it now also pays through the damage it enables,
+    which is the way it actually pays in game.
+
+    MEASURED over 15 bruisers, median percentile of a captured top-50 build,
+    lower is better:
+
+        current  58.0%     old linear ehp  34.0%
+        1800dps  30.8%     2200dps  27.2%     3000dps  24.6%     6000dps  23.6%
+
+    Per champion at 2200: Darius 85.8 -> 18.7, Jax 86.3 -> 18.4, Vi 69.8 -> 23.4,
+    Sett 59.5 -> 21.1, Irelia 53.7 -> 13.6, Xin Zhao 66.2 -> 28.6.
+
+    WHY 2200 AND NOT 6000, given the metric keeps improving. Past about 3000 the
+    cap stops binding and the term is simply dps8 x effective health, a pure
+    product. That the product scores best is the real finding and it is kept --
+    but 2200 is the largest value with a physical meaning (three attackers on
+    one target). 6000 would mean six enemies focusing one champion in a 5v5,
+    and fitting to a number that cannot happen is how the last durability
+    constant ended up describing a threshold nothing could fail.
+
+    NOT APPLIED to other classes, and this is a claim about the game rather than
+    a tuning choice. A marksman's damage is not gated on durability; it is gated
+    on positioning, which the engine cannot see and should not pretend to, and
+    applying the gate moved marksmen from 44.1% to 58.4% and mages from 9.6% to
+    33.4%. A tank's own damage is close to irrelevant to its build. Only the
+    bruiser trades health directly for damage dealt.
+
+    KNOWN EXCEPTION: Tryndamere, whose ult makes him unkillable for its duration,
+    so time-to-die is the wrong model for him outright (6.4% -> 20.0%). The gate
+    costs him and he is left in it rather than special-cased, because one
+    champion with an undying button does not earn a branch.
+    """
+    if CHAMP_CLASS.get(name) != "Bruiser":
+        return 1.0
+    ttd = (m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
+    return min(1.0, ttd / REF_FIGHT)
+
 def fight_score(m: dict, variant: str, name: str = "",
                 weights: tuple[float, float] | None = None) -> float:
     """Variant presets pick the weights; `weights` overrides them directly —
@@ -2394,6 +2460,8 @@ def fight_score(m: dict, variant: str, name: str = "",
         w_off = max(0.15, min(0.9, w_off + shift))
         w_def = 1 - w_off
     off = (m["burst3"] / REF_BURST) if variant in BURSTY else (m["dps8"] / REF_DPS)
+    # Bruisers are scored on damage DELIVERED, not damage theoretically dealt.
+    off *= delivered_share(m, name) if name else 1.0
     deff = durability_term(m["ehp"], m["sustain"])
     self_val = w_off * off + w_def * deff
     # For supports, what you do for allies IS the build's value. Blend it in so
