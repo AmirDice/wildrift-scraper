@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getChampions, type Champion } from "@/lib/data";
-import { getBuildsFor, visibleBuildVariants, type Build } from "@/lib/builds";
 import { counterSwaps, roster, threatProfile, type CounterRecScored } from "@/lib/threat";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { CounterReasoning, EnemyRead, type CounterSummary } from "@/components/counter-intel";
@@ -145,6 +144,58 @@ function SuggestionCard({ s, onPick, dim = false }: {
   );
 }
 
+/** The shape the instant-build panel renders, and the fields counterSwaps needs. */
+type InstantBuild = {
+  coreBuild: { slug: string; name: string; icon: string }[];
+  boots?: { name: string; icon: string } | null;
+  runes?: { keystone?: { name: string }; treeMinors?: { name: string }[] };
+  summoners?: { name: string }[];
+};
+
+const ITEM_BY_SLUG = new Map(
+  (itemsData as { slug: string; name: string; icon: string }[]).map((i) => [i.slug, i]),
+);
+
+/**
+ * An advisor build in the shape this panel already renders.
+ *
+ * The advisor answers with plain slug strings; the precomputed file carried
+ * objects with names and icons baked in. Rather than thread a second shape
+ * through the JSX, the slugs are looked up against items.json, which this
+ * component already imports for the counter panel.
+ */
+function adaptAdvisorBuild(b: Record<string, unknown>): InstantBuild {
+  // /api/v1/build trims items to {slug, why} objects; the raw cached build the
+  // bundle reads carries plain slug strings. Accept both rather than depend on
+  // which side of trim() the caller happens to be on.
+  const named = (entry: unknown) => {
+    const s = typeof entry === "string" ? entry
+      : entry && typeof entry === "object" && typeof (entry as { slug?: unknown }).slug === "string"
+        ? (entry as { slug: string }).slug : "";
+    const it = ITEM_BY_SLUG.get(s);
+    return { slug: s, name: it?.name ?? s, icon: it?.icon ?? "" };
+  };
+  const runes = b.runes as Record<string, unknown> | undefined;
+  const minors = Array.isArray(runes?.minors) ? (runes.minors as unknown[]) : [];
+  const summs = Array.isArray(b.summoners) ? (b.summoners as unknown[]) : [];
+  const boots = typeof b.boots === "string" ? named(b.boots) : null;
+  return {
+    coreBuild: (Array.isArray(b.items) ? b.items : []).map(named).filter((i) => i.slug),
+    boots: boots && boots.slug ? { name: boots.name, icon: boots.icon } : null,
+    runes: {
+      keystone: typeof runes?.keystone === "string" ? { name: runes.keystone } : undefined,
+      treeMinors: minors
+        .map((m) => (typeof m === "string" ? { name: m } : null))
+        .filter((m): m is { name: string } => m !== null),
+    },
+    summoners: summs
+      .map((s) => (typeof s === "string" ? { name: s }
+        : s && typeof s === "object" && typeof (s as { name?: unknown }).name === "string"
+          ? { name: (s as { name: string }).name } : null))
+      .filter((s): s is { name: string } => s !== null),
+  };
+}
+
 export function DraftAssistant() {
   const champions = useMemo(() => getChampions(), []);
   const bySlug = useMemo(() => new Map(champions.map((c) => [c.slug, c])), [champions]);
@@ -269,13 +320,43 @@ export function DraftAssistant() {
       .filter((s) => !pool.includes(s.champion.slug));
   }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds, analysis, poolCoversRole]);
 
-  const standardBuild: Build | null = useMemo(() => {
-    if (!me) return null;
-    const cb = getBuildsFor(me.name);
-    if (!cb) return null;
-    const variant = visibleBuildVariants(cb)[0];
-    return variant ? (cb.builds[variant] ?? null) : null;
-  }, [me]);
+  /**
+   * The instant build, read from the advisor's cache rather than a file.
+   *
+   * This used to come from web-next/src/data/builds.json: LLM-authored builds
+   * written once on 2026-07-27, frozen three weeks before the precomputed
+   * pipeline was deprecated, and five patches behind by now. Jinx's stored
+   * build opened Phantom Dancer into Guardian Angel -- 15 and 2 of 49 captured
+   * top-50 Jinx players respectively -- and never bought Magnetic Blaster,
+   * which 39 of them do.
+   *
+   * Every Build Studio generation since is cached against a hash of its
+   * inputs, so this asks for one and takes it if it exists. A cache hit costs
+   * no model call and, deliberately, no generation from the daily allowance.
+   * A miss shows nothing and the player generates, which is an honest empty
+   * rather than a confident stale answer.
+   */
+  const [standardBuild, setStandardBuild] = useState<InstantBuild | null>(null);
+  useEffect(() => {
+    if (!me) { setStandardBuild(null); return; }
+    let live = true;
+    setStandardBuild(null);
+    (async () => {
+      try {
+        const res = await fetch("/api/v1/build", {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-device-id": deviceId() },
+          body: JSON.stringify({ champion: me.name, role: state.myRole ?? undefined,
+                                 mode: "studio", cacheOnly: true }),
+        });
+        const data = (await res.json()) as { build?: Record<string, unknown> | null };
+        if (live && data?.build) setStandardBuild(adaptAdvisorBuild(data.build));
+      } catch {
+        /* no instant build is a fine outcome; the player can generate one */
+      }
+    })();
+    return () => { live = false; };
+  }, [me, state.myRole]);
 
   /**
    * What to change about the standard build for THIS comp, scored through the

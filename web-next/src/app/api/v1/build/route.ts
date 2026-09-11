@@ -1,6 +1,7 @@
 import { after } from "next/server";
 import { NextResponse } from "next/server";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
+import { rememberLatestBuild } from "@/lib/cached-build";
 import { clientIp, consumeQuota, isOwnerKey, ownerKeyStatus, refundQuota } from "@/lib/quota";
 import { ALPHA_DAILY_BUILDS, deviceAllowed, isAlphaDevice } from "@/lib/alpha";
 import { kvGet, kvSet, kvDelete } from "@/lib/kv";
@@ -129,6 +130,14 @@ export async function POST(request: Request) {
   // changed after champion select; items can be bought for the next twenty
   // minutes.
   const only = clean(body.only) === "runes" ? "runes" : "";
+  // CACHE-ONLY. Answer from a build somebody has already paid for, or say
+  // there is none -- never generate, never spend a generation, never queue.
+  //
+  // The draft page and the overlay used to fill this gap with builds.json,
+  // frozen on 2026-07-27 and five patches stale. A cache read gives them a
+  // real current-patch build for free wherever one exists, and an honest
+  // "nothing yet" where one does not.
+  const cacheOnly = body.cacheOnly === true;
   const advisorRequest = {
     champion,
     role: clean(body.role),
@@ -195,6 +204,13 @@ export async function POST(request: Request) {
   // stale deployment or an unset variable, and there is nothing secret in the
   // reason -- neither key appears in it.
   const ownerKey = ownerHeader ? ownerKeyStatus(ownerHeader) : undefined;
+  if (cacheOnly) {
+    // Ahead of consumeQuota on purpose: a lookup that cannot generate must not
+    // be able to spend the day's allowance either. Trimmed the same way the
+    // cached path below trims, so a caller cannot tell the two apart by shape.
+    return json({ v: 1, cached: Boolean(cached), mode, champion,
+                  build: cached ? trim(cached as Advice) : null });
+  }
   const { ok, quota } = await consumeQuota(null, identity, unlimited || paired,
                                           alphaTester ? ALPHA_DAILY_BUILDS : undefined);
   if (!ok) {
@@ -238,6 +254,13 @@ export async function POST(request: Request) {
       return json({ error: String(data.error || `generator error (${res.status})`) }, 502);
     }
     after(() => writeCachedBuild(cacheKey, data));
+    // File it as this champion's newest plain answer, so the draft page and
+    // the overlay bundle have something current to show without generating.
+    // Only a full studio build with no enemies: a counter build is an answer
+    // to one comp and a runes-only reply has no items in it at all.
+    if (!only && mode === "studio" && enemies.length === 0) {
+      after(() => rememberLatestBuild(champion, data));
+    }
     return json({
       v: 1, cached: false, mode, champion,
       build: trim(data),

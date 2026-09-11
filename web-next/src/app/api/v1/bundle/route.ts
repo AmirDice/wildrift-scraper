@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getChampions, type Champion } from "@/lib/data";
 import { roster } from "@/lib/threat";
 import { CURRENT_PATCH } from "@/lib/patch";
-import buildsData from "@/data/builds.json";
 import itemsData from "@/data/items.json";
+import { cachedStudioBuild } from "@/lib/cached-build";
 
 /**
  * The per-patch snapshot for external clients: the /draft page and the
@@ -59,44 +59,46 @@ function toNamed(v: unknown): BundleNamed | undefined {
   };
 }
 
-function trimBuild(v: Record<string, unknown>): BundleBuild | null {
-  const core = Array.isArray(v.coreBuild) ? (v.coreBuild as Record<string, unknown>[]) : [];
-  const items = core
-    .map((it) => (typeof it.slug === "string" ? it.slug : ""))
+/**
+ * An advisor build, trimmed to what the app renders.
+ *
+ * The advisor answers with plain slug strings where the old precomputed
+ * builds.json carried objects,
+ * strings where builds.json carried objects, `runes.minors` where it carried
+ * `treeMinors`, and `runes.flex` where it carried `flexMinor`. Reading the
+ * wrong one of each pair is how the flex rune reached no client for months, so
+ * both spellings are accepted on the way in.
+ */
+function trimAdvisorBuild(v: Record<string, unknown>): BundleBuild | null {
+  const items = (Array.isArray(v.items) ? v.items : [])
+    .map((s) => (typeof s === "string" ? s : ""))
     .filter(Boolean);
   if (!items.length) return null;
-  const boots = v.boots as Record<string, unknown> | undefined;
-  const ench = v.enchantment as Record<string, unknown> | undefined;
   const runes = v.runes as Record<string, unknown> | undefined;
-  const summs = Array.isArray(v.summoners) ? (v.summoners as Record<string, unknown>[]) : [];
-  // builds.json calls them treeMinors (objects with name/slug/icon/reason)
-  const minorSrc = runes && (Array.isArray(runes.treeMinors) ? runes.treeMinors
-    : Array.isArray(runes.minors) ? runes.minors : null);
-  const minors = minorSrc
-    ? (minorSrc as (string | Record<string, unknown>)[])
-        .map(toNamed)
-        .filter((r): r is BundleNamed => r !== undefined)
-    : undefined;
+  const minorSrc = runes && (Array.isArray(runes.minors) ? runes.minors
+    : Array.isArray(runes.treeMinors) ? runes.treeMinors : null);
+  const summs = Array.isArray(v.summoners) ? (v.summoners as unknown[]) : [];
   return {
-    label: String(v.label ?? "Standard"),
+    label: "Standard",
     items,
-    boots: boots && typeof boots.slug === "string" ? boots.slug : undefined,
-    bootsUpgrade: ench && typeof ench.slug === "string" ? ench.slug : undefined,
+    boots: typeof v.boots === "string" ? v.boots : undefined,
+    bootsUpgrade: typeof v.bootsUpgrade === "string" ? v.bootsUpgrade : undefined,
     runes: runes
       ? {
           keystone: toNamed(runes.keystone),
-          minors,
-          // flexMinor is what the data calls it. Reading `flex` found nothing
-          // every single time, so the fifth rune never reached any client.
-          flex: toNamed(runes.flexMinor ?? runes.flex),
+          minors: minorSrc
+            ? (minorSrc as (string | Record<string, unknown>)[])
+                .map(toNamed)
+                .filter((r): r is BundleNamed => r !== undefined)
+            : undefined,
+          flex: toNamed(runes.flex ?? runes.flexMinor),
           tree: runes.primaryTree ? String(runes.primaryTree) : undefined,
         }
       : undefined,
-    // Summoners lost their icons the same way the runes did: mapped down to
-    // bare names, so anything wanting to show the spell had nothing to show.
     summoners: summs.map(toNamed).filter((x): x is BundleNamed => x !== undefined),
   };
 }
+
 
 export async function GET() {
   const R = roster();
@@ -145,13 +147,26 @@ export async function GET() {
     category: it.category,
     icon: it.icon,
   }));
+  // BUILDS COME FROM THE ADVISOR CACHE, not from builds.json.
+  //
+  // builds.json was LLM-authored once on 2026-07-27, frozen three weeks before
+  // the precomputed pipeline was deprecated, and is five patches behind. The
+  // overlay was shipping those builds offline as "Standard build". Every live
+  // generation since is cached in KV, so the bundle serves whichever of those
+  // exist and simply omits the champions nobody has generated yet -- the app
+  // already renders "No standard build in the bundle" for a missing champion
+  // and offers the online path, which is an honest empty rather than a
+  // confident stale answer.
+  //
+  // One KV read per champion, on a route cached for an hour.
   const builds: Record<string, BundleBuild[]> = {};
-  for (const [name, entry] of Object.entries(buildsData as Record<string, Record<string, unknown>>)) {
-    const variants = entry.builds && typeof entry.builds === "object"
-      ? Object.values(entry.builds as Record<string, Record<string, unknown>>)
-      : [];
-    const trimmed = variants.map(trimBuild).filter((b): b is BundleBuild => Boolean(b));
-    if (trimmed.length) builds[name] = trimmed;
+  const cached = await Promise.all(
+    champions.map(async (c) => [c.name, await cachedStudioBuild(c.name, c.role ?? "")] as const),
+  );
+  for (const [name, build] of cached) {
+    if (!build) continue;
+    const trimmed = trimAdvisorBuild(build);
+    if (trimmed) builds[name] = [trimmed];
   }
   return NextResponse.json(
     {
