@@ -5,31 +5,66 @@
   "objectives": {
     "sustained_damage": {
       "label": "Maximum sustained damage",
-      "weights": {"sustainedDps": 0.45, "damageBeforeDeath": 0.25, "burstDamage": 0.15, "timeToDie": 0.15}
+      "weights": {
+        "sustainedDps": 0.38,
+        "aoeDamage": 0.12,
+        "damageBeforeDeath": 0.22,
+        "burstDamage": 0.13,
+        "timeToDie": 0.15
+      }
     },
     "burst_damage": {
       "label": "Maximum burst",
-      "weights": {"burstDamage": 0.55, "sustainedDps": 0.15, "damageBeforeDeath": 0.15, "timeToDie": 0.15}
+      "weights": {
+        "burstDamage": 0.55,
+        "sustainedDps": 0.15,
+        "damageBeforeDeath": 0.15,
+        "timeToDie": 0.15
+      }
     },
     "teamfight_damage": {
       "label": "Maximum teamfight damage",
-      "weights": {"sustainedDps": 0.30, "aoeDamage": 0.30, "damageBeforeDeath": 0.25, "timeToDie": 0.15}
+      "weights": {
+        "sustainedDps": 0.28,
+        "aoeDamage": 0.32,
+        "damageBeforeDeath": 0.25,
+        "timeToDie": 0.15
+      }
     },
     "bruiser": {
       "label": "Damage delivered while surviving",
-      "weights": {"damageBeforeDeath": 0.40, "sustainedDps": 0.20, "timeToDie": 0.25, "selfSustain": 0.15}
+      "weights": {
+        "damageBeforeDeath": 0.4,
+        "sustainedDps": 0.2,
+        "timeToDie": 0.25,
+        "selfSustain": 0.15
+      }
     },
     "frontline": {
       "label": "Maximum frontline value",
-      "weights": {"timeToDie": 0.45, "compEhp": 0.25, "ccSeconds": 0.15, "sustainedDps": 0.15}
+      "weights": {
+        "timeToDie": 0.45,
+        "compEhp": 0.25,
+        "ccSeconds": 0.15,
+        "sustainedDps": 0.15
+      }
     },
     "team_utility": {
       "label": "Maximum team utility",
-      "weights": {"supportOutput": 0.45, "selfSustain": 0.15, "timeToDie": 0.25, "ccSeconds": 0.15}
+      "weights": {
+        "supportOutput": 0.45,
+        "selfSustain": 0.15,
+        "timeToDie": 0.25,
+        "ccSeconds": 0.15
+      }
     },
     "anti_tank": {
       "label": "Maximum damage into high health and resistances",
-      "weights": {"sustainedDps": 0.50, "damageBeforeDeath": 0.30, "timeToDie": 0.20}
+      "weights": {
+        "sustainedDps": 0.5,
+        "damageBeforeDeath": 0.3,
+        "timeToDie": 0.2
+      }
     }
   },
   "roleDefaults": {
@@ -40,5 +75,6 @@
     "Fighter": "bruiser",
     "Tank": "frontline",
     "Enchanter": "team_utility"
-  }
+  },
+  "_aoe": "aoeDamage is bolt damage -- Runaan's and its kin -- so it is an auto-attack item mechanic and reads 0 for every mage and tank. It carries weight in the two objectives an auto-attacker uses and nowhere else, at 0.3 of the sustained-damage weight, which is the ratio fight_score's AOE_WEIGHT was swept to against captured builds. Leaving it at 0 in sustained_damage was a real mistake: it is the marksman default, and it put the hybrid back to picking Jinx builds with no Runaan's, which 45 of 49 top-50 Jinx players hold."
 }

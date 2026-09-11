@@ -3602,7 +3602,8 @@ def _typed_ehp(st: dict) -> tuple[float, float]:
 def evaluation_vector(name: str, item_slugs: list[str],
                       rune_names: list[str] | None = None,
                       level: int = 15,
-                      ad_share: float = 0.5, ap_share: float = 0.5) -> dict:
+                      ad_share: float = 0.5, ap_share: float = 0.5,
+                      fast: bool = False) -> dict:
     """Everything the engine can measure about a build, unweighted.
 
     The caller decides what matters. An objective for a marksman and an
@@ -3619,8 +3620,13 @@ def evaluation_vector(name: str, item_slugs: list[str],
     #
     # All five profiles, not the two metrics() uses. A build that wins against
     # a squishy and loses against a tank is the normal case, not an edge one.
+    # `fast` skips the per-target panel, which is five duels and fifteen
+    # rotations and costs ~57ms against the ~1.5ms everything else takes. No
+    # objective reads perTarget -- the weights name burstDamage, sustainedDps,
+    # timeToDie and so on -- so ranking thousands of candidates can skip it
+    # entirely and the panel stays for when a human is reading one build.
     per_target = {}
-    for label, prof in target_profiles(level).items():
+    for label, prof in ({} if fast else target_profiles(level)).items():
         tgt = dict(prof)
         tgt.setdefault("label", label)
         tgt.setdefault("bonusHp", max(0.0, prof["hp"] - 1800))
@@ -3631,6 +3637,8 @@ def evaluation_vector(name: str, item_slugs: list[str],
                              "overkill": (d or {}).get("overkill", 0)}
 
     phys_ehp, magic_ehp = _typed_ehp(st)
+    shielding = ((st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+                  + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"]))
     # Effective health against THIS comp's actual damage split. Not a blend of
     # the two typed numbers: effective health is health over the share that
     # gets through, and shares add while their reciprocals do not.
@@ -3659,9 +3667,30 @@ def evaluation_vector(name: str, item_slugs: list[str],
         "compEhp": round(comp_ehp),
         "timeToDie": round(ttd, 2),
         # what the kit does that is not damage
+        # HEALING AND SHIELDING SEPARATELY. They were one number, and they are
+        # not one thing: healing is denied by Grievous Wounds and shielding is
+        # denied by shield-cut, so a build answering an anti-heal comp with
+        # shields reads identically to one that walked into the counter.
         "selfSustain": m["sustain"],
+        "shielding": round(shielding),
         "supportOutput": m.get("support", 0),
-        "ccSeconds": round(_cc_depth(name) * _cc_seconds(name), 2),
+        # THE BUILD'S crowd control, not only the champion's kit.
+        #
+        # This was _cc_depth(name) * _cc_seconds(name), which is a property of
+        # the champion and identical for every build of it -- so it could never
+        # separate two builds, which is the only thing a vector field is for.
+        # Items carry real lockdown: a slow is dead time for the target in the
+        # same way a stun is, and stasis is dead time bought deliberately.
+        #
+        # HONESTLY, THAT IS THIN. Exactly three items in the game reach this --
+        # Rylai's (30% slow at 50% uptime), Zhonya's and Seeker's (2.5s stasis
+        # each) -- so for most builds this still reduces to the champion's own
+        # kit. It is wired because it is correct when it fires, not because it
+        # separates many builds: Zhonya's moves a Graves build from 0.0 to 2.5
+        # and nothing else in his pool moves it at all.
+        "ccSeconds": round(_cc_depth(name) * _cc_seconds(name)
+                           + st.get("targetSlow", 0.0) * REF_FIGHT
+                           + st.get("stasisSec", 0.0), 2),
         # economy
         "gold": sum((ITEMS.get(s) or {}).get("cost", 0) for s in item_slugs),
         "goldEfficiency": round(build_efficiency(
@@ -3684,6 +3713,7 @@ OBJECTIVE_REFS = {
     "compEhp": lambda: REF_DURABILITY_CUT,
     "timeToDie": lambda: REF_FIGHT,
     "selfSustain": lambda: REF_HEAL,
+    "shielding": lambda: REF_HEAL,
     "supportOutput": lambda: REF_SUP,
     "ccSeconds": lambda: 3.0,
     "goldEfficiency": lambda: 1.0,
@@ -3740,3 +3770,77 @@ def objective_score(vec: dict, name_or_weights) -> float:
         value = float(vec.get(field) or 0.0) / (ref() or 1.0)
         acc += (w / total) * (min(1.0, value) if field in OBJECTIVE_CAPPED else value)
     return round(100 * acc, 1)
+
+
+# ---------------------------------------------------------------------------
+# RUNE PAGES, ENUMERATED
+#
+# Runes were the one half of a build nothing ever measured. The model picked
+# them, validation checked they were LEGAL, and no ranking ever compared two
+# pages. Meanwhile the legality rules to enumerate them have existed in
+# web/advisor/runemeta.py the whole time -- page_errors() describes exactly
+# what a legal page is, so the same rules generate as well as reject.
+#
+# The space is small. Counted from the real slot data: 13 keystones, and per
+# tree the minor combinations times the legal flexes come to 4,389 shapes, so
+# 57,057 pages in total. Pin the keystone and tree -- which is the half the
+# model is good at -- and it is a few thousand, which the engine scores in
+# about a second.
+# ---------------------------------------------------------------------------
+
+
+def legal_rune_pages(tree: str, keystone: str = "",
+                     limit: int | None = None) -> list[list[str]]:
+    """Every legal rune page in one tree, as [keystone, m1, m2, m3, flex].
+
+    A page is one keystone, one minor from each of slots 1, 2 and 3 of the
+    primary tree, and one flex minor from a DIFFERENT tree. That is
+    runemeta.page_errors' definition read forwards instead of backwards.
+    """
+    from itertools import product
+
+    from web.advisor import runemeta
+
+    by_slot = runemeta.minors_by_tree(tree)
+    if sorted(by_slot) != [1, 2, 3]:
+        return []
+    flexes = [name for other in runemeta.trees() if other != tree
+              for names in runemeta.minors_by_tree(other).values()
+              for name in names]
+    keystones = [keystone] if keystone else runemeta.keystones()
+    out = []
+    for ks in keystones:
+        for minors in product(by_slot[1], by_slot[2], by_slot[3]):
+            for flex in flexes:
+                out.append([ks, *minors, flex])
+                if limit and len(out) >= limit:
+                    return out
+    return out
+
+
+def best_rune_page(name: str, item_slugs: list[str], objective,
+                   tree: str, keystone: str = "", level: int = 15,
+                   ad_share: float = 0.5, ap_share: float = 0.5) -> dict:
+    """The page in this tree that serves the objective best, with the items fixed.
+
+    Items and runes are not independent -- Lethal Tempo is worth nothing to a
+    build that never auto-attacks -- so the page is chosen against the build it
+    will actually be worn with rather than in the abstract.
+
+    Returns the winner, its score, and the score of the page it beat, because
+    "the best page" is only interesting next to what it was chosen over.
+    """
+    pages = legal_rune_pages(tree, keystone)
+    if not pages:
+        return {}
+    scored = []
+    for page in pages:
+        vec = evaluation_vector(name, item_slugs, page, level, ad_share, ap_share,
+                                fast=True)
+        scored.append((objective_score(vec, objective), page))
+    scored.sort(key=lambda r: -r[0])
+    best, worst = scored[0], scored[-1]
+    return {"page": best[1], "score": best[0],
+            "keystone": best[1][0], "minors": best[1][1:4], "flex": best[1][4],
+            "tree": tree, "consideredPages": len(scored),
+            "worstScore": worst[0], "spread": round(best[0] - worst[0], 1)}

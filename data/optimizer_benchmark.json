@@ -694,8 +694,178 @@
         }
       },
       "objective": "teamfight_damage"
+    },
+    {
+      "name": "Soraka",
+      "tests": "a SECOND enchanter, so team_utility is not overfit to Janna",
+      "variant": "support",
+      "comp": [
+        "Jinx",
+        "Riven",
+        "Ahri",
+        "Malphite",
+        "Graves"
+      ],
+      "expect": {
+        "damageItems": [
+          3,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          2
+        ],
+        "pureTankItems": [
+          0,
+          2
+        ],
+        "minSurvivalSeconds": 3.4,
+        "_humanRange": {
+          "damageItems": [
+            3,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            2
+          ],
+          "pureTankItems": [
+            0,
+            2
+          ],
+          "survivalSeconds": 3.4
+        },
+        "requireSupportItem": true
+      }
+    },
+    {
+      "name": "Varus",
+      "tests": "the other champion the AoE weight moved most (21.8% -> 4.8%)",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Darius",
+        "Ahri",
+        "Nautilus",
+        "Riven"
+      ],
+      "expect": {
+        "damageItems": [
+          4,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          1
+        ],
+        "pureTankItems": [
+          0,
+          1
+        ],
+        "minSurvivalSeconds": 2.4,
+        "_humanRange": {
+          "damageItems": [
+            4,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            1
+          ],
+          "pureTankItems": [
+            0,
+            1
+          ],
+          "survivalSeconds": 2.4
+        }
+      }
+    },
+    {
+      "name": "Aatrox",
+      "tests": "kit healing, which the sustain/shield split now separates",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Ahri",
+        "Jinx",
+        "Nautilus",
+        "Vayne"
+      ],
+      "expect": {
+        "damageItems": [
+          4,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          1
+        ],
+        "pureTankItems": [
+          0,
+          1
+        ],
+        "minSurvivalSeconds": 2.9,
+        "_humanRange": {
+          "damageItems": [
+            4,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            1
+          ],
+          "pureTankItems": [
+            0,
+            1
+          ],
+          "survivalSeconds": 2.9
+        }
+      }
+    },
+    {
+      "name": "Kayle",
+      "tests": "scaling; the best-correlating champion in the marginal-value probe",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Darius",
+        "Ahri",
+        "Jinx",
+        "Nautilus"
+      ],
+      "expect": {
+        "damageItems": [
+          5,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          0
+        ],
+        "pureTankItems": [
+          0,
+          0
+        ],
+        "minSurvivalSeconds": 1.8,
+        "_humanRange": {
+          "damageItems": [
+            5,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            0
+          ],
+          "pureTankItems": [
+            0,
+            0
+          ],
+          "survivalSeconds": 1.8
+        }
+      }
     }
   ],
   "_calibration": "Every range here is EXACTLY the range real top-50 players occupy, measured with --calibrate on 2026-09-11. It is deliberately not widened. A first draft widened each range by one item either side and all 48 tests passed on the first run, which makes a regression suite that cannot detect a regression. Strict conformance to what humans hold is a claim the optimizer can fail, and a failure here is information rather than noise -- sometimes about the optimizer, sometimes about a range that a patch moved. Re-run --calibrate after a patch before trusting a new failure.",
-  "_objectives": "From data/build_objectives.json. A champion with no entry here uses fight_engine.default_objective(), which reads its class. An entry is only present where the TEST's intent differs from that default."
+  "_objectives": "From data/build_objectives.json. A champion with no entry here uses fight_engine.default_objective(), which reads its class. An entry is only present where the TEST's intent differs from that default.",
+  "_added": "Soraka, Varus, Aatrox and Kayle were added on 2026-09-12, each for a gap this work actually found rather than to round the number up: a second enchanter so team_utility is not a Janna special case, the other champion the AoE weight rescued, a kit healer for the sustain/shield split, and the champion the marginal-value probe predicted best."
 }
