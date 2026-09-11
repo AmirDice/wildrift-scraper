@@ -21,6 +21,7 @@ import {
   analyseDraft,
 } from "@/lib/draft";
 import itemsData from "@/data/items.json";
+import { ladderConsensusBuild } from "@/lib/ladder-build";
 import runeIconsData from "@/data/rune_icons.json";
 
 /* eslint-disable @next/next/no-img-element */
@@ -146,6 +147,8 @@ function SuggestionCard({ s, onPick, dim = false }: {
 
 /** The shape the instant-build panel renders, and the fields counterSwaps needs. */
 type InstantBuild = {
+  /** Whether this is a generated answer or the top-fifty consensus. */
+  source: "generated" | "ladder";
   coreBuild: { slug: string; name: string; icon: string }[];
   boots?: { name: string; icon: string } | null;
   runes?: { keystone?: { name: string }; treeMinors?: { name: string }[] };
@@ -164,6 +167,27 @@ const ITEM_BY_SLUG = new Map(
  * through the JSX, the slugs are looked up against items.json, which this
  * component already imports for the counter panel.
  */
+/** The top-fifty consensus in the shape this panel renders. */
+function ladderInstant(champion: string): InstantBuild | null {
+  const lb = ladderConsensusBuild(champion);
+  if (!lb) return null;
+  const named = (slug: string) => {
+    const it = ITEM_BY_SLUG.get(slug);
+    return { slug, name: it?.name ?? slug, icon: it?.icon ?? "" };
+  };
+  const boots = lb.boots ? named(lb.boots) : null;
+  return {
+    source: "ladder",
+    coreBuild: lb.items.map(named),
+    boots: boots ? { name: boots.name, icon: boots.icon } : null,
+    runes: {
+      keystone: lb.runes.keystone ? { name: lb.runes.keystone } : undefined,
+      treeMinors: lb.runes.minors.map((n) => ({ name: n })),
+    },
+    summoners: [],
+  };
+}
+
 function adaptAdvisorBuild(b: Record<string, unknown>): InstantBuild {
   // /api/v1/build trims items to {slug, why} objects; the raw cached build the
   // bundle reads carries plain slug strings. Accept both rather than depend on
@@ -180,6 +204,7 @@ function adaptAdvisorBuild(b: Record<string, unknown>): InstantBuild {
   const summs = Array.isArray(b.summoners) ? (b.summoners as unknown[]) : [];
   const boots = typeof b.boots === "string" ? named(b.boots) : null;
   return {
+    source: "generated",
     coreBuild: (Array.isArray(b.items) ? b.items : []).map(named).filter((i) => i.slug),
     boots: boots && boots.slug ? { name: boots.name, icon: boots.icon } : null,
     runes: {
@@ -350,9 +375,14 @@ export function DraftAssistant() {
                                  mode: "studio", cacheOnly: true }),
         });
         const data = (await res.json()) as { build?: Record<string, unknown> | null };
-        if (live && data?.build) setStandardBuild(adaptAdvisorBuild(data.build));
+        if (!live) return;
+        // A generated build when someone has made one, the top-fifty consensus
+        // otherwise. The consensus costs nothing and covers 140 champions, so
+        // the panel is never empty just because this champion is unpopular.
+        setStandardBuild(data?.build ? adaptAdvisorBuild(data.build)
+                                     : ladderInstant(me.name));
       } catch {
-        /* no instant build is a fine outcome; the player can generate one */
+        if (live) setStandardBuild(ladderInstant(me.name));
       }
     })();
     return () => { live = false; };
@@ -761,7 +791,9 @@ export function DraftAssistant() {
           {standardBuild && !advice && (
             <div>
               <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-                Standard build · instant
+                {standardBuild.source === "ladder"
+                  ? "What the top 50 build · instant"
+                  : "Standard build · instant"}
               </span>
               <div className="mt-1.5 flex flex-wrap items-start gap-2.5">
                 {standardBuild.coreBuild.map((it, i) => (

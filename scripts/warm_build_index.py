@@ -10,10 +10,15 @@ captured top-50 Jinx players respectively -- and never bought Magnetic Blaster,
 which 39 of them do.
 
 They now read `latest:build:<champion>` from KV instead, which every live
-studio generation writes. That index fills by itself as the site is used, but
-it starts sparse -- 17 of 141 champions were reachable when it was written --
-and a missing entry means the overlay shows "No standard build in the bundle"
-for that champion. This bootstraps the rest.
+studio generation writes, and fall back to the top-fifty ladder consensus when
+the index has no entry. So a missing entry is no longer a hole: every champion
+has a build either way, and the index fills by itself as people generate.
+
+THAT MAKES THIS A TARGETED TOOL, NOT A PIPELINE STEP. Running it across the
+roster is what exhausted the Gemini prepayment at 80 of 141 champions, and the
+61 it never reached were the exact problem it was meant to solve. Use it to
+refresh a handful of champions after a patch changes their items, or to repair
+one that generated badly. --all exists but has to be asked for.
 
 WHAT IT COSTS
 
@@ -26,8 +31,8 @@ WHEN TO RE-RUN
 After a patch. The entries carry a 45-day TTL and a newer generation always
 overwrites, so a stale entry is replaced rather than merged.
 
-    python -m scripts.warm_build_index --champions Jinx,Nami      # try a few
-    python -m scripts.warm_build_index --write                    # the roster
+    python -m scripts.warm_build_index --champions Jinx,Nami --write
+    python -m scripts.warm_build_index --all --skip-existing --write
 """
 from __future__ import annotations
 
@@ -137,14 +142,24 @@ def generate(champion: str, role: str, cfg: dict) -> dict | None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--champions", default="", help="comma-separated; default is the roster")
+    ap.add_argument("--all", action="store_true",
+                    help="every champion in the roster; one model call each, and "
+                         "the reason the prepayment ran out last time")
     ap.add_argument("--write", action="store_true", help="actually call the advisor and write")
     ap.add_argument("--skip-existing", action="store_true",
                     help="leave champions that already have an index entry alone")
     args = ap.parse_args()
 
     cfg = env()
-    names = ([c.strip() for c in args.champions.split(",") if c.strip()]
-             or sorted(fe.CHAMPS))
+    names = [c.strip() for c in args.champions.split(",") if c.strip()]
+    if not names:
+        if not args.all:
+            print("Name champions with --champions, or ask for --all explicitly.")
+            print("--all is one model call per champion across the whole roster;")
+            print("every champion already falls back to the ladder consensus, so")
+            print("an unwarmed champion is not a hole.")
+            return 2
+        names = sorted(fe.CHAMPS)
     names = [n for n in names if n in fe.CHAMPS]
 
     if not args.write:
@@ -165,6 +180,13 @@ def main() -> int:
         data = generate(champ, role, cfg)
         if not data:
             failed += 1
+            # Stop on a run of failures rather than grinding through the rest.
+            # The quota error that ended the last run repeated for every
+            # remaining champion, each after four internal retries.
+            if failed >= 3 and ok == 0:
+                print("  three failures and nothing written; stopping rather than "
+                      "retrying the rest. Check the API key's quota.")
+                break
             continue
         if kv_set(cfg, latest_key(champ), json.dumps(data)):
             ok += 1

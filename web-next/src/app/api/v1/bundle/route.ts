@@ -4,6 +4,7 @@ import { roster } from "@/lib/threat";
 import { CURRENT_PATCH } from "@/lib/patch";
 import itemsData from "@/data/items.json";
 import { cachedStudioBuild } from "@/lib/cached-build";
+import { ladderConsensusBuild } from "@/lib/ladder-build";
 
 /**
  * The per-patch snapshot for external clients: the /draft page and the
@@ -29,6 +30,9 @@ type BundleNamed = { name: string; slug?: string; icon?: string };
 
 type BundleBuild = {
   label: string;
+  /** "generated" by the advisor, or "ladder" consensus. The app labels them
+   *  differently: one is an answer, the other is what everybody builds. */
+  source?: "generated" | "ladder";
   items: string[];
   boots?: string;
   bootsUpgrade?: string;
@@ -164,9 +168,34 @@ export async function GET() {
     champions.map(async (c) => [c.name, await cachedStudioBuild(c.name, c.role ?? "")] as const),
   );
   for (const [name, build] of cached) {
-    if (!build) continue;
-    const trimmed = trimAdvisorBuild(build);
-    if (trimmed) builds[name] = [trimmed];
+    // A generated build when one exists, otherwise what the top fifty actually
+    // build. Generating one for all 141 up front is what exhausted the model
+    // prepayment at 80 champions, and the 61 it did not reach were exactly the
+    // problem it was meant to solve. ladder_builds.json costs nothing, covers
+    // 140 champions, and is a record of what real players hold rather than an
+    // opinion about what they should. The index still fills by itself as
+    // people generate, and a generated build wins the moment there is one.
+    const trimmed = build ? trimAdvisorBuild(build) : null;
+    if (trimmed) {
+      builds[name] = [{ ...trimmed, source: "generated" }];
+      continue;
+    }
+    const ladder = ladderConsensusBuild(name);
+    if (ladder) {
+      builds[name] = [{
+        label: "Top 50 consensus",
+        items: ladder.items,
+        boots: ladder.boots,
+        runes: {
+          keystone: toNamed(ladder.runes.keystone),
+          minors: ladder.runes.minors
+            .map(toNamed).filter((r): r is BundleNamed => r !== undefined),
+          flex: toNamed(ladder.runes.flex),
+          tree: ladder.runes.primaryTree,
+        },
+        source: "ladder",
+      }];
+    }
   }
   return NextResponse.json(
     {
