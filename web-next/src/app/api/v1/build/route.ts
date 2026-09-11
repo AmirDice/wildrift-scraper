@@ -1,7 +1,7 @@
 import { after } from "next/server";
 import { NextResponse } from "next/server";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
-import { rememberLatestBuild } from "@/lib/cached-build";
+import { cachedStudioBuild, rememberLatestBuild } from "@/lib/cached-build";
 import { clientIp, consumeQuota, isOwnerKey, ownerKeyStatus, refundQuota } from "@/lib/quota";
 import { ALPHA_DAILY_BUILDS, deviceAllowed, isAlphaDevice } from "@/lib/alpha";
 import { kvGet, kvSet, kvDelete } from "@/lib/kv";
@@ -208,8 +208,16 @@ export async function POST(request: Request) {
     // Ahead of consumeQuota on purpose: a lookup that cannot generate must not
     // be able to spend the day's allowance either. Trimmed the same way the
     // cached path below trims, so a caller cannot tell the two apart by shape.
-    return json({ v: 1, cached: Boolean(cached), mode, champion,
-                  build: cached ? trim(cached as Advice) : null });
+    //
+    // Falls through to the CHAMPION INDEX when this exact request has never
+    // been asked. That is the common case and the whole point: the caller
+    // wants "a build for Jinx", not "the build for Jinx at these eleven
+    // settings", and the exact key only answers the second question. Without
+    // this the draft page asked for a cached build, got a 200 with null, and
+    // showed nothing for a champion whose build was sitting in the index.
+    const any = cached ?? await cachedStudioBuild(champion, advisorRequest.role);
+    return json({ v: 1, cached: Boolean(any), mode, champion,
+                  build: any ? trim(any as Advice) : null });
   }
   const { ok, quota } = await consumeQuota(null, identity, unlimited || paired,
                                           alphaTester ? ALPHA_DAILY_BUILDS : undefined);
