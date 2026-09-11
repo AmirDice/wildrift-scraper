@@ -1588,7 +1588,7 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
   wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
   const off = BURSTY.has(variant) ? burst3 / REF_BURST : dps8 / REF_DPS;
-  const deff = (ehp + 0.5 * sustain) / REF_DEF;
+  const deff = durabilityTerm(ehp, sustain);
   return 100 * (wOff * off + (1 - wOff) * deff) * Math.pow(buildEfficiency(name, items), EFFICIENCY_ALPHA);
 }
 
@@ -1827,6 +1827,27 @@ const CLASS_PRESET: Record<string, string> = {
 };
 const REF_TTK = 4, REF_SURV = 6, REF_HEAL = 1500;
 
+/**
+ * Survivability, as a SATURATING term rather than a linear one.
+ *
+ * An unbounded linear effective-health term means an optimiser can always buy
+ * more score with more health, so it does: the engine's best Malphite build
+ * was four lifeline shields stacked, each once per fight, several conditional,
+ * all treated as permanently present and additive.
+ *
+ * What replaces it is minimum sufficient durability: convert effective health
+ * into SECONDS ALIVE under fire and stop paying for seconds beyond the
+ * reference fight. Surviving the fight is worth everything; surviving it twice
+ * over is worth no more, so the rest of the score has to be won with damage.
+ * The plateau above the threshold is deliberate.
+ *
+ * Mirrors fight_engine.durability_term, which carries the measurements.
+ */
+function durabilityTerm(ehp: number, sustain: number, incomingDps = INCOMING_DPS.bruiser): number {
+  const ttd = (ehp + 0.5 * sustain) / incomingDps;
+  return Math.min(1, ttd / REF_SURV);
+}
+
 export function winScore(a: BuildAnalysis, preset = "default", champClass = ""): { score: number; preset: string } {
   if (preset === "default" && champClass) preset = CLASS_PRESET[champClass] ?? "default";
   const w = WIN_PRESETS[preset] ?? WIN_PRESETS.default;
@@ -2005,7 +2026,10 @@ export function scoreVsComp(name: string, items: string[], runes: string[],
   const dr = st.dr < 1 ? st.dr : 0.99;
   const ehpVsComp = Math.round((st.hp + shield) / taken / (1 - dr));
   const off = ttk ? REF_TTK / ttk : 0;
-  const def = ehpVsComp / REF_DEF;
+  // Same saturating curve as everywhere else. This one matters most: it is
+  // what the Counter Builder ranks its swaps on, and an unbounded term here
+  // means the answer to every enemy comp drifts toward "buy more health".
+  const def = durabilityTerm(ehpVsComp, 0);
   return { ttkCarry: ttk, ehpVsComp, score: Math.round(1000 * (0.45 * off + 0.55 * def)) / 10 };
 }
 

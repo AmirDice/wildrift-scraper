@@ -2311,6 +2311,50 @@ def _support_weight(variant: str, name: str) -> float:
     return 0.0
 
 
+def durability_term(ehp: float, sustain: float) -> float:
+    """Survivability, as a SATURATING term rather than a linear one.
+
+    The problem this fixes was diagnosed in scripts/search_builds.py long before
+    it was fixed: "fight_score is additive and EHP is linear in HP, which costs
+    2.67 gold/point against AD's 35. So per gold, defense really does buy more
+    score, and nothing in the model punishes dealing no damage ... Graves'
+    standard build came out Divine Sunderer / Sunfire / Sterak's / Black Cleaver
+    / Shojin: a tank build on a marksman." The workaround was hard per-class
+    caps on defensive items, with a note to remove them "once fight_score is
+    multiplicative rather than a weighted sum".
+
+    An unbounded linear term means an optimiser can always buy more score with
+    more health, so it does. The engine's best Malphite build was four lifeline
+    shields stacked -- Guardian Angel, Gargoyle, Kaenic, Sterak's -- each of
+    which is once per fight, several conditional, all of which the effective
+    health number treats as permanently present and additive.
+
+    What replaces it is minimum sufficient durability: convert effective health
+    into SECONDS ALIVE under fire, and stop paying for seconds beyond the
+    reference fight. Surviving the fight is worth everything; surviving it twice
+    over is worth no more than surviving it once, so the remaining score has to
+    be won with damage or utility. Both constants already existed --
+    _INCOMING_DPS["bruiser"] is the reference attacker and REF_SURV is the
+    reference fight length.
+
+    MEASURED, against the only signal available (win rate carries no
+    correlation with build choice, so "real top-50 builds rank well" is
+    evidence rather than proof). Median rank of a captured human build:
+
+        Malphite   #4783 -> #1053     Ornn    #4115 -> #2039
+        Graves     #613  -> #767      Ashe    #2166 -> #2043
+        Jinx       #2801 -> #2803     Ekko    #20   -> #24
+
+    Tanks improve enormously, carries are unchanged within noise, and the top
+    Malphite build becomes Amaranth's, Frozen Heart, Iceborn, Sunfire and
+    Zeke's: four of the five items real Malphite players most often build.
+
+    The plateau above the threshold is deliberate, not an oversight.
+    """
+    ttd = (ehp + 0.5 * sustain) / _INCOMING_DPS["bruiser"]
+    return min(1.0, ttd / REF_SURV)
+
+
 def fight_score(m: dict, variant: str, name: str = "",
                 weights: tuple[float, float] | None = None) -> float:
     """Variant presets pick the weights; `weights` overrides them directly —
@@ -2321,7 +2365,7 @@ def fight_score(m: dict, variant: str, name: str = "",
         w_off = max(0.15, min(0.9, w_off + shift))
         w_def = 1 - w_off
     off = (m["burst3"] / REF_BURST) if variant in BURSTY else (m["dps8"] / REF_DPS)
-    deff = (m["ehp"] + 0.5 * m["sustain"]) / REF_DEF
+    deff = durability_term(m["ehp"], m["sustain"])
     self_val = w_off * off + w_def * deff
     # For supports, what you do for allies IS the build's value. Blend it in so
     # Ardent/Redemption/Mandate can win on their real contribution instead of
@@ -2409,7 +2453,7 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
     _r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
                + kit_heal(name, st, level, 8.0, "self", _r8["bySlot"], _r8["total"]))
-    deff = (ehp + 0.5 * sustain) / REF_DEF
+    deff = durability_term(ehp, sustain)
     # standard's neutral 60/40: stat_weights is variant-independent, and this is
     # the blend "the best all-around build" is defined by.
     return 0.6 * off + 0.4 * deff
