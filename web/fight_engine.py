@@ -22,6 +22,7 @@ No LLM at runtime — pure math on transcribed numbers.
 from __future__ import annotations
 
 import json
+import math
 import re
 from pathlib import Path
 
@@ -638,6 +639,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
         "targetSlow": 0.0, "itemHaste": 0.0, "autoBonusPct": 0.0,
+        # What the OPPONENT's build does to my output. Both are 1.0 unless
+        # a caller sets them on a copy: duel() and score_vs_comp() do, from
+        # the target's Plated Steelcaps (basicAttackDr) and Frozen Heart
+        # (asSlow). They live on the attacker because that is whose numbers
+        # they change.
+        "autoDamageMult": 1.0, "externalAsMult": 1.0,
         "drMagic": 0.0, "drPhys": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "procs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0,
@@ -1698,6 +1705,11 @@ def _for_window(name: str, st: dict, window: float) -> dict:
 def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) -> dict:
     """Damage dealt over `window` seconds: abilities on cooldown + autos."""
     st = _for_window(name, st, window)
+    # An enemy Frozen Heart's Chill is a real attack-speed cut and belongs
+    # here, AFTER _for_window has finished deriving attack speed from the
+    # steroids -- cutting it earlier would have the steroids scale the cut.
+    if st.get("externalAsMult", 1.0) != 1.0:
+        st = dict(st, **{"as": st["as"] * st["externalAsMult"]})
     f = FORMULAS.get(name, {}).get("abilities", {})
     _cdr_per_hit, _cdr_slot = cooldown_relief(name)
     _limits = empower_limits(name)
@@ -1841,8 +1853,17 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         for slot in seq:
             if slot == "auto" or slot not in f:
                 continue
+            # `dropped` HAS to be filtered here too. It was not, and this is
+            # the one path where that was invisible: the parity harness only
+            # ever ran an 8s window, and this branch is window <= 4. Ashe's
+            # Volley carries three dropped per-hit variants (7, 9 and 11 hits)
+            # on top of the real one, so a short-window Volley resolved 3910
+            # damage against the long window's 146 -- a 27x over-count, live,
+            # and exactly the window duel() and score_vs_comp() search for a
+            # kill in. Mirrors the filter engine.ts has always had.
             comps = [c for c in f[slot].get("damage") or []
-                     if not c.get("alt") and c.get("when") != "per auto"]
+                     if not c.get("alt") and not c.get("dropped")
+                     and c.get("when") != "per auto"]
             per_auto_comps += [(c, slot) for c in f[slot].get("damage") or []
                                if not c.get("alt") and c.get("when") == "per auto" and not c.get("dropped")
                                and (c, slot) not in per_auto_comps]
@@ -1884,6 +1905,9 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
                                               crit_ev, per_auto_comps, comp_dmg,
                                               per_auto_share, name)
         dsm = st.get("doubleShotMult", 1.0)
+        # Plated Steelcaps' Block reduces BASIC ATTACK damage only, which is why
+        # it rides here and not on st["dr"] (all damage). 1.0 with no Steelcaps.
+        dsm *= st.get("autoDamageMult", 1.0)
         auto = (a_phys + a_magic + a_true) * dsm * n_autos
         add_t("physical", a_phys * dsm * n_autos)
         add_t("magic", a_magic * dsm * n_autos)
@@ -2025,6 +2049,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
                                           crit_ev, per_auto_comps, comp_dmg,
                                           per_auto_share, name)
     dsm = st.get("doubleShotMult", 1.0)
+    # See the combo path above: basic-attack-only reduction, not st["dr"].
+    dsm *= st.get("autoDamageMult", 1.0)
     d_autos = (a_phys + a_magic + a_true) * dsm * n_autos
     add_t("physical", a_phys * dsm * n_autos)
     add_t("magic", a_magic * dsm * n_autos)
@@ -3160,3 +3186,312 @@ if __name__ == "__main__":
             print(f"  {variant:10} burst3 {m['burst3']:>5} | dps8 {m['dps8']:>4} | "
                   f"ttk {ttk:>6} | ehp {m['ehp']:>5} | sustain {m['sustain']:>4} | "
                   f"score {m['score']:>5}")
+
+
+# ---------------------------------------------------------------------------
+# THE FIGHT SURFACE
+#
+# A port of the duel functions that existed only in web-next/src/lib/engine.ts.
+# The split was not a design: ranking lives in Python (fight_score, metrics,
+# scripts/build_combination_table, the advisor) and the only code that could
+# fight a real opponent lived in TypeScript, so counter-mode ranking could not
+# be done at all on this side and no per-fight metric could enter fight_score.
+#
+# NOT ported: the `scaled` flag. In TypeScript it calls applyScaling, which
+# delegates to web-next/src/lib/build-scaling.ts -- 441 lines with its own
+# dependency on customizer-data.ts. Passing scaled=True here raises rather than
+# silently returning guaranteed-stat numbers under a scaled label.
+#
+# scripts/engine_parity.py covers these, so the two implementations cannot
+# drift apart again.
+# ---------------------------------------------------------------------------
+
+#: A fixed block to linearise kit sustain against. Deliberately NOT the real
+#: opponent: this is sustain as a property of the champion, and feeding it
+#: whoever they happen to be fighting would make Aatrox heal more against a
+#: tank purely via resists. Mirrors SUSTAIN_REF_TARGET in engine.ts.
+SUSTAIN_REF_TARGET = {"label": "ref", "hp": 2600, "armor": 90, "mr": 60, "bonusHp": 900}
+SUSTAIN_REF_WINDOW = 8.0
+
+_CC_DURATIONS = _load("hard_cc_durations.json") or {}
+#: Mean stated hard-CC duration across the 82 champions whose text gives one.
+CC_MEDIAN_SECONDS = float(_CC_DURATIONS.get("_median") or 1.5)
+
+
+def _js_round(x: float) -> int:
+    """JavaScript's Math.round: halves go toward +infinity.
+
+    Python's round() is banker's rounding, so round(0.5) is 0 and round(2.5) is
+    2. Every rounded field below is compared against the TypeScript engine by
+    the parity harness, and a single half-value would show up as a mismatch.
+    """
+    return int(math.floor(x + 0.5))
+
+
+def _cc_depth(name: str) -> int:
+    """How many abilities in this kit actually lock somebody down.
+
+    The raw scraped `mechanics` tag puts "cc" on 135 of 142 champions, which is
+    why nothing could use it. This is the derived count from
+    web/advisor/hardcc.py -- the same number the exporter writes into
+    engine.json -- and it excludes slows.
+    """
+    try:
+        from web.advisor import hardcc
+    except Exception:
+        return 0
+    champ = CHAMPS.get(name) or {}
+    try:
+        return int(hardcc.hard_cc_depth(champ.get("abilities"), name))
+    except Exception:
+        return 0
+
+
+def _cc_seconds(name: str) -> float:
+    stated = (_CC_DURATIONS.get("champions") or {}).get(name)
+    return float(stated) if stated else CC_MEDIAN_SECONDS
+
+
+def dummy_target(hp: float, armor: float = 0.0, mr: float = 0.0) -> dict:
+    """A plain practice-tool dummy: no build, only the numbers you give it."""
+    return {"label": "Practice dummy", "hp": hp, "armor": armor, "mr": mr,
+            "bonusHp": 0.0}
+
+
+def champion_target(name: str, level: int, items: list[str],
+                    runes: list[str] | None = None) -> dict | None:
+    """A champion as a TARGET: their real defensive stats at a level and build.
+
+    Everything past hp/armor/mr/bonusHp is what makes an opponent more than a
+    dummy -- their sustain for Grievous Wounds to deny, their shielding for a
+    shield-cut item to cut, their crowd control as dead time, and the two
+    fields (Plated Steelcaps, Frozen Heart) that reach back and change the
+    ATTACKER's numbers.
+    """
+    with_build = resolve_stats(name, level, items, list(runes or []))
+    if not with_build:
+        return None
+    # Bonus health is what the items added, so it has to be measured against
+    # the same champion at the same level with nothing equipped.
+    naked = resolve_stats(name, level, [], [])
+    st = with_build
+    ref = rotation(name, st, SUSTAIN_REF_TARGET, SUSTAIN_REF_WINDOW, level)
+    kit = kit_heal(name, st, level, SUSTAIN_REF_WINDOW, "self",
+                   ref["bySlot"], ref["total"], SUSTAIN_REF_TARGET) / SUSTAIN_REF_WINDOW
+    bonus_hp = max(0.0, with_build["hp"] - ((naked or with_build)["hp"]))
+    return {
+        "label": name,
+        "hp": _js_round(with_build["hp"]),
+        "armor": _js_round(with_build["armor"]),
+        "mr": _js_round(with_build["mr"]),
+        "bonusHp": _js_round(bonus_hp),
+        # Vamp is excluded on purpose: it needs their damage output, which a
+        # one-way calculator does not have. mutual_duel has both sides.
+        "sustainPerSec": max(0.0, kit + st["runeHealPerSec"] + st["healOnHit"] * st["as"]),
+        # Sterak's, Maw, Kaenic Rookern and Guardian Angel's revive all land here.
+        "shield": max(0.0, st["shield"] + st["shieldPctBonusHp"] * bonus_hp
+                      + st["shieldPctMaxHp"] * with_build["hp"]),
+        "ccDepth": _cc_depth(name),
+        "ccSeconds": _cc_seconds(name),
+        "stasisSec": st.get("stasisSec", 0.0),
+        "tenacity": st.get("tenacity", 0.0),
+        "basicAttackDr": st.get("basicAttackDr", 0.0),
+        "asSlow": st.get("targetAsSlow", 0.0),
+    }
+
+
+def duel(name: str, items: list[str], runes: list[str], target: dict,
+         level: int = 15, cap: float = 20.0, scaled: bool = False) -> dict | None:
+    """Fight a target with a build and report what it took.
+
+    This is a DAMAGE CALCULATOR against a stationary target, not a duel: the
+    target does not move, dodge, itemise reactively or fight back. It is the
+    practice-tool dummy players already know, given a real champion's defensive
+    stats. Presenting it as anything more would turn every modelling gap into a
+    bug report.
+    """
+    if scaled:
+        raise NotImplementedError(
+            "duel(scaled=True) is TypeScript-only: it needs applyScaling, which "
+            "delegates to web-next/src/lib/build-scaling.ts. Use the TS engine "
+            "for fully-scaled fights, or port build-scaling first.")
+    st = resolve_stats(name, level, items, runes)
+    if not st:
+        return None
+
+    # What the target's own build does to MY output. Both default to no change,
+    # so a target built before these fields existed fights exactly as before.
+    if target.get("basicAttackDr") or target.get("asSlow"):
+        foe = dict(st)
+        foe["autoDamageMult"] = 1 - (target.get("basicAttackDr") or 0.0)
+        foe["externalAsMult"] = 1 - (target.get("asSlow") or 0.0)
+    else:
+        foe = st
+
+    # Health that has to be removed BEFORE their sustain is counted: the bar
+    # itself, less any execute, plus shielding my build cannot strip.
+    fixed_need = (target["hp"] * (1 - st.get("execute", 0.0))
+                  + (target.get("shield") or 0.0) * (1 - st.get("shieldCut", 0.0)))
+    # ...and the part that grows with the fight, because a target who heals is
+    # a moving target. This is what Grievous Wounds is for.
+    heal_rate = (target.get("sustainPerSec") or 0.0) * (1 - st.get("grievousWounds", 0.0))
+
+    # CROWD CONTROL, as dead time. Each of the target's hard-CC abilities lands
+    # once for the duration its own text states; this build's cleanses and
+    # spell shields remove that many instances outright; tenacity shortens what
+    # is left; their stasis is added on top, because an untargetable enemy is
+    # dead time for the same reason. Hard CC only -- slows are excluded,
+    # matching web/advisor/hardcc.py, because a slow is not what tenacity is for.
+    cc_left = max(0.0, (target.get("ccDepth") or 0.0) - st.get("ccRemoval", 0.0))
+    lockdown = (cc_left * (target.get("ccSeconds") or 1.5) * (1 - st.get("tenacity", 0.0))
+                + (target.get("stasisSec") or 0.0))
+
+    ttk = None
+    # 0.25s steps match _ttk, so this agrees with the number shown elsewhere.
+    t = 0.25
+    while t <= cap + 1e-9:
+        acting = max(0.0, t - lockdown)
+        if acting > 0 and rotation(name, foe, target, acting, level)["total"] \
+                >= fixed_need + heal_rate * t:
+            ttk = _js_round(t * 100) / 100
+            break
+        t += 0.25
+
+    window = ttk if ttk is not None else cap
+    acting = max(0.25, window - lockdown)
+    need = fixed_need + heal_rate * window
+    detail = rotation(name, foe, target, acting, level)
+    casts = sorted(
+        ({"slot": slot, "name": v["name"], "casts": v["casts"]}
+         for slot, v in (detail.get("castLog") or {}).items() if v.get("casts", 0) > 0),
+        key=lambda c: c["slot"])
+
+    return {
+        "target": target,
+        # The rotation the champion is actually meant to use, which the data
+        # already carries for 137 champions.
+        "combo": list((FORMULAS.get(name) or {}).get("combo") or []),
+        "ttk": ttk,
+        "damage": _js_round(detail["total"]),
+        "autos": detail["nAutos"],
+        # The short-window combo path does not report an ideal count.
+        "autosIdeal": detail.get("nAutosIdeal", detail["nAutos"]),
+        "casts": casts,
+        "byType": {k: _js_round(v) for k, v in detail["byType"].items()},
+        # Damage past the kill: high overkill means the last cast was wasted.
+        "overkill": max(0, _js_round(detail["total"] - need)),
+        # Damage per second of WALL CLOCK, not per second of acting: a fight you
+        # spent half of stunned really did take that long.
+        "dps": _js_round(detail["total"] / window),
+        "lockdown": _js_round(lockdown * 100) / 100,
+    }
+
+
+def mutual_duel(a_name: str, a_items: list[str], a_runes: list[str],
+                b_name: str, b_items: list[str], b_runes: list[str],
+                level: int = 15, cap: float = 20.0, scaled: bool = False,
+                head_start: float = 0.0) -> dict | None:
+    """Both champions run their combo at once, and the clocks race.
+
+    By default both rotations start at t=0 and the smaller clock simply wins.
+    `head_start` shifts the OTHER side's clock later by that many seconds
+    (positive = A engaged first). When the two clocks land within one 0.25s
+    tick of each other the verdict is "trade", because at that distance the
+    model cannot tell you who dies -- the engage does.
+    """
+    target_b = champion_target(b_name, level, b_items, b_runes)
+    target_a = champion_target(a_name, level, a_items, a_runes)
+    if not target_a or not target_b:
+        return None
+    you = duel(a_name, a_items, a_runes, target_b, level, cap, scaled)
+    them = duel(b_name, b_items, b_runes, target_a, level, cap, scaled)
+    if not you or not them:
+        return None
+
+    # Kill CLOCKS, not kill times: the side that engaged late has its whole
+    # rotation shifted, so its kill lands later on the shared clock.
+    your_clock = None if you["ttk"] is None else you["ttk"] + max(0.0, -head_start)
+    their_clock = None if them["ttk"] is None else them["ttk"] + max(0.0, head_start)
+
+    margin = None
+    if your_clock is None and their_clock is None:
+        verdict = "stalemate"
+    elif their_clock is None:
+        verdict = "you"
+    elif your_clock is None:
+        verdict = "them"
+    else:
+        margin = _js_round(abs(your_clock - their_clock) * 100) / 100
+        verdict = "trade" if margin <= 0.25 else ("you" if your_clock < their_clock else "them")
+
+    # How much health the winner keeps: the loser's rotation ran only until the
+    # winner's kill landed, minus any time the loser lost to a late engage.
+    survivor_hp = None
+    if verdict in ("you", "them"):
+        win_clock = your_clock if verdict == "you" else their_clock
+        loser_delay = max(0.0, head_start) if verdict == "you" else max(0.0, -head_start)
+        fought = win_clock - loser_delay
+        winner_target = target_a if verdict == "you" else target_b
+        dealt = 0.0
+        if fought >= 0.25:
+            partial = (duel(b_name, b_items, b_runes, target_a, level, fought, scaled)
+                       if verdict == "you"
+                       else duel(a_name, a_items, a_runes, target_b, level, fought, scaled))
+            dealt = (partial or {}).get("damage", 0.0)
+        survivor_hp = max(0.0, _js_round(
+            (winner_target["hp"] - dealt) / winner_target["hp"] * 1000) / 1000)
+
+    return {"you": you, "them": them, "verdict": verdict,
+            "margin": margin, "survivorHp": survivor_hp}
+
+
+def score_vs_comp(name: str, items: list[str], runes: list[str], carry: dict,
+                  ad_share: float, ap_share: float, level: int = 15) -> dict:
+    """Score a build against a specific enemy comp: how fast it kills their
+    carry, and how much effective health it has versus their actual damage mix.
+
+    Defence-leaning on purpose: a counter build is a defensive answer.
+    """
+    st = resolve_stats(name, level, items, runes)
+    if not st:
+        return {"ttkCarry": None, "ehpVsComp": 0, "score": 0.0}
+    # Mirrors duel(): the carry's shielding and sustain are part of what has to
+    # be removed, and their crowd control is time this build is not acting.
+    if carry.get("basicAttackDr") or carry.get("asSlow"):
+        foe = dict(st)
+        foe["autoDamageMult"] = 1 - (carry.get("basicAttackDr") or 0.0)
+        foe["externalAsMult"] = 1 - (carry.get("asSlow") or 0.0)
+    else:
+        foe = st
+    fixed_need = (carry["hp"] * (1 - st["execute"])
+                  + (carry.get("shield") or 0.0) * (1 - st.get("shieldCut", 0.0)))
+    heal_rate = (carry.get("sustainPerSec") or 0.0) * (1 - st.get("grievousWounds", 0.0))
+    cc_left = max(0.0, (carry.get("ccDepth") or 0.0) - st.get("ccRemoval", 0.0))
+    lockdown = (cc_left * (carry.get("ccSeconds") or 1.5) * (1 - st.get("tenacity", 0.0))
+                + (carry.get("stasisSec") or 0.0))
+    ttk = None
+    t = 0.25
+    while t <= 15 + 1e-9:
+        acting = max(0.0, t - lockdown)
+        if acting > 0 and rotation(name, foe, carry, acting, level)["total"] \
+                >= fixed_need + heal_rate * t:
+            ttk = _js_round(t * 100) / 100
+            break
+        t += 0.25
+
+    shield = st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"] + st["shieldPctMaxHp"] * st["hp"]
+    shield *= 1 + st["healShieldAmp"]
+    # Typed damage reduction rides its own half here too, and this site knows
+    # the enemy's ACTUAL damage split rather than assuming 50/50.
+    phys_taken = 100 / (100 + st["armor"]) * (1 - st.get("drPhys", 0.0))
+    magic_taken = 100 / (100 + st["mr"]) * (1 - st.get("drMagic", 0.0))
+    taken = (ad_share * phys_taken + ap_share * magic_taken) or 1.0
+    dr = st["dr"] if st["dr"] < 1 else 0.99
+    ehp_vs_comp = _js_round((st["hp"] + shield) / taken / (1 - dr))
+    off = REF_TTK / ttk if ttk else 0.0
+    # Same saturating curve as everywhere else. This one matters most: it is
+    # what the Counter Builder ranks its swaps on, and an unbounded term here
+    # means the answer to every enemy comp drifts toward "buy more health".
+    deff = durability_term(ehp_vs_comp, 0.0)
+    return {"ttkCarry": ttk, "ehpVsComp": ehp_vs_comp,
+            "score": _js_round(1000 * (0.45 * off + 0.55 * deff)) / 10}
