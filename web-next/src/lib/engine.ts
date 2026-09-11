@@ -18,6 +18,30 @@ const MELEE_AUTO_UPTIME = 0.75;
 // A champion mid-fight is not at full health. The one assumption in the kit
 // sustain model, and the same value fight_engine.py uses.
 const MISSING_HP_IN_FIGHT = 0.4;
+
+// ---- The ally model. An enchanter's entire job lives here, and none of it
+// existed in this engine: eight ally* keys shipped in the data and were read by
+// the Python engine only, so the TS side scored Soraka on her own damage and
+// survival and every support item looked like a weak stat stick. Constants are
+// fight_engine's, duplicated rather than exported because they are assumptions
+// about a fight, not data about the game.
+const SUPPORT_WINDOW = 8;
+const ALLY_AUTOS = 8;              // buffed ally basic attacks in the window
+const ALLY_DAMAGE = 2500;          // damage a buffed ally deals in the window
+const ALLY_INCOMING = 2500;        // damage an ally takes in the window
+const AP_TO_ALLY_DAMAGE = 2.5;
+const AD_TO_ALLY_DAMAGE = 4.0;
+const FONT_PROC_EVERY = 3.0;
+/** Assumed seconds between procs for a rune that states no cadence. */
+const RUNE_PROC_EVERY = 9.0;
+/** Runes that pay nothing without an ally in range. */
+const ALLY_GATED_RUNES = new Set(["Guardian", "Font of Life"]);
+/** How much of a fight each lane spends beside an ally. */
+const ALLY_UPTIME_BY_ROLE: Record<string, number> = {
+  Support: 0.90, Dragon: 0.75, Jungle: 0.30, Baron: 0.25, Mid: 0.30,
+};
+const allyUptime = (name: string): number =>
+  ALLY_UPTIME_BY_ROLE[String(DATA.champions[name]?.role ?? "")] ?? 0.35;
 const RANGED_CLASSES = new Set(["Marksman", "Mage", "Enchanter"]);
 const AUTO_GATED_RUNES = new Set(["Empowerment", "Lethal Tempo"]);
 /** Champions whose ultimate is area damage; see data/ult_shape.json. */
@@ -230,6 +254,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
     healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
+    runeAllyHealPerSec: 0, allyShield: 0,
+    extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0, itemHaste: 0,
     // Carried BY THIS BUILD and applied to whoever it is fighting.
     grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
     cloneAdPct: 0, cloneAsFromCritPct: 0, cloneLifetimeS: 0, cloneMaxCount: 0,
@@ -358,6 +384,17 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // half to an on-hit build, and invisible before this key existed.
     st.extraOnHitApplications = Math.max(st.extraOnHitApplications,
       g("extraOnHitOnSpellblade"));
+    // Runaan's Hurricane. The bolts hit OTHER targets, so they are tracked
+    // separately and never added to single-target damage, exactly as the
+    // Python engine does. The TS side had no channel, so the site could not
+    // report area damage for any build.
+    st.extraBolts = Math.max(st.extraBolts, g("extraBolts"));
+    st.extraBoltAdPct = Math.max(st.extraBoltAdPct, g("extraBoltAdPct"));
+    // Rylai's: a slow on the target is relative move speed for the one thing
+    // this engine models about positioning, a melee sticking to its target.
+    // Damage is deliberately untouched.
+    st.targetSlow = Math.max(st.targetSlow,
+      g("targetSlowPct") / 100 * (g("targetSlowUptime") || 100) / 100);
     if ((fx.spellbladeBaseAdPct || fx.spellbladeApPct) && fx.spellbladeMagic)
       st.spellbladeMagic = 1;
     st.onHitPhys += g("onHitFlatPhys");
@@ -485,6 +522,19 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     const r = ks[rn] ?? mn[rn];
     if (!r) {
       let fx = DATA.runeEngine[rn] ?? {};
+      // Ally-gated runes pay out only with an ally in range. Scaled before any
+      // key is read, so every part of the rune is discounted together.
+      if (ALLY_GATED_RUNES.has(rn)) {
+        const up = allyUptime(name);
+        const scaled: any = {};
+        for (const [k, v] of Object.entries<any>(fx)) {
+          if (v && typeof v === "object" && "lvlRange" in v)
+            scaled[k] = { lvlRange: v.lvlRange.map((x: number) => x * up) };
+          else if (typeof v === "number") scaled[k] = v * up;
+          else scaled[k] = v;
+        }
+        fx = scaled;
+      }
       if (AUTO_GATED_RUNES.has(rn) && !autoCentric) {
         const scaled: any = {};
         for (const [k, v] of Object.entries<any>(fx)) {
@@ -522,6 +572,28 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       // ult-amp channel at all, so the keystone was worth nothing here.
       st.ultAmp += (AOE_ULTS.has(name) ? g("ultAmpPctAoe") : g("ultAmpPct")) / 100;
       st.runeOnHitFlat += g("onHitFlat");
+      // Ingenious Hunter is a RUNE, so its ITEM haste is read here.
+      st.itemHaste += g("itemHasteFlat");
+      // Font of Life: a self+ally heal. Both halves were dropped.
+      const fontHeal = g("healPctMaxHp") / 100 * st.hp + g("healApRatio") / 100 * st.ap;
+      st.runeHealPerSec += fontHeal / FONT_PROC_EVERY;
+      st.runeAllyHealPerSec += (g("allyHealPctMaxHp") / 100 * st.hp
+        + g("healApRatio") / 100 * st.ap) / FONT_PROC_EVERY;
+      // Fleet Footwork. Assumed once per 9 seconds, the convention the curated
+      // healPerProc key uses; the rune states no cadence. Read by neither
+      // engine before this, so the keystone's whole point was worth nothing.
+      st.runeHealPerSec += g("healFlat") / RUNE_PROC_EVERY;
+      // Guardian shields YOU and the ally, and neither half was applied, so the
+      // keystone's entire effect was dropped. Bonus HP and max HP are different
+      // scalings: it reads "+6% BONUS Health", and charging it off max HP
+      // nearly doubles the shield.
+      const runeShield = g("shieldFlat")
+        + g("shieldPctMaxHp") / 100 * st.hp
+        + g("shieldPctBonusHp") / 100 * st.bonusHp
+        + g("shieldApRatio") / 100 * st.ap;
+      st.shield += runeShield;
+      st.allyShield += g("allyShieldFlat")
+        + (g("allyShieldFlat") ? runeShield - g("shieldFlat") : 0);
       st.damageAmp += g("ampPct") / 100;
       if (fx.burstProcFlat || fx.burstProcApRatio || fx.burstProcAdRatio)
         addProc({
@@ -708,6 +780,16 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   if (st.critDamagePerExcessCrit && st.crit > 1)
     st.critMult += st.critDamagePerExcessCrit * (st.crit - 1);
   st.crit = Math.min(st.crit, 1);
+  // Ingenious Hunter shortens ITEM cooldowns, and it is a RUNE, so it is only
+  // known after the item loop that created these procs. Applied here, and only
+  // to procs whose source is an item: a keystone's cooldown is not item
+  // haste's business. Expressible at all only since procs gained cooldowns.
+  if (st.itemHaste) {
+    const m = 100 / (100 + st.itemHaste);
+    for (const pr of st.procs as Proc[]) {
+      if (pr.cd !== Infinity && pr.label && DATA.items[pr.label]) pr.cd *= m;
+    }
+  }
 
   // Soul Transfer's Shadow Dance: clones that attack alongside you. A real,
   // in-combat physical damage stream that nothing modelled at all.
@@ -768,7 +850,11 @@ function autoUptime(name: string, window: number, st?: any): number {
   if (window <= 4) return 1;
   if (RANGED_CLASSES.has(DATA.champions[name]?.class ?? "")) return 1;
   // move speed lets a melee stick to its target -> more attacks land
-  return st ? Math.min(0.93, MELEE_AUTO_UPTIME + (st.bonusMs ?? 0) * 0.0016) : MELEE_AUTO_UPTIME;
+  if (!st) return MELEE_AUTO_UPTIME;
+  // A slow on the target closes distance exactly as your own move speed does,
+  // so it rides the same term. 330 is a champion's base move speed.
+  const relativeMs = (st.bonusMs ?? 0) + (st.targetSlow ?? 0) * 330;
+  return Math.min(0.93, MELEE_AUTO_UPTIME + relativeMs * 0.0016);
 }
 
 // Side outputs from the most recent rotation() call, read synchronously right
@@ -778,6 +864,8 @@ let ROT_AUTO_DMG = 0;
 let ROT_BY_TYPE: Record<string, number> = { physical: 0, magic: 0, true: 0 };
 let ROT_CAST_LOG: Record<string, { name: string; casts: number; max: number }> = {};
 let ROT_NAUTOS = 0;
+let ROT_BOLT_DMG = 0;
+let ROT_BY_SLOT: Record<string, number> = {};
 let ROT_NAUTOS_IDEAL = 0;
 
 /**
@@ -1036,6 +1124,14 @@ export function rotation(name: string, st: any, target: any, window: number,
     }
     return [p, m, t];
   };
+  /** Bolt damage on OTHER targets. Deliberately never added to `total`. */
+  const doBolts = (nAutos: number) => {
+    if (!st.extraBolts || !st.extraBoltAdPct) return 0;
+    const kit = DATA.champions[name]?.repeatsOnHit ? kitPerAuto(nAutos) : undefined;
+    const [bp, bm, bt] = onHitBundle(st, target, physM, magicM, kit);
+    const perBolt = st.extraBoltAdPct / 100 * st.ad * critEv * physM + bp + bm + bt;
+    return perBolt * st.extraBolts * nAutos;
+  };
   const doAutos = (nAutos: number) => {
     let aPhys = st.ad * critEv * physM * giant;
     aPhys += st.onHitPhys * physM;
@@ -1192,6 +1288,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
     ROT_CAST_LOG = {};
     ROT_NAUTOS = nAutos;
+    ROT_BOLT_DMG = doBolts(nAutos) * (1 + st.damageAmp);
+    ROT_BY_SLOT = { ...bySlot };
     ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
     return total * amp;
   }
@@ -1312,6 +1410,8 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
   ROT_CAST_LOG = castLog;
   ROT_NAUTOS = nAutos;
+  ROT_BOLT_DMG = doBolts(nAutos) * (1 + st.damageAmp);
+  ROT_BY_SLOT = { ...bySlot };
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
   return total * amp;
 }
@@ -1319,6 +1419,14 @@ export function rotation(name: string, st: any, target: any, window: number,
 export interface RotationDetail {
   damage: number;
   autoDamage: number;
+  /** Damage attributed to each ability slot, which a heal can scale off. */
+  bySlot: Record<string, number>;
+  /**
+   * Damage Runaan’s bolts deal to OTHER targets. Not part of `damage`: a
+   * single-target duel never sees it, and adding it there would inflate
+   * every time-to-kill. This is the site’s first area-damage readout.
+   */
+  boltDamage: number;
   byType: { physical: number; magic: number; true: number };
   /** Per ability: how many times it was cast in the window, and the cap. */
   casts: Record<string, { name: string; casts: number; max: number }>;
@@ -1342,6 +1450,8 @@ export function rotationDetail(name: string, st: any, target: any, window: numbe
   return {
     damage,
     autoDamage: ROT_AUTO_DMG,
+    bySlot: { ...ROT_BY_SLOT },
+    boltDamage: ROT_BOLT_DMG,
     byType: { physical: ROT_BY_TYPE.physical, magic: ROT_BY_TYPE.magic, true: ROT_BY_TYPE.true },
     casts: JSON.parse(JSON.stringify(ROT_CAST_LOG)),
     autos: ROT_NAUTOS,
@@ -1933,6 +2043,42 @@ export function championCcSeconds(name: string): number {
     || Number(DATA.ccMedianSeconds) || 1.5;
 }
 
+/**
+ * Ally value a build provides over a fight: the healing and shielding it puts
+ * on allies, plus the damage and mitigation its items hand them.
+ *
+ * A port of fight_engine.support_value. Without it this engine scores an
+ * enchanter on her own damage and survival and picks nonsense, because every
+ * support item looks like a weak stat stick. A self-heal is deliberately NOT
+ * ally value: counting Swain's Demonic Ascension here gave him 255 points of
+ * support he never provided.
+ */
+export function supportValue(name: string, items: string[], runes: string[] = [],
+                             level = 13): number {
+  const st = resolveStats(name, level, items, runes);
+  if (!st) return 0;
+  const amp = 1 + st.healShieldAmp;
+  let total = 0;
+  total += kitSustain(name, st, level, SUPPORT_WINDOW, "ally");
+  total += st.runeAllyHealPerSec * SUPPORT_WINDOW * amp;
+  total += st.allyShield * amp;
+  for (const slug of items) {
+    const fx = DATA.itemFx[slug] ?? {};
+    const g = (k: string) => (k in fx ? lvlRange(fx[k], level) : 0);
+    total += (g("allyHealFlat") + g("allyShieldFlat")) * 3 * amp;  // a few casts a fight
+    // Percentage-of-max-health ally healing (Radiant Virtue). The item ally
+    // path had flat keys only, so a percentage heal had nowhere to land.
+    total += g("allyHealPctMaxHp") / 100 * st.hp * amp;
+    total += g("allyOnHitFlatMagic") * ALLY_AUTOS;                 // Ardent Censer
+    total += g("allyProcFlat") * 2;                                // Imperial Mandate
+    total += g("allyApFlat") * AP_TO_ALLY_DAMAGE;                  // Staff of Flowing Water
+    total += g("allyAdFlat") * AD_TO_ALLY_DAMAGE;
+    total += ALLY_DAMAGE * g("allyAmpPct") / 100;
+    total += ALLY_INCOMING * g("allyDrPct") / 100;                 // Knight's Vow
+  }
+  return total;
+}
+
 export function engineChampions(): string[] {
   return Object.keys(DATA.champions);
 }
@@ -1981,6 +2127,11 @@ function applyScaling(name: string, items: string[], runes: string[],
 
 /** Seconds of fight the sustain rate below is linearised against. */
 const SUSTAIN_REF_WINDOW = 8;
+/** A fixed block to measure a kit’s own damage against, for damageDealt and
+ *  target-scaled heals. Deliberately NOT the real opponent: this is sustain
+ *  as a property of the champion, and feeding it whoever they happen to be
+ *  fighting would make Aatrox heal more against a tank purely via resists. */
+const SUSTAIN_REF_TARGET = { label: "ref", hp: 2600, armor: 90, mr: 60, bonusHp: 900 };
 
 /**
  * Healing and shielding this kit produces for `audience` over a fight.
@@ -1991,7 +2142,9 @@ const SUSTAIN_REF_WINDOW = 8;
  * on five items and read by nothing -- had nothing to deny.
  */
 export function kitSustain(name: string, st: any, level: number,
-                           window: number, audience: "self" | "ally"): number {
+                           window: number, audience: "self" | "ally",
+                           dmgBySlot?: Record<string, number>,
+                           foe?: { hp: number }): number {
   const f = DATA.formulas[name]?.abilities ?? {};
   const amp = 1 + st.healShieldAmp;
   const hasteM = 100 / (100 + st.haste);
@@ -2014,15 +2167,33 @@ export function kitSustain(name: string, st: any, level: number,
         const pct = scaleVal(r.pct ?? 0, 3, level) / 100;
         const src: Record<string, number> = {
           ap: st.ap, ad: st.ad, bonusAd: st.bonusAd,
-          ownMaxHp: st.hp, ownBonusHp: st.bonusHp,
+          ownMaxHp: st.hp, ownBonusHp: st.bonusHp, bonusHp: st.bonusHp,
           // Darius heals off MISSING health, which only exists once he has
           // been hurt.
           ownMissingHp: st.hp * MISSING_HP_IN_FIGHT,
+          missingHp: st.hp * MISSING_HP_IN_FIGHT,
+          // Amumu's Tantrum heals off his own resistances.
+          armor: st.armor, mr: st.mr,
+          // Aatrox, Viego and Rhaast heal for a share of the TARGET's health.
+          // Nine components across eight champions used a ratio stat NEITHER
+          // engine resolved, so they were silently worth their flat base and
+          // nothing more, and Aatrox, whose entire sustain is one of them,
+          // measured exactly zero.
+          targetMaxHp: foe?.hp ?? 0,
+          targetMissingHp: (foe?.hp ?? 0) * MISSING_HP_IN_FIGHT,
+          // NOT resolved, on purpose: Yasuo's shield reads "(+100% Critical
+          // Rate)", which is a multiplier on the shield and not an additive
+          // ratio. The schema can only express the latter, so charging it as
+          // one would be inventing a number. It keeps its flat base.
         };
-        // `damageDealt` needs per-slot damage this caller does not have, so it
-        // contributes nothing rather than something invented -- the same
-        // choice fight_engine makes when dmg_by_slot is absent.
-        v += pct * (src[r.stat] ?? 0);
+        // Heals for a share of what THIS ability dealt. Deliberately the
+        // ability's own damage, not the champion's total: reading Warwick's
+        // passive percentage against everything he does gave him more healing
+        // than his health bar.
+        const source = r.stat === "damageDealt"
+          ? (dmgBySlot?.[slot] ?? 0)
+          : (src[r.stat] ?? 0);
+        v += pct * source;
       }
       if (c.when === "dot total" && c.durationS) v *= Number(c.durationS);
       total += v * casts;
@@ -2097,7 +2268,9 @@ export function championTarget(name: string, level: number, items: string[],
   const st = withBuild;
   // Kit heals are linearised against a reference fight: cast counts are not
   // linear in window length, so this is a rate, not an exact integral.
-  const kit = kitSustain(name, st, level, SUSTAIN_REF_WINDOW, "self") / SUSTAIN_REF_WINDOW;
+  const refDmg = rotationDetail(name, st, SUSTAIN_REF_TARGET, SUSTAIN_REF_WINDOW, level);
+  const kit = kitSustain(name, st, level, SUSTAIN_REF_WINDOW, "self",
+                         refDmg.bySlot, SUSTAIN_REF_TARGET) / SUSTAIN_REF_WINDOW;
   const bonusHp = Math.max(0, withBuild.hp - (naked?.hp ?? withBuild.hp));
   return {
     label: name,

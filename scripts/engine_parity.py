@@ -36,7 +36,11 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           "rot8", "rot8Autos",
           # `bonusAd` was here and `ad` was not, so a base-stat divergence was
           # invisible: Kayn resolved 112 AD in one engine and 126 in the other.
-          "ad", "baseAd", "baseAs"]
+          "ad", "baseAd", "baseAs",
+          # The ally model, ported to TS after shipping Python-only.
+          "runeAllyHealPerSec", "allyShield", "shield", "support",
+          # Area damage, which the TS engine had no channel for at all.
+          "rot8Bolts"]
 
 # A plain stat block, so the two engines are compared on their own maths
 # rather than on whatever championTarget currently returns.
@@ -59,8 +63,10 @@ def main() -> int:
         # output over an 8s window, and parity was green the whole time.
         # A fixed dummy target keeps this a pure engine comparison.
         rot = fe.rotation(champ, st, dict(PARITY_TARGET), 8.0, 15)
-        st = dict(st, pctPen=1 - pen,
+        st = dict(st, support=round(fe.support_value(champ, items, runes, 15), 2),
+                  pctPen=1 - pen,
                   rot8=round(float(rot["total"]), 2),
+                  rot8Bolts=round(float(rot.get("boltDmg", 0.0)), 2),
                   rot8Autos=round(float(rot.get("autoDmg", 0.0)), 2))
         key = f"{champ}|{'+'.join(items)}|{'+'.join(runes)}"
         py[key] = {f: round(float(st.get(f, 0)), 4) for f in FIELDS}

@@ -216,6 +216,8 @@ def main() -> None:
     _ccd = _load("hard_cc_durations.json") or {}
     cc_durations = _ccd.get("champions", {})
     cc_median = _ccd.get("_median", 1.5)
+    champ_role = {c.get("name"): c.get("role", "")
+                  for c in (site.get("champions") or [])}
     from web.fight_engine import (kit_adjust, repeats_on_hit, damage_metric,
                                   attack_speed_ratio, AS_CURVE)
 
@@ -236,6 +238,11 @@ def main() -> None:
                 # rest fall back to the corpus median in the engine.
                 "ccSeconds": cc_durations.get(c["name"], 0),
                 "class": champ_class.get(c["name"], ""),
+                # The lane this champion is actually played in. Only the ally
+                # model needs it: Guardian and Font of Life pay out in
+                # proportion to how much of a fight you spend beside an ally,
+                # and a support is glued to the carry while a jungler is not.
+                "role": champ_role.get(c["name"], ""),
                 "primaryDamage": c.get("primaryDamage", ""),
                 "scalesWith": c.get("scalesWith", []),
                 "skillOrder": (guide.get(c["name"]) or {}).get("skillOrder", {}),

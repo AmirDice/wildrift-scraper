@@ -391,5 +391,110 @@
    "black-cleaver"
   ],
   []
+ ],
+ [
+  "Soraka",
+  [
+   "ardent-censer",
+   "staff-of-flowing-water",
+   "redemption"
+  ],
+  [
+   "Font of Life"
+  ]
+ ],
+ [
+  "Lulu",
+  [
+   "ardent-censer",
+   "mikaels-blessing"
+  ],
+  [
+   "Guardian"
+  ]
+ ],
+ [
+  "Janna",
+  [
+   "staff-of-flowing-water",
+   "harmonic-echo"
+  ],
+  [
+   "Guardian"
+  ]
+ ],
+ [
+  "Nami",
+  [
+   "imperial-mandate",
+   "ardent-censer"
+  ],
+  [
+   "Font of Life"
+  ]
+ ],
+ [
+  "Malphite",
+  [
+   "knights-vow",
+   "sunfire-aegis"
+  ],
+  [
+   "Guardian"
+  ]
+ ],
+ [
+  "Malphite",
+  [
+   "rylais-crystal-scepter",
+   "sunfire-aegis"
+  ],
+  []
+ ],
+ [
+  "Lux",
+  [
+   "rylais-crystal-scepter",
+   "ludens-echo"
+  ],
+  []
+ ],
+ [
+  "Soraka",
+  [
+   "radiant-virtue",
+   "ardent-censer"
+  ],
+  []
+ ],
+ [
+  "Ashe",
+  [
+   "kraken-slayer",
+   "infinity-edge"
+  ],
+  [
+   "Fleet Footwork"
+  ]
+ ],
+ [
+  "Zed",
+  [
+   "duskblade-of-draktharr",
+   "youmuus-ghostblade"
+  ],
+  [
+   "Ingenious Hunter"
+  ]
+ ],
+ [
+  "Lux",
+  [
+   "ludens-echo",
+   "hextech-rocketbelt"
+  ],
+  [
+   "Ingenious Hunter"
+  ]
  ]
 ]

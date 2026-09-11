@@ -286,5 +286,15 @@
     "cloneLifetimeS": 4,
     "cloneMaxCount": 2,
     "_why_clone": "Shadow Dance: 'When your attack Critically Strikes an enemy champion or a large monster, summon a clone that lasts 4 SECONDS to attack nearby enemies. The clone inherits 20% OF YOUR ATTACK DAMAGE and additionally gains 30% OF YOUR CRITICAL RATE AS ATTACK SPEED. UP TO TWO CLONES can exist at one time.' Every number here is from that sentence. The item shipped with an empty fx entry, so a legendary item's entire passive was worth nothing. The one figure the text does NOT give is the clone's base attack speed; it is a clone, so it uses the owner's own base."
+  },
+  "rylais-crystal-scepter": {
+    "targetSlowPct": 30,
+    "targetSlowUptime": 50,
+    "_why_slow": "Icy: 'Damaging abilities and empowered attacks slow enemies by 30% for 0.75 second.' The extractor is told to skip slows, which is why this item shipped with an empty fx entry, but a slow is not cosmetic for a MELEE champion: it is the difference between landing attacks and chasing. Modelled only through the melee-sticking term in autoUptime, which already converts move speed into landed attacks, and not as damage. ASSUMPTION, stated rather than buried: targetSlowUptime 50%. The slow lasts 0.75s per damaging ability and a kit casting roughly every 1.5s in a fight holds it about half the time. It is a named guess of the same kind as MELEE_AUTO_UPTIME itself, not a number read off the item."
+  },
+  "radiant-virtue": {
+    "shieldPctMaxHp": 10,
+    "allyHealPctMaxHp": 15,
+    "_why_transcend": "Guiding Light: 'Upon casting your ultimate ability, you Transcend, increasing your max Health by 10% for 6s. While Transcended, allied champions within 1,200 units heal for 2.5% of your max Health per second over the duration.' The self half is 10% max health for six seconds, once per fight on a 60s cooldown, which is the same effective-HP shape Guardian Angel's revive already uses shieldPctMaxHp for. The ally half is 2.5% x 6s = 15% of max health. NOT modelled: the 50% reduction for ranged champions, because the item ally path has no ranged branch."
   }
 }

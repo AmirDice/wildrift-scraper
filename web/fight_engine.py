@@ -225,7 +225,8 @@ def heal_target(name: str, slot: str) -> str:
 
 
 def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
-             dmg_by_slot: dict | None = None, dmg_total: float = 0.0) -> float:
+             dmg_by_slot: dict | None = None, dmg_total: float = 0.0,
+             foe: dict | None = None) -> float:
     """Healing and shielding this kit produces for `audience` over a fight.
 
     Shared by the ally-value model and the champion's own sustain so the two
@@ -265,8 +266,22 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
                     # here: a champion mid-fight, not one at full health.
                     src = st["hp"] * MISSING_HP_IN_FIGHT
                 else:
+                    # Nine components across eight champions used a stat this
+                    # map did not carry, so they were silently worth their flat
+                    # base and nothing more. targetMaxHp/targetMissingHp need a
+                    # target, which callers that have one now pass.
+                    # NOT resolved, on purpose: Yasuo's critChance, which reads
+                    # "(+100% Critical Rate)" -- a multiplier on the shield, not
+                    # an additive ratio the schema can express.
+                    _t_hp = float((foe or {}).get("hp", 0.0) or 0.0)
                     src = {"ap": st["ap"], "ad": st["ad"], "bonusAd": st["bonusAd"],
-                           "ownMaxHp": st["hp"], "ownBonusHp": st["bonusHp"]}.get(stat, 0.0)
+                           "ownMaxHp": st["hp"], "ownBonusHp": st["bonusHp"],
+                           "bonusHp": st["bonusHp"],
+                           "missingHp": st["hp"] * MISSING_HP_IN_FIGHT,
+                           "armor": st["armor"], "mr": st["mr"],
+                           "targetMaxHp": _t_hp,
+                           "targetMissingHp": _t_hp * MISSING_HP_IN_FIGHT,
+                           }.get(stat, 0.0)
                 v += pct * src
             if c.get("when") == "dot total" and c.get("durationS"):
                 v *= float(c["durationS"])
@@ -289,6 +304,7 @@ BASE_CRIT_MULT = 1.75
 # Font of Life procs on hitting a champion; in a real fight that lands roughly
 # every few seconds, not every tick. Used to turn its per-proc heal into a rate.
 FONT_PROC_EVERY = 3.0
+RUNE_PROC_EVERY = 9.0   # assumed cadence for a rune that states none
 AS_CAP = 2.5
 SPELLBLADE_CD = 1.5
 
@@ -546,6 +562,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
+        "targetSlow": 0.0, "itemHaste": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "procs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
@@ -648,6 +665,15 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # the single-target total -- they are reported separately as the AoE
         # axis instead. Recorded by extraction since the beginning and marked
         # INERT because the engine had nowhere to put them.
+        # Rylai's: a slow on the target is relative move speed for the one
+        # thing this engine models about positioning, a melee sticking to its
+        # target. Damage is deliberately untouched.
+        st["targetSlow"] = max(
+            st["targetSlow"],
+            g("targetSlowPct") / 100.0 * (g("targetSlowUptime") or 100.0) / 100.0)
+        # Ingenious Hunter: ITEM haste, expressible only now that item procs
+        # carry real cooldowns. Stored, exported, and read by neither engine.
+        st["itemHaste"] += g("itemHasteFlat")
         st["extraBolts"] = max(st["extraBolts"], g("extraBolts"))
         st["extraBoltAdPct"] = max(st["extraBoltAdPct"], g("extraBoltAdPct"))
         # Damage TYPE is read from the item's own text, not asked of the model: a
@@ -833,7 +859,13 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             # Font of Life: a self+ally heal. The ally half is priced by
             # support_value via runeAllyHealPerSec.
             _heal = g("healPctMaxHp") / 100.0 * st["hp"] + g("healApRatio") / 100.0 * st["ap"]
+            # Ingenious Hunter is a RUNE, so its item haste is read here. It
+            # was first written into the item loop, which never sees it.
+            st["itemHaste"] += g("itemHasteFlat")
             st["runeHealPerSec"] += _heal / FONT_PROC_EVERY
+            # Fleet Footwork. Assumed once per 9 seconds, the same convention
+            # the curated healPerProc key uses; the rune states no cadence.
+            st["runeHealPerSec"] += g("healFlat") / RUNE_PROC_EVERY
             st["runeAllyHealPerSec"] += (g("allyHealPctMaxHp") / 100.0 * st["hp"]
                                          + g("healApRatio") / 100.0 * st["ap"]) / FONT_PROC_EVERY
             # Guardian: shields YOU and the ally. Neither half was applied at
@@ -1084,6 +1116,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["as"] = st["reloadMag"] / (st["reloadMag"] / st["as"] + reload_s)
     st["crit"] = min(st["crit"], 1.0)
 
+    # Ingenious Hunter shortens ITEM cooldowns, and it is a RUNE, so it is only
+    # known after the item loop that created these procs. Applied here, and only
+    # to procs whose source is an item: a keystone's cooldown is not item
+    # haste's business.
+    if st["itemHaste"]:
+        _m = 100.0 / (100.0 + st["itemHaste"])
+        for _pr in st["procs"]:
+            if _pr["cd"] != float("inf") and _pr.get("label") in ITEMS:
+                _pr["cd"] *= _m
+
     # Soul Transfer's Shadow Dance: clones that attack alongside you. A real,
     # in-combat physical damage stream that nothing modelled at all.
     #
@@ -1176,9 +1218,12 @@ def _auto_uptime(name: str, window: float, st: dict | None = None) -> float:
     if cls in RANGED_CLASSES:
         return 1.0
     up = MELEE_AUTO_UPTIME
-    # move speed lets a melee stick to its target -> more attacks land.
+    # move speed lets a melee stick to its target -> more attacks land, and a
+    # slow on the target closes distance exactly as your own speed does, so it
+    # rides the same term. 330 is a champion's base move speed.
     if st is not None:
-        up = min(0.93, up + st.get("bonusMs", 0.0) * 0.0016)
+        relative_ms = st.get("bonusMs", 0.0) + st.get("targetSlow", 0.0) * 330.0
+        up = min(0.93, up + relative_ms * 0.0016)
     return up
 
 
@@ -2040,6 +2085,9 @@ def support_value(name: str, item_slugs: list[str], rune_names: list[str] | None
         fx = ENGINE_FX.get(slug) or {}
         g = lambda k: _lvl_range(fx[k], level) if k in fx else 0.0  # noqa: E731
         total += (g("allyHealFlat") + g("allyShieldFlat")) * 3 * amp  # a few casts/fight
+        # Percentage-of-max-health ally healing (Radiant Virtue). The item ally
+        # path had flat keys only, so a percentage heal had nowhere to land.
+        total += g("allyHealPctMaxHp") / 100.0 * st["hp"] * amp
         total += g("allyOnHitFlatMagic") * ALLY_AUTOS                 # Ardent Censer
         total += g("allyProcFlat") * 2                                # Imperial Mandate
         total += g("allyApFlat") * AP_TO_ALLY_DAMAGE                  # Staff of Flowing Water

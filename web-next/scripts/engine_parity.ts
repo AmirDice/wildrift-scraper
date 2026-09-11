@@ -1,6 +1,6 @@
 /** TS half of scripts/engine_parity.py -- resolves the shared battery and
  *  writes the stats for the Python side to diff. Run via the Python script. */
-import { resolveStats, rotationDetail } from "../src/lib/engine";
+import { resolveStats, rotationDetail, supportValue } from "../src/lib/engine";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -23,7 +23,8 @@ const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "crit
   // stats feeding it.
   "rot8", "rot8Autos",
   // See the Python half: `bonusAd` was compared and `ad` was not.
-  "ad", "baseAd", "baseAs"];
+  "ad", "baseAd", "baseAs",
+  "runeAllyHealPerSec", "allyShield", "shield", "support", "rot8Bolts"];
 
 /** Must match PARITY_TARGET in scripts/engine_parity.py. */
 const PARITY_TARGET = { label: "parity", hp: 2600, armor: 90, mr: 60, bonusHp: 900 };
@@ -34,6 +35,8 @@ for (const [champ, items, runes] of battery) {
     const rot = rotationDetail(champ, st, PARITY_TARGET, 8, 15);
     st.rot8 = Math.round(rot.damage * 100) / 100;
     st.rot8Autos = Math.round(rot.autoDamage * 100) / 100;
+    st.support = Math.round(supportValue(champ, items, runes, 15) * 100) / 100;
+    st.rot8Bolts = Math.round(rot.boltDamage * 100) / 100;
   }
   out[`${champ}|${items.join("+")}|${runes.join("+")}`] = Object.fromEntries(
     FIELDS.map((f) => [f, Math.round((Number(st?.[f]) || 0) * 10000) / 10000]));

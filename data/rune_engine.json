@@ -41,7 +41,8 @@
         15,
         110
       ]
-    }
+    },
+    "_why_heal": "healFlat was read by NEITHER engine, so the keystone's entire point -- the heal -- was worth nothing. It is now folded into runeHealPerSec on the same once-per-9-seconds convention the curated healPerProc key already uses, which is an assumption about proc cadence and not a figure from the rune: the text says only 'at 100 stacks, your next attack heals you'."
   },
   "Conqueror": {
     "adaptiveAd": {
