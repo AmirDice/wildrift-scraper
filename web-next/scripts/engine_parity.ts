@@ -21,7 +21,9 @@ const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "crit
   "ccRemoval", "stasisSec",
   // See the note on the Python half: the damage path itself, not only the
   // stats feeding it.
-  "rot8", "rot8Autos"];
+  "rot8", "rot8Autos",
+  // See the Python half: `bonusAd` was compared and `ad` was not.
+  "ad", "baseAd", "baseAs"];
 
 /** Must match PARITY_TARGET in scripts/engine_parity.py. */
 const PARITY_TARGET = { label: "parity", hp: 2600, armor: 90, mr: 60, bonusHp: 900 };

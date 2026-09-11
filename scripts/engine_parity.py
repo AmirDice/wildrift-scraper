@@ -33,7 +33,10 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           "grievousWounds", "shieldCut", "basicAttackDr", "targetAsSlow",
           "ccRemoval", "stasisSec",
           # The damage path itself, not only the stats feeding it.
-          "rot8", "rot8Autos"]
+          "rot8", "rot8Autos",
+          # `bonusAd` was here and `ad` was not, so a base-stat divergence was
+          # invisible: Kayn resolved 112 AD in one engine and 126 in the other.
+          "ad", "baseAd", "baseAs"]
 
 # A plain stat block, so the two engines are compared on their own maths
 # rather than on whatever championTarget currently returns.

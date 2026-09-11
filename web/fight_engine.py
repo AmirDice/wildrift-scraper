@@ -48,7 +48,43 @@ def _with_forms(champs: list[dict]) -> dict:
     return out
 
 
+def _apply_stat_overrides(champs: dict) -> int:
+    """Fold data/champion_stat_overrides.json into the champion base stats.
+
+    Owner-verified values read from the game, applied by
+    scripts/export_engine_data.py since they were added and by this engine
+    never: there was no reference to the file here at all. Four champions
+    carry one -- Pantheon, Lucian, and BOTH Kayn forms -- so the advisor has
+    been simulating them on the scraped stats while the site used the
+    corrected ones. Kayn's AD per level is 3.0 in the scrape and 4.0 in the
+    override, which is 14 attack damage at level 15.
+
+    Found by extending engine_parity to the damage path and adding a Kayn case:
+    `bonusAd` matched and `ad` did not, because only the former was in FIELDS.
+    """
+    path = ROOT / "data" / "champion_stat_overrides.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, override in (overlay.get("champions") or {}).items():
+        champ = champs.get(name)
+        if not champ:
+            continue
+        for stat, values in (override.get("baseStats") or {}).items():
+            champ.setdefault("baseStats", {})[stat] = {
+                k: v for k, v in values.items() if k in {"base", "perLevel", "lvl15"}
+            }
+            applied += 1
+        if override.get("statRules"):
+            champ["statRules"] = override["statRules"]
+    return applied
+
+
 CHAMPS = _with_forms(_load("champions_wr.json"))
+# Applied AFTER the forms are split out, so an override keyed on a form name
+# ("Kayn (Rhaast)") lands on that form and not on the base champion.
+_apply_stat_overrides(CHAMPS)
 FORMULAS = _load("ability_formulas.json")
 
 
@@ -80,6 +116,39 @@ def _apply_recovered_conditions(formulas: dict) -> int:
             if mech.get("kind") == "everyNHit":
                 mech["n"] = entry["n"]
                 applied += 1
+    return applied
+
+
+def _apply_cooldown_corrections(formulas: dict) -> int:
+    """Fold data/ability_cooldown_corrections.json into the formulas.
+
+    The overlay's own note says it is applied "by scripts/export_engine_data.py
+    AND web/fight_engine.py". It was not: this engine had no reference to the
+    file at all, so the owner-verified Kayn cooldowns read from the game on
+    2026-07-29 reached the site bundle and never reached the advisor. The
+    advisor was still running the pre-correction scrape, which is SHORTER
+    across both forms -- Reaping Slash 3s against the real 5s at rank 3 -- so
+    it credited Kayn four casts in an eight-second fight where the game allows
+    three, and over-rated every Kayn build accordingly.
+
+    Found by extending engine_parity to the damage path: the two engines
+    disagreed by 8.5% on Kayn and by nothing at all on everyone else.
+    """
+    path = ROOT / "data" / "ability_cooldown_corrections.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, entry in (overlay.get("champions") or {}).items():
+        record = formulas.get(name)
+        if not record:
+            continue
+        for slot, fix in (entry.get("abilities") or {}).items():
+            ability = (record.get("abilities") or {}).get(slot)
+            if not ability or "cooldowns" not in fix:
+                continue
+            ability["cooldowns"] = [float(v) for v in fix["cooldowns"]]
+            applied += 1
     return applied
 
 
@@ -124,6 +193,8 @@ def _apply_formula_corrections(formulas: dict) -> int:
 
 
 _apply_recovered_conditions(FORMULAS)
+# Before the formula corrections, matching the exporter's order.
+_apply_cooldown_corrections(FORMULAS)
 _apply_formula_corrections(FORMULAS)
 # Combos are overlaid from champion_combos.json, the same source the exported
 # engine.json uses, so the Python and browser engines open with the same

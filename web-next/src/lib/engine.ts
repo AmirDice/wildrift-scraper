@@ -20,6 +20,8 @@ const MELEE_AUTO_UPTIME = 0.75;
 const MISSING_HP_IN_FIGHT = 0.4;
 const RANGED_CLASSES = new Set(["Marksman", "Mage", "Enchanter"]);
 const AUTO_GATED_RUNES = new Set(["Empowerment", "Lethal Tempo"]);
+/** Champions whose ultimate is area damage; see data/ult_shape.json. */
+const AOE_ULTS = new Set<string>((DATA.aoeUlts ?? []) as string[]);
 const REF_BURST = 2400, REF_DPS = 700, REF_DEF = 7000;
 const BURSTY = new Set(["oneshot", "burst", "poke", "crit"]);
 
@@ -217,7 +219,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     crit: 0, critMult: BASE_CRIT_MULT, critDisabled: 0, haste: 0, mana: base("mana", 0),
     flatPen: 0, pctPenFactors: [] as number[], flatMagicPen: 0, pctMagicPen: 0,
     baseMs: bs.moveSpeed?.base || 330, bonusMs: 0, tenacity: 0,
-    abilityAmp: 0, damageAmp: 0, giant: 0, execute: 0,
+    abilityAmp: 0, damageAmp: 0, giant: 0, execute: 0, ultAmp: 0,
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     procs: [] as Proc[], dotDps: 0, dotPctMaxHp: 0,
@@ -513,6 +515,12 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       st.armor *= 1 + g("armorPct") / 100;
       st.mr *= 1 + g("mrPct") / 100;
       st.abilityAmp += g("abilityAmpPct") / 100;
+      // Axiom Arcanist: "Your ultimate ability has 10% increased damage ... (AoE
+      // damage is reduced to a 5% increase)". Which rate applies depends on the
+      // champion's own ult, so it is picked from the exported ult_shape list.
+      // Python has modelled this since the rune was written; the port had no
+      // ult-amp channel at all, so the keystone was worth nothing here.
+      st.ultAmp += (AOE_ULTS.has(name) ? g("ultAmpPctAoe") : g("ultAmpPct")) / 100;
       st.runeOnHitFlat += g("onHitFlat");
       st.damageAmp += g("ampPct") / 100;
       if (fx.burstProcFlat || fx.burstProcApRatio || fx.burstProcAdRatio)
@@ -839,6 +847,9 @@ export function rotation(name: string, st: any, target: any, window: number,
   let total = 0, castsTotal = 0, autoDmg = 0;
   const byType: Record<string, number> = { physical: 0, magic: 0, true: 0 };
   const castLog: Record<string, { name: string; casts: number; max: number }> = {};
+  // Damage attributed to each ability slot. Only an ult-only amplifier needs
+  // this, which is why the port never grew it.
+  const bySlot: Record<string, number> = {};
   const addT = (t: string, v: number) => { byType[t] = (byType[t] ?? 0) + v; };
 
   const compDmg = (comp: any, rank: number): number => {
@@ -1100,7 +1111,11 @@ export function rotation(name: string, st: any, target: any, window: number,
         if (!c.alt && c.when === "per auto") addPerAuto(c, slot);
       const rank = slot === "4" ? 2 : 3;
       const ampA = 1 + st.abilityAmp;
-      for (const c of comps) { const cd = compDmg(c, rank) * ampA; addT(c.type, cd); total += cd; }
+      for (const c of comps) {
+        const cd = compDmg(c, rank) * ampA;
+        addT(c.type, cd); total += cd;
+        bySlot[slot] = (bySlot[slot] ?? 0) + cd;
+      }
       castsTotal++;
     }
     const nAutos = Math.max(nAutosSeq, Math.floor(window * st.as * 0.5));
@@ -1138,6 +1153,40 @@ export function rotation(name: string, st: any, target: any, window: number,
       const d = st.graspPct / 100 * target.hp * magicM * (1 + Math.floor(window / st.graspEvery));
       total += d; addT("magic", d);
     }
+  // Kit amplification: a percentage bonus on damage ALREADY counted, which no
+  // per-ability formula can express. Amumu's Cursed Touch turns his own magic
+  // damage into extra true damage (worth 8.5% of his rotation), Kayn's Shadow
+  // Assassin adds magic to everything for 3 seconds, Smolder empowers three
+  // abilities. Values and the reasoning behind them live in data/kit_amps.json
+  // and were read by the Python engine only.
+  {
+    // Captured BEFORE the loop, so an "all" entry cannot be paid on a bonus an
+    // earlier entry just added. fight_engine passes total_now the same way.
+    const totalNow = total;
+    let kitBonus = 0;
+    for (const entry of ((DATA.kitAmps?.[name]?.amps ?? []) as any[])) {
+      const pct = lvlRange(entry.pct, level) / 100;
+      if (!pct) continue;
+      const src = entry.slot ? (bySlot[entry.slot] ?? 0)
+        : entry.appliesTo === "all" ? totalNow
+        : (byType[entry.appliesTo ?? "magic"] ?? 0);
+      // A stated duration is a real limit, not a guess: a 3s effect inside an
+      // 8s fight earns three eighths of it.
+      const dur = Number(entry.durationS) || 0;
+      const bonus = src * pct * (dur ? Math.min(1, dur / Math.max(window, 1e-9)) : 1);
+      if (!bonus) continue;
+      addT(entry.dealtAs ?? "magic", bonus);
+      kitBonus += bonus;
+    }
+    total += kitBonus;
+  }
+  // Ultimate-only amplification (Axiom Arcanist). Mirrors fight_engine, which
+  // charges it as magic and before the whole-rotation damage amp.
+  if (st.ultAmp && bySlot["4"]) {
+    const ultBonus = bySlot["4"] * st.ultAmp;
+    total += ultBonus;
+    addT("magic", ultBonus);
+  }
     const amp = 1 + st.damageAmp;
     ROT_AUTO_DMG = autoDmg * amp;
     ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
@@ -1185,7 +1234,11 @@ export function rotation(name: string, st: any, target: any, window: number,
     castsTotal += casts;
     castLog[slot] = { name: ab.name ?? slot, casts, max: maxCasts };
     const ampA = 1 + st.abilityAmp;
-    for (const c of dmgComps) { const cd2 = compDmg(c, rank) * casts * ampA; addT(c.type, cd2); total += cd2; }
+    for (const c of dmgComps) {
+      const cd2 = compDmg(c, rank) * casts * ampA;
+      addT(c.type, cd2); total += cd2;
+      bySlot[slot] = (bySlot[slot] ?? 0) + cd2;
+    }
   }
   const nAutos = Math.max(1, Math.floor(window * st.as * autoUptime(name, window, st)));
   const dAutos = doAutos(nAutos);
@@ -1219,6 +1272,40 @@ export function rotation(name: string, st: any, target: any, window: number,
   if (st.graspPct) {
     const d = st.graspPct / 100 * target.hp * magicM * (1 + Math.floor(window / st.graspEvery));
     total += d; addT("magic", d);
+  }
+  // Kit amplification: a percentage bonus on damage ALREADY counted, which no
+  // per-ability formula can express. Amumu's Cursed Touch turns his own magic
+  // damage into extra true damage (worth 8.5% of his rotation), Kayn's Shadow
+  // Assassin adds magic to everything for 3 seconds, Smolder empowers three
+  // abilities. Values and the reasoning behind them live in data/kit_amps.json
+  // and were read by the Python engine only.
+  {
+    // Captured BEFORE the loop, so an "all" entry cannot be paid on a bonus an
+    // earlier entry just added. fight_engine passes total_now the same way.
+    const totalNow = total;
+    let kitBonus = 0;
+    for (const entry of ((DATA.kitAmps?.[name]?.amps ?? []) as any[])) {
+      const pct = lvlRange(entry.pct, level) / 100;
+      if (!pct) continue;
+      const src = entry.slot ? (bySlot[entry.slot] ?? 0)
+        : entry.appliesTo === "all" ? totalNow
+        : (byType[entry.appliesTo ?? "magic"] ?? 0);
+      // A stated duration is a real limit, not a guess: a 3s effect inside an
+      // 8s fight earns three eighths of it.
+      const dur = Number(entry.durationS) || 0;
+      const bonus = src * pct * (dur ? Math.min(1, dur / Math.max(window, 1e-9)) : 1);
+      if (!bonus) continue;
+      addT(entry.dealtAs ?? "magic", bonus);
+      kitBonus += bonus;
+    }
+    total += kitBonus;
+  }
+  // Ultimate-only amplification (Axiom Arcanist). Mirrors fight_engine, which
+  // charges it as magic and before the whole-rotation damage amp.
+  if (st.ultAmp && bySlot["4"]) {
+    const ultBonus = bySlot["4"] * st.ultAmp;
+    total += ultBonus;
+    addT("magic", ultBonus);
   }
   const amp = 1 + st.damageAmp;
   ROT_AUTO_DMG = autoDmg * amp;

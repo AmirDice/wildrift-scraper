@@ -291,6 +291,15 @@ def main() -> None:
         "situationalOnly": (rules.get("situationalOnly") or {}).get("slugs", []),
     }
     out["healTargets"] = heal_targets
+    # Which champions' ultimates are area damage. Axiom Arcanist pays 10% on a
+    # single-target ult and only 5% on an area one, so the rate cannot be picked
+    # without this. Python has read it since the rune was modelled; the TS
+    # engine had no copy and no ult amp at all.
+    out["aoeUlts"] = sorted((_load("ult_shape.json") or {}).get("aoeUlts", []))
+    # Kit amplification (Amumu, Kayn, Smolder): a percentage bonus on damage
+    # already counted, which no per-ability formula can express. Python-only
+    # until now, and worth 8.5% of Amumu's rotation.
+    out["kitAmps"] = (_load("kit_amps.json") or {}).get("champions", {})
     out["ccMedianSeconds"] = cc_median
     OUT.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size/1024:.0f} KB, "
