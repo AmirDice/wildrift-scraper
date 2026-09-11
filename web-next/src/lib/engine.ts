@@ -696,6 +696,21 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       else if (s.stat === "ad" && s.flat) st.bonusAd += scaleVal(s.flat, 3, level);
       else if (s.stat === "moveSpeed" && pct) st.bonusMs += st.baseMs * pct / 100 * 0.5;
       else if ((s.stat === "armor" || s.stat === "mr") && s.flat) st[s.stat] += scaleVal(s.flat, 3, level);
+      else if (s.stat === "damageReduction") {
+        // Flat damage reduction from a kit (Alistar's ultimate). Takes the
+        // strongest source, mirroring how the rune path treats drPct.
+        st.dr = Math.max(st.dr, scaleVal(s.pct, 3, level) / 100);
+      } else if (s.stat === "hp") {
+        // Transform ultimates grant flat Health (Shyvana, Nasus, Volibear). It
+        // is BONUS health, so shield and HP-scaling effects see it. Python has
+        // applied this since transforms were modelled; the port had neither
+        // this nor the damageReduction branch, so Shyvana resolved 600 less
+        // bonus health than the advisor and Volibear 525 less.
+        let hp = scaleVal(s.flat, 3, level);
+        if (!hp && s.pct) hp = st.hp * scaleVal(s.pct, 3, level) / 100;
+        st.hp += hp;
+        st.bonusHp += hp;
+      }
     }
   }
   for (const ab of Object.values<any>(f)) {
@@ -1127,8 +1142,19 @@ export function rotation(name: string, st: any, target: any, window: number,
       if ((st.doubleShotMult ?? 1) > 1 && perAutoSlot.get(comp) === "P"
           && ((comp.ratios ?? []) as any[]).every(
             (r) => r.stat === "ad" || r.stat === "bonusAd")) continue;
-      const cd = compDmg(comp, 3) / Math.max(1, Math.floor(rankVal(comp.hits ?? 1, 3)) || 1)
-                 * perAutoShare(comp, nAutos);
+      const perHit = (c: any) =>
+        compDmg(c, 3) / Math.max(1, Math.floor(rankVal(c.hits ?? 1, 3)) || 1);
+      let unit = perHit(comp);
+      // A component with a CRIT VARIANT is charged at the build's crit rate
+      // against its non-critical partner. Graves is the only kit in the roster
+      // shaped this way: his shotgun fires 4 bullets for 144% AD normally and 6
+      // for 280% on a crit, and the crit line is flagged alt, so it was
+      // filtered out and crit never touched his actual attack at all.
+      const slotOf = perAutoSlot.get(comp);
+      const siblings = (DATA.formulas[name]?.abilities?.[slotOf ?? ""] as any)?.damage ?? [];
+      const critVariant = siblings.find((x: any) => x.critVariantOf === comp.name);
+      if (critVariant) unit = (1 - st.crit) * unit + st.crit * perHit(critVariant);
+      const cd = unit * perAutoShare(comp, nAutos);
       if (comp.type === "magic") m += cd;
       else if (comp.type === "true") t += cd;
       else p += cd;
@@ -1144,7 +1170,18 @@ export function rotation(name: string, st: any, target: any, window: number,
     return perBolt * st.extraBolts * nAutos;
   };
   const doAutos = (nAutos: number) => {
-    let aPhys = st.ad * critEv * physM * giant;
+    // How much of the normal attack is REPLACED by a kit component rather than
+    // added to. Graves' shotgun IS his attack, so charging a 100% AD auto and
+    // then his 144% AD passive on top was a phantom extra swing on every hit:
+    // 2.44x AD measured where the tooltip says 1.44x. Scaled by the share
+    // rather than dropped outright, because Nocturne replaces one auto every
+    // twelve seconds and Renekton one per cast, not all of them.
+    let replacedShare = 0;
+    for (const comp of perAuto) {
+      if ((comp as any).replacesAuto) replacedShare += perAutoShare(comp, nAutos);
+    }
+    replacedShare = Math.min(1, replacedShare);
+    let aPhys = st.ad * critEv * physM * giant * (1 - replacedShare);
     aPhys += st.onHitPhys * physM;
     aPhys += (st.onHitPctCurrentHp * target.hp * 0.7 + st.onHitPctMaxHp * target.hp) * physM;
     aPhys += st.runeOnHitFlat * physM;

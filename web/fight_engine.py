@@ -152,6 +152,49 @@ def _apply_cooldown_corrections(formulas: dict) -> int:
     return applied
 
 
+def _apply_auto_replacement(formulas: dict) -> int:
+    """Fold data/auto_replacement.json into the formulas.
+
+    Marks the per-auto components that REPLACE the basic attack rather than
+    adding to it, and corrects one extracted ratio. See that file for the
+    per-champion reasoning; the short version is that the engine was charging a
+    normal 100% AD auto AND the kit's per-auto component on top, which on a
+    champion whose passive IS the attack is a phantom extra swing every time.
+    """
+    path = ROOT / "data" / "auto_replacement.json"
+    if not path.exists():
+        return 0
+    overlay = json.loads(path.read_text(encoding="utf-8"))
+    applied = 0
+    for name, entry in (overlay.get("champions") or {}).items():
+        record = formulas.get(name)
+        if not record:
+            continue
+        for slot, fix in (entry.get("abilities") or {}).items():
+            ability = (record.get("abilities") or {}).get(slot)
+            if not ability:
+                continue
+            if fix.get("empowerLimit") is not None:
+                ability["empowerLimit"] = fix["empowerLimit"]
+                applied += 1
+            for comp in ability.get("damage") or []:
+                spec = (fix.get("components") or {}).get(comp.get("name"))
+                if not spec:
+                    continue
+                if "replacesAuto" in spec:
+                    comp["replacesAuto"] = bool(spec["replacesAuto"])
+                if spec.get("critVariantOf"):
+                    comp["critVariantOf"] = spec["critVariantOf"]
+                    # The crit variant is flagged alt by extraction, which keeps
+                    # it out of the normal per-auto sum. It is consumed through
+                    # its partner instead, so the flag stays.
+                if spec.get("ratioOverride") is not None:
+                    for ratio in comp.get("ratios") or []:
+                        ratio["pct"] = spec["ratioOverride"]
+                applied += 1
+    return applied
+
+
 def _apply_formula_corrections(formulas: dict) -> int:
     """Fold data/formula_corrections.json into the formulas.
 
@@ -195,6 +238,7 @@ def _apply_formula_corrections(formulas: dict) -> int:
 _apply_recovered_conditions(FORMULAS)
 # Before the formula corrections, matching the exporter's order.
 _apply_cooldown_corrections(FORMULAS)
+_apply_auto_replacement(FORMULAS)
 _apply_formula_corrections(FORMULAS)
 # Combos are overlaid from champion_combos.json, the same source the exported
 # engine.json uses, so the Python and browser engines open with the same
@@ -1308,13 +1352,24 @@ def cooldown_relief(name: str) -> tuple[float, str]:
     return 0.0, ""
 
 
-def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, comp_dmg, per_auto_share=None):
+def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, comp_dmg, per_auto_share=None, name=""):
     """One auto-attack's damage, split by type (physical / magic / true).
 
     Pre-doubleShot, pre-count: the caller scales by uptime and multiplies. Kept
     in one place so both rotation paths decompose autos identically.
     """
-    a_phys = st["ad"] * crit_ev * phys_m * giant
+    # How much of the normal attack is REPLACED by a kit component rather than
+    # added to. Graves' shotgun IS his attack, so charging a 100% AD auto and
+    # then his 144% AD passive on top was a phantom extra swing on every hit:
+    # 2.44x AD measured where the tooltip says 1.44x. Scaled by the share and
+    # not dropped outright, because Nocturne replaces one auto every twelve
+    # seconds and Renekton one per cast, not all of them.
+    _replaced = 0.0
+    for _c, _s in per_auto_comps:
+        if _c.get("replacesAuto"):
+            _replaced += per_auto_share(_s) if per_auto_share is not None else 1.0
+    _replaced = min(1.0, _replaced)
+    a_phys = st["ad"] * crit_ev * phys_m * giant * (1 - _replaced)
     a_phys += st["onHitPhys"] * phys_m
     a_phys += (st["onHitPctCurrentHp"] * target["hp"] * 0.7
                + st["onHitPctMaxHp"] * target["hp"]) * phys_m
@@ -1325,7 +1380,8 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
         cleave = st["cleaveFlat"] + st["cleavePctBonusHp"] * st["bonusHp"]
         a_phys += cleave * min(1.0, (1.0 / CLEAVE_EVERY) / max(st["as"], 0.1)) * phys_m
     a_magic = st["onHitMagic"] * magic_m
-    k_phys, k_magic, k_true = _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+    k_phys, k_magic, k_true = _kit_per_auto(st, per_auto_comps, comp_dmg,
+                                            per_auto_share, name)
     return a_phys + k_phys, a_magic + k_magic, k_true
 
 
@@ -1424,7 +1480,7 @@ def damage_metric(name: str) -> str:
     return _METRIC_CACHE[name]
 
 
-def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None):
+def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None, name=""):
     """The KIT's own on-hit components, split by type.
 
     Gwen's Thousand Cuts and Skip 'n Slash are on-hit effects the champion
@@ -1444,7 +1500,22 @@ def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None):
                 and all(r.get("stat") in ("ad", "bonusAd")
                         for r in comp.get("ratios") or [])):
             continue
-        cd = comp_dmg(comp, 3) / max(int(_rank_val(comp.get("hits", 1), 3) or 1), 1)
+        def _per_hit(c):
+            return comp_dmg(c, 3) / max(int(_rank_val(c.get("hits", 1), 3) or 1), 1)
+
+        cd = _per_hit(comp)
+        # A component with a CRIT VARIANT is charged at the build's crit rate
+        # against its non-critical partner. Graves is the only kit in the
+        # roster shaped this way: his shotgun fires 4 bullets for 144% AD
+        # normally and 6 for 280% on a crit, and the crit line is flagged alt,
+        # so it was filtered out and crit never touched his real attack.
+        if name:
+            _sibs = ((FORMULAS.get(name, {}) or {}).get("abilities", {})
+                     .get(_slot, {}) or {}).get("damage") or []
+            _cv = next((x for x in _sibs
+                        if x.get("critVariantOf") == comp.get("name")), None)
+            if _cv is not None:
+                cd = (1 - st["crit"]) * cd + st["crit"] * _per_hit(_cv)
         if per_auto_share is not None:
             cd *= per_auto_share(_slot)
         typ = comp["type"]
@@ -1745,7 +1816,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             return 1.0
         a_phys, a_magic, a_true = _auto_split(st, target, phys_m, magic_m, giant,
                                               crit_ev, per_auto_comps, comp_dmg,
-                                              per_auto_share)
+                                              per_auto_share, name)
         dsm = st.get("doubleShotMult", 1.0)
         auto = (a_phys + a_magic + a_true) * dsm * n_autos
         add_t("physical", a_phys * dsm * n_autos)
@@ -1758,7 +1829,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         # `total`: it is returned as bolt_dmg so callers can measure a
         # multi-target fight without corrupting the single-target one.
         if st["extraBolts"] and st["extraBoltAdPct"]:
-            _kit_b = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+            _kit_b = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share, name)
                       if repeats_on_hit(name) else None)
             _bp, _bm, _bt = _on_hit_bundle(st, target, phys_m, magic_m, _kit_b)
             _per_bolt = (st["extraBoltAdPct"] / 100.0 * st["ad"] * crit_ev * phys_m
@@ -1779,7 +1850,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             total += d
             auto_dmg += d
             if st["extraOnHitApplications"]:
-                _kit = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+                _kit = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share, name)
                         if repeats_on_hit(name) else None)
                 _ep, _em, _et = _on_hit_bundle(st, target, phys_m, magic_m, _kit)
                 _mult = st["extraOnHitApplications"] * procs
@@ -1874,7 +1945,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         return 1.0
     a_phys, a_magic, a_true = _auto_split(st, target, phys_m, magic_m, giant,
                                           crit_ev, per_auto_comps, comp_dmg,
-                                          per_auto_share)
+                                          per_auto_share, name)
     dsm = st.get("doubleShotMult", 1.0)
     d_autos = (a_phys + a_magic + a_true) * dsm * n_autos
     add_t("physical", a_phys * dsm * n_autos)
@@ -1885,7 +1956,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     # need it for the same reason spellblade lives in both: whichever one a
     # champion takes has to produce the same accounting.
     if st["extraBolts"] and st["extraBoltAdPct"]:
-        _kit_b = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+        _kit_b = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share, name)
                   if repeats_on_hit(name) else None)
         _bp, _bm, _bt = _on_hit_bundle(st, target, phys_m, magic_m, _kit_b)
         _per_bolt = (st["extraBoltAdPct"] / 100.0 * st["ad"] * crit_ev * phys_m
@@ -1908,7 +1979,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         total += d
         auto_dmg += d
         if st["extraOnHitApplications"]:
-            _kit = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share)
+            _kit = (_kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share, name)
                     if repeats_on_hit(name) else None)
             _ep, _em, _et = _on_hit_bundle(st, target, phys_m, magic_m, _kit)
             _mult = st["extraOnHitApplications"] * procs

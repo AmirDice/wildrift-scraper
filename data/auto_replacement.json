@@ -1,0 +1,120 @@
+{
+  "_note": "Which per-auto damage components REPLACE the basic attack rather than adding to it. An overlay, so a re-extraction cannot lose it, and folded in by scripts/export_engine_data.py and web/fight_engine.py.",
+  "_why": "The engine charged a normal 100% AD auto AND the kit's per-auto component on top of it. For a champion whose passive IS the attack -- Graves' shotgun, Zeri's burst -- that is a phantom extra attack on every swing. Measured on a bare Graves at 0% crit: the engine produced 2.44x AD where the tooltip says 1.44x, a 69% over-count. Flagged components are charged INSTEAD of the auto, in proportion to how often they actually fire, so the base term is scaled by (1 - replaced share) rather than being dropped outright: Nocturne's Umbra Blades replaces one auto every twelve seconds, not all of them.",
+  "_provenance": "Each verdict below is read off the champion's own tooltip in data/champions_wr.json, and where the tooltip could not settle it, off the League of Legends Wiki's Wild Rift data templates. The reasoning is recorded per champion because 'replaces' versus 'adds' is not recoverable from the numbers alone.",
+  "_schema": "champions[name].abilities[slot] = {empowerLimit: int, components[componentName]: {replacesAuto, critVariantOf, ratioOverride, reason}}",
+  "champions": {
+    "Graves": {
+      "abilities": {
+        "P": {
+          "components": {
+            "Passive Auto (non-critical)": {
+              "replacesAuto": true,
+              "reason": "'12 Gauge: Attacks fire 4 bullets. Units hit take 72% AD physical damage +24% for additional bullets.' That sentence describes what an attack IS, not a bonus on one: 72 + 24 + 24 + 24 = 144% AD is the whole auto. The existence of a separate critical-strike line at 280% AD only makes sense if these are totals."
+            },
+            "Passive Auto (critical)": {
+              "critVariantOf": "Passive Auto (non-critical)",
+              "reason": "'Critical strikes fire 6 bullets, 130% damage each and increase each bullet's damage by 30%' = 130 + 30 x 5 = 280% AD. Charged at the build's crit RATE against the non-critical variant, so crit finally scales Graves' actual attack. It was flagged alt and filtered out entirely, which left crit worth 1.43x on his auto where the game says 1.94x."
+            }
+          }
+        }
+      }
+    },
+    "Zeri": {
+      "abilities": {
+        "P": {
+          "components": {
+            "Living Battery": {
+              "replacesAuto": true,
+              "reason": "'Living Battery: Fires a burst of 6 rounds in the target direction, dealing 13-21 (+105-125% AD) physical damage to the first enemy hit.' Her basic attack IS the burst; there is no separate normal auto underneath it."
+            }
+          }
+        }
+      }
+    },
+    "Nocturne": {
+      "abilities": {
+        "P": {
+          "components": {
+            "Umbra Blades": {
+              "replacesAuto": true,
+              "reason": "'Every 12 seconds, Nocturne's next attack is empowered to strike the target and nearby enemies for 70 (120% AD) physical damage.' The empowered attack deals 120% AD; it is not 100% plus 120%. Only the empowered auto is replaced, which the share already handles."
+            }
+          },
+          "empowerLimit": 1,
+          "_why_empower_limit": "'Every 12 seconds, Nocturne's next attack is empowered' -- one attack, and the 12s gate is not otherwise modelled."
+        }
+      }
+    },
+    "Renekton": {
+      "abilities": {
+        "2": {
+          "components": {
+            "Ruthless Predator": {
+              "replacesAuto": true,
+              "reason": "'Empowers the next attack to strike twice, stunning for 0.75 seconds and dealing 20/60/100/140 (+150% AD) physical damage.' The stated figure is what the empowered attack deals in total across both strikes."
+            }
+          },
+          "empowerLimit": 1,
+          "_why_empower_limit": "'Empowers the NEXT ATTACK to strike twice' -- one attack per cast."
+        }
+      }
+    },
+    "Blitzcrank": {
+      "abilities": {
+        "3": {
+          "components": {
+            "Power Fist": {
+              "replacesAuto": true,
+              "reason": "NOT bonus damage. The Wild Rift data template gives 'gain 50 bonus attack range and critically strike' with 'Critical Damage: 180/200/220/240%'. It is a critical strike with a modified multiplier, so 180% AD is 180% OF the attack, not 180% on top of it."
+            }
+          },
+          "empowerLimit": 1,
+          "_why_empower_limit": "'Empowers his next attack to critically strike' -- one attack per cast."
+        }
+      }
+    },
+    "Shyvana": {
+      "abilities": {
+        "1": {
+          "components": {
+            "Twin Bite First Hit": {
+              "replacesAuto": true,
+              "reason": "'Empowers Shyvana's next attack to strike twice, dealing 58 (100% AD) and 12 (20-80% AD) physical damage respectively.' The FIRST hit at 100% AD is the normal attack restated, so adding it to the base auto counted the same swing twice. The second hit is the genuine bonus and is left alone."
+            }
+          },
+          "empowerLimit": 1,
+          "_why_empower_limit": "'Empowers Shyvana's next attack to strike twice' -- one attack per cast."
+        }
+      }
+    },
+    "Volibear": {
+      "abilities": {
+        "1": {
+          "components": {
+            "Thundering Smash Proc": {
+              "replacesAuto": false,
+              "reason": "CORRECT AS IT STANDS, recorded so it is not 'fixed' later. 'Volibear's next Attack deals 15/40/65/90 (+100% bonus AD) physical damage and Stuns the target.' The ratio is on BONUS attack damage and reads as damage added to the attack, not as the attack's total."
+            }
+          },
+          "empowerLimit": 1,
+          "_why_empower_limit": "'Volibear's NEXT Attack deals ... and Stuns the target' -- one attack per cast."
+        }
+      }
+    },
+    "Master Yi": {
+      "abilities": {
+        "P": {
+          "components": {
+            "Double Strike": {
+              "replacesAuto": false,
+              "ratioOverride": 50,
+              "reason": "A genuine bonus, but the VALUE was wrong. The Wild Rift data template reads 'Master Yi's next basic attack is empowered to consume the stacks and strike twice, the second strike dealing 50% AD physical damage'. Extraction stored 150% AD, three times the real figure. The first strike is the normal auto and is already counted."
+            }
+          }
+        }
+      }
+    }
+  },
+  "_why_empower_limit": "perAutoShare returns 1 -- every auto -- unless the ability declares an empowerLimit, and that limit is recovered by a regex looking for 'empowers the next THREE attacks'. An ability that empowers 'the next attack', singular, has no word for the regex to read, so it matched nothing and the empowered swing was applied to EVERY auto in the fight. Stated explicitly here instead. The engines already prefer an explicit empowerLimit over the regex, so nothing in them had to change for this."
+}
