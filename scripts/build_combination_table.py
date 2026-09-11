@@ -5,10 +5,20 @@ model then picks from measured options using the player's settings. This
 generates the measurement half.
 
 Why this shape:
-  * The pool is the champion's ladder items PLUS the items the engine rates
-    highest on its own. Ladder-only would cap the system at what top players
-    have already adopted; adding engine picks lets it propose something they
-    have not, which is the point of measuring rather than copying.
+  * The pool is supplied, not computed. This used to be the champion's ladder
+    items plus the eight the ENGINE rated highest on its own, on the reasoning
+    that ladder-only caps the system at what top players already adopted. That
+    reasoning is sound and the implementation was not: the engine nominated by
+    single-item marginal value, which is the measurement already tested and
+    rejected (mean Spearman rho +0.19 over 18 champions, INVERTING for Ashe
+    -0.47, Jinx -0.43, Jax -0.35, Malphite -0.33). Those nominations filled the
+    top of the table with builds nobody plays, and real builds fell to #1366
+    for Ashe. Measured 2026-08-19: engine-nominated pools produced 3 holders
+    across 10 champions, model-nominated pools 8 across 3.
+
+    So the pool now comes from --pool or --llm-pool, and ladder-only is the
+    default. --engine-extras still exists to reproduce the old behaviour, and
+    says what it is.
   * Every combination is scored on ALL THREE axes (burst, sustained,
     durability) at a full build and at an early 3-item state, because "early
     game" and "one-shot" in the player's settings have to map onto different
@@ -101,10 +111,63 @@ def real_builds(champ):
     return out
 
 
-def build_pool(champ, runes):
-    """Ladder items plus the engine's own top picks. Returns (pool, extras)."""
-    ladder = [i["slug"] for i in (LADDER.get(champ) or {}).get("items") or []
-              if i["slug"] in RAW and not is_boots(i["slug"])]
+def ladder_pool(champ):
+    return [i["slug"] for i in (LADDER.get(champ) or {}).get("items") or []
+            if i["slug"] in RAW and not is_boots(i["slug"])]
+
+
+def llm_nominations(champ):
+    """The items the MODEL puts forward, read from its own candidateItemScores.
+
+    This is the half of the hybrid the model is good at. It picks candidates
+    from kit reasoning; the engine then ranks combinations of them, which is
+    the half the engine is good at.
+    """
+    import os
+    import re
+    import subprocess
+    env = dict(os.environ)
+    try:
+        text = (ROOT / "web-next" / ".env.local").read_text(encoding="utf-8")
+        for var in ("GEMINI_API_KEY", "ADVISOR_MODEL", "ADVISOR_MODEL_PREMIUM"):
+            m = re.search(rf'{var}="?([^"\n]+)"?', text)
+            if m:
+                env[var] = m.group(1)
+    except Exception:
+        pass
+    role = fe.CHAMP_ROLE.get(champ) or "Mid"
+    proc = subprocess.run(
+        [sys.executable, "-m", "web.build_advisor", "--champion", champ, "--role", role],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=400, cwd=str(ROOT), env=env)
+    if proc.returncode:
+        return []
+    try:
+        data = json.loads(proc.stdout)
+    except Exception:
+        return []
+    return [row["item"] for row in (data.get("candidateItemScores") or [])
+            if row.get("item") in RAW and not is_boots(row["item"])]
+
+
+def build_pool(champ, runes, source="ladder", supplied=None):
+    """The item pool to enumerate over. Returns (pool, added).
+
+    `source` is "ladder" (default), "llm" (the model nominates), "engine" (the
+    REJECTED marginal-value method, kept only to reproduce old output), or
+    "supplied" with an explicit slug list.
+    """
+    ladder = ladder_pool(champ)
+    if source == "supplied":
+        extra = [s for s in (supplied or []) if s in RAW and not is_boots(s)]
+        added = [s for s in extra if s not in ladder]
+        return list(dict.fromkeys(ladder + extra)), added
+    if source == "llm":
+        nominated = llm_nominations(champ)
+        added = [s for s in nominated if s not in ladder]
+        return ladder + added, added
+    if source != "engine":
+        return ladder, []
     key = metric_key(champ)
     base = ladder[:2] or completed_pool()[:1]
     scored = []
@@ -122,16 +185,19 @@ def build_pool(champ, runes):
         scored.append((slug, (after - before) / before if before else 0.0))
     scored.sort(key=lambda r: -r[1])
     extras = [s for s, _v in scored[:ENGINE_EXTRAS]]
+    print("  WARNING: --engine-extras nominates by single-item marginal value, "
+          "the method measured to invert for marksmen and tanks. See the module "
+          "docstring.", file=sys.stderr)
     return ladder + extras, extras
 
 
-def run(champ, want_block=False):
+def run(champ, want_block=False, source="ladder", supplied=None):
     rec = LADDER.get(champ) or {}
     runes = [k["name"] for k in (rec.get("keystones") or [])[:1]]
     runes += [m["name"] for m in (rec.get("minors") or [])[:4]]
     metric = fe.damage_metric(champ)
     key = metric_key(champ)
-    pool, extras = build_pool(champ, runes)
+    pool, extras = build_pool(champ, runes, source=source, supplied=supplied)
     humans = real_builds(champ)
 
     rows = []
@@ -176,9 +242,12 @@ def run(champ, want_block=False):
     print(bar)
     print(f"{champ}  |  class {fe.CHAMP_CLASS.get(champ)}  |  ranked on "
           f"fight_score({RANK_VARIANT})  |  damage axis {metric.upper()} ({key})")
-    print(f"pool: {len(pool)} items = {len(pool) - len(extras)} ladder + "
-          f"{len(extras)} added by the engine on merit")
-    print(f"  engine added: {', '.join(extras) or 'none'}")
+    added_by = {"llm": "nominated by the MODEL", "engine": "added by the ENGINE "
+                "(marginal value, known to invert)", "supplied": "supplied"}
+    print(f"pool: {len(pool)} items = {len(pool) - len(extras)} ladder"
+          + (f" + {len(extras)} {added_by.get(source, source)}" if extras else ""))
+    if extras:
+        print(f"  added: {', '.join(extras)}")
     print(f"legal 5-item combinations scored: {len(rows)}   "
           f"captured human builds available: {len(humans)}")
     print(bar)
@@ -290,12 +359,24 @@ def main():
     ap.add_argument("--champions", default="Gwen,Diana,Ekko")
     ap.add_argument("--block", action="store_true",
                     help="print the prompt block the model would receive")
+    ap.add_argument("--pool", default="",
+                    help="comma-separated item slugs to add to the ladder pool")
+    ap.add_argument("--llm-pool", action="store_true",
+                    help="widen the pool with the MODEL's own candidateItemScores")
+    ap.add_argument("--engine-extras", action="store_true",
+                    help="REPRODUCES OLD BEHAVIOUR: widen with 8 items chosen by "
+                         "single-item marginal value, the method measured to invert "
+                         "for marksmen and tanks")
     args = ap.parse_args()
+    supplied = [s.strip() for s in args.pool.split(",") if s.strip()]
+    source = ("supplied" if supplied else
+              "llm" if args.llm_pool else
+              "engine" if args.engine_extras else "ladder")
     for champ in [c.strip() for c in args.champions.split(",") if c.strip()]:
         if champ not in fe.CHAMPS:
             print(f"{champ}: not in roster")
             continue
-        run(champ, want_block=args.block)
+        run(champ, want_block=args.block, source=source, supplied=supplied)
     return 0
 
 

@@ -2311,6 +2311,11 @@ def _support_weight(variant: str, name: str) -> float:
     return 0.0
 
 
+# Effective health past which durability stops paying. Swept, not derived;
+# see durability_term. Deliberately separate from REF_SURV, which is also
+# the reference fight length for the "surv" scorecard row.
+REF_DURABILITY_CUT = 14000.0
+
 def durability_term(ehp: float, sustain: float) -> float:
     """Survivability, as a SATURATING term rather than a linear one.
 
@@ -2329,30 +2334,54 @@ def durability_term(ehp: float, sustain: float) -> float:
     which is once per fight, several conditional, all of which the effective
     health number treats as permanently present and additive.
 
-    What replaces it is minimum sufficient durability: convert effective health
-    into SECONDS ALIVE under fire, and stop paying for seconds beyond the
-    reference fight. Surviving the fight is worth everything; surviving it twice
-    over is worth no more than surviving it once, so the remaining score has to
-    be won with damage or utility. Both constants already existed --
-    _INCOMING_DPS["bruiser"] is the reference attacker and REF_SURV is the
-    reference fight length.
+    What replaces it is minimum sufficient durability: stop paying for effective
+    health beyond what the reference fight demands. Surviving the fight is worth
+    everything; surviving it twice over is worth no more than surviving it once,
+    so the remaining score has to be won with damage or utility.
 
-    MEASURED, against the only signal available (win rate carries no
-    correlation with build choice, so "real top-50 builds rank well" is
-    evidence rather than proof). Median rank of a captured human build:
+    WHERE THE CUT SITS, and why it is not REF_SURV.
 
-        Malphite   #4783 -> #1053     Ornn    #4115 -> #2039
-        Graves     #613  -> #767      Ashe    #2166 -> #2043
-        Jinx       #2801 -> #2803     Ekko    #20   -> #24
+    The first version expressed the cut as REF_SURV seconds against the
+    _INCOMING_DPS["bruiser"] reference attacker, which works out at 3,900
+    effective health. That is below the squishiest build in the game: measured
+    over the wide pool at level 15, the 5th-percentile time to die is 6.2s for
+    Ezreal and 21.7s for Ornn, so NOTHING ever failed the threshold and this
+    function returned exactly 1.0 for every legal five-item build. The
+    defensive 40% of fight_score was a constant that cancelled out of every
+    comparison, and ranking was decided entirely by damage. Sterak's Gage added
+    +3,653 effective health to a Darius build and moved its score by 0.0.
 
-    Tanks improve enormously, carries are unchanged within noise, and the top
-    Malphite build becomes Amaranth's, Frozen Heart, Iceborn, Sunfire and
-    Zeke's: four of the five items real Malphite players most often build.
+    So the cut is now its own constant, swept rather than derived. Median
+    percentile of a captured top-50 build over 20 champions, wide pool, lower
+    is better:
+
+        linear   3.9k    6k     8k    10k    12k    14k    17k    20k
+         38.8%  33.4%  35.2%  34.6%  33.3%  33.3%  32.6%  37.0%  39.1%
+
+    14,000 is a real minimum, not a plateau. The rise after it is tanks being
+    over-rewarded again (Ornn 34.6% -> 73.0%, Amumu 14.6% -> 79.0%). It also
+    matches a hand-set per-class threshold (Tank 6s / Bruiser 30s / rest 12s)
+    to the decimal, with one number instead of seven, which is why there is no
+    class knob here.
+
+    It is deliberately NOT REF_SURV. That constant is also the reference fight
+    length for the "surv" scorecard row, and moving it would silently move an
+    unrelated number.
+
+    At this cut the term finally discriminates instead of saturating:
+
+        Riven 0.47-1.00   Malphite 0.75-1.00   Ahri 0.32-0.44   Ashe 0.30-0.32
+
+    KNOWN LIMIT. Bruisers are not fixed by this. Darius' real builds sit at the
+    86th percentile here against the 15th under the old linear term, because
+    effective health is the wrong outcome to measure for a champion whose value
+    is what he accomplishes WHILE surviving rather than the surviving itself.
+    That wants a damage-before-death term alongside this one, not another
+    coefficient on top of it.
 
     The plateau above the threshold is deliberate, not an oversight.
     """
-    ttd = (ehp + 0.5 * sustain) / _INCOMING_DPS["bruiser"]
-    return min(1.0, ttd / REF_SURV)
+    return min(1.0, (ehp + 0.5 * sustain) / REF_DURABILITY_CUT)
 
 
 def fight_score(m: dict, variant: str, name: str = "",

@@ -41,6 +41,10 @@ LADDER = json.loads(
 CAPTURES = ROOT / "data" / "captures_archive"
 MIN_GAMES = 15
 TOP_BUILDS = 6
+# The variant fight_score is asked for. "standard" is the neutral 60/40
+# blend, the same one scripts/build_combination_table.py ranks on, so the
+# two tools cannot disagree about what "best" means.
+RANK_VARIANT = "standard"
 DEFAULT = "Ahri,Ashe,Diana,Gwen,Nami,Ekko,Jinx,Riven"
 
 
@@ -190,27 +194,57 @@ def run(champ, with_extras=False, llm_pool=False):
         build = list(combo)
         if hard_exclusive_violation(build):
             continue
-        scored.append((frozenset(build), build,
-                       fe.metrics(champ, build, runes, 15, fast=True)[key]))
-    scored.sort(key=lambda r: -r[2])
+        m = fe.metrics(champ, build, runes, 15, fast=True)
+        scored.append((frozenset(build), build, m[key],
+                       fe.fight_score(m, RANK_VARIANT, champ)))
+    # RANK ON fight_score, not the single damage axis.
+    #
+    # Until 2026-09-11 this script ranked on metric_key(champ) alone, and for a
+    # durability champion that key IS "ehp": effective health maximised with no
+    # damage term whatsoever. That is precisely the failure durability_term()
+    # was added to fix -- ranking a tank on ehp alone rebuilds the four-stacked-
+    # lifeline-shields Malphite build that motivated it. Any re-measurement on
+    # the old axis would be measuring the old engine.
+    #
+    # The single axis is still computed and reported beside it, so the two
+    # rankings can be COMPARED rather than quietly swapped.
+    scored.sort(key=lambda r: -r[3])
+    by_axis = sorted(scored, key=lambda r: -r[2])
 
     people = captured(champ)
     sample_avg = sum(p[1] for p in people) / len(people) if people else 0.0
+
+    def human_ranks(order):
+        """Where the captured top-50 builds land under `order`, best first."""
+        pos = {ks: i + 1 for i, row in enumerate(order) for ks in (row[0],)}
+        return sorted(pos[p[3]] for p in people if p[3] in pos)
 
     print("")
     print("=" * 90)
     src = (f"{len(pool) - len(extras)} ladder + {len(extras)} {added_by}"
            if extras else "ladder only")
-    print(f"{champ}  |  {key}  |  {len(scored)} legal builds ({src})  |  "
-          f"{len(people)} captured players ({MIN_GAMES}+ games)")
+    print(f"{champ}  |  fight_score({RANK_VARIANT})  |  {len(scored)} legal builds "
+          f"({src})  |  {len(people)} captured players ({MIN_GAMES}+ games)")
     print(f"whole-sample average win rate: {sample_avg:.1f}%")
+    # The headline comparison: do the builds real players hold rank BETTER under
+    # fight_score than under the single damage axis this script used to rank on?
+    fs_ranks, ax_ranks = human_ranks(scored), human_ranks(by_axis)
+    if fs_ranks:
+        import statistics as _st
+        print(f"captured builds inside this pool: {len(fs_ranks)}")
+        print(f"  under fight_score   best #{fs_ranks[0]:<6} "
+              f"median #{int(_st.median(fs_ranks)):<6} of {len(scored)}")
+        print(f"  under {key:<13} best #{ax_ranks[0]:<6} "
+              f"median #{int(_st.median(ax_ranks)):<6} of {len(scored)}")
+    else:
+        print("no captured build is reachable from this pool")
     print("=" * 90)
 
     any_hit = False
-    for i, (key_set, build, score) in enumerate(scored[:TOP_BUILDS], 1):
+    for i, (key_set, build, axis_v, score) in enumerate(scored[:TOP_BUILDS], 1):
         runners = [p for p in people if p[3] == key_set]
         label = " + ".join(s.split("-")[0][:11] for s in build)
-        print(f"\n  ENGINE #{i}  {key}={score:.0f}")
+        print(f"\n  ENGINE #{i}  fight_score={score:.1f}  ({key}={axis_v:.0f})")
         print(f"    {label}")
         if not runners:
             print("    no captured player runs this exact five")
@@ -226,10 +260,11 @@ def run(champ, with_extras=False, llm_pool=False):
         print("\n  none of the engine's top builds is held by a captured player")
     if llm_pick:
         picked = frozenset(x for x in llm_pick if x in RAW and not is_boots(x))
-        at = next((i for i, (ks, _b, _v) in enumerate(scored, 1) if ks == picked), None)
+        at = next((i for i, row in enumerate(scored, 1) if row[0] == picked), None)
         where = ("#" + str(at)) if at else "outside this pool"
         print("")
-        print(f"  the model's OWN five ranks {where} of {len(scored)} on {key}:")
+        print(f"  the model's OWN five ranks {where} of {len(scored)} "
+              f"on fight_score({RANK_VARIANT}):")
         print(f"    {', '.join(llm_pick)}")
         runners = [p for p in people if p[3] == picked]
         if runners:
@@ -260,7 +295,7 @@ def main():
             continue
         # One line per champion: how the players on the engine's top builds did
         # against everyone else captured on that champion.
-        top_sets = [s for s, _b, _v in res["scored"][:TOP_BUILDS]]
+        top_sets = [row[0] for row in res["scored"][:TOP_BUILDS]]
         on_top = [p for p in res["people"] if p[3] in top_sets]
         others = [p for p in res["people"] if p[3] not in top_sets]
         if on_top and others:

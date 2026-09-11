@@ -1826,6 +1826,8 @@ const CLASS_PRESET: Record<string, string> = {
   Fighter: "bruiser", Tank: "tank", Support: "default",
 };
 const REF_TTK = 4, REF_SURV = 6, REF_HEAL = 1500;
+/** Effective health past which durability stops paying. See durabilityTerm. */
+const REF_DURABILITY_CUT = 14000;
 
 /**
  * Survivability, as a SATURATING term rather than a linear one.
@@ -1835,17 +1837,22 @@ const REF_TTK = 4, REF_SURV = 6, REF_HEAL = 1500;
  * was four lifeline shields stacked, each once per fight, several conditional,
  * all treated as permanently present and additive.
  *
- * What replaces it is minimum sufficient durability: convert effective health
- * into SECONDS ALIVE under fire and stop paying for seconds beyond the
- * reference fight. Surviving the fight is worth everything; surviving it twice
- * over is worth no more, so the rest of the score has to be won with damage.
- * The plateau above the threshold is deliberate.
+ * What replaces it is minimum sufficient durability: stop paying for effective
+ * health beyond what the reference fight demands. Surviving the fight is worth
+ * everything; surviving it twice over is worth no more, so the rest of the
+ * score has to be won with damage. The plateau above the cut is deliberate.
  *
- * Mirrors fight_engine.durability_term, which carries the measurements.
+ * The cut is its OWN constant rather than REF_SURV seconds against a reference
+ * attacker. Expressed that way it came to 3,900 effective health, below the
+ * squishiest build in the game, so this returned exactly 1.0 for every legal
+ * five-item build and the defensive 40% of the score cancelled out of every
+ * comparison. 14,000 was picked by sweeping it against captured top-50 builds.
+ *
+ * Mirrors fight_engine.durability_term, which carries the measurements and the
+ * known limit for bruisers.
  */
-function durabilityTerm(ehp: number, sustain: number, incomingDps = INCOMING_DPS.bruiser): number {
-  const ttd = (ehp + 0.5 * sustain) / incomingDps;
-  return Math.min(1, ttd / REF_SURV);
+function durabilityTerm(ehp: number, sustain: number): number {
+  return Math.min(1, (ehp + 0.5 * sustain) / REF_DURABILITY_CUT);
 }
 
 export function winScore(a: BuildAnalysis, preset = "default", champClass = ""): { score: number; preset: string } {
