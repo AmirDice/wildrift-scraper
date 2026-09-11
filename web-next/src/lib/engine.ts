@@ -254,7 +254,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
     healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
-    runeAllyHealPerSec: 0, allyShield: 0,
+    runeAllyHealPerSec: 0, allyShield: 0, autoBonusPct: 0,
     extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0, itemHaste: 0,
     // Carried BY THIS BUILD and applied to whoever it is fighting.
     grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
@@ -806,6 +806,21 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   if (st.critDamagePerExcessCrit && st.crit > 1)
     st.critMult += st.critDamagePerExcessCrit * (st.crit - 1);
   st.crit = Math.min(st.crit, 1);
+  // A kit whose CRIT CHANCE is a damage stat and whose critical strikes deal
+  // no extra damage. Only Ashe: Frost Shot reads "bonus physical damage equal
+  // to 10% (+0-75% based on critical strike chance) of the attack's damage"
+  // and "critical strikes do not deal any additional damage". So crit chance
+  // buys her damage and crit DAMAGE buys her nothing, which is the exact
+  // opposite of every other marksman. critMult is set to 1 rather than
+  // zeroing st.crit, because her attacks really do critically strike -- they
+  // just pay out as the bonus above, and on-crit item clauses still fire.
+  const autoBonus = (DATA.formulas[name] as any)?.autoBonus;
+  if (autoBonus) {
+    const ie = itemSlugs.includes("infinity-edge") ? (autoBonus.ieBonusPct ?? 0) : 0;
+    st.autoBonusPct = (autoBonus.basePct ?? 0)
+      + ((autoBonus.perCritPct ?? 0) + ie) * st.crit;
+    if (autoBonus.critDealsNoBonus) st.critMult = 1;
+  }
   // Ingenious Hunter shortens ITEM cooldowns, and it is a RUNE, so it is only
   // known after the item loop that created these procs. Applied here, and only
   // to procs whose source is an item: a keystone's cooldown is not item
@@ -1181,7 +1196,10 @@ export function rotation(name: string, st: any, target: any, window: number,
       if ((comp as any).replacesAuto) replacedShare += perAutoShare(comp, nAutos);
     }
     replacedShare = Math.min(1, replacedShare);
-    let aPhys = st.ad * critEv * physM * giant * (1 - replacedShare);
+    // Frost Shot's bonus is a share OF THE ATTACK, so it multiplies the auto
+    // rather than adding a flat AD term. 0 for every champion but Ashe.
+    const autoBonus = 1 + (st.autoBonusPct ?? 0) / 100;
+    let aPhys = st.ad * critEv * physM * giant * (1 - replacedShare) * autoBonus;
     aPhys += st.onHitPhys * physM;
     aPhys += (st.onHitPctCurrentHp * target.hp * 0.7 + st.onHitPctMaxHp * target.hp) * physM;
     aPhys += st.runeOnHitFlat * physM;
@@ -1252,7 +1270,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       if (!(slot in f)) continue;
       const comps = (f[slot].damage ?? []).filter((c: any) => !c.alt && c.when !== "per auto");
       for (const c of (f[slot].damage ?? []))
-        if (!c.alt && c.when === "per auto") addPerAuto(c, slot);
+        if (!c.alt && c.when === "per auto" && !c.dropped) addPerAuto(c, slot);
       const rank = slot === "4" ? 2 : 3;
       const ampA = 1 + st.abilityAmp;
       for (const c of comps) {
@@ -1348,7 +1366,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     const ab = f[slot];
     const comps = (ab.damage ?? []).filter((c: any) => !c.alt);
     const dmgComps = comps.filter((c: any) => c.when !== "per auto");
-    for (const c of comps) if (c.when === "per auto") addPerAuto(c, slot);
+    for (const c of comps) if (c.when === "per auto" && !c.dropped) addPerAuto(c, slot);
     // An ability whose damage is ALL per-auto still gets cast -- that is what
     // empowers the attacks. Skipping it here left Xin Zhao's Q out of the cast
     // log entirely, so the combo said "press Q" and the fight reported W, E and
@@ -1356,7 +1374,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     // when a real cast count was available.
     // Slot P excluded: a passive is not cast, and listing "Passive x5" in the
     // abilities used reads as an action the player took.
-    const empowersAutos = slot !== "P" && comps.some((c: any) => c.when === "per auto");
+    const empowersAutos = slot !== "P" && comps.some((c: any) => c.when === "per auto" && !c.dropped);
     if ((!dmgComps.length && !empowersAutos) || castBudget <= 0) continue;
     const cds = ab.cooldowns ?? [];
     const rank = rankOf[slot] ?? 3;

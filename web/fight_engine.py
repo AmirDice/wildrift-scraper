@@ -170,6 +170,16 @@ def _apply_auto_replacement(formulas: dict) -> int:
         record = formulas.get(name)
         if not record:
             continue
+        # Champion-level: a fabricated mechanic to remove, and the auto-damage
+        # model for a kit whose crit CHANCE is a damage stat (Ashe).
+        drop = set(entry.get("dropMechanics") or [])
+        if drop:
+            record["mechanics"] = [m for m in (record.get("mechanics") or [])
+                                   if m.get("kind") not in drop]
+            applied += 1
+        if entry.get("autoBonus"):
+            record["autoBonus"] = entry["autoBonus"]
+            applied += 1
         for slot, fix in (entry.get("abilities") or {}).items():
             ability = (record.get("abilities") or {}).get(slot)
             if not ability:
@@ -188,6 +198,8 @@ def _apply_auto_replacement(formulas: dict) -> int:
                     # The crit variant is flagged alt by extraction, which keeps
                     # it out of the normal per-auto sum. It is consumed through
                     # its partner instead, so the flag stays.
+                if spec.get("dropComponent"):
+                    comp["dropped"] = True
                 if spec.get("ratioOverride") is not None:
                     for ratio in comp.get("ratios") or []:
                         ratio["pct"] = spec["ratioOverride"]
@@ -606,7 +618,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
-        "targetSlow": 0.0, "itemHaste": 0.0,
+        "targetSlow": 0.0, "itemHaste": 0.0, "autoBonusPct": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "procs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
@@ -1167,6 +1179,20 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["as"] = st["reloadMag"] / (st["reloadMag"] / st["as"] + reload_s)
     st["crit"] = min(st["crit"], 1.0)
 
+    # A kit whose CRIT CHANCE is a damage stat and whose critical strikes deal
+    # no extra damage. Only Ashe: Frost Shot reads "bonus physical damage equal
+    # to 10% (+0-75% based on critical strike chance) of the attack's damage"
+    # and "critical strikes do not deal any additional damage". critMult is set
+    # to 1 rather than zeroing crit, because her attacks really do critically
+    # strike -- they just pay out as the bonus, and on-crit item clauses fire.
+    _auto_bonus = (FORMULAS.get(name, {}) or {}).get("autoBonus")
+    if _auto_bonus:
+        _ie = _auto_bonus.get("ieBonusPct", 0) if "infinity-edge" in item_slugs else 0
+        st["autoBonusPct"] = (_auto_bonus.get("basePct", 0)
+                              + (_auto_bonus.get("perCritPct", 0) + _ie) * st["crit"])
+        if _auto_bonus.get("critDealsNoBonus"):
+            st["critMult"] = 1.0
+
     # Ingenious Hunter shortens ITEM cooldowns, and it is a RUNE, so it is only
     # known after the item loop that created these procs. Applied here, and only
     # to procs whose source is an item: a keystone's cooldown is not item
@@ -1369,7 +1395,10 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
         if _c.get("replacesAuto"):
             _replaced += per_auto_share(_s) if per_auto_share is not None else 1.0
     _replaced = min(1.0, _replaced)
-    a_phys = st["ad"] * crit_ev * phys_m * giant * (1 - _replaced)
+    # Frost Shot's bonus is a share OF THE ATTACK, so it multiplies the auto
+    # rather than adding a flat AD term. 0 for every champion but Ashe.
+    a_phys = (st["ad"] * crit_ev * phys_m * giant * (1 - _replaced)
+              * (1 + st.get("autoBonusPct", 0.0) / 100.0))
     a_phys += st["onHitPhys"] * phys_m
     a_phys += (st["onHitPctCurrentHp"] * target["hp"] * 0.7
                + st["onHitPctMaxHp"] * target["hp"]) * phys_m
@@ -1778,7 +1807,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             comps = [c for c in f[slot].get("damage") or []
                      if not c.get("alt") and c.get("when") != "per auto"]
             per_auto_comps += [(c, slot) for c in f[slot].get("damage") or []
-                               if not c.get("alt") and c.get("when") == "per auto"
+                               if not c.get("alt") and c.get("when") == "per auto" and not c.get("dropped")
                                and (c, slot) not in per_auto_comps]
             rank = 2 if slot == "4" else 3
             amp_a = 1 + st["abilityAmp"]
@@ -1886,7 +1915,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     for slot, ab in sorted(f.items(), key=lambda kv: kv[0] != "4"):  # ult first
         comps = [c for c in ab.get("damage") or [] if not c.get("alt")]
         dmg_comps = [c for c in comps if c.get("when") != "per auto"]
-        per_auto_comps += [(c, slot) for c in comps if c.get("when") == "per auto"]
+        per_auto_comps += [(c, slot) for c in comps if c.get("when") == "per auto" and not c.get("dropped")]
         if not dmg_comps or cast_budget <= 0:
             continue
         cds = ab.get("cooldowns") or []

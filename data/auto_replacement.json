@@ -114,7 +114,31 @@
           }
         }
       }
+    },
+    "Ashe": {
+      "dropMechanics": [
+        "multiShot"
+      ],
+      "_why_drop_mechanics": "Ashe does NOT have a multi-shot basic attack. Extraction invented 'multiShot: 5 shots x 40%', which the engine turned into a permanent 2.0x multiplier on every auto she throws -- and which then tripped the double-count guard and silently skipped her actual passive. Ranger's Focus is a temporary ability flurry and is already modelled as its own per-auto components on slot 1.",
+      "autoBonus": {
+        "basePct": 10,
+        "perCritPct": 75,
+        "ieBonusPct": 30,
+        "critDealsNoBonus": true,
+        "reason": "Frost Shot, from the League of Legends Wiki's Wild Rift data template: basic attacks deal bonus physical damage of '10% (+ 0%-75% (+ 0%-30%)) (based on critical strike chance) of the attack's damage', and 'critical strikes do not deal any additional damage' -- they increase the slow instead. So crit chance is a damage stat for Ashe and crit DAMAGE is not, which is the exact opposite of how every other marksman reads. The inner 0-30% is Infinity Edge's own clause and is applied only when Infinity Edge is in the build."
+      },
+      "abilities": {
+        "P": {
+          "components": {
+            "Frost Shot": {
+              "dropComponent": true,
+              "reason": "Extraction stored the passive as a flat '110% AD' per-auto component. It is not flat AD at all: it is a percentage OF THE ATTACK scaling with crit chance, which autoBonus above now carries. Left in place it would double-count the same passive."
+            }
+          }
+        }
+      }
     }
   },
-  "_why_empower_limit": "perAutoShare returns 1 -- every auto -- unless the ability declares an empowerLimit, and that limit is recovered by a regex looking for 'empowers the next THREE attacks'. An ability that empowers 'the next attack', singular, has no word for the regex to read, so it matched nothing and the empowered swing was applied to EVERY auto in the fight. Stated explicitly here instead. The engines already prefer an explicit empowerLimit over the regex, so nothing in them had to change for this."
+  "_why_empower_limit": "perAutoShare returns 1 -- every auto -- unless the ability declares an empowerLimit, and that limit is recovered by a regex looking for 'empowers the next THREE attacks'. An ability that empowers 'the next attack', singular, has no word for the regex to read, so it matched nothing and the empowered swing was applied to EVERY auto in the fight. Stated explicitly here instead. The engines already prefer an explicit empowerLimit over the regex, so nothing in them had to change for this.",
+  "_why_auto_bonus": "A champion whose CRIT CHANCE converts into flat bonus attack damage, and whose critical strikes therefore deal no extra damage. Only Ashe. Modelled as a multiplier on the attack plus a hard crit-damage disable, because that is literally what the tooltip describes."
 }

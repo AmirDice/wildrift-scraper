@@ -77,6 +77,16 @@ def apply_auto_replacement(formulas: dict) -> int:
         record = formulas.get(name)
         if not record:
             continue
+        # Champion-level: a fabricated mechanic to remove, and the auto-damage
+        # model for a kit whose crit CHANCE is a damage stat (Ashe).
+        drop = set(entry.get("dropMechanics") or [])
+        if drop:
+            record["mechanics"] = [m for m in (record.get("mechanics") or [])
+                                   if m.get("kind") not in drop]
+            applied += 1
+        if entry.get("autoBonus"):
+            record["autoBonus"] = entry["autoBonus"]
+            applied += 1
         for slot, fix in (entry.get("abilities") or {}).items():
             ability = (record.get("abilities") or {}).get(slot)
             if not ability:
@@ -95,6 +105,8 @@ def apply_auto_replacement(formulas: dict) -> int:
                     # The crit variant is flagged alt by extraction, which keeps
                     # it out of the normal per-auto sum. It is consumed through
                     # its partner instead, so the flag stays.
+                if spec.get("dropComponent"):
+                    comp["dropped"] = True
                 if spec.get("ratioOverride") is not None:
                     for ratio in comp.get("ratios") or []:
                         ratio["pct"] = spec["ratioOverride"]
