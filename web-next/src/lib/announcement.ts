@@ -40,3 +40,36 @@ export const ANNOUNCEMENT = {
   /** Pages the banner points at, so it does not appear on top of itself. */
   hideOn: ["/updates"],
 } as const;
+
+/**
+ * Dated record of changes worth telling a reader about.
+ *
+ * Newest first. This exists so a correction to the numbers is visible rather
+ * than silent: someone who screenshotted a damage figure last week and sees a
+ * different one today deserves to find out why in one click. Keep entries
+ * short, specific and honest about direction -- "was over-counting" reads as
+ * trustworthy, "improvements to our algorithm" does not.
+ */
+export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "11 September 2026",
+    title: "Basic attack damage corrected for nine champions",
+    body:
+      "The fight engine was charging a normal basic attack on top of kits whose "
+      + "passive IS the attack, so Graves' shotgun, Ashe's Frost Shot, Renekton's "
+      + "empowered strike and six others were counted roughly twice. Graves read "
+      + "2.44 times his attack damage per auto where the game says 1.44. Crit was "
+      + "affected in both directions: it never reached Graves' actual shotgun, and "
+      + "Ashe was being given critical strike damage she does not have. Build "
+      + "recommendations are unchanged, because those come from the model rather "
+      + "than the engine. The damage figures shown beside them are now accurate.",
+  },
+  {
+    date: "11 September 2026",
+    title: `Patch ${SKIPPED_PATCH} applied to items and abilities`,
+    body:
+      `Vi, Janna, Swain, Nautilus and Malphite, plus Eclipse, Unending Despair `
+      + `and Seeker's Armguard. Win rates stay on the ${WINRATE_PATCH} boards; see `
+      + `above for why.`,
+  },
+];

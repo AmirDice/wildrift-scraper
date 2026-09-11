@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Card } from "@/components/ui";
 import { NotifyForm } from "@/components/notify-form";
-import { NEXT_PATCH, SKIPPED_PATCH, WINRATE_PATCH } from "@/lib/announcement";
+import { CHANGELOG, NEXT_PATCH, SKIPPED_PATCH, WINRATE_PATCH } from "@/lib/announcement";
 import site from "@/data/site.json";
 import siteNa from "@/data/site_na.json";
 
@@ -141,6 +141,28 @@ export default function UpdatesPage() {
                 How the data is collected
               </Link>
             </div>
+          </Card>
+
+          <Card className="p-5">
+            <h2 className="text-base font-semibold text-text">What changed, and when</h2>
+            <p className="mt-2.5 text-sm leading-relaxed text-muted">
+              Corrections to the numbers are listed here rather than shipped quietly.
+              If a figure you remember has moved, this is why.
+            </p>
+            <ol className="mt-4 space-y-4">
+              {CHANGELOG.map((entry) => (
+                <li
+                  key={`${entry.date}-${entry.title}`}
+                  className="border-l-2 border-white/12 pl-4"
+                >
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-faint">
+                    {entry.date}
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold text-text">{entry.title}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{entry.body}</p>
+                </li>
+              ))}
+            </ol>
           </Card>
         </div>
 
