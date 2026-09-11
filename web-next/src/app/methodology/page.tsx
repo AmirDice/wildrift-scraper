@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { site } from "@/lib/data";
 import { Container, Card } from "@/components/ui";
 
@@ -109,6 +110,27 @@ export default function MethodologyPage() {
           window therefore grows a little each day as new data arrives. This section reads the
           Chinese Challenger ladder, which updates daily, while the tier list is built from
           European data, so the two are answering different questions on purpose.
+        </Section>
+
+        <Section title="How the build tools choose, and what they do not">
+          The Build Studio and the Counter Builder split the work between a language model
+          and a deterministic fight engine, and it is worth knowing which does what. The model
+          chooses the items and runes: it is given the champion&rsquo;s kit, the enemy team and
+          your playstyle, and the engine plays no part in that decision. The engine then does
+          the arithmetic. Every damage, survivability and time-to-kill figure shown beside a
+          build is simulated from the item and ability data on this site rather than asked of
+          the model, because a language model is not dependable with numbers. The split is
+          deliberate and it was measured: builds assembled from items the model nominates are
+          ones real top-50 players actually hold, while builds the engine assembles for itself
+          are often ones nobody plays. It also means the two halves fail independently. A
+          recommendation can be sensible while a figure beside it is wrong, and they are
+          corrected separately, so anything that moves is recorded on the{" "}
+          <Link href="/updates" className="font-semibold text-accent hover:underline">
+            site updates
+          </Link>{" "}
+          page. The engine is a damage calculator rather than a fight simulator: it does not
+          model dodging, kiting, held cooldowns or missed skillshots, and it will never tell
+          you who wins a real fight.
         </Section>
 
         <Section title="Updates">
