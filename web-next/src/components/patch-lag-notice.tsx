@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Freshness } from "@/lib/patch-freshness";
 
 /**
@@ -31,7 +32,14 @@ export function PatchLagNotice({
         on <span className="text-text">{collectedOn}</span>, {days} before {patch} went live, so
         any champion changed by it is still showing its pre-patch performance. Item and ability
         numbers elsewhere on the site are already on {patch}; only the win rates lag, and they
-        update on the next collection.
+        update on the next collection.{" "}
+        {/* "The next collection" carries a lot of weight in that sentence while a
+            patch is deliberately being skipped, so it links to the page that
+            says which patch that actually is. */}
+        <Link href="/updates" className="font-semibold text-gold hover:underline">
+          When that is
+        </Link>
+        .
       </p>
     </div>
   );

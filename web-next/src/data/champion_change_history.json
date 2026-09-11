@@ -1,6 +1,1604 @@
 {
   "schemaVersion": 1,
   "champions": {
+    "Vi": [
+      {
+        "patch": "0.5",
+        "publishedAt": "2020-10-10T23:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-0-5/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "In the previous patch, we issued a hotfix to cut down Camille’s high win rate at multiple levels of play. For reference, it lives here now.",
+        "changes": []
+      },
+      {
+        "patch": "1.0",
+        "publishedAt": "2020-10-23T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-0/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "In this patch, we’ll begin Wild Rift’s Regional Open Beta, and we also need your help testing some new champs hitting the Rift for a few days on the free-to-play rotation. For those of you who were previously stuck on the loading screen, we fixed a bug related to specific devices.",
+        "changes": []
+      },
+      {
+        "patch": "1.0",
+        "publishedAt": "2020-10-23T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-0/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an exploit with Guardian Angel allowing champs to be invincible",
+        "changes": []
+      },
+      {
+        "patch": "1.0",
+        "publishedAt": "2020-10-23T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-0/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed a crash on certain devices that caused crashes in the loading screen",
+        "changes": []
+      },
+      {
+        "patch": "2.1",
+        "publishedAt": "2021-02-01T15:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed a bug where reaching account level 10 would remove the Suggested Activities menu.",
+        "changes": []
+      },
+      {
+        "patch": "2.2",
+        "publishedAt": "2021-03-28T14:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "We’re testing 120Hz support for a select few high-end devices. Your device may experience overheating or performance issues, so use carefully!",
+        "changes": []
+      },
+      {
+        "patch": "2.2a",
+        "publishedAt": "2021-04-20T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage dealt: 0% → 10%"
+          }
+        ]
+      },
+      {
+        "patch": "2.2a",
+        "publishedAt": "2021-04-20T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "Vi has been a popular and reliable pick in high-level games, but on the strong side in regular play. These changes allow her to keep her reliable gank patterns, but at a slightly higher risk.",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Vi has been a popular and reliable pick in high-level games, but on the strong side in regular play. These changes allow her to keep her reliable gank patterns, but at a slightly higher risk.\nBase Stats\nArmor: 35 → 30\n(Ult) Assault and Battery\nCooldown: 85/65/45s → 95/75/55s"
+          }
+        ]
+      },
+      {
+        "patch": "2.2a",
+        "publishedAt": "2021-04-20T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "We’re slowly rolling out 120fps mode support to high-end devices. The 120fps setting is still in testing—if you experience performance issues, please switch back to a fully supported frame rate.",
+        "changes": []
+      },
+      {
+        "patch": "2.2c",
+        "publishedAt": "2021-05-12T02:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2c/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage dealt: 10% → 20%"
+          }
+        ]
+      },
+      {
+        "patch": "2.3",
+        "publishedAt": "2021-06-02T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed a bug where Kha’Zix would damage himself when upgrading Taste Their Fear after evolving it",
+        "changes": []
+      },
+      {
+        "patch": "2.3",
+        "publishedAt": "2021-06-02T00:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Improved video stuttering issue for some low end devices",
+        "changes": []
+      },
+      {
+        "patch": "2.5",
+        "publishedAt": "2021-10-14T20:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Wukong is clearing the jungle too quickly, so we are removing his ability to amplify his damage against large monsters for his clear. Note: The tooltip incorrectly stated that this passive could stack against any unit, while it only stacked on champions and large monsters.",
+        "changes": []
+      },
+      {
+        "patch": "2.5",
+        "publishedAt": "2021-10-14T20:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "For melee champions, tapping the attack button has increased sensitivity to choosing enemy champions outside of your melee attack’s range. This change will mean that melee champions will need to rely on the minion button more often to farm in lane. We’ll be keeping an eye on your feedback around this change and will offer a setting if enough players feel like it is hard to adapt, but we expect this tuning to resolve more issues that it creates as it will make it way less likely for a melee champion to randomly attack a passerby minion while chasing down an enemy.",
+        "changes": []
+      },
+      {
+        "patch": "3.1a",
+        "publishedAt": "2022-04-08T01:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-1a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Plitover’s finest fighter has been lagging behind other junglers in recent patches. We’d like to see her pack more of a punch in her early game ganks and skirmishes, so we’re beefing up her base Attack Damage.",
+        "changes": [
+          {
+            "ability": "base_stats",
+            "text": "Base Attack Damage: 58 → 64"
+          }
+        ]
+      },
+      {
+        "patch": "3.3",
+        "publishedAt": "2022-07-13T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "95/75/55s → 80/65/50s"
+          }
+        ]
+      },
+      {
+        "patch": "3.5a",
+        "publishedAt": "2022-11-30T21:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-5a/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Bug Fix: Fixed an issue where Twisted Fate could gain permanent vision of opponents after using (Ultimate) Destiny",
+        "changes": []
+      },
+      {
+        "patch": "4.0",
+        "publishedAt": "2023-01-11T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Live Morellonomicon has been incorrectly giving 75 Ability Power when it was intended to be 70, and it could also use a small nerf, so we’re going to move it back to its intended value.",
+        "changes": []
+      },
+      {
+        "patch": "4.1b",
+        "publishedAt": "2023-04-19T20:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "While Vi’s “punch first, ask questions while punching” attitude makes her a fearsome foe to encounter while you’re in the jungle alone, she lacks that same fighting power in teamfights. So, we’re giving her a buff to her cooldown speed which will provide her more displacement possibilities in team fights.",
+        "changes": [
+          {
+            "ability": "Vault Breaker",
+            "text": "Cooldown: 12/11/10/9s → 10/9/8/7s"
+          }
+        ]
+      },
+      {
+        "patch": "4.2a",
+        "publishedAt": "2023-06-08T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2a/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Our previous adjustments seemed to have squashed this bug, so we’re back to give him some more damage to help with his jungle clears and ganks.",
+        "changes": []
+      },
+      {
+        "patch": "4.3",
+        "publishedAt": "2023-07-18T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-3/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed directions of base Scryer’s Blooms, attack from any angle will only make them grant vision of a corresponding jungle.",
+        "changes": []
+      },
+      {
+        "patch": "4.4",
+        "publishedAt": "2023-10-24T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "In previous patches, there were some issues with damage from champions to structures. The first was that champions with hybrid damage could not deal damage with part of their Attack Damage or Ability Power to turrets. The second issue was from champions with Ability Power items dealing damage to structures. The amount of damage they could deal, especially in the later stages of the game, was much higher than Attack Damage champs. So, we’ve made adjustments to address these problems.",
+        "changes": []
+      },
+      {
+        "patch": "4.4a",
+        "publishedAt": "2023-11-09T20:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "After patch 4.4, Vi seems to be getting outscaled by her opponents. We want her to really pack a punch and shut down her opponents more effectively.",
+        "changes": [
+          {
+            "ability": "base_stats",
+            "text": "Armor: 30 → 34"
+          },
+          {
+            "ability": "Assault and Battery",
+            "text": "Cooldown: 80/65/50s → 70/60/50s"
+          }
+        ]
+      },
+      {
+        "patch": "5.0",
+        "publishedAt": "2024-01-17T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "(3) Excessive Force\n200 → 225"
+          }
+        ]
+      },
+      {
+        "patch": "5.1c",
+        "publishedAt": "2024-06-05T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-1c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "All that armor on her isn’t just for looks! It should mean something, so we’re buffing Vi’s survivability to make sure she can go toe to toe with any enemy Junglers that come her way.",
+        "changes": [
+          {
+            "ability": "",
+            "text": "Base Armor: 34 → 40"
+          },
+          {
+            "ability": "BLAST SHIELD",
+            "text": "Cooldown: 12/11/10/9s → 10/9/8/7s"
+          }
+        ]
+      },
+      {
+        "patch": "5.2",
+        "publishedAt": "2024-07-17T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-52/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed the issue where Vi's damage with Relentless Force fails to generate the Armor reduction passive bonus that should have triggered when followed immediately with an attack.",
+        "changes": []
+      },
+      {
+        "patch": "5.2",
+        "publishedAt": "2024-07-17T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-52/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed the issue where Kalista and her Oathsworn are unable to mark targets they hit if they triggered the Guardian Angel's revival effect prior to landing their hits.",
+        "changes": []
+      },
+      {
+        "patch": "5.2a",
+        "publishedAt": "2024-07-31T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-2a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Vi has not been performing up to par, especially in the early game. These changes will make sure she packs a punch!",
+        "changes": [
+          {
+            "ability": "Denting Blows",
+            "text": "Damage: (4 + 0.2* per level + 0.03* bonus Attack Damage)% target's Maximum Health → (4 + 0.3* per level + 0.03* bonus Attack Damage)% target's Maximum Health"
+          },
+          {
+            "ability": "Vault Breaker",
+            "text": "Cooldown: 10/9/8/7s → 9/8/7/6s"
+          },
+          {
+            "ability": "Excessive Force",
+            "text": "Damage: 10/35/60/85 + 15% Attack Damage + 70% Ability Power → 20/45/70/95 + 15% Attack Damage + 70% Ability Power"
+          }
+        ]
+      },
+      {
+        "patch": "6.0",
+        "publishedAt": "2025-01-08T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Base Health: 650 → 690; Health per level: 105 → 112\nBase Armor: 40 → 46\nMagic Resist per level: 1.6 → 2"
+          }
+        ]
+      },
+      {
+        "patch": "6.1",
+        "publishedAt": "2025-04-16T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed the issue where Viego's possession of Yone becomes permanent if he is crowd controlled after casting Soul Unbound.",
+        "changes": []
+      },
+      {
+        "patch": "6.1b",
+        "publishedAt": "2025-05-21T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1b/",
+        "kind": "balance",
+        "scope": "Champion changes",
+        "modeOnly": false,
+        "summary": "Vi is another jungler that relies heavily on game pace. She is not performing to her expectations in early and mid games, so we’re boosting her accordingly.",
+        "changes": [
+          {
+            "ability": "Denting Blows",
+            "text": "Damage to maximum Health: 4.3%-8.5% + bonus 0.03% Attack Damage → 4.8%-9%+ bonus 0.03% Attack Damage"
+          },
+          {
+            "ability": "Vault Breaker",
+            "text": "Base damage: 55/90/125/160 to 110/180/250/320 → 60/95/130/165 to 120/190/260/330"
+          }
+        ]
+      },
+      {
+        "patch": "6.2c",
+        "publishedAt": "2025-08-08T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed a bug where obtaining Virtuous Cycle grants assists unconditionally.",
+        "changes": []
+      },
+      {
+        "patch": "6.2c",
+        "publishedAt": "2025-08-08T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed a bug where under high system load on certain devices, visual optimization caused projectile framerate drops.",
+        "changes": []
+      },
+      {
+        "patch": "6.2c",
+        "publishedAt": "2025-08-08T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an issue where Out-of-Combat Shield wouldn’t apply immediately after reviving.",
+        "changes": []
+      },
+      {
+        "patch": "6.2c",
+        "publishedAt": "2025-08-08T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an interaction between Stackosaurus Rex and Forbidden Evil that granted excessive stats when coupled.",
+        "changes": []
+      },
+      {
+        "patch": "6.2c",
+        "publishedAt": "2025-08-13T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c-1/",
+        "kind": "balance",
+        "scope": "Champion changes",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Relentless Force",
+            "text": "Charge time: 14/12/10/8 → 11/10/9/8"
+          },
+          {
+            "ability": "Cease and Desist",
+            "text": "Cooldown: 70/60/50s → 60/55/50s"
+          }
+        ]
+      },
+      {
+        "patch": "6.2k",
+        "publishedAt": "2025-10-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2k/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "This patch, Talon is swooping in with his claws even sharper than before as we’re giving his ultimate a little extra damage to help him be more of an assassin. We’ve also noticed that Olaf has been a little too hard to deal with in lane, so we’re adjusting some of his damage scaling, so he’s more in-line as a late-game champion. We’re also de-bugging the bug, Kha’Zix. We’ve nerfed his damage and increased his cooldowns, so that he stops evolving into such a menace on the Rift. Aurora’s early-game has been a little too strong, so we’re reducing some of her damage so that she doesn’t steamroll her foes in lane as much. And lastly, we’re slicing down some of Yone’s jungle prowess and tankiness.",
+        "changes": []
+      },
+      {
+        "patch": "6.3c",
+        "publishedAt": "2025-11-05T10:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed a bug where Radiant Virtue incorrectly appeared under the Magic Resistance category in the Shop’s Defense tab.",
+        "changes": []
+      },
+      {
+        "patch": "6.3c",
+        "publishedAt": "2025-11-05T10:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed a bug where Viego’s ultimate damage to the primary target was not amplified by Axiom Arcanist.",
+        "changes": []
+      },
+      {
+        "patch": "6.3c",
+        "publishedAt": "2025-11-05T10:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an issue where some AP items were not correctly providing the additional 7% Critical Rate.",
+        "changes": []
+      },
+      {
+        "patch": "7.0a",
+        "publishedAt": "2026-01-28T10:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-0a/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage Dealt: 120% → 110%"
+          }
+        ]
+      },
+      {
+        "patch": "7.1",
+        "publishedAt": "2026-04-07T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "As the balance environment has evolved, the rune system, having gone without a comprehensive update for a long time, has gradually revealed several issues. On one hand, rune setups have become increasingly rigid, where you will gravitate toward a small number of consistently reliable and broadly applicable options. This has led to a narrowing of build diversity, preventing the system’s intended strategic depth and flexibility from being fully realized. On the other hand, the overall structure of rune choices has become somewhat imbalanced: some rune paths underperform, some runes lack meaningful use cases, while certain combinations have become overly dominant due to concentrated power.",
+        "changes": []
+      },
+      {
+        "patch": "7.1f",
+        "publishedAt": "2026-05-27T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an issue where iOS devices could crash after multiple consecutive matches.",
+        "changes": []
+      },
+      {
+        "patch": "7.1f",
+        "publishedAt": "2026-05-27T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Improved device overheating issues.",
+        "changes": []
+      },
+      {
+        "patch": "7.1f",
+        "publishedAt": "2026-05-27T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Optimized in-game stuttering issues affecting some mid-to-high-end Android devices.",
+        "changes": []
+      },
+      {
+        "patch": "7.1f",
+        "publishedAt": "2026-05-27T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Optimized in-game stuttering issues affecting lower-end devices.",
+        "changes": []
+      },
+      {
+        "patch": "7.2",
+        "publishedAt": "2026-07-08T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fiddlesticks' Fear has been less consistent than intended. We've shortened the grace period on his first ability after he becomes visible and fixed an issue that could cause enemies to be Feared unexpectedly, making the effect more predictable for both Fiddlesticks and his opponents.",
+        "changes": []
+      },
+      {
+        "patch": "7.2",
+        "publishedAt": "2026-07-08T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an issue where using certain abilities while auto-pathing would interrupt auto-pathing for the following champions. We will continue monitoring and improving other champions with the same problem. Garen (1) & (2) abilities",
+        "changes": []
+      },
+      {
+        "patch": "7.2",
+        "publishedAt": "2026-07-08T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an issue where Fiddlesticks' passive could still apply Fear while visible or in combat.",
+        "changes": []
+      },
+      {
+        "patch": "7.2b",
+        "publishedAt": "2026-07-29T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2b/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an issue where the screen would not rotate automatically after entering the game on some devices.",
+        "changes": []
+      },
+      {
+        "patch": "7.2e",
+        "publishedAt": "2026-09-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-72e/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Vi has been a dominant force in the jungle for too long. We’re increasing the cooldown of her ultimate and reducing her follow up damage, giving opponents more room to respond and other junglers a better chance to keep pace with her.",
+        "changes": [
+          {
+            "ability": "Vault Breaker",
+            "text": "Minimum Damage Bonus Attack Damage Ratio: 80% Bonus Attack Damage → 60% Bonus Attack Damage\n Maximum Damage Bonus Attack Damage Ratio: 160% Bonus Attack Damage → 120% Bonus Attack Damage"
+          },
+          {
+            "ability": "Cease and Desist",
+            "text": "Cooldown: 60/55/50s → 80/70/60s"
+          }
+        ]
+      },
+      {
+        "patch": "7.2e",
+        "publishedAt": "2026-09-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-72e/",
+        "kind": "bugfix",
+        "scope": "Bug fixes",
+        "modeOnly": false,
+        "summary": "Fixed an issue where the Anvil Specialist Augment granted an incorrect number of Anvils when upgraded.",
+        "changes": []
+      }
+    ],
+    "Janna": [
+      {
+        "patch": "1.1",
+        "publishedAt": "2020-12-08T01:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-1/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "Janna has slowly fallen off, when her core fantasy should be intact as a highly mobile poke and protect champion. We’re putting the wind back in her sales by buffing up her (2) Zephyr and (3) Eye of the Storm.",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Janna has slowly fallen off, when her core fantasy should be intact as a highly mobile poke and protect champion. We’re putting the wind back in her sales by buffing up her (2) Zephyr and (3) Eye of the Storm.\nBASE STATS\nAttack Damage : 46 → 52\n(2) ZEPHYR\nDamage : 55/115/175/235 + 50% AP + 25% MS → 65/125/185/245 + 60% AP + 25% MS\n(3) EYE OF THE STORM\nBase shield : 80/130/180/230HP → 90/140/190/240HP\nCooldown : 16/14/12/10s → 13/12/11/10s"
+          }
+        ]
+      },
+      {
+        "patch": "2.3a",
+        "publishedAt": "2021-06-16T02:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3a/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "Janna has been performing too well when maxing Zephyr first. We are winding down its power so that it doesn’t blow away her other skills.",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Janna has been performing too well when maxing Zephyr first. We are winding down its power so that it doesn’t blow away her other skills.\n(2) Zephyr\nBase Damage: 65/125/185/245 → 55/105/155/205"
+          }
+        ]
+      },
+      {
+        "patch": "2.3c",
+        "publishedAt": "2021-07-14T01:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3c/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "Janna's last round of nerfs did a good job of knocking her off her windy throne, but she needs another bonk to her movement speed. She should still be able to use (2) Zephyr to harass her opponents, but she won't be zipping around as quickly to do so.",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Janna's last round of nerfs did a good job of knocking her off her windy throne, but she needs another bonk to her movement speed. She should still be able to use (2) Zephyr to harass her opponents, but she won't be zipping around as quickly to do so.\n(2) Zephyr\nBonus movement speed while on cooldown: 6/9/12/15% → 6/8/10/12%"
+          }
+        ]
+      },
+      {
+        "patch": "3.2c",
+        "publishedAt": "2022-06-28T23:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/dev/wild-rift-patch-notes-3-2c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "We’re amping up the speed of Janna’s Howling Gale and Zephyr abilities so that she can disrupt her foes with ease.",
+        "changes": [
+          {
+            "ability": "Howling Gale",
+            "text": "Time required for the whirlwind to reach its destination: 1.25s → 1s"
+          },
+          {
+            "ability": "Zephyr",
+            "text": "Projectile speed increased."
+          }
+        ]
+      },
+      {
+        "patch": "3.3",
+        "publishedAt": "2022-07-13T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "100/90/80s → 80/75/70s"
+          }
+        ]
+      },
+      {
+        "patch": "3.3b",
+        "publishedAt": "2022-08-17T22:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3b/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage received: 0% → 5%"
+          }
+        ]
+      },
+      {
+        "patch": "3.5",
+        "publishedAt": "2022-11-16T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-5/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "We’ve had our eye on Janna, and she has been overperforming in higher ranks, so the winds of change are coming. We’re hitting the scaling on Zephyr and the charge damage on Howling Gale, so that Janna can’t blow her foes away as easily.",
+        "changes": [
+          {
+            "ability": "Howling Gale",
+            "text": "Bonus damage per second charged: 20/25/30/35 + 15% Ability Power → 15/20/25/30 + 15% Ability Power"
+          },
+          {
+            "ability": "Zephyr",
+            "text": "Passive movement speed bonus: 6/8/10/12% → 6/7/8/9%"
+          }
+        ]
+      },
+      {
+        "patch": "4.1",
+        "publishedAt": "2023-03-15T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage dealt: 0% → +8%\nDamage received: 0% → -5%"
+          }
+        ]
+      },
+      {
+        "patch": "4.3d",
+        "publishedAt": "2023-10-11T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-3d/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Janna is The Storm’s Fury, and she harnesses the power of wind to support her teammates throughout the game. We felt there was some room to adjust some of her abilities to make her more supportive and lean into her strengths. We’ve reworked all of her abilities to make sure she is still that protective wind mage, while also increasing her survivability and flexibility, so that Janna is in it to “wind” it and playable in more situations.",
+        "changes": [
+          {
+            "ability": "Tailwind",
+            "text": "Bonus movement speed gained: 8% → 5%\n [REMOVED] Ally champions gain 8% movement speed bonus when moving towards Janna.\n [NEW] Nearby ally champions gain 5% movement speed bonus."
+          },
+          {
+            "ability": "Howling Gale",
+            "text": "Magic damage: 60/90/120/150+40% Ability Power → 60/100/140/180 + 50% Ability Power\n Time it takes for the storm to reach its destination: 1s → 0.5s\n [REMOVED] Damage from the storm, knockup effect and range depend on its charging time, reaching maximum potency at 3s.\n [NEW] Charging time for the storm is fixed as 0.75s. Howling Gale gains 1 charge every 12s to cast, with maximum 2 charging stacks."
+          },
+          {
+            "ability": "Zephyr",
+            "text": "Magic damage: 55/105/155/205 + 60% Ability Power +25% Bonus movement speed → 50/90/130/170+50% Ability Power + 20% Bonus movement speed\n Cooldown: 7.5/7/6.5/6s → 9/8.5/8/7.5s\n [REMOVED] Passive: After ability cooldown, Janna gains 6% bonus movement speed, dealing bonus magic damage when attacking the enemies.\n [REMOVED] Dealing damage and slowing down the chosen target for 2s.\n [NEW] Increasing Janna’s movement speed by 15%/20%/25%/30% for 2s.\n [NEW] Automatically searching 3 nearby allies or enemies. Janna will increase her ally champions movement speed by 15%/20%/25%/30%, or deal magic damage to the enemies."
+          },
+          {
+            "ability": "Eye Of The Storm",
+            "text": "Shield value: 90/140/190/240 + 80% Ability Power → 65/90/115/140 + 60% Ability Power\n [REMOVED] Janna provides a shield to an ally champion or turret that absorbs damage, the shield decays over 5s.\n [NEW] Janna now provides a shield that absorbs damage to herself and an ally champion with lowest health, if there is a turret nearby, the same shield will also be provided to the turret. The shield lasts for 3s without any decay."
+          },
+          {
+            "ability": "Monsoon",
+            "text": "Health regeneration per second: 100/150/200 + 50% Ability Power → 50/75/100 + 30% Ability Power\n [REMOVED] During the Monsoon, Janna needs to continuously channel it.\n [NEW] Janna can now move freely after casting the Monsoon."
+          }
+        ]
+      },
+      {
+        "patch": "4.4",
+        "publishedAt": "2023-10-24T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Movement speed: 335 → 340"
+          }
+        ]
+      },
+      {
+        "patch": "4.4a",
+        "publishedAt": "2023-11-09T20:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "After her rework, Janna has been maneuvering her allies across the Rift a little too well. We’ve adjusted her numbers to allow her opponents to catch up.",
+        "changes": [
+          {
+            "ability": "Zephyr",
+            "text": "Bonus movement speed: 15%/20%/25%/30% → 10%/15%/20%/25%"
+          },
+          {
+            "ability": "Eye Of The Storm",
+            "text": "Shield value: 65/90/115/140 + 60% Ability Power → 65/90/115/140 + 45% Ability Power"
+          }
+        ]
+      },
+      {
+        "patch": "5.0A",
+        "publishedAt": "2024-01-31T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0a/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Shield effect: 0% → -15%\nHealing effect: 0% → -15%"
+          }
+        ]
+      },
+      {
+        "patch": "5.3b",
+        "publishedAt": "2024-11-13T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-53b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Janna is a very safe support to play with. We’re increasing her cooldowns to increase your decision-making space when it comes to when to cast.",
+        "changes": [
+          {
+            "ability": "Howling Gale",
+            "text": "Charging time: full level 12s → full level 14s\n\n Damage: 60/100/140/180 + 50% Ability Power → 50/90/130/170 + 50% Ability Power"
+          },
+          {
+            "ability": "Eye of the Storm",
+            "text": "Cooldown: 13/12/11/10s → 16/14/12/10s"
+          }
+        ]
+      },
+      {
+        "patch": "6.0",
+        "publishedAt": "2025-01-08T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Base Health: 570 → 630; Health per level: 95 → 104\nBase Armor: 40 → 45\nMagic Resist per level: 0.8 → 1.2"
+          }
+        ]
+      },
+      {
+        "patch": "7.2e",
+        "publishedAt": "2026-09-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-72e/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Janna’s shields haven’t been providing enough protection, leaving her struggling both in lane and when supporting her team. We’re increasing her shield strength to help her better protect her allies throughout the game.",
+        "changes": [
+          {
+            "ability": "Eye of the Storm",
+            "text": "Shield Value: 65/90/115/140 + 45% Ability Power → 80/120/160/200 + 50% Ability Power"
+          }
+        ]
+      }
+    ],
+    "Swain": [
+      {
+        "patch": "4.2b",
+        "publishedAt": "2023-06-28T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Since arriving on the Rift, the Noxian Grand General has shown how strong in multiple lanes. We’re nerfing Swain's damage and survivability so that other champions don’t feel so helpless when they're up against this general and his ravens.",
+        "changes": [
+          {
+            "ability": "base_stats",
+            "text": "Armor per level: 5.5 → 5"
+          },
+          {
+            "ability": "Death's Hand",
+            "text": "Damage of each bolt after the first one: 15/25/35/45 + 8% Ability Power → 10/20/30/40 + 5% Ability Power"
+          },
+          {
+            "ability": "Demonic Ascension",
+            "text": "Heal per second: 15/27.5/40 + 15% Ability Power → 15/25/35 + 12% Ability Power"
+          }
+        ]
+      },
+      {
+        "patch": "4.4",
+        "publishedAt": "2023-10-24T19:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Movement speed: 340 → 345"
+          }
+        ]
+      },
+      {
+        "patch": "4.4b",
+        "publishedAt": "2023-11-22T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "For a Grand General, Swain sure hasn’t been making a Grand Impact. If you have ornithophobia, these changes might not be for you!",
+        "changes": [
+          {
+            "ability": "Ravenous Flock",
+            "text": "Max Health gained: 12 Health per stack of Soul Fragment → 16 Health per stack of Soul Fragment"
+          },
+          {
+            "ability": "Demonic Ascension",
+            "text": "Heal: 15/25/35 + 12% Ability Power per second → 15/25/35 + 15% Ability Power per second\n\n Damage: 20/40/60 + 10% Ability Power per second → 15/35/55 + 15% Ability Power per second"
+          }
+        ]
+      },
+      {
+        "patch": "5.0c",
+        "publishedAt": "2024-03-13T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0c/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage: 100% → 110%"
+          }
+        ]
+      },
+      {
+        "patch": "5.1b",
+        "publishedAt": "2024-05-15T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-1b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "We’re improving Swain’s base stats and damage so he can shine in both laning and team fights.",
+        "changes": [
+          {
+            "ability": "base_stats",
+            "text": "Base Magic Resist: 32 → 36\n\n Magic Resist per level: 1.5 → 2"
+          },
+          {
+            "ability": "Death's Hand",
+            "text": "Damage of the first bolts: 50/80/110/140+ 38% AP → 55/85/115/145 + 42% AP\n\n Damage of each subsequent bolt: 10/20/30/40 + 5% AP → 10/20/30/40 + 7% AP"
+          }
+        ]
+      },
+      {
+        "patch": "5.3a",
+        "publishedAt": "2024-10-30T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-3a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Swain has been needing a boost and these Ability Power ratio adjustments should help.",
+        "changes": [
+          {
+            "ability": "Death's Hand",
+            "text": "Damage dealt for each bonus eldritch bolts: 10/20/30/40 + 7% Ability Power → 10/20/30/40 + 12% Ability Power"
+          },
+          {
+            "ability": "Demonic Ascension",
+            "text": "Damage dealt per second: 15/35/55 + 15% Ability Power → 15/35/55 + 20% Ability Power\n\n Health regeneration per second: 15/25/35 + 15% Ability Power → 15/25/35 + 20% Ability Power"
+          }
+        ]
+      },
+      {
+        "patch": "6.0",
+        "publishedAt": "2025-01-08T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Base Health: 600 → 630; Health per level: 104 → 112\nBase Armor: 31 → 37"
+          }
+        ]
+      },
+      {
+        "patch": "6.0c",
+        "publishedAt": "2025-02-19T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "As a mage who likes to get right into the fights; Swain should have both durability and sustained damage. To ensure he has both, we’re strengthening his late game survivability, which will allow him to deal continuous damage more effectively during his ultimate.",
+        "changes": [
+          {
+            "ability": "Base Stats",
+            "text": "Health per level: 112 → 120"
+          },
+          {
+            "ability": "Death's Hand",
+            "text": "Base damage of the first bolt: 55/85/115/145 → 55/90/125/160"
+          },
+          {
+            "ability": "Demonic Ascension",
+            "text": "Base regeneration per second: 15/25/35 → 20/30/40"
+          }
+        ]
+      },
+      {
+        "patch": "6.1",
+        "publishedAt": "2025-04-16T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Base Movement Speed: 345 → 355"
+          }
+        ]
+      },
+      {
+        "patch": "6.2d",
+        "publishedAt": "2025-08-21T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2d-adventure-modes/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage taken: 110% → 100%"
+          }
+        ]
+      },
+      {
+        "patch": "6.2h",
+        "publishedAt": "2025-09-17T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2h/",
+        "kind": "balance",
+        "scope": "Champion changes",
+        "modeOnly": false,
+        "summary": "Swain’s ultimate has always lacked a little extra oomf, so we’ve decided to let him contribute more in extended fights beyond simply tanking damage. At the same time, we’ve reworked parts of how his ability feels and numbers to ensure his power remains consistent across different builds, while still leaving room for counterplay. Please note that Swain’s update will not be live until September 25, 00:01 UTC.",
+        "changes": [
+          {
+            "ability": "Ravenous Flock",
+            "text": "Each stack of Soul Fragments heal for: 3/4/5/6% Maximum Health (Increases with level 1/5/9/13) → (2/2.5/3/3.5 + 0.5% Ability Power)% Maximum Health (Increases with level 1/5/9/13)"
+          },
+          {
+            "ability": "Vision of Empire",
+            "text": "Explosion timer: 1s → 1.35s"
+          },
+          {
+            "ability": "Demonic Ascension",
+            "text": "Charges: Once → Infinite\n\n [New] Cooldown between two Demonflare: 6s\n\n Damage per second: 15/35/55 + 20% Ability Power → 10/25/40 + 15%Ability Power"
+          }
+        ]
+      },
+      {
+        "patch": "6.2k",
+        "publishedAt": "2025-10-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2k/",
+        "kind": "balance",
+        "scope": "Champion changes",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Base Stats",
+            "text": "Base Health: 630 → 660\n\n Base Armor: 37 → 40"
+          },
+          {
+            "ability": "Ravenous Flock",
+            "text": "Soul Fragments stack Healing value: (2/2.5/3/3.5 (Level 1/5/9/13) + 0.5% Ability Power) % Maximum Health → (3/3.5/4/4.5 (Level 1/5/9/13) + 0.5% Ability Power) % Maximum Health"
+          }
+        ]
+      },
+      {
+        "patch": "6.3d",
+        "publishedAt": "2025-11-19T10:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3d/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage dealt: 100% → 110%, Healing: 100% → 110%"
+          }
+        ]
+      },
+      {
+        "patch": "7.1b",
+        "publishedAt": "2026-04-15T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Swain has strong sustained combat power in skirmishes, especially after acquiring mage items, making him difficult to counter. We’re reducing the scaling on his ultimate ability so he’s less oppressive to deal with.",
+        "changes": [
+          {
+            "ability": "Demonic Ascension",
+            "text": "Re-cast Ability Power Ratio: 60% → 45%"
+          }
+        ]
+      },
+      {
+        "patch": "7.2e",
+        "publishedAt": "2026-09-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-72e/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Swain’s ultimate has been scaling too well with Ability Power, allowing full Ability Power builds to deal high sustained damage while providing significant healing in teamfights. We’re slightly reducing its Ability Power scaling to shift some power away from these builds and reinforce his identity as a durable mage.",
+        "changes": [
+          {
+            "ability": "Demonic Ascension",
+            "text": "Damage per second: 10/25/40 + 15% Ability Power → 15/25/35 + 6% Ability Power\n Healing per second: 20/30/40 + 20% Ability Power → 15/30/45 + 10% Ability Power"
+          }
+        ]
+      }
+    ],
+    "Nautilus": [
+      {
+        "patch": "3.3",
+        "publishedAt": "2022-07-13T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus hooks aren’t quite sinking as well as we’d hoped, so we’re making some adjustments to the hitbox to make it a bit easier to drag enemies down. While we’re at it, we’re buffing up some of the damage he deals to monsters to get his clear up to a healthier speed.",
+        "changes": [
+          {
+            "ability": "DREDGE LINE",
+            "text": "Width against units: 1→ 1.3\n Width against wall: 0.4 → 0.2"
+          },
+          {
+            "ability": "TITAN'S WRATH",
+            "text": "Monster damage ratio: 150%→ 200%"
+          }
+        ]
+      },
+      {
+        "patch": "3.3b",
+        "publishedAt": "2022-08-17T22:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Since his release, The Titan of the Depths has been performing naut too hot, so we’re giving Nautilus an array of buffs that will allow him to make impactful plays more consistently throughout the course of a game.",
+        "changes": [
+          {
+            "ability": "base_stats",
+            "text": "Movement Speed: 325 → 330"
+          },
+          {
+            "ability": "DREDGE LINE",
+            "text": "Cooldown: 13/12/11/10s → 12/11/10/9s\n Projectile speed: 16 → 18"
+          },
+          {
+            "ability": "DEPTH CHARGE",
+            "text": "Acceleration start time: 2.5s → 1s\n Cooldown: 70/60/50s → 60/50/40s"
+          }
+        ]
+      },
+      {
+        "patch": "3.4a",
+        "publishedAt": "2022-09-28T21:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus hasn’t made the impact that we’d like to see in higher levels of play, so we’re increasing the duration of the stun provided by his passive and reducing the cooldown of Dredge Line so you can hook, line and sink your foes a few more times over the course of your games.",
+        "changes": [
+          {
+            "ability": "STAGGERING BLOW",
+            "text": "Root Duration: 0.75s - 1.5s (based on level) → 1s - 1.75s (based on level)"
+          },
+          {
+            "ability": "DREDGE LINE",
+            "text": "Cooldown: Reduced from 12/11/10/9s → 11/10/9/8s"
+          }
+        ]
+      },
+      {
+        "patch": "4.0a",
+        "publishedAt": "2023-02-01T21:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus win rates have been floating up under the radar, so we’re anchoring it back down with some Dredge Line nerfs.",
+        "changes": [
+          {
+            "ability": "DREDGE LINE",
+            "text": "Cooldown: 11/10/9/8s → 12/11/10/9s\n Base damage: 70/130/190/250 → 60/120/180/240"
+          }
+        ]
+      },
+      {
+        "patch": "4.0c",
+        "publishedAt": "2023-03-01T21:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus has been struggling to sink his foes and make impact in the Jungle so we’re increasing the damage he deals to monsters with his Riptide ability.",
+        "changes": [
+          {
+            "ability": "RIPTIDE",
+            "text": "Ability Power ratio: 30% → 50%\n Damage against monsters: 150% → 200%"
+          }
+        ]
+      },
+      {
+        "patch": "4.1a",
+        "publishedAt": "2023-03-29T20:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "After our recent buffs to Nautilus, he has been dominating in the Jungle. We’re putting our anchor down, and taking back some of those previous adjustments.",
+        "changes": [
+          {
+            "ability": "RIPTIDE",
+            "text": "Damage to monsters: 200% → 175%"
+          }
+        ]
+      },
+      {
+        "patch": "4.4c",
+        "publishedAt": "2023-12-06T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "For someone entirely encased in metal, Nautilus felt a bit too squishy for our taste. So we’ve armed him with rock-solid buffs that will carry him through fights!",
+        "changes": [
+          {
+            "ability": "TITAN'S WRATH",
+            "text": "Cooldown: Max level 12s → Max level 11s\n\n Shield: 55/65/75/85 + 10/11/12/13% maximum Health → 55/65/75/85 + 11/12/13/14% maximum Health"
+          }
+        ]
+      },
+      {
+        "patch": "5.0",
+        "publishedAt": "2024-01-17T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "(2) Titan's Wrath\n200 → 225"
+          }
+        ]
+      },
+      {
+        "patch": "5.0c",
+        "publishedAt": "2024-03-13T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus hasn’t been as tanky as he should be. These changes will let him soak up all the damage he needs to for his carries to shine.",
+        "changes": [
+          {
+            "ability": "TITAN'S WRATH",
+            "text": "Shield value: 55/65/75/85 + 11/12/13/14% maximum Health → 55/65/75/85 + 12/13/14/15% maximum Health\n\n Damage: 40/50/60/70 + 40% Ability Power → 50/60/70/80 + 40% Ability Power"
+          }
+        ]
+      },
+      {
+        "patch": "5.2a",
+        "publishedAt": "2024-07-31T16:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-2a/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus has been a terror to deal with when stacking mage items. We’re tweaking his ratios to ensure his anchor is not dealing massive damage.",
+        "changes": [
+          {
+            "ability": "Dredge Line",
+            "text": "Damage: 60/120/180/240 + 90% Ability Power → 60/120/180/240 + 80% Ability Power"
+          },
+          {
+            "ability": "Depth Charge",
+            "text": "Cooldown: 60/50/40s → 70/60/50s\n\n Damage to the main target: 150/275/400 + 80% Ability Power → 150/275/400 + 70% Ability Power"
+          }
+        ]
+      },
+      {
+        "patch": "5.3b",
+        "publishedAt": "2024-11-13T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-53b/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus has been overly reliant on items to be tanky. We’re boosting his Base Stats so he can soak damage for his team even early on.",
+        "changes": [
+          {
+            "ability": "Base Stats",
+            "text": "Basic Attack Damage: 58 → 62"
+          },
+          {
+            "ability": "Dredge Line",
+            "text": "Damage: 60/120/180/240 + 80% Ability Power → 70/130/190/250 + 75% Ability Power"
+          },
+          {
+            "ability": "Titan's Wrath",
+            "text": "Shield: 55/65/75/85+12/13/14/15% maximum health → 65/75/85/95+13/14/15/16% maximum health"
+          }
+        ]
+      },
+      {
+        "patch": "6.0",
+        "publishedAt": "2025-01-08T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Base Health: 650 → 720; Health per level: 115 → 120\nBase Armor: 40 → 46\nMagic Resist per level: 1.6 → 2"
+          }
+        ]
+      },
+      {
+        "patch": "6.1d",
+        "publishedAt": "2025-06-11T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1d/",
+        "kind": "balance",
+        "scope": "",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Base Stats",
+            "text": "Health per level: 120 → 128\n\n Armor per level: 4.3 → 5"
+          },
+          {
+            "ability": "Dredge Line",
+            "text": "Base damage: 70/130/190/250 → 90/150/210/270"
+          },
+          {
+            "ability": "Riptide",
+            "text": "Base damage of each wave: 60/100/140/180 → 70/110/150/190"
+          }
+        ]
+      },
+      {
+        "patch": "7.1h",
+        "publishedAt": "2026-06-24T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1h/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus has been making waves in the jungle, combining top-tier clear speeds with impressive durability. His bonus damage against monsters lets him clear camps too efficiently, and the shield on his second ability provides more resilience than we'd like without requiring tank itemization. We're trimming both to keep him in line with the rest of the jungle roster.",
+        "changes": [
+          {
+            "ability": "Titan's Wrath",
+            "text": "Damage ratio against jungle monsters: 200% → 125%\n Shield based max Health ratio: 13%/14%/15%/16% → 9%/10%/11%/12%"
+          },
+          {
+            "ability": "Riptide",
+            "text": "Damage ratio against jungle monsters: 175% → 125%"
+          }
+        ]
+      },
+      {
+        "patch": "7.2e",
+        "publishedAt": "2026-09-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-72e/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Nautilus has been struggling to stay afloat after his last round of nerfs, leaving him without the durability he needs to dive into the enemy team and initiate fights. We’re increasing the base shield and maximum Health ratio of his second s, helping him soak up more damage and better fulfill his role as a tanky initiator.",
+        "changes": [
+          {
+            "ability": "Titan's Wrath",
+            "text": "Shield Value: 65/75/85/95 + 9/10/11/12% Maximum Health → 70/80/90/100 + 11/12/13/14% Maximum Health"
+          }
+        ]
+      }
+    ],
+    "Malphite": [
+      {
+        "patch": "2.3b",
+        "publishedAt": "2021-06-30T02:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3b/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage received: -15% → -5%"
+          }
+        ]
+      },
+      {
+        "patch": "3.3",
+        "publishedAt": "2022-07-13T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "85/75/65s → 75/70/65s"
+          }
+        ]
+      },
+      {
+        "patch": "3.3",
+        "publishedAt": "2022-07-13T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage dealt: 0% → -5%"
+          }
+        ]
+      },
+      {
+        "patch": "3.4c",
+        "publishedAt": "2022-11-02T21:30:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Malphite is rock solid for most players, but they’ve been struggling in higher ranks. So we’re giving this rock some extra minerals to boost its Passive’s cooldown and Seismic Shard’s speed, while also adjusting their general durability to compensate.",
+        "changes": [
+          {
+            "ability": "Granite Shield",
+            "text": "Cooldown: 8s → 8/7/6s (levels 1/5/11)\n 10% of Maximum health → 9% Maximum health"
+          },
+          {
+            "ability": "Seismic Shard",
+            "text": "Projectile speed: 10 → 12"
+          }
+        ]
+      },
+      {
+        "patch": "4.0",
+        "publishedAt": "2023-01-11T21:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0/",
+        "kind": "balance",
+        "scope": "Mode-specific changes",
+        "modeOnly": true,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Damage dealt: 0% → -5%"
+          }
+        ]
+      },
+      {
+        "patch": "4.4d",
+        "publishedAt": "2023-12-27T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4d/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "AP Malphite is a hit with you guys, but what about tank Malphite? We’ve tweaked his scaling a bit so both get the love they deserve.",
+        "changes": [
+          {
+            "ability": "Granite Shield",
+            "text": "Shield: 9% maximum Health → 11% maximum Health"
+          },
+          {
+            "ability": "Thunderclap",
+            "text": "Passive armor bonus: 15/20/25/30% → 20/25/30/35%\n\n Damage of the first empowered attack: 30/50/70/90 + 40% Ability Power + 20% armor→ 30/50/70/90 + 40% Ability Power + 30% armor\n\n Damage of following attacks: 10/20/30/40 + 20% Ability Power + 10% armor → 10/20/30/40 + 20% Ability Power + 15% armor"
+          }
+        ]
+      },
+      {
+        "patch": "5.3c",
+        "publishedAt": "2024-12-04T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-3c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Tank Malphite was underperforming, we adjusted his stats to position him better as a tank champion. To do this we nerfed his magic damage, but buffed his damage to surrounding enemies, and increased his damage scaling with armor.",
+        "changes": [
+          {
+            "ability": "Seismic Shard",
+            "text": "Damage bonus: 50% Ability Power → 45% Ability Power"
+          },
+          {
+            "ability": "Thunderclap",
+            "text": "Armor increased: 20/25/30/35% → 25/30/35/40%\n\n Damage of the first basic attack:30/50/70/90 + 40% Ability Power + 30% armor → 40/60/80/100+40% Ability Power + 40% armor\n\n Damage bonus for following basic attack: 20% Ability Power + 15% armor → 20% Ability Power + 20% armor"
+          },
+          {
+            "ability": "Ground Slam",
+            "text": "Bonus Damage: 50% Ability Power + 35% armor → 45% Ability Power + 45% armor"
+          }
+        ]
+      },
+      {
+        "patch": "6.0",
+        "publishedAt": "2025-01-08T17:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
+        "kind": "balance",
+        "scope": "Champion changes (legacy article)",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Patch notes",
+            "text": "Base Health: 650 → 690; Health per level: 115 → 120\nBase Armor: 45 → 49\nMagic Resist per level: 1.6 → 2"
+          }
+        ]
+      },
+      {
+        "patch": "6.3c",
+        "publishedAt": "2025-11-05T10:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "",
+        "changes": [
+          {
+            "ability": "Base Stats",
+            "text": "Base Attack Damage: 52 → 58"
+          },
+          {
+            "ability": "Ground Slam",
+            "text": "Base Damage: 50/100/150/200 → 60/110/160/210\n\n Decreased Attack Speed: 30/35/40/45% → 35/40/45/50%"
+          }
+        ]
+      },
+      {
+        "patch": "7.2e",
+        "publishedAt": "2026-09-09T09:00:00.000Z",
+        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-72e/",
+        "kind": "balance",
+        "scope": "CHAMPION CHANGES",
+        "modeOnly": false,
+        "summary": "Malphite has been struggling to make an impact in Baron Lane. We’re giving him a few small buffs to help him stand his ground and perform more consistently throughout the game.",
+        "changes": [
+          {
+            "ability": "Base Stats",
+            "text": "Armor per level: 4.3 → 5"
+          },
+          {
+            "ability": "Seismic Shard",
+            "text": "Slow effect: 15/20/25/30% → 20/25/30/35%"
+          },
+          {
+            "ability": "Thunderclap",
+            "text": "Base damage of consecutive basic attacks: 10/20/30/40 → 20/30/40/50"
+          }
+        ]
+      }
+    ],
     "Syndra": [
       {
         "patch": "5.0A",
@@ -14351,602 +15949,6 @@
         "changes": []
       }
     ],
-    "Vi": [
-      {
-        "patch": "0.5",
-        "publishedAt": "2020-10-10T23:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-0-5/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "In the previous patch, we issued a hotfix to cut down Camille’s high win rate at multiple levels of play. For reference, it lives here now.",
-        "changes": []
-      },
-      {
-        "patch": "1.0",
-        "publishedAt": "2020-10-23T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-0/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "In this patch, we’ll begin Wild Rift’s Regional Open Beta, and we also need your help testing some new champs hitting the Rift for a few days on the free-to-play rotation. For those of you who were previously stuck on the loading screen, we fixed a bug related to specific devices.",
-        "changes": []
-      },
-      {
-        "patch": "1.0",
-        "publishedAt": "2020-10-23T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-0/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an exploit with Guardian Angel allowing champs to be invincible",
-        "changes": []
-      },
-      {
-        "patch": "1.0",
-        "publishedAt": "2020-10-23T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-0/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed a crash on certain devices that caused crashes in the loading screen",
-        "changes": []
-      },
-      {
-        "patch": "2.1",
-        "publishedAt": "2021-02-01T15:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-1/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed a bug where reaching account level 10 would remove the Suggested Activities menu.",
-        "changes": []
-      },
-      {
-        "patch": "2.2",
-        "publishedAt": "2021-03-28T14:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "We’re testing 120Hz support for a select few high-end devices. Your device may experience overheating or performance issues, so use carefully!",
-        "changes": []
-      },
-      {
-        "patch": "2.2a",
-        "publishedAt": "2021-04-20T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage dealt: 0% → 10%"
-          }
-        ]
-      },
-      {
-        "patch": "2.2a",
-        "publishedAt": "2021-04-20T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "Vi has been a popular and reliable pick in high-level games, but on the strong side in regular play. These changes allow her to keep her reliable gank patterns, but at a slightly higher risk.",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Vi has been a popular and reliable pick in high-level games, but on the strong side in regular play. These changes allow her to keep her reliable gank patterns, but at a slightly higher risk.\nBase Stats\nArmor: 35 → 30\n(Ult) Assault and Battery\nCooldown: 85/65/45s → 95/75/55s"
-          }
-        ]
-      },
-      {
-        "patch": "2.2a",
-        "publishedAt": "2021-04-20T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2a/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "We’re slowly rolling out 120fps mode support to high-end devices. The 120fps setting is still in testing—if you experience performance issues, please switch back to a fully supported frame rate.",
-        "changes": []
-      },
-      {
-        "patch": "2.2c",
-        "publishedAt": "2021-05-12T02:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-2c/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage dealt: 10% → 20%"
-          }
-        ]
-      },
-      {
-        "patch": "2.3",
-        "publishedAt": "2021-06-02T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed a bug where Kha’Zix would damage himself when upgrading Taste Their Fear after evolving it",
-        "changes": []
-      },
-      {
-        "patch": "2.3",
-        "publishedAt": "2021-06-02T00:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Improved video stuttering issue for some low end devices",
-        "changes": []
-      },
-      {
-        "patch": "2.5",
-        "publishedAt": "2021-10-14T20:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Wukong is clearing the jungle too quickly, so we are removing his ability to amplify his damage against large monsters for his clear. Note: The tooltip incorrectly stated that this passive could stack against any unit, while it only stacked on champions and large monsters.",
-        "changes": []
-      },
-      {
-        "patch": "2.5",
-        "publishedAt": "2021-10-14T20:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-5/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "For melee champions, tapping the attack button has increased sensitivity to choosing enemy champions outside of your melee attack’s range. This change will mean that melee champions will need to rely on the minion button more often to farm in lane. We’ll be keeping an eye on your feedback around this change and will offer a setting if enough players feel like it is hard to adapt, but we expect this tuning to resolve more issues that it creates as it will make it way less likely for a melee champion to randomly attack a passerby minion while chasing down an enemy.",
-        "changes": []
-      },
-      {
-        "patch": "3.1a",
-        "publishedAt": "2022-04-08T01:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-1a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Plitover’s finest fighter has been lagging behind other junglers in recent patches. We’d like to see her pack more of a punch in her early game ganks and skirmishes, so we’re beefing up her base Attack Damage.",
-        "changes": [
-          {
-            "ability": "base_stats",
-            "text": "Base Attack Damage: 58 → 64"
-          }
-        ]
-      },
-      {
-        "patch": "3.3",
-        "publishedAt": "2022-07-13T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "95/75/55s → 80/65/50s"
-          }
-        ]
-      },
-      {
-        "patch": "3.5a",
-        "publishedAt": "2022-11-30T21:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-5a/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Bug Fix: Fixed an issue where Twisted Fate could gain permanent vision of opponents after using (Ultimate) Destiny",
-        "changes": []
-      },
-      {
-        "patch": "4.0",
-        "publishedAt": "2023-01-11T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Live Morellonomicon has been incorrectly giving 75 Ability Power when it was intended to be 70, and it could also use a small nerf, so we’re going to move it back to its intended value.",
-        "changes": []
-      },
-      {
-        "patch": "4.1b",
-        "publishedAt": "2023-04-19T20:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "While Vi’s “punch first, ask questions while punching” attitude makes her a fearsome foe to encounter while you’re in the jungle alone, she lacks that same fighting power in teamfights. So, we’re giving her a buff to her cooldown speed which will provide her more displacement possibilities in team fights.",
-        "changes": [
-          {
-            "ability": "Vault Breaker",
-            "text": "Cooldown: 12/11/10/9s → 10/9/8/7s"
-          }
-        ]
-      },
-      {
-        "patch": "4.2a",
-        "publishedAt": "2023-06-08T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2a/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Our previous adjustments seemed to have squashed this bug, so we’re back to give him some more damage to help with his jungle clears and ganks.",
-        "changes": []
-      },
-      {
-        "patch": "4.3",
-        "publishedAt": "2023-07-18T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-3/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed directions of base Scryer’s Blooms, attack from any angle will only make them grant vision of a corresponding jungle.",
-        "changes": []
-      },
-      {
-        "patch": "4.4",
-        "publishedAt": "2023-10-24T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "In previous patches, there were some issues with damage from champions to structures. The first was that champions with hybrid damage could not deal damage with part of their Attack Damage or Ability Power to turrets. The second issue was from champions with Ability Power items dealing damage to structures. The amount of damage they could deal, especially in the later stages of the game, was much higher than Attack Damage champs. So, we’ve made adjustments to address these problems.",
-        "changes": []
-      },
-      {
-        "patch": "4.4a",
-        "publishedAt": "2023-11-09T20:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "After patch 4.4, Vi seems to be getting outscaled by her opponents. We want her to really pack a punch and shut down her opponents more effectively.",
-        "changes": [
-          {
-            "ability": "base_stats",
-            "text": "Armor: 30 → 34"
-          },
-          {
-            "ability": "Assault and Battery",
-            "text": "Cooldown: 80/65/50s → 70/60/50s"
-          }
-        ]
-      },
-      {
-        "patch": "5.0",
-        "publishedAt": "2024-01-17T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "(3) Excessive Force\n200 → 225"
-          }
-        ]
-      },
-      {
-        "patch": "5.1c",
-        "publishedAt": "2024-06-05T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-1c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "All that armor on her isn’t just for looks! It should mean something, so we’re buffing Vi’s survivability to make sure she can go toe to toe with any enemy Junglers that come her way.",
-        "changes": [
-          {
-            "ability": "",
-            "text": "Base Armor: 34 → 40"
-          },
-          {
-            "ability": "BLAST SHIELD",
-            "text": "Cooldown: 12/11/10/9s → 10/9/8/7s"
-          }
-        ]
-      },
-      {
-        "patch": "5.2",
-        "publishedAt": "2024-07-17T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-52/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed the issue where Vi's damage with Relentless Force fails to generate the Armor reduction passive bonus that should have triggered when followed immediately with an attack.",
-        "changes": []
-      },
-      {
-        "patch": "5.2",
-        "publishedAt": "2024-07-17T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-52/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed the issue where Kalista and her Oathsworn are unable to mark targets they hit if they triggered the Guardian Angel's revival effect prior to landing their hits.",
-        "changes": []
-      },
-      {
-        "patch": "5.2a",
-        "publishedAt": "2024-07-31T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-2a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Vi has not been performing up to par, especially in the early game. These changes will make sure she packs a punch!",
-        "changes": [
-          {
-            "ability": "Denting Blows",
-            "text": "Damage: (4 + 0.2* per level + 0.03* bonus Attack Damage)% target's Maximum Health → (4 + 0.3* per level + 0.03* bonus Attack Damage)% target's Maximum Health"
-          },
-          {
-            "ability": "Vault Breaker",
-            "text": "Cooldown: 10/9/8/7s → 9/8/7/6s"
-          },
-          {
-            "ability": "Excessive Force",
-            "text": "Damage: 10/35/60/85 + 15% Attack Damage + 70% Ability Power → 20/45/70/95 + 15% Attack Damage + 70% Ability Power"
-          }
-        ]
-      },
-      {
-        "patch": "6.0",
-        "publishedAt": "2025-01-08T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Base Health: 650 → 690; Health per level: 105 → 112\nBase Armor: 40 → 46\nMagic Resist per level: 1.6 → 2"
-          }
-        ]
-      },
-      {
-        "patch": "6.1",
-        "publishedAt": "2025-04-16T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed the issue where Viego's possession of Yone becomes permanent if he is crowd controlled after casting Soul Unbound.",
-        "changes": []
-      },
-      {
-        "patch": "6.1b",
-        "publishedAt": "2025-05-21T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1b/",
-        "kind": "balance",
-        "scope": "Champion changes",
-        "modeOnly": false,
-        "summary": "Vi is another jungler that relies heavily on game pace. She is not performing to her expectations in early and mid games, so we’re boosting her accordingly.",
-        "changes": [
-          {
-            "ability": "Denting Blows",
-            "text": "Damage to maximum Health: 4.3%-8.5% + bonus 0.03% Attack Damage → 4.8%-9%+ bonus 0.03% Attack Damage"
-          },
-          {
-            "ability": "Vault Breaker",
-            "text": "Base damage: 55/90/125/160 to 110/180/250/320 → 60/95/130/165 to 120/190/260/330"
-          }
-        ]
-      },
-      {
-        "patch": "6.2c",
-        "publishedAt": "2025-08-08T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed a bug where obtaining Virtuous Cycle grants assists unconditionally.",
-        "changes": []
-      },
-      {
-        "patch": "6.2c",
-        "publishedAt": "2025-08-08T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed a bug where under high system load on certain devices, visual optimization caused projectile framerate drops.",
-        "changes": []
-      },
-      {
-        "patch": "6.2c",
-        "publishedAt": "2025-08-08T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an issue where Out-of-Combat Shield wouldn’t apply immediately after reviving.",
-        "changes": []
-      },
-      {
-        "patch": "6.2c",
-        "publishedAt": "2025-08-08T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an interaction between Stackosaurus Rex and Forbidden Evil that granted excessive stats when coupled.",
-        "changes": []
-      },
-      {
-        "patch": "6.2c",
-        "publishedAt": "2025-08-13T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2c-1/",
-        "kind": "balance",
-        "scope": "Champion changes",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Relentless Force",
-            "text": "Charge time: 14/12/10/8 → 11/10/9/8"
-          },
-          {
-            "ability": "Cease and Desist",
-            "text": "Cooldown: 70/60/50s → 60/55/50s"
-          }
-        ]
-      },
-      {
-        "patch": "6.2k",
-        "publishedAt": "2025-10-09T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2k/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "This patch, Talon is swooping in with his claws even sharper than before as we’re giving his ultimate a little extra damage to help him be more of an assassin. We’ve also noticed that Olaf has been a little too hard to deal with in lane, so we’re adjusting some of his damage scaling, so he’s more in-line as a late-game champion. We’re also de-bugging the bug, Kha’Zix. We’ve nerfed his damage and increased his cooldowns, so that he stops evolving into such a menace on the Rift. Aurora’s early-game has been a little too strong, so we’re reducing some of her damage so that she doesn’t steamroll her foes in lane as much. And lastly, we’re slicing down some of Yone’s jungle prowess and tankiness.",
-        "changes": []
-      },
-      {
-        "patch": "6.3c",
-        "publishedAt": "2025-11-05T10:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed a bug where Radiant Virtue incorrectly appeared under the Magic Resistance category in the Shop’s Defense tab.",
-        "changes": []
-      },
-      {
-        "patch": "6.3c",
-        "publishedAt": "2025-11-05T10:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed a bug where Viego’s ultimate damage to the primary target was not amplified by Axiom Arcanist.",
-        "changes": []
-      },
-      {
-        "patch": "6.3c",
-        "publishedAt": "2025-11-05T10:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an issue where some AP items were not correctly providing the additional 7% Critical Rate.",
-        "changes": []
-      },
-      {
-        "patch": "7.0a",
-        "publishedAt": "2026-01-28T10:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-0a/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage Dealt: 120% → 110%"
-          }
-        ]
-      },
-      {
-        "patch": "7.1",
-        "publishedAt": "2026-04-07T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "As the balance environment has evolved, the rune system, having gone without a comprehensive update for a long time, has gradually revealed several issues. On one hand, rune setups have become increasingly rigid, where you will gravitate toward a small number of consistently reliable and broadly applicable options. This has led to a narrowing of build diversity, preventing the system’s intended strategic depth and flexibility from being fully realized. On the other hand, the overall structure of rune choices has become somewhat imbalanced: some rune paths underperform, some runes lack meaningful use cases, while certain combinations have become overly dominant due to concentrated power.",
-        "changes": []
-      },
-      {
-        "patch": "7.1f",
-        "publishedAt": "2026-05-27T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an issue where iOS devices could crash after multiple consecutive matches.",
-        "changes": []
-      },
-      {
-        "patch": "7.1f",
-        "publishedAt": "2026-05-27T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Improved device overheating issues.",
-        "changes": []
-      },
-      {
-        "patch": "7.1f",
-        "publishedAt": "2026-05-27T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Optimized in-game stuttering issues affecting some mid-to-high-end Android devices.",
-        "changes": []
-      },
-      {
-        "patch": "7.1f",
-        "publishedAt": "2026-05-27T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1f/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Optimized in-game stuttering issues affecting lower-end devices.",
-        "changes": []
-      },
-      {
-        "patch": "7.2",
-        "publishedAt": "2026-07-08T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fiddlesticks' Fear has been less consistent than intended. We've shortened the grace period on his first ability after he becomes visible and fixed an issue that could cause enemies to be Feared unexpectedly, making the effect more predictable for both Fiddlesticks and his opponents.",
-        "changes": []
-      },
-      {
-        "patch": "7.2",
-        "publishedAt": "2026-07-08T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an issue where using certain abilities while auto-pathing would interrupt auto-pathing for the following champions. We will continue monitoring and improving other champions with the same problem. Garen (1) & (2) abilities",
-        "changes": []
-      },
-      {
-        "patch": "7.2",
-        "publishedAt": "2026-07-08T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an issue where Fiddlesticks' passive could still apply Fear while visible or in combat.",
-        "changes": []
-      },
-      {
-        "patch": "7.2b",
-        "publishedAt": "2026-07-29T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-2b/",
-        "kind": "bugfix",
-        "scope": "Bug fixes",
-        "modeOnly": false,
-        "summary": "Fixed an issue where the screen would not rotate automatically after entering the game on some devices.",
-        "changes": []
-      }
-    ],
     "Senna": [
       {
         "patch": "2.4b",
@@ -20291,258 +21293,6 @@
         "modeOnly": false,
         "summary": "Fixed an issue where Fiddlesticks could occasionally still apply Fear while revealed or in combat.",
         "changes": []
-      }
-    ],
-    "Nautilus": [
-      {
-        "patch": "3.3",
-        "publishedAt": "2022-07-13T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus hooks aren’t quite sinking as well as we’d hoped, so we’re making some adjustments to the hitbox to make it a bit easier to drag enemies down. While we’re at it, we’re buffing up some of the damage he deals to monsters to get his clear up to a healthier speed.",
-        "changes": [
-          {
-            "ability": "DREDGE LINE",
-            "text": "Width against units: 1→ 1.3\n Width against wall: 0.4 → 0.2"
-          },
-          {
-            "ability": "TITAN'S WRATH",
-            "text": "Monster damage ratio: 150%→ 200%"
-          }
-        ]
-      },
-      {
-        "patch": "3.3b",
-        "publishedAt": "2022-08-17T22:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Since his release, The Titan of the Depths has been performing naut too hot, so we’re giving Nautilus an array of buffs that will allow him to make impactful plays more consistently throughout the course of a game.",
-        "changes": [
-          {
-            "ability": "base_stats",
-            "text": "Movement Speed: 325 → 330"
-          },
-          {
-            "ability": "DREDGE LINE",
-            "text": "Cooldown: 13/12/11/10s → 12/11/10/9s\n Projectile speed: 16 → 18"
-          },
-          {
-            "ability": "DEPTH CHARGE",
-            "text": "Acceleration start time: 2.5s → 1s\n Cooldown: 70/60/50s → 60/50/40s"
-          }
-        ]
-      },
-      {
-        "patch": "3.4a",
-        "publishedAt": "2022-09-28T21:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus hasn’t made the impact that we’d like to see in higher levels of play, so we’re increasing the duration of the stun provided by his passive and reducing the cooldown of Dredge Line so you can hook, line and sink your foes a few more times over the course of your games.",
-        "changes": [
-          {
-            "ability": "STAGGERING BLOW",
-            "text": "Root Duration: 0.75s - 1.5s (based on level) → 1s - 1.75s (based on level)"
-          },
-          {
-            "ability": "DREDGE LINE",
-            "text": "Cooldown: Reduced from 12/11/10/9s → 11/10/9/8s"
-          }
-        ]
-      },
-      {
-        "patch": "4.0a",
-        "publishedAt": "2023-02-01T21:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus win rates have been floating up under the radar, so we’re anchoring it back down with some Dredge Line nerfs.",
-        "changes": [
-          {
-            "ability": "DREDGE LINE",
-            "text": "Cooldown: 11/10/9/8s → 12/11/10/9s\n Base damage: 70/130/190/250 → 60/120/180/240"
-          }
-        ]
-      },
-      {
-        "patch": "4.0c",
-        "publishedAt": "2023-03-01T21:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus has been struggling to sink his foes and make impact in the Jungle so we’re increasing the damage he deals to monsters with his Riptide ability.",
-        "changes": [
-          {
-            "ability": "RIPTIDE",
-            "text": "Ability Power ratio: 30% → 50%\n Damage against monsters: 150% → 200%"
-          }
-        ]
-      },
-      {
-        "patch": "4.1a",
-        "publishedAt": "2023-03-29T20:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "After our recent buffs to Nautilus, he has been dominating in the Jungle. We’re putting our anchor down, and taking back some of those previous adjustments.",
-        "changes": [
-          {
-            "ability": "RIPTIDE",
-            "text": "Damage to monsters: 200% → 175%"
-          }
-        ]
-      },
-      {
-        "patch": "4.4c",
-        "publishedAt": "2023-12-06T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "For someone entirely encased in metal, Nautilus felt a bit too squishy for our taste. So we’ve armed him with rock-solid buffs that will carry him through fights!",
-        "changes": [
-          {
-            "ability": "TITAN'S WRATH",
-            "text": "Cooldown: Max level 12s → Max level 11s\n\n Shield: 55/65/75/85 + 10/11/12/13% maximum Health → 55/65/75/85 + 11/12/13/14% maximum Health"
-          }
-        ]
-      },
-      {
-        "patch": "5.0",
-        "publishedAt": "2024-01-17T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "(2) Titan's Wrath\n200 → 225"
-          }
-        ]
-      },
-      {
-        "patch": "5.0c",
-        "publishedAt": "2024-03-13T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus hasn’t been as tanky as he should be. These changes will let him soak up all the damage he needs to for his carries to shine.",
-        "changes": [
-          {
-            "ability": "TITAN'S WRATH",
-            "text": "Shield value: 55/65/75/85 + 11/12/13/14% maximum Health → 55/65/75/85 + 12/13/14/15% maximum Health\n\n Damage: 40/50/60/70 + 40% Ability Power → 50/60/70/80 + 40% Ability Power"
-          }
-        ]
-      },
-      {
-        "patch": "5.2a",
-        "publishedAt": "2024-07-31T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-2a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus has been a terror to deal with when stacking mage items. We’re tweaking his ratios to ensure his anchor is not dealing massive damage.",
-        "changes": [
-          {
-            "ability": "Dredge Line",
-            "text": "Damage: 60/120/180/240 + 90% Ability Power → 60/120/180/240 + 80% Ability Power"
-          },
-          {
-            "ability": "Depth Charge",
-            "text": "Cooldown: 60/50/40s → 70/60/50s\n\n Damage to the main target: 150/275/400 + 80% Ability Power → 150/275/400 + 70% Ability Power"
-          }
-        ]
-      },
-      {
-        "patch": "5.3b",
-        "publishedAt": "2024-11-13T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-53b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus has been overly reliant on items to be tanky. We’re boosting his Base Stats so he can soak damage for his team even early on.",
-        "changes": [
-          {
-            "ability": "Base Stats",
-            "text": "Basic Attack Damage: 58 → 62"
-          },
-          {
-            "ability": "Dredge Line",
-            "text": "Damage: 60/120/180/240 + 80% Ability Power → 70/130/190/250 + 75% Ability Power"
-          },
-          {
-            "ability": "Titan's Wrath",
-            "text": "Shield: 55/65/75/85+12/13/14/15% maximum health → 65/75/85/95+13/14/15/16% maximum health"
-          }
-        ]
-      },
-      {
-        "patch": "6.0",
-        "publishedAt": "2025-01-08T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Base Health: 650 → 720; Health per level: 115 → 120\nBase Armor: 40 → 46\nMagic Resist per level: 1.6 → 2"
-          }
-        ]
-      },
-      {
-        "patch": "6.1d",
-        "publishedAt": "2025-06-11T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1d/",
-        "kind": "balance",
-        "scope": "",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Base Stats",
-            "text": "Health per level: 120 → 128\n\n Armor per level: 4.3 → 5"
-          },
-          {
-            "ability": "Dredge Line",
-            "text": "Base damage: 70/130/190/250 → 90/150/210/270"
-          },
-          {
-            "ability": "Riptide",
-            "text": "Base damage of each wave: 60/100/140/180 → 70/110/150/190"
-          }
-        ]
-      },
-      {
-        "patch": "7.1h",
-        "publishedAt": "2026-06-24T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1h/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Nautilus has been making waves in the jungle, combining top-tier clear speeds with impressive durability. His bonus damage against monsters lets him clear camps too efficiently, and the shield on his second ability provides more resilience than we'd like without requiring tank itemization. We're trimming both to keep him in line with the rest of the jungle roster.",
-        "changes": [
-          {
-            "ability": "Titan's Wrath",
-            "text": "Damage ratio against jungle monsters: 200% → 125%\n Shield based max Health ratio: 13%/14%/15%/16% → 9%/10%/11%/12%"
-          },
-          {
-            "ability": "Riptide",
-            "text": "Damage ratio against jungle monsters: 175% → 125%"
-          }
-        ]
       }
     ],
     "Nami": [
@@ -26678,258 +27428,6 @@
         ]
       }
     ],
-    "Swain": [
-      {
-        "patch": "4.2b",
-        "publishedAt": "2023-06-28T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-2b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Since arriving on the Rift, the Noxian Grand General has shown how strong in multiple lanes. We’re nerfing Swain's damage and survivability so that other champions don’t feel so helpless when they're up against this general and his ravens.",
-        "changes": [
-          {
-            "ability": "base_stats",
-            "text": "Armor per level: 5.5 → 5"
-          },
-          {
-            "ability": "Death's Hand",
-            "text": "Damage of each bolt after the first one: 15/25/35/45 + 8% Ability Power → 10/20/30/40 + 5% Ability Power"
-          },
-          {
-            "ability": "Demonic Ascension",
-            "text": "Heal per second: 15/27.5/40 + 15% Ability Power → 15/25/35 + 12% Ability Power"
-          }
-        ]
-      },
-      {
-        "patch": "4.4",
-        "publishedAt": "2023-10-24T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Movement speed: 340 → 345"
-          }
-        ]
-      },
-      {
-        "patch": "4.4b",
-        "publishedAt": "2023-11-22T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "For a Grand General, Swain sure hasn’t been making a Grand Impact. If you have ornithophobia, these changes might not be for you!",
-        "changes": [
-          {
-            "ability": "Ravenous Flock",
-            "text": "Max Health gained: 12 Health per stack of Soul Fragment → 16 Health per stack of Soul Fragment"
-          },
-          {
-            "ability": "Demonic Ascension",
-            "text": "Heal: 15/25/35 + 12% Ability Power per second → 15/25/35 + 15% Ability Power per second\n\n Damage: 20/40/60 + 10% Ability Power per second → 15/35/55 + 15% Ability Power per second"
-          }
-        ]
-      },
-      {
-        "patch": "5.0c",
-        "publishedAt": "2024-03-13T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0c/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage: 100% → 110%"
-          }
-        ]
-      },
-      {
-        "patch": "5.1b",
-        "publishedAt": "2024-05-15T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-1b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "We’re improving Swain’s base stats and damage so he can shine in both laning and team fights.",
-        "changes": [
-          {
-            "ability": "base_stats",
-            "text": "Base Magic Resist: 32 → 36\n\n Magic Resist per level: 1.5 → 2"
-          },
-          {
-            "ability": "Death's Hand",
-            "text": "Damage of the first bolts: 50/80/110/140+ 38% AP → 55/85/115/145 + 42% AP\n\n Damage of each subsequent bolt: 10/20/30/40 + 5% AP → 10/20/30/40 + 7% AP"
-          }
-        ]
-      },
-      {
-        "patch": "5.3a",
-        "publishedAt": "2024-10-30T16:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-3a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Swain has been needing a boost and these Ability Power ratio adjustments should help.",
-        "changes": [
-          {
-            "ability": "Death's Hand",
-            "text": "Damage dealt for each bonus eldritch bolts: 10/20/30/40 + 7% Ability Power → 10/20/30/40 + 12% Ability Power"
-          },
-          {
-            "ability": "Demonic Ascension",
-            "text": "Damage dealt per second: 15/35/55 + 15% Ability Power → 15/35/55 + 20% Ability Power\n\n Health regeneration per second: 15/25/35 + 15% Ability Power → 15/25/35 + 20% Ability Power"
-          }
-        ]
-      },
-      {
-        "patch": "6.0",
-        "publishedAt": "2025-01-08T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Base Health: 600 → 630; Health per level: 104 → 112\nBase Armor: 31 → 37"
-          }
-        ]
-      },
-      {
-        "patch": "6.0c",
-        "publishedAt": "2025-02-19T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "As a mage who likes to get right into the fights; Swain should have both durability and sustained damage. To ensure he has both, we’re strengthening his late game survivability, which will allow him to deal continuous damage more effectively during his ultimate.",
-        "changes": [
-          {
-            "ability": "Base Stats",
-            "text": "Health per level: 112 → 120"
-          },
-          {
-            "ability": "Death's Hand",
-            "text": "Base damage of the first bolt: 55/85/115/145 → 55/90/125/160"
-          },
-          {
-            "ability": "Demonic Ascension",
-            "text": "Base regeneration per second: 15/25/35 → 20/30/40"
-          }
-        ]
-      },
-      {
-        "patch": "6.1",
-        "publishedAt": "2025-04-16T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-1/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Base Movement Speed: 345 → 355"
-          }
-        ]
-      },
-      {
-        "patch": "6.2d",
-        "publishedAt": "2025-08-21T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2d-adventure-modes/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage taken: 110% → 100%"
-          }
-        ]
-      },
-      {
-        "patch": "6.2h",
-        "publishedAt": "2025-09-17T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2h/",
-        "kind": "balance",
-        "scope": "Champion changes",
-        "modeOnly": false,
-        "summary": "Swain’s ultimate has always lacked a little extra oomf, so we’ve decided to let him contribute more in extended fights beyond simply tanking damage. At the same time, we’ve reworked parts of how his ability feels and numbers to ensure his power remains consistent across different builds, while still leaving room for counterplay. Please note that Swain’s update will not be live until September 25, 00:01 UTC.",
-        "changes": [
-          {
-            "ability": "Ravenous Flock",
-            "text": "Each stack of Soul Fragments heal for: 3/4/5/6% Maximum Health (Increases with level 1/5/9/13) → (2/2.5/3/3.5 + 0.5% Ability Power)% Maximum Health (Increases with level 1/5/9/13)"
-          },
-          {
-            "ability": "Vision of Empire",
-            "text": "Explosion timer: 1s → 1.35s"
-          },
-          {
-            "ability": "Demonic Ascension",
-            "text": "Charges: Once → Infinite\n\n [New] Cooldown between two Demonflare: 6s\n\n Damage per second: 15/35/55 + 20% Ability Power → 10/25/40 + 15%Ability Power"
-          }
-        ]
-      },
-      {
-        "patch": "6.2k",
-        "publishedAt": "2025-10-09T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-2k/",
-        "kind": "balance",
-        "scope": "Champion changes",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Base Stats",
-            "text": "Base Health: 630 → 660\n\n Base Armor: 37 → 40"
-          },
-          {
-            "ability": "Ravenous Flock",
-            "text": "Soul Fragments stack Healing value: (2/2.5/3/3.5 (Level 1/5/9/13) + 0.5% Ability Power) % Maximum Health → (3/3.5/4/4.5 (Level 1/5/9/13) + 0.5% Ability Power) % Maximum Health"
-          }
-        ]
-      },
-      {
-        "patch": "6.3d",
-        "publishedAt": "2025-11-19T10:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3d/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage dealt: 100% → 110%, Healing: 100% → 110%"
-          }
-        ]
-      },
-      {
-        "patch": "7.1b",
-        "publishedAt": "2026-04-15T09:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-1b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Swain has strong sustained combat power in skirmishes, especially after acquiring mage items, making him difficult to counter. We’re reducing the scaling on his ultimate ability so he’s less oppressive to deal with.",
-        "changes": [
-          {
-            "ability": "Demonic Ascension",
-            "text": "Re-cast Ability Power Ratio: 60% → 45%"
-          }
-        ]
-      }
-    ],
     "Teemo": [
       {
         "patch": "2.2",
@@ -29717,163 +30215,6 @@
           {
             "ability": "Patch notes",
             "text": "Healing: 100% → 90%"
-          }
-        ]
-      }
-    ],
-    "Malphite": [
-      {
-        "patch": "2.3b",
-        "publishedAt": "2021-06-30T02:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3b/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage received: -15% → -5%"
-          }
-        ]
-      },
-      {
-        "patch": "3.3",
-        "publishedAt": "2022-07-13T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "85/75/65s → 75/70/65s"
-          }
-        ]
-      },
-      {
-        "patch": "3.3",
-        "publishedAt": "2022-07-13T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage dealt: 0% → -5%"
-          }
-        ]
-      },
-      {
-        "patch": "3.4c",
-        "publishedAt": "2022-11-02T21:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-4c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Malphite is rock solid for most players, but they’ve been struggling in higher ranks. So we’re giving this rock some extra minerals to boost its Passive’s cooldown and Seismic Shard’s speed, while also adjusting their general durability to compensate.",
-        "changes": [
-          {
-            "ability": "Granite Shield",
-            "text": "Cooldown: 8s → 8/7/6s (levels 1/5/11)\n 10% of Maximum health → 9% Maximum health"
-          },
-          {
-            "ability": "Seismic Shard",
-            "text": "Projectile speed: 10 → 12"
-          }
-        ]
-      },
-      {
-        "patch": "4.0",
-        "publishedAt": "2023-01-11T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-0/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage dealt: 0% → -5%"
-          }
-        ]
-      },
-      {
-        "patch": "4.4d",
-        "publishedAt": "2023-12-27T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4d/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "AP Malphite is a hit with you guys, but what about tank Malphite? We’ve tweaked his scaling a bit so both get the love they deserve.",
-        "changes": [
-          {
-            "ability": "Granite Shield",
-            "text": "Shield: 9% maximum Health → 11% maximum Health"
-          },
-          {
-            "ability": "Thunderclap",
-            "text": "Passive armor bonus: 15/20/25/30% → 20/25/30/35%\n\n Damage of the first empowered attack: 30/50/70/90 + 40% Ability Power + 20% armor→ 30/50/70/90 + 40% Ability Power + 30% armor\n\n Damage of following attacks: 10/20/30/40 + 20% Ability Power + 10% armor → 10/20/30/40 + 20% Ability Power + 15% armor"
-          }
-        ]
-      },
-      {
-        "patch": "5.3c",
-        "publishedAt": "2024-12-04T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-3c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Tank Malphite was underperforming, we adjusted his stats to position him better as a tank champion. To do this we nerfed his magic damage, but buffed his damage to surrounding enemies, and increased his damage scaling with armor.",
-        "changes": [
-          {
-            "ability": "Seismic Shard",
-            "text": "Damage bonus: 50% Ability Power → 45% Ability Power"
-          },
-          {
-            "ability": "Thunderclap",
-            "text": "Armor increased: 20/25/30/35% → 25/30/35/40%\n\n Damage of the first basic attack:30/50/70/90 + 40% Ability Power + 30% armor → 40/60/80/100+40% Ability Power + 40% armor\n\n Damage bonus for following basic attack: 20% Ability Power + 15% armor → 20% Ability Power + 20% armor"
-          },
-          {
-            "ability": "Ground Slam",
-            "text": "Bonus Damage: 50% Ability Power + 35% armor → 45% Ability Power + 45% armor"
-          }
-        ]
-      },
-      {
-        "patch": "6.0",
-        "publishedAt": "2025-01-08T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Base Health: 650 → 690; Health per level: 115 → 120\nBase Armor: 45 → 49\nMagic Resist per level: 1.6 → 2"
-          }
-        ]
-      },
-      {
-        "patch": "6.3c",
-        "publishedAt": "2025-11-05T10:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-3c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Base Stats",
-            "text": "Base Attack Damage: 52 → 58"
-          },
-          {
-            "ability": "Ground Slam",
-            "text": "Base Damage: 50/100/150/200 → 60/110/160/210\n\n Decreased Attack Speed: 30/35/40/45% → 35/40/45/50%"
           }
         ]
       }
@@ -33357,250 +33698,6 @@
           {
             "ability": "Patch notes",
             "text": "Base Health: 600 → 630; Health per level: 105 → 120\nArmor per level: 3.9 → 4.5\nMagic Resist per level: 1.6 → 2"
-          }
-        ]
-      }
-    ],
-    "Janna": [
-      {
-        "patch": "1.1",
-        "publishedAt": "2020-12-08T01:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-1-1/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "Janna has slowly fallen off, when her core fantasy should be intact as a highly mobile poke and protect champion. We’re putting the wind back in her sales by buffing up her (2) Zephyr and (3) Eye of the Storm.",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Janna has slowly fallen off, when her core fantasy should be intact as a highly mobile poke and protect champion. We’re putting the wind back in her sales by buffing up her (2) Zephyr and (3) Eye of the Storm.\nBASE STATS\nAttack Damage : 46 → 52\n(2) ZEPHYR\nDamage : 55/115/175/235 + 50% AP + 25% MS → 65/125/185/245 + 60% AP + 25% MS\n(3) EYE OF THE STORM\nBase shield : 80/130/180/230HP → 90/140/190/240HP\nCooldown : 16/14/12/10s → 13/12/11/10s"
-          }
-        ]
-      },
-      {
-        "patch": "2.3a",
-        "publishedAt": "2021-06-16T02:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3a/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "Janna has been performing too well when maxing Zephyr first. We are winding down its power so that it doesn’t blow away her other skills.",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Janna has been performing too well when maxing Zephyr first. We are winding down its power so that it doesn’t blow away her other skills.\n(2) Zephyr\nBase Damage: 65/125/185/245 → 55/105/155/205"
-          }
-        ]
-      },
-      {
-        "patch": "2.3c",
-        "publishedAt": "2021-07-14T01:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-2-3c/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "Janna's last round of nerfs did a good job of knocking her off her windy throne, but she needs another bonk to her movement speed. She should still be able to use (2) Zephyr to harass her opponents, but she won't be zipping around as quickly to do so.",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Janna's last round of nerfs did a good job of knocking her off her windy throne, but she needs another bonk to her movement speed. She should still be able to use (2) Zephyr to harass her opponents, but she won't be zipping around as quickly to do so.\n(2) Zephyr\nBonus movement speed while on cooldown: 6/9/12/15% → 6/8/10/12%"
-          }
-        ]
-      },
-      {
-        "patch": "3.2c",
-        "publishedAt": "2022-06-28T23:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/dev/wild-rift-patch-notes-3-2c/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "We’re amping up the speed of Janna’s Howling Gale and Zephyr abilities so that she can disrupt her foes with ease.",
-        "changes": [
-          {
-            "ability": "Howling Gale",
-            "text": "Time required for the whirlwind to reach its destination: 1.25s → 1s"
-          },
-          {
-            "ability": "Zephyr",
-            "text": "Projectile speed increased."
-          }
-        ]
-      },
-      {
-        "patch": "3.3",
-        "publishedAt": "2022-07-13T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "100/90/80s → 80/75/70s"
-          }
-        ]
-      },
-      {
-        "patch": "3.3b",
-        "publishedAt": "2022-08-17T22:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-3b/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage received: 0% → 5%"
-          }
-        ]
-      },
-      {
-        "patch": "3.5",
-        "publishedAt": "2022-11-16T21:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-3-5/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "We’ve had our eye on Janna, and she has been overperforming in higher ranks, so the winds of change are coming. We’re hitting the scaling on Zephyr and the charge damage on Howling Gale, so that Janna can’t blow her foes away as easily.",
-        "changes": [
-          {
-            "ability": "Howling Gale",
-            "text": "Bonus damage per second charged: 20/25/30/35 + 15% Ability Power → 15/20/25/30 + 15% Ability Power"
-          },
-          {
-            "ability": "Zephyr",
-            "text": "Passive movement speed bonus: 6/8/10/12% → 6/7/8/9%"
-          }
-        ]
-      },
-      {
-        "patch": "4.1",
-        "publishedAt": "2023-03-15T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-1/",
-        "kind": "balance",
-        "scope": "Mode-specific changes",
-        "modeOnly": true,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Damage dealt: 0% → +8%\nDamage received: 0% → -5%"
-          }
-        ]
-      },
-      {
-        "patch": "4.3d",
-        "publishedAt": "2023-10-11T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-3d/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Janna is The Storm’s Fury, and she harnesses the power of wind to support her teammates throughout the game. We felt there was some room to adjust some of her abilities to make her more supportive and lean into her strengths. We’ve reworked all of her abilities to make sure she is still that protective wind mage, while also increasing her survivability and flexibility, so that Janna is in it to “wind” it and playable in more situations.",
-        "changes": [
-          {
-            "ability": "Tailwind",
-            "text": "Bonus movement speed gained: 8% → 5%\n [REMOVED] Ally champions gain 8% movement speed bonus when moving towards Janna.\n [NEW] Nearby ally champions gain 5% movement speed bonus."
-          },
-          {
-            "ability": "Howling Gale",
-            "text": "Magic damage: 60/90/120/150+40% Ability Power → 60/100/140/180 + 50% Ability Power\n Time it takes for the storm to reach its destination: 1s → 0.5s\n [REMOVED] Damage from the storm, knockup effect and range depend on its charging time, reaching maximum potency at 3s.\n [NEW] Charging time for the storm is fixed as 0.75s. Howling Gale gains 1 charge every 12s to cast, with maximum 2 charging stacks."
-          },
-          {
-            "ability": "Zephyr",
-            "text": "Magic damage: 55/105/155/205 + 60% Ability Power +25% Bonus movement speed → 50/90/130/170+50% Ability Power + 20% Bonus movement speed\n Cooldown: 7.5/7/6.5/6s → 9/8.5/8/7.5s\n [REMOVED] Passive: After ability cooldown, Janna gains 6% bonus movement speed, dealing bonus magic damage when attacking the enemies.\n [REMOVED] Dealing damage and slowing down the chosen target for 2s.\n [NEW] Increasing Janna’s movement speed by 15%/20%/25%/30% for 2s.\n [NEW] Automatically searching 3 nearby allies or enemies. Janna will increase her ally champions movement speed by 15%/20%/25%/30%, or deal magic damage to the enemies."
-          },
-          {
-            "ability": "Eye Of The Storm",
-            "text": "Shield value: 90/140/190/240 + 80% Ability Power → 65/90/115/140 + 60% Ability Power\n [REMOVED] Janna provides a shield to an ally champion or turret that absorbs damage, the shield decays over 5s.\n [NEW] Janna now provides a shield that absorbs damage to herself and an ally champion with lowest health, if there is a turret nearby, the same shield will also be provided to the turret. The shield lasts for 3s without any decay."
-          },
-          {
-            "ability": "Monsoon",
-            "text": "Health regeneration per second: 100/150/200 + 50% Ability Power → 50/75/100 + 30% Ability Power\n [REMOVED] During the Monsoon, Janna needs to continuously channel it.\n [NEW] Janna can now move freely after casting the Monsoon."
-          }
-        ]
-      },
-      {
-        "patch": "4.4",
-        "publishedAt": "2023-10-24T19:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Movement speed: 335 → 340"
-          }
-        ]
-      },
-      {
-        "patch": "4.4a",
-        "publishedAt": "2023-11-09T20:30:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-4-4a/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "After her rework, Janna has been maneuvering her allies across the Rift a little too well. We’ve adjusted her numbers to allow her opponents to catch up.",
-        "changes": [
-          {
-            "ability": "Zephyr",
-            "text": "Bonus movement speed: 15%/20%/25%/30% → 10%/15%/20%/25%"
-          },
-          {
-            "ability": "Eye Of The Storm",
-            "text": "Shield value: 65/90/115/140 + 60% Ability Power → 65/90/115/140 + 45% Ability Power"
-          }
-        ]
-      },
-      {
-        "patch": "5.0A",
-        "publishedAt": "2024-01-31T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-5-0a/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Shield effect: 0% → -15%\nHealing effect: 0% → -15%"
-          }
-        ]
-      },
-      {
-        "patch": "5.3b",
-        "publishedAt": "2024-11-13T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-53b/",
-        "kind": "balance",
-        "scope": "CHAMPION CHANGES",
-        "modeOnly": false,
-        "summary": "Janna is a very safe support to play with. We’re increasing her cooldowns to increase your decision-making space when it comes to when to cast.",
-        "changes": [
-          {
-            "ability": "Howling Gale",
-            "text": "Charging time: full level 12s → full level 14s\n\n Damage: 60/100/140/180 + 50% Ability Power → 50/90/130/170 + 50% Ability Power"
-          },
-          {
-            "ability": "Eye of the Storm",
-            "text": "Cooldown: 13/12/11/10s → 16/14/12/10s"
-          }
-        ]
-      },
-      {
-        "patch": "6.0",
-        "publishedAt": "2025-01-08T17:00:00.000Z",
-        "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-6-0/",
-        "kind": "balance",
-        "scope": "Champion changes (legacy article)",
-        "modeOnly": false,
-        "summary": "",
-        "changes": [
-          {
-            "ability": "Patch notes",
-            "text": "Base Health: 570 → 630; Health per level: 95 → 104\nBase Armor: 40 → 45\nMagic Resist per level: 0.8 → 1.2"
           }
         ]
       }

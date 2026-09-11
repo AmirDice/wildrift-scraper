@@ -278,7 +278,7 @@
   },
   "seekers-armguard": {
     "stasisSec": 2.5,
-    "_why_cc": "Stasis: identical active to zhonyas-hourglass."
+    "_why_cc": "Stasis: 'Become invulnerable and untargetable for 2.5 seconds, but unable to move, attack, cast abilities or use items.' Modelled as 2.5 seconds the ATTACKER cannot damage them. NOT identical to zhonyas-hourglass any more: 7.2e moved this item's cooldown to 150s while Zhonya's stayed at 120s. Neither cooldown is modelled, because both exceed the longest window the engine simulates (duel caps at 20s), so the effect is one use per fight either way and the divergence does not change a number."
   },
   "soul-transfer": {
     "cloneAdPct": 20,

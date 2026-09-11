@@ -1,9 +1,131 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-08-26T10:52:46.265Z",
+  "fetchedAt": "2026-09-11T06:46:05.774Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.2e",
+      "title": "Wild Rift Patch Notes 7.2e",
+      "publishedAt": "2026-09-09T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-72e/",
+      "championChanges": [
+        {
+          "champion": "VI",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Vi has been a dominant force in the jungle for too long. We’re increasing the cooldown of her ultimate and reducing her follow up damage, giving opponents more room to respond and other junglers a better chance to keep pace with her.",
+          "changes": [
+            {
+              "ability": "Vault Breaker",
+              "text": "Minimum Damage Bonus Attack Damage Ratio: 80% Bonus Attack Damage → 60% Bonus Attack Damage\n Maximum Damage Bonus Attack Damage Ratio: 160% Bonus Attack Damage → 120% Bonus Attack Damage"
+            },
+            {
+              "ability": "Cease and Desist",
+              "text": "Cooldown: 60/55/50s → 80/70/60s"
+            }
+          ]
+        },
+        {
+          "champion": "JANNA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Janna’s shields haven’t been providing enough protection, leaving her struggling both in lane and when supporting her team. We’re increasing her shield strength to help her better protect her allies throughout the game.",
+          "changes": [
+            {
+              "ability": "Eye of the Storm",
+              "text": "Shield Value: 65/90/115/140 + 45% Ability Power → 80/120/160/200 + 50% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "SWAIN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Swain’s ultimate has been scaling too well with Ability Power, allowing full Ability Power builds to deal high sustained damage while providing significant healing in teamfights. We’re slightly reducing its Ability Power scaling to shift some power away from these builds and reinforce his identity as a durable mage.",
+          "changes": [
+            {
+              "ability": "Demonic Ascension",
+              "text": "Damage per second: 10/25/40 + 15% Ability Power → 15/25/35 + 6% Ability Power\n Healing per second: 20/30/40 + 20% Ability Power → 15/30/45 + 10% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "NAUTILUS",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Nautilus has been struggling to stay afloat after his last round of nerfs, leaving him without the durability he needs to dive into the enemy team and initiate fights. We’re increasing the base shield and maximum Health ratio of his second s, helping him soak up more damage and better fulfill his role as a tanky initiator.",
+          "changes": [
+            {
+              "ability": "Titan's Wrath",
+              "text": "Shield Value: 65/75/85/95 + 9/10/11/12% Maximum Health → 70/80/90/100 + 11/12/13/14% Maximum Health"
+            }
+          ]
+        },
+        {
+          "champion": "MALPHITE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Malphite has been struggling to make an impact in Baron Lane. We’re giving him a few small buffs to help him stand his ground and perform more consistently throughout the game.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Armor per level: 4.3 → 5"
+            },
+            {
+              "ability": "Seismic Shard",
+              "text": "Slow effect: 15/20/25/30% → 20/25/30/35%"
+            },
+            {
+              "ability": "Thunderclap",
+              "text": "Base damage of consecutive basic attacks: 10/20/30/40 → 20/30/40/50"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Balance changes are here with updates to Vi, Swain, Janna, Nautilus, Malphite, and more!",
+        "Welcome to Patch 7.2e! We’re reining in Vi and Swain, giving Janna, Nautilus, and Malphite a boost, and making some adjustments to some other items. Let’s get into the changes!\n Reminder: content will be released throughout the patch.",
+        "Vi has been a dominant force in the jungle for too long. We’re increasing the cooldown of her ultimate and reducing her follow up damage, giving opponents more room to respond and other junglers a better chance to keep pace with her.",
+        "Minimum Damage Bonus Attack Damage Ratio: 80% Bonus Attack Damage → 60% Bonus Attack Damage\n Maximum Damage Bonus Attack Damage Ratio: 160% Bonus Attack Damage → 120% Bonus Attack Damage",
+        "Cooldown: 60/55/50s → 80/70/60s",
+        "Janna’s shields haven’t been providing enough protection, leaving her struggling both in lane and when supporting her team. We’re increasing her shield strength to help her better protect her allies throughout the game.",
+        "Shield Value: 65/90/115/140 + 45% Ability Power → 80/120/160/200 + 50% Ability Power",
+        "Swain’s ultimate has been scaling too well with Ability Power, allowing full Ability Power builds to deal high sustained damage while providing significant healing in teamfights. We’re slightly reducing its Ability Power scaling to shift some power away from these builds and reinforce his identity as a durable mage.",
+        "Damage per second: 10/25/40 + 15% Ability Power → 15/25/35 + 6% Ability Power\n Healing per second: 20/30/40 + 20% Ability Power → 15/30/45 + 10% Ability Power",
+        "Nautilus has been struggling to stay afloat after his last round of nerfs, leaving him without the durability he needs to dive into the enemy team and initiate fights. We’re increasing the base shield and maximum Health ratio of his second s, helping him soak up more damage and better fulfill his role as a tanky initiator.",
+        "Shield Value: 65/75/85/95 + 9/10/11/12% Maximum Health → 70/80/90/100 + 11/12/13/14% Maximum Health",
+        "Malphite has been struggling to make an impact in Baron Lane. We’re giving him a few small buffs to help him stand his ground and perform more consistently throughout the game.",
+        "Armor per level: 4.3 → 5",
+        "Slow effect: 15/20/25/30% → 20/25/30/35%",
+        "Base damage of consecutive basic attacks: 10/20/30/40 → 20/30/40/50",
+        "GAMEPLAY CHANGES\n ITEMS\n Seeker's Armguard\n Seeker’s Armguard has been providing too much power for a mid-tier component, making it too valuable to sit on without completing it into a full item. We’re reducing its efficiency to make completing its full build a more meaningful investment.\n Stasis\n Cooldown: 120s → 150s\n Verdant Barrier\n Verdant Barrier is in a similar spot to Seeker’s Armguard, providing too much value for a mid-tier component. We’re reducing the power of its effect so there’s more incentive to complete it into a full item.\n Annul\n Passive cooldown: 50s → 65s\n Eclipse\n Eclipse has been struggling to compete with other fighter items, making it a less appealing option for many of its intended users. We’re giving it a small boost to help it shine as a more competitive choice for a wider range of champions.\n Base Stats\n Price: 3000 → 2900\n Ever Rising Moon\n Shield Value (Melee): 140 + 35% Bonus Attack Damage → 150 + 40% Bonus Attack Damage\n Unending Despair\n Unending Despair’s focus on teamfights has made it too situational, leaving tanks with little reason to choose it in many games. We’re increasing its general effectiveness to make it a more reliable option across a wider range of situations.\n Base Stats\n Health: 200 → 300\n Armor: 45 → 40\n Magic Resistance: 45 → 40\n [New] Ability Haste: 10\n Build Patch: Chain Vest (900) + Negatron Cloak (900) + Ruby Crystal (500) + 700→ Chain Vest (900) + Negatron Cloak (900) + Kindlegem (1000) + 200",
+        "GAME MODE CHANGES\n AAA ARAM\n New Augments\n New Augment Added: Blood Price\n Bug Fixes\n Fixed an issue where the Anvil Specialist Augment granted an incorrect number of Anvils when upgraded.\n Due to a conflict with his champion mechanics, Pyke will be unable to select Blood Price."
+      ],
+      "changeLines": [
+        "Minimum Damage Bonus Attack Damage Ratio: 80% Bonus Attack Damage → 60% Bonus Attack Damage",
+        "Maximum Damage Bonus Attack Damage Ratio: 160% Bonus Attack Damage → 120% Bonus Attack Damage",
+        "Cooldown: 60/55/50s → 80/70/60s",
+        "Shield Value: 65/90/115/140 + 45% Ability Power → 80/120/160/200 + 50% Ability Power",
+        "Damage per second: 10/25/40 + 15% Ability Power → 15/25/35 + 6% Ability Power",
+        "Healing per second: 20/30/40 + 20% Ability Power → 15/30/45 + 10% Ability Power",
+        "Shield Value: 65/75/85/95 + 9/10/11/12% Maximum Health → 70/80/90/100 + 11/12/13/14% Maximum Health",
+        "Armor per level: 4.3 → 5",
+        "Slow effect: 15/20/25/30% → 20/25/30/35%",
+        "Base damage of consecutive basic attacks: 10/20/30/40 → 20/30/40/50",
+        "Cooldown: 120s → 150s",
+        "Passive cooldown: 50s → 65s",
+        "Base Stats",
+        "Price: 3000 → 2900",
+        "Shield Value (Melee): 140 + 35% Bonus Attack Damage → 150 + 40% Bonus Attack Damage",
+        "Health: 200 → 300",
+        "Armor: 45 → 40",
+        "Magic Resistance: 45 → 40",
+        "Build Patch: Chain Vest (900) + Negatron Cloak (900) + Ruby Crystal (500) + 700→ Chain Vest (900) + Negatron Cloak (900) + Kindlegem (1000) + 200",
+        "New Augments",
+        "New Augment Added: Blood Price"
+      ]
+    },
     {
       "patch": "7.2d",
       "title": "Wild Rift Patch Notes 7.2d",

@@ -994,7 +994,7 @@
     "categories": [
       "Physical"
     ],
-    "cost": 3000,
+    "cost": 2900,
     "stats": {
       "ad": {
         "value": 65.0,
@@ -1006,7 +1006,7 @@
       }
     },
     "passives": [
-      "Ever Rising Moon: Hitting an enemy champion with 2 separate attacks or abilities within 1.8s deals bonus physical damage equal to 7% of the target's max Health [hp] (3.5% for ranged champions), and grants you a shield that absorbs damage equal to 140 + 35% bonus Attack Damage [ad] (70 + 18% bonus Attack Damage [ad] for ranged champions) for 2s. (6s Cooldawn)"
+      "Ever Rising Moon: Hitting an enemy champion with 2 separate attacks or abilities within 1.8s deals bonus physical damage equal to 7% of the target's max Health [hp] (3.5% for ranged champions), and grants you a shield that absorbs damage equal to 150 + 35% bonus Attack Damage [ad] (70 + 18% bonus Attack Damage [ad] for ranged champions) for 2s. (6s Cooldawn)"
     ],
     "tags": [
       "shield",
@@ -2832,15 +2832,19 @@
     "cost": 3000,
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 300.0,
         "percent": false
       },
       "armor": {
-        "value": 45.0,
+        "value": 40.0,
         "percent": false
       },
       "mr": {
-        "value": 45.0,
+        "value": 40.0,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10.0,
         "percent": false
       }
     },
@@ -3244,7 +3248,7 @@
       }
     },
     "passives": [
-      "Stasis (Active): Become invulnerable and untargetable for 2.5 seconds, but unable to move, attack, cast abilities or use items. (120s Cooldown)"
+      "Stasis (Active): Become invulnerable and untargetable for 2.5 seconds, but unable to move, attack, cast abilities or use items. (150s Cooldown)"
     ],
     "tags": [],
     "icon": "/items/seekers-armguard.png"

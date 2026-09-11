@@ -1,6 +1,51 @@
 {
   "schemaVersion": 1,
   "champions": {
+    "Vi": {
+      "totalChanges": 52,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 12,
+      "lastChangedPatch": "7.2e",
+      "lastChangedAt": "2026-09-09T09:00:00.000Z",
+      "lastBalancePatch": "7.2e",
+      "lastBalanceAt": "2026-09-09T09:00:00.000Z"
+    },
+    "Janna": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.2e",
+      "lastChangedAt": "2026-09-09T09:00:00.000Z",
+      "lastBalancePatch": "7.2e",
+      "lastBalanceAt": "2026-09-09T09:00:00.000Z"
+    },
+    "Swain": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.2e",
+      "lastChangedAt": "2026-09-09T09:00:00.000Z",
+      "lastBalancePatch": "7.2e",
+      "lastBalanceAt": "2026-09-09T09:00:00.000Z"
+    },
+    "Nautilus": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.2e",
+      "lastChangedAt": "2026-09-09T09:00:00.000Z",
+      "lastBalancePatch": "7.2e",
+      "lastBalanceAt": "2026-09-09T09:00:00.000Z"
+    },
+    "Malphite": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.2e",
+      "lastChangedAt": "2026-09-09T09:00:00.000Z",
+      "lastBalancePatch": "7.2e",
+      "lastBalanceAt": "2026-09-09T09:00:00.000Z"
+    },
     "Syndra": {
       "totalChanges": 10,
       "modeOnlyChanges": 0,
@@ -541,15 +586,6 @@
       "lastBalancePatch": "7.1d",
       "lastBalanceAt": "2026-04-28T09:00:00.000Z"
     },
-    "Vi": {
-      "totalChanges": 50,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 11,
-      "lastChangedPatch": "7.2b",
-      "lastChangedAt": "2026-07-29T09:00:00.000Z",
-      "lastBalancePatch": "6.2c",
-      "lastBalanceAt": "2025-08-13T09:00:00.000Z"
-    },
     "Senna": {
       "totalChanges": 20,
       "modeOnlyChanges": 5,
@@ -738,15 +774,6 @@
       "lastChangedAt": "2026-07-08T09:00:00.000Z",
       "lastBalancePatch": "6.0",
       "lastBalanceAt": "2025-01-08T17:00:00.000Z"
-    },
-    "Nautilus": {
-      "totalChanges": 14,
-      "modeOnlyChanges": 0,
-      "balanceChanges": 14,
-      "lastChangedPatch": "7.1h",
-      "lastChangedAt": "2026-06-24T09:00:00.000Z",
-      "lastBalancePatch": "7.1h",
-      "lastBalanceAt": "2026-06-24T09:00:00.000Z"
     },
     "Nami": {
       "totalChanges": 10,
@@ -946,15 +973,6 @@
       "lastBalancePatch": "7.1b",
       "lastBalanceAt": "2026-04-15T09:00:00.000Z"
     },
-    "Swain": {
-      "totalChanges": 14,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 13,
-      "lastChangedPatch": "7.1b",
-      "lastChangedAt": "2026-04-15T09:00:00.000Z",
-      "lastBalancePatch": "7.1b",
-      "lastBalanceAt": "2026-04-15T09:00:00.000Z"
-    },
     "Teemo": {
       "totalChanges": 13,
       "modeOnlyChanges": 0,
@@ -1053,15 +1071,6 @@
       "lastChangedAt": "2025-11-19T10:00:00.000Z",
       "lastBalancePatch": "6.3d",
       "lastBalanceAt": "2025-11-19T10:00:00.000Z"
-    },
-    "Malphite": {
-      "totalChanges": 9,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 6,
-      "lastChangedPatch": "6.3c",
-      "lastChangedAt": "2025-11-05T10:00:00.000Z",
-      "lastBalancePatch": "6.3c",
-      "lastBalanceAt": "2025-11-05T10:00:00.000Z"
     },
     "Viktor": {
       "totalChanges": 5,
@@ -1202,15 +1211,6 @@
       "totalChanges": 8,
       "modeOnlyChanges": 2,
       "balanceChanges": 6,
-      "lastChangedPatch": "6.0",
-      "lastChangedAt": "2025-01-08T17:00:00.000Z",
-      "lastBalancePatch": "6.0",
-      "lastBalanceAt": "2025-01-08T17:00:00.000Z"
-    },
-    "Janna": {
-      "totalChanges": 14,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 12,
       "lastChangedPatch": "6.0",
       "lastChangedAt": "2025-01-08T17:00:00.000Z",
       "lastBalancePatch": "6.0",

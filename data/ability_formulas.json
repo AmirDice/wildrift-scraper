@@ -2344,7 +2344,7 @@
           }
         ],
         "unmodeled": [
-          "shield activates after 8s without taking damage"
+          "Shield only recharges after not taking damage for 8 seconds"
         ]
       },
       "1": {
@@ -2371,7 +2371,6 @@
                 "pct": 45
               }
             ],
-            "hits": 1,
             "when": "per cast"
           }
         ],
@@ -2379,12 +2378,12 @@
           {
             "stat": "moveSpeed",
             "pct": 15,
-            "note": "for 3 seconds"
+            "note": "hastes Malphite by 15% for 3 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "slow target by 15-30% for 3s"
+          "Slows the target by 20% / 25% / 30% / 35% for 3 seconds"
         ]
       },
       "2": {
@@ -2397,13 +2396,13 @@
         ],
         "damage": [
           {
-            "name": "Thunderclap Cone",
+            "name": "Thunderclap cone attacks",
             "type": "physical",
             "base": [
-              10,
               20,
               30,
-              40
+              40,
+              50
             ],
             "ratios": [
               {
@@ -2415,11 +2414,10 @@
                 "pct": 20
               }
             ],
-            "hits": 1,
             "when": "per auto"
           },
           {
-            "name": "Thunderclap First Attack Bonus",
+            "name": "Thunderclap empowered first attack",
             "type": "physical",
             "base": [
               40,
@@ -2437,9 +2435,7 @@
                 "pct": 40
               }
             ],
-            "hits": 1,
-            "when": "per auto",
-            "note": "only on first auto after activation"
+            "when": "per auto"
           }
         ],
         "steroids": [
@@ -2448,12 +2444,14 @@
             "flat": [
               8
             ],
-            "note": "plus 25-40% total armor per rank (not modeled)"
+            "note": "plus 25% / 30% / 35% / 40% Armor (percent armor increase not modeled)"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "passive armor increases by percentage of total armor; active cone damage lasts 6s"
+          "Passive armor percent increase of 25% / 30% / 35% / 40% Armor scales with ability rank",
+          "Active lasts 6 seconds; only the first attack after activation is empowered for the extra bonus damage",
+          "Cone attacks strike enemies in a cone, not single-target"
         ]
       },
       "3": {
@@ -2484,14 +2482,13 @@
                 "pct": 45
               }
             ],
-            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "reduces attack speed of enemies by 35-50% for 3s"
+          "Reduces nearby enemies' attack speed by 35% / 40% / 45% / 50% for 3 seconds"
         ]
       },
       "4": {
@@ -2516,22 +2513,23 @@
                 "pct": 90
               }
             ],
-            "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "knocks up enemies for 1.5s"
+          "Knocks up nearby enemies for 1.5 seconds"
         ]
       }
     },
     "combo": [
       "4",
+      "auto",
       "3",
-      "1",
       "2",
+      "auto",
+      "1",
       "auto"
     ],
     "knowledge": {
@@ -9506,11 +9504,14 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 5
+            "pct": 5,
+            "note": "also granted to nearby allied champions"
           }
         ],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "Movement Speed bonus is also shared with nearby allied champions"
+        ]
       },
       "1": {
         "name": "Howling Gale",
@@ -9543,7 +9544,9 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "charge system: up to 2 charges, stored every 14s"
+          "charges stored once every 14 seconds, up to a maximum of 2 charges",
+          "knocks up enemies in its path",
+          "charges up for 0.75 seconds"
         ]
       },
       "2": {
@@ -9586,12 +9589,13 @@
               15,
               20,
               25
-            ]
+            ],
+            "note": "for 2 seconds"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "grants MS to 3 nearest allies"
+          "wind spirit automatically searches for the nearest 3 champions, granting Movement Speed bonuses to allies"
         ]
       },
       "3": {
@@ -9612,33 +9616,30 @@
               30,
               40
             ],
-            "ratios": [
-              {
-                "stat": "ap",
-                "pct": 10
-              }
-            ]
+            "note": "while the shield holds; also +10% AP as AD"
           }
         ],
         "defensive": [
           {
             "kind": "shield",
             "base": [
-              65,
-              90,
-              115,
-              140
+              80,
+              120,
+              160,
+              200
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 45
+                "pct": 50
               }
-            ]
+            ],
+            "note": "lasts 3 seconds"
           }
         ],
         "unmodeled": [
-          "targets lowest HP ally; also shields turret"
+          "also applies a shield to a turret within range",
+          "blesses herself and the allied champion with the lowest Health"
         ]
       },
       "4": {
@@ -9663,7 +9664,8 @@
                 "stat": "ap",
                 "pct": 90
               }
-            ]
+            ],
+            "note": "50 / 100 / 150 (+30% AP) Health each second for 3 seconds; total over 3 seconds shown"
           }
         ],
         "unmodeled": [
@@ -9672,10 +9674,12 @@
       }
     },
     "combo": [
+      "3",
       "1",
+      "auto",
       "2",
       "auto",
-      "1"
+      "4"
     ],
     "knowledge": {
       "source": "llm-knowledge",
@@ -17303,14 +17307,13 @@
             "name": "Staggering Blow",
             "type": "physical",
             "base": 13,
-            "ratios": [],
             "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "root on hit, 6s cooldown on same target"
+          "Roots the target for 1 second; 6 second cooldown on the same target"
         ]
       },
       "1": {
@@ -17336,14 +17339,14 @@
                 "stat": "ap",
                 "pct": 75
               }
-            ],
-            "when": "per cast"
+            ]
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "if hits terrain, refunds 50% cooldown and mana cost"
+          "Pulls target and Nautilus together",
+          "Hitting terrain refunds 50% of cooldown and mana cost"
         ]
       },
       "2": {
@@ -17356,7 +17359,7 @@
         ],
         "damage": [
           {
-            "name": "Titan's Wrath Empowered Attack",
+            "name": "Titan's Wrath empowered attacks",
             "type": "magic",
             "base": [
               50,
@@ -17378,27 +17381,22 @@
           {
             "kind": "shield",
             "base": [
-              65,
-              75,
-              85,
-              95
+              70,
+              80,
+              90,
+              100
             ],
             "ratios": [
               {
                 "stat": "ownMaxHp",
-                "pct": [
-                  9,
-                  10,
-                  11,
-                  12
-                ]
+                "pct": 11
               }
             ],
-            "durationS": 6
+            "note": "max HP ratio scales 11% / 12% / 13% / 14% by rank; shield lasts 6 seconds"
           }
         ],
         "unmodeled": [
-          "empowered attacks only while shield holds; 125% damage vs monsters"
+          "Empowered attacks only apply while the shield holds and hit around the target"
         ]
       },
       "3": {
@@ -17424,14 +17422,14 @@
                 "stat": "ap",
                 "pct": 50
               }
-            ],
-            "when": "per cast"
+            ]
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "subsequent waves deal 50% damage; 125% vs monsters; slow decays over 1.5s"
+          "Enemies hit by subsequent waves take 50% damage",
+          "Slows by 35% / 40% / 45% / 50% decaying over 1.5 seconds"
         ]
       },
       "4": {
@@ -17443,7 +17441,7 @@
         ],
         "damage": [
           {
-            "name": "Depth Charge (primary)",
+            "name": "Depth Charge",
             "type": "magic",
             "base": [
               150,
@@ -17455,11 +17453,10 @@
                 "stat": "ap",
                 "pct": 70
               }
-            ],
-            "when": "per cast"
+            ]
           },
           {
-            "name": "Depth Charge (secondary)",
+            "name": "Depth Charge (other enemies)",
             "type": "magic",
             "base": [
               125,
@@ -17472,32 +17469,31 @@
                 "pct": 40
               }
             ],
-            "when": "per cast"
+            "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "knockup and stun"
+          "Knocks up and stuns the target for 1 / 1.5 / 2 seconds"
         ]
       }
     },
     "combo": [
+      "4",
       "1",
       "auto",
       "2",
       "auto",
       "3",
-      "auto",
-      "4",
       "auto"
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.2,
+      "asEfficiency": 0.4,
       "resource": "mana",
       "abilitiesCanCrit": false,
-      "confidence": "high"
+      "confidence": "medium"
     }
   },
   "Nilah": {
@@ -23200,7 +23196,13 @@
         "name": "Ravenous Flock",
         "cooldowns": [],
         "damage": [],
-        "steroids": [],
+        "steroids": [
+          {
+            "stat": "hp",
+            "flat": 16,
+            "note": "maximum Health gained per Soul Fragment collected"
+          }
+        ],
         "defensive": [
           {
             "kind": "heal",
@@ -23208,12 +23210,12 @@
             "ratios": [
               {
                 "stat": "ownMaxHp",
-                "pct": {
-                  "lvlRange": [
-                    3,
-                    4.5
-                  ]
-                }
+                "pct": [
+                  3,
+                  3.5,
+                  4,
+                  4.5
+                ]
               },
               {
                 "stat": "ap",
@@ -23223,7 +23225,8 @@
           }
         ],
         "unmodeled": [
-          "Collects Soul Fragments from Visions of Empire and Nevermore hits and enemy deaths, granting 16 max health per fragment."
+          "collects Soul Fragments when Visions of Empire and Nevermove hit enemy champions, and also when they die",
+          "Soul Fragment heal amount is per Fragment collected"
         ]
       },
       "1": {
@@ -23236,7 +23239,7 @@
         ],
         "damage": [
           {
-            "name": "First bolt",
+            "name": "Death's Hand",
             "type": "magic",
             "base": [
               55,
@@ -23254,7 +23257,7 @@
             "when": "per cast"
           },
           {
-            "name": "Additional bolts",
+            "name": "Death's Hand (each bolt after the first)",
             "type": "magic",
             "base": [
               10,
@@ -23275,7 +23278,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Total additional damage capped at 110."
+          "number of bolts fired per cast is not stated in the tooltip (modelled as 5 bolts total: first bolt + 4 additional)",
+          "additional bolt damage is capped at up to 110 damage"
         ]
       },
       "2": {
@@ -23309,7 +23313,10 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Critically strikes immobilized champions for 50% increased damage. Slows by 30/40/50/60% for 2.5s. Reveals for 4s."
+          "critically strikes for 50% damage if it damages an immobilized champion",
+          "slows by 30% / 40% / 50% / 60% for 2.5 seconds",
+          "reveals targets hit for 4 seconds",
+          "champions hit give 1 Soul Fragment"
         ]
       },
       "3": {
@@ -23322,7 +23329,7 @@
         ],
         "damage": [
           {
-            "name": "Outward wave",
+            "name": "Nevermove (outgoing wave)",
             "type": "magic",
             "base": [
               35,
@@ -23340,7 +23347,7 @@
             "when": "per cast"
           },
           {
-            "name": "Return wave",
+            "name": "Nevermove (returning wave)",
             "type": "magic",
             "base": [
               35,
@@ -23361,7 +23368,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Roots for 1.5s. Recast pulls rooted enemies and collects 1 soul fragment."
+          "roots enemies within the returning area for 1.5 seconds",
+          "Recast: pulls rooted champions to himself and collects 1 Soul Fragment from targets"
         ]
       },
       "4": {
@@ -23376,14 +23384,14 @@
             "name": "Demonic Ascension",
             "type": "magic",
             "base": [
-              10,
+              15,
               25,
-              45
+              35
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 15
+                "pct": 6
               }
             ],
             "hits": 1,
@@ -23396,32 +23404,35 @@
           {
             "kind": "heal",
             "base": [
-              20,
+              15,
               30,
-              40
+              45
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 20
+                "pct": 10
               }
             ],
-            "when": "dot total",
             "durationS": 4
           }
         ],
         "unmodeled": [
-          "Recast deals damage and slows. Non-champion units restore 10% health. Controlled by Demon Energy, rechargeable by draining champions. Cooldown between Demonic Ascension recasts: 6s."
+          "Recast Demonflare deals damage and slows enemies (no numbers given)",
+          "Demon Energy depletes over time and is recharged indefinitely by draining enemy champions; takedowns fully restore it",
+          "non-champion units restore 10% health",
+          "cooldown between two Demonflare casts is 6 seconds"
         ]
       }
     },
     "combo": [
       "3",
       "2",
-      "1",
       "4",
+      "1",
       "auto",
-      "4"
+      "1",
+      "auto"
     ],
     "knowledge": {
       "source": "llm-knowledge",
@@ -27923,14 +27934,14 @@
             "ratios": [
               {
                 "stat": "targetMaxHp",
-                "pct": 4.8
-              },
-              {
-                "stat": "ad",
-                "pct": 0.03
+                "pct": {
+                  "lvlRange": [
+                    4.8,
+                    9
+                  ]
+                }
               }
             ],
-            "hits": 1,
             "when": "per auto"
           }
         ],
@@ -27938,12 +27949,14 @@
           {
             "stat": "attackSpeed",
             "pct": 27,
-            "note": "for 4 seconds on proc"
+            "note": "for 4 seconds, triggered by the every-3rd-attack proc"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Percentage scales from 4.8% to 9% based on level. Reduces target armor by 20%. Deals 300 max damage to monsters. Triggers every 3rd attack on same enemy."
+          "reduces the target's Armor by 20%",
+          "+0.03% AD scaling on the max Health percentage",
+          "deals 300 max damage vs. monsters"
         ]
       },
       "1": {
@@ -27967,14 +27980,13 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 80
+                "pct": 60
               }
             ],
-            "hits": 1,
-            "when": "per cast"
+            "hits": 1
           },
           {
-            "name": "Vault Breaker (Charged)",
+            "name": "Vault Breaker (charged)",
             "type": "physical",
             "base": [
               120,
@@ -27985,18 +27997,20 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 160
+                "pct": 120
               }
             ],
             "hits": 1,
-            "when": "per cast",
             "alt": true
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Colliding with an enemy champion knocks them back. Deals 75% damage to minions and monsters."
+          "Hold slows Vi's Movement Speed by 15% while charging and increases damage and dash distance",
+          "colliding with an enemy champion stops the punch and knocks them back",
+          "applies Denting Blows to all enemies hit",
+          "deals 75% damage to minions and monsters"
         ]
       },
       "2": {
@@ -28012,23 +28026,29 @@
           {
             "stat": "moveSpeed",
             "pct": 47,
-            "note": "at max stacks"
+            "note": "burst of Movement Speed at max stacks"
           }
         ],
         "defensive": [
           {
             "kind": "shield",
             "base": [
-              60,
-              85,
               110,
-              135
+              135,
+              160,
+              185
             ],
-            "ratios": []
+            "ratios": [
+              {
+                "stat": "ownMaxHp",
+                "pct": 15
+              }
+            ],
+            "note": "60/85/110/135 base shield + 5 stacks x 10 (1.5% / 2% / 2.5% / 3% max HP per stack) at max stacks; ratio uses rank-4 value of 15% max HP, lasts 3 seconds"
           }
         ],
         "unmodeled": [
-          "Each stack consumed adds 10 + 1.5%/2%/2.5%/3% max HP to the shield (max 5 stacks). Stacks up to 5, one gained per hit."
+          "stacks build from hitting an enemy with an attack or ability, up to 5; stacks fall off one at a time and a max of 1 stack is added per attack or ability"
         ]
       },
       "3": {
@@ -28059,22 +28079,22 @@
                 "pct": 70
               }
             ],
-            "hits": 1,
             "when": "per auto"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Also damages enemies behind the target."
+          "also damages enemies behind the target",
+          "stores a new charge every 11 / 10 / 9 / 8 seconds and can hold 2 charges at once"
         ]
       },
       "4": {
         "name": "Assault and Battery",
         "cooldowns": [
-          60.0,
-          55.0,
-          50.0
+          80.0,
+          70.0,
+          60.0
         ],
         "damage": [
           {
@@ -28091,14 +28111,15 @@
                 "pct": 140
               }
             ],
-            "hits": 1,
-            "when": "per cast"
+            "hits": 1
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Knocks up target for 1.25s. Enemies in the way are knocked aside and take 75% damage. Vi cannot be stopped while chasing."
+          "knocks the target up for 1.25 second",
+          "enemies in the way are knocked aside and take 75% of the damage",
+          "Vi reveals her target and cannot be stopped while chasing it down"
         ]
       }
     },
@@ -28108,26 +28129,23 @@
       "3",
       "auto",
       "4",
+      "auto",
+      "3",
       "auto"
     ],
     "mechanics": [
       {
         "kind": "everyNHit",
-        "evidence": "Every 3rd attack on the same enemy",
+        "evidence": "Every 3rd attack on the same enemy deals 4.8% - 9% ( +0.03% AD ) bonus physical damage of their max Health",
         "n": 3
-      },
-      {
-        "kind": "reload",
-        "evidence": "can hold 2 charges at once",
-        "magazine": 2
       }
     ],
     "knowledge": {
       "source": "llm-knowledge",
-      "asEfficiency": 0.6,
+      "asEfficiency": 0.7,
       "resource": "mana",
-      "abilitiesCanCrit": false,
-      "confidence": "high"
+      "abilitiesCanCrit": true,
+      "confidence": "medium"
     }
   },
   "Warwick": {

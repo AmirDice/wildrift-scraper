@@ -6052,7 +6052,7 @@
           "12",
           "10"
         ],
-        "text": "Blesses herself and the allied champion with the lowers Hp with a shield that absorbs 65 / 90 / 115 / 140 ( +45% AP ) damage and grants 10 / 20 / 30 / 40 ( +10% AP ) Attack Damage while it holds. Lasts for 3 seconds. If there is a turret within range, applies a shield to the turret as well.",
+        "text": "Blesses herself and the allied champion with the lowers Hp with a shield that absorbs 80 / 120 / 160 / 200 ( +50% AP ) damage and grants 10 / 20 / 30 / 40 ( +10% AP ) Attack Damage while it holds. Lasts for 3 seconds. If there is a turret within range, applies a shield to the turret as well.",
         "damageTypes": [],
         "scales": [
           "ap"
@@ -10039,8 +10039,8 @@
       },
       "armor": {
         "base": 49.0,
-        "perLevel": 4.0,
-        "lvl15": 105.0
+        "perLevel": 5.0,
+        "lvl15": 119.0
       },
       "mr": {
         "base": 38.0,
@@ -10099,7 +10099,7 @@
           "8",
           "8"
         ],
-        "text": "Launches a shard that deals 70 / 130 / 190 / 250 ( +45% AP ) magic damage , slowing the target by 15% / 20% / 25% / 30% , and hasting Malphite by 15% for 3 seconds.",
+        "text": "Launches a shard that deals 70 / 130 / 190 / 250 ( +45% AP ) magic damage , slowing the target by 20% / 25% / 30% / 35% , and hasting Malphite by 15% for 3 seconds.",
         "damageTypes": [
           "magic"
         ],
@@ -10119,7 +10119,7 @@
           "8",
           "7"
         ],
-        "text": "Passive: Gains 8 Armor ( 25% / 30% / 35% / 40% Armor ). Active: For the next 6 seconds, attacks deal 10 / 20 / 30 / 40 ( +20% AP +20% Armor ) physical damage in a cone. The first attack is empowered to deal 40 / 60 / 80 / 100 ( +40% AP +40% Armor ) bonus physical damage to the target.",
+        "text": "Passive: Gains 8 Armor ( 25% / 30% / 35% / 40% Armor ). Active: For the next 6 seconds, attacks deal 20 / 30 / 40 / 50 ( +20% AP +20% Armor ) physical damage in a cone. The first attack is empowered to deal 40 / 60 / 80 / 100 ( +40% AP +40% Armor ) bonus physical damage to the target.",
         "damageTypes": [
           "physical"
         ],
@@ -11651,7 +11651,7 @@
           "11",
           "11"
         ],
-        "text": "Gains a shield that absorbs 65 / 75 / 85 / 95 ( +9% / 10% / 11% / 12% max HP ) damage for 6 seconds. While the shield holds, Nautilus' attacks are empowered to deal an additional 50 / 60 / 70 / 80 ( +40% AP ) magic damage around the target. Deals 125% damage against monsters.",
+        "text": "Gains a shield that absorbs 70 / 80 / 90 / 100 ( +11% / 12% / 13% / 14% max HP ) damage for 6 seconds. While the shield holds, Nautilus' attacks are empowered to deal an additional 50 / 60 / 70 / 80 ( +40% AP ) magic damage around the target. Deals 125% damage against monsters.",
         "damageTypes": [
           "magic"
         ],
@@ -16855,7 +16855,7 @@
           "65",
           "55"
         ],
-        "text": "Swain frees the demon, dealing 10 / 25 / 45 ( +15% AP ) magic damage per second to enemies within his range and restoring 20 / 30 / 40 ( +20% AP ) health to himself. Recast: Can be cast again after 2 seconds of Demonic Ascension, dealing damage and slowing enemies. Non-champions units will restore 10% health . Demon Ascension is controlled by Demon Energy, which depletes over time, and can be recharged indefinitely by draining enemy Champions. Champion takedowns fully restore Demon Energy. Cooldown between two Demonflare: 6 seconds",
+        "text": "Swain frees the demon, dealing 15 / 25 / 35 ( +6% AP ) magic damage per second to enemies within his range and restoring 15 / 30 / 45 ( +10% AP ) health to himself. Recast: Can be cast again after 2 seconds of Demonic Ascension, dealing damage and slowing enemies. Non-champions units will restore 10% health . Demon Ascension is controlled by Demon Energy, which depletes over time, and can be recharged indefinitely by draining enemy Champions. Champion takedowns fully restore Demon Energy. Cooldown between two Demonflare: 6 seconds",
         "damageTypes": [
           "magic"
         ],
@@ -19258,7 +19258,7 @@
           "7",
           "6"
         ],
-        "text": "Hold : Charges up a powerful punch, slowing Movement Speed by 15% while increasing the punch's damage and dash distance. Cast: Dashes forward dealing 60 / 95 / 130 / 165 ( +80% AD ) to 120 / 190 / 260 / 330 ( +160% AD ) physical damage and applying Denting Blows to all enemies hit. Colliding with an enemy champion stops the punch and knocks them back. Deals 75% damage to minions and monsters.",
+        "text": "Hold : Charges up a powerful punch, slowing Movement Speed by 15% while increasing the punch's damage and dash distance. Cast: Dashes forward dealing 60 / 95 / 130 / 165 ( +60% AD ) to 120 / 190 / 260 / 330 ( +120% AD ) physical damage and applying Denting Blows to all enemies hit. Colliding with an enemy champion stops the punch and knocks them back. Deals 75% damage to minions and monsters.",
         "damageTypes": [
           "physical"
         ],
@@ -19312,9 +19312,9 @@
         "slot": "4",
         "name": "Assault and Battery",
         "cooldowns": [
-          "60",
-          "55",
-          "50"
+          "80",
+          "70",
+          "60"
         ],
         "text": "Chases down an enemy champion, knocking them up for 1.25 second and dealing 150 / 300 / 450 ( +140% AD ) physical damage . Vi Reveals her target and cannot be stopped while chasing it down. Enemies in the way are knocked aside and take 75% of the damage.",
         "damageTypes": [

@@ -92,6 +92,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
     label: "Updates",
     collapsed: true,
     items: [
+      { href: "/updates", label: "Site Updates", badges: ["new"], desc: "What patch the data is on, and email alerts" },
       { href: "/blog", label: "Guides", desc: "Best picks per role, climbing & meta reads" },
       { href: "/creators", label: "Creators", desc: "Wild Rift channels still uploading" },
       { href: "/news", label: "Latest News", desc: "Patches, champions & updates" },

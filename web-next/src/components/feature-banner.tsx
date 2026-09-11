@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { ANNOUNCEMENT } from "@/lib/announcement";
 
 // Top-of-page highlight for the newest feature. Dismissible (remembered in
 // localStorage) so it grabs attention once without nagging forever. Bump the
@@ -38,10 +39,23 @@ const FLAG_PROMO = BUILD_TOOLS_LIVE
       cta: "See it",
     };
 
-// The "EU data refresh incoming" countdown banner that used to override this
-// was removed 2026-08-06, the day the refresh shipped -- the full roster is
-// collected and live, which is exactly what the current banner announces.
-const PROMO = FLAG_PROMO;
+// A site-wide ANNOUNCEMENT outranks the feature promo while one is running.
+// Skipping a patch is the kind of thing a returning reader needs before they
+// trust a number, and it cannot wait behind whichever feature is newest. The
+// copy lives in lib/announcement.ts because the /updates page and the notice
+// on the win-rate pages say the same thing and must not drift from it.
+//
+// FLAG_PROMO above is untouched and takes over again the moment ANNOUNCEMENT
+// is retired, so the feature rotation does not have to be rebuilt afterwards.
+const PROMO = {
+  key: ANNOUNCEMENT.key,
+  href: ANNOUNCEMENT.href,
+  lead: ANNOUNCEMENT.lead,
+  body: ANNOUNCEMENT.short,
+  hideOn: [...ANNOUNCEMENT.hideOn] as string[],
+  badges: [...ANNOUNCEMENT.badges] as string[],
+  cta: ANNOUNCEMENT.cta,
+} satisfies typeof FLAG_PROMO;
 const DISMISS_KEY = PROMO.key;
 // pages the banner points at -- no reason to show it there
 const HIDE_ON = PROMO.hideOn;
