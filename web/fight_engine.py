@@ -3601,7 +3601,8 @@ def _typed_ehp(st: dict) -> tuple[float, float]:
 
 def evaluation_vector(name: str, item_slugs: list[str],
                       rune_names: list[str] | None = None,
-                      level: int = 15) -> dict:
+                      level: int = 15,
+                      ad_share: float = 0.5, ap_share: float = 0.5) -> dict:
     """Everything the engine can measure about a build, unweighted.
 
     The caller decides what matters. An objective for a marksman and an
@@ -3630,6 +3631,15 @@ def evaluation_vector(name: str, item_slugs: list[str],
                              "overkill": (d or {}).get("overkill", 0)}
 
     phys_ehp, magic_ehp = _typed_ehp(st)
+    # Effective health against THIS comp's actual damage split. Not a blend of
+    # the two typed numbers: effective health is health over the share that
+    # gets through, and shares add while their reciprocals do not.
+    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
+    _dr = st["dr"] if st["dr"] < 1 else 0.99
+    taken = (ad_share * 100.0 / (100.0 + st["armor"]) * (1 - st.get("drPhys", 0.0))
+             + ap_share * 100.0 / (100.0 + st["mr"]) * (1 - st.get("drMagic", 0.0))) or 1.0
+    comp_ehp = (st["hp"] + shield) / taken / (1 - _dr)
     # Seconds alive under FOCUS_DPS, the same reference delivered_share uses.
     ttd = (m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
     # What the build actually delivers before dying, rather than its rate.
@@ -3646,6 +3656,7 @@ def evaluation_vector(name: str, item_slugs: list[str],
         "mixedEhp": m["ehp"],
         "physicalEhp": round(phys_ehp),
         "magicEhp": round(magic_ehp),
+        "compEhp": round(comp_ehp),
         "timeToDie": round(ttd, 2),
         # what the kit does that is not damage
         "selfSustain": m["sustain"],
@@ -3656,3 +3667,76 @@ def evaluation_vector(name: str, item_slugs: list[str],
         "goldEfficiency": round(build_efficiency(
             name, [s for s in item_slugs if s in ITEMS]), 3),
     }
+
+
+#: What each vector field is measured against, so weights are comparable.
+#: Every one reuses a constant the engine already had rather than inventing a
+#: new scale.
+OBJECTIVE_REFS = {
+    "burstDamage": lambda: REF_BURST,
+    "sustainedDps": lambda: REF_DPS,
+    # aoe8 is a TOTAL over the window and dps8 is per second.
+    "aoeDamage": lambda: REF_DPS * REF_FIGHT,
+    "damageBeforeDeath": lambda: REF_DPS * REF_FIGHT,
+    "mixedEhp": lambda: REF_DURABILITY_CUT,
+    "physicalEhp": lambda: REF_DURABILITY_CUT,
+    "magicEhp": lambda: REF_DURABILITY_CUT,
+    "compEhp": lambda: REF_DURABILITY_CUT,
+    "timeToDie": lambda: REF_FIGHT,
+    "selfSustain": lambda: REF_HEAL,
+    "supportOutput": lambda: REF_SUP,
+    "ccSeconds": lambda: 3.0,
+    "goldEfficiency": lambda: 1.0,
+}
+
+#: Fields where enough is enough, capped at their reference. This is the 14k
+#: durability finding generalised: surviving the fight twice over is worth no
+#: more than surviving it once, and the same is true of every defensive
+#: measurement. Offence is deliberately uncapped -- there is no point past
+#: which more damage stops counting.
+OBJECTIVE_CAPPED = {"mixedEhp", "physicalEhp", "magicEhp", "compEhp",
+                    "timeToDie", "goldEfficiency"}
+
+OBJECTIVES = _load("build_objectives.json") or {}
+
+
+def objective_weights(name_or_weights) -> dict:
+    """A named objective's weights, or a caller's own dict passed through."""
+    if isinstance(name_or_weights, dict):
+        return name_or_weights
+    entry = (OBJECTIVES.get("objectives") or {}).get(name_or_weights) or {}
+    return entry.get("weights") or {}
+
+
+def default_objective(name: str) -> str:
+    """The objective to use for this champion when nothing else says.
+
+    A DEFAULT, not a rule. The whole reason objectives are data is that the
+    scenario or the model overrides this; fight_score had to ask
+    _support_weight(variant, name) whether a champion was an enchanter, and an
+    objective asks nothing about the champion at all.
+    """
+    role = (OBJECTIVES.get("roleDefaults") or {}).get(CHAMP_CLASS.get(name, ""))
+    return role or "sustained_damage"
+
+
+def objective_score(vec: dict, name_or_weights) -> float:
+    """Score an evaluation vector against one objective, 0-100.
+
+    The objective says WHICH measurements matter. The vector says what the
+    build achieves. Nothing here knows which champion it is looking at, which
+    is what lets one system serve a marksman and an enchanter without a branch
+    for either.
+    """
+    weights = objective_weights(name_or_weights)
+    if not weights or not vec:
+        return 0.0
+    total = sum(weights.values()) or 1.0
+    acc = 0.0
+    for field, w in weights.items():
+        ref = OBJECTIVE_REFS.get(field)
+        if not ref:
+            continue
+        value = float(vec.get(field) or 0.0) / (ref() or 1.0)
+        acc += (w / total) * (min(1.0, value) if field in OBJECTIVE_CAPPED else value)
+    return round(100 * acc, 1)

@@ -2,8 +2,8 @@
   "_note": "Adversarial benchmark for the build optimizer. Sixteen champions chosen to stress DIFFERENT parts of the scoring system rather than to be strong, each run under three scenarios. Expected properties are structural claims about what a correct answer looks like, not a copy of any particular build: a range, not a fingerprint. Where captured top-50 builds exist they are reported alongside as independent evidence, because a structural check can pass on a build no human would run. A FAIL is not automatically a bug: it says the build has a different shape from every captured build of that champion, which is worth looking at either way.",
   "_scenarios": {
     "A_pure": "The stated objective alone, ranked on the variant that expresses it.",
-    "B_comp": "The same champion against a named enemy composition, ranked through score_vs_comp.",
-    "C_constrained": "Maximise damage SUBJECT TO surviving the reference fight. The constraint is the point: an unconstrained damage maximiser and a constrained one should differ, and if they never do the constraint is not binding."
+    "B_comp": "The same champion against a named enemy composition, scored as the champion's OBJECTIVE over an evaluation vector computed against that comp's damage split. It used to rank on score_vs_comp, which is 0.45*time-to-kill-their-carry + 0.55*durability and has no support term at all -- so an enchanter was ranked by a metric that cannot see her job.",
+    "C_constrained": "Maximise the OBJECTIVE subject to surviving, as a hard filter rather than a penalty term. It used to maximise dps8 regardless of objective, which is the wrong thing to maximise for an enchanter outright."
   },
   "_itemClasses": {
     "damage": "carries any of ad, ap, crit, attackSpeed, physicalPen, magicPen, lethality",
@@ -223,7 +223,8 @@
           ],
           "survivalSeconds": 2.4
         }
-      }
+      },
+      "objective": "anti_tank"
     },
     {
       "name": "Evelynn",
@@ -435,7 +436,8 @@
           ],
           "survivalSeconds": 2.7
         }
-      }
+      },
+      "objective": "sustained_damage"
     },
     {
       "name": "Dr. Mundo",
@@ -561,7 +563,8 @@
           ],
           "survivalSeconds": 2.2
         }
-      }
+      },
+      "objective": "teamfight_damage"
     },
     {
       "name": "Senna",
@@ -646,7 +649,8 @@
           ],
           "survivalSeconds": 2.1
         }
-      }
+      },
+      "objective": "bruiser"
     },
     {
       "name": "Viego",
@@ -688,8 +692,10 @@
           ],
           "survivalSeconds": 2.5
         }
-      }
+      },
+      "objective": "teamfight_damage"
     }
   ],
-  "_calibration": "Every range here is EXACTLY the range real top-50 players occupy, measured with --calibrate on 2026-09-11. It is deliberately not widened. A first draft widened each range by one item either side and all 48 tests passed on the first run, which makes a regression suite that cannot detect a regression. Strict conformance to what humans hold is a claim the optimizer can fail, and a failure here is information rather than noise -- sometimes about the optimizer, sometimes about a range that a patch moved. Re-run --calibrate after a patch before trusting a new failure."
+  "_calibration": "Every range here is EXACTLY the range real top-50 players occupy, measured with --calibrate on 2026-09-11. It is deliberately not widened. A first draft widened each range by one item either side and all 48 tests passed on the first run, which makes a regression suite that cannot detect a regression. Strict conformance to what humans hold is a claim the optimizer can fail, and a failure here is information rather than noise -- sometimes about the optimizer, sometimes about a range that a patch moved. Re-run --calibrate after a patch before trusting a new failure.",
+  "_objectives": "From data/build_objectives.json. A champion with no entry here uses fight_engine.default_objective(), which reads its class. An entry is only present where the TEST's intent differs from that default."
 }

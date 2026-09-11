@@ -1,0 +1,44 @@
+{
+  "_note": "Objectives are weightings over the evaluation vector. The weights describe the COMBAT OBJECTIVE, not the champion: 'maximum sustained damage' is the same objective whether it is asked for Graves or Master Yi, and 'maximum team utility' is the same one for Janna, Soraka, Lulu and Nami. That is the point. fight_score needed _support_weight(variant, name) to know an enchanter was an enchanter; an objective needs nothing about the champion at all, so adding Milio or Renata costs no code.",
+  "_normalisation": "Each field is divided by its reference in fight_engine.OBJECTIVE_REFS and the weights sum to 1, so a score is comparable across objectives. DEFENSIVE fields are capped at their reference and offensive ones are not: surviving the fight twice over is worth no more than surviving it once, which is the 14k durability finding, while there is no point past which more damage stops counting.",
+  "_defaults": "roleDefaults is a starting objective per class, used when nothing else says otherwise. It is a default, not a rule -- the scenario or the model is expected to override it, which is the whole reason objectives are data rather than a branch in the scorer.",
+  "objectives": {
+    "sustained_damage": {
+      "label": "Maximum sustained damage",
+      "weights": {"sustainedDps": 0.45, "damageBeforeDeath": 0.25, "burstDamage": 0.15, "timeToDie": 0.15}
+    },
+    "burst_damage": {
+      "label": "Maximum burst",
+      "weights": {"burstDamage": 0.55, "sustainedDps": 0.15, "damageBeforeDeath": 0.15, "timeToDie": 0.15}
+    },
+    "teamfight_damage": {
+      "label": "Maximum teamfight damage",
+      "weights": {"sustainedDps": 0.30, "aoeDamage": 0.30, "damageBeforeDeath": 0.25, "timeToDie": 0.15}
+    },
+    "bruiser": {
+      "label": "Damage delivered while surviving",
+      "weights": {"damageBeforeDeath": 0.40, "sustainedDps": 0.20, "timeToDie": 0.25, "selfSustain": 0.15}
+    },
+    "frontline": {
+      "label": "Maximum frontline value",
+      "weights": {"timeToDie": 0.45, "compEhp": 0.25, "ccSeconds": 0.15, "sustainedDps": 0.15}
+    },
+    "team_utility": {
+      "label": "Maximum team utility",
+      "weights": {"supportOutput": 0.45, "selfSustain": 0.15, "timeToDie": 0.25, "ccSeconds": 0.15}
+    },
+    "anti_tank": {
+      "label": "Maximum damage into high health and resistances",
+      "weights": {"sustainedDps": 0.50, "damageBeforeDeath": 0.30, "timeToDie": 0.20}
+    }
+  },
+  "roleDefaults": {
+    "Marksman": "sustained_damage",
+    "Mage": "burst_damage",
+    "Assassin": "burst_damage",
+    "Bruiser": "bruiser",
+    "Fighter": "bruiser",
+    "Tank": "frontline",
+    "Enchanter": "team_utility"
+  }
+}

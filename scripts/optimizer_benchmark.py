@@ -230,12 +230,22 @@ def run_champion(entry: dict, verbose: bool) -> list[dict]:
     judge("A_pure", best_a, metrics[tuple(best_a)], {"variant": variant})
 
     # ---- B: against a named enemy comp ------------------------------------
+    #
+    # Scored as the champion's OBJECTIVE over a vector computed against that
+    # comp's damage split, not on score_vs_comp. score_vs_comp is
+    # 0.45*time-to-kill-their-carry + 0.55*durability and carries no support
+    # term at all, so it ranked Janna by a metric that cannot see her job: it
+    # handed her Locket and Radiant Virtue where real Janna players build
+    # three damage items. The objective knows nothing about which champion it
+    # is looking at -- the weights describe the combat objective.
+    objective = entry.get("objective") or fe.default_objective(champ)
     carry, ad_share, ap_share = enemy_carry(entry.get("comp") or [])
-    comp_scores = {tuple(b): fe.score_vs_comp(champ, b, runes, carry, ad_share,
-                                              ap_share, LEVEL)["score"] for b in builds}
-    best_b = max(builds, key=lambda b: comp_scores[tuple(b)])
+    vectors = {tuple(b): fe.evaluation_vector(champ, b, runes, LEVEL,
+                                              ad_share, ap_share) for b in builds}
+    best_b = max(builds, key=lambda b: fe.objective_score(vectors[tuple(b)], objective))
     judge("B_comp", best_b, metrics[tuple(best_b)],
-          {"comp": entry.get("comp"), "adShare": round(ad_share, 2)})
+          {"comp": entry.get("comp"), "adShare": round(ad_share, 2),
+           "objective": objective})
 
     # ---- C: most damage that still survives the fight ----------------------
     #
@@ -247,12 +257,16 @@ def run_champion(entry: dict, verbose: bool) -> list[dict]:
     survivors = [b for b in builds
                  if survival_seconds(metrics[tuple(b)]) >= floor]
     if survivors:
-        key = "burst3" if variant in fe.BURSTY else "dps8"
-        best_c = max(survivors, key=lambda b: metrics[tuple(b)][key])
+        # Maximise the OBJECTIVE, not dps8. Maximising damage regardless of
+        # objective is the wrong thing to ask for an enchanter outright: it
+        # handed Janna five damage items and no support item, which is not a
+        # build anyone plays.
+        best_c = max(survivors,
+                     key=lambda b: fe.objective_score(vectors[tuple(b)], objective))
         same = sorted(best_c) == sorted(best_a)
         judge("C_constrained", best_c, metrics[tuple(best_c)],
               {"survivorsOf": f"{len(survivors)}/{len(builds)}",
-               "sameAsUnconstrained": same})
+               "objective": objective, "sameAsUnconstrained": same})
     else:
         results.append({"champion": champ, "scenario": "C_constrained",
                         "status": "SKIP",
