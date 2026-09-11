@@ -191,7 +191,74 @@ def build_pool(champ, runes, source="ladder", supplied=None):
     return ladder + extras, extras
 
 
-def run(champ, want_block=False, source="ladder", supplied=None):
+#: The axes a build can genuinely trade off against each other. `sustained` and
+#: `burst` are kept SEPARATE on purpose: collapsing them into one damage number
+#: is what fight_score does at ranking time, and doing it here as well would
+#: discard the build that is second-best at everything and best at burst, which
+#: is exactly the build a burst-leaning player wants.
+PARETO_AXES = ("dps8", "burst3", "ehp", "support", "early")
+
+
+def pareto_front(rows, axes=PARETO_AXES):
+    """The builds no other build beats on every axis at once.
+
+    A build is DOMINATED when some other build is at least as good on every
+    axis and strictly better on one. Dominated builds are not close calls --
+    nothing about them is worth choosing, at any weighting of the axes, so no
+    playstyle dial and no enemy comp can make one the right answer.
+
+    This is what the score cannot do. fight_score has to commit to weights, and
+    the moment it does, a build that wins on an axis the weights happen to
+    discount disappears into the middle of a ranked list. The frontier is
+    weight-free: it is every build that is the best answer to SOME question.
+
+    Written to be checkable rather than clever -- O(n^2) over a few thousand
+    rows is milliseconds, and the obvious version is the one that can be read
+    against the definition above.
+
+    MEASURED, AND IT DOES NOT WORK AS A PRE-FILTER. The idea was to hand the
+    model a few dozen genuinely competitive builds instead of thousands of
+    ranked rows. Over 8 champions on ladder-only pools the frontier is indeed
+    small -- 1% to 57% of the pool -- but it keeps only 22 of the 82 builds
+    real top-50 players hold:
+
+        Ekko 7/11   Riven 5/11   Darius 4/10   Nami 3/9
+        Malphite 1/10   Ashe 1/7   Ahri 1/8   Jinx 0/16
+
+    So 73% of real builds are "dominated" by the engine's axes. They are not
+    dominated in the game; they are dominated in a model whose axes are
+    correlated (dps8, burst3 and early all rise together with damage items) and
+    incomplete. Nothing here measures stickiness -- move speed and slows, which
+    is why Stridebreaker and Dead Man's Plate are bought -- or resist TYPE
+    against a specific enemy comp, or an item active. Filtering on axes that
+    miss what players optimise for throws away their answers.
+
+    Nami is the tell in the other direction: she has the largest frontier
+    (57%) because `support` is a live axis for her and genuinely trades off
+    against damage. Where the engine can see a real trade-off, the frontier is
+    wide.
+
+    KEPT AS A DIAGNOSTIC, which is what it is good for. Frontier size measures
+    how much genuine choice the engine can see for a champion. Jinx returning
+    ONE undominated build out of 91 does not mean Jinx has one good build; it
+    means the engine sees no trade-offs in her item pool at all, and that is a
+    modelling gap worth chasing rather than a filter worth shipping.
+    """
+    vals = [tuple(r.get(a, 0.0) for a in axes) for r in rows]
+    keep = []
+    for i, vi in enumerate(vals):
+        dominated = False
+        for j, vj in enumerate(vals):
+            if i == j:
+                continue
+            if all(b >= a for a, b in zip(vi, vj)) and any(b > a for a, b in zip(vi, vj)):
+                dominated = True
+                break
+        if not dominated:
+            keep.append(rows[i])
+    return keep
+
+def run(champ, want_block=False, source="ladder", supplied=None, pareto=False):
     rec = LADDER.get(champ) or {}
     runes = [k["name"] for k in (rec.get("keystones") or [])[:1]]
     runes += [m["name"] for m in (rec.get("minors") or [])[:4]]
@@ -236,6 +303,21 @@ def run(champ, want_block=False, source="ladder", supplied=None):
             "exact": exact,
         })
     rows.sort(key=lambda r: -r["primary"])
+    all_rows = rows
+    front_note = ""
+    if pareto:
+        front = pareto_front(rows)
+        # How many builds a real top-50 player holds SURVIVE the filter. If the
+        # frontier drops builds humans actually run, it is discarding real
+        # answers and the filter is wrong -- so it is reported every time
+        # rather than assumed.
+        held = {s for _r, s in humans}
+        before = len([r for r in rows if frozenset(r["items"]) in held])
+        after = len([r for r in front if frozenset(r["items"]) in held])
+        front_note = (f"pareto: {len(front)} of {len(rows)} builds are undominated "
+                      f"({100.0 * len(front) / max(1, len(rows)):.1f}%); "
+                      f"captured human builds kept {after}/{before}")
+        rows = front
 
     bar = "=" * 92
     print("")
@@ -248,8 +330,10 @@ def run(champ, want_block=False, source="ladder", supplied=None):
           + (f" + {len(extras)} {added_by.get(source, source)}" if extras else ""))
     if extras:
         print(f"  added: {', '.join(extras)}")
-    print(f"legal 5-item combinations scored: {len(rows)}   "
+    print(f"legal 5-item combinations scored: {len(all_rows)}   "
           f"captured human builds available: {len(humans)}")
+    if front_note:
+        print(front_note)
     print(bar)
     print(f"{'#':>2} {'build':<58} {'score':>6} {key:>8} {'early3':>7} "
           f"{'burst3':>7} {'dps8':>6} {'ehp':>5} {'sup':>5} {'gold':>6}")
@@ -363,6 +447,9 @@ def main():
                     help="comma-separated item slugs to add to the ladder pool")
     ap.add_argument("--llm-pool", action="store_true",
                     help="widen the pool with the MODEL's own candidateItemScores")
+    ap.add_argument("--pareto", action="store_true",
+                    help="keep only undominated builds: no other build is at least "
+                         "as good on every axis and better on one")
     ap.add_argument("--engine-extras", action="store_true",
                     help="REPRODUCES OLD BEHAVIOUR: widen with 8 items chosen by "
                          "single-item marginal value, the method measured to invert "
@@ -376,7 +463,8 @@ def main():
         if champ not in fe.CHAMPS:
             print(f"{champ}: not in roster")
             continue
-        run(champ, want_block=args.block, source=source, supplied=supplied)
+        run(champ, want_block=args.block, source=source, supplied=supplied,
+            pareto=args.pareto)
     return 0
 
 
