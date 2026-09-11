@@ -50,6 +50,7 @@ sys.path.insert(0, str(ROOT))
 
 import web.fight_engine as fe  # noqa: E402
 from web.advisor.validate import hard_exclusive_violation  # noqa: E402
+from web.advisor import supportitem  # noqa: E402
 
 LEVEL = 15
 EARLY_ITEMS = 3
@@ -267,10 +268,24 @@ def run(champ, want_block=False, source="ladder", supplied=None, pareto=False):
     pool, extras = build_pool(champ, runes, source=source, supplied=supplied)
     humans = real_builds(champ)
 
+    # THE SUPPORT ITEM IS NOT OPTIONAL, and the enumerator did not know it.
+    #
+    # A support opens on one of two 0-gold items and never sells it: Soulcast
+    # pays 75 gold a minute and stacks to 250 Health and 20 AD / 40 AP. A
+    # support build without one has given up the role's income for the game.
+    # web/advisor/supportitem.py has enforced this on the MODEL's answer since
+    # it was written; the ranking side never learned it, so seven of the
+    # engine's top eight Nami builds had no support item while 41 of 47 real
+    # top-50 Nami players build Black Mist Scythe. Costing zero, the item also
+    # let a 13,500 gold build outrank a 10,600 one with nothing charging for
+    # the difference, because fight_score does not price gold.
+    role = fe.CHAMP_ROLE.get(champ) or ""
     rows = []
     for combo in itertools.combinations(pool, 5):
         build = list(combo)
         if hard_exclusive_violation(build):
+            continue
+        if not supportitem.build_is_legal(build, role):
             continue
         full = fe.metrics(champ, build, runes, LEVEL, fast=True)
         early = 0.0
@@ -322,8 +337,11 @@ def run(champ, want_block=False, source="ladder", supplied=None, pareto=False):
     bar = "=" * 92
     print("")
     print(bar)
-    print(f"{champ}  |  class {fe.CHAMP_CLASS.get(champ)}  |  ranked on "
-          f"fight_score({RANK_VARIANT})  |  damage axis {metric.upper()} ({key})")
+    print(f"{champ}  |  class {fe.CHAMP_CLASS.get(champ)}  |  role {role or '?'}  |  "
+          f"ranked on fight_score({RANK_VARIANT})  |  damage axis {metric.upper()} ({key})")
+    if supportitem.is_support(role):
+        _sup = [s for s in pool if s in supportitem.SUPPORT_ITEMS]
+        print(f"  support role: every build holds exactly one of {_sup or 'NONE IN POOL'}")
     added_by = {"llm": "nominated by the MODEL", "engine": "added by the ENGINE "
                 "(marginal value, known to invert)", "supplied": "supplied"}
     print(f"pool: {len(pool)} items = {len(pool) - len(extras)} ladder"

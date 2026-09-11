@@ -69,3 +69,25 @@ def enforce(items: list[str], role: str, champion_class: str) -> tuple[list[str]
     # from the end: the fifth item is the one most likely never to be finished.
     result = ([chosen] + rest)[:max(len(original), 1)]
     return result, result != original
+
+
+def build_is_legal(slugs, role: str) -> bool:
+    """Whether a finished item list satisfies the support-item rule.
+
+    enforce() REPAIRS a build. This only judges one, which is what an
+    ENUMERATOR needs: it is generating candidates rather than correcting an
+    answer, and a candidate that breaks the rule should never be scored at all
+    rather than be quietly rewritten into a different build than the one that
+    was scored.
+
+    A support holds exactly one. Not zero -- that is the income of the whole
+    role given away -- and not two, which the game does not allow. Everyone
+    else holds none.
+
+    Which of the two is left to the ranking, deliberately. It is a real
+    decision (see the module docstring), and the ladder pool already answers it
+    per champion better than a class rule would: Thresh is classed Enchanter
+    and real Thresh players build the TANKY one.
+    """
+    held = [s for s in (slugs or []) if s in SUPPORT_ITEMS]
+    return len(held) == 1 if is_support(role) else not held
