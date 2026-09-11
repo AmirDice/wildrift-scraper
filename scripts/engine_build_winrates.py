@@ -23,6 +23,7 @@ import csv
 import io
 import itertools
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -58,10 +59,19 @@ def metric_key(champ):
 
 def captured(champ):
     """[(name, winrate, games, frozenset(slugs))] for complete captured rows."""
-    prefix = champ.split()[0].lower().replace("'", "")[:5]
+    # Match the WHOLE name, normalised the way the capture sessions are named.
+    #
+    # This used to take the first word, strip apostrophes and keep five
+    # characters: "Dr. Mundo" became "dr." and the session directory is
+    # "dr-mundo_*", so Mundo silently reported zero captured builds. A
+    # five-character prefix also collides -- "Master Yi" and "Maokai" both
+    # reduce to "ma..." territory once a name is short enough -- so a champion
+    # could be scored against another champion's players.
+    key = re.sub(r"[^a-z0-9]+", "-", champ.lower()).strip("-")
     out = []
     for session in sorted(CAPTURES.glob("*/*")):
-        if not session.name.lower().startswith(prefix):
+        name = session.name.lower()
+        if not name.startswith(key + "_"):
             continue
         builds, stats = session / "builds.jsonl", session / "extracted.csv"
         if not builds.exists() or not stats.exists():

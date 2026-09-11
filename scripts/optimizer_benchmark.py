@@ -32,6 +32,7 @@ import csv
 import io
 import itertools
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -106,11 +107,11 @@ def captured(champ: str) -> list[tuple[float, int, frozenset]]:
     it, on a champion whose whole purpose in this benchmark is the durability
     curve. Normalising punctuation to a hyphen matches both.
     """
-    key = champ.lower().replace("'", "").replace(".", "").replace(" ", "-")
+    key = re.sub(r"[^a-z0-9]+", "-", champ.lower()).strip("-")
     out = []
     for session in sorted(CAPTURES.glob("*/*")):
         name = session.name.lower()
-        if not (name.startswith(key + "_") or name.startswith(key.replace("-", "") + "_")):
+        if not name.startswith(key + "_"):
             continue
         builds, stats = session / "builds.jsonl", session / "extracted.csv"
         if not builds.exists() or not stats.exists():
@@ -295,7 +296,8 @@ def calibrate(entries) -> int:
             if want and not (want[0] <= got[0] and got[1] <= want[1]):
                 bits.append(f"{field} humans {got[0]}-{got[1]} vs spec {want[0]}-{want[1]}")
         need = exp.get("minSurvivalSeconds")
-        if need and min(surv) < need:
+        # Same tolerance as judge(): the floor is stored to one decimal.
+        if need and min(surv) < need - 0.05:
             bits.append(f"survival humans from {min(surv):.1f}s vs spec {need}s")
         print(f"{champ:12} {len(held):>7}  {d[0]}-{d[1]:<7} {v[0]}-{v[1]:<7} "
               f"{p[0]}-{p[1]:<7} {min(surv):>5.1f}-{max(surv):<4.1f}   "
