@@ -1,0 +1,695 @@
+{
+  "_note": "Adversarial benchmark for the build optimizer. Sixteen champions chosen to stress DIFFERENT parts of the scoring system rather than to be strong, each run under three scenarios. Expected properties are structural claims about what a correct answer looks like, not a copy of any particular build: a range, not a fingerprint. Where captured top-50 builds exist they are reported alongside as independent evidence, because a structural check can pass on a build no human would run. A FAIL is not automatically a bug: it says the build has a different shape from every captured build of that champion, which is worth looking at either way.",
+  "_scenarios": {
+    "A_pure": "The stated objective alone, ranked on the variant that expresses it.",
+    "B_comp": "The same champion against a named enemy composition, ranked through score_vs_comp.",
+    "C_constrained": "Maximise damage SUBJECT TO surviving the reference fight. The constraint is the point: an unconstrained damage maximiser and a constrained one should differ, and if they never do the constraint is not binding."
+  },
+  "_itemClasses": {
+    "damage": "carries any of ad, ap, crit, attackSpeed, physicalPen, magicPen, lethality",
+    "defensive": "carries any of armor, mr, hp",
+    "pureTank": "defensive stats and NO damage stat at all"
+  },
+  "survivalSeconds": {
+    "_note": "Seconds alive under FOCUS_DPS (2200, roughly three attackers). Scenario C constrains on the champion's OWN minSurvivalSeconds rather than one global number: 8s is 17,600 effective health, which no build in the game reaches, so a single threshold made the constraint either vacuous or unsatisfiable.",
+    "perChampion": true
+  },
+  "champions": [
+    {
+      "name": "Graves",
+      "tests": "crit, shotgun spread, burst vs sustained",
+      "variant": "crit",
+      "comp": [
+        "Malphite",
+        "Darius",
+        "Ahri",
+        "Jinx",
+        "Nautilus"
+      ],
+      "expect": {
+        "damageItems": [
+          5,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          0
+        ],
+        "pureTankItems": [
+          0,
+          0
+        ],
+        "minSurvivalSeconds": 2.7,
+        "_humanRange": {
+          "damageItems": [
+            5,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            0
+          ],
+          "pureTankItems": [
+            0,
+            0
+          ],
+          "survivalSeconds": 2.7
+        }
+      }
+    },
+    {
+      "name": "Darius",
+      "tests": "ramping passive, durability that converts to damage",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Riven",
+        "Jax",
+        "Ahri",
+        "Jinx"
+      ],
+      "expect": {
+        "damageItems": [
+          1,
+          3
+        ],
+        "defensiveItems": [
+          2,
+          4
+        ],
+        "pureTankItems": [
+          2,
+          4
+        ],
+        "minSurvivalSeconds": 7.3,
+        "_humanRange": {
+          "damageItems": [
+            1,
+            3
+          ],
+          "defensiveItems": [
+            2,
+            4
+          ],
+          "pureTankItems": [
+            2,
+            4
+          ],
+          "survivalSeconds": 7.3
+        }
+      }
+    },
+    {
+      "name": "Malphite",
+      "tests": "the 14k durability cut; must not drift into damage",
+      "variant": "durability",
+      "comp": [
+        "Jinx",
+        "Graves",
+        "Riven",
+        "Ahri",
+        "Lux"
+      ],
+      "expect": {
+        "damageItems": [
+          0,
+          0
+        ],
+        "defensiveItems": [
+          5,
+          5
+        ],
+        "pureTankItems": [
+          5,
+          5
+        ],
+        "minSurvivalSeconds": 6.0,
+        "_humanRange": {
+          "damageItems": [
+            0,
+            0
+          ],
+          "defensiveItems": [
+            5,
+            5
+          ],
+          "pureTankItems": [
+            5,
+            5
+          ],
+          "survivalSeconds": 6.0
+        }
+      }
+    },
+    {
+      "name": "Riven",
+      "tests": "a second bruiser, so the bruiser rule is not overfit to Darius",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Darius",
+        "Ahri",
+        "Vayne",
+        "Nautilus"
+      ],
+      "expect": {
+        "damageItems": [
+          4,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          1
+        ],
+        "pureTankItems": [
+          0,
+          1
+        ],
+        "minSurvivalSeconds": 3.2,
+        "_humanRange": {
+          "damageItems": [
+            4,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            1
+          ],
+          "pureTankItems": [
+            0,
+            1
+          ],
+          "survivalSeconds": 3.2
+        }
+      }
+    },
+    {
+      "name": "Vayne",
+      "tests": "percent-max-HP damage against resistances",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Dr. Mundo",
+        "Nautilus",
+        "Darius",
+        "Ahri"
+      ],
+      "expect": {
+        "damageItems": [
+          4,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          1
+        ],
+        "pureTankItems": [
+          0,
+          1
+        ],
+        "minSurvivalSeconds": 2.4,
+        "_humanRange": {
+          "damageItems": [
+            4,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            1
+          ],
+          "pureTankItems": [
+            0,
+            1
+          ],
+          "survivalSeconds": 2.4
+        }
+      }
+    },
+    {
+      "name": "Evelynn",
+      "tests": "one-shot burst, execute, penetration",
+      "variant": "oneshot",
+      "comp": [
+        "Ahri",
+        "Jinx",
+        "Janna",
+        "Riven",
+        "Malphite"
+      ],
+      "expect": {
+        "damageItems": [
+          5,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          0
+        ],
+        "pureTankItems": [
+          0,
+          0
+        ],
+        "minSurvivalSeconds": 2.0,
+        "_humanRange": {
+          "damageItems": [
+            5,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            0
+          ],
+          "pureTankItems": [
+            0,
+            0
+          ],
+          "survivalSeconds": 2.0
+        }
+      }
+    },
+    {
+      "name": "Ahri",
+      "tests": "repeat-cast burst, ability haste, penetration",
+      "variant": "burst",
+      "comp": [
+        "Malphite",
+        "Nautilus",
+        "Riven",
+        "Jinx",
+        "Janna"
+      ],
+      "expect": {
+        "damageItems": [
+          5,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          0
+        ],
+        "pureTankItems": [
+          0,
+          0
+        ],
+        "minSurvivalSeconds": 2.1,
+        "_humanRange": {
+          "damageItems": [
+            5,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            0
+          ],
+          "pureTankItems": [
+            0,
+            0
+          ],
+          "survivalSeconds": 2.1
+        }
+      }
+    },
+    {
+      "name": "Janna",
+      "tests": "an objective where damage is NOT the metric",
+      "variant": "support",
+      "comp": [
+        "Jinx",
+        "Riven",
+        "Ahri",
+        "Malphite",
+        "Graves"
+      ],
+      "expect": {
+        "damageItems": [
+          3,
+          4
+        ],
+        "defensiveItems": [
+          1,
+          2
+        ],
+        "pureTankItems": [
+          1,
+          2
+        ],
+        "minSurvivalSeconds": 3.0,
+        "_humanRange": {
+          "damageItems": [
+            3,
+            4
+          ],
+          "defensiveItems": [
+            1,
+            2
+          ],
+          "pureTankItems": [
+            1,
+            2
+          ],
+          "survivalSeconds": 3.0
+        },
+        "requireSupportItem": true
+      }
+    },
+    {
+      "name": "Nautilus",
+      "tests": "a tank whose offence and CC actually matter",
+      "variant": "durability",
+      "comp": [
+        "Jinx",
+        "Ahri",
+        "Riven",
+        "Graves",
+        "Lux"
+      ],
+      "expect": {
+        "damageItems": [
+          0,
+          0
+        ],
+        "defensiveItems": [
+          5,
+          5
+        ],
+        "pureTankItems": [
+          5,
+          5
+        ],
+        "minSurvivalSeconds": 5.6,
+        "_humanRange": {
+          "damageItems": [
+            0,
+            0
+          ],
+          "defensiveItems": [
+            5,
+            5
+          ],
+          "pureTankItems": [
+            5,
+            5
+          ],
+          "survivalSeconds": 5.6
+        },
+        "requireSupportItem": true
+      }
+    },
+    {
+      "name": "Master Yi",
+      "tests": "attack speed, crit, on-hit, resets",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Nautilus",
+        "Darius",
+        "Ahri",
+        "Jinx"
+      ],
+      "expect": {
+        "damageItems": [
+          4,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          1
+        ],
+        "pureTankItems": [
+          0,
+          1
+        ],
+        "minSurvivalSeconds": 2.7,
+        "_humanRange": {
+          "damageItems": [
+            4,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            1
+          ],
+          "pureTankItems": [
+            0,
+            1
+          ],
+          "survivalSeconds": 2.7
+        }
+      }
+    },
+    {
+      "name": "Dr. Mundo",
+      "tests": "health scaling and regeneration, not blind HP stacking",
+      "variant": "durability",
+      "comp": [
+        "Jinx",
+        "Vayne",
+        "Ahri",
+        "Lux",
+        "Riven"
+      ],
+      "expect": {
+        "damageItems": [
+          0,
+          1
+        ],
+        "defensiveItems": [
+          4,
+          5
+        ],
+        "pureTankItems": [
+          4,
+          5
+        ],
+        "minSurvivalSeconds": 5.9,
+        "_humanRange": {
+          "damageItems": [
+            0,
+            1
+          ],
+          "defensiveItems": [
+            4,
+            5
+          ],
+          "pureTankItems": [
+            4,
+            5
+          ],
+          "survivalSeconds": 5.9
+        }
+      }
+    },
+    {
+      "name": "Ezreal",
+      "tests": "ability scaling and item procs rather than autos",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Darius",
+        "Ahri",
+        "Jinx",
+        "Nautilus"
+      ],
+      "expect": {
+        "damageItems": [
+          5,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          0
+        ],
+        "pureTankItems": [
+          0,
+          0
+        ],
+        "minSurvivalSeconds": 2.5,
+        "_humanRange": {
+          "damageItems": [
+            5,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            0
+          ],
+          "pureTankItems": [
+            0,
+            0
+          ],
+          "survivalSeconds": 2.5
+        }
+      }
+    },
+    {
+      "name": "Katarina",
+      "tests": "multi-target resets; a single-target scorer should fail here",
+      "variant": "oneshot",
+      "comp": [
+        "Jinx",
+        "Ahri",
+        "Janna",
+        "Riven",
+        "Malphite"
+      ],
+      "expect": {
+        "damageItems": [
+          5,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          0
+        ],
+        "pureTankItems": [
+          0,
+          0
+        ],
+        "minSurvivalSeconds": 2.2,
+        "_humanRange": {
+          "damageItems": [
+            5,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            0
+          ],
+          "pureTankItems": [
+            0,
+            0
+          ],
+          "survivalSeconds": 2.2
+        }
+      }
+    },
+    {
+      "name": "Senna",
+      "tests": "unusual marksman scaling, crit, range",
+      "variant": "standard",
+      "comp": [
+        "Malphite",
+        "Riven",
+        "Ahri",
+        "Jinx",
+        "Nautilus"
+      ],
+      "expect": {
+        "damageItems": [
+          3,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          2
+        ],
+        "pureTankItems": [
+          0,
+          2
+        ],
+        "minSurvivalSeconds": 2.0,
+        "_humanRange": {
+          "damageItems": [
+            3,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            2
+          ],
+          "pureTankItems": [
+            0,
+            2
+          ],
+          "survivalSeconds": 2.0
+        },
+        "requireSupportItem": true
+      }
+    },
+    {
+      "name": "Swain",
+      "tests": "extended fight: health and healing converting into output",
+      "variant": "burst",
+      "comp": [
+        "Jinx",
+        "Riven",
+        "Graves",
+        "Malphite",
+        "Nautilus"
+      ],
+      "expect": {
+        "damageItems": [
+          4,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          1
+        ],
+        "pureTankItems": [
+          0,
+          1
+        ],
+        "minSurvivalSeconds": 2.1,
+        "_humanRange": {
+          "damageItems": [
+            4,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            1
+          ],
+          "pureTankItems": [
+            0,
+            1
+          ],
+          "survivalSeconds": 2.1
+        }
+      }
+    },
+    {
+      "name": "Viego",
+      "tests": "reset assassin whose value spans several kills in one fight",
+      "variant": "standard",
+      "comp": [
+        "Ahri",
+        "Jinx",
+        "Janna",
+        "Riven",
+        "Malphite"
+      ],
+      "expect": {
+        "damageItems": [
+          5,
+          5
+        ],
+        "defensiveItems": [
+          0,
+          0
+        ],
+        "pureTankItems": [
+          0,
+          0
+        ],
+        "minSurvivalSeconds": 2.5,
+        "_humanRange": {
+          "damageItems": [
+            5,
+            5
+          ],
+          "defensiveItems": [
+            0,
+            0
+          ],
+          "pureTankItems": [
+            0,
+            0
+          ],
+          "survivalSeconds": 2.5
+        }
+      }
+    }
+  ],
+  "_calibration": "Every range here is EXACTLY the range real top-50 players occupy, measured with --calibrate on 2026-09-11. It is deliberately not widened. A first draft widened each range by one item either side and all 48 tests passed on the first run, which makes a regression suite that cannot detect a regression. Strict conformance to what humans hold is a claim the optimizer can fail, and a failure here is information rather than noise -- sometimes about the optimizer, sometimes about a range that a patch moved. Re-run --calibrate after a patch before trusting a new failure."
+}
