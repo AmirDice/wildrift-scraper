@@ -181,7 +181,8 @@
   },
   "imperial-mandate": {
     "burstProcCdSec": 6,
-    "_why_cd": "Coordinated Fire: '(6 seconds cooldown per enemy champion)'"
+    "_why_cd": "Coordinated Fire: '(6 seconds cooldown per enemy champion)'",
+    "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one."
   },
   "stormsurge": {
     "burstProcCdSec": 25,
@@ -296,5 +297,11 @@
     "shieldPctMaxHp": 10,
     "allyHealPctMaxHp": 15,
     "_why_transcend": "Guiding Light: 'Upon casting your ultimate ability, you Transcend, increasing your max Health by 10% for 6s. While Transcended, allied champions within 1,200 units heal for 2.5% of your max Health per second over the duration.' The self half is 10% max health for six seconds, once per fight on a 60s cooldown, which is the same effective-HP shape Guardian Angel's revive already uses shieldPctMaxHp for. The ally half is 2.5% x 6s = 15% of max health. NOT modelled: the 50% reduction for ranged champions, because the item ally path has no ranged branch."
+  },
+  "ardent-censer": {
+    "_why_ally_as": "allyAsPct is read by NEITHER engine, deliberately. Censer grants an ally '15-34% Attack Speed and their attacks deal 16-22 bonus magic damage'; the damage half IS priced, through allyOnHitFlatMagic. Pricing the attack-speed half needs a conversion from ally attack speed to ally damage, and that needs to know what share of that ally's damage is autos -- a number this model does not carry. A guessed constant here would be worse than a visible mismatch, so the key stays unread and the item is undervalued by a known amount rather than valued by an invented one."
+  },
+  "shurelyas-battlesong": {
+    "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one."
   }
 }

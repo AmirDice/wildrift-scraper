@@ -796,7 +796,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         _apply_stat(st, _k, _v)
 
     # runes (numeric models: bonus AD, on-hit, procs, amp, move speed, haste)
-    ragg = {"bonusAd": 0.0, "onHitFlat": 0.0, "onHitAdRatio": 0.0, "ampPct": 0.0}
+    ragg = {"bonusAd": 0.0, "onHitFlat": 0.0, "onHitAdRatio": 0.0,
+            "onHitApRatio": 0.0, "ampPct": 0.0}
     ms_amp = 0.0
     _champ = CHAMPS.get(name) or {}
     auto_centric = (CHAMP_CLASS.get(name) == "Marksman"
@@ -880,6 +881,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["allyShield"] += g("allyShieldFlat") + (_sh - g("shieldFlat")
                                                        if g("allyShieldFlat") else 0.0)
             ragg["onHitFlat"] += g("onHitFlat")
+            # Brutal reads "5 (+6% Bonus Attack Damage + 3% Ability Power)".
+            # Both engines charged the flat 5 and dropped both ratios.
+            ragg["onHitAdRatio"] += g("onHitAdRatio") / 100.0
+            ragg["onHitApRatio"] += g("onHitApRatio") / 100.0
             ragg["ampPct"] += g("ampPct") / 100.0
             # Ability amplification from a RUNE. The same key was read for
             # items but never here, so Battle Zeal's ramping ability damage
@@ -953,7 +958,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                          arm=_lvl_range(p.get("armSec") or 0, level))
         ragg["ampPct"] += r.get("ampPct", 0)
     st["bonusAd"] += ragg["bonusAd"]
-    st["runeOnHitFlat"] = ragg["onHitFlat"] + ragg["onHitAdRatio"] * st["bonusAd"]
+    st["runeOnHitFlat"] = (ragg["onHitFlat"]
+                           + ragg["onHitAdRatio"] * st["bonusAd"]
+                           + ragg["onHitApRatio"] * st["ap"])
     st["damageAmp"] += ragg["ampPct"]
     st["bonusMs"] *= 1 + ms_amp  # Celerity amplifies all MS bonuses
 

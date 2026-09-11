@@ -517,6 +517,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   const mech: string[] = c.mechanics ?? [];
   const autoCentric = c.class === "Marksman" || mech.includes("onHit");
   let msAmp = 0;
+  // Rune on-hit RATIOS, deferred: bonus AD and AP are still accumulating
+  // inside this loop, so pricing them here would charge whatever happened
+  // to have landed so far. Mirrors fight_engine's ragg.
+  const runeOnHit = { adRatio: 0, apRatio: 0 };
   const ks = DATA.runeFx.keystones ?? {}, mn = DATA.runeFx.minors ?? {};
   for (const rn of runeNames) {
     const r = ks[rn] ?? mn[rn];
@@ -572,6 +576,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       // ult-amp channel at all, so the keystone was worth nothing here.
       st.ultAmp += (AOE_ULTS.has(name) ? g("ultAmpPctAoe") : g("ultAmpPct")) / 100;
       st.runeOnHitFlat += g("onHitFlat");
+      // Brutal reads "5 (+6% Bonus Attack Damage + 3% Ability Power)". Both
+      // engines charged the flat 5 and dropped both ratios, so the rune was
+      // worth a fifth of itself on a fed carry.
+      runeOnHit.adRatio += g("onHitAdRatio") / 100;
+      runeOnHit.apRatio += g("onHitApRatio") / 100;
       // Ingenious Hunter is a RUNE, so its ITEM haste is read here.
       st.itemHaste += g("itemHasteFlat");
       // Font of Life: a self+ally heal. Both halves were dropped.
@@ -656,6 +665,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.damageAmp += r.ampPct ?? 0;
   }
   st.bonusMs *= 1 + msAmp;
+  // Paid once the rune loop is done and the stats it scales off are final.
+  st.runeOnHitFlat += runeOnHit.adRatio * st.bonusAd + runeOnHit.apRatio * st.ap;
 
   // kit steroids + conversions
   const f = DATA.formulas[name]?.abilities ?? {};
