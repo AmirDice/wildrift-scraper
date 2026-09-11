@@ -3549,3 +3549,110 @@ def score_vs_comp(name: str, items: list[str], runes: list[str], carry: dict,
     deff = durability_term(ehp_vs_comp, 0.0)
     return {"ttkCarry": ttk, "ehpVsComp": ehp_vs_comp,
             "score": _js_round(1000 * (0.45 * off + 0.55 * deff)) / 10}
+
+
+# ---------------------------------------------------------------------------
+# THE EVALUATION VECTOR
+#
+# metrics() answers a scalar question -- how much damage, how much effective
+# health -- and fight_score collapses that further into one number. Two
+# measurements taken on 2026-09-12 show what that costs, both against the
+# rank-1 player on the champion:
+#
+#   Graves  4 of 5 items shared. fight_score prefers ours by +4.3 and the
+#           rank-1 build kills a TANK a full second sooner, because 30 ability
+#           haste beats 25 AD once the fight lasts long enough for the extra
+#           casts to land. No scalar carried that.
+#   Darius  fight_score prefers ours by +3.9. The rank-1 build (65.8% over 79
+#           games) kills faster into all five standard targets AND wins the
+#           mirror duel.
+#
+# So this returns the measurements SEPARATELY and lets the caller weight them.
+# It is deliberately not wired into fight_score: the point is to stop
+# collapsing, not to collapse differently.
+#
+# Kept out of metrics() on purpose. metrics(fast=True) is called tens of
+# thousands of times by the combination table at 1.5ms each, and this runs a
+# rotation per target per time point. It is an analysis tool, not a ranker.
+# ---------------------------------------------------------------------------
+
+#: Where damage is sampled. ttk alone saturates: every Graves build kills four
+#: of the five standard targets at exactly 2.25s, the first tick of the solve,
+#: so the panel reported four ties and could not tell the builds apart. Damage
+#: AT a time discriminates where time TO a threshold cannot.
+DAMAGE_SAMPLES = (2.0, 4.0, 8.0)
+
+
+def _typed_ehp(st: dict) -> tuple[float, float]:
+    """Effective health against pure physical and pure magic damage.
+
+    metrics() reports the 50/50 blend, which is the right default and the wrong
+    number for deciding whether a build answers THIS enemy team. A build with
+    250 armour and 60 magic resist is not "averagely durable".
+    """
+    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
+    dr = st["dr"] if st["dr"] < 1 else 0.99
+    pool = (st["hp"] + shield) / (1 - dr)
+    phys = 100.0 / (100.0 + st["armor"]) * (1 - st.get("drPhys", 0.0))
+    magic = 100.0 / (100.0 + st["mr"]) * (1 - st.get("drMagic", 0.0))
+    return pool / phys, pool / magic
+
+
+def evaluation_vector(name: str, item_slugs: list[str],
+                      rune_names: list[str] | None = None,
+                      level: int = 15) -> dict:
+    """Everything the engine can measure about a build, unweighted.
+
+    The caller decides what matters. An objective for a marksman and an
+    objective for an enchanter are different weightings of the SAME vector,
+    which is what lets one system serve both without a branch per champion.
+    """
+    runes = list(rune_names or [])
+    st = resolve_stats(name, level, item_slugs, runes)
+    if not st:
+        return {}
+    m = metrics(name, item_slugs, runes, level, fast=True)
+
+    # ---- damage, per standard target, at fixed times ----------------------
+    #
+    # All five profiles, not the two metrics() uses. A build that wins against
+    # a squishy and loses against a tank is the normal case, not an edge one.
+    per_target = {}
+    for label, prof in target_profiles(level).items():
+        tgt = dict(prof)
+        tgt.setdefault("label", label)
+        tgt.setdefault("bonusHp", max(0.0, prof["hp"] - 1800))
+        dmg = {f"t{int(s)}": round(rotation(name, st, tgt, s, level)["total"])
+               for s in DAMAGE_SAMPLES}
+        d = duel(name, item_slugs, runes, dict(tgt), level)
+        per_target[label] = {**dmg, "ttk": (d or {}).get("ttk"),
+                             "overkill": (d or {}).get("overkill", 0)}
+
+    phys_ehp, magic_ehp = _typed_ehp(st)
+    # Seconds alive under FOCUS_DPS, the same reference delivered_share uses.
+    ttd = (m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
+    # What the build actually delivers before dying, rather than its rate.
+    dbd = m["dps8"] * min(REF_FIGHT, ttd)
+
+    return {
+        # offence
+        "burstDamage": m["burst3"],
+        "sustainedDps": m["dps8"],
+        "aoeDamage": m.get("aoe8", 0),
+        "damageBeforeDeath": round(dbd),
+        "perTarget": per_target,
+        # defence
+        "mixedEhp": m["ehp"],
+        "physicalEhp": round(phys_ehp),
+        "magicEhp": round(magic_ehp),
+        "timeToDie": round(ttd, 2),
+        # what the kit does that is not damage
+        "selfSustain": m["sustain"],
+        "supportOutput": m.get("support", 0),
+        "ccSeconds": round(_cc_depth(name) * _cc_seconds(name), 2),
+        # economy
+        "gold": sum((ITEMS.get(s) or {}).get("cost", 0) for s in item_slugs),
+        "goldEfficiency": round(build_efficiency(
+            name, [s for s in item_slugs if s in ITEMS]), 3),
+    }

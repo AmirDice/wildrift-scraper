@@ -159,25 +159,62 @@ def show(champ: str, ours: list[str], theirs: list[str], runes: list[str],
           f"{sum(fe.ITEMS[s]['cost'] for s in theirs):10}")
 
     # ---- the five standardised targets ------------------------------------
-    print(f"\n  DAMAGE INTO EACH STANDARD TARGET (ttk seconds, null = never kills)")
-    print(f"  {'target':10} {'hp/arm/mr':>16} {'ours ttk':>10} {'theirs ttk':>11} {'winner':>8}")
-    for name, prof in fe.target_profiles(LEVEL).items():
-        tgt = dict(prof)
-        tgt.setdefault("label", name)
-        tgt.setdefault("bonusHp", max(0.0, prof["hp"] - 1800))
-        da = fe.duel(champ, ours, runes, dict(tgt), LEVEL)
-        db = fe.duel(champ, theirs, runes, dict(tgt), LEVEL)
-        ta, tb = (da or {}).get("ttk"), (db or {}).get("ttk")
+    #
+    # ttk AND damage at fixed times. ttk alone saturated: every Graves build
+    # killed four of the five targets at exactly 2.25s, the first tick of the
+    # solve, so the panel reported four ties and could not separate the builds
+    # at all. Damage AT a time discriminates where time TO a threshold cannot.
+    vec_a = fe.evaluation_vector(champ, ours, runes, LEVEL)
+    vec_b = fe.evaluation_vector(champ, theirs, runes, LEVEL)
+    print()
+    # THE SAMPLES ARE A COARSE READ OF A STEPWISE CURVE, and ttk is the
+    # authority where they disagree.
+    #
+    # On Graves our build deals more into the tank at t2, t4 AND t8, and still
+    # kills it a second later. That looked like a bug and is not. Damage does
+    # not accumulate smoothly: it steps each time an ability comes off
+    # cooldown. Against the tank, both builds need 4800 damage, and
+    #
+    #     ours    t5.0 4049   t5.5 4049   t6.0 4049   t6.5 5930  -> ttk 6.5
+    #     theirs  t5.0 3924   t5.5 5206   t6.0 5206   t6.5 5719  -> ttk 5.5
+    #
+    # Their next cast lands a full second sooner, and that cast is the one that
+    # crosses the threshold. It is Essence Reaver's ability haste -- 30 against
+    # our 10 -- which is exactly why the rank-1 player buys it over Infinity
+    # Edge. A higher damage RATE loses to a better CADENCE once the target
+    # takes more than about five seconds to kill.
+    #
+    # So the fixed-time samples separate builds that ttk ties, and ttk settles
+    # builds the samples mislead about. Both columns are here for that reason.
+    print("  EACH STANDARD TARGET: damage by t=2s / 4s / 8s, and time to kill")
+    print(f"  {'target':9} {'ours t2':>8} {'them t2':>8} {'ours t4':>8} {'them t4':>8} "
+          f"{'ours t8':>8} {'them t8':>8} {'ours ttk':>9} {'them ttk':>9} {'faster':>8}")
+    for name in fe.target_profiles(LEVEL):
+        pa, pb = vec_a["perTarget"][name], vec_b["perTarget"][name]
+        ta, tb = pa["ttk"], pb["ttk"]
         if ta is None and tb is None:
             win = "neither"
         elif tb is None:
             win = "ours"
         elif ta is None:
             win = "theirs"
+        elif ta != tb:
+            win = "ours" if ta < tb else "theirs"
         else:
-            win = "ours" if ta < tb else ("theirs" if tb < ta else "tie")
-        stats = f"{prof['hp']:.0f}/{prof['armor']:.0f}/{prof['mr']:.0f}"
-        print(f"  {name:10} {stats:>16} {str(ta):>10} {str(tb):>11} {win:>8}")
+            # Same tick: fall back to who dealt more by then, which is the
+            # comparison ttk was too coarse to make.
+            win = ("ours" if pa["t2"] > pb["t2"]
+                   else "theirs" if pb["t2"] > pa["t2"] else "tie")
+            win += "*"
+        print(f"  {name:9} {pa['t2']:>8} {pb['t2']:>8} {pa['t4']:>8} {pb['t4']:>8} "
+              f"{pa['t8']:>8} {pb['t8']:>8} {str(ta):>9} {str(tb):>9} {win:>8}")
+    print("    * ttk tied on the tick; decided on damage dealt by 2s")
+
+    print()
+    print(f"  {'vector':20} {'ours':>10} {'theirs':>10}")
+    for k in ("physicalEhp", "magicEhp", "timeToDie", "damageBeforeDeath",
+              "supportOutput", "ccSeconds", "goldEfficiency"):
+        print(f"  {k:20} {str(vec_a.get(k)):>10} {str(vec_b.get(k)):>10}")
 
     # ---- the mirror -------------------------------------------------------
     md = fe.mutual_duel(champ, ours, runes, champ, theirs, runes, LEVEL)
