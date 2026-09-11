@@ -70,7 +70,14 @@ def engine_blind(slug):
 
 
 def metric_key(champ):
+    """The single axis this kit's damage is DESCRIBED on, kept for the readout."""
     return {"burst": "burst3", "durability": "ehp"}.get(fe.damage_metric(champ), "dps8")
+
+
+# The variant the table ranks under. "standard" is the champion's best
+# all-around build for a typical game, which is what a table with no player
+# settings attached should be showing.
+RANK_VARIANT = "standard"
 
 
 def real_builds(champ):
@@ -141,7 +148,18 @@ def run(champ, want_block=False):
         exact = sorted(r for r, s in humans if s == frozenset(build))
         rows.append({
             "items": build,
-            "primary": full[key],
+            # RANK ON THE COMPOSITE, not on the single axis.
+            #
+            # The axis alone judged an enchanter on her own sustained damage,
+            # so Sona's engine-optimal build came back as Guinsoo's Rageblade
+            # and Terminus and every build a real Sona player holds landed in
+            # the bottom 6% of 5291. fight_score already blends offence,
+            # defence AND ally value, and metrics() already computes the
+            # support term -- the table was computing it and throwing it away
+            # at sort time.
+            "primary": fe.fight_score(full, RANK_VARIANT, champ),
+            "axis": full[key],
+            "support": full.get("support", 0),
             "burst3": full["burst3"],
             "dps8": full["dps8"],
             "ehp": full["ehp"],
@@ -156,20 +174,21 @@ def run(champ, want_block=False):
     bar = "=" * 92
     print("")
     print(bar)
-    print(f"{champ}  |  class {fe.CHAMP_CLASS.get(champ)}  |  judged on {metric.upper()} ({key})")
+    print(f"{champ}  |  class {fe.CHAMP_CLASS.get(champ)}  |  ranked on "
+          f"fight_score({RANK_VARIANT})  |  damage axis {metric.upper()} ({key})")
     print(f"pool: {len(pool)} items = {len(pool) - len(extras)} ladder + "
           f"{len(extras)} added by the engine on merit")
     print(f"  engine added: {', '.join(extras) or 'none'}")
     print(f"legal 5-item combinations scored: {len(rows)}   "
           f"captured human builds available: {len(humans)}")
     print(bar)
-    print(f"{'#':>2} {'build':<58} {key:>8} {'early3':>7} {'burst3':>7} "
-          f"{'dps8':>6} {'aoe8':>6} {'ehp':>5} {'gold':>6}")
+    print(f"{'#':>2} {'build':<58} {'score':>6} {key:>8} {'early3':>7} "
+          f"{'burst3':>7} {'dps8':>6} {'ehp':>5} {'sup':>5} {'gold':>6}")
     for i, r in enumerate(rows[:TOP_ROWS], 1):
         label = " + ".join(s.split("-")[0][:9] for s in r["items"])
-        print(f"{i:>2} {label:<58} {r['primary']:>8.0f} {r['early']:>7.0f} "
-              f"{r['burst3']:>7.0f} {r['dps8']:>6.0f} {r['aoe8']:>6.0f} "
-              f"{r['ehp']:>5.0f} {r['gold']:>6}")
+        print(f"{i:>2} {label:<58} {r['primary']:>6.1f} {r['axis']:>8.0f} "
+              f"{r['early']:>7.0f} {r['burst3']:>7.0f} {r['dps8']:>6.0f} "
+              f"{r['ehp']:>5.0f} {r['support']:>5.0f} {r['gold']:>6}")
         if r["blind"]:
             print(f"     engine cannot fully measure: {', '.join(r['blind'])}")
         if r["exact"]:
@@ -243,7 +262,8 @@ def prompt_block(champ, rows, pool, top=5):
                   else " [no captured top-50 player runs this exact five]")
         lines.append(
             f"  {i}. {', '.join(r['items'])}"
-            f"\n     {key}={r['primary']:.0f}  early3={r['early']:.0f}  "
+            f"\n     score={r['primary']:.1f}  {key}={r['axis']:.0f}  "
+            f"early3={r['early']:.0f}  "
             f"burst3={r['burst3']:.0f}  dps8={r['dps8']:.0f}  aoe8={r['aoe8']:.0f}  "
             f"ehp={r['ehp']:.0f}  gold={r['gold']}{played}")
     if unmeasured:
