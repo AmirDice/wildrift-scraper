@@ -31,7 +31,7 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           # Target-side, crowd-control and clone channels, all added at once
           # and all previously unreadable by either engine.
           "grievousWounds", "shieldCut", "basicAttackDr", "targetAsSlow",
-          "ccRemoval", "stasisSec",
+          "ccRemoval", "stasisSec", "drMagic", "drPhys", "ehp",
           # The damage path itself, not only the stats feeding it.
           "rot8", "rot8Autos",
           # `bonusAd` was here and `ad` was not, so a base-stat divergence was
@@ -63,7 +63,11 @@ def main() -> int:
         # output over an 8s window, and parity was green the whole time.
         # A fixed dummy target keeps this a pure engine comparison.
         rot = fe.rotation(champ, st, dict(PARITY_TARGET), 8.0, 15)
-        st = dict(st, support=round(fe.support_value(champ, items, runes, 15), 2),
+        _sh = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+               + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
+        _dr = st["dr"] if st["dr"] < 1 else 0.99
+        st = dict(st, ehp=round((st["hp"] + _sh) / fe._mixed_taken(st) / (1 - _dr), 2),
+                  support=round(fe.support_value(champ, items, runes, 15), 2),
                   pctPen=1 - pen,
                   rot8=round(float(rot["total"]), 2),
                   rot8Bolts=round(float(rot.get("boltDmg", 0.0)), 2),

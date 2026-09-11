@@ -638,6 +638,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
         "targetSlow": 0.0, "itemHaste": 0.0, "autoBonusPct": 0.0,
+        "drMagic": 0.0, "drPhys": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "procs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
@@ -826,6 +827,11 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             else:
                 st["bonusAd"] += g("adaptiveAdFlat")
         st["dr"] = max(st["dr"], g("drPct") / 100.0)
+        # TYPED damage reduction. Force of Nature reduces incoming MAGIC
+        # damage only; charging it through the all-damage channel would
+        # roughly double its worth against a mixed enemy team.
+        st["drMagic"] = max(st["drMagic"], g("drMagicPct") / 100.0)
+        st["drPhys"] = max(st["drPhys"], g("drPhysPct") / 100.0)
         st["adFlatPassive"] = g("adFlatPassive")
         st["bonusAd"] += g("adFlatPassive")
         st["ap"] += g("apFlatPassive")
@@ -1395,6 +1401,18 @@ def cooldown_relief(name: str) -> tuple[float, str]:
             if m:
                 return float(m.group(1)), slot
     return 0.0, ""
+
+
+def _mixed_taken(st: dict) -> float:
+    """Share of incoming damage that gets through, against a 50/50 enemy split.
+
+    Typed damage reduction is applied to its OWN half: Force of Nature cuts
+    magic damage by 20% and nothing else, so folding it into the all-damage
+    term would price it against physical damage it cannot touch.
+    """
+    phys = 100.0 / (100.0 + st["armor"]) * (1 - st.get("drPhys", 0.0))
+    magic = 100.0 / (100.0 + st["mr"]) * (1 - st.get("drMagic", 0.0))
+    return 0.5 * phys + 0.5 * magic
 
 
 def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, comp_dmg, per_auto_share=None, name=""):
@@ -2255,7 +2273,7 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
 
     shield = st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"] + st["shieldPctMaxHp"] * st["hp"]
     shield *= 1 + st["healShieldAmp"]  # Revitalize-style amplification
-    mixed_taken = 0.5 * 100 / (100 + st["armor"]) + 0.5 * 100 / (100 + st["mr"])
+    mixed_taken = _mixed_taken(st)
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
     # Kit self-healing counts toward staying alive, the same as lifesteal. It
     # used to be credited entirely as ally value, so a champion who sustains
@@ -2386,7 +2404,7 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
 
     shield = st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"] + st["shieldPctMaxHp"] * st["hp"]
     shield *= 1 + st["healShieldAmp"]
-    mixed_taken = 0.5 * 100 / (100 + st["armor"]) + 0.5 * 100 / (100 + st["mr"])
+    mixed_taken = _mixed_taken(st)
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
     _r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])

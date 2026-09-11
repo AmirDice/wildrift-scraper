@@ -258,6 +258,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0, itemHaste: 0,
     // Carried BY THIS BUILD and applied to whoever it is fighting.
     grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
+    drMagic: 0, drPhys: 0,
     cloneAdPct: 0, cloneAsFromCritPct: 0, cloneLifetimeS: 0, cloneMaxCount: 0,
     // Carried by this build and applied to whoever is fighting IT. They reach
     // the damage path through championTarget, not from here.
@@ -457,6 +458,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
         ? g("everyNthRangedFlat") : g("everyNthFlat")) / nth;
     }
     st.dr = Math.max(st.dr, g("drPct") / 100);
+    // TYPED damage reduction. Force of Nature reduces incoming MAGIC damage
+    // only; charging it through the all-damage channel would roughly double
+    // its worth against a mixed enemy team.
+    st.drMagic = Math.max(st.drMagic, g("drMagicPct") / 100);
+    st.drPhys = Math.max(st.drPhys, g("drPhysPct") / 100);
     // "Gain 25 Attack Damage OR 50 Ability Power (Adaptive)" grants exactly
     // ONE, picked by the kit's primary damage type -- mirrors the Python
     // engine's _prefers_ap. Nashor's Tooth carried its whole AP grant here
@@ -1576,7 +1582,7 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   const dps8 = rotation(name, st, TARGET_BRUISER, 8, level) / 8;
   let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
   shield *= 1 + st.healShieldAmp;
-  const mixed = 0.5 * 100 / (100 + st.armor) + 0.5 * 100 / (100 + st.mr);
+  const mixed = mixedTaken(st);
   const ehp = (st.hp + shield) / mixed / (st.dr < 1 ? 1 - st.dr : 1);
   const sustain = st.vamp * dps8 * 8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp);
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
@@ -1615,7 +1621,7 @@ export function liveMetrics(name: string, items: string[], runes: string[],
   }
   let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
   shield *= 1 + st.healShieldAmp;
-  const mixed = 0.5 * 100 / (100 + st.armor) + 0.5 * 100 / (100 + st.mr);
+  const mixed = mixedTaken(st);
   const ehp = (st.hp + shield) / mixed / (st.dr < 1 ? 1 - st.dr : 1);
   const sustain = st.vamp * dmg8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp);
 
@@ -1661,6 +1667,20 @@ function cleanLabel(label: string): string {
 
 /** Full multi-dimensional readout for a custom build, matching the precomputed
  *  BuildAnalysis shape so the same SimReadout renders live in the customizer. */
+/**
+ * Share of incoming damage that gets through, against a 50/50 enemy split.
+ *
+ * Typed damage reduction is applied to its OWN half: Force of Nature cuts
+ * magic damage by 20% and nothing else, so folding it into the all-damage term
+ * would price it against physical damage it cannot touch. Mirrors
+ * fight_engine._mixed_taken.
+ */
+function mixedTaken(st: any): number {
+  const phys = 100 / (100 + st.armor) * (1 - (st.drPhys ?? 0));
+  const magic = 100 / (100 + st.mr) * (1 - (st.drMagic ?? 0));
+  return 0.5 * phys + 0.5 * magic;
+}
+
 export function analyzeBuild(name: string, items: string[], runes: string[],
                             level = 15): BuildAnalysis | null {
   const st = resolveStats(name, level, items, runes);
@@ -1722,7 +1742,10 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
   // survivability + mitigation + gold efficiency
   let shieldVal = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
   shieldVal *= 1 + st.healShieldAmp;
-  const physTaken = 100 / (100 + st.armor), magicTaken = 100 / (100 + st.mr);
+  // Typed damage reduction rides its own half here too, and this site knows
+  // the enemy's ACTUAL damage split rather than assuming 50/50.
+  const physTaken = 100 / (100 + st.armor) * (1 - (st.drPhys ?? 0));
+  const magicTaken = 100 / (100 + st.mr) * (1 - (st.drMagic ?? 0));
   const dr = st.dr < 1 ? st.dr : 0.99;
   const ehp = Math.round((st.hp + shieldVal) / (0.5 * physTaken + 0.5 * magicTaken) / (1 - dr));
   const ehpSplit = {
@@ -1974,7 +1997,10 @@ export function scoreVsComp(name: string, items: string[], runes: string[],
   }
   let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
   shield *= 1 + st.healShieldAmp;
-  const physTaken = 100 / (100 + st.armor), magicTaken = 100 / (100 + st.mr);
+  // Typed damage reduction rides its own half here too, and this site knows
+  // the enemy's ACTUAL damage split rather than assuming 50/50.
+  const physTaken = 100 / (100 + st.armor) * (1 - (st.drPhys ?? 0));
+  const magicTaken = 100 / (100 + st.mr) * (1 - (st.drMagic ?? 0));
   const taken = adShare * physTaken + apShare * magicTaken || 1;
   const dr = st.dr < 1 ? st.dr : 0.99;
   const ehpVsComp = Math.round((st.hp + shield) / taken / (1 - dr));

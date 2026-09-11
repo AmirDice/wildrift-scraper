@@ -18,7 +18,7 @@ const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "crit
   "vamp", "lifestealPct", "omnivampPct", "tenacity",
   "dr", "giant", "execute", "armorShred",
   "grievousWounds", "shieldCut", "basicAttackDr", "targetAsSlow",
-  "ccRemoval", "stasisSec",
+  "ccRemoval", "stasisSec", "drMagic", "drPhys", "ehp",
   // See the note on the Python half: the damage path itself, not only the
   // stats feeding it.
   "rot8", "rot8Autos",
@@ -36,6 +36,12 @@ for (const [champ, items, runes] of battery) {
     st.rot8 = Math.round(rot.damage * 100) / 100;
     st.rot8Autos = Math.round(rot.autoDamage * 100) / 100;
     st.support = Math.round(supportValue(champ, items, runes, 15) * 100) / 100;
+    const sh = (st.shield + st.shieldPctBonusHp * st.bonusHp
+      + st.shieldPctMaxHp * st.hp) * (1 + st.healShieldAmp);
+    const phys = 100 / (100 + st.armor) * (1 - (st.drPhys ?? 0));
+    const magic = 100 / (100 + st.mr) * (1 - (st.drMagic ?? 0));
+    const dr = st.dr < 1 ? st.dr : 0.99;
+    st.ehp = Math.round((st.hp + sh) / (0.5 * phys + 0.5 * magic) / (1 - dr) * 100) / 100;
     st.rot8Bolts = Math.round(rot.boltDamage * 100) / 100;
   }
   out[`${champ}|${items.join("+")}|${runes.join("+")}`] = Object.fromEntries(

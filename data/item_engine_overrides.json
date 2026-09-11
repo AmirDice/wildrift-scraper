@@ -303,5 +303,16 @@
   },
   "shurelyas-battlesong": {
     "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one."
+  },
+  "gargoyle-stoneplate": {
+    "shieldPctBonusHp": 90,
+    "_why_shield": "Stoneplate: 'Gain a base shield that absorbs damage equal to 100 PLUS 90% BONUS HEALTH'. Only the flat 100 was modelled, so on a tank carrying 2,000 bonus health the item was missing 1,800 of shield -- almost all of its value. Charged in full, the same convention steraks-gage uses for its own decaying lifeline shield."
+  },
+  "force-of-nature": {
+    "drMagicPct": 20,
+    "_why_dr": "Absorb: 'At maximum stacks, gain 10% Movement Speed and REDUCE ALL INCOMING MAGIC DAMAGE BY 20%'. Only the move speed was modelled. It is magic damage ONLY, so it rides a typed channel rather than the all-damage drPct that Death's Dance and the rune path use; charging it against physical damage would roughly double its worth. Taken at max stacks, the convention this file already uses for amaranths-twinguard and terminus."
+  },
+  "randuins-omen": {
+    "_why_not_modelled": "NOT MODELLED, deliberately, and recorded so it is not mistaken for an oversight. 'Resilience: Critically Struck deal 30% less damage to you' is real and large, but its worth depends entirely on how much of the incoming damage is critical strikes, which the generic effective-health formula has no way to know -- it is scored against a 50/50 physical-magic split and no enemy at all. Pricing it would mean inventing a crit share. It belongs in scoreVsComp, where the enemy team is known. Same for Countercurrent's slow resist."
   }
 }
