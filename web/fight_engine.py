@@ -2476,6 +2476,57 @@ def delivered_share(m: dict, name: str) -> float:
     ttd = (m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
     return min(1.0, ttd / REF_FIGHT)
 
+#: What damage on OTHER targets is worth, against damage on the one you are
+#: being scored against.
+#:
+#: metrics() has always computed aoe8 -- Runaan's bolt damage over the same 8s
+#: window -- and fight_score ignored it completely, with a comment explaining
+#: why that was a problem rather than why it was right: "a marksman buys
+#: Runaan's for the wave and the teamfight spread, and a single-target number
+#: can only ever call that item weak". It did exactly that. On a fixed Jinx
+#: base the fifth slot resolved
+#:
+#:     blade-of-the-ruined-king  10,080 single-target,      0 bolts, score 130.6
+#:     runaans-hurricane          7,360 single-target, 19,778 bolts, score  97.4
+#:
+#: so the engine preferred 10,080 total damage over 27,138, and ranked the item
+#: 45 of 49 top-50 Jinx players build behind everything else. Her Pareto
+#: frontier collapsed to a single undominated build for the same reason: with
+#: multi-target value invisible there is no trade-off anywhere in her pool.
+#:
+#: NOT 1.0. Bolts win the fight; they do not remove the specific threat the
+#: score is measured against, and waveclear does not show up in a duel at all.
+#: Swept against captured top-50 builds, median percentile (lower is better):
+#:
+#:     weight   0.0    0.1    0.2    0.3    0.5    0.7    1.0
+#:     mean    38.2%  38.2%  37.1%  36.6%  36.7%  36.6%  36.6%
+#:     top5       22     27     27     27     27     27     27  builds
+#:
+#: The curve flattens by 0.3 -- past it the item is simply in or out -- so 0.3
+#: is the smallest weight that buys the whole gain.
+#:
+#: It helps in proportion to how much players actually want the item, which is
+#: the right shape even though it is not free:
+#:
+#:     Jinx     Runaan's in 45/49 builds   50.5% -> 24.2%
+#:     Varus                43/50          21.8% ->  4.8%
+#:     Ashe                 29/41          43.1% -> 48.6%
+#:     Tristana             13/49          71.4% -> 78.2%
+#:
+#: A single global weight cannot say "core for Jinx, situational for Tristana",
+#: so it overrates the item for the champion who builds it least. Net over 20
+#: champions it is still worth it: 22 -> 27 exact captured builds inside the
+#: engine's top five, covering 138 -> 154 players.
+#:
+#: Builds with no bolt item have aoe8 == 0, so this term vanishes for them and
+#: 16 of the 20 champions measured are bit-for-bit unchanged.
+#:
+#: STILL MISSING: ability AoE. data/ult_shape.json tags 71 champions with an
+#: AoE ult and the engine only uses that tag to pick which item amp applies --
+#: Malphite's ult hitting five people is not modelled anywhere, which is why he
+#: is the one champion who got WORSE when scoring moved to the composite.
+AOE_WEIGHT = 0.3
+
 def fight_score(m: dict, variant: str, name: str = "",
                 weights: tuple[float, float] | None = None) -> float:
     """Variant presets pick the weights; `weights` overrides them directly —
@@ -2486,6 +2537,9 @@ def fight_score(m: dict, variant: str, name: str = "",
         w_off = max(0.15, min(0.9, w_off + shift))
         w_def = 1 - w_off
     off = (m["burst3"] / REF_BURST) if variant in BURSTY else (m["dps8"] / REF_DPS)
+    # Damage on OTHER targets, at a discount. aoe8 is a TOTAL over the 8s
+    # window and dps8 is per second, so it is divided by the window first.
+    off += AOE_WEIGHT * (m.get("aoe8", 0.0) / 8.0) / REF_DPS
     # Bruisers are scored on damage DELIVERED, not damage theoretically dealt.
     off *= delivered_share(m, name) if name else 1.0
     deff = durability_term(m["ehp"], m["sustain"])

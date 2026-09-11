@@ -1579,7 +1579,11 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   const st = resolveStats(name, level, items, runes);
   if (!st) return 0;
   const burst3 = rotation(name, st, targetSquishy(level), 3, level);
-  const dps8 = rotation(name, st, TARGET_BRUISER, 8, level) / 8;
+  const detail8 = rotationDetail(name, st, TARGET_BRUISER, 8, level);
+  const dps8 = detail8.damage / 8;
+  // Damage on OTHER targets (Runaan's bolts), as a per-second rate to match
+  // dps8. Zero for any build without a bolt item, so they are unaffected.
+  const aoePerSec = detail8.boltDamage / 8;
   let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
   shield *= 1 + st.healShieldAmp;
   const mixed = mixedTaken(st);
@@ -1588,7 +1592,8 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
   wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
   // Bruisers are scored on damage DELIVERED, not damage theoretically dealt.
-  const off = (BURSTY.has(variant) ? burst3 / REF_BURST : dps8 / REF_DPS)
+  const off = ((BURSTY.has(variant) ? burst3 / REF_BURST : dps8 / REF_DPS)
+    + AOE_WEIGHT * aoePerSec / REF_DPS)
     * deliveredShare(ehp, sustain, name);
   const deff = durabilityTerm(ehp, sustain);
   return 100 * (wOff * off + (1 - wOff) * deff) * Math.pow(buildEfficiency(name, items), EFFICIENCY_ALPHA);
@@ -1853,6 +1858,11 @@ function deliveredShare(ehp: number, sustain: number, name: string): number {
   return Math.min(1, (ehp + 0.5 * sustain) / FOCUS_DPS / REF_FIGHT);
 }
 
+/** What damage on OTHER targets is worth against damage on the scored one.
+ *  Runaan's bolts win the fight but do not remove the threat being measured,
+ *  and waveclear does not appear in a duel at all. Swept against captured
+ *  top-50 builds; see fight_engine.AOE_WEIGHT for the table. */
+const AOE_WEIGHT = 0.3;
 /** Effective health past which durability stops paying. See durabilityTerm. */
 const REF_DURABILITY_CUT = 14000;
 

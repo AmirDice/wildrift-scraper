@@ -197,7 +197,11 @@ def build_pool(champ, runes, source="ladder", supplied=None):
 #: is what fight_score does at ranking time, and doing it here as well would
 #: discard the build that is second-best at everything and best at burst, which
 #: is exactly the build a burst-leaning player wants.
-PARETO_AXES = ("dps8", "burst3", "ehp", "support", "early")
+# aoe8 belongs here now that fight_score prices it. Left out, the diagnostic
+# would be measuring a different value function than the ranker, and Jinx
+# would still read as having one undominated build for a reason the score
+# no longer agrees with.
+PARETO_AXES = ("dps8", "burst3", "ehp", "support", "early", "aoe8")
 
 
 def pareto_front(rows, axes=PARETO_AXES):
