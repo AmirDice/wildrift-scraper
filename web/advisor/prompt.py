@@ -809,8 +809,30 @@ UNKNOWN_ENEMY_BLOCK = (
     "damage from two or three sources, one serious magic threat, a real frontline "
     "with resistances worth penetrating, meaningful healing and shielding "
     "somewhere on the team, and some crowd control.\n"
-    "- Do NOT name specific enemy champions, and do not assume an extreme comp "
-    "(full AD, five tanks, triple healer). Reason at the archetype level above.\n"
+    # NAMED EXAMPLES, as illustration only.
+    #
+    # The archetype list above is correct and abstract, and abstract is harder
+    # to reason against: "one mage or assassin" carries far less than "Syndra".
+    # Measured on Hecarim with everything else held fixed -- same objective,
+    # same anchor -- handing the model a named typical five moved one item and
+    # one boot and left the core alone: Sterak's Gage became Amaranth's
+    # Twinguard against a comp holding Syndra and Nami, and the boots went from
+    # Ionian to Gluttonous. Adaptation on the flexible slots, which is what it
+    # should be.
+    #
+    # They stay ILLUSTRATIONS rather than opponents deliberately. Treating them
+    # as the real enemy team would answer one specific composition for every
+    # player in the game, which is the failure the no-extreme-comp rule below
+    # exists to prevent.
+    "- To make that concrete, a composition of this shape looks like Ornn "
+    "baron, Vi jungle, Syndra mid, Lucian dragon, Nami support. Reason against "
+    "the SHAPE those five make -- a frontline you have to get through, one "
+    "burst mage, a marksman who scales, an enchanter keeping them alive -- and "
+    "not against those champions, who are an example of the shape and not your "
+    "opponents.\n"
+    "- Do NOT name specific enemy champions in your output, and do not assume "
+    "an extreme comp (full AD, five tanks, triple healer). Reason at the "
+    "archetype level above.\n"
     "- Use situational recommendations for the real deviations from that typical "
     "comp, each with the condition that would trigger it.\n"
     "- Lower `confidence` relative to a fully specified matchup."
