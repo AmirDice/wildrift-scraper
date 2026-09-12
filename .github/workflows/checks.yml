@@ -88,6 +88,14 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit -p tsconfig.json
 
+      # The engine's behavioural checks live in TypeScript and run HERE, not in
+      # the Python job. tests/test_engine_model.py drives the same script, but
+      # that job has no Node dependencies installed and now skips rather than
+      # pretending to run it -- which is what it did for two days, executing a
+      # bare `npx` and asserting against its empty output.
+      - name: Engine model checks
+        run: npx tsx scripts/engine_model_check.ts
+
       # The build is the only thing that exercises every page, and it has
       # caught real breakage that typechecking alone did not.
       - name: Build

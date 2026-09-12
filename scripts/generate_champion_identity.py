@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import threading
 import time
@@ -145,7 +146,35 @@ def ladder_evidence(name: str) -> str:
             f"ranked players of this champion in Wild Rift, freshly scraped): {lines}.\n"
             "Your card MUST be consistent with this evidence: an archetype the "
             "ladder measurably plays cannot be marked never or off_meta, and "
-            "stats carried by frequently equipped items cannot be avoidStats.\n")
+            "stats carried by frequently equipped items cannot be avoidStats.\n"
+            # The first evidence-backed regeneration still produced cards that
+            # RECOMMENDED items outside this list -- Blitzcrank gained Knight's
+            # Vow and Shurelya's, neither of which any of his top 50 build --
+            # because the rule above only governs archetype STATUS and stats,
+            # and every card does its real damage by naming items in prose.
+            "NAMING ITEMS: the notes, flexPatterns, identitySummary and "
+            "signatureItems may RECOMMEND only items from the evidence list "
+            "above. This is the rule the previous version of this card broke. "
+            "You may still name an item outside the list to WARN against it, "
+            "but only inside an archetype whose status is off_meta or never. "
+            "If an archetype you believe in has no item in the list, that "
+            "belief is contradicted by what these players actually build: mark "
+            "it off_meta and give the GAMEPLAY reason it is wrong. Do not reach "
+            "for a PC League item, and do not substitute a similar item for a "
+            "listed one.\n"
+            # The card is quoted verbatim into the build prompt, and a note
+            # saying "the ladder never builds this" is an argument from
+            # popularity that the build model then defers to instead of
+            # reasoning. The evidence decides what the card SAYS; it must not
+            # become something the card CITES.
+            "NEVER CITE THIS EVIDENCE. The card is read by another model that "
+            "must be free to judge each item on its merits, so it may not be "
+            "told what is popular. Write no percentages, no counts like "
+            "'2/50', and none of the words 'ladder', 'top 50', 'top fifty', "
+            "'most players', 'rarely built' or 'commonly built'. State the "
+            "verdict as a gameplay fact about the champion: not 'the ladder "
+            "never builds AP on him' but 'his damage is physical and AP scales "
+            "nothing in his kit'.\n")
 
 
 def generate_one(client, types, model: str, name: str) -> dict:
@@ -164,7 +193,8 @@ def generate_one(client, types, model: str, name: str) -> dict:
         try:
             r = client.models.generate_content(model=model, contents=prompt, config=config)
             card = json.loads(r.text)
-            problems = lint_card(card)
+            problems = (lint_card(card) + unbuilt_item_problems(name, card)
+                        + popularity_problems(card))
             if problems:
                 raise ValueError("schema problems: " + "; ".join(problems))
             return card
@@ -178,6 +208,64 @@ def generate_one(client, types, model: str, name: str) -> dict:
             if attempt < 5:
                 time.sleep(min(90, wait))
     raise RuntimeError(f"{name}: gemini failed: {str(last)[:200]}")
+
+
+
+
+#: Wording that tells the build model what is POPULAR rather than what is
+#: right. The card is quoted verbatim into the build prompt, and an argument
+#: from popularity is one the model defers to instead of scoring the item.
+_POPULARITY_TALK = re.compile(
+    r"\btop[- ]?(?:50|fifty)\b|\bladder\b|\b\d+\s*/\s*\d+\b|\b\d{1,3}\s*%"
+    r"|\bmost players\b|\brarely (?:built|seen|played)\b|\bcommonly built\b"
+    r"|\bnobody builds\b|\bpick ?rate\b|\bpopular\b|\bunpopular\b", re.I)
+
+
+def popularity_problems(card: dict) -> list[str]:
+    """Reject a card that argues from popularity instead of from the kit.
+
+    The evidence decides what the card SAYS. It must never become something
+    the card CITES: the build model reads these notes verbatim, and "the
+    ladder never builds this" invites deference where the whole point is
+    independent scoring.
+    """
+    fields = ([card.get("identitySummary", "")]
+              + [a.get("note", "") for a in card.get("archetypes", []) if isinstance(a, dict)]
+              + list(card.get("flexPatterns") or []))
+    bad = sorted({m.group(0) for f in fields for m in _POPULARITY_TALK.finditer(str(f))})
+    if not bad:
+        return []
+    return ["notes argue from popularity instead of from the kit "
+            f"({', '.join(bad)}). Rewrite each as a gameplay reason -- what the "
+            "champion's kit does or does not scale with -- naming no counts, "
+            "percentages, or how many players build anything"]
+
+
+def unbuilt_item_problems(name: str, card: dict) -> list[str]:
+    """Reject a card that RECOMMENDS an item the ladder does not build.
+
+    Asking the model not to do this in prose cut the problem by two thirds and
+    no further: 47 of 97 cards still named at least one unbuilt item. So the
+    rule is enforced here instead, where a violation costs a retry rather than
+    shipping. The check is the SAME one the live prompt applies when it
+    contradicts a card, so "generated" and "not contradicted at run time" mean
+    the same thing rather than drifting apart.
+
+    Silent when the champion has no measured consensus: with nothing to
+    compare against, every item is unfalsifiable rather than wrong.
+    """
+    try:
+        from web.advisor import prompt as prompt_mod
+        bad = prompt_mod._card_items_the_ladder_rejects(name, card)
+    except Exception:  # noqa: BLE001  -- never block generation on the checker
+        return []
+    if not bad:
+        return []
+    named = ", ".join(f"{n} ({pct}% of the top 50 build it)" for n, pct in bad)
+    return [f"recommends items this champion's ladder does not build: {named}. "
+            "Remove them from the notes, flexPatterns, identitySummary and "
+            "signatureItems, or move each one into an archetype marked "
+            "off_meta or never and word it as a warning"]
 
 
 def lint_card(card: dict) -> list[str]:

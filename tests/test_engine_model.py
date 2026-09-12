@@ -30,11 +30,20 @@ CHECK = WEB / "scripts" / "engine_model_check.ts"
 
 @pytest.mark.skipif(not CHECK.exists(), reason="engine_model_check.ts is absent")
 @pytest.mark.skipif(shutil.which("npx") is None, reason="npx is not on PATH")
+@pytest.mark.skipif(not (WEB / "node_modules").is_dir(),
+                    reason="web-next dependencies are not installed")
 def test_engine_model_behaviour():
     """The TS-only engine model behaves the way it was built to behave."""
+    # NO shell=True. With a LIST of arguments its behaviour is platform
+    # specific: Windows joins the list, so this worked on the dev machine for
+    # months, while POSIX runs only the first element and passes the rest as
+    # $0, $1 -- so CI executed a bare `npx`, which prints usage and exits 0.
+    # The test then saw returncode 0 with empty stdout and failed on every
+    # push since 2026-09-10. shutil.which resolves npx.cmd on Windows, so
+    # dropping the shell costs nothing there.
     result = subprocess.run(
-        ["npx", "tsx", "scripts/engine_model_check.ts"],
-        cwd=WEB, capture_output=True, text=True, shell=True, timeout=600,
+        [shutil.which("npx"), "tsx", "scripts/engine_model_check.ts"],
+        cwd=WEB, capture_output=True, text=True, timeout=600,
     )
     output = f"{result.stdout}\n{result.stderr}".strip()
     # The script prints one FAIL line per broken behaviour and exits non-zero,

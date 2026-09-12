@@ -8,6 +8,7 @@ Add a case to the battery whenever an itemFx key gains an engine channel.
 """
 import io
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -122,8 +123,10 @@ def main() -> int:
         py[key] = {f: round(float(st.get(f, 0)), 4) for f in FIELDS}
 
     ts_out = ROOT / "scratch_ts_stats.json"
-    subprocess.run(["npx", "tsx", "scripts/engine_parity.ts"],
-                   cwd=ROOT / "web-next", check=True, shell=True)
+    # See tests/test_engine_model.py: shell=True with a LIST is platform
+    # specific and silently runs a bare `npx` on POSIX.
+    subprocess.run([shutil.which("npx") or "npx", "tsx", "scripts/engine_parity.ts"],
+                   cwd=ROOT / "web-next", check=True)
     ts = json.loads(ts_out.read_text("utf-8"))
 
     mismatches = 0
