@@ -3844,3 +3844,61 @@ def best_rune_page(name: str, item_slugs: list[str], objective,
             "keystone": best[1][0], "minors": best[1][1:4], "flex": best[1][4],
             "tree": tree, "consideredPages": len(scored),
             "worstScore": worst[0], "spread": round(best[0] - worst[0], 1)}
+
+
+#: How hard the model's own preference pulls on the engine's ranking.
+#:
+#: SWEPT, AND THE SWEEP SAYS SOMETHING UNCOMFORTABLE. Agreement with the
+#: leaderboard's five most-built items, over six champions with a model pool
+#: (30 item slots):
+#:
+#:     alpha   0     0.5   1.0   1.5   2.0   3.0    the model's own five
+#:     agree   15    17    18    19    19    21     23
+#:
+#: It rises monotonically, and the model's own answer beats the engine's
+#: ranking at EVERY setting. On this sample the ranking subtracts value and the
+#: prior only limits how much. That contradicts the 2026-08-19 measurement,
+#: where ranking model pools produced builds real players hold; six champions
+#: is a small sample and the two need reconciling before either is trusted.
+#:
+#: 1.5 is where Ezreal flips to the model's answer and where the curve has
+#: mostly flattened. It is NOT chosen as the maximum, because the maximum of
+#: this metric is "switch the engine off", which is a finding rather than a
+#: setting.
+NOMINATION_ALPHA = 1.5
+
+
+def nomination_prior(item_slugs: list[str], scores: dict[str, float]) -> float:
+    """How close a build is to the model's own preference, 0..1.
+
+    THE PROBLEM THIS EXISTS FOR. On Ezreal the model scored Manamune 98, the
+    highest it gave any item, and its own five were a 5/5 match with what all
+    fifty captured top-50 players build. The engine then dropped Manamune and
+    Spear of Shojin for Duskblade and Youmuu's, which the model scored 68 and
+    65, because Duskblade adds 69% more sustained damage in an eight-second
+    rotation than Manamune does.
+
+    The engine's arithmetic is right and its premise is not. Mana is not
+    damage, it is uptime: the simulation assumes every cast in the rotation is
+    affordable, so an item bought to stop an ability spammer running dry buys
+    nothing it can measure. The model cannot do the arithmetic, and it knows
+    the mechanic.
+
+    So the nomination scores stop being an unordered bag. They are a PRIOR the
+    engine has to beat by a margin, exactly as gold efficiency already works
+    (score * efficiency**alpha): a build far from what the model asked for
+    needs to be a lot better on the objective to win.
+
+    Normalised against the model's OWN best five rather than against 100, so
+    the model's preferred build scores exactly 1.0 and the number reads as
+    "how far from what it asked for". A build holding items the model never
+    nominated is charged the pool's lowest score for them rather than zero --
+    absence is weak evidence, not a veto.
+    """
+    if not scores:
+        return 1.0
+    floor = min(scores.values())
+    best = sorted(scores.values(), reverse=True)[:len(item_slugs)]
+    ideal = sum(best) / max(1, len(best))
+    got = sum(scores.get(s, floor) for s in item_slugs) / max(1, len(item_slugs))
+    return min(1.0, got / ideal) if ideal else 1.0

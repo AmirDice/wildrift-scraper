@@ -109,16 +109,22 @@ def run(champ: str) -> dict:
     lad = consensus(rows)
 
     pool, keystone, tree, source = hb.nominated_pool(champ)
+    scores = hb.nomination_scores(champ)
     objective = fe.default_objective(champ)
     role = fe.CHAMP_ROLE.get(champ) or ""
     combos = [list(c) for c in itertools.combinations(pool, 5)
               if not hard_exclusive_violation(list(c))
               and supportitem.build_is_legal(list(c), role)]
     seed = [keystone] + lad["runes"][1:4]
+    # The model's nomination scores are a PRIOR the engine has to beat by a
+    # margin, not an unordered bag. Without it the engine dropped Manamune on
+    # Ezreal -- the model's highest-scored item at 98, and held by all fifty
+    # captured players -- for Duskblade, which the model scored 68.
     best, best_score = None, -1.0
     for b in combos:
         s = fe.objective_score(
             fe.evaluation_vector(champ, b, seed, LEVEL, fast=True), objective)
+        s *= fe.nomination_prior(b, scores) ** fe.NOMINATION_ALPHA
         if s > best_score:
             best, best_score = b, s
     page = fe.best_rune_page(champ, best, objective, tree, keystone, LEVEL) if tree else {}

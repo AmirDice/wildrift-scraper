@@ -91,6 +91,36 @@ def nominated_pool(champ: str) -> tuple[list[str], str, str, str]:
     return pool, ks, tree, "ladder"
 
 
+def nomination_scores(champ: str) -> dict:
+    """The model's per-item scores for this champion, or {} if none are cached.
+
+    Same KV read as nominated_pool, kept separate because the pool answers
+    "which items are in the conversation" and this answers "how much did the
+    model want each of them" -- the second is what stops the engine trading a
+    98-scored item for a 68-scored one on an axis it cannot see.
+    """
+    import urllib.parse
+    import urllib.request
+    env = {}
+    try:
+        for line in (ROOT / "web-next" / ".env.local").read_text("utf-8").splitlines():
+            m = re.match(r'([A-Z0-9_]+)="?([^"]*)"?$', line.strip())
+            if m:
+                env[m.group(1)] = m.group(2)
+        key = f"latest:build:{re.sub(r'[^a-z0-9]+', '-', champ.lower()).strip('-')}"
+        req = urllib.request.Request(
+            f"{env['KV_REST_API_URL']}/get/{urllib.parse.quote(key, safe='')}",
+            headers={"Authorization": f"Bearer {env['KV_REST_API_TOKEN']}"})
+        raw = json.load(urllib.request.urlopen(req, timeout=20))["result"]
+    except Exception:
+        return {}
+    if not raw:
+        return {}
+    return {r["item"]: float(r["score"])
+            for r in (json.loads(raw).get("candidateItemScores") or [])
+            if r.get("item") in fe.ITEMS and r.get("score") is not None}
+
+
 def run(champ: str, objective: str = "", survival: float = 0.0,
         compare: bool = False) -> dict:
     pool, keystone, tree, source = nominated_pool(champ)
@@ -114,6 +144,7 @@ def run(champ: str, objective: str = "", survival: float = 0.0,
 
     t0 = time.time()
     scored = []
+    scores = nomination_scores(champ)
     for b in combos:
         vec = fe.evaluation_vector(champ, b, seed_page, LEVEL, fast=True)
         # THE SURVIVAL CONSTRAINT IS A FILTER, not a penalty. A weighted sum
@@ -122,7 +153,8 @@ def run(champ: str, objective: str = "", survival: float = 0.0,
         # survival away entirely.
         if survival and vec.get("timeToDie", 0) < survival:
             continue
-        scored.append((fe.objective_score(vec, objective), b))
+        scored.append((fe.objective_score(vec, objective)
+                       * fe.nomination_prior(b, scores) ** fe.NOMINATION_ALPHA, b))
     if not scored:
         print(f"{champ}: nothing survives {survival}s; constraint is unsatisfiable")
         return {}
