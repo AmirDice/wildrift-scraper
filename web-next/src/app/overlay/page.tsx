@@ -44,7 +44,7 @@ export default function OverlayPage() {
       <div className="py-8">
         <div className="max-w-3xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-300">
-            Available now · beta on Discord
+            Available now · alpha on Discord
           </span>
           <h1 className="mt-3 text-3xl font-bold sm:text-4xl">The draft, on top of the game</h1>
           <p className="mt-3 text-base text-muted">
@@ -119,7 +119,7 @@ export default function OverlayPage() {
               <div className="glass rounded-xl border border-[#5865F2]/40 p-4">
                 <h2 className="text-sm font-bold text-text">Try it now, through our Discord</h2>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                  The overlay is out, as a beta for the people in the WrTrueMeta Discord. Join, and
+                  The overlay is out, as an alpha for the people in the WrTrueMeta Discord. Join, and
                   the latest build is there to download. It is also the fastest way to tell us when
                   it reads a pick wrong, which is exactly what this stage is for.
                 </p>

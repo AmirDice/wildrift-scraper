@@ -36,7 +36,7 @@ export default async function DraftPage() {
           className="glass mt-4 flex items-center gap-3 rounded-xl border border-gold/25 p-3 transition hover:border-gold/50"
         >
           <span className="rounded bg-gold/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-gold">
-            Beta
+            Alpha
           </span>
           <span className="min-w-0 flex-1 text-xs text-muted">
             <span className="font-semibold text-text">This, but on top of the game.</span>{" "}

@@ -35,9 +35,9 @@ const buildsEntry = (live: boolean): NavEntry => (live
         ...(DRAFT_TOOL_LIVE
           ? [{ href: "/draft", label: "Draft Assistant", badges: ["new"], desc: "Bans, picks and the counter build, live in lobby" }]
           : []),
-        // Beta through the Discord: the page is where people are pointed from
+        // Alpha through the Discord: the page is where people are pointed from
         // YouTube, and it hands them the invite that gets them the app.
-        { href: "/overlay", label: "Draft Overlay", badges: ["beta"], desc: "The draft assistant on top of the game, via our Discord" },
+        { href: "/overlay", label: "Draft Overlay", badges: ["alpha"], desc: "The draft assistant on top of the game, via our Discord" },
         { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },
@@ -46,9 +46,9 @@ const buildsEntry = (live: boolean): NavEntry => (live
   : {
       label: "Builds",
       items: [
-        // Beta through the Discord: the page is where people are pointed from
+        // Alpha through the Discord: the page is where people are pointed from
         // YouTube, and it hands them the invite that gets them the app.
-        { href: "/overlay", label: "Draft Overlay", badges: ["beta"], desc: "The draft assistant on top of the game, via our Discord" },
+        { href: "/overlay", label: "Draft Overlay", badges: ["alpha"], desc: "The draft assistant on top of the game, via our Discord" },
         { href: "/items", label: "Items", desc: "Stats, passives & costs" },
         { href: "/runes-spells", label: "Runes & Spells", desc: "Effects, trees, cooldowns & uses" },
         { href: "/albums", label: "Build Albums", desc: "Save builds & blend with a friend" },
@@ -109,7 +109,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
 function NavBadge({ text }: { text: string }) {
   const cls = text === "new"
     ? "bg-emerald-400/20 text-emerald-300"
-    : text === "beta"
+    : text === "beta" || text === "alpha"
       ? "bg-gold/20 text-gold"
       : "bg-accent/20 text-accent";
   return (

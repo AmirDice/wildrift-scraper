@@ -42,8 +42,14 @@ const deviceKey = (device: string) => `alpha:device:${device}`;
  * tested stops working and the feedback is "it stopped working". Unlimited
  * would be cleaner signal but puts no ceiling on a leaked code, and the alpha
  * is asking whether the overlay works, not how much one person can generate.
+ *
+ * 10, down from 25, on 2026-09-18 when the overlay opened to everyone in the
+ * Discord: the tester pool stopped being a handful of invited people, and 25
+ * each was a model bill scaled to a group that no longer existed. Ten is still
+ * twice the public allowance and an evening of drafts. The app reads the limit
+ * from the response, so changing it needs no new APK.
  */
-export const ALPHA_DAILY_BUILDS = 25;
+export const ALPHA_DAILY_BUILDS = 10;
 
 /** Is the gate switched on at all? Off means the alpha is over. */
 export const ALPHA_GATE = (process.env.ALPHA_GATE ?? "").toLowerCase() === "1"
