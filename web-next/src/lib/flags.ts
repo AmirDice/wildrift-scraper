@@ -64,7 +64,10 @@ export const OVERLAY_DOWNLOAD_LIVE = _overlayFlag === "1" || _overlayFlag === "t
 /** Filename served from /public. Kept here so the page and the build script
  *  cannot drift apart silently. */
 export const OVERLAY_APK = "/wrtruemeta-overlay.apk";
-export const OVERLAY_VERSION = "2.6";
+/** The build handed out through the Discord, as the APK itself reports it
+ *  (versionName in the manifest). Read it off the file rather than from
+ *  memory: `aapt2 dump badging build/wr-overlay.apk`. */
+export const OVERLAY_VERSION = "3.1-alpha";
 
 /**
  * The Build Studio's version badge, shown on the studio header, the tool cards
