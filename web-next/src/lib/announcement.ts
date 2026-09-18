@@ -52,6 +52,16 @@ export const ANNOUNCEMENT = {
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
   {
+    date: "18 September 2026",
+    title: "The Draft Assistant is live",
+    body:
+      "Track champion select as it happens: tap a slot to fill it, tap again to "
+      + "clear it, for all ten bans and both teams. It suggests what to pick from "
+      + "the champions you actually play, reads what their comp is built to do, "
+      + "and turns their five into a counter build with one tap. On a PC it can "
+      + "also read a mirrored phone screen, so nothing has to be tapped at all.",
+  },
+  {
     date: "11 September 2026",
     title: "Basic attack damage corrected for nine champions",
     body:

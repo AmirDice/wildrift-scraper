@@ -229,7 +229,14 @@ function readSlot(
   slot: Slot, refs: Reference[],
 ): Match {
   const { width: w, height: h } = ctx.canvas;
-  const size = Math.round(slot.size * w);
+  // SIZE IS A FRACTION OF HEIGHT, not width. The game scales its UI by height,
+  // which is why the phone reader measures every box that way; taking it off
+  // the width made each box 234px on a 2340x1080 frame where the portrait is
+  // 108, so the matcher compared a portrait-plus-its-surroundings against a
+  // portrait and answered with whatever that smear resembled. It read Kalista,
+  // Diana and Kai'Sa off a frame holding Hecarim, Thresh, Yone, Nautilus and
+  // Nunu, while the phone's copy of the same matcher read it perfectly.
+  const size = Math.max(8, Math.round(slot.size * h));
   const x0 = Math.round(slot.cx * w - size / 2);
   const y0 = Math.round(slot.cy * h - size / 2);
   const hit = matchAt(ctx, scratch, x0, y0, size, slot.round, refs);

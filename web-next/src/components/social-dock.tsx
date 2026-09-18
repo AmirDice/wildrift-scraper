@@ -53,7 +53,7 @@ export function SocialDock() {
     <div
       aria-label="WrTrueMeta social channels"
       role="complementary"
-      className="fixed bottom-4 right-4 z-50 print:hidden"
+      className="dock-bottom fixed right-4 z-50 print:hidden"
     >
       <div className="liquid-glass flex items-center gap-1 rounded-2xl p-1.5">
         {CHANNELS.map(({ key, href, label, Icon, hover }) => (

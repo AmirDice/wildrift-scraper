@@ -20,30 +20,78 @@ export const DRAFT_ROLES: DraftRole[] = ["Baron", "Jungle", "Mid", "Dragon", "Su
 /** Wild Rift drafts: 5 bans per team, and both teams may ban the same champion. */
 export const MAX_BANS = 10;
 
+/** Teammates other than the player, and the whole enemy side. */
+export const ALLY_SLOTS = 4;
+export const ENEMY_SLOTS = 5;
+
+/** One seat on the board: a champion, or an empty seat waiting for a tap.
+ *
+ * The board is SEAT-ADDRESSED rather than a growing list, because the page
+ * is driven by tapping the seat you mean -- tap the fourth enemy box and the
+ * champion lands in the fourth box, not wherever the list happened to end. */
+export type Slot = string | null;
+
 export interface DraftState {
-  /** Ban list, not a set: a duplicate ban really happens in the lobby and
+  /** Ban seats, not a set: a duplicate ban really happens in the lobby and
    *  should be recorded as seen. Availability derives from the unique set. */
-  bans: string[];
-  /** Teammates other than the player (up to 4). */
-  allies: string[];
-  enemies: string[];
+  bans: Slot[];
+  allies: Slot[];
+  enemies: Slot[];
   me: string | null;
   myRole: DraftRole | null;
 }
 
-export const EMPTY_DRAFT: DraftState = {
-  bans: [],
-  allies: [],
-  enemies: [],
-  me: null,
-  myRole: null,
-};
+/** A board with every seat empty. A function, not a shared constant: the
+ *  arrays are per-draft state and must never be aliased between games. */
+export function emptyDraft(): DraftState {
+  return {
+    bans: Array<Slot>(MAX_BANS).fill(null),
+    allies: Array<Slot>(ALLY_SLOTS).fill(null),
+    enemies: Array<Slot>(ENEMY_SLOTS).fill(null),
+    me: null,
+    myRole: null,
+  };
+}
+
+/** The champions actually on the board, in seat order, empties dropped.
+ *  Everything that reasons about a composition wants this; only the board
+ *  itself cares which seat is empty. */
+export function picked(list: readonly Slot[]): string[] {
+  return list.filter((s): s is string => typeof s === "string" && s.length > 0);
+}
+
+/**
+ * A stored draft in this version's shape.
+ *
+ * Sessions saved before the board became seat-addressed hold compact arrays
+ * with no empty seats, and a resumed draft must not crash on them or grow a
+ * sixth enemy seat. Anything unrecognised becomes an empty seat.
+ */
+export function normaliseDraft(raw: unknown): DraftState {
+  const base = emptyDraft();
+  if (!raw || typeof raw !== "object") return base;
+  const r = raw as Record<string, unknown>;
+  const seats = (v: unknown, n: number): Slot[] => {
+    const src = Array.isArray(v) ? v : [];
+    return Array.from({ length: n }, (_, i) =>
+      typeof src[i] === "string" && src[i] ? (src[i] as string) : null);
+  };
+  const role = typeof r.myRole === "string" && (DRAFT_ROLES as string[]).includes(r.myRole)
+    ? (r.myRole as DraftRole) : null;
+  return {
+    bans: seats(r.bans, MAX_BANS),
+    allies: seats(r.allies, ALLY_SLOTS),
+    enemies: seats(r.enemies, ENEMY_SLOTS),
+    me: typeof r.me === "string" && r.me ? r.me : null,
+    myRole: role,
+  };
+}
 
 /** Every champion no longer pickable: banned by anyone, or already locked. */
 export function unavailable(state: DraftState): Set<string> {
-  const out = new Set(state.bans);
-  for (const s of state.allies) out.add(s);
-  for (const s of state.enemies) out.add(s);
+  const out = new Set(picked(state.bans));
+  for (const s of picked(state.allies)) out.add(s);
+  for (const s of picked(state.enemies)) out.add(s);
   if (state.me) out.add(state.me);
   return out;
 }
@@ -235,7 +283,10 @@ export interface Suggestion {
  * Kept deliberately identical to DraftState.metaScore in the overlay. The two
  * rank the same champions from the same data and users compare them.
  */
-function metaScore(c: Champion): number {
+/** Ladder strength as one number: tier first, win rate as the tiebreak. The
+ *  draft page also ranks the picker's default list with it, so that a seat
+ *  opens on the champions a lobby actually picks rather than on Aatrox. */
+export function metaScore(c: Champion): number {
   const wr = typeof c.wr === "number" ? c.wr : 50;
   return tierScore(c.tier) * 1.2 + (wr - 50) * 0.10;
 }
@@ -278,10 +329,10 @@ export function suggestPicks(
   const poolSet = new Set(pool);
   const fromPool = pool.length > 0;
   const protective = enemyTraits?.protective ?? new Set<string>();
-  const allyProfile = compProfile(state.allies, bySlug);
-  const enemyProfile = compProfile(state.enemies, bySlug);
+  const allyProfile = compProfile(picked(state.allies), bySlug);
+  const enemyProfile = compProfile(picked(state.enemies), bySlug);
   const lane = state.myRole
-    ? state.enemies.map((s) => bySlug.get(s)).find((e) => e && playsRole(e, state.myRole))
+    ? picked(state.enemies).map((s) => bySlug.get(s)).find((e) => e && playsRole(e, state.myRole))
     : undefined;
 
   const out: Suggestion[] = [];

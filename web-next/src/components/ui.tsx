@@ -94,7 +94,7 @@ export function SectionHeading({
   subtitle?: string;
 }) {
   return (
-    <div className="mb-4 flex items-end justify-between gap-4">
+    <div className="plate mb-4 flex items-end justify-between gap-4">
       <div>
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
         {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}

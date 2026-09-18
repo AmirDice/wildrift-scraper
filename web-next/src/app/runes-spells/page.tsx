@@ -3,6 +3,7 @@ import engineData from "@/data/engine.json";
 import spellsData from "@/data/spells.json";
 import { Container } from "@/components/ui";
 import { RuneSpellExplorer, type RuneEntry, type SpellEntry } from "@/components/rune-spell-explorer";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "Wild Rift Runes & Summoner Spells",
@@ -20,6 +21,7 @@ export default function RunesSpellsPage() {
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Loadout reference</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Runes & summoner spells</h1>
       <p className="mb-7 mt-3 max-w-2xl text-sm leading-relaxed text-muted">Explore what each rune and spell does before choosing a loadout. Filter by rune tree, search by effect, and expand a card for the full description and practical use.</p>
+      <AdSlot placement="inline" bare className="my-6" />
       <RuneSpellExplorer runes={runes} spells={spells} />
     </Container>
   );

@@ -5,6 +5,7 @@ import { getCnChampionsByBracket, getCnRolesByBracket, CN_BRACKETS, CN_META, get
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
+import { AdSlot } from "@/components/ad-slot";
 
 /**
  * The China tier list, on its own URL.
@@ -70,6 +71,7 @@ export default async function ChinaTierListPage({
         <span className="shrink-0 text-sm font-semibold text-gold">View skill-bracket trends →</span>
       </Link>
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <TierListView
           champions={getChampions()}

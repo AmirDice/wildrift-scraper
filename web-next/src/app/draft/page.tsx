@@ -36,14 +36,32 @@ export default async function DraftPage() {
           className="glass mt-4 flex items-center gap-3 rounded-xl border border-gold/25 p-3 transition hover:border-gold/50"
         >
           <span className="rounded bg-gold/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-gold">
-            Soon
+            Beta
           </span>
           <span className="min-w-0 flex-1 text-xs text-muted">
             <span className="font-semibold text-text">This, but on top of the game.</span>{" "}
             An Android overlay that reads champion select and builds against their five without
-            leaving Wild Rift.
+            leaving Wild Rift. Out now for everyone in our Discord.
           </span>
           <span aria-hidden className="shrink-0 text-sm text-gold">&rarr;</span>
+        </Link>
+        {/* The other way out of tapping, and the one that works on iPhone: mirror
+            the phone to this screen and let the reader fill the board. It is
+            still its own page -- reading straight into the board below is the
+            next step -- so this is the door to it. */}
+        <Link
+          href="/second-screen"
+          className="glass mt-3 flex items-center gap-3 rounded-xl border border-accent/25 p-3 transition hover:border-accent/50"
+        >
+          <span className="rounded bg-accent/20 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-accent">
+            iOS too
+          </span>
+          <span className="min-w-0 flex-1 text-xs text-muted">
+            <span className="font-semibold text-text">Tired of tapping?</span>{" "}
+            Mirror your phone to this screen and have champion select read itself, on
+            iPhone or Android, with no overlay to install.
+          </span>
+          <span aria-hidden className="shrink-0 text-sm text-accent">&rarr;</span>
         </Link>
         <div className="mt-5">
           <DraftAssistant />

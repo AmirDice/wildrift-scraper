@@ -7,6 +7,7 @@ import {getChampionChangeAge,
   getChampionChangeRanking} from "@/lib/champion-change-ranking";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { NextStep } from "@/components/next-step";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "Champion Change History | Wild Rift",
@@ -70,6 +71,8 @@ export default function ChampionChangesPage() {
       )}
 
 
+      {/* Before the list itself, not inside the tool-promo block above it. */}
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <ChampionChangeList entries={entries} />
       </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useBuildToolsVisible } from "@/lib/use-build-tools";
+import { BUILD_STUDIO_VERSION } from "@/lib/flags";
 
 /**
  * Site-wide pointer to the two build tools, shown at the TOP of every page
@@ -36,13 +37,13 @@ const LIVE_TOOLS: Cta[] = [
   {
     href: "/build", title: "Build Studio", short: "Build Studio",
     badge: "new", badgeClass: "bg-emerald-400/20 text-emerald-300",
-    secondBadge: "v2", secondBadgeClass: "bg-gold/20 text-gold",
+    secondBadge: BUILD_STUDIO_VERSION, secondBadgeClass: "bg-gold/20 text-gold",
     body: "Generate by playstyle or craft with live item, rune and ability stats.",
     accent: "text-accent", ring: "hover:border-accent/40",
   },
   {
     href: "/build?tab=counter", title: "Build vs Enemy Team", short: "vs Enemy",
-    badge: "v2", badgeClass: "bg-gold/20 text-gold",
+    badge: BUILD_STUDIO_VERSION, badgeClass: "bg-gold/20 text-gold",
     body: "A build tuned to beat the exact team you are facing.",
     accent: "text-emerald-300", ring: "hover:border-emerald-400/40",
   },

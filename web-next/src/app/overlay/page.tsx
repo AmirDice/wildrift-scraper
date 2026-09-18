@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui";
-import { NotifyForm } from "@/components/notify-form";
+import { DISCORD_URL } from "@/components/discord";
 import { OVERLAY_APK, OVERLAY_DOWNLOAD_LIVE, OVERLAY_VERSION } from "@/lib/flags";
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ const FEATURES = [
 ] as const;
 
 const STEPS = [
-  "Download the file and open it. Android will ask whether to allow installs from your browser; that prompt is normal for anything not from the Play Store.",
+  "Join the Discord and grab the latest build there. Open the file, and Android will ask whether to allow installs from outside the Play Store; that prompt is normal for anything that is not from the Play Store.",
   "Open the app once and grant Draw over other apps. This is the permission that lets it sit on top of Wild Rift.",
   "Start a game. Pull the bar out from the edge of the screen whenever you want it, and push it back when you do not.",
   "In champion select, tap WATCH and accept the screen capture prompt if you want it to fill the picks in for you.",
@@ -43,8 +43,8 @@ export default function OverlayPage() {
     <Container>
       <div className="py-8">
         <div className="max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-gold">
-            In testing
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-300">
+            Available now · beta on Discord
           </span>
           <h1 className="mt-3 text-3xl font-bold sm:text-4xl">The draft, on top of the game</h1>
           <p className="mt-3 text-base text-muted">
@@ -69,10 +69,11 @@ export default function OverlayPage() {
             <div className="glass mt-4 rounded-xl border border-white/10 p-4">
               <h2 className="text-sm font-bold text-text">Make it look like yours</h2>
               <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                Six frames, from a plain dark bar to a full Hextech crest, and a colour for every
-                champion in the game drawn from their own splash art. Pick Hecarim and the bar
-                turns Hecarim green. None of it is an image download; it is all drawn at the size
-                your phone runs at, which is why the whole app is under a quarter of a megabyte.
+                Eleven frames, from a plain dark bar to a Hextech crest to a K/DA stage plate, and
+                a colour for every champion in the game drawn from their own splash art. Pick
+                Hecarim and the bar turns Hecarim green. None of it is an image download; every
+                line and every petal is drawn at the size your phone runs at, which is why the
+                whole app is still under a quarter of a megabyte.
               </p>
             </div>
 
@@ -111,16 +112,30 @@ export default function OverlayPage() {
                 </p>
               </div>
             ) : (
-              <div className="glass rounded-xl border border-gold/25 p-4">
-                <h2 className="text-sm font-bold text-text">Not out yet</h2>
+              // Available, through the Discord. The public download stays shut
+              // (see OVERLAY_DOWNLOAD_LIVE: the first signing key published is
+              // the one you are stuck with), so the app is handed out where the
+              // people trying it can also say what it read wrong.
+              <div className="glass rounded-xl border border-[#5865F2]/40 p-4">
+                <h2 className="text-sm font-bold text-text">Try it now, through our Discord</h2>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                  It is being tested against real lobbies on real phones. Leave an address and you
-                  will hear the day it can be downloaded, rather than having to keep checking.
+                  The overlay is out, as a beta for the people in the WrTrueMeta Discord. Join, and
+                  the latest build is there to download. It is also the fastest way to tell us when
+                  it reads a pick wrong, which is exactly what this stage is for.
+                </p>
+                <a
+                  href={DISCORD_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-[#5865F2] px-4 py-3 text-sm font-bold text-white transition hover:brightness-110"
+                >
+                  Join the Discord to get it
+                </a>
+                <p className="mt-2 text-center text-[0.7rem] text-faint">
+                  Free · Android 8.0+ · version {OVERLAY_VERSION}
                 </p>
               </div>
             )}
-
-            <NotifyForm source="overlay" />
 
             <div className="glass rounded-xl border border-white/10 p-4">
               <h2 className="text-sm font-bold text-text">Use it in a browser today</h2>

@@ -55,9 +55,33 @@ export function BuildTour({
 }) {
   const [index, setIndex] = useState<number | null>(null);
   const [rect, setRect] = useState<Rect | null>(null);
+  /**
+   * The steps that have something to point at, resolved when the tour starts.
+   *
+   * The build form has a Beginner mode that takes most of the controls this
+   * tour explains off the screen. A step whose target is missing still renders,
+   * just without a spotlight, so the tour turned into nine cards about settings
+   * that were not there. A step with no target at all is an intro card and
+   * always counts.
+   */
+  const [live, setLive] = useState<TourStep[]>(steps);
 
   const open = index != null;
-  const step = open ? steps[index] : null;
+  const step = open ? live[index] : null;
+
+  /** Steps whose target is on the page right now. */
+  const present = useCallback(
+    () => steps.filter((s) => !s.target || document.querySelector(`[data-tour="${s.target}"]`)),
+    [steps],
+  );
+
+  const start = useCallback(() => {
+    const shown = present();
+    if (!shown.length) return;
+    setLive(shown);
+    setIndex(0);
+    track("tour_started");
+  }, [present]);
 
   // First visit: start on the next frame, once the page has laid out.
   useEffect(() => {
@@ -68,12 +92,9 @@ export function BuildTour({
       /* storage unavailable: treat as seen so we never nag in a loop */
     }
     if (seen) return;
-    const timer = window.setTimeout(() => {
-      setIndex(0);
-      track("tour_started");
-    }, 600);
+    const timer = window.setTimeout(start, 600);
     return () => window.clearTimeout(timer);
-  }, [storageKey]);
+  }, [storageKey, start]);
 
   // Track the spotlight to its target across scroll, resize and step changes.
   useEffect(() => {
@@ -114,23 +135,22 @@ export function BuildTour({
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") finish("skipped");
-      if (event.key === "ArrowRight") setIndex((current) => (current == null ? current : Math.min(steps.length - 1, current + 1)));
+      if (event.key === "ArrowRight") setIndex((current) => (current == null ? current : Math.min(live.length - 1, current + 1)));
       if (event.key === "ArrowLeft") setIndex((current) => (current == null ? current : Math.max(0, current - 1)));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, finish, steps.length]);
+  }, [open, finish, live.length]);
 
-  const restart = () => {
-    setIndex(0);
-    track("tour_started");
-  };
+  // Replay resolves the targets again, because the form may be in a different
+  // mode now than it was on the first visit.
+  const restart = start;
 
   return (
     <>
       <button
         onClick={restart}
-        className="fixed bottom-4 right-[4.5rem] z-40 grid h-11 place-items-center rounded-full border border-line bg-[#0e1322]/90 px-4 text-xs font-bold text-accent shadow-2xl backdrop-blur transition hover:border-accent/60"
+        className="dock-bottom fixed right-[4.5rem] z-40 grid h-11 place-items-center rounded-full border border-line bg-[#0e1322]/90 px-4 text-xs font-bold text-accent shadow-2xl backdrop-blur transition hover:border-accent/60"
       >
         {label}
       </button>
@@ -158,11 +178,11 @@ export function BuildTour({
             rect={rect}
             step={step}
             index={index!}
-            total={steps.length}
+            total={live.length}
             onSkip={() => finish("skipped")}
             onBack={() => setIndex((current) => Math.max(0, (current ?? 0) - 1))}
             onNext={() => {
-              if (index! >= steps.length - 1) finish("completed");
+              if (index! >= live.length - 1) finish("completed");
               else setIndex(index! + 1);
             }}
           />

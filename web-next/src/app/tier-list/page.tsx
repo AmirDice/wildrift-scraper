@@ -3,6 +3,7 @@ import Link from "next/link";
 import { site, getChampions, regionBoard } from "@/lib/data";
 import { freshness } from "@/lib/patch-freshness";
 import { getCnChampionsByBracket, getCnRolesByBracket, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
+import { AdSlot } from "@/components/ad-slot";
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
@@ -78,6 +79,9 @@ export default function TierListPage() {
           initialRegion="Global"
         />
       </div>
+      {/* Below the board. The longest page on the site, so the layout's bottom
+          unit is thousands of pixels from anyone still reading here. */}
+      <AdSlot placement="inline" bare className="my-10" />
       <NextStep steps={["build", "counter", "meta"]} />
 
     </Container>

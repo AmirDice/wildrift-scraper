@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AdSlot } from "@/components/ad-slot";
 import { Container } from "@/components/ui";
 import { ItemsExplorer } from "@/components/items-explorer";
 
@@ -22,6 +23,7 @@ export default function ItemsPage() {
       <div className="mt-8">
         <ItemsExplorer />
       </div>
+      <AdSlot placement="inline" bare className="mt-10" />
     </Container>
   );
 }

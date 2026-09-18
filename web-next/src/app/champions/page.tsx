@@ -3,6 +3,7 @@ import Link from "next/link";
 import { site, getChampions, regionBoard } from "@/lib/data";
 import { getCnChampions, cnRoles, CN_META, cnChampionsWithoutData } from "@/lib/cn";
 import rosterData from "@/data/roster.json";
+import { AdSlot } from "@/components/ad-slot";
 import { Container } from "@/components/ui";
 import { ChampionsExplorer } from "@/components/champions-explorer";
 import { NewChampions } from "@/components/new-champions";
@@ -51,6 +52,7 @@ export default function ChampionsPage() {
           rosterSize={roster.length}
         />
       </div>
+      <AdSlot placement="inline" bare className="my-10" />
       {/* Champions who are live in the game but have no ranked sample yet.
           They cannot be placed in the explorer above without inventing a win
           rate, so they get their own section with the kit we do have. */}

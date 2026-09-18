@@ -215,13 +215,28 @@ PLAYSTYLES_BY_CLASS: dict[str, list[str]] = PLAYSTYLE_CONFIG["byClass"]
 PLAYSTYLE_OVERRIDES: dict[str, list[str]] = PLAYSTYLE_CONFIG["overrides"]
 
 
+#: Granted to EVERY champion rather than listed per class. It is not a build
+#: archetype a class table can hand out -- it is a request to leave the
+#: consensus build behind on whatever kit it is given -- so the per-class lists
+#: stay what they have always been: a statement about what that class can
+#: actually build. It is also why this cannot be a silent default: the UI has
+#: to label the result as an experiment, which the retired `offmeta` builds did
+#: not, and that is exactly how unreviewed builds came to look recommended.
+EXPERIMENTAL = "experimental"
+
+
 def available_playstyles(champion: str) -> list[str]:
     if champion in PLAYSTYLE_OVERRIDES:
-        return PLAYSTYLE_OVERRIDES[champion]
-    champ = CHAMPS.get(champion) or {}
-    styles = list(PLAYSTYLES_BY_CLASS.get(champ.get("class", ""), ["standard", "oneshot"]))
-    if champ.get("role") == "Support" and "utility" not in styles:
-        styles.append("utility")
+        # COPY. This used to hand back the config's own list, and appending to
+        # it below would have edited the loaded playstyle table in place.
+        styles = list(PLAYSTYLE_OVERRIDES[champion])
+    else:
+        champ = CHAMPS.get(champion) or {}
+        styles = list(PLAYSTYLES_BY_CLASS.get(champ.get("class", ""), ["standard", "oneshot"]))
+        if champ.get("role") == "Support" and "utility" not in styles:
+            styles.append("utility")
+    if EXPERIMENTAL not in styles:
+        styles.append(EXPERIMENTAL)
     return styles
 
 # canonical slug lookup, forgiving about case/punctuation

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/data";
 import { Container, Card } from "@/components/ui";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "Methodology | How WrTrueMeta Calculates Win Rates",
@@ -20,6 +21,7 @@ export default function MethodologyPage() {
         )}
       </p>
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8 flex max-w-3xl flex-col gap-5">
         <Section title="Win rate shown relative to the average champion">
           We read the <strong className="text-text">top 50 players</strong> of each champion

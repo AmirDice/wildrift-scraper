@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { BuildStudio } from "@/components/build-studio";
 import { Container } from "@/components/ui";
 import { BuildsGeneratedPill } from "@/components/builds-counter";
-import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { BUILD_STUDIO_VERSION, BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { buildToolsVisible } from "@/lib/access";
 
 export const metadata: Metadata = {
@@ -56,12 +56,9 @@ export default async function BuildPage(props: PageProps<"/build">) {
         <span className="rounded-md bg-emerald-400/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-300">
           New
         </span>
-        {/* v2, 2026-08-16: the result page restructure, item and rune locks,
-            model-timed boots, the why-not challenge, bias variants, share
-            cards and Lab imports all landed as one batch. v1 went out of beta
-            2026-08-06 with the full EU roster collected. */}
+        {/* The version history lives with BUILD_STUDIO_VERSION in lib/flags. */}
         <span className="rounded-md bg-accent/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-accent">
-          v2
+          {BUILD_STUDIO_VERSION}
         </span>
       </div>
       <p className="mt-1 max-w-xl text-sm text-muted">

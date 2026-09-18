@@ -59,6 +59,11 @@ def _weighted(stat: dict) -> float | None:
         return None
     return round(stat["wr_games"] / stat["games"], 2)
 
+# Per-region outputs, the same shape export_captures.py already uses: EU keeps
+# the unsuffixed names every other script reads, and a second server gets its
+# own everything. What the top 50 build is a per-SERVER fact -- the point of
+# showing it by server is that the answers differ -- so the consensus cannot be
+# one file with the regions mixed into it.
 PULSE_OUT = ROOT / "web-next" / "src" / "data" / "ladder_pulse.json"
 CONSENSUS_OUT = ROOT / "data" / "ladder_consensus.json"
 ITEMS = {i["slug"]: i["name"]
@@ -521,14 +526,39 @@ def _carry_consensus(consensus: dict) -> dict:
 
 
 def main() -> int:
+    import argparse
+
+    import scripts.export_captures as ec
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--region", default="eu", choices=sorted(ec.REGIONS),
+                    help="which server's captures to aggregate (default: eu)")
+    args = ap.parse_args()
+
+    # Rebind the capture directory the same way export_captures does, so every
+    # helper imported from it reads this region without threading an argument
+    # through the whole file.
+    ec.CAPTURES = ec.REGIONS[args.region]["captures"]
+    suffix = "" if args.region == "eu" else f"_{args.region}"
+    pulse_out = PULSE_OUT.with_name(f"ladder_pulse{suffix}.json")
+    consensus_out = CONSENSUS_OUT.with_name(f"ladder_consensus{suffix}.json")
+    print(f"region: {args.region.upper()}  "
+          f"(captures: {ec.CAPTURES.relative_to(ROOT)})")
+    if not ec.CAPTURES.exists() or not any(ec.CAPTURES.iterdir()):
+        print(f"  nothing captured for {args.region.upper()} yet; "
+              f"run the scraper with --builds against that server first")
+        return 1
+
     pulse, consensus = build()
+    # Carrying forward only makes sense against this region's own last run.
+    globals()["PULSE_OUT"], globals()["CONSENSUS_OUT"] = pulse_out, consensus_out
     pulse = _carry_forward(pulse)
     consensus = _carry_consensus(consensus)
-    PULSE_OUT.write_text(json.dumps(pulse, ensure_ascii=False, indent=1), encoding="utf-8")
-    CONSENSUS_OUT.write_text(json.dumps(consensus, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"ladder_pulse.json: {pulse['nChampions']} champions, {pulse['nPlayers']} players, "
-          f"{pulse['nBuilds']} builds -> {PULSE_OUT.relative_to(ROOT)}")
-    print(f"ladder_consensus.json -> {CONSENSUS_OUT.relative_to(ROOT)}")
+    pulse_out.write_text(json.dumps(pulse, ensure_ascii=False, indent=1), encoding="utf-8")
+    consensus_out.write_text(json.dumps(consensus, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"{pulse_out.name}: {pulse['nChampions']} champions, {pulse['nPlayers']} players, "
+          f"{pulse['nBuilds']} builds -> {pulse_out.relative_to(ROOT)}")
+    print(f"{consensus_out.name} -> {consensus_out.relative_to(ROOT)}")
     return 0
 
 

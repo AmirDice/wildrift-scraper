@@ -18,6 +18,7 @@ import { WhyNotPanel } from "@/components/why-not-panel";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { AddToAlbumButton } from "@/components/add-to-album";
 import { LockPicker } from "@/components/lock-picker";
+import { VideoAdGate } from "@/components/video-ad-gate";
 import { Tip } from "@/components/build-view";
 import { Disclosure } from "@/components/ui";
 import { SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
@@ -251,6 +252,15 @@ function WhyThisBuild({ advice }: { advice: Advice }) {
 type AdvisorMode = "studio" | "counter";
 type PlaystyleDefinition = { key: string; label: string; description: string; prompt: string };
 
+/** The off-meta playstyle. Named here because three things key off it: the
+ *  menu, the second generate button, and the banner that has to say the result
+ *  is an experiment rather than a recommendation. */
+const EXPERIMENTAL = "experimental";
+
+/** Which settings a visitor sees. Remembered per browser, because it is a
+ *  statement about the person rather than about this build. */
+const MODE_KEY = "wtm_build_mode";
+
 const PLAYSTYLES = playstyleData.definitions as PlaystyleDefinition[];
 const PLAYSTYLES_BY_CLASS = playstyleData.byClass as Record<string, string[]>;
 const PLAYSTYLE_OVERRIDES = playstyleData.overrides as Record<string, string[]>;
@@ -272,9 +282,15 @@ function playstylesFor(champion: RosterChampion | undefined, mode: AdvisorMode):
     if (poke !== -1) allowed.splice(poke, 1);
   }
   if (champion?.role === "Support" && !allowed.includes("utility")) allowed.push("utility");
+  // Fun / experimental is offered for EVERY champion and never comes from the
+  // class table (web/build_advisor.py grants it the same way): it is not an
+  // archetype a class can hand out, it is a request to leave the consensus
+  // build behind on whatever kit it is given. Studio only -- a counter build
+  // exists to answer five specific picks, and gambling on that is a different
+  // product from experimenting on your own page.
   const modeKeys = mode === "counter"
     ? ["adaptive", ...allowed.filter((key) => key !== "standard")]
-    : allowed;
+    : [...allowed, EXPERIMENTAL];
   return modeKeys
     .map((key) => PLAYSTYLES.find((style) => style.key === key))
     .filter((style): style is PlaystyleDefinition => Boolean(style));
@@ -883,10 +899,42 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [progress, setProgress] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [advice, setAdvice] = useState<Advice | null>(null);
+  /** The playstyle that produced the build on screen, which is not always the
+   *  one in the menu: "Try something fun" generates with `experimental`
+   *  whatever the menu says, and the result has to be labelled as one. */
+  const [usedStyle, setUsedStyle] = useState<string | null>(null);
   // Folded after a successful generation so the result leads; the summary
   // bar above brings it back. Hidden rather than unmounted, because the
   // pickers hold state (locks, enemy team) that must survive the fold.
   const [formOpen, setFormOpen] = useState(true);
+
+  /**
+   * Beginner or Advanced.
+   *
+   * Eight controls were on screen before a single build had been generated --
+   * power spike, rank, playstyle, optimisation, role, a bias slider and two
+   * lock pickers -- and the feedback was the obvious one: it reads as homework.
+   * Every one of them has a sensible default, so Beginner shows the two that
+   * actually change the answer (champion and role) and sends the defaults for
+   * the rest. Advanced is the old form, unchanged.
+   *
+   * It starts Advanced when the URL arrived carrying configuration, which is
+   * what an album re-optimize or a quick-start link does: hiding the settings
+   * that link just set would be lying about what is about to be generated.
+   */
+  const [advanced, setAdvanced] = useState(
+    Boolean(initialConfig?.playstyle || initialConfig?.bias),
+  );
+  // The stored preference is adopted after mount, never during render: the
+  // server has no localStorage, and reading it in useState would render one
+  // mode on the server and the other in the browser.
+  useEffect(() => {
+    if (initialConfig?.playstyle || initialConfig?.bias) return;
+    try {
+      const stored = localStorage.getItem(MODE_KEY);
+      if (stored === "advanced") setAdvanced(true);
+    } catch { /* private mode: everyone starts in Beginner */ }
+  }, [initialConfig?.playstyle, initialConfig?.bias]);
 
   // the champion's home role, to flag off-role picks (Support Graves etc.)
   const championMeta = champ ? roster.find((c) => c.name === champ) : undefined;
@@ -939,6 +987,32 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     track("build_bias_changed");
   };
 
+  /** Everything Beginner hides, returned to the value it hides it at.
+   *
+   *  Without this, a knob set in Advanced would keep being sent from a form
+   *  that no longer shows it -- the one way a simpler mode could produce a
+   *  stranger build than the complicated one. */
+  const simplify = () => {
+    setPlaystyle(defaultPlaystyle);
+    setObjective("balanced");
+    setGamePhase("balanced");
+    setSkillLevel("average");
+    setDamagePath("standard");
+    setBiasIdx(2);
+    committedBias.current = 2;
+    setLockedItems([]);
+    setLockedRunes([]);
+  };
+
+  const chooseMode = (next: boolean) => {
+    setAdvanced(next);
+    if (!next) simplify();
+    try {
+      localStorage.setItem(MODE_KEY, next ? "advanced" : "beginner");
+    } catch { /* private mode: the choice lasts for this visit */ }
+    track(next ? "build_mode_advanced" : "build_mode_beginner");
+  };
+
   const reset = () => {
     setChamp(seedChampion ?? null);
     setRole(presetRole);
@@ -980,8 +1054,16 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     return () => clearInterval(id);
   }, [loading]);
 
-  async function generate() {
+  /** @param styleOverride generate with this playstyle instead of the menu's.
+   *  Passed by the experimental button, which is a one-click request rather
+   *  than a setting -- and it cannot set the state and then call this, because
+   *  the state would not have landed by the time the request is built. */
+  async function generate(styleOverride?: string) {
     if (!champ || needsEnemy) return;
+    const requestedStyle = styleOverride ?? playstyle;
+    // The menu follows the button, so the form explains the build under it.
+    if (styleOverride && styleOverride !== playstyle) setPlaystyle(styleOverride);
+    setUsedStyle(requestedStyle);
     const startedAt = Date.now();
     setProgress(4);
     setElapsed(0);
@@ -993,7 +1075,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          champion: champ, role, playstyle, objective, gamePhase, damagePath,
+          champion: champ, role, playstyle: requestedStyle, objective, gamePhase, damagePath,
           skillLevel,
           buildBias: BIAS_STOPS[biasIdx].key,
           championForm: champ === "Kayn" ? championForm : "",
@@ -1055,7 +1137,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         setBiasHistory((h) => ({
           ...h,
           [biasKey]: {
-            ck: `${champ}|${playstyle}`,
+            ck: `${champ}|${requestedStyle}`,
             items: [...(nextAdvice.items ?? [])],
             boots: nextAdvice.boots,
             bootsUpgrade: nextAdvice.bootsUpgrade,
@@ -1135,6 +1217,40 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         </button>
       )}
       <div className={`glass space-y-4 rounded-2xl p-4 ${formOpen ? "" : "hidden"}`}>
+        {/* Two modes, said in two words, above the controls they govern.
+            A collapsed "advanced settings" section was the other option and it
+            loses the thing that makes this work: in Beginner the settings are
+            not merely folded away, they are BACK AT THEIR DEFAULTS, so the
+            form and the request cannot disagree. */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-text">
+              {advanced ? "Every setting" : "Just the essentials"}
+            </p>
+            <p className="mt-0.5 text-xs text-muted">
+              {advanced
+                ? "Power spike, rank, playstyle, optimisation, bias and locked picks."
+                : isCounter
+                  ? "Pick your champion, your role and who you are up against. Everything else uses the default."
+                  : "Pick your champion and your role. Everything else uses the default, which is the build most people want."}
+            </p>
+          </div>
+          <div className="glass inline-flex shrink-0 rounded-full p-0.5" role="group" aria-label="How much to configure">
+            {([["beginner", false], ["advanced", true]] as const).map(([label, on]) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => chooseMode(on)}
+                aria-pressed={advanced === on}
+                className={`rounded-full px-3 py-1 text-xs font-semibold capitalize transition ${
+                  advanced === on ? "bg-accent text-[#07121f]" : "text-muted hover:text-text"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="flex flex-wrap items-end gap-4">
           <div data-tour="your-champion">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Your champion</p>
@@ -1145,15 +1261,17 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 excluded={new Set([...selectedEnemies, ...selectedAllies])} />
             )}
           </div>
-          <div data-tour="power-spike">
-            <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Power spike</p>
-            <select value={gamePhase} onChange={(e) => setGamePhase(e.target.value)}
-              title={GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
-              {GAME_PHASES.map((phase) => <option key={phase.key} value={phase.key}>{phase.label}</option>)}
-            </select>
-          </div>
-          {supportsDamagePath && (
+          {advanced && (
+            <div data-tour="power-spike">
+              <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Power spike</p>
+              <select value={gamePhase} onChange={(e) => setGamePhase(e.target.value)}
+                title={GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}
+                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+                {GAME_PHASES.map((phase) => <option key={phase.key} value={phase.key}>{phase.label}</option>)}
+              </select>
+            </div>
+          )}
+          {advanced && supportsDamagePath && (
             <div>
               <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Damage path</p>
               <select value={damagePath} onChange={(e) => setDamagePath(e.target.value)}
@@ -1174,28 +1292,34 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               </select>
             </div>
           )}
-          <div>
-            <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Your rank</p>
-            <select value={skillLevel} onChange={(e) => setSkillLevel(e.target.value)}
-              title={SKILL_LEVELS.find((lvl) => lvl.key === skillLevel)?.description}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
-              {SKILL_LEVELS.map((lvl) => <option key={lvl.key} value={lvl.key}>{lvl.label}</option>)}
-            </select>
-          </div>
-          <div data-tour="playstyle">
-            <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Playstyle</p>
-            <select value={playstyle} onChange={(e) => setPlaystyle(e.target.value)} title={selectedPlaystyle?.description}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
-              {availablePlaystyles.map((style) => <option key={style.key} value={style.key}>{style.label}</option>)}
-            </select>
-          </div>
-          <div data-tour="objective">
-            <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimize for</p>
-            <select value={objective} onChange={(e) => setObjective(e.target.value)} title={OBJECTIVE_HELP[objective]}
-              className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
-              {OBJECTIVES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-            </select>
-          </div>
+          {advanced && (
+            <div>
+              <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Your rank</p>
+              <select value={skillLevel} onChange={(e) => setSkillLevel(e.target.value)}
+                title={SKILL_LEVELS.find((lvl) => lvl.key === skillLevel)?.description}
+                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+                {SKILL_LEVELS.map((lvl) => <option key={lvl.key} value={lvl.key}>{lvl.label}</option>)}
+              </select>
+            </div>
+          )}
+          {advanced && (
+            <div data-tour="playstyle">
+              <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Playstyle</p>
+              <select value={playstyle} onChange={(e) => setPlaystyle(e.target.value)} title={selectedPlaystyle?.description}
+                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+                {availablePlaystyles.map((style) => <option key={style.key} value={style.key}>{style.label}</option>)}
+              </select>
+            </div>
+          )}
+          {advanced && (
+            <div data-tour="objective">
+              <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimize for</p>
+              <select value={objective} onChange={(e) => setObjective(e.target.value)} title={OBJECTIVE_HELP[objective]}
+                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+                {OBJECTIVES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+          )}
           <div data-tour="role">
             <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Role</p>
             <select value={role} onChange={(e) => setRole(e.target.value)} title="Choose where you plan to play this champion"
@@ -1210,6 +1334,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             slider is just how you pick one of five. No percentages anywhere,
             because "83% damage" would claim a precision the generator does
             not have. */}
+        {advanced && (
         <div data-tour="build-bias" className="rounded-xl bg-white/[0.03] px-3 py-2.5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">
@@ -1233,13 +1358,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           </div>
           <p className="mt-1.5 text-xs text-muted">{BIAS_STOPS[biasIdx].blurb}</p>
         </div>
+        )}
 
         {roleMismatch && (
           <p className="text-xs text-amber-300">
             Not recommended: {champ} is usually played {naturalRole}, not {role}. The build may be off-meta.
           </p>
         )}
-        {selectedPlaystyle && (
+        {advanced && selectedPlaystyle && (
           <div className="space-y-1 text-xs text-muted">
             <p>{selectedPlaystyle.description}</p>
             <p><span className="font-medium text-text">Power spike:</span> {GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}</p>
@@ -1260,8 +1386,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               first-pick loadout: the one that holds up whoever you end up against.
               Standard with everything balanced will return a solid, safe build rather
               than a one-shot or maximum-damage page, because a build that gambles is
-              the wrong answer when the matchup is unknown. Pick a playstyle if you
-              want it to commit to something.
+              the wrong answer when the matchup is unknown.{" "}
+              {advanced
+                ? "Pick a playstyle if you want it to commit to something."
+                : "Switch to Advanced if you want it to commit to a playstyle instead."}
             </p>
             <p className="mt-2 text-xs leading-relaxed text-muted">
               Already know who you are up against?{" "}
@@ -1334,20 +1462,39 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             </div>
           </div>
         )}
-        <div data-tour="locks">
-          <LockPicker
-            lockedItems={lockedItems}
-            lockedRunes={lockedRunes}
-            onItemsChange={setLockedItems}
-            onRunesChange={setLockedRunes}
-          />
-        </div>
+        {advanced && (
+          <div data-tour="locks">
+            <LockPicker
+              lockedItems={lockedItems}
+              lockedRunes={lockedRunes}
+              onItemsChange={setLockedItems}
+              onRunesChange={setLockedRunes}
+            />
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2" data-tour="generate">
-          <button onClick={generate} disabled={!champ || needsEnemy || loading || outOfBudget} title="Generate the optimal item order, boots, runes, and build evaluation"
+          <button onClick={() => generate()} disabled={!champ || needsEnemy || loading || outOfBudget} title="Generate the optimal item order, boots, runes, and build evaluation"
             className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2 text-sm font-bold text-black transition hover:opacity-90 disabled:opacity-40">
             {!loading && <Sparkles />}
             {loading ? "Building…" : "Generate optimal build"}
           </button>
+          {/* The experiment, as a button rather than a menu entry.
+              It has to work in Beginner, where there is no playstyle menu to
+              put it in, and it reads as what it is there: a second thing you
+              can ask for, not a setting to understand first. In Advanced the
+              menu carries it too, for anyone who wants it with the rest of
+              their setup. */}
+          {!isCounter && (
+            <button
+              onClick={() => generate(EXPERIMENTAL)}
+              disabled={!champ || loading || outOfBudget}
+              title="An off-meta build for this champion: unusual items with a real reason behind them. Good for ARAM or a PvP game, not for ranked."
+              className="glass glass-hover inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold text-gold transition disabled:opacity-40"
+            >
+              {!loading && <Sparkles />}
+              Try something fun
+            </button>
+          )}
           <button onClick={reset} disabled={loading}
             className="rounded-lg border border-line px-4 py-2 text-sm font-medium text-muted transition hover:text-text disabled:opacity-40">
             Reset
@@ -1368,7 +1515,12 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
       </div>
 
       {loading && (
-        <div className="glass rounded-2xl p-4">
+        <div className="glass space-y-3 rounded-2xl p-4">
+          {/* The wait is the ad slot. It mounts with the generation and
+              unmounts with it, so nothing plays once the build has landed, and
+              it can never hold the result back: see components/video-ad-gate.tsx
+              for the twenty-second cap and the fallbacks. */}
+          <VideoAdGate />
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="text-muted">
               {isCounter
@@ -1396,6 +1548,33 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           </p>
         ) : (
           <div className="space-y-4">
+            {/* Said BEFORE the build, every time, because the last off-meta
+                generator did not say it at all: those builds were produced
+                under a forced-novelty prompt, shown like any other, and
+                unreviewed ideas ended up reading as recommendations. The
+                escape hatch is in the banner so nobody has to scroll back to
+                the form to get the sane build. */}
+            {usedStyle === EXPERIMENTAL && (
+              <div className="rounded-2xl border border-gold/40 bg-gold/[0.07] p-4">
+                <p className="text-sm font-bold text-gold">This one is an experiment</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted">
+                  You asked for something fun, so this build deliberately leaves the
+                  consensus behind: it picks one thing this kit can do that the normal
+                  build ignores and commits to it. Take it into{" "}
+                  <span className="font-semibold text-text">ARAM or a PvP game</span>, where
+                  trying something costs nothing. It is not a build for ranked, and it is
+                  not the strongest one available. The reasoning below names what it is
+                  exploiting and what it gives up.
+                </p>
+                <button
+                  onClick={() => generate("standard")}
+                  disabled={loading || outOfBudget}
+                  className="mt-2.5 rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-text transition hover:border-accent/60 disabled:opacity-40"
+                >
+                  Generate the safe build instead
+                </button>
+              </div>
+            )}
             <div className="glass rounded-2xl p-4">
               <div className="mb-3 flex items-center gap-3">
                 <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimal build order{isCounter ? " · vs your enemy comp" : ` · ${selectedPlaystyle?.label ?? playstyle}`}</p>
@@ -1442,7 +1621,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                             className="rounded-lg border border-line px-2.5 py-1 text-xs text-muted transition hover:text-text">
                       Clear
                     </button>
-                    <button onClick={generate} disabled={loading || outOfBudget}
+                    <button onClick={() => generate()} disabled={loading || outOfBudget}
                             className="rounded-lg bg-gold px-3 py-1 text-xs font-bold text-black transition hover:opacity-90 disabled:opacity-40">
                       Regenerate around locks
                     </button>

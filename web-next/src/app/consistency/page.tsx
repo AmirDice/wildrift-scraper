@@ -4,6 +4,7 @@ import { getGlobalChampions } from "@/lib/cn";
 import { getSkillCeilingRows, topSkillCeilings } from "@/lib/regions";
 import { Container, ChampionAvatar } from "@/components/ui";
 import { WinrateScatter } from "@/components/winrate-scatter";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "Consistency & Skill Ceiling | Wild Rift Meta Chart",
@@ -55,6 +56,7 @@ export default function ConsistencyPage() {
           ))}
         </ol>
       </div>
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <WinrateScatter champions={champions} />
       </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui";
 import { CrossServerTable, type Row } from "@/components/cross-server-table";
 import { RegionUpdated } from "@/components/tierlist-updated";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "Global Win Rates | EU vs CN Cross-Server Meta",
@@ -54,6 +55,7 @@ export default function GlobalPage() {
         (the &ldquo;Global&rdquo; toggle on the tier list).
       </p>
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-6">
         <CrossServerTable rows={rows} roles={site.roles} />
       </div>

@@ -15,6 +15,7 @@ import { Tip } from "@/components/build-view";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { EnemyBuildAdvisor, type Advice } from "@/components/enemy-build";
 import { BuildCustomizer, labSeedFromFlat, type CustomBuildState as LabSeed } from "@/components/build-customizer";
+import { ServerBuildsPanel } from "@/components/server-builds";
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
 import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
@@ -328,6 +329,14 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
             presetForm={form ? (form.key === "base" ? "shadow-assassin" : "rhaast") : undefined}
             mode="counter"
           />
+        )}
+        {/* What the top 50 on each server actually hold for this champion.
+            Under the tool rather than in it: the studio answers "what should I
+            build", and this is the check on that answer. */}
+        {effectiveTab !== "counter" && (
+          <div className="mt-4">
+            <ServerBuildsPanel champion={rec.champion.name} />
+          </div>
         )}
         {effectiveTab === "customize" && builds && (
           <BuildCustomizer

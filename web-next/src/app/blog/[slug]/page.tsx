@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdSlot } from "@/components/ad-slot";
 import { Container } from "@/components/ui";
 import { BlogBody } from "@/components/blog-body";
 import { getPost, getPosts, readingMinutes } from "@/lib/blog";
@@ -86,6 +87,11 @@ export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
 
         <BlogBody blocks={post.blocks} />
       </article>
+
+      {/* End of the article, before the next one is offered: the one position
+          in-content advertising has always belonged in. Held to the article's
+          own column so it does not read as part of the page furniture. */}
+      <AdSlot placement="inline" bare className="mx-auto mt-12 max-w-2xl" />
 
       {others.length > 0 && (
         <div className="mx-auto mt-14 max-w-2xl border-t border-line pt-8">

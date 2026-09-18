@@ -7,6 +7,7 @@ import runeIcons from "@/data/rune_icons.json";
 import spells from "@/data/spells.json";
 import { NextStep } from "@/components/next-step";
 import { PlayerQuickSearch } from "@/components/player-quick-search";
+import { AdSlot } from "@/components/ad-slot";
 
 // This is the page the site genuinely ranks for: "wild rift leaderboard" sits
 // around position 6-8 and "wild rift leaderboard eu" around 3, where the head
@@ -72,6 +73,8 @@ export default function LeaderboardPage() {
         <PlayerQuickSearch />
       </section>
 
+      {/* Above the player table rather than after it: the layout's bottom unit already sits after it. */}
+      <AdSlot placement="inline" bare className="my-6" />
       <section id="players" className="mt-8 scroll-mt-24">
         <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table, with builds, ranked tiers and per-queue stats where freshly captured" />
         <LeaderboardView

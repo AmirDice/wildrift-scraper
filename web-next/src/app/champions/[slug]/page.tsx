@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel, regionBoard } from "@/lib/data";
+import { site, getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel, regionBoard } from "@/lib/data";
 import { getCnBySlug, getGlobalBySlug } from "@/lib/cn";
 import { getMatchups, type ResolvedMatchup } from "@/lib/counters";
 import { getSkewBySlug } from "@/lib/skew";
@@ -20,8 +20,13 @@ import { PlaystyleProfile } from "@/components/playstyle-profile";
 import { KaynAbilities, KaynFormGuide } from "@/components/kayn-forms";
 import { BuildLikeButton } from "@/components/build-like";
 import { ShareBuildButton } from "@/components/share-build";
+import { AdSlot } from "@/components/ad-slot";
 import { ToolsCta } from "@/components/tools-cta";
 import { MeasuredProfile } from "@/components/measured-profile";
+import { ServerBuilds } from "@/components/server-builds";
+import { SERVER_GAP, toServerBuild } from "@/lib/server-build";
+import { buildsByServer } from "@/lib/ladder-build";
+import itemsCatalogue from "@/data/items.json";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 
 /* eslint-disable @next/next/no-img-element */
@@ -53,6 +58,20 @@ export async function generateMetadata(props: PageProps<"/champions/[slug]">): P
   return { title, description, alternates: { canonical: `/champions/${champion.slug}` }, openGraph: { title, description, images: [champion.splash] }, twitter: { card: "summary_large_image", title, description, images: [champion.splash] } };
 }
 
+/** An item's name and icon for the per-server build card. Unknown slugs still
+ *  render, spelled out, rather than vanishing from a build. */
+const ITEM_CATALOGUE = new Map(
+  (itemsCatalogue as { slug: string; name: string; icon: string }[]).map((i) => [i.slug, i]),
+);
+function catalogueItem(slug: string) {
+  const hit = ITEM_CATALOGUE.get(slug);
+  return {
+    slug,
+    name: hit?.name ?? slug.replace(/-/g, " "),
+    icon: hit?.icon ?? `/items/${slug}.webp`,
+  };
+}
+
 export default async function ChampionPage(props: PageProps<"/champions/[slug]">) {
   const { slug } = await props.params;
   const champion = getChampion(slug);
@@ -70,7 +89,11 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const standardBuild = standardKey ? built!.builds.builds[standardKey] : null;
   const playstyle = getPlaystyleProfile(champion);
   const history = getChampionHistory(champion.name);
-  const na = regionBoard("NA").champions.find((c) => c.slug === champion.slug);
+  const naBoard = regionBoard("NA");
+  const na = naBoard.champions.find((c) => c.slug === champion.slug);
+  // What each server's top 50 actually hold. Per server on purpose: see
+  // components/server-builds.tsx for why China is empty and stays empty.
+  const serverBuilds = buildsByServer(champion.name);
   // Headline figures come from the EU + NA blend so the top of the page
   // agrees with the tier list. Falls back to EU when a champion is missing
   // from a board, and the "Win rate by region" card below still shows each
@@ -125,6 +148,28 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           {na && Number.isFinite(na.wr)
             ? <RegionStat label="NA" wr={na.wr} sub={`${na.tier} tier`} />
             : <RegionStat label="NA" />}
+        </div>
+      </Card>
+      {/* What the top 50 actually buy, per server. It sits directly under the
+          regional win rates because it answers the next question those raise:
+          the boards already show EU, NA and China disagreeing about who is
+          strong, and this is them disagreeing about what to build. */}
+      <Card className="p-5 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold">Most-built by server</h2>
+          <span className="text-xs text-faint">what the top 50 hold, not what we recommend</span>
+        </div>
+        <div className="mt-4">
+          <ServerBuilds
+            champion={champion.name}
+            builds={{
+              eu: toServerBuild(serverBuilds.eu, catalogueItem),
+              na: toServerBuild(serverBuilds.na, catalogueItem),
+              cn: toServerBuild(serverBuilds.cn, catalogueItem),
+            }}
+            gaps={SERVER_GAP}
+            collected={{ eu: site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
+          />
         </div>
       </Card>
       {skew && (
@@ -184,7 +229,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           { name: champion.name, path: `/champions/${champion.slug}` },
         ])}
       />
-      <section className="relative overflow-hidden border-b border-line">
+      <section className="no-plate relative overflow-hidden border-b border-line">
         <div className="absolute inset-0 bg-cover opacity-40" style={{ backgroundImage: `url(${champion.splash})`, backgroundPosition: "center 22%" }}/><div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/30"/><div className="absolute inset-0 bg-gradient-to-t from-bg to-transparent"/>
         <Container className="relative py-10 sm:py-14"><Link href="/champions" className="text-sm text-muted hover:text-text">← All champions</Link><div className="mt-5 flex items-center gap-4"><ChampionAvatar champion={champion} size={72} showBadges={false}/><div className="min-w-0"><div className="flex items-center gap-2"><h1 className="truncate text-3xl font-semibold tracking-tight sm:text-4xl">{champion.name}</h1>{champion.isOtp && <span className="rounded bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white">OTP</span>}</div><p className="mt-1 text-muted">{champion.role} · {champion.class} · <span className={champion.isHard ? "text-bad" : ""}>{champion.difficultyLabel}</span></p></div></div></Container>
       </section>
@@ -194,6 +239,10 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
       <Container className="py-8 sm:py-10">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{stats.map((stat) => <Card key={stat.label} className="p-4"><p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">{stat.label}</p><p className={`mt-2 text-xl font-semibold sm:text-2xl ${stat.className}`}>{stat.value}</p></Card>)}</div>
         <ChampionTabs panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}/>
+        {/* In-content, after the champion's own material and before the
+            "other champions" grid: the seam where a reader has finished what
+            they came for. */}
+        <AdSlot placement="inline" bare className="my-8" />
         {related.length > 0 && <div className="mt-10"><h2 className="mb-4 text-lg font-semibold">Other {champion.role} champions</h2><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{related.map((entry) => <Link key={entry.slug} href={`/champions/${entry.slug}`} className="glass glass-hover flex flex-col items-center gap-2 rounded-xl p-3 text-center"><ChampionAvatar champion={entry} size={48}/><span className="w-full truncate text-sm font-medium">{entry.name}</span><div className="flex items-center gap-1.5"><TierChip tier={entry.tier}/><span className="text-xs font-semibold text-accent">{entry.wr.toFixed(1)}%</span></div></Link>)}</div></div>}
       </Container>
     </>

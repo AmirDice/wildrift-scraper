@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { SecondScreen } from "@/components/second-screen";
+import { SecondScreenReader } from "@/components/second-screen-reader";
+import { SecondScreenGuide } from "@/components/second-screen-guide";
 import { Container } from "@/components/ui";
 import { DRAFT_TOOL_LIVE } from "@/lib/flags";
 
@@ -22,23 +23,20 @@ export default function SecondScreenPage() {
       <div className="py-6">
         <h1 className="text-2xl font-bold sm:text-3xl">PC Second Screen</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted">
-          Mirror your phone to this computer, share that window, and the draft is read for
-          you. Nothing is installed on the phone, so it works on iPhone as well as Android.
+          Screenshot champion select and drop it here: the draft is read off the picture.
+          Nothing to install, on iPhone or Android, and it works on the phone itself.
         </p>
-        <ol className="mt-4 max-w-2xl list-decimal space-y-1 pl-5 text-sm text-muted">
-          <li>
-            Mirror your phone to this PC. iPhone: AirPlay to an AirPlay receiver. Android:
-            Phone Link, Samsung DeX, or scrcpy over USB.
-          </li>
-          <li>
-            Load the icons, then share <strong>the mirror window</strong> rather than your
-            whole screen. Sharing the whole screen still works, but the phone then sits in
-            the middle of a landscape frame and has to be found first.
-          </li>
-          <li>Open champion select. The draft appears below as it is read.</li>
-        </ol>
+        {/* Every route to getting a phone screen in front of the reader, with
+            the visitor's own opened for them. The old three-line list assumed
+            one setup (mirror, share, read) and left everyone else guessing. */}
+        <div className="mt-5">
+          <SecondScreenGuide />
+        </div>
+        {/* The whole draft assistant, reading instead of tapping: same board,
+            same suggestions, same counter build. Keeping a second readout here
+            meant maintaining two front ends for one draft. */}
         <div className="mt-6">
-          <SecondScreen />
+          <SecondScreenReader />
         </div>
       </div>
     </Container>

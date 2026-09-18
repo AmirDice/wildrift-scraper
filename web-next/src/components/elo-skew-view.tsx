@@ -55,7 +55,7 @@ export function EloSkewView({ rows, roles }: { rows: SkewRow[]; roles: string[] 
   return (
     <div>
       {/* Mode toggle */}
-      <div className="mb-4 inline-flex rounded-full border border-line p-1">
+      <div className="glass mb-4 inline-flex rounded-full border border-line p-1">
         {(
           [
             ["climbing", "Scales with elo"],

@@ -72,11 +72,12 @@ body {
    *does* come through read as refracted light rather than grey haze. */
 .glass {
   position: relative;
-  /* A faint dark base under the white sheen. The backdrop is now the blurred
-     art at ~50% rather than a near-black scrim, so a purely white fill would
-     let the art come through at full brightness and drag text contrast down
-     with it. The dark base holds legibility; the white gradient still supplies
-     the sheen that makes it read as a material. */
+  /* A dark base under the white sheen, and it carries real weight now: the
+     full-page scrim that used to sit between the art and every panel is gone
+     (layout.tsx), so this fill is the ONLY thing between the painting and the
+     text on it. 0.32 was tuned against a dimmed backdrop and washed out
+     against an undimmed one. The white gradient still supplies the sheen that
+     makes it read as a material rather than a box. */
   background:
     linear-gradient(
       180deg,
@@ -84,7 +85,7 @@ body {
       rgba(255, 255, 255, 0.032) 45%,
       rgba(255, 255, 255, 0.05) 100%
     ),
-    rgba(10, 14, 24, 0.32);
+    rgba(9, 12, 22, 0.46);
   border: 1px solid rgba(255, 255, 255, 0.1);
   /* brightness is back to 1: it existed only to rescue a crushed backdrop, and
      lifting an already-bright one just washes the panel out.
@@ -114,7 +115,12 @@ body {
 /* Thinner variant for dense surfaces (rows, chips, sticky bars) where the full
    material would swallow the content behind it. */
 .glass-thin {
-  background: rgba(255, 255, 255, 0.045);
+  /* Was a 4.5% white film, which over undimmed art added brightness rather
+     than substance: the tool cards on top of every page were the worst text
+     on the site. It keeps the thin sheen and gains a dark base. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%),
+    rgba(9, 12, 22, 0.40);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px) saturate(180%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
@@ -137,7 +143,7 @@ body {
   background:
     linear-gradient(120deg, rgba(79, 141, 255, 0.10), rgba(255, 255, 255, 0.02) 40%, rgba(79, 141, 255, 0.08) 100%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.045) 45%, rgba(255, 255, 255, 0.08) 100%),
-    rgba(10, 14, 24, 0.38);
+    rgba(9, 12, 22, 0.46);
   border: 1px solid rgba(255, 255, 255, 0.17);
   backdrop-filter: blur(26px) saturate(200%);
   box-shadow:
@@ -221,7 +227,7 @@ body {
 /* Sticky top bar. Content scrolls *under* it, which is the one place the site
    gets the real Apple effect: a moving backdrop seen through the material. */
 .glass-bar {
-  background: rgba(9, 13, 23, 0.62);
+  background: rgba(9, 13, 23, 0.70);
   backdrop-filter: blur(24px) saturate(190%);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.07);
 }
@@ -229,7 +235,7 @@ body {
 /* Floating menus and popovers: more opaque than a card because text sits on
    them directly, but still a material rather than a flat fill. */
 .glass-menu {
-  background: rgba(14, 19, 34, 0.78);
+  background: rgba(14, 19, 34, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(30px) saturate(200%);
   box-shadow:
@@ -366,3 +372,151 @@ body {
   [data-av-full="64"] { --av: 64px; }
   [data-av-full="72"] { --av: 72px; }
 }
+
+/* ── Reading plates: text that sits on the art gets its own dark backing ────
+
+   The site background is a sharp painting, and anything not inside a glass
+   panel was reading straight off it: page headings, intro paragraphs, section
+   subtitles, the step lists. Over the bright parts of the art the smaller
+   text dropped to around 2:1, which is not readable.
+
+   Every text block in `main` that is NOT already inside a panel gets a dark
+   plate behind it. Two decisions worth keeping:
+
+   BOX-SHADOW, NOT PADDING. A shadow paints the backing wider than the text
+   box without touching layout, so nothing on any of the forty pages moves by
+   a pixel. A fixed size (rather than an em) keeps it the same behind a 36px
+   heading and a 14px caption, so a heading and the paragraph under it merge
+   into one shape instead of stacking two ragged boxes.
+
+   A CLOUD, NOT A CARD. The first version was a hard-edged 10px ring at 0.70,
+   which read as a black box stuck behind the words -- exactly what a site
+   built on glass should not have. The fill and the shadow now share one alpha
+   (0.52) and the shadow is blurred 18px, so the two meet at the same value and
+   the rectangle's edge disappears into a soft fade. One shadow, not a stack:
+   two would compound just outside the box and draw the ring back on.
+
+   The panel test is [class*="glass"], not a list of the variants. There are
+   five of them (glass, glass-thin, liquid-glass, glass-bar, glass-menu) and
+   naming four put a plate inside the guided tour's card, which is a box drawn
+   inside a box. A substring match cannot miss the next one either.
+
+   IT NEVER OVERRIDES A PANEL OR A PILL. `:where()` keeps the specificity at
+   zero so any Tailwind background wins, and elements that carry their own
+   `bg-` utility are excluded outright: a plate behind an accent pill would
+   just be a dark halo around it. `.no-plate` opts a whole subtree out, which
+   is what the hero and the champion banner use -- they bring their own
+   gradient scrims and a second one on top reads as a box. */
+main
+  :where(h1, h2, h3, h4, p, ol, ul, blockquote):not(
+    :where([class*="glass"], .no-plate, .plate, table, form, button, a, dialog) *
+  ):not([class*="glass"]):not(.plate):not([class*="bg-"]):not(:empty) {
+  border-radius: 8px;
+  background-color: rgba(6, 9, 16, 0.52);
+  box-shadow: 0 0 18px 9px rgba(6, 9, 16, 0.52);
+}
+
+/* The footer sits on the art too, and it is nothing but text. */
+footer :where(p, nav):not([class*="glass"]):not([class*="bg-"]):not(:empty) {
+  border-radius: 8px;
+  background-color: rgba(6, 9, 16, 0.52);
+  box-shadow: 0 0 18px 9px rgba(6, 9, 16, 0.52);
+}
+
+/* The same plate, applied to a whole block on purpose.
+
+   Per-element plates cannot cover a heading that shares its row with a link:
+   the heading and its subtitle each got a box and the link beside them stayed
+   bare on the art, which read as two ragged shapes instead of one panel. A
+   wrapper carrying `.plate` covers the row, and the rule above skips anything
+   inside it so nothing is plated twice. */
+.plate {
+  border-radius: 12px;
+  background-color: rgba(6, 9, 16, 0.52);
+  box-shadow: 0 0 18px 9px rgba(6, 9, 16, 0.52);
+}
+
+/* The long tail: standalone labels and whole-card links.
+
+   The rule above deliberately covers block text only. Two kinds of bare text
+   were left on the art by that: small uppercase labels that sit in a control
+   row ("My role", "Region", "Player pool"), which are spans rather than
+   paragraphs, and links that are a whole card rather than a word inside a
+   sentence (the featured champion on the home page, the scroll cue).
+
+   Both are matched by their ANCESTRY rather than by size: a span inside a
+   heading, a paragraph, a list or a panel is inline text that already sits on
+   something, and gets nothing. A span whose ancestors are plain layout divs is
+   on the art, and gets a plate.
+
+   A link that CONTAINS a panel is skipped through :has(), or the plate's
+   spread would draw a dark halo around every glass card that happens to be
+   wrapped in a link. */
+main
+  :where(span, label, dt, dd, figcaption, time, address):not(
+    :where(
+      [class*="glass"], .no-plate, .plate, h1, h2, h3, h4, h5, h6,
+      p, ol, ul, blockquote, table, form, button, a, dialog, svg
+    ) *
+  ):not([class*="glass"]):not(.plate):not([class*="bg-"]):not(:empty) {
+  border-radius: 8px;
+  background-color: rgba(6, 9, 16, 0.52);
+  box-shadow: 0 0 18px 9px rgba(6, 9, 16, 0.52);
+}
+
+main
+  a:not(
+    :where(
+      [class*="glass"], .no-plate, .plate, h1, h2, h3, h4, h5, h6,
+      p, ol, ul, blockquote, table, form, button, dialog
+    ) *
+  ):not([class*="glass"]):not(.plate):not(:has([class*="glass"])):not([class*="bg-"]):not(:empty) {
+  border-radius: 12px;
+  background-color: rgba(6, 9, 16, 0.52);
+  box-shadow: 0 0 18px 9px rgba(6, 9, 16, 0.52);
+}
+
+/* One material per element: glass OR a plate, never both.
+
+   Where the two meet, glass wins. A plate inside a panel is a box drawn
+   inside a box, and it stacks a second scrim over words that already had one,
+   so the text ends up darker than the panel it sits in. The rules above skip
+   anything inside a panel and anything that IS a panel; this switches `.plate`
+   off in the same places, since a wrapper cannot know where it was used. */
+:where([class*="glass"]) .plate,
+.plate[class*="glass"] {
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* ── The anchor ad, and everything that has to move for it ─────────────────
+
+   One variable, three consumers: the bar's own height, the page's bottom
+   padding, and the floating furniture in the corner. The class is put on
+   <html> by components/anchor-ad.tsx, so with no anchor the variable does not
+   exist and every rule below falls back to what it was before.
+
+   The safe-area inset is inside the number because on an iPhone the bar has to
+   clear the home indicator, and the padding underneath it has to clear the bar
+   -- if only one of them knew about the inset, one of the two would be wrong. */
+:root.has-anchor {
+  --anchor-h: calc(62px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 640px) {
+  :root.has-anchor {
+    --anchor-h: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* The last line of the page stays reachable above the bar. */
+body {
+  padding-bottom: var(--anchor-h, 0px);
+}
+
+/* Floating corner furniture: the social dock, the flagship nudge and the build
+   tour button. These carry no Tailwind `bottom-*` of their own any more, so
+   there is nothing to override -- with no anchor the calc is just the old
+   offset. */
+.dock-bottom { bottom: calc(1rem + var(--anchor-h, 0px)); }
+.dock-bottom-high { bottom: calc(5rem + var(--anchor-h, 0px)); }

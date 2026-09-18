@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BUILD_TOOLS_LIVE } from "@/lib/flags";
+import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 import { ANNOUNCEMENT } from "@/lib/announcement";
 
 // Top-of-page highlight for the newest feature. Dismissible (remembered in
@@ -47,7 +47,7 @@ const FLAG_PROMO = BUILD_TOOLS_LIVE
 //
 // FLAG_PROMO above is untouched and takes over again the moment ANNOUNCEMENT
 // is retired, so the feature rotation does not have to be rebuilt afterwards.
-const PROMO = {
+const NOTICE = {
   key: ANNOUNCEMENT.key,
   href: ANNOUNCEMENT.href,
   lead: ANNOUNCEMENT.lead,
@@ -56,6 +56,24 @@ const PROMO = {
   badges: [...ANNOUNCEMENT.badges] as string[],
   cta: ANNOUNCEMENT.cta,
 } satisfies typeof FLAG_PROMO;
+
+// A LAUNCH outranks both. The Draft Assistant went live on 2026-09-18, and a
+// new tool is the one thing a returning visitor has not seen yet -- the patch
+// notice had been up for a week and everybody who reads banners had read it.
+// It keeps living where it always did (the /updates page and the notices on
+// the win-rate pages read ANNOUNCEMENT directly), so only the top strip moves
+// on. Retire the launch by pointing PROMO back at NOTICE.
+const LAUNCH = {
+  key: "wtm-launch-draft-assistant-v1",
+  href: "/draft",
+  lead: "Draft Assistant is live",
+  body: "tap in the bans and picks as champion select happens, get picks from the champions you actually play, and a counter build against their five in one tap.",
+  hideOn: ["/draft"],
+  badges: ["New"],
+  cta: "Try it",
+} satisfies typeof FLAG_PROMO;
+
+const PROMO = DRAFT_TOOL_LIVE ? LAUNCH : NOTICE;
 const DISMISS_KEY = PROMO.key;
 // pages the banner points at -- no reason to show it there
 const HIDE_ON = PROMO.hideOn;

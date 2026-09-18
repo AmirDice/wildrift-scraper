@@ -6,6 +6,7 @@ import { Container } from "@/components/ui";
 import { EloSkewView, type SkewRow } from "@/components/elo-skew-view";
 import { ChinaUpdated } from "@/components/tierlist-updated";
 import { NextStep } from "@/components/next-step";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "Win Rate by Skill Bracket | Wild Rift China Rank Data",
@@ -44,6 +45,7 @@ export default function RanksPage() {
         <ChinaUpdated />
       </div>
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <EloSkewView rows={rows} roles={site.roles} />
       </div>

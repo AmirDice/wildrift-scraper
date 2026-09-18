@@ -10,6 +10,7 @@ import {
 import { daysSinceRelease, releaseDateLabel } from "@/lib/champion-releases";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { CURRENT_PATCH } from "@/lib/patch";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: `Wild Rift Balance Report Patch ${CURRENT_PATCH} | Most and Least Changed Champions`,
@@ -72,6 +73,7 @@ export default function ChangesReportPage() {
       </header>
 
       {/* The two extremes, as matching hero panels */}
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         {favorite && (
           <HeroPanel

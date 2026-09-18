@@ -1,13 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
 import { cnTier, type CnBracketKey } from "@/lib/cn";
 import { TIER_ORDER, tierClass, tierLabel, site, siteNa } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
+import { AdSlot } from "@/components/ad-slot";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 import { CURRENT_PATCH } from "@/lib/patch";
+
+/** The tier the in-board ad unit follows. */
+const AD_AFTER_TIER = "A";
 import { moverBySlug } from "@/lib/movers";
 
 /** "up" / "down" if two tier labels differ, else null.
@@ -363,7 +367,9 @@ export function TierListView({
 
           {/* Tiers */}
           <div className="flex flex-col gap-2.5" data-tour="tl-tiers">
-            {TIER_ORDER.map((t) => {
+            {TIER_ORDER.map((t) => (
+              <Fragment key={t}>
+              {(() => {
               const champs = buckets[t] ?? [];
               // An empty tier keeps its row. Hiding it made the ladder look
               // like it simply had no L tier -- spotted on Global/Baron, where
@@ -498,7 +504,14 @@ export function TierListView({
                   </div>
                 </div>
               );
-            })}
+              })()}
+              {/* One unit INSIDE the board, after the A tier: the tier list is the
+                  most-visited page on the site and the board is where people stay, so
+                  it earns more mid-scroll than any unit outside it. After A rather
+                  than higher so the tiers people come for are never split by it. */}
+              {t === AD_AFTER_TIER && <AdSlot placement="inline" bare className="my-2" />}
+              </Fragment>
+            ))}
           </div>
 
           {/* Legend */}

@@ -54,7 +54,7 @@ export function MetaGapView({ rows, roles }: { rows: GapRow[]; roles: string[] }
   return (
     <div>
       {/* Mode toggle */}
-      <div className="mb-4 inline-flex rounded-full border border-line p-1">
+      <div className="glass mb-4 inline-flex rounded-full border border-line p-1">
         {(
           [
             ["rising", "Rising in China"],

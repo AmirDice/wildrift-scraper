@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site, getChampions } from "@/lib/data";
+import { AdSlot } from "@/components/ad-slot";
 import { Container, Card, SectionHeading } from "@/components/ui";
 import { LadderPulseSection } from "@/components/ladder-pulse-section";
 import { UsageTables } from "@/components/usage-tables";
@@ -74,6 +75,7 @@ export default function MetaPage() {
           want "what do I play and what do I build", and a scatter plot as the
           opening image reads like an exam. The chart-minded scroll; everyone
           else has already been served. */}
+      <AdSlot placement="inline" bare className="mt-10" />
       <div className="mt-12 border-t border-line/60 pt-8">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">For the chart-minded</p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight">The same meta, visualized</h2>

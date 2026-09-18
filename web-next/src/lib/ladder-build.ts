@@ -17,13 +17,35 @@
  * on a miss, and the caller is told which it got so it can say so.
  */
 import ladderData from "@/data/ladder_builds.json";
+import ladderDataNa from "@/data/ladder_builds_na.json";
+import { BUILD_SERVERS, type BuildServer } from "@/lib/server-build";
 import engineData from "@/data/engine.json";
 import itemsData from "@/data/items.json";
 
-type Counted = { name?: string; slug?: string; count?: number };
+type Counted = { name?: string; slug?: string; count?: number; of?: number };
 type LadderEntry = { items?: Counted[]; keystones?: Counted[]; minors?: Counted[] };
 
-const LADDER = ladderData as Record<string, LadderEntry>;
+/**
+ * One record per SERVER, because that is the question the champion pages and
+ * the Build Studio ask: what do the top 50 on THIS server build. The answers
+ * differ, so they cannot be one merged file -- and a server with nothing
+ * collected yet must read as "not collected yet" rather than silently
+ * borrowing another server's answer.
+ *
+ * CN is deliberately absent. Tencent publishes per-lane win, pick and ban
+ * rates (that is where the CN boards come from) but no item data: the
+ * per-champion build endpoint is not public, and CN builds live behind the
+ * in-app companion API with signed parameters. Nothing here can fill it, so
+ * nothing here pretends to.
+ */
+const BY_SERVER: Record<BuildServer, Record<string, LadderEntry>> = {
+  eu: ladderData as Record<string, LadderEntry>,
+  na: ladderDataNa as Record<string, LadderEntry>,
+  cn: {},
+};
+
+/** The EU record, which every older caller means by "the ladder". */
+const LADDER = BY_SERVER.eu;
 const RUNES = (engineData as { runes?: Record<string, { tree?: string; slot?: number; type?: string }> }).runes ?? {};
 const ITEM = new Map(
   (itemsData as { slug: string; name: string; category?: string }[]).map((i) => [i.slug, i]),
@@ -37,6 +59,8 @@ export interface LadderBuild {
   source: "ladder";
   /** Pick count of the most-built item, out of the sample. */
   sampleOf?: number;
+  /** How many players that count is out of, so the card can say "41 of 50". */
+  of?: number;
 }
 
 function isBoots(slug: string): boolean {
@@ -144,9 +168,14 @@ function runePage(entry: LadderEntry): LadderBuild["runes"] {
   return { keystone, minors: picked, flex, primaryTree: primaryTree || undefined };
 }
 
-/** The top-fifty consensus build for a champion, or null if we have no ladder record. */
-export function ladderConsensusBuild(champion: string): LadderBuild | null {
-  const entry = LADDER[champion];
+/** The top-fifty consensus build for a champion on one server, or null if that
+ *  server has no record of it. Defaults to EU, which is what every caller
+ *  written before the site had more than one board means. */
+export function ladderConsensusBuild(
+  champion: string,
+  server: BuildServer = "eu",
+): LadderBuild | null {
+  const entry = BY_SERVER[server][champion];
   if (!entry?.items?.length) return null;
   const items: string[] = [];
   let boots: string | undefined;
@@ -166,5 +195,13 @@ export function ladderConsensusBuild(champion: string): LadderBuild | null {
     runes: runePage(entry),
     source: "ladder",
     sampleOf: entry.items[0]?.count,
+    of: entry.items[0]?.of,
   };
+}
+
+/** Every server's answer for one champion, for the per-server build card. */
+export function buildsByServer(champion: string): Record<BuildServer, LadderBuild | null> {
+  return Object.fromEntries(
+    BUILD_SERVERS.map((s) => [s, ladderConsensusBuild(champion, s)]),
+  ) as Record<BuildServer, LadderBuild | null>;
 }

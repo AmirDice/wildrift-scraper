@@ -42,11 +42,26 @@ export function MetaScatter({ points }: { points: ScatterPoint[] }) {
   const gLo = Math.log10(Math.max(100, Math.min(...points.map((p) => p.games))));
   const gHi = Math.log10(Math.max(...points.map((p) => p.games)));
 
-  const x = (g: number) => m.left + ((Math.log10(g) - gLo) / (gHi - gLo)) * iw;
-  const y = (wr: number) => m.top + (1 - (wr - wrLo) / (wrHi - wrLo)) * ih;
+  /**
+   * Coordinates are ROUNDED, and that is a correctness fix rather than tidiness.
+   *
+   * These positions are computed with Math.log10, and transcendental functions
+   * are not required to be bit-identical between implementations: Node's V8
+   * and the browser's V8 disagreed in the thirteenth decimal place, so the
+   * server rendered cx="623.6764239938827" and the client wanted
+   * cx="623.6764239938835". React compares the attribute as a string, so that
+   * one digit was a hydration mismatch on every visit to this page.
+   *
+   * Two decimals is already finer than a pixel on an 820-unit viewBox, so
+   * nothing about the chart changes except that both sides now agree.
+   */
+  const px = (n: number) => Math.round(n * 100) / 100;
+
+  const x = (g: number) => px(m.left + ((Math.log10(g) - gLo) / (gHi - gLo)) * iw);
+  const y = (wr: number) => px(m.top + (1 - (wr - wrLo) / (wrHi - wrLo)) * ih);
   const cMin = Math.min(...points.map((p) => p.ceiling));
   const cMax = Math.max(...points.map((p) => p.ceiling));
-  const r = (c: number) => 4 + ((c - cMin) / (cMax - cMin || 1)) * 6;
+  const r = (c: number) => px(4 + ((c - cMin) / (cMax - cMin || 1)) * 6);
 
   const yTicks: number[] = [];
   for (let v = Math.ceil(wrLo); v <= wrHi; v++) yTicks.push(v);

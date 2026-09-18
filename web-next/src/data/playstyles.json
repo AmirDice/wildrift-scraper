@@ -78,6 +78,12 @@
       "label": "Utility",
       "description": "Ally protection, team value, and supportive effects.",
       "prompt": "UTILITY: ally value over personal damage, delivered the way THIS kit delivers it. A shield/heal enchanter wants heal-and-shield power and the stats its abilities scale from; a lockdown or engage champion provides utility through crowd control and needs to survive long enough to land it. Both are utility builds and they share almost no items, so identify which one this champion is."
+    },
+    {
+      "key": "experimental",
+      "label": "Fun / experimental",
+      "description": "A deliberately off-meta build that still works. Fun in ARAM or a PvP game, not for ranked.",
+      "prompt": "EXPERIMENTAL: one deliberately unusual build that still wins games. The player is taking this into ARAM or a casual PvP game rather than into ranked, so it may take a real risk -- but it still has to function, because a build nobody can play is not fun either. Find ONE real mechanic on THIS kit that the consensus build ignores or under-uses -- a ratio nobody itemises for, a cast pattern that suits an item the top players never buy, a rune interaction the standard page leaves on the table -- and build around it. Every item must earn its place mechanically: this is an experiment, not a joke build, so no item the kit cannot express, no wrong damage type, and never trade away the champion's ability to function in a real game. Keep the build legal and playable: correct damage type, boots that fit, a rune page that supports the idea. Then be honest about it in the reasoning: name what the experiment exploits, what it gives up against the standard build, and the game state where it stops being worth it. If THIS kit genuinely has no interesting alternative path, build the closest honest thing and say that plainly rather than inventing a gimmick."
     }
   ],
   "byClass": {

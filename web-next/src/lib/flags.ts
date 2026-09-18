@@ -36,12 +36,12 @@ export const BUILD_TOOLS_LIVE = !(_flag === "0" || _flag === "false");
 // needs a redeploy rather than a restart.
 const _draftFlag = process.env.NEXT_PUBLIC_DRAFT_TOOL?.toLowerCase();
 
-export const DRAFT_TOOL_LIVE =
-  _draftFlag === "1" || _draftFlag === "true"
-    ? true
-    : _draftFlag === "0" || _draftFlag === "false"
-      ? false
-      : process.env.NODE_ENV === "development";
+// LAUNCHED 2026-09-18. The default is ON everywhere now, preview and
+// production included; it used to be on only in development. Kept as a kill
+// switch on the same terms as BUILD_TOOLS_LIVE: NEXT_PUBLIC_DRAFT_TOOL=0 (or
+// "false") in the Vercel environment and a redeploy pulls the page, its nav
+// entry, its hero slide and its sitemap entry back together.
+export const DRAFT_TOOL_LIVE = !(_draftFlag === "0" || _draftFlag === "false");
 
 // OVERLAY_DOWNLOAD_LIVE gates the APK download on /overlay, and ONLY that.
 // The page itself is always public: it is the thing people are pointed at from
@@ -64,7 +64,21 @@ export const OVERLAY_DOWNLOAD_LIVE = _overlayFlag === "1" || _overlayFlag === "t
 /** Filename served from /public. Kept here so the page and the build script
  *  cannot drift apart silently. */
 export const OVERLAY_APK = "/wrtruemeta-overlay.apk";
-export const OVERLAY_VERSION = "2.5";
+export const OVERLAY_VERSION = "2.6";
+
+/**
+ * The Build Studio's version badge, shown on the studio header, the tool cards
+ * under the nav and in the nav dropdown. One constant, because it was four
+ * hard-coded "v2" strings and a bump would have missed one.
+ *
+ * v1  2026-08-06  out of beta with the full EU roster collected.
+ * v2  2026-08-16  result page restructure, item and rune locks, model-timed
+ *                 boots, the why-not challenge, bias variants, share cards,
+ *                 Lab imports.
+ * v3  2026-09-18  Beginner and Advanced modes, the Fun / experimental build,
+ *                 most-built-by-server, runes drawn as icons.
+ */
+export const BUILD_STUDIO_VERSION = "v3";
 
 /**
  * Champions whose Recommended Builds tab is open.

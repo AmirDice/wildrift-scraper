@@ -22,6 +22,7 @@ const FOOTER_LINKS = [
   { href: "/changes-report", label: "Balance Report" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },
+  { href: "/privacy", label: "Privacy & Ads" },
 ];
 
 export function SiteFooter() {
@@ -46,7 +47,8 @@ export function SiteFooter() {
           <span className="font-medium text-accent">@generalthr4gg</span>.
         </p>
         <p className="mt-1">
-          WrTrueMeta is free and has no ads. If it helps you climb,{" "}
+          WrTrueMeta is free to use. Ads and coffees are what pay for the model calls
+          behind the build generator and the servers the data runs on. If it helps you climb,{" "}
           <a
             href="https://buymeacoffee.com/wrtruemeta"
             target="_blank"

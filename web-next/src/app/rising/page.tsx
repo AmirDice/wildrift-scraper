@@ -6,6 +6,7 @@ import { getMetaGaps } from "@/lib/gap";
 import { Container } from "@/components/ui";
 import { MetaGapView, type GapRow } from "@/components/meta-gap-view";
 import { RegionUpdated } from "@/components/tierlist-updated";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "Rising Picks | What China Is Playing Before the West",
@@ -44,6 +45,7 @@ export default function RisingPage() {
         <RegionUpdated region="Global" euDate={site.collectedOn} cnDate={CN_META.date} />
       </div>
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <MetaGapView rows={rows} roles={site.roles} />
       </div>

@@ -6,6 +6,7 @@ import { getCnChampions, getGlobalChampions } from "@/lib/cn";
 import { risingPicks, overratedInEu } from "@/lib/gap";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/components/ui";
+import { HeroCarousel } from "@/components/hero-carousel";
 import { HomeSearch } from "@/components/home-search";
 import { InsightCard } from "@/components/insight-card";
 import { MoversHighlight } from "@/components/movers-highlight";
@@ -90,65 +91,16 @@ export default function HomePage() {
           are still held back (BUILD_TOOLS_LIVE), the same promise stays on the
           page but the button points at what is actually open today. */}
       <section className="relative overflow-hidden border-b border-line">
-        {/* Reading scrim, hero only.
-            The hero is the one block of text that sits directly on the
-            background art rather than on a glass panel, and the art is now
-            unblurred: over its bright regions the smallest line drops to about
-            1.7:1, which is not readable. A soft ellipse behind the text fixes
-            exactly that, and fades out well before the edges so the sharp art
-            still frames the page. Darkening the global overlay instead would
-            have dimmed the whole site to solve one paragraph. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(78% 96% at 50% 50%, rgba(7,10,18,0.66) 0%, rgba(7,10,18,0.55) 52%, rgba(7,10,18,0.3) 78%, transparent 96%)",
-          }}
-        />
+        {/* No hero scrim. A radial ellipse used to sit here to hold the
+            headline's contrast against the art; the carousel now brings its
+            own glass panel, which does the same job without dimming the
+            painting behind it. Removed 2026-09-17. */}
         <Container className="relative py-20 text-center sm:py-28">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-            Builds reasoned, not repeated
-          </p>
-          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">
-            Build for <span className="text-accent">this game</span> - not every game.
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            Stop copying the same build every match. Generate a personalized Wild Rift build for your
-            champion, role, playstyle, and enemy team backed by current patch data and real
-            top-player win rates.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium text-text">
-            {/* "AI generated" alone invites the obvious dismissal -- that
-                anyone could paste the champion into a chatbot and get this.
-                The differentiator is that the model only ever sees OUR
-                current-patch data and every build is rule-checked before anyone
-                sees it. The claims say that. */}
-            <Claim>AI-powered reasoning</Claim>
-            <Claim>Rule-checked</Claim>
-            <Claim>Explained item by item</Claim>
-          </div>
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            {BUILD_TOOLS_LIVE ? (
-              <>
-                <Link href="/build?tab=generate" className="rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110">
-                  Generate my build
-                </Link>
-                <Link href="/build?tab=counter" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
-                  Build vs enemy team
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/tier-list" className="rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110">
-                  See what actually wins
-                </Link>
-                <Link href="/meta" className="glass glass-hover rounded-xl px-6 py-3 font-semibold text-text">
-                  Read the meta overview
-                </Link>
-              </>
-            )}
-          </div>
+          {/* The hero rotates through the features. It used to be one fixed
+              pitch for the build generator, so the draft assistant, the counter
+              builder and the overlay were invisible to anyone who did not
+              scroll. */}
+          <HeroCarousel />
           <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
             <BuildsGeneratedPill />
@@ -416,18 +368,6 @@ export default function HomePage() {
 }
 
 /** Hero proof point: a check mark plus a two- or three-word claim. */
-function Claim({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"
-        strokeLinecap="round" strokeLinejoin="round" aria-hidden className="text-accent">
-        <path d="m5 13 4 4L19 7" />
-      </svg>
-      {children}
-    </span>
-  );
-}
-
 function FlagshipTool({
   href, badge, badgeClass, secondBadge, secondBadgeClass, title, desc, cta, accent, ring,
 }: {

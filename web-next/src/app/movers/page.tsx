@@ -5,6 +5,7 @@ import { getChampion } from "@/lib/data";
 import { topWinners, topLosers, MOVERS_META, type Mover } from "@/lib/movers";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { NextStep } from "@/components/next-step";
+import { AdSlot } from "@/components/ad-slot";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -56,6 +57,7 @@ export default function MoversPage() {
         notes intended.
       </p>
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8 grid gap-5 lg:grid-cols-2">
         <MoverColumn title="Biggest Winners" accent="#22c55e" up movers={winners} />
         <MoverColumn title="Biggest Losers" accent="#ef4444" movers={losers} />

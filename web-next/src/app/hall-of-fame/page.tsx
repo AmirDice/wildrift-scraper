@@ -4,6 +4,7 @@ import { getChampions } from "@/lib/data";
 import { Container, SectionHeading } from "@/components/ui";
 import pulse from "@/data/ladder_pulse.json";
 import { Glyph, GLYPHS, Laurel } from "@/components/insignia";
+import { AdSlot } from "@/components/ad-slot";
 
 // The ladder's record holders, measured from the top-50 boards the scraper
 // walks: every crown belongs to a real player with a real sample behind it.
@@ -84,6 +85,7 @@ export default function HallOfFamePage() {
       </p>
 
       {/* the two thrones */}
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
         {[{ feat: pentaKing, title: "The Penta King", blurb: "Most ranked pentakills this season", fmt: (v: number) => `${v} pentakills` },
           { feat: perfectionist, title: "The Perfectionist", blurb: "Highest win rate with 30 or more games", fmt: (v: number) => `${v.toFixed(1)}% win rate` }].map(({ feat, title, blurb, fmt }) => {

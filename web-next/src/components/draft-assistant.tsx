@@ -1,15 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { getChampions, type Champion } from "@/lib/data";
-import { counterSwaps, roster, threatProfile, type CounterRecScored } from "@/lib/threat";
+import { roster } from "@/lib/threat";
+import { VideoAdGate } from "@/components/video-ad-gate";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { CounterReasoning, EnemyRead, type CounterSummary } from "@/components/counter-intel";
 import {
   buildEnemyTraits,
+  type Slot,
   DRAFT_ROLES,
-  EMPTY_DRAFT,
+  emptyDraft,
   MAX_BANS,
+  metaScore,
+  normaliseDraft,
+  picked,
   playsRole,
   suggestBans,
   suggestPicks,
@@ -21,18 +26,82 @@ import {
   analyseDraft,
 } from "@/lib/draft";
 import itemsData from "@/data/items.json";
-import { ladderConsensusBuild } from "@/lib/ladder-build";
 import runeIconsData from "@/data/rune_icons.json";
 
 /* eslint-disable @next/next/no-img-element */
 
 // The screen is built for a live lobby: ~30 seconds per pick, one hand on the
-// phone. Tap what happened (bans, their picks, your team), and the assistant
+// phone. Tap the seat that just locked, tap the champion, and the assistant
 // keeps re-ranking what YOU should pick from the champions you actually play,
 // then turns the locked enemy comp into a counter build with one tap -- the
 // same generator, cache and daily allowance as the Build Studio.
+//
+// THE BOARD IS THE CONTROL. It used to carry a row of mode tabs -- ban, my
+// pick, ally, enemy -- that decided what the next tap on the roster meant, so
+// recording one enemy pick was two taps in two different places, and a tap
+// landing in the wrong list was silent. Now a seat IS the control: tap an
+// empty seat to fill it, tap a filled one to clear it.
+//
+// And the roster grid is mounted ONLY while a seat is open. It was 141 avatars
+// on the page at all times, every one of them a request to the CN icon CDN;
+// the picker opens on your own pool (or the meta list for a seat that is not
+// yours), which is a dozen or so.
 
-type Mode = "ban" | "me" | "ally" | "enemy";
+/** Which seat the picker is filling. */
+type SlotKind = "ban" | "me" | "ally" | "enemy";
+type Target = { kind: SlotKind; index: number };
+
+function seatLabel(t: Target): string {
+  if (t.kind === "me") return "Your pick";
+  if (t.kind === "ban") return `Ban ${t.index + 1}`;
+  return `${t.kind === "ally" ? "Ally" : "Enemy"} ${t.index + 1}`;
+}
+
+/**
+ * A colour per side of the board, so a glance tells you whose seat you are
+ * looking at without reading a label: BLUE is your team, RED is theirs, GOLD
+ * is the ban row. Empty seats, filled rings, the open-seat highlight, the
+ * section headings and the picker all take their colour from here, because a
+ * board that only colours the filled seats says nothing until it is too late
+ * to matter.
+ */
+const SEAT_COLOURS: Record<SlotKind, {
+  ring: string; idle: string; open: string; text: string; panel: string;
+}> = {
+  ban: {
+    ring: "ring-gold/70 grayscale",
+    idle: "border-dashed border-gold/35 bg-gold/[0.06] text-gold/60 hover:border-gold/80 hover:bg-gold/15 hover:text-gold",
+    open: "border-gold bg-gold/20 text-gold ring-2 ring-gold",
+    text: "text-gold",
+    panel: "ring-gold/40",
+  },
+  me: {
+    ring: "ring-accent",
+    idle: "border-dashed border-accent/45 bg-accent/[0.06] text-accent/70 hover:border-accent hover:bg-accent/15 hover:text-accent",
+    open: "border-accent bg-accent/20 text-accent ring-2 ring-accent",
+    text: "text-accent",
+    panel: "ring-accent/40",
+  },
+  ally: {
+    ring: "ring-accent/50",
+    idle: "border-dashed border-accent/30 bg-accent/[0.04] text-accent/55 hover:border-accent/70 hover:bg-accent/12 hover:text-accent",
+    open: "border-accent bg-accent/20 text-accent ring-2 ring-accent",
+    text: "text-accent",
+    panel: "ring-accent/40",
+  },
+  enemy: {
+    ring: "ring-red-500/70",
+    idle: "border-dashed border-red-500/35 bg-red-500/[0.06] text-red-400/60 hover:border-red-500/80 hover:bg-red-500/15 hover:text-red-300",
+    open: "border-red-500 bg-red-500/20 text-red-300 ring-2 ring-red-500",
+    text: "text-red-400",
+    panel: "ring-red-500/40",
+  },
+};
+
+/** How many champions the picker shows before you search or ask for the rest.
+ *  Enough that a lobby's likely picks are all there, few enough that opening a
+ *  seat is instant on a phone. */
+const PICKER_PREVIEW = 30;
 
 const POOL_KEY = "draft:pool";
 const ROLE_KEY = "draft:role";
@@ -110,12 +179,15 @@ function nameOf(v: { name?: string } | string | null | undefined): string {
   return typeof v === "string" ? v : (v.name ?? "");
 }
 
-function load<T>(store: "local" | "session", key: string, fallback: T): T {
+/** Whatever is stored under `key`, or null. Parsing is the caller's problem:
+ *  the draft runs it through normaliseDraft, which is the one place that knows
+ *  what a board looks like in this version. */
+function loadRaw(store: "local" | "session", key: string): unknown {
   try {
     const raw = (store === "local" ? localStorage : sessionStorage).getItem(key);
-    return raw ? { ...fallback, ...(JSON.parse(raw) as T) } : fallback;
+    return raw ? (JSON.parse(raw) as unknown) : null;
   } catch {
-    return fallback;
+    return null;
   }
 }
 
@@ -145,92 +217,28 @@ function SuggestionCard({ s, onPick, dim = false }: {
   );
 }
 
-/** The shape the instant-build panel renders, and the fields counterSwaps needs. */
-type InstantBuild = {
-  /** Whether this is a generated answer or the top-fifty consensus. */
-  source: "generated" | "ladder";
-  coreBuild: { slug: string; name: string; icon: string }[];
-  boots?: { name: string; icon: string } | null;
-  runes?: { keystone?: { name: string }; treeMinors?: { name: string }[] };
-  summoners?: { name: string }[];
-};
-
-const ITEM_BY_SLUG = new Map(
-  (itemsData as { slug: string; name: string; icon: string }[]).map((i) => [i.slug, i]),
-);
-
-/**
- * An advisor build in the shape this panel already renders.
- *
- * The advisor answers with plain slug strings; the precomputed file carried
- * objects with names and icons baked in. Rather than thread a second shape
- * through the JSX, the slugs are looked up against items.json, which this
- * component already imports for the counter panel.
- */
-/** The top-fifty consensus in the shape this panel renders. */
-function ladderInstant(champion: string): InstantBuild | null {
-  const lb = ladderConsensusBuild(champion);
-  if (!lb) return null;
-  const named = (slug: string) => {
-    const it = ITEM_BY_SLUG.get(slug);
-    return { slug, name: it?.name ?? slug, icon: it?.icon ?? "" };
-  };
-  const boots = lb.boots ? named(lb.boots) : null;
-  return {
-    source: "ladder",
-    coreBuild: lb.items.map(named),
-    boots: boots ? { name: boots.name, icon: boots.icon } : null,
-    runes: {
-      keystone: lb.runes.keystone ? { name: lb.runes.keystone } : undefined,
-      treeMinors: lb.runes.minors.map((n) => ({ name: n })),
-    },
-    summoners: [],
-  };
-}
-
-function adaptAdvisorBuild(b: Record<string, unknown>): InstantBuild {
-  // /api/v1/build trims items to {slug, why} objects; the raw cached build the
-  // bundle reads carries plain slug strings. Accept both rather than depend on
-  // which side of trim() the caller happens to be on.
-  const named = (entry: unknown) => {
-    const s = typeof entry === "string" ? entry
-      : entry && typeof entry === "object" && typeof (entry as { slug?: unknown }).slug === "string"
-        ? (entry as { slug: string }).slug : "";
-    const it = ITEM_BY_SLUG.get(s);
-    return { slug: s, name: it?.name ?? s, icon: it?.icon ?? "" };
-  };
-  const runes = b.runes as Record<string, unknown> | undefined;
-  const minors = Array.isArray(runes?.minors) ? (runes.minors as unknown[]) : [];
-  const summs = Array.isArray(b.summoners) ? (b.summoners as unknown[]) : [];
-  const boots = typeof b.boots === "string" ? named(b.boots) : null;
-  return {
-    source: "generated",
-    coreBuild: (Array.isArray(b.items) ? b.items : []).map(named).filter((i) => i.slug),
-    boots: boots && boots.slug ? { name: boots.name, icon: boots.icon } : null,
-    runes: {
-      keystone: typeof runes?.keystone === "string" ? { name: runes.keystone } : undefined,
-      treeMinors: minors
-        .map((m) => (typeof m === "string" ? { name: m } : null))
-        .filter((m): m is { name: string } => m !== null),
-    },
-    summoners: summs
-      .map((s) => (typeof s === "string" ? { name: s }
-        : s && typeof s === "object" && typeof (s as { name?: unknown }).name === "string"
-          ? { name: (s as { name: string }).name } : null))
-      .filter((s): s is { name: string } => s !== null),
-  };
-}
-
-export function DraftAssistant() {
+export function DraftAssistant({ reader }: {
+  /** A screen reader for this board, rendered above it and handed the
+   *  function that fills seats. The second-screen page passes one; /draft
+   *  passes nothing and is unchanged. */
+  reader?: (applyScan: (scan: { bans: string[]; allies: string[]; enemies: string[] }) => void) => ReactNode;
+} = {}) {
   const champions = useMemo(() => getChampions(), []);
   const bySlug = useMemo(() => new Map(champions.map((c) => [c.slug, c])), [champions]);
 
-  const [state, setState] = useState<DraftState>(EMPTY_DRAFT);
+  const [state, setState] = useState<DraftState>(emptyDraft);
   const [pool, setPool] = useState<string[]>([]);
-  const [mode, setMode] = useState<Mode>("ban");
+  /** The seat the picker is filling, or null when the board is at rest. */
+  const [picking, setPicking] = useState<Target | null>(null);
   const [poolOpen, setPoolOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<DraftRole | "All">("All");
+  /** Whether the open picker has been asked for the whole roster. */
+  const [showAll, setShowAll] = useState(false);
+  /** The pool editor searches and expands on its own, so opening it does not
+   *  disturb the seat the draft is in the middle of. */
+  const [poolSearch, setPoolSearch] = useState("");
+  const [poolShowAll, setPoolShowAll] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   /** Who the player actually is, as opposed to what this game assigned them. */
   const [mainRole, setMainRole] = useState<DraftRole | null>(null);
@@ -243,7 +251,10 @@ export function DraftAssistant() {
 
   // client-only stores; render empty first so the server markup matches
   useEffect(() => {
-    setState(load("session", STATE_KEY, EMPTY_DRAFT));
+    // normaliseDraft, not a spread over a default: a session saved before the
+    // board became seat-addressed holds compact lists, and those would render
+    // two allies into the first two seats and drop the rest of the board.
+    setState(normaliseDraft(loadRaw("session", STATE_KEY)));
     try {
       setPool(JSON.parse(localStorage.getItem(POOL_KEY) ?? "[]") as string[]);
     } catch {}
@@ -279,6 +290,12 @@ export function DraftAssistant() {
   const gone = useMemo(() => unavailable(state), [state]);
   const me = state.me ? bySlug.get(state.me) : undefined;
 
+  // The board keeps empty seats; everything that reasons about a composition
+  // wants the champions actually on it.
+  const allies = useMemo(() => picked(state.allies), [state.allies]);
+  const enemies = useMemo(() => picked(state.enemies), [state.enemies]);
+  const bans = useMemo(() => picked(state.bans), [state.bans]);
+
   /**
    * Autofill: this game put you somewhere other than your main role.
    *
@@ -306,28 +323,42 @@ export function DraftAssistant() {
   // comp, a team with one of each answered no to all three, and three
   // completely different allied drafts produced identical suggestions.
   const allyNeeds = useMemo(
-    () => buildAllyNeeds(state.allies, Object.values(roster()), bySlug),
-    [state.allies, bySlug],
+    () => buildAllyNeeds(allies, Object.values(roster()), bySlug),
+    [allies, bySlug],
   );
   // The composition read: what they threaten, what they are trying to do, and
   // what our own four still lack. Computed once per draft rather than per
   // candidate, because none of it depends on the candidate.
   const analysis = useMemo(
-    () => analyseDraft(state.allies, state.enemies, Object.values(roster())),
-    [state.allies, state.enemies],
+    () => analyseDraft(allies, enemies, Object.values(roster())),
+    [allies, enemies],
   );
   const enemyTraits = useMemo(
-    () => buildEnemyTraits(state.enemies, Object.values(roster()), bySlug),
-    [state.enemies, bySlug],
+    () => buildEnemyTraits(enemies, Object.values(roster()), bySlug),
+    [enemies, bySlug],
   );
 
+  /**
+   * Which question the suggestion panel answers, read off the board instead of
+   * off a tab the player had to remember to set.
+   *
+   * A lobby bans before it picks, so an untouched board is in the ban phase;
+   * the moment anything is locked it becomes "what should I play". With a seat
+   * open, the seat decides: a ban seat wants ban targets.
+   */
+  const banPhase = !state.me && allies.length === 0 && enemies.length === 0
+    && bans.length < MAX_BANS;
+  const suggestKind: "ban" | "pick" | null = picking
+    ? (picking.kind === "ban" ? "ban" : picking.kind === "me" ? "pick" : null)
+    : state.me ? null : banPhase ? "ban" : "pick";
+
   const suggestions = useMemo(() => {
-    if (mode === "ban") return suggestBans(state, pool, champions);
-    if (mode === "me" && !state.me) {
+    if (suggestKind === "ban") return suggestBans(state, pool, champions);
+    if (suggestKind === "pick") {
       return suggestPicks(state, pool, champions, bySlug, 6, enemyTraits, allyNeeds, analysis);
     }
     return [];
-  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds, analysis]);
+  }, [suggestKind, state, pool, champions, bySlug, enemyTraits, allyNeeds, analysis]);
 
   /**
    * The other question. "Strongest pick in the game" and "strongest pick I
@@ -336,136 +367,125 @@ export function DraftAssistant() {
    * what they are giving up by not owning the first.
    */
   const overallPicks = useMemo(() => {
-    if (mode !== "me" || state.me || pool.length === 0) return [];
+    if (suggestKind !== "pick" || pool.length === 0) return [];
     // Filled into a role the pool does not cover, the "outside your pool"
     // list stops being a curiosity and becomes the actual answer, so it gets
     // more of them.
     const limit = poolCoversRole ? 4 : 6;
     return suggestPicks(state, [], champions, bySlug, limit, enemyTraits, allyNeeds, analysis)
       .filter((s) => !pool.includes(s.champion.slug));
-  }, [mode, state, pool, champions, bySlug, enemyTraits, allyNeeds, analysis, poolCoversRole]);
+  }, [suggestKind, state, pool, champions, bySlug, enemyTraits, allyNeeds, analysis, poolCoversRole]);
 
-  /**
-   * The instant build, read from the advisor's cache rather than a file.
-   *
-   * This used to come from web-next/src/data/builds.json: LLM-authored builds
-   * written once on 2026-07-27, frozen three weeks before the precomputed
-   * pipeline was deprecated, and five patches behind by now. Jinx's stored
-   * build opened Phantom Dancer into Guardian Angel -- 15 and 2 of 49 captured
-   * top-50 Jinx players respectively -- and never bought Magnetic Blaster,
-   * which 39 of them do.
-   *
-   * Every Build Studio generation since is cached against a hash of its
-   * inputs, so this asks for one and takes it if it exists. A cache hit costs
-   * no model call and, deliberately, no generation from the daily allowance.
-   * A miss shows nothing and the player generates, which is an honest empty
-   * rather than a confident stale answer.
-   */
-  const [standardBuild, setStandardBuild] = useState<InstantBuild | null>(null);
-  useEffect(() => {
-    if (!me) { setStandardBuild(null); return; }
-    let live = true;
-    setStandardBuild(null);
-    (async () => {
-      try {
-        const res = await fetch("/api/v1/build", {
-          method: "POST",
-          headers: { "content-type": "application/json", "x-device-id": deviceId() },
-          body: JSON.stringify({ champion: me.name, role: state.myRole ?? undefined,
-                                 mode: "studio", cacheOnly: true }),
-        });
-        const data = (await res.json()) as { build?: Record<string, unknown> | null };
-        if (!live) return;
-        // A generated build when someone has made one, the top-fifty consensus
-        // otherwise. The consensus costs nothing and covers 140 champions, so
-        // the panel is never empty just because this champion is unpopular.
-        setStandardBuild(data?.build ? adaptAdvisorBuild(data.build)
-                                     : ladderInstant(me.name));
-      } catch {
-        if (live) setStandardBuild(ladderInstant(me.name));
-      }
-    })();
-    return () => { live = false; };
-  }, [me, state.myRole]);
+  const seatsOf = (kind: SlotKind) =>
+    kind === "ban" ? state.bans : kind === "ally" ? state.allies : state.enemies;
 
-  /**
-   * What to change about the standard build for THIS comp, scored through the
-   * fight engine in the browser.
-   *
-   * It costs no generation: a counter build spends one of the day's five and
-   * takes up to half a minute, while this runs on the build already on screen.
-   * It only reports swaps that measurably improve, and never touches the first
-   * item, which is the build's core rather than a slot to trade away.
-   *
-   * ON DEMAND, because it is not cheap. Scoring every candidate against every
-   * slot is ~125 full build evaluations and measured 1.8 SECONDS of blocked
-   * main thread on a desktop; running it on every enemy tap would freeze the
-   * grid mid-draft on a phone, which is the one place this has to stay quick.
-   */
-  const compKey = `${state.me}|${[...state.enemies].sort().join(",")}`;
-  const [swaps, setSwaps] = useState<CounterRecScored[]>([]);
-  const [swapsFor, setSwapsFor] = useState("");
-  const [measuring, setMeasuring] = useState(false);
-
-  function measureSwaps() {
-    if (!me || !standardBuild || measuring) return;
-    setMeasuring(true);
-    // let the button's own state paint before the main thread goes away
-    setTimeout(() => {
-      try {
-        const profile = threatProfile(
-          state.enemies.map((s) => bySlug.get(s)?.name ?? s), 15, state.myRole ?? "");
-        const items = standardBuild.coreBuild.map((it) => it.slug).filter(Boolean);
-        const runeNames = [
-          standardBuild.runes?.keystone?.name,
-          ...(standardBuild.runes?.treeMinors ?? []).map((r) => r.name),
-        ].filter((n): n is string => Boolean(n));
-        setSwaps(profile
-          ? counterSwaps(me.name, items, runeNames, profile, 15, items.slice(0, 1))
-          : []);
-      } catch {
-        setSwaps([]);
-      } finally {
-        setSwapsFor(compKey);
-        setMeasuring(false);
-      }
-    }, 30);
+  /** The next seat of the same kind still empty, ignoring the one being filled
+   *  right now. Bans and enemy picks arrive in runs, so the picker walks along
+   *  the row rather than making the player re-open it per seat. */
+  function nextEmpty(t: Target): Target | null {
+    if (t.kind === "me") return null;
+    const seats = seatsOf(t.kind);
+    for (let i = 0; i < seats.length; i++) {
+      if (i !== t.index && !seats[i]) return { kind: t.kind, index: i };
+    }
+    return null;
   }
 
-  const swapsCurrent = swapsFor === compKey;
+  /** Put a champion in a seat. Duplicate BANS are allowed on purpose -- both
+   *  teams can ban the same champion -- but nothing else can be taken twice. */
+  function place(slug: string, target: Target) {
+    if (target.kind !== "ban" && gone.has(slug)) return;
+    setState((s) => {
+      if (target.kind === "me") return { ...s, me: slug };
+      const key = target.kind === "ban" ? "bans" : target.kind === "ally" ? "allies" : "enemies";
+      const seats = [...s[key]];
+      seats[target.index] = slug;
+      return { ...s, [key]: seats };
+    });
+    const next = nextEmpty(target);
+    setPicking(next);
+    setSearch("");
+    if (!next) setShowAll(false);
+  }
 
-  function assign(slug: string) {
-    if (mode === "ban") {
-      if (state.bans.length >= MAX_BANS) return;
-      // duplicates allowed on purpose: both teams can ban the same champion
-      setState((s) => {
-        const bans = [...s.bans, slug];
-        if (bans.length >= MAX_BANS) setMode("me");
-        return { ...s, bans };
-      });
-      return;
-    }
-    if (gone.has(slug)) return;
-    if (mode === "me") {
-      setState((s) => ({ ...s, me: slug }));
-      setMode("enemy");
-    } else if (mode === "ally") {
-      if (state.allies.length >= 4) return;
-      setState((s) => ({ ...s, allies: [...s.allies, slug] }));
-    } else {
-      if (state.enemies.length >= 5) return;
-      setState((s) => ({ ...s, enemies: [...s.enemies, slug] }));
+  function clearSeat(t: Target) {
+    setState((s) => {
+      if (t.kind === "me") return { ...s, me: null };
+      const key = t.kind === "ban" ? "bans" : t.kind === "ally" ? "allies" : "enemies";
+      const seats = [...s[key]];
+      seats[t.index] = null;
+      return { ...s, [key]: seats };
+    });
+    if (t.kind === "me") {
+      setAdvice(null);
+      setAdviceFor("");
     }
   }
+
+  function openSeat(t: Target) {
+    setPicking((cur) => (cur && cur.kind === t.kind && cur.index === t.index ? null : t));
+    setSearch("");
+    setShowAll(false);
+  }
+
+  /**
+   * Fill the board from a screen read.
+   *
+   * FILLS EMPTY SEATS ONLY, and never clears one. A read is evidence, not the
+   * truth: it sees part of a draft, it can miss a seat, and a live mirror
+   * re-reads every 600ms. Letting each read rewrite the board would undo the
+   * player's own corrections a second after they made them, and would flicker
+   * a champion out of a seat the moment a frame missed it. So a scan can only
+   * ever add, and anything wrong is one tap to remove.
+   *
+   * Your own pick is left alone: the reader sees five allies and cannot tell
+   * which is you. Anything already on the board is skipped, so scanning twice
+   * changes nothing.
+   */
+  const applyScan = useCallback((scan: { bans: string[]; allies: string[]; enemies: string[] }) => {
+    const slugOf = (name: string) =>
+      champions.find((c) => c.name === name)?.slug ?? null;
+    setState((s) => {
+      const taken = new Set<string>([
+        ...picked(s.bans), ...picked(s.allies), ...picked(s.enemies), ...(s.me ? [s.me] : []),
+      ]);
+      const fill = (seats: Slot[], names: string[], allowDuplicates: boolean) => {
+        const next = [...seats];
+        for (const name of names) {
+          const slug = slugOf(name);
+          if (!slug || (!allowDuplicates && taken.has(slug))) continue;
+          const at = next.findIndex((x) => !x);
+          if (at === -1) break;
+          next[at] = slug;
+          taken.add(slug);
+        }
+        return next;
+      };
+      return {
+        ...s,
+        // Bans allow duplicates on the board, but a scan of the same strip
+        // twice must not add the same champion twice, so they are tracked too.
+        bans: fill(s.bans, scan.bans, false),
+        allies: fill(s.allies, scan.allies, false),
+        enemies: fill(s.enemies, scan.enemies, false),
+      };
+    });
+  }, [champions]);
 
   function reset() {
-    setState((s) => ({ ...EMPTY_DRAFT, myRole: s.myRole }));
+    setState((s) => ({ ...emptyDraft(), myRole: s.myRole }));
     setAdvice(null);
     setAdviceFor("");
     setGenError("");
-    setMode("ban");
+    setPicking(null);
+    setSearch("");
+    setShowAll(false);
   }
 
+  /** The counter build itself, from the same generator, cache and daily
+   *  allowance as the Build Studio. There is no standard build on this page any
+   *  more: someone who has tapped their opponents in is asking what beats THOSE
+   *  five, and a generic build sitting above the answer only delayed it. */
   async function generate() {
     if (!me || generating) return;
     setGenerating(true);
@@ -477,8 +497,8 @@ export function DraftAssistant() {
         body: JSON.stringify({
           champion: me.name,
           role: state.myRole ?? undefined,
-          mode: state.enemies.length ? "counter" : "studio",
-          enemies: state.enemies.map((s) => bySlug.get(s)?.name ?? s),
+          mode: enemies.length ? "counter" : "studio",
+          enemies: enemies.map((s) => bySlug.get(s)?.name ?? s),
         }),
       });
       const data = (await res.json()) as V1Response;
@@ -486,7 +506,7 @@ export function DraftAssistant() {
         setGenError(data.error ?? "The generator is busy; try again in a moment.");
       } else {
         setAdvice(data.build);
-        setAdviceFor(`${me.slug}|${state.enemies.join(",")}`);
+        setAdviceFor(`${me.slug}|${enemies.join(",")}`);
       }
       if (data.quota) setQuota(data.quota);
     } catch {
@@ -496,39 +516,137 @@ export function DraftAssistant() {
     }
   }
 
-  const adviceStale = advice != null && adviceFor !== `${state.me}|${state.enemies.join(",")}`;
+  const adviceStale = advice != null && adviceFor !== `${state.me}|${enemies.join(",")}`;
 
-  const grid = useMemo(() => {
+  /** The first seat of a kind still empty, for the suggestion cards: tapping
+   *  "worth banning" with no seat open should fill the next ban box. */
+  function firstEmpty(kind: SlotKind): Target | null {
+    if (kind === "me") return state.me ? null : { kind: "me", index: 0 };
+    const i = seatsOf(kind).findIndex((x) => !x);
+    return i === -1 ? null : { kind, index: i };
+  }
+
+  const suggestTarget: Target | null = picking
+    ? picking
+    : suggestKind === "ban" ? firstEmpty("ban")
+    : suggestKind === "pick" ? firstEmpty("me")
+    : null;
+
+  /**
+   * What the open picker shows.
+   *
+   * Searching, or asking for the rest, spans the whole roster. Otherwise a
+   * seat opens on a SHORT list: your own pool for your own pick, the
+   * strongest champions for a seat that is not yours. The page used to mount
+   * all 141 avatars at all times -- 141 requests to the icon CDN before the
+   * player had tapped anything -- and on a phone in a live lobby that is the
+   * one cost worth cutting.
+   */
+  const picker = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return champions.filter(
-      (c) =>
-        (roleFilter === "All" || playsRole(c, roleFilter)) &&
-        (!q || c.name.toLowerCase().includes(q)),
+    const matches = champions.filter(
+      (c) => (roleFilter === "All" || playsRole(c, roleFilter))
+        && (!q || c.name.toLowerCase().includes(q)),
     );
-  }, [champions, roleFilter, search]);
+    if (!picking) return { list: [] as Champion[], total: matches.length, source: "all" as const };
+    if (q || showAll) return { list: matches, total: matches.length, source: "all" as const };
+    if (picking.kind === "me" && pool.length > 0) {
+      const mine = matches.filter((c) => pool.includes(c.slug));
+      if (mine.length > 0) return { list: mine, total: matches.length, source: "pool" as const };
+    }
+    return {
+      list: [...matches].sort((a, b) => metaScore(b) - metaScore(a)).slice(0, PICKER_PREVIEW),
+      total: matches.length,
+      source: "meta" as const,
+    };
+  }, [picking, champions, pool, roleFilter, search, showAll]);
 
-  const slot = (c: Champion | undefined, ring: string, size: number, onClear?: () => void, label?: string) =>
-    c ? (
+  /** The pool editor's list: everything you already play, then the strongest
+   *  of the rest, so there is always something to tap without mounting the
+   *  whole roster. Searching or expanding spans all 141. */
+  const poolList = useMemo(() => {
+    const q = poolSearch.trim().toLowerCase();
+    const matches = q ? champions.filter((c) => c.name.toLowerCase().includes(q)) : champions;
+    if (q || poolShowAll) return matches;
+    const mine = matches.filter((c) => pool.includes(c.slug));
+    const rest = matches
+      .filter((c) => !pool.includes(c.slug))
+      .sort((x, y) => metaScore(y) - metaScore(x))
+      .slice(0, PICKER_PREVIEW);
+    return [...mine, ...rest];
+  }, [champions, pool, poolSearch, poolShowAll]);
+
+  /** One seat on the board. Filled: tap to clear. Empty: tap to open the
+   *  picker on it, and tap again to close.
+   *
+   *  An empty seat wears a PLUS, not its seat number. The number was just a
+   *  label -- it told you which box you were looking at, which you could
+   *  already see -- while a plus says the box is a button. */
+  const seat = (kind: SlotKind, index: number, slug: string | null, size: number) => {
+    const c = slug ? bySlug.get(slug) : undefined;
+    const target: Target = { kind, index };
+    const open = picking?.kind === kind && picking.index === index;
+    const paint = SEAT_COLOURS[kind];
+    return c ? (
       <button
-        key={`${c.slug}-${label ?? ""}`}
-        onClick={onClear}
+        key={`${kind}-${index}`}
+        onClick={() => clearSeat(target)}
         title={`${c.name} — tap to remove`}
-        className={`relative shrink-0 rounded-full ring-2 ${ring} transition hover:opacity-70`}
+        className={`relative shrink-0 rounded-full ring-2 ${paint.ring} transition hover:opacity-70`}
       >
         <ChampionAvatar champion={c} size={size} showBadges={false} />
       </button>
     ) : (
-      <span
-        key={`empty-${label}`}
-        className="grid shrink-0 place-items-center rounded-full border border-dashed border-white/20 bg-white/[0.05] text-[10px] text-faint"
-        style={{ width: size, height: size }}
+      <button
+        key={`${kind}-${index}`}
+        onClick={() => openSeat(target)}
+        title={`${seatLabel(target)} — tap to pick`}
+        className={`grid shrink-0 place-items-center rounded-full border font-semibold leading-none transition ${
+          open ? paint.open : paint.idle
+        }`}
+        style={{ width: size, height: size, fontSize: Math.round(size * 0.45) }}
       >
-        {label}
-      </span>
+        +
+      </button>
     );
+  };
+
+  /** A grid of champion icons. Used by the picker and by the pool editor, so
+   *  both get the same size, the same disabled treatment and the same lazily
+   *  loaded avatars. */
+  const championGrid = (
+    list: Champion[],
+    onTap: (c: Champion) => void,
+    opts: { disabled?: (c: Champion) => boolean; marked?: (c: Champion) => boolean } = {},
+  ) => (
+    <div className="flex flex-wrap gap-1.5">
+      {list.map((c) => {
+        const off = opts.disabled?.(c) ?? false;
+        const on = opts.marked?.(c) ?? false;
+        return (
+          <button
+            key={c.slug}
+            onClick={() => onTap(c)}
+            disabled={off}
+            title={c.name}
+            className={`rounded-full p-0.5 transition ${
+              off ? "cursor-not-allowed opacity-25 grayscale"
+                : on ? "ring-2 ring-gold"
+                : "opacity-85 hover:opacity-100 hover:ring-2 hover:ring-accent/60"
+            }`}
+          >
+            <ChampionAvatar champion={c} size={40} showBadges={false} />
+          </button>
+        );
+      })}
+      {list.length === 0 && <span className="py-3 text-sm text-faint">No champion matches.</span>}
+    </div>
+  );
 
   return (
     <div className="space-y-4">
+      {reader?.(applyScan)}
+
       {/* role + pool + reset */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-faint">
@@ -570,116 +688,64 @@ export function DraftAssistant() {
       {poolOpen && (
         <div className="glass rounded-2xl p-4 ring-1 ring-gold/30">
           <p className="mb-2 text-xs text-muted">
-            Tap the champions you actually play. Pick suggestions come from this pool
-            (it is saved on this device); leave it empty to rank the whole roster.
+            Tap the champions you actually play. Your pick suggestions come from this
+            pool, and your own seat opens straight onto it (it is saved on this device);
+            leave it empty to rank the whole roster.
           </p>
-          <div className="flex flex-wrap gap-1.5">
-            {champions.map((c) => (
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <input
+              value={poolSearch}
+              onChange={(e) => setPoolSearch(e.target.value)}
+              placeholder="Search champions…"
+              className="glass w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
+            />
+            {pool.length > 0 && (
               <button
-                key={c.slug}
-                onClick={() =>
-                  setPool((p) => (p.includes(c.slug) ? p.filter((s) => s !== c.slug) : [...p, c.slug]))
-                }
-                title={c.name}
-                className={`rounded-full p-0.5 transition ${
-                  pool.includes(c.slug) ? "ring-2 ring-gold" : "opacity-45 hover:opacity-90"
-                }`}
+                onClick={() => setPool([])}
+                className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text"
               >
-                <ChampionAvatar champion={c} size={34} showBadges={false} />
+                Clear pool
               </button>
-            ))}
+            )}
           </div>
+          {/* Your pool first, so a set pool stays a short list to check; the
+              rest of the roster follows only once you search for it. */}
+          {championGrid(
+            poolList,
+            (c) => setPool((p) =>
+              p.includes(c.slug) ? p.filter((s) => s !== c.slug) : [...p, c.slug]),
+            { marked: (c) => pool.includes(c.slug) },
+          )}
+          {!poolSearch.trim() && !poolShowAll && champions.length > poolList.length && (
+            <button
+              onClick={() => setPoolShowAll(true)}
+              className="glass mt-2 w-full rounded-xl px-3 py-2 text-xs font-semibold text-muted transition hover:text-text"
+            >
+              Show all {champions.length} champions
+            </button>
+          )}
         </div>
       )}
 
-      {/* the draft board */}
-      <div className="glass space-y-3 rounded-2xl p-4">
-        <div>
-          <div className="mb-1.5 flex items-baseline gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">
-              Bans {state.bans.length}/{MAX_BANS}
-            </span>
-            <span className="text-[11px] text-faint">duplicates happen; tap one to remove it</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {state.bans.map((slug, i) =>
-              slot(bySlug.get(slug), "ring-red-500/60 grayscale", 34, () =>
-                setState((s) => ({ ...s, bans: s.bans.filter((_, j) => j !== i) })), `b${i}`),
-            )}
-            {Array.from({ length: MAX_BANS - state.bans.length }, (_, i) =>
-              slot(undefined, "", 34, undefined, `${state.bans.length + i + 1}`),
-            )}
-          </div>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">My team</span>
-            <div className="mt-1.5 flex items-center gap-1.5">
-              {slot(me, "ring-accent", 44, () => { setState((s) => ({ ...s, me: null })); setAdvice(null); }, "you")}
-              {state.allies.map((slug) =>
-                slot(bySlug.get(slug), "ring-accent/40", 38, () =>
-                  setState((s) => ({ ...s, allies: s.allies.filter((x) => x !== slug) })), slug),
-              )}
-              {Array.from({ length: 4 - state.allies.length }, (_, i) =>
-                slot(undefined, "", 38, undefined, `a${i + 1}`),
-              )}
-            </div>
-          </div>
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Enemy team</span>
-            <div className="mt-1.5 flex items-center gap-1.5">
-              {state.enemies.map((slug) =>
-                slot(bySlug.get(slug), "ring-red-500/70", 38, () =>
-                  setState((s) => ({ ...s, enemies: s.enemies.filter((x) => x !== slug) })), slug),
-              )}
-              {Array.from({ length: 5 - state.enemies.length }, (_, i) =>
-                slot(undefined, "", 38, undefined, `e${i + 1}`),
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* what the next tap records */}
-      <div className="flex flex-wrap gap-2">
-        {(
-          [
-            ["ban", `Ban ${state.bans.length}/${MAX_BANS}`],
-            ["me", state.me ? "My pick ✓" : "My pick"],
-            ["ally", `Ally ${state.allies.length}/4`],
-            ["enemy", `Enemy ${state.enemies.length}/5`],
-          ] as [Mode, string][]
-        ).map(([m, label]) => (
-          <button
-            key={m}
-            onClick={() => setMode(m)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-              mode === m ? "bg-accent text-white" : "glass text-muted hover:text-text"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-        <span className="self-center text-[11px] text-faint">then tap champions below</span>
-      </div>
-
-      {/* suggestions -- the page's one must-not-miss control, so it wears the
-          emphasized liquid-glass material */}
+      {/* Suggestions, ABOVE the board: this is the answer the page exists to
+          give, and under a ten-box ban row plus two teams it was below the fold
+          on a phone exactly when the timer was running. It wears the emphasized
+          liquid-glass material for the same reason. */}
       {suggestions.length > 0 && (
         <div className="liquid-glass rounded-2xl p-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-gold">
-            {mode === "ban" ? "Worth banning"
+            {suggestKind === "ban" ? "Worth banning"
               : pool.length ? (poolCoversRole ? "Best from your pool" : "Your pool, off-role")
               : "Suggested picks"}
           </span>
-          {mode !== "ban" && pool.length > 0 && (
+          {suggestKind !== "ban" && pool.length > 0 && (
             <span className="ml-2 text-[11px] text-faint">
               {poolCoversRole
                 ? "ranked for this game, not overall"
                 : `nothing in your pool plays ${state.myRole === "Dragon" ? "ADC" : state.myRole}`}
             </span>
           )}
-          {mode !== "ban" && filled && (
+          {suggestKind !== "ban" && filled && (
             <p className="mt-1 text-[11px] text-amber-300">
               Filled to {state.myRole === "Dragon" ? "ADC" : state.myRole} from{" "}
               {mainRole === "Dragon" ? "ADC" : mainRole}
@@ -695,7 +761,8 @@ export function DraftAssistant() {
           )}
           <div className="-mx-1 mt-1.5 flex gap-2 overflow-x-auto pb-1">
             {suggestions.map((s) => (
-              <SuggestionCard key={s.champion.slug} s={s} onPick={() => assign(s.champion.slug)} />
+              <SuggestionCard key={s.champion.slug} s={s}
+                onPick={() => suggestTarget && place(s.champion.slug, suggestTarget)} />
             ))}
           </div>
 
@@ -712,7 +779,7 @@ export function DraftAssistant() {
               <div className="-mx-1 mt-1 flex gap-2 overflow-x-auto pb-1">
                 {overallPicks.map((s) => (
                   <SuggestionCard key={s.champion.slug} s={s} dim
-                    onPick={() => assign(s.champion.slug)} />
+                    onPick={() => suggestTarget && place(s.champion.slug, suggestTarget)} />
                 ))}
               </div>
             </div>
@@ -720,55 +787,102 @@ export function DraftAssistant() {
         </div>
       )}
 
-      {/* roster grid */}
-      <div className="glass rounded-2xl p-4">
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search champions…"
-            className="glass w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
-          />
-          {(["All", ...DRAFT_ROLES] as const).map((r) => (
-            <button
-              key={r}
-              onClick={() => setRoleFilter(r as DraftRole | "All")}
-              className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
-                roleFilter === r ? "bg-accent text-white" : "glass text-muted hover:text-text"
-              }`}
-            >
-              {r === "Dragon" ? "ADC" : r}
-            </button>
-          ))}
+      {/* the draft board, which is also the whole control surface */}
+      <div className="glass space-y-3 rounded-2xl p-4">
+        <div>
+          <div className="mb-1.5 flex items-baseline gap-2">
+            <span className={`text-xs font-semibold uppercase tracking-wide ${SEAT_COLOURS.ban.text}`}>
+              Bans {bans.length}/{MAX_BANS}
+            </span>
+            <span className="text-[11px] text-faint">
+              tap a box to fill it, tap a champion to remove
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {state.bans.map((slug, i) =>
+              seat("ban", i, slug, 34))}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {grid.map((c) => {
-            const out = gone.has(c.slug) && mode !== "ban";
-            return (
-              <button
-                key={c.slug}
-                onClick={() => assign(c.slug)}
-                disabled={out}
-                title={c.name}
-                className={`rounded-full p-0.5 transition ${
-                  out ? "opacity-25 grayscale" : "opacity-85 hover:opacity-100 hover:ring-2 hover:ring-accent/60"
-                }`}
-              >
-                <ChampionAvatar champion={c} size={40} showBadges={false} />
-              </button>
-            );
-          })}
-          {grid.length === 0 && <span className="py-3 text-sm text-faint">No champion matches.</span>}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <span className={`text-xs font-semibold uppercase tracking-wide ${SEAT_COLOURS.me.text}`}>My team</span>
+            <div className="mt-1.5 flex items-start gap-1.5">
+              {/* Your own seat says so. It is bigger and wears the solid accent
+                  ring, but with the seat numbers gone in favour of a plus,
+                  nothing else would name it. */}
+              <span className="flex flex-col items-center gap-0.5">
+                {seat("me", 0, state.me, 44)}
+                <span className="text-[9px] font-bold uppercase tracking-wide text-accent">
+                  you
+                </span>
+              </span>
+              {state.allies.map((slug, i) =>
+                seat("ally", i, slug, 38))}
+            </div>
+          </div>
+          <div>
+            <span className={`text-xs font-semibold uppercase tracking-wide ${SEAT_COLOURS.enemy.text}`}>Enemy team</span>
+            <div className="mt-1.5 flex items-center gap-1.5">
+              {state.enemies.map((slug, i) =>
+                seat("enemy", i, slug, 38))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* The read on their comp, derived locally: it is worth most DURING the
-          draft, so it must not wait on a generation. */}
-      {state.enemies.length > 0 && (
-        <EnemyRead
-          enemies={state.enemies.map((s) => bySlug.get(s)?.name ?? s)}
-          myRole={state.myRole ?? ""}
-        />
+      {/* the picker, open on one seat: mounted only while a seat is waiting */}
+      {picking && (
+        <div className={`glass rounded-2xl p-4 ring-1 ${SEAT_COLOURS[picking.kind].panel}`}>
+          <div className="mb-2 flex items-center gap-2">
+            <span className={`text-sm font-bold ${SEAT_COLOURS[picking.kind].text}`}>{seatLabel(picking)}</span>
+            <span className="text-[11px] text-faint">
+              {picker.source === "pool" ? "your pool"
+                : picker.source === "meta" ? "strongest right now"
+                : `${picker.list.length} champion${picker.list.length === 1 ? "" : "s"}`}
+            </span>
+            <span className="grow" />
+            <button
+              onClick={() => { setPicking(null); setSearch(""); setShowAll(false); }}
+              className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text"
+            >
+              Done
+            </button>
+          </div>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search champions…"
+              className="glass w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
+            />
+            {(["All", ...DRAFT_ROLES] as const).map((r) => (
+              <button
+                key={r}
+                onClick={() => setRoleFilter(r as DraftRole | "All")}
+                className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
+                  roleFilter === r ? "bg-accent text-white" : "glass text-muted hover:text-text"
+                }`}
+              >
+                {r === "Dragon" ? "ADC" : r}
+              </button>
+            ))}
+          </div>
+          {championGrid(
+            picker.list,
+            (c) => place(c.slug, picking),
+            // A banned or already-locked champion cannot be picked again, but
+            // both teams really can ban the same one.
+            { disabled: (c) => picking.kind !== "ban" && gone.has(c.slug) },
+          )}
+          {picker.source !== "all" && picker.total > picker.list.length && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="glass mt-2 w-full rounded-xl px-3 py-2 text-xs font-semibold text-muted transition hover:text-text"
+            >
+              Show all {picker.total} champions
+            </button>
+          )}
+        </div>
       )}
 
       {/* the build sheet */}
@@ -781,89 +895,12 @@ export function DraftAssistant() {
                 {me.name} <TierChip tier={me.tier} />
               </div>
               <div className="text-xs text-muted">
-                {state.enemies.length
-                  ? `vs ${state.enemies.map((s) => bySlug.get(s)?.name ?? s).join(", ")}`
-                  : "standard build — tag enemies for a counter build"}
+                {enemies.length
+                  ? `vs ${enemies.map((s) => bySlug.get(s)?.name ?? s).join(", ")}`
+                  : "tap their picks above, then build against them"}
               </div>
             </div>
           </div>
-
-          {standardBuild && !advice && (
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-                {standardBuild.source === "ladder"
-                  ? "What the top 50 build · instant"
-                  : "Standard build · instant"}
-              </span>
-              <div className="mt-1.5 flex flex-wrap items-start gap-2.5">
-                {standardBuild.coreBuild.map((it, i) => (
-                  <span key={it.slug} className="w-14 text-center">
-                    <img src={it.icon} alt={it.name} className="mx-auto h-10 w-10 rounded-lg border border-line" />
-                    <span className="mt-0.5 block text-[10px] leading-tight text-muted">
-                      {i + 1}. {it.name}
-                    </span>
-                  </span>
-                ))}
-                {standardBuild.boots && (
-                  <span className="w-14 text-center">
-                    <img src={standardBuild.boots.icon} alt={standardBuild.boots.name} className="mx-auto h-10 w-10 rounded-lg border border-line" />
-                    <span className="mt-0.5 block text-[10px] leading-tight text-muted">{standardBuild.boots.name}</span>
-                  </span>
-                )}
-              </div>
-              {standardBuild.runes?.keystone && (
-                <p className="mt-2 text-xs text-muted">
-                  <span className="font-semibold text-text">{standardBuild.runes.keystone.name}</span>
-                  {standardBuild.runes.treeMinors?.length
-                    ? ` · ${standardBuild.runes.treeMinors.map((r) => r.name).join(" · ")}`
-                    : ""}
-                  {standardBuild.summoners?.length
-                    ? `  —  ${standardBuild.summoners.map((s) => s.name).join(" + ")}`
-                    : ""}
-                </p>
-              )}
-              {state.enemies.length > 0 && !swapsCurrent && (
-                <button
-                  onClick={measureSwaps}
-                  disabled={measuring}
-                  className="glass mt-3 w-full rounded-xl px-3 py-2 text-xs font-semibold text-accent transition hover:text-text disabled:opacity-60"
-                >
-                  {measuring
-                    ? "Measuring against their comp…"
-                    : "What should I change for this comp? · free"}
-                </button>
-              )}
-              {swapsCurrent && swaps.length === 0 && (
-                <p className="mt-3 border-t border-line/60 pt-3 text-xs text-faint">
-                  Nothing in the standard build measurably improves against this comp.
-                  Generate a counter build for a full rethink.
-                </p>
-              )}
-              {swapsCurrent && swaps.length > 0 && (
-                <div className="mt-3 border-t border-line/60 pt-3">
-                  <p className="mb-1.5 text-[0.65rem] font-bold uppercase tracking-wide text-gold">
-                    Change for this comp · free, measured here
-                  </p>
-                  <div className="space-y-1.5">
-                    {swaps.slice(0, 3).map((s) => s.swap && (
-                      <div key={s.key} className="text-xs">
-                        <span className="font-semibold text-text">
-                          {itemName(s.swap.add)}
-                        </span>
-                        <span className="text-muted"> in for {itemName(s.swap.remove)}</span>
-                        <span className="ml-1 text-gold">+{s.swap.delta}</span>
-                        <span className="block text-faint">{s.reason}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="mt-1.5 text-[0.65rem] text-faint">
-                    Generate a counter build for a full rethink; these are swaps into the
-                    standard one.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
 
           {advice && (
             <div>
@@ -973,9 +1010,9 @@ export function DraftAssistant() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={generate}
-              disabled={generating || state.enemies.length === 0}
+              disabled={generating || enemies.length === 0}
               className={`rounded-xl px-4 py-2 text-sm font-bold transition ${
-                state.enemies.length === 0
+                enemies.length === 0
                   ? "glass cursor-not-allowed text-faint"
                   : "bg-gold text-[#221a04] hover:opacity-90"
               } ${generating ? "opacity-60" : ""}`}
@@ -984,10 +1021,18 @@ export function DraftAssistant() {
                 ? "Generating…"
                 : advice
                   ? "Regenerate counter build"
-                  : `Counter build vs ${state.enemies.length || "their"} pick${state.enemies.length === 1 ? "" : "s"}`}
+                  : `Counter build vs ${enemies.length || "their"} pick${enemies.length === 1 ? "" : "s"}`}
             </button>
             {generating && (
               <span className="text-xs text-muted">a fresh matchup can take 15–30 seconds; known ones are instant</span>
+            )}
+            {/* The pre-roll, only once a wait has actually started: a known
+                matchup answers instantly, and the delay means it never sees an
+                ad slot at all. Full width of the row, under the button. */}
+            {generating && (
+              <div className="basis-full">
+                <VideoAdGate delayMs={1500} />
+              </div>
             )}
             {genError && <span className="text-xs text-red-400">{genError}</span>}
             {quota && quota.limit != null && (
@@ -997,6 +1042,15 @@ export function DraftAssistant() {
             )}
           </div>
         </div>
+      )}
+      {/* The read on their comp, derived locally: it is worth most DURING the
+          draft, so it must not wait on a generation. It sits UNDER the build
+          now -- the build is the answer, this is the reasoning behind it. */}
+      {enemies.length > 0 && (
+        <EnemyRead
+          enemies={enemies.map((s) => bySlug.get(s)?.name ?? s)}
+          myRole={state.myRole ?? ""}
+        />
       )}
     </div>
   );

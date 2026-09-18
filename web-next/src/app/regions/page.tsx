@@ -6,6 +6,7 @@ import { getRegionRows, getDivergence, regionCoverage } from "@/lib/regions";
 import { site, regionBoard } from "@/lib/data";
 import { CN_META } from "@/lib/cn";
 import { CURRENT_PATCH } from "@/lib/patch";
+import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = {
   title: "EU vs NA vs China | Regional Meta Differences",
@@ -93,6 +94,7 @@ export default function RegionsPage() {
         </div>
       )}
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <RegionsView rows={rows} roles={site.roles} cnBracket={coverage.cnBracket} />
       </div>

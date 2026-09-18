@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import newsData from "@/data/news.json";
 import { Container } from "@/components/ui";
+import { AdSlot } from "@/components/ad-slot";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -37,6 +38,7 @@ export default function NewsPage() {
         story to read it in full.
       </p>
 
+      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {articles.map((a) => (
           <a
