@@ -65,6 +65,9 @@ def main() -> None:
         ]
         if items:
             out[name] = {"items": items, "keystones": keystones, "minors": minors}
+            # The purchase order of the six the card shows (ladder_item_order.py).
+            if rec.get("order"):
+                out[name]["order"] = rec["order"]
     out_path.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")),
                         encoding="utf-8")
     size = out_path.stat().st_size

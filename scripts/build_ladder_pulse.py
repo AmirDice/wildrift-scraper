@@ -36,6 +36,7 @@ from scripts.export_captures import (  # noqa: E402
     find_sessions, _builds_by_rank, _stats_by_rank, _players_by_rank,
     _read_csv, _slug,
 )
+from scripts.ladder_item_order import purchase_order, shown_items  # noqa: E402
 from web.integrity import counts_toward_aggregates, eligible_for_title  # noqa: E402
 from web.runes import canonical_rune, is_known_rune  # noqa: E402
 
@@ -144,6 +145,10 @@ def build() -> tuple[dict, dict]:
         spells: Counter = Counter()
         items: Counter = Counter()
         exact: Counter = Counter()
+        # Each counted player's items IN SLOT ORDER. The popup lists them the
+        # way the inventory filled, which is purchase order; the counting
+        # below sorts them away, so they are kept separately for the order.
+        sequences: list[list[str]] = []
         # win rate + games for the player who ran each build, so usage can be
         # weighted by how well it actually performed
         by_rank = {}
@@ -185,7 +190,10 @@ def build() -> tuple[dict, dict]:
                 pair = " + ".join(sorted(b["spells"]))
                 spells[pair] += 1
                 spell_global[pair] += 1
-            slugs = tuple(sorted(i["slug"] for i in b["items"] if i.get("slug")))
+            ordered = [i["slug"] for i in b["items"] if i.get("slug")]
+            if ordered:
+                sequences.append(ordered)
+            slugs = tuple(sorted(ordered))
             for s in slugs:
                 items[s] += 1
                 item_global[s] += 1
@@ -364,9 +372,16 @@ def build() -> tuple[dict, dict]:
         # A rare line is still evidence. Keeping the whole tail costs a few
         # hundred kilobytes and lets the model see that the alternatives are
         # things people actually play, rather than inferring they do not exist.
+        # The purchase order of the six the site shows, by a pairwise vote
+        # among the players who bought both of each pair; see
+        # scripts/ladder_item_order.py for why not a plain average.
+        shown = shown_items(items.most_common())
+        order, slot = purchase_order(sequences, shown) if shown else ([], {})
         consensus[champ] = {
-            "items": [{"slug": s, "name": ITEMS.get(s, s), "count": c, "of": len(builds)}
+            "items": [{"slug": s, "name": ITEMS.get(s, s), "count": c, "of": len(builds),
+                       **({"slot": slot[s]} if s in slot else {})}
                       for s, c in items.most_common()],
+            **({"order": order, "orderFrom": "same"} if order else {}),
             "keystones": [{"name": k, "count": c, "of": len(builds)} for k, c in ks.most_common()],
             "spells": [{"pair": p, "count": c, "of": len(builds)} for p, c in spells.most_common()],
             "minors": [{"name": m, "count": c, "of": len(builds)} for m, c in minors.most_common()],

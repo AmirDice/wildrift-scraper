@@ -29,6 +29,19 @@ const RUNE_ICONS = runeIconsData as Record<string, string>;
  * in the browser.
  */
 
+/** The six to draw, left to right: the purchase order with the boots slotted
+ *  in where they are bought, or most-built first with the boots last when no
+ *  order was recorded. */
+function sequenceOf(build: ServerBuild): { slug: string; name: string; icon: string }[] {
+  const boots = build.boots ?? null;
+  if (!boots) return build.items;
+  if (build.ordered && build.bootsAt != null) {
+    const at = Math.max(0, Math.min(build.bootsAt, build.items.length));
+    return [...build.items.slice(0, at), boots, ...build.items.slice(at)];
+  }
+  return [...build.items, boots];
+}
+
 export function ServerBuilds({
   champion,
   builds,
@@ -69,25 +82,27 @@ export function ServerBuilds({
 
       {build ? (
         <>
-          <div className="mt-4 flex flex-wrap items-start gap-2.5">
-            {build.items.map((it, i) => (
+          {/* Numbered ONLY when the numbers mean something. With a recorded
+              purchase order the six are shown in the order the top 50 buy
+              them, boots where they are actually bought -- 63% of players buy
+              them first or second, so tacking them on at the end misstated
+              the build. Without one, a number would read as an order that is
+              really a popularity rank, so there is none. */}
+          {build.ordered && (
+            <p className="mt-3 text-[11px] font-semibold uppercase tracking-wide text-faint">
+              In the order they buy them
+            </p>
+          )}
+          <div className={`${build.ordered ? "mt-2" : "mt-4"} flex flex-wrap items-start gap-2.5`}>
+            {sequenceOf(build).map((it, i) => (
               <span key={it.slug} className="w-16 text-center">
                 <img src={it.icon} alt={it.name} loading="lazy"
                   className="mx-auto h-11 w-11 rounded-lg border border-line" />
                 <span className="mt-1 block text-[10px] leading-tight text-muted">
-                  {i + 1}. {it.name}
+                  {build.ordered ? `${i + 1}. ` : ""}{it.name}
                 </span>
               </span>
             ))}
-            {build.boots && (
-              <span className="w-16 text-center">
-                <img src={build.boots.icon} alt={build.boots.name} loading="lazy"
-                  className="mx-auto h-11 w-11 rounded-lg border border-line" />
-                <span className="mt-1 block text-[10px] leading-tight text-muted">
-                  {build.boots.name}
-                </span>
-              </span>
-            )}
           </div>
           {build.runes.keystone && (
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted">

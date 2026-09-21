@@ -5,37 +5,43 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 3.68
    },
    {
     "slug": "eclipse",
     "name": "Eclipse",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 1.73
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.06
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.83
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 4.93
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "serpents-fang",
@@ -107,7 +113,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "eclipse",
+   "trinity-force",
+   "armored-advance",
+   "seryldas-grudge",
+   "deaths-dance",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Ahri": {
   "items": [
@@ -115,37 +130,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.98
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.49
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.36
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 2.97
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 5.29
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "malignance",
@@ -217,7 +238,16 @@
     "count": 36,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "blackfire-torch",
+   "lich-bane",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Akali": {
   "items": [
@@ -225,37 +255,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.77
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.49
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 1.69
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 5.38
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 3.11
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 5.0
    },
    {
     "slug": "oceanids-trident",
@@ -337,7 +373,16 @@
     "count": 26,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "infinity-orb",
+   "lich-bane",
+   "rabadons-deathcap",
+   "zhonyas-hourglass",
+   "void-staff"
+  ],
+  "orderFrom": "adjacent"
  },
  "Akshan": {
   "items": [
@@ -345,37 +390,43 @@
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 2.95
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 4.77
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 1.69
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 3.8
    },
    {
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 1.86
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 3.86
    },
    {
     "slug": "lord-dominiks-regard",
@@ -457,7 +508,16 @@
     "count": 29,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "kraken-slayer",
+   "the-collector",
+   "magnetic-blaster",
+   "gunmetal-greaves",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Alistar": {
   "items": [
@@ -465,25 +525,29 @@
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 5.43
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 4.64
    },
    {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "chainlaced-crushers",
@@ -495,13 +559,15 @@
     "slug": "dead-mans-plate",
     "name": "Dead Man's Plate",
     "count": 17,
-    "of": 50
+    "of": 50,
+    "slot": 3.29
    },
    {
     "slug": "dawnshroud",
     "name": "Dawnshroud",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 4.81
    },
    {
     "slug": "gargoyle-stoneplate",
@@ -572,7 +638,16 @@
     "count": 41,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "warmogs-armor",
+   "dead-mans-plate",
+   "armored-advance",
+   "dawnshroud",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Ambessa": {
   "items": [
@@ -580,37 +655,43 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.56
    },
    {
     "slug": "eclipse",
     "name": "Eclipse",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 1.4
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 5.69
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.28
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.81
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 2.79
    },
    {
     "slug": "armored-advance",
@@ -692,7 +773,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "immortal-treads",
+   "eclipse",
+   "spear-of-shojin",
+   "seryldas-grudge",
+   "deaths-dance",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Amumu": {
   "items": [
@@ -700,37 +790,43 @@
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.9
    },
    {
     "slug": "hollow-radiance",
     "name": "Hollow Radiance",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.04
    },
    {
     "slug": "searing-crown",
     "name": "Searing Crown",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "chainlaced-crushers",
     "name": "Chainlaced Crushers",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.17
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 5.25
    },
    {
     "slug": "randuins-omen",
     "name": "Randuin's Omen",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 6.0
    },
    {
     "slug": "abyssal-mask",
@@ -797,7 +893,16 @@
     "count": 45,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "searing-crown",
+   "chainlaced-crushers",
+   "hollow-radiance",
+   "thornmail",
+   "amaranths-twinguard",
+   "randuins-omen"
+  ],
+  "orderFrom": "same"
  },
  "Annie": {
   "items": [
@@ -805,37 +910,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.76
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 3.6
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "malignance",
     "name": "Malignance",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 1.65
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 3.56
    },
    {
     "slug": "titanic-hydra",
     "name": "Titanic Hydra",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 3.22
    },
    {
     "slug": "banshees-veil",
@@ -907,7 +1018,16 @@
     "count": 33,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "malignance",
+   "titanic-hydra",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "spellslingers-shoes",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Ashe": {
   "items": [
@@ -915,37 +1035,43 @@
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 3.04
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 2.53
    },
    {
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 3.84
    },
    {
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 1.62
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 5.73
    },
    {
     "slug": "galeforce",
     "name": "Galeforce",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 4.5
    },
    {
     "slug": "mortal-reminder",
@@ -1022,7 +1148,16 @@
     "count": 36,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "gunmetal-greaves",
+   "kraken-slayer",
+   "blade-of-the-ruined-king",
+   "runaans-hurricane",
+   "galeforce",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Aurelion Sol": {
   "items": [
@@ -1030,37 +1165,43 @@
     "slug": "rylais-crystal-scepter",
     "name": "Rylai's Crystal Scepter",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.92
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 4.4
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.4
    },
    {
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 3.4
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.44
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.97
    },
    {
     "slug": "infinity-orb",
@@ -1142,7 +1283,16 @@
     "count": 32,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "rylais-crystal-scepter",
+   "liandrys-torment",
+   "void-staff",
+   "rabadons-deathcap",
+   "blackfire-torch"
+  ],
+  "orderFrom": "same"
  },
  "Aurora": {
   "items": [
@@ -1150,37 +1300,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.88
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.06
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.27
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.94
    },
    {
     "slug": "seekers-armguard",
     "name": "Seeker's Armguard",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 5.29
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 4.92
    },
    {
     "slug": "banshees-veil",
@@ -1252,7 +1408,16 @@
     "count": 45,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "ludens-echo",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "void-staff",
+   "seekers-armguard"
+  ],
+  "orderFrom": "same"
  },
  "Bard": {
   "items": [
@@ -1260,37 +1425,43 @@
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "oceanids-trident",
     "name": "Oceanid's Trident",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 3.92
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 2.67
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 4.55
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 17,
-    "of": 50
+    "of": 50,
+    "slot": 3.18
    },
    {
     "slug": "imperial-mandate",
     "name": "Imperial Mandate",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 2.75
    },
    {
     "slug": "banshees-veil",
@@ -1372,7 +1543,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "spellslingers-shoes",
+   "lich-bane",
+   "imperial-mandate",
+   "rabadons-deathcap",
+   "oceanids-trident"
+  ],
+  "orderFrom": "same"
  },
  "Blitzcrank": {
   "items": [
@@ -1380,37 +1560,43 @@
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 4.25
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 3.41
    },
    {
     "slug": "yordle-trap",
     "name": "Yordle Trap",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.53
    },
    {
     "slug": "dead-mans-plate",
     "name": "Dead Man's Plate",
     "count": 13,
-    "of": 50
+    "of": 50,
+    "slot": 3.62
    },
    {
     "slug": "frozen-heart",
     "name": "Frozen Heart",
     "count": 13,
-    "of": 50
+    "of": 50,
+    "slot": 5.15
    },
    {
     "slug": "force-of-nature",
@@ -1482,7 +1668,16 @@
     "count": 19,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "armored-advance",
+   "yordle-trap",
+   "dead-mans-plate",
+   "warmogs-armor",
+   "frozen-heart"
+  ],
+  "orderFrom": "adjacent"
  },
  "Brand": {
   "items": [
@@ -1490,31 +1685,36 @@
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.4
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 4.69
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 2.74
    },
    {
     "slug": "malignance",
     "name": "Malignance",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.09
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 3.3
    },
    {
     "slug": "boots-of-mana",
@@ -1526,7 +1726,8 @@
     "slug": "stormsurge",
     "name": "Stormsurge",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 6.0
    },
    {
     "slug": "infinity-orb",
@@ -1602,7 +1803,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "liandrys-torment",
+   "blackfire-torch",
+   "spellslingers-shoes",
+   "malignance",
+   "rabadons-deathcap",
+   "stormsurge"
+  ],
+  "orderFrom": "same"
  },
  "Braum": {
   "items": [
@@ -1610,37 +1820,43 @@
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 2.84
    },
    {
     "slug": "knights-vow",
     "name": "Knight's Vow",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.77
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 5.43
    },
    {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 4.39
    },
    {
     "slug": "locket-of-the-iron-solari",
     "name": "Locket of the Iron Solari",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 4.0
    },
    {
     "slug": "amaranths-twinguard",
@@ -1707,7 +1923,16 @@
     "count": 38,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "armored-advance",
+   "knights-vow",
+   "locket-of-the-iron-solari",
+   "warmogs-armor",
+   "force-of-nature"
+  ],
+  "orderFrom": "same"
  },
  "Caitlyn": {
   "items": [
@@ -1715,37 +1940,43 @@
     "slug": "the-collector",
     "name": "The Collector",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.83
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 2.53
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 2.53
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 4.54
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.06
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "galeforce",
@@ -1822,7 +2053,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "gunmetal-greaves",
+   "the-collector",
+   "magnetic-blaster",
+   "blade-of-the-ruined-king",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "adjacent"
  },
  "Camille": {
   "items": [
@@ -1830,37 +2070,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 1.09
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.93
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 3.42
    },
    {
     "slug": "hullbreaker",
     "name": "Hullbreaker",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 3.23
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 4.52
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 5.42
    },
    {
     "slug": "steraks-gage",
@@ -1942,7 +2188,16 @@
     "count": 22,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "armored-advance",
+   "hullbreaker",
+   "deaths-dance",
+   "spear-of-shojin",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Cho'Gath": {
   "items": [
@@ -1950,37 +2205,43 @@
     "slug": "heartsteel",
     "name": "Heartsteel",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 4.58
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 4.58
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 3.88
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.53
    },
    {
     "slug": "sunfire-aegis",
     "name": "Sunfire Aegis",
     "count": 15,
-    "of": 50
+    "of": 50,
+    "slot": 1.93
    },
    {
     "slug": "riftmaker",
@@ -2062,7 +2323,16 @@
     "count": 26,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "heartsteel",
+   "sunfire-aegis",
+   "unending-despair",
+   "amaranths-twinguard",
+   "armored-advance",
+   "thornmail"
+  ],
+  "orderFrom": "same"
  },
  "Corki": {
   "items": [
@@ -2070,37 +2340,43 @@
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.06
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 2.51
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 4.38
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.77
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.4
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 4.73
    },
    {
     "slug": "lord-dominiks-regard",
@@ -2172,7 +2448,16 @@
     "count": 43,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "essence-reaver",
+   "magnetic-blaster",
+   "bloodthirster",
+   "immortal-treads",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Darius": {
   "items": [
@@ -2180,37 +2465,43 @@
     "slug": "steraks-gage",
     "name": "Sterak's Gage",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 3.35
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 1.52
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.69
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.41
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 5.33
    },
    {
     "slug": "stridebreaker",
     "name": "Stridebreaker",
     "count": 17,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "dead-mans-plate",
@@ -2287,7 +2578,16 @@
     "count": 21,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "stridebreaker",
+   "armored-advance",
+   "steraks-gage",
+   "amaranths-twinguard",
+   "force-of-nature"
+  ],
+  "orderFrom": "same"
  },
  "Diana": {
   "items": [
@@ -2295,37 +2595,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.55
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 2.77
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 5.49
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 3.9
    },
    {
     "slug": "dusk-and-dawn",
     "name": "Dusk and Dawn",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 1.93
    },
    {
     "slug": "nashors-tooth",
     "name": "Nashor's Tooth",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 2.31
    },
    {
     "slug": "lich-bane",
@@ -2407,7 +2713,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "dusk-and-dawn",
+   "spellslingers-shoes",
+   "nashors-tooth",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Dr. Mundo": {
   "items": [
@@ -2415,37 +2730,43 @@
     "slug": "heartsteel",
     "name": "Heartsteel",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.4
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 2.71
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.26
    },
    {
     "slug": "sunfire-aegis",
     "name": "Sunfire Aegis",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 2.71
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.9
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 4.63
    },
    {
     "slug": "warmogs-armor",
@@ -2517,7 +2838,16 @@
     "count": 35,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "heartsteel",
+   "armored-advance",
+   "sunfire-aegis",
+   "thornmail",
+   "unending-despair",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Draven": {
   "items": [
@@ -2525,37 +2855,43 @@
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.4
    },
    {
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.33
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 2.56
    },
    {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regard",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 4.73
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 2.69
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 2.5
    },
    {
     "slug": "magnetic-blaster",
@@ -2637,7 +2973,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "immortal-treads",
+   "bloodthirster",
+   "the-collector",
+   "essence-reaver",
+   "infinity-edge",
+   "lord-dominiks-regard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Ekko": {
   "items": [
@@ -2645,37 +2990,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.36
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 2.57
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.49
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 5.31
    },
    {
     "slug": "dusk-and-dawn",
     "name": "Dusk and Dawn",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 1.62
    },
    {
     "slug": "nashors-tooth",
     "name": "Nashor's Tooth",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 2.73
    },
    {
     "slug": "titanic-hydra",
@@ -2752,7 +3103,16 @@
     "count": 38,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "dusk-and-dawn",
+   "nashors-tooth",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Evelynn": {
   "items": [
@@ -2760,37 +3120,43 @@
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.38
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.86
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.83
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.77
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.71
    },
    {
     "slug": "titanic-hydra",
     "name": "Titanic Hydra",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 3.68
    },
    {
     "slug": "banshees-veil",
@@ -2867,7 +3233,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "lich-bane",
+   "rabadons-deathcap",
+   "titanic-hydra",
+   "spellslingers-shoes",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Ezreal": {
   "items": [
@@ -2875,37 +3250,43 @@
     "slug": "manamune",
     "name": "Manamune",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.48
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.9
    },
    {
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.96
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 5.7
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 5.14
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "gluttonous-greaves",
@@ -2972,7 +3353,16 @@
     "count": 45,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "manamune",
+   "immortal-treads",
+   "trinity-force",
+   "seryldas-grudge",
+   "spear-of-shojin",
+   "blade-of-the-ruined-king"
+  ],
+  "orderFrom": "same"
  },
  "Fiddlesticks": {
   "items": [
@@ -2980,37 +3370,43 @@
     "slug": "malignance",
     "name": "Malignance",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.68
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.02
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 5.09
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.15
    },
    {
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "seekers-armguard",
     "name": "Seeker's Armguard",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 4.14
    },
    {
     "slug": "oceanids-trident",
@@ -3092,7 +3488,16 @@
     "count": 33,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "malignance",
+   "spellslingers-shoes",
+   "liandrys-torment",
+   "seekers-armguard",
+   "infinity-orb",
+   "rabadons-deathcap"
+  ],
+  "orderFrom": "same"
  },
  "Fiora": {
   "items": [
@@ -3100,37 +3505,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.56
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 1.79
    },
    {
     "slug": "eclipse",
     "name": "Eclipse",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 2.83
    },
    {
     "slug": "hullbreaker",
     "name": "Hullbreaker",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.57
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 5.24
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 6.0
    },
    {
     "slug": "goredrinker",
@@ -3207,7 +3618,16 @@
     "count": 21,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "immortal-treads",
+   "trinity-force",
+   "hullbreaker",
+   "eclipse",
+   "deaths-dance",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Fizz": {
   "items": [
@@ -3215,37 +3635,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.42
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.78
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.17
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 4.35
    },
    {
     "slug": "cryptbloom",
     "name": "Cryptbloom",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 3.36
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 5.84
    },
    {
     "slug": "void-staff",
@@ -3327,7 +3753,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "lich-bane",
+   "rabadons-deathcap",
+   "cryptbloom",
+   "spellslingers-shoes",
+   "infinity-orb",
+   "riftmaker"
+  ],
+  "orderFrom": "same"
  },
  "Galio": {
   "items": [
@@ -3335,37 +3770,43 @@
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 3.32
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 3.38
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 4.36
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 2.62
    },
    {
     "slug": "hollow-radiance",
     "name": "Hollow Radiance",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 1.24
    },
    {
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 5.4
    },
    {
     "slug": "riftmaker",
@@ -3447,7 +3888,16 @@
     "count": 19,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "hollow-radiance",
+   "infinity-orb",
+   "spellslingers-shoes",
+   "rabadons-deathcap",
+   "void-staff",
+   "liandrys-torment"
+  ],
+  "orderFrom": "adjacent"
  },
  "Garen": {
   "items": [
@@ -3455,37 +3905,43 @@
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.18
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 4.74
    },
    {
     "slug": "black-cleaver",
     "name": "Black Cleaver",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 1.3
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 4.74
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 4.13
    },
    {
     "slug": "dead-mans-plate",
     "name": "Dead Man's Plate",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 3.15
    },
    {
     "slug": "heartsteel",
@@ -3557,7 +4013,16 @@
     "count": 27,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-cleaver",
+   "armored-advance",
+   "dead-mans-plate",
+   "spear-of-shojin",
+   "force-of-nature",
+   "thornmail"
+  ],
+  "orderFrom": "same"
  },
  "Gnar": {
   "items": [
@@ -3565,37 +4030,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.71
    },
    {
     "slug": "black-cleaver",
     "name": "Black Cleaver",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.81
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.15
    },
    {
     "slug": "steraks-gage",
     "name": "Sterak's Gage",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 3.91
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 5.48
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 5.0
    },
    {
     "slug": "guardian-angel",
@@ -3672,7 +4143,16 @@
     "count": 33,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "armored-advance",
+   "trinity-force",
+   "black-cleaver",
+   "steraks-gage",
+   "deaths-dance",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Gragas": {
   "items": [
@@ -3680,37 +4160,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 4.34
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.36
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.38
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.35
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 5.38
    },
    {
     "slug": "titanic-hydra",
     "name": "Titanic Hydra",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 3.86
    },
    {
     "slug": "banshees-veil",
@@ -3792,7 +4278,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "lich-bane",
+   "spellslingers-shoes",
+   "infinity-orb",
+   "titanic-hydra",
+   "rabadons-deathcap",
+   "void-staff"
+  ],
+  "orderFrom": "adjacent"
  },
  "Graves": {
   "items": [
@@ -3800,37 +4295,43 @@
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.57
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.66
    },
    {
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 3.13
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 1.62
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 4.26
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 5.4
    },
    {
     "slug": "lord-dominiks-regard",
@@ -3907,7 +4408,16 @@
     "count": 23,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "the-collector",
+   "bloodthirster",
+   "immortal-treads",
+   "essence-reaver",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Gwen": {
   "items": [
@@ -3915,37 +4425,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.92
    },
    {
     "slug": "dusk-and-dawn",
     "name": "Dusk and Dawn",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.78
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 2.73
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 3.42
    },
    {
     "slug": "nashors-tooth",
     "name": "Nashor's Tooth",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 2.73
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 5.21
    },
    {
     "slug": "infinity-orb",
@@ -4027,7 +4543,16 @@
     "count": 23,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "dusk-and-dawn",
+   "riftmaker",
+   "nashors-tooth",
+   "spellslingers-shoes",
+   "rabadons-deathcap",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Hecarim": {
   "items": [
@@ -4035,37 +4560,43 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.26
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.49
    },
    {
     "slug": "manamune",
     "name": "Manamune",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.76
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 4.82
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 5.35
    },
    {
     "slug": "mercurial-scimitar",
     "name": "Mercurial Scimitar",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 4.11
    },
    {
     "slug": "crimson-lucidity",
@@ -4122,7 +4653,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "manamune",
+   "seryldas-grudge",
+   "mercurial-scimitar",
+   "spear-of-shojin",
+   "immortal-treads"
+  ],
+  "orderFrom": "adjacent"
  },
  "Heimerdinger": {
   "items": [
@@ -4130,37 +4670,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.04
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 5.04
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 1.18
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.74
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 3.96
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 4.75
    },
    {
     "slug": "liandrys-torment",
@@ -4242,7 +4788,16 @@
     "count": 20,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blackfire-torch",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "void-staff",
+   "zhonyas-hourglass",
+   "spellslingers-shoes"
+  ],
+  "orderFrom": "same"
  },
  "Irelia": {
   "items": [
@@ -4250,37 +4805,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 1.91
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 4.16
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 2.55
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 5.0
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 2.19
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 5.79
    },
    {
     "slug": "wits-end",
@@ -4357,7 +4918,16 @@
     "count": 28,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "blade-of-the-ruined-king",
+   "immortal-treads",
+   "deaths-dance",
+   "amaranths-twinguard",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Janna": {
   "items": [
@@ -4365,37 +4935,43 @@
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.38
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 3.19
    },
    {
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.03
    },
    {
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.84
    },
    {
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "imperial-mandate",
     "name": "Imperial Mandate",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 4.7
    },
    {
     "slug": "black-mist-scythe",
@@ -4472,7 +5048,16 @@
     "count": 26,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "harmonic-echo",
+   "crimson-lucidity",
+   "ardent-censer",
+   "imperial-mandate",
+   "staff-of-flowing-water"
+  ],
+  "orderFrom": "same"
  },
  "Jarvan IV": {
   "items": [
@@ -4480,37 +5065,43 @@
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.04
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.98
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 5.83
    },
    {
     "slug": "sundered-sky",
     "name": "Sundered Sky",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 5.0
    },
    {
     "slug": "force-of-nature",
@@ -4592,7 +5183,16 @@
     "count": 45,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "armored-advance",
+   "sundered-sky",
+   "amaranths-twinguard",
+   "deaths-dance",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Jax": {
   "items": [
@@ -4600,31 +5200,36 @@
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.43
    },
    {
     "slug": "dusk-and-dawn",
     "name": "Dusk and Dawn",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 1.72
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 2.52
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 2.83
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 3.94
    },
    {
     "slug": "spellslingers-shoes",
@@ -4636,7 +5241,8 @@
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 4.62
    },
    {
     "slug": "nashors-tooth",
@@ -4712,7 +5318,16 @@
     "count": 20,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "dusk-and-dawn",
+   "armored-advance",
+   "blade-of-the-ruined-king",
+   "rabadons-deathcap",
+   "zhonyas-hourglass",
+   "riftmaker"
+  ],
+  "orderFrom": "adjacent"
  },
  "Jayce": {
   "items": [
@@ -4720,37 +5335,43 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.91
    },
    {
     "slug": "eclipse",
     "name": "Eclipse",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.52
    },
    {
     "slug": "manamune",
     "name": "Manamune",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.84
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 5.0
    },
    {
     "slug": "edge-of-night",
     "name": "Edge of Night",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 5.8
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 1.94
    },
    {
     "slug": "serpents-fang",
@@ -4832,7 +5453,16 @@
     "count": 19,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "eclipse",
+   "immortal-treads",
+   "manamune",
+   "seryldas-grudge",
+   "spear-of-shojin",
+   "edge-of-night"
+  ],
+  "orderFrom": "same"
  },
  "Jhin": {
   "items": [
@@ -4840,37 +5470,43 @@
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 4.24
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.61
    },
    {
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 1.69
    },
    {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regard",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.21
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.08
    },
    {
     "slug": "galeforce",
     "name": "Galeforce",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.87
    },
    {
     "slug": "mortal-reminder",
@@ -4942,7 +5578,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "armorcrusher-boots",
+   "the-collector",
+   "magnetic-blaster",
+   "lord-dominiks-regard",
+   "infinity-edge",
+   "galeforce"
+  ],
+  "orderFrom": "adjacent"
  },
  "Jinx": {
   "items": [
@@ -4950,37 +5595,43 @@
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.57
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 3.57
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 2.52
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 2.13
    },
    {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regard",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 4.81
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 2.19
    },
    {
     "slug": "blade-of-the-ruined-king",
@@ -5047,7 +5698,16 @@
     "count": 42,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "the-collector",
+   "gunmetal-greaves",
+   "bloodthirster",
+   "runaans-hurricane",
+   "magnetic-blaster",
+   "lord-dominiks-regard"
+  ],
+  "orderFrom": "same"
  },
  "K'Sante": {
   "items": [
@@ -5055,37 +5715,43 @@
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.62
    },
    {
     "slug": "iceborn-gauntlet",
     "name": "Iceborn Gauntlet",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.83
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.76
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.66
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 3.39
    },
    {
     "slug": "hollow-radiance",
     "name": "Hollow Radiance",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 5.82
    },
    {
     "slug": "gargoyle-stoneplate",
@@ -5162,7 +5828,16 @@
     "count": 32,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "armored-advance",
+   "iceborn-gauntlet",
+   "unending-despair",
+   "thornmail",
+   "amaranths-twinguard",
+   "hollow-radiance"
+  ],
+  "orderFrom": "same"
  },
  "Kai'Sa": {
   "items": [
@@ -5170,37 +5845,43 @@
     "slug": "guinsoos-rageblade",
     "name": "Guinsoo's Rageblade",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.95
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 4.65
    },
    {
     "slug": "terminus",
     "name": "Terminus",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.66
    },
    {
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 1.72
    },
    {
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 4.08
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 1.13
    },
    {
     "slug": "gunmetal-greaves",
@@ -5277,7 +5958,16 @@
     "count": 43,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "immortal-treads",
+   "kraken-slayer",
+   "guinsoos-rageblade",
+   "runaans-hurricane",
+   "terminus",
+   "blade-of-the-ruined-king"
+  ],
+  "orderFrom": "adjacent"
  },
  "Kalista": {
   "items": [
@@ -5285,37 +5975,43 @@
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.3
    },
    {
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 4.06
    },
    {
     "slug": "guinsoos-rageblade",
     "name": "Guinsoo's Rageblade",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 2.48
    },
    {
     "slug": "terminus",
     "name": "Terminus",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.58
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 5.13
    },
    {
     "slug": "wits-end",
@@ -5387,7 +6083,16 @@
     "count": 42,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blade-of-the-ruined-king",
+   "guinsoos-rageblade",
+   "runaans-hurricane",
+   "gunmetal-greaves",
+   "terminus",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Karma": {
   "items": [
@@ -5395,37 +6100,43 @@
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 4.34
    },
    {
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.46
    },
    {
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.66
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 2.78
    },
    {
     "slug": "mikaels-blessing",
     "name": "Mikael's Blessing",
     "count": 17,
-    "of": 50
+    "of": 50,
+    "slot": 5.59
    },
    {
     "slug": "spellslingers-shoes",
@@ -5507,7 +6218,16 @@
     "count": 26,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "crimson-lucidity",
+   "ardent-censer",
+   "harmonic-echo",
+   "staff-of-flowing-water",
+   "mikaels-blessing"
+  ],
+  "orderFrom": "adjacent"
  },
  "Kassadin": {
   "items": [
@@ -5515,37 +6235,43 @@
     "slug": "archangels-staff",
     "name": "Archangel's Staff",
     "count": 49,
-    "of": 49
+    "of": 49,
+    "slot": 2.1
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 49
+    "of": 49,
+    "slot": 4.12
    },
    {
     "slug": "malignance",
     "name": "Malignance",
     "count": 46,
-    "of": 49
+    "of": 49,
+    "slot": 2.98
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 44,
-    "of": 49
+    "of": 49,
+    "slot": 2.0
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 26,
-    "of": 49
+    "of": 49,
+    "slot": 5.08
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 19,
-    "of": 49
+    "of": 49,
+    "slot": 5.32
    },
    {
     "slug": "zhonyas-hourglass",
@@ -5627,7 +6353,16 @@
     "count": 29,
     "of": 49
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "archangels-staff",
+   "malignance",
+   "rabadons-deathcap",
+   "void-staff",
+   "infinity-orb"
+  ],
+  "orderFrom": "adjacent"
  },
  "Katarina": {
   "items": [
@@ -5635,37 +6370,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.33
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.81
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.46
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 4.56
    },
    {
     "slug": "stormsurge",
     "name": "Stormsurge",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 3.36
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 4.88
    },
    {
     "slug": "riftmaker",
@@ -5747,7 +6488,16 @@
     "count": 26,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "infinity-orb",
+   "spellslingers-shoes",
+   "stormsurge",
+   "rabadons-deathcap",
+   "void-staff",
+   "zhonyas-hourglass"
+  ],
+  "orderFrom": "same"
  },
  "Kayle": {
   "items": [
@@ -5755,37 +6505,43 @@
     "slug": "nashors-tooth",
     "name": "Nashor's Tooth",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.55
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.63
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.08
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 4.86
    },
    {
     "slug": "dusk-and-dawn",
     "name": "Dusk and Dawn",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 2.93
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 5.12
    },
    {
     "slug": "lich-bane",
@@ -5867,7 +6623,16 @@
     "count": 27,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "nashors-tooth",
+   "spellslingers-shoes",
+   "dusk-and-dawn",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Kayn": {
   "items": [
@@ -5875,37 +6640,43 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 3.62
    },
    {
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.3
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 3.41
    },
    {
     "slug": "eclipse",
     "name": "Eclipse",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 2.11
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 4.44
    },
    {
     "slug": "youmuus-ghostblade",
     "name": "Youmuu's Ghostblade",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "deaths-dance",
@@ -5982,7 +6753,16 @@
     "count": 20,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "youmuus-ghostblade",
+   "eclipse",
+   "armorcrusher-boots",
+   "serpents-fang",
+   "seryldas-grudge",
+   "spear-of-shojin"
+  ],
+  "orderFrom": "same"
  },
  "Kennen": {
   "items": [
@@ -5990,37 +6770,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.56
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 2.37
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 1.38
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 5.44
    },
    {
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 4.93
    },
    {
     "slug": "oceanids-trident",
     "name": "Oceanid's Trident",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 4.83
    },
    {
     "slug": "titanic-hydra",
@@ -6102,7 +6888,16 @@
     "count": 23,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "oceanids-trident",
+   "banshees-veil",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Kha'Zix": {
   "items": [
@@ -6110,31 +6905,36 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.92
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.17
    },
    {
     "slug": "youmuus-ghostblade",
     "name": "Youmuu's Ghostblade",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 1.74
    },
    {
     "slug": "duskblade-of-draktharr",
     "name": "Duskblade of Draktharr",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 2.89
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 5.69
    },
    {
     "slug": "eclipse",
@@ -6152,7 +6952,8 @@
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 2.94
    },
    {
     "slug": "immortal-treads",
@@ -6222,7 +7023,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "youmuus-ghostblade",
+   "armorcrusher-boots",
+   "duskblade-of-draktharr",
+   "serpents-fang",
+   "seryldas-grudge",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Kindred": {
   "items": [
@@ -6230,37 +7040,43 @@
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 2.9
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 3.86
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 2.5
    },
    {
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 1.89
    },
    {
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 1.62
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "mortal-reminder",
@@ -6337,7 +7153,16 @@
     "count": 33,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "essence-reaver",
+   "kraken-slayer",
+   "gunmetal-greaves",
+   "the-collector",
+   "magnetic-blaster",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Kog'Maw": {
   "items": [
@@ -6345,37 +7170,43 @@
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 2.28
    },
    {
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.15
    },
    {
     "slug": "guinsoos-rageblade",
     "name": "Guinsoo's Rageblade",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 1.84
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 5.03
    },
    {
     "slug": "navori-quickblades",
     "name": "Navori Quickblades",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 3.83
    },
    {
     "slug": "terminus",
     "name": "Terminus",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 4.67
    },
    {
     "slug": "archangels-staff",
@@ -6457,7 +7288,16 @@
     "count": 30,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "guinsoos-rageblade",
+   "blade-of-the-ruined-king",
+   "runaans-hurricane",
+   "terminus",
+   "navori-quickblades",
+   "gunmetal-greaves"
+  ],
+  "orderFrom": "same"
  },
  "Lee Sin": {
   "items": [
@@ -6465,37 +7305,43 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 4.0
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 5.81
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 3.82
    },
    {
     "slug": "youmuus-ghostblade",
     "name": "Youmuu's Ghostblade",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 1.88
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 1.5
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 3.03
    },
    {
     "slug": "deaths-dance",
@@ -6567,7 +7413,16 @@
     "count": 33,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "immortal-treads",
+   "youmuus-ghostblade",
+   "trinity-force",
+   "serpents-fang",
+   "seryldas-grudge",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Leona": {
   "items": [
@@ -6575,37 +7430,43 @@
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.42
    },
    {
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.44
    },
    {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 3.46
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 2.17
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 5.23
    },
    {
     "slug": "zekes-convergence",
@@ -6672,7 +7533,16 @@
     "count": 29,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "armored-advance",
+   "warmogs-armor",
+   "amaranths-twinguard",
+   "force-of-nature",
+   "thornmail"
+  ],
+  "orderFrom": "same"
  },
  "Lillia": {
   "items": [
@@ -6680,37 +7550,43 @@
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.38
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.8
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 4.2
    },
    {
     "slug": "bloodletters-curse",
     "name": "Bloodletter's Curse",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 5.18
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 3.52
    },
    {
     "slug": "stormsurge",
     "name": "Stormsurge",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 2.69
    },
    {
     "slug": "riftmaker",
@@ -6777,7 +7653,16 @@
     "count": 32,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "liandrys-torment",
+   "stormsurge",
+   "zhonyas-hourglass",
+   "rabadons-deathcap",
+   "bloodletters-curse",
+   "spellslingers-shoes"
+  ],
+  "orderFrom": "same"
  },
  "Lissandra": {
   "items": [
@@ -6785,37 +7670,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.96
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.75
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.3
    },
    {
     "slug": "malignance",
     "name": "Malignance",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 2.2
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 5.87
    },
    {
     "slug": "seekers-armguard",
     "name": "Seeker's Armguard",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 3.06
    },
    {
     "slug": "cryptbloom",
@@ -6892,7 +7783,16 @@
     "count": 37,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "malignance",
+   "seekers-armguard",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Lucian": {
   "items": [
@@ -6900,37 +7800,43 @@
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.44
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 4.96
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.96
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 4.07
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 1.85
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 5.84
    },
    {
     "slug": "gluttonous-greaves",
@@ -7007,7 +7913,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "essence-reaver",
+   "immortal-treads",
+   "magnetic-blaster",
+   "mortal-reminder",
+   "infinity-edge",
+   "bloodthirster"
+  ],
+  "orderFrom": "same"
  },
  "Lulu": {
   "items": [
@@ -7015,37 +7930,43 @@
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.24
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.19
    },
    {
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 4.12
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "knights-vow",
     "name": "Knight's Vow",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 5.4
    },
    {
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 5.64
    },
    {
     "slug": "mikaels-blessing",
@@ -7117,7 +8038,16 @@
     "count": 38,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "ardent-censer",
+   "crimson-lucidity",
+   "harmonic-echo",
+   "knights-vow",
+   "staff-of-flowing-water"
+  ],
+  "orderFrom": "same"
  },
  "Lux": {
   "items": [
@@ -7125,37 +8055,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.19
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 2.67
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 3.51
    },
    {
     "slug": "horizon-focus",
     "name": "Horizon Focus",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 3.79
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 1.74
    },
    {
     "slug": "malignance",
     "name": "Malignance",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 4.18
    },
    {
     "slug": "void-staff",
@@ -7237,7 +8173,16 @@
     "count": 20,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "ludens-echo",
+   "spellslingers-shoes",
+   "horizon-focus",
+   "malignance",
+   "infinity-orb",
+   "rabadons-deathcap"
+  ],
+  "orderFrom": "same"
  },
  "Malphite": {
   "items": [
@@ -7245,37 +8190,43 @@
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.62
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 2.82
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 5.02
    },
    {
     "slug": "iceborn-gauntlet",
     "name": "Iceborn Gauntlet",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 1.85
    },
    {
     "slug": "frozen-heart",
     "name": "Frozen Heart",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 3.67
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 4.44
    },
    {
     "slug": "randuins-omen",
@@ -7347,7 +8298,16 @@
     "count": 34,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "iceborn-gauntlet",
+   "thornmail",
+   "armored-advance",
+   "frozen-heart",
+   "force-of-nature",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Maokai": {
   "items": [
@@ -7355,37 +8315,43 @@
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.49
    },
    {
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 5.69
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 3.97
    },
    {
     "slug": "yordle-trap",
     "name": "Yordle Trap",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 2.96
    },
    {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 3.45
    },
    {
     "slug": "amaranths-twinguard",
@@ -7457,7 +8423,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "armored-advance",
+   "yordle-trap",
+   "warmogs-armor",
+   "unending-despair",
+   "thornmail"
+  ],
+  "orderFrom": "same"
  },
  "Master Yi": {
   "items": [
@@ -7465,37 +8440,43 @@
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 1.55
    },
    {
     "slug": "guinsoos-rageblade",
     "name": "Guinsoo's Rageblade",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 2.44
    },
    {
     "slug": "mercurial-scimitar",
     "name": "Mercurial Scimitar",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 5.75
    },
    {
     "slug": "terminus",
     "name": "Terminus",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 4.08
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 4.64
    },
    {
     "slug": "berserkers-greaves",
     "name": "Berserker's Greaves",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 2.65
    },
    {
     "slug": "quicksilver-sash",
@@ -7567,7 +8548,16 @@
     "count": 34,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blade-of-the-ruined-king",
+   "guinsoos-rageblade",
+   "berserkers-greaves",
+   "terminus",
+   "deaths-dance",
+   "mercurial-scimitar"
+  ],
+  "orderFrom": "same"
  },
  "Mel": {
   "items": [
@@ -7575,37 +8565,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.47
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 4.29
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.48
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 5.44
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 1.07
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 1.39
    },
    {
     "slug": "banshees-veil",
@@ -7687,7 +8683,16 @@
     "count": 23,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blackfire-torch",
+   "ludens-echo",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "spellslingers-shoes",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Milio": {
   "items": [
@@ -7695,37 +8700,43 @@
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.36
    },
    {
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.84
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.92
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "knights-vow",
     "name": "Knight's Vow",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 5.39
    },
    {
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 5.22
    },
    {
     "slug": "mikaels-blessing",
@@ -7797,7 +8808,16 @@
     "count": 41,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "ardent-censer",
+   "crimson-lucidity",
+   "harmonic-echo",
+   "knights-vow",
+   "staff-of-flowing-water"
+  ],
+  "orderFrom": "same"
  },
  "Miss Fortune": {
   "items": [
@@ -7805,37 +8825,43 @@
     "slug": "the-collector",
     "name": "The Collector",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.94
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.72
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.95
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 5.58
    },
    {
     "slug": "duskblade-of-draktharr",
     "name": "Duskblade of Draktharr",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.1
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.17
    },
    {
     "slug": "armorcrusher-boots",
@@ -7917,7 +8943,16 @@
     "count": 40,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "duskblade-of-draktharr",
+   "the-collector",
+   "mortal-reminder",
+   "bloodthirster",
+   "infinity-edge",
+   "immortal-treads"
+  ],
+  "orderFrom": "same"
  },
  "Mordekaiser": {
   "items": [
@@ -7925,37 +8960,43 @@
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.65
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 5.56
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 3.72
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.59
    },
    {
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.13
    },
    {
     "slug": "rylais-crystal-scepter",
     "name": "Rylai's Crystal Scepter",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 3.18
    },
    {
     "slug": "rabadons-deathcap",
@@ -8032,7 +9073,16 @@
     "count": 40,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "riftmaker",
+   "armored-advance",
+   "rylais-crystal-scepter",
+   "unending-despair",
+   "liandrys-torment",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Morgana": {
   "items": [
@@ -8040,37 +9090,43 @@
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 5.37
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 1.19
    },
    {
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 2.98
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.15
    },
    {
     "slug": "rylais-crystal-scepter",
     "name": "Rylai's Crystal Scepter",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 2.82
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 4.96
    },
    {
     "slug": "infinity-orb",
@@ -8152,7 +9208,16 @@
     "count": 30,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blackfire-torch",
+   "rylais-crystal-scepter",
+   "liandrys-torment",
+   "rabadons-deathcap",
+   "zhonyas-hourglass",
+   "spellslingers-shoes"
+  ],
+  "orderFrom": "adjacent"
  },
  "Nami": {
   "items": [
@@ -8160,37 +9225,43 @@
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 2.47
    },
    {
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.91
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 3.02
    },
    {
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 4.79
    },
    {
     "slug": "mikaels-blessing",
     "name": "Mikael's Blessing",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 5.38
    },
    {
     "slug": "banshees-veil",
@@ -8257,7 +9328,16 @@
     "count": 35,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "crimson-lucidity",
+   "harmonic-echo",
+   "ardent-censer",
+   "staff-of-flowing-water",
+   "mikaels-blessing"
+  ],
+  "orderFrom": "same"
  },
  "Nasus": {
   "items": [
@@ -8265,31 +9345,36 @@
     "slug": "sundered-sky",
     "name": "Sundered Sky",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.74
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.66
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 4.88
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 1.89
    },
    {
     "slug": "steraks-gage",
     "name": "Sterak's Gage",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 5.09
    },
    {
     "slug": "armored-advance",
@@ -8301,7 +9386,8 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 4.12
    },
    {
     "slug": "guardian-angel",
@@ -8377,7 +9463,16 @@
     "count": 37,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "crimson-lucidity",
+   "trinity-force",
+   "sundered-sky",
+   "seryldas-grudge",
+   "amaranths-twinguard",
+   "steraks-gage"
+  ],
+  "orderFrom": "same"
  },
  "Nautilus": {
   "items": [
@@ -8385,37 +9480,43 @@
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.2
    },
    {
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 3.22
    },
    {
     "slug": "frozen-heart",
     "name": "Frozen Heart",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 5.08
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 4.33
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 5.6
    },
    {
     "slug": "force-of-nature",
@@ -8492,7 +9593,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "armored-advance",
+   "warmogs-armor",
+   "amaranths-twinguard",
+   "frozen-heart",
+   "thornmail"
+  ],
+  "orderFrom": "same"
  },
  "Nidalee": {
   "items": [
@@ -8500,37 +9610,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.38
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.13
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 3.63
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 2.02
    },
    {
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 5.45
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 5.37
    },
    {
     "slug": "stormsurge",
@@ -8602,7 +9718,16 @@
     "count": 40,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "lich-bane",
+   "spellslingers-shoes",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "banshees-veil",
+   "void-staff"
+  ],
+  "orderFrom": "adjacent"
  },
  "Nilah": {
   "items": [
@@ -8610,31 +9735,36 @@
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 4.82
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.74
    },
    {
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 1.38
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 3.74
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 1.89
    },
    {
     "slug": "lord-dominiks-regard",
@@ -8652,7 +9782,8 @@
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 15,
-    "of": 50
+    "of": 50,
+    "slot": 4.33
    },
    {
     "slug": "boots-of-dynamism",
@@ -8722,7 +9853,16 @@
     "count": 22,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "essence-reaver",
+   "the-collector",
+   "bloodthirster",
+   "mortal-reminder",
+   "immortal-treads",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Nocturne": {
   "items": [
@@ -8730,37 +9870,43 @@
     "slug": "duskblade-of-draktharr",
     "name": "Duskblade of Draktharr",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.15
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.5
    },
    {
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.23
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 5.95
    },
    {
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.4
    },
    {
     "slug": "sundered-sky",
     "name": "Sundered Sky",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 4.15
    },
    {
     "slug": "the-collector",
@@ -8837,7 +9983,16 @@
     "count": 43,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "duskblade-of-draktharr",
+   "serpents-fang",
+   "seryldas-grudge",
+   "sundered-sky",
+   "armorcrusher-boots",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Norra": {
   "items": [
@@ -8845,37 +10000,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.96
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 3.44
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 2.97
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 1.35
    },
    {
     "slug": "horizon-focus",
     "name": "Horizon Focus",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.13
    },
    {
     "slug": "malignance",
     "name": "Malignance",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 4.47
    },
    {
     "slug": "void-staff",
@@ -8957,7 +10118,16 @@
     "count": 28,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "ludens-echo",
+   "infinity-orb",
+   "spellslingers-shoes",
+   "rabadons-deathcap",
+   "horizon-focus",
+   "malignance"
+  ],
+  "orderFrom": "same"
  },
  "Nunu & Willump": {
   "items": [
@@ -8965,31 +10135,36 @@
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.94
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 4.45
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 3.81
    },
    {
     "slug": "searing-crown",
     "name": "Searing Crown",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 1.33
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "chainlaced-crushers",
@@ -9001,7 +10176,8 @@
     "slug": "sunfire-aegis",
     "name": "Sunfire Aegis",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 1.15
    },
    {
     "slug": "randuins-omen",
@@ -9077,7 +10253,16 @@
     "count": 28,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "sunfire-aegis",
+   "armored-advance",
+   "searing-crown",
+   "thornmail",
+   "amaranths-twinguard",
+   "force-of-nature"
+  ],
+  "orderFrom": "same"
  },
  "Olaf": {
   "items": [
@@ -9085,37 +10270,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.12
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.21
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 5.94
    },
    {
     "slug": "experimental-hexplate",
     "name": "Experimental Hexplate",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 4.09
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 2.07
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 5.0
    },
    {
     "slug": "armored-advance",
@@ -9187,7 +10378,16 @@
     "count": 25,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "immortal-treads",
+   "deaths-dance",
+   "experimental-hexplate",
+   "spear-of-shojin",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Orianna": {
   "items": [
@@ -9195,37 +10395,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.9
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.98
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 1.73
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 3.48
    },
    {
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 5.48
    },
    {
     "slug": "oceanids-trident",
     "name": "Oceanid's Trident",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 5.53
    },
    {
     "slug": "archangels-staff",
@@ -9307,7 +10513,16 @@
     "count": 37,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "ludens-echo",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "banshees-veil",
+   "oceanids-trident"
+  ],
+  "orderFrom": "adjacent"
  },
  "Ornn": {
   "items": [
@@ -9315,37 +10530,43 @@
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 4.2
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 1.49
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.38
    },
    {
     "slug": "sunfire-aegis",
     "name": "Sunfire Aegis",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 2.32
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 5.71
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 4.93
    },
    {
     "slug": "heartsteel",
@@ -9422,7 +10643,16 @@
     "count": 23,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "armored-advance",
+   "sunfire-aegis",
+   "thornmail",
+   "amaranths-twinguard",
+   "force-of-nature",
+   "unending-despair"
+  ],
+  "orderFrom": "same"
  },
  "Pantheon": {
   "items": [
@@ -9430,37 +10660,43 @@
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 5.02
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.18
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 1.63
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 5.15
    },
    {
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 3.06
    },
    {
     "slug": "edge-of-night",
     "name": "Edge of Night",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 4.39
    },
    {
     "slug": "trinity-force",
@@ -9542,7 +10778,16 @@
     "count": 42,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "serpents-fang",
+   "blade-of-the-ruined-king",
+   "seryldas-grudge",
+   "edge-of-night",
+   "guardian-angel",
+   "armorcrusher-boots"
+  ],
+  "orderFrom": "adjacent"
  },
  "Poppy": {
   "items": [
@@ -9550,37 +10795,43 @@
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.02
    },
    {
     "slug": "sunfire-aegis",
     "name": "Sunfire Aegis",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 2.5
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.62
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 4.47
    },
    {
     "slug": "heartsteel",
     "name": "Heartsteel",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 1.11
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 4.63
    },
    {
     "slug": "force-of-nature",
@@ -9657,7 +10908,16 @@
     "count": 35,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "heartsteel",
+   "armored-advance",
+   "sunfire-aegis",
+   "unending-despair",
+   "thornmail",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Pyke": {
   "items": [
@@ -9665,37 +10925,43 @@
     "slug": "youmuus-ghostblade",
     "name": "Youmuu's Ghostblade",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.62
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 3.66
    },
    {
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "duskblade-of-draktharr",
     "name": "Duskblade of Draktharr",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 3.71
    },
    {
     "slug": "edge-of-night",
     "name": "Edge of Night",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 5.18
    },
    {
     "slug": "amaranths-twinguard",
@@ -9772,7 +11038,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "armorcrusher-boots",
+   "youmuus-ghostblade",
+   "serpents-fang",
+   "duskblade-of-draktharr",
+   "edge-of-night"
+  ],
+  "orderFrom": "adjacent"
  },
  "Rakan": {
   "items": [
@@ -9780,37 +11055,43 @@
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "zekes-convergence",
     "name": "Zeke's Convergence",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 3.3
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 4.52
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 17,
-    "of": 50
+    "of": 50,
+    "slot": 4.59
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 15,
-    "of": 50
+    "of": 50,
+    "slot": 5.6
    },
    {
     "slug": "randuins-omen",
@@ -9882,7 +11163,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "crimson-lucidity",
+   "zekes-convergence",
+   "amaranths-twinguard",
+   "rabadons-deathcap",
+   "thornmail"
+  ],
+  "orderFrom": "same"
  },
  "Rammus": {
   "items": [
@@ -9890,37 +11180,43 @@
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.66
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 4.61
    },
    {
     "slug": "dawnshroud",
     "name": "Dawnshroud",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.02
    },
    {
     "slug": "chainlaced-crushers",
     "name": "Chainlaced Crushers",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 2.78
    },
    {
     "slug": "dead-mans-plate",
     "name": "Dead Man's Plate",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 1.41
    },
    {
     "slug": "titanic-hydra",
     "name": "Titanic Hydra",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 6.0
    },
    {
     "slug": "searing-crown",
@@ -9987,7 +11283,16 @@
     "count": 37,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "dead-mans-plate",
+   "chainlaced-crushers",
+   "dawnshroud",
+   "thornmail",
+   "amaranths-twinguard",
+   "titanic-hydra"
+  ],
+  "orderFrom": "same"
  },
  "Rell": {
   "items": [
@@ -9995,37 +11300,43 @@
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 2.64
    },
    {
     "slug": "zekes-convergence",
     "name": "Zeke's Convergence",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 2.73
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 6.0
    },
    {
     "slug": "radiant-virtue",
     "name": "Radiant Virtue",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "dawnshroud",
     "name": "Dawnshroud",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 4.1
    },
    {
     "slug": "warmogs-armor",
@@ -10092,7 +11403,16 @@
     "count": 35,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "armored-advance",
+   "zekes-convergence",
+   "dawnshroud",
+   "radiant-virtue",
+   "unending-despair"
+  ],
+  "orderFrom": "same"
  },
  "Renekton": {
   "items": [
@@ -10100,37 +11420,43 @@
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.05
    },
    {
     "slug": "hullbreaker",
     "name": "Hullbreaker",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 3.05
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 2.02
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 4.85
    },
    {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regard",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 3.93
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 5.86
    },
    {
     "slug": "steraks-gage",
@@ -10212,7 +11538,16 @@
     "count": 21,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "armored-advance",
+   "blade-of-the-ruined-king",
+   "hullbreaker",
+   "lord-dominiks-regard",
+   "amaranths-twinguard",
+   "thornmail"
+  ],
+  "orderFrom": "adjacent"
  },
  "Rengar": {
   "items": [
@@ -10220,37 +11555,43 @@
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.14
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 3.51
    },
    {
     "slug": "duskblade-of-draktharr",
     "name": "Duskblade of Draktharr",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 3.68
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 4.42
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 3.88
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 4.55
    },
    {
     "slug": "lord-dominiks-regard",
@@ -10332,7 +11673,16 @@
     "count": 23,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "essence-reaver",
+   "infinity-edge",
+   "duskblade-of-draktharr",
+   "mortal-reminder",
+   "immortal-treads",
+   "the-collector"
+  ],
+  "orderFrom": "same"
  },
  "Riven": {
   "items": [
@@ -10340,37 +11690,43 @@
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.14
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 3.5
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 2.87
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 1.87
    },
    {
     "slug": "eclipse",
     "name": "Eclipse",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 1.54
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 5.68
    },
    {
     "slug": "sundered-sky",
@@ -10432,7 +11788,16 @@
     "count": 33,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "eclipse",
+   "trinity-force",
+   "immortal-treads",
+   "deaths-dance",
+   "seryldas-grudge",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Rumble": {
   "items": [
@@ -10440,37 +11805,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.67
    },
    {
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 2.63
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 2.85
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 3.55
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 5.0
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 2.33
    },
    {
     "slug": "bloodletters-curse",
@@ -10552,7 +11923,16 @@
     "count": 19,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "liandrys-torment",
+   "infinity-orb",
+   "riftmaker",
+   "rabadons-deathcap",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Ryze": {
   "items": [
@@ -10560,37 +11940,43 @@
     "slug": "archangels-staff",
     "name": "Archangel's Staff",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.7
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.74
    },
    {
     "slug": "rod-of-ages",
     "name": "Rod of Ages",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.66
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 2.02
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 5.04
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 5.88
    },
    {
     "slug": "zhonyas-hourglass",
@@ -10667,7 +12053,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "rod-of-ages",
+   "archangels-staff",
+   "rabadons-deathcap",
+   "void-staff",
+   "infinity-orb"
+  ],
+  "orderFrom": "same"
  },
  "Samira": {
   "items": [
@@ -10675,37 +12070,43 @@
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.52
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.24
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.27
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.23
    },
    {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regard",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.97
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 5.76
    },
    {
     "slug": "mortal-reminder",
@@ -10772,7 +12173,16 @@
     "count": 37,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "the-collector",
+   "immortal-treads",
+   "bloodthirster",
+   "infinity-edge",
+   "lord-dominiks-regard",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Senna": {
   "items": [
@@ -10780,37 +12190,43 @@
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.24
    },
    {
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.91
    },
    {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regard",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 3.5
    },
    {
     "slug": "duskblade-of-draktharr",
     "name": "Duskblade of Draktharr",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.72
    },
    {
     "slug": "youmuus-ghostblade",
     "name": "Youmuu's Ghostblade",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 4.46
    },
    {
     "slug": "iceborn-gauntlet",
@@ -10887,7 +12303,16 @@
     "count": 29,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "duskblade-of-draktharr",
+   "lord-dominiks-regard",
+   "youmuus-ghostblade",
+   "serpents-fang",
+   "armorcrusher-boots"
+  ],
+  "orderFrom": "adjacent"
  },
  "Seraphine": {
   "items": [
@@ -10895,31 +12320,36 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.12
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 2.19
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 4.08
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 1.2
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 17,
-    "of": 50
+    "of": 50,
+    "slot": 2.35
    },
    {
     "slug": "crimson-lucidity",
@@ -10931,7 +12361,8 @@
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
     "count": 14,
-    "of": 50
+    "of": 50,
+    "slot": 5.79
    },
    {
     "slug": "horizon-focus",
@@ -11007,7 +12438,16 @@
     "count": 17,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "spellslingers-shoes",
+   "blackfire-torch",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "banshees-veil"
+  ],
+  "orderFrom": "same"
  },
  "Sett": {
   "items": [
@@ -11015,37 +12455,43 @@
     "slug": "overlords-bloodmail",
     "name": "Overlord's Bloodmail",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.19
    },
    {
     "slug": "steraks-gage",
     "name": "Sterak's Gage",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 4.76
    },
    {
     "slug": "black-cleaver",
     "name": "Black Cleaver",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 2.57
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 3.9
    },
    {
     "slug": "hullbreaker",
     "name": "Hullbreaker",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.41
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 4.75
    },
    {
     "slug": "heartsteel",
@@ -11117,7 +12563,16 @@
     "count": 29,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-cleaver",
+   "hullbreaker",
+   "overlords-bloodmail",
+   "steraks-gage",
+   "armored-advance",
+   "spear-of-shojin"
+  ],
+  "orderFrom": "same"
  },
  "Shen": {
   "items": [
@@ -11125,37 +12580,43 @@
     "slug": "heartsteel",
     "name": "Heartsteel",
     "count": 42,
-    "of": 45
+    "of": 45,
+    "slot": 1.07
    },
    {
     "slug": "sunfire-aegis",
     "name": "Sunfire Aegis",
     "count": 40,
-    "of": 45
+    "of": 45,
+    "slot": 2.38
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 38,
-    "of": 45
+    "of": 45,
+    "slot": 4.74
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 30,
-    "of": 45
+    "of": 45,
+    "slot": 2.73
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 21,
-    "of": 45
+    "of": 45,
+    "slot": 4.29
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 18,
-    "of": 45
+    "of": 45,
+    "slot": 4.89
    },
    {
     "slug": "divine-sunderer",
@@ -11232,7 +12693,16 @@
     "count": 23,
     "of": 45
    }
-  ]
+  ],
+  "order": [
+   "heartsteel",
+   "sunfire-aegis",
+   "armored-advance",
+   "unending-despair",
+   "thornmail",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Shyvana": {
   "items": [
@@ -11240,37 +12710,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.59
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.38
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.3
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.9
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 2.81
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 5.28
    },
    {
     "slug": "gluttonous-greaves",
@@ -11342,7 +12818,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "gunmetal-greaves",
+   "trinity-force",
+   "blade-of-the-ruined-king",
+   "deaths-dance",
+   "amaranths-twinguard",
+   "spear-of-shojin"
+  ],
+  "orderFrom": "same"
  },
  "Singed": {
   "items": [
@@ -11350,37 +12835,43 @@
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 1.59
    },
    {
     "slug": "rylais-crystal-scepter",
     "name": "Rylai's Crystal Scepter",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 3.11
    },
    {
     "slug": "dead-mans-plate",
     "name": "Dead Man's Plate",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 3.08
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 4.75
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 13,
-    "of": 50
+    "of": 50,
+    "slot": 5.31
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 12,
-    "of": 50
+    "of": 50,
+    "slot": 3.83
    },
    {
     "slug": "spellslingers-shoes",
@@ -11462,7 +12953,16 @@
     "count": 17,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "liandrys-torment",
+   "dead-mans-plate",
+   "rylais-crystal-scepter",
+   "armored-advance",
+   "force-of-nature",
+   "riftmaker"
+  ],
+  "orderFrom": "same"
  },
  "Sion": {
   "items": [
@@ -11470,37 +12970,43 @@
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 3.58
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.02
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 3.83
    },
    {
     "slug": "sunfire-aegis",
     "name": "Sunfire Aegis",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 2.26
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 5.22
    },
    {
     "slug": "heartsteel",
     "name": "Heartsteel",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 1.33
    },
    {
     "slug": "titanic-hydra",
@@ -11577,7 +13083,16 @@
     "count": 47,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "heartsteel",
+   "sunfire-aegis",
+   "armored-advance",
+   "thornmail",
+   "unending-despair",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Sivir": {
   "items": [
@@ -11585,37 +13100,43 @@
     "slug": "navori-quickblades",
     "name": "Navori Quickblades",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.51
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 1.73
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.48
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.83
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 3.88
    },
    {
     "slug": "lord-dominiks-regard",
@@ -11692,7 +13213,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bloodthirster",
+   "magnetic-blaster",
+   "gunmetal-greaves",
+   "navori-quickblades",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "adjacent"
  },
  "Skarner": {
   "items": [
@@ -11700,37 +13230,43 @@
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.67
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 5.06
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 4.45
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 2.85
    },
    {
     "slug": "hollow-radiance",
     "name": "Hollow Radiance",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 2.69
    },
    {
     "slug": "searing-crown",
     "name": "Searing Crown",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 1.08
    },
    {
     "slug": "frozen-heart",
@@ -11812,7 +13348,16 @@
     "count": 29,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "searing-crown",
+   "armored-advance",
+   "hollow-radiance",
+   "unending-despair",
+   "amaranths-twinguard",
+   "thornmail"
+  ],
+  "orderFrom": "adjacent"
  },
  "Smolder": {
   "items": [
@@ -11820,37 +13365,43 @@
     "slug": "manamune",
     "name": "Manamune",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.08
    },
    {
     "slug": "spear-of-shojin",
     "name": "Spear of Shojin",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 5.15
    },
    {
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.87
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 2.67
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 5.94
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 4.0
    },
    {
     "slug": "crimson-lucidity",
@@ -11922,7 +13473,16 @@
     "count": 39,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "manamune",
+   "trinity-force",
+   "seryldas-grudge",
+   "immortal-treads",
+   "spear-of-shojin",
+   "guardian-angel"
+  ],
+  "orderFrom": "adjacent"
  },
  "Sona": {
   "items": [
@@ -11930,37 +13490,43 @@
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.5
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 2.74
    },
    {
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.25
    },
    {
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 4.85
    },
    {
     "slug": "archangels-staff",
     "name": "Archangel's Staff",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 4.12
    },
    {
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "black-mist-scythe",
@@ -12032,7 +13598,16 @@
     "count": 38,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "crimson-lucidity",
+   "harmonic-echo",
+   "archangels-staff",
+   "ardent-censer",
+   "staff-of-flowing-water"
+  ],
+  "orderFrom": "same"
  },
  "Soraka": {
   "items": [
@@ -12040,37 +13615,43 @@
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.44
    },
    {
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.72
    },
    {
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 3.73
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 3.81
    },
    {
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 5.47
    },
    {
     "slug": "mikaels-blessing",
@@ -12142,7 +13723,16 @@
     "count": 30,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "harmonic-echo",
+   "ardent-censer",
+   "crimson-lucidity",
+   "staff-of-flowing-water",
+   "banshees-veil"
+  ],
+  "orderFrom": "adjacent"
  },
  "Swain": {
   "items": [
@@ -12150,37 +13740,43 @@
     "slug": "malignance",
     "name": "Malignance",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.78
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 5.36
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 1.43
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 3.72
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 3.86
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 16,
-    "of": 50
+    "of": 50,
+    "slot": 5.75
    },
    {
     "slug": "amaranths-twinguard",
@@ -12257,7 +13853,16 @@
     "count": 20,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "malignance",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "riftmaker",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Syndra": {
   "items": [
@@ -12265,37 +13870,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.22
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 4.12
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 4.89
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 4.31
    },
    {
     "slug": "stormsurge",
     "name": "Stormsurge",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 1.69
    },
    {
     "slug": "banshees-veil",
@@ -12377,7 +13988,16 @@
     "count": 21,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "stormsurge",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "zhonyas-hourglass",
+   "void-staff",
+   "spellslingers-shoes"
+  ],
+  "orderFrom": "same"
  },
  "Taliyah": {
   "items": [
@@ -12385,37 +14005,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.32
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.02
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.54
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.24
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 5.8
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.97
    },
    {
     "slug": "banshees-veil",
@@ -12497,7 +14123,16 @@
     "count": 34,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blackfire-torch",
+   "spellslingers-shoes",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "zhonyas-hourglass",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Talon": {
   "items": [
@@ -12505,37 +14140,43 @@
     "slug": "youmuus-ghostblade",
     "name": "Youmuu's Ghostblade",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.73
    },
    {
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 3.81
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 3.12
    },
    {
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 2.33
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 5.71
    },
    {
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 4.56
    },
    {
     "slug": "edge-of-night",
@@ -12617,7 +14258,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "armorcrusher-boots",
+   "youmuus-ghostblade",
+   "serpents-fang",
+   "seryldas-grudge",
+   "trinity-force",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Teemo": {
   "items": [
@@ -12625,37 +14275,43 @@
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.2
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.41
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 4.81
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 4.0
    },
    {
     "slug": "nashors-tooth",
     "name": "Nashor's Tooth",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.49
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 5.23
    },
    {
     "slug": "blackfire-torch",
@@ -12732,7 +14388,16 @@
     "count": 27,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "nashors-tooth",
+   "liandrys-torment",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "riftmaker"
+  ],
+  "orderFrom": "same"
  },
  "Thresh": {
   "items": [
@@ -12740,37 +14405,43 @@
     "slug": "bulwark-of-the-mountain",
     "name": "Bulwark of the Mountain",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 2.73
    },
    {
     "slug": "force-of-nature",
     "name": "Force of Nature",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 4.85
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 5.1
    },
    {
     "slug": "chainlaced-crushers",
     "name": "Chainlaced Crushers",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 2.37
    },
    {
     "slug": "frozen-heart",
     "name": "Frozen Heart",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 5.17
    },
    {
     "slug": "crimson-lucidity",
@@ -12842,7 +14513,16 @@
     "count": 32,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bulwark-of-the-mountain",
+   "chainlaced-crushers",
+   "warmogs-armor",
+   "thornmail",
+   "force-of-nature",
+   "frozen-heart"
+  ],
+  "orderFrom": "same"
  },
  "Tristana": {
   "items": [
@@ -12850,37 +14530,43 @@
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 2.97
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 3.35
    },
    {
     "slug": "navori-quickblades",
     "name": "Navori Quickblades",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 2.97
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.41
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.77
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 1.83
    },
    {
     "slug": "blade-of-the-ruined-king",
@@ -12957,7 +14643,16 @@
     "count": 44,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bloodthirster",
+   "navori-quickblades",
+   "magnetic-blaster",
+   "gunmetal-greaves",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Tryndamere": {
   "items": [
@@ -12965,37 +14660,43 @@
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.25
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.8
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 3.45
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 5.72
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 3.95
    },
    {
     "slug": "essence-reaver",
@@ -13067,7 +14768,16 @@
     "count": 42,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "magnetic-blaster",
+   "gunmetal-greaves",
+   "blade-of-the-ruined-king",
+   "infinity-edge",
+   "mortal-reminder",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Twisted Fate": {
   "items": [
@@ -13075,37 +14785,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.98
    },
    {
     "slug": "nashors-tooth",
     "name": "Nashor's Tooth",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 1.78
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.07
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.92
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 5.44
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 2.87
    },
    {
     "slug": "dusk-and-dawn",
@@ -13187,7 +14903,16 @@
     "count": 22,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "nashors-tooth",
+   "spellslingers-shoes",
+   "lich-bane",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Twitch": {
   "items": [
@@ -13195,37 +14920,43 @@
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.94
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.89
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 2.67
    },
    {
     "slug": "the-collector",
     "name": "The Collector",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.71
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 4.76
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 5.48
    },
    {
     "slug": "kraken-slayer",
@@ -13292,7 +15023,16 @@
     "count": 35,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "gunmetal-greaves",
+   "blade-of-the-ruined-king",
+   "the-collector",
+   "runaans-hurricane",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Urgot": {
   "items": [
@@ -13300,25 +15040,29 @@
     "slug": "black-cleaver",
     "name": "Black Cleaver",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 3.37
    },
    {
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 1.31
    },
    {
     "slug": "dead-mans-plate",
     "name": "Dead Man's Plate",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 3.36
    },
    {
     "slug": "chainlaced-crushers",
     "name": "Chainlaced Crushers",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 2.23
    },
    {
     "slug": "armored-advance",
@@ -13330,13 +15074,15 @@
     "slug": "overlords-bloodmail",
     "name": "Overlord's Bloodmail",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 5.89
    },
    {
     "slug": "force-of-nature",
@@ -13412,7 +15158,16 @@
     "count": 20,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "kraken-slayer",
+   "chainlaced-crushers",
+   "dead-mans-plate",
+   "black-cleaver",
+   "overlords-bloodmail",
+   "guardian-angel"
+  ],
+  "orderFrom": "adjacent"
  },
  "Varus": {
   "items": [
@@ -13420,37 +15175,43 @@
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.18
    },
    {
     "slug": "guinsoos-rageblade",
     "name": "Guinsoo's Rageblade",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 2.49
    },
    {
     "slug": "terminus",
     "name": "Terminus",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.77
    },
    {
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 3.58
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 2.9
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 6.0
    },
    {
     "slug": "dusk-and-dawn",
@@ -13532,7 +15293,16 @@
     "count": 46,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blade-of-the-ruined-king",
+   "gunmetal-greaves",
+   "guinsoos-rageblade",
+   "runaans-hurricane",
+   "terminus",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Vayne": {
   "items": [
@@ -13540,37 +15310,43 @@
     "slug": "guinsoos-rageblade",
     "name": "Guinsoo's Rageblade",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 2.17
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.02
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.11
    },
    {
     "slug": "terminus",
     "name": "Terminus",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.56
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 5.9
    },
    {
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 1.23
    },
    {
     "slug": "experimental-hexplate",
@@ -13642,7 +15418,16 @@
     "count": 47,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "kraken-slayer",
+   "guinsoos-rageblade",
+   "gunmetal-greaves",
+   "blade-of-the-ruined-king",
+   "terminus",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "adjacent"
  },
  "Veigar": {
   "items": [
@@ -13650,37 +15435,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.27
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 4.68
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 1.23
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 4.36
    },
    {
     "slug": "stormsurge",
     "name": "Stormsurge",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 2.17
    },
    {
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 4.14
    },
    {
     "slug": "riftmaker",
@@ -13757,7 +15548,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "stormsurge",
+   "rabadons-deathcap",
+   "banshees-veil",
+   "void-staff",
+   "infinity-orb"
+  ],
+  "orderFrom": "same"
  },
  "Vel'Koz": {
   "items": [
@@ -13765,37 +15565,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 4.36
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.13
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 1.42
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 2.86
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 5.4
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 4.17
    },
    {
     "slug": "liandrys-torment",
@@ -13877,7 +15683,16 @@
     "count": 24,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "ludens-echo",
+   "infinity-orb",
+   "spellslingers-shoes",
+   "rabadons-deathcap",
+   "void-staff",
+   "blackfire-torch"
+  ],
+  "orderFrom": "same"
  },
  "Vex": {
   "items": [
@@ -13885,37 +15700,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 3.82
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.65
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.47
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 3.93
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 1.93
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 5.3
    },
    {
     "slug": "seekers-armguard",
@@ -13987,7 +15808,16 @@
     "count": 41,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "ludens-echo",
+   "rabadons-deathcap",
+   "void-staff",
+   "zhonyas-hourglass",
+   "infinity-orb"
+  ],
+  "orderFrom": "same"
  },
  "Vi": {
   "items": [
@@ -13995,37 +15825,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.1
    },
    {
     "slug": "sundered-sky",
     "name": "Sundered Sky",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 3.08
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 3.92
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 5.82
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 4.84
    },
    {
     "slug": "plated-steelcaps",
     "name": "Plated Steelcaps",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 2.0
    },
    {
     "slug": "amaranths-twinguard",
@@ -14092,7 +15928,16 @@
     "count": 26,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "plated-steelcaps",
+   "sundered-sky",
+   "deaths-dance",
+   "mortal-reminder",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Viego": {
   "items": [
@@ -14100,37 +15945,43 @@
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.51
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 4.79
    },
    {
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 2.94
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 3.32
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 3.57
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 5.92
    },
    {
     "slug": "the-collector",
@@ -14202,7 +16053,16 @@
     "count": 27,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "essence-reaver",
+   "bloodthirster",
+   "mortal-reminder",
+   "gunmetal-greaves",
+   "infinity-edge",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Viktor": {
   "items": [
@@ -14210,37 +16070,43 @@
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 2.66
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 4.2
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 1.48
    },
    {
     "slug": "stormsurge",
     "name": "Stormsurge",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 3.37
    },
    {
     "slug": "malignance",
     "name": "Malignance",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 4.54
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 4.32
    },
    {
     "slug": "ludens-echo",
@@ -14322,7 +16188,16 @@
     "count": 25,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blackfire-torch",
+   "spellslingers-shoes",
+   "stormsurge",
+   "malignance",
+   "rabadons-deathcap",
+   "infinity-orb"
+  ],
+  "orderFrom": "same"
  },
  "Vladimir": {
   "items": [
@@ -14330,37 +16205,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.45
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 4.2
    },
    {
     "slug": "titanic-hydra",
     "name": "Titanic Hydra",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 2.81
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 2.42
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.55
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 4.27
    },
    {
     "slug": "stormsurge",
@@ -14437,7 +16318,16 @@
     "count": 23,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "infinity-orb",
+   "titanic-hydra",
+   "rabadons-deathcap",
+   "void-staff",
+   "riftmaker",
+   "spellslingers-shoes"
+  ],
+  "orderFrom": "same"
  },
  "Volibear": {
   "items": [
@@ -14445,37 +16335,43 @@
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 35,
-    "of": 50
+    "of": 50,
+    "slot": 4.46
    },
    {
     "slug": "unending-despair",
     "name": "Unending Despair",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 4.62
    },
    {
     "slug": "dusk-and-dawn",
     "name": "Dusk and Dawn",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 1.9
    },
    {
     "slug": "heartsteel",
     "name": "Heartsteel",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 1.68
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 2.26
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "mercurys-treads",
@@ -14557,7 +16453,16 @@
     "count": 28,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "heartsteel",
+   "armored-advance",
+   "dusk-and-dawn",
+   "thornmail",
+   "unending-despair",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Warwick": {
   "items": [
@@ -14565,37 +16470,43 @@
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 47,
-    "of": 50
+    "of": 50,
+    "slot": 1.47
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "terminus",
     "name": "Terminus",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 4.43
    },
    {
     "slug": "experimental-hexplate",
     "name": "Experimental Hexplate",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 5.05
    },
    {
     "slug": "zhonyas-hourglass",
     "name": "Zhonya's Hourglass",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 5.95
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 3.33
    },
    {
     "slug": "immortal-treads",
@@ -14677,7 +16588,16 @@
     "count": 29,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "kraken-slayer",
+   "gunmetal-greaves",
+   "blade-of-the-ruined-king",
+   "terminus",
+   "experimental-hexplate",
+   "zhonyas-hourglass"
+  ],
+  "orderFrom": "same"
  },
  "Wukong": {
   "items": [
@@ -14685,37 +16605,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 1.54
    },
    {
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 4.17
    },
    {
     "slug": "amaranths-twinguard",
     "name": "Amaranth's Twinguard",
     "count": 21,
-    "of": 50
+    "of": 50,
+    "slot": 5.52
    },
    {
     "slug": "sundered-sky",
     "name": "Sundered Sky",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 2.42
    },
    {
     "slug": "armored-advance",
     "name": "Armored Advance",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 3.53
    },
    {
     "slug": "thornmail",
     "name": "Thornmail",
     "count": 19,
-    "of": 50
+    "of": 50,
+    "slot": 4.53
    },
    {
     "slug": "armorcrusher-boots",
@@ -14797,7 +16723,16 @@
     "count": 20,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "sundered-sky",
+   "armored-advance",
+   "seryldas-grudge",
+   "thornmail",
+   "amaranths-twinguard"
+  ],
+  "orderFrom": "same"
  },
  "Xayah": {
   "items": [
@@ -14805,37 +16740,43 @@
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 1.93
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 43,
-    "of": 50
+    "of": 50,
+    "slot": 4.93
    },
    {
     "slug": "magnetic-blaster",
     "name": "Magnetic Blaster",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 3.71
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 3.61
    },
    {
     "slug": "navori-quickblades",
     "name": "Navori Quickblades",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 2.75
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 3.05
    },
    {
     "slug": "immortal-treads",
@@ -14907,7 +16848,16 @@
     "count": 47,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "bloodthirster",
+   "navori-quickblades",
+   "gunmetal-greaves",
+   "mortal-reminder",
+   "magnetic-blaster",
+   "infinity-edge"
+  ],
+  "orderFrom": "adjacent"
  },
  "Xin Zhao": {
   "items": [
@@ -14915,37 +16865,43 @@
     "slug": "trinity-force",
     "name": "Trinity Force",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 1.25
    },
    {
     "slug": "sundered-sky",
     "name": "Sundered Sky",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 2.97
    },
    {
     "slug": "immortal-treads",
     "name": "Immortal Treads",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 2.69
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.26
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 4.43
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 22,
-    "of": 50
+    "of": 50,
+    "slot": 5.27
    },
    {
     "slug": "guardian-angel",
@@ -15012,7 +16968,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "trinity-force",
+   "immortal-treads",
+   "sundered-sky",
+   "serpents-fang",
+   "deaths-dance",
+   "mortal-reminder"
+  ],
+  "orderFrom": "adjacent"
  },
  "Yasuo": {
   "items": [
@@ -15020,37 +16985,43 @@
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 4.17
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.45
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 38,
-    "of": 50
+    "of": 50,
+    "slot": 1.66
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 1.83
    },
    {
     "slug": "deaths-dance",
     "name": "Death's Dance",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 5.04
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 15,
-    "of": 50
+    "of": 50,
+    "slot": 5.73
    },
    {
     "slug": "kraken-slayer",
@@ -15132,7 +17103,16 @@
     "count": 31,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "gunmetal-greaves",
+   "blade-of-the-ruined-king",
+   "mortal-reminder",
+   "infinity-edge",
+   "deaths-dance",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Yone": {
   "items": [
@@ -15140,37 +17120,43 @@
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 1.64
    },
    {
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 41,
-    "of": 50
+    "of": 50,
+    "slot": 2.68
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 40,
-    "of": 50
+    "of": 50,
+    "slot": 3.02
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 3.88
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 26,
-    "of": 50
+    "of": 50,
+    "slot": 5.46
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 5.08
    },
    {
     "slug": "mercurial-scimitar",
@@ -15252,7 +17238,16 @@
     "count": 25,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "blade-of-the-ruined-king",
+   "gunmetal-greaves",
+   "essence-reaver",
+   "mortal-reminder",
+   "infinity-edge",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Yunara": {
   "items": [
@@ -15260,37 +17255,43 @@
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 3.17
    },
    {
     "slug": "runaans-hurricane",
     "name": "Runaan's Hurricane",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 3.38
    },
    {
     "slug": "blade-of-the-ruined-king",
     "name": "Blade of the Ruined King",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 2.1
    },
    {
     "slug": "kraken-slayer",
     "name": "Kraken Slayer",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 1.07
    },
    {
     "slug": "mortal-reminder",
     "name": "Mortal Reminder",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 4.88
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 23,
-    "of": 50
+    "of": 50,
+    "slot": 5.04
    },
    {
     "slug": "galeforce",
@@ -15357,7 +17358,16 @@
     "count": 45,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "kraken-slayer",
+   "blade-of-the-ruined-king",
+   "gunmetal-greaves",
+   "runaans-hurricane",
+   "mortal-reminder",
+   "infinity-edge"
+  ],
+  "orderFrom": "same"
  },
  "Yuumi": {
   "items": [
@@ -15365,37 +17375,43 @@
     "slug": "ardent-censer",
     "name": "Ardent Censer",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.75
    },
    {
     "slug": "harmonic-echo",
     "name": "Harmonic Echo",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.6
    },
    {
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
     "count": 30,
-    "of": 50
+    "of": 50,
+    "slot": 2.93
    },
    {
     "slug": "staff-of-flowing-water",
     "name": "Staff of Flowing Water",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 5.17
    },
    {
     "slug": "mikaels-blessing",
     "name": "Mikael's Blessing",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 5.12
    },
    {
     "slug": "oceanids-trident",
@@ -15467,7 +17483,16 @@
     "count": 37,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "crimson-lucidity",
+   "ardent-censer",
+   "harmonic-echo",
+   "mikaels-blessing",
+   "staff-of-flowing-water"
+  ],
+  "orderFrom": "same"
  },
  "Zed": {
   "items": [
@@ -15475,37 +17500,43 @@
     "slug": "eclipse",
     "name": "Eclipse",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.42
    },
    {
     "slug": "seryldas-grudge",
     "name": "Serylda's Grudge",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 3.83
    },
    {
     "slug": "serpents-fang",
     "name": "Serpent's Fang",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 3.26
    },
    {
     "slug": "edge-of-night",
     "name": "Edge of Night",
     "count": 36,
-    "of": 50
+    "of": 50,
+    "slot": 5.39
    },
    {
     "slug": "youmuus-ghostblade",
     "name": "Youmuu's Ghostblade",
     "count": 31,
-    "of": 50
+    "of": 50,
+    "slot": 2.26
    },
    {
     "slug": "armorcrusher-boots",
     "name": "Armorcrusher Boots",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 2.3
    },
    {
     "slug": "boots-of-dynamism",
@@ -15577,7 +17608,16 @@
     "count": 26,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "armorcrusher-boots",
+   "youmuus-ghostblade",
+   "serpents-fang",
+   "eclipse",
+   "seryldas-grudge",
+   "edge-of-night"
+  ],
+  "orderFrom": "same"
  },
  "Zeri": {
   "items": [
@@ -15585,37 +17625,43 @@
     "slug": "bloodthirster",
     "name": "Bloodthirster",
     "count": 49,
-    "of": 50
+    "of": 50,
+    "slot": 3.18
    },
    {
     "slug": "gunmetal-greaves",
     "name": "Gunmetal Greaves",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.33
    },
    {
     "slug": "essence-reaver",
     "name": "Essence Reaver",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 1.89
    },
    {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 4.87
    },
    {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regard",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 4.21
    },
    {
     "slug": "guardian-angel",
     "name": "Guardian Angel",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 5.96
    },
    {
     "slug": "runaans-hurricane",
@@ -15687,7 +17733,16 @@
     "count": 45,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "gunmetal-greaves",
+   "essence-reaver",
+   "bloodthirster",
+   "lord-dominiks-regard",
+   "infinity-edge",
+   "guardian-angel"
+  ],
+  "orderFrom": "same"
  },
  "Ziggs": {
   "items": [
@@ -15695,37 +17750,43 @@
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.71
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 46,
-    "of": 50
+    "of": 50,
+    "slot": 4.37
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 1.75
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 42,
-    "of": 50
+    "of": 50,
+    "slot": 3.69
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 34,
-    "of": 50
+    "of": 50,
+    "slot": 5.68
    },
    {
     "slug": "horizon-focus",
     "name": "Horizon Focus",
     "count": 24,
-    "of": 50
+    "of": 50,
+    "slot": 3.12
    },
    {
     "slug": "stormsurge",
@@ -15807,7 +17868,16 @@
     "count": 27,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "ludens-echo",
+   "horizon-focus",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Zilean": {
   "items": [
@@ -15815,37 +17885,43 @@
     "slug": "black-mist-scythe",
     "name": "Black Mist Scythe",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 1.0
    },
    {
     "slug": "oceanids-trident",
     "name": "Oceanid's Trident",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 4.86
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 29,
-    "of": 50
+    "of": 50,
+    "slot": 5.14
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 28,
-    "of": 50
+    "of": 50,
+    "slot": 3.0
    },
    {
     "slug": "horizon-focus",
     "name": "Horizon Focus",
     "count": 25,
-    "of": 50
+    "of": 50,
+    "slot": 4.48
    },
    {
     "slug": "imperial-mandate",
     "name": "Imperial Mandate",
     "count": 18,
-    "of": 50
+    "of": 50,
+    "slot": 3.22
    },
    {
     "slug": "ludens-echo",
@@ -15927,7 +18003,16 @@
     "count": 25,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "black-mist-scythe",
+   "spellslingers-shoes",
+   "imperial-mandate",
+   "oceanids-trident",
+   "horizon-focus",
+   "rabadons-deathcap"
+  ],
+  "orderFrom": "same"
  },
  "Zoe": {
   "items": [
@@ -15935,37 +18020,43 @@
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 50,
-    "of": 50
+    "of": 50,
+    "slot": 4.04
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.1
    },
    {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 44,
-    "of": 50
+    "of": 50,
+    "slot": 2.23
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 37,
-    "of": 50
+    "of": 50,
+    "slot": 4.73
    },
    {
     "slug": "infinity-orb",
     "name": "Infinity Orb",
     "count": 32,
-    "of": 50
+    "of": 50,
+    "slot": 3.72
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
     "count": 27,
-    "of": 50
+    "of": 50,
+    "slot": 1.41
    },
    {
     "slug": "banshees-veil",
@@ -16047,7 +18138,16 @@
     "count": 35,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "ludens-echo",
+   "spellslingers-shoes",
+   "lich-bane",
+   "rabadons-deathcap",
+   "infinity-orb",
+   "void-staff"
+  ],
+  "orderFrom": "same"
  },
  "Zyra": {
   "items": [
@@ -16055,37 +18155,43 @@
     "slug": "liandrys-torment",
     "name": "Liandry's Torment",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.75
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
     "count": 48,
-    "of": 50
+    "of": 50,
+    "slot": 2.25
    },
    {
     "slug": "blackfire-torch",
     "name": "Blackfire Torch",
     "count": 45,
-    "of": 50
+    "of": 50,
+    "slot": 1.69
    },
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
     "count": 39,
-    "of": 50
+    "of": 50,
+    "slot": 4.44
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
     "count": 33,
-    "of": 50
+    "of": 50,
+    "slot": 5.3
    },
    {
     "slug": "riftmaker",
     "name": "Riftmaker",
     "count": 20,
-    "of": 50
+    "of": 50,
+    "slot": 5.6
    },
    {
     "slug": "rylais-crystal-scepter",
@@ -16167,6 +18273,15 @@
     "count": 27,
     "of": 50
    }
-  ]
+  ],
+  "order": [
+   "spellslingers-shoes",
+   "blackfire-torch",
+   "liandrys-torment",
+   "rabadons-deathcap",
+   "void-staff",
+   "riftmaker"
+  ],
+  "orderFrom": "same"
  }
 }

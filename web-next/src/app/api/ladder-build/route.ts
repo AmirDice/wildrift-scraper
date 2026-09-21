@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import itemsCatalogue from "@/data/items.json";
 import { site, regionBoard } from "@/lib/data";
-import { buildsByServer } from "@/lib/ladder-build";
+import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
 import { toServerBuild } from "@/lib/server-build";
 
 /**
@@ -45,7 +45,7 @@ export function GET(request: Request) {
         cn: toServerBuild(builds.cn, item),
       },
       collected: {
-        eu: site.collectedOn ?? undefined,
+        eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined,
         na: regionBoard("NA").collectedOn ?? undefined,
       },
     },

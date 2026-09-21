@@ -330,14 +330,14 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
             mode="counter"
           />
         )}
-        {/* What the top 50 on each server actually hold for this champion.
-            Under the tool rather than in it: the studio answers "what should I
-            build", and this is the check on that answer. */}
-        {effectiveTab !== "counter" && (
-          <div className="mt-4">
-            <ServerBuildsPanel champion={rec.champion.name} />
-          </div>
-        )}
+        {/* What the top 50 on each server actually hold for this champion, in
+            the order they buy it. Under the tool rather than in it: the studio
+            answers "what should I build", and this is the check on that
+            answer. On every tab, the enemy-team one included: a counter build
+            is easiest to read against the build it departs from. */}
+        <div className="mt-4">
+          <ServerBuildsPanel champion={rec.champion.name} />
+        </div>
         {effectiveTab === "customize" && builds && (
           <BuildCustomizer
             key={labSeed?.id ?? "empty"}

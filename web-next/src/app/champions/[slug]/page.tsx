@@ -25,7 +25,7 @@ import { ToolsCta } from "@/components/tools-cta";
 import { MeasuredProfile } from "@/components/measured-profile";
 import { ServerBuilds } from "@/components/server-builds";
 import { SERVER_GAP, toServerBuild } from "@/lib/server-build";
-import { buildsByServer } from "@/lib/ladder-build";
+import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
 import itemsCatalogue from "@/data/items.json";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 
@@ -168,7 +168,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               cn: toServerBuild(serverBuilds.cn, catalogueItem),
             }}
             gaps={SERVER_GAP}
-            collected={{ eu: site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
+            collected={{ eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
           />
         </div>
       </Card>

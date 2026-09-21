@@ -34,8 +34,13 @@ export const SERVER_GAP: Record<BuildServer, string> = {
 
 /** What the card renders: one server's most-common build, already named. */
 export interface ServerBuild {
+  /** In purchase order when `ordered`, most-built first otherwise. */
   items: { slug: string; name: string; icon: string }[];
   boots?: { slug: string; name: string; icon: string } | null;
+  /** Where the boots fall among all six in the purchase order, 0-based. */
+  bootsAt?: number | null;
+  /** The card may number these as a buying order only when this is true. */
+  ordered?: boolean;
   runes: { keystone?: string; minors: string[]; flex?: string };
   /** "41 of 50 players" behind the most-built item. */
   sample?: { count: number; of: number } | null;
@@ -45,6 +50,8 @@ export interface ServerBuild {
 interface ConsensusLike {
   items: string[];
   boots?: string;
+  bootsAt?: number;
+  ordered?: boolean;
   runes: { keystone?: string; minors: string[]; flex?: string };
   sampleOf?: number;
   of?: number;
@@ -60,6 +67,8 @@ export function toServerBuild(
   return {
     items: build.items.map(item),
     boots: build.boots ? item(build.boots) : null,
+    bootsAt: build.bootsAt ?? null,
+    ordered: Boolean(build.ordered),
     runes: {
       keystone: build.runes.keystone,
       minors: build.runes.minors,

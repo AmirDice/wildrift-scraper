@@ -21,9 +21,18 @@ import ladderDataNa from "@/data/ladder_builds_na.json";
 import { BUILD_SERVERS, type BuildServer } from "@/lib/server-build";
 import engineData from "@/data/engine.json";
 import itemsData from "@/data/items.json";
+import pulseData from "@/data/ladder_pulse.json";
 
 type Counted = { name?: string; slug?: string; count?: number; of?: number };
-type LadderEntry = { items?: Counted[]; keystones?: Counted[]; minors?: Counted[] };
+type LadderEntry = {
+  items?: Counted[];
+  keystones?: Counted[];
+  minors?: Counted[];
+  /** The six shown items in the order the top 50 BUY them, boots included
+   *  where they are bought (scripts/ladder_item_order.py). Absent on a board
+   *  whose per-player builds were never read. */
+  order?: string[];
+};
 
 /**
  * One record per SERVER, because that is the question the champion pages and
@@ -52,8 +61,15 @@ const ITEM = new Map(
 );
 
 export interface LadderBuild {
+  /** The five non-boot items. In PURCHASE order when `ordered` is set,
+   *  otherwise most-built first. */
   items: string[];
   boots?: string;
+  /** Where the boots fall in the purchase order, 0-based across all six. */
+  bootsAt?: number;
+  /** True when `items` and `bootsAt` describe the order players buy in,
+   *  rather than how many of them bought each item. */
+  ordered?: boolean;
   runes: { keystone?: string; minors: string[]; flex?: string; primaryTree?: string };
   /** Where this came from, so the UI can label it honestly. */
   source: "ladder";
@@ -189,14 +205,49 @@ export function ladderConsensusBuild(
     if (items.length < 5) items.push(slug);
   }
   if (items.length < 5) return null;
+  // Reorder to the purchase order when the board recorded one AND it covers
+  // exactly the six picked above. The two are chosen by the same rule on the
+  // same catalogue, so they agree; the check is there so that a mismatch
+  // falls back to most-built order instead of silently dropping an item.
+  const shown = boots ? [...items, boots] : [...items];
+  const order = entry.order ?? [];
+  const covers = order.length === shown.length && shown.every((slug) => order.includes(slug));
   return {
-    items,
+    items: covers ? order.filter((slug) => slug !== boots) : items,
     boots,
+    bootsAt: covers && boots ? order.indexOf(boots) : undefined,
+    ordered: covers,
     runes: runePage(entry),
     source: "ladder",
     sampleOf: entry.items[0]?.count,
     of: entry.items[0]?.of,
   };
+}
+
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+  "August", "September", "October", "November", "December"];
+
+/**
+ * When a server's BUILDS were collected, as the card should state it.
+ *
+ * Not the board's win-rate date. A collection can read win rates alone -- the
+ * 2026-09-03 EU refresh did -- and the item tables are then carried forward
+ * from the last collection that read builds. The card used to print the
+ * win-rate date under builds that were two weeks older, which is the one date
+ * on it that describes something else. `buildsFrom` in ladder_pulse.json is
+ * written exactly when that carry happens.
+ *
+ * Formatted here, on the server, by hand rather than with toLocaleDateString:
+ * the value is a string prop, and a date formatted in two locales is a
+ * hydration mismatch waiting for the first visitor outside en-US.
+ */
+export function ladderBuildsCollected(server: BuildServer): string | undefined {
+  if (server !== "eu") return undefined;
+  const pulse = pulseData as { buildsFrom?: string; generatedAt?: string };
+  const stamp = (pulse.buildsFrom ?? pulse.generatedAt ?? "").slice(0, 10);
+  const [y, m, d] = stamp.split("-").map(Number);
+  if (!y || !m || !d) return undefined;
+  return `${MONTHS[m - 1]} ${d}, ${y}`;
 }
 
 /** Every server's answer for one champion, for the per-server build card. */
