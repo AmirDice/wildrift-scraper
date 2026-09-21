@@ -107,6 +107,8 @@ type EngineData = {
     cost: number;
     category: string;
     stats?: Record<string, StatValue>;
+    /** The patch that took this item out of the shop, if one has. */
+    removedIn?: string;
   }>;
   runes: Record<string, { icon: string; tree: string; type: string; slot: number; description?: string }>;
   runeEngine?: Record<string, { hasteFlat?: number }>;
@@ -185,6 +187,8 @@ export interface ListedBuildStats {
   magicPen: number;
   omnivamp: number;
   physicalVamp: number;
+  /** New in 7.3: heals off attacks and on-hit damage only. */
+  lifesteal: number;
   magicVamp: number;
   tenacity: number;
   healShieldPower: number;
@@ -263,7 +267,10 @@ export function hasSimulatableKit(name: string): boolean {
 
 export function customizerItems(): CustomizerItem[] {
   return Object.entries(DATA.items)
-    .filter(([, item]) => item.category !== "Enchantment")
+    // Enchantments are not items you pick, and an item removed from the game
+    // is not one you can buy. Removed records stay in the catalogue so a build
+    // collected before the patch can still be read.
+    .filter(([, item]) => item.category !== "Enchantment" && !item.removedIn)
     .map(([slug, item]) => ({
       slug,
       name: item.name,
@@ -278,6 +285,9 @@ export function customizerItems(): CustomizerItem[] {
 
 export function customizerRunes(): CustomizerRune[] {
   return Object.entries(DATA.runes)
+    // A rune removed from the game keeps its entry so old pages still read,
+    // but nobody can equip it.
+    .filter(([, rune]) => !(rune as { removedIn?: string }).removedIn)
     .map(([name, rune]) => ({
       name,
       icon: rune.icon,
@@ -456,6 +466,7 @@ export function listedBuildStats(
     magicPen: 0,
     omnivamp: 0,
     physicalVamp: 0,
+    lifesteal: 0,
     magicVamp: 0,
     // Read from baseStats like every other level-scaling stat. It was a hard 0,
     // so a champion with innate tenacity (Kayn carries 3%) showed none until an

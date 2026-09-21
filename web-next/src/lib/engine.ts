@@ -10,11 +10,39 @@ import type { BuildAnalysis } from "@/lib/builds";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const DATA = engineData as any;
 
-const BASE_CRIT_MULT = 1.75;
-const AS_CAP = 2.5;
+// Patch 7.3 raised base critical strike damage from 175% to 200% across the
+// board, and the attack speed cap from 2.5 to 3 attacks per second.
+const BASE_CRIT_MULT = 2.0;
+const AS_CAP = 3.0;
 const SPELLBLADE_CD = 1.5;
 const CLEAVE_EVERY = 1.75;
 const MELEE_AUTO_UPTIME = 0.75;
+
+/**
+ * A champion's OWN bonus attack speed at a level, as a fraction of its ratio.
+ *
+ * Patch 7.3 published the model for the whole roster: baseBonus + perLevel x
+ * sum(0.7 + 0.04 x l) over the levels gained, which comes to exactly 14 x
+ * perLevel at level 15. It is innate, so an item discount (asEfficiency) never
+ * applies to it. Mirrors fight_engine.level_as_bonus, fallback included: a
+ * champion the published table does not carry keeps the pre-7.3 measured curve.
+ *
+ * Every attack-speed calculation in this file goes through here. `baseAs` is
+ * the RATIO now, not the level-1 total, so a path that forgets this bonus
+ * fights at roughly half speed.
+ */
+function innateAsBonus(name: string, level: number): number {
+  const c = (DATA.champions[name] ?? {}) as any;
+  const baseBonus = Number(c.asBaseBonus) || 0;
+  const perLevel = Number(c.asPerLevel) || 0;
+  if (baseBonus || perLevel) {
+    let steps = 0;
+    for (let l = 1; l < level; l += 1) steps += 0.7 + 0.04 * l;
+    return baseBonus + perLevel * steps;
+  }
+  const growth = Number(c.asGrowth) || 0;
+  return growth && level > 1 ? growth * (level - 1) * (0.7025 + 0.0175 * (level - 1)) : 0;
+}
 // A champion mid-fight is not at full health. The one assumption in the kit
 // sustain model, and the same value fight_engine.py uses.
 const MISSING_HP_IN_FIGHT = 0.4;
@@ -55,6 +83,7 @@ const BURSTY = new Set(["oneshot", "burst", "poke", "crit"]);
 const STAT_GOLD: Record<string, number> = {
   ad: 35, ap: 21.75, abilityHaste: 26.7, hp: 2.67, armor: 20, mr: 20,
   attackSpeed: 30, crit: 40, magicPen: 41.7, physicalPen: 41.7, lethality: 50,
+  lifesteal: 40,
   mana: 1.4, moveSpeed: 13,
 };
 const EFFICIENCY_ALPHA = 0.5;
@@ -333,6 +362,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
         else st.flatPen += val;
       } else if (k === "physicalPenFlat") st.flatPen += val;
       else if (k === "physicalVamp") { st.vamp += val / 100; st.lifestealPct += val / 100; }
+      // Lifesteal is new in 7.3: it heals off attacks and on-hit damage only,
+      // where physical vamp also heals off abilities. One vamp channel here,
+      // so it is approximated as physical vamp -- see the Python engine.
+      else if (k === "lifesteal") { st.vamp += val / 100; st.lifestealPct += val / 100; }
       else if (k === "omnivamp") { st.vamp += val / 100; st.omnivampPct += val / 100; }
       else if (k === "healShieldPower") st.healShieldAmp += val / 100;
       // Tenacity is always a percentage, but the two items that carry it disagree
@@ -784,14 +817,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   } else {
     let asPct = st.baseAsPct;
     if (!mechs.reload) asPct *= know.asEfficiency ?? 1; // Tier-2, no double dip with reload
-    // Attack speed GROWS with level; the port ignored that entirely and fought
-    // every champion at its level-1 rate. Level bonus is innate, so
-    // asEfficiency (an ITEM discount) must not touch it. Mirrors
-    // fight_engine.level_as_bonus.
-    const growth = Number(c.asGrowth) || 0;
-    const levelBonus = growth && level > 1
-      ? growth * (level - 1) * (0.7025 + 0.0175 * (level - 1)) : 0;
-    st.as = Math.min(st.baseAs * (1 + levelBonus + asPct / 100), AS_CAP);
+    st.as = Math.min(st.baseAs * (1 + innateAsBonus(name, level) + asPct / 100), AS_CAP);
   }
   if (mechs.reload) {
     const mag = Number(mechs.reload.magazine) || 2;
@@ -849,7 +875,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   // time-based stream across more autos rather than multiplying it.
   if (st.cloneAdPct) {
     const alive = Math.min(st.cloneMaxCount || 1, st.crit * st.as * (st.cloneLifetimeS || 0));
-    const cloneAs = Math.min(AS_CAP, st.baseAs * (1 + (st.cloneAsFromCritPct || 0) / 100 * st.crit));
+    const cloneAs = Math.min(AS_CAP, st.baseAs
+      * (1 + innateAsBonus(name, level) + (st.cloneAsFromCritPct || 0) / 100 * st.crit));
     const cloneDps = alive * cloneAs * (st.cloneAdPct / 100) * st.ad;
     st.onHitPhys += cloneDps / Math.max(st.as, 0.1);
   }
@@ -955,7 +982,7 @@ function forWindow(name: string, st: any, window: number, level: number): any {
     if (!mechs.fixedAttackSpeed) {
       let asPct = Math.max(0, st.baseAsPct - asPctLost);
       if (!mechs.reload) asPct *= know.asEfficiency ?? 1;
-      adj.as = Math.min(adj.baseAs * (1 + asPct / 100), AS_CAP);
+      adj.as = Math.min(adj.baseAs * (1 + innateAsBonus(name, level) + asPct / 100), AS_CAP);
       if (mechs.reload) {
         const mag = Number(mechs.reload.magazine) || 2;
         const reloadS = Number(know.reloadSeconds) || 1.0;
@@ -2281,7 +2308,7 @@ function applyScaling(name: string, items: string[], runes: string[],
     }
   }
   if (contributions.some((c) => c.stat === "attackSpeedPct")) {
-    st.as = Math.min(st.baseAs * (1 + st.baseAsPct / 100), AS_CAP);
+    st.as = Math.min(st.baseAs * (1 + innateAsBonus(name, level) + st.baseAsPct / 100), AS_CAP);
   }
 }
 

@@ -1,9 +1,1319 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-09-11T06:46:05.774Z",
+  "fetchedAt": "2026-09-21T14:39:07.165Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.3",
+      "title": "Wild Rift Patch Notes 7.3",
+      "publishedAt": "2026-09-21T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-3/",
+      "championChanges": [
+        {
+          "champion": "EZREAL",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 58 → 60"
+            },
+            {
+              "ability": "Mystic Shot",
+              "text": "Cooldown: 4.5/4/3.5/3s → 5.5/5/4.5/4s\n Damage: 50 / 85 / 120 / 155 + 135% Attack Damage + 30% Ability Power → 25 / 55 / 85 / 115 + 135% Attack Damage + 30% Ability Power\n Cooldown refund: reduces the cooldown of all other abilities except [Mystic Shot] → reduces the cooldown of all abilities"
+            },
+            {
+              "ability": "Trueshot Barrage",
+              "text": "Cooldown: 70 / 65 / 60s → 80 / 70 / 60s\n Damage: 350 / 500 / 650 + 100% bonus Attack Damage + 90% Ability Power → 300 / 500 / 700 + 100% bonus Attack Damage + 100% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "KAI'SA",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 62 → 59"
+            },
+            {
+              "ability": "Second Skin",
+              "text": "Plasma damage: 4.5 + 0.5 × level + 15% Ability Power → 4 + 1 × level + 12% Ability Power + current Plasma stacks × (1 + 0.2 × level + 2% Ability Power)\n Missing Health damage: (15 + 2.5% Ability Power)% → (15 + 5% Ability Power)%"
+            },
+            {
+              "ability": "Void Seeker",
+              "text": "Damage: 30 / 60 / 90 / 120 + 110% Attack Damage + 60% Ability Power → 30 / 60 / 90 / 120 + 130% Attack Damage + 50% Ability Power"
+            },
+            {
+              "ability": "Supercharge",
+              "text": "Movement Speed: 50% / 55% / 60% / 65% + 80% × item Attack Speed × 50% / 55% / 60% / 65% (item Attack Speed capped at 90% / 99% / 108% / 117%) → 50% / 55% / 60% / 65% + bonus Attack Speed * 50% / 55% / 60% / 65% (maximum 100% / 110% / 120% / 130%)"
+            },
+            {
+              "ability": "Killer Instinct",
+              "text": "Shield: 75 / 100 / 125 + 100 / 150 / 200% Attack Damage + 75% Ability Power → 100 / 125 / 150 + 80 / 120 / 160% Attack Damage + 100% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "TWITCH",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "Twitch’s current kit hasn’t been delivering on the sneaky, high-impact playstyle we want for him. We’re reworking his kit to reward finding the right position from stealth before striking, giving him a stronger window to unleash massive burst damage when he finally reveals himself.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 58\n Attack Damage per Level: 4.5 → 4"
+            },
+            {
+              "ability": "Deadly Venom",
+              "text": "Damage per stack: 1 / 2 / 3 / 4 / 5 + 2.5% Ability Power → 1 / 2 / 3 / 4 / 5 + 3% Ability Power\n [Removed] When enemy champions reach max poison stacks, Twitch gains 30 / 35 / 40 / 45 / 50% Attack Speed (at levels 1 / 4 / 7 / 10 / 13) for 5 seconds. Reapplying refreshes the duration."
+            },
+            {
+              "ability": "Ambush",
+              "text": "[New] After leaving camouflage, Twitch gains 35 / 40 / 45 / 50% bonus Attack Speed for 6 seconds.\n [Removed] For 3 seconds after leaving camouflage, Twitch's basic attacks apply 2 stacks of Deadly Venom."
+            },
+            {
+              "ability": "Venom Cask",
+              "text": "Twitch throws a Venom Cask into the target area, granting vision there and slowing enemies inside by 30% / 35% / 40% / 45% + 0.06% × Ability Power. The area lasts 3 seconds and applies 1 stack of Deadly Venom each second to enemies inside."
+            },
+            {
+              "ability": "Contaminate",
+              "text": "Direct detonation physical damage: 25 / 35 / 45 / 55 → 30 / 40 / 50 / 60\n Physical damage per stack: 20 / 25 / 30 / 35 + 42% bonus Attack Damage + 18% Ability Power → 20 / 25 / 30 / 35 + 35% bonus Attack Damage\n [New] Magic damage per stack: 35% Ability Power\n [New] This ability can only be cast while a poisoned target is within 1200 units of Twitch."
+            },
+            {
+              "ability": "Spray and Pray",
+              "text": "Cooldown: 70 / 65 / 60s → 75 / 70 / 65s\n Projectile speed: 60 → 65"
+            }
+          ]
+        },
+        {
+          "champion": "LUCIAN",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "Lucian thrives on maintaining pressure and controlling the tempo of his lane, but his late-game damage windows can be limited. The Culling hasn’t been scaling well enough to remain a meaningful threat later in the game, so we’re strengthening it to give Lucian a more reliable way to kick off his offense in mid and late-game fights.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 58 → 60\n Attack Damage per Level: 4 → 3.5"
+            },
+            {
+              "ability": "Lightslinger",
+              "text": "Secondary shot damage: 35% / 50% / 65% Attack Damage → 40% / 50% / 60% Attack Damage"
+            },
+            {
+              "ability": "Piercing Light",
+              "text": "Damage: 80 / 125 / 170 / 215 + 65 / 85 / 105 / 125% × bonus Attack Damage → 75 / 125 / 175 / 225 + 100% × bonus Attack Damage"
+            },
+            {
+              "ability": "The Culling",
+              "text": "Bullet count: 22 / 26 / 30 → 20 + 20 × Critical Rate (gain 2 bullets for every 10% Critical Rate) + (Critical Damage-2) × 20 × Critical Rate\n Damage per bullet: 20 / 35 / 50 + 25% Attack Damage + 10% Ability Power → 20 / 25 / 30 + 25% Attack Damage + 15% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "CAITLYN",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "Caitlyn hasn’t been packing quite enough punch for a crit-focused marksman. We’re adjusting her stats and Passive to strengthen her lane presence while giving her the burst damage she needs to make those well-placed Headshots really hurt.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.04\n Base Attack Damage: 54 → 60\n Attack Damage per Level: 4.5 → 4.2"
+            },
+            {
+              "ability": "Headshot",
+              "text": "Headshot bonus damage: (60% - 110%) × Attack Damage + 200 × Critical Rate → (60% - 100%) × Attack Damage + Critical Rate × 100% + (Critical Damage-2) × Critical Rate × 100% × Attack Damage"
+            },
+            {
+              "ability": "Piltover Peacemaker",
+              "text": "Damage: 60 / 110 / 160 / 210 + 125 / 140 / 155 / 170% Attack Damage → 50 / 100 / 150 / 200 + 125 / 145 / 165 / 185% Attack Damage"
+            },
+            {
+              "ability": "Yordle Snap Trap",
+              "text": "[New] Headshot attacks against enemies trapped by Yordle Snap Trap deal 40 / 90 / 140 / 190 (+30% bonus Attack Damage) bonus physical damage."
+            },
+            {
+              "ability": "90 Caliber Net",
+              "text": "Slow duration: 1.5s → 1s"
+            },
+            {
+              "ability": "Ace in the Hole",
+              "text": "Damage: 200 / 375 / 550 + 200% bonus Attack Damage + 20% target missing Health → (250 / 450 / 650 + 100% bonus Attack Damage + 20% target missing Health) × (1 + Critical Rate × 30% + (Critical Damage - 2) × 30% × Critical Rate)"
+            }
+          ]
+        },
+        {
+          "champion": "DRAVEN",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Damage per Level: 4.5 → 3.8"
+            },
+            {
+              "ability": "League of Draven",
+              "text": "Bounty: 80 + (stacks) × 4 → 60 + (stacks) × 3"
+            },
+            {
+              "ability": "Spinning Axe",
+              "text": "Damage: 45 / 50 / 55 / 60 + 100 / 110 / 120 / 130% → 45 / 50 / 55 / 60 + 80 / 90 / 100 / 110%"
+            },
+            {
+              "ability": "Whirling Death",
+              "text": "Damage falloff per hit: 8% (minimum 40%) → 5% (minimum 50%)\n [New] Enemy champions hit whose current Health is lower than Draven's current Adoration stacks are executed."
+            }
+          ]
+        },
+        {
+          "champion": "MISS FORTUNE",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "Miss Fortune’s first ability can sometimes land bounce hits that are difficult for foes to anticipate, especially during the laning phase. We’re updating its target-selection rules to make those bounces more predictable and give opponents a clearer opportunity to play around them.",
+          "changes": [
+            {
+              "ability": "Love Tap",
+              "text": "Damage: (15 + 40% bonus Attack Damage) × (1 + Critical Rate) → (15 + 40% bonus Attack Damage) × (0.6 + Critical Rate × 0.4)\n Damage Amp: 6% - 10.9% (based on level) → 6% - 9.5% (based on level)"
+            },
+            {
+              "ability": "Double Up",
+              "text": "Damage: 60 / 90 / 120 / 150 + 112 / 120 / 128 / 136% Attack Damage + 35% Ability Power → 60 / 90 / 120 / 150 + 110% Attack Damage + 35% Ability Power\n Second-hit damage ratio: 120% → 60% × current Critical Damage\n Optimized the bounce target-selection rules."
+            },
+            {
+              "ability": "Strut",
+              "text": "Initial Movement Speed: 30 / 35 / 40 / 45 → 35 / 40 / 45 / 50\n Maximum Movement Speed: 80 / 90 / 100 / 110 → 70 / 80 / 90 / 100"
+            },
+            {
+              "ability": "Make It Rain",
+              "text": "Slow: 30 / 40 / 50 / 60% → 40% + 0.06% × Ability Power"
+            },
+            {
+              "ability": "Bullet Time",
+              "text": "Barrage damage: 85% Attack Damage + 20% Ability Power → 20 / 30 / 40 + 60% Attack Damage + 20% Ability Power\n Critical ratio: 130% → 130% + (Critical Damage-2) × 0.3"
+            }
+          ]
+        },
+        {
+          "champion": "SAMIRA",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 62 → 60\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.03\n Attack Damage per Level: 4 → 3.5"
+            },
+            {
+              "ability": "Daredevil Impulse",
+              "text": "Movement Speed bonus per Style grade: 4% → 3% / 3.25% / 3.5% / 3.75% / 4% (based on level)"
+            },
+            {
+              "ability": "Flair",
+              "text": "Damage: 15 / 20 / 25 / 30 + 100 / 115 / 130 / 145% Attack Damage → 15 / 20 / 25 / 30 + 110% Attack Damage\n Critical Damage: current Critical Damage - 50% → 150% - 165% (based on Critical Damage)\n New: Flair’s Damage can not trigger Life Steal."
+            },
+            {
+              "ability": "Blade Whirl",
+              "text": "Bonus Attack Damage ratio: 80% → 50%"
+            },
+            {
+              "ability": "Wild Rush",
+              "text": "Attack Speed: 35% / 40% / 45% / 50% → 25% / 30% / 35% / 40%"
+            },
+            {
+              "ability": "Inferno Trigger",
+              "text": "Cooldown: 8 / 8 / 8 → 6 / 6 / 6\n Mana cost: 60 / 30 / 0 → 0 / 0 / 0\n Damage: 5 / 20 / 35 + 60% Attack Damage → 20 / 40 / 60 + 40% Attack Damage\n New: Inferno Trigger’s Damage can now trigger 66.7% Life Steal."
+            }
+          ]
+        },
+        {
+          "champion": "ZERI",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Living Battery",
+              "text": "Excess Attack Speed to Attack Damage conversion ratio: 50% → 60%\n Damage: 13 / 15 / 17 / 19 / 21 + 105 / 110 / 115 / 120 / 125% Attack Damage → 20 / 24 / 28 / 32 / 36 + 102 / 104 / 106 / 108% / 110% Attack Damage"
+            },
+            {
+              "ability": "Burst Fire",
+              "text": "Damage: 35 / 60 / 85 / 110 + 55 / 70 / 85 / 100% Attack Damage + 30 / 35 / 40 / 45% Ability Power → 70 / 100 / 130 / 160 + 80% × bonus Attack Damage + 30 / 35 / 40 / 45% Ability Power\n Slow duration: 2s → 1.5s"
+            },
+            {
+              "ability": "Ultrashock Laser",
+              "text": "Damage: 30 / 70 / 110 / 150 + 80% Attack Damage + 40% Ability Power → 60 / 100 / 140 / 180 + 100% Attack Damage + 50% Ability Power\n Critical Damage: current Critical Damage rate → (150% + (Critical Damage rate - 2) × 0.5)"
+            },
+            {
+              "ability": "Spark Surge",
+              "text": "Subsequent damage ratio: 80 / 85 / 90 / 95% → 85 / 90 / 95 / 100%"
+            },
+            {
+              "ability": "Lightning Crash",
+              "text": "Nova damage: 150 / 200 / 250 + 70% bonus Attack Damage + 80% Ability Power → 150 / 225 / 300 + 60% bonus Attack Damage + 100% Ability Power\n Overload duration: 1.5s → 2.5s\n Overload extension duration: 1.5s on non-critical strikes, 4.5s on critical strikes → 2.5s on non-critical strikes, 7.5s on critical strikes\n Overload lightning Attack Damage ratio: 25% → 30%\n Critical Damage: current Critical Damage → 150% + (Critical Damage - 2) × 0.5"
+            }
+          ]
+        },
+        {
+          "champion": "JINX",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Damage per Level: 4.5 → 4"
+            },
+            {
+              "ability": "Super Mega Death Rocket!",
+              "text": "Cooldown: 50 / 45 / 40s → 60 / 50 / 40s\n Damage: 25 / 35 / 45 + 15% × bonus Attack Damage to 250 / 350 / 450 + 150% × bonus Attack Damage → 25 / 35 / 45 + 12% × bonus Attack Damage to 250 / 350 / 450 + 120% × bonus Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "AKSHAN",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Damage per Level: 5.5 → 4.5"
+            },
+            {
+              "ability": "Dirty Fighting",
+              "text": "Movement Speed: 40 - 120 (based on level) → 20 - 80 (based on level) × (1 + 100% bonus Attack Speed)"
+            },
+            {
+              "ability": "Avengerang",
+              "text": "Damage: 10 / 40 / 70 / 100 + 85% Attack Damage → 60 / 110 / 160 / 210 + 70% × bonus Attack Damage\n Minion damage ratio: 55 / 70 / 85 / 100% → 50 / 60 / 70 / 80%"
+            },
+            {
+              "ability": "Heroic Swing",
+              "text": "Critical Damage: 150% → current Critical Damage × 0.7"
+            },
+            {
+              "ability": "Comeuppance",
+              "text": "Damage per bullet: (20 / 30 / 40 + 10% Attack Damage) - (80 / 120 / 160 + 40% Attack Damage) → (25 / 35 / 45 + 15% Attack Damage) - (75 / 105 / 135 + 45% Attack Damage)\n Damage increase from critical-strike stats: 50% * Critical Rate → 30% × Critical Rate + (Critical Damage - 2) × Critical Rate × 0.3"
+            }
+          ]
+        },
+        {
+          "champion": "CORKI",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Damage per Level: 3 → 2.5"
+            },
+            {
+              "ability": "Phosphorus Bomb",
+              "text": "Damage: 65 / 125 / 185 / 245 + 125% bonus Attack Damage + 80% Ability Power → 60 / 120 / 185 / 240 + 110% bonus Attack Damage + 100% Ability Power"
+            },
+            {
+              "ability": "Gatling Gun",
+              "text": "Armor and Magic Resistance reduction: 10 / 14 / 18 / 22 → 12 / 14 / 16 / 18"
+            },
+            {
+              "ability": "Missile Barrage",
+              "text": "Missile bonus Attack Damage ratio: 70% bonus Attack Damage → 65% bonus Attack Damage\n Big One bonus Attack Damage ratio: 140% bonus Attack Damage → 130% bonus Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "KALISTA",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 57\n Attack Damage per Level: 5 → 5.2"
+            }
+          ]
+        },
+        {
+          "champion": "KOG'MAW",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 58\n Attack Speed Ratio: 0.665\n Base Attack Speed: 0.665\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.03"
+            }
+          ]
+        },
+        {
+          "champion": "VARUS",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 58"
+            }
+          ]
+        },
+        {
+          "champion": "XAYAH",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.03\n Base Attack Damage: 54 → 60\n Attack Damage per Level: 5 → 4.2"
+            },
+            {
+              "ability": "Deadly Plumage",
+              "text": "Attack Speed: 45 / 50 / 55 / 60% → 40 / 45 / 50 / 55%\n Additional feather damage ratio: 20% → 25%\n Movement Speed: 25 / 30 / 35 / 40% → 30%"
+            },
+            {
+              "ability": "Bladecaller",
+              "text": "Damage: 60 / 70 / 80 / 90 + 90% bonus Attack Damage → (70 / 80 / 90 / 100 + 50% bonus Attack Damage) × (1 + 50% × Critical Rate + 50% × (Critical Damage-2) × Critical Rate)"
+            },
+            {
+              "ability": "Featherstorm",
+              "text": "Damage: 125 / 250 / 375 + 100% bonus Attack Damage → 150 / 250 / 350 + 100% bonus Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "TRISTANA",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 60\n Attack Damage per Level: 6 → 5"
+            },
+            {
+              "ability": "Rocket Jump",
+              "text": "Cooldown: 22 / 19 / 16 / 13 → 22 / 20 / 18 / 16\n Damage: 85 / 155 / 225 / 295 + 50% Ability Power → 80 / 120 / 160 / 200 + 80% × bonus Attack Damage + 50% Ability Power\n Slow effect: 60% → 50%\n Slow duration: 1.5 / 2 / 2.5 / 3s → 2s"
+            },
+            {
+              "ability": "Explosive Charge",
+              "text": "Cooldown: 15 / 14 / 13 / 12 → 16 / 15 / 14 / 13\n Passive explosion damage: 65 / 100 / 135 / 170 + 25% Ability Power → 60 / 90 / 120 / 150 + 25% Ability Power\n Active explosion damage: 50 / 75 / 100 / 125 + 75 / 110 / 145 / 180% bonus Attack Damage + 50% Ability Power → (80 / 100 / 120 / 140 + 100% bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 40% + (Critical Damage-2) × 40% × Critical Rate)\n Damage per stack: 30% → 25%"
+            },
+            {
+              "ability": "Buster Shot",
+              "text": "Damage: 350 / 450 / 550 + 100% Ability Power → 300 / 350 / 400 + 70%× bonus Attack Damage + 100% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "SIVIR",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 58 → 60\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.3\n Attack Speed per Level: 0.01"
+            },
+            {
+              "ability": "Fleet of Foot",
+              "text": "Movement Speed bonus: 31 - 45 (based on level) → 55 - 70 (based on level)"
+            },
+            {
+              "ability": "Boomerang Blade",
+              "text": "Damage: 10 / 30 / 50 / 70 + 75 / 80 / 85 / 90% Attack Damage + 60% Ability Power × 50% × Critical Rate → (70 / 100 / 130 / 160 + 70% × bonus Attack Damage + 60% Ability Power) × (1 + Critical Rate × 40% + (Critical Damage-2) × 40% × Critical Rate)\n Non-champion damage ratio: 80% → 75%"
+            },
+            {
+              "ability": "Ricochet",
+              "text": "Damage: 4 / 6 / 8 / 10 + 15 / 18 / 21 / 24% Attack Damage → 37.5% / 40% / 42.5% / 45% Attack Damage\n Minion ratio: 75% → 70%"
+            },
+            {
+              "ability": "On the Hunt",
+              "text": "Initial Movement Speed bonus: 15% → 15 / 20 / 25%\n Initial Movement Speed duration: 10 / 11 / 12 seconds → 8 / 10 / 12 seconds\n Cooldown reduction ratio: 30 / 35 / 40% → 20 / 25 / 30%\n Attack Damage per morale stack: 2 / 3 / 4 → 2 / 2.5 / 3\n Re-triggering refreshes Hunt duration.\n Movement Speed granted on re-trigger: 25% → 15 / 20 / 25%"
+            }
+          ]
+        },
+        {
+          "champion": "VAYNE",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 60"
+            },
+            {
+              "ability": "Tumble",
+              "text": "Damage: 35 / 45 / 55 / 65% Attack Damage → 50 / 60 / 70 / 80% Attack Damage"
+            },
+            {
+              "ability": "Silver Bolts",
+              "text": "True Damage based on Maximum Health: 2 / 5 / 8 / 11% → 6 / 7 / 8 / 9%"
+            },
+            {
+              "ability": "Final Hour",
+              "text": "Attack Damage: 15 / 25 / 35 → 30 / 40 / 50"
+            }
+          ]
+        },
+        {
+          "champion": "ASHE",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Damage per Level: 2.65 → 4\n Base Attack Damage: 58 → 60"
+            },
+            {
+              "ability": "Frost Shot",
+              "text": "Slow effect: 15 / 17.5 / 20 / 22.5 / 25% (based on level) → 20 / 22.5 / 25 / 27.5 / 30% (based on level)\n Bonus damage: 10% + 100% × Critical Rate × (Critical Damage-1) → 100% × Critical Rate + 100% × (Critical Damage-2) × Critical Rate"
+            },
+            {
+              "ability": "Ranger's Focus",
+              "text": "Mana cost: 50 / 50 / 50 / 50 → 30 / 30 / 30 / 30"
+            },
+            {
+              "ability": "Volley",
+              "text": "Cooldown: 16 / 13.5 / 11 / 8.5s → 15 / 12 / 9 / 6s\n Mana cost: 50 / 50 / 50 / 50 → 65 / 60 / 55 / 50\n Damage: 20 / 35 / 50 / 65 + 115% Attack Damage → 70 / 110 / 150 / 190 + 100% bonus Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "JHIN",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "With base Critical Strike Damage increasing this patch, some champions would end up hitting a little harder than intended. We’re adjusting the Critical Strike Damage modifiers for Jhin, Yasuo, Yone, and Senna to keep their crit damage in check alongside the system changes.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 58 → 60\n Attack Damage Growth: 4.55 → 5"
+            },
+            {
+              "ability": "Whisper",
+              "text": "[New] Critical strikes now deal only 80% of normal critical strike damage.\n Fourth-shot bonus damage to turrets: 135% / 162% (with Infinity Edge) → 150% / 172.5% (with Infinity Edge)\n Attack Damage conversion ratio: bonus Attack Speed × 30% + Critical Rate × 45% + level × 4.5% → bonus Attack Speed × 30% + Critical Rate × 40% + level × 3%\n Critical-strike Movement Speed: 15% + 0.55% × bonus Attack Speed → 14% + 0.44% × bonus Attack Speed"
+            },
+            {
+              "ability": "Curtain Call",
+              "text": "Fourth super shot damage ratio: 200% → current Critical Damage"
+            }
+          ]
+        },
+        {
+          "champion": "SENNA",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Absolution",
+              "text": "Attack Speed Ratio: 0.4\n Base Attack Speed: 0.4\n Base Bonus Attack Speed: 0.6\n Attack Speed per Level: 0.05\n Damage based on Current Health: 1.2%~12% (based on level) → 1%~10% (based on level)\n Critical Rate gained per 20 Mist: 15% → 10%\n [New] Basic attacks now deal 90% of normal critical strike damage when they critical strike."
+            },
+            {
+              "ability": "Piercing Darkness",
+              "text": "Base Damage: 50 / 90 / 130 / 170 → 50 / 80 / 110 / 140"
+            },
+            {
+              "ability": "Dawning Shadow",
+              "text": "Damage: 250 / 375 / 500 + 120% bonus Attack Damage + 50% Ability Power → 250 / 400 / 550 + 120% bonus Attack Damage + 70% Ability Power\n Shield: 120 / 160 / 200 + 40% Ability Power + Mist × 4 → 120 / 160 / 200 + 50% Ability Power + Mist × 2"
+            }
+          ]
+        },
+        {
+          "champion": "YUNARA",
+          "scope": "Champion changes",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Vow of the Lands",
+              "text": "Critical bonus damage: 10% (gain 10% per 100 Ability Power) → 8% (gain 8% per 100 Ability Power)"
+            },
+            {
+              "ability": "Cultivation of Spirit",
+              "text": "Bonus Attack Speed: 22.5% / 35% / 47.5% / 60% → 25% / 35% / 45% / 55%"
+            }
+          ]
+        },
+        {
+          "champion": "YASUO",
+          "scope": "Other Critical Strike Champion Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Way of the Wanderer",
+              "text": "Excess Critical Rate to Attack Damage conversion ratio: 0.6 → 0.5\n Yasuo's basic attacks and (1) ability crits deal 90% of normal critical strike damage."
+            },
+            {
+              "ability": "Last Breath",
+              "text": "Damage: 250 / 400 / 550 + 160% bonus Attack Damage → 200 / 350 / 500 + 150% bonus Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "GRAVES",
+          "scope": "Other Critical Strike Champion Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "New Destiny",
+              "text": "Shotgun Critical Strike Damage rate: 1.3 → 1.5"
+            }
+          ]
+        },
+        {
+          "champion": "YONE",
+          "scope": "Other Critical Strike Champion Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Way of the Hunter",
+              "text": "Excess Critical Rate to Attack Damage conversion ratio: 0.6 → 0.5\n Yone's basic attacks and (1) ability crits deal 90% of normal critical strike damage."
+            },
+            {
+              "ability": "Mortal Steel",
+              "text": "Damage ratio to Jungle Monsters: 65% → 70%"
+            },
+            {
+              "ability": "Spirit Cleave",
+              "text": "Damage: 25 / 35 / 45 / 55 + 11 / 12 / 13 / 14% target’s max Health → 20 / 35 / 50 / 65 + 9 / 10 / 11 / 12% target max Health\n Shield: 45 + 80% bonus Attack Damage → 40 / 55 / 70 / 85 + 60% bonus Attack Damage"
+            },
+            {
+              "ability": "Soul Unbound",
+              "text": "Stored damage ratio: 24 / 28 / 32 / 36% → 27.5% / 30% / 32.5% / 35%"
+            },
+            {
+              "ability": "Fate Sealed",
+              "text": "Damage: 200 / 350 / 500 + 80% Attack Damage → 200 / 375 / 550 + 60% Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "VIEGO",
+          "scope": "Other Critical Strike Champion Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 62 → 60\n Attack Damage Growth: 4.5 → 4.2"
+            },
+            {
+              "ability": "Sovereign's Domination",
+              "text": "Base heal: 7% → 5%"
+            },
+            {
+              "ability": "Blade of the Ruined King",
+              "text": "Critical Damage ratio on current Health damage: current Critical Damage → current Critical Damage × 80%\n Critical Damage ratio on second strike: current Critical Damage → current Critical Damage × 80%\n Thrust damage: 20 / 40 / 60 / 80 ( + 80% Attack Damage) × (1 + 50% × Critical Rate) → 25 / 45 / 65 / 85 ( + 70% Attack Damage) × (1 + 60% × Critical Rate + (Critical Damage-2) × Critical Rate × 60%)"
+            },
+            {
+              "ability": "Harrowed Path",
+              "text": "Attack Speed: 45 / 50 / 55 / 60% → 35 / 40 / 45 / 50%"
+            },
+            {
+              "ability": "Heartbreaker",
+              "text": "Damage: 110% Attack Damage - 165% Attack Damage (based on Critical Rate) + target missing Health × (14 / 17 / 20 + 6% bonus Attack Damage)% → 120% Attack Damage × (1 + 50% × Critical Rate + (Critical Damage - 2) × Critical Rate * 50%) + target missing Health × (14 / 17 / 20 + 5% bonus Attack Damage)%"
+            }
+          ]
+        },
+        {
+          "champion": "TRYNDAMERE",
+          "scope": "Other Critical Strike Champion Adjustments",
+          "modeOnly": false,
+          "summary": "We want Tryndamere’s basic attacks to hit like they mean it, rather than relying on a flurry of lower-damage attacks to wear opponents down. We’re removing the bonus Attack Speed from his Passive to shift more power into each individual strike. We’re also adjusting the Attack Damage reduction on his second ability. Its effectiveness will now scale more with points invested into the ability, rather than automatically becoming stronger against opponents who build more Attack Damage.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 54 → 64\n Attack Damage per Level: 5.5 → 5\n Armor per Level: 3.9 → 4.5"
+            },
+            {
+              "ability": "Battle Fury",
+              "text": "[Removed] Landing a basic attack on an enemy champion grants 30% Attack Speed for 5 seconds; after the effect ends, it goes on a 6-second cooldown."
+            },
+            {
+              "ability": "Bloodlust",
+              "text": "Attack Damage: 7 / 12 / 17 / 22 → 0\n Bonus Attack Damage per 1% missing Health: 0.35 / 0.40 / 0.45 / 0.5 → 0.3 / 0.5 / 0.7 / 0.9"
+            },
+            {
+              "ability": "Mocking Shout",
+              "text": "Attack Damage reduction: 40% → 20 / 40 / 60 / 80%"
+            },
+            {
+              "ability": "Spinning Slash",
+              "text": "Damage: 80 / 120 / 160 / 200 + 135% bonus Attack Damage + 100% Ability Power → 80 / 120 / 160 / 200 + 100% bonus Attack Damage + 80% Ability Power\n Targets that trigger the cooldown reduction on critical strike: Minions → Minions, monsters, champion-summoned units, and other units that can be critically struck"
+            },
+            {
+              "ability": "Undying Rage",
+              "text": "[Removed] Battle Fury's Attack Speed bonus increases to 45 / 60 / 75%"
+            }
+          ]
+        },
+        {
+          "champion": "OLAF",
+          "scope": "Other Champion Stats Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Health: 690 → 660\n Attack Speed Ratio: 0.694\n Base Attack Speed: 0.694\n Base Bonus Attack Speed: 0.06\n Attack Speed per Level: 0.0326\n Health per Level: 112 → 140"
+            },
+            {
+              "ability": "Undertow",
+              "text": "Bonus Attack Damage ratio: 120% → 105%"
+            },
+            {
+              "ability": "Ragnarok",
+              "text": "Armor and Magic Resistance increase: 25 / 35 / 45 → 15 / 25 / 35"
+            }
+          ]
+        },
+        {
+          "champion": "VOLIBEAR",
+          "scope": "Other Champion Stats Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "The Relentless Storm",
+              "text": "Damage: 11 - 80 (based on level) + 40% Ability Power → 12 - 68 (based on level) + 40% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "NUNU & WILLUMP",
+          "scope": "Other Champion Stats Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Snowball Barrage",
+              "text": "Removed: Damage modifier against monsters: 150%"
+            }
+          ]
+        },
+        {
+          "champion": "ZED",
+          "scope": "Other Champion Stats Adjustments",
+          "modeOnly": false,
+          "summary": "",
+          "changes": [
+            {
+              "ability": "Razor Shuriken",
+              "text": "Removed: Damage modifier against monsters: 80%"
+            },
+            {
+              "ability": "Shadow Slash",
+              "text": "Removed: Damage modifier against monsters: 60%"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Patch 7.3 brings Hwei, a major marksman overhaul, jungle updates, Ranked changes, new items, and more!",
+        "Banana? 🍌🥽\n Patch 7.3 is here, and the minions are ready to make some noise. We’re updating turrets and minion waves, overhauling the marksman ecosystem with new items and crit changes, shaking up the jungle, bringing a fresh set of updates to Ranked and Legendary Ranked, and so much more.\n Grab your goggles and get ready to cause a little mayhem on the Rift!\n\n Reminder: content will be released throughout the patch.",
+        "NEW\n NEW CHAMPIONS\n Hwei\n Hwei is a brooding painter who creates brilliant art in order to confront Ionia's criminals and comfort their victims. Beneath his melancholy roils a torn, emotional mind—haunted by both the vibrant visions of his imagination and the gruesome memories of his temple's massacre. Hwei seeks to understand this light and dark, which drives him inevitably toward the artist who unraveled him. With paintbrush and palette, Hwei shapes endless possibilities as he draws ever closer to earning closure or embracing despair.\n\n Hwei\n\n New Season\n Ranked Season S23 is almost here, bringing a new season-exclusive skin, Glorious Eminence Milio, alongside some major updates to Ranked and Legendary Ranked.\n\n Glorious Eminence Milio\n\n This season, we’re updating several systems to better recognize your individual performance, improve matchmaking, and support a healthier role ecosystem. These changes include updates to S/A ratings and MVP selection, the new Legendary Trial in Legendary Ranked, a rework of the Champion Score system, and a new Priority Role Bonus.\n We’re also standardizing the Pick/Ban experience across higher ranks. Platinum through Diamond will now have five bans per team, up from three, and we’re removing the restriction that previously disabled five bans during the first two weeks of a new season. This should give teams more room to make strategic choices from the very start of the climb.\n Ranked Season S23 begins on September 23, 2026 at 03:00 UTC and is expected to end in January 2027. Check the Ranked queue interface in-game for the exact season schedule.\n New Wild Pass\n The Wild Pass is getting an upgrade, with more rewards, more choice, and a fresh new look! The Pencil Sharpener Wild Pass arrives on September 22 at 00:00 UTC, featuring Pencil Sharpener Kog'Maw and Ascended Pencil Sharpener Kog'Maw.\n\n Pencil Sharpener Kog'Maw\n\n CONTENT UPDATES\n New personalization rewards are joining the Wild Pass, including the Super Pencil Sharpener Battle Ensign and the Ear to Ear emote.\n You’ll now have more choice when it comes to your Wild Pass skin rewards. Select the current Wild Pass skin or choose from a selection of returning Wild Pass skins.\n Returning Wild Pass skins: Dream Raider Thresh, Unleashed Dream Raider Thresh, Food Spirits Amumu, and Ascended Food Spirits Amumu.\n Returning Mini Pass skins: Dragonslayer Kayle, Dragonslayer Kayle (Amber), Blackfrost Renekton, and Blackfrost Renekton (Purple).\n Battlecast Urgot is also returning with its own Mini Pass skin track! This track shares level progress with the current Wild Pass, so leveling up will unlock rewards from both tracks at the same time.\n Wild Star Reward Optimization\n We’re making Wild Stars easier to earn. All Wild Stars will now be available within the first seventy-five Wild Pass levels, so you’ll no longer need to grind recurring rewards to collect them all.\n We’re also increasing the total number of Wild Stars you can earn. Reaching Wild Pass level seventy-five will now grant a total of three hundred thirty Wild Stars, up from two hundred fifty. Reaching Mini Pass level fifty will grant one hundred forty Wild Stars, up from one hundred.\n Purchasing the Wild Pass Elite will now immediately grant an additional two hundred Wild Stars.\n Stellacorn’s Gift will now add two Wild Stars to your daily reward, while Celestial Blessing will add three Wild Stars.\n Expired Wild Stars will now automatically convert into five Condensed Ore instead of one Blue Mote.\n Collection System and Wild Pass Emporium Revamp\n The Wild Pass Emporium will be removed with this update.\n Personalization rewards can now be redeemed directly through the Set Redemption window.\n Battle Ensigns will now be available through Wild Star redemption for four hundred fifty-five Wild Stars, instead of being acquired through loot.\n Battle Ensigns will also be removed from the Trove.\n New Wild Star Spending Milestones\n Spending Wild Stars will now unlock personalization rewards at certain milestones. Personalization items that were previously available outside of sets in the Wild Pass Emporium will now be earned based on your total Wild Stars spent.\n Full UI Refresh\n The Wild Pass is getting a fresh new look! We’ve updated the interface to make it easier to navigate, give you a clearer view of your rewards, and added a few quality-of-life improvements along the way.\n Reward Level Adjustments\n We’ve swapped the positions of the Wild Pass skin and Random Skin Chest. The Wild Pass skin will now unlock immediately at level one when you purchase the Advanced Pass or higher, while the Random Skin Chest will move to level twenty.\n Reindeer Mini Pass\n Once the Pencil Sharpener Wild Pass wraps up, the Reindeer Mini Pass arrives on December 3, featuring the all-new Reindeer Smolder and Reindeer Smolder (Pink).\n The Mini Pass will have its own level progression, exclusive rewards, and missions, tailored specifically to the shorter Mini Pass period.\n Wild Stars can be used across both the Wild Pass and Mini Pass while they’re active. Any unused Wild Stars will be automatically reclaimed after the Mini Pass ends, so be sure to spend them before time runs out.\n CHAMPION ADJUSTMENTS\n Marksmen are at their best when different champions have distinct ways to carry. Some should hit hard with powerful critical strikes, while others rely on Attack Speed, sustained damage, and precise positioning to take over a fight.\n Recently, those differences have become less noticeable. Crit and on-hit marksmen have both become increasingly reliant on Attack Speed, while item choices and build paths have started to feel too similar across the roster.\n In Patch 7.3, we’re making a broad update to the marksman ecosystem to give these playstyles more room to shine. We’re increasing Critical Strike Damage, reworking Lethal Tempo, adjusting Attack Speed and vamp, refining champion damage profiles, and updating marksman items.\n Our goal is to create clearer strengths, build paths, and power curves across the marksman roster, so how you choose to carry depends more on the champion you’re playing, and how you play them.\n Marksman Systematic Adjustments\n We’re increasing base Critical Strike Damage to give crit-focused marksmen more power behind each basic attack and help further distinguish them from Attack Speed-focused carries. To account for this increase, we’re also adjusting abilities that scale with Critical Strike Chance or Critical Strike Damage.\n Base Critical Strike Damage : 175% → 200%\n Critical Rate\n Crit Damage: 175% → 200%\n Attack Speed\n We’re adjusting marksmen’s Attack Speed growth and ratios to create clearer differences in how each champion scales and which items they prefer. Some champions will get more value from building Attack Speed, while others will naturally lean toward heavier Attack Damage options.\n For example, Caitlyn will now have higher base Attack Speed and Attack Speed growth, but a lower Attack Speed ratio. This gives her plenty of Attack Speed naturally while encouraging her to prioritize harder-hitting Attack Damage items.\n Attack Speed cap (attacks per second): 2.5 → 3\n Attack Speed per Level adjustments for certain champions\n Attack Speed ratios are no longer divided by melee and ranged; each champion will now have an individual Attack Speed ratio.\n For a detailed breakdown of these changes, check out the appendix below: [Champion Attack Speed Details and Mechanics Overview].\n Marksman Champion Adjustments\n Basic attacks aren’t the only way marksmen deal damage, so we’re also updating several champions’ abilities to better support their intended builds and playstyles.\n Several core damage abilities will now scale with Critical Strike Chance and Critical Strike Damage, allowing crit builds to strengthen both basic attacks and abilities while giving Infinity Edge a clearer role as a capstone item.\n We’re also updating some ability mechanics that no longer fully support their champion’s intended identity, including Lucian and Twitch, to give their kits and playstyles a clearer definition.",
+        "Base Attack Damage: 58 → 60",
+        "Cooldown: 4.5/4/3.5/3s → 5.5/5/4.5/4s\n Damage: 50 / 85 / 120 / 155 + 135% Attack Damage + 30% Ability Power → 25 / 55 / 85 / 115 + 135% Attack Damage + 30% Ability Power\n Cooldown refund: reduces the cooldown of all other abilities except [Mystic Shot] → reduces the cooldown of all abilities",
+        "Cooldown: 70 / 65 / 60s → 80 / 70 / 60s\n Damage: 350 / 500 / 650 + 100% bonus Attack Damage + 90% Ability Power → 300 / 500 / 700 + 100% bonus Attack Damage + 100% Ability Power",
+        "Base Attack Damage: 62 → 59",
+        "Plasma damage: 4.5 + 0.5 × level + 15% Ability Power → 4 + 1 × level + 12% Ability Power + current Plasma stacks × (1 + 0.2 × level + 2% Ability Power)\n Missing Health damage: (15 + 2.5% Ability Power)% → (15 + 5% Ability Power)%",
+        "Damage: 30 / 60 / 90 / 120 + 110% Attack Damage + 60% Ability Power → 30 / 60 / 90 / 120 + 130% Attack Damage + 50% Ability Power",
+        "Movement Speed: 50% / 55% / 60% / 65% + 80% × item Attack Speed × 50% / 55% / 60% / 65% (item Attack Speed capped at 90% / 99% / 108% / 117%) → 50% / 55% / 60% / 65% + bonus Attack Speed * 50% / 55% / 60% / 65% (maximum 100% / 110% / 120% / 130%)",
+        "Shield: 75 / 100 / 125 + 100 / 150 / 200% Attack Damage + 75% Ability Power → 100 / 125 / 150 + 80 / 120 / 160% Attack Damage + 100% Ability Power",
+        "Twitch’s current kit hasn’t been delivering on the sneaky, high-impact playstyle we want for him. We’re reworking his kit to reward finding the right position from stealth before striking, giving him a stronger window to unleash massive burst damage when he finally reveals himself.",
+        "Base Attack Damage: 54 → 58\n Attack Damage per Level: 4.5 → 4",
+        "Damage per stack: 1 / 2 / 3 / 4 / 5 + 2.5% Ability Power → 1 / 2 / 3 / 4 / 5 + 3% Ability Power\n [Removed] When enemy champions reach max poison stacks, Twitch gains 30 / 35 / 40 / 45 / 50% Attack Speed (at levels 1 / 4 / 7 / 10 / 13) for 5 seconds. Reapplying refreshes the duration.",
+        "[New] After leaving camouflage, Twitch gains 35 / 40 / 45 / 50% bonus Attack Speed for 6 seconds.\n [Removed] For 3 seconds after leaving camouflage, Twitch's basic attacks apply 2 stacks of Deadly Venom.",
+        "Twitch throws a Venom Cask into the target area, granting vision there and slowing enemies inside by 30% / 35% / 40% / 45% + 0.06% × Ability Power. The area lasts 3 seconds and applies 1 stack of Deadly Venom each second to enemies inside.",
+        "Direct detonation physical damage: 25 / 35 / 45 / 55 → 30 / 40 / 50 / 60\n Physical damage per stack: 20 / 25 / 30 / 35 + 42% bonus Attack Damage + 18% Ability Power → 20 / 25 / 30 / 35 + 35% bonus Attack Damage\n [New] Magic damage per stack: 35% Ability Power\n [New] This ability can only be cast while a poisoned target is within 1200 units of Twitch.",
+        "Cooldown: 70 / 65 / 60s → 75 / 70 / 65s\n Projectile speed: 60 → 65",
+        "Lucian thrives on maintaining pressure and controlling the tempo of his lane, but his late-game damage windows can be limited. The Culling hasn’t been scaling well enough to remain a meaningful threat later in the game, so we’re strengthening it to give Lucian a more reliable way to kick off his offense in mid and late-game fights.",
+        "Base Attack Damage: 58 → 60\n Attack Damage per Level: 4 → 3.5",
+        "Secondary shot damage: 35% / 50% / 65% Attack Damage → 40% / 50% / 60% Attack Damage",
+        "Damage: 80 / 125 / 170 / 215 + 65 / 85 / 105 / 125% × bonus Attack Damage → 75 / 125 / 175 / 225 + 100% × bonus Attack Damage",
+        "Bullet count: 22 / 26 / 30 → 20 + 20 × Critical Rate (gain 2 bullets for every 10% Critical Rate) + (Critical Damage-2) × 20 × Critical Rate\n Damage per bullet: 20 / 35 / 50 + 25% Attack Damage + 10% Ability Power → 20 / 25 / 30 + 25% Attack Damage + 15% Ability Power",
+        "Caitlyn hasn’t been packing quite enough punch for a crit-focused marksman. We’re adjusting her stats and Passive to strengthen her lane presence while giving her the burst damage she needs to make those well-placed Headshots really hurt.",
+        "Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.04\n Base Attack Damage: 54 → 60\n Attack Damage per Level: 4.5 → 4.2",
+        "Headshot bonus damage: (60% - 110%) × Attack Damage + 200 × Critical Rate → (60% - 100%) × Attack Damage + Critical Rate × 100% + (Critical Damage-2) × Critical Rate × 100% × Attack Damage",
+        "Damage: 60 / 110 / 160 / 210 + 125 / 140 / 155 / 170% Attack Damage → 50 / 100 / 150 / 200 + 125 / 145 / 165 / 185% Attack Damage",
+        "[New] Headshot attacks against enemies trapped by Yordle Snap Trap deal 40 / 90 / 140 / 190 (+30% bonus Attack Damage) bonus physical damage.",
+        "Slow duration: 1.5s → 1s",
+        "Damage: 200 / 375 / 550 + 200% bonus Attack Damage + 20% target missing Health → (250 / 450 / 650 + 100% bonus Attack Damage + 20% target missing Health) × (1 + Critical Rate × 30% + (Critical Damage - 2) × 30% × Critical Rate)",
+        "Attack Damage per Level: 4.5 → 3.8",
+        "Bounty: 80 + (stacks) × 4 → 60 + (stacks) × 3",
+        "Damage: 45 / 50 / 55 / 60 + 100 / 110 / 120 / 130% → 45 / 50 / 55 / 60 + 80 / 90 / 100 / 110%",
+        "Damage falloff per hit: 8% (minimum 40%) → 5% (minimum 50%)\n [New] Enemy champions hit whose current Health is lower than Draven's current Adoration stacks are executed.",
+        "Miss Fortune’s first ability can sometimes land bounce hits that are difficult for foes to anticipate, especially during the laning phase. We’re updating its target-selection rules to make those bounces more predictable and give opponents a clearer opportunity to play around them.",
+        "Damage: (15 + 40% bonus Attack Damage) × (1 + Critical Rate) → (15 + 40% bonus Attack Damage) × (0.6 + Critical Rate × 0.4)\n Damage Amp: 6% - 10.9% (based on level) → 6% - 9.5% (based on level)",
+        "Damage: 60 / 90 / 120 / 150 + 112 / 120 / 128 / 136% Attack Damage + 35% Ability Power → 60 / 90 / 120 / 150 + 110% Attack Damage + 35% Ability Power\n Second-hit damage ratio: 120% → 60% × current Critical Damage\n Optimized the bounce target-selection rules.",
+        "Initial Movement Speed: 30 / 35 / 40 / 45 → 35 / 40 / 45 / 50\n Maximum Movement Speed: 80 / 90 / 100 / 110 → 70 / 80 / 90 / 100",
+        "Slow: 30 / 40 / 50 / 60% → 40% + 0.06% × Ability Power",
+        "Barrage damage: 85% Attack Damage + 20% Ability Power → 20 / 30 / 40 + 60% Attack Damage + 20% Ability Power\n Critical ratio: 130% → 130% + (Critical Damage-2) × 0.3",
+        "Base Attack Damage: 62 → 60\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.03\n Attack Damage per Level: 4 → 3.5",
+        "Movement Speed bonus per Style grade: 4% → 3% / 3.25% / 3.5% / 3.75% / 4% (based on level)",
+        "Damage: 15 / 20 / 25 / 30 + 100 / 115 / 130 / 145% Attack Damage → 15 / 20 / 25 / 30 + 110% Attack Damage\n Critical Damage: current Critical Damage - 50% → 150% - 165% (based on Critical Damage)\n New: Flair’s Damage can not trigger Life Steal.",
+        "Bonus Attack Damage ratio: 80% → 50%",
+        "Attack Speed: 35% / 40% / 45% / 50% → 25% / 30% / 35% / 40%",
+        "Cooldown: 8 / 8 / 8 → 6 / 6 / 6\n Mana cost: 60 / 30 / 0 → 0 / 0 / 0\n Damage: 5 / 20 / 35 + 60% Attack Damage → 20 / 40 / 60 + 40% Attack Damage\n New: Inferno Trigger’s Damage can now trigger 66.7% Life Steal.",
+        "Excess Attack Speed to Attack Damage conversion ratio: 50% → 60%\n Damage: 13 / 15 / 17 / 19 / 21 + 105 / 110 / 115 / 120 / 125% Attack Damage → 20 / 24 / 28 / 32 / 36 + 102 / 104 / 106 / 108% / 110% Attack Damage",
+        "Damage: 35 / 60 / 85 / 110 + 55 / 70 / 85 / 100% Attack Damage + 30 / 35 / 40 / 45% Ability Power → 70 / 100 / 130 / 160 + 80% × bonus Attack Damage + 30 / 35 / 40 / 45% Ability Power\n Slow duration: 2s → 1.5s",
+        "Damage: 30 / 70 / 110 / 150 + 80% Attack Damage + 40% Ability Power → 60 / 100 / 140 / 180 + 100% Attack Damage + 50% Ability Power\n Critical Damage: current Critical Damage rate → (150% + (Critical Damage rate - 2) × 0.5)",
+        "Subsequent damage ratio: 80 / 85 / 90 / 95% → 85 / 90 / 95 / 100%",
+        "Nova damage: 150 / 200 / 250 + 70% bonus Attack Damage + 80% Ability Power → 150 / 225 / 300 + 60% bonus Attack Damage + 100% Ability Power\n Overload duration: 1.5s → 2.5s\n Overload extension duration: 1.5s on non-critical strikes, 4.5s on critical strikes → 2.5s on non-critical strikes, 7.5s on critical strikes\n Overload lightning Attack Damage ratio: 25% → 30%\n Critical Damage: current Critical Damage → 150% + (Critical Damage - 2) × 0.5",
+        "Attack Damage per Level: 4.5 → 4",
+        "Cooldown: 50 / 45 / 40s → 60 / 50 / 40s\n Damage: 25 / 35 / 45 + 15% × bonus Attack Damage to 250 / 350 / 450 + 150% × bonus Attack Damage → 25 / 35 / 45 + 12% × bonus Attack Damage to 250 / 350 / 450 + 120% × bonus Attack Damage",
+        "Attack Damage per Level: 5.5 → 4.5",
+        "Movement Speed: 40 - 120 (based on level) → 20 - 80 (based on level) × (1 + 100% bonus Attack Speed)",
+        "Damage: 10 / 40 / 70 / 100 + 85% Attack Damage → 60 / 110 / 160 / 210 + 70% × bonus Attack Damage\n Minion damage ratio: 55 / 70 / 85 / 100% → 50 / 60 / 70 / 80%",
+        "Critical Damage: 150% → current Critical Damage × 0.7",
+        "Damage per bullet: (20 / 30 / 40 + 10% Attack Damage) - (80 / 120 / 160 + 40% Attack Damage) → (25 / 35 / 45 + 15% Attack Damage) - (75 / 105 / 135 + 45% Attack Damage)\n Damage increase from critical-strike stats: 50% * Critical Rate → 30% × Critical Rate + (Critical Damage - 2) × Critical Rate × 0.3",
+        "Attack Damage per Level: 3 → 2.5",
+        "Damage: 65 / 125 / 185 / 245 + 125% bonus Attack Damage + 80% Ability Power → 60 / 120 / 185 / 240 + 110% bonus Attack Damage + 100% Ability Power",
+        "Armor and Magic Resistance reduction: 10 / 14 / 18 / 22 → 12 / 14 / 16 / 18",
+        "Missile bonus Attack Damage ratio: 70% bonus Attack Damage → 65% bonus Attack Damage\n Big One bonus Attack Damage ratio: 140% bonus Attack Damage → 130% bonus Attack Damage",
+        "Base Attack Damage: 54 → 57\n Attack Damage per Level: 5 → 5.2",
+        "Base Attack Damage: 54 → 58\n Attack Speed Ratio: 0.665\n Base Attack Speed: 0.665\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.03",
+        "Base Attack Damage: 54 → 58",
+        "Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.03\n Base Attack Damage: 54 → 60\n Attack Damage per Level: 5 → 4.2",
+        "Attack Speed: 45 / 50 / 55 / 60% → 40 / 45 / 50 / 55%\n Additional feather damage ratio: 20% → 25%\n Movement Speed: 25 / 30 / 35 / 40% → 30%",
+        "Damage: 60 / 70 / 80 / 90 + 90% bonus Attack Damage → (70 / 80 / 90 / 100 + 50% bonus Attack Damage) × (1 + 50% × Critical Rate + 50% × (Critical Damage-2) × Critical Rate)",
+        "Damage: 125 / 250 / 375 + 100% bonus Attack Damage → 150 / 250 / 350 + 100% bonus Attack Damage",
+        "Base Attack Damage: 54 → 60\n Attack Damage per Level: 6 → 5",
+        "Cooldown: 22 / 19 / 16 / 13 → 22 / 20 / 18 / 16\n Damage: 85 / 155 / 225 / 295 + 50% Ability Power → 80 / 120 / 160 / 200 + 80% × bonus Attack Damage + 50% Ability Power\n Slow effect: 60% → 50%\n Slow duration: 1.5 / 2 / 2.5 / 3s → 2s",
+        "Cooldown: 15 / 14 / 13 / 12 → 16 / 15 / 14 / 13\n Passive explosion damage: 65 / 100 / 135 / 170 + 25% Ability Power → 60 / 90 / 120 / 150 + 25% Ability Power\n Active explosion damage: 50 / 75 / 100 / 125 + 75 / 110 / 145 / 180% bonus Attack Damage + 50% Ability Power → (80 / 100 / 120 / 140 + 100% bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 40% + (Critical Damage-2) × 40% × Critical Rate)\n Damage per stack: 30% → 25%",
+        "Damage: 350 / 450 / 550 + 100% Ability Power → 300 / 350 / 400 + 70%× bonus Attack Damage + 100% Ability Power",
+        "Base Attack Damage: 58 → 60\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.3\n Attack Speed per Level: 0.01",
+        "Movement Speed bonus: 31 - 45 (based on level) → 55 - 70 (based on level)",
+        "Damage: 10 / 30 / 50 / 70 + 75 / 80 / 85 / 90% Attack Damage + 60% Ability Power × 50% × Critical Rate → (70 / 100 / 130 / 160 + 70% × bonus Attack Damage + 60% Ability Power) × (1 + Critical Rate × 40% + (Critical Damage-2) × 40% × Critical Rate)\n Non-champion damage ratio: 80% → 75%",
+        "Damage: 4 / 6 / 8 / 10 + 15 / 18 / 21 / 24% Attack Damage → 37.5% / 40% / 42.5% / 45% Attack Damage\n Minion ratio: 75% → 70%",
+        "Initial Movement Speed bonus: 15% → 15 / 20 / 25%\n Initial Movement Speed duration: 10 / 11 / 12 seconds → 8 / 10 / 12 seconds\n Cooldown reduction ratio: 30 / 35 / 40% → 20 / 25 / 30%\n Attack Damage per morale stack: 2 / 3 / 4 → 2 / 2.5 / 3\n Re-triggering refreshes Hunt duration.\n Movement Speed granted on re-trigger: 25% → 15 / 20 / 25%",
+        "Base Attack Damage: 54 → 60",
+        "Damage: 35 / 45 / 55 / 65% Attack Damage → 50 / 60 / 70 / 80% Attack Damage",
+        "True Damage based on Maximum Health: 2 / 5 / 8 / 11% → 6 / 7 / 8 / 9%",
+        "Attack Damage: 15 / 25 / 35 → 30 / 40 / 50",
+        "Attack Damage per Level: 2.65 → 4\n Base Attack Damage: 58 → 60",
+        "Slow effect: 15 / 17.5 / 20 / 22.5 / 25% (based on level) → 20 / 22.5 / 25 / 27.5 / 30% (based on level)\n Bonus damage: 10% + 100% × Critical Rate × (Critical Damage-1) → 100% × Critical Rate + 100% × (Critical Damage-2) × Critical Rate",
+        "Mana cost: 50 / 50 / 50 / 50 → 30 / 30 / 30 / 30",
+        "Cooldown: 16 / 13.5 / 11 / 8.5s → 15 / 12 / 9 / 6s\n Mana cost: 50 / 50 / 50 / 50 → 65 / 60 / 55 / 50\n Damage: 20 / 35 / 50 / 65 + 115% Attack Damage → 70 / 110 / 150 / 190 + 100% bonus Attack Damage",
+        "With base Critical Strike Damage increasing this patch, some champions would end up hitting a little harder than intended. We’re adjusting the Critical Strike Damage modifiers for Jhin, Yasuo, Yone, and Senna to keep their crit damage in check alongside the system changes.",
+        "Base Attack Damage: 58 → 60\n Attack Damage Growth: 4.55 → 5",
+        "[New] Critical strikes now deal only 80% of normal critical strike damage.\n Fourth-shot bonus damage to turrets: 135% / 162% (with Infinity Edge) → 150% / 172.5% (with Infinity Edge)\n Attack Damage conversion ratio: bonus Attack Speed × 30% + Critical Rate × 45% + level × 4.5% → bonus Attack Speed × 30% + Critical Rate × 40% + level × 3%\n Critical-strike Movement Speed: 15% + 0.55% × bonus Attack Speed → 14% + 0.44% × bonus Attack Speed",
+        "Fourth super shot damage ratio: 200% → current Critical Damage",
+        "Attack Speed Ratio: 0.4\n Base Attack Speed: 0.4\n Base Bonus Attack Speed: 0.6\n Attack Speed per Level: 0.05\n Damage based on Current Health: 1.2%~12% (based on level) → 1%~10% (based on level)\n Critical Rate gained per 20 Mist: 15% → 10%\n [New] Basic attacks now deal 90% of normal critical strike damage when they critical strike.",
+        "Base Damage: 50 / 90 / 130 / 170 → 50 / 80 / 110 / 140",
+        "Damage: 250 / 375 / 500 + 120% bonus Attack Damage + 50% Ability Power → 250 / 400 / 550 + 120% bonus Attack Damage + 70% Ability Power\n Shield: 120 / 160 / 200 + 40% Ability Power + Mist × 4 → 120 / 160 / 200 + 50% Ability Power + Mist × 2",
+        "Critical bonus damage: 10% (gain 10% per 100 Ability Power) → 8% (gain 8% per 100 Ability Power)",
+        "Bonus Attack Speed: 22.5% / 35% / 47.5% / 60% → 25% / 35% / 45% / 55%",
+        "Excess Critical Rate to Attack Damage conversion ratio: 0.6 → 0.5\n Yasuo's basic attacks and (1) ability crits deal 90% of normal critical strike damage.",
+        "Damage: 250 / 400 / 550 + 160% bonus Attack Damage → 200 / 350 / 500 + 150% bonus Attack Damage",
+        "Shotgun Critical Strike Damage rate: 1.3 → 1.5",
+        "Excess Critical Rate to Attack Damage conversion ratio: 0.6 → 0.5\n Yone's basic attacks and (1) ability crits deal 90% of normal critical strike damage.",
+        "Damage ratio to Jungle Monsters: 65% → 70%",
+        "Damage: 25 / 35 / 45 / 55 + 11 / 12 / 13 / 14% target’s max Health → 20 / 35 / 50 / 65 + 9 / 10 / 11 / 12% target max Health\n Shield: 45 + 80% bonus Attack Damage → 40 / 55 / 70 / 85 + 60% bonus Attack Damage",
+        "Stored damage ratio: 24 / 28 / 32 / 36% → 27.5% / 30% / 32.5% / 35%",
+        "Damage: 200 / 350 / 500 + 80% Attack Damage → 200 / 375 / 550 + 60% Attack Damage",
+        "Base Attack Damage: 62 → 60\n Attack Damage Growth: 4.5 → 4.2",
+        "Base heal: 7% → 5%",
+        "Critical Damage ratio on current Health damage: current Critical Damage → current Critical Damage × 80%\n Critical Damage ratio on second strike: current Critical Damage → current Critical Damage × 80%\n Thrust damage: 20 / 40 / 60 / 80 ( + 80% Attack Damage) × (1 + 50% × Critical Rate) → 25 / 45 / 65 / 85 ( + 70% Attack Damage) × (1 + 60% × Critical Rate + (Critical Damage-2) × Critical Rate × 60%)",
+        "Attack Speed: 45 / 50 / 55 / 60% → 35 / 40 / 45 / 50%",
+        "Damage: 110% Attack Damage - 165% Attack Damage (based on Critical Rate) + target missing Health × (14 / 17 / 20 + 6% bonus Attack Damage)% → 120% Attack Damage × (1 + 50% × Critical Rate + (Critical Damage - 2) × Critical Rate * 50%) + target missing Health × (14 / 17 / 20 + 5% bonus Attack Damage)%",
+        "We want Tryndamere’s basic attacks to hit like they mean it, rather than relying on a flurry of lower-damage attacks to wear opponents down. We’re removing the bonus Attack Speed from his Passive to shift more power into each individual strike. We’re also adjusting the Attack Damage reduction on his second ability. Its effectiveness will now scale more with points invested into the ability, rather than automatically becoming stronger against opponents who build more Attack Damage.",
+        "Base Attack Damage: 54 → 64\n Attack Damage per Level: 5.5 → 5\n Armor per Level: 3.9 → 4.5",
+        "[Removed] Landing a basic attack on an enemy champion grants 30% Attack Speed for 5 seconds; after the effect ends, it goes on a 6-second cooldown.",
+        "Attack Damage: 7 / 12 / 17 / 22 → 0\n Bonus Attack Damage per 1% missing Health: 0.35 / 0.40 / 0.45 / 0.5 → 0.3 / 0.5 / 0.7 / 0.9",
+        "Attack Damage reduction: 40% → 20 / 40 / 60 / 80%",
+        "Damage: 80 / 120 / 160 / 200 + 135% bonus Attack Damage + 100% Ability Power → 80 / 120 / 160 / 200 + 100% bonus Attack Damage + 80% Ability Power\n Targets that trigger the cooldown reduction on critical strike: Minions → Minions, monsters, champion-summoned units, and other units that can be critically struck",
+        "[Removed] Battle Fury's Attack Speed bonus increases to 45 / 60 / 75%",
+        "Champion Durability Adjustments\n We’re adjusting the durability of several champions to better match how and when they’re intended to take risks in combat. We’re trimming some extreme cases of early-game Health and Armor, while giving champions who regularly dive into the middle of fights more Health growth to help them survive as the game progresses.\n We’re also making targeted durability adjustments to better align certain champions with their intended strengths at different stages of the game. There are quite a few changes here, so check out Champion Durability Details in the appendix for the full list.",
+        "Base Health: 690 → 660\n Attack Speed Ratio: 0.694\n Base Attack Speed: 0.694\n Base Bonus Attack Speed: 0.06\n Attack Speed per Level: 0.0326\n Health per Level: 112 → 140",
+        "Bonus Attack Damage ratio: 120% → 105%",
+        "Armor and Magic Resistance increase: 25 / 35 / 45 → 15 / 25 / 35",
+        "Damage: 11 - 80 (based on level) + 40% Ability Power → 12 - 68 (based on level) + 40% Ability Power",
+        "Removed: Damage modifier against monsters: 150%",
+        "Removed: Damage modifier against monsters: 80%",
+        "Removed: Damage modifier against monsters: 60%",
+        "Item Adjustments\n Marksman Item Adjustments\n We’re updating the marksman item system to create more distinct build paths and give each purchase a clearer purpose. New items like Fiendhunter Bolts and Yun Tal Wildarrows are joining the shop, giving marksmen more options to play toward their individual strengths, particularly when choosing their first item.\n We’re also sharpening the identities of existing marksman items by reducing overly broad stat profiles, simplifying some passive effects, and shifting more power into their core stats. Our goal is for each completed item to provide a clear and meaningful damage spike while making build choices more dependent on what your champion does best. For champions whose abilities scale with Critical Strike Chance and Critical Strike Damage, Infinity Edge will also serve as a powerful capstone for maximizing their damage.\n Dagger\n Base Stats\n Price: 500 → 400\n Attack Speed: 15% → 12%\n Last Whisper\n Base Stats\n [New] Build Path: Long Sword (500) + 700\n Price: 800 → 1200\n [New] Attack Damage: 15\n Armor Penetration: 12% → 15%\n Recurve Bow\n Base Stats\n Build Path: Dagger (500) + Dagger (500) + 400 → Dagger (400) + 500\n Price: 1400 → 900\n Attack Speed: 30% → 20%\n Zeal\n If you continue to see Movement Speed adjustments below, don't be surprised. They're part of our broader effort to rein in and standardize late-game Movement Speed.\n Base Stats\n Movement Speed: 5% → 4%\n Noonquiver\n We’re introducing Noonquiver to fill a gap in the marksman item system, providing both Attack Damage and Critical Strike Chance in a single component. It should also make building toward items that offer both stats feel smoother and more flexible.\n Base Stats\n Build Path: Long Sword (500) + Dagger (500) + 350 → Long Sword (500) + Brawler's Gloves (500) + 300\n Price: 1350 → 1300\n Attack Damage: 25 → 20\n [Removed] Attack Speed: 15%\n [New] Critical Rate: 15%\n Vampiric Scepter\n For details on Physical Vamp and Lifesteal , see the section below.\n Base Stats\n [Removed] Physical Vamp: 8%\n [New] Lifesteal: 8%\n Kircheis Shard\n With more items that don’t provide Attack Damage now building from Kircheis Shard, we’re removing its Attack Damage to better support the wider range of items it builds into.\n Base Stats\n Build Path: Long Sword (500) + 400 → Dagger (400) + 400\n Price: 900 → 800\n [Removed] Attack Damage: 15\n [New] Attack Speed: 20%\n Shock\n Dealing damage to an enemy champion deals 40 bonus magic damage (25 second cooldown). Attacks reduce this cooldown by 1 second.\n Pickaxe\n We’re adjusting Pickaxe to smooth out the build paths for items with lower overall Attack Damage, particularly those that also build from Attack Damage components like Vampiric Scepter or Caulfield’s Warhammer.\n Base Stats\n Price: 800\n Build Path: Long Sword (500) + 300\n Attack Damage: 20\n Hearthbound Axe\n Hearthbound Axe replaces Noonquiver as the mid-tier Attack Speed and Attack Damage component.\n Base Stats\n Price: 1200\n Build Path: Long Sword (500) + Dagger (400) + 300\n Attack Damage: 20\n Attack Speed: 15%\n Hexoptics C44\n We want crit marksmen to have more meaningful choices after completing their first item, and Hexoptics C44 offers a new option for those looking to take over teamfights. Participating in a takedown grants additional Attack Range, helping you keep the momentum going, while your damage increases based on how far you are from your target.\n Base Stats\n Price: 2900\n Build Path: Pickaxe (800) + Noonquiver (1300) + Long Sword (500) + 300\n Attack Damage: 55\n Critical Rate: 25%\n Magnification\n Attacks deal 0 - 10% bonus damage based on how far away the enemy is, reaching maximum damage at 550 units.\n Arcane Aim\n When a champion you damaged within the last 3 seconds dies, you gain 100 bonus Attack Range for 8 seconds.\n Yun Tal Wildarrows\n Yun Tal Wildarrows offers a highly gold-efficient first-item option for crit marksmen, providing Attack Damage, Critical Strike Chance, and Attack Speed. There is a catch, though: its unique Critical Strike Chance stacking mechanic means it takes time to reach its full potential. You’ll need to decide whether the game state gives you enough time to invest in scaling or if you need power right away.\n Base Stats\n Price: 3100\n Build Path: Noonquiver (1300) + Pickaxe (800) + Kircheis Shard (800) + 200\n Attack Damage: 50\n Critical Rate: 0%\n Attack Speed: 25%\n Practice Makes Perfect\n Basic attacks permanently grant Critical Rate, gaining 0.4% / 0.2% (melee / ranged) Critical Rate per attack, up to a maximum of 25%.\n Flurry\n Attacking an enemy champion grants 25% Attack Speed for 6 seconds (20 second cooldown). Attacks reduce this cooldown by 1 second, and this reduction increases to 2 seconds on a critical strike.\n Energized items\n Consolidating so many Energized effects into a small number of items left marksmen with fewer meaningful choices. Magnetic Blaster, in particular, offered range, waveclear, burst, and kiting all in one package, making it difficult to strengthen crit marksmen without also giving them too much power from a single item. We’re breaking that power back apart. Magnetic Blaster has been removed, with its effects redistributed across three items to create more distinct choices. We’re also reworking Statikk Shiv into an item focused on on-hit marksmen.\n Stormrazor\n As an old friend of the Energized family, [Stormrazor] has returned to Summoner's Rift. In the early game, it offers the strongest lane pressure and kiting power for players who want to focus on laning, and champions that rely on heavy-damage basic attacks or need Energized effects can choose it.\n Base Stats\n Price: 3000\n Build Path: B. F. Sword (1500) + Kircheis Shard (800) + Brawler's Gloves (500) + 200\n Attack Damage: 50\n Critical Rate: 25%\n Attack Speed: 20%\n Energized\n Moving and attacking generate an Energized attack.\n Bolt\n Your Energized attack deals 120 bonus magic damage and grants 45% Movement Speed for 1.5 seconds.\n Rapid Firecannon\n Rapid Firecannon is stepping in for Magnetic Blaster as a more specialized option for marksmen who value additional Attack Range. It’s especially useful for champions who need a little extra reach to safely find opportunities to deal damage in teamfights.\n Base Stats\n Price: 2650\n Build Path: Zeal (1400) + Kircheis Shard (800) + 450\n Critical Rate: 25%\n Attack Speed: 40%\n Movement Speed: 4%\n Energized\n Moving and attacking generate an Energized attack.\n Sharpshooter\n Your Energized attack deals 80 bonus magic damage and grants 35% bonus Attack Range, up to 150.\n Fiendhunter Bolts\n When marksmen choose between Zeal items, we want them to have different options based on the situation or the specific needs of their champion. Fiendhunter Bolts provides a powerful window after casting an ultimate, making it a great way to boost burst damage for marksmen who already play around their ultimate, such as Twitch, Zeri, and Yunara.\n Base Stats:\n Attack Speed Ratio: 0.65\n Base Attack Speed: 0.65\n Base Bonus Attack Speed: 0.23\n Attack Speed per Level: 0.032\n 2650\n Build Path: Zeal (1400) + Kircheis Shard (800) + 450\n Critical Rate: 25%\n Attack Speed: 45%\n Movement Speed: 4%\n Night Vigil:\n Gain 20 ultimate ability haste.\n Opening Barrage:\n After casting your ultimate ability, your next 3 attacks gain 50% Attack Speed and are guaranteed to crit, dealing 80% of your normal critical strike damage for 8 seconds. If an attack would already crit, it instead deals 15% bonus true damage. (45 second cooldown)\n\n Immortal Shieldbow\n Immortal Shieldbow is returning as a dedicated defensive option, designed to give marksmen more survivability in the late game.\n Base Stats\n Price: 3000\n Build Path: Noonquiver (1300) + Pickaxe (800) + 900\n Attack Damage: 55\n Critical Rate: 25%\n Lifeline:\n When you take damage that would reduce you to below 35% Health, gain a shield for 3 seconds (350 - 650 for melee, 300 - 550 for ranged, based on champion level). (70 second cooldown)\n Statikk Shiv\n On-hit builds have long lacked some room for itemization, and now Statikk Shiv can join that space as a specialized on-hit option. The new Statikk Shiv allows on-hit builds to apply their effects to multiple enemies at the same time, creating exciting item combinations and helping those builds matter in teamfights.\n Base Stats\n Price: 3000\n Build Path: Aether Wisp (950) + Pickaxe (800) + Kircheis Shard (800) + 450\n Attack Damage: 40\n Ability Power: 40\n Attack Speed: 30%\n Movement Speed: 4%\n Energized:\n Moving and attacking generate an Energized attack.\n Electrospark:\n Your Energized attack fires chain lightning that bounces to additional targets. Bounce count: 3 / 4 / 5 / 6, increasing at levels 1 / 5 / 9 / 13, dealing 60 magic damage, increased to 90 against minions and monsters. Applies on-hit effects to secondary bounce targets.\n ElectroShock:\n Basic attacks grant 5 bonus Energized stacks.\n Bloodthirster\n Bloodthirster is returning to its identity as a high-Attack Damage, high-Lifesteal item and is no longer limited to crit champions.\n Base Stats:\n Build Path: Vampiric Scepter (1200) + Cloak of Agility (1000) + Ruby Crystal (500) + 300 → Vampiric Scepter (1200) + B. F. Sword (1500) + 500\n Price: 3000 → 3200\n Attack Damage: 55 → 75\n [Removed] Critical Rate: 25%\n [Removed] Max Health: 250\n [Removed] Physical Vamp: 8%\n [New] Lifesteal: 15%\n Ichorshield\n Convert overhealing from your Lifesteal into a shield, up to 165 - 345 (based on level).\n Essence Reaver\n We've streamlined Essence Reaver's effects, making it slightly weaker on its best users, such as Viego and Lucian, while allowing it to better serve a wider range of champions who want Critical Strike Chance, Attack Damage, and Ability Haste.\n Base Stats:\n Build Path: Sheen (800) + Cloak of Agility (1000) + Long Sword (500) + 700 → Sheen (800) + Caulfield's Warhammer (1200) + Brawler's Gloves (500) + 500\n Attack Damage: 35 → 50\n Spellblade:\n After casting an ability, your next basic attack within 10 seconds deals bonus physical damage equal to 135% × base Attack Damage + 0 - 80 (Based on Critical Rate) and restores Mana equal to 50% of the damage dealt. (1.5 second cooldown)\n Galeforce\n Base Stats\n Build Path: Zeal (1400) + B. F. Sword (1500) + 200 → Noonquiver (1300) + Pickaxe (800) + Long Sword (500) + 500\n Attack Damage: 50 → 60\n [Removed] Attack Speed: 15%\n Movement Speed: 5% → 4%\n The Collector\n Base Stats\n Build Path: Serrated Dirk (1000) + Cloak of Agility (1000) + 1000 → Serrated Dirk (1000) + Noonquiver (1300) + 700\n Attack Damage: 45 → 50\n Death and Taxes:\n If you deal damage to an enemy champion and leave them below 5% of their max Health, they are executed, permanently increasing the execute threshold by 0.1% of max Health and granting an additional 25 gold.\n Kraken Slayer\n Base Stats\n Build Path: Noonquiver (1300) + Dagger (500) + Long Sword (500) + 500 → Recurve Bow (900) + Hearthbound Axe (1200) + Long Sword (500) + 300\n Price: 2800 → 2900\n Attack Damage: 40 → 45\n Attack Speed: 30% → 35%\n Movement Speed: 5% → 4%\n Bring It Down:\n Every third attack now deals 150 - 210 bonus physical damage, or 120 - 168 for ranged champions. This damage is increased based on the target's missing Health. For every 1% Health the target is missing, damage increases by 0.75%, up to 75%.\n Optimized its interaction with Yunara's 1st ability; Yunara's 1st ability spread effect can now trigger [Bring It Down].\n Blade of the Ruined King\n For details on Physical Vamp and Lifesteal , see the section below.\n Base Stats\n Build Path: Vampiric Scepter (1200) + Recurve Bow (1400) + 400 → Vampiric Scepter Scepter (1200) + Pickaxe (800) + Recurve Bow (900) + 200\n Price: 3200 → 3100\n Attack Speed: 35% → 30%\n [Removed] Omnivamp: 10%\n [New] Lifesteal: 12%\n Ruined Strike:\n Basic attacks deal bonus physical damage on hit equal to 7% of the target's current Health (8.5% for melee), with a minimum of 15 and a maximum of 100 against monsters.\n Drain:\n Hitting the same enemy champion 3 times with basic attacks or abilities slows them by 30% for 1.5 seconds (30 second cooldown).\n Guinsoo's Rageblade\n Guinsoo’s Rageblade has long been a staple for on-hit marksmen, but giving up Critical Strike Chance to build it can feel like too steep a tradeoff. We’re removing its Critical Strike Chance restriction, giving on-hit champions more flexibility in their builds while keeping Rageblade’s power focused on repeatedly triggering on-hit effects rather than dealing additional damage of its own.\n Base Stats:\n Build Path: Nashor's Talon (800) + Recurve Bow (1400) + 900 → Amplifying Tome (500) + Recurve Bow (900) + Pickaxe (800) + + 800\n Price: 3100 → 3000\n [New] Attack Damage: 35\n [New] Ability Power: 30\n [Removed] Movement Speed: 5%\n Wrath:\n Attacks deal 30 bonus magic damage.\n Seething Strike:\n Basic attacks grant 8% Attack Speed, stacking up to 4 times. At max stacks, every 3rd basic attack triggers an additional on-hit effect.\n At Wit's End\n Base Stats\n Build Path: Recurve Bow (1400) + Negatron Cloak (900) + 500 → Recurve Bow (900) + Negatron Cloak (900) + Dagger (400) + 600\n Attack Speed: 45% → 50%\n [New] Tenacity: 20%\n At Wit's End:\n Basic attacks deal 40 bonus magic damage on hit.\n Terminus\n Base Stats\n Build Path: Recurve Bow (1400) + B. F. Sword (1500) + 400 → Recurve Bow (900) + Hearthbound Axe (1200) + 900\n Total Price: 3300 → 3000\n Attack Damage: 40 → 35\n Attack Speed: 30% → 35%\n Shadow\n Basic attacks deal 30 bonus magic damage on hit.\n Juxtaposition\n The light effect grants 5 - 8 Armor and Magic Resist; the dark effect grants 10% Armor Penetration and Magic Penetration, stacking up to 3 times.\n Phantom Dancer\n Base Stats\n Build Path: Zeal (1400) + Dagger (500) + Long Sword (500) + 500 → Zeal (1400) + Dagger (400) + Dagger (400) + 450\n Price: 2900 → 2650\n [Removed] Attack Damage: 20\n Movement Speed: 5% → 7%\n Spectral Waltz:\n Landing a basic attack on a champion grants 6% Attack Speed and 1% Movement Speed for 6 seconds, stacking up to 5 times.\n Runaan's Hurricane\n Base Stats\n Build Path: Recurve Bow (1400) + Cloak of Agility (1000) + 500 → Zeal (1400) + Kircheis Shard (800) + 450\n Price: 2900 → 2650\n Attack Speed: 35% → 40%\n [New] Movement Speed: 4%\n Wind's Fury:\n Basic attacks fire mini bolts at 2 nearby targets on hit, each dealing 55% physical damage. These bolts can crit and apply on-hit effects.\n Wind Blade\n [Removed]\n Mortal Reminder\n We want Mortal Reminder to stand out through its slot efficiency rather than directly competing with other Armor Penetration options that offer similar stats. We’re sharpening its identity so the choice between penetration items is clearer, making it easier to understand what you’re gaining from each option and when Mortal Reminder is the right fit for your build.\n Base Stats\n Build Path: Last Whisper (800) + Executioner's Calling (800) + Cloak of Agility (1000) + 900 → Last Whisper (1200) + Executioner's Calling (800) + Brawler's Gloves (500) + 500\n Price: 3300 → 3000\n Attack Damage: 25 → 35\n [Removed] Attack Speed: 15%\n [New] Armor Penetration: 30%\n Sepsis:\n Physical damage dealt to enemy champions applies 50% Grievous Wounds for 3 seconds.\n Last Whisper\n Integrated into base stats.\n Infinity Edge\n With the increase to base Critical Strike Damage, Infinity Edge is already compelling enough, making its Critical Strike Damage passive feel somewhat redundant.\n Base Stats\n Build Path: B. F. Sword (1500) + Cloak of Agility (1000) + 900 → B. F. Sword (1500) + Pickaxe (800) + Brawler's Gloves (500) + 700\n Attack Damage: 65 → 75\n\nInfinity:\n Critical strike damage increased from 200% to 230%.\n Limit Break:\n [Removed]\n Manamune\n The Mana consumption mechanic on completed Tear of the Goddess items has become outdated. We removed it from Seraph’s Embrace last patch, and now Manamune and Muramana are getting the same treatment, making their effects less dependent on spending Mana.\n Base Stats\n Build Path: Tear of the Goddess (500) + Caulfield's Warhammer (1200) + 1000 → Caulfield's Warhammer (1200) + Tear of the Goddess (400) + Long Sword (500) + 800\n Price: 2700 → 2900\n Attack Damage: 25 → 40\n Mana: 300 → 500\n Ability Haste: 20 → 15\n AWE:\n Gain Attack Damage equal to 2% of max Mana and refund 15% of total Mana spent.\n Mana Charge:\n Basic attacks and Mana expenditure grant 14 max Mana, up to 700. Triggers at most 3 times every 10 seconds.\n Muramana\n Base Stats\n Price: 2700 → 2900\n Attack Damage: 25 → 40\n Ability Haste: 20 → 15\n AWE:\n Gain Attack Damage equal to 2% of max Mana and refund 15% of total Mana spent.\n Shock:\n Basic attacks deal bonus physical damage equal to 1.5% of max Mana; abilities deal bonus physical damage equal to 3.5% / 3% of max Mana for melee / ranged.\n Serylda's Grudge\n Serylda’s Grudge has been offering too much utility to champions outside of its intended audience. We’re reworking its Slow and Grievous Wounds effects while strengthening its core stats, sharpening its identity as an Armor Penetration option for high-burst champions.\n Base Stats\n Build Path: Caulfield's Warhammer (1200) + Last Whisper (800) + Long Sword (500) + 800 → Caulfield's Warhammer (1200) + Last Whisper (1200) + 700\n Price: 3300 → 3100\n Attack Damage: 40 → 50\n [New] Armor Penetration: 35%\n Icy:\n Damaging active abilities and empowered attacks slow enemies below 60% current Health by 30% Movement Speed for 1 second.\n Last Whisper\n Integrated into base stats.\n Frostbite:\n [Removed]\n Navori Quickblades\n Base Stats\n Price: 2800 → 2650\n Attack Speed: 45% → 40%\n Movement Speed: 5% → 4%\n Lord Dominik's Regards\n Base Stats\n Build Path: Last Whisper (800) + Long Sword (500) + Cloak of Agility (1000) + 1000 → Last Whisper (1200) + Noonquiver (1300) + 800\n Attack Damage: 30 → 35\n Armor Penetration: 36% → 35%\n Mercurial Scimitar\n Base Stats\n [Removed] Physical Vamp: 10%\n [New] Lifesteal: 12%\n Removed\n As mentioned above, Magnetic Blaster has been removed due to being too much of an all-purpose item. Magnetic Blaster\n\n Soul Transfer has struggled to find its intended audience, so we've decided to take it off the Rift for now. Soul Transfer\n\n Cloak of Agility overlaps too heavily with Brawler's Gloves, and there are few situations where stacking Critical Strike Chance takes priority over building Attack Damage. Cloak of Agility\n\n Nashor's Talon has lost its last remaining user. It's time for it to leave the Rift. Nashor's Talon\n\n Other Item Adjustments\n Alongside the marksman item overhaul, we’re also sharpening the identities of items for other classes. Some items currently offer too many different stats at once, which can leave them without a clear purpose or create unintended synergies. We’re streamlining these stat profiles so each item has a more defined role and a clearer reason to build it.\n Winged Moonplate\n Base Stats\n Movement Speed: 5% → 4%\n Bami's Cinder\n Following the changes to Smite (see below), Shimmering Spark no longer has a place as a starting item, so we're removing it and adjusting Bami's Cinder's build path accordingly.\n Base Stats\n Build Path: Shimmering Spark (500) + Ruby Crystal (500) + 300 → Ring of Revelation (300) + Ruby Crystal (500) + 400\n Total Price: 1300 → 1200\n [New] Ability Haste: 5\n Aether Wisp\n Base Stats\n Movement Speed: 5% → 4%\n Phage\n Rage:\n Each time a basic attack hits a unit, gain 20 Movement Speed for 2 seconds. This Movement Speed bonus does not stack, and the effect is halved for ranged champions.\n Forbidden Idol\n Forbidden Idol and the items it builds into have been offering too many different stats at once, allowing enchanters to stack powerful healing and shielding while also gaining significant durability and other benefits.\n We’re sharpening the identity of these components by specializing Forbidden Idol around Heal and Shield Power. The new Bandleglass Mirror will instead serve as the go-to component for Ability Power and Ability Haste, creating clearer build paths based on the stats you need.\n Base Stats\n Build Path: No recipe\n Price: 900 → 700\n Heal and Shield Power: 4% → 6%\n [Removed] Health: 100\n [Removed] Ability Haste: 5\n Bandleglass Mirror\n Bandleglass Mirror is a mid-tier support item component that provides Ability Power and Ability Haste.\n Base Stats\n Build Path: Amplifying Tome (500) + Ring of Revelation (300) + 100\n Total Price: 900\n Ability power: 20\n Base Mana Regen: 50%\n Ability Haste: 10\n Whispering Circlet\n Base Stats\n Price: 2400\n Build Path: Forbidden Idol (700) + Tear of the Goddess (400) + Ruby Crystal (500) + 800\n Health: 200\n Maximum Mana: 500\n Base Mana Regen: 50%\n Heal and Shield Power: 8%\n Harmony:\n Gain bonus Heal and Shield Power equal to 0.5% of max Mana and refund 25% of Mana spent.\n Mana Charge:\n Mana expenditure grants 14 max Mana, up to 700. This can trigger at most 2 times every 10 seconds. At max stacks, it automatically upgrades into Diadem of Songs.\n Diadem of Songs\n Base Stats\n Build Path: Whispering Circlet\n Health: 200\n Mana: 1200\n Base Mana Regen: 50%\n Heal and Shield Power: 8%\n Harmony:\n Gain bonus Heal and Shield Power equal to 0.5% of max Mana and refund 25% of Mana spent.\n Diadem\n If either you or an allied champion you healed or shielded within the last 3 seconds is in combat, heal the nearby allied champion with the lowest Health within 800 units each second for an amount equal to 0.8% of your max Mana.\n Echoes of Helia\n Echoes of Helia is tailor-made for offensive supports looking to turn their damage into healing.\n Base Stats\n Price: 2400\n Build Path: Bandleglass Mirror (900) + Kindlegem (1000) + 500\n Health: 200\n Ability Power: 40\n Ability Haste: 20\n Base Mana Regen: 50%\n Soul Siphon:\n 30% of pre-mitigation damage dealt to enemy champions is stored as Soul Fragments, with a maximum of 80 - 250 based on level. When you heal or shield an allied champion other than yourself, all Soul Fragments are consumed to heal that target for an equal amount.\n Ardent Censer\n In addition to addressing the mixed-stat issue mentioned above, we're also narrowing the buffs Ardent Censer provides to marksmen, particularly crit marksmen, so supports don't have to pay as much attention to their own level or how much Critical Strike Chance their marksman currently has.\n Base Stats\n Build Path: Forbidden Idol (900) + Aether Wisp (950) + Ring of Revelation (300) + 550 → Forbidden Idol (700) + Aether Wisp (950) + 750\n Price: 2700 → 2400\n Ability Power: 45 → 50\n Heal and Shield Power: 5% → 8%\n Movement Speed: 5% → 4%\n [Removed] Ability Haste: 10\n [Removed] Health: 250\n Censer:\n Shielding or healing an allied champion other than yourself empowers both you and that champion for 6 seconds, granting 30% bonus Attack Speed and 25 bonus magic damage on basic attacks.\n Staff of Flowing Waters\n Base Stats\n Price: 2500 → 2400\n Health: 100 → 0\n Heal and Shield Power: 5% → 8%\n Ability Haste: 15 → 10\n Rapids:\n Shielding or healing an allied champion other than yourself empowers both you and that champion for 6 seconds, granting 40 Ability Power and 15 Ability Haste.\n Salvation\n Base Stats\n Price: 2600 → 2450\n Health: 150 → 0\n Ability Power: 50 → 40\n Heal and Shield Power: 5% → 8%\n Ability Haste: 15 → 10\n Shurelya's Battlesong\n Base Stats\n Build Path: Aether Wisp (950) + Amplifying Tome (500) + Ring of Revelation (300) + 750 → Bandleglass Mirror (900) + Aether Wisp (950) + 600\n Movement Speed: 5% → 4%\n Imperial Mandate\n Imperial Mandate has become a little too closely tied to Nami, while its trigger condition and power spike haven’t always been easy to understand. We’re giving it a refresh with clearer functionality and a stronger identity as an option for crowd control-focused mages.\n Base Stats\n Build Path: Fiendish Codex (900) + Kindlegem (1000) + 600 → Bandleglass Mirror (900) + Blasting Wand (800) + 900\n Price: 2500 → 2600\n Health: 200 → 0\n Ability Power: 50 → 60\n [New] Base Mana Regen: 50%\n Control:\n Crowd Control abilities gain 20 Ability Haste.\n Command:\n Crowd-controlling an enemy champion marks them for 4 seconds, causing them to take 7% increased damage during that time.\n Harmonic Echo\n Harmonic Echo has been scaling a little too well with Ability Haste and Heal and Shield Power, allowing some champions to provide an overwhelming amount of healing in the late game. We’re reworking it into a chain healing and shielding item. Rather than simply amplifying repeated healing, champions with powerful heals and shields can now use Harmonic Echo to spread those effects to additional teammates, giving the item a clearer role in supporting the whole team.\n Base Stats\n Build Path: Lost Chapter (1200) + Forbidden Idol (900) + Amplifying Tome (500) + 100 → Bandleglass Mirror (900) + Kindlegem (1000) + 600\n Price: 2800 → 2500\n Health: 100 → 200\n Ability Power: 50 → 40\n Ability Haste: 15 → 20\n [Removed] Max Mana: 300\n [Removed] Heal and Shield Power: 5%\n Harmonic Echo:\n When you heal or shield an allied champion, the effect links to the nearest allied champion within range with the lowest percentage Health, excluding yourself, and grants them 30% of that heal or 35% of that shield. If no other allied champion is in range, the original target instead receives that same extra heal or shield.\n Knight's Vow\n Base Stats\n Build Path: Kindlegem (1000) + Chain Vest (900) + 700 → Kindlegem (1000) + Chain Vest (900) + 550\n Price: 2600 → 2450\n Health: 400 → 200\n Zeke's Convergence\n Some Zeke’s Convergence users cast their ultimate before getting close to the action, making it difficult to get full value from the item. We’re adjusting its effect to better support champions who engage from range. We’re also redistributing some of the Armor on tank support items into Magic Resist. This should give tank supports more balanced durability against physical and magic damage, rather than making them exceptionally tough against marksmen while leaving them overly vulnerable to mages.\n Base Stats\n Build Path: Glacial Shroud (1000) + Giant's Belt (1000) + 700 → Kindlegem (1000) + Cloth Armor (500) + Null-Magic Mantle (500) + 400\n Price: 2700 → 2400\n Health: 400 → 300\n [Removed] Mana: 150\n Armor: 40 → 25\n [New] Magic Resist: 25\n Ability Haste: 15 → 10\n Converge:\n Gain 10 ultimate ability haste.\n Frostfire Tempest:\n Casting your ultimate ability deals 150 magic damage and slows nearby enemies by 30% over 5 seconds. If no enemy champion is in range when the ultimate is cast, the effect is delayed until up to 5 seconds later or until an enemy champion enters range.\n Yordle Trap\n Yordle Trap Device has become too focused on snowballing through the extra Gold it generates, while its payoff can feel inconsistent from game to game. We also want support items to encourage you to, well, support your team. We’re shifting more of the item’s power away from Gold generation and into buffs for your allies. Don’t worry, though, you’ll still pocket a little extra Gold along the way.\n Base Stats\n Build Path: Chain Vest (900) + Kindlegem (1000) + 700 → Kindlegem (1000) + Cloth Armor (500) + Null-Magic Mantle (500) + 400\n Price: 2600 → 2400\n Health: 350 → 200\n Armor: 40 → 20\n [New] Magic Resist: 20\n Catcher:\n Slowing or immobilizing an enemy champion empowers you for 8 / 4s, melee / ranged, granting 20 Movement Speed. During this time, you and nearby allies gain 30% / 20% bonus Attack Speed, melee / ranged. If an ally, including you, gets a kill while inspired, you gain 20 gold.\n Mantle of the Twelfth Hour\n Mantle of the Twelfth Hour is meant to help tanks survive heavy bursts of damage, but its high price and reliance on resistances have made it difficult to justify. We’re addressing both issues to make it a more reliable anti-burst option and a worthwhile choice earlier in a tank’s build.\n Base Stats\n Build Path: Surging Scales (1300) + Negatron Cloak (900) + 500 → Kindlegem (1000) + Giant's Belt (1000) + 550\n Price: 2700 → 2550\n Health: 200 → 600\n [Removed] Armor: 40\n [Removed] Magic Resist: 40\n [New] Ability Haste: 20\n Lifeline:\n When you drop below 30% max Health, immediately gain 200 - 300 bonus Health for 5 seconds, and heal over 5 seconds for 200 - 400 + 120% bonus Armor + 120% bonus Magic Resistance + 15% bonus Health. During this time, gain 10% size, 10% bonus Movement Speed, and 20% Tenacity.\n Frozen Heart\n Frozen Heart has drifted away from its intended purpose, with its current effect asking users to hit multiple enemies with abilities just to apply its debuff. We’re bringing it back to its roots as an item for tanks who dive straight into the heart of the enemy team, allowing them to disrupt nearby opponents simply by being in the thick of the fight.\n Base Stats\n Price: 2650 → 2550\n Max Mana: 250 → 400\n Winter's Caress:\n All enemy champions within 650 units lose 25% Attack Speed.\n Radiant Virtue\n Base Stats\n Build Path: Kindlegem (1000) + Chain Vest (900) + 950 → Giant's Belt (1000) + Cloth Armor (500) + Null-Magic Mantle (500) + 650\n Price: 2850 → 2650\n Armor: 45 → 30\n [New] Magic Resist: 30\n Ability Haste: 15 → 10\n Abyssal Mask\n Abyssal Mask has struggled to find a clear audience and purpose. We’re refocusing it as a more accessible option for tank supports and other low-economy champions, helping them empower their teammates without needing a hefty Gold income.\n Base Stats\n Build Path: Kindlegem (1000) + Negatron Cloak (900) + Ruby Crystal (500) + 600 → Kindlegem (1000) + Negatron Cloak (900) + 500\n Price: 3000 → 2400\n Health: 400 → 350\n Magic Resist: 55 → 45\n Unmake:\n All enemy champions within 6.5 meters take 12% increased magic damage.\n Gunmetal Greaves\n For details on Physical Vamp and Lifesteal , see the section below.\n Base Stats\n [Removed] Physical Vamp: 5%\n [New] Lifesteal: 5%\n Death's Dance\n Death’s Dance has been leaning too heavily on Defy, leaving its base stats weaker than we’d like. We’re making Defy harder to trigger while strengthening the item’s core stats in return, giving its users more consistent combat power even when Defy isn’t active.\n Base Stats\n Build Path: Caulfield's Warhammer (1200) + Chain Vest (900) + 1000 → Caulfield's Warhammer (1200) + Chain Vest (900) + Pickaxe (800) + 300\n Total Price: 3100 → 3200\n Attack Damage: 35 → 50\n Armor: 40 → 45\n Defy:\n If a champion you damaged within the last 3 seconds dies, the remaining Ignore Pain damage is cleansed, and you heal over 2 seconds for an amount equal to 90% bonus Attack Damage.\n Cauterize:\n Store 30% of physical and magic damage taken, or 12% for ranged champions, and take the stored amount as true damage over 3 seconds.\n Winter's Approach\n Base Stats\n Build Path: Tear of the Goddess (500) + Giant's Belt (1000) + 1100 → Tear of the Goddess (400) + Giant's Belt (1000) + Kindlegem (1000) + 200\n Max Health: 350 → 500\n AWE:\n Gain bonus Health equal to 15% of max Mana and refund 15% of total Mana spent.\n Mana Charge:\n Basic attacks, Mana expenditure, and taking damage from champions, structures, and epic monsters grant 14 max Mana. This effect grants up to 700 max Mana and can trigger at most 3 times every 10 seconds. Limited to one Tear of the Goddess item.\n Fimbulwinter\n Base Stats\n Max Health: 350 → 500\n Awe:\n Gain bonus Health equal to 15% of max Mana and refund 15% of total Mana spent.\n Frozen Colossus:\n Whenever you impair an enemy champion's movement, gain a shield for 3 seconds that absorbs 120 + 4.5% max Mana. If more than one enemy champion is nearby, the shield is increased by 80%. (8 second cooldown) Ranged champions use this shield at 50% effectiveness.\n Amaranth's Twinguard\n We’ve always intended Amaranth’s Twinguard to be the capstone item for tanks, much like Infinity Edge for crit marksmen or Rabadon’s Deathcap for mages. Right now, it isn’t quite hitting that mark. It’s too appealing to champions outside the tank class, while tanks themselves don’t always feel a meaningful power spike when completing it We’re shifting some of its raw resistances into Health and bonus resistances, giving tanks a more noticeable durability spike when they complete Twinguard while reducing some of its late-game synergy with percentage-based resistance effects. This should also make it less appealing to champions who don’t invest heavily in bonus resistances. Yes, fighters, we’re looking at you.\n Base Stats\n Build Path: Surging Scales (1300) + Negatron Cloak (900) + 900 → Giant's Belt (1000) + Chain Vest (900) + Negatron Cloak (900) + 400\n Total Price: 3100 → 3200\n [New] Health: 300\n Armor: 60 → 50\n Magic Resist: 60 → 50\n Endurance:\n While in combat with enemy champions, gain 1 Endurance stack each second, up to 5 stacks. At max stacks, gain 20% increased size, 20% Tenacity, 30% bonus Armor, and 30% bonus Magic Resistance until leaving combat.\n Dead Man's Plate\n Base Stats\n Build Path: Winged Moonplate (900) + Surging Scales (1300) + 600 → Winged Moonplate (900) + Chain Vest (900) + Ruby Crystal (500) + 500\n Movement Speed: 5% → 4%\n Force of Nature\n Force of Nature has become too dominant as the answer to magic damage, particularly due to its percentage damage reduction. We’re removing that effect to bring down some of its more extreme defensive cases and create more room for other Magic Resistance items to shine. This also gives us more flexibility to adjust the Magic Resistance system and mage ecosystem in the future. We’ll be keeping a close eye on mage performance following these changes.\n Base Stats\n Build Path: Winged Moonplate (900) + Spectre's Cowl (1100) + 750 → Winged Moonplate (900) + Negatron Cloak (900) + Ruby Crystal (500) + 500\n Price: 2750 → 2800\n Max Health: 350 → 400\n Absorb:\n Taking magic damage from enemy champions grants 1 Steadfast stack, up to 4, for 7 seconds. Dealing damage to enemy champions refreshes the duration. At max stacks, gain 6% Movement Speed and 70 bonus Magic Resist.\n Youmuu's Ghostblade\n We’re making Youmuu’s Ghostblade a more consistent option by moving its Movement Speed away from the stacking mechanic and into persistent and out-of-combat Movement Speed. This should make its mobility more reliable, whether you’re moving around the map or looking for your next fight.\n Base Stats\n [New] Movement Speed: 4%\n Momentum:\n 3 seconds after combat with enemy champions ends, gain 30 bonus Movement Speed, or 20 for ranged champions.\n Spectral Haste [Removed]\n Titanic Hydra\n Base Stats\n Build Path: Bami's Cinder (1300) + Jaurim's Fist (1200) + 500 → Pickaxe (800) + Jaurim's Fist (1200) + Ruby Crystal (500) + 500\n Cosmic Drive\n Base Stats\n Movement Speed: 5% → 4%\n Trinity Force\n Base Stats\n Build Path: Sheen (800) + Phage (1000) + Stinger (1200) + 333 → Sheen (800) + Phage (1000) + Hearthbound Axe (1200) + 333\n Attack Damage: 30 → 36\n Ability Haste: 20 → 15\n Movement Speed: 5% → 0\n Dusk and Dawn\n Dusk and Dawn is just one step away from being the perfect item. A bit of healing should help give it stronger sustained combat power.\n Base Stats\n Ability Power: 70 → 60\n Max Health: 350 → 300\n Attack Speed: 25% → 20%\n Spellblade:\n After casting an ability, your next attack deals bonus magic damage equal to 75% base Attack Damage + 10% Ability Power and heals you for 10% Ability Power + 3% bonus Health. Shortly afterward, it applies one additional on-hit effect to the target. (1.5 second cooldown) Deals reduced damage to structures.\n Nashor's Tooth\n Nashor’s Tooth’s Adaptive Force hasn’t created many meaningful build opportunities, while limiting how much power we can give its other stats. We’re removing it and returning Nashor’s Tooth to its roots as a dedicated Ability Power item.\n Base Stats\n Build Path: Nashor's Talon (800) + Recurve Bow (1400) + 600 → Recurve Bow (900) + Blasting Wand (800) + Fiendish Codex (900) + 300\n Total Price: 2800 → 2900\n Attack Speed: 45% → 50%\n [New] Ability Power: 80\n Ability Haste: 20 → 15\n Gnaw:\n Basic attacks deal 15 + 20% bonus Ability Power magic damage on hit.\n Magic Fang:\n [Removed]\n Luden's Echo\n Luden’s Echo has been a little too effective at spreading its damage across multiple targets. We’re reducing its multi-target damage while leaving its single-target power unchanged, keeping it effective when you’re focused on bursting down one opponent.\n Echo:\n Your next damaging ability or empowered basic attack deals 75 + 8% Ability Power magic damage to the primary target and up to 5 nearby enemies. For each fewer target hit by Echo, the primary target takes an additional 20 + 1.2% Ability Power magic damage. (9 second cooldown)\n Sunfire Aegis\n Sunfire Aegis’s stacking and basic attack mechanics have made its damage harder to understand, while allowing champions with high Attack Speed and mobility to get more value from it than intended. We’re simplifying its damage mechanic and shifting its power toward high-Health tanks, giving the item a clearer identity and making its damage more intuitive.\n Immolate:\n Upon entering combat, deals 20 + 1.5% bonus Health Magic Damage to nearby enemies every second. Immolate deals 175%–250% damage to minions and 130% damage to monsters.\n Flametouch:\n [Removed]\n Infinity Orb\n Inevitable Demise\n Critical Strike Threshold: 35% → 40%\n Sterak's Gage\n Base Stats\n [New] Tenacity: 20%\n Sterak's Fury\n Tenacity Removed.\n Tear of the Goddess\n Base Stats\n Price: 500 → 400\n [Removed] 5 Ability Haste\n Items Removed\n Like Shimmering Spark, with the new jungle system, we no longer need a jungle-specific version of Sunfire Aegis. Searing Crown\n\n Surging Scales has always struggled to find a clear identity. Its underwhelming stats and effect haven't done enough to differentiate it from Chain Vest, so it's time to say goodbye. Surging Scales\n\n Stinger has also lost its last remaining user, so we're removing it for now. Stinger\n See above.\n Searing Crown",
+        "RUNE ADJUSTMENTS\n Lethal Tempo\n Lethal Tempo has been providing too much Attack Speed and bonus range on its own, creating some extreme power swings for marksmen throughout the game. Alongside our marksman item updates, we’re reworking the rune to rely more on synergy with other Attack Speed sources rather than providing so much power by itself. This should make Lethal Tempo a more natural fit for champions who invest heavily in Attack Speed, while keeping its power more consistent and easier to control.\n Landing basic attacks on enemy champions grants stacking Attack Speed, 8% for melee and 6.4% for ranged, up to 6 stacks for 6 seconds. At max stacks, attacks also fire a bullet that deals adaptive damage, 9 - 30 for melee and 6 - 24 for ranged. Each 1% bonus Attack Speed increases this damage by 1% for melee and 0.67% for ranged.\n Conqueror\n We've standardized Conqueror's Attack Damage and Ability Power scaling.\n Stats granted per stack: 3–5 Bonus Attack Damage / 4–8 Ability Power (1.25x–1.6x) -> 3–5 Bonus Attack Damage / 5–8.33 Ability Power (standardized to 1.667x)\n Legend: Haste\n With Mercury’s Treads now providing a significant amount of Tenacity, having additional Tenacity readily available through runes can make crowd control too easy to shrug off. We want Tenacity to remain a more deliberate investment so champions who rely on crowd control can still do their jobs. As a result, we’re replacing Legend: Tenacity with Legend: Haste.\n Replaces Legend: Tenacity\n Takedowns and killing monsters and minions grant Ability Haste, up to a maximum of 15 Ability Haste, with each stack granting 1.5 Ability Haste.\n Demolish\n To align with turret-related changes such as Crystalline Overgrowth, we're making corresponding adjustments to Demolish. See Battlefield Adjustments for details.\n After hitting a turret with 3 basic attacks, melee champions deal 85 + 28% maximum Health bonus Physical Damage, while ranged champions deal 50 + 20% maximum Health bonus Physical Damage.\n Ingenious Hunter\n Ingenious Hunter has created some overly powerful synergies with certain items, while barely making an impact with others. To keep the item system in a healthier spot, we’re removing Ingenious Hunter for now. Don’t worry, hunters, we’ll bring it back when the time is right.\n Removed\n Legend: Tenacity\n Removed\n BATTLEFIELD ADJUSTMENTS\n Jungle Adjustments\n We’re making a broad set of changes to the jungle this patch, with a few key goals: increase champion diversity, bring clear speeds closer together across different types of junglers, protect jungle resources from laners, and give non-carry junglers more ways to help their team win.\n First, we’re shifting a significant portion of the bonus damage junglers deal to monsters with basic attacks and abilities into a persistent burn. This burn benefits from a wider range of stats, allowing fighters, mages, tanks, and other junglers to improve their clear speeds naturally through their builds. Tank junglers, for example, should no longer feel as pressured to build items like Sunfire Aegis just to keep up their clear.\n We’re also adjusting the jungle economy. Monsters will grant less base Gold, with more of that Gold shifted into the bonus provided by Smite. At the same time, monsters will be tougher and deal more damage to non-junglers. Together, these changes should make jungle resources harder for laners to take while keeping them valuable for the jungler.\n Monster levels will now scale based on the average level of both teams rather than game time. This should keep monster durability more consistent with the state of the match, instead of allowing them to become excessively tanky or squishy.\n We’re also moving the jungle healing effect from casting Smite to killing monsters, aligning healing more closely with when junglers receive their Gold and experience.\n Epic monsters are getting some attention too. We want major objectives to be worth fighting over without disappearing before teams have a chance to contest them, so we’re standardizing their durability and increasing Baron Nashor’s mid-game rewards. Alongside our turret and minion changes, securing an early Baron should give teams, especially those with non-carry junglers, a more reliable opportunity to turn that advantage into meaningful map pressure.\n And finally, we’re giving junglers a little more control when it matters most: Smite is getting stronger. Smite will now upgrade twice as you consume reward stacks, eventually reaching one thousand four hundred damage. Combined with increased monster resistances, this should make objectives harder for non-junglers to steal and give junglers a bit more reliability in those high-pressure objective fights.\n Smite Adjustments\n [New] Champions with Smite deal 30-225 (Scale with Level) + 10% Bonus Attack Damage + 12% Ability Power + 20% Bonus Armor + 20% Bonus Magic Resistance + 3% Bonus Health True damage. After you stop attacking, this damage continues up to 2 more times. Champions also heal for 5 - 35 each second, scaling with champion level.\n [Removed] Champions with Smite deal bonus ability and basic attack damage to monsters.\n [New] Non-epic monsters deal 50% damage to champions with Smite.\n [Removed] Casting Smite restores Health.\n [New] Killing a large monster restores 100–260 Health to the killer (scales with monster level, reaching the maximum at level 9).\n Jungle Economy Adjustments\n [Removed] Monster gold scaling.\n Eco Protection adjustments:\n Champions with Smite gain 1 stack every 20 seconds. Consuming 1 stack when clearing a monster camp grants an additional 45 gold, stacking up to 3 times.\n Catch-up mechanic: when your team's total gold is below 90% of the enemy team's total gold and your own gold is less than or equal to 95% of your team's average gold, consuming 1 stack grants 70 gold.\n Jungler minion penalty:\n Champions with Smite gain 30% - 100% of lane experience, increasing over time once per minute and reaching 100% at 15 minutes.\n If a jungler gains more than 40% as much gold from lanes as from monsters, gold and experience gained from lanes are reduced by 50%. This effect stacks with the previous rule and is removed at 12 minutes.\n Lane champion jungling penalty:\n Champions without Smite gain only 50% - 80% experience from monsters, increasing over time once per minute and reaching 80% at 12 minutes.\n Smite Upgrade Rules\n Initial damage: 600 true damage\n Upgrade Smite by consuming Eco-system Protection stacks.\n Consume 8 total stacks. Upgrade to 1000 true damage.\n\n Consume 20 total stacks. Upgrade to 1400 true damage.\n Afterward, gain 1 Eco-system Protection stack every 30 seconds.\n Gain 5% bonus Movement Speed in the jungle and river, increased to 10% while out of combat.\n Gain an additional 20 bonus gold from each jungle camp.\n\n Jungle Monster Rules\n Monster stat growth no longer increases with time and instead scales with the average level of all champions on the map.\n Epic jungle monster stats:\n Elemental Dragons (levels 5 - 15): Health 4900 - 10900, Attack Damage 70, Armor 59 - 119, Magic Resistance 41 - 81\n\n Rift Herald (levels 5 - 15): Health 7100 - 11100, Attack Damage 100 - 200, Armor 79 - 139, Magic Resistance 52 - 82\n\n Summoned Rift Herald (levels 5 - 15): Health 5300 - 7300, Attack Damage 80 - 130, Armor 54 - 114, Magic Resistance 32 - 62\n Gold granted when the Summoned Rift Herald charges: 200 → 50\n\n Baron Nashor (levels 9 - 15): Health 14000 - 18500, Attack Damage 280 - 490, Armor 96 - 168, Magic Resistance 56 - 98\n Basic attacks and abilities that hit enemy champions apply a debuff that reduces Armor and Magic Resistance by 0.5, stacking up to 100 times and lasting 8 seconds. Basic attacks add 1 stack, and abilities add 2 stacks.\n Energy Surge Attack Damage ratio: 60% → 30%\n Corrosive Fluid Attack Damage ratio: 100% → 50%\n Sundering Breath Attack Damage ratio: 200% → 100%\n Spike Burst Attack Damage ratio: 100% → 50%\n\n Elder Dragon (levels 11 - 15): Health 19000 - 20200, Attack Damage 105, Armor 150 - 170, Magic Resistance 95 - 107\n Jungle monster stats (levels 1 - 15):\n Krugs: Health 1300 - 3050, Attack Damage 60 - 172, Armor 40, Magic Resistance 35\n\n Mini Krugs: Health 550 - 1560, Attack Damage 20 - 62, Armor 20, Magic Resistance 20\n\n Gromp: Health 1800 - 4390, Attack Damage 55 - 160, Armor 40, Magic Resistance 35\n\n Blue Sentinel: Health 2200 - 4650, Attack Damage 70 - 210, Armor 40, Magic Resistance 35\n\n Red Brambleback: Health 2200 - 4650, Attack Damage 70 - 210, Armor 40, Magic Resistance 35\n\n Crimson Raptor: Health 1000 - 2540, Attack Damage 20 - 55, Armor 40, Magic Resistance 35\n\n Raptors: Health 500 - 1270, Attack Damage 10 - 24, Armor 20, Magic Resistance 20\n\n Greater Murk Wolf: Health 1200 - 3230, Attack Damage 30 - 93, Armor 40, Magic Resistance 35\n\n Murk Wolves: Health 600 - 1510, Attack Damage 10 - 31, Armor 20, Magic Resistance 20\n\n Rift Scuttler: Health 1500 - 3600, Armor 40, Magic Resistance 40\n The first spawn has been moved to 1: 30.\n\n New jungle monster traits:\n Krugs, Crimson Raptors, and Greater Murk Wolves deal bonus physical damage equal to 3% of the target's current Health on attack.\n Gromp, Red Brambleback, and Blue Sentinel deal bonus physical damage equal to 5% of the target's current Health on attack.\n Battlefield system Adjustments\n Turrets\n This season, we’re making some changes to turrets to create a smoother transition out of the laning phase and make every push feel like meaningful progress.\n First, all turrets will now have plating, and turret plating will no longer disappear at six minutes. We’re also increasing turret Health across the board. Previously, once plating disappeared, a single mistake could quickly turn a full-Health turret into rubble and abruptly bring the laning phase to an end. Keeping plating around longer should make that transition more gradual while giving you a consistent reward for pushing, even when you can’t take the entire turret.\n The additional durability should also make it harder to take multiple plates in a single push, while creating more opportunities to chip away at turrets throughout the game.\n We’re also introducing Crystalline Overgrowth , a new mechanic that gives every champion a way to make meaningful progress against turrets, even if they aren’t running Demolish or building specifically for split-pushing.\n Over time, crystals will accumulate on turrets. When a champion attacks a turret, the accumulated crystals shatter and deal bonus True Damage based on how much Crystalline Overgrowth has built up. This damage doesn’t depend on the attacker’s stats, and you won’t need to hang around the turret for an extended period to take advantage of it.\n Think of it as a mini push waiting for you. Whether you’re constantly pressuring a side lane or only find a brief window to sneak in a few attacks, Crystalline Overgrowth should help those moments make a meaningful dent in the turret.\n Crystalline Overgrowth\n All attackable lane turrets are now affected by Crystalline Overgrowth.\n Turrets crystallize over time. A champion's first basic attack detonates all accumulated crystals, dealing True Damage.\n The higher the average level of the attacking team, the higher the crystal detonation damage.\n Cooldown: After a turret spawns, Crystalline Overgrowth has a 50-second cooldown. Once the cooldown ends, crystals begin to accumulate.\n Crystalline Overgrowth remains at its minimum damage for 30 seconds, then scales linearly over 160 seconds until reaching its maximum damage, where it remains indefinitely.\n Minimum damage: 2%–8.7% of the turret's maximum Health (based on the attacking team's level)\n Maximum damage: 3.3%–18.9% of the turret's maximum Health (based on the attacking team's level)\n If an enemy champion is near the turret at the 50-second mark, when Crystalline Overgrowth would normally activate, crystal growth is temporarily suppressed and will not appear. Once all enemy champions leave the area, the crystals will begin to appear and \"fast-forward\" to the stage they would have reached, making up for the suppressed progress. This is intended to prevent Crystalline Overgrowth from suddenly activating in the middle of a push.\n While the outer turret is still standing, the inner turret and inhibitor turret will not crystallize. Once the outer turret is destroyed, the inner turret begins crystallizing.\n When no minions are within turret range and the turret's damage reduction is active, the crystals cannot be detonated.\n Turret Related Adjustments\n Turret Adjustments\n All Turrets [New] All turrets take 20% increased damage from melee champions.\n Turret plating distribution: Outer turrets, inner turrets, and inhibitor turrets.\n Turret plating now persists permanently.\n Turret plates are tied to Health thresholds. A turret loses 1 plate whenever its Health falls below 90%, 75%, 55%, 30%, and 0%.\n [Removed] When an outer/inner turret is destroyed, the corresponding inner/inhibitor turret no longer gains a 30-second shield.\n [Removed] During the first 2 minutes of the game, Baron Lane and Mid Lane turrets no longer gain 50 bonus Armor and Magic Resist.\n [Removed] During the first 6 minutes of the game, outer turrets no longer gain Armor and Magic Resist based on their remaining Health.\n [Removed] During the first 5 minutes of the game, turrets no longer gain bonus stats when multiple enemy champions are within their attack range.\n [New] Starting at 5:00, outer turret Armor, Magic Resistance, and turret plate Gold rewards begin to decay, up to 4 times. Turret plate Gold: -10 every 30 seconds, down to a minimum of 100 Gold\n Armor and Magic Resist: -15 every 30 seconds, down to a minimum of 0\n\n Whenever a turret plate is destroyed, the turret gains 30 Armor and Magic Resist for 20 seconds. Destroying another plate refreshes the duration. During this time, the turret gains an additional 5 Armor and Magic Resist for each enemy champion within 850 range\n\n Turret Stats Health: Outer turret: 3000 → 7000\n Inner turret: 3000 → 4500\n Inhibitor turret: 3200 → 4250\n\n [ Adjusted] Armor and Magic Resist: 60\n [Removed] Gold granted for destroying turrets\n [Adjusted] Turret Plating and Turret Rewards: Outer turret: 140 Gold per plate, 700 Gold total\n Inner and inhibitor turrets: 120 Gold per plate, 600 Gold total\n First turret: 150 bonus Gold\n Global bounty for destroying an outer turret: 50 Gold per player\n Global bounty for destroying an inner or inhibitor turret: 25 Gold per player\n\n Battlefield Tempo Adjustments\n As part of our broader jungle and objective changes, we’re also updating Hand of Baron to make empowered minion waves more impactful and give each minion type a clearer role when pushing. We’re changing the Attack Damage granted to empowered minions from a percentage increase to a flat value. This should make early Baron takes more rewarding while keeping the buff from scaling too heavily later in the game. Empowered minions will also now have a minimum Movement Speed, preventing powerful Slow effects from bringing Baron-empowered pushes to a crawl.\n Hand of Baron\n Melee Minions: Reduced damage from champions: 50% - 70% (11:00 - 25:00)\n Reduced damage from minions: 80%\n Attack Damage increase: 10\n Reduced damage from turrets: 25%\n\n Caster Minion: Reduced damage from champions: 50% - 70% (11:00 - 25:00)\n Reduced damage from minions: 20%\n Attack Damage increase: 30\n Reduced damage from turrets: 25%\n\n Siege Minions: Reduced damage from champions: 30%\n Reduced damage from minions: 20%\n Attack Damage increase: 100\n Reduced damage from turrets: 25%\n\n Cannon Minions: Reduced damage from champions: 30%\n Reduced damage from minions: 20%\n Attack Damage increase: 100\n Reduced damage from turrets: 25%\n\n Super Minions: Super Minions are not affected by Hand of Baron.\n\n All Minions: Minions empowered by Hand of Baron now have a minimum Movement Speed of 3.3.\n\n Minions\n Minions are also getting some updates this patch. We want teams that successfully break through an inhibitor turret to be better rewarded for maintaining pressure, allowing empowered waves to steadily build advantages and wear down the enemy team over time. We’re also changing the mid- and late-game minion acceleration effect from out-of-combat Movement Speed to persistent Movement Speed. This should help waves push more consistently later in the game and reduce awkward gaps between them.\n Super Minion Aura\n Super Minions empower nearby minions based on the number of enemy inhibitor turrets destroyed.\n 1 Turret: 35 Armor, 35 Magic Resistance\n\n 2 Turrets: 35 Armor, 35 Magic Resistance\n Attack Damage: 15%\n\n 3 Turrets: 35 Armor, 35 Magic Resistance\n Attack Damage: 40%\n\n [Removed] Super Minions no longer benefit from the Super Minion Aura.\n Minion Stats\n Super Minions\n Base Health: 800 → 1100\n Cannon Minions\n Damage to structures: Reaches a maximum of 100% at 23:00 → Fixed at 84%\n All Minions\n [New] All minions deal 60% damage to champions.\n [New] Starting at 5:30, minions gain 25 Movement Speed every 150 seconds, up to 6 times.\n [Removed] Starting at 11:00, minions no longer gain 10% out-of-combat Movement Speed per minute.\n Minion experience range: 8 → 10\n Minion Push Buffs\n The team with the higher total level and a turret advantage in the lane gains a Minion Push Advantage:\n [New] Bonus damage to minions: (5% + (5% × turret advantage in the lane)) × team average level advantage\n [New] Damage reduction against minions: 1 + (turret advantage in the lane × team average level advantage)\n Lifesteal\n We’re introducing Lifesteal, a new vamp stat that applies only to basic attacks, on-hit damage, and abilities treated as basic attacks. This gives marksmen a more focused source of sustain that rewards their basic attacks without allowing abilities to generate excessive healing. We also want vamp to remain a relatively scarce source of power. Some champions are defined by their access to strong sustain, and making similar levels of healing too easy for everyone to access can diminish that strength while creating difficult balance cases. Lifesteal gives us a clearer way to separate basic attack-focused sustain from other forms of vamp and reduce the overall availability of broad healing across the game.\n This stat has replaced the previous vamp effects on the following items. See the item sections for details: Mercurial Scimitar, Vampiric Scepter, Bloodthirster, Blade of the Ruined King, and Gunmetal Greaves.",
+        "OTHER IN-GAME ADJUSTMENTS\n Training Camp\n You can now interact with the shop from anywhere in Practice Mode, including buying items, undoing purchases, and selling items.\n Custom Mode\n Added a new custom game mode: Rift Trials , where two players face off in a 1v1 on the Baron Lane of Summoner's Rift.\n Summoner’s Rift\n When players are within the item purchase area at their base, the Gold display will now be highlighted.\n Item price differences can now be displayed while within the base.\n When an Elemental Dragon is about to spawn, its shadow can be seen circling above its spawn location.\n In-Game Key Item Recommendations\n We have introduced the Battlefield Smart Counter Assistant. Based on the enemy team composition and build traits, the system recommends key counter items for the current match and explains why, helping players make better item decisions.\n Adventure Mode\n Battlefest S7\n Battlefest Season 7 kicks off on September 23 at 03:00 UTC, bringing a fresh round of fun modes and new rewards!This season features four chromas for Purple Garlic Lulu, along with exclusive skin icons, borders, and more goodies to earn. We’re also updating hidden chroma rewards: when claiming one, you’ll now be able to choose between the base skin or the hidden chroma, so you won’t end up with a chroma for a skin you don’t own. Time to Battlefest!\n AAA ARAM\n\n Welcome to the “Sonic Waves” Season of AAA ARAM!\n Themed Augments\n With this update, we're introducing several new Augment sets, including Heartsteel and True Damage. Augments within the same set generally have stronger synergies with one another, and their effects typically become more powerful as you collect more Augments from the same set.\n Heartsteel\n Earn “Steelbuff” through various means. For every 100 Steel Tokens collected, you can open a chest containing Gold, Anvils, and bonus Augments. The more Heartsteel Augments you have, the more Steelbuff you'll gain each time.\n True Damage\n Your attacks deal bonus True Damage. As you collect more True Damage Augments, the Duet Augment will further increase all True Damage you deal, up to a maximum increase of 100%.\n Rock ‘n’ Pentakill\n Significantly increases your champion's sustained combat power. When a champion holding these Augments scores a pentakill, a unique pentakill celebration will play. The more Augments from this set you have, the more spectacular the celebration becomes.\n We've also balanced the power of collecting Augments from the same set, so the individual strengths of each Augment won't be overshadowed by these set effects. For more information on the new Augments, check the Augment Archive after the update.\n Sonic Waves Season Theme\n Augment visuals and selection sound effects have been redesigned. Music-themed Augments feature unique animated champion card art, with their effects generally inspired by the champions featured on the cards.\n New Items\n Endless Hunger\n If a champion you've damaged within the last 3 seconds dies, gain 15% Omnivamp for 8 seconds. This effect can stack.\n Profane Hydra\n Attacks deal area damage to nearby enemies. Empowered basic attacks deal additional area damage.\n Elixir of Iron\n Increases Health and Tenacity.\n Elixir of Sorcery\n Increases Ability Power and Mana regeneration, and allows you to deal bonus True Damage.\n Elixir of Wrath\n Increases Attack Damage and Physical Vamp.\n Augment pool Adjustments\n We've optimized the Augment pool so champions can more easily find Augments that suit their needs. We'll continue improving the system to minimize Augments that provide little practical value. As a result, some champions will initially have fewer Augments available from certain themed Augment sets. Once you select any Augment from a set, the remaining Augments from that set will become available.\n Augments Adjustments\n We've improved the values provided by several Augments to make them more competitive, including True Damage, Witchful Thinking, and more.\n SYSTEM\n NEW SYSTEM\n New Season Begins\n Ranked & Legendary Ranked Evaluation System\n Combat stats like KDA have historically played a large role in determining S/A ratings and MVP, but they don’t always tell the full story of how much a player contributed to their team.\n We’re trialing a new evaluation system in Ranked and Legendary Ranked that better accounts for the different ways champions and roles can contribute to a match. We’ll continue monitoring its performance and making adjustments based on your feedback.\n Adjusted the S/A rating algorithm. Ratings will still be based on comparisons with other players using the same champion, but will now incorporate more data related to role responsibilities and team contributions. The weighting of evaluation parameters will also be optimized based on the responsibilities of each role, allowing ratings to more accurately reflect the performance of different champion types and players.\n Optimized the MVP selection algorithm to more comprehensively evaluate the responsibilities and contributions of different roles, making MVP results better reflect players' actual contributions.\n Added a new rating above S: Legendary S. Players who earn a Legendary S rating will also receive additional Ranked Fortitude.\n Updated the post-game evaluation interface for Ranked and Legendary Ranked to provide a clearer and more comprehensive overview of player performance.\n These evaluation system changes only apply to Ranked and Legendary Ranked.\n Legendary Ranked\n We’re updating Legendary Ranked to encourage more high-skill players to join the competition and help you reach the level that best reflects your skill more quickly. We’re adjusting entry requirements, progression, and the point system to make the climb smoother and more rewarding.\n Lowered entry requirements: Players who reach Master this season, or reached Grandmaster or above last season, can participate in Legendary Ranked when it is available now.\n Added the Legendary Trial event. Perform well and complete the designated challenges to advance directly to Legendary Master.\n Added provincial Legendary Ranked leaderboards, giving high-skill players more opportunities to showcase their skills and compete for recognition.\n Adjusted the point system at higher ranks. Once players reach higher ranks, they'll need to maintain a higher win rate to continue climbing, further increasing the competitive value of high ranks.\n Champion Score System Update\n We’re updating Champion Score to better reflect your skill and competitive performance with each champion, while reducing the impact of score manipulation and intentional losses.\n Our goal is to let you focus on climbing in Legendary Ranked without worrying as much about losing Champion Score or feeling pressured to pick a specific champion just to increase their score. Your champion choice should be about what gives your team the best chance to win—not protecting a number.\n Removed Legendary Ranked Performance Score, while retaining the Legendary Ranked Multiplier. The higher your Legendary Ranked tier, the higher your multiplier will be. The value of the Legendary Ranked Multiplier has also been significantly increased.\n Added a champion unlock mechanic for the Legendary Ranked Multiplier. Players must accumulate net wins with a champion to gradually unlock that champion's Legendary Ranked Multiplier.\n Champion Record Score will no longer decrease after a loss. Except in cases involving rule violations, Champion Record Score can only increase.\n Champion Performance Score has been changed to Ranked Performance Score. After this adjustment, this score can only be earned through Ranked matches.\n Corresponding multipliers and values for the Legendary Ranked Challenge have also been optimized.\n Removed the previous Season Inheritance Score Bonus and added the new Master of Versatility Score Bonus.\n Priority Role Bonus\n We’re introducing a new Priority Role Bonus to help maintain a healthier role distribution in Ranked. Players who choose roles that are currently in higher demand will receive additional rewards, giving you a little something extra for stepping up where your team needs it most.\n The Priority Role Bonus applies to Ranked matches from Platinum through Challenger.\n Bonus points earned through the Priority Role Bonus count toward the weekly cap for performance bonus points.\n Eligible roles will be adjusted each season based on player role preferences and the overall matchmaking environment. Refer to the in-game display for the current eligible roles. This season's bonus roles are Support, Jungle, and Any Position.\n Any Position will no longer count toward the Autofill Bonus. In Ranked, it will instead use the Priority Role Bonus system.\n The regular Autofill Bonus in Legendary Ranked will remain unchanged.\n Champion Ban Rule Adjustments\n We’re expanding the five-ban system to more ranks, creating a more consistent Pick/Ban experience while giving teams more room to make strategic choices around champion picks and team compositions.\n Ranked matches from Platinum through Diamond will change from 3 bans per team to 5 bans per team.\n Removed the restriction that only enabled the 5-ban system two weeks after the start of a new season. Eligible Ranked matches will now use the 5-ban system immediately when the new season begins.\n Teammate Augment Recommendation\n If you're having trouble deciding which Augment to choose, you can ask your premade teammates for recommendations.\n New Player Rewards Revamped\n We’re combining the 8-Day New Player Login and Special Offer events into a single interface, making it easier for new players to find and claim their rewards in one place. If you unlocked New Player Rewards before this update, don’t worry! Your existing reward progress and remaining event duration will carry over automatically, so you won’t miss out on anything.",
+        "BUG FIXES\n Fixed an issue where slows were removed outright if the target became Unstoppable or crowd-control immune after the slow was applied. Now the slow does not take effect during that state, but its timer continues normally, and once the state ends the slow applies again.\n Fixed an issue where Sivir's (2) Ricochet could trigger the Red Brambleback buff.\n Fixed an issue where the description for Heimerdinger's (1) was missing the information that melee champions deal bonus damage to turrets.\n Fixed an issue where Wukong's (4) would occasionally knock up targets an additional time.\n Fixed an issue where the duration of the damage reduction from Warwick's (3) ability would occasionally be abnormal when activated early.",
+        "Appendix\n Champion Durability Adjustments Detailed List\n Garen\n Base Stats\n Base Health: 660 → 690\n Base Armor: 52 → 44\n Armor per Level: 5.8 → 5\n Aatrox\n Base Stats\n Armor per Level: 4.5 → 5\n Base Magic Resist: 40 → 36\n Rengar\n Base Stats\n Base Health: 660 → 630\n Health per Level: 128 → 136\n Amumu\n Base Stats\n Health per Level: 104 → 114\n Nunu & Willump\n Base Stats\n Base Health: 690 → 630\n Health per Level: 120 → 124\n Ekko\n Base Stats\n Base Health: 630 → 650\n Health per Level: 120 → 126\n Kha’Zix\n Base Stats\n Base Health: 630 → 640\n Health per Level: 120 → 128\n Xin Zhao\n Base Stats\n Base Health: 690 → 650\n Armor per Level: 4.3 → 4.7\n Health per Level: 120 → 130\n Hecarim\n Base Stats\n Base Armor: 46 → 42\n Armor per Level: 5 → 5.4\n Health per Level: 120 → 130\n Braum\n Base Stats\n Base Health: 690 → 630\n Base Armor: 52 → 46\n Health per Level: 120 → 136\n Jhin\n Base Stats\n Base Health: 600 → 630\n Evelynn\n Base Stats\n Base Health: 600 → 630\n Akali\n Base Stats\n Health per Level: 140 → 150\n Pantheon\n Base Stats\n Base Health: 690 → 660\n Base Armor: 52 → 48\n Health per Level: 120 → 132\n Fiora\n Base Stats\n Base Health: 650 → 630\n Base Armor: 46 → 42\n Armor per Level: 4.3 → 4.8\n Health per Level: 120 → 130\n Blitzcrank\n Base Stats\n Base Health: 660 → 630\n Base Armor: 49 → 45\n Health per Level: 120 → 135\n Jax\n Base Stats\n Base Health: 690 → 660\n Base Armor: 46 → 44\n Health per Level: 120 → 130\n Vi\n Base Stats\n Base Health: 690 → 660\n Base Armor: 46 → 42\n Health per Level: 112 → 130\n Rakan\n Base Stats\n Base Armor: 49 → 42\n Base Health: 660 → 640\n Health per Level: 112 → 120\n Gwen\n Base Stats\n Base Health: 690 → 640\n Base Armor: 52 → 48\n Health per Level: 120 → 136\n Camille\n Base Stats\n Base Health: 690 → 660\n Health per Level: 128 → 132\n Jarvan IV\n Base Stats\n Base Health: 690 → 660\n Health per Level: 120 → 130\n Viego\n Base Stats\n Base Health: 660 → 630\n Health per Level: 128 → 138\n Lee Sin\n Base Stats\n Base Health: 690 → 660\n Health per Level: 120 → 132\n Kennen\n Base Stats\n Base Health: 660 → 600\n Health per Level: 120 → 130\n Dr. Mundo\n Base Stats\n Base Health: 720 → 680\n Health per Level: 112 → 120\n Rammus\n Base Stats\n Base Health: 690 → 670\n Base Armor: 49 → 45\n Health per Level: 112 → 124\n Zeri\n Base Stats\n Base Health: 630 → 600\n Health per Level: 128 → 136\n Master Yi\n Base Stats\n Health per Level: 120 → 130\n Yone\n Base Stats\n Base Health: 650 → 630\n Health per Level: 120 → 130\n Darius\n Base Stats\n Base Health: 650 → 660\n Base Armor: 52 → 45\n Health per Level: 144 → 148\n Alistar\n Base Stats\n Base Health: 720 → 700\n Aurora\n Base Stats\n Health per Level: 120 → 132\n Kassadin\n Base Stats\n Base Health: 630 → 650\n Health per Level: 120 → 132\n Graves\n Base Stats\n Base Health: 660 → 630\n Health per Level: 128 → 136\n\n Poppy\n Base Stats\n Base Health: 660 → 630\n Health per Level: 128 → 136\n Draven\n Base Stats\n Base Health: 630 → 650\n Health per Level: 128 → 132\n Malphite\n Base Stats\n Health per Level: 120 → 130\n Gragas\n Base Stats\n Base Health: 720 → 660\n Health per Level: 120 → 140\n Riven\n Base Stats\n Base Health: 690 → 660\n Health per Level: 120 → 125\n Base Armor: 46 → 43\n Irelia\n Base Stats\n Base Health: 690 → 660\n Health per Level: 128 → 138\n Katarina\n Base Stats\n Base Health: 630 → 660\n Skarner\n Base Stats\n Base Health: 690 → 660\n Health per Level: 128 → 132\n Shen\n Base Stats\n Health per Level: 112 → 124\n Galio\n Base Stats\n Base Health: 660 → 630\n Health per Level: 144 → 148\n Lissandra\n Base Stats\n Health per Level: 120 → 130\n Senna\n Base Stats\n Base Health: 600 → 570\n Nautilus\n Base Stats\n Base Health: 720 → 690\n Thresh\n Base Stats\n Health per Level: 120 → 140\n Ornn\n Base Stats\n Base Health: 720 → 690\n Health per Level: 120 → 132\n Nocturne\n Base Stats\n Health per Level: 120 → 134\n In Patch 7.3, we made fairly major changes to Attack Speed, so we also want to take this opportunity to fully explain how Attack Speed works. Attack Speed is the stat that determines how often a unit can perform basic attacks. For a champion, Attack Speed can mainly be broken down into the following types:\n Base Attack Speed Base Attack Speed is a champion's starting Attack Speed and usually also determines that champion's Attack Speed Ratio.\n\n Attack Speed Ratio Attack Speed Ratio determines how efficiently a champion converts bonus Attack Speed into actual Attack Speed. It converts the bonus Attack Speed a champion gains into real Attack Speed based on a percentage. In most cases, a champion's Attack Speed Ratio is equal to their Base Attack Speed.\n\n Base Bonus Attack Speed Base Bonus Attack Speed is the bonus Attack Speed a champion has as soon as the match begins, and it does not scale with champion level. This means a champion's Attack Speed at level 1 is determined jointly by their Base Attack Speed and Base Bonus Attack Speed.\n\n Attack Speed per Level Attack Speed per Level is the Attack Speed a champion gains as they level up, and it is also treated as bonus Attack Speed in these calculations. (By contrast, other per-level stats, such as Attack Damage per Level, are not treated as bonus Attack Damage and are instead calculated as part of base Attack Damage.) Although Attack Speed per Level is a fixed value, the amount of bonus Attack Speed a champion gains each level is not equal. Bonus Attack Speed gained from leveling each level = Attack Speed per Level ×(0.7 + 0.04 × current level). For example, when a champion levels from 1 to 2, the bonus Attack Speed gained is equal to 74% of their Attack Speed per Level. By max level, the total bonus Attack Speed a champion gains from leveling = 1400% × Attack Speed per Level.\n\n Next, we'll take a closer look at how Attack Speed is calculated. Let's start with a few formulas:\n Total Attack Speed = Base Attack Speed + Attack Speed Ratio × Bonus Attack Speed Bonus Attack Speed = Base Bonus Attack Speed + bonus Attack Speed gained from leveling + bonus Attack Speed gained from other sources such as items, runes, and abilities\n Let's use Caitlyn as an example and plug the numbers into the formulas:\n For Caitlyn, both her Base Attack Speed and Attack Speed Ratio are 0.625, her Base Bonus Attack Speed is 0.28, and her Attack Speed per Level is 0.04.\n At level 1, without any extra items or runes, Caitlyn's only bonus Attack Speed comes from her Base Bonus Attack Speed. So Caitlyn's Attack Speed = Base Attack Speed + Attack Speed Ratio × Base Bonus Attack Speed = 0.625 + 0.625 × 0.28 = 0.8 Assume Caitlyn is at max level, has a fully stacked rune - Legend: Alacrity (granting 18% bonus Attack Speed), and has equipped Berserker's Greaves (granting 35% bonus Attack Speed). Her Attack Speed can then be calculated as follows: 0.625 + 0.625 × (0.28 + 0.04 × 14 + 0.18 + 0.35) = 1.48125. On the stats panel, Attack Speed is displayed with two decimal places: 1.48\n Garen\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.024\n Aatrox\n Base Stats\n Attack Speed Ratio: 0.651\n Base Attack Speed: 0.651\n Base Bonus Attack Speed: 0.13\n Attack Speed per Level: 0.021\n Lux\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.03\n Amumu\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.024\n Kayn\n Base Stats\n Attack Speed Ratio: 0.67\n Base Attack Speed: 0.67\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.018\n Rengar\n Base Stats\n Attack Speed Ratio: 0.667\n Base Attack Speed: 0.667\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.023\n Karma\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.0135\n Nunu & Willump\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.0122\n Wukong\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.028\n Vayne\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.23\n Attack Speed per Level: 0.03\n Ekko\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.031\n Orianna\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.032\n Diana\n Base Stats\n Attack Speed Ratio: 0.694\n Base Attack Speed: 0.694\n Base Bonus Attack Speed: 0.15\n Attack Speed per Level: 0.008\n Zoe\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.021\n Tryndamere\n Base Stats\n Attack Speed Ratio: 0.725\n Base Attack Speed: 0.725\n Base Bonus Attack Speed: 0.1\n Attack Speed per Level: 0.025\n Xin Zhao\n Base Stats\n Attack Speed Ratio: 0.645\n Base Attack Speed: 0.645\n Base Bonus Attack Speed: 0.24\n Attack Speed per Level: 0.025\n Kha'Zix\n Base Stats\n Attack Speed Ratio: 0.668\n Base Attack Speed: 0.668\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.0185\n Jinx\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.3\n Attack Speed per Level: 0.02\n Hecarim\n Base Stats\n Attack Speed Ratio: 0.67\n Base Attack Speed: 0.67\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.016\n Yuumi\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.006\n Braum\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.16\n Attack Speed per Level: 0.03\n Jhin\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.06\n Attack Speed per Level: 0.032\n Aurelion Sol\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.004\n Syndra\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.015\n Twisted Fate\n Base Stats\n Attack Speed Ratio: 0.651\n Base Attack Speed: 0.651\n Base Bonus Attack Speed: 0.15\n Attack Speed per Level: 0.016\n Kai'Sa\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.022\n Nilah\n Base Stats\n Attack Speed Ratio: 0.67\n Base Attack Speed: 0.67\n Base Bonus Attack Speed: 0.21\n Attack Speed per Level: 0.02\n Morgana\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.005\n Evelynn\n Base Stats\n Attack Speed Ratio: 0.667\n Base Attack Speed: 0.667\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.012\n Pantheon\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.02\n Akali\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.02\n Fiora\n Base Stats\n Attack Speed Ratio: 0.69\n Base Attack Speed: 0.69\n Base Bonus Attack Speed: 0.16\n Attack Speed per Level: 0.026\n Blitzcrank\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.006\n Seraphine\n Base Stats\n Attack Speed Ratio:0.699\n Base Attack Speed: 0.669\n Base Bonus Attack Speed: 0.12\n Attack Speed per Level: 0.017\n Mordekaiser\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.008\n Annie\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.006\n Yasuo\n Base Stats\n Attack Speed Ratio: 0.67\n Base Attack Speed: 0.67\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.04\n Ahri\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.02\n Zed\n Base Stats\n Attack Speed Ratio: 0.651\n Base Attack Speed: 0.651\n Base Bonus Attack Speed: 0.23\n Attack Speed per Level: 0.024\n Jax\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.15\n Attack Speed per Level: 0.03\n Kayle\n Base Stats\n Attack Speed Ratio: 0.667\n Base Attack Speed: 0.667\n Base Bonus Attack Speed: 0.13\n Attack Speed per Level: 0.028\n Lucian\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.028\n Leona\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.021\n Tristana\n Base Stats\n Attack Speed Ratio: 0.694\n Base Attack Speed: 0.694\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.02\n Teemo\n Base Stats\n Attack Speed Ratio: 0.69\n Base Attack Speed: 0.69\n Base Bonus Attack Speed: 0.09\n Attack Speed per Level: 0.03\n Sona\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.016\n Lulu\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.013\n Shyvana\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.012\n Vi\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.24\n Attack Speed per Level: 0.012\n Xayah\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.034\n Rakan\n Base Stats\n Attack Speed Ratio: 0.635\n Base Attack Speed: 0.635\n Base Bonus Attack Speed: 0.18\n Attack Speed per Level: 0.022\n Twitch\n Base Stats\n Attack Speed Ratio: 0.679\n Base Attack Speed: 0.679\n Base Bonus Attack Speed: 0.18\n Attack Speed per Level: 0.03\n Gwen\n Base Stats\n Attack Speed Ratio: 0.69\n Base Attack Speed: 0.69\n Base Bonus Attack Speed: 0.16\n Attack Speed per Level: 0.026\n Camille\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.24\n Attack Speed per Level: 0.016\n Jarvan IV\n Base Stats:\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.016\n Viego\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.025\n Volibear\n Base Stats\n Attack Speed Ratio: 0.7\n Base Attack Speed: 0.7\n Base Bonus Attack Speed: 0.05\n Attack Speed per Level: 0.014\n Lee Sin\n Base Stats\n Attack Speed Ratio: 0.651\n Base Attack Speed: 0.651\n Base Bonus Attack Speed: 0.23\n Attack Speed per Level: 0.02\n Corki\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.032\n Kennen\n Base Stats\n Attack Speed Ratio: 0.69\n Base Attack Speed: 0.69\n Base Bonus Attack Speed: 0.09\n Attack Speed per Level: 0.028\n Dr. Mundo\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.028\n Zyra\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.02\n Rammus\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.0185\n Nasus\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.024\n Miss Fortune\n Base Stats\n Attack Speed Ratio: 0.656\n Base Attack Speed: 0.656\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.032\n Zeri\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.024\n Sett\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.01\n Yone\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.032\n Master Yi\n Base Stats\n Attack Speed Ratio: 0.679\n Base Attack Speed: 0.679\n Base Bonus Attack Speed: 0.18\n Attack Speed per Level: 0.018\n Darius\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.008\n Graves\n Base Stats\n Attack Speed Ratio: 0.7\n Base Attack Speed: 0.7\n Base Bonus Attack Speed: 0\n Attack Speed per Level: 0.021\n Kindred\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.032\n Maokai\n Base Stats\n Attack Speed Ratio: 0.695\n Base Attack Speed: 0.695\n Base Bonus Attack Speed: 0.15\n Attack Speed per Level: 0.029\n Janna\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.022\n Poppy\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.021\n Draven\n Base Stats\n Attack Speed Ratio: 0.679\n Base Attack Speed: 0.679\n Base Bonus Attack Speed: 0.11\n Attack Speed per Level: 0.03\n Gnar\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.015\n Ashe\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.23\n Attack Speed per Level: 0.03\n Zilean\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.017\n Alistar\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.012\n Ambessa\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.012\n Malphite\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.04\n Nidalee\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.18\n Attack Speed per Level: 0.024\n Aurora\n Base Stats\n Attack Speed Ratio: 0.668\n Base Attack Speed: 0.668\n Base Bonus Attack Speed: 0.12\n Attack Speed per Level: 0.02\n Fizz\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.022\n Ziggs\n Base Stats\n Attack Speed Ratio: 0.656\n Base Attack Speed: 0.656\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.014\n Cho'Gath\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.008\n Gragas\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.013\n Vladimir\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.0165\n Nami\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.02\n Riven\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.022\n Varus\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.03\n Irelia\n Base Stats\n Attack Speed Ratio: 0.656\n Base Attack Speed: 0.656\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.016\n Katarina\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.018\n Singed\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.016\n Soraka\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.012\n Ezreal\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.022\n Galio\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.007\n Akshan\n Base Stats\n Attack Speed Ratio: 0.4\n Base Attack Speed: 0.4\n Base Bonus Attack Speed: 0.67\n Attack Speed per Level: 0.04\n Jayce\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.22\n Attack Speed per Level: 0.021\n Urgot\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.031\n Kassadin\n Base Stats\n Attack Speed Ratio: 0.64\n Base Attack Speed: 0.64\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.027\n Samira\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.03\n Bard\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.015\n Olaf\n Base Stats\n Attack Speed Ratio: 0.694\n Base Attack Speed: 0.694\n Base Bonus Attack Speed: 0.06\n Attack Speed per Level: 0.0326\n Sivir\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.3\n Attack Speed per Level: 0.01\n Milio\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.022\n Lissandra\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.01\n Kog'Maw\n Base Stats\n Attack Speed Ratio: 0.665\n Base Attack Speed: 0.665\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.03\n Caitlyn\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.04\n Rell\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.01\n Skarner\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.005\n Shen\n Base Stats\n Attack Speed Ratio: 0.651\n Base Attack Speed: 0.651\n Base Bonus Attack Speed: 0.23\n Attack Speed per Level: 0.0367\n Brand\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.0185\n Renekton\n Base Stats\n Attack Speed Ratio: 0.665\n Base Attack Speed: 0.665\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.024\n Veigar\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.014\n Senna\n Base Stats\n Attack Speed Ratio: 0.4\n Base Attack Speed: 0.4\n Base Bonus Attack Speed: 0.6\n Attack Speed per Level: 0.05\n Pyke\n Base Stats\n Attack Speed Ratio: 0.667\n Base Attack Speed: 0.667\n Base Bonus Attack Speed: 0.13\n Attack Speed per Level: 0.021\n Sion\n Base Stats\n Attack Speed Ratio: 0.679\n Base Attack Speed: 0.679\n Base Bonus Attack Speed: 0.18\n Attack Speed per Level: 0.006\n Swain\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.012\n Heimerdinger\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.01\n Talon\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.025\n Vel'Koz\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.01\n Thresh\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.028\n Warwick\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.012\n Nautilus\n Base Stats\n Attack Speed Ratio: 0.612\n Base Attack Speed: 0.612\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.0124\n Fiddlesticks\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.012\n Kalista\n Base Stats\n Attack Speed Ratio: 0.694\n Base Attack Speed: 0.694\n Base Bonus Attack Speed: 0.16\n Attack Speed per Level: 0.046\n Lillia\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.016\n Ornn\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.17\n Attack Speed per Level: 0.012\n Ryze\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.018\n Smolder\n Base Stats\n Attack Speed Ratio: 0.638\n Base Attack Speed: 0.638\n Base Bonus Attack Speed: 0.25\n Attack Speed per Level: 0.031\n Mel\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.016\n Rumble\n Base Stats\n Attack Speed Ratio: 0.644\n Base Attack Speed: 0.644\n Base Bonus Attack Speed: 0.24\n Attack Speed per Level: 0.016\n Vex\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.01\n Viktor\n Base Stats\n Attack Speed Ratio: 0.658\n Base Attack Speed: 0.658\n Base Bonus Attack Speed: 0.14\n Attack Speed per Level: 0.02\n Taliyah\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.01\n Yunara\n Base Stats\n Attack Speed Ratio: 0.65\n Base Attack Speed: 0.65\n Base Bonus Attack Speed: 0.23\n Attack Speed per Level: 0.032\n Nocturne\n Base Stats\n Attack Speed Ratio: 0.721\n Base Attack Speed: 0.721\n Base Bonus Attack Speed: 0.11\n Attack Speed per Level: 0.024\n K'Sante\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.28\n Attack Speed per Level: 0.021\n Norra\n Base Stats\n Attack Speed Ratio: 0.625\n Base Attack Speed: 0.625\n Base Bonus Attack Speed: 0.2\n Attack Speed per Level: 0.012"
+      ],
+      "changeLines": [
+        "NEW",
+        "NEW CHAMPIONS",
+        "New Season",
+        "New Wild Pass",
+        "New personalization rewards are joining the Wild Pass, including the Super Pencil Sharpener Battle Ensign and the Ear to Ear emote.",
+        "New Wild Star Spending Milestones",
+        "Base Critical Strike Damage : 175% → 200%",
+        "Crit Damage: 175% → 200%",
+        "Attack Speed",
+        "Attack Speed cap (attacks per second): 2.5 → 3",
+        "Attack Speed per Level adjustments for certain champions",
+        "Attack Speed ratios are no longer divided by melee and ranged; each champion will now have an individual Attack Speed ratio.",
+        "Base Attack Damage: 58 → 60",
+        "Cooldown: 4.5/4/3.5/3s → 5.5/5/4.5/4s",
+        "Damage: 50 / 85 / 120 / 155 + 135% Attack Damage + 30% Ability Power → 25 / 55 / 85 / 115 + 135% Attack Damage + 30% Ability Power",
+        "Cooldown refund: reduces the cooldown of all other abilities except [Mystic Shot] → reduces the cooldown of all abilities",
+        "Cooldown: 70 / 65 / 60s → 80 / 70 / 60s",
+        "Damage: 350 / 500 / 650 + 100% bonus Attack Damage + 90% Ability Power → 300 / 500 / 700 + 100% bonus Attack Damage + 100% Ability Power",
+        "Base Attack Damage: 62 → 59",
+        "Plasma damage: 4.5 + 0.5 × level + 15% Ability Power → 4 + 1 × level + 12% Ability Power + current Plasma stacks × (1 + 0.2 × level + 2% Ability Power)",
+        "Missing Health damage: (15 + 2.5% Ability Power)% → (15 + 5% Ability Power)%",
+        "Damage: 30 / 60 / 90 / 120 + 110% Attack Damage + 60% Ability Power → 30 / 60 / 90 / 120 + 130% Attack Damage + 50% Ability Power",
+        "Movement Speed: 50% / 55% / 60% / 65% + 80% × item Attack Speed × 50% / 55% / 60% / 65% (item Attack Speed capped at 90% / 99% / 108% / 117%) → 50% / 55% / 60% / 65% + bonus Attack Speed * 50% / 55% / 60% / 65% (maximum 100% / 110% / 120% / 130%)",
+        "Shield: 75 / 100 / 125 + 100 / 150 / 200% Attack Damage + 75% Ability Power → 100 / 125 / 150 + 80 / 120 / 160% Attack Damage + 100% Ability Power",
+        "Base Attack Damage: 54 → 58",
+        "Attack Damage per Level: 4.5 → 4",
+        "Damage per stack: 1 / 2 / 3 / 4 / 5 + 2.5% Ability Power → 1 / 2 / 3 / 4 / 5 + 3% Ability Power",
+        "Direct detonation physical damage: 25 / 35 / 45 / 55 → 30 / 40 / 50 / 60",
+        "Physical damage per stack: 20 / 25 / 30 / 35 + 42% bonus Attack Damage + 18% Ability Power → 20 / 25 / 30 / 35 + 35% bonus Attack Damage",
+        "Cooldown: 70 / 65 / 60s → 75 / 70 / 65s",
+        "Projectile speed: 60 → 65",
+        "Attack Damage per Level: 4 → 3.5",
+        "Secondary shot damage: 35% / 50% / 65% Attack Damage → 40% / 50% / 60% Attack Damage",
+        "Damage: 80 / 125 / 170 / 215 + 65 / 85 / 105 / 125% × bonus Attack Damage → 75 / 125 / 175 / 225 + 100% × bonus Attack Damage",
+        "Bullet count: 22 / 26 / 30 → 20 + 20 × Critical Rate (gain 2 bullets for every 10% Critical Rate) + (Critical Damage-2) × 20 × Critical Rate",
+        "Damage per bullet: 20 / 35 / 50 + 25% Attack Damage + 10% Ability Power → 20 / 25 / 30 + 25% Attack Damage + 15% Ability Power",
+        "Attack Speed Ratio: 0.625",
+        "Attack Speed per Level: 0.04",
+        "Base Attack Damage: 54 → 60",
+        "Attack Damage per Level: 4.5 → 4.2",
+        "Headshot bonus damage: (60% - 110%) × Attack Damage + 200 × Critical Rate → (60% - 100%) × Attack Damage + Critical Rate × 100% + (Critical Damage-2) × Critical Rate × 100% × Attack Damage",
+        "Damage: 60 / 110 / 160 / 210 + 125 / 140 / 155 / 170% Attack Damage → 50 / 100 / 150 / 200 + 125 / 145 / 165 / 185% Attack Damage",
+        "Slow duration: 1.5s → 1s",
+        "Damage: 200 / 375 / 550 + 200% bonus Attack Damage + 20% target missing Health → (250 / 450 / 650 + 100% bonus Attack Damage + 20% target missing Health) × (1 + Critical Rate × 30% + (Critical Damage - 2) × 30% × Critical Rate)",
+        "Attack Damage per Level: 4.5 → 3.8",
+        "Bounty: 80 + (stacks) × 4 → 60 + (stacks) × 3",
+        "Damage: 45 / 50 / 55 / 60 + 100 / 110 / 120 / 130% → 45 / 50 / 55 / 60 + 80 / 90 / 100 / 110%",
+        "Damage falloff per hit: 8% (minimum 40%) → 5% (minimum 50%)",
+        "Damage: (15 + 40% bonus Attack Damage) × (1 + Critical Rate) → (15 + 40% bonus Attack Damage) × (0.6 + Critical Rate × 0.4)",
+        "Damage Amp: 6% - 10.9% (based on level) → 6% - 9.5% (based on level)",
+        "Damage: 60 / 90 / 120 / 150 + 112 / 120 / 128 / 136% Attack Damage + 35% Ability Power → 60 / 90 / 120 / 150 + 110% Attack Damage + 35% Ability Power",
+        "Second-hit damage ratio: 120% → 60% × current Critical Damage",
+        "Initial Movement Speed: 30 / 35 / 40 / 45 → 35 / 40 / 45 / 50",
+        "Maximum Movement Speed: 80 / 90 / 100 / 110 → 70 / 80 / 90 / 100",
+        "Slow: 30 / 40 / 50 / 60% → 40% + 0.06% × Ability Power",
+        "Barrage damage: 85% Attack Damage + 20% Ability Power → 20 / 30 / 40 + 60% Attack Damage + 20% Ability Power",
+        "Critical ratio: 130% → 130% + (Critical Damage-2) × 0.3",
+        "Base Attack Damage: 62 → 60",
+        "Attack Speed Ratio: 0.658",
+        "Attack Speed per Level: 0.03",
+        "Movement Speed bonus per Style grade: 4% → 3% / 3.25% / 3.5% / 3.75% / 4% (based on level)",
+        "Damage: 15 / 20 / 25 / 30 + 100 / 115 / 130 / 145% Attack Damage → 15 / 20 / 25 / 30 + 110% Attack Damage",
+        "Critical Damage: current Critical Damage - 50% → 150% - 165% (based on Critical Damage)",
+        "New: Flair’s Damage can not trigger Life Steal.",
+        "Bonus Attack Damage ratio: 80% → 50%",
+        "Attack Speed: 35% / 40% / 45% / 50% → 25% / 30% / 35% / 40%",
+        "Cooldown: 8 / 8 / 8 → 6 / 6 / 6",
+        "Mana cost: 60 / 30 / 0 → 0 / 0 / 0",
+        "Damage: 5 / 20 / 35 + 60% Attack Damage → 20 / 40 / 60 + 40% Attack Damage",
+        "New: Inferno Trigger’s Damage can now trigger 66.7% Life Steal.",
+        "Excess Attack Speed to Attack Damage conversion ratio: 50% → 60%",
+        "Damage: 13 / 15 / 17 / 19 / 21 + 105 / 110 / 115 / 120 / 125% Attack Damage → 20 / 24 / 28 / 32 / 36 + 102 / 104 / 106 / 108% / 110% Attack Damage",
+        "Damage: 35 / 60 / 85 / 110 + 55 / 70 / 85 / 100% Attack Damage + 30 / 35 / 40 / 45% Ability Power → 70 / 100 / 130 / 160 + 80% × bonus Attack Damage + 30 / 35 / 40 / 45% Ability Power",
+        "Slow duration: 2s → 1.5s",
+        "Damage: 30 / 70 / 110 / 150 + 80% Attack Damage + 40% Ability Power → 60 / 100 / 140 / 180 + 100% Attack Damage + 50% Ability Power",
+        "Critical Damage: current Critical Damage rate → (150% + (Critical Damage rate - 2) × 0.5)",
+        "Subsequent damage ratio: 80 / 85 / 90 / 95% → 85 / 90 / 95 / 100%",
+        "Nova damage: 150 / 200 / 250 + 70% bonus Attack Damage + 80% Ability Power → 150 / 225 / 300 + 60% bonus Attack Damage + 100% Ability Power",
+        "Overload duration: 1.5s → 2.5s",
+        "Overload extension duration: 1.5s on non-critical strikes, 4.5s on critical strikes → 2.5s on non-critical strikes, 7.5s on critical strikes",
+        "Overload lightning Attack Damage ratio: 25% → 30%",
+        "Critical Damage: current Critical Damage → 150% + (Critical Damage - 2) × 0.5",
+        "Cooldown: 50 / 45 / 40s → 60 / 50 / 40s",
+        "Damage: 25 / 35 / 45 + 15% × bonus Attack Damage to 250 / 350 / 450 + 150% × bonus Attack Damage → 25 / 35 / 45 + 12% × bonus Attack Damage to 250 / 350 / 450 + 120% × bonus Attack Damage",
+        "Attack Damage per Level: 5.5 → 4.5",
+        "Movement Speed: 40 - 120 (based on level) → 20 - 80 (based on level) × (1 + 100% bonus Attack Speed)",
+        "Damage: 10 / 40 / 70 / 100 + 85% Attack Damage → 60 / 110 / 160 / 210 + 70% × bonus Attack Damage",
+        "Minion damage ratio: 55 / 70 / 85 / 100% → 50 / 60 / 70 / 80%",
+        "Critical Damage: 150% → current Critical Damage × 0.7",
+        "Damage per bullet: (20 / 30 / 40 + 10% Attack Damage) - (80 / 120 / 160 + 40% Attack Damage) → (25 / 35 / 45 + 15% Attack Damage) - (75 / 105 / 135 + 45% Attack Damage)",
+        "Damage increase from critical-strike stats: 50% * Critical Rate → 30% × Critical Rate + (Critical Damage - 2) × Critical Rate × 0.3",
+        "Attack Damage per Level: 3 → 2.5",
+        "Damage: 65 / 125 / 185 / 245 + 125% bonus Attack Damage + 80% Ability Power → 60 / 120 / 185 / 240 + 110% bonus Attack Damage + 100% Ability Power",
+        "Armor and Magic Resistance reduction: 10 / 14 / 18 / 22 → 12 / 14 / 16 / 18",
+        "Missile bonus Attack Damage ratio: 70% bonus Attack Damage → 65% bonus Attack Damage",
+        "Big One bonus Attack Damage ratio: 140% bonus Attack Damage → 130% bonus Attack Damage",
+        "Base Attack Damage: 54 → 57",
+        "Attack Damage per Level: 5 → 5.2",
+        "Attack Speed Ratio: 0.665",
+        "Attack Damage per Level: 5 → 4.2",
+        "Attack Speed: 45 / 50 / 55 / 60% → 40 / 45 / 50 / 55%",
+        "Additional feather damage ratio: 20% → 25%",
+        "Movement Speed: 25 / 30 / 35 / 40% → 30%",
+        "Damage: 60 / 70 / 80 / 90 + 90% bonus Attack Damage → (70 / 80 / 90 / 100 + 50% bonus Attack Damage) × (1 + 50% × Critical Rate + 50% × (Critical Damage-2) × Critical Rate)",
+        "Damage: 125 / 250 / 375 + 100% bonus Attack Damage → 150 / 250 / 350 + 100% bonus Attack Damage",
+        "Attack Damage per Level: 6 → 5",
+        "Cooldown: 22 / 19 / 16 / 13 → 22 / 20 / 18 / 16",
+        "Damage: 85 / 155 / 225 / 295 + 50% Ability Power → 80 / 120 / 160 / 200 + 80% × bonus Attack Damage + 50% Ability Power",
+        "Slow effect: 60% → 50%",
+        "Slow duration: 1.5 / 2 / 2.5 / 3s → 2s",
+        "Cooldown: 15 / 14 / 13 / 12 → 16 / 15 / 14 / 13",
+        "Passive explosion damage: 65 / 100 / 135 / 170 + 25% Ability Power → 60 / 90 / 120 / 150 + 25% Ability Power",
+        "Active explosion damage: 50 / 75 / 100 / 125 + 75 / 110 / 145 / 180% bonus Attack Damage + 50% Ability Power → (80 / 100 / 120 / 140 + 100% bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 40% + (Critical Damage-2) × 40% × Critical Rate)",
+        "Damage per stack: 30% → 25%",
+        "Damage: 350 / 450 / 550 + 100% Ability Power → 300 / 350 / 400 + 70%× bonus Attack Damage + 100% Ability Power",
+        "Attack Speed per Level: 0.01",
+        "Movement Speed bonus: 31 - 45 (based on level) → 55 - 70 (based on level)",
+        "Damage: 10 / 30 / 50 / 70 + 75 / 80 / 85 / 90% Attack Damage + 60% Ability Power × 50% × Critical Rate → (70 / 100 / 130 / 160 + 70% × bonus Attack Damage + 60% Ability Power) × (1 + Critical Rate × 40% + (Critical Damage-2) × 40% × Critical Rate)",
+        "Non-champion damage ratio: 80% → 75%",
+        "Damage: 4 / 6 / 8 / 10 + 15 / 18 / 21 / 24% Attack Damage → 37.5% / 40% / 42.5% / 45% Attack Damage",
+        "Minion ratio: 75% → 70%",
+        "Initial Movement Speed bonus: 15% → 15 / 20 / 25%",
+        "Initial Movement Speed duration: 10 / 11 / 12 seconds → 8 / 10 / 12 seconds",
+        "Cooldown reduction ratio: 30 / 35 / 40% → 20 / 25 / 30%",
+        "Attack Damage per morale stack: 2 / 3 / 4 → 2 / 2.5 / 3",
+        "Movement Speed granted on re-trigger: 25% → 15 / 20 / 25%",
+        "Damage: 35 / 45 / 55 / 65% Attack Damage → 50 / 60 / 70 / 80% Attack Damage",
+        "True Damage based on Maximum Health: 2 / 5 / 8 / 11% → 6 / 7 / 8 / 9%",
+        "Attack Damage: 15 / 25 / 35 → 30 / 40 / 50",
+        "Attack Damage per Level: 2.65 → 4",
+        "Slow effect: 15 / 17.5 / 20 / 22.5 / 25% (based on level) → 20 / 22.5 / 25 / 27.5 / 30% (based on level)",
+        "Bonus damage: 10% + 100% × Critical Rate × (Critical Damage-1) → 100% × Critical Rate + 100% × (Critical Damage-2) × Critical Rate",
+        "Mana cost: 50 / 50 / 50 / 50 → 30 / 30 / 30 / 30",
+        "Cooldown: 16 / 13.5 / 11 / 8.5s → 15 / 12 / 9 / 6s",
+        "Mana cost: 50 / 50 / 50 / 50 → 65 / 60 / 55 / 50",
+        "Damage: 20 / 35 / 50 / 65 + 115% Attack Damage → 70 / 110 / 150 / 190 + 100% bonus Attack Damage",
+        "Attack Damage Growth: 4.55 → 5",
+        "Fourth-shot bonus damage to turrets: 135% / 162% (with Infinity Edge) → 150% / 172.5% (with Infinity Edge)",
+        "Attack Damage conversion ratio: bonus Attack Speed × 30% + Critical Rate × 45% + level × 4.5% → bonus Attack Speed × 30% + Critical Rate × 40% + level × 3%",
+        "Critical-strike Movement Speed: 15% + 0.55% × bonus Attack Speed → 14% + 0.44% × bonus Attack Speed",
+        "Fourth super shot damage ratio: 200% → current Critical Damage",
+        "Attack Speed Ratio: 0.4",
+        "Attack Speed per Level: 0.05",
+        "Damage based on Current Health: 1.2%~12% (based on level) → 1%~10% (based on level)",
+        "Critical Rate gained per 20 Mist: 15% → 10%",
+        "Base Damage: 50 / 90 / 130 / 170 → 50 / 80 / 110 / 140",
+        "Damage: 250 / 375 / 500 + 120% bonus Attack Damage + 50% Ability Power → 250 / 400 / 550 + 120% bonus Attack Damage + 70% Ability Power",
+        "Shield: 120 / 160 / 200 + 40% Ability Power + Mist × 4 → 120 / 160 / 200 + 50% Ability Power + Mist × 2",
+        "Critical bonus damage: 10% (gain 10% per 100 Ability Power) → 8% (gain 8% per 100 Ability Power)",
+        "Bonus Attack Speed: 22.5% / 35% / 47.5% / 60% → 25% / 35% / 45% / 55%",
+        "Excess Critical Rate to Attack Damage conversion ratio: 0.6 → 0.5",
+        "Damage: 250 / 400 / 550 + 160% bonus Attack Damage → 200 / 350 / 500 + 150% bonus Attack Damage",
+        "Shotgun Critical Strike Damage rate: 1.3 → 1.5",
+        "Damage ratio to Jungle Monsters: 65% → 70%",
+        "Damage: 25 / 35 / 45 / 55 + 11 / 12 / 13 / 14% target’s max Health → 20 / 35 / 50 / 65 + 9 / 10 / 11 / 12% target max Health",
+        "Shield: 45 + 80% bonus Attack Damage → 40 / 55 / 70 / 85 + 60% bonus Attack Damage",
+        "Stored damage ratio: 24 / 28 / 32 / 36% → 27.5% / 30% / 32.5% / 35%",
+        "Damage: 200 / 350 / 500 + 80% Attack Damage → 200 / 375 / 550 + 60% Attack Damage",
+        "Attack Damage Growth: 4.5 → 4.2",
+        "Base heal: 7% → 5%",
+        "Critical Damage ratio on current Health damage: current Critical Damage → current Critical Damage × 80%",
+        "Critical Damage ratio on second strike: current Critical Damage → current Critical Damage × 80%",
+        "Thrust damage: 20 / 40 / 60 / 80 ( + 80% Attack Damage) × (1 + 50% × Critical Rate) → 25 / 45 / 65 / 85 ( + 70% Attack Damage) × (1 + 60% × Critical Rate + (Critical Damage-2) × Critical Rate × 60%)",
+        "Attack Speed: 45 / 50 / 55 / 60% → 35 / 40 / 45 / 50%",
+        "Damage: 110% Attack Damage - 165% Attack Damage (based on Critical Rate) + target missing Health × (14 / 17 / 20 + 6% bonus Attack Damage)% → 120% Attack Damage × (1 + 50% × Critical Rate + (Critical Damage - 2) × Critical Rate * 50%) + target missing Health × (14 / 17 / 20 + 5% bonus Attack Damage)%",
+        "Base Attack Damage: 54 → 64",
+        "Attack Damage per Level: 5.5 → 5",
+        "Armor per Level: 3.9 → 4.5",
+        "Attack Damage: 7 / 12 / 17 / 22 → 0",
+        "Bonus Attack Damage per 1% missing Health: 0.35 / 0.40 / 0.45 / 0.5 → 0.3 / 0.5 / 0.7 / 0.9",
+        "Attack Damage reduction: 40% → 20 / 40 / 60 / 80%",
+        "Damage: 80 / 120 / 160 / 200 + 135% bonus Attack Damage + 100% Ability Power → 80 / 120 / 160 / 200 + 100% bonus Attack Damage + 80% Ability Power",
+        "Targets that trigger the cooldown reduction on critical strike: Minions → Minions, monsters, champion-summoned units, and other units that can be critically struck",
+        "Base Health: 690 → 660",
+        "Attack Speed Ratio: 0.694",
+        "Attack Speed per Level: 0.0326",
+        "Health per Level: 112 → 140",
+        "Bonus Attack Damage ratio: 120% → 105%",
+        "Armor and Magic Resistance increase: 25 / 35 / 45 → 15 / 25 / 35",
+        "Damage: 11 - 80 (based on level) + 40% Ability Power → 12 - 68 (based on level) + 40% Ability Power",
+        "Removed: Damage modifier against monsters: 150%",
+        "Removed: Damage modifier against monsters: 80%",
+        "Removed: Damage modifier against monsters: 60%",
+        "Base Stats",
+        "Price: 500 → 400",
+        "Attack Speed: 15% → 12%",
+        "Price: 800 → 1200",
+        "Armor Penetration: 12% → 15%",
+        "Build Path: Dagger (500) + Dagger (500) + 400 → Dagger (400) + 500",
+        "Price: 1400 → 900",
+        "Attack Speed: 30% → 20%",
+        "Movement Speed: 5% → 4%",
+        "Build Path: Long Sword (500) + Dagger (500) + 350 → Long Sword (500) + Brawler's Gloves (500) + 300",
+        "Price: 1350 → 1300",
+        "Attack Damage: 25 → 20",
+        "Build Path: Long Sword (500) + 400 → Dagger (400) + 400",
+        "Price: 900 → 800",
+        "Attack Damage: 20",
+        "Attack Speed: 15%",
+        "Attack Damage: 55",
+        "Attack Damage: 50",
+        "Attack Speed: 25%",
+        "Attack Speed: 20%",
+        "Attack Speed: 40%",
+        "Movement Speed: 4%",
+        "Base Stats:",
+        "Attack Speed Ratio: 0.65",
+        "Attack Speed per Level: 0.032",
+        "Attack Speed: 45%",
+        "Attack Damage: 40",
+        "Attack Speed: 30%",
+        "Build Path: Vampiric Scepter (1200) + Cloak of Agility (1000) + Ruby Crystal (500) + 300 → Vampiric Scepter (1200) + B. F. Sword (1500) + 500",
+        "Price: 3000 → 3200",
+        "Attack Damage: 55 → 75",
+        "Build Path: Sheen (800) + Cloak of Agility (1000) + Long Sword (500) + 700 → Sheen (800) + Caulfield's Warhammer (1200) + Brawler's Gloves (500) + 500",
+        "Attack Damage: 35 → 50",
+        "Build Path: Zeal (1400) + B. F. Sword (1500) + 200 → Noonquiver (1300) + Pickaxe (800) + Long Sword (500) + 500",
+        "Attack Damage: 50 → 60",
+        "Build Path: Serrated Dirk (1000) + Cloak of Agility (1000) + 1000 → Serrated Dirk (1000) + Noonquiver (1300) + 700",
+        "Attack Damage: 45 → 50",
+        "Build Path: Noonquiver (1300) + Dagger (500) + Long Sword (500) + 500 → Recurve Bow (900) + Hearthbound Axe (1200) + Long Sword (500) + 300",
+        "Price: 2800 → 2900",
+        "Attack Damage: 40 → 45",
+        "Attack Speed: 30% → 35%",
+        "Build Path: Vampiric Scepter (1200) + Recurve Bow (1400) + 400 → Vampiric Scepter Scepter (1200) + Pickaxe (800) + Recurve Bow (900) + 200",
+        "Price: 3200 → 3100",
+        "Attack Speed: 35% → 30%",
+        "Build Path: Nashor's Talon (800) + Recurve Bow (1400) + 900 → Amplifying Tome (500) + Recurve Bow (900) + Pickaxe (800) + + 800",
+        "Price: 3100 → 3000",
+        "Build Path: Recurve Bow (1400) + Negatron Cloak (900) + 500 → Recurve Bow (900) + Negatron Cloak (900) + Dagger (400) + 600",
+        "Attack Speed: 45% → 50%",
+        "Build Path: Recurve Bow (1400) + B. F. Sword (1500) + 400 → Recurve Bow (900) + Hearthbound Axe (1200) + 900",
+        "Total Price: 3300 → 3000",
+        "Attack Damage: 40 → 35",
+        "Build Path: Zeal (1400) + Dagger (500) + Long Sword (500) + 500 → Zeal (1400) + Dagger (400) + Dagger (400) + 450",
+        "Price: 2900 → 2650",
+        "Movement Speed: 5% → 7%",
+        "Build Path: Recurve Bow (1400) + Cloak of Agility (1000) + 500 → Zeal (1400) + Kircheis Shard (800) + 450",
+        "Attack Speed: 35% → 40%",
+        "Build Path: Last Whisper (800) + Executioner's Calling (800) + Cloak of Agility (1000) + 900 → Last Whisper (1200) + Executioner's Calling (800) + Brawler's Gloves (500) + 500",
+        "Price: 3300 → 3000",
+        "Attack Damage: 25 → 35",
+        "Build Path: B. F. Sword (1500) + Cloak of Agility (1000) + 900 → B. F. Sword (1500) + Pickaxe (800) + Brawler's Gloves (500) + 700",
+        "Attack Damage: 65 → 75",
+        "Manamune",
+        "Build Path: Tear of the Goddess (500) + Caulfield's Warhammer (1200) + 1000 → Caulfield's Warhammer (1200) + Tear of the Goddess (400) + Long Sword (500) + 800",
+        "Price: 2700 → 2900",
+        "Attack Damage: 25 → 40",
+        "Mana: 300 → 500",
+        "Ability Haste: 20 → 15",
+        "Mana Charge:",
+        "Build Path: Caulfield's Warhammer (1200) + Last Whisper (800) + Long Sword (500) + 800 → Caulfield's Warhammer (1200) + Last Whisper (1200) + 700",
+        "Price: 3300 → 3100",
+        "Attack Damage: 40 → 50",
+        "Price: 2800 → 2650",
+        "Attack Speed: 45% → 40%",
+        "Build Path: Last Whisper (800) + Long Sword (500) + Cloak of Agility (1000) + 1000 → Last Whisper (1200) + Noonquiver (1300) + 800",
+        "Attack Damage: 30 → 35",
+        "Armor Penetration: 36% → 35%",
+        "Removed",
+        "Build Path: Shimmering Spark (500) + Ruby Crystal (500) + 300 → Ring of Revelation (300) + Ruby Crystal (500) + 400",
+        "Total Price: 1300 → 1200",
+        "Price: 900 → 700",
+        "Heal and Shield Power: 4% → 6%",
+        "Health: 200",
+        "Mana expenditure grants 14 max Mana, up to 700. This can trigger at most 2 times every 10 seconds. At max stacks, it automatically upgrades into Diadem of Songs.",
+        "Mana: 1200",
+        "Build Path: Forbidden Idol (900) + Aether Wisp (950) + Ring of Revelation (300) + 550 → Forbidden Idol (700) + Aether Wisp (950) + 750",
+        "Price: 2700 → 2400",
+        "Ability Power: 45 → 50",
+        "Heal and Shield Power: 5% → 8%",
+        "Shielding or healing an allied champion other than yourself empowers both you and that champion for 6 seconds, granting 30% bonus Attack Speed and 25 bonus magic damage on basic attacks.",
+        "Price: 2500 → 2400",
+        "Health: 100 → 0",
+        "Ability Haste: 15 → 10",
+        "Shielding or healing an allied champion other than yourself empowers both you and that champion for 6 seconds, granting 40 Ability Power and 15 Ability Haste.",
+        "Price: 2600 → 2450",
+        "Health: 150 → 0",
+        "Ability Power: 50 → 40",
+        "Build Path: Aether Wisp (950) + Amplifying Tome (500) + Ring of Revelation (300) + 750 → Bandleglass Mirror (900) + Aether Wisp (950) + 600",
+        "Build Path: Fiendish Codex (900) + Kindlegem (1000) + 600 → Bandleglass Mirror (900) + Blasting Wand (800) + 900",
+        "Price: 2500 → 2600",
+        "Health: 200 → 0",
+        "Ability Power: 50 → 60",
+        "Build Path: Lost Chapter (1200) + Forbidden Idol (900) + Amplifying Tome (500) + 100 → Bandleglass Mirror (900) + Kindlegem (1000) + 600",
+        "Price: 2800 → 2500",
+        "Health: 100 → 200",
+        "Ability Haste: 15 → 20",
+        "Build Path: Kindlegem (1000) + Chain Vest (900) + 700 → Kindlegem (1000) + Chain Vest (900) + 550",
+        "Health: 400 → 200",
+        "Build Path: Glacial Shroud (1000) + Giant's Belt (1000) + 700 → Kindlegem (1000) + Cloth Armor (500) + Null-Magic Mantle (500) + 400",
+        "Health: 400 → 300",
+        "Armor: 40 → 25",
+        "Build Path: Chain Vest (900) + Kindlegem (1000) + 700 → Kindlegem (1000) + Cloth Armor (500) + Null-Magic Mantle (500) + 400",
+        "Price: 2600 → 2400",
+        "Health: 350 → 200",
+        "Armor: 40 → 20",
+        "Build Path: Surging Scales (1300) + Negatron Cloak (900) + 500 → Kindlegem (1000) + Giant's Belt (1000) + 550",
+        "Price: 2700 → 2550",
+        "Health: 200 → 600",
+        "Price: 2650 → 2550",
+        "Max Mana: 250 → 400",
+        "Build Path: Kindlegem (1000) + Chain Vest (900) + 950 → Giant's Belt (1000) + Cloth Armor (500) + Null-Magic Mantle (500) + 650",
+        "Price: 2850 → 2650",
+        "Armor: 45 → 30",
+        "Build Path: Kindlegem (1000) + Negatron Cloak (900) + Ruby Crystal (500) + 600 → Kindlegem (1000) + Negatron Cloak (900) + 500",
+        "Price: 3000 → 2400",
+        "Health: 400 → 350",
+        "Magic Resist: 55 → 45",
+        "Build Path: Caulfield's Warhammer (1200) + Chain Vest (900) + 1000 → Caulfield's Warhammer (1200) + Chain Vest (900) + Pickaxe (800) + 300",
+        "Total Price: 3100 → 3200",
+        "Armor: 40 → 45",
+        "Build Path: Tear of the Goddess (500) + Giant's Belt (1000) + 1100 → Tear of the Goddess (400) + Giant's Belt (1000) + Kindlegem (1000) + 200",
+        "Max Health: 350 → 500",
+        "Build Path: Surging Scales (1300) + Negatron Cloak (900) + 900 → Giant's Belt (1000) + Chain Vest (900) + Negatron Cloak (900) + 400",
+        "Armor: 60 → 50",
+        "Magic Resist: 60 → 50",
+        "Build Path: Winged Moonplate (900) + Surging Scales (1300) + 600 → Winged Moonplate (900) + Chain Vest (900) + Ruby Crystal (500) + 500",
+        "Build Path: Winged Moonplate (900) + Spectre's Cowl (1100) + 750 → Winged Moonplate (900) + Negatron Cloak (900) + Ruby Crystal (500) + 500",
+        "Price: 2750 → 2800",
+        "Max Health: 350 → 400",
+        "Build Path: Bami's Cinder (1300) + Jaurim's Fist (1200) + 500 → Pickaxe (800) + Jaurim's Fist (1200) + Ruby Crystal (500) + 500",
+        "Build Path: Sheen (800) + Phage (1000) + Stinger (1200) + 333 → Sheen (800) + Phage (1000) + Hearthbound Axe (1200) + 333",
+        "Attack Damage: 30 → 36",
+        "Movement Speed: 5% → 0",
+        "Ability Power: 70 → 60",
+        "Max Health: 350 → 300",
+        "Attack Speed: 25% → 20%",
+        "Build Path: Nashor's Talon (800) + Recurve Bow (1400) + 600 → Recurve Bow (900) + Blasting Wand (800) + Fiendish Codex (900) + 300",
+        "Total Price: 2800 → 2900",
+        "Critical Strike Threshold: 35% → 40%",
+        "Gold granted when the Summoned Rift Herald charges: 200 → 50",
+        "Energy Surge Attack Damage ratio: 60% → 30%",
+        "Corrosive Fluid Attack Damage ratio: 100% → 50%",
+        "Sundering Breath Attack Damage ratio: 200% → 100%",
+        "Spike Burst Attack Damage ratio: 100% → 50%",
+        "New jungle monster traits:",
+        "Cooldown: After a turret spawns, Crystalline Overgrowth has a 50-second cooldown. Once the cooldown ends, crystals begin to accumulate.",
+        "Armor and Magic Resist: -15 every 30 seconds, down to a minimum of 0",
+        "Turret Stats Health: Outer turret: 3000 → 7000",
+        "Inner turret: 3000 → 4500",
+        "Inhibitor turret: 3200 → 4250",
+        "Attack Damage increase: 10",
+        "Attack Damage increase: 30",
+        "Attack Damage increase: 100",
+        "Attack Damage: 15%",
+        "Attack Damage: 40%",
+        "Base Health: 800 → 1100",
+        "Damage to structures: Reaches a maximum of 100% at 23:00 → Fixed at 84%",
+        "Minion experience range: 8 → 10",
+        "New Items",
+        "NEW SYSTEM",
+        "New Season Begins",
+        "Removed Legendary Ranked Performance Score, while retaining the Legendary Ranked Multiplier. The higher your Legendary Ranked tier, the higher your multiplier will be. The value of the Legendary Ranked Multiplier has also been significantly increased.",
+        "Removed the previous Season Inheritance Score Bonus and added the new Master of Versatility Score Bonus.",
+        "Removed the restriction that only enabled the 5-ban system two weeks after the start of a new season. Eligible Ranked matches will now use the 5-ban system immediately when the new season begins.",
+        "New Player Rewards Revamped",
+        "Base Health: 660 → 690",
+        "Base Armor: 52 → 44",
+        "Armor per Level: 5.8 → 5",
+        "Armor per Level: 4.5 → 5",
+        "Base Magic Resist: 40 → 36",
+        "Base Health: 660 → 630",
+        "Health per Level: 128 → 136",
+        "Health per Level: 104 → 114",
+        "Base Health: 690 → 630",
+        "Health per Level: 120 → 124",
+        "Base Health: 630 → 650",
+        "Health per Level: 120 → 126",
+        "Base Health: 630 → 640",
+        "Health per Level: 120 → 128",
+        "Base Health: 690 → 650",
+        "Armor per Level: 4.3 → 4.7",
+        "Health per Level: 120 → 130",
+        "Base Armor: 46 → 42",
+        "Armor per Level: 5 → 5.4",
+        "Base Armor: 52 → 46",
+        "Health per Level: 120 → 136",
+        "Base Health: 600 → 630",
+        "Health per Level: 140 → 150",
+        "Base Armor: 52 → 48",
+        "Health per Level: 120 → 132",
+        "Base Health: 650 → 630",
+        "Armor per Level: 4.3 → 4.8",
+        "Base Armor: 49 → 45",
+        "Health per Level: 120 → 135",
+        "Base Armor: 46 → 44",
+        "Health per Level: 112 → 130",
+        "Base Armor: 49 → 42",
+        "Base Health: 660 → 640",
+        "Health per Level: 112 → 120",
+        "Base Health: 690 → 640",
+        "Health per Level: 128 → 132",
+        "Health per Level: 128 → 138",
+        "Base Health: 660 → 600",
+        "Base Health: 720 → 680",
+        "Base Health: 690 → 670",
+        "Health per Level: 112 → 124",
+        "Base Health: 630 → 600",
+        "Base Health: 650 → 660",
+        "Base Armor: 52 → 45",
+        "Health per Level: 144 → 148",
+        "Base Health: 720 → 700",
+        "Base Health: 720 → 660",
+        "Health per Level: 120 → 140",
+        "Health per Level: 120 → 125",
+        "Base Armor: 46 → 43",
+        "Base Health: 630 → 660",
+        "Base Health: 600 → 570",
+        "Base Health: 720 → 690",
+        "Health per Level: 120 → 134",
+        "Attack Speed Ratio Attack Speed Ratio determines how efficiently a champion converts bonus Attack Speed into actual Attack Speed. It converts the bonus Attack Speed a champion gains into real Attack Speed based on a percentage. In most cases, a champion's Attack Speed Ratio is equal to their Base Attack Speed.",
+        "Attack Speed per Level Attack Speed per Level is the Attack Speed a champion gains as they level up, and it is also treated as bonus Attack Speed in these calculations. (By contrast, other per-level stats, such as Attack Damage per Level, are not treated as bonus Attack Damage and are instead calculated as part of base Attack Damage.) Although Attack Speed per Level is a fixed value, the amount of bonus Attack Speed a champion gains each level is not equal. Bonus Attack Speed gained from leveling each level = Attack Speed per Level ×(0.7 + 0.04 × current level). For example, when a champion levels from 1 to 2, the bonus Attack Speed gained is equal to 74% of their Attack Speed per Level. By max level, the total bonus Attack Speed a champion gains from leveling = 1400% × Attack Speed per Level.",
+        "Attack Speed per Level: 0.024",
+        "Attack Speed Ratio: 0.651",
+        "Attack Speed per Level: 0.021",
+        "Attack Speed Ratio: 0.638",
+        "Attack Speed Ratio: 0.67",
+        "Attack Speed per Level: 0.018",
+        "Attack Speed Ratio: 0.667",
+        "Attack Speed per Level: 0.023",
+        "Attack Speed per Level: 0.0135",
+        "Attack Speed per Level: 0.0122",
+        "Attack Speed per Level: 0.028",
+        "Attack Speed per Level: 0.031",
+        "Attack Speed per Level: 0.008",
+        "Attack Speed Ratio: 0.725",
+        "Attack Speed per Level: 0.025",
+        "Attack Speed Ratio: 0.645",
+        "Attack Speed Ratio: 0.668",
+        "Attack Speed per Level: 0.0185",
+        "Attack Speed per Level: 0.02",
+        "Attack Speed per Level: 0.016",
+        "Attack Speed per Level: 0.006",
+        "Attack Speed Ratio: 0.644",
+        "Attack Speed per Level: 0.004",
+        "Attack Speed per Level: 0.015",
+        "Attack Speed per Level: 0.022",
+        "Attack Speed per Level: 0.005",
+        "Attack Speed per Level: 0.012",
+        "Attack Speed Ratio: 0.69",
+        "Attack Speed per Level: 0.026",
+        "Attack Speed Ratio:0.699",
+        "Attack Speed per Level: 0.017",
+        "Attack Speed per Level: 0.013",
+        "Attack Speed per Level: 0.034",
+        "Attack Speed Ratio: 0.635",
+        "Attack Speed Ratio: 0.679",
+        "Attack Speed Ratio: 0.7",
+        "Attack Speed per Level: 0.014",
+        "Attack Speed Ratio: 0.656",
+        "Attack Speed Ratio: 0.695",
+        "Attack Speed per Level: 0.029",
+        "Attack Speed per Level: 0.0165",
+        "Attack Speed per Level: 0.007",
+        "Attack Speed Ratio: 0.64",
+        "Attack Speed per Level: 0.027",
+        "Attack Speed per Level: 0.0367",
+        "Attack Speed Ratio: 0.612",
+        "Attack Speed per Level: 0.0124",
+        "Attack Speed per Level: 0.046",
+        "Attack Speed Ratio: 0.721"
+      ]
+    },
     {
       "patch": "7.2e",
       "title": "Wild Rift Patch Notes 7.2e",

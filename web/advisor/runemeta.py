@@ -22,7 +22,15 @@ def _load(name: str, default=None):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
 
 
-RUNES: list[dict] = _load("wrmeta_runes.json", []) or []
+#: Every rune the catalogue knows, including ones a patch has taken out of the
+#: game. Kept whole so a rune page saved before the patch still resolves by
+#: name; nothing here is offered to the model.
+ALL_RUNES: list[dict] = _load("wrmeta_runes.json", []) or []
+
+#: What a player can actually pick today. 7.3 replaced Legend: Tenacity with
+#: Legend: Haste and removed Ingenious Hunter, and offering either would be
+#: recommending a rune that no longer exists.
+RUNES: list[dict] = [r for r in ALL_RUNES if not r.get("removedIn")]
 
 #: Runes bought FOR mana, and nothing else.
 #:
@@ -40,7 +48,9 @@ def _canon(text: str) -> str:
     return re.sub(r"[^a-z0-9]", "", str(text).lower())
 
 
-BY_NAME: dict[str, dict] = {r["name"]: r for r in RUNES}
+#: Name resolution reads every rune, live or not: a build that names a removed
+#: rune has to be readable in order to be told it is stale.
+BY_NAME: dict[str, dict] = {r["name"]: r for r in ALL_RUNES}
 CANON: dict[str, str] = {_canon(n): n for n in BY_NAME}
 
 

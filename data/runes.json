@@ -41,7 +41,7 @@
     "name": "Conqueror",
     "tree": "",
     "type": "Keystone",
-    "description": "Basic attacks and abilities generate stacks of Conqueror on enemy champions hit, up to one per attack or cast. Each stack of Conqueror lasts 6 seconds and grants 3 - 5 (based on level) bonus (Adaptive) Attack Damage 4 - 12 (based on level) or Ability Power 4 - 8 (based on level), stacking up to 6 times, for a maximum of 12 - 36 (based on level) bonus Attack Damage or 18 - 54 (based on level) Ability Power (Adaptive). While fully stacked, gain 8 % melle ( 5% ranged) Physical Vamp and Magical Vamp. Adaptive Damage: Deals either physical or magic damage depending on your bonus stats, defaulting based on the origin of the effect.",
+    "description": "Basic attacks and abilities generate stacks of Conqueror on enemy champions hit, up to one per attack or cast. Each stack lasts 6 seconds and grants 3 - 5 (based on level) bonus Attack Damage or 5 - 8.33 Ability Power (Adaptive), stacking up to 6 times. At full stacks, melee champions heal for 9% of the damage they deal to champions and ranged champions for 6%.",
     "icon": "https://www.wildriftfire.com/images/runes/conqueror.png"
   },
   {
@@ -122,7 +122,7 @@
     "name": "Lethal Tempo",
     "tree": "",
     "type": "Keystone",
-    "description": "Gain stackable Attack Speed when attacking enemy champions. Stacks up to 6 times. At max stacks, you gain bonus range and can exceed your Attack Speed cap. Each stack increases Attack Speed by 6 – 14% (melee) or 3.5 – 8% (ranged) for 6 seconds. At max stacks, gain 25 (melee) or 50 (ranged) Attack Distance.",
+    "description": "Landing basic attacks on enemy champions grants stacking Attack Speed, 8% for melee and 6.4% for ranged, up to 6 stacks for 6 seconds. At max stacks, attacks also fire a bullet dealing 9 - 30 adaptive damage for melee and 6 - 24 for ranged. Each 1% bonus Attack Speed increases that damage by 1% for melee and 0.67% for ranged.",
     "icon": "https://www.wildriftfire.com/images/runes/lethal-tempo.png"
   },
   {
@@ -149,7 +149,7 @@
     "name": "Demolish",
     "tree": "Resolve",
     "type": "Minor",
-    "description": "When within 550 range of an enemy turret, gain a charge every 0.5s, up to 6 times. When fully charged, your next attack against the turret deals an additional 100 + 22% Max HP physical damage. (30s cooldown)",
+    "description": "After hitting a turret with 3 basic attacks, melee champions deal 85 + 28% maximum Health bonus physical damage, and ranged champions 50 + 20% maximum Health.",
     "icon": "https://www.wildriftfire.com/images/runes/demolish.png"
   },
   {
@@ -231,7 +231,9 @@
     "tree": "Domination",
     "type": "Minor",
     "description": "Gain 20 Item Ability Haste. For each champion or epic monster takedown you score, gain an additional 5 Item Ability Haste. Stacks up to 5 times.",
-    "icon": "https://www.wildriftfire.com/images/runes/ingenious-hunter.png"
+    "icon": "https://www.wildriftfire.com/images/runes/ingenious-hunter.png",
+    "removedIn": "7.3",
+    "removedWhy": "Removed in 7.3: its item synergies were too strong in some hands and did nothing in others."
   },
   {
     "id": 115,
@@ -276,7 +278,19 @@
     "tree": "Precision",
     "type": "Minor",
     "description": "Gain 3% tenacity and 3% slow resist, up to bonus 15% tenacity and 20% slow resist when engaging in taking down monsters, enemy champions and minions.",
-    "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png"
+    "icon": "https://www.wildriftfire.com/images/runes/legend-tenacity.png",
+    "removedIn": "7.3",
+    "removedWhy": "Replaced by Legend: Haste in 7.3, with Mercury's Treads now carrying the tenacity."
+  },
+  {
+    "id": 147,
+    "slug": "legend-haste",
+    "name": "Legend: Haste",
+    "tree": "Precision",
+    "type": "Minor",
+    "description": "Takedowns and killing monsters and minions grant 1.5 Ability Haste per stack, up to 15 Ability Haste.",
+    "icon": "/items/legend-haste.png",
+    "addedIn": "7.3"
   },
   {
     "id": 120,

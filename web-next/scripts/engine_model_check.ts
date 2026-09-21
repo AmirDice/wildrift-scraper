@@ -94,7 +94,12 @@ const CARRY = ["essence-reaver", "infinity-edge", "bloodthirster"];
 
 // ------------------------------------------------------------- shields / cut
 {
-  const shielded = { ...DUMMY, shield: 800 };
+  // 800 before patch 7.3. Base critical strike damage went from 175% to 200%
+  // and Infinity Edge from 205% to 230%, so a crit carry now chews through an
+  // 800 shield inside one 0.25s time-to-kill step and the check could not see
+  // it. The shield has to be worth more than a tick for the comparison to mean
+  // anything.
+  const shielded = { ...DUMMY, shield: 2000 };
   const plain = duel("Graves", CARRY, ["Conqueror"], shielded, 15, 20);
   const cut = duel("Graves", ["essence-reaver", "infinity-edge", "serpents-fang"],
                    ["Conqueror"], shielded, 15, 20);
@@ -118,7 +123,11 @@ const CARRY = ["essence-reaver", "infinity-edge", "bloodthirster"];
   ok("no lockdown against a champion with no hard cc", vsGraves!.lockdown === 0,
      `${vsGraves!.lockdown}s`);
 
-  const tenacity = duel("Graves", CARRY, ["Conqueror", "Legend: Tenacity"], alistar!, 15, 20);
+  // Tenacity used to come from Legend: Tenacity, which patch 7.3 replaced with
+  // Legend: Haste. At Wit's End carries 20% instead, and unlike Sterak's it
+  // does not also cleanse, so this still measures tenacity alone.
+  const tenacity = duel("Graves", ["essence-reaver", "infinity-edge", "wits-end"],
+                        ["Conqueror"], alistar!, 15, 20);
   ok("tenacity shortens lockdown", tenacity!.lockdown < vsAli!.lockdown,
      `${vsAli!.lockdown} -> ${tenacity!.lockdown}`);
 
@@ -200,17 +209,11 @@ const CARRY = ["essence-reaver", "infinity-edge", "bloodthirster"];
      rotation("Lux", ranged, DUMMY, 8, 15)
        === rotation("Lux", { ...ranged, targetSlow: 0 }, DUMMY, 8, 15));
 
-  const plain: any = resolveStats("Zed", 15, ["duskblade-of-draktharr"], []);
-  const hasted: any = resolveStats("Zed", 15, ["duskblade-of-draktharr"], ["Ingenious Hunter"]);
-  const cdOf = (st: any) => st.procs.find((p: any) => p.label === "duskblade-of-draktharr")?.cd;
-  ok("item haste shortens an item proc", cdOf(hasted) < cdOf(plain),
-     `${cdOf(plain)} -> ${cdOf(hasted)}`);
-  // Item haste is ITEM cooldowns. A keystone is not its business.
-  const runeProc: any = resolveStats("Zed", 15, ["duskblade-of-draktharr"], ["Ingenious Hunter", "Electrocute"]);
-  const elecOnly: any = resolveStats("Zed", 15, ["duskblade-of-draktharr"], ["Electrocute"]);
-  const elecCd = (st: any) => st.procs.find((p: any) => p.label === "Electrocute")?.cd;
-  ok("item haste leaves rune procs alone", elecCd(runeProc) === elecCd(elecOnly),
-     `${elecCd(elecOnly)} -> ${elecCd(runeProc)}`);
+  // ITEM HASTE has no source in the game as of patch 7.3: Ingenious Hunter was
+  // the only one and the patch removed it. The two checks that lived here --
+  // that item haste shortens an item proc, and that it leaves rune procs alone
+  // -- exercised the rune, so there is nothing left to drive them with. The
+  // engine still reads itemHasteFlat; bring these back with the next source.
 }
 
 console.log(`engine model: ${checks - failures}/${checks} checks passed`);

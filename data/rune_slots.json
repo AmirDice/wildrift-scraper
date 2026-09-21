@@ -14,7 +14,6 @@
       ],
       "3": [
         "Eyeball Collector",
-        "Ingenious Hunter",
         "Relentless Hunter",
         "Zombie Ward"
       ]
@@ -32,7 +31,7 @@
       ],
       "3": [
         "Legend: Alacrity",
-        "Legend: Tenacity",
+        "Legend: Haste",
         "Legend: Bloodline"
       ]
     },
@@ -73,5 +72,6 @@
         "Ixtali Seedjar"
       ]
     }
-  }
+  },
+  "targetPatch": "7.3"
 }

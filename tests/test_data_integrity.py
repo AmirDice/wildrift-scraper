@@ -311,11 +311,17 @@ class TestKaynBaseStats:
     at all on a champion who uses mana.
     """
 
+    # Attack speed is the one line here that does NOT come from the owner's
+    # reading any more. Patch 7.3 restated attack speed for the whole roster
+    # and published the numbers (ratio 0.67, base bonus 0.2, 0.018 per level),
+    # which puts Kayn at 0.804 rather than the 0.80 read in 7.2 and 0.973 at
+    # level 15 rather than 1.01. The published table is the newer authority;
+    # every other number is still the in-game reading.
     L1 = {"ad": 70, "hp": 630, "mana": 420, "armor": 40, "mr": 36,
-          "attackSpeed": 0.80, "hpRegen": 8, "manaRegen": 12, "moveSpeed": 350,
+          "attackSpeed": 0.804, "hpRegen": 8, "manaRegen": 12, "moveSpeed": 350,
           "tenacity": 3}
     L15 = {"ad": 126, "hp": 2422, "mana": 1260, "armor": 110, "mr": 64,
-           "attackSpeed": 1.01, "hpRegen": 20, "manaRegen": 26, "moveSpeed": 350,
+           "attackSpeed": 0.9728, "hpRegen": 20, "manaRegen": 26, "moveSpeed": 350,
            "tenacity": 3}
 
     def _stats(self, name):

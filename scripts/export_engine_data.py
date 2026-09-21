@@ -333,13 +333,16 @@ def main() -> None:
                 # durability. Ranking a burst mage on 8-second sustained damage
                 # is what made on-hit items look strong on casters.
                 "damageMetric": damage_metric(c["name"]),
-                # Attack speed RATIO (what % bonuses multiply) and per-level
-                # growth, verified in game. Absent growth means the champion
-                # has not been measured, and the TS engine must then behave
-                # exactly as before: no level scaling.
+                # Attack speed as 7.3 defines it: a RATIO that percentage
+                # bonuses multiply, the champion's own bonus at level 1, and
+                # the per-level step. asGrowth is the pre-7.3 measured curve,
+                # kept for a champion the published table does not carry (a
+                # new release), where the TS engine falls back to it.
                 "asRatio": attack_speed_ratio(
                     c["name"],
                     (c.get("baseStats", {}).get("attackSpeed", {}) or {}).get("base", 0.75) or 0.75),
+                "asBaseBonus": float((AS_CURVE.get(c["name"]) or {}).get("baseBonusAttackSpeed") or 0.0),
+                "asPerLevel": float((AS_CURVE.get(c["name"]) or {}).get("attackSpeedPerLevel") or 0.0),
                 "asGrowth": float((AS_CURVE.get(c["name"]) or {}).get("attackSpeedGrowth") or 0.0),
             }
             # Stats and skill ranks exist for the full roster. Structured
@@ -347,19 +350,28 @@ def main() -> None:
             for c in champs_all
         },
         "formulas": formulas,
+        # An item taken off the Rift keeps its entry: ladder builds collected
+        # while it existed still name it, and a catalogue that cannot resolve
+        # the slug draws a blank square. `removedIn` is what every picker and
+        # generator filters on instead.
         "items": {
             it["slug"]: {"name": it["name"], "cost": it["cost"], "icon": it["icon"],
-                         "category": it["category"], "stats": it["stats"]}
+                         "category": it["category"], "stats": it["stats"],
+                         **({"removedIn": it["removedIn"]} if it.get("removedIn") else {})}
             for it in items
         },
         "itemFx": {k: v for k, v in item_fx.items() if v and not k.startswith("_")},
         "runeFx": {"keystones": {k: v for k, v in rune_fx.get("keystones", {}).items()},
                    "minors": {k: v for k, v in rune_fx.get("minors", {}).items()}},
         "runeEngine": {k: v for k, v in rune_engine.items() if v},
+        # A rune taken out of the game keeps its entry for the same reason a
+        # removed item does: pages collected before the patch still name it.
         "runes": {
             r["name"]: {"slug": r["slug"], "icon": r["icon"], "tree": r.get("tree", ""),
                         "type": r["type"], "slot": slot_of.get(r["name"], 0),
-                        "description": r.get("description", "")}
+                        "description": r.get("description", ""),
+                        **({"removedIn": r["removedIn"]} if r.get("removedIn") else {}),
+                        **({"addedIn": r["addedIn"]} if r.get("addedIn") else {})}
             for r in runes
         },
         # `hardExclusive` replaced the flat `mutexGroups` map and nests the

@@ -152,6 +152,7 @@ const ITEM_FLAT_FX: Record<string, {
   asPctPassive: { stat: "attackSpeedPct", printedAs: "attackSpeed", note: (v) => `+${v}% Attack Speed at full ramp` },
   omnivampPct: { stat: "omnivamp", printedAs: "omnivamp", note: (v) => `${v}% Omnivamp at full ramp` },
   physVampPct: { stat: "physicalVamp", printedAs: "physicalVamp", note: (v) => `${v}% Physical Vamp with the passive up` },
+  lifestealPct: { stat: "lifesteal", printedAs: "lifesteal", note: (v) => `${v}% Lifesteal with the passive up` },
   healShieldAmpPct: { stat: "healShieldPower", printedAs: "healShieldPower", note: (v) => `+${v}% Heal & Shield Power` },
 };
 

@@ -32,7 +32,7 @@
     "tagline": "Attack Speed",
     "tree": "Keystone",
     "type": "Keystone",
-    "text": "Gain stacks of Attack Speed when attacking enemy champions. Stacks up to 6 times. At max stacks, you gain bonus range and can exceed the Attack Speed cap. Each stack: increase 6-14% (Melee) or 3.5-8% (Ranged) Attack Speed for 6 seconds. At max stack bonus: Gain 25 (Melee) or 50 (Ranged) Attack Distance.",
+    "text": "Landing basic attacks on enemy champions grants stacking Attack Speed, 8% for melee and 6.4% for ranged, up to 6 stacks for 6 seconds. At max stacks, attacks also fire a bullet dealing 9 - 30 adaptive damage for melee and 6 - 24 for ranged. Each 1% bonus Attack Speed increases that damage by 1% for melee and 0.67% for ranged.",
     "image": "/items/lethal-tempo.webp"
   },
   {
@@ -50,7 +50,7 @@
     "tagline": "Stacking Damage, Vamp",
     "tree": "Keystone",
     "type": "Keystone",
-    "text": "Gain stacks of Adaptive Force when hitting a champion with separate attacks or abilities. Stacks up to 6 times. When fully stacked, gain bonus omnivamp. Per stack: 3-5 bonus [ad] or 4-8 [ap] for 6s. Fully stacked bonus: Melee - 9%, Ranged - 5% bonus Omnivamp [omnivamp].",
+    "text": "Basic attacks and abilities generate stacks of Conqueror on enemy champions hit, up to one per attack or cast. Each stack lasts 6 seconds and grants 3 - 5 (based on level) bonus Attack Damage or 5 - 8.33 Ability Power (Adaptive), stacking up to 6 times. At full stacks, melee champions heal for 9% of the damage they deal to champions and ranged champions for 6%.",
     "image": "/items/conqueror.webp"
   },
   {
@@ -186,7 +186,8 @@
     "tree": "Domination",
     "type": "Minor",
     "text": "Gains 20 Item Ability Haste. For each champion or epic monster takedown you score, gain an additional 5 Item Ability Haste. Stacks up to 5 times.",
-    "image": "/items/ingenious-hunter.webp"
+    "image": "/items/ingenious-hunter.webp",
+    "removedIn": "7.3"
   },
   {
     "name": "Relentless Hunter",
@@ -276,7 +277,8 @@
     "tree": "Precision",
     "type": "Minor",
     "text": "Gains 3% Tenacity and 3% Slow Resist. Takedown monsters, enemy champions, or minions to gain up to an additional 15% Tenacity and 20% Slow Resist.",
-    "image": "/items/legend-tenacity.webp"
+    "image": "/items/legend-tenacity.webp",
+    "removedIn": "7.3"
   },
   {
     "name": "Legend: Bloodline",
@@ -293,7 +295,7 @@
     "tagline": "Destroy turrets faster",
     "tree": "Resolve",
     "type": "Minor",
-    "text": "When within 550 range of an enemy turret, gain a charge every 0.5s, up to 6 times. When fully charged, your next attack against the turret deals an additional (100 + 22% max Health [hp]) physical damage. Cooldown: 30s",
+    "text": "After hitting a turret with 3 basic attacks, melee champions deal 85 + 28% maximum Health bonus physical damage, and ranged champions 50 + 20% maximum Health.",
     "image": "/items/demolish.webp"
   },
   {
@@ -475,5 +477,14 @@
     "type": "Minor",
     "text": "After destroying a plant, immediately gain a seeds that replaces your trinket for 60 seconds. The seed matures and self-destructs after it is planted at a target location. (Seeds you can pick up will also drop when an ally destroys a plant.) Seeds become obtainable 2 minutes after the game starts. Cooldown: Each plant has a unique 30s",
     "image": "/items/ixtali-seedjar.webp"
+  },
+  {
+    "name": "Legend: Haste",
+    "slug": "legend-haste",
+    "tagline": "Takedowns grant Ability Haste",
+    "tree": "Precision",
+    "type": "Minor",
+    "text": "Takedowns and killing monsters and minions grant 1.5 Ability Haste per stack, up to 15 Ability Haste.",
+    "image": "/items/legend-haste.png"
   }
 ]

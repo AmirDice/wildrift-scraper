@@ -63,7 +63,12 @@ class TestPreFilter:
         """The filter exists to remove the impossible. If it starts trimming
         broadly it is silently narrowing every build."""
         kept, removed = _for("Hecarim", enemies_known=True)
-        assert len(removed) <= 3
+        # Three of these are items 7.3 took out of the game (Magnetic Blaster,
+        # Soul Transfer, Searing Crown), which is not the filter narrowing a
+        # build -- they cannot be bought. The other three are the standing
+        # cases: a ranged-only item on a melee champion and the two free
+        # support items outside the support role.
+        assert len(removed) <= 6, removed
         assert len(kept) > 90
 
     def test_reactive_items_stay_in_the_pool_without_an_enemy_team(self):
@@ -102,9 +107,11 @@ class TestPreFilter:
 
 
 class TestMetadata:
-    def test_runaans_is_ranged_only_despite_the_garbled_text(self):
-        """The item text reads 'cannot only be used by melee champions'. Either
-        way that sentence is untangled, melee cannot build it."""
+    def test_runaans_is_ranged_only(self):
+        """It used to be read out of wr-meta's garbled 'cannot only be used by
+        melee champions'. 7.3 rewrote that passive from Riot's own text, which
+        does not mention the restriction, so it lives in the catalogue as a
+        field now -- and this is the test that would have caught its loss."""
         meta = itemmeta.metadata("runaans-hurricane")
         assert meta["meleeAllowed"] is False
         assert meta["rangedAllowed"] is True
@@ -264,8 +271,11 @@ class TestThreatResponseItems:
         got = itemmeta.items_answering("armor_penetration")
         assert "lord-dominiks-regard" in got
         assert "seryldas-grudge" in got
-        # Sorted by magnitude, so the most penetration leads.
-        assert got[0] == "lord-dominiks-regard"
+        # Sorted by magnitude, so the most penetration leads. 7.3 levelled the
+        # top of this list: Lord Dominik's went 36% -> 35% and Serylda's Grudge
+        # gained 35% as a printed stat, so the two share the lead and which one
+        # prints first is a tie-break, not a ranking.
+        assert set(got[:2]) == {"lord-dominiks-regard", "seryldas-grudge"}
         assert "void-staff" in itemmeta.items_answering("magic_penetration")
 
     def test_lethality_is_not_offered_as_anti_tank(self):

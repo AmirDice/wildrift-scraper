@@ -11,7 +11,7 @@ import ladderBuildsData from "@/data/ladder_builds.json";
 /* eslint-disable @next/next/no-img-element */
 
 const DATA = engineData as {
-  items?: Record<string, { name?: string; icon?: string; category?: string }>;
+  items?: Record<string, { name?: string; icon?: string; category?: string; removedIn?: string }>;
   runes?: Record<string, { icon?: string; type?: string | number }>;
   formulas?: Record<string, {
     abilities?: Record<string, { name?: string; icon?: string }>;
@@ -40,6 +40,9 @@ const LADDER = ladderBuildsData as Record<string, {
   items: { slug: string; count: number; of: number }[];
   keystones: { name: string; count: number }[];
   minors: { name: string; count: number }[];
+  /** The six most-built in the order the top 50 BUY them, boots included
+   *  where they are bought (scripts/ladder_item_order.py). */
+  order?: string[];
 }>;
 
 const abilityName = (champ: string, slot: string): string =>
@@ -78,13 +81,19 @@ function variantRunes(name: string, variant?: string): string[] {
 }
 
 /** The most common top-50 loadout: the five most-equipped non-boots items plus
- *  the most-equipped boots, in popularity order.
+ *  the most-equipped boots, in the order those players buy them.
  *
  *  Popularity is aggregated across DIFFERENT players' games, so the raw top 5
  *  can pair items no single game allows -- when half the ladder builds Lord
  *  Dominik's and half builds Mortal Reminder, both make the cut. Each pick is
  *  therefore checked against the exclusivity rules given what is already in
- *  the build, exactly as the Lab's item picker does. */
+ *  the build, exactly as the Lab's item picker does.
+ *
+ *  The order is the board's recorded purchase order, the same one the
+ *  Most-built panel numbers, so the two never show one build two ways. It only
+ *  applies when it covers exactly the six picked here: an item the exclusivity
+ *  check swapped in was never ordered, and guessing its place would be
+ *  inventing a build order, so that loadout stays most-built first. */
 function ladderBuild(name: string): string[] {
   const rec = LADDER[name];
   if (!rec) return [];
@@ -96,7 +105,10 @@ function ladderBuild(name: string): string[] {
     items.push(i.slug);
   }
   const boots = rec.items.find((i) => isBoots(i.slug))?.slug;
-  return boots ? [...items, boots] : items;
+  const picked = boots ? [...items, boots] : items;
+  const order = rec.order ?? [];
+  return order.length === picked.length && picked.every((slug) => order.includes(slug))
+    ? order : picked;
 }
 
 function ladderRunes(name: string): string[] {
@@ -436,6 +448,9 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
  *  the engine catalogue -- the same source of truth every other picker uses. */
 function itemOptions(): { key: string; name: string; icon?: string }[] {
   return Object.entries(DATA.items ?? {})
+    // An item removed from the game keeps its catalogue entry so old builds
+    // can still be read, but nobody can equip it, so it is not offered.
+    .filter(([, meta]) => !meta.removedIn)
     .map(([slug, meta]) => ({ key: slug, name: meta.name ?? slug, icon: meta.icon ?? `/items/${slug}.webp` }))
     .sort((a, b) => a.name.localeCompare(b.name));
 }

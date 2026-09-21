@@ -1,25 +1,8 @@
 {
-  "targetPatch": "7.2",
+  "targetPatch": "7.3",
   "source": "data/wrmeta_runes.json",
   "note": "Maximum modelled value of each rune: full stacks, full ramp. 'stats' fold into the stat sheet; 'effects' are quantified but are not stats.",
   "runes": {
-    "Legend: Tenacity": {
-      "stats": [
-        {
-          "stat": "tenacity",
-          "value": 18,
-          "note": "3% base + 15% at full takedown stacks"
-        }
-      ],
-      "effects": [
-        {
-          "label": "Slow resist",
-          "value": "23%",
-          "note": "3% base + 20% at full stacks"
-        }
-      ],
-      "evidence": "additional 15% Tenacity and 20% Slow Resist"
-    },
     "Legend: Alacrity": {
       "stats": [
         {
@@ -280,16 +263,6 @@
       ],
       "evidence": "Gain 10 out-of-combat Movement Speed"
     },
-    "Ingenious Hunter": {
-      "effects": [
-        {
-          "label": "Item Ability Haste",
-          "value": "45",
-          "note": "20 base + 5 per takedown, 5 stacks"
-        }
-      ],
-      "evidence": "Gains 20 Item Ability Haste"
-    },
     "Hubris": {
       "effects": [
         {
@@ -470,36 +443,36 @@
       "stats": [
         {
           "stat": "attackSpeedPct",
-          "melee": 84,
-          "ranged": 48,
-          "note": "6 stacks at level 15: 14% melee or 8% ranged per stack"
+          "melee": 48,
+          "ranged": 38.4,
+          "note": "6 stacks: 8% melee or 6.4% ranged per stack"
         }
       ],
       "effects": [
         {
-          "label": "At max stacks",
-          "value": "25 (melee) / 50 (ranged) Attack Distance",
-          "note": "and the Attack Speed cap is lifted"
+          "label": "Bullet at max stacks",
+          "value": "9 - 30 adaptive (melee)",
+          "note": "6 - 24 ranged, +1% per 1% bonus Attack Speed (0.67% ranged)"
         }
       ],
-      "evidence": "6-14% (Melee) or 3.5-8% (Ranged)"
+      "evidence": "8% for melee and 6.4% for ranged, up to 6 stacks"
     },
     "Conqueror": {
       "stats": [
         {
           "stat": "adaptive",
           "ad": 30,
-          "ap": 48,
-          "note": "6 stacks at level 15: 5 AD or 8 AP per stack"
+          "ap": 50,
+          "note": "6 stacks at level 15: 5 AD or 8.33 AP per stack"
         },
         {
           "stat": "omnivamp",
           "melee": 9,
-          "ranged": 5,
-          "note": "only while fully stacked"
+          "ranged": 6,
+          "note": "at full stacks"
         }
       ],
-      "evidence": "3-5 bonus"
+      "evidence": "3 - 5 bonus Attack Damage or 5 - 8.33 Ability Power per stack"
     },
     "Dark Harvest": {
       "effects": [
@@ -658,6 +631,16 @@
         }
       ],
       "evidence": "35 + 75% bonus Armor and Magic Resist"
+    },
+    "Legend: Haste": {
+      "stats": [
+        {
+          "stat": "abilityHaste",
+          "value": 15,
+          "note": "1.5 per stack, ten stacks"
+        }
+      ],
+      "evidence": "up to a maximum of 15 Ability Haste, with each stack granting 1.5"
     }
   },
   "unmodelled": [

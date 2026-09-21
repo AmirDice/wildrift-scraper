@@ -62,8 +62,12 @@ def test_master_yi_routes_to_carry_variants_and_rejects_lethality_stack():
                       "edge-of-night", "seryldas-grudge", "guardian-angel")
     assert curated._path_errors("standard", lethality, items, identity)
 
+    # Guinsoo's, not Nashor's Tooth: 7.3 took the adaptive stat off Nashor's
+    # and made it a pure Ability Power item, which an AD on-hit jungler has no
+    # use for. Guinsoo's carries 30 AP beside 35 AD and must still pass, or the
+    # gate would reject the on-hit build the item exists for.
     on_hit = _core("blade-of-the-ruined-king", "wits-end", "terminus",
-                   "nashors-tooth", "deaths-dance")
+                   "guinsoos-rageblade", "deaths-dance")
     assert curated._path_errors("standard", on_hit, items, identity) == []
 
 

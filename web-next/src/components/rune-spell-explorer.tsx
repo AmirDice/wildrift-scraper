@@ -12,6 +12,9 @@ export type RuneEntry = {
   type: string;
   slot: number;
   description: string;
+  /** The patch a rune arrived in, and the one that took it out of the game. */
+  addedIn?: string;
+  removedIn?: string;
 };
 
 export type SpellEntry = {
@@ -29,6 +32,10 @@ export function RuneSpellExplorer({ runes, spells }: { runes: RuneEntry[]; spell
   const [tree, setTree] = useState("All");
   const trees = ["All", "Keystones", ...Array.from(new Set(runes.map((rune) => rune.tree).filter(Boolean))).sort()];
   const visibleRunes = useMemo(() => runes.filter((rune) => {
+    // A rune that is no longer in the game is not part of the loadout
+    // reference, but it is still here for the player who comes looking for it
+    // after a patch, and its card says when it left.
+    if (rune.removedIn && !query.trim()) return false;
     const matchesTree = tree === "All" || (tree === "Keystones" ? rune.type === "Keystone" : rune.tree === tree);
     const q = query.toLowerCase();
     return matchesTree && (!q || `${rune.name} ${rune.description}`.toLowerCase().includes(q));
@@ -54,7 +61,7 @@ export function RuneSpellExplorer({ runes, spells }: { runes: RuneEntry[]; spell
 
       {tab === "runes" ? (
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleRunes.map((rune) => <details key={rune.name} className="group glass rounded-xl p-4 open:border-accent/30"><summary className="flex cursor-pointer list-none items-center gap-3"><img src={rune.icon} alt="" width={44} height={44} className="h-11 w-11 rounded-full object-cover ring-1 ring-white/10" /><div className="min-w-0 flex-1"><p className="truncate font-semibold">{rune.name}</p><p className="text-xs text-muted">{rune.type === "Keystone" ? "Keystone" : `${rune.tree} · slot ${rune.slot}`}</p></div><span className="text-lg text-faint transition group-open:rotate-45">+</span></summary><p className="mt-3 border-t border-line/60 pt-3 text-sm leading-relaxed text-muted">{rune.description}</p></details>)}
+          {visibleRunes.map((rune) => <details key={rune.name} className="group glass rounded-xl p-4 open:border-accent/30"><summary className="flex cursor-pointer list-none items-center gap-3"><img src={rune.icon} alt="" width={44} height={44} className="h-11 w-11 rounded-full object-cover ring-1 ring-white/10" /><div className="min-w-0 flex-1"><p className="truncate font-semibold">{rune.name}</p><p className="text-xs text-muted">{rune.type === "Keystone" ? "Keystone" : `${rune.tree} · slot ${rune.slot}`}{rune.addedIn ? ` · new in ${rune.addedIn}` : ""}{rune.removedIn ? ` · removed in ${rune.removedIn}` : ""}</p></div><span className="text-lg text-faint transition group-open:rotate-45">+</span></summary><p className="mt-3 border-t border-line/60 pt-3 text-sm leading-relaxed text-muted">{rune.description}</p></details>)}
         </div>
       ) : (
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

@@ -376,12 +376,14 @@ GUIDE_META = _load("wrf_guide_meta.json")  # real skill orders from wildriftfire
 _SITE_P = ROOT / "web-next" / "src" / "data" / "site.json"
 _SITE = json.loads(_SITE_P.read_text(encoding="utf-8")) if _SITE_P.exists() else {}
 
-BASE_CRIT_MULT = 1.75
+# Patch 7.3 raised base critical strike damage from 175% to 200% across the
+# board, which is the change the whole marksman item overhaul is built on.
+BASE_CRIT_MULT = 2.0
 # Font of Life procs on hitting a champion; in a real fight that lands roughly
 # every few seconds, not every tick. Used to turn its per-proc heal into a rate.
 FONT_PROC_EVERY = 3.0
 RUNE_PROC_EVERY = 9.0   # assumed cadence for a rune that states none
-AS_CAP = 2.5
+AS_CAP = 3.0        # 2.5 before patch 7.3
 SPELLBLADE_CD = 1.5
 
 # Reference targets. The squishy is a REAL champion with zero defensive tools
@@ -584,6 +586,15 @@ def _apply_stat(st: dict, k: str, val: float, pct: bool = False) -> None:
         st["healShieldAmp"] += val / 100.0
     elif k == "physicalVamp":
         # Mirrors the physVampPct item effect.
+        st["vamp"] += val / 100.0
+        st["lifestealPct"] += val / 100.0
+    elif k == "lifesteal":
+        # New in 7.3. In game it heals off basic attacks, on-hit damage and
+        # abilities that count as attacks, where physical vamp also heals off
+        # ability damage. The engine has one vamp channel, and the healing
+        # breakdown already charges lifesteal against physical damage only, so
+        # this is approximated as physical vamp. Splitting attack damage out of
+        # the window is its own change, not this patch's.
         st["vamp"] += val / 100.0
         st["lifestealPct"] += val / 100.0
     elif k == "omnivamp":
@@ -1248,7 +1259,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         _alive = min(st["cloneMaxCount"] or 1,
                      st["crit"] * st["as"] * st["cloneLifetimeS"])
         _clone_as = min(AS_CAP, st["baseAs"]
-                        * (1 + st["cloneAsFromCritPct"] / 100.0 * st["crit"]))
+                        * (1 + level_as_bonus(name, level)
+                           + st["cloneAsFromCritPct"] / 100.0 * st["crit"]))
         _clone_dps = _alive * _clone_as * (st["cloneAdPct"] / 100.0) * st["ad"]
         st["onHitPhys"] += _clone_dps / max(st["as"], 0.1)
 
@@ -1498,20 +1510,32 @@ def attack_speed_ratio(name: str, fallback: float) -> float:
 
 
 def level_as_bonus(name: str, level: int) -> float:
-    """Bonus attack speed from LEVELS, as a fraction.
+    """The champion's OWN bonus attack speed at this level, as a fraction.
 
-    Wild Rift kept League's curve, confirmed in game against Ekko, Akali, Lux
-    and Fiddlesticks:
+    Patch 7.3 published the model for the whole roster:
 
-        bonus = growth * (L-1) * (0.7025 + 0.0175 * (L-1))
+        bonus = baseBonusAttackSpeed + perLevel * sum(0.7 + 0.04 * l)
 
-    Returns 0 for champions we have not measured, so their numbers do not move
-    until someone reads the real values off the client.
+    summed over the levels gained, which comes to exactly 14 * perLevel at
+    level 15. The base bonus is part of it -- it is attack speed a champion has
+    standing still at level 1, on top of the ratio -- so this is no longer
+    "from levels" alone.
+
+    Before 7.3 this was League's own curve applied to the eight champions the
+    owner had measured, and zero for everyone else. Returns 0 for a champion
+    the table does not carry (a new release), which keeps that old behaviour.
     """
-    growth = float((AS_CURVE.get(name) or {}).get("attackSpeedGrowth") or 0.0)
-    if not growth or level <= 1:
-        return 0.0
-    return growth * (level - 1) * (0.7025 + 0.0175 * (level - 1))
+    entry = AS_CURVE.get(name) or {}
+    base_bonus = float(entry.get("baseBonusAttackSpeed") or 0.0)
+    per_level = float(entry.get("attackSpeedPerLevel") or 0.0)
+    if not per_level and not base_bonus:
+        # Pre-7.3 measurement, kept so a champion measured by hand and not yet
+        # in the published table still scales.
+        growth = float(entry.get("attackSpeedGrowth") or 0.0)
+        if not growth or level <= 1:
+            return 0.0
+        return growth * (level - 1) * (0.7025 + 0.0175 * (level - 1))
+    return base_bonus + per_level * sum(0.7 + 0.04 * l for l in range(1, max(1, level)))
 
 
 _METRIC_CACHE: dict[str, str] = {}
@@ -2563,7 +2587,7 @@ STAT_GOLD = {
     "armor": 20.0, "mr": 20.0, "attackSpeed": 30.0, "crit": 40.0,
     "magicPen": 41.7, "physicalPen": 41.7, "lethality": 50.0,
     "magicPenFlat": 41.7, "physicalPenFlat": 50.0,
-    "healShieldPower": 26.7, "physicalVamp": 40.0,
+    "healShieldPower": 26.7, "physicalVamp": 40.0, "lifesteal": 40.0,
     "mana": 1.4, "moveSpeed": 13.0,
 }
 # Stats that occur as BOTH flat and percent under a single key: scales the

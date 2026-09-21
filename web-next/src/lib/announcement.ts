@@ -21,7 +21,7 @@
  * apart: every number a patch changes directly (ability ratios, cooldowns,
  * item stats) is on this patch, and only the measured win rates are not.
  */
-export const SKIPPED_PATCH = "7.2e";
+export const SKIPPED_PATCH = "7.3";
 
 /** The patch whose games the win rates were actually collected from. */
 export const WINRATE_PATCH = "7.2d";
@@ -31,10 +31,10 @@ export const NEXT_PATCH = "7.3";
 
 export const ANNOUNCEMENT = {
   /** Bump when the message changes, so a dismissed banner comes back. */
-  key: "wtm-announce-skip-72e-v1",
+  key: "wtm-announce-73-v1",
   href: "/updates",
   lead: `Patch ${SKIPPED_PATCH} is live`,
-  short: `Items, abilities and champion changes are updated. Win rates stay on the ${WINRATE_PATCH} boards: the next collection is for ${NEXT_PATCH}, and the time goes into new features instead.`,
+  short: `The marksman overhaul is in: ten new items, three gone, 200% base critical strike damage, and new base stats for every champion. Win rates stay on the ${WINRATE_PATCH} boards until the next collection.`,
   cta: "Read why",
   badges: ["Update"],
   /** Pages the banner points at, so it does not appear on top of itself. */
@@ -51,6 +51,21 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "21 September 2026",
+    title: `Patch ${SKIPPED_PATCH} applied: the marksman overhaul`,
+    body:
+      "Ten items joined the shop (Yun Tal Wildarrows, Stormrazor, Rapid Firecannon, "
+      + "Fiendhunter Bolts, Hexoptics C44, Immortal Shieldbow, Statikk Shiv, Echoes of "
+      + "Helia, Whispering Circlet, Diadem of Songs) and three left it: Magnetic "
+      + "Blaster, Soul Transfer and Searing Crown. Base critical strike damage is 200% "
+      + "instead of 175%, the attack speed cap is 3, and Lifesteal is a new stat that "
+      + "heals from attacks only. Legend: Tenacity became Legend: Haste and Ingenious "
+      + "Hunter is gone. Thirty-two champions changed abilities, and every champion in "
+      + "the game has new attack speed numbers, so the damage and build figures across "
+      + "the site have all moved. Win rates are still measured on the "
+      + `${WINRATE_PATCH} boards until the next collection.`,
+  },
   {
     date: "18 September 2026",
     title: "The Draft Assistant is live",

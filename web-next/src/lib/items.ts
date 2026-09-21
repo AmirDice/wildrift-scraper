@@ -15,9 +15,24 @@ export interface Item {
   tags: string[];
   stats: Record<string, ItemStat>;
   passives: string[];
+  /** The patch this item arrived in, for the "new" badge after a patch. */
+  addedIn?: string;
+  /** Set once the item leaves the shop. The record stays so builds collected
+   *  while it existed can still be read; nothing may recommend it. */
+  removedIn?: string;
+  removedWhy?: string;
 }
 
+/** Every item the catalogue knows, including ones taken off the Rift. */
 export const ITEMS = itemsData as unknown as Item[];
+
+/** What a player can actually buy today. Anything that offers an item to
+ *  build -- a picker, a generator, a comparison -- uses this one. */
+export const LIVE_ITEMS = ITEMS.filter((it) => !it.removedIn);
+
+export function isRemoved(slug: string): boolean {
+  return Boolean(ITEMS.find((it) => it.slug === slug)?.removedIn);
+}
 
 /** Display order for the category filter; matches the scraped categories. */
 export const ITEM_CATEGORIES = ["Physical", "Magic", "Defense", "Boots", "Active", "Support"] as const;

@@ -14,13 +14,13 @@
       },
       "armor": {
         "base": 46.0,
-        "perLevel": 4.0,
-        "lvl15": 102.0
+        "perLevel": 5.0,
+        "lvl15": 116.0
       },
       "mr": {
-        "base": 40.0,
+        "base": 36.0,
         "perLevel": 2.0,
-        "lvl15": 68.0
+        "lvl15": 64.0
       },
       "moveSpeed": {
         "base": 355.0,
@@ -33,9 +33,9 @@
         "lvl15": 132.0
       },
       "attackSpeed": {
-        "base": 0.73,
-        "perLevel": 0.0079,
-        "lvl15": 0.8
+        "base": 0.7356,
+        "perLevel": 0.01367,
+        "lvl15": 0.927
       }
     },
     "abilities": [
@@ -161,8 +161,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.0125,
+        "lvl15": 0.925
       }
     },
     "abilities": [
@@ -251,8 +251,8 @@
     "baseStats": {
       "hp": {
         "base": 630.0,
-        "perLevel": 140.0,
-        "lvl15": 2590.0
+        "perLevel": 150.0,
+        "lvl15": 2730.0
       },
       "hpRegen": {
         "base": 10.0,
@@ -291,8 +291,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.0125,
+        "lvl15": 0.975
       }
     },
     "abilities": [
@@ -415,13 +415,13 @@
       },
       "ad": {
         "base": 52.0,
-        "perLevel": 5.0,
-        "lvl15": 122.0
+        "perLevel": 4.5,
+        "lvl15": 115.0
       },
       "attackSpeed": {
-        "base": 0.7,
-        "perLevel": 0.0036,
-        "lvl15": 0.8
+        "base": 0.668,
+        "perLevel": 0.016,
+        "lvl15": 0.892
       }
     },
     "abilities": [
@@ -441,7 +441,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Avengerang",
-        "text": "Akshan hurls a boomerang in the target direction, dealing 10 / 40 / 70 / 100 ( +85% AD ) physical damage to enemies it passes through and revealing them, granting sight of the area along its path, as well as extending its range every time it hits an enemy. If the boomerang hits an enemy champion, Akshan gains bonus movement speed decaying over time. Upon reaching maximum range, the boomerang returns to Akshan, applying the same effects to enemies hit along the way. Avengerang deals 55% / 70% / 85% / 100% damage to minions.",
+        "text": "Akshan hurls a boomerang in the target direction, dealing 60 / 110 / 160 / 210 ( +85% AD ) physical damage to enemies it passes through and revealing them, granting sight of the area along its path, as well as extending its range every time it hits an enemy. If the boomerang hits an enemy champion, Akshan gains bonus movement speed decaying over time. Upon reaching maximum range, the boomerang returns to Akshan, applying the same effects to enemies hit along the way. Avengerang deals 50% / 60% / 70% / 80% damage to minions.",
         "cooldowns": [
           "8",
           "7",
@@ -471,7 +471,7 @@
         "slot": "3",
         "key": "E",
         "name": "Heroic Swing",
-        "text": "Fires a hook to attach and swing around terrain, attacking the nearest enemy dealing 30 / 70 / 110 / 150 ( +15% AD ) physical damage . If Akshan collides with an enemy champion or terrain, he will jump off the rope. Re-cast: Jumps off the rope. Champion takedowns refresh this ability's cooldown. Prioritizing champions recently damaged by Akshan. On-hit effects deal 25% damage. Each shot can Critically Strike for 150% damage.",
+        "text": "Fires a hook to attach and swing around terrain, attacking the nearest enemy dealing 30 / 70 / 110 / 150 ( +15% AD ) physical damage . If Akshan collides with an enemy champion or terrain, he will jump off the rope. Re-cast: Jumps off the rope. Champion takedowns refresh this ability's cooldown. Prioritizing champions recently damaged by Akshan. On-hit effects deal 25% damage. Each shot can Critically Strike for 0.7% damage.",
         "cooldowns": [
           "18",
           "16",
@@ -487,7 +487,7 @@
         "slot": "4",
         "key": "R",
         "name": "Comeuppance",
-        "text": "Locks onto an enemy champion, charging multiple shots over a few seconds. Re-cast: Fires the shots, dealing 20 / 30 / 40 ( +10% AD ) physical damage to the first enemy or structure hit, increased up to 80 / 120 / 160 ( +40% AD ) physical damage based on target's missing Health. Each shot's damage is further increased by a percentage equal to 50% of Critical Rate . Shots also execute minions.",
+        "text": "Locks onto an enemy champion, charging multiple shots over a few seconds. Re-cast: Fires the shots, dealing 20 / 30 / 40 ( +15% AD ) physical damage to the first enemy or structure hit, increased up to 80 / 120 / 160 ( +45% AD ) physical damage based on target's missing Health. Each shot's damage is further increased by a percentage equal to 30% of Critical Rate . Shots also execute minions.",
         "cooldowns": [
           "65",
           "60",
@@ -509,9 +509,9 @@
     "name": "Alistar",
     "baseStats": {
       "hp": {
-        "base": 720.0,
+        "base": 700.0,
         "perLevel": 144.0,
-        "lvl15": 2736.0
+        "lvl15": 2716.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -549,9 +549,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.75,
+        "perLevel": 0.0075,
+        "lvl15": 0.855
       }
     },
     "abilities": [
@@ -677,8 +677,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.0075,
+        "lvl15": 0.905
       }
     },
     "abilities": [
@@ -769,8 +769,8 @@
     "baseStats": {
       "hp": {
         "base": 690.0,
-        "perLevel": 104.0,
-        "lvl15": 2146.0
+        "perLevel": 114.0,
+        "lvl15": 2286.0
       },
       "hpRegen": {
         "base": 99.0,
@@ -808,9 +808,9 @@
         "lvl15": 94.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7975,
+        "perLevel": 0.01531,
+        "lvl15": 1.0119
       }
     },
     "abilities": [
@@ -942,8 +942,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.00375,
+        "lvl15": 0.8025
       }
     },
     "abilities": [
@@ -1063,14 +1063,14 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 58.0,
-        "perLevel": 2.0,
-        "lvl15": 86.0
+        "base": 60.0,
+        "perLevel": 4.0,
+        "lvl15": 116.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.8093,
+        "perLevel": 0.01974,
+        "lvl15": 1.0857
       }
     },
     "abilities": [
@@ -1078,7 +1078,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Frost Shot",
-        "text": "Attacks and damaging abilities slow targets hit by 15% for 2 seconds. Attacks deal 110% bonus damage , scaling with her Critical Damage. Critical Strikes deal no bonus damage but slow targets by 40%, decaying over time.",
+        "text": "Attacks and damaging abilities slow targets hit by 15% for 2 seconds. Attacks deal 1100% bonus damage , scaling with her Critical Damage. Critical Strikes deal no bonus damage but slow targets by 40%, decaying over time.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/ashe-frost-shot.png"
@@ -1102,12 +1102,12 @@
         "slot": "2",
         "key": "W",
         "name": "Volley",
-        "text": "Ashe fires 5 / 7 / 9 / 11 arrows in a cone, dealing 20 / 35 / 50 / 65 ( +115% AD ) physical damage . Also applies a critical slow from Frost Shot.",
+        "text": "Ashe fires 5 / 7 / 9 / 11 arrows in a cone, dealing 70 / 110 / 150 / 190 ( +100% AD ) physical damage . Also applies a critical slow from Frost Shot.",
         "cooldowns": [
-          "16",
-          "14",
-          "11",
-          "9"
+          "15",
+          "12",
+          "9",
+          "6"
         ],
         "damageTypes": [
           "physical"
@@ -1195,8 +1195,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.0025,
+        "lvl15": 0.785
       }
     },
     "abilities": [
@@ -1284,8 +1284,8 @@
     "baseStats": {
       "hp": {
         "base": 630.0,
-        "perLevel": 89.0,
-        "lvl15": 1876.0
+        "perLevel": 132.0,
+        "lvl15": 2478.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -1323,9 +1323,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.7482,
+        "perLevel": 0.01336,
+        "lvl15": 0.9352
       }
     },
     "abilities": [
@@ -1452,9 +1452,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.7501,
+        "perLevel": 0.00987,
+        "lvl15": 0.8883
       }
     },
     "abilities": [
@@ -1489,7 +1489,7 @@
         "slot": "2",
         "key": "W",
         "name": "Caretaker's Shrine",
-        "text": "Creates a Health shrine that grows and powers up to max efficiency after 5 seconds, granting 22.5% / 25% / 27.5% / 30% ( +0.05% AP ) for 1.5 second and restoring at least 50 / 80 / 110 / 140 ( +30% AP ) Health to the first allied champion to enter. The shrine restores 100 / 160 / 220 / 280 ( +60% AP ) Health after existing for 5 seconds. Charge : This ability has 2 charges. Bard can have up to 3 shrines active at once. If an enemy champion enters a  shrine, it will be crushed.",
+        "text": "Creates a Health shrine that grows and powers up to max efficiency after 5 seconds, granting 22.5% / 25% / 27.5% / 30% ( +0.05% AP ) for 1.5 second and restoring at least 50 / 80 / 110 / 140 ( +30% AP ) Health to the first allied champion to enter. The shrine restores 100 / 160 / 220 / 280 ( +60% AP ) Health after existing for 5 seconds. Charge : This ability has 2 charges. Bard can have up to 3 shrines active at once. If an enemy champion enters a shrine, it will be crushed.",
         "cooldowns": [
           "15",
           "15",
@@ -1517,7 +1517,7 @@
         "slot": "4",
         "key": "R",
         "name": "Tempered Fate",
-        "text": "Hurls magical protective energy  to an area, placing all units and structures within into stasis for 2.5 seconds. While in stasis, they are invulnerable, untargetable, and unable to act.",
+        "text": "Hurls magical protective energy to an area, placing all units and structures within into stasis for 2.5 seconds. While in stasis, they are invulnerable, untargetable, and unable to act.",
         "cooldowns": [
           "75",
           "65",
@@ -1537,9 +1537,9 @@
     "name": "Blitzcrank",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 120.0,
-        "lvl15": 2340.0
+        "base": 630.0,
+        "perLevel": 135.0,
+        "lvl15": 2520.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -1557,9 +1557,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 49.0,
+        "base": 45.0,
         "perLevel": 4.0,
-        "lvl15": 105.0
+        "lvl15": 101.0
       },
       "mr": {
         "base": 38.0,
@@ -1577,9 +1577,9 @@
         "lvl15": 86.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.75,
+        "perLevel": 0.00375,
+        "lvl15": 0.8025
       }
     },
     "abilities": [
@@ -1705,8 +1705,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.01156,
+        "lvl15": 0.9119
       }
     },
     "abilities": [
@@ -1795,9 +1795,9 @@
     "name": "Braum",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 630.0,
+        "perLevel": 136.0,
+        "lvl15": 2534.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -1815,9 +1815,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 52.0,
+        "base": 46.0,
         "perLevel": 4.0,
-        "lvl15": 108.0
+        "lvl15": 102.0
       },
       "mr": {
         "base": 38.0,
@@ -1835,9 +1835,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.747,
+        "perLevel": 0.01932,
+        "lvl15": 1.0175
       }
     },
     "abilities": [
@@ -1957,14 +1957,14 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 54.0,
-        "perLevel": 4.0,
-        "lvl15": 110.0
+        "base": 60.0,
+        "perLevel": 4.2,
+        "lvl15": 118.8
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.8,
+        "perLevel": 0.025,
+        "lvl15": 1.15
       }
     },
     "abilities": [
@@ -1972,7 +1972,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Headshot",
-        "text": "Every 6 attacks fires a Headshot , dealing 27 ( 60% AD + 200 Critical chance ) bonus physical damage . Trapped or netted enemies trigger a Headshot that has double range. Attacking from brush builds Headshot twice as fast.",
+        "text": "Every 6 attacks fires a Headshot , dealing ( 60% - 100% AD + 100% x Critical Rate, and more for Critical Damage above 200% ) bonus physical damage . Trapped or netted enemies trigger a Headshot that has double range. Attacking from brush builds Headshot twice as fast.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -1983,7 +1983,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Piltover Peacemaker",
-        "text": "Fires a narrow piercing bullet that deals 60 / 110 / 160 / 210 ( + 125% / 140% / 155% / 170% AD ) physical damage . Hitting an enemy expands the bullet, but reduces subsequent damage by 40% . Always deals full damage to trapped or netted enemies.",
+        "text": "Fires a narrow piercing bullet that deals 50 / 100 / 150 / 200 ( + 125% / 145% / 165% / 185% AD ) physical damage . Hitting an enemy expands the bullet, but reduces subsequent damage by 40% . Always deals full damage to trapped or netted enemies.",
         "cooldowns": [
           "9",
           "8",
@@ -1999,7 +1999,7 @@
         "slot": "2",
         "key": "W",
         "name": "Yordle Snap Trap",
-        "text": "Sets a trap that enemy champions can spring, immobilizing them for 1.5 seconds and Revealing them for a short duration. Traps last for 30 seconds and 2 / 3 / 4 / 5 can be active at once. Trap charging time: 25 / 20 / 15 / 10 seconds.",
+        "text": "Sets a trap that enemy champions can spring, immobilizing them for 1.5 seconds and Revealing them for a short duration. Traps last for 30 seconds and 2 / 3 / 4 / 5 can be active at once. Trap charging time: 25 / 20 / 15 / 10 seconds. Headshots against trapped enemies deal 40 / 90 / 140 / 190 ( +30% bonus AD ) bonus physical damage.",
         "cooldowns": [
           "1",
           "1",
@@ -2013,7 +2013,7 @@
         "slot": "3",
         "key": "E",
         "name": "90 Caliber Net",
-        "text": "Launchest a net, knocking Caitly backwards. The net deals 70 / 120 / 170 / 220 ( +80% AP ) magic damage and slows by 50% for 1.5 seconds.",
+        "text": "Launchest a net, knocking Caitly backwards. The net deals 70 / 120 / 170 / 220 ( +80% AP ) magic damage and slows by 50% for 1 seconds.",
         "cooldowns": [
           "16",
           "14",
@@ -2029,7 +2029,7 @@
         "slot": "4",
         "key": "R",
         "name": "Ace in the Hole",
-        "text": "Lines up the perfect shot, Revealing an enemy champion for 1.5 seconds before dealing 200 / 375 / 550 ( +200% bonus AD ) physical damage plus 20% of their missing Health. Enemy champions can intercept the bullet before it hits their ally.",
+        "text": "Lines up the perfect shot, Revealing an enemy champion for 1.5 seconds before dealing 200 / 375 / 550 ( +100% bonus AD ) physical damage plus 20% of their missing Health. Enemy champions can intercept the bullet before it hits their ally.",
         "cooldowns": [
           "65",
           "55",
@@ -2051,9 +2051,9 @@
     "name": "Camille",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 128.0,
-        "lvl15": 2482.0
+        "base": 660.0,
+        "perLevel": 132.0,
+        "lvl15": 2508.0
       },
       "hpRegen": {
         "base": 11.0,
@@ -2091,9 +2091,9 @@
         "lvl15": 118.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.7986,
+        "perLevel": 0.0103,
+        "lvl15": 0.9428
       }
     },
     "abilities": [
@@ -2223,8 +2223,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.01
+        "perLevel": 0.005,
+        "lvl15": 0.87
       }
     },
     "abilities": [
@@ -2343,13 +2343,13 @@
       },
       "ad": {
         "base": 54.0,
-        "perLevel": 4.0,
-        "lvl15": 110.0
+        "perLevel": 2.5,
+        "lvl15": 89.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.032,
-        "lvl15": 1.2
+        "base": 0.7535,
+        "perLevel": 0.02061,
+        "lvl15": 1.042
       }
     },
     "abilities": [
@@ -2368,7 +2368,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Phosphorus Bomb",
-        "text": "Fires a bomb, dealing 65 / 125 / 185 / 245 ( +125% bonus AD +80% AP ) magic damage and granting vision over the area.",
+        "text": "Fires a bomb, dealing 60 / 120 / 185 / 240 ( +110% bonus AD +100% AP ) magic damage and granting vision over the area.",
         "cooldowns": [
           "9",
           "8",
@@ -2400,7 +2400,7 @@
         "slot": "3",
         "key": "E",
         "name": "Gatling Gun",
-        "text": "Fires a gatling gun, dealing 20 / 35 / 50 / 65 ( +55% bonus AD ) physical damage per second, up to a total of 100 / 160 / 220 / 280 physical damage over 4 seconds. Shreds up to 10 / 14 / 18 / 22 Armor and Magic Resist for 2 seconds.",
+        "text": "Fires a gatling gun, dealing 20 / 35 / 50 / 65 ( +55% bonus AD ) physical damage per second, up to a total of 100 / 160 / 220 / 280 physical damage over 4 seconds. Shreds up to 12 / 14 / 16 / 18 Armor and Magic Resist for 2 seconds.",
         "cooldowns": [
           "12",
           "12",
@@ -2416,7 +2416,7 @@
         "slot": "4",
         "key": "R",
         "name": "Missile Barrage",
-        "text": "Fires a missile that explodes on the first target hit, dealing 70 / 140 / 210 ( +70% bonus AD ) physical damage to nearby enemies. Big One : Every third missile is a Big One that deals 140 / 210 / 280 ( +140% bonus AD ) physical damage and has a bigger area of effect and increased blast radius. Charge : Gains a charge every 16 seconds, storing up to 4 charges. Attacks against champions reduce the time between charges by 2 ( +300% Crit Rate ) seconds on hit.",
+        "text": "Fires a missile that explodes on the first target hit, dealing 70 / 140 / 210 ( +65% bonus AD ) physical damage to nearby enemies. Big One : Every third missile is a Big One that deals 140 / 210 / 280 ( +130% bonus AD ) physical damage and has a bigger area of effect and increased blast radius. Charge : Gains a charge every 16 seconds, storing up to 4 charges. Attacks against champions reduce the time between charges by 2 ( +300% Crit Rate ) seconds on hit.",
         "cooldowns": [
           "2",
           "2",
@@ -2439,9 +2439,9 @@
     "name": "Darius",
     "baseStats": {
       "hp": {
-        "base": 650.0,
-        "perLevel": 144.0,
-        "lvl15": 2666.0
+        "base": 660.0,
+        "perLevel": 148.0,
+        "lvl15": 2732.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -2459,9 +2459,9 @@
         "lvl15": 23.0
       },
       "armor": {
-        "base": 52.0,
+        "base": 45.0,
         "perLevel": 4.0,
-        "lvl15": 108.0
+        "lvl15": 101.0
       },
       "mr": {
         "base": 38.0,
@@ -2479,9 +2479,9 @@
         "lvl15": 140.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0079,
-        "lvl15": 0.9
+        "base": 0.7312,
+        "perLevel": 0.005,
+        "lvl15": 0.8013
       }
     },
     "abilities": [
@@ -2606,9 +2606,9 @@
         "lvl15": 94.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7981,
+        "perLevel": 0.00555,
+        "lvl15": 0.8758
       }
     },
     "abilities": [
@@ -2697,9 +2697,9 @@
     "name": "Dr. Mundo",
     "baseStats": {
       "hp": {
-        "base": 720.0,
-        "perLevel": 112.0,
-        "lvl15": 2288.0
+        "base": 680.0,
+        "perLevel": 120.0,
+        "lvl15": 2360.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -2728,8 +2728,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.0175,
+        "lvl15": 1.045
       }
     },
     "abilities": [
@@ -2762,7 +2762,7 @@
         "slot": "2",
         "key": "W",
         "name": "Heart Zapper",
-        "text": "Charges a defibrillator for 4 seconds, dealing 20 magic damage per second to nearby enemies. Re-cast: Detonates the defibrillator, dealing 20 / 40 / 60 / 80 ( +5% bonus HP ) magic damage to nearby enemies. If the detonation damaged an enemy, Dr. Mundo heals for 15% of the damage taken during Heart Zapper's duration. If it damaged a champion or monster he heals 30%  / 35% / 40% / 45% instead.",
+        "text": "Charges a defibrillator for 4 seconds, dealing 20 magic damage per second to nearby enemies. Re-cast: Detonates the defibrillator, dealing 20 / 40 / 60 / 80 ( +5% bonus HP ) magic damage to nearby enemies. If the detonation damaged an enemy, Dr. Mundo heals for 15% of the damage taken during Heart Zapper's duration. If it damaged a champion or monster he heals 30% / 35% / 40% / 45% instead.",
         "cooldowns": [
           "13",
           "12",
@@ -2814,9 +2814,9 @@
     "name": "Draven",
     "baseStats": {
       "hp": {
-        "base": 630.0,
-        "perLevel": 128.0,
-        "lvl15": 2422.0
+        "base": 650.0,
+        "perLevel": 132.0,
+        "lvl15": 2498.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -2850,13 +2850,13 @@
       },
       "ad": {
         "base": 66.0,
-        "perLevel": 4.0,
-        "lvl15": 122.0
+        "perLevel": 3.8,
+        "lvl15": 119.2
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.7537,
+        "perLevel": 0.02037,
+        "lvl15": 1.0389
       }
     },
     "abilities": [
@@ -2919,7 +2919,7 @@
         "slot": "4",
         "key": "R",
         "name": "Whirling Death",
-        "text": "Hurls two massive axes, dealing 200 / 300 / 400 ( +130% AD ) physical damage . The axe return to Draven when they reach the edge of the map, hit a champion or upon reactivation. Deals 8% less damage as it damages targets, minimum 60% . Upon reversal, the reduction is reset do deal full damage.",
+        "text": "Hurls two massive axes, dealing 200 / 300 / 400 ( +130% AD ) physical damage . The axe return to Draven when they reach the edge of the map, hit a champion or upon reactivation. Deals 5% less damage as it damages targets, minimum 60% . Upon reversal, the reduction is reset do deal full damage.",
         "cooldowns": [
           "70",
           "65",
@@ -2941,9 +2941,9 @@
     "name": "Ekko",
     "baseStats": {
       "hp": {
-        "base": 630.0,
-        "perLevel": 120.0,
-        "lvl15": 2310.0
+        "base": 650.0,
+        "perLevel": 126.0,
+        "lvl15": 2414.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -2982,8 +2982,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.01937,
+        "lvl15": 1.0713
       }
     },
     "abilities": [
@@ -3072,9 +3072,9 @@
     "name": "Evelynn",
     "baseStats": {
       "hp": {
-        "base": 600.0,
+        "base": 630.0,
         "perLevel": 128.0,
-        "lvl15": 2392.0
+        "lvl15": 2422.0
       },
       "hpRegen": {
         "base": 11.0,
@@ -3112,9 +3112,9 @@
         "lvl15": 106.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8004,
+        "perLevel": 0.008,
+        "lvl15": 0.9125
       }
     },
     "abilities": [
@@ -3234,14 +3234,14 @@
         "lvl15": 340.0
       },
       "ad": {
-        "base": 58.0,
+        "base": 60.0,
         "perLevel": 4.0,
-        "lvl15": 114.0
+        "lvl15": 116.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.0136,
-        "lvl15": 1.0
+        "base": 0.8,
+        "perLevel": 0.01375,
+        "lvl15": 0.9925
       }
     },
     "abilities": [
@@ -3258,12 +3258,12 @@
         "slot": "1",
         "key": "Q",
         "name": "Mystic Shot",
-        "text": "Fires a bolt, dealing 50 / 85 / 120 / 155 ( +135% AD +30% AP ) physical damage . Hitting a target reduces Ezreal's other ability cooldowns by 1.5 seconds. Applies on-hit effects .",
+        "text": "Fires a bolt, dealing 25 / 55 / 85 / 115 ( +135% AD +30% AP ) physical damage . Hitting a target reduces Ezreal's other ability cooldowns by 1.5 seconds. Applies on-hit effects .",
         "cooldowns": [
-          "4",
-          "4",
-          "3",
-          "3"
+          "5.5",
+          "5",
+          "4.5",
+          "4"
         ],
         "damageTypes": [
           "physical"
@@ -3306,10 +3306,10 @@
         "slot": "4",
         "key": "R",
         "name": "Trueshot Barrage",
-        "text": "Fires an energy wave, dealing 350 / 500 / 650 ( +100% AD +90% AP ) magic damage . Deals 50% reduced damage to minions and non-epic monsters.",
+        "text": "Fires an energy wave, dealing 300 / 500 / 700 ( +100% AD +100% AP ) magic damage . Deals 50% reduced damage to minions and non-epic monsters.",
         "cooldowns": [
+          "80",
           "70",
-          "65",
           "60"
         ],
         "damageTypes": [
@@ -3369,8 +3369,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.0075,
+        "lvl15": 0.855
       }
     },
     "abilities": [
@@ -3457,9 +3457,9 @@
     "name": "Fiora",
     "baseStats": {
       "hp": {
-        "base": 650.0,
-        "perLevel": 120.0,
-        "lvl15": 2330.0
+        "base": 630.0,
+        "perLevel": 130.0,
+        "lvl15": 2450.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -3477,9 +3477,9 @@
         "lvl15": 23.0
       },
       "armor": {
-        "base": 46.0,
-        "perLevel": 4.0,
-        "lvl15": 102.0
+        "base": 42.0,
+        "perLevel": 4.8,
+        "lvl15": 109.2
       },
       "mr": {
         "base": 38.0,
@@ -3497,9 +3497,9 @@
         "lvl15": 126.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8004,
+        "perLevel": 0.01794,
+        "lvl15": 1.0516
       }
     },
     "abilities": [
@@ -3628,9 +3628,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8028,
+        "perLevel": 0.01448,
+        "lvl15": 1.0054
       }
     },
     "abilities": [
@@ -3720,9 +3720,9 @@
     "name": "Galio",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 144.0,
-        "lvl15": 2676.0
+        "base": 630.0,
+        "perLevel": 148.0,
+        "lvl15": 2702.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -3761,8 +3761,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.00438,
+        "lvl15": 0.8613
       }
     },
     "abilities": [
@@ -3797,7 +3797,7 @@
         "slot": "2",
         "key": "W",
         "name": "Shield of Durand",
-        "text": "Passive : Every 12 seconds, upon taking damage, Galio gains a shield that absorbs 46 ( 8% / 12% / 16% / 20% HP ) magic damage for 3.5 seconds. Hold : Enters a defensive stance, slowing himself by 15% for up to 2 seconds. Takes 25% / 30% / 35% / 40% ( +4% AP + 8% bonus MR +1% bonus Health ) reduced magic damage and 12.5% / 15% / 17.5% / 20% ( +2% A P + 4% bonus MR +0.5% bonus Health ) reduced physical damage . Release : Deals 40 / 80 / 120 / 160 ( +55% AP ) magic damage to nearby enemies and  taunts them for 0.5 - 1.5 seconds, increased with hold time.",
+        "text": "Passive : Every 12 seconds, upon taking damage, Galio gains a shield that absorbs 46 ( 8% / 12% / 16% / 20% HP ) magic damage for 3.5 seconds. Hold : Enters a defensive stance, slowing himself by 15% for up to 2 seconds. Takes 25% / 30% / 35% / 40% ( +4% AP + 8% bonus MR +1% bonus Health ) reduced magic damage and 12.5% / 15% / 17.5% / 20% ( +2% A P + 4% bonus MR +0.5% bonus Health ) reduced physical damage . Release : Deals 40 / 80 / 120 / 160 ( +55% AP ) magic damage to nearby enemies and taunts them for 0.5 - 1.5 seconds, increased with hold time.",
         "cooldowns": [
           "18",
           "17",
@@ -3852,9 +3852,9 @@
     "name": "Garen",
     "baseStats": {
       "hp": {
-        "base": 660.0,
+        "base": 690.0,
         "perLevel": 128.0,
-        "lvl15": 2452.0
+        "lvl15": 2482.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -3862,9 +3862,9 @@
         "lvl15": 8.0
       },
       "armor": {
-        "base": 52.0,
+        "base": 44.0,
         "perLevel": 5.0,
-        "lvl15": 122.0
+        "lvl15": 114.0
       },
       "mr": {
         "base": 38.0,
@@ -3884,7 +3884,7 @@
       "attackSpeed": {
         "base": 0.8,
         "perLevel": 0.015,
-        "lvl15": 1.0
+        "lvl15": 1.01
       }
     },
     "abilities": [
@@ -4000,8 +4000,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.022,
-        "lvl15": 1.1
+        "perLevel": 0.00938,
+        "lvl15": 0.8813
       }
     },
     "abilities": [
@@ -4101,9 +4101,9 @@
     "name": "Gragas",
     "baseStats": {
       "hp": {
-        "base": 720.0,
-        "perLevel": 120.0,
-        "lvl15": 2400.0
+        "base": 660.0,
+        "perLevel": 140.0,
+        "lvl15": 2620.0
       },
       "hpRegen": {
         "base": 6.0,
@@ -4142,8 +4142,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.00813,
+        "lvl15": 0.9138
       }
     },
     "abilities": [
@@ -4230,9 +4230,9 @@
     "name": "Graves",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 128.0,
-        "lvl15": 2452.0
+        "base": 630.0,
+        "perLevel": 136.0,
+        "lvl15": 2534.0
       },
       "hpRegen": {
         "base": 11.0,
@@ -4270,9 +4270,9 @@
         "lvl15": 108.0
       },
       "attackSpeed": {
-        "base": 1.03,
-        "perLevel": 0.0221,
-        "lvl15": 1.3
+        "base": 0.7,
+        "perLevel": 0.0147,
+        "lvl15": 0.9058
       }
     },
     "abilities": [
@@ -4280,7 +4280,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "New Destiny",
-        "text": "Graves' shotgun has some unique properties: Double Barrel : Graves must reload when he runs out of ammo. Attack Speed reduces reload time slightly, but reduces time between attacks dramatically. 12 Gauge : Attacks fire 4 bullets. Units hit take 72% AD physical damage +24% for additional bullets. Critical strikes fire 6 bullets, 130% damage each and increase each bullet's damage by 30% . Structures only take 75% damage. Buckshot : Bullets cannot pass through enemy units. Non-champions struck by multiple bullets are knock back slightly.",
+        "text": "Graves' shotgun has some unique properties: Double Barrel : Graves must reload when he runs out of ammo. Attack Speed reduces reload time slightly, but reduces time between attacks dramatically. 12 Gauge : Attacks fire 4 bullets. Units hit take 72% AD physical damage +24% for additional bullets. Critical strikes fire 6 bullets, 150% damage each and increase each bullet's damage by 30% . Structures only take 75% damage. Buckshot : Bullets cannot pass through enemy units. Non-champions struck by multiple bullets are knock back slightly.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -4359,9 +4359,9 @@
     "name": "Gwen",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 640.0,
+        "perLevel": 136.0,
+        "lvl15": 2544.0
       },
       "hpRegen": {
         "base": 11.0,
@@ -4379,9 +4379,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 52.0,
+        "base": 48.0,
         "perLevel": 4.0,
-        "lvl15": 108.0
+        "lvl15": 104.0
       },
       "mr": {
         "base": 38.0,
@@ -4399,9 +4399,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.8004,
+        "perLevel": 0.01794,
+        "lvl15": 1.0516
       }
     },
     "abilities": [
@@ -4490,8 +4490,8 @@
     "baseStats": {
       "hp": {
         "base": 630.0,
-        "perLevel": 120.0,
-        "lvl15": 2310.0
+        "perLevel": 130.0,
+        "lvl15": 2450.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -4509,9 +4509,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 46.0,
-        "perLevel": 5.0,
-        "lvl15": 116.0
+        "base": 42.0,
+        "perLevel": 5.4,
+        "lvl15": 117.6
       },
       "mr": {
         "base": 36.0,
@@ -4529,9 +4529,9 @@
         "lvl15": 110.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.804,
+        "perLevel": 0.01072,
+        "lvl15": 0.9541
       }
     },
     "abilities": [
@@ -4659,8 +4659,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.00625,
+        "lvl15": 0.8375
       }
     },
     "abilities": [
@@ -4747,9 +4747,9 @@
     "name": "Irelia",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 128.0,
-        "lvl15": 2482.0
+        "base": 660.0,
+        "perLevel": 138.0,
+        "lvl15": 2592.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -4787,9 +4787,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8003,
+        "perLevel": 0.0105,
+        "lvl15": 0.9473
       }
     },
     "abilities": [
@@ -4920,8 +4920,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.01375,
+        "lvl15": 0.9425
       }
     },
     "abilities": [
@@ -5004,9 +5004,9 @@
     "name": "Jarvan IV",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 660.0,
+        "perLevel": 130.0,
+        "lvl15": 2480.0
       },
       "hpRegen": {
         "base": 12.0,
@@ -5044,9 +5044,9 @@
         "lvl15": 128.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8028,
+        "perLevel": 0.01053,
+        "lvl15": 0.9502
       }
     },
     "abilities": [
@@ -5133,9 +5133,9 @@
     "name": "Jax",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 660.0,
+        "perLevel": 130.0,
+        "lvl15": 2480.0
       },
       "hpRegen": {
         "base": 12.0,
@@ -5153,9 +5153,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 46.0,
+        "base": 44.0,
         "perLevel": 4.0,
-        "lvl15": 102.0
+        "lvl15": 100.0
       },
       "mr": {
         "base": 38.0,
@@ -5173,9 +5173,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7337,
+        "perLevel": 0.01914,
+        "lvl15": 1.0017
       }
     },
     "abilities": [
@@ -5302,9 +5302,9 @@
         "lvl15": 118.0
       },
       "attackSpeed": {
-        "base": 0.91,
-        "perLevel": 0.0207,
-        "lvl15": 1.2
+        "base": 0.8028,
+        "perLevel": 0.01382,
+        "lvl15": 0.9962
       }
     },
     "abilities": [
@@ -5409,9 +5409,9 @@
     "name": "Jhin",
     "baseStats": {
       "hp": {
-        "base": 600.0,
+        "base": 630.0,
         "perLevel": 128.0,
-        "lvl15": 2392.0
+        "lvl15": 2422.0
       },
       "hpRegen": {
         "base": 6.0,
@@ -5444,14 +5444,14 @@
         "lvl15": 340.0
       },
       "ad": {
-        "base": 58.0,
+        "base": 60.0,
         "perLevel": 4.0,
-        "lvl15": 114.0
+        "lvl15": 116.0
       },
       "attackSpeed": {
-        "base": 0.66,
+        "base": 0.6625,
         "perLevel": 0.02,
-        "lvl15": 0.9
+        "lvl15": 0.9425
       }
     },
     "abilities": [
@@ -5459,7 +5459,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Whisper",
-        "text": "Jhin's hand cannon, Whisper, carries 4 shots before needing to be reloaded and fires at a fixed rate. ( Attack speed will be converted into Attack Damage ). The final bullet will critically strike and deal additional 11% missing Health physical damage . Whenever Whisper crits, Jhin gains a burst of 15% ( +0.55% per 1% bonus AS ) movement speed for 2 seconds. Attack Damage scales with Critical Rate and bonus Attack Speed.",
+        "text": "Jhin's hand cannon, Whisper, carries 4 shots before needing to be reloaded and fires at a fixed rate. ( Attack speed will be converted into Attack Damage ). The final bullet will critically strike and deal additional 11% missing Health physical damage . Whenever Whisper crits, Jhin gains a burst of 14% ( +0.44% per 1% bonus AS ) movement speed for 2 seconds. Attack Damage scales with Critical Rate and bonus Attack Speed. Jhin's critical strikes deal 80% of normal critical strike damage.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -5580,9 +5580,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.0107,
-        "lvl15": 1.0
+        "base": 0.8125,
+        "perLevel": 0.0125,
+        "lvl15": 0.9875
       }
     },
     "abilities": [
@@ -5645,10 +5645,10 @@
         "slot": "4",
         "key": "R",
         "name": "Super Mega Death Rocket!",
-        "text": "Fires a mega-rocket that gains damage and speed over the first second it travels. The rocket explodes on the first enemy champion hit, dealing 25 / 35 / 45 to 250 / 350 / 450 ( +15% to 150% AD ) physical damage +25% / 30% / 35% of their missing health. Nearby enemies take 80% damage. Deals a max of 500 damage to epic monsters.",
+        "text": "Fires a mega-rocket that gains damage and speed over the first second it travels. The rocket explodes on the first enemy champion hit, dealing 25 / 35 / 45 to 250 / 350 / 450 ( +12% to 120% AD ) physical damage +25% / 30% / 35% of their missing health. Nearby enemies take 80% damage. Deals a max of 500 damage to epic monsters.",
         "cooldowns": [
+          "60",
           "50",
-          "45",
           "40"
         ],
         "damageTypes": [
@@ -5702,14 +5702,14 @@
         "lvl15": 340.0
       },
       "ad": {
-        "base": 62.0,
+        "base": 59.0,
         "perLevel": 3.0,
-        "lvl15": 104.0
+        "lvl15": 101.0
       },
       "attackSpeed": {
-        "base": 0.77,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.7535,
+        "perLevel": 0.01417,
+        "lvl15": 0.9518
       }
     },
     "abilities": [
@@ -5744,7 +5744,7 @@
         "slot": "2",
         "key": "W",
         "name": "Void Seeker",
-        "text": "Fires a blast that reveals the first enemy hit, adds 2 Plasma stacks, and deals 30 / 60 / 90 / 120 ( +110% AD +60% AP ) magic damage . Living Weapon : 80 Ability Power - Adds 3 stacks and refunds 70% Cooldown on champion hits.",
+        "text": "Fires a blast that reveals the first enemy hit, adds 2 Plasma stacks, and deals 30 / 60 / 90 / 120 ( +130% AD +50% AP ) magic damage . Living Weapon : 80 Ability Power - Adds 3 stacks and refunds 70% Cooldown on champion hits.",
         "cooldowns": [
           "20",
           "18",
@@ -5760,7 +5760,7 @@
         "slot": "3",
         "key": "E",
         "name": "Supercharge",
-        "text": "Charges up for 1 second, gaining 50% / 55% / 60% / 65% ( +80% Attack Speed ) Movement Speed . For 4 seconds after charging, gain 40% / 50% / 60% / 70% Attack Speed . Living Weapon : 65% Attack Speed - Grants invisibility during the charge up. Attacks reduce Supercharge's Cooldown by 0.5 seconds. Charge time and Movement Speed scale with Attack Speed.",
+        "text": "Charges up for 1 second, gaining 50% / 60% / 60% / 65% ( +50% Attack Speed ) Movement Speed . For 4 seconds after charging, gain 40% / 50% / 60% / 70% Attack Speed . Living Weapon : 65% Attack Speed - Grants invisibility during the charge up. Attacks reduce Supercharge's Cooldown by 0.5 seconds. Charge time and Movement Speed scale with Attack Speed.",
         "cooldowns": [
           "16",
           "14",
@@ -5774,7 +5774,7 @@
         "slot": "4",
         "key": "R",
         "name": "Killer Instinct",
-        "text": "Dash to a location near an enemy champion marked by Plasma , gaining a shield that aborbs 75 / 100 / 125 ( +100% / 150% / 200% AD +75% AP ) damage for 2 seconds.",
+        "text": "Dash to a location near an enemy champion marked by Plasma , gaining a shield that aborbs 100 / 125 / 150 ( +80% / 120% / 160% AD +100% AP ) damage for 2 seconds.",
         "cooldowns": [
           "80",
           "70",
@@ -5829,14 +5829,14 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 54.0,
-        "perLevel": 5.0,
-        "lvl15": 124.0
+        "base": 57.0,
+        "perLevel": 5.2,
+        "lvl15": 129.8
       },
       "attackSpeed": {
-        "base": 0.81,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.805,
+        "perLevel": 0.03192,
+        "lvl15": 1.252
       }
     },
     "abilities": [
@@ -5962,8 +5962,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.00844,
+        "lvl15": 0.8681
       }
     },
     "abilities": [
@@ -6048,9 +6048,9 @@
     "name": "Kassadin",
     "baseStats": {
       "hp": {
-        "base": 630.0,
-        "perLevel": 120.0,
-        "lvl15": 2310.0
+        "base": 650.0,
+        "perLevel": 132.0,
+        "lvl15": 2498.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -6089,8 +6089,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.01728,
+        "lvl15": 1.0419
       }
     },
     "abilities": [
@@ -6179,9 +6179,9 @@
     "name": "Katarina",
     "baseStats": {
       "hp": {
-        "base": 630.0,
+        "base": 660.0,
         "perLevel": 136.0,
-        "lvl15": 2534.0
+        "lvl15": 2564.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -6209,9 +6209,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8028,
+        "perLevel": 0.01184,
+        "lvl15": 0.9686
       }
     },
     "abilities": [
@@ -6338,9 +6338,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.7537,
+        "perLevel": 0.01868,
+        "lvl15": 1.0152
       }
     },
     "abilities": [
@@ -6455,9 +6455,9 @@
         "lvl15": 112.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.804,
+        "perLevel": 0.01206,
+        "lvl15": 0.9728
       }
     },
     "abilities": [
@@ -6544,9 +6544,9 @@
     "name": "Kennen",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 120.0,
-        "lvl15": 2340.0
+        "base": 600.0,
+        "perLevel": 130.0,
+        "lvl15": 2420.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -6584,9 +6584,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.7521,
+        "perLevel": 0.01932,
+        "lvl15": 1.0226
       }
     },
     "abilities": [
@@ -6673,9 +6673,9 @@
     "name": "Kha'Zix",
     "baseStats": {
       "hp": {
-        "base": 630.0,
-        "perLevel": 120.0,
-        "lvl15": 2310.0
+        "base": 640.0,
+        "perLevel": 128.0,
+        "lvl15": 2432.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -6713,9 +6713,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.15,
-        "lvl15": 2.9
+        "base": 0.8016,
+        "perLevel": 0.01236,
+        "lvl15": 0.9746
       }
     },
     "abilities": [
@@ -6842,9 +6842,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.81,
+        "base": 0.8,
         "perLevel": 0.02,
-        "lvl15": 1.1
+        "lvl15": 1.08
       }
     },
     "abilities": [
@@ -6964,14 +6964,14 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 54.0,
+        "base": 58.0,
         "perLevel": 3.0,
-        "lvl15": 96.0
+        "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0107,
-        "lvl15": 0.9
+        "base": 0.798,
+        "perLevel": 0.01995,
+        "lvl15": 1.0773
       }
     },
     "abilities": [
@@ -7101,8 +7101,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.01312,
+        "lvl15": 0.9838
       }
     },
     "abilities": [
@@ -7190,9 +7190,9 @@
     "name": "Lee Sin",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 660.0,
+        "perLevel": 132.0,
+        "lvl15": 2508.0
       },
       "hpRegen": {
         "base": 11.0,
@@ -7230,9 +7230,9 @@
         "lvl15": 122.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8007,
+        "perLevel": 0.01302,
+        "lvl15": 0.983
       }
     },
     "abilities": [
@@ -7359,9 +7359,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.0079,
-        "lvl15": 0.9
+        "base": 0.75,
+        "perLevel": 0.01313,
+        "lvl15": 0.9338
       }
     },
     "abilities": [
@@ -7490,9 +7490,9 @@
         "lvl15": 90.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.8,
+        "perLevel": 0.01,
+        "lvl15": 0.94
       }
     },
     "abilities": [
@@ -7583,8 +7583,8 @@
     "baseStats": {
       "hp": {
         "base": 660.0,
-        "perLevel": 120.0,
-        "lvl15": 2340.0
+        "perLevel": 130.0,
+        "lvl15": 2480.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -7623,8 +7623,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.00625,
+        "lvl15": 0.8375
       }
     },
     "abilities": [
@@ -7748,14 +7748,14 @@
         "lvl15": 345.0
       },
       "ad": {
-        "base": 58.0,
-        "perLevel": 4.0,
-        "lvl15": 114.0
+        "base": 60.0,
+        "perLevel": 3.5,
+        "lvl15": 109.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.7975,
+        "perLevel": 0.01786,
+        "lvl15": 1.0476
       }
     },
     "abilities": [
@@ -7763,7 +7763,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Lightslinger",
-        "text": "After using an Ability, Lucian's next Attack within 3.5 seconds will fire two shots. The second shot deals 35% / 50% / 65% physical damage , increased to 100% against minions. The second shot is a separate Attack that applies on-hit effects and can critical strike. Vigilance : When healed or shielded by allied champions, or when a nearby enemy champion is immobilized, Lucian's next two attacks deal an additional 20 ( +10% AD ) magic damage (stores up to four empowered attacks).",
+        "text": "After using an Ability, Lucian's next Attack within 3.5 seconds will fire two shots. The second shot deals 40% / 50% / 60% physical damage , increased to 100% against minions. The second shot is a separate Attack that applies on-hit effects and can critical strike. Vigilance : When healed or shielded by allied champions, or when a nearby enemy champion is immobilized, Lucian's next two attacks deal an additional 20 ( +10% AD ) magic damage (stores up to four empowered attacks).",
         "cooldowns": [],
         "damageTypes": [
           "physical",
@@ -7775,7 +7775,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Piercing Light",
-        "text": "Shoots a bolt of piercing light through an enemy unit, damaging enemies in a line for 80 / 125 / 170 / 215 ( +65% / 85% / 105% / 125% AD ) physical damage .",
+        "text": "Shoots a bolt of piercing light through an enemy unit, damaging enemies in a line for 75 / 125 / 175 / 225 ( +100% AD ) physical damage .",
         "cooldowns": [
           "9",
           "8",
@@ -7821,7 +7821,7 @@
         "slot": "4",
         "key": "R",
         "name": "The Culling",
-        "text": "Fires rapidly in a direction for 3 seconds. Each shot deals 20 / 35 / 50 ( +25% AD +10% AP ) physical damage to the first enemy hit. Fires a total of 22 / 26 / 30 bullets. Lucian may use Relentless Pursuit during The Culling. Recast to cancel early. Minions take 200% damage from The Culling.",
+        "text": "Fires rapidly in a direction for 3 seconds. Each shot deals 20 / 25 / 30 ( +25% AD +15% AP ) physical damage to the first enemy hit. Fires 20 bullets, plus 2 more for every 10% Critical Rate and more again for Critical Damage above 200%. Lucian may use Relentless Pursuit during The Culling. Recast to cancel early. Minions take 200% damage from The Culling.",
         "cooldowns": [
           "70",
           "65",
@@ -7884,8 +7884,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.00813,
+        "lvl15": 0.8638
       }
     },
     "abilities": [
@@ -8011,8 +8011,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.01875,
+        "lvl15": 1.0125
       }
     },
     "abilities": [
@@ -8100,8 +8100,8 @@
     "baseStats": {
       "hp": {
         "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "perLevel": 130.0,
+        "lvl15": 2510.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -8139,9 +8139,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7975,
+        "perLevel": 0.02552,
+        "lvl15": 1.1548
       }
     },
     "abilities": [
@@ -8268,9 +8268,9 @@
         "lvl15": 136.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7992,
+        "perLevel": 0.02016,
+        "lvl15": 1.0814
       }
     },
     "abilities": [
@@ -8358,8 +8358,8 @@
     "baseStats": {
       "hp": {
         "base": 630.0,
-        "perLevel": 120.0,
-        "lvl15": 2310.0
+        "perLevel": 130.0,
+        "lvl15": 2450.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -8397,9 +8397,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.8012,
+        "perLevel": 0.01222,
+        "lvl15": 0.9723
       }
     },
     "abilities": [
@@ -8525,8 +8525,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.01,
+        "lvl15": 0.89
       }
     },
     "abilities": [
@@ -8655,9 +8655,9 @@
         "lvl15": 78.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "base": 0.75,
+        "perLevel": 0.01375,
+        "lvl15": 0.9425
       }
     },
     "abilities": [
@@ -8780,9 +8780,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.81,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.8003,
+        "perLevel": 0.02099,
+        "lvl15": 1.0942
       }
     },
     "abilities": [
@@ -8790,7 +8790,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Love Tap",
-        "text": "Applies Love Tap when attack enemy champions or epic monsters. At 3 stacks, increases Miss Fortune's damage to the target by 6% - 10.9% ( + 0.4x per level ). At 3 stacks deal 15 ( +70% bonus AD ) X ( 1 + 100% Critical Rate) physical damage to the target. Deals 50% damage to minions and monsters.",
+        "text": "Applies Love Tap when attack enemy champions or epic monsters. At 3 stacks, increases Miss Fortune's damage to the target by 6% - 9.5% ( + 0.4x per level ). At 3 stacks deal 15 ( +70% bonus AD ) X ( 1 + 100% Critical Rate) physical damage to the target. Deals 50% damage to minions and monsters.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -8801,7 +8801,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Double Up",
-        "text": "Fires a shot that ricochets behind the first enemy hit, dealing 60 / 90 / 120 / 150 ( + 112% / 120% / 128% / 136% AD +35% AP ) physical damage . The second hit will Critically Strike for 130% / 140% / 150% / 160% damage and apply Love Tap. On-hits are applied to both targets.",
+        "text": "Fires a shot that ricochets behind the first enemy hit, dealing 60 / 90 / 120 / 150 ( + 110% AD +35% AP ) physical damage . The second hit will Critically Strike for 130% / 140% / 150% / 160% damage and apply Love Tap. On-hits are applied to both targets.",
         "cooldowns": [
           "6",
           "5",
@@ -8817,7 +8817,7 @@
         "slot": "2",
         "key": "W",
         "name": "Strut",
-        "text": "Passive : After 4 seconds of not taking damage, gain 30 / 35 / 40 / 45 Movement Speed . After another 3 seconds, this bonus increases to 80 / 90 / 100 / 110 . Active : Fully activates Strut's Movement Speed and grants 45% / 60% / 75% / 90% Attack Speed for 4 seconds. Attacking targets with full stacks of Love Tap reduces the remaining cooldown of Strut by 2 seconds.",
+        "text": "Passive : After 4 seconds of not taking damage, gain 35 / 40 / 45 / 50 Movement Speed . After another 3 seconds, this bonus increases to 70 / 80 / 90 / 100 . Active : Fully activates Strut's Movement Speed and grants 45% / 60% / 75% / 90% Attack Speed for 4 seconds. Attacking targets with full stacks of Love Tap reduces the remaining cooldown of Strut by 2 seconds.",
         "cooldowns": [
           "12",
           "12",
@@ -8847,7 +8847,7 @@
         "slot": "4",
         "key": "R",
         "name": "Bullet Time",
-        "text": "Channels a 3 seconds barrage of bullets, with 12 / 14 / 16 waves that each deal 39 ( 85% AD +20% AP ) physical damage . Each wave can Crit for 130% damage. Re-activate : Cancel the barrage.",
+        "text": "Channels a 3 seconds barrage of bullets, with 12 / 14 / 16 waves that each deal 39 ( 60% AD +20% AP ) physical damage . Each wave can Crit for 130% damage. Re-activate : Cancel the barrage.",
         "cooldowns": [
           "70",
           "65",
@@ -8899,9 +8899,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.73,
-        "perLevel": 0.0079,
-        "lvl15": 0.8
+        "base": 0.7312,
+        "perLevel": 0.005,
+        "lvl15": 0.8013
       }
     },
     "abilities": [
@@ -8909,7 +8909,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Darkness Rise",
-        "text": "Gains 3% / 6% / 9% / 12% Magic Pen . Attacks deal 30% bonus magic damage . When Mordekaiser gets a takedown, or his basic abilities or attacks hit an enemy champion or large monster, he gains 1 stack of Darkness Rise for 5 seconds. At 3 stacks, he cloaks himself in a negative energy field. The negative energy field deals magic damage equal to 4.75 ( + 0.25 per level + 25% AP ) plus 1% of the target's max Health per second and grants him 3% Movement Speed for 5 seconds. Takedowns and basic ability or attack hits against enemy champions or large monsters refresh the negative energy field's duration. Darkness Rise deals a maximum of 24 damage to monsters per second.",
+        "text": "Gains 3% / 6% / 9% / 12% Magic Pen . Attacks deal 30% bonus magic damage . When Mordekaiser gets a takedown, or his basic abilities or attacks hit an enemy champion or large monster, he gains 1 stack of Darkness Rise for 5 seconds. At 3 stacks, he cloaks himself in a negative energy field. The negative energy field deals magic damage equal to 4.75 ( + 0.25 per level + 25% AP ) plus 1% of the target's max Health per second and grants him 3% Movement Speed for 5 seconds. Takedowns and basic ability or attack hits against enemy champions or large monsters refresh the negative energy field's duration. Darkness Rise deals a maximum of 24 damage to monsters per second.",
         "cooldowns": [],
         "damageTypes": [
           "magic"
@@ -9027,8 +9027,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.00312,
+        "lvl15": 0.7937
       }
     },
     "abilities": [
@@ -9155,9 +9155,9 @@
         "lvl15": 94.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "base": 0.7535,
+        "perLevel": 0.01288,
+        "lvl15": 0.9338
       }
     },
     "abilities": [
@@ -9284,9 +9284,9 @@
         "lvl15": 128.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7975,
+        "perLevel": 0.01531,
+        "lvl15": 1.0119
       }
     },
     "abilities": [
@@ -9371,9 +9371,9 @@
     "name": "Nautilus",
     "baseStats": {
       "hp": {
-        "base": 720.0,
+        "base": 690.0,
         "perLevel": 128.0,
-        "lvl15": 2512.0
+        "lvl15": 2482.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -9411,9 +9411,9 @@
         "lvl15": 118.0
       },
       "attackSpeed": {
-        "base": 0.73,
-        "perLevel": 0.0079,
-        "lvl15": 0.8
+        "base": 0.7344,
+        "perLevel": 0.00759,
+        "lvl15": 0.8406
       }
     },
     "abilities": [
@@ -9542,9 +9542,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7528,
+        "perLevel": 0.01531,
+        "lvl15": 0.9672
       }
     },
     "abilities": [
@@ -9681,9 +9681,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.89,
-        "perLevel": 0.0207,
-        "lvl15": 1.2
+        "base": 0.8107,
+        "perLevel": 0.0134,
+        "lvl15": 0.9983
       }
     },
     "abilities": [
@@ -9771,8 +9771,8 @@
     "baseStats": {
       "hp": {
         "base": 660.0,
-        "perLevel": 89.0,
-        "lvl15": 1906.0
+        "perLevel": 134.0,
+        "lvl15": 2536.0
       },
       "hpRegen": {
         "base": 10.0,
@@ -9810,9 +9810,9 @@
         "lvl15": 110.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8003,
+        "perLevel": 0.0173,
+        "lvl15": 1.0426
       }
     },
     "abilities": [
@@ -9940,8 +9940,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.0075,
+        "lvl15": 0.855
       }
     },
     "abilities": [
@@ -10030,9 +10030,9 @@
     "name": "Nunu & Willump",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 630.0,
+        "perLevel": 124.0,
+        "lvl15": 2366.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -10071,8 +10071,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.00762,
+        "lvl15": 0.9067
       }
     },
     "abilities": [
@@ -10122,7 +10122,7 @@
         "slot": "3",
         "key": "E",
         "name": "Snowball Barrage",
-        "text": "Channels for up to 2.5 seconds, throwing snowballs that deal 8 / 12 / 16 / 20 ( +5% AP ) magic damage and slow by 20% for 0.5 seconds. When the channel ends, Willump deals magic damage equal to 3% - 15% ( +0.8 - 4% AP ) of the enemies' max Health and roots them for 0.5 - 1.5 seconds. Damage and root duration scale with number of snowball hits on the target. Final explosion deals up to 150 / 200 / 250 / 300 damage vs. monsters. Deals 150% damage to monsters.",
+        "text": "Channels for up to 2.5 seconds, throwing snowballs that deal 8 / 12 / 16 / 20 ( +5% AP ) magic damage and slow by 20% for 0.5 seconds. When the channel ends, Willump deals magic damage equal to 3% - 15% ( +0.8 - 4% AP ) of the enemies' max Health and roots them for 0.5 - 1.5 seconds. Damage and root duration scale with number of snowball hits on the target. Final explosion deals up to 150 / 200 / 250 / 300 damage vs. monsters.",
         "cooldowns": [
           "12",
           "12",
@@ -10160,9 +10160,9 @@
     "name": "Olaf",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 112.0,
-        "lvl15": 2258.0
+        "base": 660.0,
+        "perLevel": 140.0,
+        "lvl15": 2620.0
       },
       "hpRegen": {
         "base": 12.0,
@@ -10200,9 +10200,9 @@
         "lvl15": 120.0
       },
       "attackSpeed": {
-        "base": 0.73,
-        "perLevel": 0.015,
-        "lvl15": 0.9
+        "base": 0.7356,
+        "perLevel": 0.02262,
+        "lvl15": 1.0524
       }
     },
     "abilities": [
@@ -10265,7 +10265,7 @@
         "slot": "4",
         "key": "R",
         "name": "Ragnarok",
-        "text": "Passive : Gain 25 / 35 / 45 Armor and Magic Resist . Active : Becomes immune to crowd control and gains 5 / 15 / 25 ( +20% AD ) Attack Damage for 4 seconds. Also gains 20% Movement Speed when moving toward enemy champions for 1 second upon cast. Ragnarok's duration is increased by 2.5 seconds for each basic attack or cast of Reckless Swing against an enemy champion. Ragnarok can be cast while under the effects of crowd control.",
+        "text": "Passive : Gain 15 / 25 / 35 Armor and Magic Resist . Active : Becomes immune to crowd control and gains 5 / 15 / 25 ( +20% AD ) Attack Damage for 4 seconds. Also gains 20% Movement Speed when moving toward enemy champions for 1 second upon cast. Ragnarok's duration is increased by 2.5 seconds for each basic attack or cast of Reckless Swing against an enemy champion. Ragnarok can be cast while under the effects of crowd control.",
         "cooldowns": [
           "60",
           "55",
@@ -10325,9 +10325,9 @@
         "lvl15": 74.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "base": 0.7501,
+        "perLevel": 0.02106,
+        "lvl15": 1.0449
       }
     },
     "abilities": [
@@ -10416,9 +10416,9 @@
     "name": "Ornn",
     "baseStats": {
       "hp": {
-        "base": 720.0,
-        "perLevel": 120.0,
-        "lvl15": 2400.0
+        "base": 690.0,
+        "perLevel": 132.0,
+        "lvl15": 2538.0
       },
       "hpRegen": {
         "base": 12.0,
@@ -10456,9 +10456,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.73,
-        "perLevel": 0.0079,
-        "lvl15": 0.8
+        "base": 0.7312,
+        "perLevel": 0.0075,
+        "lvl15": 0.8363
       }
     },
     "abilities": [
@@ -10545,9 +10545,9 @@
     "name": "Pantheon",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 660.0,
+        "perLevel": 132.0,
+        "lvl15": 2508.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -10565,9 +10565,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 52.0,
+        "base": 48.0,
         "perLevel": 4.0,
-        "lvl15": 108.0
+        "lvl15": 104.0
       },
       "mr": {
         "base": 40.0,
@@ -10585,9 +10585,9 @@
         "lvl15": 106.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8028,
+        "perLevel": 0.01316,
+        "lvl15": 0.987
       }
     },
     "abilities": [
@@ -10675,9 +10675,9 @@
     "name": "Poppy",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 95.0,
-        "lvl15": 1990.0
+        "base": 630.0,
+        "perLevel": 136.0,
+        "lvl15": 2534.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -10715,9 +10715,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.75,
+        "perLevel": 0.01313,
+        "lvl15": 0.9338
       }
     },
     "abilities": [
@@ -10846,9 +10846,9 @@
         "lvl15": 106.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.0114,
-        "lvl15": 1.0
+        "base": 0.7537,
+        "perLevel": 0.01401,
+        "lvl15": 0.9498
       }
     },
     "abilities": [
@@ -10933,9 +10933,9 @@
     "name": "Rakan",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 112.0,
-        "lvl15": 2228.0
+        "base": 640.0,
+        "perLevel": 120.0,
+        "lvl15": 2320.0
       },
       "hpRegen": {
         "base": 6.0,
@@ -10953,9 +10953,9 @@
         "lvl15": 29.0
       },
       "armor": {
-        "base": 49.0,
+        "base": 42.0,
         "perLevel": 4.0,
-        "lvl15": 105.0
+        "lvl15": 98.0
       },
       "mr": {
         "base": 34.0,
@@ -10973,9 +10973,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.7493,
+        "perLevel": 0.01397,
+        "lvl15": 0.9449
       }
     },
     "abilities": [
@@ -11060,9 +11060,9 @@
     "name": "Rammus",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 112.0,
-        "lvl15": 2258.0
+        "base": 670.0,
+        "perLevel": 124.0,
+        "lvl15": 2406.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -11080,9 +11080,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 49.0,
+        "base": 45.0,
         "perLevel": 4.0,
-        "lvl15": 105.0
+        "lvl15": 101.0
       },
       "mr": {
         "base": 38.0,
@@ -11101,8 +11101,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.01156,
+        "lvl15": 0.9619
       }
     },
     "abilities": [
@@ -11227,9 +11227,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.75,
+        "perLevel": 0.00625,
+        "lvl15": 0.8375
       }
     },
     "abilities": [
@@ -11348,9 +11348,9 @@
         "lvl15": 122.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.798,
+        "perLevel": 0.01596,
+        "lvl15": 1.0214
       }
     },
     "abilities": [
@@ -11437,9 +11437,9 @@
     "name": "Rengar",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 128.0,
-        "lvl15": 2452.0
+        "base": 630.0,
+        "perLevel": 136.0,
+        "lvl15": 2534.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -11467,9 +11467,9 @@
         "lvl15": 118.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.8004,
+        "perLevel": 0.01534,
+        "lvl15": 1.0152
       }
     },
     "abilities": [
@@ -11554,9 +11554,9 @@
     "name": "Riven",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 660.0,
+        "perLevel": 125.0,
+        "lvl15": 2410.0
       },
       "hpRegen": {
         "base": 12.0,
@@ -11564,9 +11564,9 @@
         "lvl15": 26.0
       },
       "armor": {
-        "base": 46.0,
+        "base": 43.0,
         "perLevel": 4.0,
-        "lvl15": 102.0
+        "lvl15": 99.0
       },
       "mr": {
         "base": 38.0,
@@ -11585,8 +11585,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.01375,
+        "lvl15": 0.9925
       }
     },
     "abilities": [
@@ -11703,9 +11703,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7986,
+        "perLevel": 0.0103,
+        "lvl15": 0.9428
       }
     },
     "abilities": [
@@ -11833,8 +11833,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.01125,
+        "lvl15": 0.9075
       }
     },
     "abilities": [
@@ -11954,14 +11954,14 @@
         "lvl15": 330.0
       },
       "ad": {
-        "base": 62.0,
-        "perLevel": 4.0,
-        "lvl15": 118.0
+        "base": 60.0,
+        "perLevel": 3.5,
+        "lvl15": 109.0
       },
       "attackSpeed": {
-        "base": 0.81,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.7501,
+        "perLevel": 0.01974,
+        "lvl15": 1.0265
       }
     },
     "abilities": [
@@ -11978,7 +11978,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Flair",
-        "text": "Samira fires a shot, dealing 15 / 20 / 25 / 30 ( +100% / 115% / 130% / 145% AD ) physical damage to the first enemy hit. If this ability is cast towards an enemy in melee range, Samira will slash with her blade in a cone instead, dealing the same damage to all enemies within. Either hit can critically strike for 25% bonus damage. If cast during Wild Rush Samira will strike all enemies in her path upon completion.",
+        "text": "Samira fires a shot, dealing 15 / 20 / 25 / 30 ( +110% AD ) physical damage to the first enemy hit. If this ability is cast towards an enemy in melee range, Samira will slash with her blade in a cone instead, dealing the same damage to all enemies within. Either hit can critically strike for 25% bonus damage. If cast during Wild Rush Samira will strike all enemies in her path upon completion.",
         "cooldowns": [
           "7",
           "5",
@@ -12010,7 +12010,7 @@
         "slot": "3",
         "key": "E",
         "name": "Wild Rush",
-        "text": "Samira dashes through an enemy (including structures) slashing enemies she passes through, dealing 45 / 60 / 75 / 90 ( +20% AD ) magic damage and gaining 35% / 40% / 45% / 50% attack speed for 3 seconds. If Samira scores a takedown, Wild Rush's cooldown is reset. Tapping this ability mid-dash will cast Flair.",
+        "text": "Samira dashes through an enemy (including structures) slashing enemies she passes through, dealing 45 / 60 / 75 / 90 ( +20% AD ) magic damage and gaining 25% / 30% / 25% / 30% attack speed for 3 seconds. If Samira scores a takedown, Wild Rush's cooldown is reset. Tapping this ability mid-dash will cast Flair.",
         "cooldowns": [
           "20",
           "17",
@@ -12026,11 +12026,11 @@
         "slot": "4",
         "key": "R",
         "name": "Inferno Trigger",
-        "text": "Samira can only use this ability if her current Style rating is \"S\" . Samira unleashes a torrent of shots from her weapons, reducing her Movement Speed by 30% while wildly shooting up to 5 enemies around her 10 times over 2.23 seconds, each shot dealing 5 / 20 / 35 (+ 60% AD ) physical damage . Each shot can critically strike. Deals 25% damage to minions.",
+        "text": "Samira can only use this ability if her current Style rating is \"S\" . Samira unleashes a torrent of shots from her weapons, reducing her Movement Speed by 30% while wildly shooting up to 5 enemies around her 10 times over 2.23 seconds, each shot dealing 20 / 40 / 60 (+ 40% AD ) physical damage . Each shot can critically strike. Deals 25% damage to minions.",
         "cooldowns": [
-          "8",
-          "8",
-          "8"
+          "6",
+          "6",
+          "6"
         ],
         "damageTypes": [
           "physical"
@@ -12048,9 +12048,9 @@
     "name": "Senna",
     "baseStats": {
       "hp": {
-        "base": 600.0,
+        "base": 570.0,
         "perLevel": 120.0,
-        "lvl15": 2280.0
+        "lvl15": 2250.0
       },
       "hpRegen": {
         "base": 6.0,
@@ -12088,9 +12088,9 @@
         "lvl15": 50.0
       },
       "attackSpeed": {
-        "base": 0.62,
-        "perLevel": 0.0079,
-        "lvl15": 0.7
+        "base": 0.64,
+        "perLevel": 0.02,
+        "lvl15": 0.92
       }
     },
     "abilities": [
@@ -12098,7 +12098,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Absolution",
-        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1% of their current health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 15% Critical Chance.",
+        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1% - 10% (based on level) of their current Health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 10% Critical Chance.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -12109,7 +12109,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Piercing Darkness",
-        "text": "Shoots a bolt of piercing shadow through any object, dealing 50 / 90 / 130 / 170 ( +60% AD ) physical damage to enemies, slowing enemies by 15% ( +0.1 AD +0.06 AP ) for 0.75 / 1 / 1.25 / 1.5 seconds and restoring 40 / 70 / 100 / 130 ( +40% AD +25% AP ) Health to ally champions. Attacks reduces Piercing Darkness's cooldown by 1 seconds. This Ability's cast range matches Senna's attack range and its cast time is improved with Attack Speed. It applies on-hit effects to enemy champions.",
+        "text": "Shoots a bolt of piercing shadow through any object, dealing 50 / 80 / 110 / 140 ( +60% AD ) physical damage to enemies, slowing enemies by 15% ( +0.1 AD +0.06 AP ) for 0.75 / 1 / 1.25 / 1.5 seconds and restoring 40 / 70 / 100 / 130 ( +40% AD +25% AP ) Health to ally champions. Attacks reduces Piercing Darkness's cooldown by 1 seconds. This Ability's cast range matches Senna's attack range and its cast time is improved with Attack Speed. It applies on-hit effects to enemy champions.",
         "cooldowns": [
           "15",
           "15",
@@ -12155,7 +12155,7 @@
         "slot": "4",
         "key": "R",
         "name": "Dawning Shadow",
-        "text": "Fires a global wave that shields ally champions from 120 / 160 / 200 ( +50% AP + 2.5 per Mist) damage for 3 seconds, while dealing 250 / 375 / 500 ( +120% AD +50% AP ) physical damage and applies Mist to enemy champions caught in the center.",
+        "text": "Fires a global wave that shields ally champions from 120 / 160 / 200 ( +50% AP + 2.5 per Mist) damage for 3 seconds, while dealing 250 / 400 / 550 ( +120% AD +50% AP ) physical damage and applies Mist to enemy champions caught in the center.",
         "cooldowns": [
           "85",
           "80",
@@ -12217,9 +12217,9 @@
         "lvl15": 94.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "base": 0.7529,
+        "perLevel": 0.01188,
+        "lvl15": 0.9192
       }
     },
     "abilities": [
@@ -12336,9 +12336,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0079,
-        "lvl15": 0.9
+        "base": 0.7312,
+        "perLevel": 0.00625,
+        "lvl15": 0.8188
       }
     },
     "abilities": [
@@ -12429,8 +12429,8 @@
     "baseStats": {
       "hp": {
         "base": 630.0,
-        "perLevel": 112.0,
-        "lvl15": 2198.0
+        "perLevel": 124.0,
+        "lvl15": 2366.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -12468,9 +12468,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8007,
+        "perLevel": 0.02389,
+        "lvl15": 1.1352
       }
     },
     "abilities": [
@@ -12583,9 +12583,9 @@
         "lvl15": 118.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.7975,
+        "perLevel": 0.00766,
+        "lvl15": 0.9047
       }
     },
     "abilities": [
@@ -12714,8 +12714,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.01,
+        "lvl15": 0.94
       }
     },
     "abilities": [
@@ -12842,9 +12842,9 @@
         "lvl15": 120.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.0079,
-        "lvl15": 0.9
+        "base": 0.8012,
+        "perLevel": 0.00407,
+        "lvl15": 0.8583
       }
     },
     "abilities": [
@@ -12966,14 +12966,14 @@
         "lvl15": 340.0
       },
       "ad": {
-        "base": 58.0,
+        "base": 60.0,
         "perLevel": 4.0,
-        "lvl15": 114.0
+        "lvl15": 116.0
       },
       "attackSpeed": {
-        "base": 0.81,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.8125,
+        "perLevel": 0.00625,
+        "lvl15": 0.9
       }
     },
     "abilities": [
@@ -13006,7 +13006,7 @@
         "slot": "2",
         "key": "W",
         "name": "Ricochet",
-        "text": "Gains 25% / 30% / 35% / 40% Attack Speed for 4 seconds. Her attacks bounce to nearby enemies, dealing 4 / 6 / 8 / 10 ( +15% / 18% / 21% / 24% AD ) physical damage . If the first attack critically strikes , so will the bounces. Deals 75% damage to minions. Each enemy can be hit by a maximum of 2 bounces.",
+        "text": "Gains 25% / 30% / 35% / 40% Attack Speed for 4 seconds. Her attacks bounce to nearby enemies, dealing 37.5 / 40 / 42.5 / 45 ( +15% / 18% / 21% / 24% AD ) physical damage . If the first attack critically strikes , so will the bounces. Deals 70% damage to minions. Each enemy can be hit by a maximum of 2 bounces.",
         "cooldowns": [
           "12",
           "12",
@@ -13036,11 +13036,11 @@
         "slot": "4",
         "key": "R",
         "name": "On The Hunt",
-        "text": "Grants 15% bonus Movement Speed to nearby allied champions for 10 / 11 / 12 seconds. During this period, her basic ability cooldowns are reduced by 20% / 25% / 30% . Unyielding Valor : While the Hunt is active, gains 1 stack of Morale every time an attack or ability deals damage to an enemy champion, and 2 stacks of Morale after a champion takedown. Each stack of Morale grants 2 / 3 / 4 AD . At 8 stacks, grants an additional 25% bonus Movement Speed to nearby allied champions and refreshes On the Hunt's duration.",
+        "text": "Grants 15% bonus Movement Speed to nearby allied champions for 8 / 10 / 12 seconds. During this period, her basic ability cooldowns are reduced by 20% / 25% / 30% . Unyielding Valor : While the Hunt is active, gains 1 stack of Morale every time an attack or ability deals damage to an enemy champion, and 2 stacks of Morale after a champion takedown. Each stack of Morale grants 2 / 2.5 / 3 AD . At 8 stacks, grants an additional 25% bonus Movement Speed to nearby allied champions and refreshes On the Hunt's duration.",
         "cooldowns": [
-          "80",
-          "70",
-          "60"
+          "20",
+          "25",
+          "30"
         ],
         "damageTypes": [],
         "icon": "/abilities/sivir-on-the-hunt.png"
@@ -13056,9 +13056,9 @@
     "name": "Skarner",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 128.0,
-        "lvl15": 2482.0
+        "base": 660.0,
+        "perLevel": 132.0,
+        "lvl15": 2508.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -13097,8 +13097,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.00312,
+        "lvl15": 0.8438
       }
     },
     "abilities": [
@@ -13227,9 +13227,9 @@
         "lvl15": 110.0
       },
       "attackSpeed": {
-        "base": 0.81,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.7975,
+        "perLevel": 0.01978,
+        "lvl15": 1.0744
       }
     },
     "abilities": [
@@ -13361,9 +13361,9 @@
         "lvl15": 74.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "base": 0.7535,
+        "perLevel": 0.0103,
+        "lvl15": 0.8977
       }
     },
     "abilities": [
@@ -13489,8 +13489,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.0075,
+        "lvl15": 0.855
       }
     },
     "abilities": [
@@ -13614,8 +13614,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.0075,
+        "lvl15": 0.855
       }
     },
     "abilities": [
@@ -13743,8 +13743,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.00938,
+        "lvl15": 0.8813
       }
     },
     "abilities": [
@@ -13873,8 +13873,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.00625,
+        "lvl15": 0.8375
       }
     },
     "abilities": [
@@ -13998,8 +13998,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.01562,
+        "lvl15": 1.0188
       }
     },
     "abilities": [
@@ -14126,9 +14126,9 @@
         "lvl15": 94.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.7521,
+        "perLevel": 0.0207,
+        "lvl15": 1.0419
       }
     },
     "abilities": [
@@ -14215,8 +14215,8 @@
     "baseStats": {
       "hp": {
         "base": 660.0,
-        "perLevel": 120.0,
-        "lvl15": 2340.0
+        "perLevel": 140.0,
+        "lvl15": 2620.0
       },
       "hpRegen": {
         "base": 11.0,
@@ -14255,8 +14255,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.0175,
+        "lvl15": 0.995
       }
     },
     "abilities": [
@@ -14376,14 +14376,14 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 54.0,
-        "perLevel": 6.0,
-        "lvl15": 138.0
+        "base": 60.0,
+        "perLevel": 5.0,
+        "lvl15": 130.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.812,
+        "perLevel": 0.01388,
+        "lvl15": 1.0063
       }
     },
     "abilities": [
@@ -14414,12 +14414,12 @@
         "slot": "2",
         "key": "W",
         "name": "Rocket Jump",
-        "text": "Leap to a target location, dealing 85 /155 / 225 / 295 ( +50% AP ) magic damage and slowing nearby enemies by 60% for 1.5 / 2 / 2.5 / 3 seconds. Takedowns and fully stacked Explosive Charg e detonations on champions reset Rocket Jump's cooldown.",
+        "text": "Leap to a target location, dealing 80 / 120 / 160 / 200 ( +80% bonus AD +50% AP ) magic damage and slowing nearby enemies by 50% for 2 seconds. Takedowns and fully stacked Explosive Charg e detonations on champions reset Rocket Jump's cooldown.",
         "cooldowns": [
           "22",
-          "19",
-          "16",
-          "13"
+          "20",
+          "18",
+          "16"
         ],
         "damageTypes": [
           "magic"
@@ -14430,12 +14430,12 @@
         "slot": "3",
         "key": "E",
         "name": "Explosive Charge",
-        "text": "Passive : Enemies explode when killed by Tristana's attacks, dealing 65 / 100 / 135 / 170 ( +25% AP ) magic damage to nearby enemies. Active : Places a bomb on an enemy or turret, dealing 50 / 75 / 100 / 125 ( +75% / 110% / 145% / 180% bonus AD +50% AP ) physical damage to nearby enemies. Tristana's attacks and abilities charge the bomb's damage by 30% stacking 4 times. Bombs explode immediately at full stacks. Explosion radius is doubled for bombs placed on turrets.",
+        "text": "Passive : Enemies explode when killed by Tristana's attacks, dealing 60 / 90 / 120 / 150 ( +25% AP ) magic damage to nearby enemies. Active : Places a bomb on an enemy or turret, dealing 50 / 75 / 100 / 125 ( +100% bonus AD +50% AP ) physical damage to nearby enemies. Tristana's attacks and abilities charge the bomb's damage by 25% stacking 4 times. Bombs explode immediately at full stacks. Explosion radius is doubled for bombs placed on turrets.",
         "cooldowns": [
+          "16",
           "15",
           "14",
-          "13",
-          "12"
+          "13"
         ],
         "damageTypes": [
           "physical",
@@ -14447,7 +14447,7 @@
         "slot": "4",
         "key": "R",
         "name": "Buster Shot",
-        "text": "Fires a massive cannonball at an enemy, dealing 350 / 450 / 550 ( +100% AP ) magic damage and knocking them back.",
+        "text": "Fires a massive cannonball at an enemy, dealing 300 / 350 / 400 ( +100% AP ) magic damage and knocking them back.",
         "cooldowns": [
           "70",
           "65",
@@ -14480,8 +14480,8 @@
       },
       "armor": {
         "base": 46.0,
-        "perLevel": 3.0,
-        "lvl15": 88.0
+        "perLevel": 4.5,
+        "lvl15": 109.0
       },
       "mr": {
         "base": 38.0,
@@ -14494,14 +14494,14 @@
         "lvl15": 355.0
       },
       "ad": {
-        "base": 54.0,
+        "base": 64.0,
         "perLevel": 5.0,
-        "lvl15": 124.0
+        "lvl15": 134.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.7975,
+        "perLevel": 0.01813,
+        "lvl15": 1.0513
       }
     },
     "abilities": [
@@ -14509,7 +14509,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Battle Fury",
-        "text": "Gains 0.32% Critical Rate for each point of Fury. Attacking a champion grants 30% Attack Speed for 5 seconds. (6 second cooldown) Gains 5 Fury with every attack, 10 from critical strikes and 15 from kills. Loses 5 Fury per second after Tryndamere has been out of combat for 8 seconds. Battle Fury's Attack Speed bonus increases with Undying Rage's ability rank. Tryndamere converts Critical Rate above 100% into Attack Damage at a rate of 1 Attack Damage per 1% Critical Rate.",
+        "text": "Gains 0.32% Critical Rate for each point of Fury. Gains 5 Fury with every attack, 10 from critical strikes and 15 from kills. Loses 5 Fury per second after Tryndamere has been out of combat for 8 seconds. Tryndamere converts Critical Rate above 100% into Attack Damage at a rate of 1 Attack Damage per 1% Critical Rate.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/tryndamere-battle-fury.png"
@@ -14518,7 +14518,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Bloodlust",
-        "text": "Passive : Gains 7 / 12 / 17 / 22 Attack Damage plus an additional 0.35 / 0.4 / 0.45 / 0.5 Attack Damage per 1% of missing Health. Active : Consumes all Fury to heal for 55 / 65 / 75 / 85 ( +30% AP ) plus 1.5 / 2.1 / 2.7 / 3.3 ( +1.2% AP ) per point of Fury consumed.",
+        "text": "Passive : Gains an additional 0.3 / 0.5 / 0.7 / 0.9 Attack Damage per 1% of missing Health. Active : Consumes all Fury to heal for 55 / 65 / 75 / 85 ( +30% AP ) plus 1.5 / 2.1 / 2.7 / 3.3 ( +1.2% AP ) per point of Fury consumed.",
         "cooldowns": [
           "12",
           "12",
@@ -14546,7 +14546,7 @@
         "slot": "3",
         "key": "E",
         "name": "Spinning Slash",
-        "text": "Dashes, dealing 80 / 120 / 160 / 200 ( +135% AD +100% AP ) physical damage . Critical Strikes against minions reduce the cooldown of Spinning Slash by 1 second, doubled against champions. Gains 2 Fury for each enemy hit.",
+        "text": "Dashes, dealing 80 / 120 / 160 / 200 ( +100% AD +100% AP ) physical damage . Critical Strikes against minions reduce the cooldown of Spinning Slash by 1 second, doubled against champions. Gains 2 Fury for each enemy hit.",
         "cooldowns": [
           "11",
           "10",
@@ -14622,9 +14622,9 @@
         "lvl15": 80.0
       },
       "attackSpeed": {
-        "base": 0.77,
-        "perLevel": 0.0136,
-        "lvl15": 1.0
+        "base": 0.7487,
+        "perLevel": 0.01042,
+        "lvl15": 0.8945
       }
     },
     "abilities": [
@@ -14744,14 +14744,14 @@
         "lvl15": 340.0
       },
       "ad": {
-        "base": 54.0,
+        "base": 58.0,
         "perLevel": 4.0,
-        "lvl15": 110.0
+        "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.8012,
+        "perLevel": 0.02037,
+        "lvl15": 1.0864
       }
     },
     "abilities": [
@@ -14759,7 +14759,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Deadly Venom",
-        "text": "Attacks infect enemies with venom, dealing 1 ( +2.5% AP ) true damage over 5 seconds and stacking up to 5 times. When an enemy champion has full stacks of Deadly Venom, Twitch gains 30% / 35% / 40% / 45% / 50% attack speed for 5 seconds. Monsters take 130% increased damage from Deadly Venom.",
+        "text": "Attacks infect enemies with venom, dealing 1 ( +3% AP ) true damage over 5 seconds and stacking up to 5 times. Monsters take 130% increased damage from Deadly Venom.",
         "cooldowns": [],
         "damageTypes": [
           "true"
@@ -14770,7 +14770,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Ambush",
-        "text": "Become Camouflaged and hasted by 10% for 8 / 9 / 10 / 11 seconds, increasing to 20% when nearby enemy champions cannot see Twitch. After exiting Camouflage , Twitch's attacks will apply an additional stack of Deadly Venom for 3 seconds. Ambush resets when a champion dies while infected by Deadly Venom. Camouflage : Hide from champions by keeping them outside Twitch's detection radius. Attacks and offensive abilities end Camouflage early.",
+        "text": "Become Camouflaged and hasted by 10% for 8 / 9 / 10 / 11 seconds, increasing to 20% when nearby enemy champions cannot see Twitch. After exiting Camouflage , Twitch gains 35% / 40% / 45% / 50% bonus Attack Speed for 6 seconds. Ambush resets when a champion dies while infected by Deadly Venom. Camouflage : Hide from champions by keeping them outside Twitch's detection radius. Attacks and offensive abilities end Camouflage early.",
         "cooldowns": [
           "15",
           "15",
@@ -14784,7 +14784,7 @@
         "slot": "2",
         "key": "W",
         "name": "Venom Cask",
-        "text": "Hurls a cask that applies stacks of Deadly Venom to enemies and slows them for 30% / 35% / 40% / 45% ( +6% bonus ) for 3 seconds. Cast time decreases with Twitch's attack speed.",
+        "text": "Hurls a cask that applies stacks of Deadly Venom to enemies and slows them for 30% / 35% / 40% / 45% ( +0.06% AP ) for 3 seconds. Cast time decreases with Twitch's attack speed.",
         "cooldowns": [
           "12",
           "11",
@@ -14798,7 +14798,7 @@
         "slot": "3",
         "key": "E",
         "name": "Contaminate",
-        "text": "Deals 25 / 35 / 45 / 55 physical damage to all enemies affected by Deadly Venom , each stack deals 20 / 25 / 30 / 35 ( +42% bonus AD +18% AP ) damage to enemies. Enemies with maximum stacks will spread the damage to nearby targets and apply maximum stacks of Deadly Venom to them. Deals 130 physical damage at max stacks. Deals 80% increased damage to monsters.",
+        "text": "Deals 30 / 40 / 50 / 60 physical damage to all enemies affected by Deadly Venom , each stack deals 20 / 25 / 30 / 35 ( +35% bonus AD ) physical damage and ( +35% AP ) magic damage. Contaminate can only be cast while a poisoned target is within 1200 units of Twitch. Enemies with maximum stacks will spread the damage to nearby targets and apply maximum stacks of Deadly Venom to them. Deals 130 physical damage at max stacks. Deals 80% increased damage to monsters.",
         "cooldowns": [
           "16",
           "15",
@@ -14814,11 +14814,11 @@
         "slot": "4",
         "key": "R",
         "name": "Spray and Pray",
-        "text": "For 6 seconds gain 225 Attack Range and 30 / 45 / 60 bonus Attack Damage and transform attacks into piercing bolts that hit every enemy in a line. Subsequent targets take 15% less damage, down to a minimum of 40% .",
+        "text": "For 6 seconds gain 225 Attack Range and 30 / 45 / 65 bonus Attack Damage and transform attacks into piercing bolts that hit every enemy in a line. Subsequent targets take 15% less damage, down to a minimum of 40% .",
         "cooldowns": [
+          "75",
           "70",
-          "65",
-          "60"
+          "65"
         ],
         "damageTypes": [],
         "icon": "/abilities/twitch-spray-and-pray.png"
@@ -14875,8 +14875,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.01937,
+        "lvl15": 1.0212
       }
     },
     "abilities": [
@@ -15000,14 +15000,14 @@
         "lvl15": 340.0
       },
       "ad": {
-        "base": 54.0,
+        "base": 58.0,
         "perLevel": 4.0,
-        "lvl15": 110.0
+        "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.81,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.8028,
+        "perLevel": 0.01974,
+        "lvl15": 1.0791
       }
     },
     "abilities": [
@@ -15129,14 +15129,14 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 54.0,
+        "base": 60.0,
         "perLevel": 3.0,
-        "lvl15": 96.0
+        "lvl15": 102.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.0136,
-        "lvl15": 1.0
+        "base": 0.8093,
+        "perLevel": 0.01974,
+        "lvl15": 1.0857
       }
     },
     "abilities": [
@@ -15153,7 +15153,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Tumble",
-        "text": "Dashes forward and empowers her next attack to deal an additional 24 ( 35% / 45% / 55% / 65% AD ) physical damage . Final Hour : Gains 1 second of invisibility on cast. Tumble does not go through walls.",
+        "text": "Dashes forward and empowers her next attack to deal an additional 24 ( 50% / 60% / 70% / 80% AD ) physical damage . Final Hour : Gains 1 second of invisibility on cast. Tumble does not go through walls.",
         "cooldowns": [
           "5",
           "4",
@@ -15169,7 +15169,7 @@
         "slot": "2",
         "key": "W",
         "name": "Silver Bolts",
-        "text": "Passive : Every third consecutive attack or ability on the same target deals additional 2% / 5% / 8% / 11% true damage of the enemy's maximum Health. Active : Gains 10% / 15% / 20% / 25% Attack Speed and 10% Omnivamp for 3 seconds. Passive deals at least 50 / 65 / 80 / 95 true damage . Passive damage is capped at 200 against monsters.",
+        "text": "Passive : Every third consecutive attack or ability on the same target deals additional 6% / 7% / 8% / 9% true damage of the enemy's maximum Health. Active : Gains 10% / 15% / 20% / 25% Attack Speed and 10% Omnivamp for 3 seconds. Passive deals at least 50 / 65 / 80 / 95 true damage . Passive damage is capped at 200 against monsters.",
         "cooldowns": [
           "18",
           "17",
@@ -15201,7 +15201,7 @@
         "slot": "4",
         "key": "R",
         "name": "Final Hour",
-        "text": "Gains 15 / 25 / 35 Attack Damage and strengthens Night Hunter and Tumble for 8 / 10 / 12 seconds. When an enemy champion damaged by Vayne dies within 3 seconds, Final Hour's duration is extended by 4 seconds, up to an additional 8 / 10 / 12 seconds.",
+        "text": "Gains 30 / 40 / 50 Attack Damage and strengthens Night Hunter and Tumble for 8 / 10 / 12 seconds. When an enemy champion damaged by Vayne dies within 3 seconds, Final Hour's duration is extended by 4 seconds, up to an additional 8 / 10 / 12 seconds.",
         "cooldowns": [
           "70",
           "65",
@@ -15262,8 +15262,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.00875,
+        "lvl15": 0.8725
       }
     },
     "abilities": [
@@ -15389,8 +15389,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.00625,
+        "lvl15": 0.8375
       }
     },
     "abilities": [
@@ -15521,8 +15521,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "perLevel": 0.00625,
+        "lvl15": 0.8375
       }
     },
     "abilities": [
@@ -15611,9 +15611,9 @@
     "name": "Vi",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 112.0,
-        "lvl15": 2258.0
+        "base": 660.0,
+        "perLevel": 130.0,
+        "lvl15": 2480.0
       },
       "hpRegen": {
         "base": 11.0,
@@ -15631,9 +15631,9 @@
         "lvl15": 29.0
       },
       "armor": {
-        "base": 46.0,
+        "base": 42.0,
         "perLevel": 4.0,
-        "lvl15": 102.0
+        "lvl15": 98.0
       },
       "mr": {
         "base": 38.0,
@@ -15651,9 +15651,9 @@
         "lvl15": 106.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.7986,
+        "perLevel": 0.00773,
+        "lvl15": 0.9068
       }
     },
     "abilities": [
@@ -15740,9 +15740,9 @@
     "name": "Viego",
     "baseStats": {
       "hp": {
-        "base": 660.0,
-        "perLevel": 128.0,
-        "lvl15": 2452.0
+        "base": 630.0,
+        "perLevel": 138.0,
+        "lvl15": 2562.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -15765,14 +15765,14 @@
         "lvl15": 345.0
       },
       "ad": {
-        "base": 62.0,
+        "base": 60.0,
         "perLevel": 4.0,
-        "lvl15": 118.0
+        "lvl15": 116.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8028,
+        "perLevel": 0.01645,
+        "lvl15": 1.0331
       }
     },
     "abilities": [
@@ -15789,7 +15789,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Blade of the Ruined King",
-        "text": "Passive : Attacks deal bonus physical damage equal to 2% / 3% / 4% / 5% of the target's current Health . After damaging an enemy with an ability, Viego's first attack against them within 5 seconds strikes twice, dealing physical damage equal to 15% of AD (+ 15% AP ) and healing himself for 135% of the damage dealt. Passive bonuses are kept during Possession. Active : Stabs forward, dealing 20 / 40 / 60 / 80 ((+ 80% AD ) * ( 1 + 0.5% bonus Critical rate )) physical damage . This ability's cast time reduces with Attack Speed.",
+        "text": "Passive : Attacks deal bonus physical damage equal to 2% / 3% / 4% / 5% of the target's current Health . After damaging an enemy with an ability, Viego's first attack against them within 5 seconds strikes twice, dealing physical damage equal to 15% of AD (+ 15% AP ) and healing himself for 135% of the damage dealt. Passive bonuses are kept during Possession. Active : Stabs forward, dealing 25 / 45 / 65 / 85 ((+ 70% AD ) * ( 1 + 0.5% bonus Critical rate )) physical damage . This ability's cast time reduces with Attack Speed.",
         "cooldowns": [
           "5",
           "4",
@@ -15821,7 +15821,7 @@
         "slot": "3",
         "key": "E",
         "name": "Harrowed Path",
-        "text": "Sends forth a specter to haunt the first terrain hit with Black Mist for 6 seconds. While inside the Black Mist, Viego becomes camouflaged and gains 25% / 30% / 35% / 40% Movement Speed ( +0.04% AP ) and 45% / 50% / 55% / 60% Attack Speed .",
+        "text": "Sends forth a specter to haunt the first terrain hit with Black Mist for 6 seconds. While inside the Black Mist, Viego becomes camouflaged and gains 25% / 30% / 35% / 40% Movement Speed ( +0.04% AP ) and 35% / 40% / 45% / 50% Attack Speed .",
         "cooldowns": [
           "12",
           "10",
@@ -15835,7 +15835,7 @@
         "slot": "4",
         "key": "R",
         "name": "Heartbreaker",
-        "text": "Teleports to a target location nearby, dealing physical damage equal to 110% - 210% AD * ( 1 + 0.5 Crit rate ) to all the champions in the area. Deal 14% / 17% / 20% ( +6% bonus AD ) of the target's missing Health to the enemy champion with the lowest percentage of Health, slowing them by 99% for 0.25 seconds and knocking back enemies nearby them.",
+        "text": "Teleports to a target location nearby, dealing physical damage equal to 120% - 210% AD * ( 1 + 0.5 Crit rate ) to all the champions in the area. Deal 14% / 17% / 20% ( +5% bonus AD ) of the target's missing Health to the enemy champion with the lowest percentage of Health, slowing them by 99% for 0.25 seconds and knocking back enemies nearby them.",
         "cooldowns": [
           "90",
           "75",
@@ -15897,9 +15897,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.7501,
+        "perLevel": 0.01316,
+        "lvl15": 0.9344
       }
     },
     "abilities": [
@@ -16014,9 +16014,9 @@
         "lvl15": 94.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "base": 0.7501,
+        "perLevel": 0.01086,
+        "lvl15": 0.9021
       }
     },
     "abilities": [
@@ -16143,9 +16143,9 @@
         "lvl15": 104.0
       },
       "attackSpeed": {
-        "base": 0.73,
-        "perLevel": 0.0114,
-        "lvl15": 0.9
+        "base": 0.735,
+        "perLevel": 0.0098,
+        "lvl15": 0.8722
       }
     },
     "abilities": [
@@ -16153,7 +16153,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "The Relentless Storm",
-        "text": "Volibear gains 5% ( +4% AP ) Attack Speed for 6 seconds whenever he deals damage with an Ability or Attack, stacking up to 5 times. At 5 stacks, Volibear's claws ignite with lightning, causing his Attacks to deal an additional 11 - 80 ( +40% AP ) magic damage to the target and 4 closest enemies.",
+        "text": "Volibear gains 5% ( +4% AP ) Attack Speed for 6 seconds whenever he deals damage with an Ability or Attack, stacking up to 5 times. At 5 stacks, Volibear's claws ignite with lightning, causing his Attacks to deal an additional 12 - 68 ( +40% AP ) magic damage to the target and 4 closest enemies.",
         "cooldowns": [],
         "damageTypes": [
           "magic"
@@ -16274,9 +16274,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.7975,
+        "perLevel": 0.00766,
+        "lvl15": 0.9047
       }
     },
     "abilities": [
@@ -16402,8 +16402,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "perLevel": 0.0175,
+        "lvl15": 1.045
       }
     },
     "abilities": [
@@ -16523,14 +16523,14 @@
         "lvl15": 335.0
       },
       "ad": {
-        "base": 54.0,
-        "perLevel": 5.0,
-        "lvl15": 124.0
+        "base": 60.0,
+        "perLevel": 4.2,
+        "lvl15": 118.8
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.8028,
+        "perLevel": 0.01974,
+        "lvl15": 1.0791
       }
     },
     "abilities": [
@@ -16563,7 +16563,7 @@
         "slot": "2",
         "key": "W",
         "name": "Deadly Plumage",
-        "text": "Creates a storm of blades for 4 seconds that grants 45% / 50% / 55% / 60% Attack Speed and causes attacks to deal 20% more damage. If Deadly Plumage strikes an enemy champion, gain 25% / 30% / 35% / 40% Movement Speed for 1.5 seconds. If Rakan is nearby he will also gain the effects of this skill.",
+        "text": "Creates a storm of blades for 4 seconds that grants 40% / 45% / 50% / 55% Attack Speed and causes attacks to deal 25% more damage. If Deadly Plumage strikes an enemy champion, gain 25% / 30% / 35% / 40% Movement Speed for 1.5 seconds. If Rakan is nearby he will also gain the effects of this skill.",
         "cooldowns": [
           "17",
           "16",
@@ -16577,7 +16577,7 @@
         "slot": "3",
         "key": "E",
         "name": "Bladecaller",
-        "text": "Calls back all Feathers , dealing 60 / 70 / 80 / 90 ( +90% bonus AD ) physical damage to enemies they pass through. Hitting an enemy with 3 Feathers roots them for 1.25 seconds. Minions take 50% damage from Bladecaller.",
+        "text": "Calls back all Feathers , dealing 60 / 70 / 80 / 90 ( +50% bonus AD ) physical damage to enemies they pass through. Hitting an enemy with 3 Feathers roots them for 1.25 seconds. Minions take 50% damage from Bladecaller.",
         "cooldowns": [
           "11",
           "10",
@@ -16593,7 +16593,7 @@
         "slot": "4",
         "key": "R",
         "name": "Featherstorm",
-        "text": "Leaps into the air, becoming untargetable and throwing out a fan of daggers wich deal 125 / 250 / 375 ( +100% bonus AD ) physical damage and leave behind a line of Feathers . Can move while in the air.",
+        "text": "Leaps into the air, becoming untargetable and throwing out a fan of daggers wich deal 150 / 250 / 350 ( +100% bonus AD ) physical damage and leave behind a line of Feathers . Can move while in the air.",
         "cooldowns": [
           "80",
           "70",
@@ -16615,9 +16615,9 @@
     "name": "Xin Zhao",
     "baseStats": {
       "hp": {
-        "base": 690.0,
-        "perLevel": 120.0,
-        "lvl15": 2370.0
+        "base": 650.0,
+        "perLevel": 130.0,
+        "lvl15": 2470.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -16636,8 +16636,8 @@
       },
       "armor": {
         "base": 46.0,
-        "perLevel": 4.0,
-        "lvl15": 102.0
+        "perLevel": 4.7,
+        "lvl15": 111.8
       },
       "mr": {
         "base": 38.0,
@@ -16655,9 +16655,9 @@
         "lvl15": 118.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0143,
-        "lvl15": 1.0
+        "base": 0.7998,
+        "perLevel": 0.01612,
+        "lvl15": 1.0255
       }
     },
     "abilities": [
@@ -16786,9 +16786,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.89,
-        "perLevel": 0.0207,
-        "lvl15": 1.2
+        "base": 0.804,
+        "perLevel": 0.0268,
+        "lvl15": 1.1792
       }
     },
     "abilities": [
@@ -16796,7 +16796,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Way of the Wanderer",
-        "text": "Resolve : Moving builds Flow, wich is tracked on Yasuo's resource bar. At max Flow, damage from a champion or monster grants a shield that absorbs 115 - 500 ( +100% Critical Strike Rate ) damage and lasts 1 second. Intent : Yasuo's Critcal Rate is doubled. Yasuo converts Critical Rate above 100% into Attack Damge at a rate of 0.6 Attack Damge per 1% Critical Rate.",
+        "text": "Resolve : Moving builds Flow, wich is tracked on Yasuo's resource bar. At max Flow, damage from a champion or monster grants a shield that absorbs 115 - 500 ( +100% Critical Strike Rate ) damage and lasts 1 second. Intent : Yasuo's Critcal Rate is doubled. Yasuo converts Critical Rate above 100% into Attack Damge at a rate of 0.5 Attack Damge per 1% Critical Rate.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/yasuo-way-of-the-wanderer.png"
@@ -16851,7 +16851,7 @@
         "slot": "4",
         "key": "R",
         "name": "Last Breath",
-        "text": "Blinks to an Airborne enemy champion, dealing 250 / 400 / 550 ( +160% bonus AD ) physical damage and holding all Airborne enemies in the area in the air for an additional 1.3 seconds. Grants maximum Flow but resets all stacks of Gathering Storm . For the next 15 seconds, Critical Strikes gain 55% bonus Armor Penetration .",
+        "text": "Blinks to an Airborne enemy champion, dealing 200 / 350 / 500 ( +150% bonus AD ) physical damage and holding all Airborne enemies in the area in the air for an additional 1.3 seconds. Grants maximum Flow but resets all stacks of Gathering Storm . For the next 15 seconds, Critical Strikes gain 55% bonus Armor Penetration .",
         "cooldowns": [
           "50",
           "40",
@@ -16873,9 +16873,9 @@
     "name": "Yone",
     "baseStats": {
       "hp": {
-        "base": 650.0,
-        "perLevel": 120.0,
-        "lvl15": 2330.0
+        "base": 630.0,
+        "perLevel": 130.0,
+        "lvl15": 2450.0
       },
       "hpRegen": {
         "base": 9.0,
@@ -16903,9 +16903,9 @@
         "lvl15": 110.0
       },
       "attackSpeed": {
-        "base": 0.82,
-        "perLevel": 0.0214,
-        "lvl15": 1.1
+        "base": 0.8,
+        "perLevel": 0.02,
+        "lvl15": 1.08
       }
     },
     "abilities": [
@@ -16913,7 +16913,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Way of the Hunter",
-        "text": "Steel and Spirit : Every other attack deals 50% of the attack's damage as magic damage instead. Intent : Yone's Critical Rate is doubled. Yone converts Critical Rate above 100% into Attack Damage at a rate of 0.6 Attack Damage per 1% Critical Rate.",
+        "text": "Steel and Spirit : Every other attack deals 50% of the attack's damage as magic damage instead. Intent : Yone's Critical Rate is doubled. Yone converts Critical Rate above 100% into Attack Damage at a rate of 0.5 Attack Damage per 1% Critical Rate.",
         "cooldowns": [],
         "damageTypes": [
           "magic"
@@ -16924,7 +16924,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Mortal Steel",
-        "text": "Thrusts forward, dealing 30 / 50 / 70 / 90 ( +175% AD ) physical damage . Grants a stack of Gathering Storm if the thrust damages an enemy. At 2 stacks, Mortal Steel dashes Yone forward and launches a whirlwind that knocks enemies Airborne . Mortal Steel is treated as an attack: it can Critically Strike for bonus damage and applies on-hit effects to all units hit. Cooldown and cast time are reduced by Attack Speed. Deal 65% damage to monsters.",
+        "text": "Thrusts forward, dealing 30 / 50 / 70 / 90 ( +175% AD ) physical damage . Grants a stack of Gathering Storm if the thrust damages an enemy. At 2 stacks, Mortal Steel dashes Yone forward and launches a whirlwind that knocks enemies Airborne . Mortal Steel is treated as an attack: it can Critically Strike for bonus damage and applies on-hit effects to all units hit. Cooldown and cast time are reduced by Attack Speed. Deal 70% damage to monsters.",
         "cooldowns": [
           "4",
           "4",
@@ -16940,7 +16940,7 @@
         "slot": "2",
         "key": "W",
         "name": "Spirit Cleave",
-        "text": "Cleaves in a cone, dealing 25 / 35 / 45 / 55 plus 11% / 12% / 13% / 14% of the target's maximum Health as physical and magic damage . Gains a shield that absorbs 45 ( +80% bonus AD ) damage for 1.5 seconds if Spirit Cleave hits an enemy, increased by 100% on hitting a champion and 40% on subsequent champion hits. Deals 60 minimum damage against minions. Deals 30 maximum damage against monsters. Cooldown aand cast time are reduced by Attack Speed.",
+        "text": "Cleaves in a cone, dealing 20 / 35 / 50 / 65 plus 9% / 10% / 11% / 12% of the target's maximum Health as physical and magic damage . Gains a shield that absorbs 45 ( +60% bonus AD ) damage for 1.5 seconds if Spirit Cleave hits an enemy, increased by 100% on hitting a champion and 40% on subsequent champion hits. Deals 60 minimum damage against minions. Deals 30 maximum damage against monsters. Cooldown aand cast time are reduced by Attack Speed.",
         "cooldowns": [
           "14",
           "14",
@@ -16956,7 +16956,7 @@
         "slot": "3",
         "key": "E",
         "name": "Soul Unbound",
-        "text": "Dashes forward, entering Spirit Form and leaving his body behind for 5 seconds. During Spirit Form, Yone gains 10% Movement Speed that increases over the duration and marks champions damaged with his attacks or abilities. When Soul Unbound ends, Yone returns to his body and marked enemies take 24% / 28% / 32% / 36% of the damage Yone dealt to them as true damage . Re-cast : End Soul Unbound early.",
+        "text": "Dashes forward, entering Spirit Form and leaving his body behind for 5 seconds. During Spirit Form, Yone gains 10% Movement Speed that increases over the duration and marks champions damaged with his attacks or abilities. When Soul Unbound ends, Yone returns to his body and marked enemies take 27.5% / 30% / 32.5% / 35% of the damage Yone dealt to them as true damage . Re-cast : End Soul Unbound early.",
         "cooldowns": [
           "20",
           "17",
@@ -16972,7 +16972,7 @@
         "slot": "4",
         "key": "R",
         "name": "Fate Sealed",
-        "text": "Strikes all enemies along a path for 200 / 350 / 500 ( +80% AD ) physical and magic damage , teleport behind the last champion hit and knocking them towards Yone.",
+        "text": "Strikes all enemies along a path for 200 / 375 / 550 ( +60% AD ) physical and magic damage , teleport behind the last champion hit and knocking them towards Yone.",
         "cooldowns": [
           "80",
           "70",
@@ -17034,9 +17034,9 @@
         "lvl15": 100.0
       },
       "attackSpeed": {
-        "base": 0.77,
-        "perLevel": 0.02,
-        "lvl15": 1.1
+        "base": 0.7995,
+        "perLevel": 0.0208,
+        "lvl15": 1.0907
       }
     },
     "abilities": [
@@ -17169,9 +17169,9 @@
         "lvl15": 92.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.0043,
-        "lvl15": 0.9
+        "base": 0.75,
+        "perLevel": 0.00375,
+        "lvl15": 0.8025
       }
     },
     "abilities": [
@@ -17294,9 +17294,9 @@
         "lvl15": 120.0
       },
       "attackSpeed": {
-        "base": 0.8,
-        "perLevel": 0.015,
-        "lvl15": 1.0
+        "base": 0.8007,
+        "perLevel": 0.01562,
+        "lvl15": 1.0195
       }
     },
     "abilities": [
@@ -17315,7 +17315,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Razor Shuriken",
-        "text": "Zed and his shadows throw their shurikens, each dealing 70 / 120 / 170 / 220 ( +110% bonus AD ) physical damage to the first enemy they hit and 49 / 84 / 119 / 154 ( +77% bonus AD ) physical damage to other enemies in their path. Deals 80% damage to monsters.",
+        "text": "Zed and his shadows throw their shurikens, each dealing 70 / 120 / 170 / 220 ( +110% bonus AD ) physical damage to the first enemy they hit and 49 / 84 / 119 / 154 ( +77% bonus AD ) physical damage to other enemies in their path.",
         "cooldowns": [
           "6",
           "6",
@@ -17345,7 +17345,7 @@
         "slot": "3",
         "key": "E",
         "name": "Shadow Slash",
-        "text": "Zed and his shadows slash, each dealing 65 / 95 / 125 / 155 ( +70 bonus AD ) physical damage to nearby enemies and slowing them by 25% / 30% / 35% / 40% for 1.5 seconds. Slashes beyond the first striking the same enemy deal 50% damage and increase the slow by 50% . Each enemy champion hit by Zed's slash reduces Living Shadow 's cooldown by 2 seconds. Deals 60% damage to monsters.",
+        "text": "Zed and his shadows slash, each dealing 65 / 95 / 125 / 155 ( +70 bonus AD ) physical damage to nearby enemies and slowing them by 25% / 30% / 35% / 40% for 1.5 seconds. Slashes beyond the first striking the same enemy deal 50% damage and increase the slow by 50% . Each enemy champion hit by Zed's slash reduces Living Shadow 's cooldown by 2 seconds.",
         "cooldowns": [
           "5",
           "4",
@@ -17383,9 +17383,9 @@
     "name": "Zeri",
     "baseStats": {
       "hp": {
-        "base": 630.0,
-        "perLevel": 128.0,
-        "lvl15": 2422.0
+        "base": 600.0,
+        "perLevel": 136.0,
+        "lvl15": 2504.0
       },
       "hpRegen": {
         "base": 8.0,
@@ -17423,9 +17423,9 @@
         "lvl15": 114.0
       },
       "attackSpeed": {
-        "base": 0.83,
-        "perLevel": 0.0171,
-        "lvl15": 1.1
+        "base": 0.8,
+        "perLevel": 0.015,
+        "lvl15": 1.01
       }
     },
     "abilities": [
@@ -17433,7 +17433,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Living Battery",
-        "text": "Fires a burst of 6 rounds in the target direction, dealing 13 / 15 / 17 / 19 / 21 ( +105% / 110% / 115% / 120% / 125% AD ) physical damage to the first enemy hit. Zeri's Attack Speed is capped at 1.5 attacks per second. 50% of Attack Speed in excess of the cap is converted into bonus Attack Damage .",
+        "text": "Fires a burst of 6 rounds in the target direction, dealing 20 / 24 / 28 / 32 / 36 ( +105% / 110% / 115% / 120% / 125% AD ) physical damage to the first enemy hit. Zeri's Attack Speed is capped at 1.5 attacks per second. 60% of Attack Speed in excess of the cap is converted into bonus Attack Damage .",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -17460,7 +17460,7 @@
         "slot": "2",
         "key": "W",
         "name": "Ultrashock Laser",
-        "text": "Zeri fires out an electric pulse that deals 30 / 70 / 110 / 150 ( +80% AD +40% AP ) physical damage tot he first unit hit, slowing it by 30% / 35% / 40% / 45% for 2 seconds. If the pulse hits a wall, it expands into a long range laser, dealing the same damage and slow effect to enemies in the area and Critically Striking champions and monsters.",
+        "text": "Zeri fires out an electric pulse that deals 60 / 100 / 140 / 180 ( +100% AD +40% AP ) physical damage tot he first unit hit, slowing it by 30% / 35% / 40% / 45% for 2 seconds. If the pulse hits a wall, it expands into a long range laser, dealing the same damage and slow effect to enemies in the area and Critically Striking champions and monsters.",
         "cooldowns": [
           "12",
           "11",
@@ -17476,7 +17476,7 @@
         "slot": "3",
         "key": "E",
         "name": "Spark Surge",
-        "text": "Dashes a short distance and builds up Electrocute! for 6 seconds, empowering the next 3 attacks to pierce, dealing 20 / 23 / 26 / 29 ( +10% bonus AD +20% bonus AP ) bonus magic damage to the first target hit ( increased by up to 100% based on her Critical Rate) and 80% / 85% / 90% / 95% damage to targets after the first. Hitting an enemy champion with an attack or ability reduces this ability's cooldown by 0.5 seconds. Critical Strikes reduce the cooldown by 1.5 seconds instead. Zeri vaults over any terrain she touches, greatly extending the dash distance.",
+        "text": "Dashes a short distance and builds up Electrocute! for 6 seconds, empowering the next 3 attacks to pierce, dealing 20 / 23 / 26 / 29 ( +10% bonus AD +20% bonus AP ) bonus magic damage to the first target hit ( increased by up to 100% based on her Critical Rate) and 85% / 90% / 95% / 100% damage to targets after the first. Hitting an enemy champion with an attack or ability reduces this ability's cooldown by 0.5 seconds. Critical Strikes reduce the cooldown by 1.5 seconds instead. Zeri vaults over any terrain she touches, greatly extending the dash distance.",
         "cooldowns": [
           "22",
           "19",
@@ -17492,7 +17492,7 @@
         "slot": "4",
         "key": "R",
         "name": "Lightning Crash",
-        "text": "Discharges a nova of electricity, dealing 150 / 200 / 250 ( +70% bonus AD +80% AP ) magic damage to nearby enemies. Upon hitting an enemy champion, she gains 10% Movement Speed and a 30% Attack Speed bonus that can bypass her Attack Speed cap for 5 seconds. During this time, her attack becomes a faster triple shot that chains to nearby enemies to deal 14 physical damage . Hitting an enemy champion with an ability or attack extends this ability's duration and adds 1 stack of Overcharge for 1.5 seconds. Critical Strikes add 2 additional stacks. Each stack grants 0.5 Movement Speed .",
+        "text": "Discharges a nova of electricity, dealing 150 / 225 / 300 ( +60% bonus AD +100% AP ) magic damage to nearby enemies. Upon hitting an enemy champion, she gains 10% Movement Speed and a 30% Attack Speed bonus that can bypass her Attack Speed cap for 5 seconds. During this time, her attack becomes a faster triple shot that chains to nearby enemies to deal 14 physical damage . Hitting an enemy champion with an ability or attack extends this ability's duration and adds 1 stack of Overcharge for 2.5 seconds. Critical Strikes add 2 additional stacks. Each stack grants 0.5 Movement Speed .",
         "cooldowns": [
           "70",
           "65",
@@ -17555,9 +17555,9 @@
         "lvl15": 94.0
       },
       "attackSpeed": {
-        "base": 0.75,
-        "perLevel": 0.0,
-        "lvl15": 0.8
+        "base": 0.7478,
+        "perLevel": 0.00918,
+        "lvl15": 0.8764
       }
     },
     "abilities": [
@@ -17687,8 +17687,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.01063,
+        "lvl15": 0.8988
       }
     },
     "abilities": [
@@ -17810,8 +17810,8 @@
       },
       "attackSpeed": {
         "base": 0.75,
-        "perLevel": 0.0136,
-        "lvl15": 0.9
+        "perLevel": 0.01313,
+        "lvl15": 0.9338
       }
     },
     "abilities": [
@@ -17938,9 +17938,9 @@
         "lvl15": 96.0
       },
       "attackSpeed": {
-        "base": 0.96,
-        "perLevel": 0.0,
-        "lvl15": 1.0
+        "base": 0.75,
+        "perLevel": 0.0125,
+        "lvl15": 0.925
       }
     },
     "abilities": [

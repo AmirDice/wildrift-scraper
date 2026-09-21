@@ -34,7 +34,10 @@
     "ampPct": 8,
     "burstProcType": "magic"
   },
-  "Lethal Tempo": {},
+  "Lethal Tempo": {
+    "asPctPassive": 48,
+    "_why": "8% per stack, six stacks, melee. Ranged is 6.4% (38.4%), and the engine carries one figure. The bullet at max stacks is adaptive damage that scales with your own bonus attack speed, which has no key here."
+  },
   "Fleet Footwork": {
     "healFlat": {
       "lvlRange": [
@@ -53,8 +56,8 @@
     },
     "adaptiveAp": {
       "lvlRange": [
-        24,
-        48
+        30,
+        50
       ]
     },
     "healPct": 9,
@@ -66,10 +69,11 @@
     },
     "bonusAp": {
       "lvlRange": [
-        24,
-        48
+        30,
+        50
       ]
-    }
+    },
+    "_why": "Ability Power per stack is standardised to 1.667x the Attack Damage figure: 5 - 8.33 per stack, six stacks."
   },
   "Grasp of the Undying": {},
   "Guardian": {
@@ -209,7 +213,8 @@
     "adaptiveAp": 24
   },
   "Ingenious Hunter": {
-    "itemHasteFlat": 45
+    "itemHasteFlat": 0,
+    "_why": "Removed from the game in 7.3."
   },
   "Relentless Hunter": {},
   "Zombie Ward": {
@@ -236,14 +241,14 @@
   },
   "Legend: Alacrity": {},
   "Legend: Tenacity": {
-    "tenacityPct": 15,
-    "_why": "'Gain 3% tenacity and 3% slow resist, UP TO BONUS 15% TENACITY.' This entry was an empty {} -- one of fifteen -- so the exporter dropped it and the rune never reached engine.json at all. Charged at the cap, the convention this file already uses for stacked passives."
+    "tenacityPct": 0,
+    "_why": "Removed from the game in 7.3. Zeroed rather than deleted so a build saved before the patch scores what it actually does now, which is nothing."
   },
   "Legend: Bloodline": {},
   "Demolish": {
     "burstProcFlat": 0,
     "burstProcType": "physical",
-    "_why_turret": "'your next attack against the TURRET deals an additional 100 + 22% Max HP'. This never lands on a champion, so it must not contribute to a duel."
+    "_why_turret": "Turret damage only, which the engine does not simulate; the numbers changed in 7.3 (85 + 28% max Health melee, 50 + 20% ranged) and the effect on a champion fight is still nothing."
   },
   "Font of Life": {
     "healPctMaxHp": 1.3,
@@ -338,5 +343,9 @@
     "adaptiveAd": 14,
     "adaptiveAp": 28
   },
-  "Ixtali Seedjar": {}
+  "Ixtali Seedjar": {},
+  "Legend: Haste": {
+    "hasteFlat": 15,
+    "_why": "1.5 Ability Haste per stack, ten stacks. Replaces Legend: Tenacity."
+  }
 }

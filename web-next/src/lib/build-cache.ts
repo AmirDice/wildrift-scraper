@@ -257,7 +257,14 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Also new: percentage/flat penetration split, a cc_immunity category, and
   // fight-length guidance on the rune page. Every v33 counter build was
   // chosen from a menu that could not express most of this.
-  return `build:v34:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v35: patch 7.3, which is the largest data change this cache has ever seen.
+  // Base critical strike damage went from 175% to 200% and the attack speed
+  // cap from 2.5 to 3; ten items arrived and three left; forty-two items moved;
+  // Legend: Tenacity became Legend: Haste and Ingenious Hunter is gone; every
+  // champion's attack speed was restated and 141 of them have new base stats.
+  // A v34 entry was reasoned from a shop and a stat table that no longer
+  // exist, item for item.
+  return `build:v35:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

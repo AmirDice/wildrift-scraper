@@ -53,6 +53,7 @@ const ROWS = [
   ["magicPen", "Magic Pen", "%"],
   ["omnivamp", "Omnivamp", "%"],
   ["physicalVamp", "Physical Vamp", "%"],
+  ["lifesteal", "Lifesteal", "%"],
   ["tenacity", "Tenacity", "%"],
   ["healShieldPower", "Heal & Shield Power", "%"],
   ["itemCost", "Total Item Cost", "g"],

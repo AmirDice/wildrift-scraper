@@ -2,11 +2,16 @@ import type { Metadata } from "next";
 import { AdSlot } from "@/components/ad-slot";
 import { Container } from "@/components/ui";
 import { ItemsExplorer } from "@/components/items-explorer";
+import { CURRENT_PATCH } from "@/lib/patch";
 
+// The patch is read, not typed: this description said 7.2 for three patches
+// after the shop had moved on, which is the exact failure lib/patch.ts exists
+// to prevent.
 export const metadata: Metadata = {
   title: "Wild Rift Items | Stats, Passives & Costs",
   description:
-    "Every Wild Rift item on patch 7.2: costs, stats and passive effects. Filter by physical, magic, defense, boots, active and support items.",
+    `Every Wild Rift item on patch ${CURRENT_PATCH}: costs, stats and passive effects. `
+    + "Filter by physical, magic, defense, boots, active and support items.",
   alternates: { canonical: "/items" },
 };
 

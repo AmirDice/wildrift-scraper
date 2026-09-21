@@ -1,19 +1,1057 @@
 {
-  "_note": "Attack speed ratio and per-level growth, VERIFIED IN GAME by the owner. Wild Rift keeps League's formula: AS(level) = ratio * (1 + growth * (L-1) * (0.7025 + 0.0175 * (L-1))). The engines applied no level scaling at all before this file existed, simulating every champion at its level-1 attack speed -- roughly 20-25% too slow at level 15.",
-  "_why_not_derived": "Neither class nor attack pattern predicts growth. Every champion below except Gwen is class Mage and they span 0.0% to 2.1%; among 'caster' kits Ahri is 0.0% and Fiddlesticks 2.1%. It is a per-champion Riot stat, so entries are added only when measured, never extrapolated. A champion absent from this file keeps the old behaviour exactly.",
-  "_how_to_add": "In game with no items, read attack speed at level 1 (that is the ratio) and at level 15. growth = (as15/ratio - 1) / 13.265. Check an intermediate level against the formula before trusting it.",
+  "_note": "Attack speed as patch 7.3 defines it, from the appendix of the official notes: total = baseAttackSpeed + attackSpeedRatio x bonus, where bonus is baseBonusAttackSpeed + attackSpeedPerLevel x sum(0.7 + 0.04 x level) over the levels gained, plus items and runes. At level 15 the level term is exactly 14 x attackSpeedPerLevel.",
+  "_why_not_derived": "Riot publishes these per champion and nothing predicts them: among mages alone the per-level figure runs from 0.005 to 0.04. Before 7.3 the file held eight champions the owner measured in game, kept below as measuredBefore7_3 -- they are the only independent check on this table.",
   "champions": {
-    "Lux": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat 0.75 at every level" },
-    "Ahri": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
-    "Annie": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
-    "Aurelion Sol": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
-    "Brand": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.0, "verified": "2026-08-19, flat" },
-    "Akali": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.019, "verified": "2026-08-19, 0.79 at 5, 0.86 at 10, 0.94 at 15" },
-    "Aurora": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.019, "verified": "2026-08-19, same curve as Akali" },
-    "Ekko": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, 0.85 at 5, 0.92 at 10, 1.01 at 15" },
-    "Diana": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, same curve as Ekko" },
-    "Evelynn": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, same curve as Ekko" },
-    "Gwen": { "attackSpeedRatio": 0.80, "attackSpeedGrowth": 0.020, "verified": "2026-08-19, reported as the same curve as Ekko", "_confirm": "our scrape says her level-1 attack speed is 0.82, not 0.80. If the in-game level-1 value is 0.82 then the ratio here is wrong and level 15 should read 1.04 rather than 1.01. Worth one more look." },
-    "Fiddlesticks": { "attackSpeedRatio": 0.75, "attackSpeedGrowth": 0.021, "verified": "2026-08-19, 0.96 at 15" }
+    "Aatrox": {
+      "attackSpeedRatio": 0.651,
+      "baseAttackSpeed": 0.651,
+      "baseBonusAttackSpeed": 0.13,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Ahri": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Akali": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Akshan": {
+      "attackSpeedRatio": 0.4,
+      "baseAttackSpeed": 0.4,
+      "baseBonusAttackSpeed": 0.67,
+      "attackSpeedPerLevel": 0.04,
+      "source": "appendix"
+    },
+    "Alistar": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Ambessa": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Amumu": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Annie": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.006,
+      "source": "appendix"
+    },
+    "Ashe": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.23,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Aurelion Sol": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.004,
+      "source": "appendix"
+    },
+    "Aurora": {
+      "attackSpeedRatio": 0.668,
+      "baseAttackSpeed": 0.668,
+      "baseBonusAttackSpeed": 0.12,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Bard": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.14,
+      "attackSpeedPerLevel": 0.015,
+      "source": "appendix"
+    },
+    "Blitzcrank": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.006,
+      "source": "appendix"
+    },
+    "Brand": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.0185,
+      "source": "appendix"
+    },
+    "Braum": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.16,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Caitlyn": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.04,
+      "source": "champion block"
+    },
+    "Camille": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.24,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Cho'Gath": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.008,
+      "source": "appendix"
+    },
+    "Corki": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.032,
+      "source": "appendix"
+    },
+    "Darius": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.008,
+      "source": "appendix"
+    },
+    "Diana": {
+      "attackSpeedRatio": 0.694,
+      "baseAttackSpeed": 0.694,
+      "baseBonusAttackSpeed": 0.15,
+      "attackSpeedPerLevel": 0.008,
+      "source": "appendix"
+    },
+    "Dr. Mundo": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.028,
+      "source": "appendix"
+    },
+    "Draven": {
+      "attackSpeedRatio": 0.679,
+      "baseAttackSpeed": 0.679,
+      "baseBonusAttackSpeed": 0.11,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Ekko": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.031,
+      "source": "appendix"
+    },
+    "Evelynn": {
+      "attackSpeedRatio": 0.667,
+      "baseAttackSpeed": 0.667,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Ezreal": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.022,
+      "source": "appendix"
+    },
+    "Fiddlesticks": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Fiora": {
+      "attackSpeedRatio": 0.69,
+      "baseAttackSpeed": 0.69,
+      "baseBonusAttackSpeed": 0.16,
+      "attackSpeedPerLevel": 0.026,
+      "source": "appendix"
+    },
+    "Fizz": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.022,
+      "source": "appendix"
+    },
+    "Galio": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.007,
+      "source": "appendix"
+    },
+    "Garen": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Gnar": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.015,
+      "source": "appendix"
+    },
+    "Gragas": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.013,
+      "source": "appendix"
+    },
+    "Graves": {
+      "attackSpeedRatio": 0.7,
+      "baseAttackSpeed": 0.7,
+      "baseBonusAttackSpeed": 0.0,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Gwen": {
+      "attackSpeedRatio": 0.69,
+      "baseAttackSpeed": 0.69,
+      "baseBonusAttackSpeed": 0.16,
+      "attackSpeedPerLevel": 0.026,
+      "source": "appendix"
+    },
+    "Hecarim": {
+      "attackSpeedRatio": 0.67,
+      "baseAttackSpeed": 0.67,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Heimerdinger": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.01,
+      "source": "appendix"
+    },
+    "Irelia": {
+      "attackSpeedRatio": 0.656,
+      "baseAttackSpeed": 0.656,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Janna": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.022,
+      "source": "appendix"
+    },
+    "Jarvan IV": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Jax": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.15,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Jayce": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Jhin": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.06,
+      "attackSpeedPerLevel": 0.032,
+      "source": "appendix"
+    },
+    "Jinx": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.3,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "K'Sante": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Kai'Sa": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.022,
+      "source": "appendix"
+    },
+    "Kalista": {
+      "attackSpeedRatio": 0.694,
+      "baseAttackSpeed": 0.694,
+      "baseBonusAttackSpeed": 0.16,
+      "attackSpeedPerLevel": 0.046,
+      "source": "appendix"
+    },
+    "Karma": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.0135,
+      "source": "appendix"
+    },
+    "Kassadin": {
+      "attackSpeedRatio": 0.64,
+      "baseAttackSpeed": 0.64,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.027,
+      "source": "appendix"
+    },
+    "Katarina": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.018,
+      "source": "appendix"
+    },
+    "Kayle": {
+      "attackSpeedRatio": 0.667,
+      "baseAttackSpeed": 0.667,
+      "baseBonusAttackSpeed": 0.13,
+      "attackSpeedPerLevel": 0.028,
+      "source": "appendix"
+    },
+    "Kayn": {
+      "attackSpeedRatio": 0.67,
+      "baseAttackSpeed": 0.67,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.018,
+      "source": "appendix"
+    },
+    "Kennen": {
+      "attackSpeedRatio": 0.69,
+      "baseAttackSpeed": 0.69,
+      "baseBonusAttackSpeed": 0.09,
+      "attackSpeedPerLevel": 0.028,
+      "source": "appendix"
+    },
+    "Kha'Zix": {
+      "attackSpeedRatio": 0.668,
+      "baseAttackSpeed": 0.668,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.0185,
+      "source": "appendix"
+    },
+    "Kindred": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.032,
+      "source": "appendix"
+    },
+    "Kog'Maw": {
+      "attackSpeedRatio": 0.665,
+      "baseAttackSpeed": 0.665,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.03,
+      "source": "champion block"
+    },
+    "Lee Sin": {
+      "attackSpeedRatio": 0.651,
+      "baseAttackSpeed": 0.651,
+      "baseBonusAttackSpeed": 0.23,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Leona": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Lillia": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Lissandra": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.01,
+      "source": "appendix"
+    },
+    "Lucian": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.028,
+      "source": "appendix"
+    },
+    "Lulu": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.013,
+      "source": "appendix"
+    },
+    "Lux": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Malphite": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.04,
+      "source": "appendix"
+    },
+    "Maokai": {
+      "attackSpeedRatio": 0.695,
+      "baseAttackSpeed": 0.695,
+      "baseBonusAttackSpeed": 0.15,
+      "attackSpeedPerLevel": 0.029,
+      "source": "appendix"
+    },
+    "Master Yi": {
+      "attackSpeedRatio": 0.679,
+      "baseAttackSpeed": 0.679,
+      "baseBonusAttackSpeed": 0.18,
+      "attackSpeedPerLevel": 0.018,
+      "source": "appendix"
+    },
+    "Mel": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Milio": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.022,
+      "source": "appendix"
+    },
+    "Miss Fortune": {
+      "attackSpeedRatio": 0.656,
+      "baseAttackSpeed": 0.656,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.032,
+      "source": "appendix"
+    },
+    "Mordekaiser": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.008,
+      "source": "appendix"
+    },
+    "Morgana": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.005,
+      "source": "appendix"
+    },
+    "Nami": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Nasus": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Nautilus": {
+      "attackSpeedRatio": 0.612,
+      "baseAttackSpeed": 0.612,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.0124,
+      "source": "appendix"
+    },
+    "Nidalee": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.18,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Nilah": {
+      "attackSpeedRatio": 0.67,
+      "baseAttackSpeed": 0.67,
+      "baseBonusAttackSpeed": 0.21,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Nocturne": {
+      "attackSpeedRatio": 0.721,
+      "baseAttackSpeed": 0.721,
+      "baseBonusAttackSpeed": 0.11,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Norra": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Nunu & Willump": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.0122,
+      "source": "appendix"
+    },
+    "Olaf": {
+      "attackSpeedRatio": 0.694,
+      "baseAttackSpeed": 0.694,
+      "baseBonusAttackSpeed": 0.06,
+      "attackSpeedPerLevel": 0.0326,
+      "source": "champion block"
+    },
+    "Orianna": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.14,
+      "attackSpeedPerLevel": 0.032,
+      "source": "appendix"
+    },
+    "Ornn": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Pantheon": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Poppy": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Pyke": {
+      "attackSpeedRatio": 0.667,
+      "baseAttackSpeed": 0.667,
+      "baseBonusAttackSpeed": 0.13,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Rakan": {
+      "attackSpeedRatio": 0.635,
+      "baseAttackSpeed": 0.635,
+      "baseBonusAttackSpeed": 0.18,
+      "attackSpeedPerLevel": 0.022,
+      "source": "appendix"
+    },
+    "Rammus": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.0185,
+      "source": "appendix"
+    },
+    "Rell": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.01,
+      "source": "appendix"
+    },
+    "Renekton": {
+      "attackSpeedRatio": 0.665,
+      "baseAttackSpeed": 0.665,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Rengar": {
+      "attackSpeedRatio": 0.667,
+      "baseAttackSpeed": 0.667,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.023,
+      "source": "appendix"
+    },
+    "Riven": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.022,
+      "source": "appendix"
+    },
+    "Rumble": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.24,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Ryze": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.018,
+      "source": "appendix"
+    },
+    "Samira": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.14,
+      "attackSpeedPerLevel": 0.03,
+      "source": "champion block"
+    },
+    "Senna": {
+      "attackSpeedRatio": 0.4,
+      "baseAttackSpeed": 0.4,
+      "baseBonusAttackSpeed": 0.6,
+      "attackSpeedPerLevel": 0.05,
+      "source": "champion block"
+    },
+    "Seraphine": {
+      "attackSpeedRatio": 0.699,
+      "baseAttackSpeed": 0.669,
+      "baseBonusAttackSpeed": 0.12,
+      "attackSpeedPerLevel": 0.017,
+      "source": "appendix"
+    },
+    "Sett": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.01,
+      "source": "appendix"
+    },
+    "Shen": {
+      "attackSpeedRatio": 0.651,
+      "baseAttackSpeed": 0.651,
+      "baseBonusAttackSpeed": 0.23,
+      "attackSpeedPerLevel": 0.0367,
+      "source": "appendix"
+    },
+    "Shyvana": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Singed": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Sion": {
+      "attackSpeedRatio": 0.679,
+      "baseAttackSpeed": 0.679,
+      "baseBonusAttackSpeed": 0.18,
+      "attackSpeedPerLevel": 0.006,
+      "source": "appendix"
+    },
+    "Sivir": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.3,
+      "attackSpeedPerLevel": 0.01,
+      "source": "champion block"
+    },
+    "Skarner": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.005,
+      "source": "appendix"
+    },
+    "Smolder": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.031,
+      "source": "appendix"
+    },
+    "Sona": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Soraka": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Swain": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Syndra": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.015,
+      "source": "appendix"
+    },
+    "Taliyah": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.01,
+      "source": "appendix"
+    },
+    "Talon": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.025,
+      "source": "appendix"
+    },
+    "Teemo": {
+      "attackSpeedRatio": 0.69,
+      "baseAttackSpeed": 0.69,
+      "baseBonusAttackSpeed": 0.09,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Thresh": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.028,
+      "source": "appendix"
+    },
+    "Tristana": {
+      "attackSpeedRatio": 0.694,
+      "baseAttackSpeed": 0.694,
+      "baseBonusAttackSpeed": 0.17,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Tryndamere": {
+      "attackSpeedRatio": 0.725,
+      "baseAttackSpeed": 0.725,
+      "baseBonusAttackSpeed": 0.1,
+      "attackSpeedPerLevel": 0.025,
+      "source": "appendix"
+    },
+    "Twisted Fate": {
+      "attackSpeedRatio": 0.651,
+      "baseAttackSpeed": 0.651,
+      "baseBonusAttackSpeed": 0.15,
+      "attackSpeedPerLevel": 0.016,
+      "source": "appendix"
+    },
+    "Twitch": {
+      "attackSpeedRatio": 0.679,
+      "baseAttackSpeed": 0.679,
+      "baseBonusAttackSpeed": 0.18,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Urgot": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.031,
+      "source": "appendix"
+    },
+    "Varus": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Vayne": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.23,
+      "attackSpeedPerLevel": 0.03,
+      "source": "appendix"
+    },
+    "Veigar": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.014,
+      "source": "appendix"
+    },
+    "Vel'Koz": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.01,
+      "source": "appendix"
+    },
+    "Vex": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.01,
+      "source": "appendix"
+    },
+    "Vi": {
+      "attackSpeedRatio": 0.644,
+      "baseAttackSpeed": 0.644,
+      "baseBonusAttackSpeed": 0.24,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Viego": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.025,
+      "source": "appendix"
+    },
+    "Viktor": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.14,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    },
+    "Vladimir": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.14,
+      "attackSpeedPerLevel": 0.0165,
+      "source": "appendix"
+    },
+    "Volibear": {
+      "attackSpeedRatio": 0.7,
+      "baseAttackSpeed": 0.7,
+      "baseBonusAttackSpeed": 0.05,
+      "attackSpeedPerLevel": 0.014,
+      "source": "appendix"
+    },
+    "Warwick": {
+      "attackSpeedRatio": 0.638,
+      "baseAttackSpeed": 0.638,
+      "baseBonusAttackSpeed": 0.25,
+      "attackSpeedPerLevel": 0.012,
+      "source": "appendix"
+    },
+    "Wukong": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.028,
+      "source": "appendix"
+    },
+    "Xayah": {
+      "attackSpeedRatio": 0.658,
+      "baseAttackSpeed": 0.658,
+      "baseBonusAttackSpeed": 0.22,
+      "attackSpeedPerLevel": 0.03,
+      "source": "champion block"
+    },
+    "Xin Zhao": {
+      "attackSpeedRatio": 0.645,
+      "baseAttackSpeed": 0.645,
+      "baseBonusAttackSpeed": 0.24,
+      "attackSpeedPerLevel": 0.025,
+      "source": "appendix"
+    },
+    "Yasuo": {
+      "attackSpeedRatio": 0.67,
+      "baseAttackSpeed": 0.67,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.04,
+      "source": "appendix"
+    },
+    "Yone": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.032,
+      "source": "appendix"
+    },
+    "Yunara": {
+      "attackSpeedRatio": 0.65,
+      "baseAttackSpeed": 0.65,
+      "baseBonusAttackSpeed": 0.23,
+      "attackSpeedPerLevel": 0.032,
+      "source": "appendix"
+    },
+    "Yuumi": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.006,
+      "source": "appendix"
+    },
+    "Zed": {
+      "attackSpeedRatio": 0.651,
+      "baseAttackSpeed": 0.651,
+      "baseBonusAttackSpeed": 0.23,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Zeri": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.28,
+      "attackSpeedPerLevel": 0.024,
+      "source": "appendix"
+    },
+    "Ziggs": {
+      "attackSpeedRatio": 0.656,
+      "baseAttackSpeed": 0.656,
+      "baseBonusAttackSpeed": 0.14,
+      "attackSpeedPerLevel": 0.014,
+      "source": "appendix"
+    },
+    "Zilean": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.017,
+      "source": "appendix"
+    },
+    "Zoe": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.021,
+      "source": "appendix"
+    },
+    "Zyra": {
+      "attackSpeedRatio": 0.625,
+      "baseAttackSpeed": 0.625,
+      "baseBonusAttackSpeed": 0.2,
+      "attackSpeedPerLevel": 0.02,
+      "source": "appendix"
+    }
+  },
+  "patch": "7.3",
+  "measuredBefore7_3": {
+    "Lux": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.0,
+      "verified": "2026-08-19, flat 0.75 at every level"
+    },
+    "Ahri": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.0,
+      "verified": "2026-08-19, flat"
+    },
+    "Annie": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.0,
+      "verified": "2026-08-19, flat"
+    },
+    "Aurelion Sol": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.0,
+      "verified": "2026-08-19, flat"
+    },
+    "Brand": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.0,
+      "verified": "2026-08-19, flat"
+    },
+    "Akali": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.019,
+      "verified": "2026-08-19, 0.79 at 5, 0.86 at 10, 0.94 at 15"
+    },
+    "Aurora": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.019,
+      "verified": "2026-08-19, same curve as Akali"
+    },
+    "Ekko": {
+      "attackSpeedRatio": 0.8,
+      "attackSpeedGrowth": 0.02,
+      "verified": "2026-08-19, 0.85 at 5, 0.92 at 10, 1.01 at 15"
+    },
+    "Diana": {
+      "attackSpeedRatio": 0.8,
+      "attackSpeedGrowth": 0.02,
+      "verified": "2026-08-19, same curve as Ekko"
+    },
+    "Evelynn": {
+      "attackSpeedRatio": 0.8,
+      "attackSpeedGrowth": 0.02,
+      "verified": "2026-08-19, same curve as Ekko"
+    },
+    "Gwen": {
+      "attackSpeedRatio": 0.8,
+      "attackSpeedGrowth": 0.02,
+      "verified": "2026-08-19, reported as the same curve as Ekko",
+      "_confirm": "our scrape says her level-1 attack speed is 0.82, not 0.80. If the in-game level-1 value is 0.82 then the ratio here is wrong and level 15 should read 1.04 rather than 1.01. Worth one more look."
+    },
+    "Fiddlesticks": {
+      "attackSpeedRatio": 0.75,
+      "attackSpeedGrowth": 0.021,
+      "verified": "2026-08-19, 0.96 at 15"
+    }
   }
 }

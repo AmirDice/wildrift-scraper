@@ -5,8 +5,9 @@
     "_why": "Focused Will 3% x 4 stacks (spam kits hold max stacks)"
   },
   "infinity-edge": {
-    "critMult": 2.05,
-    "_why": "INFINITY: crits deal 205% instead of 175%"
+    "critMult": 2.3,
+    "_why": "Infinity raises critical strike damage to 230% (base is 200% from 7.3). Limit Break, the excess-crit conversion, is gone.",
+    "critDamagePerExcessCrit": 0
   },
   "steraks-gage": {
     "shieldPctBonusHp": 75,
@@ -20,7 +21,7 @@
   },
   "deaths-dance": {
     "drPct": 12,
-    "_why": "Cauterize defers 27% over 3s + takedown cleanse; modeled as ~12% effective DR"
+    "_why": "Unchanged for ranged (12%); melee storage went 27% -> 30%, and the engine's single figure is the ranged one."
   },
   "dead-mans-plate": {
     "onHitFlatMagic": 0,
@@ -28,24 +29,22 @@
   },
   "wits-end": {
     "omnivampPct": 0,
-    "healOnHitFlat": 15,
-    "_why": "extractor misread 'heals 100% of THIS passive's damage below half HP' as omnivamp; ~15/hit conditional heal instead"
+    "healOnHitFlat": 0,
+    "_why": "On-hit is a flat 40 magic now (was 10-55 by level) and the below-half-health healing is gone. The new 20% Tenacity is a printed stat, and both the stat and this key feed the same multiplicative channel, so carrying it here too would charge the item 36% tenacity.",
+    "onHitFlatMagic": 40,
+    "tenacityPct": 0
   },
   "essence-reaver": {
-    "spellbladeBaseAdPct": 70,
-    "_why": "wr-meta writes 'dealing 70 bonus <ad icon>' with the % dropped, so the extractor reads a flat 70 proc. Patch 7.2a is explicit: 'Spellblade damage: 90% -> 70% base AD'.",
+    "spellbladeBaseAdPct": 135,
+    "_why": "Spellblade is one hit of 135% base AD (was a 70-damage charge system with Move Speed). The 0-80 that scales with Critical Rate is not modelled: the engine has no crit-scaled spellblade key, so this is the floor of the effect.",
     "burstProcFlat": 0,
-    "_why_stale_proc": "The spellbladeBaseAdPct:70 correction above was meant to REPLACE the extractor's flat-70 misread, but the override merge in export_engine_data.py only .update()s keys and never removes them, so burstProcFlat:70 survived into engine.json alongside it and the item was charged twice -- once through the one-shot proc channel and again every spellblade cycle."
+    "_why_stale_proc": "The spellbladeBaseAdPct:70 correction above was meant to REPLACE the extractor's flat-70 misread, but the override merge in export_engine_data.py only .update()s keys and never removes them, so burstProcFlat:70 survived into engine.json alongside it and the item was charged twice -- once through the one-shot proc channel and again every spellblade cycle.",
+    "msFlat": 0
   },
   "sunfire-aegis": {
     "damageAmpPct": 0,
-    "dotDps": {
-      "lvlRange": [
-        21,
-        33
-      ]
-    },
-    "_why": "Extractor read Immolate's '+5% per stack x6' self-ramp as damageAmpPct 30 (+30% ALL damage on a 2900g tank item -- why it was in 25% of builds). The ramp only amplifies the burn: dotDps 16-25 * 1.3 = 21-33, amp zeroed."
+    "dotDps": 20,
+    "_why": "Immolate is a flat 20 per second plus 1.5% bonus Health; the Health half has no key, and Flametouch's stacking amp is gone."
   },
   "divine-sunderer": {
     "spellbladePctMaxHp": 10,
@@ -54,13 +53,23 @@
   },
   "terminus": {
     "rampAttacks": 6,
-    "_why_ramp": "Light/Dark ALTERNATE, so 3 Dark (pen) stacks need 6 attacks; pen/shred were modelled at max from second zero, a big reason Terminus sat in 18 of 48 builds."
+    "_why_ramp": "Light/Dark ALTERNATE, so 3 Dark (pen) stacks need 6 attacks; pen/shred were modelled at max from second zero, a big reason Terminus sat in 18 of 48 builds.",
+    "onHitFlatMagic": 30,
+    "pctPen": 30,
+    "mrShredPct": 30,
+    "_why": "Shadow 35 -> 30 magic on hit. Juxtaposition's dark side is 10% of each penetration per stack, three stacks, and the old 40% cap is gone from the text."
   },
   "guinsoos-rageblade": {
     "rampAttacks": 4,
     "_why_ramp": "Seething Strike stacks per attack, max 4: the 32% AS is not there from second zero.",
-    "disablesCrit": 1,
-    "_why_wrath": "Wrath reads 'Attacks deal 30 magic damage but no longer Critical Strike'. The engine was giving a Guinsoo build full crit rate AND full crit damage while ALSO paying the onHitFlatMagic 105, which already bakes in the converted maximum (30 base + 75 at 50% crit) -- the same value counted twice. Crit is now zeroed when this item is held."
+    "disablesCrit": 0,
+    "_why_wrath": "Wrath reads 'Attacks deal 30 magic damage but no longer Critical Strike'. The engine was giving a Guinsoo build full crit rate AND full crit damage while ALSO paying the onHitFlatMagic 105, which already bakes in the converted maximum (30 base + 75 at 50% crit) -- the same value counted twice. Crit is now zeroed when this item is held.",
+    "adaptiveAdFlat": 0,
+    "adaptiveApFlat": 0,
+    "msPct": 0,
+    "onHitFlatMagic": 30,
+    "asPctPassive": 32,
+    "_why": "Chaos (adaptive 25 AD / 50 AP) became printed stats, Surge's Move Speed is gone, Wrath is a flat 30 magic on hit and no longer blocks crit, and Seething Strike is unchanged at 8% x 4."
   },
   "black-cleaver": {
     "rampAttacks": 5,
@@ -68,11 +77,13 @@
   },
   "nashors-tooth": {
     "onHitFlatPhys": 0,
-    "onHitFlatMagic": 0,
-    "adaptiveOnHitFlat": 15,
-    "adaptiveOnHitBonusAdPct": 20,
-    "adaptiveOnHitApPct": 30,
-    "_why_gnaw": "Gnaw is ONE adaptive on-hit of 15 + 20% bonus AD + 30% AP. Extraction stored the flat 15 as BOTH onHitFlatPhys and onHitFlatMagic (double count) and had no key for the scaling half, which on an AP on-hit champion is most of the item. The engines apply it once, with final stats, typed by the kit's damage."
+    "onHitFlatMagic": 15,
+    "adaptiveOnHitFlat": 0,
+    "adaptiveOnHitBonusAdPct": 0,
+    "adaptiveOnHitApPct": 0,
+    "_why_gnaw": "Gnaw is ONE adaptive on-hit of 15 + 20% bonus AD + 30% AP. Extraction stored the flat 15 as BOTH onHitFlatPhys and onHitFlatMagic (double count) and had no key for the scaling half, which on an AP on-hit champion is most of the item. The engines apply it once, with final stats, typed by the kit's damage.",
+    "onHitApRatio": 20,
+    "_why": "Magic Fang (adaptive) was removed and the item is pure Ability Power again, so Gnaw is a plain magic on-hit of 15 + 20% bonus AP rather than an adaptive one."
   },
   "searing-crown": {
     "dotPctMaxHpPerSec": 1.4,
@@ -80,9 +91,10 @@
     "_why_burn": "Fiery Touch: attacks/abilities refresh a 3s burn of 1.4% target max HP per second (0.8% ranged) -- effectively continuous in a sustained fight. Was entirely unmodelled; the item scored as a bare 300hp/50armor statstick."
   },
   "amaranths-twinguard": {
-    "armorPctPassive": 20.6,
-    "mrPctPassive": 20.6,
-    "_why_endurance": "Endurance: +30% Armor and MR at 5 stacks (1 stack/s in combat). Pre-averaged over the 8s reference fight: stacks ramp linearly for 5s then cap, so the average multiplier is 30% x 0.6875 = 20.6%. The passive was worth zero before this."
+    "armorPctPassive": 30,
+    "mrPctPassive": 30,
+    "_why_endurance": "Endurance: +30% Armor and MR at 5 stacks (1 stack/s in combat). Pre-averaged over the 8s reference fight: stacks ramp linearly for 5s then cap, so the average multiplier is 30% x 0.6875 = 20.6%. The passive was worth zero before this.",
+    "_why": "Endurance now grants 30% BONUS Armor and Magic Resist at max stacks. It was modelled at 20.6% of total resistances; the new text is explicit about both the number and the base."
   },
   "kaenic-rookern": {
     "shieldFlat": {
@@ -118,7 +130,10 @@
   },
   "youmuus-ghostblade": {
     "flatPen": 0,
-    "_why_dedupe": "stat physicalPenFlat 15; fx flatPen 15 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+    "_why_dedupe": "stat physicalPenFlat 15; fx flatPen 15 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "msFlat": 30,
+    "asPctPassive": 0,
+    "_why": "Momentum is a flat out-of-combat 30 Move Speed now, and Spectral Haste (25% Attack Speed) was removed."
   },
   "serpents-fang": {
     "flatPen": 0,
@@ -128,7 +143,9 @@
   },
   "the-collector": {
     "flatPen": 0,
-    "_why_dedupe": "stat physicalPenFlat 10; fx flatPen 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+    "_why_dedupe": "stat physicalPenFlat 10; fx flatPen 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "executePct": 5,
+    "_why": "The execute threshold is a flat 5% now, not 4% + 2% of crit."
   },
   "edge-of-night": {
     "flatPen": 0,
@@ -138,11 +155,18 @@
   },
   "seryldas-grudge": {
     "pctPen": 0,
-    "_why_dedupe": "stat physicalPen 33% (percent:true); fx pctPen 33 was the same Frostbite line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+    "_why_dedupe": "stat physicalPen 33% (percent:true); fx pctPen 33 was the same Frostbite line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "burstProcFlat": 0,
+    "grievousWoundsPct": 0,
+    "_why": "Penetration moved to the stat block (35%); Frostbite, with its bleed and its Grievous Wounds, was removed outright."
   },
   "blade-of-the-ruined-king": {
     "omnivampPct": 0,
-    "_why_dedupe": "stat omnivamp 10%; fx omnivampPct 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+    "_why_dedupe": "stat omnivamp 10%; fx omnivampPct 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "burstProcFlat": 0,
+    "_why": "Omnivamp became Lifesteal 12% on the stat line. Drain no longer deals damage or steals Move Speed; it is a 30% slow, which is utility the engine prices through the slow channel, not damage.",
+    "targetSlowPct": 30,
+    "targetSlowUptime": 0.4
   },
   "goredrinker": {
     "omnivampPct": 0,
@@ -158,17 +182,22 @@
   },
   "mortal-reminder": {
     "pctPen": 0,
-    "pctPenOnCrit": 6,
-    "_why_dedupe": "stat physicalPen 30% (percent:true) is Last Whisper's base. The old fx pctPen 36 folded in the '+6% on Critical Strike' clause at 100% uptime and then got applied ON TOP of the stat in Python. Base now comes from the stat line; the 6% rides pctPenOnCrit and is scaled by the build's actual crit rate."
+    "pctPenOnCrit": 0,
+    "_why_dedupe": "stat physicalPen 30% (percent:true) is Last Whisper's base. The old fx pctPen 36 folded in the '+6% on Critical Strike' clause at 100% uptime and then got applied ON TOP of the stat in Python. Base now comes from the stat line; the 6% rides pctPenOnCrit and is scaled by the build's actual crit rate.",
+    "_why": "Last Whisper is integrated into the stat block as 30% Armor Penetration, so the effect keys would double it."
   },
   "bloodthirster": {
     "physVampPct": 0,
-    "physVampPctOnCrit": 4,
-    "_why_dedupe": "stat physicalVamp 8% is Bloody's base. The old fx physVampPct 12 folded in '+4% Physical Vamp on Critical Strike' at 100% uptime; Python then added both for 20%. Base from the stat line, the 4% scaled by crit rate."
+    "physVampPctOnCrit": 0,
+    "_why_dedupe": "stat physicalVamp 8% is Bloody's base. The old fx physVampPct 12 folded in '+4% Physical Vamp on Critical Strike' at 100% uptime; Python then added both for 20%. Base from the stat line, the 4% scaled by crit rate.",
+    "_why": "Physical Vamp became the new Lifesteal stat (15%), which the engines read off the item's stat line. Ichorshield's overheal shield is not modelled."
   },
   "ludens-echo": {
     "burstProcCdSec": 9,
-    "_why_cd": "Echo: '(9s Cooldown)'"
+    "_why_cd": "Echo: '(9s Cooldown)'",
+    "burstProcFlat": 75,
+    "burstProcApPct": 8,
+    "_why": "Echo is 75 + 8% AP (was 140 + 15%). The single-target top-up for each target it misses is not modelled: the engine prices the primary target only."
   },
   "unending-despair": {
     "procMaxHpCdSec": 4,
@@ -182,7 +211,13 @@
   "imperial-mandate": {
     "burstProcCdSec": 6,
     "_why_cd": "Coordinated Fire: '(6 seconds cooldown per enemy champion)'",
-    "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one."
+    "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one.",
+    "burstProcFlat": 0,
+    "allyProcFlat": 0,
+    "allyMsPct": 0,
+    "msPct": 0,
+    "damageAmpPct": 7,
+    "_why": "Coordinated Fire is gone. Command marks a crowd-controlled enemy so they take 7% more damage; the mark helps the whole team, and the engine can only price your own share of it."
   },
   "stormsurge": {
     "burstProcCdSec": 25,
@@ -194,8 +229,10 @@
     "_why_cd": "Protobelt: '(30s Cooldown)'"
   },
   "zekes-convergence": {
-    "burstProcCdSec": 30,
-    "_why_cd": "Harbinger: '(30s Cooldown)'"
+    "burstProcCdSec": 60,
+    "_why_cd": "Harbinger: '(30s Cooldown)'",
+    "burstProcFlat": 150,
+    "_why": "Frostfire Tempest is 150 magic damage on your ultimate (was a 320-600 blizzard), so it recurs on the ultimate's cooldown."
   },
   "heartsteel": {
     "procMaxHpArmSec": 2.5,
@@ -217,20 +254,21 @@
   "kraken-slayer": {
     "burstProcFlat": 0,
     "everyNthBaseAdPct": 0,
-    "_why_channel": "'Bring it Down: EVERY THIRD ATTACK deals 120-160 bonus physical damage'. The item already carried everyNthAttack:3, but with no everyNth* damage key the nth block contributed exactly zero and the whole 120-160 rode the once-per-fight proc channel instead -- so a core marksman item paid out once in a 20-second fight instead of roughly seven times. Moved to everyNthFlat, which the resolver averages across autos.",
     "everyNthFlat": {
       "lvlRange": [
-        120,
-        160
+        150,
+        210
       ]
     },
     "everyNthRangedFlat": {
       "lvlRange": [
-        110,
-        150
+        120,
+        168
       ]
     },
-    "_why_channel2": "Ranged users get 110-150 by the same sentence."
+    "_why_channel2": "Ranged users get 110-150 by the same sentence.",
+    "msPct": 4,
+    "_why": "Bring It Down's third-attack damage is up, and the missing health scaling is 0.75% per 1% up to 75% (was 1% up to 70%), which the engine averages the same way it did before."
   },
   "liandrys-torment": {
     "procMaxHpPct": 0,
@@ -254,8 +292,9 @@
     "_why_target_side": "Block: 'Basic attacks from champions deal 10% reduced damage to you.' Unmodelled because it needs the TARGET to be the one attacking, which the one-way damage calculator had no way to express. Deliberately NOT drPct, which is all damage -- Block is basic attacks only."
   },
   "frozen-heart": {
-    "targetAsSlowPct": 36,
-    "_why_target_side": "Winter's Caress: 'Each stack of Chill slows enemy attack speed by 9%, up to a maximum of 4 stacks or 36% attack speed reduction.' Charged at max stacks, the same convention Terminus/Black Cleaver use for stacked passives -- see rampAttacks. The item had an empty fx entry."
+    "targetAsSlowPct": 25,
+    "_why_target_side": "Winter's Caress: 'Each stack of Chill slows enemy attack speed by 9%, up to a maximum of 4 stacks or 36% attack speed reduction.' Charged at max stacks, the same convention Terminus/Black Cleaver use for stacked passives -- see rampAttacks. The item had an empty fx entry.",
+    "_why": "Winter's Caress is a flat 25% Attack Speed aura on every nearby enemy, not a four-stack chill."
   },
   "oceanids-trident": {
     "shieldCutPct": 45,
@@ -299,7 +338,10 @@
     "_why_transcend": "Guiding Light: 'Upon casting your ultimate ability, you Transcend, increasing your max Health by 10% for 6s. While Transcended, allied champions within 1,200 units heal for 2.5% of your max Health per second over the duration.' The self half is 10% max health for six seconds, once per fight on a 60s cooldown, which is the same effective-HP shape Guardian Angel's revive already uses shieldPctMaxHp for. The ally half is 2.5% x 6s = 15% of max health. NOT modelled: the 50% reduction for ranged champions, because the item ally path has no ranged branch."
   },
   "ardent-censer": {
-    "_why_ally_as": "allyAsPct is read by NEITHER engine, deliberately. Censer grants an ally '15-34% Attack Speed and their attacks deal 16-22 bonus magic damage'; the damage half IS priced, through allyOnHitFlatMagic. Pricing the attack-speed half needs a conversion from ally attack speed to ally damage, and that needs to know what share of that ally's damage is autos -- a number this model does not carry. A guessed constant here would be worse than a visible mismatch, so the key stays unread and the item is undervalued by a known amount rather than valued by an invented one."
+    "_why_ally_as": "allyAsPct is read by NEITHER engine, deliberately. Censer grants an ally '15-34% Attack Speed and their attacks deal 16-22 bonus magic damage'; the damage half IS priced, through allyOnHitFlatMagic. Pricing the attack-speed half needs a conversion from ally attack speed to ally damage, and that needs to know what share of that ally's damage is autos -- a number this model does not carry. A guessed constant here would be worse than a visible mismatch, so the key stays unread and the item is undervalued by a known amount rather than valued by an invented one.",
+    "allyAsPct": 30,
+    "allyOnHitFlatMagic": 25,
+    "_why": "Censer is a flat 30% Attack Speed and 25 magic on hit for both of you, no longer scaling with the ally's level."
   },
   "shurelyas-battlesong": {
     "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one."
@@ -309,10 +351,122 @@
     "_why_shield": "Stoneplate: 'Gain a base shield that absorbs damage equal to 100 PLUS 90% BONUS HEALTH'. Only the flat 100 was modelled, so on a tank carrying 2,000 bonus health the item was missing 1,800 of shield -- almost all of its value. Charged in full, the same convention steraks-gage uses for its own decaying lifeline shield."
   },
   "force-of-nature": {
-    "drMagicPct": 20,
-    "_why_dr": "Absorb: 'At maximum stacks, gain 10% Movement Speed and REDUCE ALL INCOMING MAGIC DAMAGE BY 20%'. Only the move speed was modelled. It is magic damage ONLY, so it rides a typed channel rather than the all-damage drPct that Death's Dance and the rune path use; charging it against physical damage would roughly double its worth. Taken at max stacks, the convention this file already uses for amaranths-twinguard and terminus."
+    "drMagicPct": 0,
+    "_why_dr": "Absorb: 'At maximum stacks, gain 10% Movement Speed and REDUCE ALL INCOMING MAGIC DAMAGE BY 20%'. Only the move speed was modelled. It is magic damage ONLY, so it rides a typed channel rather than the all-damage drPct that Death's Dance and the rune path use; charging it against physical damage would roughly double its worth. Taken at max stacks, the convention this file already uses for amaranths-twinguard and terminus.",
+    "msPct": 6,
+    "mrFlat": 70,
+    "_why": "The percentage magic damage reduction is gone; at four stacks the item grants 70 Magic Resist and 6% Move Speed instead. Stack uptime is not modelled, so this is the full value."
   },
   "randuins-omen": {
     "_why_not_modelled": "NOT MODELLED, deliberately, and recorded so it is not mistaken for an oversight. 'Resilience: Critically Struck deal 30% less damage to you' is real and large, but its worth depends entirely on how much of the incoming damage is critical strikes, which the generic effective-health formula has no way to know -- it is scored against a 50/50 physical-magic split and no enemy at all. Pricing it would mean inventing a crit share. It belongs in scoreVsComp, where the enemy team is known. Same for Countercurrent's slow resist."
+  },
+  "phantom-dancer": {
+    "asPctPassive": 30,
+    "msPct": 7,
+    "_why": "Spectral Waltz is 6% Attack Speed x 5 stacks (was a flat 25%), and Swift-Footed is 7% Move Speed (was 5%)."
+  },
+  "runaans-hurricane": {
+    "onHitFlatPhys": 0,
+    "_why": "Wind Blade (15 physical on hit) was removed; the bolts remain."
+  },
+  "manamune": {
+    "adFromManaPct": 2,
+    "_why": "AWE converts 2% of max Mana (was 1.5%)."
+  },
+  "trinity-force": {
+    "msPct": 0,
+    "_why": "Fervor's 5% Move Speed was removed."
+  },
+  "abyssal-mask": {
+    "mrShredFlat": 0,
+    "damageAmpPct": 12,
+    "_why": "Unmake no longer shreds Magic Resist; nearby enemies take 12% more magic damage. Charged as the carrier's own amp, which is the half of it the engine can see."
+  },
+  "winters-approach": {
+    "hpFromManaPct": 15,
+    "_why": "AWE converts 15% of max Mana into Health (was 8%)."
+  },
+  "fimbulwinter": {
+    "hpFromManaPct": 15,
+    "shieldFlat": 120,
+    "_why": "AWE is 15% of max Mana; Frozen Colossus shields a flat 120 plus 4.5% max Mana (the Mana half has no key)."
+  },
+  "mantle-of-the-twelfth-hour": {
+    "msFlat": 0,
+    "healFlat": {
+      "lvlRange": [
+        200,
+        400
+      ]
+    },
+    "hpFlatPassive": 0,
+    "_why": "Lifeline is a heal now (200-400 plus resistance scaling that has no key) with 200-300 temporary Health, at 30% rather than 35% Health."
+  },
+  "staff-of-flowing-water": {
+    "allyApFlat": 40,
+    "hasteFlatPassive": 15,
+    "_why": "Rapids grants a flat 40 Ability Power and 15 Ability Haste to both of you (was 30-50 by level)."
+  },
+  "yordle-trap": {
+    "mrShredFlat": 0,
+    "msPct": 0,
+    "allyAsPct": 20,
+    "asPctPassive": 20,
+    "_why": "Catcher no longer shreds resistances or grants gold on a kill it marked; it now hands you and nearby allies Attack Speed (30% melee, 20% ranged) after a slow or immobilise."
+  },
+  "harmonic-echo": {
+    "allyHealFlat": 0,
+    "_why": "The item no longer heals by itself: it forwards 30% of a heal or 35% of a shield you cast to a second ally. That is a share of the caster's own healing, which the engine has no key for."
+  },
+  "hexoptics-c44": {
+    "_why": "Magnification (0-10% by distance) and Arcane Aim (bonus Attack Range on a takedown) are positional; the engine has neither distance nor range, so the item is priced on its stats."
+  },
+  "yun-tal-wildarrows": {
+    "asPctPassive": 25,
+    "_why": "Flurry's 25% Attack Speed, which is up for most of a fight given the cooldown drops by 1s per attack. The stacking Critical Rate is in data/item_stat_rules.json, since it is a stat the shop does not print."
+  },
+  "stormrazor": {
+    "burstProcFlat": 120,
+    "burstProcCdSec": 6,
+    "msPct": 11,
+    "_why": "Bolt is 120 magic on the Energized attack with 45% Move Speed for 1.5s. Energized recharges while moving and attacking, so it is charged every 6 seconds rather than once a fight. msPct is a PERMANENT bonus in the engine, so the burst is discounted to its uptime: 45% for 1.5s of every 6 is about 11%."
+  },
+  "rapid-firecannon": {
+    "burstProcFlat": 80,
+    "burstProcCdSec": 6,
+    "_why": "Sharpshooter is 80 magic on the Energized attack; its 35% bonus Attack Range has no key."
+  },
+  "fiendhunter-bolts": {
+    "_why": "Opening Barrage's three guaranteed crits after an ultimate are a window the engine cannot open: it has no ultimate timeline. Priced on its stats and the 20 ultimate Ability Haste."
+  },
+  "immortal-shieldbow": {
+    "shieldFlat": {
+      "lvlRange": [
+        300,
+        550
+      ]
+    },
+    "_why": "Lifeline's ranged shield, which is who buys it. Melee is 350-650."
+  },
+  "statikk-shiv": {
+    "burstProcFlat": 60,
+    "burstProcCdSec": 6,
+    "_why": "Electrospark's first bounce. The other bounces hit other targets, which the engine reports separately only for Runaan's bolts, so they are left out rather than added to single-target damage."
+  },
+  "whispering-circlet": {
+    "_why": "Harmony is Heal and Shield Power from max Mana, which the stat rules carry; there is no separate combat effect."
+  },
+  "diadem-of-songs": {
+    "allyHealFlat": 10,
+    "_why": "Diadem heals the lowest-Health nearby ally for 0.8% of max Mana each second. At its ~1,200 Mana that is about 10 a second, so it is charged as a flat ally heal."
+  },
+  "echoes-of-helia": {
+    "allyHealFlat": {
+      "lvlRange": [
+        80,
+        250
+      ]
+    },
+    "_why": "Soul Siphon's fragments cap at 80-250 by level and are spent on the next heal or shield, so the cap is the per-use value."
   }
 }

@@ -17,9 +17,19 @@ function ItemCard({ it }: { it: Item }) {
         )}
         <div className="min-w-0 flex-1">
           <p className="font-semibold leading-tight">{it.name}</p>
-          <div className="mt-1 flex items-center gap-2">
+          <div className="mt-1 flex flex-wrap items-center gap-2">
             <span className="text-sm font-semibold text-gold">{it.cost.toLocaleString()}g</span>
             <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[0.6rem] uppercase tracking-wide text-muted">{it.category}</span>
+            {it.addedIn && (
+              <span className="rounded bg-emerald-400/15 px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-emerald-300">
+                New in {it.addedIn}
+              </span>
+            )}
+            {it.removedIn && (
+              <span className="rounded bg-rose-400/15 px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-rose-300">
+                Removed in {it.removedIn}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -63,6 +73,10 @@ export function ItemsExplorer() {
     const query = q.trim().toLowerCase();
     return ITEMS.filter((it) => {
       if (cat !== "All" && it.category !== cat) return false;
+      // An item that is off the Rift is not part of the shop any more, so it
+      // does not sit in the list; it is still here for the player who comes
+      // looking for it after the patch, and says when it left.
+      if (it.removedIn && !query) return false;
       if (!query) return true;
       return (
         it.name.toLowerCase().includes(query) ||

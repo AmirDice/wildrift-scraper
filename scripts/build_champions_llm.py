@@ -755,7 +755,12 @@ def _item_path_signals(core: list[dict], item_by_slug: dict[str, dict]) -> dict[
             signals["magic"] += 1
         if "Defense" in categories:
             signals["defense"] += 1
-        if stats.get("ap"):
+        # An AP ITEM is one built for Ability Power, not one that happens to
+        # carry some. 7.3 put printed Ability Power on hybrids an AD champion
+        # genuinely wants -- Guinsoo's Rageblade is 35 AD and 30 AP, Statikk
+        # Shiv 40 and 40 -- and counting those as AP items would fail the
+        # on-hit builds the items were made for.
+        if stats.get("ap") and stats["ap"].get("value", 0) > (stats.get("ad") or {}).get("value", 0):
             signals["AP"] += 1
         if stats.get("ad") or "Physical" in categories:
             signals["AD"] += 1

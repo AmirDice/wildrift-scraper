@@ -185,7 +185,10 @@ def metadata(slug: str) -> dict:
     )
     if "mana" in stat_keys and "mana-dependent" not in tags:
         tags.append("mana-dependent")
-    restriction = _range_restriction(blob)
+    # The catalogue's own field wins. Prose is the fallback: it is how this was
+    # read before 7.3, and it survived only as long as wr-meta's garbled
+    # sentence did (see _range_restriction).
+    restriction = item.get("restriction") or _range_restriction(blob)
     if restriction:
         tags.append(restriction)
         tags.sort()
@@ -439,6 +442,14 @@ def filter_candidates(
         meta = metadata(slug)
         stats = set(item.get("stats") or {})
         tags = set(meta["passiveTags"])
+
+        # 0. Items that no longer exist. Their records stay in the catalogue so
+        #    ladder builds collected while they were in the shop can still be
+        #    read, but recommending one would be recommending a purchase the
+        #    player cannot make.
+        if item.get("removedIn"):
+            drop(slug, f'removed from the game in patch {item["removedIn"]}')
+            continue
 
         # 1. Mana on a manaless kit. Only when mana is ALL the item does -- an
         #    item with mana plus AD plus a passive still has a case.

@@ -1109,7 +1109,8 @@
         "unmodeled": [
           "Structures only take 75% damage.",
           "Non-champions struck by multiple bullets are knock back slightly.",
-          "Bullets cannot pass through enemy units."
+          "Bullets cannot pass through enemy units.",
+          "7.3: Shotgun Critical Strike Damage rate: 1.3 → 1.5"
         ]
       },
       "1": {
@@ -1961,10 +1962,10 @@
             "name": "Piercing Light",
             "type": "physical",
             "base": [
-              80,
-              125,
-              170,
-              215
+              75.0,
+              125.0,
+              175.0,
+              225.0
             ],
             "ratios": [
               {
@@ -2043,18 +2044,18 @@
             "name": "The Culling",
             "type": "physical",
             "base": [
-              20,
-              35,
-              50
+              20.0,
+              25.0,
+              30.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 25
+                "pct": 25.0
               },
               {
                 "stat": "ap",
-                "pct": 10
+                "pct": 15.0
               }
             ],
             "hits": 22,
@@ -2064,7 +2065,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Bullets per rank: 22/26/30; minions take 200% damage."
+          "Bullets per rank: 22/26/30; minions take 200% damage.",
+          "7.3: Bullet count: 22 / 26 / 30 → 20 + 20 × Critical Rate (gain 2 bullets for every 10% Critical Rate) + (Critical Damage-2) × 20 × Critical Rate"
         ]
       }
     },
@@ -3267,7 +3269,7 @@
             "ratios": [
               {
                 "stat": "targetMaxHp",
-                "pct": 7
+                "pct": 5.0
               }
             ],
             "unmodeled": "Also heals for additional 2% + 4% bonus AD + 2% AP +5% bonus AS of target's max health (total 7% + 2% + scaling) during Possession."
@@ -3313,15 +3315,15 @@
             "name": "Active",
             "type": "physical",
             "base": [
-              20,
-              40,
-              60,
-              80
+              25.0,
+              45.0,
+              65.0,
+              85.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 80
+                "pct": 70.0
               }
             ],
             "hits": 1,
@@ -3356,7 +3358,9 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Cast time reduces with Attack Speed."
+          "Cast time reduces with Attack Speed.",
+          "7.3: Critical Damage ratio on current Health damage: current Critical Damage → current Critical Damage × 80%",
+          "7.3: Critical Damage ratio on second strike: current Critical Damage → current Critical Damage × 80%"
         ]
       },
       "2": {
@@ -3416,10 +3420,10 @@
           {
             "stat": "attackSpeed",
             "pct": [
-              45,
-              50,
-              55,
-              60
+              35.0,
+              40.0,
+              45.0,
+              50.0
             ]
           }
         ],
@@ -3447,7 +3451,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 110
+                "pct": 120.0
               }
             ],
             "hits": 1,
@@ -4271,7 +4275,8 @@
           }
         ],
         "unmodeled": [
-          "Second shot can be cancelled to gain decaying movement speed."
+          "Second shot can be cancelled to gain decaying movement speed.",
+          "7.3: Movement Speed: 40 - 120 (based on level) → 20 - 80 (based on level) × (1 + 100% bonus Attack Speed)"
         ]
       },
       "1": {
@@ -4287,10 +4292,10 @@
             "name": "Avengerang",
             "type": "physical",
             "base": [
-              10,
-              40,
-              70,
-              100
+              60.0,
+              110.0,
+              160.0,
+              210.0
             ],
             "ratios": [
               {
@@ -4374,7 +4379,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 10
+                "pct": 15.0
               }
             ],
             "when": "per cast"
@@ -4988,7 +4993,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Crit chance is converted to increased damage; crit damage stat scales the bonus."
+          "Crit chance is converted to increased damage; crit damage stat scales the bonus.",
+          "7.3: Slow effect: 15 / 17.5 / 20 / 22.5 / 25% (based on level) → 20 / 22.5 / 25 / 27.5 / 30% (based on level)"
         ]
       },
       "1": {
@@ -5069,16 +5075,17 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "Focus stacking mechanic: attacks grant a stack for 4 seconds, at 4 stacks can cast active."
+          "Focus stacking mechanic: attacks grant a stack for 4 seconds, at 4 stacks can cast active.",
+          "7.3: Mana cost: 50 / 50 / 50 / 50 → 30 / 30 / 30 / 30"
         ]
       },
       "2": {
         "name": "Volley",
         "cooldowns": [
-          16.0,
-          14.0,
-          11.0,
-          9.0
+          15.0,
+          12.0,
+          9.0,
+          6.0
         ],
         "damage": [
           {
@@ -5090,7 +5097,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 115
+                "pct": 100.0
               }
             ],
             "hits": 5,
@@ -5105,7 +5112,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 115
+                "pct": 100.0
               }
             ],
             "hits": 7,
@@ -5120,7 +5127,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 115
+                "pct": 100.0
               }
             ],
             "hits": 9,
@@ -5135,7 +5142,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 115
+                "pct": 100.0
               }
             ],
             "hits": 11,
@@ -5145,7 +5152,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Also applies a critical slow from Frost Shot."
+          "Also applies a critical slow from Frost Shot.",
+          "7.3: Mana cost: 50 / 50 / 50 / 50 → 65 / 60 / 55 / 50"
         ]
       },
       "3": {
@@ -6347,7 +6355,8 @@
         "unmodeled": [
           "also scales with 200% of critical strike chance",
           "trapped/netted enemies trigger Headshot with double range",
-          "attacking from brush builds Headshot twice as fast"
+          "attacking from brush builds Headshot twice as fast",
+          "7.3: Headshot bonus damage: (60% - 110%) × Attack Damage + 200 × Critical Rate → (60% - 100%) × Attack Damage + Critical Rate × 100% + (Critical Damage-2) × Critical Rate × 100% × Attack Damage"
         ]
       },
       "1": {
@@ -6363,19 +6372,19 @@
             "name": "Piltover Peacemaker",
             "type": "physical",
             "base": [
-              60,
-              110,
-              160,
-              210
+              50.0,
+              100.0,
+              150.0,
+              200.0
             ],
             "ratios": [
               {
                 "stat": "ad",
                 "pct": [
-                  125,
-                  140,
-                  155,
-                  170
+                  125.0,
+                  145.0,
+                  165.0,
+                  185.0
                 ]
               }
             ],
@@ -6460,7 +6469,7 @@
               },
               {
                 "stat": "targetMissingHp",
-                "pct": 20
+                "pct": 20.0
               }
             ],
             "when": "per cast"
@@ -7713,10 +7722,10 @@
             "name": "Phosphorus Bomb",
             "type": "magic",
             "base": [
-              65,
-              125,
-              185,
-              245
+              60.0,
+              120.0,
+              185.0,
+              240.0
             ],
             "ratios": [
               {
@@ -7725,7 +7734,7 @@
               },
               {
                 "stat": "ap",
-                "pct": 80
+                "pct": 100.0
               }
             ],
             "when": "per cast",
@@ -7828,7 +7837,7 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 70
+                "pct": 65.0
               }
             ],
             "when": "per cast",
@@ -7845,7 +7854,7 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 140
+                "pct": 130.0
               }
             ],
             "when": "per cast",
@@ -7894,29 +7903,29 @@
       "1": {
         "name": "Mystic Shot",
         "cooldowns": [
-          4.0,
-          4.0,
-          3.0,
-          3.0
+          5.5,
+          5.0,
+          4.5,
+          4.0
         ],
         "damage": [
           {
             "name": "Mystic Shot",
             "type": "physical",
             "base": [
-              50,
-              85,
-              120,
-              155
+              25.0,
+              55.0,
+              85.0,
+              115.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 135
+                "pct": 135.0
               },
               {
                 "stat": "ap",
-                "pct": 30
+                "pct": 30.0
               }
             ],
             "hits": 1,
@@ -7926,7 +7935,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Applies on-hit effects. Hitting a target reduces other ability cooldowns by 1.5s."
+          "Applies on-hit effects. Hitting a target reduces other ability cooldowns by 1.5s.",
+          "7.3: Cooldown refund: reduces the cooldown of all other abilities except [Mystic Shot] → reduces the cooldown of all abilities"
         ]
       },
       "2": {
@@ -8013,8 +8023,8 @@
       "4": {
         "name": "Trueshot Barrage",
         "cooldowns": [
+          80.0,
           70.0,
-          65.0,
           60.0
         ],
         "damage": [
@@ -8022,18 +8032,18 @@
             "name": "Trueshot Barrage",
             "type": "magic",
             "base": [
-              350,
-              500,
-              650
+              300.0,
+              500.0,
+              700.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 100
+                "pct": 100.0
               },
               {
                 "stat": "ap",
-                "pct": 90
+                "pct": 100.0
               }
             ],
             "hits": 1,
@@ -8071,7 +8081,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Adoration stacks grant bonus gold on champion kill; half lost on death."
+          "Adoration stacks grant bonus gold on champion kill; half lost on death.",
+          "7.3: Bounty: 80 + (stacks) × 4 → 60 + (stacks) × 3"
         ]
       },
       "1": {
@@ -8087,10 +8098,10 @@
             "name": "Spinning Axe",
             "type": "physical",
             "base": [
-              45,
-              50,
-              55,
-              60
+              45.0,
+              50.0,
+              55.0,
+              60.0
             ],
             "ratios": [
               {
@@ -11021,8 +11032,8 @@
       "4": {
         "name": "Super Mega Death Rocket!",
         "cooldowns": [
+          60.0,
           50.0,
-          45.0,
           40.0
         ],
         "damage": [
@@ -11099,13 +11110,15 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 15,
+            "pct": 14.0,
             "note": "+0.55% per 1% bonus AS"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "Attack Damage scales with Critical Rate and bonus Attack Speed; Attack speed converted to Attack Damage."
+          "Attack Damage scales with Critical Rate and bonus Attack Speed; Attack speed converted to Attack Damage.",
+          "7.3: Fourth-shot bonus damage to turrets: 135% / 162% (with Infinity Edge) → 150% / 172.5% (with Infinity Edge)",
+          "7.3: Attack Damage conversion ratio: bonus Attack Speed × 30% + Critical Rate × 45% + level × 4.5% → bonus Attack Speed × 30% + Critical Rate × 40% + level × 3%"
         ]
       },
       "1": {
@@ -11270,7 +11283,9 @@
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "7.3: Fourth super shot damage ratio: 200% → current Critical Damage"
+        ]
       }
     },
     "combo": [
@@ -15136,7 +15151,7 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 15
+                "pct": 12.0
               }
             ],
             "hits": 1,
@@ -15161,7 +15176,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Living Weapon: abilities evolve based on permanent stats. Detonation also deals 0.025% AP of missing health (max 400 vs monsters). Nearby allies apply 1 stack on immobilize."
+          "Living Weapon: abilities evolve based on permanent stats. Detonation also deals 0.025% AP of missing health (max 400 vs monsters). Nearby allies apply 1 stack on immobilize.",
+          "7.3: Missing Health damage: (15 + 2.5% Ability Power)% → (15 + 5% Ability Power)%"
         ]
       },
       "1": {
@@ -15238,19 +15254,19 @@
             "name": "Void Seeker",
             "type": "magic",
             "base": [
-              30,
-              60,
-              90,
-              120
+              30.0,
+              60.0,
+              90.0,
+              120.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 110
+                "pct": 130.0
               },
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 50.0
               }
             ],
             "hits": 1,
@@ -15260,19 +15276,19 @@
             "name": "Void Seeker (Evolved)",
             "type": "magic",
             "base": [
-              30,
-              60,
-              90,
-              120
+              30.0,
+              60.0,
+              90.0,
+              120.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 110
+                "pct": 130.0
               },
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 50.0
               }
             ],
             "hits": 1,
@@ -15299,10 +15315,10 @@
           {
             "stat": "moveSpeed",
             "flat": [
-              50,
-              55,
-              60,
-              65
+              50.0,
+              55.0,
+              60.0,
+              65.0
             ],
             "from": "attackSpeed",
             "pct": 80,
@@ -15337,14 +15353,14 @@
           {
             "kind": "shield",
             "base": [
-              75,
-              100,
-              125
+              100.0,
+              125.0,
+              150.0
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 75
+                "pct": 100.0
               }
             ],
             "note": "AD ratio per rank: 100%/150%/200% AD"
@@ -16594,7 +16610,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Love Tap: After 3 stacks, increases damage dealt to target by 6%-10.9% (+0.4% per level) and deals 15 (+70% bonus AD) physical damage (50% to minions/monsters)."
+          "Love Tap: After 3 stacks, increases damage dealt to target by 6%-10.9% (+0.4% per level) and deals 15 (+70% bonus AD) physical damage (50% to minions/monsters).",
+          "7.3: Damage: (15 + 40% bonus Attack Damage) × (1 + Critical Rate) → (15 + 40% bonus Attack Damage) × (0.6 + Critical Rate × 0.4)"
         ]
       },
       "1": {
@@ -16610,10 +16627,10 @@
             "name": "Double Up - Primary",
             "type": "physical",
             "base": [
-              60,
-              90,
-              120,
-              150
+              60.0,
+              90.0,
+              120.0,
+              150.0
             ],
             "ratios": [
               {
@@ -16627,7 +16644,7 @@
               },
               {
                 "stat": "ap",
-                "pct": 35
+                "pct": 35.0
               }
             ],
             "hits": 1,
@@ -16638,10 +16655,10 @@
             "name": "Double Up - Ricochet",
             "type": "physical",
             "base": [
-              60,
-              90,
-              120,
-              150
+              60.0,
+              90.0,
+              120.0,
+              150.0
             ],
             "ratios": [
               {
@@ -16655,7 +16672,7 @@
               },
               {
                 "stat": "ap",
-                "pct": 35
+                "pct": 35.0
               }
             ],
             "hits": 1,
@@ -16665,7 +16682,9 @@
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "7.3: Second-hit damage ratio: 120% → 60% × current Critical Damage"
+        ]
       },
       "2": {
         "name": "Strut",
@@ -16680,20 +16699,20 @@
           {
             "stat": "moveSpeed",
             "flat": [
-              30,
-              35,
-              40,
-              45
+              35.0,
+              40.0,
+              45.0,
+              50.0
             ],
             "note": "Passive: after 4 sec of not taking damage"
           },
           {
             "stat": "moveSpeed",
             "flat": [
-              80,
-              90,
-              100,
-              110
+              70.0,
+              80.0,
+              90.0,
+              100.0
             ],
             "note": "Passive: after another 3 sec"
           },
@@ -16744,7 +16763,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Slows enemies by 30%/40%/50%/60% for duration."
+          "Slows enemies by 30%/40%/50%/60% for duration.",
+          "7.3: Slow: 30 / 40 / 50 / 60% → 40% + 0.06% × Ability Power"
         ]
       },
       "4": {
@@ -16762,11 +16782,11 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 85
+                "pct": 60.0
               },
               {
                 "stat": "ap",
-                "pct": 20
+                "pct": 20.0
               }
             ],
             "hits": [
@@ -16781,7 +16801,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Channels for 3 sec, can be recast to cancel."
+          "Channels for 3 sec, can be recast to cancel.",
+          "7.3: Critical ratio: 130% → 130% + (Critical Damage-2) × 0.3"
         ]
       }
     },
@@ -17954,7 +17975,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 120
+                "pct": 105.0
               }
             ],
             "hits": 1,
@@ -18054,17 +18075,17 @@
           {
             "stat": "armor",
             "flat": [
-              25,
-              35,
-              45
+              15.0,
+              25.0,
+              35.0
             ]
           },
           {
             "stat": "mr",
             "flat": [
-              25,
-              35,
-              45
+              15.0,
+              25.0,
+              35.0
             ]
           },
           {
@@ -21295,7 +21316,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Style is built by damaging enemies with unique attacks/abilities, reaching S enables R. Each hit can critically strike for 25% bonus damage."
+          "Style is built by damaging enemies with unique attacks/abilities, reaching S enables R. Each hit can critically strike for 25% bonus damage.",
+          "7.3: Movement Speed bonus per Style grade: 4% → 3% / 3.25% / 3.5% / 3.75% / 4% (based on level)"
         ]
       },
       "1": {
@@ -21311,20 +21333,15 @@
             "name": "Flair (ranged)",
             "type": "physical",
             "base": [
-              15,
-              20,
-              25,
-              30
+              15.0,
+              20.0,
+              25.0,
+              30.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": [
-                  100,
-                  115,
-                  130,
-                  145
-                ]
+                "pct": 110.0
               }
             ],
             "hits": 1,
@@ -21334,20 +21351,15 @@
             "name": "Flair (melee)",
             "type": "physical",
             "base": [
-              15,
-              20,
-              25,
-              30
+              15.0,
+              20.0,
+              25.0,
+              30.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": [
-                  100,
-                  115,
-                  130,
-                  145
-                ]
+                "pct": 110.0
               }
             ],
             "hits": 1,
@@ -21358,7 +21370,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Each hit can critically strike for 25% bonus damage. If cast during Wild Rush, hits all enemies in path."
+          "Each hit can critically strike for 25% bonus damage. If cast during Wild Rush, hits all enemies in path.",
+          "7.3: Critical Damage: current Critical Damage - 50% → 150% - 165% (based on Critical Damage)"
         ]
       },
       "2": {
@@ -21382,7 +21395,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 80
+                "pct": 50.0
               }
             ],
             "hits": 2,
@@ -21427,10 +21440,10 @@
           {
             "stat": "attackSpeed",
             "pct": [
-              35,
-              40,
-              45,
-              50
+              25.0,
+              30.0,
+              35.0,
+              40.0
             ],
             "durationS": 3
           }
@@ -21443,23 +21456,23 @@
       "4": {
         "name": "Inferno Trigger",
         "cooldowns": [
-          8.0,
-          8.0,
-          8.0
+          6.0,
+          6.0,
+          6.0
         ],
         "damage": [
           {
             "name": "Inferno Trigger",
             "type": "physical",
             "base": [
-              5,
-              20,
-              35
+              20.0,
+              40.0,
+              60.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 60
+                "pct": 40.0
               }
             ],
             "hits": 10,
@@ -21469,7 +21482,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Requires S style. Each shot can critically strike (25% bonus?). Self slow 30% while channeling. Deals 25% damage to minions."
+          "Requires S style. Each shot can critically strike (25% bonus?). Self slow 30% while channeling. Deals 25% damage to minions.",
+          "7.3: Mana cost: 60 / 30 / 0 → 0 / 0 / 0"
         ]
       }
     },
@@ -21888,7 +21902,8 @@
         "defensive": [],
         "unmodeled": [
           "Each stack of Mist grants 1.25 Attack Damage; every 20 stacks grant 15 Attack Range and 15% Critical Chance.",
-          "Proc requires two hits on the same enemy champion within 4 seconds; 6 second cooldown per target."
+          "Proc requires two hits on the same enemy champion within 4 seconds; 6 second cooldown per target.",
+          "7.3: Damage based on Current Health: 1.2%~12% (based on level) → 1%~10% (based on level)"
         ]
       },
       "1": {
@@ -21904,10 +21919,10 @@
             "name": "Piercing Darkness",
             "type": "physical",
             "base": [
-              50,
-              90,
-              130,
-              170
+              50.0,
+              80.0,
+              110.0,
+              140.0
             ],
             "ratios": [
               {
@@ -22015,18 +22030,18 @@
             "name": "Dawning Shadow",
             "type": "physical",
             "base": [
-              250,
-              375,
-              500
+              250.0,
+              400.0,
+              550.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 120
+                "pct": 120.0
               },
               {
                 "stat": "ap",
-                "pct": 50
+                "pct": 70.0
               }
             ],
             "hits": 1,
@@ -22038,14 +22053,14 @@
           {
             "kind": "shield",
             "base": [
-              120,
-              160,
-              200
+              120.0,
+              160.0,
+              200.0
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 50
+                "pct": 70.0
               }
             ]
           }
@@ -22587,7 +22602,9 @@
           }
         ],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "7.3: Movement Speed bonus: 31 - 45 (based on level) → 55 - 70 (based on level)"
+        ]
       },
       "1": {
         "name": "Boomerang Blade",
@@ -22619,7 +22636,7 @@
               },
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 60.0
               }
             ],
             "hits": 1,
@@ -22629,7 +22646,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "For every 1% Critical Rate, damage is increased by 0.5%. Deals 80% damage against non-champion enemies. Cast time scales with Attack Speed."
+          "For every 1% Critical Rate, damage is increased by 0.5%. Deals 80% damage against non-champion enemies. Cast time scales with Attack Speed.",
+          "7.3: Non-champion damage ratio: 80% → 75%"
         ]
       },
       "2": {
@@ -22645,10 +22663,10 @@
             "name": "Ricochet Bounce",
             "type": "physical",
             "base": [
-              4,
-              6,
-              8,
-              10
+              37.5,
+              40.0,
+              42.5,
+              45.0
             ],
             "ratios": [
               {
@@ -22730,9 +22748,9 @@
       "4": {
         "name": "On The Hunt",
         "cooldowns": [
-          80.0,
-          70.0,
-          60.0
+          20.0,
+          25.0,
+          30.0
         ],
         "damage": [],
         "steroids": [
@@ -22744,7 +22762,9 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "During On the Hunt, basic ability cooldowns are reduced by 20%/25%/30%. Unyielding Valor: Gain stacks on damage to champions. Max 8 stacks."
+          "During On the Hunt, basic ability cooldowns are reduced by 20%/25%/30%. Unyielding Valor: Gain stacks on damage to champions. Max 8 stacks.",
+          "7.3: Initial Movement Speed bonus: 15% → 15 / 20 / 25%",
+          "7.3: Movement Speed granted on re-trigger: 25% → 15 / 20 / 25%"
         ]
       }
     },
@@ -24945,7 +24965,8 @@
           }
         ],
         "unmodeled": [
-          "Active consumes all fury to heal"
+          "Active consumes all fury to heal",
+          "7.3: Attack Damage: 7 / 12 / 17 / 22 → 0"
         ]
       },
       "2": {
@@ -24960,7 +24981,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Reduces nearby enemy AD by 40% for 3s; if moving away, slows by 25/30/35/40% for 3s"
+          "Reduces nearby enemy AD by 40% for 3s; if moving away, slows by 25/30/35/40% for 3s",
+          "7.3: Attack Damage reduction: 40% → 20 / 40 / 60 / 80%"
         ]
       },
       "3": {
@@ -24976,19 +24998,19 @@
             "name": "Spinning Slash",
             "type": "physical",
             "base": [
-              80,
-              120,
-              160,
-              200
+              80.0,
+              120.0,
+              160.0,
+              200.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 135
+                "pct": 100.0
               },
               {
                 "stat": "ap",
-                "pct": 100
+                "pct": 80.0
               }
             ],
             "hits": 1,
@@ -24998,7 +25020,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Critical strikes vs minions reduce CD by 1s, doubled vs champions; gains 2 fury per enemy hit"
+          "Critical strikes vs minions reduce CD by 1s, doubled vs champions; gains 2 fury per enemy hit",
+          "7.3: Targets that trigger the cooldown reduction on critical strike: Minions → Minions, monsters, champion-summoned units, and other units that can be critically struck"
         ]
       },
       "4": {
@@ -25706,7 +25729,7 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 2.5
+                "pct": 3.0
               }
             ],
             "when": "dot total"
@@ -25782,10 +25805,10 @@
             "name": "Contaminate Base",
             "type": "physical",
             "base": [
-              25,
-              35,
-              45,
-              55
+              30.0,
+              40.0,
+              50.0,
+              60.0
             ],
             "ratios": []
           },
@@ -25793,10 +25816,10 @@
             "name": "Contaminate Per Stack",
             "type": "physical",
             "base": [
-              20,
-              25,
-              30,
-              35
+              20.0,
+              25.0,
+              30.0,
+              35.0
             ],
             "ratios": [
               {
@@ -25830,9 +25853,9 @@
       "4": {
         "name": "Spray and Pray",
         "cooldowns": [
+          75.0,
           70.0,
-          65.0,
-          60.0
+          65.0
         ],
         "damage": [],
         "steroids": [
@@ -26106,19 +26129,19 @@
         "name": "Rocket Jump",
         "cooldowns": [
           22.0,
-          19.0,
-          16.0,
-          13.0
+          20.0,
+          18.0,
+          16.0
         ],
         "damage": [
           {
             "name": "Rocket Jump",
             "type": "magic",
             "base": [
-              85,
-              155,
-              225,
-              295
+              80.0,
+              120.0,
+              160.0,
+              200.0
             ],
             "ratios": [
               {
@@ -26133,16 +26156,17 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Leap, slow for 1.5/2/2.5/3 seconds by 60%, cooldown reset on takedowns or fully stacked Explosive Charge detonations on champions."
+          "Leap, slow for 1.5/2/2.5/3 seconds by 60%, cooldown reset on takedowns or fully stacked Explosive Charge detonations on champions.",
+          "7.3: Slow duration: 1.5 / 2 / 2.5 / 3s → 2s"
         ]
       },
       "3": {
         "name": "Explosive Charge",
         "cooldowns": [
+          16.0,
           15.0,
           14.0,
-          13.0,
-          12.0
+          13.0
         ],
         "damage": [
           {
@@ -26166,7 +26190,7 @@
               },
               {
                 "stat": "ap",
-                "pct": 50
+                "pct": 50.0
               }
             ],
             "hits": 1,
@@ -26191,14 +26215,14 @@
             "name": "Buster Shot",
             "type": "magic",
             "base": [
-              350,
-              450,
-              550
+              300.0,
+              350.0,
+              400.0
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 100
+                "pct": 100.0
               }
             ],
             "hits": 1,
@@ -26532,10 +26556,10 @@
               {
                 "stat": "ad",
                 "pct": [
-                  35,
-                  45,
-                  55,
-                  65
+                  50.0,
+                  60.0,
+                  70.0,
+                  80.0
                 ]
               }
             ],
@@ -26565,10 +26589,10 @@
               {
                 "stat": "targetMaxHp",
                 "pct": [
-                  2,
-                  5,
-                  8,
-                  11
+                  6.0,
+                  7.0,
+                  8.0,
+                  9.0
                 ]
               }
             ],
@@ -26657,9 +26681,9 @@
           {
             "stat": "ad",
             "flat": [
-              15,
-              25,
-              35
+              30.0,
+              40.0,
+              50.0
             ]
           }
         ],
@@ -27370,16 +27394,14 @@
           {
             "name": "The Relentless Storm",
             "type": "magic",
-            "base": {
-              "lvlRange": [
-                11,
-                80
-              ]
-            },
+            "base": [
+              12.0,
+              68.0
+            ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 40
+                "pct": 40.0
               }
             ],
             "hits": 1,
@@ -28450,10 +28472,10 @@
           {
             "stat": "attackSpeed",
             "pct": [
-              45,
-              50,
-              55,
-              60
+              40.0,
+              45.0,
+              50.0,
+              55.0
             ],
             "note": "for 4 seconds"
           },
@@ -28470,7 +28492,8 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "Basic attacks deal 20% more damage while active. If Rakan is nearby, he also gains the effects."
+          "Basic attacks deal 20% more damage while active. If Rakan is nearby, he also gains the effects.",
+          "7.3: Movement Speed: 25 / 30 / 35 / 40% → 30%"
         ]
       },
       "3": {
@@ -28519,9 +28542,9 @@
             "name": "Featherstorm",
             "type": "physical",
             "base": [
-              125,
-              250,
-              375
+              150.0,
+              250.0,
+              350.0
             ],
             "ratios": [
               {
@@ -29099,9 +29122,9 @@
             "name": "Last Breath",
             "type": "physical",
             "base": [
-              250,
-              400,
-              550
+              200.0,
+              350.0,
+              500.0
             ],
             "ratios": [
               {
@@ -29710,11 +29733,11 @@
             "name": "Living Battery",
             "type": "physical",
             "base": [
-              13,
-              15,
-              17,
-              19,
-              21
+              20.0,
+              24.0,
+              28.0,
+              32.0,
+              36.0
             ],
             "ratios": [
               {
@@ -29783,19 +29806,19 @@
             "name": "Ultrashock Laser",
             "type": "physical",
             "base": [
-              30,
-              70,
-              110,
-              150
+              60.0,
+              100.0,
+              140.0,
+              180.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 80
+                "pct": 100.0
               },
               {
                 "stat": "ap",
-                "pct": 40
+                "pct": 50.0
               }
             ],
             "hits": 1,
@@ -29805,7 +29828,8 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "If hits wall, expands into AoE laser that critically strikes champions and monsters; slow 30-45% for 2s"
+          "If hits wall, expands into AoE laser that critically strikes champions and monsters; slow 30-45% for 2s",
+          "7.3: Critical Damage: current Critical Damage rate → (150% + (Critical Damage rate - 2) × 0.5)"
         ]
       },
       "3": {
@@ -29858,9 +29882,9 @@
             "name": "Lightning Crash Nova",
             "type": "magic",
             "base": [
-              150,
-              200,
-              250
+              150.0,
+              225.0,
+              300.0
             ],
             "ratios": [
               {
@@ -29869,7 +29893,7 @@
               },
               {
                 "stat": "ap",
-                "pct": 80
+                "pct": 100.0
               }
             ],
             "hits": 1,
@@ -29896,7 +29920,10 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "Bypasses attack speed cap for 5s; Overcharge stacks grant 0.5 MS each; extending duration on hit; triple shot chains to nearby enemies"
+          "Bypasses attack speed cap for 5s; Overcharge stacks grant 0.5 MS each; extending duration on hit; triple shot chains to nearby enemies",
+          "7.3: Overload extension duration: 1.5s on non-critical strikes, 4.5s on critical strikes → 2.5s on non-critical strikes, 7.5s on critical strikes",
+          "7.3: Overload lightning Attack Damage ratio: 25% → 30%",
+          "7.3: Critical Damage: current Critical Damage → 150% + (Critical Damage - 2) × 0.5"
         ]
       }
     },
@@ -29994,7 +30021,8 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "Unleash stack mechanic; spread critically strikes if attack crits; spread increased to 250% vs minions below 30% HP"
+          "Unleash stack mechanic; spread critically strikes if attack crits; spread increased to 250% vs minions below 30% HP",
+          "7.3: Bonus Attack Speed: 22.5% / 35% / 47.5% / 60% → 25% / 35% / 45% / 55%"
         ]
       },
       "2": {
@@ -30229,10 +30257,10 @@
             "name": "Spirit Cleave",
             "type": "magic",
             "base": [
-              25,
-              35,
-              45,
-              55
+              20.0,
+              35.0,
+              50.0,
+              65.0
             ],
             "ratios": [
               {
@@ -30298,14 +30326,14 @@
             "name": "Fate Sealed",
             "type": "magic",
             "base": [
-              200,
-              350,
-              500
+              200.0,
+              375.0,
+              550.0
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 80
+                "pct": 60.0
               }
             ],
             "hits": 1,

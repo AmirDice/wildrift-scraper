@@ -1,17 +1,9 @@
 {
   "schemaVersion": 1,
-  "targetPatch": "7.2e",
+  "targetPatch": "7.3",
   "updated": "2026-07-21",
   "items": {
     "trinity-force": {
-      "always": [
-        {
-          "stat": "moveSpeed",
-          "value": 5,
-          "percent": true,
-          "label": "Fervor"
-        }
-      ],
       "conditional": [
         {
           "label": "Valor",
@@ -23,14 +15,8 @@
       "always": [
         {
           "stat": "critDamage",
-          "set": 205,
+          "set": 230,
           "label": "Infinity"
-        }
-      ],
-      "conditional": [
-        {
-          "label": "Limit Break",
-          "detail": "Each 1% item Critical Rate above 100% converts to 0.6% Critical Damage."
         }
       ]
     },
@@ -66,7 +52,71 @@
       "conditional": [
         {
           "label": "Drain",
-          "detail": "After 3 attacks or abilities, steal 25% of the target's Move Speed for 2 seconds."
+          "detail": "Three attacks or abilities on the same champion slow them by 30% for 1.5 seconds."
+        }
+      ]
+    },
+    "yun-tal-wildarrows": {
+      "conditional": [
+        {
+          "label": "Practice Makes Perfect",
+          "detail": "Attacks permanently grant Critical Rate, 0.2% per attack for ranged and 0.4% for melee, up to 25%."
+        },
+        {
+          "label": "Flurry",
+          "detail": "Attacking a champion grants 25% Attack Speed for 6 seconds."
+        }
+      ]
+    },
+    "rapid-firecannon": {
+      "conditional": [
+        {
+          "label": "Sharpshooter",
+          "detail": "The Energized attack deals 80 bonus magic damage and grants 35% bonus Attack Range, up to 150."
+        }
+      ]
+    },
+    "hexoptics-c44": {
+      "conditional": [
+        {
+          "label": "Magnification",
+          "detail": "Attacks deal up to 10% bonus damage, reaching the maximum at 550 units away."
+        },
+        {
+          "label": "Arcane Aim",
+          "detail": "A takedown within 3 seconds of your damage grants 100 Attack Range for 8 seconds."
+        }
+      ]
+    },
+    "fiendhunter-bolts": {
+      "conditional": [
+        {
+          "label": "Opening Barrage",
+          "detail": "After your ultimate, your next 3 attacks crit for 80% of normal critical damage, or deal 15% bonus true damage if they would already crit."
+        }
+      ]
+    },
+    "immortal-shieldbow": {
+      "conditional": [
+        {
+          "label": "Lifeline",
+          "detail": "Dropping below 35% Health shields you for 300-550 (350-650 melee) for 3 seconds. (70s cooldown)"
+        }
+      ]
+    },
+    "stormrazor": {
+      "conditional": [
+        {
+          "label": "Bolt",
+          "detail": "The Energized attack deals 120 bonus magic damage and grants 45% Move Speed for 1.5 seconds."
+        }
+      ]
+    },
+    "statikk-shiv": {
+      "conditional": [
+        {
+          "label": "Electrospark",
+          "detail": "The Energized attack chains to 3-6 targets for 60 magic damage each, 90 against minions and monsters, and applies on-hit effects to them."
         }
       ]
     }
