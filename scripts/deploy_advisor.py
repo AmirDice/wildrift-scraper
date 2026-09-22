@@ -209,7 +209,7 @@ def main() -> None:
     if code == 0:
         print(
             "\nDeployed. Two secrets still have to be set BY HAND (they are not\n"
-            "handled by this script). The advisor defaults to gemini-3.6-flash,\n"
+            "handled by this script). The advisor defaults to gemini-3.8-flash,\n"
             "which is what production serves, so the key it needs is Gemini's;\n"
             "set DEEPSEEK_API_KEY instead only if you also set ADVISOR_MODEL to\n"
             "a DeepSeek model:\n"
