@@ -295,5 +295,7 @@ class handler(BaseHTTPRequestHandler):
             "champions": len(advisor.CHAMPS),
             "items": len(advisor.ITEMS),
             "itemCatalogVersion": ITEM_CATALOG_VERSION,
+            "model": advisor.MODEL,
+            "premiumModel": advisor.PREMIUM_MODEL or None,
             "hasApiKey": bool(advisor._api_key(advisor.KEY_NAME)),
         })

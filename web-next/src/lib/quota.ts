@@ -1,10 +1,9 @@
 /**
  * Daily build-generation quota.
  *
- * Everyone gets 5 generations a day. Signing in with Google grants a second
- * allowance of 5 counted against the Google account instead of the IP, so a
- * visitor who burns through the anonymous five can sign in and keep going --
- * 10 in a day, total.
+ * Anonymous visitors get 1 generation a day. Signing in with Google grants a
+ * separate allowance of 3 counted against the Google account instead of the
+ * IP, so a visitor can try one build and then sign in for three more.
  *
  * Counters live in the shared KV store (src/lib/kv.ts) keyed by UTC day, so
  * they survive redeploys and are shared across serverless instances whenever
@@ -112,7 +111,7 @@ export async function consumeQuota(
   unlimited = false,
   // An explicit ceiling for callers who have earned a different one -- today
   // that is an alpha tester, whose device is on the invite register and who
-  // would otherwise share the anonymous five with the public.
+  // would otherwise share the anonymous allowance with the public.
   limitOverride?: number,
 ): Promise<{ ok: boolean; quota: QuotaState }> {
   const key = keyFor(user, ip);

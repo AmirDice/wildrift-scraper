@@ -223,7 +223,7 @@ export async function POST(request: Request) {
   const { ok, quota } = await consumeQuota(user, ip, unlimited);
   if (!ok) {
     return NextResponse.json(
-      { error: `That is your ${quota.limit} free generations for today; a question costs one like a build does.`, quota },
+      { error: `That is your ${quota.limit} free ${quota.limit === 1 ? "generation" : "generations"} for today; a question costs one like a build does.`, quota },
       { status: 429 },
     );
   }

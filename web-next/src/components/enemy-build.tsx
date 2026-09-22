@@ -807,7 +807,7 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
     <div className="rounded-xl border border-gold/25 bg-gold/[0.07] p-4">
       <p className="text-sm font-semibold text-gold">
         {canUpgrade
-          ? `That is your ${quota.limit} free builds for today.`
+          ? `That is your ${quota.limit} free ${quota.limit === 1 ? "build" : "builds"} for today.`
           : "You have used every generation for today."}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-muted">

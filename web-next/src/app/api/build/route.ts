@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { NextResponse, after } from "next/server";
 import { SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
-import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, refundQuota, type QuotaState } from "@/lib/quota";
+import { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, refundQuota, type QuotaState } from "@/lib/quota";
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
 import { checkAbuseGuards } from "@/lib/build-guards";
 import { recordBiasUse, recordGenerationEngagement, trackEvent } from "@/lib/stats";
@@ -117,8 +117,8 @@ const ADVISOR_URL = process.env.ADVISOR_URL
   || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/advisor` : "");
 const ADVISOR_SECRET = process.env.ADVISOR_SECRET || "";
 
-// The daily cap lives in src/lib/quota.ts: 5 generations per IP per day, plus
-// another 5 for anyone signed in with Google. It exists because every
+// The daily cap lives in src/lib/quota.ts: 1 generation per IP per day, plus
+// a separate 3 for anyone signed in with Google. It exists because every
 // generation costs a real model call, so an unattended script could otherwise
 // run up the bill.
 
@@ -189,7 +189,7 @@ function outOfAllowance(quota: QuotaState): NextResponse {
   return NextResponse.json(
     {
       error: quota.canUnlockBySigningIn
-        ? `That is your ${ANON_DAILY_BUILDS} free builds for today. Sign in with Google for ${quota.limit} more, or come back in ~${hours}h.`
+        ? `That is your ${ANON_DAILY_BUILDS} free build for today. Sign in with Google for ${SIGNED_IN_DAILY_BUILDS} more, or come back in ~${hours}h.`
         : `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h.`,
       quota,
     },
