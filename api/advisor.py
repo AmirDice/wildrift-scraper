@@ -25,6 +25,7 @@ root stays here, so both the Next.js app and this function see what they need.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import sys
 import traceback
@@ -35,7 +36,7 @@ from pathlib import Path
 # regardless of where the function is invoked from.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from web.build_advisor import advise_runes, advise_best_of, why_not  # noqa: E402
+from web.build_advisor import ITEMS, advise_runes, advise_best_of, why_not  # noqa: E402
 
 # Shared secret so only our own Next.js route can spend DeepSeek credit. Without
 # it this endpoint is an open, billable API.
@@ -51,6 +52,15 @@ ADVISOR_SECRET = os.environ.get("ADVISOR_SECRET", "")
 REQUIRE_SECRET = bool(os.environ.get("VERCEL"))
 
 MAX_BODY_BYTES = 16_384
+
+
+def _catalog_version() -> str:
+    """Fingerprint the item catalogue baked into this advisor deployment."""
+    slugs = "\n".join(sorted(ITEMS)).encode("utf-8")
+    return hashlib.sha256(slugs).hexdigest()[:16]
+
+
+ITEM_CATALOG_VERSION = _catalog_version()
 
 
 def _clean(value, limit: int = 40) -> str:
@@ -99,6 +109,21 @@ def build_from_request(body: dict) -> tuple[int, dict]:
     champion = _clean(body.get("champion"))
     if not champion:
         return 400, {"error": "champion is required"}
+
+    # The site and advisor are separate Vercel projects, each with a baked-in
+    # items.json. Refuse a mixed release before any model call: otherwise a new
+    # item shown by the site is absent from the model pool and "why not" calls
+    # misleadingly report it as unknown.
+    site_catalog = body.get("itemCatalogVersion")
+    if site_catalog and site_catalog != ITEM_CATALOG_VERSION:
+        return 409, {
+            "error": (
+                "the build advisor item catalog is out of date; redeploy the "
+                "advisor before serving this site release"
+            ),
+            "siteCatalogVersion": str(site_catalog)[:64],
+            "advisorCatalogVersion": ITEM_CATALOG_VERSION,
+        }
 
     # "Why is CANDIDATE not in this build?" -- a different, deliberately small
     # call, handled before anything else. When this branch was missing the
@@ -269,5 +294,6 @@ class handler(BaseHTTPRequestHandler):
             "ok": True,
             "champions": len(advisor.CHAMPS),
             "items": len(advisor.ITEMS),
+            "itemCatalogVersion": ITEM_CATALOG_VERSION,
             "hasApiKey": bool(advisor._api_key(advisor.KEY_NAME)),
         })

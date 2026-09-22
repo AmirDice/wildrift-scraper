@@ -10,6 +10,7 @@ import { ANON_DAILY_BUILDS, clientIp, consumeQuota, peekQuota, quotaIdentity, re
 import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-cache";
 import { checkAbuseGuards } from "@/lib/build-guards";
 import { recordBiasUse, recordGenerationEngagement, trackEvent } from "@/lib/stats";
+import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
 
 /**
  * Live build advisor. POST { champion, role, enemies[], allies[], playstyle, mode }
@@ -248,7 +249,7 @@ async function callAdvisorFunction(b: Body): Promise<AdvisorResult> {
         "Content-Type": "application/json",
         ...(ADVISOR_SECRET ? { "x-advisor-secret": ADVISOR_SECRET } : {}),
       },
-      body: JSON.stringify(b),
+      body: JSON.stringify({ ...b, itemCatalogVersion: ITEM_CATALOG_VERSION }),
       signal: controller.signal,
     });
     const text = await res.text();

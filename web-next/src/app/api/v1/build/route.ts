@@ -6,6 +6,7 @@ import { clientIp, consumeQuota, isOwnerKey, ownerKeyStatus, refundQuota } from 
 import { ALPHA_DAILY_BUILDS, deviceAllowed, isAlphaDevice } from "@/lib/alpha";
 import { kvGet, kvSet, kvDelete } from "@/lib/kv";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
+import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
 
 /**
  * The ported generator: one versioned endpoint for clients that are not this
@@ -254,7 +255,10 @@ export async function POST(request: Request) {
         "content-type": "application/json",
         ...(ADVISOR_SECRET ? { "x-advisor-secret": ADVISOR_SECRET } : {}),
       },
-      body: JSON.stringify(advisorRequest),
+      body: JSON.stringify({
+        ...advisorRequest,
+        itemCatalogVersion: ITEM_CATALOG_VERSION,
+      }),
     });
     const data = (await res.json()) as Advice;
     if (!res.ok || data.error) {

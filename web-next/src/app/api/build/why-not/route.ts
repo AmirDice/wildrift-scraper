@@ -6,6 +6,7 @@ import { SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
 import { clientIp, consumeQuota } from "@/lib/quota";
 import { trackEvent } from "@/lib/stats";
+import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
 
 /**
  * "Why not this item?" -- challenge the generator about one absent item.
@@ -122,7 +123,11 @@ async function remoteWhyNot(champion: string, payload: Record<string, unknown>):
         "Content-Type": "application/json",
         ...(ADVISOR_SECRET ? { "x-advisor-secret": ADVISOR_SECRET } : {}),
       },
-      body: JSON.stringify({ champion, whyNot: payload }),
+      body: JSON.stringify({
+        champion,
+        whyNot: payload,
+        itemCatalogVersion: ITEM_CATALOG_VERSION,
+      }),
       signal: controller.signal,
     });
     const data = (await res.json()) as WhyNotResult;

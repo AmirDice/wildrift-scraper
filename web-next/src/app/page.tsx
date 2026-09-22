@@ -13,6 +13,7 @@ import { MoversHighlight } from "@/components/movers-highlight";
 import { BuildsGeneratedCount, BuildsGeneratedPill } from "@/components/builds-counter";
 import { SeasonCard } from "@/components/season-card";
 import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champion-change-ranking";
+import { ITEM_CATALOG_COUNT } from "@/lib/advisor-catalog";
 
 // The title and description come from the root layout; the home page only has
 // to claim its own canonical so the root never competes with itself over
@@ -239,7 +240,7 @@ export default function HomePage() {
             href="/leaderboard"
             valueClass="text-gold"
           />
-          <StatCard label="Items catalogued" value="117" sub="stats, passives, and costs" href="/items" />
+          <StatCard label="Items catalogued" value={ITEM_CATALOG_COUNT.toLocaleString()} sub="stats, passives, and costs" href="/items" />
         </div>
       </Container>
 

@@ -35,6 +35,33 @@ class TestRequestValidation:
         assert status == 400
         assert "error" in payload
 
+    def test_a_stale_site_catalog_is_rejected_before_any_model_call(self, monkeypatch):
+        called = False
+
+        def should_not_run(**_kwargs):
+            nonlocal called
+            called = True
+            return {}
+
+        monkeypatch.setattr(advisor_api, "advise_best_of", should_not_run)
+        status, payload = advisor_api.build_from_request({
+            "champion": "Hecarim",
+            "itemCatalogVersion": "stale-catalog",
+        })
+        assert status == 409
+        assert "catalog is out of date" in payload["error"]
+        assert not called
+
+    def test_the_current_site_catalog_reaches_generation(self, monkeypatch):
+        monkeypatch.setattr(
+            advisor_api, "advise_best_of", lambda **_kwargs: {"items": ["black-cleaver"]})
+        status, payload = advisor_api.build_from_request({
+            "champion": "Hecarim",
+            "itemCatalogVersion": advisor_api.ITEM_CATALOG_VERSION,
+        })
+        assert status == 200
+        assert payload["items"] == ["black-cleaver"]
+
 
 class TestSanitising:
     def test_shell_and_markup_characters_are_stripped(self):
@@ -159,3 +186,43 @@ class TestDeploymentShape:
     def test_the_body_size_cap_is_small(self):
         """This endpoint spends money, so it should not accept large payloads."""
         assert advisor_api.MAX_BODY_BYTES <= 32_768
+
+    def test_item_catalogs_and_fight_engine_are_release_complete(self):
+        """One release must carry the same items through UI, model and engine."""
+        from scripts.deploy_advisor import validate_catalogs
+
+        manifest = validate_catalogs()
+        assert manifest["itemCount"] >= manifest["activeItemCount"]
+        assert manifest["catalogVersion"] == advisor_api.ITEM_CATALOG_VERSION
+
+
+class TestPatch73ItemsEverywhere:
+    """The ten 7.3 items that exposed the split advisor deployment."""
+
+    def test_new_items_reach_catalog_model_prompt_and_fight_engine(self):
+        import json
+
+        from scripts.apply_patch_7_3_items import NEW_ITEMS
+        from web.advisor import itemmeta, prompt
+        from web.build_advisor import ITEMS
+
+        slugs = {row["slug"] for row in NEW_ITEMS}
+        frontend = {
+            row["slug"]
+            for row in json.loads(
+                (ROOT / "web-next" / "src" / "data" / "items.json")
+                .read_text(encoding="utf-8"))
+        }
+        base = json.loads((ROOT / "data" / "item_engine.json").read_text(encoding="utf-8"))
+        overrides = json.loads(
+            (ROOT / "data" / "item_engine_overrides.json").read_text(encoding="utf-8"))
+
+        assert slugs <= set(ITEMS)
+        assert slugs <= frontend
+        assert slugs <= set(itemmeta.completed_items())
+        assert slugs <= (set(base) | set(overrides))
+
+        block = prompt.item_pool_block(sorted(slugs))
+        for slug in slugs:
+            assert slug in block
+        assert "NEW-THIS-PATCH" in block

@@ -31,6 +31,7 @@ USAGE
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import subprocess
@@ -93,7 +94,57 @@ def _dependencies() -> str:
     return ", ".join(f'"{line}"' for line in lines)
 
 
+def _records(path: Path) -> dict[str, dict]:
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(rows, list):
+        raise ValueError(f"{path.relative_to(ROOT)} must contain a JSON list")
+    return {row["slug"]: row for row in rows}
+
+
+def validate_catalogs() -> dict:
+    """Fail before staging when any item consumer is behind the source catalog."""
+    source = _records(ROOT / "data" / "items.json")
+    frontend = _records(ROOT / "web-next" / "src" / "data" / "items.json")
+    missing = sorted(set(source) - set(frontend))
+    extra = sorted(set(frontend) - set(source))
+    # The frontend export deliberately enriches records with statRules and
+    # strips prompt-only [stat] markers from passive prose. Compare the fields
+    # that must remain identical instead of treating those transformations as
+    # drift.
+    shared_fields = ("name", "cost", "icon", "category", "categories", "tags",
+                     "stats", "addedIn", "removedIn")
+    changed = sorted(
+        slug for slug in set(source) & set(frontend)
+        if any(source[slug].get(field) != frontend[slug].get(field)
+               for field in shared_fields)
+    )
+    if missing or extra or changed:
+        raise RuntimeError(
+            "item catalog drift between data/items.json and the site copy: "
+            f"missing={missing}, extra={extra}, changed={changed}"
+        )
+
+    base = json.loads((ROOT / "data" / "item_engine.json").read_text(encoding="utf-8"))
+    overrides = json.loads(
+        (ROOT / "data" / "item_engine_overrides.json").read_text(encoding="utf-8"))
+    modelled = set(base) | set(overrides)
+    active = {slug for slug, item in source.items() if not item.get("removedIn")}
+    missing_engine = sorted(active - modelled)
+    if missing_engine:
+        raise RuntimeError(
+            "active items missing from the fight engine: " + ", ".join(missing_engine)
+        )
+
+    joined = "\n".join(sorted(source)).encode("utf-8")
+    return {
+        "catalogVersion": hashlib.sha256(joined).hexdigest()[:16],
+        "itemCount": len(source),
+        "activeItemCount": len(active),
+    }
+
+
 def build() -> Path:
+    manifest = validate_catalogs()
     if STAGE.exists():
         shutil.rmtree(STAGE)
     STAGE.mkdir()
@@ -120,9 +171,12 @@ def build() -> Path:
         json.dumps(VERCEL_CONFIG, indent=2) + "\n", encoding="utf-8")
     (STAGE / "pyproject.toml").write_text(
         PYPROJECT.format(dependencies=_dependencies()), encoding="utf-8")
+    (STAGE / "catalog-manifest.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
     size = sum(p.stat().st_size for p in STAGE.rglob("*") if p.is_file())
-    print(f"staged {STAGE.relative_to(ROOT)}: {size / 1024 / 1024:.1f} MB")
+    print(f"staged {STAGE.relative_to(ROOT)}: {size / 1024 / 1024:.1f} MB; "
+          f"items={manifest['itemCount']} catalog={manifest['catalogVersion']}")
     return STAGE
 
 
