@@ -1459,7 +1459,7 @@
     "3",
     "auto"
    ],
-   "why": "Starting with a basic attack triggers Battle Fury's bonus attack speed before animation-canceling into Spinning Slash for maximum initial burst damage. Activating Undying Rage instantly maximizes Fury for critical strike chance and attack speed while allowing low-HP passive Attack Damage scaling fro",
+   "why": "Open with a basic attack before animation-canceling into Spinning Slash for immediate damage. Use Undying Rage at lethal health to avoid death and maximize Fury for critical-strike chance, then keep attacking and reuse Spinning Slash.",
    "confidence": "high"
   },
   "Twisted Fate": {

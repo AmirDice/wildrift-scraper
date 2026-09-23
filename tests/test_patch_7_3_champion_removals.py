@@ -117,3 +117,15 @@ def test_frontend_ability_cards_match_the_canonical_tooltips():
         expected = {a["slot"]: a.get("text", "") for a in champion.get("abilities", [])}
         actual = {a["slot"]: a.get("text", "") for a in frontend[slug].get("abilities", [])}
         assert actual == expected, f"{slug} frontend ability cards are stale"
+
+
+def test_tryndamere_combo_does_not_reference_removed_attack_speed():
+    paths = (
+        DATA / "champion_combos.json",
+        ROOT / "web-next" / "src" / "data" / "champion_combos.json",
+    )
+    for path in paths:
+        combos = json.loads(path.read_text(encoding="utf-8"))
+        text = combos["champions"]["Tryndamere"]["why"].lower()
+        assert "bonus attack speed" not in text
+        assert "critical strike chance and attack speed" not in text
