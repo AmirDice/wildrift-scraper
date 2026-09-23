@@ -269,7 +269,10 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // A v35 hit would bypass both changes and could keep returning an older
   // model's build -- including builds that never considered the new items --
   // for the remainder of the 45-day TTL.
-  return `build:v36:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v37: reconcile patch 7.3 champion tooltips and combat formulas with the
+  // final Riot notes, including removed mechanics that previously survived
+  // in generated data. Cached builds must be reasoned from the corrected kit.
+  return `build:v37:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

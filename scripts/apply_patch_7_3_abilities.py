@@ -134,12 +134,34 @@ TEXT_EDITS = [
      "Attacking a champion grants 30% Attack Speed for 5 seconds. (6 second cooldown) ", ""),
     ("Tryndamere", "Battle Fury",
      "Battle Fury's Attack Speed bonus increases with Undying Rage's ability rank. ", ""),
+    ("Tryndamere", "Undying Rage",
+     "Passive : Increases Battle Fury's bonus Attack Speed to 45% / 60% / 75% . ", ""),
 
     # The jungle rework took the monster damage modifiers off these three.
     ("Zed", "Razor Shuriken", " Deals 80% damage to monsters.", ""),
     ("Zed", "Shadow Slash", " Deals 60% damage to monsters.", ""),
     ("Nunu & Willump", "Snowball Barrage", " Deals 150% damage to monsters.", ""),
 ]
+
+
+# Removed mechanics need a postcondition as well as an exact rewrite. An empty
+# replacement cannot prove idempotence: the old scrape may use different prose
+# (the Tryndamere bug this guard was added for), and treating every missing
+# exact phrase as success lets that stale variant ship indefinitely.
+REMOVED_TEXT_FORBIDDEN = {
+    "Twitch": (
+        "full stacks of Deadly Venom, Twitch gains",
+        "attacks apply an additional stack of Deadly Venom",
+    ),
+    "Tryndamere": (
+        "Attacking a champion grants 30% Attack Speed",
+        "Landing a basic attack on an enemy champion grants 30% Attack Speed",
+        "Increases Battle Fury's bonus Attack Speed",
+        "Battle Fury's Attack Speed bonus increases",
+    ),
+    "Nunu & Willump": ("Deals 150% damage to monsters",),
+    "Zed": ("Deals 80% damage to monsters", "Deals 60% damage to monsters"),
+}
 
 
 def key_of(text: str) -> str:
@@ -187,6 +209,98 @@ def text_variants(nums: list[float]) -> list[str]:
         out += [f"{body[0]}-{body[1]}", f"{body[0]} - {body[1]}",
                 f"{pct[0]}-{pct[1]}", f"{pct[0]} - {pct[1]}"]
     return out
+
+
+def apply_removed_mechanics(formulas: dict) -> int:
+    """Remove 7.3 mechanics whose notes have no ``old → new`` numeric shape.
+
+    The generic matcher can rewrite numbers, but a deletion must also remove
+    the structured steroid/note or the fight engine continues simulating it
+    after the champion page looks correct. Keep this idempotent so a later
+    scrape can safely be reconciled again.
+    """
+    changed = 0
+
+    tryn = formulas["Tryndamere"]["abilities"]
+    for slot in ("P", "1", "4"):
+        if tryn[slot].get("steroids"):
+            tryn[slot]["steroids"] = []
+            changed += 1
+    tryn["1"]["unmodeled"] = [
+        "Active consumes all fury to heal",
+        "Passive grants 0.3/0.5/0.7/0.9 Attack Damage per 1% missing Health; "
+        "its non-linear runtime value is not modeled.",
+    ]
+    tryn["2"]["unmodeled"] = [
+        "Reduces nearby enemy AD by 20/40/60/80% for 3s; if moving away, "
+        "slows by 25/30/35/40% for 3s",
+    ]
+
+    twitch = formulas["Twitch"]["abilities"]
+    if twitch["P"].get("steroids"):
+        twitch["P"]["steroids"] = []
+        changed += 1
+    wanted_as = {
+        "stat": "attackSpeed", "pct": [35, 40, 45, 50],
+        "durationS": 6, "note": "after leaving camouflage",
+    }
+    ambush_steroids = [s for s in twitch["1"].get("steroids") or []
+                       if s.get("stat") != "attackSpeed"]
+    ambush_steroids.append(wanted_as)
+    if twitch["1"].get("steroids") != ambush_steroids:
+        twitch["1"]["steroids"] = ambush_steroids
+        changed += 1
+    twitch["1"]["unmodeled"] = [
+        note for note in twitch["1"].get("unmodeled") or []
+        if "additional stack of Deadly Venom" not in note
+    ]
+    for note in twitch["2"].get("unmodeled") or []:
+        if "+6% bonus AD" in note:
+            twitch["2"]["unmodeled"] = [
+                n.replace("+6% bonus AD", "+0.06% AP")
+                for n in twitch["2"]["unmodeled"]
+            ]
+            changed += 1
+            break
+    damage = twitch["3"].get("damage") or []
+    per_stack = next((d for d in damage if d.get("name") == "Contaminate Per Stack"), None)
+    if per_stack:
+        per_stack["ratios"] = [{"stat": "bonusAd", "pct": 35}]
+    magic = {
+        "name": "Contaminate Magic Per Stack", "type": "magic", "base": 0,
+        "ratios": [{"stat": "ap", "pct": 35}], "hits": 5,
+    }
+    existing_magic = next((d for d in damage if d.get("name") == magic["name"]), None)
+    if existing_magic:
+        existing_magic.update(magic)
+    else:
+        insert_at = damage.index(per_stack) + 1 if per_stack in damage else len(damage)
+        damage.insert(insert_at, magic)
+        changed += 1
+
+    stale_notes = {
+        "Nunu & Willump": {"3": ("Deals 150% damage to monsters",)},
+        "Zed": {
+            "1": ("Deals 80% damage to monsters",),
+            "3": ("Deals 60% damage to monsters",),
+        },
+    }
+    for champion, slots in stale_notes.items():
+        for slot, phrases in slots.items():
+            ability = formulas[champion]["abilities"][slot]
+            before = ability.get("unmodeled") or []
+            after = []
+            for note in before:
+                cleaned = note
+                for phrase in phrases:
+                    cleaned = cleaned.replace(f" {phrase}.", "").replace(phrase + ".", "")
+                    cleaned = cleaned.replace(phrase, "")
+                if cleaned.strip():
+                    after.append(cleaned.strip())
+            if before != after:
+                ability["unmodeled"] = after
+                changed += 1
+    return changed
 
 
 class Apply:
@@ -423,7 +537,7 @@ class Apply:
             # (Senna's attack speed sits under Absolution) belong to
             # apply_patch_7_3_champion_stats and are not ability notes.
             if not re.match(r"^(attack speed|base attack speed|base bonus attack speed"
-                            r"|attack speed ratio|attack speed per level|mana cost)",
+                            r"|attack speed ratio|attack speed per level|mana cost)\b",
                             label.strip().lower()):
                 self.note_unmodeled(title, raw)
         (self.done if moved else self.todo).append(f"{title}: {raw}")
@@ -491,12 +605,25 @@ def main() -> int:
         if before_text not in text:
             if after_text and after_text in text:
                 continue                       # already applied
+            if not after_text:
+                continue                       # verified by the postcondition below
             print(f"TEXT EDIT: {champ_name} {ability_name} does not contain {before_text[:60]!r}")
             return 1
         ability["text"] = re.sub(r"\s{2,}", " ", text.replace(before_text, after_text, 1)).strip()
         rewritten += 1
 
+    for champ_name, phrases in REMOVED_TEXT_FORBIDDEN.items():
+        champ = by_key[key_of(champ_name)]
+        text = " ".join(a.get("text") or "" for a in champ.get("abilities") or [])
+        stale = [phrase for phrase in phrases if phrase in text]
+        if stale:
+            print(f"REMOVED TEXT STILL PRESENT: {champ_name}: {stale}")
+            return 1
+
+    removed_formula_edits = apply_removed_mechanics(formulas)
+
     print(f"\n{done} lines applied, {rewritten} tooltips rewritten by hand, "
+          f"{removed_formula_edits} removed-mechanic formula edits, "
           f"{todo} recorded as notes")
     if args.write:
         CHAMPIONS.write_text(json.dumps(champions, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

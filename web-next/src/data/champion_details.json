@@ -429,7 +429,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Dirty Fighting",
-        "text": "Every three hits from attacks and abilities deal bonus 25 magic damage . Against champions, also gain a shield that absorbs 40 ( +40% AD ) damage for a few seconds. After launching an attack, Akshan will fire a second shot that deals 26 ( 50% AD ) physical damage . The shot can be cancelled to gain bonus decaying movement speed.",
+        "text": "Every three hits from attacks and abilities deal bonus 25 magic damage . Against champions, also gain a shield that absorbs 40 ( +40% AD ) damage for a few seconds. After launching an attack, Akshan will fire a second shot that deals 26 ( 50% AD ) physical damage . The shot can be cancelled to gain 20 - 80 (based on level) Movement Speed multiplied by (1 + 100% bonus Attack Speed), decaying over time.",
         "cooldowns": [],
         "damageTypes": [
           "physical",
@@ -441,7 +441,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Avengerang",
-        "text": "Akshan hurls a boomerang in the target direction, dealing 60 / 110 / 160 / 210 ( +85% AD ) physical damage to enemies it passes through and revealing them, granting sight of the area along its path, as well as extending its range every time it hits an enemy. If the boomerang hits an enemy champion, Akshan gains bonus movement speed decaying over time. Upon reaching maximum range, the boomerang returns to Akshan, applying the same effects to enemies hit along the way. Avengerang deals 50% / 60% / 70% / 80% damage to minions.",
+        "text": "Akshan hurls a boomerang in the target direction, dealing 60 / 110 / 160 / 210 ( +70% bonus AD ) physical damage to enemies it passes through and revealing them, granting sight of the area along its path, as well as extending its range every time it hits an enemy. If the boomerang hits an enemy champion, Akshan gains bonus movement speed decaying over time. Upon reaching maximum range, the boomerang returns to Akshan, applying the same effects to enemies hit along the way. Avengerang deals 50% / 60% / 70% / 80% damage to minions.",
         "cooldowns": [
           "8",
           "7",
@@ -471,7 +471,7 @@
         "slot": "3",
         "key": "E",
         "name": "Heroic Swing",
-        "text": "Fires a hook to attach and swing around terrain, attacking the nearest enemy dealing 30 / 70 / 110 / 150 ( +15% AD ) physical damage . If Akshan collides with an enemy champion or terrain, he will jump off the rope. Re-cast: Jumps off the rope. Champion takedowns refresh this ability's cooldown. Prioritizing champions recently damaged by Akshan. On-hit effects deal 25% damage. Each shot can Critically Strike for 0.7% damage.",
+        "text": "Fires a hook to attach and swing around terrain, attacking the nearest enemy dealing 30 / 70 / 110 / 150 ( +15% AD ) physical damage . If Akshan collides with an enemy champion or terrain, he will jump off the rope. Re-cast: Jumps off the rope. Champion takedowns refresh this ability's cooldown. Prioritizing champions recently damaged by Akshan. On-hit effects deal 25% damage. Each shot can Critically Strike for 70% of current Critical Damage.",
         "cooldowns": [
           "18",
           "16",
@@ -487,7 +487,7 @@
         "slot": "4",
         "key": "R",
         "name": "Comeuppance",
-        "text": "Locks onto an enemy champion, charging multiple shots over a few seconds. Re-cast: Fires the shots, dealing 20 / 30 / 40 ( +15% AD ) physical damage to the first enemy or structure hit, increased up to 80 / 120 / 160 ( +45% AD ) physical damage based on target's missing Health. Each shot's damage is further increased by a percentage equal to 30% of Critical Rate . Shots also execute minions.",
+        "text": "Locks onto an enemy champion, charging multiple shots over a few seconds. Re-cast: Fires the shots, dealing 25 / 35 / 45 ( +15% AD ) physical damage to the first enemy or structure hit, increased up to 75 / 105 / 135 ( +45% AD ) physical damage based on target's missing Health. Each shot's damage is further increased by a percentage equal to 30% of Critical Rate plus 30% of Critical Damage above 200%, scaled by Critical Rate . Shots also execute minions.",
         "cooldowns": [
           "65",
           "60",
@@ -1078,7 +1078,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Frost Shot",
-        "text": "Attacks and damaging abilities slow targets hit by 15% for 2 seconds. Attacks deal 1100% bonus damage , scaling with her Critical Damage. Critical Strikes deal no bonus damage but slow targets by 40%, decaying over time.",
+        "text": "Attacks and damaging abilities slow targets hit by 20% - 30% (based on level) for 2 seconds. Attacks gain bonus damage from Critical Rate and from Critical Damage above 200%. Critical Strikes deal no bonus damage but slow targets by 40%, decaying over time.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/ashe-frost-shot.png"
@@ -2029,7 +2029,7 @@
         "slot": "4",
         "key": "R",
         "name": "Ace in the Hole",
-        "text": "Lines up the perfect shot, Revealing an enemy champion for 1.5 seconds before dealing 200 / 375 / 550 ( +100% bonus AD ) physical damage plus 20% of their missing Health. Enemy champions can intercept the bullet before it hits their ally.",
+        "text": "Lines up the perfect shot, Revealing an enemy champion for 1.5 seconds before dealing 250 / 450 / 650 ( +100% bonus AD ) physical damage plus 20% of their missing Health. Enemy champions can intercept the bullet before it hits their ally.",
         "cooldowns": [
           "65",
           "55",
@@ -2864,7 +2864,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "League of Draven",
-        "text": "Killing a unit or catching a Spinning Axe grants a stack of Adoration . Killing champions consume all Adoration stacks and grant 80 bonus gold + 4 per stack of Adoration . When Draven dies, half of Adoration stacks are lost.",
+        "text": "Killing a unit or catching a Spinning Axe grants a stack of Adoration . Killing champions consume all Adoration stacks and grant 60 bonus gold + 3 per stack of Adoration . When Draven dies, half of Adoration stacks are lost.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/draven-league-of-draven.png"
@@ -2873,7 +2873,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Spinning Axe",
-        "text": "Gains a Spinning Axe , causing his next attack within 6 seconds to deal an additional 45 / 50 / 55 / 60 ( +100% / 110% / 120% / 130% bonus AD ) physical damage . The Spinning Axe bounces off the target, allowing Draven to catch and regain it. Draven can hold two Spinning Axes at once.",
+        "text": "Gains a Spinning Axe , causing his next attack within 6 seconds to deal an additional 45 / 50 / 55 / 60 ( +80% / 90% / 100% / 110% bonus AD ) physical damage . The Spinning Axe bounces off the target, allowing Draven to catch and regain it. Draven can hold two Spinning Axes at once.",
         "cooldowns": [
           "10",
           "9",
@@ -2919,7 +2919,7 @@
         "slot": "4",
         "key": "R",
         "name": "Whirling Death",
-        "text": "Hurls two massive axes, dealing 200 / 300 / 400 ( +130% AD ) physical damage . The axe return to Draven when they reach the edge of the map, hit a champion or upon reactivation. Deals 5% less damage as it damages targets, minimum 60% . Upon reversal, the reduction is reset do deal full damage.",
+        "text": "Hurls two massive axes, dealing 200 / 300 / 400 ( +130% AD ) physical damage . The axe return to Draven when they reach the edge of the map, hit a champion or upon reactivation. Deals 5% less damage per target hit, minimum 50% . Upon reversal, the reduction is reset to deal full damage. Enemy champions with less current Health than Draven's Adoration stacks are executed.",
         "cooldowns": [
           "70",
           "65",
@@ -3258,7 +3258,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Mystic Shot",
-        "text": "Fires a bolt, dealing 25 / 55 / 85 / 115 ( +135% AD +30% AP ) physical damage . Hitting a target reduces Ezreal's other ability cooldowns by 1.5 seconds. Applies on-hit effects .",
+        "text": "Fires a bolt, dealing 25 / 55 / 85 / 115 ( +135% AD +30% AP ) physical damage . Hitting a target reduces all of Ezreal's ability cooldowns by 1.5 seconds. Applies on-hit effects .",
         "cooldowns": [
           "5.5",
           "5",
@@ -5518,7 +5518,7 @@
         "slot": "4",
         "key": "R",
         "name": "Curtain Call",
-        "text": "Channels to fire 4 super shots at extreme range in a cone. The shots stop on the first champion hit, slowing it by 80% for 0.75 seconds and dealing 75 / 150 / 225 ( +25% AD ) physical damage , increased by 3% for each 1% health the target is missing. The 4th shot crits for 200% damage. Tap the cancel button to cancel the channel.",
+        "text": "Channels to fire 4 super shots at extreme range in a cone. The shots stop on the first champion hit, slowing it by 80% for 0.75 seconds and dealing 75 / 150 / 225 ( +25% AD ) physical damage , increased by 3% for each 1% health the target is missing. The 4th shot crits for current Critical Damage. Tap the cancel button to cancel the channel.",
         "cooldowns": [
           "80",
           "70",
@@ -5717,7 +5717,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Second Skin",
-        "text": "Living Weapon : Kai'sa's abilities evolve based upon the permanent stats she gains from advanced equipment. Caustic Wounds : Kai'sa's attacks stack Plasma for 4 seconds and deal 5 ( +15% AP ) bonus magic damage . Plasma detonates at 5 stacks, dealing 15% ( +0.025% AP ) bonus magic damage of their missing Health. Nearby allies apply 1 stack to champions they Immobilize. Plasma detonations deal a max of 400 damage to monsters.",
+        "text": "Living Weapon : Kai'sa's abilities evolve based upon the permanent stats she gains from advanced equipment. Caustic Wounds : Kai'sa's attacks stack Plasma for 4 seconds and deal 4 - 18 (based on level) ( +12% AP plus current Plasma stacks scaling ) bonus magic damage . Plasma detonates at 5 stacks, dealing 15% ( +5% AP ) bonus magic damage of their missing Health. Nearby allies apply 1 stack to champions they Immobilize. Plasma detonations deal a max of 400 damage to monsters.",
         "cooldowns": [],
         "damageTypes": [
           "magic"
@@ -5760,7 +5760,7 @@
         "slot": "3",
         "key": "E",
         "name": "Supercharge",
-        "text": "Charges up for 1 second, gaining 50% / 60% / 60% / 65% ( +50% Attack Speed ) Movement Speed . For 4 seconds after charging, gain 40% / 50% / 60% / 70% Attack Speed . Living Weapon : 65% Attack Speed - Grants invisibility during the charge up. Attacks reduce Supercharge's Cooldown by 0.5 seconds. Charge time and Movement Speed scale with Attack Speed.",
+        "text": "Charges up for 1 second, gaining 50% / 55% / 60% / 65% Movement Speed, increased by 50% / 55% / 60% / 65% of bonus Attack Speed (maximum 100% / 110% / 120% / 130%) . For 4 seconds after charging, gain 40% / 50% / 60% / 70% Attack Speed . Living Weapon : 65% Attack Speed - Grants invisibility during the charge up. Attacks reduce Supercharge's Cooldown by 0.5 seconds. Charge time and Movement Speed scale with Attack Speed.",
         "cooldowns": [
           "16",
           "14",
@@ -8790,7 +8790,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Love Tap",
-        "text": "Applies Love Tap when attack enemy champions or epic monsters. At 3 stacks, increases Miss Fortune's damage to the target by 6% - 9.5% ( + 0.4x per level ). At 3 stacks deal 15 ( +70% bonus AD ) X ( 1 + 100% Critical Rate) physical damage to the target. Deals 50% damage to minions and monsters.",
+        "text": "Applies Love Tap when attack enemy champions or epic monsters. At 3 stacks, increases Miss Fortune's damage to the target by 6% - 9.5% ( + 0.4x per level ). At 3 stacks deal ( 15 +40% bonus AD ) × ( 0.6 + Critical Rate × 0.4 ) physical damage to the target. Deals 50% damage to minions and monsters.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -8801,7 +8801,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Double Up",
-        "text": "Fires a shot that ricochets behind the first enemy hit, dealing 60 / 90 / 120 / 150 ( + 110% AD +35% AP ) physical damage . The second hit will Critically Strike for 130% / 140% / 150% / 160% damage and apply Love Tap. On-hits are applied to both targets.",
+        "text": "Fires a shot that ricochets behind the first enemy hit, dealing 60 / 90 / 120 / 150 ( + 110% AD +35% AP ) physical damage . The second hit deals 60% of current Critical Damage and apply Love Tap. On-hits are applied to both targets.",
         "cooldowns": [
           "6",
           "5",
@@ -8831,7 +8831,7 @@
         "slot": "3",
         "key": "E",
         "name": "Make it Rain",
-        "text": "Rains down bullets on an area for 2 seconds, dealing 15 / 20 / 25 / 30 ( +10% AP ) magic damage every quarter second and slowing enemies by 30% / 40% / 50% / 60% .",
+        "text": "Rains down bullets on an area for 2 seconds, dealing 15 / 20 / 25 / 30 ( +10% AP ) magic damage every quarter second and slowing enemies by 40% ( +0.06% AP ) .",
         "cooldowns": [
           "15",
           "13",
@@ -8847,7 +8847,7 @@
         "slot": "4",
         "key": "R",
         "name": "Bullet Time",
-        "text": "Channels a 3 seconds barrage of bullets, with 12 / 14 / 16 waves that each deal 39 ( 60% AD +20% AP ) physical damage . Each wave can Crit for 130% damage. Re-activate : Cancel the barrage.",
+        "text": "Channels a 3 seconds barrage of bullets, with 12 / 14 / 16 waves that each deal 20 / 30 / 40 ( +60% AD +20% AP ) physical damage . Each wave can Crit for 130% damage, increased by 30% of Critical Damage above 200%. Re-activate : Cancel the barrage.",
         "cooldowns": [
           "70",
           "65",
@@ -10219,7 +10219,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Undertow",
-        "text": "Throws an axe, dealing 50 / 115 / 180 / 245 (+120% AD ) physical damage and slowing by 20% / 27.55% / 35% / 42.5% for 2 seconds. Picking up the axe reduces Undertow's cooldown by 4.5 seconds. Inflict 20% armor reduction for 4 seconds on enemy champions. Deals 110% damage to monsters.",
+        "text": "Throws an axe, dealing 50 / 115 / 180 / 245 (+105% bonus AD ) physical damage and slowing by 20% / 27.55% / 35% / 42.5% for 2 seconds. Picking up the axe reduces Undertow's cooldown by 4.5 seconds. Inflict 20% armor reduction for 4 seconds on enemy champions. Deals 110% damage to monsters.",
         "cooldowns": [
           "7",
           "7",
@@ -11969,7 +11969,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Daredevil Impulse",
-        "text": "Samira builds a combo by dealing damage with attacks or abilities against enemy champions unique from the previous one. Each one increases her Style from \"E\" to \"S\" .",
+        "text": "Samira builds a combo by dealing damage with attacks or abilities against enemy champions unique from the previous one. Each one increases her Style from \"E\" to \"S\" and grants 3% - 4% Movement Speed per grade based on level.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/samira-daredevil-impulse.png"
@@ -11994,7 +11994,7 @@
         "slot": "2",
         "key": "W",
         "name": "Blade Whirl",
-        "text": "Samira slashes around her 0.75 seconds, damaging enemies twice for 20 / 40 / 60 / 80 ( +80% AD ) physical damage each and destroying enemy missiles that enter the area.",
+        "text": "Samira slashes around her 0.75 seconds, damaging enemies twice for 20 / 40 / 60 / 80 ( +50% bonus AD ) physical damage each and destroying enemy missiles that enter the area.",
         "cooldowns": [
           "22",
           "20",
@@ -12010,7 +12010,7 @@
         "slot": "3",
         "key": "E",
         "name": "Wild Rush",
-        "text": "Samira dashes through an enemy (including structures) slashing enemies she passes through, dealing 45 / 60 / 75 / 90 ( +20% AD ) magic damage and gaining 25% / 30% / 25% / 30% attack speed for 3 seconds. If Samira scores a takedown, Wild Rush's cooldown is reset. Tapping this ability mid-dash will cast Flair.",
+        "text": "Samira dashes through an enemy (including structures) slashing enemies she passes through, dealing 45 / 60 / 75 / 90 ( +20% AD ) magic damage and gaining 25% / 30% / 35% / 40% Attack Speed for 3 seconds. If Samira scores a takedown, Wild Rush's cooldown is reset. Tapping this ability mid-dash will cast Flair.",
         "cooldowns": [
           "20",
           "17",
@@ -12026,7 +12026,7 @@
         "slot": "4",
         "key": "R",
         "name": "Inferno Trigger",
-        "text": "Samira can only use this ability if her current Style rating is \"S\" . Samira unleashes a torrent of shots from her weapons, reducing her Movement Speed by 30% while wildly shooting up to 5 enemies around her 10 times over 2.23 seconds, each shot dealing 20 / 40 / 60 (+ 40% AD ) physical damage . Each shot can critically strike. Deals 25% damage to minions.",
+        "text": "Samira can only use this ability if her current Style rating is \"S\" . Samira unleashes a torrent of shots from her weapons, reducing her Movement Speed by 30% while wildly shooting up to 5 enemies around her 10 times over 2.23 seconds, each shot dealing 20 / 40 / 60 (+ 40% AD ) physical damage . Each shot can critically strike and trigger 66.7% Life Steal. Deals 25% damage to minions.",
         "cooldowns": [
           "6",
           "6",
@@ -12098,7 +12098,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Absolution",
-        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1% - 10% (based on level) of their current Health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 10% Critical Chance.",
+        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1% - 10% (based on level) of their current Health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 10% Critical Chance. Critical strikes from basic attacks deal 90% of normal critical strike damage.",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -12155,7 +12155,7 @@
         "slot": "4",
         "key": "R",
         "name": "Dawning Shadow",
-        "text": "Fires a global wave that shields ally champions from 120 / 160 / 200 ( +50% AP + 2.5 per Mist) damage for 3 seconds, while dealing 250 / 400 / 550 ( +120% AD +50% AP ) physical damage and applies Mist to enemy champions caught in the center.",
+        "text": "Fires a global wave that shields ally champions from 120 / 160 / 200 ( +50% AP + 2 per Mist) damage for 3 seconds, while dealing 250 / 400 / 550 ( +120% AD +70% AP ) physical damage and applies Mist to enemy champions caught in the center.",
         "cooldowns": [
           "85",
           "80",
@@ -12981,7 +12981,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Fleet of Foot",
-        "text": "Gains 31 Movement Speed for 1.5 seconds after dealing damage to an enemy champion with an attack or ability.",
+        "text": "Gains 55 - 70 Movement Speed (based on level) for 1.5 seconds after dealing damage to an enemy champion with an attack or ability.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/sivir-fleet-of-foot.png"
@@ -12990,7 +12990,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Boomerang Blade",
-        "text": "Sivir hurls her crossblade, dealing 10 / 30 / 50 / 70 ( 75% / 80% / 85% / 90% AD + 60% AP ) physical damage to all enemies it cuts through. For every 1% Critical Rate , damage is increased by 0.5% . The higher the Attack Speed, the shorter the cast time. Deals 80% damage against non-champion enemies.",
+        "text": "Sivir hurls her crossblade, dealing ( 70 / 100 / 130 / 160 +70% bonus AD +60% AP ) multiplied by Critical Rate and Critical Damage scaling physical damage to all enemies it cuts through. For every 1% Critical Rate , damage is increased by 0.5% . The higher the Attack Speed, the shorter the cast time. Deals 75% damage against non-champion enemies.",
         "cooldowns": [
           "10",
           "9",
@@ -13006,7 +13006,7 @@
         "slot": "2",
         "key": "W",
         "name": "Ricochet",
-        "text": "Gains 25% / 30% / 35% / 40% Attack Speed for 4 seconds. Her attacks bounce to nearby enemies, dealing 37.5 / 40 / 42.5 / 45 ( +15% / 18% / 21% / 24% AD ) physical damage . If the first attack critically strikes , so will the bounces. Deals 70% damage to minions. Each enemy can be hit by a maximum of 2 bounces.",
+        "text": "Gains 25% / 30% / 35% / 40% Attack Speed for 4 seconds. Her attacks bounce to nearby enemies, dealing 37.5% / 40% / 42.5% / 45% AD physical damage . If the first attack critically strikes , so will the bounces. Deals 70% damage to minions. Each enemy can be hit by a maximum of 2 bounces.",
         "cooldowns": [
           "12",
           "12",
@@ -13036,7 +13036,7 @@
         "slot": "4",
         "key": "R",
         "name": "On The Hunt",
-        "text": "Grants 15% bonus Movement Speed to nearby allied champions for 8 / 10 / 12 seconds. During this period, her basic ability cooldowns are reduced by 20% / 25% / 30% . Unyielding Valor : While the Hunt is active, gains 1 stack of Morale every time an attack or ability deals damage to an enemy champion, and 2 stacks of Morale after a champion takedown. Each stack of Morale grants 2 / 2.5 / 3 AD . At 8 stacks, grants an additional 25% bonus Movement Speed to nearby allied champions and refreshes On the Hunt's duration.",
+        "text": "Grants 15% / 20% / 25% bonus Movement Speed to nearby allied champions for 8 / 10 / 12 seconds. During this period, her basic ability cooldowns are reduced by 20% / 25% / 30% . Unyielding Valor : While the Hunt is active, gains 1 stack of Morale every time an attack or ability deals damage to an enemy champion, and 2 stacks of Morale after a champion takedown. Each stack of Morale grants 2 / 2.5 / 3 AD . At 8 stacks, grants an additional 15% / 20% / 25% bonus Movement Speed to nearby allied champions and refreshes On the Hunt's duration.",
         "cooldowns": [
           "20",
           "25",
@@ -14430,7 +14430,7 @@
         "slot": "3",
         "key": "E",
         "name": "Explosive Charge",
-        "text": "Passive : Enemies explode when killed by Tristana's attacks, dealing 60 / 90 / 120 / 150 ( +25% AP ) magic damage to nearby enemies. Active : Places a bomb on an enemy or turret, dealing 50 / 75 / 100 / 125 ( +100% bonus AD +50% AP ) physical damage to nearby enemies. Tristana's attacks and abilities charge the bomb's damage by 25% stacking 4 times. Bombs explode immediately at full stacks. Explosion radius is doubled for bombs placed on turrets.",
+        "text": "Passive : Enemies explode when killed by Tristana's attacks, dealing 60 / 90 / 120 / 150 ( +25% AP ) magic damage to nearby enemies. Active : Places a bomb on an enemy or turret, dealing ( 80 / 100 / 120 / 140 +100% bonus AD +50% AP ) multiplied by Critical Rate and Critical Damage scaling physical damage to nearby enemies. Tristana's attacks and abilities charge the bomb's damage by 25% stacking 4 times. Bombs explode immediately at full stacks. Explosion radius is doubled for bombs placed on turrets.",
         "cooldowns": [
           "16",
           "15",
@@ -14447,7 +14447,7 @@
         "slot": "4",
         "key": "R",
         "name": "Buster Shot",
-        "text": "Fires a massive cannonball at an enemy, dealing 300 / 350 / 400 ( +100% AP ) magic damage and knocking them back.",
+        "text": "Fires a massive cannonball at an enemy, dealing 300 / 350 / 400 ( +70% bonus AD +100% AP ) magic damage and knocking them back.",
         "cooldowns": [
           "70",
           "65",
@@ -14532,7 +14532,7 @@
         "slot": "2",
         "key": "W",
         "name": "Mocking Shout",
-        "text": "Reduces nearby enemy champions' Attack Damage by 40% for 3 seconds. If target is moving away from Tryndamere, they will be slowed by 25% / 30% / 35% / 40% .",
+        "text": "Reduces nearby enemy champions' Attack Damage by 20% / 40% / 60% / 80% for 3 seconds. If target is moving away from Tryndamere, they will be slowed by 25% / 30% / 35% / 40% .",
         "cooldowns": [
           "12",
           "12",
@@ -14546,7 +14546,7 @@
         "slot": "3",
         "key": "E",
         "name": "Spinning Slash",
-        "text": "Dashes, dealing 80 / 120 / 160 / 200 ( +100% AD +100% AP ) physical damage . Critical Strikes against minions reduce the cooldown of Spinning Slash by 1 second, doubled against champions. Gains 2 Fury for each enemy hit.",
+        "text": "Dashes, dealing 80 / 120 / 160 / 200 ( +100% bonus AD +80% AP ) physical damage . Critical Strikes against minions, monsters, champion-summoned units, and other units that can be critically struck reduce the cooldown of Spinning Slash by 1 second, doubled against champions. Gains 2 Fury for each enemy hit.",
         "cooldowns": [
           "11",
           "10",
@@ -14562,7 +14562,7 @@
         "slot": "4",
         "key": "R",
         "name": "Undying Rage",
-        "text": "Passive : Increases Battle Fury's bonus Attack Speed to 45% / 60% / 75% . Active : Becomes unkillable for 5 seconds and gains 50 / 75 /100 Fury . Can be cast while crowd controlled.",
+        "text": "Becomes unkillable for 5 seconds and gains 50 / 75 / 100 Fury. Can be cast while crowd controlled.",
         "cooldowns": [
           "90",
           "80",
@@ -15780,7 +15780,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Sovereign's Domination",
-        "text": "The souls of enemy champions that die within 3 seconds of being damaged by Viego become wraiths that remain in place for 8 seconds.Viego can channel for 1 second to Possess them for 10 seconds. During Possession: - Becomes untargetable - Gains a free cast of Heartbreaker - Gains 10% Movement Speed when moving toward enemy champions - Gains access to the Possessed champion's basic abilities, attacks and items - Heals for 7% ( 2 + 4% bonus AD + 2% AP +5 bonus AS ) of the target's max Health Viego cannot use the Possessed champion's enchantment item actives.",
+        "text": "The souls of enemy champions that die within 3 seconds of being damaged by Viego become wraiths that remain in place for 8 seconds.Viego can channel for 1 second to Possess them for 10 seconds. During Possession: - Becomes untargetable - Gains a free cast of Heartbreaker - Gains 10% Movement Speed when moving toward enemy champions - Gains access to the Possessed champion's basic abilities, attacks and items - Heals for 5% ( 2 + 4% bonus AD + 2% AP +5 bonus AS ) of the target's max Health Viego cannot use the Possessed champion's enchantment item actives.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/viego-sovereigns-domination.png"
@@ -15789,7 +15789,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Blade of the Ruined King",
-        "text": "Passive : Attacks deal bonus physical damage equal to 2% / 3% / 4% / 5% of the target's current Health . After damaging an enemy with an ability, Viego's first attack against them within 5 seconds strikes twice, dealing physical damage equal to 15% of AD (+ 15% AP ) and healing himself for 135% of the damage dealt. Passive bonuses are kept during Possession. Active : Stabs forward, dealing 25 / 45 / 65 / 85 ((+ 70% AD ) * ( 1 + 0.5% bonus Critical rate )) physical damage . This ability's cast time reduces with Attack Speed.",
+        "text": "Passive : Attacks deal bonus physical damage equal to 2% / 3% / 4% / 5% of the target's current Health, with critical damage scaled to 80% . After damaging an enemy with an ability, Viego's first attack against them within 5 seconds strikes twice, dealing physical damage equal to 15% of AD with critical damage scaled to 80% (+ 15% AP ) and healing himself for 135% of the damage dealt. Passive bonuses are kept during Possession. Active : Stabs forward, dealing 25 / 45 / 65 / 85 ((+ 70% AD ) * ( 1 + 0.5% bonus Critical rate )) physical damage . This ability's cast time reduces with Attack Speed.",
         "cooldowns": [
           "5",
           "4",
@@ -16563,7 +16563,7 @@
         "slot": "2",
         "key": "W",
         "name": "Deadly Plumage",
-        "text": "Creates a storm of blades for 4 seconds that grants 40% / 45% / 50% / 55% Attack Speed and causes attacks to deal 25% more damage. If Deadly Plumage strikes an enemy champion, gain 25% / 30% / 35% / 40% Movement Speed for 1.5 seconds. If Rakan is nearby he will also gain the effects of this skill.",
+        "text": "Creates a storm of blades for 4 seconds that grants 40% / 45% / 50% / 55% Attack Speed and causes attacks to deal 25% more damage. If Deadly Plumage strikes an enemy champion, gain 30% Movement Speed for 1.5 seconds. If Rakan is nearby he will also gain the effects of this skill.",
         "cooldowns": [
           "17",
           "16",
@@ -16577,7 +16577,7 @@
         "slot": "3",
         "key": "E",
         "name": "Bladecaller",
-        "text": "Calls back all Feathers , dealing 60 / 70 / 80 / 90 ( +50% bonus AD ) physical damage to enemies they pass through. Hitting an enemy with 3 Feathers roots them for 1.25 seconds. Minions take 50% damage from Bladecaller.",
+        "text": "Calls back all Feathers , dealing ( 70 / 80 / 90 / 100 +50% bonus AD ) multiplied by Critical Rate and Critical Damage scaling physical damage to enemies they pass through. Hitting an enemy with 3 Feathers roots them for 1.25 seconds. Minions take 50% damage from Bladecaller.",
         "cooldowns": [
           "11",
           "10",
@@ -16796,7 +16796,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Way of the Wanderer",
-        "text": "Resolve : Moving builds Flow, wich is tracked on Yasuo's resource bar. At max Flow, damage from a champion or monster grants a shield that absorbs 115 - 500 ( +100% Critical Strike Rate ) damage and lasts 1 second. Intent : Yasuo's Critcal Rate is doubled. Yasuo converts Critical Rate above 100% into Attack Damge at a rate of 0.5 Attack Damge per 1% Critical Rate.",
+        "text": "Resolve : Moving builds Flow, wich is tracked on Yasuo's resource bar. At max Flow, damage from a champion or monster grants a shield that absorbs 115 - 500 ( +100% Critical Strike Rate ) damage and lasts 1 second. Intent : Yasuo's Critcal Rate is doubled. Yasuo converts Critical Rate above 100% into Attack Damge at a rate of 0.5 Attack Damage per 1% Critical Rate. Yasuo's basic attacks and Steel Tempest critical strikes deal 90% of normal critical strike damage.",
         "cooldowns": [],
         "damageTypes": [],
         "icon": "/abilities/yasuo-way-of-the-wanderer.png"
@@ -16805,7 +16805,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Steel Tempest",
-        "text": "Thrusts forward, dealing 20 / 50 / 80 / 110 ( +105% AD) physical damage . Grants a stack of Gathering Storm if the thrust damages an enemy. At 2 stacks, Steel Tempest launches a whirlwind that knocks enemies Airborne . If tapped during Sweeping Blade's dash, Steel Tempest will strike as a circle. Steel Tempest is treated as an attack: it can Critically Strike for 75% bonus damage and applies on-hit efects to all units hit. Cooldown and cast time are reduced by Attack Speed.",
+        "text": "Thrusts forward, dealing 20 / 50 / 80 / 110 ( +105% AD) physical damage . Grants a stack of Gathering Storm if the thrust damages an enemy. At 2 stacks, Steel Tempest launches a whirlwind that knocks enemies Airborne . If tapped during Sweeping Blade's dash, Steel Tempest will strike as a circle. Steel Tempest is treated as an attack: it can Critically Strike for 90% of normal critical strike damage and applies on-hit efects to all units hit. Cooldown and cast time are reduced by Attack Speed.",
         "cooldowns": [
           "4",
           "4",
@@ -16913,7 +16913,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Way of the Hunter",
-        "text": "Steel and Spirit : Every other attack deals 50% of the attack's damage as magic damage instead. Intent : Yone's Critical Rate is doubled. Yone converts Critical Rate above 100% into Attack Damage at a rate of 0.5 Attack Damage per 1% Critical Rate.",
+        "text": "Steel and Spirit : Every other attack deals 50% of the attack's damage as magic damage instead. Intent : Yone's Critical Rate is doubled. Yone converts Critical Rate above 100% into Attack Damage at a rate of 0.5 Attack Damage per 1% Critical Rate. Yone's basic attacks and Mortal Steel critical strikes deal 90% of normal critical strike damage.",
         "cooldowns": [],
         "damageTypes": [
           "magic"
@@ -16940,7 +16940,7 @@
         "slot": "2",
         "key": "W",
         "name": "Spirit Cleave",
-        "text": "Cleaves in a cone, dealing 20 / 35 / 50 / 65 plus 9% / 10% / 11% / 12% of the target's maximum Health as physical and magic damage . Gains a shield that absorbs 45 ( +60% bonus AD ) damage for 1.5 seconds if Spirit Cleave hits an enemy, increased by 100% on hitting a champion and 40% on subsequent champion hits. Deals 60 minimum damage against minions. Deals 30 maximum damage against monsters. Cooldown aand cast time are reduced by Attack Speed.",
+        "text": "Cleaves in a cone, dealing 20 / 35 / 50 / 65 plus 9% / 10% / 11% / 12% of the target's maximum Health as physical and magic damage . Gains a shield that absorbs 40 / 55 / 70 / 85 ( +60% bonus AD ) damage for 1.5 seconds if Spirit Cleave hits an enemy, increased by 100% on hitting a champion and 40% on subsequent champion hits. Deals 60 minimum damage against minions. Deals 30 maximum damage against monsters. Cooldown aand cast time are reduced by Attack Speed.",
         "cooldowns": [
           "14",
           "14",
@@ -17044,7 +17044,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Vow of the First Lands",
-        "text": "Critical Strikes deal an additional 10% (per 100 AP ) magic damage .",
+        "text": "Critical Strikes deal an additional 8% (per 100 AP ) magic damage .",
         "cooldowns": [],
         "damageTypes": [
           "magic"
@@ -17055,7 +17055,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Cultivation of Spirit",
-        "text": "S pirit Charge (Passive) : Attacks deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage ; When not active, launching an attack grants 1 Unleash. Attacking again refreshes Unleash's duration. Max Unleash is 6. If the duration is not refreshed, Yunara loses 1 Unleash every 0.5 seconds. Spirit Unbound (Active) : On cast, consumes Unleash, gaining 22% / 35% / 47% / 60% Attack Speed for 5 seconds. Attacks are empowered during this time to: Deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage on-hit; Spread to enemies nearby the target, dealing them 18 ( 30% AD ) physical damage . Transcendent State : This ability automatically activates until Yunara exits the state. If the attack Critically Strikes, its spread damage will also Critically Strike. Damage from spread attacks is increased to 250% against minions below 30% Health.",
+        "text": "S pirit Charge (Passive) : Attacks deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage ; When not active, launching an attack grants 1 Unleash. Attacking again refreshes Unleash's duration. Max Unleash is 6. If the duration is not refreshed, Yunara loses 1 Unleash every 0.5 seconds. Spirit Unbound (Active) : On cast, consumes Unleash, gaining 25% / 35% / 45% / 55% Attack Speed for 5 seconds. Attacks are empowered during this time to: Deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage on-hit; Spread to enemies nearby the target, dealing them 18 ( 30% AD ) physical damage . Transcendent State : This ability automatically activates until Yunara exits the state. If the attack Critically Strikes, its spread damage will also Critically Strike. Damage from spread attacks is increased to 250% against minions below 30% Health.",
         "cooldowns": [
           "0",
           "0",
@@ -17433,7 +17433,7 @@
         "slot": "P",
         "key": "Passive",
         "name": "Living Battery",
-        "text": "Fires a burst of 6 rounds in the target direction, dealing 20 / 24 / 28 / 32 / 36 ( +105% / 110% / 115% / 120% / 125% AD ) physical damage to the first enemy hit. Zeri's Attack Speed is capped at 1.5 attacks per second. 60% of Attack Speed in excess of the cap is converted into bonus Attack Damage .",
+        "text": "Fires a burst of 6 rounds in the target direction, dealing 20 / 24 / 28 / 32 / 36 ( +102% / 104% / 106% / 108% / 110% AD ) physical damage to the first enemy hit. Zeri's Attack Speed is capped at 1.5 attacks per second. 60% of Attack Speed in excess of the cap is converted into bonus Attack Damage .",
         "cooldowns": [],
         "damageTypes": [
           "physical"
@@ -17444,7 +17444,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Electrocute!",
-        "text": "Zaps target location, dealing 35 / 60 / 85 / 110 ( +55% / 70% / 85% / 100% AD +30% / 35% / 40% / 45% AP ) magic damage and applying a 14% / 18% / 22% / 26% slow effect that decays over 2 seconds. If this ability kills an enemy, it refunds 50% of its cooldown and 100% of its Mana Cost.",
+        "text": "Zaps target location, dealing 70 / 100 / 130 / 160 ( +80% bonus AD +30% / 35% / 40% / 45% AP ) magic damage and applying a 14% / 18% / 22% / 26% slow effect that decays over 1.5 seconds. If this ability kills an enemy, it refunds 50% of its cooldown and 100% of its Mana Cost.",
         "cooldowns": [
           "7",
           "6",
@@ -17460,7 +17460,7 @@
         "slot": "2",
         "key": "W",
         "name": "Ultrashock Laser",
-        "text": "Zeri fires out an electric pulse that deals 60 / 100 / 140 / 180 ( +100% AD +40% AP ) physical damage tot he first unit hit, slowing it by 30% / 35% / 40% / 45% for 2 seconds. If the pulse hits a wall, it expands into a long range laser, dealing the same damage and slow effect to enemies in the area and Critically Striking champions and monsters.",
+        "text": "Zeri fires out an electric pulse that deals 60 / 100 / 140 / 180 ( +100% AD +50% AP ) physical damage tot he first unit hit, slowing it by 30% / 35% / 40% / 45% for 2 seconds. If the pulse hits a wall, it expands into a long range laser, dealing the same damage and slow effect to enemies in the area and Critically Striking champions and monsters for 150% plus half of Critical Damage above 200%.",
         "cooldowns": [
           "12",
           "11",
@@ -17492,7 +17492,7 @@
         "slot": "4",
         "key": "R",
         "name": "Lightning Crash",
-        "text": "Discharges a nova of electricity, dealing 150 / 225 / 300 ( +60% bonus AD +100% AP ) magic damage to nearby enemies. Upon hitting an enemy champion, she gains 10% Movement Speed and a 30% Attack Speed bonus that can bypass her Attack Speed cap for 5 seconds. During this time, her attack becomes a faster triple shot that chains to nearby enemies to deal 14 physical damage . Hitting an enemy champion with an ability or attack extends this ability's duration and adds 1 stack of Overcharge for 2.5 seconds. Critical Strikes add 2 additional stacks. Each stack grants 0.5 Movement Speed .",
+        "text": "Discharges a nova of electricity, dealing 150 / 225 / 300 ( +60% bonus AD +100% AP ) magic damage to nearby enemies. Upon hitting an enemy champion, she gains 10% Movement Speed and a 30% Attack Speed bonus that can bypass her Attack Speed cap for 5 seconds. During this time, her attack becomes a faster triple shot that chains to nearby enemies to deal 30% AD physical damage . Hitting an enemy champion with an ability or attack extends this ability's duration and adds 1 stack of Overcharge for 2.5 seconds. Critical Strikes add 2 additional stacks. Each stack grants 0.5 Movement Speed .",
         "cooldowns": [
           "70",
           "65",

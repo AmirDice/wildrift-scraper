@@ -4299,8 +4299,8 @@
             ],
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 85
+                "stat": "bonusAd",
+                "pct": 70
               }
             ],
             "when": "per cast"
@@ -4372,14 +4372,14 @@
             "name": "Comeuppance",
             "type": "physical",
             "base": [
-              20,
-              30,
-              40
+              25,
+              35,
+              45
             ],
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 15.0
+                "pct": 15
               }
             ],
             "when": "per cast"
@@ -5091,13 +5091,11 @@
           {
             "name": "Volley Arrow (Rank1)",
             "type": "physical",
-            "base": [
-              20
-            ],
+            "base": 70,
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 100.0
+                "stat": "bonusAd",
+                "pct": 100
               }
             ],
             "hits": 5,
@@ -5106,13 +5104,11 @@
           {
             "name": "Volley Arrow (Rank2)",
             "type": "physical",
-            "base": [
-              35
-            ],
+            "base": 110,
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 100.0
+                "stat": "bonusAd",
+                "pct": 100
               }
             ],
             "hits": 7,
@@ -5121,13 +5117,11 @@
           {
             "name": "Volley Arrow (Rank3)",
             "type": "physical",
-            "base": [
-              50
-            ],
+            "base": 150,
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 100.0
+                "stat": "bonusAd",
+                "pct": 100
               }
             ],
             "hits": 9,
@@ -5136,13 +5130,11 @@
           {
             "name": "Volley Arrow (Rank4)",
             "type": "physical",
-            "base": [
-              65
-            ],
+            "base": 190,
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 100.0
+                "stat": "bonusAd",
+                "pct": 100
               }
             ],
             "hits": 11,
@@ -6458,14 +6450,14 @@
             "name": "Ace in the Hole",
             "type": "physical",
             "base": [
-              200,
-              375,
-              550
+              250,
+              450,
+              650
             ],
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 200
+                "pct": 100
               },
               {
                 "stat": "targetMissingHp",
@@ -6777,7 +6769,6 @@
         "defensive": [],
         "unmodeled": [
           "Secondary targets take 49 / 84 / 119 / 154 (+77% bonus AD) physical damage.",
-          "Deals 80% damage to monsters.",
           "Zed's shadows also fire shurikens dealing the same damage."
         ]
       },
@@ -6831,7 +6822,6 @@
           "Slashes beyond the first striking the same enemy deal 50% damage.",
           "Slows enemies by 25% / 30% / 35% / 40% for 1.5 seconds.",
           "Each enemy champion hit reduces Living Shadow's cooldown by 2 seconds.",
-          "Deals 60% damage to monsters.",
           "Zed's shadows also slash, dealing the same damage."
         ]
       },
@@ -8107,10 +8097,10 @@
               {
                 "stat": "bonusAd",
                 "pct": [
+                  80,
+                  90,
                   100,
-                  110,
-                  120,
-                  130
+                  110
                 ]
               }
             ],
@@ -15145,13 +15135,16 @@
           {
             "name": "Caustic Wounds On-Hit",
             "type": "magic",
-            "base": [
-              5
-            ],
+            "base": {
+              "lvlRange": [
+                5,
+                19
+              ]
+            },
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 12.0
+                "pct": 12
               }
             ],
             "hits": 1,
@@ -16635,12 +16628,7 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": [
-                  112,
-                  120,
-                  128,
-                  136
-                ]
+                "pct": 110
               },
               {
                 "stat": "ap",
@@ -16663,12 +16651,7 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": [
-                  112,
-                  120,
-                  128,
-                  136
-                ]
+                "pct": 110
               },
               {
                 "stat": "ap",
@@ -16778,7 +16761,11 @@
           {
             "name": "Bullet Time",
             "type": "physical",
-            "base": 39,
+            "base": [
+              20,
+              30,
+              40
+            ],
             "ratios": [
               {
                 "stat": "ad",
@@ -18730,7 +18717,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Number of snowball hits determines explosion damage and root duration. Deals 150% damage to monsters."
+          "Number of snowball hits determines explosion damage and root duration."
         ]
       },
       "4": {
@@ -22060,9 +22047,10 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 70.0
+                "pct": 50
               }
-            ]
+            ],
+            "note": "Shield also gains 2 per Mist stack."
           }
         ],
         "unmodeled": [
@@ -22595,9 +22583,12 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "flat": [
-              31
-            ],
+            "flat": {
+              "lvlRange": [
+                55,
+                70
+              ]
+            },
             "note": "Gains 31 Movement Speed for 1.5 seconds after dealing damage to an enemy champion with an attack or ability."
           }
         ],
@@ -22619,24 +22610,19 @@
             "name": "Boomerang Blade",
             "type": "physical",
             "base": [
-              10,
-              30,
-              50,
-              70
+              70,
+              100,
+              130,
+              160
             ],
             "ratios": [
               {
-                "stat": "ad",
-                "pct": [
-                  75,
-                  80,
-                  85,
-                  90
-                ]
+                "stat": "bonusAd",
+                "pct": 70
               },
               {
                 "stat": "ap",
-                "pct": 60.0
+                "pct": 60
               }
             ],
             "hits": 1,
@@ -22662,20 +22648,15 @@
           {
             "name": "Ricochet Bounce",
             "type": "physical",
-            "base": [
-              37.5,
-              40.0,
-              42.5,
-              45.0
-            ],
+            "base": 0,
             "ratios": [
               {
                 "stat": "ad",
                 "pct": [
-                  15,
-                  18,
-                  21,
-                  24
+                  37.5,
+                  40,
+                  42.5,
+                  45
                 ]
               }
             ],
@@ -22756,7 +22737,11 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 15,
+            "pct": [
+              15,
+              20,
+              25
+            ],
             "note": "Grants 15% bonus Movement Speed to nearby allied champions for 10/11/12 seconds. Unyielding Valor: Each stack of Morale grants 2/3/4 AD. At 8 stacks, grants an additional 25% bonus Movement Speed and refreshes duration."
           }
         ],
@@ -24913,13 +24898,7 @@
         "name": "Battle Fury",
         "cooldowns": [],
         "damage": [],
-        "steroids": [
-          {
-            "stat": "attackSpeed",
-            "pct": 30,
-            "note": "on attacking champion, 5s, 6s cooldown"
-          }
-        ],
+        "steroids": [],
         "defensive": [],
         "unmodeled": [
           "Fury system: gains 5 fury per attack, 10 per crit, 15 per kill; loses 5 fury/s after 8s out of combat. Each fury gives 0.32% crit chance. Converts excess crit rate (>100%) to AD at 1:1 ratio."
@@ -24934,18 +24913,7 @@
           12.0
         ],
         "damage": [],
-        "steroids": [
-          {
-            "stat": "ad",
-            "flat": [
-              7,
-              12,
-              17,
-              22
-            ],
-            "note": "additional AD based on missing health percentage (0.35/0.4/0.45/0.5 per 1% missing health) - not modeled due to non-linear scaling"
-          }
-        ],
+        "steroids": [],
         "defensive": [
           {
             "kind": "heal",
@@ -24966,7 +24934,7 @@
         ],
         "unmodeled": [
           "Active consumes all fury to heal",
-          "7.3: Attack Damage: 7 / 12 / 17 / 22 → 0"
+          "Passive grants 0.3/0.5/0.7/0.9 Attack Damage per 1% missing Health; its non-linear runtime value is not modeled."
         ]
       },
       "2": {
@@ -24981,8 +24949,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Reduces nearby enemy AD by 40% for 3s; if moving away, slows by 25/30/35/40% for 3s",
-          "7.3: Attack Damage reduction: 40% → 20 / 40 / 60 / 80%"
+          "Reduces nearby enemy AD by 20/40/60/80% for 3s; if moving away, slows by 25/30/35/40% for 3s"
         ]
       },
       "3": {
@@ -25032,17 +24999,7 @@
           70.0
         ],
         "damage": [],
-        "steroids": [
-          {
-            "stat": "attackSpeed",
-            "pct": [
-              45,
-              60,
-              75
-            ],
-            "note": "passive: replaces P's attack speed bonus"
-          }
-        ],
+        "steroids": [],
         "defensive": [],
         "unmodeled": [
           "Active: become unkillable for 5s, gain 50/75/100 fury. Can be cast while CC'd."
@@ -25735,19 +25692,7 @@
             "when": "dot total"
           }
         ],
-        "steroids": [
-          {
-            "stat": "attackSpeed",
-            "pct": [
-              30,
-              35,
-              40,
-              45,
-              50
-            ],
-            "note": "upon enemy reaching full stacks"
-          }
-        ],
+        "steroids": [],
         "defensive": [],
         "unmodeled": [
           "Monsters take 130% increased damage from Deadly Venom."
@@ -25767,12 +25712,22 @@
             "stat": "moveSpeed",
             "pct": 10,
             "note": "increases to 20% when nearby enemy champions cannot see Twitch"
+          },
+          {
+            "stat": "attackSpeed",
+            "pct": [
+              35,
+              40,
+              45,
+              50
+            ],
+            "durationS": 6,
+            "note": "after leaving camouflage"
           }
         ],
         "defensive": [],
         "unmodeled": [
           "Camouflage: Hide from champions by keeping them outside Twitch's detection radius. Attacks and offensive abilities end Camouflage early.",
-          "After exiting Camouflage, basic attacks apply an additional stack of Deadly Venom for 3 seconds.",
           "Ambush resets when a champion dies while infected by Deadly Venom."
         ]
       },
@@ -25788,7 +25743,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Applies stacks of Deadly Venom (number unspecified) and slows enemies for 30%/35%/40%/45% (+6% bonus AD) for 3 seconds.",
+          "Applies stacks of Deadly Venom (number unspecified) and slows enemies for 30%/35%/40%/45% (+0.06% AP) for 3 seconds.",
           "Cast time decreases with Twitch's attack speed."
         ]
       },
@@ -25824,11 +25779,19 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 42
-              },
+                "pct": 35
+              }
+            ],
+            "hits": 5
+          },
+          {
+            "name": "Contaminate Magic Per Stack",
+            "type": "magic",
+            "base": 0,
+            "ratios": [
               {
                 "stat": "ap",
-                "pct": 18
+                "pct": 35
               }
             ],
             "hits": 5
@@ -26145,6 +26108,10 @@
             ],
             "ratios": [
               {
+                "stat": "bonusAd",
+                "pct": 80
+              },
+              {
                 "stat": "ap",
                 "pct": 50
               }
@@ -26173,24 +26140,19 @@
             "name": "Explosive Charge (Active)",
             "type": "physical",
             "base": [
-              50,
-              75,
+              80,
               100,
-              125
+              120,
+              140
             ],
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": [
-                  75,
-                  110,
-                  145,
-                  180
-                ]
+                "pct": 100
               },
               {
                 "stat": "ap",
-                "pct": 50.0
+                "pct": 50
               }
             ],
             "hits": 1,
@@ -26221,8 +26183,12 @@
             ],
             "ratios": [
               {
+                "stat": "bonusAd",
+                "pct": 70
+              },
+              {
                 "stat": "ap",
-                "pct": 100.0
+                "pct": 100
               }
             ],
             "hits": 1,
@@ -28481,12 +28447,7 @@
           },
           {
             "stat": "moveSpeed",
-            "pct": [
-              25,
-              30,
-              35,
-              40
-            ],
+            "pct": 30,
             "note": "for 1.5 seconds when hitting an enemy champion"
           }
         ],
@@ -28509,15 +28470,15 @@
             "name": "Bladecaller",
             "type": "physical",
             "base": [
-              60,
               70,
               80,
-              90
+              90,
+              100
             ],
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 90
+                "pct": 50
               }
             ],
             "hits": 5,
@@ -29129,7 +29090,7 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 160
+                "pct": 150
               }
             ],
             "hits": 1,
@@ -29742,7 +29703,13 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 125
+                "pct": [
+                  102,
+                  104,
+                  106,
+                  108,
+                  110
+                ]
               }
             ],
             "hits": 1,
@@ -29768,19 +29735,24 @@
             "name": "Electrocute!",
             "type": "magic",
             "base": [
-              35,
-              60,
-              85,
-              110
+              70,
+              100,
+              130,
+              160
             ],
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 100
+                "stat": "bonusAd",
+                "pct": 80
               },
               {
                 "stat": "ap",
-                "pct": 45
+                "pct": [
+                  30,
+                  35,
+                  40,
+                  45
+                ]
               }
             ],
             "hits": 1,
@@ -29889,7 +29861,7 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 70
+                "pct": 60
               },
               {
                 "stat": "ap",
@@ -29902,8 +29874,13 @@
           {
             "name": "Overcharged Triple Shot",
             "type": "physical",
-            "base": 14,
-            "ratios": [],
+            "base": 0,
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 30
+              }
+            ],
             "hits": 3,
             "when": "per auto"
           }
@@ -29956,7 +29933,7 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 10
+                "pct": 8
               }
             ],
             "hits": 1,
@@ -30011,10 +29988,10 @@
           {
             "stat": "attackSpeed",
             "flat": [
-              22,
+              25,
               35,
-              47,
-              60
+              45,
+              55
             ],
             "note": "for 5 seconds on active"
           }
@@ -30180,7 +30157,7 @@
           {
             "stat": "ad",
             "from": "critChance",
-            "pct": 60,
+            "pct": 50,
             "note": "converts excess crit above 100%"
           }
         ],
@@ -30265,7 +30242,12 @@
             "ratios": [
               {
                 "stat": "targetMaxHp",
-                "pct": 11
+                "pct": [
+                  9,
+                  10,
+                  11,
+                  12
+                ]
               }
             ],
             "hits": 1,
@@ -30278,12 +30260,15 @@
           {
             "kind": "shield",
             "base": [
-              45
+              40,
+              55,
+              70,
+              85
             ],
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 80
+                "pct": 60
               }
             ],
             "note": "Shield increased by 100% on champion hit, 40% on subsequent champion hit."
