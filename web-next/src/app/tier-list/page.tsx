@@ -51,6 +51,14 @@ export default function TierListPage() {
         switch to any one server, then filter by role for role-specific tiers.
       </p>
 
+      <div className="mt-5 max-w-3xl rounded-xl border border-gold/25 bg-gold/[0.07] px-4 py-3">
+        <p className="text-sm font-semibold text-gold">New-season collection schedule</p>
+        <p className="mt-1 text-sm leading-relaxed text-muted">
+          Win rates will be collected one week into the season, once the ladder has enough games
+          for the rankings to be meaningful.
+        </p>
+      </div>
+
       <Link
         href="/ranks"
         className="glass glass-hover mt-5 flex max-w-3xl flex-col gap-2 rounded-xl border border-gold/25 px-4 py-3 transition sm:flex-row sm:items-center sm:justify-between"
