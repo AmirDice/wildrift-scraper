@@ -95,7 +95,7 @@ def main() -> None:
         pending.append({
             "name": name,
             "slug": champion["slug"],
-            "role": guide.get("guideRole") or primary_role(name),
+            "role": champion.get("role") or guide.get("guideRole") or primary_role(name),
             "class": champion_class(name),
             "difficulty": difficulty,
             "difficultyLabel": difficulty_label(difficulty),
@@ -116,7 +116,7 @@ def main() -> None:
             ],
             "guideTier": guide.get("guideTier"),
             "guideLane": guide.get("guideLane"),
-            "guideUrl": f"https://www.wildriftfire.com/guide/{champion['slug']}",
+            "guideUrl": champion.get("sourceUrl") or f"https://www.wildriftfire.com/guide/{champion['slug']}",
         })
 
     pending.sort(key=lambda c: c["name"])

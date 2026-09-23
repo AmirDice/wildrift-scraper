@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { customizerItems, listedBuildStats } from "@/lib/customizer-data";
 import { scaledBuildStats, scalingSources } from "@/lib/build-scaling";
 import { ShareBuildButton } from "@/components/share-build";
-import { getChampions } from "@/lib/data";
+import { getChampions, pendingChampions } from "@/lib/data";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -80,7 +80,7 @@ export function BuildComparison({
   // Shared comparison links land on the champion's build page; that is as close
   // as a URL can get to "these two builds side by side".
   const championSlug = useMemo(
-    () => getChampions().find((entry) => entry.name === champion)?.slug ?? "",
+    () => [...getChampions(), ...pendingChampions()].find((entry) => entry.name === champion)?.slug ?? "",
     [champion],
   );
   // A stacking build and a static build are not comparable on guaranteed stats

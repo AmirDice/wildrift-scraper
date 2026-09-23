@@ -254,6 +254,11 @@ def _form_label(abilities: list[dict]) -> str:
 
 
 def parse_champion(slug: str, refresh: bool = False) -> dict | None:
+    if slug == "hwei":
+        # WRF currently lists Wash Brush as R. Keep the reviewed, complete
+        # WR-Meta kit until the two sources agree; provenance is in hwei_kit.json.
+        from scripts.add_hwei import source_record
+        return source_record()
     html = fetch(f"{BASE}/guide/{slug}", f"guide_{slug}.html", refresh=refresh)
     soup = BeautifulSoup(html, "html.parser")
     abilities = _abilities(soup, slug=slug)

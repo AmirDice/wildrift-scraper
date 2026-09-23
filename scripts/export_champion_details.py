@@ -203,8 +203,8 @@ def main() -> None:
         for a in c.get("abilities", []):
             slot = a.get("slot", "")
             url = icons.get(slot)
-            icon = None
-            if url:
+            icon = a.get("icon")
+            if url and not icon:
                 icon = f"/abilities/{url.rsplit('/', 1)[-1].split('?')[0]}" if args.no_download else _download(url)
                 if icon:
                     n_icons += 1

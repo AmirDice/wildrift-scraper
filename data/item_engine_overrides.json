@@ -423,7 +423,8 @@
   },
   "yun-tal-wildarrows": {
     "asPctPassive": 25,
-    "_why": "Flurry's 25% Attack Speed, which is up for most of a fight given the cooldown drops by 1s per attack. The stacking Critical Rate is in data/item_stat_rules.json, since it is a stat the shop does not print."
+    "_why": "Flurry's 25% Attack Speed, which is up for most of a fight given the cooldown drops by 1s per attack, and Practice Makes Perfect's 25% Critical Rate. The shop prints that crit as 0% because it is earned by attacking (125 attacks for a ranged champion), so it cannot sit in the stat line without misstating the purchase -- but the engines score a completed level 15 build, where it is long since full. critPctPassive is the crit twin of asPctPassive, which exists for exactly this reason.",
+    "critPctPassive": 25
   },
   "stormrazor": {
     "burstProcFlat": 120,

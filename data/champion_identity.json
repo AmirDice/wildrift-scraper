@@ -13684,6 +13684,73 @@
     "hp",
     "move_speed"
    ]
+  },
+  "Hwei": {
+   "roles": [
+    "Mid",
+    "Support"
+   ],
+   "classes": [
+    "Mage"
+   ],
+   "identitySummary": "Long-range control mage with subject choices, area damage and allied shielding. Immobile and vulnerable when caught.",
+   "combat": {
+    "range": "long_ranged",
+    "engagement": "medium",
+    "playstyle": [
+     "poke",
+     "teamfight",
+     "zone_control"
+    ],
+    "power_pattern": "mid_late_game",
+    "primary_win_condition": "teamfighting"
+   },
+   "teamComp": {
+    "needs_frontline": true,
+    "needs_peel": true,
+    "benefits_from_engage": true,
+    "benefits_from_cc": true,
+    "primary_team_role": "damage_dealer"
+   },
+   "itemizationNeeds": {
+    "primary_damage": "magic",
+    "scaling_priority": [
+     "ability_power",
+     "penetration",
+     "ability_haste",
+     "mana"
+    ],
+    "defensive_priority": [
+     "armor",
+     "magic_resistance"
+    ],
+    "situational_needs": [
+     "anti_heal_vs_healing",
+     "penetration_vs_resists",
+     "defensive_item_vs_burst"
+    ]
+   },
+   "hardLimits": {
+    "neverArchetypes": [
+     {
+      "path": "AD Crit On-Hit",
+      "why": "Spells scale with AP; three WE charges also trigger on spell hits."
+     }
+    ],
+    "avoidStats": [
+     "ad",
+     "crit",
+     "lethality",
+     "armor_pen",
+     "lifesteal"
+    ]
+   },
+   "statPriorities": [
+    "ap",
+    "magic_pen",
+    "ability_haste",
+    "mana"
+   ]
   }
  }
 }

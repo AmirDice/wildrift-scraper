@@ -18141,5 +18141,164 @@
       "W",
       "E"
     ]
+  },
+  "hwei": {
+    "name": "Hwei",
+    "baseStats": {
+      "hp": {
+        "base": 630,
+        "perLevel": 120,
+        "lvl15": 2310
+      },
+      "hpRegen": {
+        "base": 8,
+        "perLevel": 0.65,
+        "lvl15": 17.1
+      },
+      "mana": {
+        "base": 480,
+        "perLevel": 50,
+        "lvl15": 1180
+      },
+      "manaRegen": {
+        "base": 12,
+        "perLevel": 1,
+        "lvl15": 26
+      },
+      "armor": {
+        "base": 34,
+        "perLevel": 4.5,
+        "lvl15": 97.0
+      },
+      "mr": {
+        "base": 36,
+        "perLevel": 1.2,
+        "lvl15": 52.8
+      },
+      "moveSpeed": {
+        "base": 355,
+        "perLevel": 0,
+        "lvl15": 355
+      },
+      "ad": {
+        "base": 54,
+        "perLevel": 3.5,
+        "lvl15": 103.0
+      },
+      "attackSpeed": {
+        "base": 0.75,
+        "perLevel": 0.017,
+        "lvl15": 0.988
+      }
+    },
+    "abilities": [
+      {
+        "slot": "P",
+        "name": "Signature of the Visionary",
+        "text": "Different spell hits combine into a delayed area explosion: 33–333 by level +33% AP. Marks expire after 4s; repeated hits from one cast cannot repeatedly trigger it.",
+        "cooldowns": [],
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [],
+        "icon": "/abilities/hwei-signature-of-the-visionary.png",
+        "key": "Passive"
+      },
+      {
+        "slot": "1",
+        "name": "Subject: Disaster",
+        "text": "Choose QQ: 50/90/130/170 +75% AP +4/5/6/7% target maximum health; QW: 80/110/140/170 +30% AP, amplified against isolated or immobilized targets with missing health; or QE: 20/35/50/65 +30% AP eruption and 20/40/60/80 +30% AP per second in lava for 2.5s. Lava slows 30%.",
+        "cooldowns": [
+          "9.5",
+          "8.5",
+          "7.5",
+          "6.5"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ],
+        "icon": "/abilities/hwei-subject-disaster.png",
+        "key": "Q"
+      },
+      {
+        "slot": "2",
+        "name": "Subject: Serenity",
+        "text": "Choose WQ: an allied movement-speed trail; WW: a 3s allied shield, initially 60/80/100/120 +35% AP, growing toward 108/128/148/168 +71% AP (15% weaker on allies); or WE: three empowered spell/attack hits, each adding 30/40/50/60 +15% AP magic damage and restoring 45/50/55/60 mana.",
+        "cooldowns": [
+          "17",
+          "16.5",
+          "16",
+          "15.5"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "shield"
+        ],
+        "icon": "/abilities/hwei-subject-serenity.png",
+        "key": "W"
+      },
+      {
+        "slot": "3",
+        "name": "Subject: Torment",
+        "text": "Choose EQ (fear), EW (root and vision), or EE (pull and slow). Each deals 70/120/170/220 +70% AP magic damage. Fear lasts 1/1.125/1.25/1.375s; root lasts 1.25/1.5/1.75/2s.",
+        "cooldowns": [
+          "13",
+          "12",
+          "11",
+          "10"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ],
+        "icon": "/abilities/hwei-subject-torment.png",
+        "key": "E"
+      },
+      {
+        "slot": "4",
+        "name": "Spiraling Despair",
+        "text": "Attach an expanding, stacking slow for 3s. Deals 10/20/30 +5% AP magic damage per second, then explodes for 250/350/450 +75% AP magic damage. Wash Brush cancels subject selection; it is not the ultimate.",
+        "cooldowns": [
+          "70",
+          "60",
+          "50"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ],
+        "icon": "/abilities/hwei-spiraling-despair.webp",
+        "key": "R"
+      }
+    ],
+    "skillPriority": [
+      "Q",
+      "E",
+      "W"
+    ]
   }
 }

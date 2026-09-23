@@ -313,12 +313,12 @@ def main() -> None:
                 # scraped from the ability text. 82 champions state one; the
                 # rest fall back to the corpus median in the engine.
                 "ccSeconds": cc_durations.get(c["name"], 0),
-                "class": champ_class.get(c["name"], ""),
+                "class": champ_class.get(c["name"], c.get("class", "")),
                 # The lane this champion is actually played in. Only the ally
                 # model needs it: Guardian and Font of Life pay out in
                 # proportion to how much of a fight you spend beside an ally,
                 # and a support is glued to the carry while a jungler is not.
-                "role": champ_role.get(c["name"], ""),
+                "role": champ_role.get(c["name"], c.get("role", "")),
                 "primaryDamage": c.get("primaryDamage", ""),
                 "scalesWith": c.get("scalesWith", []),
                 "skillOrder": (guide.get(c["name"]) or {}).get("skillOrder", {}),
@@ -592,7 +592,7 @@ def main() -> None:
         if c.get("formOf"):
             continue
         name = c["name"]
-        meta = site_meta.get(name) or prerelease_meta.get(name, {})
+        meta = site_meta.get(name) or prerelease_meta.get(name) or c
         bs = c.get("baseStats", {})
         override = meta_overrides.get(name) or {}
         primary_role = meta.get("role", "")

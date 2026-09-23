@@ -91214,5 +91214,284 @@
     "name": "Kayn (Rhaast)",
     "class": "Bruiser",
     "role": "Jungle"
+  },
+  "Hwei": {
+    "name": "Hwei",
+    "class": "Mage",
+    "role": "Mid",
+    "damageProfile": "ap-burst-poke",
+    "canOneshot": false,
+    "source": "https://wr-meta.com/505-hwei.html",
+    "variants": [
+      "standard"
+    ],
+    "builds": {
+      "standard": {
+        "summary": "Guide-based AP build. Fight estimates use WE → EQ → QQ → R; spell travel, passive timing and QW execution are approximations pending in-game validation.",
+        "label": "Standard",
+        "pathLabel": "Magic",
+        "coreBuild": [
+          {
+            "slug": "blackfire-torch",
+            "name": "Blackfire Torch",
+            "cost": 2800,
+            "icon": "/items/blackfire-torch.webp"
+          },
+          {
+            "slug": "infinity-orb",
+            "name": "Infinity Orb",
+            "cost": 3100,
+            "icon": "/items/infinity-orb.webp"
+          },
+          {
+            "slug": "rabadons-deathcap",
+            "name": "Rabadon's Deathcap",
+            "cost": 3400,
+            "icon": "/items/rabadons-deathcap.webp"
+          },
+          {
+            "slug": "void-staff",
+            "name": "Void Staff",
+            "cost": 3000,
+            "icon": "/items/void-staff.webp"
+          },
+          {
+            "slug": "zhonyas-hourglass",
+            "name": "Zhonya's Hourglass",
+            "cost": 3300,
+            "icon": "/items/zhonyas-hourglass.webp"
+          }
+        ],
+        "boots": {
+          "slug": "spellslingers-shoes",
+          "name": "Spellslinger's Shoes",
+          "cost": 2200,
+          "icon": "/items/spellslingers-shoes.webp"
+        },
+        "bootsEarly": {
+          "slug": "boots-of-mana",
+          "name": "Boots of Mana",
+          "cost": 1200,
+          "icon": "/items/boots-of-mana.webp"
+        },
+        "bootsUpgradeAfter": 2,
+        "enchantment": null,
+        "situational": [],
+        "runes": {
+          "keystone": {
+            "name": "Arcane Comet",
+            "slug": "arcane-comet",
+            "icon": "https://www.wildriftfire.com/images/runes/arcane-comet.png",
+            "reason": "Reliable poke damage with short cooldown abilities"
+          },
+          "primaryTree": "Sorcery",
+          "treeMinors": [
+            {
+              "name": "Manaflow Band",
+              "slug": "manaflow-band",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/manaflow-band.png",
+              "reason": "Mana sustain for spam"
+            },
+            {
+              "name": "Transcendence",
+              "slug": "transcendence",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/transcendence.png",
+              "reason": "Haste and ability cooldown reduction"
+            },
+            {
+              "name": "Scorch",
+              "slug": "scorch",
+              "tree": "Sorcery",
+              "icon": "https://www.wildriftfire.com/images/runes/scorch.png",
+              "reason": "Extra poke damage early"
+            }
+          ],
+          "flexMinor": {
+            "name": "Bone Plating",
+            "slug": "bone-plating",
+            "tree": "Resolve",
+            "icon": "https://www.wildriftfire.com/images/runes/bone-plating.png"
+          }
+        },
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png"
+          },
+          {
+            "name": "Barrier",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerBarrier.png"
+          }
+        ],
+        "analysis": {
+          "level": 15,
+          "burst": {
+            "0.5": 177,
+            "1.0": 2046,
+            "2.0": 3632,
+            "3.0": 4433
+          },
+          "dps": {
+            "5": 1064,
+            "10": 820,
+            "20": 677
+          },
+          "damage3s": 3961,
+          "damage8s": 6658,
+          "ttk": {
+            "adc": 1.25,
+            "mage": 1.25,
+            "fighter": 1.25,
+            "bruiser": 3.0,
+            "tank": 9.0
+          },
+          "byType": {
+            "physical": 269,
+            "magic": 6389,
+            "true": 0
+          },
+          "byTypePct": {
+            "physical": 4,
+            "magic": 96,
+            "true": 0
+          },
+          "bySource": {
+            "auto": 269,
+            "ability": 6389
+          },
+          "byAbility": {
+            "Spiraling Despair": 1067,
+            "Signature of the Visionary": 1019,
+            "Subject: Disaster": 1704,
+            "Subject: Serenity": 454,
+            "Subject: Torment": 654,
+            "Autos": 224,
+            "Procs": 284,
+            "Burn": 140
+          },
+          "items": [
+            {
+              "slug": "infinity-orb",
+              "name": "Infinity Orb",
+              "dmg": 2222
+            },
+            {
+              "slug": "void-staff",
+              "name": "Void Staff",
+              "dmg": 1830
+            },
+            {
+              "slug": "rabadons-deathcap",
+              "name": "Rabadon's Deathcap",
+              "dmg": 1377
+            },
+            {
+              "slug": "spellslingers-shoes",
+              "name": "Spellslinger's Shoes",
+              "dmg": 1216
+            },
+            {
+              "slug": "blackfire-torch",
+              "name": "Blackfire Torch",
+              "dmg": 742
+            },
+            {
+              "slug": "zhonyas-hourglass",
+              "name": "Zhonya's Hourglass",
+              "dmg": 669
+            }
+          ],
+          "runes": [
+            {
+              "name": "Arcane Comet",
+              "dmg": 290
+            },
+            {
+              "name": "Scorch",
+              "dmg": 52
+            },
+            {
+              "name": "Manaflow Band",
+              "dmg": 0
+            },
+            {
+              "name": "Transcendence",
+              "dmg": 0
+            },
+            {
+              "name": "Bone Plating",
+              "dmg": 0
+            }
+          ],
+          "ehp": 4518,
+          "ehpSplit": {
+            "physical": 5763,
+            "magic": 3715
+          },
+          "sustain": 0,
+          "survivalTime": {
+            "adc": 5.02,
+            "bruiser": 6.95,
+            "tank": 11.29
+          },
+          "goldEff": {
+            "gold": 17800,
+            "dmgPerGold": 0.22,
+            "ehpPerGold": 0.25
+          },
+          "healing": {
+            "lifesteal": 0,
+            "omnivamp": 0,
+            "onHit": 0,
+            "rune": 0,
+            "total": 0
+          },
+          "shields": {
+            "value": 0,
+            "avgUptime": 0.0,
+            "amp": 0
+          },
+          "damagePrevented": {
+            "armor": 1503,
+            "mr": 898,
+            "dr": 140,
+            "shield": 0,
+            "total": 2541
+          },
+          "cooldownUtil": {
+            "efficiency": 100,
+            "abilities": {
+              "Spiraling Despair": {
+                "casts": 1,
+                "max": 1
+              },
+              "Subject: Disaster": {
+                "casts": 2,
+                "max": 2
+              },
+              "Subject: Serenity": {
+                "casts": 1,
+                "max": 1
+              },
+              "Subject: Torment": {
+                "casts": 1,
+                "max": 1
+              }
+            }
+          },
+          "damageLost": {
+            "autoUptimePct": 83,
+            "autoDmgLost": 54,
+            "overkill": 920
+          }
+        }
+      }
+    },
+    "synergyNotes": [
+      "AP and magic penetration scale all damage choices. Haste shortens shared subject cooldowns.",
+      "WW trades away WE damage and mana restoration; the default build metrics use WE."
+    ]
   }
 }

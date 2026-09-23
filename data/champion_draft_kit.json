@@ -513,6 +513,19 @@
       "physical": 0.0,
       "globalPressure": 0.0
     },
+    "Hwei": {
+      "frontline": 0.0,
+      "peel": 0.65,
+      "engage": 0.35,
+      "antiDive": 0.7,
+      "antiTank": 0.45,
+      "disruption": 0.85,
+      "disengage": 0.75,
+      "sustained": 0.55,
+      "magic": 1.0,
+      "physical": 0.0,
+      "globalPressure": 0.0
+    },
     "Irelia": {
       "frontline": 0.6,
       "peel": 0.15,

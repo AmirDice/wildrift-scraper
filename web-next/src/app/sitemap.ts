@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getChampions, site } from "@/lib/data";
+import { getChampions, pendingChampions, site } from "@/lib/data";
 import { getPosts } from "@/lib/blog";
 import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 
@@ -62,7 +62,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Champion pages change when the scrape does, roughly twice a month, and
   // they are the pages Google has not got round to crawling yet: an honest
   // lastmod and a priority above the secondary tools is the signal we have.
-  const championPages: MetadataRoute.Sitemap = getChampions().map((c) => ({
+  const championPages: MetadataRoute.Sitemap = [...getChampions(), ...pendingChampions()].map((c) => ({
     url: `${BASE}/champions/${c.slug}`,
     lastModified: collected,
     changeFrequency: "monthly",

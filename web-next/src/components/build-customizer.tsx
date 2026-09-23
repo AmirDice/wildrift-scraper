@@ -21,7 +21,7 @@ import { GlassSlider } from "@/components/glass-slider";
 import { ShareBuildButton, track } from "@/components/share-build";
 import { ShareSnapshotButton } from "@/components/share-snapshot";
 import { useAccount } from "@/components/account-provider";
-import { getChampions } from "@/lib/data";
+import { getChampions, pendingChampions } from "@/lib/data";
 import { CURRENT_PATCH } from "@/lib/patch";
 import engineData from "@/data/engine.json";
 
@@ -271,7 +271,7 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
   const [loadedSavedId, setLoadedSavedId] = useState<string | null>(null);
 
   const championSlug = useMemo(
-    () => getChampions().find((entry) => entry.name === name)?.slug ?? "",
+    () => [...getChampions(), ...pendingChampions()].find((entry) => entry.name === name)?.slug ?? "",
     [name],
   );
   const allItems = useMemo(() => customizerItems(), []);

@@ -25,6 +25,7 @@ import json
 import math
 import re
 from pathlib import Path
+from web.hwei import timeline as hwei_timeline
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -307,6 +308,9 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
 
     Shared by the ally-value model and the champion's own sustain so the two
     read the same components and cannot disagree about what a kit does."""
+    if name == "Hwei" and FORMULAS.get(name, {}).get("hwei"):
+        result = hwei_timeline(FORMULAS[name]["hwei"], st, {"hp": (foe or {}).get("hp", 2600)}, window, level)
+        return result["shield" if audience == "self" else "allyShield"] * (1 + st["healShieldAmp"])
     f = (FORMULAS.get(name, {}) or {}).get("abilities", {}) or {}
     amp = 1 + st["healShieldAmp"]
     haste_m = 100 / (100 + st["haste"])
@@ -628,6 +632,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "hp": base("hp", 1800), "bonusHp": 0.0,
         "armor": base("armor", 60), "mr": base("mr", 45),
         "baseAsPct": 0.0,  # bonus attack speed %
+        # The champion's OWN bonus attack speed at this level (7.3's published
+        # model). Filled in when attack speed is resolved.
+        "innateAsBonus": 0.0,
         "baseAs": attack_speed_ratio(
             name, bs.get("attackSpeed", {}).get("base", 0.75) or 0.75),
         "crit": 0.0, "critMult": BASE_CRIT_MULT, "critDamagePerExcessCrit": 0.0,
@@ -818,6 +825,11 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # Attack speed granted by a PASSIVE rather than the stat line. There was
         # no key for this at all, so Guinsoo's 32% and Youmuu's 25% were lost.
         st["baseAsPct"] += g("asPctPassive")
+        # Critical rate granted by a PASSIVE, the same idea. Yun Tal Wildarrows
+        # (7.3) prints 0% crit and earns 25% by attacking, so its stat line says
+        # nothing about the one stat it exists for, and a crit item read as
+        # having no crit loses every comparison it should win.
+        st["crit"] += g("critPctPassive") / 100.0
         st["critDamagePerExcessCrit"] += g("critDamagePerExcessCrit")
         # "Every Nth attack deals ..." (Hullbreaker's Skipper). Emphatically NOT
         # a spellblade and NOT an on-hit: it fires once per N autos, so only 1/N
@@ -1212,7 +1224,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # entirely -- every champion fought at its level-1 rate. The bonus from
         # levels is innate, so asEfficiency (which discounts ITEM attack speed
         # on kits that convert it poorly) must not touch it.
-        st["as"] = min(st["baseAs"] * (1 + level_as_bonus(name, level) + as_pct / 100.0),
+        # Stored, not recomputed downstream: _for_window and the clone path
+        # both rebuild attack speed from baseAs, and each place that forgets
+        # this term fights at the champion's level-1 rate. It is also how the
+        # TS engine carries it, so the two cannot drift.
+        st["innateAsBonus"] = level_as_bonus(name, level)
+        st["as"] = min(st["baseAs"] * (1 + st["innateAsBonus"] + as_pct / 100.0),
                        AS_CAP)
     if st["reloadMag"]:
         # magazine of M shots then reload: throughput = M / (M/AS + reload).
@@ -1259,7 +1276,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         _alive = min(st["cloneMaxCount"] or 1,
                      st["crit"] * st["as"] * st["cloneLifetimeS"])
         _clone_as = min(AS_CAP, st["baseAs"]
-                        * (1 + level_as_bonus(name, level)
+                        * (1 + st.get("innateAsBonus", 0.0)
                            + st["cloneAsFromCritPct"] / 100.0 * st["crit"]))
         _clone_dps = _alive * _clone_as * (st["cloneAdPct"] / 100.0) * st["ad"]
         st["onHitPhys"] += _clone_dps / max(st["as"], 0.1)
@@ -1315,6 +1332,13 @@ CHAMP_CLASS: dict[str, str] = {c["name"]: c.get("class", "")
                                for c in _SITE.get("champions", [])}
 CHAMP_ROLE: dict[str, str] = {c["name"]: c.get("role", "")
                               for c in _SITE.get("champions", [])}
+
+
+for _c in CHAMPS.values():
+    if _c.get("class"):
+        CHAMP_CLASS.setdefault(_c["name"], _c["class"])
+    if _c.get("role"):
+        CHAMP_ROLE.setdefault(_c["name"], _c["role"])
 
 
 def _mobility_profile(name: str) -> tuple[bool, bool]:
@@ -1718,7 +1742,8 @@ def _for_window(name: str, st: dict, window: float) -> dict:
         as_pct = max(0.0, st["baseAsPct"] - as_lost)
         if not mechs.get("reload"):
             as_pct *= know.get("asEfficiency") or 1
-        adj["as"] = min(adj["baseAs"] * (1 + as_pct / 100.0), AS_CAP)
+        adj["as"] = min(adj["baseAs"] * (1 + st.get("innateAsBonus", 0.0)
+                                        + as_pct / 100.0), AS_CAP)
         if mechs.get("reload"):
             mag = float(mechs["reload"].get("magazine") or 2)
             reload_s = float(know.get("reloadSeconds") or 1.0)
@@ -1738,6 +1763,12 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     _cdr_per_hit, _cdr_slot = cooldown_relief(name)
     _limits = empower_limits(name)
     phys_m, magic_m = _mults(st, target)
+    hwei = (hwei_timeline(FORMULAS[name]["hwei"], st, dict(target, magicMultiplier=magic_m), window, level)
+            if name == "Hwei" and FORMULAS.get(name, {}).get("hwei") else None)
+    if hwei:
+        f = {slot: {"name": FORMULAS[name]["abilities"][slot]["name"],
+                    "damage": [{"type": "magic", "base": base, "when": "per cast"}]}
+             for slot, base in hwei["damage"].items()}
     giant = 1 + st["giant"] * min(1.0, target["bonusHp"] / 1700)
     crit_ev = 1 + st["crit"] * (st["critMult"] - 1)
     haste_m = 100 / (100 + st["haste"])
@@ -1870,7 +1901,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     # Short windows follow the champion's actual all-in COMBO sequence when one
     # is authored (each action ~0.45s); longer windows use the cooldown rotation.
     combo_seq = FORMULAS.get(name, {}).get("combo") or []
-    if window <= 4.0 and combo_seq:
+    if not hwei and window <= 4.0 and combo_seq:
         budget = max(1, int(window / 0.45))
         seq = combo_seq[:budget]
         n_autos_seq = sum(1 for a in seq if a == "auto")
@@ -2013,7 +2044,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         # Slot P excluded: a passive is not cast.
         empowers_autos = slot != "P" and any(
             c.get("when") == "per auto" for c in comps)
-        if (not dmg_comps and not empowers_autos) or cast_budget <= 0:
+        if (not dmg_comps and not empowers_autos) or (not hwei and cast_budget <= 0):
             continue
         cds = ab.get("cooldowns") or []
         rank = rank_of.get(slot, 3)
@@ -2027,14 +2058,17 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             _src_cd = max(0.5, (_rank_val(_src_cds, 3) or 12) * haste_m)
             _seconds = _cdr_per_hit * _empowered * (1 + int(window / _src_cd))
             cd = max(cd * 0.5, cd - _seconds / max(1.0, window / max(cd, 0.75)))
-        casts = 1 + int(window // max(cd, 0.75)) if cd else 1
+        casts = 1 if hwei else (1 + int(window // max(cd, 0.75)) if cd else 1)
         if slot == "4":
             casts = 1  # one ult per fight window
         max_casts = casts  # cd-allowed before action-time budget clamps it
-        casts = min(casts, cast_budget)
+        casts = 1 if hwei else min(casts, cast_budget)
         cast_budget -= casts
-        casts_total += casts
-        cast_log[slot] = {"name": ab.get("name", slot), "casts": casts, "max": max_casts}
+        casts_total += hwei["casts"].get(slot, 0) if hwei else casts
+        if not hwei or hwei["casts"].get(slot, 0):
+            actual = hwei["casts"][slot] if hwei else casts
+            cast_log[slot] = {"name": ab.get("name", slot), "casts": actual,
+                              "max": actual if hwei else max_casts}
         amp_a = 1 + st["abilityAmp"]
         d = 0.0
         for c in dmg_comps:
@@ -2046,7 +2080,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         total += d
 
     # autos
-    n_autos = max(1, int(window * st["as"] * _auto_uptime(name, window, st)))
+    n_autos = hwei["autos"] if hwei else max(1, int(window * st["as"] * _auto_uptime(name, window, st)))
     # Frequency of each per-auto component: a passive that fires every Nth
     # attack rides 1/N of them, and an ability that empowers N attacks per
     # cast rides N x its casts. Both were riding every attack.

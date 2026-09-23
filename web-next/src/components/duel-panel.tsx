@@ -150,6 +150,7 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
   const [enemy, setEnemy] = useState("Garen");
   const [dummyHp, setDummyHp] = useState(4000);
   const [engage, setEngage] = useState<Engage>("same");
+  const [hweiChoices, setHweiChoices] = useState<Record<string, string>>({"1":"QQ","2":"WE","3":"EQ"});
   // What the opponent stands on: "ladder" (their top-50 players' most common
   // loadout, the default), "variant:<name>" (one of our recommended builds),
   // or "custom" (the player picks every item and rune themselves).
@@ -206,8 +207,8 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
 
   const result = useMemo(() => {
     if (!target || !itemSlugs.length) return null;
-    return duel(name, itemSlugs, runeNames, target, level, 20, scaled);
-  }, [name, itemSlugs, runeNames, target, level, scaled]);
+    return duel(name, itemSlugs, runeNames, target, level, 20, scaled, hweiChoices);
+  }, [name, itemSlugs, runeNames, target, level, scaled, hweiChoices]);
 
   // The enemy fights back only when their kit is actually simulatable. A
   // form-swapper or an unreleased champion would "fight back" with zero
@@ -218,8 +219,8 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
     if (mode !== "champion" || enemyLocked || !itemSlugs.length) return null;
     const head = engage === "you" ? ENGAGE_HEAD_START : engage === "them" ? -ENGAGE_HEAD_START : 0;
     return mutualDuel(name, itemSlugs, runeNames, enemy, enemyItems, enemyRunes,
-                      level, 20, scaled, head);
-  }, [mode, enemyLocked, name, itemSlugs, runeNames, enemy, level, scaled, engage, enemyItems, enemyRunes]);
+                      level, 20, scaled, head, hweiChoices);
+  }, [mode, enemyLocked, name, itemSlugs, runeNames, enemy, level, scaled, engage, enemyItems, enemyRunes, hweiChoices]);
 
   // Any change to the build, level, scaling or opponent invalidates the last
   // fight, so the numbers on screen always belong to the setup above them.
@@ -228,7 +229,7 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
   // current render already knows.
   const setupKey = [name, mode, enemy, dummyHp, level, scaled, engage, activeSource,
                     enemyItems.join(","), enemyRunes.join(","),
-                    itemSlugs.join(","), runeNames.join(",")].join("|");
+                    itemSlugs.join(","), runeNames.join(","), JSON.stringify(hweiChoices)].join("|");
   const [lastSetup, setLastSetup] = useState(setupKey);
   if (lastSetup !== setupKey) {
     setLastSetup(setupKey);
@@ -287,6 +288,23 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
         <span aria-hidden className="shrink-0 text-accent transition group-open:rotate-180">⌄</span>
       </summary>
       <div className="p-4">
+        {name === "Hwei" && (
+          <div className="mt-3 rounded-lg border border-white/10 p-3">
+            <p className="text-sm font-semibold">Hwei’s spell choices</p>
+            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              {([['1','Disaster',['QQ','QW','QE']],['2','Serenity',['WQ','WW','WE']],['3','Torment',['EQ','EW','EE']]] as const).map(([slot,label,choices]) => (
+                <label key={slot} className="text-xs text-muted">{label}
+                  <select aria-label={`Hwei ${label}`} value={hweiChoices[slot]}
+                    onChange={e=>setHweiChoices({...hweiChoices,[slot]:e.target.value})}
+                    className="mt-1 block w-full rounded bg-bg p-2 text-text">
+                    {choices.map(choice=><option key={choice} value={choice}>{choice}</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-muted">These choices apply to this fight. WW trades empowered hits for shielding. R’s explosion is delayed; QW’s execute curve and spell timing are estimates. Movement and vision are not simulated.</p>
+          </div>
+        )}
 
         <div className="relative mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <div className={phase === "fighting" ? "motion-safe:animate-[duelLungeL_.55s_ease-in-out_infinite]" : ""}>

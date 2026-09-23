@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getChampions, type Champion } from "@/lib/data";
+import { getChampions, pendingChampions, type Champion } from "@/lib/data";
 import { roster } from "@/lib/threat";
 import { CURRENT_PATCH } from "@/lib/patch";
 import itemsData from "@/data/items.json";
@@ -106,7 +106,10 @@ function trimAdvisorBuild(v: Record<string, unknown>): BundleBuild | null {
 
 export async function GET() {
   const R = roster();
-  const champions = getChampions().map((c) => {
+  // The offline draft roster needs every live champion, including releases
+  // whose first ladder sample has not been collected yet. Their win rate is
+  // null below, so they cannot masquerade as ranked data.
+  const champions = [...getChampions(), ...pendingChampions()].map((c) => {
     const kit = R[c.name];
     return {
       slug: c.slug,

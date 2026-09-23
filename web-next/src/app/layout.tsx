@@ -13,7 +13,7 @@ import { AnchorAd } from "@/components/anchor-ad";
 import { ADSENSE_CLIENT, ADS_LIVE } from "@/lib/ads";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/next";
-import { getChampions } from "@/lib/data";
+import { getChampions, pendingChampions } from "@/lib/data";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://wrtruemeta.com"),
@@ -57,7 +57,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const navChampions = getChampions().map(({ name, slug, icon }) => ({ name, slug, icon }));
+  const navChampions = [...getChampions(), ...pendingChampions()]
+    .map(({ name, slug, icon }) => ({ name, slug, icon }));
   return (
     <html lang="en" className="h-full">
       <body className="flex min-h-full flex-col">

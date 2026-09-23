@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { getChampions, type Champion } from "@/lib/data";
+import { getChampions, pendingChampions, type Champion } from "@/lib/data";
 import { roster } from "@/lib/threat";
 import { VideoAdGate } from "@/components/video-ad-gate";
 import { ChampionAvatar, TierChip } from "@/components/ui";
@@ -223,7 +223,10 @@ export function DraftAssistant({ reader }: {
    *  passes nothing and is unchanged. */
   reader?: (applyScan: (scan: { bans: string[]; allies: string[]; enemies: string[] }) => void) => ReactNode;
 } = {}) {
-  const champions = useMemo(() => getChampions(), []);
+  // Live champions without a collected ladder sample still belong in champ
+  // select. Their roster-backed kit can be analysed even though they stay out
+  // of rankings until a trustworthy win rate exists.
+  const champions = useMemo(() => [...getChampions(), ...pendingChampions()], []);
   const bySlug = useMemo(() => new Map(champions.map((c) => [c.slug, c])), [champions]);
 
   const [state, setState] = useState<DraftState>(emptyDraft);

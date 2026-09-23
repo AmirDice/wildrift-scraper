@@ -78,5 +78,10 @@
     "archetype": "spellcaster",
     "reason": "Bouncing Bomb, Satchel Charge, and Mega Inferno Bomb deliver burst; autos are filler.",
     "autoShare": 0.5
+  },
+  "Hwei": {
+    "archetype": "spellcaster",
+    "reason": "AP spell damage, area control and ranged poke; WE can empower spells and does not require an attack-speed build.",
+    "autoShare": 0.15
   }
 }

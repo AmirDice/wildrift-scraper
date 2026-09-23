@@ -1811,6 +1811,17 @@
    ],
    "why": "Starting with Focused Resolve (2) initiates tether damage before Transcendent Embrace (4) pulls the target and instantly triggers Mantra state. This allows Inner Flame (1) to be cast in its empowered Mantra form for maximum overall burst damage combined with basic attacks.",
    "confidence": "high"
+  },
+  "Hwei": {
+   "combo": [
+    "2",
+    "3",
+    "1",
+    "4",
+    "auto"
+   ],
+   "confidence": "medium",
+   "why": "WE, EQ, QQ, R, then autos. One choice per subject; R explodes after its 3-second delay. This is a modeled rotation, not a claim of an optimal combo."
   }
  }
 }

@@ -1,0 +1,37 @@
+{
+  "source": "https://wr-meta.com/505-hwei.html",
+  "crossCheck": "https://www.wildriftfire.com/guide/hwei",
+  "patch": "7.3",
+  "reviewedOn": "2026-09-22",
+  "note": "WR-Meta supplies the complete ultimate and is used consistently for growth and cooldowns where the guides disagree. Recheck against in-game tooltips when available.",
+  "assumptions": [
+    "Single target; all aimed spells hit. Default rotation is WE, EQ, QQ, R, followed by available spells and autos.",
+    "Subject choices share their parent cooldown and mana cost. WW and WE are mutually exclusive.",
+    "Cast actions take 0.45s; projectile impact and passive detonation use 0.25s. These timing estimates are not sourced cast times.",
+    "Passive base damage interpolates linearly between the published level 1 and 15 endpoints.",
+    "QW uses the isolated-target case and interpolates its published minimum/maximum damage by missing-health fraction. The source does not specify the precise execute curve.",
+    "QE assumes one eruption and 2.5s lava exposure. R ticks once per second for 3s, then explodes; repeated ticks of one cast cannot repeatedly trigger the passive.",
+    "WW maximum shield is treated as the published total cap, not added to the initial shield. Movement, vision, skillshot misses and spatial area damage are not simulated."
+  ],
+  "baseStats": {
+    "hp": [630, 120], "hpRegen": [8, 0.65], "mana": [480, 50],
+    "manaRegen": [12, 1], "armor": [34, 4.5], "mr": [36, 1.2],
+    "moveSpeed": [355, 0], "ad": [54, 3.5], "attackSpeed": [0.75, 0.017]
+  },
+  "skillOrder": {"1": [1,4,6,7], "2": [3,12,14,15], "3": [2,8,10,11], "4": [5,9,13]},
+  "cooldowns": {"1": [9.5,8.5,7.5,6.5], "2": [17,16.5,16,15.5], "3": [13,12,11,10], "4": [70,60,50]},
+  "manaCosts": {"1": 80, "2": 90, "3": 50, "4": 100},
+  "passive": {"base": [33,333], "ap": 0.33, "markSeconds": 4},
+  "spells": {
+    "QQ": {"name": "Devastating Fire", "base": [50,90,130,170], "ap": 0.75, "targetMaxHp": [0.04,0.05,0.06,0.07]},
+    "QW": {"name": "Severing Bolt", "base": [80,110,140,170], "ap": 0.30, "maxBase": [200,330,490,680], "maxAp": 0.75},
+    "QE": {"name": "Molten Fissure", "base": [20,35,50,65], "ap": 0.30, "tickBase": [20,40,60,80], "tickAp": 0.30, "duration": 2.5, "slow": 0.30},
+    "WQ": {"name": "Fleeting Current", "moveSpeed": [30,32,35,37], "moveSpeedAp": 0.03, "duration": [4,4.5,5,5.5]},
+    "WW": {"name": "Pool of Reflection", "shieldBase": [60,80,100,120], "shieldAp": 0.35, "maxShieldBase": [108,128,148,168], "maxShieldAp": 0.71, "rampSeconds": 1.5, "duration": 3, "allyMultiplier": 0.85},
+    "WE": {"name": "Stirring Lights", "base": [30,40,50,60], "ap": 0.15, "charges": 3, "manaRestore": [45,50,55,60]},
+    "EQ": {"name": "Grim Visage", "base": [70,120,170,220], "ap": 0.70, "fearSeconds": [1,1.125,1.25,1.375]},
+    "EW": {"name": "Gaze of the Abyss", "base": [70,120,170,220], "ap": 0.70, "rootSeconds": [1.25,1.5,1.75,2]},
+    "EE": {"name": "Crushing Maw", "base": [70,120,170,220], "ap": 0.70, "slow": [0.4,0.5,0.6,0.7], "slowSeconds": 1.25},
+    "R": {"name": "Spiraling Despair", "base": [250,350,450], "ap": 0.75, "tickBase": [10,20,30], "tickAp": 0.05, "duration": 3, "slowPerStack": 0.10, "slowInterval": 0.25}
+  }
+}

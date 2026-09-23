@@ -6,6 +6,7 @@
 import engineData from "@/data/engine.json";
 import { scaledBuildStats } from "@/lib/build-scaling";
 import type { BuildAnalysis } from "@/lib/builds";
+import { hweiTimeline } from "@/lib/hwei";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const DATA = engineData as any;
@@ -470,6 +471,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // Attack speed granted by a PASSIVE rather than the stat line (Guinsoo's
     // 32%, Youmuu's 25%): the port had no channel for it at all.
     st.baseAsPct += g("asPctPassive");
+    // Crit granted by a passive rather than the stat line: Yun Tal
+    // Wildarrows prints 0% and earns 25% by attacking. Mirrors Python.
+    st.crit += g("critPctPassive") / 100;
     st.critDamagePerExcessCrit += g("critDamagePerExcessCrit");
     // "Every Nth attack deals ..." (Hullbreaker, Kraken Slayer). NOT an
     // on-hit: it fires once per N autos, so it is averaged across attacks,
@@ -817,7 +821,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   } else {
     let asPct = st.baseAsPct;
     if (!mechs.reload) asPct *= know.asEfficiency ?? 1; // Tier-2, no double dip with reload
-    st.as = Math.min(st.baseAs * (1 + innateAsBonus(name, level) + asPct / 100), AS_CAP);
+    // Stored on the block, not recomputed downstream: forWindow, the clone
+    // path and applyScaling all rebuild attack speed from baseAs, and any
+    // one of them that forgets this term fights at the level-1 rate.
+    st.innateAsBonus = innateAsBonus(name, level);
+    st.as = Math.min(st.baseAs * (1 + st.innateAsBonus + asPct / 100), AS_CAP);
   }
   if (mechs.reload) {
     const mag = Number(mechs.reload.magazine) || 2;
@@ -876,7 +884,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   if (st.cloneAdPct) {
     const alive = Math.min(st.cloneMaxCount || 1, st.crit * st.as * (st.cloneLifetimeS || 0));
     const cloneAs = Math.min(AS_CAP, st.baseAs
-      * (1 + innateAsBonus(name, level) + (st.cloneAsFromCritPct || 0) / 100 * st.crit));
+      * (1 + (st.innateAsBonus ?? 0) + (st.cloneAsFromCritPct || 0) / 100 * st.crit));
     const cloneDps = alive * cloneAs * (st.cloneAdPct / 100) * st.ad;
     st.onHitPhys += cloneDps / Math.max(st.as, 0.1);
   }
@@ -982,7 +990,7 @@ function forWindow(name: string, st: any, window: number, level: number): any {
     if (!mechs.fixedAttackSpeed) {
       let asPct = Math.max(0, st.baseAsPct - asPctLost);
       if (!mechs.reload) asPct *= know.asEfficiency ?? 1;
-      adj.as = Math.min(adj.baseAs * (1 + innateAsBonus(name, level) + asPct / 100), AS_CAP);
+      adj.as = Math.min(adj.baseAs * (1 + (st.innateAsBonus ?? 0) + asPct / 100), AS_CAP);
       if (mechs.reload) {
         const mag = Number(mechs.reload.magazine) || 2;
         const reloadS = Number(know.reloadSeconds) || 1.0;
@@ -1001,8 +1009,12 @@ export function rotation(name: string, st: any, target: any, window: number,
   if (st.externalAsMult && st.externalAsMult !== 1) {
     st = { ...st, as: st.as * st.externalAsMult };
   }
-  const f = DATA.formulas[name]?.abilities ?? {};
   const [physM, magicM] = mults(st, target);
+  const hwei = name === "Hwei" && DATA.formulas[name]?.hwei
+    ? hweiTimeline(DATA.formulas[name].hwei, st, { ...target, magicMultiplier: magicM }, window, level) : null;
+  const f: any = hwei ? Object.fromEntries(Object.entries(hwei.damage).map(([slot, base]) =>
+    [slot, { name: DATA.formulas[name].abilities[slot].name,
+      damage: [{ type: "magic", base, when: "per cast" }] }])) : DATA.formulas[name]?.abilities ?? {};
   const giant = 1 + st.giant * Math.min(1, target.bonusHp / 1700);
   const critEv = 1 + st.crit * (st.critMult - 1);
   const hasteM = 100 / (100 + st.haste);
@@ -1294,7 +1306,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     return p + m + t;
   };
 
-  if (window <= 4 && comboSeq.length) {
+  if (!hwei && window <= 4 && comboSeq.length) {
     const budget = Math.max(1, Math.floor(window / 0.45));
     const seq = comboSeq.slice(0, budget);
     let nAutosSeq = 0;
@@ -1408,7 +1420,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     // Slot P excluded: a passive is not cast, and listing "Passive x5" in the
     // abilities used reads as an action the player took.
     const empowersAutos = slot !== "P" && comps.some((c: any) => c.when === "per auto" && !c.dropped);
-    if ((!dmgComps.length && !empowersAutos) || castBudget <= 0) continue;
+    if ((!dmgComps.length && !empowersAutos) || (!hwei && castBudget <= 0)) continue;
     const cds = ab.cooldowns ?? [];
     const rank = rankOf[slot] ?? 3;
     const cdIdx = cds.length ? Math.min(rank, cds.length - 1) : 0;
@@ -1423,13 +1435,15 @@ export function rotation(name: string, st: any, target: any, window: number,
       const seconds = cdrPerEmpoweredHit * empowered * srcCasts;
       cd = Math.max(cd * 0.5, cd - seconds / Math.max(1, window / Math.max(cd, 0.75)));
     }
-    let casts = cd ? 1 + Math.floor(window / Math.max(cd, 0.75)) : 1;
+    let casts = hwei ? 1 : cd ? 1 + Math.floor(window / Math.max(cd, 0.75)) : 1;
     if (slot === "4") casts = 1;
     const maxCasts = casts;
-    casts = Math.min(casts, castBudget);
+    casts = hwei ? 1 : Math.min(casts, castBudget);
     castBudget -= casts;
-    castsTotal += casts;
-    castLog[slot] = { name: ab.name ?? slot, casts, max: maxCasts };
+    castsTotal += hwei ? (hwei.casts[slot] ?? 0) : casts;
+    if (!hwei || (hwei.casts[slot] ?? 0) > 0)
+      castLog[slot] = { name: ab.name ?? slot, casts: hwei ? hwei.casts[slot] : casts,
+        max: hwei ? hwei.casts[slot] : maxCasts };
     const ampA = 1 + st.abilityAmp;
     for (const c of dmgComps) {
       const cd2 = compDmg(c, rank) * casts * ampA;
@@ -1437,7 +1451,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       bySlot[slot] = (bySlot[slot] ?? 0) + cd2;
     }
   }
-  const nAutos = Math.max(1, Math.floor(window * st.as * autoUptime(name, window, st)));
+  const nAutos = hwei ? hwei.autos : Math.max(1, Math.floor(window * st.as * autoUptime(name, window, st)));
   const dAutos = doAutos(nAutos);
   total += dAutos;
   autoDmg += dAutos;
@@ -2308,7 +2322,7 @@ function applyScaling(name: string, items: string[], runes: string[],
     }
   }
   if (contributions.some((c) => c.stat === "attackSpeedPct")) {
-    st.as = Math.min(st.baseAs * (1 + innateAsBonus(name, level) + st.baseAsPct / 100), AS_CAP);
+    st.as = Math.min(st.baseAs * (1 + (st.innateAsBonus ?? 0) + st.baseAsPct / 100), AS_CAP);
   }
 }
 
@@ -2332,6 +2346,10 @@ export function kitSustain(name: string, st: any, level: number,
                            window: number, audience: "self" | "ally",
                            dmgBySlot?: Record<string, number>,
                            foe?: { hp: number }): number {
+  if (name === "Hwei" && DATA.formulas[name]?.hwei) {
+    const result = hweiTimeline(DATA.formulas[name].hwei, st, { hp: foe?.hp ?? 2600 }, window, level);
+    return (audience === "self" ? result.shield : result.allyShield) * (1 + st.healShieldAmp);
+  }
   const f = DATA.formulas[name]?.abilities ?? {};
   const amp = 1 + st.healShieldAmp;
   const hasteM = 100 / (100 + st.haste);
@@ -2446,9 +2464,10 @@ export interface DuelResult {
 
 /** A champion as a target: their real defensive stats at a level and build. */
 export function championTarget(name: string, level: number, items: string[],
-                               runes: string[] = []): DuelTarget | null {
+                               runes: string[] = [], hweiChoices?: Record<string, string>): DuelTarget | null {
   const withBuild = resolveStats(name, level, items, runes);
   if (!withBuild) return null;
+  if (name === "Hwei") withBuild.hweiChoices = hweiChoices;
   // Bonus health is what the items added, so it has to be measured against the
   // same champion at the same level with nothing equipped.
   const naked = resolveStats(name, level, [], []);
@@ -2456,8 +2475,10 @@ export function championTarget(name: string, level: number, items: string[],
   // Kit heals are linearised against a reference fight: cast counts are not
   // linear in window length, so this is a rate, not an exact integral.
   const refDmg = rotationDetail(name, st, SUSTAIN_REF_TARGET, SUSTAIN_REF_WINDOW, level);
-  const kit = kitSustain(name, st, level, SUSTAIN_REF_WINDOW, "self",
+  const kit = name === "Hwei" ? 0 : kitSustain(name, st, level, SUSTAIN_REF_WINDOW, "self",
                          refDmg.bySlot, SUSTAIN_REF_TARGET) / SUSTAIN_REF_WINDOW;
+  const hweiShield = name === "Hwei"
+    ? kitSustain(name, st, level, SUSTAIN_REF_WINDOW, "self", refDmg.bySlot, SUSTAIN_REF_TARGET) : 0;
   const bonusHp = Math.max(0, withBuild.hp - (naked?.hp ?? withBuild.hp));
   return {
     label: name,
@@ -2470,7 +2491,7 @@ export function championTarget(name: string, level: number, items: string[],
     sustainPerSec: Math.max(0, kit + st.runeHealPerSec + st.healOnHit * st.as),
     // Item shielding, so a shield-cut item has something to cut. Sterak's,
     // Maw, Kaenic Rookern and Guardian Angel's revive all land here.
-    shield: Math.max(0, st.shield + st.shieldPctBonusHp * bonusHp
+    shield: Math.max(0, hweiShield + st.shield + st.shieldPctBonusHp * bonusHp
                         + st.shieldPctMaxHp * withBuild.hp),
     ccDepth: Number(DATA.champions[name]?.ccDepth) || 0,
     // 82 champions state a duration in their ability text; the rest fall back
@@ -2500,9 +2521,10 @@ export function dummyTarget(hp: number, armor = 0, mr = 0): DuelTarget {
  */
 export function duel(name: string, items: string[], runes: string[],
                      target: DuelTarget, level = 15, cap = 20,
-                     scaled = false): DuelResult | null {
+                     scaled = false, hweiChoices?: Record<string, string>): DuelResult | null {
   const st = resolveStats(name, level, items, runes);
   if (!st) return null;
+  if (name === "Hwei") st.hweiChoices = hweiChoices;
   // "Fully scaled" is not a display mode: stacking items and ramping passives
   // genuinely change how hard a build hits, so the fight has to see them too.
   // A build shown as fully scaled that then fights at its guaranteed stats
@@ -2628,13 +2650,14 @@ export function mutualDuel(
   aName: string, aItems: string[], aRunes: string[],
   bName: string, bItems: string[], bRunes: string[],
   level = 15, cap = 20, scaled = false, headStart = 0,
+  hweiChoices?: Record<string, string>,
 ): MutualDuelResult | null {
   const targetB = championTarget(bName, level, bItems, bRunes);
-  const targetA = championTarget(aName, level, aItems, aRunes);
+  const targetA = championTarget(aName, level, aItems, aRunes, hweiChoices);
   if (!targetA || !targetB) return null;
   // The same scaling switch applies to both sides: a fully-scaled build racing
   // a guaranteed-stats build would be comparing two different moments in time.
-  const you = duel(aName, aItems, aRunes, targetB, level, cap, scaled);
+  const you = duel(aName, aItems, aRunes, targetB, level, cap, scaled, hweiChoices);
   const them = duel(bName, bItems, bRunes, targetA, level, cap, scaled);
   if (!you || !them) return null;
 
@@ -2665,7 +2688,7 @@ export function mutualDuel(
     if (fought >= 0.25) {
       const partial = verdict === "you"
         ? duel(bName, bItems, bRunes, targetA, level, fought, scaled)
-        : duel(aName, aItems, aRunes, targetB, level, fought, scaled);
+        : duel(aName, aItems, aRunes, targetB, level, fought, scaled, hweiChoices);
       dealt = partial?.damage ?? 0;
     }
     survivorHp = Math.max(0, Math.round(((winnerTarget.hp - dealt) / winnerTarget.hp) * 1000) / 1000);
