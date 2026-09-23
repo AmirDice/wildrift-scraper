@@ -264,7 +264,12 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // champion's attack speed was restated and 141 of them have new base stats.
   // A v34 entry was reasoned from a shop and a stat table that no longer
   // exist, item for item.
-  return `build:v35:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v36: production moved from Gemini 3.6 Flash to Gemini 3.8 Flash, and the
+  // advisor's item catalog was rebuilt to include the complete patch 7.3 shop.
+  // A v35 hit would bypass both changes and could keep returning an older
+  // model's build -- including builds that never considered the new items --
+  // for the remainder of the 45-day TTL.
+  return `build:v36:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
