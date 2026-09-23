@@ -85,8 +85,10 @@ export function AdSlot({ placement, className = "", bare = false }: {
 }) {
   const pathname = usePathname() || "/";
   const box = useRef<HTMLDivElement | null>(null);
+  const ad = useRef<HTMLModElement | null>(null);
   const pushed = useRef(false);
   const [near, setNear] = useState(false);
+  const [fillStatus, setFillStatus] = useState<"pending" | "filled" | "unfilled">("pending");
 
   // The anchor is components/anchor-ad.tsx, not a slot in the page flow: it is
   // fixed to the viewport, reserves space through a CSS variable and can be
@@ -123,10 +125,39 @@ export function AdSlot({ placement, className = "", bare = false }: {
       const w = window as unknown as { adsbygoogle?: unknown[] };
       w.adsbygoogle = w.adsbygoogle || [];
       w.adsbygoogle.push({});
-    } catch { /* blocked or not loaded: the reserved space just stays empty */ }
+    } catch { /* blocked or not loaded: the status fallback below collapses it */ }
+  }, [near, network]);
+
+  // AdSense marks each requested unit as filled or unfilled. An unfilled unit
+  // should disappear instead of leaving a large blank rectangle on the page
+  // (especially while a new account is still being reviewed). Keep reserving
+  // space while a real ad is loading, then collapse only on an explicit
+  // unfilled response. A blocked script gets the same treatment after a short
+  // grace period so ad blockers do not turn every placement into empty space.
+  useEffect(() => {
+    if (!near || !network || !ad.current) return;
+    const el = ad.current;
+
+    const readStatus = () => {
+      const status = el.getAttribute("data-ad-status");
+      if (status === "filled" || status === "unfilled") setFillStatus(status);
+    };
+
+    readStatus();
+    const observer = new MutationObserver(readStatus);
+    observer.observe(el, { attributes: true, attributeFilter: ["data-ad-status"] });
+    const timeout = window.setTimeout(() => {
+      if (!el.getAttribute("data-ad-status")) setFillStatus("unfilled");
+    }, 8_000);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timeout);
+    };
   }, [near, network]);
 
   if (!allowed) return null;
+  if (fillStatus === "unfilled") return null;
 
   return (
     <div
@@ -148,6 +179,7 @@ export function AdSlot({ placement, className = "", bare = false }: {
               Advertisement
             </span>
             <ins
+              ref={ad}
               className="adsbygoogle block w-full"
               style={{ display: "block", width: "100%" }}
               data-ad-client={ADSENSE_CLIENT}
