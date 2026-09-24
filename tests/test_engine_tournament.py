@@ -37,6 +37,59 @@ def test_candidate_gate_requires_three_distinct_legal_cores():
     assert errors == []
 
 
+def test_jungle_candidates_get_smite_instead_of_being_rejected():
+    # Graves max damage never reached the engine: every candidate paired Flash
+    # with Ignite, the gate rejected all three for needing Smite, and the
+    # request silently fell back to one ordinary generation.
+    a = candidate("A", "guardian-angel")
+    b = candidate("B", "wits-end")
+    c = candidate("C", "bloodthirster")
+    for build in (a, b, c):
+        build["summoners"] = ["Flash", "Ignite"]
+    allowed = sorted({item for build in (a, b, c) for item in build["items"]})
+
+    accepted, errors = adv._legal_tournament_candidates(
+        {"candidates": [a, b, c]}, allowed, role="jungle")
+
+    assert errors == []
+    assert [row["id"] for row in accepted] == ["A", "B", "C"]
+    assert all(sorted(row["summoners"]) == ["Flash", "Smite"] for row in accepted)
+    # The measured core is the repaired one, so the post-judge enforcement of
+    # the same rule cannot knock it out of the tested set.
+    assert a["summoners"] == ["Flash", "Ignite"]
+
+
+def test_candidates_equal_after_summoner_repair_are_duplicates():
+    a = candidate("A")
+    b = candidate("B")
+    a["summoners"] = ["Flash", "Ignite"]
+    b["summoners"] = ["Flash", "Exhaust"]
+    allowed = sorted(set(a["items"]))
+
+    accepted, errors = adv._legal_tournament_candidates(
+        {"candidates": [a, b]}, allowed, role="jungle", expected_count=2)
+
+    assert [row["id"] for row in accepted] == ["A"]
+    assert any("duplicates" in e for e in errors)
+
+
+def test_core_repaired_after_the_judge_degrades_instead_of_raising():
+    # Max-durability Caitlyn used to 500 here.
+    judged = candidate("A")
+    meta = {"winner": "A", "measurements": [{"id": "A"}]}
+    tested = {adv._candidate_signature(judged)}
+
+    assert adv._settle_tournament_label(dict(judged), meta, tested) is meta
+
+    repaired = {**judged, "items": judged["items"][:4] + ["bloodthirster"]}
+    settled = adv._settle_tournament_label(repaired, meta, tested)
+    assert settled["winner"] is None
+    assert settled["judgedWinner"] == "A"
+    assert settled["coreRepairedAfterJudge"] is True
+    assert settled["measurements"] == meta["measurements"]
+    assert adv._settle_tournament_label(repaired, None, tested) is None
+
+
 def test_flexible_champions_get_distinct_cross_path_archetypes():
     varus = adv.profiles.profile("Varus", log=False)
     paths = adv._damage_archetypes(

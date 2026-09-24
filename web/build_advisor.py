@@ -953,12 +953,16 @@ def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
         elif not (legal_spells := summoners.enforce(
                 candidate.get("summoners") or [], role, enemies_known)):
             problem = "has illegal summoner spells"
-        elif sorted(legal_spells) != sorted(candidate.get("summoners") or []):
-            problem = "has summoner spells that require deterministic replacement"
         elif valid_archetypes and archetype not in valid_archetypes:
             problem = f"has unknown or missing archetype {archetype!r}"
         elif valid_archetypes and not _combo_matches_archetype(tuple(items), archetype):
             problem = f"does not actually satisfy its declared {archetype!r} archetype"
+        if not problem and sorted(legal_spells) != sorted(candidate.get("summoners") or []):
+            # A jungler without Smite, or a spell outside the request's pool, is
+            # repaired deterministically after the judge anyway.  Rejecting the
+            # candidate for it meant a jungle tournament almost never ran; apply
+            # the same repair here so the measured core is the one that ships.
+            candidate = {**candidate, "summoners": legal_spells}
         signature = _candidate_signature(candidate)
         if not problem and signature in seen:
             problem = "duplicates another candidate"
@@ -978,6 +982,24 @@ def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
     if missing:
         errors.append("missing required damage archetypes: " + ", ".join(sorted(missing)))
     return accepted, errors
+
+
+def _settle_tournament_label(res: dict, meta: dict | None,
+                             tested_signatures: set[tuple]) -> dict | None:
+    """Keep the engine verdict only while the final core is one it measured.
+
+    Post-judge validation can legitimately repair items, runes or summoners.
+    That used to raise, which turned a legal build into a 500; now the build
+    ships and the tournament metadata keeps its measurements but names no
+    winner, so nothing downstream can present it as engine-judged.
+    """
+    if not meta or _candidate_signature(res) in tested_signatures:
+        return meta
+    print(f"[advisor] post-judge validation changed the tested core "
+          f"(judged {meta.get('winner')!r}); returning the repaired build "
+          "without the engine-judged label", file=sys.stderr)
+    return {**meta, "winner": None, "judgedWinner": meta.get("winner"),
+            "coreRepairedAfterJudge": True}
 
 
 def _simulate_tournament(champion: str, candidates: list[dict],
@@ -2147,10 +2169,9 @@ def advise(champion: str, role: str, enemies: list[str],
     # Validation and deterministic enforcement run after the judge. They may
     # repair prose or situational advice, but the engine badge is truthful only
     # while the item/rune/summoner core is still one of the measured candidates.
-    if tournament_meta and _candidate_signature(res) not in tested_signatures:
-        raise RuntimeError(
-            "post-judge validation changed the tested core; refusing to label an "
-            "unmeasured build as engine-judged")
+    # When repair did touch the core, the repaired build is still the legal one
+    # to return; it just stops claiming a verdict the engine never gave.
+    tournament_meta = _settle_tournament_label(res, tournament_meta, tested_signatures)
 
     # Normalised request metadata, so the frontend can show what the build was
     # optimised for and flag any playstyle the champion could not honour. Added
