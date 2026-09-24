@@ -819,7 +819,23 @@ _ARCHETYPE_TEXT = {
     "ap-caster": "AP ability burst/poke with magic penetration and haste",
     "ap-on-hit": "AP attack-speed/on-hit sustained damage",
     "hybrid-on-hit": "a coherent mixed-scaling on-hit path",
+    # A tank or bruiser asked for damage is not asking to stop being one. The
+    # bias prose already says "a tank asked for maximum damage becomes the most
+    # offensive viable TANK, not a different class", but that instruction had
+    # nothing to land on: Malphite was offered ap-caster and NOTHING else, so
+    # all three candidates and the engine challenger were the same 4,813-EHP
+    # glass build. These paths give the durable classes somewhere to go.
+    "ad-bruiser": "AD damage delivered from a frame that still holds a fight",
+    "ap-bruiser": "AP damage delivered from a frame that still holds a fight",
 }
+
+#: Classes that must always be offered a durable path, whatever their kit
+#: pattern says. Everything here fights from the front by definition.
+FRONTLINE_CLASSES = {"Tank", "Bruiser", "Fighter", "Juggernaut"}
+
+#: How many of the five items a bruiser/tank path has to spend on durability
+#: before it counts as that path rather than the caster build wearing its name.
+BRUISER_DEFENSIVE_ITEMS = 2
 
 
 def _damage_archetypes(champion: str, combat: dict, scaling: dict,
@@ -865,6 +881,14 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
             add("ap-on-hit")
     if damage_path in {"standard", "hybrid"} and champion in HYBRID_DAMAGE_CHAMPIONS:
         add("hybrid-on-hit" if on_hit or attack_based else "ap-caster")
+    # A frontline class always gets a durable path, and gets it FIRST so it
+    # survives the five-path cap below. Without this a tank asked for maximum
+    # damage was handed a single ap-caster path and every candidate came back a
+    # glass build, which is the opposite of what the bias text asks for.
+    if champion_class in FRONTLINE_CLASSES:
+        durable = "ap-bruiser" if (allow_ap and not allow_ad) else "ad-bruiser"
+        if durable not in ids:
+            ids.insert(0, durable)
 
     # One completion can cheaply provide more hypotheses.  Five bounds prompt
     # size and engine latency while covering every meaningful axis on the most
@@ -1165,6 +1189,11 @@ def _item_archetype_signals(slug: str) -> set[str]:
         signals.add("physical-pen")
     if "magicPenFlat" in stats or "magicPen" in stats:
         signals.add("magic-pen")
+    # Carries a durability stat. Needed so a bruiser or tank path can require
+    # that its build actually holds a frontline instead of collapsing into the
+    # same caster build the squishy paths already produce.
+    if stats & {"hp", "armor", "mr"}:
+        signals.add("defensive")
     return signals
 
 
@@ -1200,6 +1229,12 @@ def _item_supports_archetype(slug: str, archetype: str) -> bool:
         "ap-caster": bool(sig & {"ap", "magic-pen"}) and not phys_only,
         "ap-on-hit": bool(sig & {"ap", "on-hit", "attack-speed"}) and not phys_only,
         "hybrid-on-hit": bool(sig & {"ad", "ap", "on-hit", "attack-speed"}),
+        # A durable path needs BOTH halves available: its own scaling and the
+        # defensive items that make it that path rather than the caster build.
+        "ad-bruiser": (bool(sig & {"ad", "physical-pen", "defensive"})
+                       and not magic_only),
+        "ap-bruiser": (bool(sig & {"ap", "magic-pen", "defensive"})
+                       and not phys_only),
     }.get(archetype, True)
 
 
@@ -1218,6 +1253,12 @@ def _combo_matches_archetype(combo: tuple[str, ...], archetype: str) -> bool:
         return count("ap") >= 3
     if archetype == "ad-caster":
         return count("ad") >= 3
+    # Without a floor these collapse straight back into the caster build: the
+    # optimizer would happily call five glass items an "ad-bruiser".
+    if archetype == "ad-bruiser":
+        return count("defensive") >= BRUISER_DEFENSIVE_ITEMS and count("ad") >= 2
+    if archetype == "ap-bruiser":
+        return count("defensive") >= BRUISER_DEFENSIVE_ITEMS and count("ap") >= 2
     return True
 
 

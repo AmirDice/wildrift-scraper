@@ -655,3 +655,65 @@ def test_the_eligibility_gate_is_the_only_defence_here():
     assert adv._combo_matches_archetype(
         ("dusk-and-dawn", "runaans-hurricane", "infinity-edge",
          "wits-end", "terminus"), "ad-crit")
+
+
+# ---------------------------------------------------------------------------
+# DURABLE PATHS FOR DURABLE CLASSES
+#
+# Malphite asked for maximum damage was offered ap-caster and NOTHING else, so
+# all three model candidates and the engine challenger came back as the same
+# 4,813-EHP glass build. The bias prose already says a tank asked for maximum
+# damage becomes the most offensive viable TANK; it had nothing to land on.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("champion,expected", [
+    ("Malphite", "ap-bruiser"),
+    ("Darius", "ad-bruiser"),
+    ("Ornn", "ad-bruiser"),
+    ("Aatrox", "ad-bruiser"),
+])
+def test_frontline_classes_are_always_offered_a_durable_path(champion, expected):
+    profile = adv.profiles.profile(champion, log=False)
+    paths = adv._damage_archetypes(
+        champion, profile["combatProfile"], profile["scalingProfile"], "standard")
+    ids = [row["id"] for row in paths]
+
+    assert expected in ids, ids
+    # First, so it survives the five-path cap on a flexible kit.
+    assert ids[0] == expected
+
+
+@pytest.mark.parametrize("champion", ["Caitlyn", "Jinx", "Lux", "Akali"])
+def test_squishy_classes_are_not_given_a_durable_path(champion):
+    profile = adv.profiles.profile(champion, log=False)
+    ids = [row["id"] for row in adv._damage_archetypes(
+        champion, profile["combatProfile"], profile["scalingProfile"], "standard")]
+
+    assert not any(i.endswith("-bruiser") for i in ids), ids
+
+
+def test_a_durable_path_must_actually_buy_durability():
+    """Otherwise it collapses into the caster build wearing its name."""
+    glass = ("infinity-edge", "the-collector", "stormrazor",
+             "lord-dominiks-regard", "duskblade-of-draktharr")
+    durable = ("trinity-force", "steraks-gage", "deaths-dance",
+               "black-cleaver", "spear-of-shojin")
+
+    assert not adv._combo_matches_archetype(glass, "ad-bruiser")
+    assert adv._combo_matches_archetype(durable, "ad-bruiser")
+
+
+def test_defensive_items_carry_the_signal_that_gate_reads():
+    for slug in ("steraks-gage", "deaths-dance", "sunfire-aegis"):
+        assert "defensive" in adv._item_archetype_signals(slug), slug
+    for slug in ("infinity-edge", "rabadons-deathcap", "void-staff"):
+        assert "defensive" not in adv._item_archetype_signals(slug), slug
+
+
+def test_a_durable_path_still_refuses_the_wrong_scaling():
+    """ad-bruiser must not become a home for pure AP items."""
+    assert not adv._item_supports_archetype("rabadons-deathcap", "ad-bruiser")
+    assert not adv._item_supports_archetype("infinity-edge", "ap-bruiser")
+    assert adv._item_supports_archetype("steraks-gage", "ad-bruiser")
+    assert adv._item_supports_archetype("steraks-gage", "ap-bruiser")
