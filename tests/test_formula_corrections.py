@@ -165,3 +165,37 @@ def test_the_two_corrected_components_now_scale_by_rank():
                     if c["name"] == name)
         assert len(comp["ratios"]) == 1, comp["ratios"]
         assert isinstance(comp["ratios"][0]["pct"], list), comp["ratios"]
+
+
+def test_graves_crit_pellets_carry_the_7_3_rate():
+    """Six bullets, each at 1.5x its normal value. 288% AD, not 280%.
+
+    The scraped tooltip said "by 30%", which is the pre-7.3 rate; the client
+    says 50%, and the 7.3 note "Shotgun Critical Strike Damage rate: 1.3 -> 1.5"
+    is the same number stated as a rate. Extraction had 130 + 30x5 = 280%,
+    matching neither the old rate (249.6%) nor the new one.
+    """
+    import web.fight_engine as fe
+    crit = next(c for c in fe.FORMULAS["Graves"]["abilities"]["P"]["damage"]
+                if c["name"] == "Passive Auto (critical)")
+    plain = next(c for c in fe.FORMULAS["Graves"]["abilities"]["P"]["damage"]
+                 if c["name"] == "Passive Auto (non-critical)")
+    crit_pcts = [r["pct"] for r in crit["ratios"]]
+    plain_pcts = [r["pct"] for r in plain["ratios"]]
+
+    assert plain_pcts == [72, 24, 24, 24], plain_pcts
+    assert len(crit_pcts) == 6, "a critical strike fires six bullets"
+    assert crit_pcts == [72 * 1.5] + [24 * 1.5] * 5, crit_pcts
+    assert sum(crit_pcts) == 288
+
+
+def test_the_site_tooltip_matches_the_modelled_rate():
+    """The page said 30% while the engine was told 50%; both are read by users."""
+    import json
+    details = json.loads(
+        (Path(__file__).resolve().parents[1] / "web-next" / "src" / "data"
+         / "champion_details.json").read_text(encoding="utf-8"))
+    passive = next(a for a in details["graves"]["abilities"] if a["slot"] == "P")
+
+    assert "by 50%" in passive["text"]
+    assert "by 30%" not in passive["text"]
