@@ -100,3 +100,68 @@ class TestOverlayIntegrity:
         for name, entry in overlay["champions"].items():
             assert name in profiles.FORMULAS, f"unknown champion {name!r}"
             assert entry.get("reason"), f"{name} has no reason"
+
+
+# ---------------------------------------------------------------------------
+# RANK TIERS MUST NOT BE STORED AS SEPARATE RATIOS
+#
+# A tooltip's "110 / 130 / 150 / 170% AD" is ONE ratio that scales with ability
+# rank, and 63 components store it that way. Graves' Detonation and Urgot's
+# Purge bolt were extracted as four separate same-stat ratios instead, and the
+# engine sums every ratio in the list, so they were charged 560% and 125% AD at
+# every rank. On Graves that made End of the Line roughly three times its real
+# damage and turned an engine enumeration of his best damage build into a
+# zero-attack-speed ability-haste build.
+# ---------------------------------------------------------------------------
+
+
+def _same_stat_ratio_groups():
+    import collections
+    import web.fight_engine as fe
+    for champion, record in fe.FORMULAS.items():
+        for slot, ability in (record.get("abilities") or {}).items():
+            for comp in (ability.get("damage") or []):
+                ratios = comp.get("ratios") or []
+                counts = collections.Counter(
+                    r.get("stat") for r in ratios
+                    if isinstance(r.get("pct"), (int, float)))
+                for stat, n in counts.items():
+                    if n > 1:
+                        yield champion, slot, comp.get("name"), stat, [
+                            r.get("pct") for r in ratios if r.get("stat") == stat]
+
+
+def test_no_component_stores_rank_tiers_as_repeated_ratios():
+    """Four strictly increasing same-stat ratios is a rank list, not a sum.
+
+    Graves' PASSIVE is the legitimate shape and must keep passing: its
+    [72, 24, 24, 24] really is four shotgun bullets that really do add up.
+    """
+    offenders = []
+    for champion, slot, name, stat, pcts in _same_stat_ratio_groups():
+        if len(pcts) == 4 and all(
+                b > a for a, b in zip(pcts, pcts[1:])):
+            offenders.append(f"{champion} {slot} {name} {stat}={pcts}")
+
+    assert not offenders, (
+        "rank tiers stored as separate ratios; use one entry with a rank-list "
+        "pct: " + "; ".join(offenders))
+
+
+def test_the_legitimately_additive_shape_is_left_alone():
+    import web.fight_engine as fe
+    passive = next(c for c in fe.FORMULAS["Graves"]["abilities"]["P"]["damage"]
+                   if c["name"] == "Passive Auto (non-critical)")
+    pcts = [r["pct"] for r in passive["ratios"]]
+
+    assert pcts == [72, 24, 24, 24], pcts
+
+
+def test_the_two_corrected_components_now_scale_by_rank():
+    import web.fight_engine as fe
+    for champion, slot, name in [("Graves", "1", "Detonation"),
+                                 ("Urgot", "2", "Purge bolt")]:
+        comp = next(c for c in fe.FORMULAS[champion]["abilities"][slot]["damage"]
+                    if c["name"] == name)
+        assert len(comp["ratios"]) == 1, comp["ratios"]
+        assert isinstance(comp["ratios"][0]["pct"], list), comp["ratios"]

@@ -28,7 +28,26 @@
    "removeMechanics": [
     "noResource"
    ],
-   "reason": "Extraction says resource=none plus a noResource mechanic, and the prompt told the model Graves 'has NO mana'. He has 390 base mana and pays per cast (Q 65/70/75/80) -- wildriftfire and wr-meta agree. The reload/magazine mechanic likely got conflated with resourcelessness."
+   "reason": "Extraction says resource=none plus a noResource mechanic, and the prompt told the model Graves 'has NO mana'. He has 390 base mana and pays per cast (Q 65/70/75/80) -- wildriftfire and wr-meta agree. The reload/magazine mechanic likely got conflated with resourcelessness. RANK TIERS EXTRACTED AS SEPARATE RATIOS. A tooltip's '110 / 130 / 150 / 170% AD' is one ratio that scales with ability rank, and 63 components across the roster store it correctly as a single entry with a rank-list pct. These two were written as FOUR separate same-stat ratios instead, and the engine sums every ratio in the list, so the ability was charged 110+130+150+170 = 560% AD at every rank. On Graves that made End of the Line roughly three times its real damage and dominated his whole profile: an engine enumeration of his best damage build came back as a zero-attack-speed ability-haste build, because Q was worth more than his shotgun. Graves' PASSIVE is deliberately left alone: [72, 24, 24, 24] really is four bullets and really does add up.",
+   "abilities": {
+    "1": {
+     "components": {
+      "Detonation": {
+       "ratios": [
+        {
+         "stat": "ad",
+         "pct": [
+          110,
+          130,
+          150,
+          170
+         ]
+        }
+       ]
+      }
+     }
+    }
+   }
   },
   "Nilah": {
    "knowledge": {
@@ -271,6 +290,28 @@
     }
    },
    "reason": "Patch 7.3 moved this champion's damage onto CRIT scaling and the extraction kept only the printed ratio, so crit items were priced at their stat line alone. Across the roster 45 abilities carry crit scaling in `unmodeled` with only Miss Fortune's Love Tap actually modelled, and 14 of those notes were written by 7.3 itself. That is a large part of why the engine ranked on-hit above crit for exactly these champions. 4:Curtain Call 4th Shot -- 7.3: fourth super shot damage ratio 200% -> current Critical Damage. The component was modelled identically to shots 1-3, so neither the old 200% nor the new crit-damage scaling was present."
+  },
+  "Urgot": {
+   "abilities": {
+    "2": {
+     "components": {
+      "Purge bolt": {
+       "ratios": [
+        {
+         "stat": "ad",
+         "pct": [
+          20,
+          27.5,
+          35,
+          42.5
+         ]
+        }
+       ]
+      }
+     }
+    }
+   },
+   "reason": "RANK TIERS EXTRACTED AS SEPARATE RATIOS. A tooltip's '110 / 130 / 150 / 170% AD' is one ratio that scales with ability rank, and 63 components across the roster store it correctly as a single entry with a rank-list pct. These two were written as FOUR separate same-stat ratios instead, and the engine sums every ratio in the list, so the ability was charged 110+130+150+170 = 560% AD at every rank. On Graves that made End of the Line roughly three times its real damage and dominated his whole profile: an engine enumeration of his best damage build came back as a zero-attack-speed ability-haste build, because Q was worth more than his shotgun. Graves' PASSIVE is deliberately left alone: [72, 24, 24, 24] really is four bullets and really does add up."
   }
  },
  "_revertNote": "Twisted Fate (asEfficiency 0.8) and Kennen (0.7) corrections were applied on 2026-07-29 and REVERTED the same day on owner meta-judgment: with the raised values the model built Nashor's Tooth as an effective core item on both (slot 2 in consecutive Twisted Fate runs), and neither champion builds it as a staple in the live meta. Their every-N-hit passives are real, but the extraction's 0.2 produces the builds that match reality. If this comes up again, re-litigate with N-run evidence against real meta builds, not from ability text alone."
