@@ -6,7 +6,6 @@ import { kvGetJson } from "@/lib/kv";
 import { getChampion } from "@/lib/data";
 import type { SharedBuild } from "@/app/api/share-build/route";
 import engineData from "@/data/engine.json";
-import skinsData from "@/data/champion_skins.json";
 
 /**
  * The shareable build card, as an actual image.
@@ -100,8 +99,6 @@ const BIAS_LABEL: Record<string, string> = {
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 
-const SKINS = skinsData as Record<string, { key: string; skins: { num: number; name: string }[] }>;
-
 /** The site's actual wordmark (public/logo.png, 1549x217), inlined once per
  *  process: it never changes between renders, so re-reading it per card would
  *  be waste. */
@@ -150,31 +147,34 @@ async function runeIconUri(name: string): Promise<string | null> {
 }
 
 /**
- * Full-bleed background: the ddragon SPLASH (1215x717 cinematic horizontal),
- * for the champion's chosen skin. Cover-cropping 1215x717 into 1200x630 trims
- * only ~11% of the height, and "attention" spends that trim away from the
- * subject, so the composition survives intact for the whole roster. Skin
- * numbers are validated against the catalogue; anything unknown is the base
- * skin. Champions absent from ddragon (Wild Rift exclusives) fall back to
- * whatever art the site stores for them.
+ * Full-bleed background from Riot's official Wild Rift skin catalogue. Social
+ * cards deliberately never fall back to Data Dragon: its catalogue belongs to
+ * League PC and can silently select art for a skin that is not in Wild Rift.
+ * Batch assets live locally so card rendering remains deterministic. Until a
+ * selected Wild Rift skin has been added, use the site's champion splash.
  */
-async function splashUri(slug: string, skin: number, fallback: string | undefined): Promise<string | null> {
-  const entry = SKINS[slug];
-  const num = entry?.skins.some((k) => k.num === skin) ? skin : 0;
-  const url = entry
-    ? `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${entry.key}_${num}.jpg`
-    : fallback;
-  if (!url) return null;
+async function splashUri(
+  slug: string,
+  fallback: string | undefined,
+  width = 1200,
+  height = 630,
+): Promise<string | null> {
   try {
-    const buf = url.startsWith("/")
-      ? await readFile(path.join(PUBLIC_DIR, url.slice(1)))
-      : await (async () => {
-          const res = await fetch(url);
-          if (!res.ok) throw new Error(String(res.status));
-          return Buffer.from(await res.arrayBuffer());
-        })();
+    let buf: Buffer;
+    try {
+      buf = await readFile(path.join(PUBLIC_DIR, "wildrift-skins", `${slug}.jpg`));
+    } catch {
+      if (!fallback) return null;
+      buf = fallback.startsWith("/")
+        ? await readFile(path.join(PUBLIC_DIR, fallback.slice(1)))
+        : await (async () => {
+            const res = await fetch(fallback);
+            if (!res.ok) throw new Error(String(res.status));
+            return Buffer.from(await res.arrayBuffer());
+          })();
+    }
     const jpg = await sharp(buf)
-      .resize(1200, 630, { fit: "cover", position: "attention" })
+      .resize(width, height, { fit: "cover", position: "attention" })
       .jpeg({ quality: 76 })
       .toBuffer();
     return `data:image/jpeg;base64,${jpg.toString("base64")}`;
@@ -212,6 +212,7 @@ function parsePayload(raw: string): SharedBuild | null {
       skin: Number.isInteger(decoded.skin) && (decoded.skin as number) >= 0 && (decoded.skin as number) <= 99
         ? (decoded.skin as number) : 0,
       player: t(decoded.player, 24) || undefined,
+      tagline: t(decoded.tagline, 100) || undefined,
       createdAt: "",
     };
     if (!build.champion || build.items.length === 0) return null;
@@ -223,6 +224,7 @@ function parsePayload(raw: string): SharedBuild | null {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  const isTikTok = url.searchParams.get("format") === "tiktok";
   let build: SharedBuild | null = null;
 
   const d = url.searchParams.get("d");
@@ -238,7 +240,12 @@ export async function GET(request: Request) {
   const champ = getChampion(build.championSlug);
   const [logo, splash, champIcon, ...itemArt] = await Promise.all([
     logoUri(),
-    splashUri(build.championSlug, build.skin ?? 0, champ?.splash),
+    splashUri(
+      build.championSlug,
+      champ?.splash,
+      isTikTok ? 1080 : 1200,
+      isTikTok ? 940 : 630,
+    ),
     champ?.icon && champ.icon.startsWith("http") ? champ.icon : null,
     ...build.items.map(itemPng),
   ]);
@@ -267,6 +274,272 @@ export async function GET(request: Request) {
     : !build.bootsUpgrade && upAfter === 0
       ? "T2 ALL GAME"
       : "BOOTS";
+
+  if (isTikTok) {
+    return new ImageResponse(
+      (
+        <div style={{
+          width: "100%", height: "100%", display: "flex", flexDirection: "column",
+          background: "#050812", color: "#f4f7ff", fontFamily: "sans-serif", position: "relative",
+          overflow: "hidden",
+        }}>
+          {splash && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={splash} width={1080} height={940}
+                 style={{ position: "absolute", top: 0, left: 0 }} />
+          )}
+          <div style={{
+            position: "absolute", inset: 0, display: "flex",
+            background: "linear-gradient(180deg, rgba(3,5,12,0.18) 0%, rgba(3,5,12,0.08) 25%, rgba(3,5,12,0.82) 48%, #050812 59%, #050812 100%)",
+          }} />
+          <div style={{
+            position: "absolute", top: 430, left: 0, width: 1080, height: 510, display: "flex",
+            background: "linear-gradient(180deg, rgba(3,5,12,0) 0%, rgba(3,5,12,0.42) 35%, rgba(3,5,12,0.86) 100%)",
+          }} />
+          <div style={{
+            position: "absolute", top: 0, left: 0, width: 1080, height: 8, display: "flex",
+            background: "linear-gradient(90deg, #4f8dff 0%, #7fd6ff 46%, #ffd76e 100%)",
+          }} />
+
+          <div style={{
+            position: "relative", height: "100%", display: "flex", flexDirection: "column",
+            padding: "54px 58px 52px",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              {logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logo} height={42} width={Math.round(42 * (1549 / 217))} />
+              ) : (
+                <div style={{ display: "flex", fontSize: 31, fontWeight: 900, letterSpacing: "0.12em" }}>
+                  <span style={{ color: "#4f8dff" }}>WRTRUE</span><span>META</span>
+                </div>
+              )}
+              <div style={{
+                display: "flex", borderRadius: 999, border: "2px solid rgba(255,255,255,0.3)",
+                background: "rgba(4,7,15,0.62)", padding: "10px 22px", fontSize: 20,
+                fontWeight: 800, letterSpacing: "0.08em",
+              }}>
+                WILD RIFT · PATCH {build.patch || "7.3"}
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", marginTop: 500 }}>
+              <div style={{
+                display: "flex", color: "#8ee5ff", fontSize: 19, fontWeight: 900,
+                letterSpacing: "0.24em",
+              }}>
+                OPTIMAL STANDARD DAMAGE BUILD
+              </div>
+              <div style={{
+                display: "flex", fontSize: 126, lineHeight: 0.95, fontWeight: 900,
+                letterSpacing: "-0.055em", textShadow: "0 4px 28px rgba(0,0,0,0.78)",
+              }}>
+                {build.champion.toUpperCase()}
+              </div>
+              <div style={{ display: "flex", gap: 12, marginTop: 18 }}>
+                <div style={{
+                  display: "flex", padding: "8px 18px", borderRadius: 10,
+                  background: "rgba(79,141,255,0.2)", color: "#9fc5ff", fontSize: 20,
+                  fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em",
+                }}>
+                  {build.role || "Dragon Lane"}
+                </div>
+                <div style={{
+                  display: "flex", padding: "8px 18px", borderRadius: 10,
+                  background: "rgba(255,215,110,0.16)", color: "#ffd76e", fontSize: 20,
+                  fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em",
+                }}>
+                  Standard · Damage
+                </div>
+                <div style={{
+                  display: "flex", padding: "8px 18px", borderRadius: 10,
+                  background: "rgba(142,229,255,0.11)", color: "#a7eaff", fontSize: 16,
+                  fontWeight: 850, textTransform: "uppercase", letterSpacing: "0.09em",
+                }}>
+                  AI Optimized · Engine Checked
+                </div>
+              </div>
+            </div>
+
+            <div style={{
+              display: "flex", flexDirection: "column", marginTop: 40, padding: "28px 0 30px",
+              background: "rgba(5,8,18,0.74)",
+              borderTop: "2px solid rgba(127,214,255,0.28)",
+              borderBottom: "2px solid rgba(127,214,255,0.16)",
+            }}>
+              <div style={{
+                display: "flex", color: "#8fa2c5", fontSize: 17, fontWeight: 900,
+                letterSpacing: "0.16em",
+              }}>
+                OPTIMAL 5-ITEM CORE · PURCHASE ORDER
+              </div>
+              <div style={{
+                display: "flex", gap: 18, marginTop: 20, alignItems: "flex-start",
+              }}>
+                {itemArt.map((art, i) => (
+                  <div key={build.items[i]} style={{
+                    width: 132, display: "flex", flexDirection: "column", alignItems: "center",
+                    position: "relative", flexShrink: 0,
+                  }}>
+                    {art ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={art} width={116} height={116} style={{
+                        borderRadius: 22, border: i < 3
+                          ? "3px solid rgba(79,141,255,0.82)"
+                          : "3px solid rgba(255,255,255,0.2)",
+                      }} />
+                    ) : (
+                      <div style={{
+                        width: 116, height: 116, display: "flex", alignItems: "center",
+                        justifyContent: "center", borderRadius: 22, background: "#151d31",
+                        fontSize: 34, fontWeight: 900,
+                      }}>{itemName(build.items[i]).slice(0, 2)}</div>
+                    )}
+                    <div style={{
+                      position: "absolute", top: -10, left: -2, width: 34, height: 34,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      borderRadius: 999, background: "#080d19", border: "2px solid #4f8dff",
+                      color: "#7fb2ff", fontSize: 18, fontWeight: 900,
+                    }}>{i + 1}</div>
+                    <div style={{
+                      display: "flex", textAlign: "center", justifyContent: "center",
+                      fontSize: 15, lineHeight: 1.15, fontWeight: 750, marginTop: 9,
+                      color: "#dce5f7",
+                    }}>{itemName(build.items[i])}</div>
+                  </div>
+                ))}
+                {bootsArt && (
+                  <div style={{
+                    width: 132, display: "flex", flexDirection: "column", alignItems: "center",
+                    marginLeft: "auto", flexShrink: 0,
+                  }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={bootsArt} width={104} height={104} style={{
+                      borderRadius: 20, border: "3px solid rgba(255,215,110,0.7)",
+                    }} />
+                    <div style={{
+                      display: "flex", textAlign: "center", justifyContent: "center",
+                      fontSize: 15, lineHeight: 1.15, fontWeight: 800, marginTop: 9,
+                      color: "#ffd76e",
+                    }}>{itemName(bootsFinal)}</div>
+                    <div style={{ display: "flex", fontSize: 12, color: "#bda96f", marginTop: 4 }}>
+                      {bootsTag}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div style={{
+              display: "flex", gap: 0, marginTop: 26, padding: "28px 0 30px",
+              borderTop: "2px solid rgba(255,255,255,0.11)",
+              borderBottom: "2px solid rgba(255,255,255,0.08)",
+            }}>
+              <div style={{
+                flex: 1, display: "flex", flexDirection: "column", paddingRight: 28,
+              }}>
+                <div style={{ display: "flex", color: "#8fa2c5", fontSize: 17, fontWeight: 900, letterSpacing: "0.16em" }}>
+                  RUNES
+                </div>
+                <div style={{
+                  display: "flex", flexDirection: "row", gap: 12, marginTop: 22,
+                  justifyContent: "space-between",
+                }}>
+                  {runes.ordered.map((rune, i) => (
+                    <div key={rune.name} style={{
+                      width: 112, display: "flex", flexDirection: "column", alignItems: "center",
+                      flexShrink: 0,
+                    }}>
+                      {runeArt[i] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={runeArt[i]!} width={56} height={56} style={{
+                          borderRadius: 999, background: "rgba(0,0,0,0.38)",
+                          border: rune.role === "keystone" ? "2px solid #4f8dff" : "2px solid rgba(255,255,255,0.14)",
+                        }} />
+                      ) : <div style={{ display: "flex", width: 56, height: 56 }} />}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 9 }}>
+                        <div style={{
+                          display: "flex", textAlign: "center", justifyContent: "center",
+                          fontSize: 15, lineHeight: 1.12, fontWeight: 800,
+                        }}>{rune.name}</div>
+                        <div style={{
+                          display: "flex", fontSize: 10, fontWeight: 900, letterSpacing: "0.11em", marginTop: 4,
+                          color: rune.role === "keystone" ? "#7fb2ff" : rune.role === "flex" ? "#ffd76e" : "#7e8ca8",
+                        }}>{rune.role.toUpperCase()}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{
+                width: 286, display: "flex", flexDirection: "column", paddingLeft: 30,
+                borderLeft: "2px solid rgba(255,255,255,0.11)",
+              }}>
+                <div style={{ display: "flex", color: "#8fa2c5", fontSize: 17, fontWeight: 900, letterSpacing: "0.16em" }}>
+                  SUMMONERS
+                </div>
+                <div style={{ display: "flex", gap: 20, marginTop: 22 }}>
+                  {spellArt.map((art, i) => art && (
+                    <div key={spells[i]} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={art} width={94} height={94} style={{
+                        borderRadius: 20, border: "3px solid rgba(127,214,255,0.55)",
+                      }} />
+                      <div style={{ display: "flex", fontSize: 18, fontWeight: 800, marginTop: 9 }}>
+                        {spells[i]}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              marginTop: 30,
+            }}>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{
+                  display: "flex", color: "#7f8ca7", fontSize: 14, fontWeight: 850,
+                  letterSpacing: "0.15em",
+                }}>WHY THIS BUILD</div>
+                <div style={{ display: "flex", color: "#eef5ff", fontSize: 24, fontWeight: 760, marginTop: 7 }}>
+                  {build.tagline || "Reliable damage. Clean power spikes. Built to carry teamfights."}
+                </div>
+              </div>
+            </div>
+
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              marginTop: 30, paddingTop: 26, borderTop: "2px solid rgba(255,255,255,0.1)",
+            }}>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", color: "#7f8ca7", fontSize: 16 }}>
+                  Generated & optimized by WRTrueMeta Build Studio
+                </div>
+                <div style={{ display: "flex", fontSize: 28, fontWeight: 900, color: "#4f8dff", marginTop: 5 }}>
+                  WRTRUEMETA.COM
+                </div>
+              </div>
+              <div style={{
+                display: "flex", padding: "12px 20px", borderRadius: 999,
+                border: "2px solid rgba(255,215,110,0.45)", color: "#ffd76e",
+                fontSize: 17, fontWeight: 900, letterSpacing: "0.1em",
+              }}>
+                BUILD. TEST. WIN.
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      {
+        width: 1080,
+        height: 1920,
+        headers: { "Cache-Control": "public, max-age=86400" },
+      },
+    );
+  }
 
   return new ImageResponse(
     (

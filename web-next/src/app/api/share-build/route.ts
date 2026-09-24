@@ -35,10 +35,12 @@ export interface SharedBuild {
   bootsUpgradeAfter?: number;
   runes: string[];
   summoners?: string[];
-  /** ddragon skin number for the card's splash; 0 is the base skin. */
+  /** Legacy skin number retained so older shared payloads remain compatible. */
   skin?: number;
   /** Optional display name the player chose to put on their card. */
   player?: string;
+  /** Short social-card hook explaining what the generated build is for. */
+  tagline?: string;
   createdAt: string;
 }
 
@@ -75,6 +77,7 @@ export async function POST(request: Request) {
     skin: Number.isInteger(body.skin) && (body.skin as number) >= 0 && (body.skin as number) <= 99
       ? (body.skin as number) : undefined,
     player: text(body.player, 24) || undefined,
+    tagline: text(body.tagline, 100) || undefined,
     createdAt: new Date().toISOString(),
   };
   if (!snapshot.champion || !snapshot.championSlug || snapshot.items.length === 0) {
