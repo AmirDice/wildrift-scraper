@@ -623,5 +623,60 @@
    "kaenic-rookern"
   ],
   []
+ ],
+ [
+  "Jinx",
+  [
+   "statikk-shiv",
+   "runaans-hurricane",
+   "blade-of-the-ruined-king"
+  ],
+  [
+   "Lethal Tempo"
+  ]
+ ],
+ [
+  "Kai'Sa",
+  [
+   "runaans-hurricane",
+   "guinsoos-rageblade",
+   "terminus"
+  ],
+  [
+   "Lethal Tempo"
+  ]
+ ],
+ [
+  "Caitlyn",
+  [
+   "infinity-edge",
+   "the-collector",
+   "rapid-firecannon"
+  ],
+  [
+   "Fleet Footwork"
+  ]
+ ],
+ [
+  "Miss Fortune",
+  [
+   "infinity-edge",
+   "the-collector",
+   "bloodthirster"
+  ],
+  [
+   "Lethal Tempo"
+  ]
+ ],
+ [
+  "Jhin",
+  [
+   "infinity-edge",
+   "the-collector",
+   "lord-dominiks-regard"
+  ],
+  [
+   "Fleet Footwork"
+  ]
  ]
 ]

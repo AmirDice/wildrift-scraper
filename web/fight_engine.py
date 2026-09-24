@@ -279,6 +279,12 @@ def _apply_formula_corrections(formulas: dict) -> int:
                         component["ratios"] = fix["ratios"]
                     if "crossRatios" in fix:
                         component["crossRatios"] = fix["crossRatios"]
+                    # Crit shapes 7.3 introduced. They live here rather than in
+                    # ability_formulas.json so a re-extraction cannot drop them.
+                    if "critScale" in fix:
+                        component["critScale"] = fix["critScale"]
+                    if "critAdBonus" in fix:
+                        component["critAdBonus"] = fix["critAdBonus"]
                     if fix.get("unsetAlt"):
                         component.pop("alt", None)
                     applied += 1
@@ -481,6 +487,46 @@ SPELLBLADE_CD = 1.5
 # profiles. It remains slightly harsh for the three-second burst window, where a
 # target survives and its current health really does stay higher.
 CURRENT_HP_DECAY = 0.5
+
+# How much of a fight a SECONDARY target is actually reachable.
+#
+# The multi-target panel used to charge every secondary effect at full rate for
+# the whole window: Runaan's bolts fired at both secondaries on 100% of attacks,
+# and each bolt carried the entire on-hit bundle. Measured on a two-item Caitlyn
+# that is 13 primary applications of Blade of the Ruined King and 26 more
+# through bolts, and the bolt damage on secondaries (2,810) came out level with
+# the primary target's whole damage (2,847). That is why every engine challenger
+# reached for BotRK plus Runaan's regardless of champion.
+#
+# Riot's own numbers are why a flat 100% is wrong: Runaan's bolts travel about
+# 500 units and a marksman attacks from 575+, so a secondary is only struck while
+# it happens to be near whatever you are currently shooting. A focused target is
+# by definition in range; the others drift in and out as the fight moves.
+#
+# These are deliberately NOT one number. Enemies clump, so the nearest secondary
+# is reachable much more often than the next one out, and a flat factor would
+# either overpay the first or underpay it to punish the second.
+SECONDARY_REACH = (0.65, 0.40)
+
+
+def secondary_reach(index: int) -> float:
+    """Reach for the Nth secondary target, 0-based. Beyond the table, the tail."""
+    if index < 0:
+        return 0.0
+    return SECONDARY_REACH[min(index, len(SECONDARY_REACH) - 1)]
+
+
+def secondary_reach_total(targets: float) -> float:
+    """Effective number of secondary targets, once reach is applied.
+
+    Callers that multiply a per-target amount by a target COUNT multiply by this
+    instead, so one change covers bolts, item AoE procs and ability area damage.
+    """
+    whole = int(targets)
+    total = sum(secondary_reach(i) for i in range(whole))
+    if targets > whole:  # a fractional target, kept for callers that pass one
+        total += secondary_reach(whole) * (targets - whole)
+    return total
 
 # Reference targets. The squishy is a REAL champion with zero defensive tools
 # in her kit (Ashe: no shields, heals, armor or damage reduction anywhere),
@@ -934,9 +980,18 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                  cd=g("procMaxHpCdSec"), arm=g("procMaxHpArmSec"))
         add_proc(flat=g("firstHit"), label=slug, type="physical",
                  cd=g("firstHitCdSec"), arm=g("firstHitArmSec"))
+        # A burst proc that has to be delivered at melee range pays a ranged
+        # champion less, the same way %HP on-hits already do. Goredrinker's
+        # Thirsting Slash is the case that matters: it is a point-blank AoE
+        # active, and charging a backline marksman its full 175% total AD is
+        # what put it in three separate engine challengers for three ranged
+        # champions. Nothing here changes a melee build.
+        _burst = ("burstProcTotalAdRatioRanged"
+                  if (_rngd and "burstProcTotalAdRatioRanged" in fx)
+                  else "burstProcTotalAdRatio")
         add_proc(flat=g("burstProcFlat"),
                  adRatio=g("burstProcAdRatio") / 100.0,
-                 totalAdRatio=g("burstProcTotalAdRatio") / 100.0,
+                 totalAdRatio=g(_burst) / 100.0,
                  apRatio=g("burstProcApPct") / 100.0,
                  label=slug, type=fx.get("burstProcType", "magic"),
                  cd=g("burstProcCdSec"), arm=g("burstProcArmSec"))
@@ -1918,6 +1973,7 @@ def _aoe_proc_damage(st: dict, magic_m: float, window: float,
         targets = min(targets, max(0, secondary_targets))
     if not flat or not targets:
         return 0.0
+    targets = secondary_reach_total(targets)
     cd = st.get("aoeProcCdSec", 0.0) or float("inf")
     if cd != float("inf"):
         cd *= 100.0 / (100.0 + st.get("itemHaste", 0.0))
@@ -2173,8 +2229,26 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         # modifier or folding one assumed crit value into the base formula.
         if comp.get("critScale"):
             scale = comp["critScale"]
+            # perCritDamage carries the 7.3 shape, where the multiplier follows
+            # CRIT DAMAGE rather than crit chance: Miss Fortune's ultimate is
+            # "130% + (Critical Damage - 2) x 0.3", and BASE_CRIT_MULT is that 2.
             val *= (float(scale.get("base", 1.0) or 0.0)
-                    + float(scale.get("perCrit", 0.0) or 0.0) * st["crit"])
+                    + float(scale.get("perCrit", 0.0) or 0.0) * st["crit"]
+                    + float(scale.get("perCritDamage", 0.0) or 0.0)
+                    * (st["critMult"] - BASE_CRIT_MULT))
+        # Damage ADDED in proportion to crit rate, which is a different shape
+        # from a multiplier and the one 7.3 gave Caitlyn: Headshot is
+        # "(60-100%) x AD + Critical Rate x 100% + (Critical Damage - 2) x
+        # Critical Rate x 100% x AD". A component like that is worth far more
+        # in a finished crit build than its printed ratio suggests, and pricing
+        # it at the printed ratio is a large part of why the engine ranked crit
+        # items below on-hit for exactly these champions.
+        if comp.get("critAdBonus"):
+            bonus = comp["critAdBonus"]
+            val += st["ad"] * st["crit"] * (
+                float(bonus.get("perCritRate", 0.0) or 0.0)
+                + float(bonus.get("perCritRatePerCritDamage", 0.0) or 0.0)
+                * (st["critMult"] - BASE_CRIT_MULT))
         val *= max(1, int(_rank_val(comp.get("hits", 1), rank) or 1))
         m = {"physical": phys_m, "magic": magic_m, "true": 1.0}[comp["type"]]
         rule = ability_aoe_rule(name, slot, str(comp.get("name") or ""))
@@ -2187,7 +2261,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         cap = max(0, int(rule.get("maxSecondaryTargets", 0) or 0))
         targets = cap if secondary_targets is None else min(
             cap, max(0, int(secondary_targets)))
-        return comp_dmg(comp, rank, slot, secondary=True) * targets
+        return comp_dmg(comp, rank, slot, secondary=True) * secondary_reach_total(targets)
 
     per_auto_comps = []
     # Skill-order realism: prefer the REAL recommended order scraped from the
@@ -2297,7 +2371,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                          + _bp + _bm + _bt)
             bolts = (st["extraBolts"] if secondary_targets is None
                      else min(st["extraBolts"], max(0, secondary_targets)))
-            bolt_dmg += _per_bolt * bolts * n_autos
+            bolt_dmg += _per_bolt * secondary_reach_total(bolts) * n_autos
         bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets)
         if st["spellbladeBaseAdPct"] or st["spellbladePctMaxHp"] or st["spellbladeApPct"]:
             procs = min(casts_total, n_autos, 1 + int(window / SPELLBLADE_CD))
@@ -2452,7 +2526,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                      + _bp + _bm + _bt)
         bolts = (st["extraBolts"] if secondary_targets is None
                  else min(st["extraBolts"], max(0, secondary_targets)))
-        bolt_dmg += _per_bolt * bolts * n_autos
+        bolt_dmg += _per_bolt * secondary_reach_total(bolts) * n_autos
     bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets)
     total += d_autos
     auto_dmg += d_autos

@@ -110,8 +110,10 @@ def report(run: dict) -> list[str]:
         return out + [f"**ERROR**: {res['error']}", ""]
     meta = res.get("engineTournament")
     runes = res.get("runes") or {}
-    if not meta:
-        verdict = "no tournament ran; ordinary generation fallback (see stderr)"
+    if not meta or meta.get("ran") is False:
+        why = (meta or {}).get("reason")
+        verdict = ("no tournament ran; ordinary generation fallback"
+                   + (f" -- {why}" if why else " (see stderr)"))
     elif meta.get("coreRepairedAfterJudge"):
         verdict = (f"judge picked {meta.get('judgedWinner')}, then validation repaired "
                    "the core, so it is not engine-judged")
@@ -132,7 +134,7 @@ def report(run: dict) -> list[str]:
                    + (f" ({search['reason']})" if search.get("reason") else "")
                    + (", challenger entered" if meta.get("engineChallenger")
                       else ", no challenger entered") + ".")
-    if meta:
+    if meta and meta.get("ran") is not False:
         out += ["", *candidate_rows(meta, res),
                 "", "★ judge's pick · ◇ matches the shipped build"]
     why = res.get("why") or []

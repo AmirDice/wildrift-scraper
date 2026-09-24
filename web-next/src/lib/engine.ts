@@ -21,6 +21,26 @@ const SPELLBLADE_CD = 1.5;
 // as the target dies. A linear burn averages 50%, and every reference profile
 // loses its whole health pool inside the window. Was 0.7.
 const CURRENT_HP_DECAY = 0.5;
+// See SECONDARY_REACH in web/fight_engine.py. How much of a fight a secondary
+// target is actually reachable: the multi-target panel used to fire Runaan's
+// bolts at both secondaries on 100% of attacks, each carrying the whole on-hit
+// bundle. Enemies clump, so the nearest secondary is reachable far more often
+// than the next one out, which is why this is a table and not one number.
+const SECONDARY_REACH = [0.65, 0.40];
+
+function secondaryReach(index: number): number {
+  if (index < 0) return 0;
+  return SECONDARY_REACH[Math.min(index, SECONDARY_REACH.length - 1)];
+}
+
+/** Effective number of secondary targets once reach is applied. */
+function secondaryReachTotal(targets: number): number {
+  const whole = Math.floor(targets);
+  let total = 0;
+  for (let i = 0; i < whole; i++) total += secondaryReach(i);
+  if (targets > whole) total += secondaryReach(whole) * (targets - whole);
+  return total;
+}
 const CLEAVE_EVERY = 1.75;
 const MELEE_AUTO_UPTIME = 0.75;
 
@@ -328,6 +348,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
     runeAllyHealPerSec: 0, allyShield: 0, autoBonusPct: 0,
     extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0,
+    // Statikk Shiv's chain lightning. Modelled in web/fight_engine.py since
+    // the tournament work and never ported here, so Build Studio scored its
+    // area damage at zero while the advisor counted it. No battery case held
+    // a chain-lightning item, so parity stayed green through the whole gap.
+    aoeProcFlat: 0, aoeProcCdSec: 0, aoeProcTargets: 0,
     targetSlowEffects: [] as any[], itemHaste: 0,
     // Carried BY THIS BUILD and applied to whoever it is fighting.
     grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
@@ -483,6 +508,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // report area damage for any build.
     st.extraBolts = Math.max(st.extraBolts, g("extraBolts"));
     st.extraBoltAdPct = Math.max(st.extraBoltAdPct, g("extraBoltAdPct"));
+    st.aoeProcFlat += g("aoeProcFlat");
+    st.aoeProcCdSec = Math.max(st.aoeProcCdSec, g("aoeProcCdSec"));
+    st.aoeProcTargets += g("aoeProcTargets");
     // Rylai's: a slow on the target is relative move speed for the one thing
     // this engine models about positioning, a melee sticking to its target.
     // Damage is deliberately untouched.
@@ -513,8 +541,12 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
               cd: g("procMaxHpCdSec"), arm: g("procMaxHpArmSec") });
     addProc({ flat: g("firstHit"), label: slug, type: "physical",
               cd: g("firstHitCdSec"), arm: g("firstHitArmSec") });
+    // See the Python half: a burst proc delivered at melee range pays a ranged
+    // champion less. Goredrinker's Thirsting Slash is the case that matters.
+    const burstKey = (rngd && fx.burstProcTotalAdRatioRanged !== undefined)
+      ? "burstProcTotalAdRatioRanged" : "burstProcTotalAdRatio";
     addProc({ flat: g("burstProcFlat"), adRatio: g("burstProcAdRatio") / 100,
-              totalAdRatio: g("burstProcTotalAdRatio") / 100,
+              totalAdRatio: g(burstKey) / 100,
               apRatio: g("burstProcApPct") / 100,
               label: slug, type: fx.burstProcType ?? "magic",
               cd: g("burstProcCdSec"), arm: g("burstProcArmSec") });
@@ -1171,9 +1203,20 @@ export function rotation(name: string, st: any, target: any, window: number,
       val += (targets[r.target] ?? 0) * (stats[r.stat] ?? 0)
         * (Number(r.pctPerStat) || 0) / 100;
     }
+    // See the Python half. perCritDamage follows CRIT DAMAGE rather than crit
+    // chance, which is the shape 7.3 gave several ultimates.
     if (comp.critScale) {
       val *= (Number(comp.critScale.base) || 0)
-        + (Number(comp.critScale.perCrit) || 0) * st.crit;
+        + (Number(comp.critScale.perCrit) || 0) * st.crit
+        + (Number(comp.critScale.perCritDamage) || 0) * (st.critMult - BASE_CRIT_MULT);
+    }
+    // Damage ADDED in proportion to crit rate, not multiplied: Caitlyn's
+    // Headshot. Pricing it at its printed ratio understates every crit item.
+    if (comp.critAdBonus) {
+      val += st.ad * st.crit * (
+        (Number(comp.critAdBonus.perCritRate) || 0)
+        + (Number(comp.critAdBonus.perCritRatePerCritDamage) || 0)
+          * (st.critMult - BASE_CRIT_MULT));
     }
     val *= Math.max(1, Math.floor(rankVal(comp.hits ?? 1, rank)) || 1);
     const m = comp.type === "physical" ? physM : comp.type === "magic" ? magicM : 1;
@@ -1186,7 +1229,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     const cap = Math.max(0, Number(rule.maxSecondaryTargets) || 0);
     const targets = secondaryTargets == null
       ? cap : Math.min(cap, Math.max(0, secondaryTargets));
-    return compDmg(comp, rank, slot, true) * targets;
+    return compDmg(comp, rank, slot, true) * secondaryReachTotal(targets);
   };
   const thresholdAmpDamage = (totalNow: number): number => {
     let added = 0;
@@ -1392,7 +1435,18 @@ export function rotation(name: string, st: any, target: any, window: number,
     const perBolt = st.extraBoltAdPct / 100 * st.ad * critEv * physM + bp + bm + bt;
     const bolts = secondaryTargets == null
       ? st.extraBolts : Math.min(st.extraBolts, Math.max(0, secondaryTargets));
-    return perBolt * bolts * nAutos;
+    return perBolt * secondaryReachTotal(bolts) * nAutos;
+  };
+  /** Statikk Shiv's chain lightning. Mirrors _aoe_proc_damage in Python. */
+  const doAoeProc = (): number => {
+    const flat = st.aoeProcFlat ?? 0;
+    let targets = st.aoeProcTargets ?? 0;
+    if (secondaryTargets != null) targets = Math.min(targets, Math.max(0, secondaryTargets));
+    if (!flat || !targets) return 0;
+    targets = secondaryReachTotal(targets);
+    let cd = st.aoeProcCdSec || Infinity;
+    if (cd !== Infinity) cd *= 100 / (100 + (st.itemHaste ?? 0));
+    return flat * targets * magicM * procActivations(window, cd);
   };
   const doAutos = (nAutos: number) => {
     // How much of the normal attack is REPLACED by a kit component rather than
@@ -1568,7 +1622,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
     ROT_CAST_LOG = {};
     ROT_NAUTOS = nAutos;
-    ROT_BOLT_DMG = doBolts(nAutos) * (1 + st.damageAmp);
+    ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc()) * (1 + st.damageAmp);
     ROT_ABILITY_AOE_DMG = abilityAoeDmg * (1 + st.damageAmp);
     ROT_BY_SLOT = { ...bySlot };
     ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
@@ -1697,7 +1751,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
   ROT_CAST_LOG = castLog;
   ROT_NAUTOS = nAutos;
-  ROT_BOLT_DMG = doBolts(nAutos) * (1 + st.damageAmp);
+  ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc()) * (1 + st.damageAmp);
   ROT_ABILITY_AOE_DMG = abilityAoeDmg * (1 + st.damageAmp);
   ROT_BY_SLOT = { ...bySlot };
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));

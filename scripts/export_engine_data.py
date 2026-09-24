@@ -185,6 +185,12 @@ def apply_formula_corrections(formulas: dict) -> int:
                         component["ratios"] = fix["ratios"]
                     if "crossRatios" in fix:
                         component["crossRatios"] = fix["crossRatios"]
+                    # Crit shapes 7.3 introduced. They live here rather than in
+                    # ability_formulas.json so a re-extraction cannot drop them.
+                    if "critScale" in fix:
+                        component["critScale"] = fix["critScale"]
+                    if "critAdBonus" in fix:
+                        component["critAdBonus"] = fix["critAdBonus"]
                     if fix.get("unsetAlt"):
                         component.pop("alt", None)
                     applied += 1

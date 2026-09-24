@@ -309,7 +309,16 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // target's starting health, and the decay factor was 0.7 where a target that
   // dies inside the window averages 0.5. Nothing cached before this saw any
   // of it.
-  return `build:v46:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v47: the simulator stopped flattering multi-target on-hit and started
+  // paying crit what 7.3 owes it, which moves most marksman builds. Secondary
+  // targets are now reachable 65% and 40% of a fight rather than 100%, so
+  // Runaan's bolts no longer triple the on-hit bundle for free. Caitlyn's
+  // Headshot, Miss Fortune's Q and R and Jhin's ultimate carry the crit
+  // scaling 7.3 gave them instead of their printed ratios. Goredrinker's
+  // point-blank active pays a ranged champion a quarter of the melee number.
+  // Statikk's chain lightning now exists in the browser engine too. Every
+  // cached build predates all of it.
+  return `build:v47:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

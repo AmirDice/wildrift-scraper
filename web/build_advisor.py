@@ -1939,6 +1939,7 @@ def advise(champion: str, role: str, enemies: list[str],
         return _call(key, text, **kwargs)
 
     tournament_meta = None
+    tournament_skipped: dict | None = None
     tested_signatures: set[tuple] = set()
     if engine_tournament:
         # One candidate-generation completion, not three independent samples.
@@ -2012,7 +2013,17 @@ def advise(champion: str, role: str, enemies: list[str],
             # is malformed. The ordinary advisor is the known-good fallback.
             print(f"[advisor] engine tournament unavailable: {type(exc).__name__}: {exc}; "
                   "falling back to one ordinary generation", file=sys.stderr)
+            # A silent fallback is indistinguishable from a champion the
+            # tournament simply never ran for, and both look identical to a
+            # tested result once the response is read back. Three of nine runs
+            # in one benchmark degraded this way on Gemini 503s and were read
+            # as tournament output. Say so in the response.
             tournament_meta = None
+            tournament_skipped = {
+                "ran": False,
+                "reason": f"{type(exc).__name__}: {exc}"[:300],
+                "fellBackTo": "one ordinary generation",
+            }
             res = call(prompt)
     else:
         res = call(prompt)
@@ -2234,6 +2245,8 @@ def advise(champion: str, role: str, enemies: list[str],
     }
     if tournament_meta:
         res["engineTournament"] = tournament_meta
+    elif tournament_skipped:
+        res["engineTournament"] = tournament_skipped
 
     for warning in report.warnings:
         print(f"[advisor] warning: {warning}", file=sys.stderr)
