@@ -42,6 +42,9 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           "runeAllyHealPerSec", "allyShield", "shield", "support",
           # Area damage, which the TS engine had no channel for at all.
           "rot8Bolts",
+          # Champion ABILITY area damage in the 1v3, added when the targeting
+          # rules stopped being Graves-only and started covering 119 champions.
+          "rot8AbilityAoe",
           # THE FIGHT SURFACE, ported to Python on 2026-09-11 after living only
           # in TypeScript. duel/mutual_duel/score_vs_comp/champion_target are
           # what counter-mode ranking needs, and a port with nothing guarding it
@@ -90,6 +93,12 @@ def main() -> int:
         # output over an 8s window, and parity was green the whole time.
         # A fixed dummy target keeps this a pure engine comparison.
         rot = fe.rotation(champ, st, dict(PARITY_TARGET), 8.0, 15)
+        # The multi-target axis is 30% of the tournament objective and had
+        # nothing here comparing it, which is how one engine could credit a
+        # kit's area damage while the other scored it at zero. Two secondaries
+        # is the scenario's own cap.
+        rot3 = fe.rotation(champ, st, dict(PARITY_TARGET), 8.0, 15,
+                           secondary_targets=2)
         _sh = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
                + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
         _dr = st["dr"] if st["dr"] < 1 else 0.99
@@ -98,7 +107,8 @@ def main() -> int:
                   pctPen=1 - pen,
                   rot8=round(float(rot["total"]), 2),
                   rot8Bolts=round(float(rot.get("boltDmg", 0.0)), 2),
-                  rot8Autos=round(float(rot.get("autoDmg", 0.0)), 2))
+                  rot8Autos=round(float(rot.get("autoDmg", 0.0)), 2),
+                  rot8AbilityAoe=round(float(rot3.get("abilityAoeDmg", 0.0)), 2))
         # ---- the fight surface ------------------------------------------
         tgt = fe.champion_target(champ, 15, items, runes) or {}
         d = fe.duel(champ, items, runes, dict(DUEL_FOE), 15) or {}

@@ -16,6 +16,11 @@ const DATA = engineData as any;
 const BASE_CRIT_MULT = 2.0;
 const AS_CAP = 3.0;
 const SPELLBLADE_CD = 1.5;
+// See CURRENT_HP_DECAY in web/fight_engine.py. A %current-health on-hit is
+// charged against the target's STARTING health, so this stands in for the decay
+// as the target dies. A linear burn averages 50%, and every reference profile
+// loses its whole health pool inside the window. Was 0.7.
+const CURRENT_HP_DECAY = 0.5;
 const CLEAVE_EVERY = 1.75;
 const MELEE_AUTO_UPTIME = 0.75;
 
@@ -75,6 +80,36 @@ const RANGED_CLASSES = new Set(["Marksman", "Mage", "Enchanter"]);
 const AUTO_GATED_RUNES = new Set(["Empowerment", "Lethal Tempo"]);
 /** Champions whose ultimate is area damage; see data/ult_shape.json. */
 const AOE_ULTS = new Set<string>((DATA.aoeUlts ?? []) as string[]);
+type AbilityAoeRule = {
+  primaryPct: number;
+  secondaryPct: number;
+  maxSecondaryTargets: number;
+};
+/** Whether activating this ability should charge a Spellblade proc.
+ *
+ *  Mirrors `charges_spellblade` in web/fight_engine.py -- see that docstring
+ *  for the reasoning. Three abilities on the roster deliver all their damage
+ *  through basic attacks AND carry the placeholder 1.0 cooldown (Jinx's
+ *  Switcheroo, Vi's Excessive Force, Heimerdinger's turret). Read as a real
+ *  one-second cooldown they are 8-9 casts per eight-second window, which
+ *  saturates Spellblade for free. Abilities that empower an attack on a REAL
+ *  cooldown are unaffected and still charge it. */
+function chargesSpellblade(ability: any): boolean {
+  const components = (ability?.damage ?? []) as any[];
+  if (!components.length) return true;
+  if (!components.every((c) => c.when === "per auto")) return true;
+  const cooldowns = (ability?.cooldowns ?? []) as number[];
+  return !(cooldowns.length && cooldowns.every((c) => Number(c) === 1.0));
+}
+
+function abilityAoeRule(name: string, slot: string, component: string): AbilityAoeRule {
+  const curated = DATA.abilityAoe?.[name]?.[slot]?.[component] as AbilityAoeRule | undefined;
+  if (curated) return curated;
+  if (slot === "4" && AOE_ULTS.has(name)) {
+    return { primaryPct: 100, secondaryPct: 100, maxSecondaryTargets: 2 };
+  }
+  return { primaryPct: 100, secondaryPct: 0, maxSecondaryTargets: 0 };
+}
 const REF_BURST = 2400, REF_DPS = 700, REF_DEF = 7000;
 const BURSTY = new Set(["oneshot", "burst", "poke", "crit"]);
 
@@ -188,6 +223,8 @@ export interface Proc {
   flat: number;
   /** Fractions, not percents: 0.10 means 10% bonus AD. */
   adRatio: number;
+  /** Same units, but against TOTAL AD (base + bonus), as Goredrinker states. */
+  totalAdRatio: number;
   apRatio: number;
   /** Fraction of the TARGET's max health. */
   pctMaxHp: number;
@@ -254,8 +291,10 @@ function kitAdjust(name: string): number {
   return DATA.champions[name]?.kitShift ?? 0;
 }
 
+export type ConditionBand = "floor" | "expected" | "ceiling";
+
 export function resolveStats(name: string, level: number, itemSlugs: string[],
-                             runeNames: string[]): any {
+                             runeNames: string[], conditionBand: ConditionBand = "expected"): any {
   const c = DATA.champions[name];
   if (!c) return null;
   const bs = c.baseStats ?? {};
@@ -273,7 +312,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     crit: 0, critMult: BASE_CRIT_MULT, critDisabled: 0, haste: 0, mana: base("mana", 0),
     flatPen: 0, pctPenFactors: [] as number[], flatMagicPen: 0, pctMagicPen: 0,
     baseMs: bs.moveSpeed?.base || 330, bonusMs: 0, tenacity: 0,
-    abilityAmp: 0, damageAmp: 0, giant: 0, execute: 0, ultAmp: 0,
+    abilityAmp: 0, damageAmp: 0, attackDamageAmp: 0,
+    conditionalEffects: [] as any[], conditionBand,
+    timedDamageAmps: [] as any[], targetThresholdAmps: [] as any[],
+    giant: 0, execute: 0, ultAmp: 0,
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     procs: [] as Proc[], dotDps: 0, dotPctMaxHp: 0,
@@ -285,7 +327,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
     healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
     runeAllyHealPerSec: 0, allyShield: 0, autoBonusPct: 0,
-    extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0, itemHaste: 0,
+    extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0,
+    targetSlowEffects: [] as any[], itemHaste: 0,
     // Carried BY THIS BUILD and applied to whoever it is fighting.
     grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
     drMagic: 0, drPhys: 0,
@@ -318,10 +361,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   const adaptiveOnHit = { flat: 0, adPct: 0, apPct: 0 };
   const addProc = (e: Partial<Proc>) => {
     const flat = e.flat ?? 0, adRatio = e.adRatio ?? 0;
+    const totalAdRatio = e.totalAdRatio ?? 0;
     const apRatio = e.apRatio ?? 0, pctMaxHp = e.pctMaxHp ?? 0;
-    if (!flat && !adRatio && !apRatio && !pctMaxHp) return;
+    if (!flat && !adRatio && !totalAdRatio && !apRatio && !pctMaxHp) return;
     st.procs.push({
-      flat, adRatio, apRatio, pctMaxHp,
+      flat, adRatio, totalAdRatio, apRatio, pctMaxHp,
       type: e.type ?? "magic",
       // A missing or zero cooldown means "no repeat stated", which is charged
       // once per fight -- exactly what the engine did before this existed.
@@ -404,6 +448,20 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     if (fx.disablesCrit) st.critDisabled = 1;
     st.abilityAmp += g("abilityAmpPct") / 100;
     st.damageAmp += g("damageAmpPct") / 100;
+    const conditionalAttack = fx.conditionalAttackAmpPct;
+    if (conditionalAttack && typeof conditionalAttack === "object") {
+      const value = Number(conditionalAttack[conditionBand]) || 0;
+      st.attackDamageAmp += value / 100;
+      st.conditionalEffects.push({
+        source: slug,
+        label: String(fx.conditionalLabel || "conditional attack damage"),
+        band: conditionBand,
+        valuePct: value,
+        floorPct: Number(conditionalAttack.floor) || 0,
+        expectedPct: Number(conditionalAttack.expected) || 0,
+        ceilingPct: Number(conditionalAttack.ceiling) || 0,
+      });
+    }
     st.giant = Math.max(st.giant, g("giantSlayerPct") / 100);
     st.execute = Math.max(st.execute, g("executePct") / 100);
     st.spellbladeBaseAdPct = Math.max(st.spellbladeBaseAdPct, g("spellbladeBaseAdPct"));
@@ -428,8 +486,18 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // Rylai's: a slow on the target is relative move speed for the one thing
     // this engine models about positioning, a melee sticking to its target.
     // Damage is deliberately untouched.
-    st.targetSlow = Math.max(st.targetSlow,
-      g("targetSlowPct") / 100 * (g("targetSlowUptime") || 100) / 100);
+    const slowPct = g("targetSlowPct") / 100;
+    if (slowPct && g("targetSlowDurationSec")) {
+      st.targetSlowEffects.push({
+        pct: slowPct,
+        durationS: g("targetSlowDurationSec"),
+        cooldownS: g("targetSlowCdSec") || Infinity,
+        armHits: g("targetSlowArmHits"),
+      });
+    } else {
+      st.targetSlow = Math.max(st.targetSlow,
+        slowPct * (g("targetSlowUptime") || 100) / 100);
+    }
     if ((fx.spellbladeBaseAdPct || fx.spellbladeApPct) && fx.spellbladeMagic)
       st.spellbladeMagic = 1;
     st.onHitPhys += g("onHitFlatPhys");
@@ -445,7 +513,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
               cd: g("procMaxHpCdSec"), arm: g("procMaxHpArmSec") });
     addProc({ flat: g("firstHit"), label: slug, type: "physical",
               cd: g("firstHitCdSec"), arm: g("firstHitArmSec") });
-    addProc({ flat: g("burstProcFlat"), apRatio: g("burstProcApPct") / 100,
+    addProc({ flat: g("burstProcFlat"), adRatio: g("burstProcAdRatio") / 100,
+              totalAdRatio: g("burstProcTotalAdRatio") / 100,
+              apRatio: g("burstProcApPct") / 100,
               label: slug, type: fx.burstProcType ?? "magic",
               cd: g("burstProcCdSec"), arm: g("burstProcArmSec") });
     st.dotDps += g("dotDps");
@@ -566,6 +636,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   const runeOnHit = { adRatio: 0, apRatio: 0 };
   const ks = DATA.runeFx.keystones ?? {}, mn = DATA.runeFx.minors ?? {};
   for (const rn of runeNames) {
+    if (rn === "Sudden Impact" && !c.suddenImpactTrigger) continue;
     const r = ks[rn] ?? mn[rn];
     if (!r) {
       let fx = DATA.runeEngine[rn] ?? {};
@@ -686,9 +757,23 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       const p = r.burstProc;
       const flat = p.baseRange ? p.baseRange[0] + (p.baseRange[1] - p.baseRange[0]) * (level - 1) / 14 : (p.flat ?? 0);
       const cond = p.condition === "targetBelowHalfInWindow";
+      const soulBands = p.assumedSoulsByBand;
+      const souls = soulBands && typeof soulBands === "object"
+        ? Number(soulBands[conditionBand]) || 0 : (p.assumedSouls ?? 0);
+      if (cond && soulBands && typeof soulBands === "object") {
+        st.conditionalEffects.push({
+          source: rn,
+          label: "Dark Harvest souls (16 is a strong-game scenario, not a cap)",
+          band: conditionBand,
+          value: souls,
+          floor: Number(soulBands.floor) || 0,
+          expected: Number(soulBands.expected) || 0,
+          ceiling: Number(soulBands.ceiling) || 0,
+        });
+      }
       addProc({
         // Souls are a permanent stack, so they belong in the base value.
-        flat: flat + (cond ? (p.perSoul ?? 0) * (p.assumedSouls ?? 0) : 0),
+        flat: flat + (cond ? (p.perSoul ?? 0) * souls : 0),
         // PERCENT, divided once here. This file used to store Electrocute as a
         // fraction (0.1) and Dark Harvest as a percent (10) for the same 10%,
         // and this line divided by nothing -- so Dark Harvest was charged ten
@@ -705,7 +790,14 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
         need: cond ? 0.5 : 0,
       });
     }
-    st.damageAmp += r.ampPct ?? 0;
+    const amp = r.ampPct ?? 0;
+    if (rn === "First Strike" && amp) {
+      st.timedDamageAmps.push({ pct: amp, durationS: 3, source: rn });
+    } else if (rn === "Coup de Grace" && amp) {
+      st.targetThresholdAmps.push({ pct: amp, belowHpPct: 0.40, source: rn });
+    } else {
+      st.damageAmp += amp;
+    }
   }
   st.bonusMs *= 1 + msAmp;
   // Paid once the rune loop is done and the stats it scales off are final.
@@ -923,7 +1015,7 @@ function mults(st: any, target: any): [number, number] {
 function onHitBundle(st: any, target: any, physM: number, magicM: number,
                      kit?: [number, number, number]): [number, number, number] {
   const phys = (st.onHitPhys + st.runeOnHitFlat
-    + st.onHitPctCurrentHp * target.hp * 0.7
+    + st.onHitPctCurrentHp * target.hp * CURRENT_HP_DECAY
     + st.onHitPctMaxHp * target.hp) * physM;
   return [phys + (kit?.[0] ?? 0), st.onHitMagic * magicM + (kit?.[1] ?? 0), kit?.[2] ?? 0];
 }
@@ -947,8 +1039,16 @@ let ROT_BY_TYPE: Record<string, number> = { physical: 0, magic: 0, true: 0 };
 let ROT_CAST_LOG: Record<string, { name: string; casts: number; max: number }> = {};
 let ROT_NAUTOS = 0;
 let ROT_BOLT_DMG = 0;
+let ROT_ABILITY_AOE_DMG = 0;
 let ROT_BY_SLOT: Record<string, number> = {};
 let ROT_NAUTOS_IDEAL = 0;
+
+/** Number of activations for an initially-ready proc inside a fight window. */
+function procActivations(window: number, cooldown = Infinity, arm = 0): number {
+  if (window + 1e-9 < arm) return 0;
+  if (cooldown === Infinity || cooldown <= 0) return 1;
+  return 1 + Math.floor((window - arm) / cooldown);
+}
 
 /**
  * The stat block as it averages over a fight of this length.
@@ -963,20 +1063,39 @@ let ROT_NAUTOS_IDEAL = 0;
  */
 function forWindow(name: string, st: any, window: number, level: number): any {
   const timed = st.timedSteroids as any[] | undefined;
-  if (!timed || !timed.length || window <= 0) return st;
+  const slows = st.targetSlowEffects as any[] | undefined;
+  if ((!timed?.length && !slows?.length) || window <= 0) return st;
   const hasteM = 100 / (100 + (st.haste ?? 0));
   let asPctLost = 0;
   let adLost = 0;
-  for (const s of timed) {
+  for (const s of timed ?? []) {
     const cd = Math.max(0.5, (s.cooldownS || 12) * hasteM);
     const casts = 1 + Math.floor(window / cd);
     const uptime = Math.min(1, (s.durationS * casts) / window);
     asPctLost += (s.asPct || 0) * (1 - uptime);
     adLost += (s.adFlat || 0) * (1 - uptime);
   }
-  if (!asPctLost && !adLost) return st;
-
   const adj = { ...st };
+  if (slows?.length) {
+    let scheduledSlow = 0;
+    for (const effect of slows) {
+      // First hit lands at time zero, so an N-hit trigger needs N-1 attack
+      // intervals. Abilities can also stack Drain; attacks-only is conservative.
+      const arm = Math.max(0, Number(effect.armHits || 0) - 1)
+        / Math.max(Number(st.as || 0.1), 0.1);
+      let cd = Number(effect.cooldownS || Infinity);
+      if (cd !== Infinity) cd *= 100 / (100 + Number(st.itemHaste || 0));
+      let active = 0;
+      let activation = arm;
+      for (let i = 0; i < procActivations(window, cd, arm); i += 1) {
+        active += Math.max(0, Math.min(Number(effect.durationS), window - activation));
+        activation += cd;
+      }
+      scheduledSlow = Math.max(scheduledSlow,
+        Number(effect.pct) * Math.min(1, active / window));
+    }
+    adj.targetSlow = Math.max(Number(st.targetSlow || 0), scheduledSlow);
+  }
   if (adLost) {
     adj.bonusAd = Math.max(0, st.bonusAd - adLost);
     adj.ad = adj.baseAd + adj.bonusAd;
@@ -1002,7 +1121,7 @@ function forWindow(name: string, st: any, window: number, level: number): any {
 }
 
 export function rotation(name: string, st: any, target: any, window: number,
-                         level = 13): number {
+                         level = 13, secondaryTargets?: number): number {
   st = forWindow(name, st, window, level);
   // An enemy Frozen Heart's Chill is a real attack-speed cut and belongs here,
   // after forWindow has finished deriving attack speed from the steroids.
@@ -1018,7 +1137,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   const giant = 1 + st.giant * Math.min(1, target.bonusHp / 1700);
   const critEv = 1 + st.crit * (st.critMult - 1);
   const hasteM = 100 / (100 + st.haste);
-  let total = 0, castsTotal = 0, autoDmg = 0;
+  let total = 0, castsTotal = 0, autoDmg = 0, abilityAoeDmg = 0;
   const byType: Record<string, number> = { physical: 0, magic: 0, true: 0 };
   const castLog: Record<string, { name: string; casts: number; max: number }> = {};
   // Damage attributed to each ability slot. Only an ult-only amplifier needs
@@ -1026,7 +1145,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   const bySlot: Record<string, number> = {};
   const addT = (t: string, v: number) => { byType[t] = (byType[t] ?? 0) + v; };
 
-  const compDmg = (comp: any, rank: number): number => {
+  const compDmg = (comp: any, rank: number, slot = "", secondary = false): number => {
     let base = scaleVal(comp.base, rank, level);
     if (comp.when === "dot total" && comp.durationS) base *= comp.durationS;
     let val = base;
@@ -1040,9 +1159,53 @@ export function rotation(name: string, st: any, target: any, window: number,
       };
       val += pct * (src[r.stat] ?? 0);
     }
+    for (const r of comp.crossRatios ?? []) {
+      const targets: Record<string, number> = {
+        targetMaxHp: target.hp,
+        targetCurrentHp: target.hp * 0.7,
+        targetMissingHp: target.hp * 0.3,
+      };
+      const stats: Record<string, number> = {
+        ap: st.ap, ad: st.ad, bonusAd: st.bonusAd,
+      };
+      val += (targets[r.target] ?? 0) * (stats[r.stat] ?? 0)
+        * (Number(r.pctPerStat) || 0) / 100;
+    }
+    if (comp.critScale) {
+      val *= (Number(comp.critScale.base) || 0)
+        + (Number(comp.critScale.perCrit) || 0) * st.crit;
+    }
     val *= Math.max(1, Math.floor(rankVal(comp.hits ?? 1, rank)) || 1);
     const m = comp.type === "physical" ? physM : comp.type === "magic" ? magicM : 1;
-    return val * m * (comp.type === "physical" ? giant : 1);
+    const rule = abilityAoeRule(name, slot, String(comp.name ?? ""));
+    const share = secondary ? rule.secondaryPct : rule.primaryPct;
+    return val * m * (comp.type === "physical" ? giant : 1) * share / 100;
+  };
+  const secondaryCompDmg = (comp: any, rank: number, slot: string): number => {
+    const rule = abilityAoeRule(name, slot, String(comp.name ?? ""));
+    const cap = Math.max(0, Number(rule.maxSecondaryTargets) || 0);
+    const targets = secondaryTargets == null
+      ? cap : Math.min(cap, Math.max(0, secondaryTargets));
+    return compDmg(comp, rank, slot, true) * targets;
+  };
+  const thresholdAmpDamage = (totalNow: number): number => {
+    let added = 0;
+    for (const entry of st.targetThresholdAmps ?? []) {
+      const threshold = Number(entry.belowHpPct) || 0;
+      if (threshold <= 0) continue;
+      const eligible = Math.min(
+        Math.max(0, totalNow - target.hp * (1 - threshold)),
+        target.hp * threshold,
+      );
+      added += eligible * (Number(entry.pct) || 0);
+    }
+    return added;
+  };
+  const wholeRotationAmp = (): number => {
+    const timed = (st.timedDamageAmps ?? []).reduce(
+      (sum: number, entry: any) => sum + (Number(entry.pct) || 0)
+        * Math.min(1, (Number(entry.durationS) || 0) / Math.max(window, 1e-9)), 0);
+    return 1 + st.damageAmp + timed;
   };
 
   // skill ranks
@@ -1227,7 +1390,9 @@ export function rotation(name: string, st: any, target: any, window: number,
     const kit = DATA.champions[name]?.repeatsOnHit ? kitPerAuto(nAutos) : undefined;
     const [bp, bm, bt] = onHitBundle(st, target, physM, magicM, kit);
     const perBolt = st.extraBoltAdPct / 100 * st.ad * critEv * physM + bp + bm + bt;
-    return perBolt * st.extraBolts * nAutos;
+    const bolts = secondaryTargets == null
+      ? st.extraBolts : Math.min(st.extraBolts, Math.max(0, secondaryTargets));
+    return perBolt * bolts * nAutos;
   };
   const doAutos = (nAutos: number) => {
     // How much of the normal attack is REPLACED by a kit component rather than
@@ -1246,7 +1411,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     const autoBonus = 1 + (st.autoBonusPct ?? 0) / 100;
     let aPhys = st.ad * critEv * physM * giant * (1 - replacedShare) * autoBonus;
     aPhys += st.onHitPhys * physM;
-    aPhys += (st.onHitPctCurrentHp * target.hp * 0.7 + st.onHitPctMaxHp * target.hp) * physM;
+    aPhys += (st.onHitPctCurrentHp * target.hp * CURRENT_HP_DECAY
+              + st.onHitPctMaxHp * target.hp) * physM;
     aPhys += st.runeOnHitFlat * physM;
     // Titanic Cleave arms every CLEAVE_EVERY seconds, not every auto, so only
     // a fraction of attacks carry it: faster attacks dilute it, not scale it.
@@ -1261,7 +1427,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     const dsm = st.doubleShotMult ?? 1;
     // Plated Steelcaps' Block reduces BASIC ATTACK damage only, which is why
     // it rides here and not on st.dr (all damage). 1 when the target has none.
-    const adm = st.autoDamageMult ?? 1;
+    const adm = (st.autoDamageMult ?? 1) * (1 + (st.attackDamageAmp ?? 0));
     addT("physical", aPhys * dsm * nAutos * adm);
     addT("magic", aMagic * dsm * nAutos * adm);
     addT("true", aTrue * dsm * nAutos * adm);
@@ -1279,9 +1445,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       // Nothing lands before the effect has armed: Electrocute needs three
       // stacks inside three seconds, Heartsteel charges for 2.5.
       if (window + 1e-9 < pr.arm) continue;
-      const times = pr.cd === Infinity
-        ? 1
-        : 1 + Math.floor((window - pr.arm) / pr.cd);
+      const times = procActivations(window, pr.cd, pr.arm);
       // A proc gated on the target's health is earned only when this
       // champion's own damage in this window actually gets them there. Tapered
       // rather than a cliff, so a 4% damage change cannot flip a keystone on
@@ -1293,7 +1457,8 @@ export function rotation(name: string, st: any, target: any, window: number,
       if (reach <= 0) continue;
       let dtype = pr.type;
       if (dtype === "adaptive") dtype = st.ap >= st.bonusAd ? "magic" : "physical";
-      const val = (pr.flat + pr.adRatio * st.bonusAd + pr.apRatio * st.ap
+      const val = (pr.flat + pr.adRatio * st.bonusAd + pr.totalAdRatio * st.ad
+                   + pr.apRatio * st.ap
                    + pr.pctMaxHp * target.hp) * times * reach;
       // The old routing was "physical goes through armour, everything else is
       // true damage", so every magic and adaptive proc bypassed magic resist
@@ -1319,11 +1484,14 @@ export function rotation(name: string, st: any, target: any, window: number,
       const rank = slot === "4" ? 2 : 3;
       const ampA = 1 + st.abilityAmp;
       for (const c of comps) {
-        const cd = compDmg(c, rank) * ampA;
+        const cd = compDmg(c, rank, slot) * ampA;
         addT(c.type, cd); total += cd;
         bySlot[slot] = (bySlot[slot] ?? 0) + cd;
+        let secondary = secondaryCompDmg(c, rank, slot) * ampA;
+        if (slot === "4") secondary *= 1 + st.ultAmp;
+        abilityAoeDmg += secondary;
       }
-      castsTotal++;
+      if (chargesSpellblade(f[slot])) castsTotal++;
     }
     const nAutos = Math.max(nAutosSeq, Math.floor(window * st.as * 0.5));
     const dAutos = doAutos(nAutos);
@@ -1394,12 +1562,14 @@ export function rotation(name: string, st: any, target: any, window: number,
     total += ultBonus;
     addT("magic", ultBonus);
   }
-    const amp = 1 + st.damageAmp;
+    total += thresholdAmpDamage(total);
+    const amp = wholeRotationAmp();
     ROT_AUTO_DMG = autoDmg * amp;
     ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
     ROT_CAST_LOG = {};
     ROT_NAUTOS = nAutos;
     ROT_BOLT_DMG = doBolts(nAutos) * (1 + st.damageAmp);
+    ROT_ABILITY_AOE_DMG = abilityAoeDmg * (1 + st.damageAmp);
     ROT_BY_SLOT = { ...bySlot };
     ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
     return total * amp;
@@ -1440,15 +1610,18 @@ export function rotation(name: string, st: any, target: any, window: number,
     const maxCasts = casts;
     casts = hwei ? 1 : Math.min(casts, castBudget);
     castBudget -= casts;
-    castsTotal += hwei ? (hwei.casts[slot] ?? 0) : casts;
+    if (chargesSpellblade(ab)) castsTotal += hwei ? (hwei.casts[slot] ?? 0) : casts;
     if (!hwei || (hwei.casts[slot] ?? 0) > 0)
       castLog[slot] = { name: ab.name ?? slot, casts: hwei ? hwei.casts[slot] : casts,
         max: hwei ? hwei.casts[slot] : maxCasts };
     const ampA = 1 + st.abilityAmp;
     for (const c of dmgComps) {
-      const cd2 = compDmg(c, rank) * casts * ampA;
+      const cd2 = compDmg(c, rank, slot) * casts * ampA;
       addT(c.type, cd2); total += cd2;
       bySlot[slot] = (bySlot[slot] ?? 0) + cd2;
+      let secondary = secondaryCompDmg(c, rank, slot) * casts * ampA;
+      if (slot === "4") secondary *= 1 + st.ultAmp;
+      abilityAoeDmg += secondary;
     }
   }
   const nAutos = hwei ? hwei.autos : Math.max(1, Math.floor(window * st.as * autoUptime(name, window, st)));
@@ -1518,12 +1691,14 @@ export function rotation(name: string, st: any, target: any, window: number,
     total += ultBonus;
     addT("magic", ultBonus);
   }
-  const amp = 1 + st.damageAmp;
+  total += thresholdAmpDamage(total);
+  const amp = wholeRotationAmp();
   ROT_AUTO_DMG = autoDmg * amp;
   ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
   ROT_CAST_LOG = castLog;
   ROT_NAUTOS = nAutos;
   ROT_BOLT_DMG = doBolts(nAutos) * (1 + st.damageAmp);
+  ROT_ABILITY_AOE_DMG = abilityAoeDmg * (1 + st.damageAmp);
   ROT_BY_SLOT = { ...bySlot };
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
   return total * amp;
@@ -1540,6 +1715,8 @@ export interface RotationDetail {
    * every time-to-kill. This is the site’s first area-damage readout.
    */
   boltDamage: number;
+  /** Champion ability damage allocated to OTHER targets, never in `damage`. */
+  abilityAoeDamage: number;
   byType: { physical: number; magic: number; true: number };
   /** Per ability: how many times it was cast in the window, and the cap. */
   casts: Record<string, { name: string; casts: number; max: number }>;
@@ -1558,13 +1735,14 @@ export interface RotationDetail {
  * overwritten them, so new callers get a value instead of a landmine.
  */
 export function rotationDetail(name: string, st: any, target: any, window: number,
-                               level = 13): RotationDetail {
-  const damage = rotation(name, st, target, window, level);
+                               level = 13, secondaryTargets?: number): RotationDetail {
+  const damage = rotation(name, st, target, window, level, secondaryTargets);
   return {
     damage,
     autoDamage: ROT_AUTO_DMG,
     bySlot: { ...ROT_BY_SLOT },
     boltDamage: ROT_BOLT_DMG,
+    abilityAoeDamage: ROT_ABILITY_AOE_DMG,
     byType: { physical: ROT_BY_TYPE.physical, magic: ROT_BY_TYPE.magic, true: ROT_BY_TYPE.true },
     casts: JSON.parse(JSON.stringify(ROT_CAST_LOG)),
     autos: ROT_NAUTOS,

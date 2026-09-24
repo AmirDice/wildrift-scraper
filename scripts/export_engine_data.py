@@ -160,6 +160,11 @@ def apply_formula_corrections(formulas: dict) -> int:
             kept = [m for m in rec.get("mechanics") or [] if m.get("kind") not in drop]
             applied += len(rec.get("mechanics") or []) - len(kept)
             rec["mechanics"] = kept
+        for mechanic in entry.get("addMechanics") or []:
+            if not any(m.get("kind") == mechanic.get("kind")
+                       for m in rec.get("mechanics") or []):
+                rec.setdefault("mechanics", []).append(mechanic)
+                applied += 1
         # Per-slot ability overrides: `damage` replaces the slot's damage list
         # wholesale. Added for Camille's Q, whose scraped text was missing the
         # recast sentence and with it the 40% true-damage conversion.
@@ -171,6 +176,18 @@ def apply_formula_corrections(formulas: dict) -> int:
             if ability is not None and "empowerLimit" in patch:
                 ability["empowerLimit"] = patch["empowerLimit"]
                 applied += 1
+            if ability is not None:
+                for component in ability.get("damage") or []:
+                    fix = (patch.get("components") or {}).get(component.get("name"))
+                    if not fix:
+                        continue
+                    if "ratios" in fix:
+                        component["ratios"] = fix["ratios"]
+                    if "crossRatios" in fix:
+                        component["crossRatios"] = fix["crossRatios"]
+                    if fix.get("unsetAlt"):
+                        component.pop("alt", None)
+                    applied += 1
     return applied
 
 
@@ -295,7 +312,8 @@ def main() -> None:
     champ_role = {c.get("name"): c.get("role", "")
                   for c in (site.get("champions") or [])}
     from web.fight_engine import (kit_adjust, repeats_on_hit, damage_metric,
-                                  attack_speed_ratio, AS_CURVE)
+                                  attack_speed_ratio, can_trigger_sudden_impact,
+                                  AS_CURVE)
 
     out = {
         "champions": {
@@ -333,6 +351,10 @@ def main() -> None:
                 # durability. Ranking a burst mage on 8-second sustained damage
                 # is what made on-hit items look strong on casters.
                 "damageMetric": damage_metric(c["name"]),
+                # Sudden Impact cannot be paid merely because Flash exists.
+                # This grounded flag comes from the champion's own ability
+                # text and is consumed identically by both engines.
+                "suddenImpactTrigger": can_trigger_sudden_impact(c["name"]),
                 # Attack speed as 7.3 defines it: a RATIO that percentage
                 # bonuses multiply, the champion's own bonus at level 1, and
                 # the per-level step. asGrowth is the pre-7.3 measured curve,
@@ -391,6 +413,10 @@ def main() -> None:
     # without this. Python has read it since the rune was modelled; the TS
     # engine had no copy and no ult amp at all.
     out["aoeUlts"] = sorted((_load("ult_shape.json") or {}).get("aoeUlts", []))
+    # Per-component target allocation for structured champion AoE. The generic
+    # ult tag above is the conservative fallback; this overlay distinguishes
+    # shapes such as Graves' primary-only R shell from its secondary cone.
+    out["abilityAoe"] = (_load("ability_aoe.json") or {}).get("champions", {})
     # Kit amplification (Amumu, Kayn, Smolder): a percentage bonus on damage
     # already counted, which no per-ability formula can express. Python-only
     # until now, and worth 8.5% of Amumu's rotation.

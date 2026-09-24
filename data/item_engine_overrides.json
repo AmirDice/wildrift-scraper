@@ -76,12 +76,13 @@
     "_why_ramp": "Sunder stacks per physical hit, 5 to reach 30% shred."
   },
   "nashors-tooth": {
+    "adaptiveAdFlat": 0,
+    "adaptiveApFlat": 0,
     "onHitFlatPhys": 0,
     "onHitFlatMagic": 15,
     "adaptiveOnHitFlat": 0,
     "adaptiveOnHitBonusAdPct": 0,
     "adaptiveOnHitApPct": 0,
-    "_why_gnaw": "Gnaw is ONE adaptive on-hit of 15 + 20% bonus AD + 30% AP. Extraction stored the flat 15 as BOTH onHitFlatPhys and onHitFlatMagic (double count) and had no key for the scaling half, which on an AP on-hit champion is most of the item. The engines apply it once, with final stats, typed by the kit's damage.",
     "onHitApRatio": 20,
     "_why": "Magic Fang (adaptive) was removed and the item is pure Ability Power again, so Gnaw is a plain magic on-hit of 15 + 20% bonus AP rather than an adaptive one."
   },
@@ -158,19 +159,27 @@
     "_why_dedupe": "stat physicalPen 33% (percent:true); fx pctPen 33 was the same Frostbite line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
     "burstProcFlat": 0,
     "grievousWoundsPct": 0,
-    "_why": "Penetration moved to the stat block (35%); Frostbite, with its bleed and its Grievous Wounds, was removed outright."
+    "targetSlowPct": 30,
+    "targetSlowUptime": 40,
+    "_why": "Penetration is read from the 35% stat line. Icy slows targets below 60% Health by 30%; represented at 40% fight uptime."
   },
   "blade-of-the-ruined-king": {
     "omnivampPct": 0,
     "_why_dedupe": "stat omnivamp 10%; fx omnivampPct 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
     "burstProcFlat": 0,
-    "_why": "Omnivamp became Lifesteal 12% on the stat line. Drain no longer deals damage or steals Move Speed; it is a 30% slow, which is utility the engine prices through the slow channel, not damage.",
+    "_why": "Omnivamp became Lifesteal 12% on the stat line. Drain no longer deals damage or steals Move Speed. Its 30% slow arms after three hits, lasts 1.5s and has a 30s cooldown, so the window scheduler can activate it only once in an ordinary teamfight.",
     "targetSlowPct": 30,
-    "targetSlowUptime": 0.4
+    "targetSlowDurationSec": 1.5,
+    "targetSlowCdSec": 30,
+    "targetSlowArmHits": 3
   },
   "goredrinker": {
     "omnivampPct": 0,
-    "_why_dedupe": "stat omnivamp 8%; fx omnivampPct 8 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives."
+    "burstProcTotalAdRatio": 175,
+    "burstProcType": "physical",
+    "burstProcCdSec": 12,
+    "_why_dedupe": "stat omnivamp 8%; fx omnivampPct 8 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. Zeroed here so exactly one source survives.",
+    "_why": "Thirsting Slash damage is modeled against one champion as 175% total AD every 12 seconds. Its 20% AD + 10% missing-Health heal per champion hit is not modeled."
   },
   "gluttonous-greaves": {
     "omnivampPct": 0,
@@ -352,7 +361,6 @@
   },
   "force-of-nature": {
     "drMagicPct": 0,
-    "_why_dr": "Absorb: 'At maximum stacks, gain 10% Movement Speed and REDUCE ALL INCOMING MAGIC DAMAGE BY 20%'. Only the move speed was modelled. It is magic damage ONLY, so it rides a typed channel rather than the all-damage drPct that Death's Dance and the rune path use; charging it against physical damage would roughly double its worth. Taken at max stacks, the convention this file already uses for amaranths-twinguard and terminus.",
     "msPct": 6,
     "mrFlat": 70,
     "_why": "The percentage magic damage reduction is gone; at four stacks the item grants 70 Magic Resist and 6% Move Speed instead. Stack uptime is not modelled, so this is the full value."
@@ -419,7 +427,13 @@
     "_why": "The item no longer heals by itself: it forwards 30% of a heal or 35% of a shield you cast to a second ally. That is a share of the caster's own healing, which the engine has no key for."
   },
   "hexoptics-c44": {
-    "_why": "Magnification (0-10% by distance) and Arcane Aim (bonus Attack Range on a takedown) are positional; the engine has neither distance nor range, so the item is priced on its stats."
+    "conditionalAttackAmpPct": {
+      "floor": 0,
+      "expected": 5,
+      "ceiling": 10
+    },
+    "conditionalLabel": "Magnification: 0-10% attack damage by distance",
+    "_why": "Magnification is now measured as three honest distance bands: 0% floor, 5% midpoint expectation, and 10% max-range ceiling. It multiplies attack damage after expected crit damage, so Hexoptics' unconditional 25% crit is present in every band. Arcane Aim is not modeled in raw damage: its post-takedown range is delivery utility, not damage, and requires a separate reset/continuation scenario."
   },
   "yun-tal-wildarrows": {
     "asPctPassive": 25,
@@ -452,7 +466,10 @@
   "statikk-shiv": {
     "burstProcFlat": 60,
     "burstProcCdSec": 6,
-    "_why": "Electrospark's first bounce. The other bounces hit other targets, which the engine reports separately only for Runaan's bolts, so they are left out rather than added to single-target damage."
+    "aoeProcFlat": 60,
+    "aoeProcCdSec": 6,
+    "aoeProcTargets": 5,
+    "_why": "Electrospark's first 60-damage hit is single-target; its five additional level-15 bounces are reported on the AoE axis. On-hit effects carried by those bounces are not modeled."
   },
   "whispering-circlet": {
     "_why": "Harmony is Heal and Shield Power from max Mana, which the stat rules carry; there is no separate combat effect."

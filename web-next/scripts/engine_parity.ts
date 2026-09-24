@@ -26,6 +26,8 @@ const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "crit
   // See the Python half: `bonusAd` was compared and `ad` was not.
   "ad", "baseAd", "baseAs",
   "runeAllyHealPerSec", "allyShield", "shield", "support", "rot8Bolts",
+  // See the Python half: champion ability area damage in the 1v3.
+  "rot8AbilityAoe",
   // See the Python half: the fight surface, ported to Python on 2026-09-11.
   "tgtHp", "tgtArmor", "tgtMr", "tgtBonusHp", "tgtSustain", "tgtShield",
   "tgtCcDepth", "tgtCcSeconds",
@@ -59,6 +61,9 @@ for (const [champ, items, runes] of battery) {
     const dr = st.dr < 1 ? st.dr : 0.99;
     st.ehp = Math.round((st.hp + sh) / (0.5 * phys + 0.5 * magic) / (1 - dr) * 100) / 100;
     st.rot8Bolts = Math.round(rot.boltDamage * 100) / 100;
+    // See the Python half: the multi-target axis needed something comparing it.
+    const rot3 = rotationDetail(champ, st, PARITY_TARGET, 8, 15, 2);
+    st.rot8AbilityAoe = Math.round(rot3.abilityAoeDamage * 100) / 100;
     // ---- the fight surface ----------------------------------------------
     const tgt: any = championTarget(champ, 15, items, runes) ?? {};
     const d: any = duel(champ, items, runes, { ...DUEL_FOE }, 15) ?? {};

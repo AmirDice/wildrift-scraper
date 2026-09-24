@@ -272,7 +272,44 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v37: reconcile patch 7.3 champion tooltips and combat formulas with the
   // final Riot notes, including removed mechanics that previously survived
   // in generated data. Cached builds must be reasoned from the corrected kit.
-  return `build:v37:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v39: maximum-damage builds are no longer one unmeasured model draw. One
+  // response proposes three legal cores, the fight engine measures all three,
+  // recombines their nominated items and runes into an optional stronger fourth
+  // candidate, and a second model pass selects a tested whole build from the
+  // disclosed DPS, TTK, AoE and durability dimensions. Old max-damage cache
+  // entries never went through that tournament and must not mask it.
+  // v40: the maximum-damage tournament now ranks its finalists across ADC,
+  // mage, fighter, bruiser and tank profiles plus a capped two-secondary-target
+  // 1v3 item-AoE scenario. A v39 result was optimized mainly against one
+  // target profile and can hide the multi-profile winner.
+  // v41: item and rune procs now share an explicitly tested cooldown scheduler,
+  // and Blade of the Ruined King's Drain uses its real three-hit arm, 1.5s
+  // duration and 30s cooldown instead of a static uptime value.
+  // v42: max-damage tournaments now count structured champion ability AoE in
+  // the capped 1v3 panel. Old winners were judged on item AoE alone.
+  // v43: execution-dependent effects now carry floor/expected/ceiling bands,
+  // and tournament scoring weights them by the player's skill profile.
+  // v44: Sudden Impact now requires an intrinsic kit trigger, First Strike is
+  // capped to its three-second window, and Coup de Grace starts below 40% HP.
+  // v45: maximum-damage tournaments cover distinct AD/AP/crit/on-hit
+  // archetypes and search the full legal item pool inside each path.
+  // v46: the tournament is no longer maximum-damage only. Every bias on the
+  // damage/durability axis runs it, scored on a blend of damage delivered and
+  // surviving to deliver it, so balanced, damage-leaning, durability-leaning
+  // and maximum-durability answers are measured rather than written in one
+  // unranked draw. Champion ability AoE is also derived across the roster
+  // instead of Graves alone, which moves the 1v3 number on most kits, and
+  // Goredrinker's active now lands in the browser engine as well as the
+  // advisor's. Two engine corrections go with it: a placeholder 1.0 cooldown on
+  // an attack rider no longer saturates Spellblade (Jinx's weapon swap was
+  // charging it 10 times in 8 seconds), and the archetype gate no longer lets
+  // attack speed alone qualify a pure AP item for an AD path, which is what put
+  // Dusk and Dawn in a maximum-damage Jinx build. A third recalibrates
+  // %current-health on-hit: Blade of the Ruined King is charged against the
+  // target's starting health, and the decay factor was 0.7 where a target that
+  // dies inside the window averages 0.5. Nothing cached before this saw any
+  // of it.
+  return `build:v46:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

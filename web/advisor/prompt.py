@@ -25,6 +25,15 @@ DATA = ROOT / "data"
 ITEMS = itemmeta.ITEMS
 RULES = itemmeta.RULES
 
+#: The patch this data describes, read from the same file the site reads it
+#: from (data/item_stat_rules.json, written by the patch apply scripts). Used
+#: to tell the model which items arrived in it.
+try:
+    CURRENT_PATCH = json.loads(
+        (DATA / "item_stat_rules.json").read_text(encoding="utf-8")).get("targetPatch", "")
+except Exception:
+    CURRENT_PATCH = ""
+
 
 def _norm(text: str) -> str:
     return " ".join((text or "").split())
@@ -591,7 +600,46 @@ def ladder_core_slugs(name: str) -> list[str]:
     rec = _consensus_store().get(name.split(" (")[0])
     if not rec or not rec.get("items"):
         return []
-    return [i["slug"] for i in rec["items"] if i.get("slug")]
+    return [i["slug"] for i in rec["items"]
+            if i.get("slug") and not (ITEMS.get(i["slug"]) or {}).get("removedIn")]
+
+
+_STALE_CACHE: bool | None = None
+
+
+def consensus_predates_patch() -> bool:
+    """True when the measured builds are older than the patch we are on.
+
+    A required-candidate list is only worth its weight while it describes the
+    game being played. After a patch that changes items, the same list becomes
+    a list of what players bought under different rules: 7.3 replaced ten items
+    and rewrote forty-two, and the August board it was measured on could not
+    contain a single one of the new ones. Every champion then arrives with nine
+    pre-patch items named as required and nothing said for the new ten, which
+    is an anchor pointed at the past.
+
+    So the block switches ITSELF off while that is true, and comes back on its
+    own the first time a collection lands after the patch. Nothing to remember
+    and nothing to flip back: both dates are already in the data, the build
+    date in ladder_pulse.json and the patch's publication date in the history
+    we fetch from Riot.
+    """
+    global _STALE_CACHE
+    if _STALE_CACHE is not None:
+        return _STALE_CACHE
+    _STALE_CACHE = False
+    try:
+        pulse = json.loads((ROOT / "web-next" / "src" / "data" / "ladder_pulse.json")
+                           .read_text(encoding="utf-8"))
+        built = (pulse.get("buildsFrom") or pulse.get("generatedAt") or "")[:10]
+        history = json.loads((DATA / "official_patch_history.json").read_text(encoding="utf-8"))
+        published = next((p.get("publishedAt", "")[:10] for p in history.get("patches") or []
+                          if p.get("patch") == CURRENT_PATCH), "")
+        if built and published:
+            _STALE_CACHE = built < published
+    except Exception:
+        _STALE_CACHE = False
+    return _STALE_CACHE
 
 
 def ladder_consensus_block(name: str) -> str:
@@ -620,12 +668,24 @@ def ladder_consensus_block(name: str) -> str:
     either: the list shows the finished tier-3 boot, and boots_block already
     explains the tier-2 purchase that upgrades into it.
     """
+    # Off entirely while the measured builds predate the patch: see
+    # consensus_predates_patch(). Nothing is printed in its place -- a note
+    # saying "the usual list is out of date" is still an appeal to the list.
+    if consensus_predates_patch():
+        return ""
     rec = _consensus_store().get(name.split(" (")[0])
     if not rec or not rec.get("items"):
         return ""
-    core = [i for i in rec["items"] if i.get("name")]
+    # The consensus is measured on whichever board was last collected, so it
+    # outlives the patch that collected it. After 7.3 that matters: Jinx's core
+    # named Magnetic Blaster, an item the patch deleted, and the block would
+    # have required the model to score a purchase nobody can make. An item or
+    # rune that has left the game is dropped rather than argued about.
+    core = [i for i in rec["items"]
+            if i.get("name") and not (ITEMS.get(i.get("slug")) or {}).get("removedIn")]
     if not core:
         return ""
+    live_rune = lambda n: not (runemeta.BY_NAME.get(n) or {}).get("removedIn")  # noqa: E731
     lines = [
         "REQUIRED CANDIDATES (must be in the initial candidate list you score; "
         "judge them exactly like every other candidate):",
@@ -643,10 +703,12 @@ def ladder_consensus_block(name: str) -> str:
     # Still no counts and still no provenance, for the reason in the docstring:
     # the model defers to a named authority instead of evaluating. A list of
     # equals is a menu; a list with a headline is an instruction.
-    if rec.get("keystones"):
-        lines.append("  keystones: " + ", ".join(k["name"] for k in rec["keystones"]))
-    if rec.get("minors"):
-        lines.append("  minor runes: " + ", ".join(m["name"] for m in rec["minors"]))
+    keystones = [k["name"] for k in rec.get("keystones") or [] if live_rune(k["name"])]
+    minors = [m["name"] for m in rec.get("minors") or [] if live_rune(m["name"])]
+    if keystones:
+        lines.append("  keystones: " + ", ".join(keystones))
+    if minors:
+        lines.append("  minor runes: " + ", ".join(minors))
     if rec.get("spells"):
         lines.append("  summoner spells: "
                      + ", ".join(sp["pair"] for sp in rec["spells"]))
@@ -1231,14 +1293,32 @@ def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
             syn_note += "; DISABLES-CRIT (your attacks stop critting entirely)"
         elif slug in crit_dependent and crit_disablers:
             syn_note += "; NEEDS-CRIT=dead alongside " + ",".join(crit_disablers)
+        # NEW-THIS-PATCH, stamped on the row. Without it the newest items are
+        # the only ones in the pool a model has never read about, sitting among
+        # ninety it has, while the required-candidate list is necessarily made
+        # of older items -- a measured list cannot contain an item that did not
+        # exist when it was measured. Jinx's first 7.3 generation took five
+        # pre-patch items and scored every new one below them. The marker is a
+        # fact, not a recommendation: it says the silence around these items is
+        # their age, and that they have to be judged on their text.
+        new_note = ""
+        if item.get("addedIn") and item["addedIn"] == CURRENT_PATCH:
+            new_note = "; NEW-THIS-PATCH"
         rows.append(f"{slug} [{item['category']}] {item['cost']}g {stats} "
-                    f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}{syn_note}) "
-                    f":: {passive}")
+                    f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}{syn_note}"
+                    f"{new_note}) :: {passive}")
     header = ("ITEM POOL (the only items you may build; the description is the factual "
               "source, the tags are an index into it). An item marked EXCLUSIVE-GROUP "
               "cannot be built alongside ANY other item carrying the same group name -- "
               "the game refuses the second purchase, so a build holding two is illegal, "
               "not merely suboptimal.")
+    if any("NEW-THIS-PATCH" in row for row in rows):
+        header += (" NEW-THIS-PATCH means the item arrived in the current patch. Nothing "
+                   "you have read elsewhere can have an opinion about it yet, and no "
+                   "list of what players build can include it, so its absence from any "
+                   "such list is not evidence against it. Judge it on its stats and its "
+                   "description, exactly like the rest, and say plainly if it beats an "
+                   "established item or loses to one.")
     if multiplies:
         header += (" MULTIPLIES-ON-HIT means the item RE-APPLIES the on-hit damage of "
                    "the items listed after it, so its worth is those on-hits repeated "

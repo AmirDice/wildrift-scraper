@@ -4,7 +4,8 @@
     "knowledge": "keys merged over the champion's knowledge block (resource, asEfficiency, abilitiesCanCrit, ...)",
     "removeMechanics": "list of mechanic kinds to delete from the champion's mechanics list",
     "reason": "why the extraction is wrong here. Required.",
-    "abilities": "per-slot overrides folded into the extracted ability. Supported: damage (REPLACES the slot's damage list wholesale) and empowerLimit (how many following attacks one cast empowers -- read by both engines ahead of the prose heuristic). Requires reason quoting the source text."
+    "abilities": "per-slot overrides folded into the extracted ability. Supported: damage (REPLACES the slot's damage list wholesale) and empowerLimit (how many following attacks one cast empowers -- read by both engines ahead of the prose heuristic). Requires reason quoting the source text.",
+    "addMechanics": "reviewed mechanics to append when extraction omitted them; duplicate kinds are ignored"
   },
   "champions": {
     "Garen": {
@@ -113,6 +114,111 @@
         "asEfficiency": 0.8
       },
       "reason": "7.2d drift: asEfficiency 0.8 -> 1.0. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.8 -> asEfficiency 0.8 -> 1.0); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
+    },
+    "Miss Fortune": {
+      "addMechanics": [
+        {
+          "kind": "everyNHit",
+          "evidence": "Love Tap triggers at 3 stacks on the same champion or epic monster",
+          "n": 3
+        }
+      ],
+      "abilities": {
+        "P": {
+          "damage": [
+            {
+              "name": "Love Tap (third attack)",
+              "type": "physical",
+              "base": 15,
+              "ratios": [
+                {
+                  "stat": "bonusAd",
+                  "pct": 40
+                }
+              ],
+              "hits": 1,
+              "when": "per auto",
+              "critScale": {
+                "base": 0.6,
+                "perCrit": 0.4
+              }
+            }
+          ]
+        }
+      },
+      "reason": "Patch 7.3 Love Tap is stated as (15 + 40% bonus AD) x (0.6 + Critical Rate x 0.4) physical damage at 3 stacks. Extraction left the passive empty, which made every Miss Fortune build omit its defining crit-dependent proc."
+    },
+    "Jax": {
+      "abilities": {
+        "2": {
+          "components": {
+            "Empower": {
+              "unsetAlt": true
+            }
+          }
+        }
+      },
+      "reason": "Empower is Jax's only W damage component, not an alternative representation. The extracted alt flag caused both engines to drop the entire AP-scaled empowered attack."
+    },
+    "Varus": {
+      "abilities": {
+        "2": {
+          "components": {
+            "Blight detonation (max stacks)": {
+              "ratios": [
+                {
+                  "stat": "targetMaxHp",
+                  "pct": [3, 3.5, 4, 4.5]
+                }
+              ],
+              "crossRatios": [
+                {
+                  "target": "targetMaxHp",
+                  "stat": "ap",
+                  "pctPerStat": 0.012
+                }
+              ]
+            }
+          }
+        }
+      },
+      "reason": "Each Blight stack adds 0.012 percentage points of target-max-health damage per AP. Extraction stored 0.012% AP as flat damage, erasing the multiplicative AP/max-health term and severely under-rating AP Varus."
+    },
+    "Kai'Sa": {
+      "abilities": {
+        "P": {
+          "components": {
+            "Plasma Detonation": {
+              "crossRatios": [
+                {
+                  "target": "targetMissingHp",
+                  "stat": "ap",
+                  "pctPerStat": 0.05
+                }
+              ]
+            }
+          }
+        }
+      },
+      "reason": "Patch 7.3 Plasma Detonation deals (15 + 5% AP)% of missing health. The AP term multiplies missing health; it is not a flat AP ratio."
+    },
+    "Kayle": {
+      "abilities": {
+        "3": {
+          "components": {
+            "Starfire Spellblade Active": {
+              "crossRatios": [
+                {
+                  "target": "targetMissingHp",
+                  "stat": "ap",
+                  "pctPerStat": 0.02
+                }
+              ]
+            }
+          }
+        }
+      },
+      "reason": "Starfire Spellblade's active adds 0.02 percentage points of target-missing-health damage per AP. This multiplicative ratio was recorded only as unmodeled prose."
     }
   },
   "_revertNote": "Twisted Fate (asEfficiency 0.8) and Kennen (0.7) corrections were applied on 2026-07-29 and REVERTED the same day on owner meta-judgment: with the raised values the model built Nashor's Tooth as an effective core item on both (slot 2 in consecutive Twisted Fate runs), and neither champion builds it as a staple in the live meta. Their every-N-hit passives are real, but the extraction's 0.2 produces the builds that match reality. If this comes up again, re-litigate with N-run evidence against real meta builds, not from ability text alone."

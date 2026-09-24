@@ -52,9 +52,11 @@ EFFECTS = {
     "blade-of-the-ruined-king": {
         "omnivampPct": 0, "burstProcFlat": 0,
         "_why": "Omnivamp became Lifesteal 12% on the stat line. Drain no longer "
-                "deals damage or steals Move Speed; it is a 30% slow, which is "
-                "utility the engine prices through the slow channel, not damage.",
-        "targetSlowPct": 30, "targetSlowUptime": 0.4,
+                "deals damage or steals Move Speed. Its 30% slow arms after three "
+                "hits, lasts 1.5s and has a 30s cooldown, so the window scheduler "
+                "can activate it only once in an ordinary teamfight.",
+        "targetSlowPct": 30, "targetSlowDurationSec": 1.5,
+        "targetSlowCdSec": 30, "targetSlowArmHits": 3,
     },
     "guinsoos-rageblade": {
         "adaptiveAdFlat": 0, "adaptiveApFlat": 0, "msPct": 0,
@@ -93,8 +95,16 @@ EFFECTS = {
     },
     "seryldas-grudge": {
         "pctPen": 0, "burstProcFlat": 0, "grievousWoundsPct": 0,
-        "_why": "Penetration moved to the stat block (35%); Frostbite, with its "
-                "bleed and its Grievous Wounds, was removed outright.",
+        "targetSlowPct": 30, "targetSlowUptime": 40,
+        "_why": "Penetration is read from the 35% stat line. Icy slows targets "
+                "below 60% Health by 30%; represented at 40% fight uptime.",
+    },
+    "goredrinker": {
+        "omnivampPct": 0, "burstProcTotalAdRatio": 175,
+        "burstProcType": "physical", "burstProcCdSec": 12,
+        "_why": "Thirsting Slash damage is modeled against one champion as 175% "
+                "total AD every 12 seconds. Its 20% AD + 10% missing-Health heal "
+                "per champion hit is not modeled.",
     },
     "infinity-edge": {
         "critMult": 2.3, "critDamagePerExcessCrit": 0,
@@ -125,6 +135,7 @@ EFFECTS = {
         "_why": "AWE converts 2% of max Mana (was 1.5%).",
     },
     "nashors-tooth": {
+        "adaptiveAdFlat": 0, "adaptiveApFlat": 0,
         "adaptiveOnHitFlat": 0, "adaptiveOnHitBonusAdPct": 0, "adaptiveOnHitApPct": 0,
         "onHitFlatMagic": 15, "onHitApRatio": 20,
         "_why": "Magic Fang (adaptive) was removed and the item is pure Ability "
@@ -236,11 +247,16 @@ EFFECTS = {
                 "distance nor range, so the item is priced on its stats.",
     },
     "yun-tal-wildarrows": {
-        "asPctPassive": 25,
+        "asPctPassive": 25, "critPctPassive": 25,
         "_why": "Flurry's 25% Attack Speed, which is up for most of a fight "
-                "given the cooldown drops by 1s per attack. The stacking "
-                "Critical Rate is in data/item_stat_rules.json, since it is a "
-                "stat the shop does not print.",
+                "given the cooldown drops by 1s per attack, and Practice Makes "
+                "Perfect's 25% Critical Rate. The shop prints that crit as 0% "
+                "because it is earned by attacking (125 attacks for a ranged "
+                "champion), so it cannot sit in the stat line without "
+                "misstating the purchase -- but the engines score a completed "
+                "level 15 build, where it is long since full. critPctPassive "
+                "is the crit twin of asPctPassive, which exists for exactly "
+                "this reason.",
     },
     "stormrazor": {
         "burstProcFlat": 120, "burstProcCdSec": 6, "msPct": 11,
@@ -267,10 +283,10 @@ EFFECTS = {
     },
     "statikk-shiv": {
         "burstProcFlat": 60, "burstProcCdSec": 6,
-        "_why": "Electrospark's first bounce. The other bounces hit other "
-                "targets, which the engine reports separately only for Runaan's "
-                "bolts, so they are left out rather than added to single-target "
-                "damage.",
+        "aoeProcFlat": 60, "aoeProcCdSec": 6, "aoeProcTargets": 5,
+        "_why": "Electrospark's first 60-damage hit is single-target; its five "
+                "additional level-15 bounces are reported on the AoE axis. On-hit "
+                "effects carried by those bounces are not modeled.",
     },
     "whispering-circlet": {
         "_why": "Harmony is Heal and Shield Power from max Mana, which the stat "
@@ -411,6 +427,10 @@ def main() -> int:
         entry = dict(overrides.get(slug) or {})
         entry.update(fx)
         entry.pop("_why_channel", None)      # superseded by this patch's note
+        if slug == "nashors-tooth":
+            entry.pop("_why_gnaw", None)     # superseded by pure-AP 7.3 Gnaw
+        if slug == "force-of-nature":
+            entry.pop("_why_dr", None)       # old 20% magic-DR version was removed
         overrides[slug] = entry
         after = {k: v for k, v in entry.items() if not k.startswith("_")}
         changed = {k: (before.get(k), v) for k, v in after.items() if before.get(k) != v}

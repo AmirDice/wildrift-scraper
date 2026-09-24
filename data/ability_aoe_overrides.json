@@ -1,0 +1,50 @@
+{
+  "_note": "Hand-verified component targeting that WINS over scripts/derive_ability_aoe.py. Use this whenever a single ability splits into components with different target counts, or when the tooltip text lies. Everything here is component-keyed: champion -> slot -> component name, exactly as the component is named in data/ability_formulas.json.",
+  "champions": {
+    "Gragas": {
+      "2": {
+        "Drunken Rage Empowered Attack": {
+          "primaryPct": 100,
+          "secondaryPct": 100,
+          "maxSecondaryTargets": 2,
+          "_why": "The derivation keeps empowered basic attacks primary-only, because most of them simply hit the body being attacked. Drunken Rage is the exception: the empowered attack splashes around the target, so it belongs on the area axis."
+        }
+      }
+    },
+    "Graves": {
+      "1": {
+        "Initial Round": {
+          "primaryPct": 100,
+          "secondaryPct": 100,
+          "maxSecondaryTargets": 2
+        },
+        "Detonation": {
+          "primaryPct": 100,
+          "secondaryPct": 100,
+          "maxSecondaryTargets": 2
+        }
+      },
+      "2": {
+        "Initial Impact": {
+          "primaryPct": 100,
+          "secondaryPct": 100,
+          "maxSecondaryTargets": 2
+        }
+      },
+      "4": {
+        "Shell Impact": {
+          "primaryPct": 100,
+          "secondaryPct": 0,
+          "maxSecondaryTargets": 0,
+          "_why": "The shell itself is a single-target collision; only the explosion behind it spreads."
+        },
+        "Cone Explosion": {
+          "primaryPct": 0,
+          "secondaryPct": 100,
+          "maxSecondaryTargets": 2,
+          "_why": "The cone opens BEHIND the first champion hit, so it cannot touch the primary target."
+        }
+      }
+    }
+  }
+}

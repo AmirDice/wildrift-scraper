@@ -10404,8 +10404,7 @@
               }
             ],
             "hits": 1,
-            "when": "per auto",
-            "alt": true
+            "when": "per auto"
           }
         ],
         "steroids": [],
@@ -15162,6 +15161,13 @@
                 "pct": 15
               }
             ],
+            "crossRatios": [
+              {
+                "target": "targetMissingHp",
+                "stat": "ap",
+                "pctPerStat": 0.05
+              }
+            ],
             "hits": 1,
             "when": "per auto"
           }
@@ -16276,6 +16282,13 @@
                 ]
               }
             ],
+            "crossRatios": [
+              {
+                "target": "targetMissingHp",
+                "stat": "ap",
+                "pctPerStat": 0.02
+              }
+            ],
             "hits": 1,
             "when": "per cast",
             "alt": true
@@ -16599,7 +16612,25 @@
       "P": {
         "name": "Love Tap",
         "cooldowns": [],
-        "damage": [],
+        "damage": [
+          {
+            "name": "Love Tap (third attack)",
+            "type": "physical",
+            "base": 15,
+            "ratios": [
+              {
+                "stat": "bonusAd",
+                "pct": 40
+              }
+            ],
+            "hits": 1,
+            "when": "per auto",
+            "critScale": {
+              "base": 0.6,
+              "perCrit": 0.4
+            }
+          }
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
@@ -16793,6 +16824,13 @@
         ]
       }
     },
+    "mechanics": [
+      {
+        "kind": "everyNHit",
+        "evidence": "Love Tap triggers at 3 stacks on the same champion or epic monster",
+        "n": 3
+      }
+    ],
     "combo": [
       "2",
       "auto",
@@ -26365,10 +26403,13 @@
                   4,
                   4.5
                 ]
-              },
+              }
+            ],
+            "crossRatios": [
               {
+                "target": "targetMaxHp",
                 "stat": "ap",
-                "pct": 0.012
+                "pctPerStat": 0.012
               }
             ],
             "hits": 3,

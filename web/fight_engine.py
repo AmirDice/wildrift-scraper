@@ -254,6 +254,11 @@ def _apply_formula_corrections(formulas: dict) -> int:
             kept = [m for m in rec.get("mechanics") or [] if m.get("kind") not in drop]
             applied += len(rec.get("mechanics") or []) - len(kept)
             rec["mechanics"] = kept
+        for mechanic in entry.get("addMechanics") or []:
+            if not any(m.get("kind") == mechanic.get("kind")
+                       for m in rec.get("mechanics") or []):
+                rec.setdefault("mechanics", []).append(mechanic)
+                applied += 1
         # Per-slot ability overrides: `damage` replaces the slot's damage list
         # wholesale. Added for Camille's Q, whose scraped text was missing the
         # recast sentence and with it the 40% true-damage conversion.
@@ -265,6 +270,18 @@ def _apply_formula_corrections(formulas: dict) -> int:
             if ability is not None and "empowerLimit" in patch:
                 ability["empowerLimit"] = patch["empowerLimit"]
                 applied += 1
+            if ability is not None:
+                for component in ability.get("damage") or []:
+                    fix = (patch.get("components") or {}).get(component.get("name"))
+                    if not fix:
+                        continue
+                    if "ratios" in fix:
+                        component["ratios"] = fix["ratios"]
+                    if "crossRatios" in fix:
+                        component["crossRatios"] = fix["crossRatios"]
+                    if fix.get("unsetAlt"):
+                        component.pop("alt", None)
+                    applied += 1
     return applied
 
 
@@ -370,6 +387,70 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
 # Ultimates that hit an area. Only Axiom Arcanist cares: it amplifies an ult by
 # 10%, or by 5% when the damage is AoE.
 AOE_ULTS = set((_load("ult_shape.json") or {}).get("aoeUlts", []))
+ABILITY_AOE = (_load("ability_aoe.json") or {}).get("champions", {})
+
+_BUILD_RELEVANT_MECHANIC = re.compile(
+    r"damage|critical|crit\b|attack speed|armor|magic resist|penetration|"
+    r"on[- ]hit|max(?:imum)? health|current health|missing health|execute|"
+    r"cooldown|recast|additional hit|strikes?\b|stack", re.I)
+_PVE_ONLY_MECHANIC = re.compile(r"\b(?:minions?|monsters?|structures?|turrets?)\b", re.I)
+_MODELED_NOTE = re.compile(r"\bmodel(?:l)?ed (?:as|by|with)|use one .+ action", re.I)
+
+
+def champion_mechanics_coverage(name: str) -> dict:
+    """Disclose unresolved kit mechanics that can bias build comparison.
+
+    Formula extraction keeps unsupported clauses in ``unmodeled``.  A simulator
+    must never turn their absence into fake certainty, especially when comparing
+    AP, crit and on-hit paths.  PvE-only clauses do not affect champion fights;
+    explicit notes explaining an existing model are not gaps.
+    """
+    record = FORMULAS.get(name) or {}
+    abilities = record.get("abilities") or {}
+    relevant: list[dict] = []
+    other = 0
+    for slot, ability in abilities.items():
+        for raw in ability.get("unmodeled") or []:
+            note = str(raw).strip()
+            if (not note or _MODELED_NOTE.search(note)
+                    or (_PVE_ONLY_MECHANIC.search(note)
+                        and not re.search(r"champion|target", note, re.I))):
+                other += 1
+                continue
+            if _BUILD_RELEVANT_MECHANIC.search(note):
+                relevant.append({"slot": str(slot),
+                                 "ability": ability.get("name", str(slot)),
+                                 "limitation": note[:360]})
+            else:
+                other += 1
+    return {
+        "status": "complete-for-build-comparison" if not relevant else "partial",
+        "engineAuthoritative": not relevant,
+        "modeledAbilities": len(abilities),
+        "buildRelevantGapCount": len(relevant),
+        "buildRelevantGaps": relevant[:12],
+        "additionalUtilityOrPvEGaps": other + max(0, len(relevant) - 12),
+        "policy": ("Do not use an engine score to eliminate a path whose defining "
+                   "mechanic appears in buildRelevantGaps." if relevant else
+                   "No unresolved build-relevant mechanic is recorded."),
+    }
+
+
+def ability_aoe_rule(name: str, slot: str, component: str) -> dict:
+    """Target allocation for one ability damage component.
+
+    Hand-curated component rules win. Other AoE-tagged ultimates use the
+    conservative common shape: the same ult component may hit the two nearby
+    enemies in the 1v3. Basic abilities stay single-target until curated.
+    """
+    rule = (((ABILITY_AOE.get(name) or {}).get(str(slot)) or {}).get(component))
+    if rule is not None:
+        return rule
+    if str(slot) == "4" and name in AOE_ULTS:
+        return {"primaryPct": 100, "secondaryPct": 100,
+                "maxSecondaryTargets": 2}
+    return {"primaryPct": 100, "secondaryPct": 0,
+            "maxSecondaryTargets": 0}
 RUNE_FX = _load("rune_effects.json")
 RUNE_ENGINE = _load("rune_engine.json")  # LLM-extracted, used when not hand-curated
 # Per-ability mana costs (wr-meta, patch 7.2). Read straight from the scrape
@@ -389,6 +470,17 @@ FONT_PROC_EVERY = 3.0
 RUNE_PROC_EVERY = 9.0   # assumed cadence for a rune that states none
 AS_CAP = 3.0        # 2.5 before patch 7.3
 SPELLBLADE_CD = 1.5
+# A %CURRENT-health on-hit (Blade of the Ruined King's Ruined Strike) is charged
+# against the target's STARTING health, so it needs a factor standing in for the
+# decay as the target dies. A linear burn from full to zero averages 50% current
+# health, and measurement says that is the case to model: all five reference
+# profiles, tank included, lose their whole health pool inside the eight-second
+# window. The value here was 0.7, which is what a target that only loses about
+# 60% would average -- a fight the engine never actually runs. It made BotRK
+# roughly 5% too strong against a bruiser and more against the squishier
+# profiles. It remains slightly harsh for the three-second burst window, where a
+# target survives and its current health really does stay higher.
+CURRENT_HP_DECAY = 0.5
 
 # Reference targets. The squishy is a REAL champion with zero defensive tools
 # in her kit (Ashe: no shields, heals, armor or damage reduction anywhere),
@@ -614,13 +706,23 @@ def _apply_stat(st: dict, k: str, val: float, pct: bool = False) -> None:
         st["tenacity"] = 1 - (1 - st["tenacity"]) * (1 - val / 100.0)
 
 
+CONDITION_BANDS = ("floor", "expected", "ceiling")
+CONDITION_SKILL_WEIGHTS = {
+    "developing": {"floor": 0.50, "expected": 0.40, "ceiling": 0.10},
+    "average": {"floor": 0.20, "expected": 0.60, "ceiling": 0.20},
+    "high": {"floor": 0.10, "expected": 0.40, "ceiling": 0.50},
+}
+
+
 def resolve_stats(name: str, level: int, item_slugs: list[str],
                   rune_names: list[str] | None = None,
-                  bonus: dict | None = None) -> dict:
+                  bonus: dict | None = None,
+                  condition_band: str = "expected") -> dict:
     """Champion base stats + item stats + engine passives + kit steroids.
 
     `bonus` injects raw stats (the marginal-value probe) through the same
     derivation, so reload / fixed-AS / asEfficiency mechanics still apply."""
+    condition_band = condition_band if condition_band in CONDITION_BANDS else "expected"
     bs = CHAMPS[name]["baseStats"]
 
     def base(k, default=0.0):
@@ -649,14 +751,21 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "cloneAdPct": 0.0, "cloneAsFromCritPct": 0.0,
         "cloneLifetimeS": 0.0, "cloneMaxCount": 0.0,
         "baseMs": bs.get("moveSpeed", {}).get("base", 330) or 330, "bonusMs": 0.0,
-        "abilityAmp": 0.0, "damageAmp": 0.0, "giant": 0.0, "execute": 0.0,
+        "abilityAmp": 0.0, "damageAmp": 0.0, "attackDamageAmp": 0.0,
+        "conditionalEffects": [], "conditionBand": condition_band,
+        "timedDamageAmps": [], "targetThresholdAmps": [],
+        "giant": 0.0, "execute": 0.0,
         # Procs whose condition the rotation has to verify, and ult-only amp.
         "conditionalProcs": [], "ultAmp": 0.0,
         "spellbladeBaseAdPct": 0.0, "spellbladePctMaxHp": 0.0,
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
-        "targetSlow": 0.0, "itemHaste": 0.0, "autoBonusPct": 0.0,
+        # Discrete damage on OTHER targets (Statikk chain lightning). Kept out
+        # of single-target total just like Runaan's bolts.
+        "aoeProcFlat": 0.0, "aoeProcCdSec": 0.0, "aoeProcTargets": 0.0,
+        "targetSlow": 0.0, "targetSlowEffects": [],
+        "itemHaste": 0.0, "autoBonusPct": 0.0,
         # What the OPPONENT's build does to my output. Both are 1.0 unless
         # a caller sets them on a copy: duel() and score_vs_comp() do, from
         # the target's Plated Steelcaps (basicAttackDr) and Frozen Heart
@@ -691,13 +800,14 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     # landed so far.
     on_crit = {"pctPen": 0.0, "physVampPct": 0.0}
 
-    def add_proc(flat=0.0, adRatio=0.0, apRatio=0.0, pctMaxHp=0.0,
+    def add_proc(flat=0.0, adRatio=0.0, totalAdRatio=0.0, apRatio=0.0, pctMaxHp=0.0,
                  type="magic", cd=0.0, arm=0.0, label=""):
         """A discrete proc. cd <= 0 means 'no repeat stated' -> once per fight."""
-        if not (flat or adRatio or apRatio or pctMaxHp):
+        if not (flat or adRatio or totalAdRatio or apRatio or pctMaxHp):
             return
         st["procs"].append({
-            "flat": flat, "adRatio": adRatio, "apRatio": apRatio,
+            "flat": flat, "adRatio": adRatio, "totalAdRatio": totalAdRatio,
+            "apRatio": apRatio,
             "pctMaxHp": pctMaxHp, "type": type, "arm": arm, "label": label,
             "cd": cd if cd and cd > 0 else float("inf"),
         })
@@ -746,6 +856,20 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["critDisabled"] = 1.0
         st["abilityAmp"] += g("abilityAmpPct") / 100.0
         st["damageAmp"] += g("damageAmpPct") / 100.0
+        _conditional_attack = fx.get("conditionalAttackAmpPct")
+        if isinstance(_conditional_attack, dict):
+            _value = float(_conditional_attack.get(condition_band, 0) or 0)
+            st["attackDamageAmp"] += _value / 100.0
+            st["conditionalEffects"].append({
+                "source": slug,
+                "label": str(fx.get("conditionalLabel") or
+                             "conditional attack damage"),
+                "band": condition_band,
+                "valuePct": _value,
+                "floorPct": float(_conditional_attack.get("floor", 0) or 0),
+                "expectedPct": float(_conditional_attack.get("expected", 0) or 0),
+                "ceilingPct": float(_conditional_attack.get("ceiling", 0) or 0),
+            })
         st["giant"] = max(st["giant"], g("giantSlayerPct") / 100.0)
         st["execute"] = max(st["execute"], g("executePct") / 100.0)
         st["spellbladeBaseAdPct"] = max(st["spellbladeBaseAdPct"], g("spellbladeBaseAdPct"))
@@ -769,14 +893,26 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # Rylai's: a slow on the target is relative move speed for the one
         # thing this engine models about positioning, a melee sticking to its
         # target. Damage is deliberately untouched.
-        st["targetSlow"] = max(
-            st["targetSlow"],
-            g("targetSlowPct") / 100.0 * (g("targetSlowUptime") or 100.0) / 100.0)
+        _slow_pct = g("targetSlowPct") / 100.0
+        if _slow_pct and g("targetSlowDurationSec"):
+            st["targetSlowEffects"].append({
+                "pct": _slow_pct,
+                "durationS": g("targetSlowDurationSec"),
+                "cooldownS": g("targetSlowCdSec") or float("inf"),
+                "armHits": g("targetSlowArmHits"),
+            })
+        else:
+            st["targetSlow"] = max(
+                st["targetSlow"],
+                _slow_pct * (g("targetSlowUptime") or 100.0) / 100.0)
         # Ingenious Hunter: ITEM haste, expressible only now that item procs
         # carry real cooldowns. Stored, exported, and read by neither engine.
         st["itemHaste"] += g("itemHasteFlat")
         st["extraBolts"] = max(st["extraBolts"], g("extraBolts"))
         st["extraBoltAdPct"] = max(st["extraBoltAdPct"], g("extraBoltAdPct"))
+        st["aoeProcFlat"] += g("aoeProcFlat")
+        st["aoeProcCdSec"] = max(st["aoeProcCdSec"], g("aoeProcCdSec"))
+        st["aoeProcTargets"] += g("aoeProcTargets")
         # Damage TYPE is read from the item's own text, not asked of the model: a
         # flag key would have to be grounded, and the literal "1" of a boolean
         # never appears in a tooltip, so it could never survive the filter.
@@ -798,7 +934,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                  cd=g("procMaxHpCdSec"), arm=g("procMaxHpArmSec"))
         add_proc(flat=g("firstHit"), label=slug, type="physical",
                  cd=g("firstHitCdSec"), arm=g("firstHitArmSec"))
-        add_proc(flat=g("burstProcFlat"), apRatio=g("burstProcApPct") / 100.0,
+        add_proc(flat=g("burstProcFlat"),
+                 adRatio=g("burstProcAdRatio") / 100.0,
+                 totalAdRatio=g("burstProcTotalAdRatio") / 100.0,
+                 apRatio=g("burstProcApPct") / 100.0,
                  label=slug, type=fx.get("burstProcType", "magic"),
                  cd=g("burstProcCdSec"), arm=g("burstProcArmSec"))
         st["dotDps"] += g("dotDps")
@@ -915,6 +1054,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                     or "onHit" in (_champ.get("mechanics") or []))
     ks, mn = RUNE_FX.get("keystones", {}), RUNE_FX.get("minors", {})
     for rn in rune_names or []:
+        if rn == "Sudden Impact" and not can_trigger_sudden_impact(name):
+            # Flash is not a repeatable kit trigger.
+            continue
         r = ks.get(rn) or mn.get(rn)
         if not r:
             # fall back to the LLM-extracted numeric model
@@ -1049,7 +1191,20 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 # Checked later against the simulated rotation rather than
                 # assumed: the proc is earned only if this champion's damage
                 # actually takes the target below half health.
-                flat = p.get("flat", 0) + p.get("perSoul", 0) * p.get("assumedSouls", 0)
+                _soul_bands = p.get("assumedSoulsByBand")
+                _souls = p.get("assumedSouls", 0)
+                if isinstance(_soul_bands, dict):
+                    _souls = float(_soul_bands.get(condition_band, _souls) or 0)
+                    st["conditionalEffects"].append({
+                        "source": rn,
+                        "label": "Dark Harvest souls (16 is a strong-game scenario, not a cap)",
+                        "band": condition_band,
+                        "value": _souls,
+                        "floor": float(_soul_bands.get("floor", 0) or 0),
+                        "expected": float(_soul_bands.get("expected", 0) or 0),
+                        "ceiling": float(_soul_bands.get("ceiling", 0) or 0),
+                    })
+                flat = p.get("flat", 0) + p.get("perSoul", 0) * _souls
                 st["conditionalProcs"].append(
                     {"need": 0.5, "flat": flat, "adRatio": p.get("adRatio", 0),
                      "apRatio": p.get("apRatio", 0), "type": p.get("type", "magic"),
@@ -1067,7 +1222,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                          type=p.get("type", "physical"), label=rn,
                          cd=_lvl_range(p.get("cdSec") or 0, level),
                          arm=_lvl_range(p.get("armSec") or 0, level))
-        ragg["ampPct"] += r.get("ampPct", 0)
+        _amp = r.get("ampPct", 0)
+        if rn == "First Strike" and _amp:
+            st["timedDamageAmps"].append({"pct": _amp, "durationS": 3.0,
+                                           "source": rn})
+        elif rn == "Coup de Grace" and _amp:
+            st["targetThresholdAmps"].append({"pct": _amp,
+                                               "belowHpPct": 0.40,
+                                               "source": rn})
+        else:
+            ragg["ampPct"] += _amp
     st["bonusAd"] += ragg["bonusAd"]
     st["runeOnHitFlat"] = (ragg["onHitFlat"]
                            + ragg["onHitAdRatio"] * st["bonusAd"]
@@ -1310,6 +1474,24 @@ RANGED_CLASSES = {"Marksman", "Mage", "Enchanter"}
 # Runes whose trigger requires sustained basic attacking; casters get 45% value.
 AUTO_GATED_RUNES = {"Empowerment", "Lethal Tempo"}
 
+
+def can_trigger_sudden_impact(name: str) -> bool:
+    """Whether the kit itself has a Sudden Impact trigger (Flash excluded).
+
+    The raw mechanics tag is too noisy: Jinx is tagged `dash` because Chompers
+    *interrupt enemy dashes*. Read the ability sentences instead, after
+    removing enemy-dash references that describe crowd control rather than the
+    champion moving.
+    """
+    text = " ".join(str(a.get("text") or "")
+                    for a in (CHAMPS.get(name) or {}).get("abilities", []))
+    text = re.sub(r"interrupt\w*\s+(?:their\s+|enemy\s+)?dashes?", "", text,
+                  flags=re.I)
+    return bool(re.search(
+        r"\b(?:dash(?:es|ed|ing)?|blink(?:s|ed|ing)?|warp(?:s|ed|ing)?|"
+        r"teleport(?:s|ed|ing)?|camouflag(?:e|ed|es|ing)|invisib(?:le|ility)|"
+        r"stealth)\b", text, re.I))
+
 # Runes whose value REQUIRES an ally beside you. Guardian only shields while
 # "guarding allies within 350 units"; Font of Life heals "the lowest Health
 # allied champion nearby". The engine simulates a 1v1, so it cannot see that
@@ -1374,6 +1556,37 @@ def _auto_uptime(name: str, window: float, st: dict | None = None) -> float:
 
 _ORDINALS = {"second": 2, "other": 2, "two": 2, "third": 3, "three": 3,
              "fourth": 4, "four": 4, "fifth": 5, "five": 5, "sixth": 6, "six": 6}
+
+
+def charges_spellblade(ability: dict) -> bool:
+    """Whether activating this ability should charge a Spellblade proc.
+
+    Almost every ability does.  The exception is an ability whose damage is
+    delivered ENTIRELY through basic attacks *and* whose stored cooldown is the
+    placeholder 1.0 -- three abilities on the whole roster, and all three are
+    misrepresented by that number:
+
+      Jinx     Switcheroo!             a weapon stance swap
+      Vi       Excessive Force         2 charges, one every 8-11s (its own note)
+      Heimerdinger  H-28G Turret       a turret placement, up to 3 held
+
+    Read as a real one-second cooldown, each of these is 8 or 9 casts in an
+    eight-second window, which saturates Spellblade at its maximum 6 procs for
+    free.  On Jinx that made Dusk and Dawn -- a 60 AP spellblade item on a
+    champion with no AP scaling -- score as her best fifth item, because every
+    proc also re-applied Blade of the Ruined King and Kraken on-hits: 1,704 of
+    her 8-second damage came from `extra on-hit x6` that a weapon swap paid for.
+
+    Abilities that empower an attack on a REAL cooldown (Gwen's Skip 'n Slash,
+    Garen's Q, Camille's Q, 43 others) are unaffected and still charge it.
+    """
+    components = ability.get("damage") or []
+    if not components:
+        return True
+    if not all((c.get("when") or "") == "per auto" for c in components):
+        return True
+    cooldowns = ability.get("cooldowns") or []
+    return not (cooldowns and all(float(c) == 1.0 for c in cooldowns))
 
 
 def every_n_share(name: str) -> tuple[float, bool]:
@@ -1480,7 +1693,7 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
     a_phys = (st["ad"] * crit_ev * phys_m * giant * (1 - _replaced)
               * (1 + st.get("autoBonusPct", 0.0) / 100.0))
     a_phys += st["onHitPhys"] * phys_m
-    a_phys += (st["onHitPctCurrentHp"] * target["hp"] * 0.7
+    a_phys += (st["onHitPctCurrentHp"] * target["hp"] * CURRENT_HP_DECAY
                + st["onHitPctMaxHp"] * target["hp"]) * phys_m
     a_phys += st["runeOnHitFlat"] * phys_m
     # Titanic Cleave arms every CLEAVE_EVERY seconds, not every auto, so only a
@@ -1649,6 +1862,16 @@ def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None, name=""):
     return p, m, t
 
 
+def _proc_activations(window: float, cooldown: float = float("inf"),
+                      arm: float = 0.0) -> int:
+    """How many times an initially-ready proc can fire inside a window."""
+    if window + 1e-9 < arm:
+        return 0
+    if cooldown == float("inf") or cooldown <= 0:
+        return 1
+    return 1 + int((window - arm) // cooldown)
+
+
 def _proc_split(st, target, phys_m, magic_m, window):
     """Discrete procs, charged at the rate their own descriptions state.
 
@@ -1663,15 +1886,16 @@ def _proc_split(st, target, phys_m, magic_m, window):
     once_p = once_m = once_t = 0.0
     for pr in st["procs"]:
         arm = pr.get("arm", 0.0)
-        if window + 1e-9 < arm:
-            continue
         cd = pr.get("cd") or float("inf")
-        times = 1 if cd == float("inf") else 1 + int((window - arm) // cd)
+        times = _proc_activations(window, cd, arm)
+        if not times:
+            continue
         dtype = pr.get("type", "magic")
         if dtype == "adaptive":
             dtype = "magic" if st["ap"] >= st["bonusAd"] else "physical"
         val = (pr.get("flat", 0.0)
                + pr.get("adRatio", 0.0) * st["bonusAd"]
+               + pr.get("totalAdRatio", 0.0) * st["ad"]
                + pr.get("apRatio", 0.0) * st["ap"]
                + pr.get("pctMaxHp", 0.0) * target["hp"]) * times
         # Everything used to be charged as PHYSICAL through phys_m, so magic
@@ -1683,6 +1907,22 @@ def _proc_split(st, target, phys_m, magic_m, window):
         else:
             once_p += val * phys_m
     return once_p, once_m, once_t
+
+
+def _aoe_proc_damage(st: dict, magic_m: float, window: float,
+                     secondary_targets: int | None = None) -> float:
+    """Damage a discrete item proc deals to enemies beyond the main target."""
+    flat = st.get("aoeProcFlat", 0.0)
+    targets = st.get("aoeProcTargets", 0.0)
+    if secondary_targets is not None:
+        targets = min(targets, max(0, secondary_targets))
+    if not flat or not targets:
+        return 0.0
+    cd = st.get("aoeProcCdSec", 0.0) or float("inf")
+    if cd != float("inf"):
+        cd *= 100.0 / (100.0 + st.get("itemHaste", 0.0))
+    times = _proc_activations(window, cd)
+    return flat * targets * magic_m * times
 
 
 def _on_hit_bundle(st, target, phys_m, magic_m, kit=None):
@@ -1698,7 +1938,7 @@ def _on_hit_bundle(st, target, phys_m, magic_m, kit=None):
     a re-application is worth.
     """
     on_p = (st["onHitPhys"] + st["runeOnHitFlat"]
-            + st["onHitPctCurrentHp"] * target["hp"] * 0.7
+            + st["onHitPctCurrentHp"] * target["hp"] * CURRENT_HP_DECAY
             + st["onHitPctMaxHp"] * target["hp"]) * phys_m
     on_m = st["onHitMagic"] * magic_m
     on_t = 0.0
@@ -1718,7 +1958,8 @@ def _for_window(name: str, st: dict, window: float) -> dict:
     only the simulation averages.
     """
     timed = st.get("timedSteroids") or []
-    if not timed or window <= 0:
+    slows = st.get("targetSlowEffects") or []
+    if (not timed and not slows) or window <= 0:
         return st
     haste_m = 100 / (100 + st["haste"])
     as_lost = ad_lost = 0.0
@@ -1728,10 +1969,26 @@ def _for_window(name: str, st: dict, window: float) -> dict:
         uptime = min(1.0, (s["durationS"] * casts) / window)
         as_lost += s["asPct"] * (1 - uptime)
         ad_lost += s["adFlat"] * (1 - uptime)
-    if not as_lost and not ad_lost:
-        return st
-
     adj = dict(st)
+    if slows:
+        scheduled_slow = 0.0
+        for effect in slows:
+            # Drain arms after three hits. The first hit lands at time zero, so
+            # N hits need N-1 attack intervals. Abilities can also stack it;
+            # using attacks alone is the conservative deterministic estimate.
+            arm_hits = max(0.0, effect.get("armHits", 0.0))
+            arm = max(0.0, arm_hits - 1.0) / max(st.get("as", 0.1), 0.1)
+            cd = effect.get("cooldownS") or float("inf")
+            if cd != float("inf"):
+                cd *= 100.0 / (100.0 + st.get("itemHaste", 0.0))
+            active = 0.0
+            activation = arm
+            for _ in range(_proc_activations(window, cd, arm)):
+                active += max(0.0, min(effect["durationS"], window - activation))
+                activation += cd
+            scheduled_slow = max(
+                scheduled_slow, effect["pct"] * min(1.0, active / window))
+        adj["targetSlow"] = max(st.get("targetSlow", 0.0), scheduled_slow)
     mechs = {m.get("kind"): m for m in FORMULAS.get(name, {}).get("mechanics") or []}
     know = FORMULAS.get(name, {}).get("knowledge") or {}
     if ad_lost:
@@ -1751,7 +2008,8 @@ def _for_window(name: str, st: dict, window: float) -> dict:
     return adj
 
 
-def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) -> dict:
+def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
+             secondary_targets: int | None = None) -> dict:
     """Damage dealt over `window` seconds: abilities on cooldown + autos."""
     st = _for_window(name, st, window)
     # An enemy Frozen Heart's Chill is a real attack-speed cut and belongs
@@ -1776,6 +2034,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     total = 0.0
     auto_dmg = 0.0  # damage gated by attacking: autos + on-hit + spellblade
     bolt_dmg = 0.0  # damage landing on OTHER targets (Runaan's), never in total
+    ability_aoe_dmg = 0.0  # champion ability damage on OTHER targets
     by_type = {"physical": 0.0, "magic": 0.0, "true": 0.0}
     # Damage per ability slot, so an effect that amplifies ONE ability (Axiom
     # Arcanist's ultimate, Smolder's per-ability empowerments) has something to
@@ -1852,8 +2111,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             # Charged at its stated cooldown, like every other proc.
             _arm = pr.get("arm", 0.0)
             _cd = pr.get("cd") or float("inf")
-            _times = 0 if window + 1e-9 < _arm else (
-                1 if _cd == float("inf") else 1 + int((window - _arm) // _cd))
+            _times = _proc_activations(window, _cd, _arm)
             if not _times:
                 continue
             dmg *= (magic_m if dtype == "magic" else phys_m) * reach * _times
@@ -1862,7 +2120,32 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             added += dmg
         return added
 
-    def comp_dmg(comp, rank) -> float:
+    def threshold_amp_damage(total_now: float) -> float:
+        """Damage earned only during the target's stated low-health slice."""
+        added = 0.0
+        for entry in st.get("targetThresholdAmps", []):
+            threshold = float(entry.get("belowHpPct", 0) or 0)
+            if threshold <= 0:
+                continue
+            # Damage before the threshold does not receive the amp. Once the
+            # rotation reaches it, at most that final health slice can.
+            eligible = min(max(0.0, total_now - target["hp"] * (1 - threshold)),
+                           target["hp"] * threshold)
+            bonus = eligible * float(entry.get("pct", 0) or 0)
+            if bonus:
+                parts.append((f"{entry.get('source', 'threshold amp')} (<{threshold:.0%})",
+                              bonus))
+                added += bonus
+        return added
+
+    def whole_rotation_amp() -> float:
+        timed = sum(float(entry.get("pct", 0) or 0)
+                    * min(1.0, float(entry.get("durationS", 0) or 0)
+                          / max(window, 1e-9))
+                    for entry in st.get("timedDamageAmps", []))
+        return 1 + st["damageAmp"] + timed
+
+    def comp_dmg(comp, rank, slot: str = "", secondary: bool = False) -> float:
         base = _scale_val(comp.get("base"), rank, level)
         if comp.get("when") == "dot total" and comp.get("durationS"):
             base *= float(comp["durationS"])
@@ -1875,9 +2158,36 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
                    "ownBonusHp": st["bonusHp"], "armor": st["armor"], "mr": st["mr"],
                    "bonusMs": st["bonusMs"], "bonusArmor": 0, "bonusMr": 0}.get(stat, 0)
             val += pct * src
+        for r in comp.get("crossRatios") or []:
+            left = {"targetMaxHp": target["hp"],
+                    "targetCurrentHp": target["hp"] * 0.7,
+                    "targetMissingHp": target["hp"] * 0.3}.get(r.get("target"), 0)
+            right = {"ap": st["ap"], "ad": st["ad"],
+                     "bonusAd": st["bonusAd"]}.get(r.get("stat"), 0)
+            # pctPerStat is percentage points of the target quantity granted
+            # by each point of the scaling stat (e.g. 0.012% max HP per AP).
+            val += left * right * float(r.get("pctPerStat", 0) or 0) / 100.0
+        # Some champion damage scales with the build's current crit chance
+        # without itself being a critical strike (Miss Fortune Love Tap 7.3).
+        # Keeping this on the component avoids pretending it is a global auto
+        # modifier or folding one assumed crit value into the base formula.
+        if comp.get("critScale"):
+            scale = comp["critScale"]
+            val *= (float(scale.get("base", 1.0) or 0.0)
+                    + float(scale.get("perCrit", 0.0) or 0.0) * st["crit"])
         val *= max(1, int(_rank_val(comp.get("hits", 1), rank) or 1))
         m = {"physical": phys_m, "magic": magic_m, "true": 1.0}[comp["type"]]
-        return val * m * (giant if comp["type"] == "physical" else 1.0)
+        rule = ability_aoe_rule(name, slot, str(comp.get("name") or ""))
+        share = rule.get("secondaryPct", 0) if secondary else rule.get("primaryPct", 100)
+        return (val * m * (giant if comp["type"] == "physical" else 1.0)
+                * float(share) / 100.0)
+
+    def secondary_comp_dmg(comp, rank, slot: str) -> float:
+        rule = ability_aoe_rule(name, slot, str(comp.get("name") or ""))
+        cap = max(0, int(rule.get("maxSecondaryTargets", 0) or 0))
+        targets = cap if secondary_targets is None else min(
+            cap, max(0, int(secondary_targets)))
+        return comp_dmg(comp, rank, slot, secondary=True) * targets
 
     per_auto_comps = []
     # Skill-order realism: prefer the REAL recommended order scraped from the
@@ -1893,7 +2203,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     else:
         def _max_rank_dmg(slot):
             comps = [c for c in f[slot].get("damage") or [] if not c.get("alt")]
-            return sum(comp_dmg(c, 3) for c in comps)
+            return sum(comp_dmg(c, 3, slot) for c in comps)
         prio = sorted(basic_slots, key=_max_rank_dmg, reverse=True)
         rank_of = {s: (3 if i < 2 else 1) for i, s in enumerate(prio)}
     rank_of["4"] = 2 if level >= 13 else 1  # ult ranks at 5/9/13
@@ -1926,13 +2236,18 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             amp_a = 1 + st["abilityAmp"]
             d = 0.0
             for c in comps:
-                cd = comp_dmg(c, rank) * amp_a
+                cd = comp_dmg(c, rank, slot) * amp_a
                 add_t(c["type"], cd)
                 by_slot_dmg[slot] = by_slot_dmg.get(slot, 0.0) + cd
                 d += cd
+                secondary = secondary_comp_dmg(c, rank, slot) * amp_a
+                if slot == "4":
+                    secondary *= 1 + st["ultAmp"]
+                ability_aoe_dmg += secondary
             parts.append((f"[{slot}] {f[slot].get('name', slot)}", d))
             total += d
-            casts_total += 1
+            if charges_spellblade(f[slot]):
+                casts_total += 1
         n_autos = max(n_autos_seq, int(window * st["as"] * 0.5))
         # Frequency of each per-auto component: a passive that fires every Nth
         # attack rides 1/N of them, and an ability that empowers N attacks per
@@ -1963,6 +2278,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         # Plated Steelcaps' Block reduces BASIC ATTACK damage only, which is why
         # it rides here and not on st["dr"] (all damage). 1.0 with no Steelcaps.
         dsm *= st.get("autoDamageMult", 1.0)
+        dsm *= 1.0 + st.get("attackDamageAmp", 0.0)
         auto = (a_phys + a_magic + a_true) * dsm * n_autos
         add_t("physical", a_phys * dsm * n_autos)
         add_t("magic", a_magic * dsm * n_autos)
@@ -1979,7 +2295,10 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             _bp, _bm, _bt = _on_hit_bundle(st, target, phys_m, magic_m, _kit_b)
             _per_bolt = (st["extraBoltAdPct"] / 100.0 * st["ad"] * crit_ev * phys_m
                          + _bp + _bm + _bt)
-            bolt_dmg += _per_bolt * st["extraBolts"] * n_autos
+            bolts = (st["extraBolts"] if secondary_targets is None
+                     else min(st["extraBolts"], max(0, secondary_targets)))
+            bolt_dmg += _per_bolt * bolts * n_autos
+        bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets)
         if st["spellbladeBaseAdPct"] or st["spellbladePctMaxHp"] or st["spellbladeApPct"]:
             procs = min(casts_total, n_autos, 1 + int(window / SPELLBLADE_CD))
             # Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; there
@@ -2018,10 +2337,12 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
             d = (st["dotDps"] + st["dotPctMaxHp"] * target["hp"]) * window * magic_m
             add_t("magic", d)
             total += d
-        amp = 1 + st["damageAmp"]
         total += kit_amps(total)
+        total += threshold_amp_damage(total)
+        amp = whole_rotation_amp()
         return {"total": total * amp, "parts": parts, "nAutos": n_autos,
                 "boltDmg": bolt_dmg * amp, "bySlot": dict(by_slot_dmg),
+                "abilityAoeDmg": ability_aoe_dmg * amp,
                 "autoDmg": auto_dmg * amp,
                 "byType": {k: v * amp for k, v in by_type.items()}}
 
@@ -2064,7 +2385,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         max_casts = casts  # cd-allowed before action-time budget clamps it
         casts = 1 if hwei else min(casts, cast_budget)
         cast_budget -= casts
-        casts_total += hwei["casts"].get(slot, 0) if hwei else casts
+        if charges_spellblade(ab):
+            casts_total += hwei["casts"].get(slot, 0) if hwei else casts
         if not hwei or hwei["casts"].get(slot, 0):
             actual = hwei["casts"][slot] if hwei else casts
             cast_log[slot] = {"name": ab.get("name", slot), "casts": actual,
@@ -2072,10 +2394,14 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         amp_a = 1 + st["abilityAmp"]
         d = 0.0
         for c in dmg_comps:
-            cd = comp_dmg(c, rank) * casts * amp_a
+            cd = comp_dmg(c, rank, slot) * casts * amp_a
             add_t(c["type"], cd)
             by_slot_dmg[slot] = by_slot_dmg.get(slot, 0.0) + cd
             d += cd
+            secondary = secondary_comp_dmg(c, rank, slot) * casts * amp_a
+            if slot == "4":
+                secondary *= 1 + st["ultAmp"]
+            ability_aoe_dmg += secondary
         parts.append((f"[{slot}] {ab.get('name', slot)} x{casts}", d))
         total += d
 
@@ -2109,6 +2435,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
     dsm = st.get("doubleShotMult", 1.0)
     # See the combo path above: basic-attack-only reduction, not st["dr"].
     dsm *= st.get("autoDamageMult", 1.0)
+    dsm *= 1.0 + st.get("attackDamageAmp", 0.0)
     d_autos = (a_phys + a_magic + a_true) * dsm * n_autos
     add_t("physical", a_phys * dsm * n_autos)
     add_t("magic", a_magic * dsm * n_autos)
@@ -2123,7 +2450,10 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         _bp, _bm, _bt = _on_hit_bundle(st, target, phys_m, magic_m, _kit_b)
         _per_bolt = (st["extraBoltAdPct"] / 100.0 * st["ad"] * crit_ev * phys_m
                      + _bp + _bm + _bt)
-        bolt_dmg += _per_bolt * st["extraBolts"] * n_autos
+        bolts = (st["extraBolts"] if secondary_targets is None
+                 else min(st["extraBolts"], max(0, secondary_targets)))
+        bolt_dmg += _per_bolt * bolts * n_autos
+    bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets)
     total += d_autos
     auto_dmg += d_autos
 
@@ -2175,13 +2505,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13) 
         total += d
 
     total += kit_amps(total)
+    total += threshold_amp_damage(total)
 
-    amp = 1 + st["damageAmp"]
+    amp = whole_rotation_amp()
     total *= amp
     n_autos_ideal = max(1, int(window * st["as"]))  # no uptime discount
     return {"total": total, "parts": parts, "nAutos": n_autos,
             "nAutosIdeal": n_autos_ideal, "castLog": cast_log, "bySlot": dict(by_slot_dmg),
             "autoDmg": auto_dmg * amp, "boltDmg": bolt_dmg * amp,
+            "abilityAoeDmg": ability_aoe_dmg * amp,
             "byType": {k: v * amp for k, v in by_type.items()}}
 
 
@@ -2579,10 +2911,10 @@ def delivered_share(m: dict, name: str) -> float:
 #: Builds with no bolt item have aoe8 == 0, so this term vanishes for them and
 #: 16 of the 20 champions measured are bit-for-bit unchanged.
 #:
-#: STILL MISSING: ability AoE. data/ult_shape.json tags 71 champions with an
-#: AoE ult and the engine only uses that tag to pick which item amp applies --
-#: Malphite's ult hitting five people is not modelled anywhere, which is why he
-#: is the one champion who got WORSE when scoring moved to the composite.
+#: This legacy composite still prices item AoE only. The explicit tournament
+#: damage_scenarios panel below now allocates tagged ultimates and curated basic
+#: ability components to at most two nearby champions; moving that contextual
+#: 1v3 value into this generic single-target score is a separate calibration.
 AOE_WEIGHT = 0.3
 
 def fight_score(m: dict, variant: str, name: str = "",
@@ -3657,6 +3989,112 @@ def _typed_ehp(st: dict) -> tuple[float, float]:
     return pool / phys, pool / magic
 
 
+def damage_scenarios(name: str, item_slugs: list[str],
+                     rune_names: list[str] | None = None,
+                     level: int = 15,
+                     condition_band: str = "expected") -> dict:
+    """Comparable damage panel across five 1v1s and one explicit 1v3.
+
+    The 1v3 is a fixed eight-second damage-delivery test: a bruiser is the
+    focused target and an ADC plus mage are in range of item splash.  Only
+    damage that the engine can allocate to those exact targets is counted.
+    It is deliberately *not* a claim that the champion survives or wins the
+    1v3: enemy actions, CC and positioning remain outside this panel. Ability
+    area shapes are derived across the roster from each ability's own damage
+    text (data/ability_aoe.json); passives and empowered-attack riders stay
+    primary-only, because they land on the body being attacked.
+    """
+    runes = list(rune_names or [])
+    st = resolve_stats(name, level, item_slugs, runes,
+                       condition_band=condition_band)
+    if not st:
+        return {}
+
+    profiles = target_profiles(level)
+    targets: dict[str, dict] = {}
+    for label, profile in profiles.items():
+        target = dict(profile, label=label)
+        burst = rotation(name, st, target, 3.0, level, secondary_targets=0)["total"]
+        damage = rotation(name, st, target, REF_FIGHT, level,
+                          secondary_targets=0)["total"]
+        targets[label] = {
+            "burst3": round(burst),
+            "damage8": round(damage),
+            "dps8": round(damage / REF_FIGHT),
+        }
+
+    primary = rotation(
+        name, st, dict(profiles["bruiser"], label="bruiser"), REF_FIGHT,
+        level, secondary_targets=0,
+    )["total"]
+    secondary_items = 0.0
+    secondary_abilities = 0.0
+    for label in ("adc", "mage"):
+        result = rotation(
+            name, st, dict(profiles[label], label=label), REF_FIGHT,
+            level, secondary_targets=1,
+        )
+        secondary_items += result["boltDmg"]
+        secondary_abilities += result["abilityAoeDmg"]
+
+    primary_damage = round(primary)
+    secondary_item_damage = round(secondary_items)
+    secondary_ability_damage = round(secondary_abilities)
+    return {
+        "conditionBand": condition_band,
+        "conditionalEffects": st.get("conditionalEffects", []),
+        "targets": targets,
+        "oneVsThree": {
+            "windowSeconds": REF_FIGHT,
+            "primary": "bruiser",
+            "secondaryTargets": ["adc", "mage"],
+            "primaryDamage": primary_damage,
+            "secondaryItemAoeDamage": secondary_item_damage,
+            "secondaryChampionAoeDamage": secondary_ability_damage,
+            "totalDamage": (primary_damage + secondary_item_damage
+                            + secondary_ability_damage),
+            "scope": ("outgoing damage only; item and champion-ability AoE are capped "
+                      "to the two secondary targets; passives and empowered-attack "
+                      "riders stay primary-only; positioning, focus changes, enemy "
+                      "damage and enemy CC are not modeled"),
+        },
+    }
+
+
+def conditional_damage_scenarios(name: str, item_slugs: list[str],
+                                 rune_names: list[str] | None = None,
+                                 level: int = 15,
+                                 skill_level: str = "average") -> dict:
+    """Floor/expected/ceiling panels for execution-dependent effects.
+
+    Deterministic conditions (cooldowns, arm times, hit counts and health
+    thresholds) remain inside each panel and are never skill-discounted. Only
+    effects carrying explicit conditional bands are rerun. Builds without one
+    reuse the expected panel so the tournament pays no extra simulation cost.
+    """
+    runes = list(rune_names or [])
+    expected = damage_scenarios(name, item_slugs, runes, level, "expected")
+    weights = CONDITION_SKILL_WEIGHTS.get(
+        skill_level, CONDITION_SKILL_WEIGHTS["average"])
+    if not expected.get("conditionalEffects"):
+        return {
+            "skillLevel": skill_level if skill_level in CONDITION_SKILL_WEIGHTS else "average",
+            "weights": weights,
+            "hasConditionalEffects": False,
+            "bands": {"expected": expected},
+        }
+    return {
+        "skillLevel": skill_level if skill_level in CONDITION_SKILL_WEIGHTS else "average",
+        "weights": weights,
+        "hasConditionalEffects": True,
+        "bands": {
+            band: (expected if band == "expected" else
+                   damage_scenarios(name, item_slugs, runes, level, band))
+            for band in CONDITION_BANDS
+        },
+    }
+
+
 def evaluation_vector(name: str, item_slugs: list[str],
                       rune_names: list[str] | None = None,
                       level: int = 15,
@@ -3747,7 +4185,8 @@ def evaluation_vector(name: str, item_slugs: list[str],
         # separates many builds: Zhonya's moves a Graves build from 0.0 to 2.5
         # and nothing else in his pool moves it at all.
         "ccSeconds": round(_cc_depth(name) * _cc_seconds(name)
-                           + st.get("targetSlow", 0.0) * REF_FIGHT
+                           + _for_window(name, st, REF_FIGHT).get("targetSlow", 0.0)
+                           * REF_FIGHT
                            + st.get("stasisSec", 0.0), 2),
         # economy
         "gold": sum((ITEMS.get(s) or {}).get("cost", 0) for s in item_slugs),

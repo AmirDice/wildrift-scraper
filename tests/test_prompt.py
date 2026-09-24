@@ -525,12 +525,29 @@ class TestNoArgumentFromPopularity:
             assert "ladder" not in block, name
             assert "popular" not in block, name
 
-    def test_the_required_candidates_block_hides_where_it_came_from(self):
-        """It is a menu, not a mandate, and it must not say who plays it."""
+    def test_the_required_candidates_block_hides_where_it_came_from(self, monkeypatch):
+        """It is a menu, not a mandate, and it must not say who plays it.
+
+        Forced live, because the block switches itself off while the measured
+        builds predate the patch -- which is the normal state for the first
+        days after one, and is the next test.
+        """
         from web.advisor import prompt
+        monkeypatch.setattr(prompt, "consensus_predates_patch", lambda: False)
         block = prompt.ladder_consensus_block("Vayne")
         low = block.lower()
         for phrase in ("top 50", "top fifty", "ladder", "popular", "%"):
             assert phrase not in low, f"{phrase!r} leaked into the candidate block"
         assert "does not have to reach your final build" in low \
             or "none of these has to reach your final build" in low
+
+    def test_a_pre_patch_consensus_asks_for_nothing(self, monkeypatch):
+        """A measured list is worth its weight only while it describes the game
+        being played. 7.3 replaced ten items and rewrote forty-two, so the
+        August board named nine pre-patch items as required and could not
+        mention one of the new ten. The block says nothing until a collection
+        lands on the current patch -- not even that it is out of date, since a
+        note about the list is still an appeal to it."""
+        from web.advisor import prompt
+        monkeypatch.setattr(prompt, "consensus_predates_patch", lambda: True)
+        assert prompt.ladder_consensus_block("Vayne") == ""

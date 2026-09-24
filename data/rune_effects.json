@@ -42,10 +42,15 @@
         "apRatio": 5,
         "perSoul": 11,
         "assumedSouls": 8,
+        "assumedSoulsByBand": {
+          "floor": 0,
+          "expected": 8,
+          "ceiling": 16
+        },
         "condition": "targetBelowHalfInWindow",
         "cdSec": 20
       },
-      "_why": "35 (+10% bonus AD / +5% AP) adaptive, +10 per soul permanently. The condition is CHECKED, not assumed: the proc only counts when the simulated rotation actually takes the target below 50% Health, which is what separates a champion who can farm souls from one who cannot. assumedSouls=8 is an ESTIMATE, not measured data -- no site publishes average souls per game. It follows the reported 4-6 souls by minute 5 carried to the 10-15 minute mark of a Wild Rift game. Stacks are linear, so halving this halves the rune's contribution.",
+      "_why": "35 (+10% bonus AD / +5% AP) adaptive, +11 per soul permanently. The target-below-50% condition is CHECKED by the rotation. Soul acquisition is execution/snowball dependent, so it is disclosed as 0 / 8 / 16 souls: floor, midpoint expectation, and a practical strong-game ceiling scenario (not a literal stack cap). No public source provides a true average; 8 preserves the previous midpoint estimate.",
       "_patch": [
         "7.2a"
       ],
