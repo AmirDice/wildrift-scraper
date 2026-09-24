@@ -128,6 +128,20 @@ def test_generation_prompt_requests_all_paths_in_one_completion():
     assert '"archetype"' in prompt
 
 
+def test_generation_prompt_carries_the_bias_into_every_candidate():
+    # Varus has as many archetypes as slots, so every candidate was a pure
+    # damage probe and all three biases returned the same five items.
+    paths = [{"id": "ad-on-hit", "description": "on-hit autos"}]
+    damage = adv._tournament_generation_prompt("base", paths, 3, "max_damage")
+    durable = adv._tournament_generation_prompt("base", paths, 3, "max_durability")
+
+    assert "maximum-damage goal" in damage
+    assert "maximum-damage goal" not in durable
+    assert "max durability goal" in durable
+    assert "80% on surviving" in durable
+    assert "EACH archetype" in durable
+
+
 def test_candidate_gate_rejects_unknown_items_and_duplicate_builds():
     a = candidate("A", "guardian-angel")
     duplicate = candidate("B", "guardian-angel")

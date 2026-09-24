@@ -1501,8 +1501,25 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
 
 
 def _tournament_generation_prompt(prompt: str, archetypes: list[dict] | None = None,
-                                  candidate_count: int = 3) -> str:
+                                  candidate_count: int = 3,
+                                  build_bias: str = "max_damage") -> str:
     archetypes = archetypes or []
+    damage_w, survival_w = _tournament_blend(build_bias)
+    # This pass used to ask for "the requested maximum-damage goal" whatever
+    # the bias was.  A champion with as many archetypes as slots (Varus: five)
+    # then spent every slot on a pure damage probe, the durability request had
+    # no durable candidate to choose, and all three biases returned the same
+    # five items.  The bias has to shape each candidate, not just the judge.
+    goal = (
+        "the requested maximum-damage goal" if not survival_w else
+        f"the requested {build_bias.replace('_', ' ')} goal. The engine will rank "
+        f"them {damage_w:.0%} on damage delivered and {survival_w:.0%} on surviving "
+        "to deliver it (damage before death, time to die, effective health, "
+        "self-sustain). Build EACH archetype in the version that best serves that "
+        "blend: an archetype probe is not an excuse to ignore the bias, and at "
+        f"{survival_w:.0%} survival weight a candidate with no survivability-oriented "
+        "option anywhere in its items, boots or runes is answering a different "
+        "request")
     path_text = "\n".join(
         f"- {row['id']}: {row['description']}" for row in archetypes)
     path_rule = (f"""
@@ -1518,7 +1535,7 @@ archetype. Do not label a build with an archetype it does not actually follow.
 ENGINE TOURNAMENT -- CANDIDATE PASS.
 Do not return the full presentation schema above on this pass. In ONE response,
 propose exactly {candidate_count} genuinely competitive, materially different builds for
-the requested maximum-damage goal. These are hypotheses for measurement, not
+{goal}. These are hypotheses for measurement, not
 random novelty. One may favour peak sustained DPS, one burst/TTK, and one
 damage delivery or survival where appropriate for this champion. Every build
 must obey every item, rune, role, lock and identity rule above.
@@ -1926,7 +1943,7 @@ def advise(champion: str, role: str, enemies: list[str],
                 champion, combat, scaling, damage_path)
             candidate_count = _tournament_candidate_count(damage_archetypes)
             raw_candidates = call(_tournament_generation_prompt(
-                prompt, damage_archetypes, candidate_count))
+                prompt, damage_archetypes, candidate_count, build_bias))
             candidates, candidate_errors = _legal_tournament_candidates(
                 raw_candidates, pool_slugs, item_locks=item_locks,
                 boot_lock=locked_boot, rune_locks=locked_runes,
