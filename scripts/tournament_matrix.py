@@ -148,6 +148,12 @@ def report(run: dict) -> list[str]:
 
 
 def main() -> None:
+    # The report uses arrows between items, and a Windows console is cp1252, so
+    # the final print died on UnicodeEncodeError AFTER a 13-minute run. The
+    # files were already written, but the traceback is what the operator sees.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--champions", nargs="+", default=list(DEFAULT_CHAMPIONS))
     ap.add_argument("--biases", nargs="+", default=DEFAULT_BIASES)
