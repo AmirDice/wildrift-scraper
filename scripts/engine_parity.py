@@ -8,6 +8,7 @@ Add a case to the battery whenever an itemFx key gains an engine channel.
 """
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -77,9 +78,46 @@ COMP_CARRY = {"name": "carry", "hp": 2900, "armor": 95, "mr": 60, "bonusHp": 950
 NO_KILL = -1.0
 
 
+def exhaustive_battery() -> list:
+    """Every live item and every live rune, one at a time, across archetypes.
+
+    The curated battery is a set of cases someone thought to write down, and
+    that is exactly its weakness: Statikk Shiv's chain lightning existed only in
+    the Python engine for as long as the channel had existed, and no case held a
+    chain-lightning item, so parity stayed green across the whole gap. This
+    sweep is the version that cannot miss one. It found three real divergences
+    the 75-case battery never touched: the missing chain lightning, First
+    Strike's timed amp reaching ability AoE in one engine only, and a cast count
+    that differed because Python's `//` and JavaScript's `Math.floor(a / b)`
+    are not the same operation on floats.
+
+    Slow (a few hundred cases), so it is opt-in rather than the default.
+    """
+    from web.advisor import runemeta
+    items = json.loads((ROOT / "data" / "items.json").read_text("utf-8"))
+    live = [i["slug"] for i in items
+            if not i.get("removedIn") and (i.get("stats") or i.get("passives"))]
+    runes = [r.get("name") if isinstance(r, dict) else r for r in runemeta.RUNES]
+    cases = []
+    for rune in filter(None, runes):
+        # A ranged carry, a melee bruiser and a mage, each holding an item the
+        # rune can actually key off.
+        cases.append(["Caitlyn", ["infinity-edge"], [rune]])
+        cases.append(["Darius", ["black-cleaver"], [rune]])
+        cases.append(["Lux", ["rabadons-deathcap"], [rune]])
+    cases += [["Caitlyn", [slug], []] for slug in live]
+    cases += [["Darius", [slug], []] for slug in live]
+    return cases
+
+
 def main() -> int:
     import web.fight_engine as fe
-    battery = json.loads((ROOT / "scripts" / "engine_parity_battery.json").read_text("utf-8"))
+    exhaustive = "--exhaustive" in sys.argv
+    battery = json.loads(
+        (ROOT / "scripts" / "engine_parity_battery.json").read_text("utf-8"))
+    if exhaustive:
+        battery = exhaustive_battery()
+        print(f"exhaustive sweep: {len(battery)} cases", file=sys.stderr)
     py = {}
     for champ, items, runes in battery:
         st = fe.resolve_stats(champ, 15, items, runes)
@@ -135,8 +173,14 @@ def main() -> int:
     ts_out = ROOT / "scratch_ts_stats.json"
     # See tests/test_engine_model.py: shell=True with a LIST is platform
     # specific and silently runs a bare `npx` on POSIX.
+    env = dict(os.environ)
+    if exhaustive:
+        sweep = ROOT / "scripts" / "_battery_sweep.json"
+        sweep.write_text(json.dumps(battery, indent=1, ensure_ascii=False),
+                         encoding="utf-8")
+        env["PARITY_BATTERY"] = str(sweep)
     subprocess.run([shutil.which("npx") or "npx", "tsx", "scripts/engine_parity.ts"],
-                   cwd=ROOT / "web-next", check=True)
+                   cwd=ROOT / "web-next", check=True, env=env)
     ts = json.loads(ts_out.read_text("utf-8"))
 
     mismatches = 0

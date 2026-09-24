@@ -348,7 +348,7 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
             continue
         cds = ab.get("cooldowns") or []
         cd = (_rank_val(cds, 3) if cds else 8.0) * haste_m
-        casts = 1 if slot == "4" else max(1, 1 + int(window // max(cd, 0.75)))
+        casts = 1 if slot == "4" else max(1, casts_in_window(window, cd))
         for c in comps:
             v = _scale_val(c.get("base"), 3, level)
             for r in c.get("ratios") or []:
@@ -1917,6 +1917,27 @@ def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None, name=""):
     return p, m, t
 
 
+def casts_in_window(window: float, cooldown: float) -> int:
+    """How many casts fit in `window`, counting the one at t=0.
+
+    This exists because Python's `//` and JavaScript's `Math.floor(a / b)` are
+    NOT the same operation on floats, and both engines had one of each. Darius'
+    Decimate at 20 haste is a 4.166666666666667s cooldown, and in a 12.5s window
+    `12.5 // 4.166666666666667` is 2.0 while `floor(12.5 / 4.166666666666667)`
+    is 3 -- the two disagree inside Python alone, because floor division
+    corrects for the quotient not being exactly representable and plain
+    division rounds to exactly 3.0. That was a whole extra Decimate, worth 2.6%
+    of an Essence Reaver build's damage, and it moved a time-to-kill by a
+    quarter second. Only an exhaustive per-item sweep across both engines found
+    it; the 75-case battery never hit the boundary.
+
+    The epsilon makes an exact boundary deterministic and identical on both
+    sides: if the cooldown divides the window exactly, that cast counts.
+    """
+    cd = max(float(cooldown or 0.0), 0.75)
+    return 1 + int(window / cd + 1e-9)
+
+
 def _proc_activations(window: float, cooldown: float = float("inf"),
                       arm: float = 0.0) -> int:
     """How many times an initially-ready proc can fire inside a window."""
@@ -2453,7 +2474,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             _src_cd = max(0.5, (_rank_val(_src_cds, 3) or 12) * haste_m)
             _seconds = _cdr_per_hit * _empowered * (1 + int(window / _src_cd))
             cd = max(cd * 0.5, cd - _seconds / max(1.0, window / max(cd, 0.75)))
-        casts = 1 if hwei else (1 + int(window // max(cd, 0.75)) if cd else 1)
+        casts = 1 if hwei else (casts_in_window(window, cd) if cd else 1)
         if slot == "4":
             casts = 1  # one ult per fight window
         max_casts = casts  # cd-allowed before action-time budget clamps it

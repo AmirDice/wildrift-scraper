@@ -6,8 +6,12 @@ import * as fs from "fs";
 import * as path from "path";
 
 const ROOT = path.resolve(__dirname, "..", "..");
+// PARITY_BATTERY lets the Python half hand over a generated sweep without
+// overwriting the committed battery file.
+const batteryPath = process.env.PARITY_BATTERY
+  || path.join(ROOT, "scripts", "engine_parity_battery.json");
 const battery: [string, string[], string[]][] = JSON.parse(
-  fs.readFileSync(path.join(ROOT, "scripts", "engine_parity_battery.json"), "utf-8"));
+  fs.readFileSync(batteryPath, "utf-8"));
 const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
   "onHitPhys", "onHitMagic", "onHitPctMaxHp", "onHitPctCurrentHp",
   "mrShred", "mrShredFlat", "spellbladeApPct", "spellbladeMagic",

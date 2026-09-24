@@ -1076,6 +1076,19 @@ let ROT_BY_SLOT: Record<string, number> = {};
 let ROT_NAUTOS_IDEAL = 0;
 
 /** Number of activations for an initially-ready proc inside a fight window. */
+/** How many casts fit in `window`, counting the one at t=0.
+ *
+ *  Mirrors casts_in_window in web/fight_engine.py. Python's `//` and this
+ *  language's `Math.floor(a / b)` are NOT the same operation on floats, and
+ *  the two engines had one of each: Darius' Decimate at 20 haste is a
+ *  4.166666666666667s cooldown, and in a 12.5s window Python's floor division
+ *  said 2 where this said 3. That was a whole extra cast. The epsilon makes an
+ *  exact boundary deterministic and identical on both sides. */
+function castsInWindow(window: number, cooldown: number): number {
+  const cd = Math.max(Number(cooldown) || 0, 0.75);
+  return 1 + Math.floor(window / cd + 1e-9);
+}
+
 function procActivations(window: number, cooldown = Infinity, arm = 0): number {
   if (window + 1e-9 < arm) return 0;
   if (cooldown === Infinity || cooldown <= 0) return 1;
@@ -1623,7 +1636,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     ROT_CAST_LOG = {};
     ROT_NAUTOS = nAutos;
     ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc()) * (1 + st.damageAmp);
-    ROT_ABILITY_AOE_DMG = abilityAoeDmg * (1 + st.damageAmp);
+    ROT_ABILITY_AOE_DMG = abilityAoeDmg * amp;
     ROT_BY_SLOT = { ...bySlot };
     ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
     return total * amp;
@@ -1659,7 +1672,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       const seconds = cdrPerEmpoweredHit * empowered * srcCasts;
       cd = Math.max(cd * 0.5, cd - seconds / Math.max(1, window / Math.max(cd, 0.75)));
     }
-    let casts = hwei ? 1 : cd ? 1 + Math.floor(window / Math.max(cd, 0.75)) : 1;
+    let casts = hwei ? 1 : cd ? castsInWindow(window, cd) : 1;
     if (slot === "4") casts = 1;
     const maxCasts = casts;
     casts = hwei ? 1 : Math.min(casts, castBudget);
@@ -1752,7 +1765,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_CAST_LOG = castLog;
   ROT_NAUTOS = nAutos;
   ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc()) * (1 + st.damageAmp);
-  ROT_ABILITY_AOE_DMG = abilityAoeDmg * (1 + st.damageAmp);
+  ROT_ABILITY_AOE_DMG = abilityAoeDmg * amp;
   ROT_BY_SLOT = { ...bySlot };
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
   return total * amp;
@@ -1896,7 +1909,9 @@ export function liveMetrics(name: string, items: string[], runes: string[],
 
   const need = squishy.hp * (1 - st.execute);
   let ttk: number | null = null;
-  for (let t = 0.25; t <= 12; t += 0.25) {
+  // Same integer grid as ttkOf; see the note there.
+  for (let i = 1; i <= 48; i++) {
+    const t = i * 0.25;
     if (rotation(name, st, squishy, t, level) >= need) { ttk = t; break; }
   }
   let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
@@ -1934,8 +1949,15 @@ const INCOMING_DPS: Record<string, number> = { adc: 900, bruiser: 650, tank: 400
 
 function ttkOf(name: string, st: any, target: any, level: number, cap = 15): number | null {
   const need = target.hp * (1 - st.execute);
-  for (let t = 0.25; t <= cap; t += 0.25)
+  // The grid is built by MULTIPLYING an integer, not by accumulating 0.25.
+  // Repeated addition drifts by an ulp per step, and by the far end of a long
+  // search that moved the boundary: Darius with Essence Reaver killed at 14.25s
+  // in Python and 14s here, and only an exhaustive per-item sweep found it.
+  const steps = Math.floor(cap / 0.25);
+  for (let i = 1; i <= steps; i++) {
+    const t = i * 0.25;
     if (rotation(name, st, target, t, level) >= need) return Math.round(t * 100) / 100;
+  }
   return null;
 }
 
@@ -2597,7 +2619,7 @@ export function kitSustain(name: string, st: any, level: number,
     const cds = ab.cooldowns ?? [];
     const cd = (cds.length ? rankVal(cds, 3) : 8) * hasteM;
     const casts = slot === "4" ? 1
-      : Math.max(1, 1 + Math.floor(window / Math.max(cd, 0.75)));
+      : Math.max(1, castsInWindow(window, cd));
     for (const c of comps) {
       let v = scaleVal(c.base, 3, level);
       for (const r of c.ratios ?? []) {

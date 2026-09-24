@@ -64,3 +64,4 @@ data/captures_*/
 data/chogath/
 # navigator debug dumps -- rejected frames; pinned test fixtures are force-added
 data/debug_scans/
+_battery_sweep.json
