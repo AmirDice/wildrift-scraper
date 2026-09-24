@@ -1376,6 +1376,10 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
             list(candidate["items"]) + [candidate["boots"]],
             _candidate_rune_names(candidate)))
     threshold = max(authored_scores)
+    # Every authored score, not just the best, so a reader can see how far the
+    # judge's pick sat from the engine's ranking.
+    authored_by_id = {str(c.get("id")): score
+                      for c, score in zip(candidates, authored_scores)}
 
     # Search each path independently.  Start from the full legal advisor item
     # pool, rank individual items cheaply, then enumerate the best bounded path
@@ -1458,6 +1462,7 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                       "scenarioEvaluations": scenario_evaluations,
                       "paths": path_meta,
                       "authoredBestScore": threshold,
+                      "authoredScores": authored_by_id,
                       "challengerScore": best[0] if best else None}
 
     score, combo, boot, page, archetype = best
@@ -1487,7 +1492,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                       "searched": searched,
                       "scenarioEvaluations": scenario_evaluations,
                       "paths": path_meta,
-                      "authoredBestScore": threshold, "challengerScore": score,
+                      "authoredBestScore": threshold,
+                      "authoredScores": authored_by_id, "challengerScore": score,
                       "reason": "winner duplicates an authored candidate"}
     return challenger, {"objective": objective, "weights": weights,
                         "blend": {"damage": damage_w, "survival": survival_w},
@@ -1497,7 +1503,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                         "searched": searched,
                         "scenarioEvaluations": scenario_evaluations,
                         "paths": path_meta,
-                        "authoredBestScore": threshold, "challengerScore": score}
+                        "authoredBestScore": threshold,
+                      "authoredScores": authored_by_id, "challengerScore": score}
 
 
 def _tournament_generation_prompt(prompt: str, archetypes: list[dict] | None = None,
