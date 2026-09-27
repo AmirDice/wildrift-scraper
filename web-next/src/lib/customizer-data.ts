@@ -453,7 +453,7 @@ export function listedBuildStats(
     mr: atLevel("mr"),
     attackSpeed: atLevel("attackSpeed"),
     crit: atLevel("crit"),
-    critDamage: 175,
+    critDamage: 200,
     haste: generalHaste,
     basicAbilityHaste: generalHaste,
     ultimateAbilityHaste: generalHaste,
