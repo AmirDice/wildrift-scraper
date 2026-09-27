@@ -81,6 +81,7 @@ from .config import (
     load_screen_points,
     save_calibration,
 )
+from . import collection_progress
 from .navigator import LeaderboardNavigator
 from .ocr import (
     locate_badge_column,
@@ -271,6 +272,12 @@ def main() -> int:
     parser.add_argument("--builds", action="store_true",
                         help="capture-only: also capture each player's BUILD popup (book icon "
                              "on the leaderboard row; ~2s/profile)")
+    parser.add_argument("--region", choices=["EU", "NA", "CN"], default=None,
+                        help="Which server this run collects. Publishes live progress to "
+                             "the site's collection bar. There is no way to read the region "
+                             "off the device, so it is declared here; without it nothing is "
+                             "published, which is safer than mislabelling a run and "
+                             "overwriting another server's progress.")
     parser.add_argument("--champions", type=int, default=0,
                         help="Carousel mode: process this many champions from the CHAMPION tab, "
                              "navigating rows by name OCR and returning after each top-N capture. "
@@ -1144,6 +1151,18 @@ def main() -> int:
         empty_sessions = 0   # consecutive zero-profile champions (down detector)
         t_carousel = time.time()
 
+        # Live progress for the site's collection bar. Declared, never guessed:
+        # see --region. Publishing is entirely best-effort and every call here
+        # swallows its own failures, so KV being down cannot touch the scrape.
+        progress_region = collection_progress.resolve_region(args.region)
+        progress_total = max(args.champions, len(scraped), 1)
+        if progress_region:
+            collection_progress.start(progress_region, progress_total)
+            print(f"[carousel] publishing {progress_region} progress to the site")
+            if scraped:
+                collection_progress.advance(progress_region, len(scraped),
+                                            progress_total, force=True)
+
         def back_to_champions() -> None:
             """Verified return to the champions page (never blind).
 
@@ -1452,6 +1471,9 @@ def main() -> int:
                     args.start_rank, args.n = prev_start, prev_n
                 scraped.add(label)
                 done += 1
+                if progress_region:
+                    collection_progress.advance(progress_region, len(scraped),
+                                                progress_total)
                 if args.unattended:
                     # Champions failing with ZERO profiles back-to-back means
                     # the leaderboard itself is broken (rankings lock, server
@@ -1478,6 +1500,17 @@ def main() -> int:
         except KeyboardInterrupt:
             print()
             print("^C -- carousel stopped")
+
+        if progress_region:
+            # Only a run that reached the target is "Completed". A stopped or
+            # partial run stays at its last count, so the bar keeps showing
+            # how far it actually got instead of claiming a finish it never
+            # made and stamping today's date on half a collection.
+            if len(scraped) >= progress_total:
+                collection_progress.finish(progress_region, progress_total)
+            else:
+                collection_progress.advance(progress_region, len(scraped),
+                                            progress_total, force=True)
 
         mins = (time.time() - t_carousel) / 60
         print()
