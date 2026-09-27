@@ -88,7 +88,7 @@ const STAT_DESCRIPTIONS: Record<string, string> = {
   mr: "Reduces incoming magic damage. More Magic Resist has diminishing percentage returns.",
   attackSpeed: "Controls how many basic attacks you can make each second.",
   crit: "Chance for eligible attacks and effects to deal critical-strike damage.",
-  critDamage: "The damage multiplier applied when an eligible attack or effect critically strikes. The normal value is 175%.",
+  critDamage: "The damage multiplier applied when an eligible attack or effect critically strikes. The normal value is 200%.",
   haste: "General Ability Haste reduces the cooldown of both basic abilities and your ultimate.",
   basicAbilityHaste: "Effective haste for basic abilities, including general and basic-only haste such as Shojin.",
   ultimateAbilityHaste: "Effective haste for your ultimate, including general and ultimate-only haste.",
