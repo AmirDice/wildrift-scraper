@@ -318,7 +318,10 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // point-blank active pays a ranged champion a quarter of the melee number.
   // Statikk's chain lightning now exists in the browser engine too. Every
   // cached build predates all of it.
-  return `build:v47:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v48: patch 7.3a balance follow-up. Hwei, Samira, Rammus, Malphite,
+  // Tristana, Draven, Caitlyn, Senna, Syndra, Swain, Yuumi and Viego formulas,
+  // plus Yun Tal, support-item Harmony and Death's Dance, all changed.
+  return `build:v48:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

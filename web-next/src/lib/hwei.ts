@@ -52,7 +52,17 @@ export function hweiTimeline(kit: any, st: any, target: any, window: number, lev
     if (kind === "bolt") {
       const [slot,token,spell,rank] = data;
       const missing = Math.min(1,Math.max(0,1-(target.currentHp??target.hp)/target.hp+dealt*(target.magicMultiplier??1)/target.hp));
-      const low=value(spell.base,rank)+spell.ap*ap, high=value(spell.maxBase,rank)+spell.maxAp*ap;
+      const low=value(spell.base,rank)+spell.ap*ap;
+      let high=value(spell.maxBase,rank)+spell.maxAp*ap;
+      // 7.3a reduced QW's missing-health multiplier from 150/200/250/300%
+      // to 100/150/200/250%. The scraped maxBase values are the pre-7.3a
+      // endpoint, so scale only the excess over the low-health floor; this
+      // keeps the published minimum intact while applying the live nerf.
+      if (spell.missingHealthPct) {
+        const oldPct=[1.5,2,2.5,3][rank] ?? 3;
+        const nextPct=value(spell.missingHealthPct,rank);
+        high=low+Math.max(0,high-low)*(nextPct/oldPct);
+      }
       hit(t,slot,token,low+(high-low)*missing); continue;
     }
     const slot=["2","3","1","4"].find(s=>ranks[s]>=0 && ready[s]<=t+1e-9 && mana>=kit.manaCosts[s]);

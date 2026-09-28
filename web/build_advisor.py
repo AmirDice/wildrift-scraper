@@ -519,7 +519,7 @@ def _stream_call(key: str, body: dict, on_progress) -> dict:
     return json.loads("".join(chunks))
 
 
-def _gemini_call(prompt: str, model: str = "") -> dict:
+def _gemini_call(prompt: str, model: str = "", system: str = "") -> dict:
     """The same contract as the DeepSeek path: prompt in, parsed build out.
 
     Kept deliberately thin. Everything that decides the build -- the prompt, the
@@ -540,7 +540,11 @@ def _gemini_call(prompt: str, model: str = "") -> dict:
                          + f" (the build model is {MODEL!r})")
     client = genai.Client(api_key=api_key)
     config = types.GenerateContentConfig(
-        system_instruction=prompt_mod.SYSTEM,
+        # Overridable so a caller with a different JOB can reuse this path.
+        # The bias picker judges a measured menu instead of authoring a build,
+        # and inheriting the authoring system prompt made it invent items that
+        # were not on the menu.
+        system_instruction=system or prompt_mod.SYSTEM,
         response_mime_type="application/json",
         temperature=0,
         max_output_tokens=MAX_OUTPUT_TOKENS,
