@@ -21,20 +21,20 @@
  * apart: every number a patch changes directly (ability ratios, cooldowns,
  * item stats) is on this patch, and only the measured win rates are not.
  */
-export const SKIPPED_PATCH = "7.3";
+export const SKIPPED_PATCH = "7.3a";
 
 /** The patch whose games the win rates were actually collected from. */
 export const WINRATE_PATCH = "7.2d";
 
 /** The patch the next collection and the next round of work is aimed at. */
-export const NEXT_PATCH = "7.3";
+export const NEXT_PATCH = "7.3a";
 
 export const ANNOUNCEMENT = {
   /** Bump when the message changes, so a dismissed banner comes back. */
-  key: "wtm-announce-73-v1",
+  key: "wtm-announce-73a-v1",
   href: "/updates",
   lead: `Patch ${SKIPPED_PATCH} is live`,
-  short: `The marksman overhaul is in: ten new items, three gone, 200% base critical strike damage, and new base stats for every champion. Win rates stay on the ${WINRATE_PATCH} boards until the next collection.`,
+  short: `Patch 7.3a is live: Hwei is nerfed, Samira, Tristana, Draven and Viego are buffed, and Caitlyn, Senna, Syndra and others are tuned. Win rates stay on the ${WINRATE_PATCH} boards until the next collection.`,
   cta: "Read why",
   badges: ["Update"],
   /** Pages the banner points at, so it does not appear on top of itself. */
@@ -51,6 +51,18 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "29 September 2026",
+    title: `Patch ${SKIPPED_PATCH} applied: balance follow-up`,
+    body:
+      "Hwei's damage was reduced, Samira, Tristana, Draven and Viego were "
+      + "buffed, and Rammus, Malphite, Caitlyn, Senna, Syndra, Swain and Yuumi "
+      + "were adjusted. Yun Tal Wildarrows now has 35% Attack Speed and a 25s "
+      + "Flurry cooldown, Whispering Circlet and Diadem of Songs use 0.25% "
+      + "Harmony, Death's Dance costs 3300 gold, Smite burns for less early, and "
+      + "the post-plating turret resistance window and main crystal health were reduced."
+      + ` Win rates remain on the ${WINRATE_PATCH} boards until the next collection.`,
+  },
   {
     date: "21 September 2026",
     title: `Patch ${SKIPPED_PATCH} applied: the marksman overhaul`,

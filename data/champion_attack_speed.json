@@ -111,7 +111,7 @@
       "attackSpeedRatio": 0.625,
       "baseAttackSpeed": 0.625,
       "baseBonusAttackSpeed": 0.28,
-      "attackSpeedPerLevel": 0.04,
+      "attackSpeedPerLevel": 0.025,
       "source": "champion block"
     },
     "Camille": {
@@ -236,7 +236,7 @@
     "Graves": {
       "attackSpeedRatio": 0.7,
       "baseAttackSpeed": 0.7,
-      "baseBonusAttackSpeed": 0.0,
+      "baseBonusAttackSpeed": 0,
       "attackSpeedPerLevel": 0.021,
       "source": "appendix"
     },
@@ -661,10 +661,10 @@
       "source": "champion block"
     },
     "Senna": {
-      "attackSpeedRatio": 0.4,
-      "baseAttackSpeed": 0.4,
-      "baseBonusAttackSpeed": 0.6,
-      "attackSpeedPerLevel": 0.05,
+      "attackSpeedRatio": 0.3,
+      "baseAttackSpeed": 0.3,
+      "baseBonusAttackSpeed": 1.1,
+      "attackSpeedPerLevel": 0.025,
       "source": "champion block"
     },
     "Seraphine": {
@@ -990,31 +990,31 @@
       "source": "appendix"
     }
   },
-  "patch": "7.3",
+  "patch": "7.3a",
   "measuredBefore7_3": {
     "Lux": {
       "attackSpeedRatio": 0.75,
-      "attackSpeedGrowth": 0.0,
+      "attackSpeedGrowth": 0,
       "verified": "2026-08-19, flat 0.75 at every level"
     },
     "Ahri": {
       "attackSpeedRatio": 0.75,
-      "attackSpeedGrowth": 0.0,
+      "attackSpeedGrowth": 0,
       "verified": "2026-08-19, flat"
     },
     "Annie": {
       "attackSpeedRatio": 0.75,
-      "attackSpeedGrowth": 0.0,
+      "attackSpeedGrowth": 0,
       "verified": "2026-08-19, flat"
     },
     "Aurelion Sol": {
       "attackSpeedRatio": 0.75,
-      "attackSpeedGrowth": 0.0,
+      "attackSpeedGrowth": 0,
       "verified": "2026-08-19, flat"
     },
     "Brand": {
       "attackSpeedRatio": 0.75,
-      "attackSpeedGrowth": 0.0,
+      "attackSpeedGrowth": 0,
       "verified": "2026-08-19, flat"
     },
     "Akali": {

@@ -12,11 +12,11 @@
     "tags": [],
     "stats": {
       "armor": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       },
       "ap": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       }
     },
@@ -39,7 +39,7 @@
     "tags": [],
     "stats": {
       "mr": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       }
     },
@@ -62,19 +62,19 @@
     "tags": [],
     "stats": {
       "ad": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       },
       "physicalPenFlat": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "physicalPen": {
-        "value": 6.0,
+        "value": 6,
         "percent": true
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -104,15 +104,15 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 150.0,
+        "value": 150,
         "percent": false
       },
       "armor": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -136,19 +136,19 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 150.0,
+        "value": 150,
         "percent": false
       },
       "mr": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       },
       "tenacity": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -171,15 +171,15 @@
     "tags": [],
     "stats": {
       "attackSpeed": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "lifesteal": {
-        "value": 5.0,
+        "value": 5,
         "percent": true
       }
     },
@@ -203,23 +203,23 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       },
       "magicPenFlat": {
-        "value": 18.0,
+        "value": 18,
         "percent": false
       },
       "magicPen": {
-        "value": 8.0,
+        "value": 8,
         "percent": true
       },
       "manaRegen": {
-        "value": 100.0,
+        "value": 100,
         "percent": true
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -243,21 +243,21 @@
     "tags": [],
     "stats": {
       "manaRegen": {
-        "value": 75.0,
+        "value": 75,
         "percent": true
       },
       "abilityHaste": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
     "scopedStats": {
       "summonerSpellHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": true
       }
     },
@@ -280,11 +280,11 @@
     "tags": [],
     "stats": {
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "omnivamp": {
-        "value": 5.0,
+        "value": 5,
         "percent": true
       }
     },
@@ -331,11 +331,11 @@
     ],
     "stats": {
       "attackSpeed": {
-        "value": 35.0,
+        "value": 35,
         "percent": true
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -361,15 +361,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "physicalPenFlat": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -395,19 +395,19 @@
     ],
     "stats": {
       "ap": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "magicPenFlat": {
-        "value": 8.0,
+        "value": 8,
         "percent": false
       },
       "manaRegen": {
-        "value": 75.0,
+        "value": 75,
         "percent": true
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -434,19 +434,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 150.0,
+        "value": 150,
         "percent": false
       },
       "mr": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "tenacity": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -470,15 +470,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 150.0,
+        "value": 150,
         "percent": false
       },
       "armor": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
@@ -504,11 +504,11 @@
     ],
     "stats": {
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "omnivamp": {
-        "value": 5.0,
+        "value": 5,
         "percent": true
       }
     },
@@ -535,21 +535,21 @@
     ],
     "stats": {
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "moveSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       }
     },
     "scopedStats": {
       "summonerSpellHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": true
       }
     },
@@ -572,15 +572,15 @@
     "tags": [],
     "stats": {
       "armor": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "mr": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       }
     },
@@ -604,15 +604,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 700.0,
+        "value": 700,
         "percent": false
       },
       "hpRegen": {
-        "value": 150.0,
+        "value": 150,
         "percent": true
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -638,19 +638,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "armor": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "mana": {
-        "value": 250.0,
+        "value": 250,
         "percent": false
       },
       "abilityHaste": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       }
     },
@@ -675,19 +675,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "armor": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "mr": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -710,19 +710,19 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "armor": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "mr": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -746,15 +746,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "armor": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -780,15 +780,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 700.0,
+        "value": 700,
         "percent": false
       },
       "hpRegen": {
-        "value": 100.0,
+        "value": 100,
         "percent": true
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -814,11 +814,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "armor": {
-        "value": 70.0,
+        "value": 70,
         "percent": false
       }
     },
@@ -844,15 +844,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "mr": {
-        "value": 60.0,
+        "value": 60,
         "percent": false
       },
       "moveSpeed": {
-        "value": 5.0,
+        "value": 5,
         "percent": true
       }
     },
@@ -877,15 +877,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "mr": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -911,15 +911,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "hpRegen": {
-        "value": 100.0,
+        "value": 100,
         "percent": true
       },
       "mr": {
-        "value": 80.0,
+        "value": 80,
         "percent": false
       }
     },
@@ -944,11 +944,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "armor": {
-        "value": 75.0,
+        "value": 75,
         "percent": false
       }
     },
@@ -974,15 +974,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 250.0,
+        "value": 250,
         "percent": false
       },
       "armor": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "mr": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       }
     },
@@ -1006,11 +1006,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "armor": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       }
     },
@@ -1037,11 +1037,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "armor": {
-        "value": 75.0,
+        "value": 75,
         "percent": false
       }
     },
@@ -1067,19 +1067,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "armor": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "mr": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       }
     },
@@ -1101,15 +1101,15 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "mana": {
-        "value": 1200.0,
+        "value": 1200,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -1135,15 +1135,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "mana": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -1169,15 +1169,15 @@
     ],
     "stats": {
       "armor": {
-        "value": 80.0,
+        "value": 80,
         "percent": false
       },
       "mana": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1203,11 +1203,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 600.0,
+        "value": 600,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1232,15 +1232,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "armor": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -1265,15 +1265,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "mr": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -1298,19 +1298,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "armor": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "mr": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1336,25 +1336,25 @@
     ],
     "stats": {
       "armor": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "mr": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       }
     },
     "scopedStats": {
       "ultimateAbilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -1376,7 +1376,7 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 130.0,
+        "value": 130,
         "percent": false
       }
     },
@@ -1400,11 +1400,11 @@
     "tags": [],
     "stats": {
       "armor": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "ap": {
-        "value": 110.0,
+        "value": 110,
         "percent": false
       }
     },
@@ -1426,19 +1426,19 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "attackSpeed": {
-        "value": 20.0,
+        "value": 20,
         "percent": true
       },
       "ap": {
-        "value": 60.0,
+        "value": 60,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1464,11 +1464,11 @@
     ],
     "stats": {
       "ap": {
-        "value": 110.0,
+        "value": 110,
         "percent": false
       },
       "magicPenFlat": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -1492,15 +1492,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "ap": {
-        "value": 70.0,
+        "value": 70,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -1525,15 +1525,15 @@
     ],
     "stats": {
       "ap": {
-        "value": 60.0,
+        "value": 60,
         "percent": false
       },
       "mana": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "abilityHaste": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       }
     },
@@ -1557,11 +1557,11 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 105.0,
+        "value": 105,
         "percent": false
       },
       "mr": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       }
     },
@@ -1585,19 +1585,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "ap": {
-        "value": 70.0,
+        "value": 70,
         "percent": false
       },
       "abilityHaste": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
@@ -1619,15 +1619,15 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 75.0,
+        "value": 75,
         "percent": false
       },
       "magicPen": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1651,11 +1651,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "ap": {
-        "value": 70.0,
+        "value": 70,
         "percent": false
       }
     },
@@ -1678,11 +1678,11 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 95.0,
+        "value": 95,
         "percent": false
       },
       "magicPen": {
-        "value": 40.0,
+        "value": 40,
         "percent": true
       }
     },
@@ -1702,15 +1702,15 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 60.0,
+        "value": 60,
         "percent": false
       },
       "mana": {
-        "value": 1200.0,
+        "value": 1200,
         "percent": false
       },
       "abilityHaste": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       }
     },
@@ -1733,15 +1733,15 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "ap": {
-        "value": 65.0,
+        "value": 65,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -1763,15 +1763,15 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 80.0,
+        "value": 80,
         "percent": false
       },
       "mana": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1798,15 +1798,15 @@
     ],
     "stats": {
       "ap": {
-        "value": 100.0,
+        "value": 100,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "moveSpeed": {
-        "value": 5.0,
+        "value": 5,
         "percent": true
       }
     },
@@ -1828,15 +1828,15 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 100.0,
+        "value": 100,
         "percent": false
       },
       "mana": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -1858,15 +1858,15 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 90.0,
+        "value": 90,
         "percent": false
       },
       "magicPenFlat": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "moveSpeed": {
-        "value": 6.0,
+        "value": 6,
         "percent": true
       }
     },
@@ -1890,15 +1890,15 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 250.0,
+        "value": 250,
         "percent": false
       },
       "ap": {
-        "value": 70.0,
+        "value": 70,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1920,11 +1920,11 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 80.0,
+        "value": 80,
         "percent": false
       },
       "abilityHaste": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       }
     },
@@ -1950,21 +1950,21 @@
     ],
     "stats": {
       "ap": {
-        "value": 90.0,
+        "value": 90,
         "percent": false
       },
       "mana": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
     "scopedStats": {
       "ultimateAbilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -1990,15 +1990,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "ap": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "mana": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       }
     },
@@ -2023,11 +2023,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "ap": {
-        "value": 65.0,
+        "value": 65,
         "percent": false
       }
     },
@@ -2052,15 +2052,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "ap": {
-        "value": 75.0,
+        "value": 75,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -2085,15 +2085,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "ap": {
-        "value": 80.0,
+        "value": 80,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -2121,19 +2121,19 @@
     ],
     "stats": {
       "ap": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "healShieldPower": {
-        "value": 8.0,
+        "value": 8,
         "percent": true
       }
     },
@@ -2158,15 +2158,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 425.0,
+        "value": 425,
         "percent": false
       },
       "ad": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "abilityHaste": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       }
     },
@@ -2188,11 +2188,11 @@
     "tags": [],
     "stats": {
       "ad": {
-        "value": 75.0,
+        "value": 75,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       }
     },
@@ -2226,19 +2226,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 333.0,
+        "value": 333,
         "percent": false
       },
       "ad": {
-        "value": 36.0,
+        "value": 36,
         "percent": false
       },
       "attackSpeed": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -2257,6 +2257,40 @@
     ]
   },
   {
+    "slug": "deaths-dance",
+    "name": "Death's Dance",
+    "cost": 3300,
+    "icon": "/items/deaths-dance.webp",
+    "category": "Physical",
+    "categories": [
+      "Physical",
+      "Defense"
+    ],
+    "tags": [
+      "sustain"
+    ],
+    "stats": {
+      "ad": {
+        "value": 50,
+        "percent": false
+      },
+      "armor": {
+        "value": 45,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15,
+        "percent": false
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Defy: If a champion you damaged within the last 3 seconds dies, the stored Cauterize damage is cleansed and you heal over 2 seconds for 90% bonus Attack Damage.",
+      "Cauterize: Store 30% of physical and magic damage taken (12% for ranged champions) and take it as true damage over 3 seconds instead."
+    ]
+  },
+  {
     "slug": "lord-dominiks-regard",
     "name": "Lord Dominik's Regards",
     "cost": 3300,
@@ -2270,15 +2304,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       },
       "physicalPen": {
-        "value": 35.0,
+        "value": 35,
         "percent": true
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       }
     },
@@ -2302,11 +2336,11 @@
     ],
     "stats": {
       "ad": {
-        "value": 75.0,
+        "value": 75,
         "percent": false
       },
       "lifesteal": {
-        "value": 15.0,
+        "value": 15,
         "percent": true
       }
     },
@@ -2314,40 +2348,6 @@
     "statRules": {},
     "passives": [
       "Ichorshield: Overhealing from your Lifesteal becomes a shield, up to 165-345 (based on level)."
-    ]
-  },
-  {
-    "slug": "deaths-dance",
-    "name": "Death's Dance",
-    "cost": 3200,
-    "icon": "/items/deaths-dance.webp",
-    "category": "Physical",
-    "categories": [
-      "Physical",
-      "Defense"
-    ],
-    "tags": [
-      "sustain"
-    ],
-    "stats": {
-      "ad": {
-        "value": 50.0,
-        "percent": false
-      },
-      "armor": {
-        "value": 45.0,
-        "percent": false
-      },
-      "abilityHaste": {
-        "value": 15.0,
-        "percent": false
-      }
-    },
-    "scopedStats": {},
-    "statRules": {},
-    "passives": [
-      "Defy: If a champion you damaged within the last 3 seconds dies, the stored Cauterize damage is cleansed and you heal over 2 seconds for 90% bonus Attack Damage.",
-      "Cauterize: Store 30% of physical and magic damage taken (12% for ranged champions) and take it as true damage over 3 seconds instead."
     ]
   },
   {
@@ -2366,11 +2366,11 @@
     ],
     "stats": {
       "ad": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "armor": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       }
     },
@@ -2395,11 +2395,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 450.0,
+        "value": 450,
         "percent": false
       },
       "ad": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       }
     },
@@ -2422,15 +2422,15 @@
     "tags": [],
     "stats": {
       "ad": {
-        "value": 25.0,
+        "value": 25,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "attackSpeed": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       }
     },
@@ -2458,11 +2458,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "tenacity": {
-        "value": 20.0,
+        "value": 20,
         "percent": true
       }
     },
@@ -2489,15 +2489,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "attackSpeed": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       },
       "lifesteal": {
-        "value": 12.0,
+        "value": 12,
         "percent": true
       }
     },
@@ -2531,15 +2531,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 60.0,
+        "value": 60,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
@@ -2565,19 +2565,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "omnivamp": {
-        "value": 8.0,
+        "value": 8,
         "percent": true
       }
     },
@@ -2602,11 +2602,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       }
     },
@@ -2631,15 +2631,15 @@
     "tags": [],
     "stats": {
       "ad": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "mr": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "lifesteal": {
-        "value": 12.0,
+        "value": 12,
         "percent": true
       }
     },
@@ -2666,15 +2666,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "physicalPen": {
-        "value": 35.0,
+        "value": 35,
         "percent": true
       }
     },
@@ -2698,17 +2698,17 @@
     ],
     "stats": {
       "hp": {
-        "value": 450.0,
+        "value": 450,
         "percent": false
       },
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       }
     },
     "scopedStats": {
       "basicAbilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -2734,15 +2734,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "attackSpeed": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       }
     },
@@ -2765,11 +2765,11 @@
     "tags": [],
     "stats": {
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "attackSpeed": {
-        "value": 25.0,
+        "value": 35,
         "percent": true
       }
     },
@@ -2788,7 +2788,7 @@
     },
     "passives": [
       "Practice Makes Perfect: Attacks permanently grant Critical Rate, 0.4% per attack for melee and 0.2% for ranged, up to 25%.",
-      "Flurry: Attacking an enemy champion grants 25% Attack Speed for 6 seconds. (20s Cooldown, reduced by 1s per attack and 2s on a Critical Strike)"
+      "Flurry: Attacking an enemy champion grants 35% Attack Speed for 6 seconds. (25s Cooldown, reduced by 1s per attack and 2s on a Critical Strike)"
     ],
     "addedIn": "7.3"
   },
@@ -2807,15 +2807,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -2841,15 +2841,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 55.0,
+        "value": 55,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "physicalPenFlat": {
-        "value": 18.0,
+        "value": 18,
         "percent": false
       }
     },
@@ -2875,15 +2875,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 250.0,
+        "value": 250,
         "percent": false
       },
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "physicalPenFlat": {
-        "value": 12.0,
+        "value": 12,
         "percent": false
       }
     },
@@ -2910,15 +2910,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -2942,21 +2942,21 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "ad": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       },
       "attackSpeed": {
-        "value": 20.0,
+        "value": 20,
         "percent": true
       }
     },
     "scopedStats": {
       "ultimateAbilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -2982,15 +2982,15 @@
     ],
     "stats": {
       "attackSpeed": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       },
       "ad": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       },
       "ap": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       }
     },
@@ -3016,11 +3016,11 @@
     ],
     "stats": {
       "ad": {
-        "value": 55.0,
+        "value": 55,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       }
     },
@@ -3052,15 +3052,15 @@
     ],
     "stats": {
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "attackSpeed": {
-        "value": 35.0,
+        "value": 35,
         "percent": true
       },
       "ad": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       }
     },
@@ -3089,15 +3089,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 55.0,
+        "value": 55,
         "percent": false
       },
       "mr": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -3122,15 +3122,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "physicalPen": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       }
     },
@@ -3155,19 +3155,19 @@
     ],
     "stats": {
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "ap": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "attackSpeed": {
-        "value": 30.0,
+        "value": 30,
         "percent": true
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
@@ -3201,15 +3201,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "attackSpeed": {
-        "value": 20.0,
+        "value": 20,
         "percent": true
       }
     },
@@ -3243,15 +3243,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 350.0,
+        "value": 350,
         "percent": false
       },
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -3276,11 +3276,11 @@
     ],
     "stats": {
       "ad": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       },
       "attackSpeed": {
-        "value": 35.0,
+        "value": 35,
         "percent": true
       }
     },
@@ -3306,15 +3306,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "physicalPenFlat": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -3340,11 +3340,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 450.0,
+        "value": 450,
         "percent": false
       },
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       }
     },
@@ -3369,15 +3369,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 55.0,
+        "value": 55,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "physicalPenFlat": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -3403,11 +3403,11 @@
     ],
     "stats": {
       "ad": {
-        "value": 65.0,
+        "value": 65,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -3429,11 +3429,11 @@
     "tags": [],
     "stats": {
       "ad": {
-        "value": 55.0,
+        "value": 55,
         "percent": false
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       }
     },
@@ -3471,11 +3471,11 @@
     ],
     "stats": {
       "ad": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "attackSpeed": {
-        "value": 35.0,
+        "value": 35,
         "percent": true
       }
     },
@@ -3501,15 +3501,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "mana": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -3532,15 +3532,15 @@
     "tags": [],
     "stats": {
       "ad": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "mana": {
-        "value": 1000.0,
+        "value": 1000,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -3564,15 +3564,15 @@
     "tags": [],
     "stats": {
       "attackSpeed": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "ap": {
-        "value": 80.0,
+        "value": 80,
         "percent": false
       }
     },
@@ -3597,15 +3597,15 @@
     ],
     "stats": {
       "attackSpeed": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "mr": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "tenacity": {
-        "value": 20.0,
+        "value": 20,
         "percent": true
       }
     },
@@ -3629,15 +3629,15 @@
     ],
     "stats": {
       "hp": {
-        "value": 400.0,
+        "value": 400,
         "percent": false
       },
       "ad": {
-        "value": 45.0,
+        "value": 45,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -3662,15 +3662,15 @@
     ],
     "stats": {
       "ad": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "physicalPenFlat": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       }
     },
@@ -3695,21 +3695,21 @@
     ],
     "stats": {
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "attackSpeed": {
-        "value": 45.0,
+        "value": 45,
         "percent": true
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
     "scopedStats": {
       "ultimateAbilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -3739,15 +3739,15 @@
     "tags": [],
     "stats": {
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "attackSpeed": {
-        "value": 40.0,
+        "value": 40,
         "percent": true
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
@@ -3771,11 +3771,11 @@
     ],
     "stats": {
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "attackSpeed": {
-        "value": 40.0,
+        "value": 40,
         "percent": true
       }
     },
@@ -3800,15 +3800,15 @@
     ],
     "stats": {
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       },
       "attackSpeed": {
-        "value": 40.0,
+        "value": 40,
         "percent": true
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
@@ -3842,11 +3842,11 @@
     ],
     "stats": {
       "attackSpeed": {
-        "value": 40.0,
+        "value": 40,
         "percent": true
       },
       "crit": {
-        "value": 25.0,
+        "value": 25,
         "percent": true
       }
     },
@@ -3871,15 +3871,15 @@
     ],
     "stats": {
       "ap": {
-        "value": 60.0,
+        "value": 60,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       }
     },
@@ -3903,19 +3903,19 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "armor": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       },
       "mr": {
-        "value": 30.0,
+        "value": 30,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -3938,19 +3938,19 @@
     "tags": [],
     "stats": {
       "ap": {
-        "value": 35.0,
+        "value": 35,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
@@ -3976,19 +3976,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "ap": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       }
     },
@@ -4011,19 +4011,19 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 300.0,
+        "value": 300,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "abilityHaste": {
-        "value": 15.0,
+        "value": 15,
         "percent": false
       },
       "healShieldPower": {
-        "value": 9.0,
+        "value": 9,
         "percent": true
       }
     },
@@ -4049,19 +4049,19 @@
     ],
     "stats": {
       "ap": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "healShieldPower": {
-        "value": 8.0,
+        "value": 8,
         "percent": true
       },
       "moveSpeed": {
-        "value": 4.0,
+        "value": 4,
         "percent": true
       }
     },
@@ -4086,26 +4086,26 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "mana": {
-        "value": 1200.0,
+        "value": 1200,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "healShieldPower": {
-        "value": 8.0,
+        "value": 8,
         "percent": true
       }
     },
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Harmony: Gain bonus Heal and Shield Power equal to 0.5% of max Mana and refund 25% of Mana spent.",
+      "Harmony: Gain bonus Heal and Shield Power equal to 0.25% of max Mana and refund 25% of Mana spent.",
       "Diadem: While you, or an ally you healed or shielded in the last 3 seconds, are in combat, heal the nearby allied champion with the lowest Health within 800 units each second for 0.8% of your max Mana."
     ],
     "addedIn": "7.3"
@@ -4124,19 +4124,19 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "ap": {
-        "value": 40.0,
+        "value": 40,
         "percent": false
       },
       "abilityHaste": {
-        "value": 20.0,
+        "value": 20,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       }
     },
@@ -4164,19 +4164,19 @@
     ],
     "stats": {
       "ap": {
-        "value": 50.0,
+        "value": 50,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       },
       "healShieldPower": {
-        "value": 8.0,
+        "value": 8,
         "percent": true
       }
     },
@@ -4200,26 +4200,26 @@
     ],
     "stats": {
       "hp": {
-        "value": 200.0,
+        "value": 200,
         "percent": false
       },
       "mana": {
-        "value": 500.0,
+        "value": 500,
         "percent": false
       },
       "manaRegen": {
-        "value": 50.0,
+        "value": 50,
         "percent": true
       },
       "healShieldPower": {
-        "value": 8.0,
+        "value": 8,
         "percent": true
       }
     },
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Harmony: Gain bonus Heal and Shield Power equal to 0.5% of max Mana and refund 25% of Mana spent.",
+      "Harmony: Gain bonus Heal and Shield Power equal to 0.25% of max Mana and refund 25% of Mana spent.",
       "Mana Charge: Mana expenditure grants 14 max Mana, up to 700, at which point Whispering Circlet transforms into Diadem of Songs. Triggers up to 2 times every 10 seconds."
     ],
     "addedIn": "7.3",
@@ -4237,7 +4237,7 @@
     "tags": [],
     "stats": {
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },
@@ -4260,11 +4260,11 @@
     "tags": [],
     "stats": {
       "hp": {
-        "value": 175.0,
+        "value": 175,
         "percent": false
       },
       "abilityHaste": {
-        "value": 10.0,
+        "value": 10,
         "percent": false
       }
     },

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "targetPatch": "7.3",
+  "targetPatch": "7.3a",
   "champions": {
     "Pantheon": {
       "baseStats": {
@@ -15,7 +15,7 @@
           "lvl15": 882
         },
         "armor": {
-          "base": 48.0,
+          "base": 48,
           "perLevel": 4.7,
           "lvl15": 113.8
         },
@@ -101,27 +101,27 @@
       "baseStats": {
         "ad": {
           "base": 70,
-          "perLevel": 4.0,
+          "perLevel": 4,
           "lvl15": 126
         },
         "hp": {
           "base": 630,
-          "perLevel": 128.0,
+          "perLevel": 128,
           "lvl15": 2422
         },
         "mana": {
           "base": 420,
-          "perLevel": 60.0,
+          "perLevel": 60,
           "lvl15": 1260
         },
         "armor": {
           "base": 40,
-          "perLevel": 5.0,
+          "perLevel": 5,
           "lvl15": 110
         },
         "mr": {
           "base": 36,
-          "perLevel": 2.0,
+          "perLevel": 2,
           "lvl15": 64
         },
         "attackSpeed": {
@@ -136,17 +136,17 @@
         },
         "manaRegen": {
           "base": 12,
-          "perLevel": 1.0,
+          "perLevel": 1,
           "lvl15": 26
         },
         "moveSpeed": {
           "base": 350,
-          "perLevel": 0.0,
+          "perLevel": 0,
           "lvl15": 350
         },
         "tenacity": {
           "base": 3,
-          "perLevel": 0.0,
+          "perLevel": 0,
           "lvl15": 3
         }
       },
@@ -156,27 +156,27 @@
       "baseStats": {
         "ad": {
           "base": 70,
-          "perLevel": 4.0,
+          "perLevel": 4,
           "lvl15": 126
         },
         "hp": {
           "base": 630,
-          "perLevel": 128.0,
+          "perLevel": 128,
           "lvl15": 2422
         },
         "mana": {
           "base": 420,
-          "perLevel": 60.0,
+          "perLevel": 60,
           "lvl15": 1260
         },
         "armor": {
           "base": 40,
-          "perLevel": 5.0,
+          "perLevel": 5,
           "lvl15": 110
         },
         "mr": {
           "base": 36,
-          "perLevel": 2.0,
+          "perLevel": 2,
           "lvl15": 64
         },
         "attackSpeed": {
@@ -191,17 +191,17 @@
         },
         "manaRegen": {
           "base": 12,
-          "perLevel": 1.0,
+          "perLevel": 1,
           "lvl15": 26
         },
         "moveSpeed": {
           "base": 350,
-          "perLevel": 0.0,
+          "perLevel": 0,
           "lvl15": 350
         },
         "tenacity": {
           "base": 3,
-          "perLevel": 0.0,
+          "perLevel": 0,
           "lvl15": 3
         }
       },
