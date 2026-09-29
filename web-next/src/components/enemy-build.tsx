@@ -440,6 +440,26 @@ export type Advice = {
     riskTolerance: string;
     enemyContext: string;
   };
+  engineEvidence?: {
+    available: boolean;
+    engineRole?: string;
+    playstyleValidation?: string;
+    powerCurve?: string;
+    measuredLevels?: number[];
+    spikes?: Array<{
+      itemsCompleted: number;
+      level: number;
+      items: string[];
+      dps?: number;
+      burst?: number;
+      damageBeforeDeath?: number;
+      timeToDie?: number;
+      ehp?: number;
+    }>;
+    objective?: string;
+    objectiveEvidence?: Record<string, unknown>;
+    reason?: string;
+  };
   counterSummary?: {
     confidence: number;
     counterPriorities: string[];

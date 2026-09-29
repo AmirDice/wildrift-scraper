@@ -177,6 +177,7 @@ ARCHETYPES = _load("champion_archetypes.json", {})
 COUNTERS = _load("counters.json", {})
 WRMETA = _load("wrmeta_champions.json", {})
 ITEM_RULES = _load("item_rules.json", {})
+DEFENSE_PROFILE = _load("item_defense_profile.json", {}) or {}
 _champs_raw = _load("champions_wr.json", [])
 CHAMPS = {c["name"]: c for c in (_champs_raw.values() if isinstance(_champs_raw, dict)
                                  else _champs_raw)}
@@ -780,6 +781,18 @@ _BIAS_GUARD = (
     "off-meta archetype to satisfy it. Where the bias materially changed a pick, say so "
     "in that item's or rune's reason -- once, where it mattered, not on every line.")
 
+_MARKSMAN_DEFENSIVE_GUIDANCE = (
+    " For a MARKSMAN defensive build, prefer threat-specific carry protection: "
+    "Guardian Angel against physical burst or when a team can cover the revive; "
+    "Mercurial Scimitar into hard crowd control; Maw into magic burst; Immortal "
+    "Shieldbow or Wit's End when their offensive stats still match the kit; and "
+    "defensive boots when the matchup justifies them. Bloodthirster is a damage-"
+    "leaning sustain/shield hybrid, not a dedicated defense slot. For a close-"
+    "range marksman or hybrid auto-attacker, Sterak's Gage and Death's Dance are "
+    "valid defensive carry options, while Randuin's Omen and Amaranth's Twinguard "
+    "are situational anti-basic-attack/frontline choices rather than default ranged "
+    "items.")
+
 BUILD_BIAS = {
     "max_durability": (
         "BUILD BIAS MAXIMUM DURABILITY: build the most durable competitive version of THIS "
@@ -789,13 +802,13 @@ BUILD_BIAS = {
         "damage items, HP-carrying options of the right damage type, defensive boots, "
         "protective actives, sustain and safety in the rune page, the less greedy choice "
         "wherever two viable picks differ mainly in risk."
-        + _BIAS_GUARD),
+        + _MARKSMAN_DEFENSIVE_GUIDANCE + _BIAS_GUARD),
     "durability": (
         "BUILD BIAS DURABILITY-LEANING: when two viable options are close, prefer the one "
         "that adds survivability -- HP, resists, sustain, shields, defensive boots, safer "
         "runes -- while keeping the offense this champion and playstyle need to function. "
         "A bruiser stays a bruiser, on its safer side."
-        + _BIAS_GUARD),
+        + _MARKSMAN_DEFENSIVE_GUIDANCE + _BIAS_GUARD),
     "balanced": "",  # the default optimisation, no extra bias
     "damage": (
         "BUILD BIAS DAMAGE-LEANING: when two viable options are close, prefer the one that "
@@ -841,6 +854,17 @@ FRONTLINE_CLASSES = {"Tank", "Bruiser", "Fighter", "Juggernaut"}
 #: before it counts as that path rather than the caster build wearing its name.
 BRUISER_DEFENSIVE_ITEMS = 2
 
+# These are deliberately small, explicit floors rather than a general item
+# score.  The engine is allowed to discover the best names, but it must first
+# prove that a candidate is actually the delivery path it claims to be.  This
+# keeps a marksman's crit probe from quietly becoming a lethality/on-hit build
+# and keeps an on-hit probe from being five AD items with one attack-speed
+# passenger.
+CRIT_CORE_ITEMS = 3
+ON_HIT_CORE_ITEMS = 2
+ATTACK_SPEED_CORE_ITEMS = 2
+ON_HIT_EFFECT_CORE_ITEMS = 2
+
 
 def _damage_archetypes(champion: str, combat: dict, scaling: dict,
                        damage_path: str = "standard") -> list[dict]:
@@ -875,7 +899,11 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
             add("ad-caster")
         if crit:
             add("ad-crit")
-        if on_hit:
+        # Marksmen and repeated-attack champions each deserve an independent
+        # attack-speed/on-hit hypothesis.  Do not infer it only from a parsed
+        # on-hit sentence: some kits express the same loop through an attack
+        # speed steroid and item effects.
+        if on_hit or combat.get("attackSpeedValue") == "high":
             add("ad-on-hit")
         if not any(x.startswith("ad-") for x in ids):
             add("ad-caster")
@@ -1102,8 +1130,85 @@ def _simulate_tournament(champion: str, candidates: list[dict],
     return measured
 
 
-def _candidate_rune_pages(candidates: list[dict], rune_locks: list[str] | None = None) -> list[dict]:
-    """Legal pages made only from runes the model nominated in its three builds."""
+def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
+                             objective: str, playstyle: str) -> dict:
+    """Measure the returned build for the UI's power-curve/objective controls.
+
+    The LLM still owns semantic choices such as *how* the player wants to
+    fight. This pass supplies deterministic evidence for the axes the engine
+    can actually measure: item-completion spikes, survivability, stat value,
+    and damage output. It is intentionally post-selection and lightweight; the
+    full candidate tournament remains opt-in for requests that need comparison
+    across multiple builds.
+    """
+    from web.fight_engine import analyze_build, evaluation_vector
+
+    items = list(build.get("items") or [])
+    boots = str(build.get("boots") or "")
+    runes = _candidate_rune_names(build)
+    if not items or not boots:
+        return {"available": False, "reason": "incomplete item core"}
+
+    levels = {"early": 7, "mid": 11, "late": 15}
+    levels_to_measure = [levels[game_phase]] if game_phase in levels else [7, 11, 15]
+    spikes = []
+    for count in (1, 2, 3, 5):
+        if count > len(items):
+            continue
+        level = 7 if count == 1 else 11 if count <= 3 else 15
+        core = items[:count] + [boots]
+        vector = evaluation_vector(champion, core, runes, level=level)
+        spikes.append({
+            "itemsCompleted": count,
+            "level": level,
+            "items": items[:count],
+            "dps": vector.get("dps"),
+            "burst": vector.get("burst"),
+            "damageBeforeDeath": vector.get("damageBeforeDeath"),
+            "timeToDie": vector.get("timeToDie"),
+            "ehp": vector.get("compEhp") or vector.get("ehp"),
+        })
+
+    full = analyze_build(champion, items + [boots], runes, level=15)
+    vector = evaluation_vector(champion, items + [boots], runes, level=15)
+    objective_evidence = {
+        "maxstats": {
+            "goldEfficiency": vector.get("goldEfficiency"),
+            "statValue": vector.get("statValue"),
+        },
+        "maxsynergy": {
+            "dps": full.get("dps"),
+            "damageBeforeDeath": vector.get("damageBeforeDeath"),
+            "itemAblation": full.get("items"),
+            "runeAblation": full.get("runes"),
+        },
+        "best": {
+            "dps": full.get("dps"),
+            "burst": full.get("burst"),
+            "survivalTime": full.get("survivalTime"),
+            "damageBeforeDeath": vector.get("damageBeforeDeath"),
+        },
+        "balanced": {
+            "dps": full.get("dps"),
+            "survivalTime": full.get("survivalTime"),
+            "damageBeforeDeath": vector.get("damageBeforeDeath"),
+        },
+    }.get(objective, {})
+    return {
+        "available": True,
+        "engineRole": "measurement",
+        "playstyleValidation": "semantic choice remains LLM-led; mechanics are measured here",
+        "powerCurve": game_phase,
+        "measuredLevels": levels_to_measure,
+        "spikes": spikes,
+        "objective": objective,
+        "objectiveEvidence": objective_evidence,
+    }
+
+
+def _candidate_rune_pages(candidates: list[dict], rune_locks: list[str] | None = None,
+                          build_bias: str = "max_damage") -> list[dict]:
+    """Build a small legal page frontier around the model's nominated pages."""
     from itertools import product
 
     pages: list[dict] = []
@@ -1149,6 +1254,32 @@ def _candidate_rune_pages(candidates: list[dict], rune_locks: list[str] | None =
                 and signature not in seen):
             seen.add(signature)
             pages.append(page)
+
+    # Defensive biases need more than one flex choice. Without this frontier,
+    # the engine can change items but every bias is stuck with the exact same
+    # defensive rune page the model happened to nominate.
+    if build_bias in {"balanced", "durability", "max_durability"}:
+        defensive_flexes = (
+            "Bone Plating", "Nullifying Orb", "Second Wind",
+            "Revitalize", "Perseverance")
+        for candidate in candidates:
+            base = dict(candidate.get("runes") or {})
+            tree = str(base.get("primaryTree") or "")
+            if tree not in runemeta.TREES:
+                continue
+            for flex in defensive_flexes:
+                if runemeta.SLOT_OF.get(flex, ("", 0))[0] == tree:
+                    continue
+                page = {**base, "flex": flex}
+                names = _candidate_rune_names({"runes": page})
+                signature = (page.get("keystone"), page.get("primaryTree"),
+                             tuple(page.get("minors") or []), page.get("flex"))
+                if (runemeta.page_errors(page)
+                        or any(lock not in names for lock in (rune_locks or []))
+                        or signature in seen):
+                    continue
+                seen.add(signature)
+                pages.append(page)
     return pages
 
 
@@ -1186,8 +1317,17 @@ def _item_archetype_signals(slug: str) -> set[str]:
         signals.add("crit")
     if "attackSpeed" in stats:
         signals.add("attack-speed")
-    if ("on hit" in text or "on-hit" in text or "attacks deal" in text
-            or "attackSpeed" in stats):
+    # Keep the broad `on-hit` signal for pool eligibility, but also retain a
+    # strict effect signal. Attack speed amplifies on-hit damage; it is not an
+    # on-hit effect by itself. The final path gate uses the strict signal so
+    # Trinity/Duskblade-style attack-speed passengers cannot masquerade as an
+    # on-hit build.
+    if ("on hit" in text or "on-hit" in text
+            or re.search(r"\battacks?\s+deal", text)
+            or "every third attack" in text):
+        signals.add("on-hit-effect")
+        signals.add("on-hit")
+    if "attackSpeed" in stats:
         signals.add("on-hit")
     if "physicalPenFlat" in stats or "physicalPen" in stats:
         signals.add("physical-pen")
@@ -1246,13 +1386,37 @@ def _combo_matches_archetype(combo: tuple[str, ...], archetype: str) -> bool:
     sigs = [_item_archetype_signals(slug) for slug in combo]
     count = lambda key: sum(key in row for row in sigs)
     if archetype == "ad-crit":
-        return count("crit") >= 2 and count("ad") >= 2
+        # Two crit items can still be a bruiser/on-hit shell with one crit
+        # accent. The engine must not call that an AD-crit path and then fill
+        # the remaining slots with Trinity/Duskblade-style outliers. Require a
+        # genuine three-item crit core before comparing raw damage.
+        # A second penetration item is likewise a signal that the search has
+        # drifted into lethality/caster territory. Four crit items are enough
+        # to justify one such flex; otherwise keep one pen slot (normally LDR)
+        # and leave the remaining slots to the crit core.
+        pen = count("physical-pen")
+        return (count("crit") >= CRIT_CORE_ITEMS and count("ad") >= 2
+                and (pen <= 1 or count("crit") >= 4))
     if archetype == "ad-on-hit":
-        return count("on-hit") >= 2 and count("ad") >= 1
+        return (count("on-hit") >= ON_HIT_CORE_ITEMS
+                and count("on-hit-effect") >= ON_HIT_EFFECT_CORE_ITEMS
+                and count("attack-speed") >= ATTACK_SPEED_CORE_ITEMS
+                and count("ad") >= 1
+                and (count("physical-pen") <= 1
+                     or count("on-hit-effect") >= 3))
     if archetype == "ap-on-hit":
-        return count("on-hit") >= 2 and count("ap") >= 1
+        return (count("on-hit") >= ON_HIT_CORE_ITEMS
+                and count("on-hit-effect") >= ON_HIT_EFFECT_CORE_ITEMS
+                and count("attack-speed") >= ATTACK_SPEED_CORE_ITEMS
+                and count("ap") >= 1
+                and (count("magic-pen") <= 1
+                     or count("on-hit-effect") >= 3))
     if archetype == "hybrid-on-hit":
-        return count("on-hit") >= 2 and count("ad") >= 1 and count("ap") >= 1
+        # Hybrid auto-attackers already have their reviewed mixed path. Keep
+        # its broader gate so a champion such as Kai'Sa can still use a
+        # deliberate AD/AP/on-hit interaction even when one item supplies the
+        # attack-speed bridge.
+        return count("on-hit") >= ON_HIT_CORE_ITEMS and count("ad") >= 1 and count("ap") >= 1
     if archetype == "ap-caster":
         return count("ap") >= 3
     if archetype == "ad-caster":
@@ -1349,8 +1513,6 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
     TOURNAMENT_BLEND.  For max_damage the survival weight is zero and the score
     is the damage scenario score exactly as it was before the blend existed.
     """
-    from itertools import combinations
-
     from web.fight_engine import (REF_BURST, REF_DPS, REF_FIGHT,
                                   conditional_damage_scenarios, evaluation_vector,
                                   objective_score)
@@ -1365,13 +1527,29 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
     weights = {"fiveTargetDps": 0.60, "fiveTargetBurst": 0.10,
                "oneVsThreeDamage": 0.30}
 
+    # A generic build should not be selected by averaging a tank and a carry
+    # as if they were equally common opponents.  The old flat mean made
+    # current-health on-hit items look like the default answer even when the
+    # request supplied no frontline context.  Keep every profile in the test,
+    # but weight the ordinary carry/fighter cases more heavily than the rare
+    # five-thousand-health tank case.
+    profile_weights = {
+        "adc": 0.28, "mage": 0.17, "fighter": 0.25,
+        "bruiser": 0.20, "tank": 0.10,
+    }
+
     def scenario_score(panel: dict) -> float:
-        targets = list((panel.get("targets") or {}).values())
+        target_rows = (panel.get("targets") or {})
+        targets = list(target_rows.values())
         one_three = (panel.get("oneVsThree") or {}).get("totalDamage", 0)
         if not targets:
             return 0.0
-        mean_dps = sum(row.get("dps8", 0) for row in targets) / len(targets)
-        mean_burst = sum(row.get("burst3", 0) for row in targets) / len(targets)
+        weights_total = sum(profile_weights.get(name, 0.0)
+                            for name in target_rows) or 1.0
+        mean_dps = sum(profile_weights.get(name, 0.0) * row.get("dps8", 0)
+                       for name, row in target_rows.items()) / weights_total
+        mean_burst = sum(profile_weights.get(name, 0.0) * row.get("burst3", 0)
+                         for name, row in target_rows.items()) / weights_total
         # The 1v3 reference is three targets receiving reference DPS for the
         # full fight. A no-AoE build still earns its primary-target damage.
         return round(100.0 * (
@@ -1441,7 +1619,7 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
     path_meta: dict[str, dict] = {}
     for archetype, seeds in by_path.items():
         boots = sorted({str(c.get("boots") or "") for c in seeds} - {""})
-        pages = _candidate_rune_pages(seeds, rune_locks)
+        pages = _candidate_rune_pages(seeds, rune_locks, build_bias)
         authored_pages = [c.get("runes") or {} for c in seeds]
         if not boots or not pages:
             path_meta[archetype] = {"reason": "no legal boots or rune pages"}
@@ -1451,6 +1629,16 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         authored_items = {slug for c in seeds for slug in c.get("items") or []}
         eligible = [slug for slug in universe
                     if archetype == "unlabelled" or _item_supports_archetype(slug, archetype)]
+        # Defensive items often carry no AD/crit/on-hit signal, so they would
+        # otherwise be eliminated before the durability score gets a chance to
+        # consider them. Admit the reviewed class-appropriate carry pool only
+        # when the requested bias actually values survival; the archetype gate
+        # still requires the finished five-item build to retain its damage path.
+        if survival_w:
+            champion_class = str((CHAMPS.get(champion) or {}).get("class") or "")
+            family = (DEFENSE_PROFILE.get("classFamilies") or {}).get(champion_class) or {}
+            defensive_pool = set(family.get("preferred") or []) | set(family.get("allowed") or [])
+            eligible = sorted(set(eligible) | (defensive_pool & set(universe)))
         ranked_items = []
         for slug in eligible:
             vector = evaluation_vector(
@@ -1459,22 +1647,45 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
             ranked_items.append((objective_score(vector, prefilter_objective), slug))
             searched += 1
         ranked_items.sort(reverse=True)
-        pool = sorted(set(slug for _score, slug in ranked_items[:11])
+        # The old challenger searched only the top 11 one-item probes. That
+        # was fast, but it could never recover a strong five-item interaction
+        # when one component looked ordinary by itself (Yun Tal + BORK + LDR
+        # on Tryndamere was the concrete miss). Keep a wider legal frontier and
+        # use beam search below instead of enumerating every 30-choose-5 set.
+        pool = sorted(set(slug for _score, slug in ranked_items[:30])
                       | authored_items | set(item_locks or []))
-        shortlist: list[tuple[float, tuple[str, ...]]] = []
-        for combo in combinations(pool, 5):
-            if (not legal_items(combo)
-                    or (archetype != "unlabelled"
-                        and not _combo_matches_archetype(combo, archetype))):
-                continue
-            best_seed = 0.0
-            for page in authored_pages:
-                vector = evaluation_vector(
-                    champion, list(combo) + [seed_boot],
-                    _candidate_rune_names({"runes": page}), level=15, fast=True)
-                best_seed = max(best_seed, objective_score(vector, prefilter_objective))
-                searched += 1
-            shortlist.append((best_seed, combo))
+        # Beam width is deliberately bounded: 30 candidates at each slot,
+        # retaining the best 120 partial builds, is enough to preserve item
+        # synergies while keeping a max-damage request comfortably within the
+        # function time budget.
+        beam: list[tuple[float, tuple[str, ...]]] = [(0.0, ())]
+        for depth in range(5):
+            expanded: list[tuple[float, tuple[str, ...]]] = []
+            for _old_score, partial in beam:
+                for slug in pool:
+                    if slug in partial:
+                        continue
+                    combo = partial + (slug,)
+                    if depth == 4 and (
+                            not legal_items(combo)
+                            or (archetype != "unlabelled"
+                                and not _combo_matches_archetype(combo, archetype))):
+                        continue
+                    if depth < 4 and not legal_items(combo):
+                        continue
+                    best_seed = 0.0
+                    for page in authored_pages:
+                        vector = evaluation_vector(
+                            champion, list(combo) + [seed_boot],
+                            _candidate_rune_names({"runes": page}), level=15, fast=True)
+                        best_seed = max(best_seed, objective_score(vector, prefilter_objective))
+                        searched += 1
+                    expanded.append((best_seed, combo))
+            expanded.sort(key=lambda row: row[0], reverse=True)
+            beam = expanded[:120]
+            if not beam:
+                break
+        shortlist = beam
         shortlist.sort(key=lambda row: row[0], reverse=True)
         for _seed, combo in shortlist[:35]:
             for boot in boots:
@@ -1520,8 +1731,9 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
     challenger = {
         "id": "ENGINE-D",
         "archetype": archetype,
-        "hypothesis": (f"Engine recombination winner across five target profiles and "
-                       f"a capped 1v3, scored {damage_w:.0%} damage / "
+        "hypothesis": (f"Engine recombination winner across five target profiles "
+                       f"(carry/fighter weighted for a generic game) and a capped 1v3, "
+                       f"scored {damage_w:.0%} damage / "
                        f"{survival_w:.0%} survival for a {build_bias} request, "
                        f"conditional effects weighted for {skill_level} "
                        f"skill; score {score:.1f} versus authored best "
@@ -1580,6 +1792,11 @@ The engine has identified these credible damage archetypes for this champion:
 Every listed archetype MUST appear at least once. Use any remaining slots for
 a materially different burst/sustained/delivery hypothesis inside the strongest
 archetype. Do not label a build with an archetype it does not actually follow.
+For `ad-crit`, commit to a genuine three-item crit core before adding one
+penetration or utility flex. For `ad-on-hit`, commit to at least two
+attack-speed/on-hit items and enough AD for the champion's physical scaling;
+do not call a mostly-AD build on-hit because it contains one attack-speed item.
+These are delivery-path requirements, not suggestions for item names.
 """ if archetypes else "")
     labels = "|".join(chr(ord("A") + i) for i in range(candidate_count))
     return prompt + f"""
@@ -2252,6 +2469,20 @@ def advise(champion: str, role: str, enemies: list[str],
     # When repair did touch the core, the repaired build is still the legal one
     # to return; it just stops claiming a verdict the engine never gave.
     tournament_meta = _settle_tournament_label(res, tournament_meta, tested_signatures)
+
+    # Always attach the cheap, deterministic evidence pass. It makes the
+    # power-spike toggle and optimizer objective truthful even on the ordinary
+    # one-call path; a full engine tournament is still reserved for explicit
+    # multi-candidate comparisons.
+    try:
+        res["engineEvidence"] = _engine_request_evidence(
+            champion, res, game_phase=game_phase, objective=objective,
+            playstyle=playstyle)
+    except Exception as exc:  # noqa: BLE001 -- evidence must not break a legal build
+        print(f"[advisor] engine evidence unavailable: {type(exc).__name__}: {exc}",
+              file=sys.stderr)
+        res["engineEvidence"] = {"available": False,
+                                  "reason": f"{type(exc).__name__}: {exc}"[:240]}
 
     # Normalised request metadata, so the frontend can show what the build was
     # optimised for and flag any playstyle the champion could not honour. Added

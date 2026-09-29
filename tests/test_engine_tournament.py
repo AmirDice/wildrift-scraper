@@ -101,6 +101,16 @@ def test_flexible_champions_get_distinct_cross_path_archetypes():
     assert adv._tournament_candidate_count(paths) >= len(paths)
 
 
+@pytest.mark.parametrize("champion", ["Caitlyn", "Jinx", "Tristana", "Vayne"])
+def test_marksmen_receive_both_crit_and_attack_speed_on_hit_probes(champion):
+    profile = adv.profiles.profile(champion, log=False)
+    ids = [row["id"] for row in adv._damage_archetypes(
+        champion, profile["combatProfile"], profile["scalingProfile"], "standard")]
+
+    assert "ad-crit" in ids, (champion, ids)
+    assert "ad-on-hit" in ids, (champion, ids)
+
+
 def test_candidate_gate_requires_every_declared_damage_archetype():
     builds = [candidate("A", "guardian-angel"),
               candidate("B", "wits-end"), candidate("C", "bloodthirster")]
@@ -643,18 +653,31 @@ def test_the_engine_cannot_put_dusk_and_dawn_in_a_jinx_damage_build():
     assert "infinity-edge" in eligible
 
 
-def test_the_eligibility_gate_is_the_only_defence_here():
-    """The combo gate does NOT catch a stat-wasting passenger, so the
-    per-item filter above is load-bearing rather than belt-and-braces.
+def test_crit_path_rejects_a_stat_wasting_passenger():
+    """A crit path needs a real crit core, not just two crit accents.
 
-    `ad-crit` asks for two crit items and two AD items across the five. IE and
-    Runaan's satisfy both counts by themselves, so Dusk and Dawn rides along
-    unexamined. Anything that widens `_item_supports_archetype` puts the bug
-    straight back.
+    The final combo gate is intentionally belt-and-braces with the item pool
+    filter: otherwise a high-scoring on-hit/ability item can ride along after
+    two crit items and be mislabeled as a marksman build.
     """
-    assert adv._combo_matches_archetype(
+    assert not adv._combo_matches_archetype(
         ("dusk-and-dawn", "runaans-hurricane", "infinity-edge",
          "wits-end", "terminus"), "ad-crit")
+
+
+def test_marksman_crit_and_on_hit_paths_have_distinct_minimum_cores():
+    crit = ("infinity-edge", "runaans-hurricane", "stormrazor",
+            "lord-dominiks-regard", "bloodthirster")
+    on_hit = ("blade-of-the-ruined-king", "guinsoos-rageblade",
+              "kraken-slayer", "terminus", "wits-end")
+    weak_on_hit = ("blade-of-the-ruined-king", "infinity-edge",
+                   "lord-dominiks-regard", "bloodthirster", "guardian-angel")
+    attack_speed_passengers = ("blade-of-the-ruined-king", "lord-dominiks-regard",
+                               "maw-of-malmortius", "guardian-angel", "trinity-force")
+    assert adv._combo_matches_archetype(crit, "ad-crit")
+    assert adv._combo_matches_archetype(on_hit, "ad-on-hit")
+    assert not adv._combo_matches_archetype(weak_on_hit, "ad-on-hit")
+    assert not adv._combo_matches_archetype(attack_speed_passengers, "ad-on-hit")
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,980 @@
+{
+ "_note": "Give every completed item a DEFENSIVE WEIGHT, 0.0 to 1.0.",
+ "_bands": {
+  "0.0": "pure offense",
+  "0.25": "minor sustain or HP",
+  "0.5": "meaningful hybrid",
+  "0.75": "strong defensive carry",
+  "1.0": "dedicated defense"
+ },
+ "_curatedWhy": {
+  "bloodthirster": "Lifesteal plus an overheal shield that survives the fight ending. A genuine hybrid for a carry.",
+  "guardian-angel": "A revive is the strongest single defensive effect a carry can hold.",
+  "blade-of-the-ruined-king": "Lifesteal is real sustain, but the item's job is killing faster. Counting it as THE defensive slot is how a build with five damage items gets called balanced.",
+  "trinity-force": "The health is meaningful secondary durability on the champions that buy it, not incidental.",
+  "maw-of-malmortius": "Lifeline plus magic resist.",
+  "deaths-dance": "Damage deferral plus the execute heal.",
+  "wits-end": "Magic resist that scales into an offensive on-hit.",
+  "edge-of-night": "A spell shield is the assassin's defensive slot.",
+  "steraks-gage": "A health bar for melee, with no offensive identity of its own.",
+  "sundered-sky": "Same shape as Goredrinker: a bruiser item whose health and heal are half of why it is bought.",
+  "experimental-hexplate": "Health and haste on a frame that still fights.",
+  "goredrinker": "Bruiser health plus omnivamp and a heal on the active; the derivation lands it a band low.",
+  "riftmaker": "AP bruiser hybrid: the health and omnivamp are the point, not a rider.",
+  "bulwark-of-the-mountain": "175 health is meaningful on a support and nowhere near a dedicated defensive item.",
+  "black-mist-scythe": "Gold and ability haste. No defence at all: it is the support's income, not its survivability.",
+  "immortal-shieldbow": "Lifeline is a second health bar at the moment it matters."
+  ,"mercurial-scimitar": "AD, magic resist, lifesteal and Quicksilver; the ADC answer to hard crowd control, not a generic damage purchase."
+  ,"randuins-omen": "Strong anti-crit and armor, but a close-range or anti-basic-attack answer rather than a default ranged-carry slot."
+ },
+ "classFamilies": {
+  "Marksman": {
+   "preferred": [
+    "immortal-shieldbow",
+    "bloodthirster",
+    "guardian-angel",
+    "maw-of-malmortius",
+    "mercurial-scimitar",
+    "wits-end",
+    "trinity-force",
+    "experimental-hexplate",
+    "phantom-dancer"
+   ],
+   "allowed": [
+    "deaths-dance",
+    "amaranths-twinguard",
+    "steraks-gage",
+    "randuins-omen"
+   ],
+   "rangedSituational": [
+    "mercurial-scimitar",
+    "maw-of-malmortius",
+    "immortal-shieldbow",
+    "guardian-angel",
+    "wits-end"
+   ],
+   "closeRangePreferred": [
+    "steraks-gage",
+    "deaths-dance",
+    "randuins-omen",
+    "amaranths-twinguard"
+   ]
+  },
+  "Assassin": {
+   "preferred": [
+    "edge-of-night",
+    "maw-of-malmortius",
+    "deaths-dance",
+    "guardian-angel",
+    "eclipse"
+   ],
+   "allowed": [
+    "steraks-gage",
+    "amaranths-twinguard",
+    "randuins-omen"
+   ]
+  },
+  "Mage": {
+   "preferred": [
+    "riftmaker",
+    "rod-of-ages",
+    "zhonyas-hourglass",
+    "banshees-veil"
+   ],
+   "allowed": [
+    "abyssal-mask",
+    "kaenic-rookern"
+   ]
+  },
+  "Fighter": {
+   "preferred": [
+    "steraks-gage",
+    "deaths-dance",
+    "maw-of-malmortius",
+    "amaranths-twinguard",
+    "sundered-sky",
+    "trinity-force",
+    "black-cleaver"
+   ],
+   "allowed": [
+    "guardian-angel",
+    "spear-of-shojin",
+    "overlords-bloodmail",
+    "randuins-omen"
+   ]
+  },
+  "Tank": {
+   "preferred": [],
+   "allowed": []
+  },
+  "Enchanter": {
+   "preferred": [
+    "staff-of-flowing-water",
+    "ardent-censer",
+    "redemption",
+    "zekes-convergence",
+    "banshees-veil",
+    "zhonyas-hourglass",
+    "riftmaker",
+    "rod-of-ages"
+   ],
+   "allowed": [
+    "kaenic-rookern",
+    "abyssal-mask",
+    "amaranths-twinguard"
+   ]
+  },
+  "Bruiser": {
+   "preferred": [
+    "steraks-gage",
+    "deaths-dance",
+    "maw-of-malmortius",
+    "amaranths-twinguard",
+    "sundered-sky",
+    "trinity-force",
+    "black-cleaver"
+   ],
+   "allowed": [
+    "guardian-angel",
+    "spear-of-shojin",
+    "overlords-bloodmail"
+   ]
+  },
+  "Skirmisher": {
+   "preferred": [
+    "edge-of-night",
+    "maw-of-malmortius",
+    "deaths-dance",
+    "guardian-angel",
+    "eclipse"
+   ],
+   "allowed": [
+    "steraks-gage",
+    "amaranths-twinguard",
+    "randuins-omen"
+   ]
+  }
+ },
+ "carryAvoid": [
+  "zekes-convergence",
+  "warmogs-armor",
+  "heartsteel",
+  "frozen-heart",
+  "thornmail",
+  "sunfire-aegis",
+  "randuins-omen",
+  "force-of-nature",
+  "bulwark-of-the-mountain",
+  "black-mist-scythe",
+  "kaenic-rookern",
+  "abyssal-mask",
+  "chainlaced-crushers"
+ ],
+ "items": {
+  "abyssal-mask": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.875,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "amaranths-twinguard": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 5.372,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "archangels-staff": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "ardent-censer": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "armorcrusher-boots": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "armored-advance": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.708,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "banshees-veil": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.889,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "black-cleaver": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "black-mist-scythe": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.625,
+   "offensiveStats": 0,
+   "source": "curated"
+  },
+  "blackfire-torch": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "blade-of-the-ruined-king": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "curated"
+  },
+  "bloodletters-curse": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.875,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "bloodthirster": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "bulwark-of-the-mountain": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.062,
+   "offensiveStats": 0,
+   "source": "curated"
+  },
+  "chainlaced-crushers": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.458,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "chempunk-chainsword": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "cosmic-drive": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.75,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "crimson-lucidity": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "cryptbloom": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "dawnshroud": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.403,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "dead-mans-plate": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.431,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "deaths-dance": {
+   "defensiveWeight": 0.75,
+   "kind": "defensive-carry",
+   "derivedPoints": 2.0,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "diadem-of-songs": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.5,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "divine-sunderer": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.062,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "dusk-and-dawn": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.75,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "duskblade-of-draktharr": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "echoes-of-helia": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.5,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "eclipse": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.28,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "edge-of-night": {
+   "defensiveWeight": 0.75,
+   "kind": "defensive-carry",
+   "derivedPoints": 0.625,
+   "offensiveStats": 2,
+   "source": "curated"
+  },
+  "essence-reaver": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "experimental-hexplate": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.0,
+   "offensiveStats": 2,
+   "source": "curated"
+  },
+  "fiendhunter-bolts": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "fimbulwinter": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.49,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "force-of-nature": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.333,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "frozen-heart": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.778,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "galeforce": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "gargoyle-stoneplate": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 10.2,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "goredrinker": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 0.875,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "guardian-angel": {
+   "defensiveWeight": 0.75,
+   "kind": "defensive-carry",
+   "derivedPoints": 2.139,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "guinsoos-rageblade": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "gunmetal-greaves": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.133,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "harmonic-echo": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.5,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "heartsteel": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.75,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "hexoptics-c44": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "hextech-rocketbelt": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.625,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "hollow-radiance": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.889,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "horizon-focus": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "hullbreaker": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "iceborn-gauntlet": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.861,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "immortal-shieldbow": {
+   "defensiveWeight": 0.75,
+   "kind": "defensive-carry",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "curated"
+  },
+  "immortal-treads": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.3,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "imperial-mandate": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "infinity-edge": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "infinity-orb": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "kaenic-rookern": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 3.819,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "knights-vow": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.389,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "kraken-slayer": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "liandrys-torment": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.75,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "lich-bane": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "locket-of-the-iron-solari": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.833,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "lord-dominiks-regard": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "ludens-echo": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "malignance": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "manamune": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "mantle-of-the-twelfth-hour": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.5,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "maw-of-malmortius": {
+   "defensiveWeight": 0.75,
+   "kind": "defensive-carry",
+   "derivedPoints": 1.782,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "mercurial-scimitar": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.889,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "mikaels-blessing": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.75,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "morellonomicon": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.75,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "mortal-reminder": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "muramana": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "nashors-tooth": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "navori-quickblades": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "oceanids-trident": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.5,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "overlords-bloodmail": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.125,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "phantom-dancer": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "rabadons-deathcap": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "radiant-virtue": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.917,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "randuins-omen": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.667,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "rapid-firecannon": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "redemption": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "riftmaker": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.057,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "rod-of-ages": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.25,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "runaans-hurricane": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "rylais-crystal-scepter": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.875,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "seraphs-embrace": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "serpents-fang": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "seryldas-grudge": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "shurelyas-battlesong": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "spear-of-shojin": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.125,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "spellslingers-shoes": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "staff-of-flowing-water": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "statikk-shiv": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "steraks-gage": {
+   "defensiveWeight": 0.75,
+   "kind": "defensive-carry",
+   "derivedPoints": 7.25,
+   "offensiveStats": 0,
+   "source": "curated"
+  },
+  "stormrazor": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "stormsurge": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "stridebreaker": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "sundered-sky": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 0.875,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "sunfire-aegis": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.764,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "terminus": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "the-collector": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 3,
+   "source": "derived"
+  },
+  "thornmail": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.167,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "titanic-hydra": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.125,
+   "offensiveStats": 1,
+   "source": "derived"
+  },
+  "trinity-force": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 0.833,
+   "offensiveStats": 2,
+   "source": "curated"
+  },
+  "unending-despair": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.528,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "void-staff": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "warmogs-armor": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 2.5,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "whispering-circlet": {
+   "defensiveWeight": 0.25,
+   "kind": "offense",
+   "derivedPoints": 0.5,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "winters-approach": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.25,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "wits-end": {
+   "defensiveWeight": 0.5,
+   "kind": "hybrid",
+   "derivedPoints": 1.0,
+   "offensiveStats": 1,
+   "source": "curated"
+  },
+  "yordle-trap": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.389,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "youmuus-ghostblade": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "yun-tal-wildarrows": {
+   "defensiveWeight": 0.0,
+   "kind": "offense",
+   "derivedPoints": 0.0,
+   "offensiveStats": 2,
+   "source": "derived"
+  },
+  "zekes-convergence": {
+   "defensiveWeight": 1.0,
+   "kind": "defense",
+   "derivedPoints": 1.861,
+   "offensiveStats": 0,
+   "source": "derived"
+  },
+  "zhonyas-hourglass": {
+   "defensiveWeight": 0.75,
+   "kind": "defensive-carry",
+   "derivedPoints": 1.889,
+   "offensiveStats": 1,
+   "source": "derived"
+  }
+ }
+}

@@ -786,6 +786,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "baseAs": attack_speed_ratio(
             name, bs.get("attackSpeed", {}).get("base", 0.75) or 0.75),
         "crit": 0.0, "critMult": BASE_CRIT_MULT, "critDamagePerExcessCrit": 0.0,
+        "ultimateArmorPen": [],
+        "ultimateInvulnS": 0.0,
         "critDisabled": 0.0,
         # Real per-champion mana, scraped at last. A manaless kit has no entry
         # and correctly starts at 0, so Muramana's "AD = % of max mana" grants
@@ -807,6 +809,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
+        "piercingBoltDurationS": 0.0,
         # Discrete damage on OTHER targets (Statikk chain lightning). Kept out
         # of single-target total just like Runaan's bolts.
         "aoeProcFlat": 0.0, "aoeProcCdSec": 0.0, "aoeProcTargets": 0.0,
@@ -1298,6 +1301,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     f = FORMULAS.get(name, {}).get("abilities", {})
     st["timedSteroids"] = []
     for _ab_slot, ab in f.items():
+        for effect in ab.get("effects") or []:
+            if _ab_slot == "4" and effect.get("kind") == "armorPen":
+                st["ultimateArmorPen"].append({
+                    "pct": _scale_val(effect.get("pct"), 3, level) / 100.0,
+                    "durationS": float(effect.get("durationS") or 0.0),
+                })
+            elif _ab_slot == "4" and effect.get("kind") == "invulnerability":
+                st["ultimateInvulnS"] = max(
+                    st.get("ultimateInvulnS", 0.0),
+                    float(effect.get("durationS") or 0.0))
         for s in ab.get("steroids") or []:
             stat = s.get("stat")
             pct = _scale_val(s.get("pct"), 3, level) if s.get("pct") is not None else 0.0
@@ -1340,6 +1353,15 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                     _hp = st["hp"] * _scale_val(s["pct"], 3, level) / 100.0
                 st["hp"] += _hp
                 st["bonusHp"] += _hp
+    # Zeri's Lightning Crash is refreshed by attacks. Crit-heavy builds keep
+    # the overdrive online longer, so a fixed five-second uptime would under-
+    # value the exact builds the ultimate is designed around.
+    if name == "Zeri" and st.get("timedSteroids"):
+        for _steroid in st["timedSteroids"]:
+            _steroid["durationS"] = max(
+                _steroid["durationS"],
+                5.0 + (3.0 if st.get("crit", 0.0) >= 0.5 else 1.0))
+
     for ab in f.values():  # conversions last, after all MS sources counted
         for s in ab.get("steroids") or []:
             if s.get("from") == "bonusMs" and s.get("stat") == "ad" and s.get("pct") is not None:
@@ -1427,7 +1449,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     if "multiShot" in mech:
         shots = float(mech["multiShot"].get("shots", 1) or 1)
         per = float(mech["multiShot"].get("damagePerShotPct", 100) or 100)
-        st["doubleShotMult"] *= max(1.0, shots * per / 100.0)
+        if name == "Twitch":
+            st["extraBolts"] = max(st.get("extraBolts", 0.0), shots - 1.0)
+            st["extraBoltAdPct"] = max(st.get("extraBoltAdPct", 0.0), per)
+            st["piercingBoltDurationS"] = 5.0
+        else:
+            st["doubleShotMult"] *= max(1.0, shots * per / 100.0)
     st["reloadMag"] = float(mech["reload"].get("magazine", 2)) if "reload" in mech else 0.0
 
     st["ad"] = st["baseAd"] + st["bonusAd"]
@@ -2036,7 +2063,7 @@ def _for_window(name: str, st: dict, window: float) -> dict:
     """
     timed = st.get("timedSteroids") or []
     slows = st.get("targetSlowEffects") or []
-    if (not timed and not slows) or window <= 0:
+    if (not timed and not slows and not st.get("ultimateArmorPen")) or window <= 0:
         return st
     haste_m = 100 / (100 + st["haste"])
     as_lost = ad_lost = 0.0
@@ -2047,6 +2074,13 @@ def _for_window(name: str, st: dict, window: float) -> dict:
         as_lost += s["asPct"] * (1 - uptime)
         ad_lost += s["adFlat"] * (1 - uptime)
     adj = dict(st)
+    if st.get("ultimateArmorPen"):
+        pen_factors = list(st.get("pctPenFactors") or [])
+        for effect in st["ultimateArmorPen"]:
+            uptime = min(1.0, effect["durationS"] / window) if effect["durationS"] else 1.0
+            if effect["pct"] and uptime:
+                pen_factors.append(effect["pct"] * uptime)
+        adj["pctPenFactors"] = pen_factors
     if slows:
         scheduled_slow = 0.0
         for effect in slows:
@@ -2270,7 +2304,32 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                 float(bonus.get("perCritRate", 0.0) or 0.0)
                 + float(bonus.get("perCritRatePerCritDamage", 0.0) or 0.0)
                 * (st["critMult"] - BASE_CRIT_MULT))
-        val *= max(1, int(_rank_val(comp.get("hits", 1), rank) or 1))
+        if comp.get("critMultiplier"):
+            val *= st.get("critMult", BASE_CRIT_MULT)
+        # Execute-style ultimates spend part of their rotation against a
+        # wounded target.  Formula data can provide a conservative expected
+        # missing-health ramp without pretending the engine knows the exact
+        # cast order of a live team fight.
+        mh = comp.get("missingHealthAmp")
+        if isinstance(mh, dict):
+            expected_missing = min(1.0, max(0.0, float(mh.get("expectedMissing", 0.30) or 0.0)))
+            cap = max(1e-6, float(mh.get("capMissing", 1.0) or 1.0))
+            val *= 1.0 + min(1.0, expected_missing / cap) * float(mh.get("maxAmp", 0.0) or 0.0)
+        low = comp.get("lowHealthMultiplier")
+        if isinstance(low, dict):
+            # Expected share of an 8-second rotation spent below the execute
+            # threshold; this keeps the score useful for build comparison.
+            val *= 1.0 + float(low.get("uptime", 0.35) or 0.0) * (
+                float(low.get("multiplier", 1.0) or 1.0) - 1.0)
+        hits_spec = comp.get("hitsByCrit")
+        if isinstance(hits_spec, dict):
+            hits = (float(hits_spec.get("base", 0) or 0)
+                    + float(hits_spec.get("perCrit", 0) or 0) * st.get("crit", 0.0)
+                    + float(hits_spec.get("perCritDamage", 0) or 0)
+                    * st.get("crit", 0.0) * (st.get("critMult", BASE_CRIT_MULT) - BASE_CRIT_MULT))
+        else:
+            hits = _rank_val(comp.get("hits", 1), rank)
+        val *= max(1, int(round(hits or 1)))
         m = {"physical": phys_m, "magic": magic_m, "true": 1.0}[comp["type"]]
         rule = ability_aoe_rule(name, slot, str(comp.get("name") or ""))
         share = rule.get("secondaryPct", 0) if secondary else rule.get("primaryPct", 100)
@@ -2348,6 +2407,11 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         # attack rides 1/N of them, and an ability that empowers N attacks per
         # cast rides N x its casts. Both were riding every attack.
         _share_p, _abilities_stack = every_n_share(name)
+        if name == "Jax":
+            # Grandmaster-at-Arms changes the passive cadence from every third
+            # hit to every second hit for its 8-second active window.
+            active = min(1.0, 8.0 / max(window, 1e-9))
+            _share_p = active * 0.5 + (1.0 - active) * (1.0 / 3.0)
         _limits = empower_limits(name)
 
         def per_auto_share(slot, _n=None):
@@ -2392,7 +2456,9 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                          + _bp + _bm + _bt)
             bolts = (st["extraBolts"] if secondary_targets is None
                      else min(st["extraBolts"], max(0, secondary_targets)))
-            bolt_dmg += _per_bolt * secondary_reach_total(bolts) * n_autos
+            bolt_uptime = (min(1.0, st.get("piercingBoltDurationS", 0.0) / window)
+                           if st.get("piercingBoltDurationS") else 1.0)
+            bolt_dmg += _per_bolt * secondary_reach_total(bolts) * n_autos * bolt_uptime
         bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets)
         if st["spellbladeBaseAdPct"] or st["spellbladePctMaxHp"] or st["spellbladeApPct"]:
             procs = min(casts_total, n_autos, 1 + int(window / SPELLBLADE_CD))
@@ -2506,6 +2572,9 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
     # attack rides 1/N of them, and an ability that empowers N attacks per
     # cast rides N x its casts. Both were riding every attack.
     _share_p, _abilities_stack = every_n_share(name)
+    if name == "Jax":
+        active = min(1.0, 8.0 / max(window, 1e-9))
+        _share_p = active * 0.5 + (1.0 - active) * (1.0 / 3.0)
     _limits = empower_limits(name)
 
     def per_auto_share(slot, _n=None):
@@ -2806,7 +2875,8 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
             "armor": round(st["armor"]), "mr": round(st["mr"]),
             "moveSpeed": round(st["baseMs"] + st["bonusMs"]),
             "attackSpeed": round(st["as"], 2), "haste": round(st["haste"]),
-            "crit": round(st["crit"] * 100), "mana": round(st["mana"])}
+            "crit": round(st["crit"] * 100), "mana": round(st["mana"]),
+            "ultimateInvulnS": round(st.get("ultimateInvulnS", 0.0), 2)}
 
 
 # How much of a build's worth is what it does for ALLIES. A protect enchanter is
@@ -2958,7 +3028,8 @@ def delivered_share(m: dict, name: str) -> float:
     """
     if CHAMP_CLASS.get(name) != "Bruiser":
         return 1.0
-    ttd = (m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
+    ttd = ((m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
+           + float(m.get("ultimateInvulnS", 0.0) or 0.0))
     return min(1.0, ttd / REF_FIGHT)
 
 #: What damage on OTHER targets is worth, against damage on the one you are
@@ -4240,7 +4311,8 @@ def evaluation_vector(name: str, item_slugs: list[str],
              + ap_share * 100.0 / (100.0 + st["mr"]) * (1 - st.get("drMagic", 0.0))) or 1.0
     comp_ehp = (st["hp"] + shield) / taken / (1 - _dr)
     # Seconds alive under FOCUS_DPS, the same reference delivered_share uses.
-    ttd = (m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
+    ttd = ((m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
+           + float(m.get("ultimateInvulnS", 0.0) or 0.0))
     # What the build actually delivers before dying, rather than its rate.
     dbd = m["dps8"] * min(REF_FIGHT, ttd)
 

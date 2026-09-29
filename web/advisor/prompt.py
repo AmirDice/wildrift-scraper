@@ -1304,6 +1304,15 @@ def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
         new_note = ""
         if item.get("addedIn") and item["addedIn"] == CURRENT_PATCH:
             new_note = "; NEW-THIS-PATCH"
+        # Current-health on-hit is attractive in a raw eight-second damage
+        # panel, so make the condition visible at the point where the model
+        # scores the item.  Drain is a 30-second three-hit slow, not a damage
+        # proc; it must never be counted as if it fires every attack.
+        if slug == "blade-of-the-ruined-king":
+            new_note += ("; CONDITIONAL-ANTITANK: current-health damage is strongest "
+                         "against high-health targets and extended autos; compare "
+                         "Kraken/Yun Tal/crit alternatives for squishy or short fights; "
+                         "Drain slow is one proc per 30s, not repeated damage")
         rows.append(f"{slug} [{item['category']}] {item['cost']}g {stats} "
                     f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}{syn_note}"
                     f"{new_note}) :: {passive}")

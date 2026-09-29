@@ -226,3 +226,10 @@ class TestPatch73ItemsEverywhere:
         for slug in slugs:
             assert slug in block
         assert "NEW-THIS-PATCH" in block
+
+    def test_bork_is_marked_as_conditional_antitank_in_item_pool(self):
+        from web.advisor import prompt
+
+        block = prompt.item_pool_block(["blade-of-the-ruined-king"])
+        assert "CONDITIONAL-ANTITANK" in block
+        assert "Drain slow is one proc per 30s" in block

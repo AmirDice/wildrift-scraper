@@ -19,7 +19,7 @@
               70,
               100
             ],
-            "ratios": [
+          "ratios": [
               {
                 "stat": "ad",
                 "pct": [
@@ -454,9 +454,9 @@
                   3,
                   3.5
                 ]
-              }
-            ],
-            "when": "per cast"
+            }
+          ],
+          "when": "per cast"
           },
           {
             "name": "Cunning Sweep Edge",
@@ -685,7 +685,10 @@
             "when": "per cast"
           }
         ],
-        "steroids": [
+      "effects": [
+        {"kind": "armorPen", "pct": [10, 20, 30]}
+      ],
+      "steroids": [
           {
             "stat": "damageReduction",
             "pct": [
@@ -717,9 +720,9 @@
             "note": "applies to damage dealt by active abilities and empowered Drakehound's Step; healing vs minions 25%, monsters 40% of original"
           }
         ],
-        "unmodeled": [
-          "Passive grants 10%/20%/30% Armor Pen; active suppresses target for 1s and makes Ambessa unstoppable, then stuns for 0.4s; 35% cooldown refund if no champion hit"
-        ]
+      "unmodeled": [
+        "Active suppresses target for 1s and makes Ambessa unstoppable, then stuns for 0.4s; 35% cooldown refund if no champion hit"
+      ]
       },
       "P": {
         "name": "Drakehound’s Step",
@@ -2017,16 +2020,13 @@
                 "pct": 15
               }
             ],
-            "hits": 22,
+            "hitsByCrit": {"base": 20, "perCrit": 20, "perCritDamage": 20},
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "Bullets per rank: 22/26/30; minions take 200% damage.",
-          "7.3: Bullet count: 22 / 26 / 30 → 20 + 20 × Critical Rate (gain 2 bullets for every 10% Critical Rate) + (Critical Damage-2) × 20 × Critical Rate"
-        ]
+      "unmodeled": []
       },
       "P": {
         "name": "Lightslinger",
@@ -2760,12 +2760,14 @@
             "when": "per cast"
           }
         ],
+        "effects": [
+          {"kind": "armorPen", "pct": [10, 20, 30]}
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
           "Thrown spear deals 30 (Comet Spear damage) physical damage and slows by 50% for 2 seconds",
           "Damage reduced by up to 50% at edges",
-          "Passive: 10% / 20% / 30% Armor Penetration",
           "Instantly readies Mortal Will"
         ]
       },
@@ -7417,14 +7419,13 @@
                 "pct": 75
               }
             ],
+            "lowHealthMultiplier": {"multiplier": 2.3, "uptime": 0.35},
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "Evelynn becomes untargetable and warps backwards. Damage increased to 230% against champions below 35% health (execute)."
-        ]
+      "unmodeled": []
       },
       "P": {
         "name": "Demon Shade",
@@ -7473,7 +7474,7 @@
               270,
               325
             ],
-            "ratios": [
+          "ratios": [
               {
                 "stat": "ap",
                 "pct": 90
@@ -11229,14 +11230,13 @@
             ],
             "hits": 1,
             "when": "per cast",
-            "unmodeled": "Crits for 200% damage; damage increased by 3% per 1% missing health."
+          "critMultiplier": true,
+          "unmodeled": "Damage increased by 3% per 1% missing health."
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "7.3: Fourth super shot damage ratio: 200% → current Critical Damage"
-        ]
+      "unmodeled": []
       },
       "P": {
         "name": "Whisper",
@@ -13495,6 +13495,7 @@
                 "pct": 75
               }
             ],
+            "missingHealthAmp": {"capMissing": 0.60, "maxAmp": 0.50, "expectedMissing": 0.30},
             "hits": 1,
             "when": "per cast"
           },
@@ -13533,9 +13534,9 @@
           }
         ],
         "defensive": [],
-        "unmodeled": [
-          "Active damage increases by 0%-50% based on target's missing Health (0%-60% missing); below 40% Health takes the low-health damage instead; reveals area for 2s and reveals targets (duration missing); subsequent shots within 8s cost an additional 50 Mana (max 500 Mana); range increases by 200 units per rank"
-        ]
+      "unmodeled": [
+        "Below 40% Health takes the low-health damage instead; subsequent shots within 8s cost an additional 50 Mana (max 500 Mana); range increases by 200 units per rank"
+      ]
       },
       "P": {
         "name": "Icathian Surprise",
@@ -13602,7 +13603,7 @@
               85,
               120
             ],
-            "ratios": [
+          "ratios": [
               {
                 "stat": "ap",
                 "pct": 30
@@ -15493,6 +15494,7 @@
         "steroids": [
           {
             "stat": "moveSpeed",
+            "durationS": 7,
             "pct": [
               35,
               45,
@@ -15501,6 +15503,7 @@
           },
           {
             "stat": "attackSpeed",
+            "durationS": 7,
             "pct": [
               30,
               60,
@@ -25023,12 +25026,15 @@
           80,
           70
         ],
-        "damage": [],
-        "steroids": [],
-        "defensive": [],
-        "unmodeled": [
-          "Active: become unkillable for 5s, gain 50/75/100 fury. Can be cast while CC'd."
-        ]
+      "damage": [],
+      "steroids": [],
+      "effects": [
+        {"kind": "invulnerability", "durationS": 5}
+      ],
+      "defensive": [],
+      "unmodeled": [
+        "Gain 50/75/100 fury and can be cast while CC'd."
+      ]
       },
       "P": {
         "name": "Battle Fury",
@@ -25671,15 +25677,14 @@
                 "pct": 75
               }
             ],
+            "missingHealthAmp": {"capMissing": 0.35, "maxAmp": 1.00, "expectedMissing": 0.30},
             "hits": 1,
             "when": "per cast"
           }
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "Damage increased by 0-100% based on target's missing health, max at 35% health."
-        ]
+      "unmodeled": []
       },
       "P": {
         "name": "Phenomenal Evil Power",
@@ -26670,6 +26675,7 @@
         "steroids": [
           {
             "stat": "ad",
+            "durationS": 8,
             "flat": [
               30,
               40,
@@ -29113,6 +29119,13 @@
             "when": "per cast"
           }
         ],
+        "effects": [
+          {
+            "kind": "armorPen",
+            "pct": 55,
+            "durationS": 15
+          }
+        ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
@@ -29896,11 +29909,13 @@
         "steroids": [
           {
             "stat": "moveSpeed",
-            "pct": 10
+        "pct": 10,
+        "durationS": 5
           },
           {
             "stat": "attackSpeed",
-            "pct": 30
+        "pct": 30,
+        "durationS": 5
           }
         ],
         "defensive": [],
