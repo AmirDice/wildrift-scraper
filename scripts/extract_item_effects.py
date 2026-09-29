@@ -45,7 +45,7 @@ VOCAB = {
     "onHitPctCurrentHp": "EVERY auto: X% target CURRENT HP (MELEE value if it varies)",
     "onHitPctCurrentHpRanged": "the RANGED %-OF-HP VALUE of onHitPctCurrentHp, ONLY when "
                                "the text lists two HP percentages "
-                               "(e.g. '10% Melee / 8.5% Ranged'). It is NOT a damage "
+                               "(e.g. '8.5% Melee / 7% Ranged'). It is NOT a damage "
                                "multiplier: 'ranged champions deal 40% of the damage' is "
                                "a scaling of the whole effect, NOT 40% of max HP. If you "
                                "see that phrasing, do not use this key.",
@@ -140,7 +140,7 @@ SYSTEM = (
     + "\n".join(f"  {k}: {v}" for k, v in VOCAB.items())
     + "\nRules:\n"
     "- Take the MAX-STACKS / condition-met value when a passive stacks or ramps.\n"
-    "- If a value has melee/ranged variants (e.g. '10% Melee / 8.5% Ranged'), put the MELEE "
+    "- If a value has melee/ranged variants (e.g. '8.5% Melee / 7% Ranged'), put the MELEE "
     "number in the base key AND the RANGED number in its \"...Ranged\" companion key when one "
     "exists. Never drop the ranged value: the engine picks per champion.\n"
     "- Skip slows, CC, vision and gold passives: put a 3-6 word note in \"skip\".\n"

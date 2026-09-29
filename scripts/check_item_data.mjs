@@ -25,14 +25,14 @@ for (const file of files) {
       by["malignance"]?.scopedStats?.ultimateAbilityHaste?.value === 20,
     "Plated Steelcaps 7.2 stats/passive":
       by["plated-steelcaps"]?.stats?.armor?.value === 25 &&
-      has("plated-steelcaps", "6% reduced"),
+      has("plated-steelcaps", "10% reduced"),
     "Armored Advance 7.2 shield":
       has("armored-advance", "20-140") && has("armored-advance", "5%"),
     "Chainlaced Crushers 7.2 shield":
       has("chainlaced-crushers", "20-140") &&
       has("chainlaced-crushers", "5%"),
     "Gunmetal Greaves ranged movement speed":
-      has("gunmetal-greaves", "10% for ranged"),
+      has("gunmetal-greaves", "7% for ranged"),
     "Crimson Lucidity summoner-spell haste":
       has("crimson-lucidity", "20% Summoner Spell Haste") &&
       by["crimson-lucidity"]?.scopedStats?.summonerSpellHaste?.value === 20,
@@ -48,27 +48,28 @@ for (const file of files) {
     "Goredrinker structured omnivamp and AD wording":
       by["goredrinker"]?.stats?.omnivamp?.value === 8 &&
       has("goredrinker", "175% Attack Damage"),
-    "Bloodthirster structured physical vamp":
-      by["bloodthirster"]?.stats?.physicalVamp?.value === 8,
-    "BotRK structured omnivamp":
-      by["blade-of-the-ruined-king"]?.stats?.omnivamp?.value === 10,
+    "Bloodthirster structured lifesteal":
+      by["bloodthirster"]?.stats?.lifesteal?.value === 15 &&
+      has("bloodthirster", "Ichorshield"),
+    "BotRK structured lifesteal":
+      by["blade-of-the-ruined-king"]?.stats?.lifesteal?.value === 12,
     "Flat armor penetration is structured":
       by["youmuus-ghostblade"]?.stats?.physicalPenFlat?.value === 15 &&
       by["duskblade-of-draktharr"]?.stats?.physicalPenFlat?.value === 18 &&
-      by["edge-of-night"]?.stats?.physicalPenFlat?.value === 8 &&
+      by["edge-of-night"]?.stats?.physicalPenFlat?.value === 12 &&
       by["serpents-fang"]?.stats?.physicalPenFlat?.value === 15 &&
       by["the-collector"]?.stats?.physicalPenFlat?.value === 10,
     "Percent armor penetration is structured":
       by["mortal-reminder"]?.stats?.physicalPen?.value === 30 &&
-      by["seryldas-grudge"]?.stats?.physicalPen?.value === 33,
+      by["seryldas-grudge"]?.stats?.physicalPen?.value === 35,
     "Boot omnivamp is structured":
       by["gluttonous-greaves"]?.stats?.omnivamp?.value === 5 &&
       by["immortal-treads"]?.stats?.omnivamp?.value === 5,
     "BotRK 7.2a and clean current-health wording":
-      has("blade-of-the-ruined-king", "Melee attacks deal 8.5%") &&
-      !has("blade-of-the-ruined-king", "7% [ad]"),
-    "Manamune 7.2a": has("manamune", "max Mana by 14"),
-    "Muramana 7.2a": has("muramana", "4.5%"),
+      has("blade-of-the-ruined-king", "7% of the target's current Health") &&
+      has("blade-of-the-ruined-king", "8.5% for melee"),
+    "Manamune current charge wording": has("manamune", "grant 14 max Mana"),
+    "Muramana current Shock wording": has("muramana", "1.5% of max Mana"),
     "Seraph 7.2a": has("seraphs-embrace", "16%"),
     "Armorcrusher Boots 7.2a":
       by["armorcrusher-boots"]?.stats?.ad?.value === 20 &&

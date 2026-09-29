@@ -294,6 +294,16 @@ const rankVal = (arr: any, rank: number): number => {
 const scaleVal = (v: any, rank: number, level: number): number =>
   v && typeof v === "object" && "lvlRange" in v ? lvlRange(v, level) : rankVal(v, rank);
 
+// Python's round() uses ties-to-even. Keep hit-count formulas identical at
+// exact .5 boundaries (for example Lucian's crit-scaled ultimate).
+const roundEven = (v: number): number => {
+  const lo = Math.floor(v);
+  const frac = v - lo;
+  if (frac < 0.5) return lo;
+  if (frac > 0.5) return lo + 1;
+  return lo % 2 === 0 ? lo : lo + 1;
+};
+
 function targetSquishy(level: number) {
   const c = DATA.champions["Ashe"];
   const v = (k: string, d: number) => {
@@ -338,6 +348,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     giant: 0, execute: 0, ultAmp: 0,
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
+    onHitPctMissingHp: 0,
     procs: [] as Proc[], dotDps: 0, dotPctMaxHp: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
@@ -585,16 +596,12 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       const nthMult = rngd && fx.everyNthRangedMult ? g("everyNthRangedMult") / 100 : 1;
       st.onHitPhys += g("everyNthBaseAdPct") / 100 * st.baseAd * nthMult / nth;
       st.onHitPctMaxHp += g("everyNthPctMaxHp") / 100 * nthMult / nth;
-      // Flat every-Nth damage (Kraken Slayer's "Every third attack deals
-      // 120-160"). There was no channel for it, so the whole value sat on the
-      // once-per-fight proc list and a core marksman item paid out once in a
-      // twenty-second fight instead of about seven times. Ranged users have
-      // their own stated number rather than a multiplier.
-      // NOT modelled: Kraken's "increased by 1% per 1% Health the target is
-      // missing, up to 70%". Average missing health is not available here and
-      // assuming a value would be a guess, so this is the floor of the item.
+      // Flat every-Nth damage (Kraken Slayer's "Every third attack") is
+      // averaged across autos. Its missing-health multiplier is averaged over
+      // the same fight-wide target-health decay used for BORK.
       st.onHitPhys += (rngd && fx.everyNthRangedFlat
         ? g("everyNthRangedFlat") : g("everyNthFlat")) / nth;
+      st.onHitPctMissingHp += g("everyNthMissingHpPct") / 100 / nth;
     }
     st.dr = Math.max(st.dr, g("drPct") / 100);
     // TYPED damage reduction. Force of Nature reduces incoming MAGIC damage
@@ -880,6 +887,14 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       }
     }
   }
+  // Zeri's Lightning Crash is refreshed by attacks. Crit-heavy builds keep
+  // the overdrive online longer; mirror the Python engine's verified uptime
+  // correction instead of treating every build as a fixed five-second buff.
+  if (name === "Zeri" && st.timedSteroids.length) {
+    for (const steroid of st.timedSteroids)
+      steroid.durationS = Math.max(steroid.durationS,
+        5 + (st.crit >= 0.5 ? 3 : 1));
+  }
   for (const ab of Object.values<any>(f)) {
     for (const s of ab.steroids ?? []) {
       if (s.from === "bonusMs" && s.stat === "ad" && s.pct != null)
@@ -928,15 +943,18 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   st.doubleShotMult = mechs.doubleShot
     ? 1 + (Number(mechs.doubleShot.secondShotPct) || 50) / 100 * 0.6 : 1;
   // multiShot: one attack fires N projectiles (Graves' shotgun, Ashe's Volley,
-  // Twitch, Lulu). Each pellet rolls crit and carries on-hit, so this scales
-  // the whole auto. Python has modelled it since the mechanic was extracted and
-  // the port never had it at all, so the TS engine thought these champions
-  // barely auto-attacked: Ashe measured 6.0% below Python over an 8s window
-  // while the other seven champions tested agreed to the decimal.
+  // Twitch, Lulu). Twitch's extra projectiles are target bolts, so they belong
+  // on the AoE channel rather than multiplying the primary target's auto.
   if (mechs.multiShot) {
     const shots = Number(mechs.multiShot.shots) || 1;
     const per = Number(mechs.multiShot.damagePerShotPct) || 100;
-    st.doubleShotMult *= Math.max(1, shots * per / 100);
+    if (name === "Twitch") {
+      st.extraBolts = Math.max(st.extraBolts, shots - 1);
+      st.extraBoltAdPct = Math.max(st.extraBoltAdPct, per);
+      st.piercingBoltDurationS = 5;
+    } else {
+      st.doubleShotMult *= Math.max(1, shots * per / 100);
+    }
   }
 
   st.ad = st.baseAd + st.bonusAd;
@@ -1048,7 +1066,8 @@ function onHitBundle(st: any, target: any, physM: number, magicM: number,
                      kit?: [number, number, number]): [number, number, number] {
   const phys = (st.onHitPhys + st.runeOnHitFlat
     + st.onHitPctCurrentHp * target.hp * CURRENT_HP_DECAY
-    + st.onHitPctMaxHp * target.hp) * physM;
+    + st.onHitPctMaxHp * target.hp
+    + st.onHitPctMissingHp * target.hp * CURRENT_HP_DECAY) * physM;
   return [phys + (kit?.[0] ?? 0), st.onHitMagic * magicM + (kit?.[1] ?? 0), kit?.[2] ?? 0];
 }
 
@@ -1231,7 +1250,15 @@ export function rotation(name: string, st: any, target: any, window: number,
         + (Number(comp.critAdBonus.perCritRatePerCritDamage) || 0)
           * (st.critMult - BASE_CRIT_MULT));
     }
-    val *= Math.max(1, Math.floor(rankVal(comp.hits ?? 1, rank)) || 1);
+    if (comp.critMultiplier) val *= st.critMult;
+    const hitsSpec = comp.hitsByCrit;
+    const hits = hitsSpec && typeof hitsSpec === "object"
+      ? (Number(hitsSpec.base) || 0)
+        + (Number(hitsSpec.perCrit) || 0) * st.crit
+        + (Number(hitsSpec.perCritDamage) || 0) * st.crit
+          * (st.critMult - BASE_CRIT_MULT)
+      : rankVal(comp.hits ?? 1, rank);
+    val *= Math.max(1, roundEven(hits || 1));
     const m = comp.type === "physical" ? physM : comp.type === "magic" ? magicM : 1;
     const rule = abilityAoeRule(name, slot, String(comp.name ?? ""));
     const share = secondary ? rule.secondaryPct : rule.primaryPct;
@@ -1479,7 +1506,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     let aPhys = st.ad * critEv * physM * giant * (1 - replacedShare) * autoBonus;
     aPhys += st.onHitPhys * physM;
     aPhys += (st.onHitPctCurrentHp * target.hp * CURRENT_HP_DECAY
-              + st.onHitPctMaxHp * target.hp) * physM;
+              + st.onHitPctMaxHp * target.hp
+              + st.onHitPctMissingHp * target.hp * CURRENT_HP_DECAY) * physM;
     aPhys += st.runeOnHitFlat * physM;
     // Titanic Cleave arms every CLEAVE_EVERY seconds, not every auto, so only
     // a fraction of attacks carry it: faster attacks dilute it, not scale it.

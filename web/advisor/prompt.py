@@ -1302,7 +1302,14 @@ def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
         # fact, not a recommendation: it says the silence around these items is
         # their age, and that they have to be judged on their text.
         new_note = ""
-        if item.get("addedIn") and item["addedIn"] == CURRENT_PATCH:
+        added_in = str(item.get("addedIn") or "")
+        # A follow-up patch such as 7.3a still has the 7.3 item pool. Keep
+        # base-patch additions marked as new until the next numbered patch,
+        # rather than dropping the freshness cue on the first hotfix.
+        is_followup = (CURRENT_PATCH.startswith(added_in)
+                       and len(CURRENT_PATCH) > len(added_in)
+                       and CURRENT_PATCH[len(added_in)].isalpha())
+        if added_in and (added_in == CURRENT_PATCH or is_followup):
             new_note = "; NEW-THIS-PATCH"
         # Current-health on-hit is attractive in a raw eight-second damage
         # panel, so make the condition visible at the point where the model

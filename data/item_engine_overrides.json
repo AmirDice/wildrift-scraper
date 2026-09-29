@@ -165,7 +165,7 @@
   },
   "blade-of-the-ruined-king": {
     "omnivampPct": 0,
-    "_why_dedupe": "stat omnivamp 10%; fx omnivampPct 10 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
+    "_why_dedupe": "The old extractor read a pre-7.3 omnivamp line into itemFx. The current stat line is 12% Lifesteal (data/items.json); the old channel is explicitly zeroed so it cannot reintroduce stale sustain or double-count the current stat.",
     "burstProcFlat": 0,
     "_why": "Omnivamp became Lifesteal 12% on the stat line. Drain no longer deals damage or steals Move Speed. Its 30% slow arms after three hits, lasts 1.5s and has a 30s cooldown, so the window scheduler can activate it only once in an ordinary teamfight.",
     "targetSlowPct": 30,
@@ -277,7 +277,8 @@
         168
       ]
     },
-    "_why_channel2": "Ranged users get 110-150 by the same sentence.",
+    "everyNthMissingHpPct": 0.75,
+    "_why_channel2": "Ranged users get 120-168 by the same sentence.",
     "msPct": 4,
     "_why": "Bring It Down's third-attack damage is up, and the missing health scaling is 0.75% per 1% up to 75% (was 1% up to 70%), which the engine averages the same way it did before."
   },
@@ -439,7 +440,7 @@
   },
   "yun-tal-wildarrows": {
     "asPctPassive": 35,
-    "_why": "Flurry's 25% Attack Speed, which is up for most of a fight given the cooldown drops by 1s per attack, and Practice Makes Perfect's 25% Critical Rate. The shop prints that crit as 0% because it is earned by attacking (125 attacks for a ranged champion), so it cannot sit in the stat line without misstating the purchase -- but the engines score a completed level 15 build, where it is long since full. critPctPassive is the crit twin of asPctPassive, which exists for exactly this reason.",
+    "_why": "Flurry's 35% Attack Speed, which is up for most of a fight given the cooldown drops by 1s per attack, and Practice Makes Perfect's 25% Critical Rate. The shop prints that crit as 0% because it is earned by attacking (125 attacks for a ranged champion), so it cannot sit in the stat line without misstating the purchase -- but the engines score a completed level 15 build, where it is long since full. critPctPassive is the crit twin of asPctPassive, which exists for exactly this reason.",
     "critPctPassive": 25,
     "flurryCooldownSec": 25
   },

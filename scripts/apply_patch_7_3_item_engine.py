@@ -114,6 +114,7 @@ EFFECTS = {
     "kraken-slayer": {
         "everyNthFlat": {"lvlRange": [150, 210]},
         "everyNthRangedFlat": {"lvlRange": [120, 168]},
+        "everyNthMissingHpPct": 0.75,
         "msPct": 4,
         "_why": "Bring It Down's third-attack damage is up, and the missing "
                 "health scaling is 0.75% per 1% up to 75% (was 1% up to 70%), "
@@ -247,8 +248,8 @@ EFFECTS = {
                 "distance nor range, so the item is priced on its stats.",
     },
     "yun-tal-wildarrows": {
-        "asPctPassive": 25, "critPctPassive": 25,
-        "_why": "Flurry's 25% Attack Speed, which is up for most of a fight "
+        "asPctPassive": 35, "critPctPassive": 25,
+        "_why": "Flurry's 35% Attack Speed, which is up for most of a fight "
                 "given the cooldown drops by 1s per attack, and Practice Makes "
                 "Perfect's 25% Critical Rate. The shop prints that crit as 0% "
                 "because it is earned by attacking (125 attacks for a ranged "
@@ -328,8 +329,8 @@ STAT_RULES = {
             {"label": "Practice Makes Perfect",
              "detail": "Attacks permanently grant Critical Rate, 0.2% per attack for ranged and "
                        "0.4% for melee, up to 25%."},
-            {"label": "Flurry",
-             "detail": "Attacking a champion grants 25% Attack Speed for 6 seconds."},
+             {"label": "Flurry",
+             "detail": "Attacking a champion grants 35% Attack Speed for 6 seconds."},
         ],
     },
     "rapid-firecannon": {

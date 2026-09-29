@@ -16,15 +16,8 @@
     }
   },
   "blade-of-the-ruined-king": {
-    "omnivampPct": 10,
     "onHitPctCurrentHp": 8.5,
-    "onHitPctCurrentHpRanged": 7,
-    "burstProcFlat": {
-      "lvlRange": [
-        30,
-        100
-      ]
-    }
+    "onHitPctCurrentHpRanged": 7
   },
   "runaans-hurricane": {
     "extraBolts": 2,
@@ -167,14 +160,21 @@
     "everyNthAttack": 3
   },
   "kraken-slayer": {
-    "msPct": 5,
+    "msPct": 4,
     "everyNthAttack": 3,
-    "burstProcFlat": {
+    "everyNthFlat": {
+      "lvlRange": [
+        150,
+        210
+      ]
+    },
+    "everyNthRangedFlat": {
       "lvlRange": [
         120,
-        160
+        168
       ]
-    }
+    },
+    "everyNthMissingHpPct": 0.75
   },
   "overlords-bloodmail": {
     "damageAmpPct": 9

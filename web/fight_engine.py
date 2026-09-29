@@ -823,6 +823,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "autoDamageMult": 1.0, "externalAsMult": 1.0,
         "drMagic": 0.0, "drPhys": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
+        "onHitPctMissingHp": 0.0,
         "procs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
         "apAmp": 0.0, "hastePct": 0.0, "cdRefundPctPerAuto": 0.0,
@@ -971,7 +972,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 st["spellbladeMagic"] = 1.0
         st["onHitPhys"] += g("onHitFlatPhys")
         st["onHitMagic"] += g("onHitFlatMagic")
-        # Wild Rift %HP on-hits pay ranged champions less (BotRK: 10% melee, 8.5%
+        # Wild Rift %HP on-hits pay ranged champions less (BotRK: 8.5% melee, 7%
         # ranged). Extraction stores the melee number in the base key; prefer the
         # "...Ranged" companion when this champion attacks from range.
         _rngd = CHAMP_CLASS.get(name, "") in RANGED_CLASSES
@@ -1038,12 +1039,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                      if (_rngd and fx.get("everyNthRangedMult")) else 1.0)
             st["onHitPhys"] += g("everyNthBaseAdPct") / 100.0 * st["baseAd"] * _mult / _n
             st["onHitPctMaxHp"] += g("everyNthPctMaxHp") / 100.0 * _mult / _n
-            # Flat every-Nth damage (Kraken Slayer's "Every third attack deals
-            # 120-160"). No channel existed, so the value rode the once-per-fight
-            # proc list and paid out once per fight instead of once per 3 autos.
-            # NOT modelled: its "+1% per 1% missing Health, up to 70%" scaling.
+            # Flat every-Nth damage (Kraken Slayer's "Every third attack") is
+            # averaged across autos. Its missing-health multiplier is averaged
+            # over the same fight-wide target-health decay used for BORK.
             st["onHitPhys"] += (g("everyNthRangedFlat") if (_rngd and fx.get("everyNthRangedFlat"))
                                 else g("everyNthFlat")) / _n
+            st["onHitPctMissingHp"] += g("everyNthMissingHpPct") / 100.0 / _n
         # "Gain 25 Attack Damage OR 50 Ability Power (Adaptive)" grants exactly
         # ONE. Storing both as adFlatPassive+apFlatPassive handed Lucian 25 AD
         # AND 50 AP off Nashor's. Pick by the kit's primary damage type; using
@@ -1776,7 +1777,8 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
               * (1 + st.get("autoBonusPct", 0.0) / 100.0))
     a_phys += st["onHitPhys"] * phys_m
     a_phys += (st["onHitPctCurrentHp"] * target["hp"] * CURRENT_HP_DECAY
-               + st["onHitPctMaxHp"] * target["hp"]) * phys_m
+               + st["onHitPctMaxHp"] * target["hp"]
+               + st["onHitPctMissingHp"] * target["hp"] * CURRENT_HP_DECAY) * phys_m
     a_phys += st["runeOnHitFlat"] * phys_m
     # Titanic Cleave arms every CLEAVE_EVERY seconds, not every auto, so only a
     # fraction of attacks carry it: faster attacks dilute it rather than scale it.
@@ -2043,7 +2045,8 @@ def _on_hit_bundle(st, target, phys_m, magic_m, kit=None):
     """
     on_p = (st["onHitPhys"] + st["runeOnHitFlat"]
             + st["onHitPctCurrentHp"] * target["hp"] * CURRENT_HP_DECAY
-            + st["onHitPctMaxHp"] * target["hp"]) * phys_m
+            + st["onHitPctMaxHp"] * target["hp"]
+            + st["onHitPctMissingHp"] * target["hp"] * CURRENT_HP_DECAY) * phys_m
     on_m = st["onHitMagic"] * magic_m
     on_t = 0.0
     if kit:
@@ -3742,13 +3745,39 @@ def score_items(name: str, items: list[str], runes: list[str], variant: str,
     return out
 
 
+def optimal_purchase_order(name: str, items: list[str], boots: str = "",
+                           runes: list[str] | None = None,
+                           variant: str = "standard") -> list[str]:
+    """Choose a completion order for the returned six-slot set.
+
+    Boots are a normal candidate, not an automatic second purchase. This is a
+    completion-order model (not component shopping): each next purchase is the
+    one that gives the strongest measured build value at that point in the
+    curve, with a tiny cost tie-break so a cheaper equal-value purchase wins.
+    """
+    remaining = [s for s in list(items) + ([boots] if boots else []) if s]
+    chosen: list[str] = []
+    for i in range(len(remaining)):
+        level = PREFIX_LEVELS[min(i, len(PREFIX_LEVELS) - 1)]
+        best_slug, best_key = remaining[0], None
+        for slug in remaining:
+            prefix = chosen + [slug]
+            m = metrics(name, prefix, runes, level, fast=True)
+            value = fight_score(m, variant, name)
+            cost = float((ITEMS.get(slug) or {}).get("cost", 0) or 0)
+            key = (value, -cost)
+            if best_key is None or key > best_key:
+                best_slug, best_key = slug, key
+        chosen.append(best_slug)
+        remaining.remove(best_slug)
+    return chosen
+
+
 def build_curve(name: str, items: list[str], runes: list[str], variant: str,
-                role: str = "") -> list[dict]:
+                role: str = "", purchase_order: list[str] | None = None) -> list[dict]:
     """Engine metrics after each purchase in build order (the user's gold
     slider): prefix of N items -> {gold, level, score, burst3, dps8, ehp}."""
-    order = list(items)
-    if len(order) >= 2:  # boots (last slot) are bought 2nd, matching affordable()
-        order = [order[0], order[-1]] + order[1:-1]
+    order = list(purchase_order or items)
     curve = []
     spent = 0.0
     for i in range(len(order)):
@@ -3770,7 +3799,11 @@ def score_build(name: str, bd: dict, variant: str, role: str = "",
     items, runes = _build_lists(bd)
     out = score_items(name, items, runes, variant, role)
     if curve:
-        out["curve"] = build_curve(name, items, runes, variant, role)
+        boots = items[-1] if items and (ITEMS.get(items[-1]) or {}).get("category") == "Boots" else ""
+        core = items[:-1] if boots else items
+        order = optimal_purchase_order(name, core, boots, runes, variant)
+        out["purchaseOrder"] = order
+        out["curve"] = build_curve(name, items, runes, variant, role, order)
     return out
 
 

@@ -358,11 +358,11 @@ NEW_ITEMS = [
         # passive here rather than a "+0%" stat line nobody can read.
         "slug": "yun-tal-wildarrows", "name": "Yun Tal Wildarrows", "category": "Physical",
         "categories": ["Physical"], "cost": 3100,
-        "stats": {"ad": 50, "attackSpeed": "25%"},
+        "stats": {"ad": 50, "attackSpeed": "35%"},
         "passives": [
             "Practice Makes Perfect: Attacks permanently grant Critical Rate [crit], 0.4% per attack "
             "for melee and 0.2% for ranged, up to 25%.",
-            "Flurry: Attacking an enemy champion grants 25% Attack Speed for 6 seconds. (20s "
+            "Flurry: Attacking an enemy champion grants 35% Attack Speed for 6 seconds. (25s "
             "Cooldown, reduced by 1s per attack and 2s on a Critical Strike)",
         ],
         "tags": [],
