@@ -222,7 +222,7 @@ SYSTEM = (
     '"synergyWith":["<slug in your five that this multiplies or is multiplied by>"]}],'
     '"mandatoryAuditScores":[{"item":"<slug>","score":0-100,"reason":"..."}],'
     '"items":["<slug>", 5 in PURCHASE ORDER],'
-    '"boots":"<tier-2 slug>","bootsUpgrade":"<tier-3 slug>","bootsUpgradeAfter":0-5,'
+    '"boots":"<tier-2 slug>","bootsPurchaseAfter":0-5,"bootsUpgrade":"<tier-3 slug>","bootsUpgradeAfter":0-5,'
     '"bootsUpgradeReason":"one line: why the tier-3 enchant lands there in THIS power curve",'
     '"situationalBoots":[{"boots":"<tier-2 slug>","when":"specific matchup condition"}],'
     '"buildScore":{"overall":0-100,"burst":0-100,"sustainedDamage":0-100,'
@@ -1142,6 +1142,9 @@ def boots_block(champion_class: str, enemies_known: bool, damage_path: str = "st
     block = (
         "BOOTS (pick ONE tier-2; the listed tier-3 upgrade costs ~1000g):\n" + "\n".join(rows)
         + "\n\nBOOT UPGRADE TIMING -- your decision, not a fixed rule. Return "
+          "`bootsPurchaseAfter`: the number of completed core items before completing tier-2 boots (0-5). "
+          "Use 0 when boots are an immediate priority, 1-2 for normal lane tempo, and later only when "
+          "a major item spike is clearly worth delaying them.\n"
           "`bootsUpgradeAfter`: the number of completed items (0-5) after which the ~1000g "
           "tier-3 upgrade is worth buying in THIS build's power curve.\n"
           "- Early (after 1-2 items) when the tier-3's stats or active are part of the "

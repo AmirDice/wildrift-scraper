@@ -151,6 +151,8 @@ export interface Build {
   /** The tier-2 you buy first, upgraded into `boots` later. Null when the boot
    *  has no tier-3 (patch 7.2 unlocks the upgrade at 10:00). */
   bootsEarly?: BuildItem | null;
+  /** Number of completed core items before tier-2 boots are completed. */
+  bootsPurchaseAfter?: number | null;
   /** How many core items are bought before the tier-3 upgrade. */
   bootsUpgradeAfter?: number | null;
   /** Boot enchantments were removed in patch 7.2; always null on new builds. */

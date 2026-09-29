@@ -1141,7 +1141,7 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
     full candidate tournament remains opt-in for requests that need comparison
     across multiple builds.
     """
-    from web.fight_engine import analyze_build, evaluation_vector
+    from web.fight_engine import analyze_build, evaluation_vector, optimal_purchase_order
 
     items = list(build.get("items") or [])
     boots = str(build.get("boots") or "")
@@ -1151,19 +1151,36 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
 
     levels = {"early": 7, "mid": 11, "late": 15}
     levels_to_measure = [levels[game_phase]] if game_phase in levels else [7, 11, 15]
+    purchase_order = optimal_purchase_order(
+        champion, items, boots, runes, "standard")
+    # The engine orders the five core items, while the model separately decides
+    # when tier-2 boots are worth completing. Keep those decisions distinct:
+    # boots are a tempo purchase, not a late full-build damage item.
+    try:
+        requested_boots_after = max(0, min(len(items), int(build.get("bootsPurchaseAfter", 1))))
+    except (TypeError, ValueError):
+        requested_boots_after = 1
+    core_order = [slug for slug in purchase_order if slug != boots]
+    purchase_order = (core_order[:requested_boots_after] + [boots]
+                      + core_order[requested_boots_after:])
+    ordered_core = core_order
+    boots_purchase_after = (
+        next((i for i, slug in enumerate(purchase_order)
+              if slug == boots), len(purchase_order)))
     spikes = []
     for count in (1, 2, 3, 5):
-        if count > len(items):
+        if count > len(ordered_core):
             continue
         level = 7 if count == 1 else 11 if count <= 3 else 15
-        core = items[:count] + [boots]
+        core = ordered_core[:count] + ([boots] if boots_purchase_after <= count else [])
         vector = evaluation_vector(champion, core, runes, level=level)
         spikes.append({
             "itemsCompleted": count,
             "level": level,
-            "items": items[:count],
-            "dps": vector.get("dps"),
-            "burst": vector.get("burst"),
+            "items": ordered_core[:count],
+            "bootsOwned": boots_purchase_after <= count,
+            "dps": vector.get("sustainedDps", vector.get("dps8")),
+            "burst": vector.get("burstDamage", vector.get("burst3")),
             "damageBeforeDeath": vector.get("damageBeforeDeath"),
             "timeToDie": vector.get("timeToDie"),
             "ehp": vector.get("compEhp") or vector.get("ehp"),
@@ -1200,6 +1217,12 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
         "playstyleValidation": "semantic choice remains LLM-led; mechanics are measured here",
         "powerCurve": game_phase,
         "measuredLevels": levels_to_measure,
+        "buildOrder": purchase_order,
+        "bootsPurchaseAfter": boots_purchase_after,
+        "bootsTiming": {
+            "tier2": f"after {boots_purchase_after} completed core items",
+            "tier3": build.get("bootsUpgradeAfter", 2),
+        },
         "spikes": spikes,
         "objective": objective,
         "objectiveEvidence": objective_evidence,

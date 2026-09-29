@@ -521,6 +521,11 @@ def validate(
     else:
         res["boots"] = boots
         res["bootsUpgrade"] = ITEMS[boots].get("upgradesTo")
+        try:
+            boot_after = int(res.get("bootsPurchaseAfter", 1))
+        except (TypeError, ValueError):
+            boot_after = 1
+        res["bootsPurchaseAfter"] = max(0, min(5, boot_after))
         # The model times the ~1000g tier-3 upgrade itself (bootsUpgradeAfter:
         # buy after that many completed items; 0 means it is not worth buying
         # this game). Clamp rather than fail -- a bad number is a footnote, not

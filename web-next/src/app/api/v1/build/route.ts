@@ -61,6 +61,7 @@ function trim(advice: Advice) {
   return {
     items,
     boots: advice.boots ?? null,
+    bootsPurchaseAfter: advice.bootsPurchaseAfter ?? null,
     bootsUpgrade: advice.bootsUpgrade ?? null,
     bootsUpgradeAfter: advice.bootsUpgradeAfter ?? null,
     bootsReason: typeof advice.bootsReason === "string" ? advice.bootsReason.slice(0, 200) : null,

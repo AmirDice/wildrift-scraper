@@ -3672,6 +3672,27 @@ def _build_lists(bd: dict) -> tuple[list[str], list[str]]:
 # Nth purchase (boots is the 2nd). Used for the gold/prefix curve.
 PREFIX_LEVELS = [8, 10, 12, 13, 14, 15]
 
+# A completed-build comparison uses late-game target profiles.  Purchase-order
+# scoring needs a more honest default when no enemy team was supplied: early
+# champions have much less armour, so percentage armour penetration should not
+# automatically win the first purchase.  These are expected armour values at
+# each completion checkpoint, not hard bans; an explicit high-armour context can
+# opt out of the guard through `armor_pressure="high"`.
+STAGE_EXPECTED_ARMOR = [65, 85, 105, 120, 135, 150]
+
+
+def _percent_armor_pen(slug: str) -> float:
+    """Return an item's percentage physical-penetration stat, if any."""
+    stats = (ITEMS.get(slug) or {}).get("stats") or {}
+    for key in ("physicalPen", "armorPen", "pctPen"):
+        row = stats.get(key)
+        if isinstance(row, dict) and row.get("percent"):
+            try:
+                return float(row.get("value", 0) or 0)
+            except (TypeError, ValueError):
+                return 0.0
+    return 0.0
+
 # Wild Rift is a fast game (15-20 min): the first drag/herald land at 6:00 and
 # the 2nd-3rd item spikes usually decide games, so a build is scored across its
 # whole purchase timeline, weighted heavily toward those early spikes rather
@@ -3747,13 +3768,19 @@ def score_items(name: str, items: list[str], runes: list[str], variant: str,
 
 def optimal_purchase_order(name: str, items: list[str], boots: str = "",
                            runes: list[str] | None = None,
-                           variant: str = "standard") -> list[str]:
+                           variant: str = "standard",
+                           armor_pressure: str = "unknown") -> list[str]:
     """Choose a completion order for the returned six-slot set.
 
     Boots are a normal candidate, not an automatic second purchase. This is a
     completion-order model (not component shopping): each next purchase is the
     one that gives the strongest measured build value at that point in the
     curve, with a tiny cost tie-break so a cheaper equal-value purchase wins.
+
+    Percentage penetration receives a stage-aware early-game discount when the
+    enemy team is unknown.  This prevents the late-game target profiles from
+    making Lord Dominik's Regards look like an efficient first purchase, while
+    still allowing it early when the caller has supplied a high-armour context.
     """
     remaining = [s for s in list(items) + ([boots] if boots else []) if s]
     chosen: list[str] = []
@@ -3761,9 +3788,30 @@ def optimal_purchase_order(name: str, items: list[str], boots: str = "",
         level = PREFIX_LEVELS[min(i, len(PREFIX_LEVELS) - 1)]
         best_slug, best_key = remaining[0], None
         for slug in remaining:
+            pen = _percent_armor_pen(slug)
+            if (pen and armor_pressure != "high" and i < 2
+                    and any(not _percent_armor_pen(other) for other in remaining
+                            if other != slug)):
+                # With no enemy composition, keep percentage penetration out of
+                # the first two completed slots.  The staged armour discount
+                # below handles close calls from slot three onward; this guard
+                # prevents a late-game full-build comparison from overriding
+                # the early purchase reality altogether.
+                continue
             prefix = chosen + [slug]
             m = metrics(name, prefix, runes, level, fast=True)
             value = fight_score(m, variant, name)
+            if pen and armor_pressure != "high" and i < 2:
+                # Compare the expected early armour to the old bruiser reference
+                # (130).  Keep a practical floor as this is also a lane-timing
+                # prior: percentage pen is not forbidden, merely required to
+                # beat a genuinely better first/second-item spike.
+                expected = STAGE_EXPECTED_ARMOR[min(i, len(STAGE_EXPECTED_ARMOR) - 1)]
+                late = (100.0 + 130.0) / (100.0 + 130.0 * (1.0 - pen / 100.0))
+                early = (100.0 + expected) / (100.0 + expected * (1.0 - pen / 100.0))
+                value *= max(0.68, min(1.0, early / max(late, 1e-9)))
+                if i == 0:
+                    value *= 0.82
             cost = float((ITEMS.get(slug) or {}).get("cost", 0) or 0)
             key = (value, -cost)
             if best_key is None or key > best_key:

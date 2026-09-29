@@ -27,7 +27,7 @@ REPAIRABLE: dict[str, tuple[str, ...]] = {
     # bootsReason rides with the boots: a repair that swaps the boots and keeps
     # the old justification shipped "Immortal Treads -- Plated Steelcaps
     # mitigate physical damage" to a reader (7 such builds in the cache).
-    "boots": ("boots", "bootsReason", "bootsUpgrade", "bootsUpgradeAfter",
+    "boots": ("boots", "bootsReason", "bootsPurchaseAfter", "bootsUpgrade", "bootsUpgradeAfter",
               "bootsUpgradeReason", "situationalBoots"),
     "situational": ("situational",),
     "situationalRunes": ("situationalRunes",),

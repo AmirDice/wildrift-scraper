@@ -321,7 +321,10 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v48: patch 7.3a balance follow-up. Hwei, Samira, Rammus, Malphite,
   // Tristana, Draven, Caitlyn, Senna, Syndra, Swain, Yuumi and Viego formulas,
   // plus Yun Tal, support-item Harmony and Death's Dance, all changed.
-  return `build:v48:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v49: purchase order became stage-aware for early armour penetration, and
+  // tier-2 boots now have their own completion timing alongside the tier-3
+  // upgrade. Older evidence can show Lord Dominik's too early and omit boots.
+  return `build:v49:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

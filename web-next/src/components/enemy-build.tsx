@@ -344,6 +344,8 @@ export function Sparkles({ className = "", size = 14 }: { className?: string; si
 export type Advice = {
   items?: string[];
   boots?: string;
+  /** Number of completed core items before tier-2 boots are completed. */
+  bootsPurchaseAfter?: number;
   bootsUpgrade?: string;
   /** Buy the tier-3 upgrade after this many completed items; 0 means it is not
    *  worth buying this game (bootsUpgrade is absent then). Missing on builds
@@ -446,6 +448,9 @@ export type Advice = {
     playstyleValidation?: string;
     powerCurve?: string;
     measuredLevels?: number[];
+    buildOrder?: string[];
+    bootsPurchaseAfter?: number;
+    bootsTiming?: { tier2?: string; tier3?: number };
     spikes?: Array<{
       itemsCompleted: number;
       level: number;
@@ -1699,8 +1704,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                     name={champ ?? ""}
                     items={advice.items}
                     boots={advice.boots}
+                    bootsPurchaseAfter={advice.bootsPurchaseAfter}
                     bootsUpgrade={advice.bootsUpgrade}
                     bootsUpgradeAfter={advice.bootsUpgradeAfter}
+                    purchaseOrder={advice.engineEvidence?.buildOrder}
                     powerCurve={(advice.requestMeta as { powerCurve?: string } | undefined)?.powerCurve}
                     candidates={advice.candidateItemScores}
                     runeNames={advice.runes

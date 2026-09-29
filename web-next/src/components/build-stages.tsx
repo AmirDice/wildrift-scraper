@@ -40,13 +40,14 @@ const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
  * marginal DPS jump per gold-equivalent slot, which is the honest version of
  * "when is this build scariest".
  *
- * Boots are inserted where the strip shows them landing (after the second
- * item), so the stages mirror the purchase order the player was just shown.
+ * When advisor evidence includes an engine order, boots are inserted at the
+ * measured completion point; older responses retain the legacy placement.
  */
-export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level = 15, bare = false, powerCurve, candidates }: {
+export function BuildStages({ name, items, boots, bootsPurchaseAfter, bootsUpgrade, bootsUpgradeAfter, runeNames, level = 15, bare = false, powerCurve, candidates, purchaseOrder }: {
   name: string;
   items: string[];
   boots?: string;
+  bootsPurchaseAfter?: number;
   bootsUpgrade?: string;
   /** Model-chosen upgrade timing: tier-3 lands after this many completed
    *  items; 0 = stays tier-2 all game. Absent on older builds (reads as 2). */
@@ -62,6 +63,8 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
   powerCurve?: string;
   /** The model's scored item alternatives, the substitution candidate pool. */
   candidates?: { item: string; score?: number }[];
+  /** Engine-selected completion order, including boots where they belong. */
+  purchaseOrder?: string[];
 }) {
   const stages = useMemo(() => {
     if (!items.length || !hasSimulatableKit(name)) return null;
@@ -87,12 +90,21 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     const t3Delta = t3 ? Math.max(300, itemCost(t3) - (t2 ? itemCost(t2) : 0)) : 0;
 
     type Purchase = { kind: "item" | "t2" | "t3"; slug: string; costG: number; itemCount: number };
+    const engineOrder = purchaseOrder?.length ? purchaseOrder : null;
     const purchasesFor = (order: string[], at: number): Purchase[] => {
       const seq: Purchase[] = [];
-      order.forEach((slug, i) => {
-        seq.push({ kind: "item", slug, costG: itemCost(slug), itemCount: i + 1 });
-        if (i === 0 && t2) seq.push({ kind: "t2", slug: t2, costG: itemCost(t2), itemCount: i + 1 });
-        if (i + 1 === at && t3) seq.push({ kind: "t3", slug: t3, costG: t3Delta, itemCount: i + 1 });
+      let completed = 0;
+      order.forEach((slug) => {
+        if (slug === t2) {
+          seq.push({ kind: "t2", slug: t2, costG: itemCost(t2), itemCount: completed });
+          return;
+        }
+        completed += 1;
+        seq.push({ kind: "item", slug, costG: itemCost(slug), itemCount: completed });
+        if (!engineOrder && completed === (bootsPurchaseAfter ?? 1) && t2) {
+          seq.push({ kind: "t2", slug: t2, costG: itemCost(t2), itemCount: completed });
+        }
+        if (completed === at && t3) seq.push({ kind: "t3", slug: t3, costG: t3Delta, itemCount: completed });
       });
       return seq;
     };
@@ -104,7 +116,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
     // "your spike" points players at a game that will never be played.
     const REACHABLE_GOLD = 13000;
     const target = dummyTarget(3000, 60, 45);
-    const purchases = purchasesFor(items, upgradeAt);
+    const purchases = purchasesFor(engineOrder ?? items, upgradeAt);
     const owned: string[] = [];
     let gold = 0;
     const rows = purchases.map((purchase, i) => {
@@ -162,7 +174,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
              purchasesFor, upgradeAt, t3, metric,
              spikeMetric: metric === "durability" ? ("durability" as const)
                         : metric === "burst" ? ("burst" as const) : ("damage" as const) };
-  }, [name, items, boots, bootsUpgrade, bootsUpgradeAfter, runeNames, level]);
+  }, [name, items, boots, bootsPurchaseAfter, bootsUpgrade, bootsUpgradeAfter, runeNames, level, purchaseOrder]);
 
   // ENGINE ORDER CHECK: would any other purchase order of the SAME five
   // items reach power earlier? Wild Rift games are short, so the curve's
@@ -174,7 +186,7 @@ export function BuildStages({ name, items, boots, bootsUpgrade, bootsUpgradeAfte
   // the early game; the check proves it), but the ladder's opening order
   // still left 5-12% early damage on the table.
   const orderCheck = useMemo(() => {
-    if (!stages || items.length !== 5) return null;
+    if (!stages || purchaseOrder?.length || items.length !== 5) return null;
     const cost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
     // Checkpoints and weights follow the REQUESTED power curve, per the
     // owner's definition: Early optimizes immediate strength and cheap fast
