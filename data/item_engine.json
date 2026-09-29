@@ -1,6 +1,7 @@
 {
   "bloodthirster": {
-    "physVampPct": 12
+    "physVampPct": 15,
+    "shieldFlat": {"lvlRange": [165, 345]}
   },
   "guardian-angel": {
     "reviveHpPct": 50
