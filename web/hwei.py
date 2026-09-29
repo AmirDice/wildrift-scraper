@@ -81,6 +81,15 @@ def timeline(kit, st, target, window, level=13):
                                    + dealt * target.get("magicMultiplier", 1) / target["hp"]))
             low = value(spell["base"], rank) + spell["ap"] * ap
             high = value(spell["maxBase"], rank) + spell["maxAp"] * ap
+            # 7.3a reduced QW's missing-health multiplier from
+            # 150/200/250/300% to 100/150/200/250%.  The scraped maxBase
+            # values remain the pre-7.3a endpoint, so scale only the excess
+            # above the published low-health floor, mirroring the browser
+            # engine's live adjustment.
+            if spell.get("missingHealthPct"):
+                old_pct = [1.5, 2, 2.5, 3][rank] if rank < 4 else 3
+                next_pct = value(spell["missingHealthPct"], rank)
+                high = low + max(0, high - low) * (next_pct / old_pct)
             hit(t, slot, token, low + (high - low) * missing)
             continue
         slot = next((s for s in ("2", "3", "1", "4") if ranks[s] >= 0

@@ -22,6 +22,7 @@ import { VideoAdGate } from "@/components/video-ad-gate";
 import { Tip } from "@/components/build-view";
 import { Disclosure } from "@/components/ui";
 import { SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
+import { AdvisorDebugPanel } from "@/components/advisor-debug-panel";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -301,11 +302,11 @@ function playstylesFor(champion: RosterChampion | undefined, mode: AdvisorMode):
  *  nothing to the request, the cache key or the prompt, so leaving the slider
  *  alone is guaranteed to behave exactly like the pre-slider generator. */
 const BIAS_STOPS = [
-  { key: "max_durability", label: "Maximum Durability", blurb: "The most durable competitive version of this playstyle. Still not a full tank on a damage champion." },
-  { key: "durability", label: "Durability Leaning", blurb: "When two viable options are close, take the safer one." },
-  { key: "balanced", label: "Balanced", blurb: "The default optimisation. No lean either way." },
-  { key: "damage", label: "Damage Leaning", blurb: "When two viable options are close, take the more aggressive one." },
-  { key: "max_damage", label: "Maximum Damage", blurb: "As much damage as this champion can viably carry. Never an off-meta archetype." },
+  { key: "max_durability", label: "Maximum Durability", blurb: "About 20% damage / 80% durability: the toughest competitive version of this playstyle, still not a full tank on a damage champion." },
+  { key: "durability", label: "Durability Leaning", blurb: "About 40% damage / 60% durability: take the safer option when viable choices are close." },
+  { key: "balanced", label: "Balanced", blurb: "About 60% damage / 40% durability: the default all-around build for most games." },
+  { key: "damage", label: "Damage Leaning", blurb: "About 80% damage / 20% durability: take the more aggressive option when choices are close." },
+  { key: "max_damage", label: "Maximum Damage", blurb: "100% damage / 0% durability in the engine objective: the strongest viable damage version, never an off-meta archetype." },
 ] as const;
 
 const OBJECTIVES = [
@@ -342,6 +343,9 @@ export function Sparkles({ className = "", size = 14 }: { className?: string; si
 }
 
 export type Advice = {
+  /** Recommendation provenance: engine-selected, model-selected, or an
+   * engine winner refined by Gemini with one validated item replacement. */
+  provenance?: "E" | "M" | "E+M";
   items?: string[];
   boots?: string;
   /** Number of completed core items before tier-2 boots are completed. */
@@ -449,6 +453,8 @@ export type Advice = {
     powerCurve?: string;
     measuredLevels?: number[];
     buildOrder?: string[];
+    componentPlan?: Array<{ item: string; components?: string[]; known?: boolean }>;
+    recipeCoverage?: number;
     bootsPurchaseAfter?: number;
     bootsTiming?: { tier2?: string; tier3?: number };
     spikes?: Array<{
@@ -464,6 +470,55 @@ export type Advice = {
     objective?: string;
     objectiveEvidence?: Record<string, unknown>;
     reason?: string;
+  };
+  /** Full local-only inspection data from the model/engine tournament. */
+  engineTournament?: {
+    ran?: boolean;
+    stage?: string;
+    reason?: string;
+    fellBackTo?: string;
+    candidateCount?: number;
+    modelCandidateCount?: number;
+    candidateErrors?: string[];
+    damageArchetypes?: { id: string; description?: string }[];
+    modelCandidates?: Array<Record<string, unknown>>;
+    engineChallenger?: boolean;
+    engineAutoSelected?: boolean;
+    engineWinGate?: {
+      eligible?: boolean;
+      marginThreshold?: number;
+      absoluteLead?: number;
+      relativeLead?: number;
+      coverageSafe?: boolean;
+      majorCoverageGaps?: string[];
+      reason?: string;
+    };
+    engineAlternatives?: string[];
+    itemShortlist?: { requested?: number; selected?: number; items?: string[] } | null;
+    itemReplacement?: Record<string, unknown> | null;
+    winner?: string | null;
+    judgedWinner?: string | null;
+    coreRepairedAfterJudge?: boolean;
+    winnerSource?: "engine" | "model" | "unlabelled";
+    winnerRationale?: string[];
+    level?: number;
+    measurements?: Array<Record<string, unknown>>;
+    engineSearch?: {
+      objective?: string;
+      buildBias?: string;
+      searched?: number;
+      scenarioEvaluations?: number;
+      authoredBestScore?: number;
+      challengerScore?: number | null;
+      paths?: Record<string, {
+        eligibleItems?: number;
+        boundedPool?: number;
+        legalCombinations?: number;
+        topItems?: Array<{ item: string; score: number }>;
+      }>;
+      topEngineBuilds?: Array<Record<string, unknown>>;
+      [key: string]: unknown;
+    };
   };
   counterSummary?: {
     confidence: number;
@@ -750,22 +805,52 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
   // Older cached builds carry no timing and read as the old fixed 2.
   const stayT2 = advice.bootsUpgradeAfter === 0;
   const upAfter = Math.min(Math.max(advice.bootsUpgradeAfter ?? 2, 1), Math.max(items.length, 1));
+  const engineOrder = advice.engineEvidence?.buildOrder?.filter(Boolean) ?? [];
+  const displayOrder = engineOrder.length
+    ? engineOrder
+    : [advice.boots, ...items].filter(Boolean) as string[];
+  const coreOrder = displayOrder.filter((slug) => slug !== advice.boots);
+  const bootsIndex = advice.boots ? displayOrder.indexOf(advice.boots) : -1;
+  const coreBeforeBoots = bootsIndex < 0
+    ? 0
+    : displayOrder.slice(0, bootsIndex).filter((slug) => slug !== advice.boots).length;
+  // T3 must be rendered after T2, even when the engine says to finish T2
+  // after the requested core threshold. In that case the enchant waits until
+  // the boots icon, rather than appearing to upgrade boots that do not exist.
+  const t3AfterBoots = Boolean(advice.bootsUpgrade && advice.boots && coreBeforeBoots >= upAfter);
   return (
+    <div>
     <div className="flex flex-wrap items-center gap-2.5">
-      {advice.boots && (
-        <ItemTip slug={advice.boots} advice={advice}>
-          <span className="relative inline-flex flex-col items-center">
-            <img src={itemIcon(advice.boots)} alt={itemName(advice.boots)} width={40} height={40} className="rounded-lg ring-1 ring-white/10" />
-            <span
-              title={stayT2 ? advice.bootsUpgradeReason : undefined}
-              className={`mt-0.5 text-[0.55rem] font-bold uppercase ${stayT2 ? "text-gold" : "text-faint"}`}
-            >
-              {stayT2 ? "T2 all game" : "T2 boots"}
+      {displayOrder.map((slug) => {
+        if (slug === advice.boots) {
+          return (
+            <span key={`boots-${slug}`} className="inline-flex items-center gap-2.5">
+            <ItemTip slug={slug} advice={advice}>
+              <span className="relative inline-flex flex-col items-center">
+                <img src={itemIcon(slug)} alt={itemName(slug)} width={40} height={40} className="rounded-lg ring-1 ring-white/10" />
+                <span
+                  title={stayT2 ? advice.bootsUpgradeReason : undefined}
+                  className={`mt-0.5 text-[0.55rem] font-bold uppercase ${stayT2 ? "text-gold" : "text-faint"}`}
+                >
+                  {stayT2 ? "T2 all game" : "T2 boots"}
+                </span>
+              </span>
+            </ItemTip>
+            {t3AfterBoots && (
+              <ItemTip slug={advice.bootsUpgrade!} advice={advice}>
+                <span className="relative inline-flex flex-col items-center">
+                  <img src={itemIcon(advice.bootsUpgrade!)} alt={itemName(advice.bootsUpgrade!)} width={40} height={40} className="rounded-lg ring-1 ring-gold/40" />
+                  <span title={advice.bootsUpgradeReason} className="mt-0.5 text-[0.55rem] font-bold uppercase text-gold">
+                    T3 after {ordinal(coreBeforeBoots)}
+                  </span>
+                </span>
+              </ItemTip>
+            )}
             </span>
-          </span>
-        </ItemTip>
-      )}
-      {items.map((slug, i) => (
+          );
+        }
+        const i = coreOrder.indexOf(slug);
+        return (
         <span key={slug} className="inline-flex items-center gap-2.5">
           <span className="inline-flex flex-col items-center">
             <ItemTip slug={slug} advice={advice}>
@@ -795,7 +880,7 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
                 finishing even in a game that ends early. */}
             {i < 3 && <span className="mt-0.5 text-[0.5rem] font-black uppercase tracking-wide text-accent/80">core</span>}
           </span>
-          {advice.bootsUpgrade && i + 1 === upAfter && (
+          {advice.bootsUpgrade && !t3AfterBoots && i + 1 === upAfter && (
             <ItemTip slug={advice.bootsUpgrade} advice={advice}>
               <span className="relative inline-flex flex-col items-center">
                 <img src={itemIcon(advice.bootsUpgrade)} alt={itemName(advice.bootsUpgrade)} width={40} height={40} className="rounded-lg ring-1 ring-gold/40" />
@@ -806,7 +891,16 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
             </ItemTip>
           )}
         </span>
-      ))}
+        );
+      })}
+    </div>
+    {engineOrder.length > 0 && (
+      <p className="mt-2 text-[0.65rem] text-faint">
+        Engine order: <span className="font-semibold text-text">
+          {engineOrder.map((slug) => itemName(slug)).join(" → ")}
+        </span>
+      </p>
+    )}
     </div>
   );
 }
@@ -980,6 +1074,15 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     quota && !quota.unlimited && typeof quota.remaining === "number" && quota.remaining <= 0,
   );
 
+  // Shared links and older localStorage entries can carry a playstyle that
+  // this champion no longer exposes. Keep the UI on a valid preset instead
+  // of sending a stale value and surfacing a server error.
+  useEffect(() => {
+    if (champ && !availablePlaystyles.some((style) => style.key === playstyle)) {
+      setPlaystyle(defaultPlaystyle);
+    }
+  }, [champ, availablePlaystyles, defaultPlaystyle, playstyle]);
+
   const pickChamp = (name: string) => {
     setChamp(name);
     setPlaystyle(defaultPlaystyle);
@@ -1085,7 +1188,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
    *  the state would not have landed by the time the request is built. */
   async function generate(styleOverride?: string) {
     if (!champ || needsEnemy) return;
-    const requestedStyle = styleOverride ?? playstyle;
+    const requestedStyle = styleOverride
+      ?? (availablePlaystyles.some((style) => style.key === playstyle)
+        ? playstyle
+        : defaultPlaystyle);
     // The menu follows the button, so the form explains the build under it.
     if (styleOverride && styleOverride !== playstyle) setPlaystyle(styleOverride);
     setUsedStyle(requestedStyle);
@@ -1384,6 +1490,14 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           <p className="mt-1.5 text-xs text-muted">{BIAS_STOPS[biasIdx].blurb}</p>
         </div>
         )}
+        {!advanced && (
+          <p className="rounded-xl bg-white/[0.03] px-3 py-2.5 text-xs leading-relaxed text-muted">
+            <span className="font-semibold text-text">Default build: Balanced.</span>{" "}
+            The engine aims for about <span className="font-semibold text-accent">60% damage</span>{" "}
+            and <span className="font-semibold text-emerald-300">40% durability</span> — a practical
+            all-around build rather than the absolute highest damage or the tankiest option.
+          </p>
+        )}
 
         {roleMismatch && (
           <p className="text-xs text-amber-300">
@@ -1603,20 +1717,38 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             <div className="glass rounded-2xl p-4">
               <div className="mb-3 flex items-center gap-3">
                 <p className="text-[0.65rem] font-bold uppercase tracking-wide text-faint">Optimal build order{isCounter ? " · vs your enemy comp" : ` · ${selectedPlaystyle?.label ?? playstyle}`}</p>
+                {advice.provenance && (
+                  <span
+                    className={`ml-1 rounded-md px-2 py-0.5 text-[0.65rem] font-black tracking-wide ${
+                      advice.provenance === "E"
+                        ? "bg-cyan-400/15 text-cyan-300"
+                        : advice.provenance === "E+M"
+                          ? "bg-emerald-400/15 text-emerald-300"
+                          : "bg-gold/15 text-gold"
+                    }`}
+                    title={advice.provenance === "E"
+                      ? "Selected by the fight engine"
+                      : advice.provenance === "E+M"
+                        ? "Engine-selected, then refined by Gemini"
+                        : "Selected by Gemini"}
+                  >
+                    {advice.provenance}
+                  </span>
+                )}
                 {typeof advice.buildScore?.overall === "number" && (
-                  <span className="rounded-md bg-accent/15 px-2 py-0.5 text-[0.65rem] font-bold text-accent"
+                  <span className="ml-1 rounded-md bg-accent/15 px-2 py-0.5 text-[0.65rem] font-bold text-accent"
                     title={advice.buildScore.reason}>
                     Build rating {advice.buildScore.overall}
                   </span>
                 )}
                 {advice.ladderAgreement && advice.ladderAgreement.score >= 40 && (
-                  <span className="rounded-md bg-gold/15 px-2 py-0.5 text-[0.65rem] font-bold text-gold"
+                  <span className="ml-1 rounded-md bg-gold/15 px-2 py-0.5 text-[0.65rem] font-bold text-gold"
                     title={`${advice.ladderAgreement.matched} of ${advice.ladderAgreement.of} items are also equipped by this champion's top-50 ranked players right now`}>
                     {advice.ladderAgreement.score}% ladder match
                   </span>
                 )}
                 {advice.validationErrors?.length ? (
-                  <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[0.65rem] font-bold text-amber-300" title={advice.validationErrors.join("; ")}>
+                  <span className="ml-1 rounded-md bg-amber-500/15 px-2 py-0.5 text-[0.65rem] font-bold text-amber-300" title={advice.validationErrors.join("; ")}>
                     needs review
                   </span>
                 ) : null}
@@ -1774,6 +1906,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                   </div>
                 </div>
               )}
+              <AdvisorDebugPanel advice={advice} />
             </div>
 
 

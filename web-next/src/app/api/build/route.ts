@@ -109,13 +109,19 @@ function resolvePython(): string {
 }
 
 const PY = resolvePython();
-// Thinking-mode generations now include the mandatory item audit and complete
-// LLM build evaluation, so allow the same four-minute ceiling as the advisor.
-const TIMEOUT_MS = 240_000;
 // Set on Vercel; absent locally, which is what selects the subprocess path.
 const ADVISOR_URL = process.env.ADVISOR_URL
   || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/advisor` : "");
 const ADVISOR_SECRET = process.env.ADVISOR_SECRET || "";
+// Thinking-mode generations include the item audit and engine tournament. The
+// local subprocess intentionally has no wall-clock cutoff while we benchmark
+// the search; Vercel keeps its four-minute safety ceiling. Set
+// ADVISOR_TIMEOUT_MS explicitly (0 disables it) when a different test budget is
+// useful. The platform's maxDuration still governs production functions.
+const configuredTimeout = Number(process.env.ADVISOR_TIMEOUT_MS);
+const TIMEOUT_MS = Number.isFinite(configuredTimeout) && configuredTimeout >= 0
+  ? configuredTimeout
+  : ADVISOR_URL ? 240_000 : 0;
 
 // The daily cap lives in src/lib/quota.ts: 1 generation per IP per day, plus
 // a separate 3 for anyone signed in with Google. It exists because every
@@ -241,7 +247,9 @@ function advisorErrorText(data: unknown, status: number): string {
 /** Production path: the advisor as a Vercel Python function, over HTTP. */
 async function callAdvisorFunction(b: Body): Promise<AdvisorResult> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = TIMEOUT_MS > 0
+    ? setTimeout(() => controller.abort(), TIMEOUT_MS)
+    : undefined;
   try {
     const res = await fetch(ADVISOR_URL, {
       method: "POST",
@@ -279,7 +287,7 @@ async function callAdvisorFunction(b: Body): Promise<AdvisorResult> {
     const aborted = err instanceof Error && err.name === "AbortError";
     return { ok: false, error: aborted ? "advisor timed out" : String(err) };
   } finally {
-    clearTimeout(timer);
+    if (timer) clearTimeout(timer);
   }
 }
 
@@ -344,18 +352,20 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
       return;
     }
 
-    const timer = setTimeout(() => {
-      finish({ ok: false, error: "advisor timed out" });
-      try {
-        proc.kill();
-      } catch {
-        // The timeout response is already settled; close/error may follow.
-      }
-    }, TIMEOUT_MS);
+    const timer = TIMEOUT_MS > 0
+      ? setTimeout(() => {
+          finish({ ok: false, error: "advisor timed out" });
+          try {
+            proc.kill();
+          } catch {
+            // The timeout response is already settled; close/error may follow.
+          }
+        }, TIMEOUT_MS)
+      : undefined;
     const finish = (result: AdvisorResult) => {
       if (settled) return;
       settled = true;
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
       resolve(result);
     };
 

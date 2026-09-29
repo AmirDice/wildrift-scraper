@@ -104,8 +104,24 @@
    ]
   },
   "Tank": {
-   "preferred": [],
-   "allowed": []
+   "preferred": [
+    "amaranths-twinguard",
+    "warmogs-armor",
+    "frozen-heart",
+    "force-of-nature",
+    "thornmail",
+    "sunfire-aegis",
+    "abyssal-mask",
+    "kaenic-rookern",
+    "randuins-omen",
+    "iceborn-gauntlet"
+   ],
+   "allowed": [
+    "steraks-gage",
+    "sundered-sky",
+    "heartsteel",
+    "guardian-angel"
+   ]
   },
   "Enchanter": {
    "preferred": [

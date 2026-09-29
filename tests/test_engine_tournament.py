@@ -179,6 +179,29 @@ def test_simulation_returns_comparable_damage_and_survival_dimensions():
     }
 
 
+def test_engine_win_gate_requires_margin_and_complete_coverage():
+    meta = {"challengerScore": 110.0, "authoredBestScore": 100.0}
+    complete = [{
+        "id": "ENGINE-D",
+        "engine": {"championMechanicsCoverage": {
+            "buildRelevantGaps": []}, "coverageGaps": []},
+    }]
+    gate = adv._engine_win_gate(meta, complete)
+    assert gate["eligible"] is True
+    assert gate["relativeLead"] == pytest.approx(0.1)
+
+    incomplete = [{
+        "id": "ENGINE-D",
+        "engine": {"championMechanicsCoverage": {
+            "buildRelevantGaps": [{"limitation": "recast damage is not modeled"}]},
+            "coverageGaps": []},
+    }]
+    assert adv._engine_win_gate(meta, incomplete)["eligible"] is False
+    assert adv._engine_win_gate(
+        {"challengerScore": 103.0, "authoredBestScore": 100.0}, complete
+    )["eligible"] is False
+
+
 def test_patch_73_nashors_does_not_keep_removed_adaptive_stats():
     stats = fe.resolve_stats("Jinx", 15, ["nashors-tooth"], [])
 

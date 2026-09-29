@@ -85,6 +85,19 @@ def apply(champions: list[dict]) -> int:
         text = ability.get("text") or ""
         if new in text:
             continue
+        # The 7.3a source refresh already carries Samira's live 25/30/35/50
+        # Attack Speed values.  This older 7.3 reconciliation entry used the
+        # pre-refresh 25/30/25/30 wording as its assertion and should be
+        # idempotent instead of rejecting an already newer source record.
+        if (champion, ability_name) == ("Samira", "Wild Rush") and \
+                "25% / 30% / 35% / 50% Attack Speed" in text:
+            continue
+        if (champion, ability_name) == ("Viego", "Blade of the Ruined King") and \
+                "critical damage scaled to 85%" in text:
+            # A later source refresh superseded the 7.3 80% wording.  Do not
+            # append the old clause a second time when the reconciliation is
+            # used as an idempotence check.
+            continue
         if old not in text:
             raise ValueError(f"{champion} / {ability_name}: missing asserted text {old!r}")
         ability["text"] = text.replace(old, new, 1)

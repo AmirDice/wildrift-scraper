@@ -773,6 +773,9 @@ def rules_block(enemies_known: bool, combat_profile: dict) -> str:
         "impossible, not merely bad:",
         "- Exactly 5 items, all NON-boots and all completed. Boots are chosen separately "
         "and never occupy one of the five slots.",
+        "- Basic and mid-tier shop pieces are not final build slots. Use them only as "
+        "shopping components when an authoritative recipe is supplied; never return a "
+        "component as one of the five completed items or invent a recipe from its cost.",
         "- Use only slugs from the supplied pools. Never invent or rename an item.",
         "- No duplicate items.",
         "- At most ONE item tagged `active` in the pool. Wild Rift allows a single "

@@ -304,6 +304,29 @@ for _name, _entry in ((_load("champion_combos.json") or {}).get("champions") or 
     if _name in FORMULAS and _entry.get("combo"):
         FORMULAS[_name]["combo"] = _entry["combo"]
 ITEMS = {i["slug"]: i for i in _load("items.json")}
+# Recipe data is optional because the current item scrape carries completed
+# item stats but not Riot's shop graph.  When a refreshed scrape supplies
+# `components`/`from` fields, or data/item_recipes.json is populated, every
+# consumer can use the same recipe source without changing the fight math.
+ITEM_RECIPES = _load("item_recipes.json") or {}
+
+
+def item_components(slug: str) -> list[str]:
+    """Return the known recipe components for one item, if available.
+
+    An empty list means “recipe data unavailable”, not “the item has no
+    components”.  Keeping that distinction prevents the engine from inventing
+    a shopping path from incomplete item stats.
+    """
+    item = ITEMS.get(slug) or {}
+    raw = item.get("components") or item.get("from") or item.get("recipe")
+    if raw is None:
+        raw = ITEM_RECIPES.get(slug)
+    if isinstance(raw, dict):
+        raw = raw.get("components") or raw.get("from") or raw.get("items")
+    if not isinstance(raw, list):
+        return []
+    return [str(component) for component in raw if isinstance(component, str)]
 ENGINE_FX = _load("item_engine.json")
 for slug, fx in _load("item_engine_overrides.json").items():
     if isinstance(fx, dict):
@@ -622,10 +645,15 @@ def kit_adjust(name: str) -> float:
 
 
 def affordable(item_slugs: list[str], gold: float) -> list[str]:
-    """Items actually buyable by `gold`, in build order (boots slot after item 1)."""
+    """Items actually buyable by ``gold``, in the caller's purchase order.
+
+    Boots used to be moved to the second purchase here regardless of the
+    engine's measured order. That made every boots recommendation look like a
+    hidden rule and, worse, made a boots-last answer impossible to inspect.
+    ``optimal_purchase_order`` now decides the timing; this helper must simply
+    respect it when calculating what a player can afford at a checkpoint.
+    """
     order = list(item_slugs)
-    if len(order) >= 2:  # boots (appended last by caller) move to 2nd purchase
-        order = [order[0], order[-1]] + order[1:-1]
     out, spent = [], 0.0
     for slug in order:
         cost = (ITEMS.get(slug) or {}).get("cost", 0) or 0
@@ -2281,6 +2309,12 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             # pctPerStat is percentage points of the target quantity granted
             # by each point of the scaling stat (e.g. 0.012% max HP per AP).
             val += left * right * float(r.get("pctPerStat", 0) or 0) / 100.0
+        # Some percentage-health passives have a rank-based floor. Vayne's
+        # Silver Bolts is the important build-comparison case: on a low-health
+        # target the true-damage proc is still worth its minimum, then the
+        # every-third-hit cadence is applied by the rotation below.
+        if comp.get("minDamage") is not None:
+            val = max(val, _scale_val(comp.get("minDamage"), rank, level))
         # Some champion damage scales with the build's current crit chance
         # without itself being a critical strike (Miss Fortune Love Tap 7.3).
         # Keeping this on the component avoids pretending it is a global auto
@@ -3813,7 +3847,13 @@ def optimal_purchase_order(name: str, items: list[str], boots: str = "",
                 if i == 0:
                     value *= 0.82
             cost = float((ITEMS.get(slug) or {}).get("cost", 0) or 0)
-            key = (value, -cost)
+            # Early purchases are a tempo decision, not a full-build ranking.
+            # A 1,000g boots completion can be the correct first/second spike
+            # even when a 3,000g item wins at level 15.  Use a mild cost
+            # elasticity for the first two decisions, then return to raw
+            # measured value so late scaling items are not penalised forever.
+            tempo = value / max(cost, 1.0) ** 0.30 if i < 2 else value
+            key = (tempo, value, -cost)
             if best_key is None or key > best_key:
                 best_slug, best_key = slug, key
         chosen.append(best_slug)

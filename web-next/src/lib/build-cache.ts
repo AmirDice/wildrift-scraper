@@ -324,7 +324,29 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v49: purchase order became stage-aware for early armour penetration, and
   // tier-2 boots now have their own completion timing alongside the tier-3
   // upgrade. Older evidence can show Lord Dominik's too early and omit boots.
-  return `build:v49:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v53: shortlist validation accepts the alternate items/shortlist response
+  // keys Gemini sometimes uses while retaining the legal-pool fill.
+  // v52: shortlist validation now canonicalizes aliases and fills a short
+  // Gemini response from the supplied legal pool instead of silently falling
+  // back to the entire catalog.
+  // v54: salvage valid tournament candidates instead of degrading to model-only
+  // when Gemini returns one malformed or missing archetype candidate.
+  // v55: expose full local tournament diagnostics, broaden AP/frontline paths,
+  // and make early boot timing cost-aware instead of forcing boots second/last.
+  // v56: never serve a model-only fallback cached while the tournament was
+  // failing; the local debug panel now surfaces the exact failure reason.
+  // v57: invalidate the fallback generated before fixing the frontline
+  // archetype filter's undefined `stats` reference.
+  // v58: repair max-damage candidate rune pages before measurement so a
+  // post-judge rune fix cannot erase a valid tournament winner.
+  // v59: expose whether the judge chose the model or engine and why.
+  // v60: include the judge rationale bullets in local debug output.
+  // v61: repair stale preset handling and allow crit plus penetration paths.
+  // v62: let the engine tournament proceed with one legal model seed.
+  // v69: deterministic engine-win gate (5% lead + coverage safety),
+  // competitive re-simulation for Gemini item replacements, and request-local
+  // engine memoization. Older tournament decisions must not bypass the gate.
+  return `build:v69:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
