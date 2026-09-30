@@ -105,6 +105,17 @@ def _apply_formula_corrections(formulas: dict) -> int:
                        for m in rec.get("mechanics") or []):
                 rec.setdefault("mechanics", []).append(mechanic)
                 applied += 1
+        for kind, updates in (entry.get("mechanicUpdates") or {}).items():
+            for mechanic in rec.get("mechanics") or []:
+                if mechanic.get("kind") == kind:
+                    mechanic.update(updates)
+                    applied += 1
+        for slot, notes in (entry.get("resolvedUnmodeled") or {}).items():
+            ability = (rec.get("abilities") or {}).get(slot)
+            if ability and notes:
+                before = list(ability.get("unmodeled") or [])
+                ability["unmodeled"] = [n for n in before if n not in notes]
+                applied += len(before) - len(ability["unmodeled"])
         # Per-slot ability overrides: `damage` replaces the slot's damage list
         # wholesale. Added for Camille's Q, whose scraped text was missing the
         # recast sentence and with it the 40% true-damage conversion.
@@ -116,6 +127,30 @@ def _apply_formula_corrections(formulas: dict) -> int:
             if ability is not None and "empowerLimit" in patch:
                 ability["empowerLimit"] = patch["empowerLimit"]
                 applied += 1
+            if ability is not None and "recastChain" in patch:
+                ability["recastChain"] = bool(patch["recastChain"])
+                applied += 1
+            if ability is not None and "recastMultiplier" in patch:
+                ability["recastMultiplier"] = patch["recastMultiplier"]
+                applied += 1
+            if ability is not None and "nextCastMultiplier" in patch:
+                ability["nextCastMultiplier"] = patch["nextCastMultiplier"]
+                applied += 1
+            if ability is not None and "preferredAlt" in patch:
+                ability["preferredAlt"] = patch["preferredAlt"]
+                applied += 1
+            if ability is not None and "stackGated" in patch:
+                ability["stackGated"] = bool(patch["stackGated"])
+                applied += 1
+            if ability is not None and "statefulCombo" in patch:
+                ability["statefulCombo"] = bool(patch["statefulCombo"])
+                applied += 1
+            if ability is not None and "tapCooldownRefundPct" in patch:
+                ability["tapCooldownRefundPct"] = patch["tapCooldownRefundPct"]
+                applied += 1
+            if ability is not None and "steroids" in patch:
+                ability["steroids"] = patch["steroids"]
+                applied += 1
             if ability is not None:
                 for component in ability.get("damage") or []:
                     fix = (patch.get("components") or {}).get(component.get("name"))
@@ -125,6 +160,11 @@ def _apply_formula_corrections(formulas: dict) -> int:
                         component["ratios"] = fix["ratios"]
                     if "crossRatios" in fix:
                         component["crossRatios"] = fix["crossRatios"]
+                    for key in ("baseAdd", "hits", "when", "recastIndex",
+                                "empowerLimit", "mortalWill", "gritScale",
+                                "comboState", "preferredAlt"):
+                        if key in fix:
+                            component[key] = fix[key]
                     if fix.get("unsetAlt"):
                         component.pop("alt", None)
                     applied += 1

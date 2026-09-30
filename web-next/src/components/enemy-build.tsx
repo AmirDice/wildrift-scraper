@@ -455,6 +455,7 @@ export type Advice = {
     buildOrder?: string[];
     componentPlan?: Array<{ item: string; components?: string[]; known?: boolean }>;
     recipeCoverage?: number;
+    recipeSource?: string;
     bootsPurchaseAfter?: number;
     bootsTiming?: { tier2?: string; tier3?: number };
     spikes?: Array<{
@@ -817,7 +818,8 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
   // T3 must be rendered after T2, even when the engine says to finish T2
   // after the requested core threshold. In that case the enchant waits until
   // the boots icon, rather than appearing to upgrade boots that do not exist.
-  const t3AfterBoots = Boolean(advice.bootsUpgrade && advice.boots && coreBeforeBoots >= upAfter);
+  const t3AfterBoots = Boolean(advice.bootsUpgrade && !stayT2 && advice.boots
+    && coreBeforeBoots >= upAfter);
   return (
     <div>
     <div className="flex flex-wrap items-center gap-2.5">
@@ -880,7 +882,7 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
                 finishing even in a game that ends early. */}
             {i < 3 && <span className="mt-0.5 text-[0.5rem] font-black uppercase tracking-wide text-accent/80">core</span>}
           </span>
-          {advice.bootsUpgrade && !t3AfterBoots && i + 1 === upAfter && (
+          {advice.bootsUpgrade && !stayT2 && !t3AfterBoots && i + 1 === upAfter && (
             <ItemTip slug={advice.bootsUpgrade} advice={advice}>
               <span className="relative inline-flex flex-col items-center">
                 <img src={itemIcon(advice.bootsUpgrade)} alt={itemName(advice.bootsUpgrade)} width={40} height={40} className="rounded-lg ring-1 ring-gold/40" />

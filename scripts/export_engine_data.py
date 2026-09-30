@@ -165,6 +165,17 @@ def apply_formula_corrections(formulas: dict) -> int:
                        for m in rec.get("mechanics") or []):
                 rec.setdefault("mechanics", []).append(mechanic)
                 applied += 1
+        for kind, updates in (entry.get("mechanicUpdates") or {}).items():
+            for mechanic in rec.get("mechanics") or []:
+                if mechanic.get("kind") == kind:
+                    mechanic.update(updates)
+                    applied += 1
+        for slot, notes in (entry.get("resolvedUnmodeled") or {}).items():
+            ability = (rec.get("abilities") or {}).get(slot)
+            if ability and notes:
+                before = list(ability.get("unmodeled") or [])
+                ability["unmodeled"] = [n for n in before if n not in notes]
+                applied += len(before) - len(ability["unmodeled"])
         # Per-slot ability overrides: `damage` replaces the slot's damage list
         # wholesale. Added for Camille's Q, whose scraped text was missing the
         # recast sentence and with it the 40% true-damage conversion.
@@ -176,6 +187,30 @@ def apply_formula_corrections(formulas: dict) -> int:
             if ability is not None and "empowerLimit" in patch:
                 ability["empowerLimit"] = patch["empowerLimit"]
                 applied += 1
+            if ability is not None and "recastChain" in patch:
+                ability["recastChain"] = bool(patch["recastChain"])
+                applied += 1
+            if ability is not None and "recastMultiplier" in patch:
+                ability["recastMultiplier"] = patch["recastMultiplier"]
+                applied += 1
+            if ability is not None and "nextCastMultiplier" in patch:
+                ability["nextCastMultiplier"] = patch["nextCastMultiplier"]
+                applied += 1
+            if ability is not None and "preferredAlt" in patch:
+                ability["preferredAlt"] = patch["preferredAlt"]
+                applied += 1
+            if ability is not None and "stackGated" in patch:
+                ability["stackGated"] = bool(patch["stackGated"])
+                applied += 1
+            if ability is not None and "statefulCombo" in patch:
+                ability["statefulCombo"] = bool(patch["statefulCombo"])
+                applied += 1
+            if ability is not None and "tapCooldownRefundPct" in patch:
+                ability["tapCooldownRefundPct"] = patch["tapCooldownRefundPct"]
+                applied += 1
+            if ability is not None and "steroids" in patch:
+                ability["steroids"] = patch["steroids"]
+                applied += 1
             if ability is not None:
                 for component in ability.get("damage") or []:
                     fix = (patch.get("components") or {}).get(component.get("name"))
@@ -185,6 +220,11 @@ def apply_formula_corrections(formulas: dict) -> int:
                         component["ratios"] = fix["ratios"]
                     if "crossRatios" in fix:
                         component["crossRatios"] = fix["crossRatios"]
+                    for key in ("baseAdd", "hits", "when", "recastIndex",
+                                "empowerLimit", "mortalWill", "gritScale",
+                                "comboState", "preferredAlt"):
+                        if key in fix:
+                            component[key] = fix[key]
                     # Crit shapes 7.3 introduced. They live here rather than in
                     # ability_formulas.json so a re-extraction cannot drop them.
                     if "critScale" in fix:
@@ -236,6 +276,22 @@ def main() -> None:
     # which is the mismatch the whole form split exists to remove. They are not
     # in the roster, so nothing lists them -- only a lookup by name finds them.
     champs_all = champs_all + [f for c in champs_all for f in (c.get("forms") or [])]
+    # The scrape names the red transformation explicitly but uses the base
+    # record for Shadow Assassin.  The advisor exposes both labels, so the
+    # browser bundle must resolve the blue form to the base Kayn kit as well.
+    if any(c.get("name") == "Kayn" for c in champs_all) and not any(
+            c.get("name") == "Kayn (Shadow Assassin)" for c in champs_all):
+        base_kayn = next(c for c in champs_all if c.get("name") == "Kayn")
+        shadow = dict(base_kayn)
+        shadow["name"] = "Kayn (Shadow Assassin)"
+        shadow["slug"] = "kayn-shadow-assassin"
+        # Keep the synthetic lookup entry out of the public roster.  It is a
+        # form of Kayn, not a 144th champion users should be able to select.
+        shadow["formOf"] = "Kayn"
+        shadow["formKey"] = "shadow-assassin"
+        shadow["formLabel"] = "Shadow Assassin"
+        shadow.pop("forms", None)
+        champs_all.append(shadow)
     champion_overrides = _load("champion_stat_overrides.json").get("champions", {})
     item_stat_rules = _load("item_stat_rules.json").get("items", {})
     rune_stat_rules = _load("rune_stat_rules.json").get("runes", {})
@@ -249,6 +305,8 @@ def main() -> None:
         if override.get("statRules"):
             champion["statRules"] = override["statRules"]
     formulas = _load("ability_formulas.json")
+    if "Kayn" in formulas:
+        formulas.setdefault("Kayn (Shadow Assassin)", formulas["Kayn"])
     # Combos come from champion_combos.json, not from the extraction.
     #
     # ability_formulas.json carries a `combo` field, but it is the one thing in

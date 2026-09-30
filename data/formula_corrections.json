@@ -4,7 +4,9 @@
   "knowledge": "keys merged over the champion's knowledge block (resource, asEfficiency, abilitiesCanCrit, ...)",
   "removeMechanics": "list of mechanic kinds to delete from the champion's mechanics list",
   "reason": "why the extraction is wrong here. Required.",
-  "abilities": "per-slot overrides folded into the extracted ability. Supported: damage (REPLACES the slot's damage list wholesale) and empowerLimit (how many following attacks one cast empowers -- read by both engines ahead of the prose heuristic). Requires reason quoting the source text.",
+ "abilities": "per-slot overrides folded into the extracted ability. Supported: damage (REPLACES the slot's damage list wholesale), empowerLimit (how many following attacks one cast empowers -- read by both engines ahead of the prose heuristic), steroids (replace the slot's steroid list), and component fields such as ratios, crossRatios, baseAdd, hits, when, recastIndex, empowerLimit, and mortalWill. Requires reason quoting the source text.",
+ "mechanicUpdates": "fields merged into an existing mechanic by kind; useful for rank/level-scaled passive values without replacing the whole mechanic",
+ "resolvedUnmodeled": "exact tooltip notes that are now represented by structured formula fields and should no longer count as unresolved coverage gaps",
   "addMechanics": "reviewed mechanics to append when extraction omitted them; duplicate kinds are ignored"
  },
  "champions": {
@@ -79,7 +81,150 @@
       }
      }
     }
+   },
+   "resolvedUnmodeled": {
+    "4": ["Enemies damaged by the initial impact do not take damage from the explosive cone."],
+    "P": ["7.3: Shotgun Critical Strike Damage rate: 1.3 → 1.5"]
    }
+  },
+  "Sett": {
+   "abilities": {
+    "1": {
+     "components": {
+      "Knuckle Down": {
+       "crossRatios": [
+        {"target": "targetMaxHp", "stat": "ad", "pctPerStat": [0.01, 0.015, 0.02, 0.025]}
+       ]
+      }
+     }
+    },
+    "2": {
+     "components": {
+      "Haymaker Center": {
+       "gritScale": {"expectedGritPctMaxHp": 0.25, "base": 0.25, "perAd": 0.00275}
+      }
+     }
+    }
+   },
+   "resolvedUnmodeled": {
+    "1": ["Additional percent max health damage scales with AD per rank (0.01%/0.015%/0.02%/0.025% per AD)."]
+   },
+   "reason": "Sett's Knuckle Down adds a rank-scaled percentage of target max health for every point of AD. Haymaker also carries an expected half-cap Grit charge for deterministic build comparison; exact incoming-damage timing remains disclosed."
+  },
+  "Pantheon": {
+   "abilities": {
+    "1": {"tapCooldownRefundPct": 0.6},
+    "2": {
+     "components": {
+      "Shield Vault (Mortal Will empowered attack)": {"hits": 3, "mortalWill": true}
+     }
+    }
+   },
+   "resolvedUnmodeled": {
+    "1": ["Refunds 60% Cooldown on tap cast"],
+    "2": ["Empowered attack strikes 3 times"]
+   },
+   "reason": "Mortal Will Shield Vault is a three-hit empowered attack. The alternate component existed but was never selected or given its three strikes, so the high-value empowered path was absent from burst comparisons. The combo evaluator now selects it when Grand Starfall readies Mortal Will."
+  },
+  "Malphite": {
+   "abilities": {
+    "2": {
+     "steroids": [
+      {"stat": "armor", "flat": [8], "pct": [25, 30, 35, 40], "note": "plus 25% / 30% / 35% / 40% Armor; passive and active armor bonus"}
+     ],
+     "components": {
+      "Thunderclap empowered first attack": {"empowerLimit": 1}
+     }
+    }
+   },
+   "resolvedUnmodeled": {
+    "2": ["Passive armor percent increase of 25% / 30% / 35% / 40% Armor scales with ability rank", "Active lasts 6 seconds; only the first attack after activation is empowered for the extra bonus damage", "Cone attacks strike enemies in a cone, not single-target"]
+   },
+   "reason": "Thunderclap's passive armor is a multiplicative rank-scaled bonus, and its active extra damage is only on the first attack. Both were previously applied as an always-on flat/always-per-auto effect, biasing armor and attack-speed builds."
+  },
+  "Gwen": {
+   "knowledge": {
+    "asEfficiency": 0.6
+   },
+   "abilities": {
+    "1": {"stackGated": true},
+    "P": {
+     "components": {
+      "Thousand Cuts on-hit": {
+       "crossRatios": [
+        {"target": "targetMaxHp", "stat": "ap", "pctPerStat": 0.005}
+       ]
+      }
+     }
+    },
+    "4": {
+     "recastChain": true,
+     "components": {
+      "Needlework first cast": {"recastIndex": 0},
+      "Needlework second cast": {"recastIndex": 1},
+      "Needlework third cast": {"recastIndex": 2}
+     }
+    }
+   },
+   "resolvedUnmodeled": {
+    "P": ["Additional +0.005% AP of target's max health on-hit"],
+    "4": ["Needlework can be recast 2 additional times; each component is one recast (use one '4' action for the full 3-cast chain)"]
+   },
+   "reason": "Gwen's Thousand Cuts adds 0.005% target max health per AP, and Needlework's three formula components are three recasts of one cast. The short-combo path now assigns one component per recast while the sustained path retains the complete three-cast chain."
+  },
+  "Ambessa": {
+   "abilities": {
+    "1": {
+     "statefulCombo": true,
+     "components": {
+      "Cunning Sweep": {"comboState": "initial", "crossRatios": [{"target": "targetMaxHp", "stat": "bonusAd", "pctPerStat": 0.02}]},
+      "Cunning Sweep Edge": {"crossRatios": [{"target": "targetMaxHp", "stat": "bonusAd", "pctPerStat": 0.04}]},
+      "Sundering Slam First Enemy": {"crossRatios": [{"target": "targetMaxHp", "stat": "bonusAd", "pctPerStat": 0.04}]},
+      "Sundering Slam Other Targets": {"crossRatios": [{"target": "targetMaxHp", "stat": "bonusAd", "pctPerStat": 0.02}]}
+     }
+    },
+    "P": {
+     "components": {
+      "Drakehound's Step Empowered Attack": {"baseAdd": 2.5}
+     }
+    }
+   },
+   "resolvedUnmodeled": {
+    "1": ["Cunning Sweep transforms into Sundering Slam for 3.5s after hitting; max health damage also scales with +0.02% bonus AD (regular/other) and +0.04% (edge/first)"],
+    "P": ["Empowered attack also gains +2.5 flat damage and increased range; triggers after Feint; stacks up to 3; restores 50 Energy (increases at level 1/6/11)"]
+   },
+   "reason": "Ambessa's Q max-health damage has an additional bonus-AD multiplier in both stances, and Drakehound's Step adds a flat 2.5 damage to each empowered attack. These are build-relevant numeric terms; stance selection and energy timing remain disclosed separately."
+  },
+  "Aatrox": {
+   "abilities": {
+    "1": {"recastChain": true, "recastMultiplier": [1, 1.25, 1.5625], "preferredAlt": "The Darkin Blade (Sweetspot)"}
+   },
+   "resolvedUnmodeled": {
+    "1": ["Can be recast 2 more times; each subsequent cast deals 25% more damage (multiplicative)."]
+   },
+   "reason": "The Darkin Blade recasts multiply damage by 1.25 on each successive cast. The combo path now applies the 1x/1.25x/1.5625x sequence instead of treating all three actions as identical casts."
+  },
+  "Hecarim": {
+   "abilities": {
+    "1": {"nextCastMultiplier": 1.2}
+   },
+   "reason": "A full-charge Rampage empowers the next Rampage for 120% damage. The rotation applies this to repeated Q casts after the first within the 8-second window; the charge timing remains conservative."
+  },
+  "Lucian": {
+   "abilities": {
+    "1": {
+     "components": {
+      "Piercing Light": {"ratios": [{"stat": "ad", "pct": [65, 85, 105, 125]}]}
+     }
+    }
+   },
+   "mechanicUpdates": {
+    "doubleShot": {"secondShotPctByLevel": [[1, 35], [6, 50], [11, 65]]}
+   },
+   "resolvedUnmodeled": {
+    "1": ["AD ratio scales with rank: 65%/85%/105%/125%."]
+   },
+   "reason": "Lucian's Piercing Light ratio is rank-scaled, not a permanent 65%. Lightslinger also grows from 35% to 50% to 65% AD at levels 1/6/11; the mechanic update keeps the double-shot uptime model while using the correct level tier."
   },
   "Nilah": {
    "knowledge": {
@@ -146,12 +291,6 @@
     "abilitiesCanCrit": false
    },
    "reason": "7.2d drift: asEfficiency 0.6 -> 0.7 and abilitiesCanCrit false -> true. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.6 -> asEfficiency 0.6 -> 0.7 and abilitiesCanCrit false -> true); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
-  },
-  "Gwen": {
-   "knowledge": {
-    "asEfficiency": 0.6
-   },
-   "reason": "7.2d drift: asEfficiency 0.6 -> 0.8. The 7.2d re-extraction moved this value without the patch touching the champion's attack pattern (asEfficiency 0.6 -> asEfficiency 0.6 -> 0.8); the pre-patch value is what the current builds were judged on. Re-litigate with evidence rather than letting an unrelated patch re-tune it."
   },
   "Renekton": {
    "knowledge": {
@@ -345,6 +484,6 @@
    },
    "reason": "RANK TIERS EXTRACTED AS SEPARATE RATIOS. A tooltip's '110 / 130 / 150 / 170% AD' is one ratio that scales with ability rank, and 63 components across the roster store it correctly as a single entry with a rank-list pct. These two were written as FOUR separate same-stat ratios instead, and the engine sums every ratio in the list, so the ability was charged 110+130+150+170 = 560% AD at every rank. On Graves that made End of the Line roughly three times its real damage and dominated his whole profile: an engine enumeration of his best damage build came back as a zero-attack-speed ability-haste build, because Q was worth more than his shotgun. Graves' PASSIVE is deliberately left alone: [72, 24, 24, 24] really is four bullets and really does add up."
   }
- },
+  },
  "_revertNote": "Twisted Fate (asEfficiency 0.8) and Kennen (0.7) corrections were applied on 2026-07-29 and REVERTED the same day on owner meta-judgment: with the raised values the model built Nashor's Tooth as an effective core item on both (slot 2 in consecutive Twisted Fate runs), and neither champion builds it as a staple in the live meta. Their every-N-hit passives are real, but the extraction's 0.2 produces the builds that match reality. If this comes up again, re-litigate with N-run evidence against real meta builds, not from ability text alone."
 }

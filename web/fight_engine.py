@@ -259,6 +259,17 @@ def _apply_formula_corrections(formulas: dict) -> int:
                        for m in rec.get("mechanics") or []):
                 rec.setdefault("mechanics", []).append(mechanic)
                 applied += 1
+        for kind, updates in (entry.get("mechanicUpdates") or {}).items():
+            for mechanic in rec.get("mechanics") or []:
+                if mechanic.get("kind") == kind:
+                    mechanic.update(updates)
+                    applied += 1
+        for slot, notes in (entry.get("resolvedUnmodeled") or {}).items():
+            ability = (rec.get("abilities") or {}).get(slot)
+            if ability and notes:
+                before = list(ability.get("unmodeled") or [])
+                ability["unmodeled"] = [n for n in before if n not in notes]
+                applied += len(before) - len(ability["unmodeled"])
         # Per-slot ability overrides: `damage` replaces the slot's damage list
         # wholesale. Added for Camille's Q, whose scraped text was missing the
         # recast sentence and with it the 40% true-damage conversion.
@@ -270,6 +281,30 @@ def _apply_formula_corrections(formulas: dict) -> int:
             if ability is not None and "empowerLimit" in patch:
                 ability["empowerLimit"] = patch["empowerLimit"]
                 applied += 1
+            if ability is not None and "recastChain" in patch:
+                ability["recastChain"] = bool(patch["recastChain"])
+                applied += 1
+            if ability is not None and "recastMultiplier" in patch:
+                ability["recastMultiplier"] = patch["recastMultiplier"]
+                applied += 1
+            if ability is not None and "nextCastMultiplier" in patch:
+                ability["nextCastMultiplier"] = patch["nextCastMultiplier"]
+                applied += 1
+            if ability is not None and "preferredAlt" in patch:
+                ability["preferredAlt"] = patch["preferredAlt"]
+                applied += 1
+            if ability is not None and "stackGated" in patch:
+                ability["stackGated"] = bool(patch["stackGated"])
+                applied += 1
+            if ability is not None and "statefulCombo" in patch:
+                ability["statefulCombo"] = bool(patch["statefulCombo"])
+                applied += 1
+            if ability is not None and "tapCooldownRefundPct" in patch:
+                ability["tapCooldownRefundPct"] = patch["tapCooldownRefundPct"]
+                applied += 1
+            if ability is not None and "steroids" in patch:
+                ability["steroids"] = patch["steroids"]
+                applied += 1
             if ability is not None:
                 for component in ability.get("damage") or []:
                     fix = (patch.get("components") or {}).get(component.get("name"))
@@ -279,6 +314,11 @@ def _apply_formula_corrections(formulas: dict) -> int:
                         component["ratios"] = fix["ratios"]
                     if "crossRatios" in fix:
                         component["crossRatios"] = fix["crossRatios"]
+                    for key in ("baseAdd", "hits", "when", "recastIndex",
+                                "empowerLimit", "mortalWill", "gritScale",
+                                "comboState", "preferredAlt"):
+                        if key in fix:
+                            component[key] = fix[key]
                     # Crit shapes 7.3 introduced. They live here rather than in
                     # ability_formulas.json so a re-extraction cannot drop them.
                     if "critScale" in fix:
@@ -296,6 +336,15 @@ _apply_recovered_conditions(FORMULAS)
 _apply_cooldown_corrections(FORMULAS)
 _apply_auto_replacement(FORMULAS)
 _apply_formula_corrections(FORMULAS)
+# The data feed has a named Rhaast form but stores Shadow Assassin as Kayn's
+# base record.  The advisor uses an explicit form label so the final answer can
+# say which transformation was measured; expose that label to the simulator as
+# the same base/Shadow kit instead of raising KeyError halfway through a
+# tournament.
+if "Kayn" in CHAMPS:
+    CHAMPS.setdefault("Kayn (Shadow Assassin)", CHAMPS["Kayn"])
+if "Kayn" in FORMULAS:
+    FORMULAS.setdefault("Kayn (Shadow Assassin)", FORMULAS["Kayn"])
 # Combos are overlaid from champion_combos.json, the same source the exported
 # engine.json uses, so the Python and browser engines open with the same
 # sequence. The extraction's own combo answers a different question ("standard
@@ -493,9 +542,9 @@ _SITE = json.loads(_SITE_P.read_text(encoding="utf-8")) if _SITE_P.exists() else
 # Patch 7.3 raised base critical strike damage from 175% to 200% across the
 # board, which is the change the whole marksman item overhaul is built on.
 BASE_CRIT_MULT = 2.0
-# Font of Life procs on hitting a champion; in a real fight that lands roughly
-# every few seconds, not every tick. Used to turn its per-proc heal into a rate.
-FONT_PROC_EVERY = 3.0
+# Font of Life states a 15-second cooldown. Keep the fallback cadence aligned
+# with the curated tooltip data rather than paying its heal every few seconds.
+FONT_PROC_EVERY = 15.0
 RUNE_PROC_EVERY = 9.0   # assumed cadence for a rune that states none
 AS_CAP = 3.0        # 2.5 before patch 7.3
 SPELLBLADE_CD = 1.5
@@ -530,6 +579,20 @@ CURRENT_HP_DECAY = 0.5
 # is reachable much more often than the next one out, and a flat factor would
 # either overpay the first or underpay it to punish the second.
 SECONDARY_REACH = (0.65, 0.40)
+
+# Context effects that cannot be inferred from an item/kit tuple are kept
+# explicit rather than silently priced as guaranteed.  The numerical engine
+# already discounts secondary reach and cooldown-gated procs; this contract
+# tells the judge and the local debug panel which remaining variables are
+# intentionally scenario assumptions, so a practical override has a grounded
+# place to explain itself.
+CONTEXT_ASSUMPTIONS = {
+    "allyProximity": "not simulated; ally-only healing/buffs use the reference 8s support window",
+    "takedownAvailability": "not simulated; reset/range-after-takedown effects are excluded from raw damage",
+    "positioning": "primary target is in range; secondary targets use the reach table and capped 1v3 panel",
+    "enemyActions": "enemy damage, crowd control, target switching and peel are not simulated",
+    "procOpportunities": "stated cooldowns, arming delays and hit-count gates are enforced; unstructured opportunities are conservative",
+}
 
 
 def secondary_reach(index: int) -> float:
@@ -834,13 +897,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # Procs whose condition the rotation has to verify, and ult-only amp.
         "conditionalProcs": [], "ultAmp": 0.0,
         "spellbladeBaseAdPct": 0.0, "spellbladePctMaxHp": 0.0,
-        "spellbladeApPct": 0.0, "spellbladeMagic": 0.0,
+        "spellbladeApPct": 0.0, "spellbladeCritFlatPerCrit": 0.0,
+        "spellbladeCanCrit": 0.0, "spellbladeMagic": 0.0,
         "extraOnHitApplications": 0.0,
         "extraBolts": 0.0, "extraBoltAdPct": 0.0,
         "piercingBoltDurationS": 0.0,
         # Discrete damage on OTHER targets (Statikk chain lightning). Kept out
         # of single-target total just like Runaan's bolts.
         "aoeProcFlat": 0.0, "aoeProcCdSec": 0.0, "aoeProcTargets": 0.0,
+        "aoeProcAppliesOnHit": 0.0,
+        "burstAoeProcs": [],
         "targetSlow": 0.0, "targetSlowEffects": [],
         "itemHaste": 0.0, "autoBonusPct": 0.0,
         # What the OPPONENT's build does to my output. Both are 1.0 unless
@@ -852,13 +918,25 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "drMagic": 0.0, "drPhys": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "onHitPctMissingHp": 0.0,
-        "procs": [], "dotDps": 0.0, "dotPctMaxHp": 0.0,
+        "procs": [], "dotDps": 0.0, "dotDpsBonusHpPct": 0.0, "dotPctMaxHp": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
         "apAmp": 0.0, "hastePct": 0.0, "cdRefundPctPerAuto": 0.0,
         "cleaveFlat": 0.0, "cleavePctBonusHp": 0.0,
         "vamp": 0.0, "healOnHit": 0.0,
+        "activeHealAdPct": 0.0, "activeHealMissingHpPct": 0.0,
+        "activeHealCdSec": 0.0,
         "shield": 0.0, "shieldPctBonusHp": 0.0, "shieldPctMaxHp": 0.0, "dr": 0.0,
+        "overhealShieldCap": 0.0,
+        "shieldPctMana": 0.0, "shieldManaRangedMult": 1.0,
+        "triggeredHp": 0.0, "triggeredHeal": 0.0,
+        "triggeredHealBonusArmorPct": 0.0, "triggeredHealBonusMrPct": 0.0,
+        "triggeredHealBonusHpPct": 0.0,
+        "attackRangeBonus": 0.0, "attackRangeBonusPct": 0.0,
+        "ultAttackCount": 0.0, "ultAttackCritMultiplierPct": 0.0,
+        "ultAttackTruePctIfCrit": 0.0, "ultAttackWindowS": 0.0,
+        "ultAttackAsPct": 0.0, "ultAttackCooldownS": 0.0,
         "healShieldAmp": 0.0, "runeHealPerSec": 0.0, "runeAllyHealPerSec": 0.0,
+        "conquerorHealPct": 0.0, "conquerorRampS": 3.0,
         "allyShield": 0.0,
         "graspPct": 0.0, "graspEvery": 5.0,
         # component healing shares (for the breakdown; total still == "vamp")
@@ -896,6 +974,12 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                   for it in (ITEMS.get(s) for s in item_slugs) if it)
     _atk_rate = min(AS_CAP, (bs.get("attackSpeed", {}).get("base", 0.75) or 0.75)
                     * (1 + _as_pct / 100.0))
+    # Build-stage simulations must not grant a fully stacked passive to a
+    # first-item purchase.  This is intentionally a smooth expectation rather
+    # than a hard item rule: a one-item Yun Tal has had fewer attacks to build
+    # Practice Makes Perfect than a six-slot build, while a full build is
+    # measured at its ordinary late-game value.
+    _stack_progress = min(1.0, 0.20 + 0.16 * max(0, len(item_slugs) - 1))
 
     for slug in item_slugs:
         it = ITEMS.get(slug)
@@ -958,6 +1042,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             _sb_max = g("spellbladePctMaxHpRanged")
         st["spellbladePctMaxHp"] = max(st["spellbladePctMaxHp"], _sb_max)
         st["spellbladeApPct"] = max(st["spellbladeApPct"], g("spellbladeApPct"))
+        st["spellbladeCritFlatPerCrit"] = max(
+            st["spellbladeCritFlatPerCrit"], g("spellbladeCritFlatPerCrit"))
+        st["spellbladeCanCrit"] = max(st["spellbladeCanCrit"], g("spellbladeCanCrit"))
         # Dusk and Dawn's second clause: "apply on-hits to the target 1
         # additional time", on the same spellblade proc. Worth more than its
         # small spellblade half to an on-hit build (Nashor's, Wit's End), and
@@ -991,6 +1078,20 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["aoeProcFlat"] += g("aoeProcFlat")
         st["aoeProcCdSec"] = max(st["aoeProcCdSec"], g("aoeProcCdSec"))
         st["aoeProcTargets"] += g("aoeProcTargets")
+        st["aoeProcAppliesOnHit"] = max(
+            st["aoeProcAppliesOnHit"], g("aoeProcAppliesOnHit"))
+        if (g("burstAoeFlat") or g("burstAoeApPct") or
+                g("burstPrimaryMissingFlat") or g("burstPrimaryMissingApPct")):
+            st["burstAoeProcs"].append({
+                "flat": g("burstAoeFlat"),
+                "apRatio": g("burstAoeApPct") / 100.0,
+                "targets": g("burstAoeTargets"),
+                "missingFlat": g("burstPrimaryMissingFlat"),
+                "missingApRatio": g("burstPrimaryMissingApPct") / 100.0,
+                "cd": g("burstProcAoeCdSec") or g("burstProcCdSec") or float("inf"),
+                "type": fx.get("burstProcType", "magic"),
+                "label": slug,
+            })
         # Damage TYPE is read from the item's own text, not asked of the model: a
         # flag key would have to be grounded, and the literal "1" of a boolean
         # never appears in a tooltip, so it could never survive the filter.
@@ -1027,7 +1128,11 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                  apRatio=g("burstProcApPct") / 100.0,
                  label=slug, type=fx.get("burstProcType", "magic"),
                  cd=g("burstProcCdSec"), arm=g("burstProcArmSec"))
+        st["activeHealAdPct"] += g("healOnActiveAdPct") / 100.0
+        st["activeHealMissingHpPct"] += g("healOnActiveMissingHpPct") / 100.0
+        st["activeHealCdSec"] = max(st["activeHealCdSec"], g("healOnActiveCdSec") or g("burstProcCdSec"))
         st["dotDps"] += g("dotDps")
+        st["dotDpsBonusHpPct"] = st.get("dotDpsBonusHpPct", 0.0) + g("dotDpsBonusHpPct")
         # %max-HP burns (Searing Crown) are target-scaled, so they are summed
         # here and priced at fight time. Ranged users pay the reduced rate.
         st["dotPctMaxHp"] += g("dotPctMaxHpPerSecRanged" if (_rngd and fx.get(
@@ -1042,20 +1147,43 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["omnivampPct"] += g("omnivampPct") / 100.0
         st["healOnHit"] += g("healOnHitFlat")
         st["shield"] += g("shieldFlat")
+        st["overhealShieldCap"] += g("overhealShieldCap")
+        st["shieldPctMana"] += g("shieldPctMana") / 100.0
+        if g("shieldManaRangedMult"):
+            st["shieldManaRangedMult"] = min(
+                st["shieldManaRangedMult"], g("shieldManaRangedMult"))
         st["shieldPctBonusHp"] += g("shieldPctBonusHp") / 100.0
         st["shieldPctMaxHp"] += g("shieldPctMaxHp") / 100.0
+        st["triggeredHp"] += g("emergencyHpFlat")
+        st["triggeredHeal"] += g("emergencyHealFlat")
+        st["triggeredHealBonusArmorPct"] = st.get("triggeredHealBonusArmorPct", 0.0) + g("emergencyHealBonusArmorPct") / 100.0
+        st["triggeredHealBonusMrPct"] = st.get("triggeredHealBonusMrPct", 0.0) + g("emergencyHealBonusMrPct") / 100.0
+        st["triggeredHealBonusHpPct"] = st.get("triggeredHealBonusHpPct", 0.0) + g("emergencyHealBonusHpPct") / 100.0
+        _range_cap = g("rangeBonusCap")
+        if _range_cap:
+            st["attackRangeBonus"] = max(st["attackRangeBonus"], _range_cap)
+        else:
+            st["attackRangeBonus"] += g("rangeBonusFlat")
+        if g("rangeBonusPct"):
+            st["attackRangeBonusPct"] = max(st.get("attackRangeBonusPct", 0.0), g("rangeBonusPct"))
+        st["ultAttackCount"] = max(st["ultAttackCount"], g("ultAttackCount"))
+        st["ultAttackCritMultiplierPct"] = max(st["ultAttackCritMultiplierPct"], g("ultAttackCritMultiplierPct"))
+        st["ultAttackTruePctIfCrit"] = max(st["ultAttackTruePctIfCrit"], g("ultAttackTruePctIfCrit"))
+        st["ultAttackWindowS"] = max(st["ultAttackWindowS"], g("ultAttackWindowS"))
+        st["ultAttackAsPct"] = max(st["ultAttackAsPct"], g("ultAttackAsPct"))
+        st["ultAttackCooldownS"] = max(st["ultAttackCooldownS"], g("ultAttackCooldownS"))
         # A revive is, for EHP purposes, a shield worth X% of max HP: they have
         # to kill you twice. Conservative -- ignores the stasis window, during
         # which the enemy often disengages entirely.
         st["shieldPctMaxHp"] += g("reviveHpPct") / 100.0
         # Attack speed granted by a PASSIVE rather than the stat line. There was
         # no key for this at all, so Guinsoo's 32% and Youmuu's 25% were lost.
-        st["baseAsPct"] += g("asPctPassive")
+        st["baseAsPct"] += g("asPctPassive") * _stack_progress
         # Critical rate granted by a PASSIVE, the same idea. Yun Tal Wildarrows
         # (7.3) prints 0% crit and earns 25% by attacking, so its stat line says
         # nothing about the one stat it exists for, and a crit item read as
         # having no crit loses every comparison it should win.
-        st["crit"] += g("critPctPassive") / 100.0
+        st["crit"] += g("critPctPassive") / 100.0 * _stack_progress
         st["critDamagePerExcessCrit"] += g("critDamagePerExcessCrit")
         # "Every Nth attack deals ..." (Hullbreaker's Skipper). Emphatically NOT
         # a spellblade and NOT an on-hit: it fires once per N autos, so only 1/N
@@ -1251,6 +1379,27 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["dr"] = max(st["dr"], r.get("drPct", 0) / 100.0)
         st["healShieldAmp"] += r.get("healShieldAmpPct", 0) / 100.0
         st["runeHealPerSec"] += r.get("healPerSec", 0) + r.get("healPerProc", 0) / 9.0
+        if r.get("healPctMelee") or r.get("healPctRanged"):
+            heal_pct = (r.get("healPctRanged", r.get("healPctMelee", 0))
+                        if CHAMP_CLASS.get(name, "") in RANGED_CLASSES
+                        else r.get("healPctMelee", r.get("healPctRanged", 0)))
+            st["conquerorHealPct"] = max(st["conquerorHealPct"], heal_pct / 100.0)
+            st["conquerorRampS"] = max(st["conquerorRampS"],
+                                       float(r.get("stackRampSec", 3) or 3))
+        if r.get("healPctMaxHp") or r.get("allyHealPctMaxHp") or r.get("healApRatio"):
+            # Font of Life has an explicit 15s cooldown and 130% melee
+            # effectiveness. Its ally gate is handled as a single uptime
+            # factor so the self and ally halves cannot be paid separately.
+            up = _ally_uptime(name) if rn in ALLY_GATED_RUNES else 1.0
+            melee_mult = (float(r.get("meleeMultiplier", 1.0) or 1.0)
+                          if CHAMP_CLASS.get(name, "") not in RANGED_CLASSES else 1.0)
+            period = float(r.get("procEverySec", FONT_PROC_EVERY) or FONT_PROC_EVERY)
+            self_heal = (float(r.get("healPctMaxHp", 0) or 0) / 100.0 * st["hp"]
+                         + float(r.get("healApRatio", 0) or 0) / 100.0 * st["ap"])
+            ally_heal = (float(r.get("allyHealPctMaxHp", 0) or 0) / 100.0 * st["hp"]
+                         + float(r.get("healApRatio", 0) or 0) / 100.0 * st["ap"])
+            st["runeHealPerSec"] += self_heal * up * melee_mult / period
+            st["runeAllyHealPerSec"] += ally_heal * up * melee_mult / period
         # Vamp from a rune. Only items and the LLM rune path fed these, so a
         # curated rune granting omnivamp or lifesteal healed for nothing.
         _vamp = (r.get("omnivampPct", 0) + r.get("lifestealPct", 0)
@@ -1259,7 +1408,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["omnivampPct"] += r.get("omnivampPct", 0) / 100.0
         st["lifestealPct"] += (r.get("lifestealPct", 0) + r.get("physVampPct", 0)) / 100.0
         if r.get("procTargetMaxHpPct"):
-            st["graspPct"] += r["procTargetMaxHpPct"]
+            ranged_mult = (r.get("rangedMultiplier", 1.0)
+                           if CHAMP_CLASS.get(name, "") in RANGED_CLASSES else 1.0)
+            st["graspPct"] += r["procTargetMaxHpPct"] * ranged_mult
             st["graspEvery"] = r.get("procEverySec", 5)
         if "bonusAdPerStackRange" in r:
             lo, hi = r["bonusAdPerStackRange"]
@@ -1350,7 +1501,11 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             # fight. Duration is structured on nine steroids and stated in prose
             # on forty-two more, so both are read; anything with neither stays
             # permanent, which is right for passives.
-            note_s = re.search(r"(\d+(?:\.\d+)?)\s*second", str(s.get("note") or ""), re.I)
+            # Scrapes alternate between "0.75s" and "5 seconds"; both are
+            # duration evidence, and missing the abbreviated form turns
+            # Fiora's Riposte peak into permanent 100% damage reduction.
+            note_s = re.search(r"(\d+(?:\.\d+)?)\s*(?:seconds?|s)\b",
+                               str(s.get("note") or ""), re.I)
             duration = (s.get("durationS") if isinstance(s.get("durationS"), (int, float))
                         else float(note_s.group(1)) if note_s else None)
             if duration and duration > 0:
@@ -1359,6 +1514,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                     "stat": stat,
                     "asPct": (pct or _scale_val(s.get("flat"), 3, level)) if stat == "attackSpeed" else 0.0,
                     "adFlat": _scale_val(s["flat"], 3, level) if stat == "ad" and s.get("flat") else 0.0,
+                    "drPct": (pct / 100.0) if stat == "damageReduction" else 0.0,
                     "durationS": float(duration),
                     "cooldownS": _scale_val(cds, 3, level) if cds else 12.0,
                 })
@@ -1370,10 +1526,23 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 st["bonusMs"] += st["baseMs"] * pct / 100.0 * 0.5  # avg uptime
             elif stat in ("armor", "mr") and s.get("flat"):
                 st[stat] += _scale_val(s["flat"], 3, level)
+                if s.get("from") == "ap" and pct:
+                    st[stat] += st["ap"] * pct / 100.0
+                elif s.get("pct") is not None:
+                    st[stat] *= 1.0 + pct / 100.0
+            elif stat in ("armor", "mr") and s.get("from") == "ap" and pct:
+                st[stat] += st["ap"] * pct / 100.0
+            elif stat in ("armor", "mr") and s.get("pct") is not None:
+                st[stat] *= 1.0 + pct / 100.0
             elif stat == "damageReduction":
                 # Flat damage reduction from a kit (Alistar's ultimate). Takes
-                # the strongest source, mirroring how the rune path treats drPct.
-                st["dr"] = max(st["dr"], _scale_val(s.get("pct"), 3, level) / 100.0)
+                # the strongest source, mirroring how the rune path treats
+                # drPct. A duration-bound parry (Fiora) is not a permanent
+                # 100% reduction: it is averaged by _for_window just like an
+                # attack-speed steroid. Only passive/permanent reductions land
+                # directly in the displayed stat block.
+                if not duration or duration <= 0:
+                    st["dr"] = max(st["dr"], _scale_val(s.get("pct"), 3, level) / 100.0)
             elif stat == "hp":
                 # Transform ultimates grant flat Health (Shyvana, Nasus,
                 # Volibear). It is bonus HP, so shield/HP-scaling effects see it.
@@ -1452,6 +1621,21 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         _hp_mana = mana_conv["hp"] / 100.0 * st["mana"]
         st["hp"] += _hp_mana
         st["bonusHp"] += _hp_mana
+    # Effects whose value depends on the completed build must be resolved only
+    # after mana conversions and rune stats have landed.  This is the point at
+    # which Sunfire sees all bonus health and Fimbulwinter sees final mana.
+    if st.get("dotDpsBonusHpPct"):
+        st["dotDps"] += st["dotDpsBonusHpPct"] / 100.0 * st["bonusHp"]
+    if st.get("shieldPctMana"):
+        _mana_mult = (st.get("shieldManaRangedMult", 1.0)
+                      if CHAMP_CLASS.get(name, "") in RANGED_CLASSES else 1.0)
+        st["shield"] += st["shieldPctMana"] * st["mana"] * _mana_mult
+    if st.get("triggeredHealBonusArmorPct") or st.get("triggeredHealBonusMrPct") \
+            or st.get("triggeredHealBonusHpPct"):
+        st["triggeredHeal"] += (
+            st.get("triggeredHealBonusArmorPct", 0.0) * max(0.0, st["armor"] - base("armor", 60))
+            + st.get("triggeredHealBonusMrPct", 0.0) * max(0.0, st["mr"] - base("mr", 45))
+            + st.get("triggeredHealBonusHpPct", 0.0) * st["bonusHp"])
     # Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
     # source above (items, runes, adaptive grants, Archangel's mana conversion).
     # It used to run BEFORE the mana conversions, contradicting this very
@@ -1470,7 +1654,13 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["onHitPhys"] += _dmg
     st["doubleShotMult"] = 1.0
     if "doubleShot" in mech:
-        pct = float(mech["doubleShot"].get("secondShotPct", 50))
+        shot = mech["doubleShot"]
+        pct = shot.get("secondShotPct", 50)
+        for min_level, value in sorted(shot.get("secondShotPctByLevel") or [],
+                                        key=lambda x: x[0]):
+            if level >= min_level:
+                pct = value
+        pct = float(pct)
         st["doubleShotMult"] = 1 + pct / 100.0 * 0.6  # post-ability uptime approx
     # multiShot: one attack fires N projectiles (Graves' shotgun). Each pellet
     # rolls crit and carries on-hit, so this scales the whole auto — without it
@@ -1782,6 +1972,37 @@ def _mixed_taken(st: dict) -> float:
     return 0.5 * phys + 0.5 * magic
 
 
+def _active_item_heal(st: dict, window: float) -> float:
+    """Healing from a cooldown-gated item active in the reference fight."""
+    if not (st.get("activeHealAdPct") or st.get("activeHealMissingHpPct")):
+        return 0.0
+    cd = st.get("activeHealCdSec") or float("inf")
+    times = _proc_activations(window, cd)
+    return times * (st.get("activeHealAdPct", 0.0) * st.get("ad", 0.0)
+                    + st.get("activeHealMissingHpPct", 0.0)
+                    * st.get("hp", 0.0) * MISSING_HP_IN_FIGHT)
+
+
+def _conqueror_heal(st: dict, damage: float, window: float) -> float:
+    """Expected healing after Conqueror reaches its six-stack ramp."""
+    pct = st.get("conquerorHealPct", 0.0) or 0.0
+    if not pct or window <= 0:
+        return 0.0
+    active = max(0.0, min(1.0,
+                           (window - (st.get("conquerorRampS", 3.0) or 3.0))
+                           / window))
+    return pct * damage * active
+
+
+def _overheal_shield(st: dict, detail: dict) -> float:
+    """Bloodthirster's Ichorshield, charged by lifesteal healing only."""
+    cap = st.get("overhealShieldCap", 0.0)
+    if not cap:
+        return 0.0
+    lifesteal = st.get("lifestealPct", 0.0) * detail.get("byType", {}).get("physical", 0.0)
+    return min(cap, max(0.0, lifesteal))
+
+
 def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, comp_dmg, per_auto_share=None, name=""):
     """One auto-attack's damage, split by type (physical / magic / true).
 
@@ -1797,7 +2018,7 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
     _replaced = 0.0
     for _c, _s in per_auto_comps:
         if _c.get("replacesAuto"):
-            _replaced += per_auto_share(_s) if per_auto_share is not None else 1.0
+            _replaced += per_auto_share(_s, _c) if per_auto_share is not None else 1.0
     _replaced = min(1.0, _replaced)
     # Frost Shot's bonus is a share OF THE ATTACK, so it multiplies the auto
     # rather than adding a flat AD term. 0 for every champion but Ashe.
@@ -1817,6 +2038,40 @@ def _auto_split(st, target, phys_m, magic_m, giant, crit_ev, per_auto_comps, com
     k_phys, k_magic, k_true = _kit_per_auto(st, per_auto_comps, comp_dmg,
                                             per_auto_share, name)
     return a_phys + k_phys, a_magic + k_magic, k_true
+
+
+def _ult_attack_window_delta(st: dict, cast_log: dict, n_autos: int,
+                             window: float, phys_m: float, giant: float,
+                             per_auto_comps, per_auto_share=None) -> tuple[float, float]:
+    """Extra physical/true damage from Fiendhunter's post-ultimate window.
+
+    The item changes only the attack's crit outcome, not on-hit payloads. A
+    naturally critting attack receives the stated 15% bonus true damage; a
+    non-crit is forced to 80% of normal critical damage. The three-hit cap is
+    applied before the ordinary auto stream is multiplied.
+    """
+    count = int(st.get("ultAttackCount", 0) or 0)
+    if not count or not cast_log.get("4", {}).get("casts") or not n_autos:
+        return 0.0, 0.0
+    duration = st.get("ultAttackWindowS", 0.0) or window
+    eligible = n_autos if window <= duration else int(n_autos * duration / window)
+    count = min(count, max(1, eligible), n_autos)
+    replaced = 0.0
+    for comp, slot in per_auto_comps:
+        if comp.get("replacesAuto"):
+            replaced += per_auto_share(slot, comp) if per_auto_share is not None else 1.0
+    replaced = min(1.0, replaced)
+    base = (st["ad"] * giant * (1 - replaced)
+            * (1 + st.get("autoBonusPct", 0.0) / 100.0))
+    crit = min(1.0, st.get("crit", 0.0))
+    normal_mult = 1 + crit * (st.get("critMult", BASE_CRIT_MULT) - 1)
+    forced_pct = (st.get("ultAttackCritMultiplierPct", 80.0) or 80.0) / 100.0
+    forced_mult = ((1 - crit) * forced_pct * st.get("critMult", BASE_CRIT_MULT)
+                   + crit * st.get("critMult", BASE_CRIT_MULT))
+    d_phys = (forced_mult - normal_mult) * base * phys_m * count
+    d_true = (crit * st.get("ultAttackTruePctIfCrit", 0.0) / 100.0
+              * base * count)
+    return d_phys, d_true
 
 
 _REPEAT_ON_HIT_CACHE: dict[str, bool] = {}
@@ -1963,7 +2218,7 @@ def _kit_per_auto(st, per_auto_comps, comp_dmg, per_auto_share=None, name=""):
             if _cv is not None:
                 cd = (1 - st["crit"]) * cd + st["crit"] * _per_hit(_cv)
         if per_auto_share is not None:
-            cd *= per_auto_share(_slot)
+            cd *= per_auto_share(_slot, comp)
         typ = comp["type"]
         if typ == "magic":
             m += cd
@@ -2043,7 +2298,9 @@ def _proc_split(st, target, phys_m, magic_m, window):
 
 
 def _aoe_proc_damage(st: dict, magic_m: float, window: float,
-                     secondary_targets: int | None = None) -> float:
+                     secondary_targets: int | None = None,
+                     target: dict | None = None, phys_m: float = 1.0,
+                     kit=None) -> float:
     """Damage a discrete item proc deals to enemies beyond the main target."""
     flat = st.get("aoeProcFlat", 0.0)
     targets = st.get("aoeProcTargets", 0.0)
@@ -2056,7 +2313,39 @@ def _aoe_proc_damage(st: dict, magic_m: float, window: float,
     if cd != float("inf"):
         cd *= 100.0 / (100.0 + st.get("itemHaste", 0.0))
     times = _proc_activations(window, cd)
-    return flat * targets * magic_m * times
+    damage = flat * targets * magic_m * times
+    # Statikk Shiv explicitly applies on-hit effects to its bounce targets.
+    # The primary energized attack already goes through _auto_split; only the
+    # secondary targets need the extra bundle here.
+    if st.get("aoeProcAppliesOnHit") and target is not None:
+        _p, _m, _t = _on_hit_bundle(st, target, phys_m, magic_m, kit)
+        damage += (_p + _m + _t) * targets * times
+    return damage
+
+
+def _burst_aoe_damage(st: dict, target: dict, magic_m: float, window: float,
+                      secondary_targets: int | None = None) -> tuple[float, float]:
+    """Return (primary top-up, nearby damage) for multi-target burst procs.
+
+    Luden's Echo deals its base hit to the primary and up to five nearby
+    enemies. Empty nearby slots are converted into extra primary-target damage.
+    Keeping this separate from the one-target proc channel means 1v1, 1v2 and
+    1v3 simulations all use the same cooldown and do not double-count the
+    primary hit.
+    """
+    primary = secondary = 0.0
+    for proc in st.get("burstAoeProcs") or []:
+        targets = max(0.0, proc.get("targets", 0.0))
+        nearby = (0.0 if secondary_targets is None else
+                  min(targets, max(0, secondary_targets)))
+        cd = proc.get("cd") or float("inf")
+        times = _proc_activations(window, cd)
+        base = proc.get("flat", 0.0) + proc.get("apRatio", 0.0) * st.get("ap", 0.0)
+        missing = (proc.get("missingFlat", 0.0)
+                   + proc.get("missingApRatio", 0.0) * st.get("ap", 0.0))
+        primary += missing * max(0.0, targets - nearby) * magic_m * times
+        secondary += base * nearby * magic_m * times
+    return primary, secondary
 
 
 def _on_hit_bundle(st, target, phys_m, magic_m, kit=None):
@@ -2098,13 +2387,18 @@ def _for_window(name: str, st: dict, window: float) -> dict:
         return st
     haste_m = 100 / (100 + st["haste"])
     as_lost = ad_lost = 0.0
+    timed_dr = 0.0
     for s in timed:
         cd = max(0.5, (s["cooldownS"] or 12) * haste_m)
         casts = 1 + int(window / cd)
         uptime = min(1.0, (s["durationS"] * casts) / window)
         as_lost += s["asPct"] * (1 - uptime)
         ad_lost += s["adFlat"] * (1 - uptime)
+        if s.get("drPct"):
+            timed_dr = max(timed_dr, float(s["drPct"]) * uptime)
     adj = dict(st)
+    if timed_dr:
+        adj["dr"] = max(float(st.get("dr", 0.0)), min(0.99, timed_dr))
     if st.get("ultimateArmorPen"):
         pen_factors = list(st.get("pctPenFactors") or [])
         for effect in st["ultimateArmorPen"]:
@@ -2289,9 +2583,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
 
     def comp_dmg(comp, rank, slot: str = "", secondary: bool = False) -> float:
         base = _scale_val(comp.get("base"), rank, level)
+        base += _scale_val(comp.get("baseAdd"), rank, level)
         if comp.get("when") == "dot total" and comp.get("durationS"):
             base *= float(comp["durationS"])
         val = base
+        grit = comp.get("gritScale")
+        if isinstance(grit, dict):
+            expected = st["hp"] * float(grit.get("expectedGritPctMaxHp", 0.0) or 0.0)
+            val += expected * (float(grit.get("base", 0.0) or 0.0)
+                              + float(grit.get("perAd", 0.0) or 0.0) * st["ad"])
         for r in comp.get("ratios") or []:
             stat, pct = r.get("stat"), _scale_val(r.get("pct", 0), rank, level) / 100.0
             src = {"ad": st["ad"], "bonusAd": st["bonusAd"], "ap": st["ap"],
@@ -2308,7 +2608,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                      "bonusAd": st["bonusAd"]}.get(r.get("stat"), 0)
             # pctPerStat is percentage points of the target quantity granted
             # by each point of the scaling stat (e.g. 0.012% max HP per AP).
-            val += left * right * float(r.get("pctPerStat", 0) or 0) / 100.0
+            val += left * right * _scale_val(
+                r.get("pctPerStat", 0), rank, level) / 100.0
         # Some percentage-health passives have a rank-based floor. Vayne's
         # Silver Bolts is the important build-comparison case: on a low-health
         # target the true-damage proc is still worth its minimum, then the
@@ -2406,7 +2707,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         budget = max(1, int(window / 0.45))
         seq = combo_seq[:budget]
         n_autos_seq = sum(1 for a in seq if a == "auto")
-        for slot in seq:
+        combo_casts: dict[str, int] = {}
+        for action_index, slot in enumerate(seq):
             if slot == "auto" or slot not in f:
                 continue
             # `dropped` HAS to be filtered here too. It was not, and this is
@@ -2417,17 +2719,68 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             # damage against the long window's 146 -- a 27x over-count, live,
             # and exactly the window duel() and score_vs_comp() search for a
             # kill in. Mirrors the filter engine.ts has always had.
-            comps = [c for c in f[slot].get("damage") or []
-                     if not c.get("alt") and not c.get("dropped")
-                     and c.get("when") != "per auto"]
-            per_auto_comps += [(c, slot) for c in f[slot].get("damage") or []
+            cast_index = combo_casts.get(slot, 0)
+            combo_casts[slot] = cast_index + 1
+            ability = f[slot]
+            cast_log[slot] = {"name": ability.get("name", slot),
+                              "casts": cast_index + 1, "max": cast_index + 1}
+            raw_damage = ability.get("damage") or []
+            # A recast chain stores one component per action. Sustained fights
+            # still use the complete chain, but a short combo's repeated slot
+            # actions are individual recasts (Gwen R and similar kits).
+            if ability.get("recastChain") and any(
+                    c.get("recastIndex") is not None for c in raw_damage):
+                comps = [c for c in raw_damage
+                         if c.get("recastIndex") == cast_index
+                         and not c.get("dropped")
+                         and c.get("when") != "per auto"]
+            # Grand Starfall immediately readies Mortal Will. The first
+            # Shield Vault after it is therefore the three-hit empowered
+            # attack, not the ordinary one. Keep this deterministic in the
+            # authored all-in combo; sustained rotation remains conservative.
+            elif name == "Pantheon" and slot == "2" and "4" in seq[:action_index]:
+                comps = [c for c in raw_damage
+                         if c.get("mortalWill") and not c.get("dropped")
+                         and c.get("when") != "per auto"]
+                if not comps:
+                    comps = [c for c in raw_damage
+                             if not c.get("alt") and not c.get("dropped")
+                             and c.get("when") != "per auto"]
+            elif ability.get("statefulCombo"):
+                state = "initial" if cast_index == 0 else "recast"
+                comps = [c for c in raw_damage
+                         if c.get("comboState") == state and not c.get("dropped")
+                         and c.get("when") != "per auto"]
+                if not comps:
+                    comps = [c for c in raw_damage
+                             if not c.get("alt") and not c.get("dropped")
+                             and c.get("when") != "per auto"]
+            elif ability.get("preferredAlt"):
+                comps = [c for c in raw_damage
+                         if c.get("name") == ability["preferredAlt"]
+                         and not c.get("dropped") and c.get("when") != "per auto"]
+            else:
+                comps = [c for c in raw_damage
+                         if not c.get("alt") and not c.get("dropped")
+                         and c.get("when") != "per auto"]
+            if ability.get("stackGated"):
+                attack_stacks = sum(1 for a in seq[:action_index] if a == "auto")
+                if attack_stacks < 4:
+                    comps = []
+            per_auto_comps += [(c, slot) for c in raw_damage
                                if not c.get("alt") and c.get("when") == "per auto" and not c.get("dropped")
                                and (c, slot) not in per_auto_comps]
             rank = 2 if slot == "4" else 3
             amp_a = 1 + st["abilityAmp"]
             d = 0.0
+            cast_multiplier = 1.0
+            if ability.get("recastMultiplier"):
+                multipliers = ability["recastMultiplier"]
+                cast_multiplier = float(multipliers[min(cast_index, len(multipliers) - 1)])
+            elif ability.get("nextCastMultiplier") and cast_index > 0:
+                cast_multiplier = float(ability["nextCastMultiplier"])
             for c in comps:
-                cd = comp_dmg(c, rank, slot) * amp_a
+                cd = comp_dmg(c, rank, slot) * cast_multiplier * amp_a
                 add_t(c["type"], cd)
                 by_slot_dmg[slot] = by_slot_dmg.get(slot, 0.0) + cd
                 d += cd
@@ -2440,6 +2793,11 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             if charges_spellblade(f[slot]):
                 casts_total += 1
         n_autos = max(n_autos_seq, int(window * st["as"] * 0.5))
+        if st.get("ultAttackAsPct") and cast_log.get("4", {}).get("casts"):
+            uptime = min(1.0, (st.get("ultAttackWindowS") or window)
+                         / max(window, 1e-9))
+            n_autos = max(n_autos, int(n_autos
+                                       * (1 + st["ultAttackAsPct"] / 100.0 * uptime)))
         # Frequency of each per-auto component: a passive that fires every Nth
         # attack rides 1/N of them, and an ability that empowers N attacks per
         # cast rides N x its casts. Both were riding every attack.
@@ -2451,13 +2809,13 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             _share_p = active * 0.5 + (1.0 - active) * (1.0 / 3.0)
         _limits = empower_limits(name)
 
-        def per_auto_share(slot, _n=None):
+        def per_auto_share(slot, comp=None, _n=None):
             if slot == "P":
                 if not _abilities_stack or not n_autos:
                     return _share_p
                 hits = sum(v["casts"] for v in cast_log.values())
                 return min(1.0, _share_p * ((n_autos + hits) / n_autos))
-            limit = _limits.get(slot)
+            limit = (comp or {}).get("empowerLimit") or _limits.get(slot)
             if limit and n_autos:
                 casts = cast_log.get(slot, {}).get("casts", 0)
                 if casts <= 0:
@@ -2479,6 +2837,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         add_t("physical", a_phys * dsm * n_autos)
         add_t("magic", a_magic * dsm * n_autos)
         add_t("true", a_true * dsm * n_autos)
+        _ult_p, _ult_t = _ult_attack_window_delta(
+            st, cast_log, n_autos, window, phys_m, giant, per_auto_comps,
+            per_auto_share)
+        _ult_p *= dsm
+        _ult_t *= dsm
+        if _ult_p or _ult_t:
+            auto += _ult_p + _ult_t
+            add_t("physical", _ult_p)
+            add_t("true", _ult_t)
         total += auto
         auto_dmg += auto
         parts.append((f"autos x{n_autos}", auto))
@@ -2496,7 +2863,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             bolt_uptime = (min(1.0, st.get("piercingBoltDurationS", 0.0) / window)
                            if st.get("piercingBoltDurationS") else 1.0)
             bolt_dmg += _per_bolt * secondary_reach_total(bolts) * n_autos * bolt_uptime
-        bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets)
+        bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets,
+                                      target, phys_m)
+        _burst_primary, _burst_secondary = _burst_aoe_damage(
+            st, target, magic_m, window, secondary_targets)
+        bolt_dmg += _burst_secondary
+        if _burst_primary:
+            parts.append(("multi-target proc primary top-up", _burst_primary))
+            add_t("magic", _burst_primary)
+            total += _burst_primary
         if st["spellbladeBaseAdPct"] or st["spellbladePctMaxHp"] or st["spellbladeApPct"]:
             procs = min(casts_total, n_autos, 1 + int(window / SPELLBLADE_CD))
             # Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; there
@@ -2504,9 +2879,13 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             # charged against armour. Type follows the item.
             _magic = st["spellbladeMagic"] > 0
             _m = magic_m if _magic else phys_m
-            d = (st["spellbladeBaseAdPct"] / 100.0 * st["baseAd"]
-                 + st["spellbladeApPct"] / 100.0 * st["ap"]
-                 + st["spellbladePctMaxHp"] / 100.0 * target["hp"]) * _m * procs
+            _sb_raw = (st["spellbladeBaseAdPct"] / 100.0 * st["baseAd"]
+                       + st["spellbladeApPct"] / 100.0 * st["ap"]
+                       + st["spellbladePctMaxHp"] / 100.0 * target["hp"]
+                       + st["spellbladeCritFlatPerCrit"] * st["crit"])
+            if st["spellbladeCanCrit"]:
+                _sb_raw *= crit_ev
+            d = _sb_raw * _m * procs
             parts.append((f"spellblade x{procs}", d))
             add_t("magic" if _magic else "physical", d)
             total += d
@@ -2569,6 +2948,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         rank = rank_of.get(slot, 3)
         cd_idx = min(rank, len(cds) - 1) if cds else 0
         cd = (cds[cd_idx] if cds else 8.0) * haste_m
+        if ab.get("tapCooldownRefundPct"):
+            cd *= max(0.05, 1.0 - float(ab["tapCooldownRefundPct"]))
         if _cdr_per_hit and slot != _cdr_slot and window > 0:
             # Seconds of cooldown removed across the window, spread evenly and
             # capped at halving, so a long fight cannot drive one to nothing.
@@ -2590,13 +2971,29 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             cast_log[slot] = {"name": ab.get("name", slot), "casts": actual,
                               "max": actual if hwei else max_casts}
         amp_a = 1 + st["abilityAmp"]
+        cast_multiplier_sum = float(casts)
+        if ab.get("nextCastMultiplier") and casts > 1:
+            cast_multiplier_sum = 1.0 + (casts - 1) * float(ab["nextCastMultiplier"])
+        damage_entries = [(c, cast_multiplier_sum) for c in dmg_comps]
+        if ab.get("statefulCombo"):
+            initial = [c for c in dmg_comps if c.get("comboState") == "initial"]
+            recast = [c for c in dmg_comps if c.get("comboState") == "recast"]
+            if initial or recast:
+                damage_entries = ([(c, 1.0) for c in initial[:1]]
+                                  + [(c, max(0.0, casts - 1.0)) for c in recast])
+        elif ab.get("preferredAlt"):
+            preferred = [c for c in (ab.get("damage") or [])
+                         if c.get("name") == ab["preferredAlt"]
+                         and not c.get("dropped") and c.get("when") != "per auto"]
+            if preferred:
+                damage_entries = [(c, cast_multiplier_sum) for c in preferred]
         d = 0.0
-        for c in dmg_comps:
-            cd = comp_dmg(c, rank, slot) * casts * amp_a
+        for c, component_casts in damage_entries:
+            cd = comp_dmg(c, rank, slot) * component_casts * amp_a
             add_t(c["type"], cd)
             by_slot_dmg[slot] = by_slot_dmg.get(slot, 0.0) + cd
             d += cd
-            secondary = secondary_comp_dmg(c, rank, slot) * casts * amp_a
+            secondary = secondary_comp_dmg(c, rank, slot) * component_casts * amp_a
             if slot == "4":
                 secondary *= 1 + st["ultAmp"]
             ability_aoe_dmg += secondary
@@ -2605,6 +3002,11 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
 
     # autos
     n_autos = hwei["autos"] if hwei else max(1, int(window * st["as"] * _auto_uptime(name, window, st)))
+    if st.get("ultAttackAsPct") and cast_log.get("4", {}).get("casts"):
+        uptime = min(1.0, (st.get("ultAttackWindowS") or window)
+                     / max(window, 1e-9))
+        n_autos = max(n_autos, int(n_autos
+                                   * (1 + st["ultAttackAsPct"] / 100.0 * uptime)))
     # Frequency of each per-auto component: a passive that fires every Nth
     # attack rides 1/N of them, and an ability that empowers N attacks per
     # cast rides N x its casts. Both were riding every attack.
@@ -2614,13 +3016,13 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         _share_p = active * 0.5 + (1.0 - active) * (1.0 / 3.0)
     _limits = empower_limits(name)
 
-    def per_auto_share(slot, _n=None):
+    def per_auto_share(slot, comp=None, _n=None):
         if slot == "P":
             if not _abilities_stack or not n_autos:
                 return _share_p
             hits = sum(v["casts"] for v in cast_log.values())
             return min(1.0, _share_p * ((n_autos + hits) / n_autos))
-        limit = _limits.get(slot)
+        limit = (comp or {}).get("empowerLimit") or _limits.get(slot)
         if limit and n_autos:
             casts = cast_log.get(slot, {}).get("casts", 0)
             if casts <= 0:
@@ -2641,6 +3043,14 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
     add_t("physical", a_phys * dsm * n_autos)
     add_t("magic", a_magic * dsm * n_autos)
     add_t("true", a_true * dsm * n_autos)
+    _ult_p, _ult_t = _ult_attack_window_delta(
+        st, cast_log, n_autos, window, phys_m, giant, per_auto_comps,
+        per_auto_share)
+    _ult_p *= dsm
+    _ult_t *= dsm
+    d_autos += _ult_p + _ult_t
+    add_t("physical", _ult_p)
+    add_t("true", _ult_t)
     parts.append((f"autos x{n_autos}", d_autos))
     # Bolt damage on OTHER targets, mirroring the combo path above. Both paths
     # need it for the same reason spellblade lives in both: whichever one a
@@ -2654,7 +3064,11 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         bolts = (st["extraBolts"] if secondary_targets is None
                  else min(st["extraBolts"], max(0, secondary_targets)))
         bolt_dmg += _per_bolt * secondary_reach_total(bolts) * n_autos
-    bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets)
+    bolt_dmg += _aoe_proc_damage(st, magic_m, window, secondary_targets,
+                                 target, phys_m)
+    _burst_primary, _burst_secondary = _burst_aoe_damage(
+        st, target, magic_m, window, secondary_targets)
+    bolt_dmg += _burst_secondary
     total += d_autos
     auto_dmg += d_autos
 
@@ -2664,9 +3078,13 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         procs = min(casts_total, n_autos, 1 + int(window / SPELLBLADE_CD))
         _magic = st["spellbladeMagic"] > 0
         _m = magic_m if _magic else phys_m
-        d = (st["spellbladeBaseAdPct"] / 100.0 * st["baseAd"]
-             + st["spellbladeApPct"] / 100.0 * st["ap"]
-             + st["spellbladePctMaxHp"] / 100.0 * target["hp"]) * _m * procs
+        _sb_raw = (st["spellbladeBaseAdPct"] / 100.0 * st["baseAd"]
+                   + st["spellbladeApPct"] / 100.0 * st["ap"]
+                   + st["spellbladePctMaxHp"] / 100.0 * target["hp"]
+                   + st["spellbladeCritFlatPerCrit"] * st["crit"])
+        if st["spellbladeCanCrit"]:
+            _sb_raw *= crit_ev
+        d = _sb_raw * _m * procs
         parts.append((f"spellblade x{procs}", d))
         add_t("magic" if _magic else "physical", d)
         total += d
@@ -2693,6 +3111,10 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         add_t("magic", once_m)
         add_t("true", once_t)
         total += once
+    if _burst_primary:
+        parts.append(("multi-target proc primary top-up", _burst_primary))
+        add_t("magic", _burst_primary)
+        total += _burst_primary
     if st["dotDps"] or st["dotPctMaxHp"]:
         d = (st["dotDps"] + st["dotPctMaxHp"] * target["hp"]) * window * magic_m
         parts.append(("burn", d))
@@ -2888,17 +3310,21 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
             ttk = t
             break
 
-    shield = st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"] + st["shieldPctMaxHp"] * st["hp"]
+    r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
+    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st["shieldPctMaxHp"] * st["hp"]
+              + st.get("triggeredHp", 0.0) + _overheal_shield(st, r8))
     shield *= 1 + st["healShieldAmp"]  # Revitalize-style amplification
     mixed_taken = _mixed_taken(st)
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
     # Kit self-healing counts toward staying alive, the same as lifesteal. It
     # used to be credited entirely as ally value, so a champion who sustains
     # through his own kit scored as though he had no sustain at all.
-    r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
                + kit_heal(name, st, level, 8.0, "self", r8["bySlot"], r8["total"])
-               + st["healOnHit"] * r8["nAutos"])
+               + st["healOnHit"] * r8["nAutos"]
+               + _active_item_heal(st, 8.0) + _conqueror_heal(st, dmg8, 8.0)
+               + st.get("triggeredHeal", 0.0))
 
     return {"burst3": round(burst3), "dps8": round(dps8), "ttk": ttk,
             # Damage the build puts on OTHER targets over the same 8s window
@@ -2913,6 +3339,8 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
             "moveSpeed": round(st["baseMs"] + st["bonusMs"]),
             "attackSpeed": round(st["as"], 2), "haste": round(st["haste"]),
             "crit": round(st["crit"] * 100), "mana": round(st["mana"]),
+            "attackRangeBonus": round(st.get("attackRangeBonus", 0.0)),
+            "attackRangeBonusPct": round(st.get("attackRangeBonusPct", 0.0)),
             "ultimateInvulnS": round(st.get("ultimateInvulnS", 0.0), 2)}
 
 
@@ -3012,6 +3440,26 @@ FOCUS_DPS = 2200.0
 REF_FIGHT = 8.0
 
 
+def incoming_damage_mix(name: str) -> tuple[float, float, float]:
+    """Reference team pressure as (physical, magic, true) shares.
+
+    A 50/50 physical/magic split was a useful first sanity check, but it made
+    armor-only Rammus and MR-only tanks look interchangeable and gave every
+    class the same defensive target.  Frontliners are the champions most often
+    focused by mixed damage plus true-damage executes, while carries see a
+    little more physical pressure from the marksman/fighter pair.  This is a
+    scenario prior for *comparison*, not a claim that every game has these
+    exact percentages; known enemy compositions still belong in the counter
+    simulator.
+    """
+    cls = CHAMP_CLASS.get(name, "")
+    if cls in {"Tank", "Juggernaut"}:
+        return 0.42, 0.38, 0.20
+    if cls in {"Bruiser", "Fighter"}:
+        return 0.48, 0.37, 0.15
+    return 0.52, 0.38, 0.10
+
+
 def delivered_share(m: dict, name: str) -> float:
     """Share of an 8-second rotation this build survives long enough to deal.
 
@@ -3065,7 +3513,7 @@ def delivered_share(m: dict, name: str) -> float:
     """
     if CHAMP_CLASS.get(name) != "Bruiser":
         return 1.0
-    ttd = ((m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
+    ttd = ((comp_ehp + 0.5 * m["sustain"]) / FOCUS_DPS
            + float(m.get("ultimateInvulnS", 0.0) or 0.0))
     return min(1.0, ttd / REF_FIGHT)
 
@@ -3216,13 +3664,17 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
     burst3 = rotation(name, st, squishy, 3.0, level)["total"]
     off = 0.6 * (dmg8 / 8.0) / REF_DPS + 0.4 * burst3 / REF_BURST
 
-    shield = st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"] + st["shieldPctMaxHp"] * st["hp"]
+    _r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
+    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st["shieldPctMaxHp"] * st["hp"]
+              + st.get("triggeredHp", 0.0) + _overheal_shield(st, _r8))
     shield *= 1 + st["healShieldAmp"]
     mixed_taken = _mixed_taken(st)
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
-    _r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
-               + kit_heal(name, st, level, 8.0, "self", _r8["bySlot"], _r8["total"]))
+               + kit_heal(name, st, level, 8.0, "self", _r8["bySlot"], _r8["total"])
+               + _active_item_heal(st, 8.0) + _conqueror_heal(st, dmg8, 8.0)
+               + st.get("triggeredHeal", 0.0))
     deff = durability_term(ehp, sustain)
     # standard's neutral 60/40: stat_weights is variant-independent, and this is
     # the blend "the best all-around build" is defined by.
@@ -3501,14 +3953,21 @@ def analyze_build(name: str, items: list[str], runes: list[str] | None = None,
         "omnivamp": round(st["omnivampPct"] * tot),
         "onHit": round(st["healOnHit"] * r8["nAutos"]),
         "rune": round(st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])),
+        "itemActive": round(_active_item_heal(st, 8.0)),
+        "conqueror": round(_conqueror_heal(st, tot, 8.0)),
+        "conditional": round(st.get("triggeredHeal", 0.0)),
     }
     healing["total"] = sum(healing.values())
 
     # #8 shields: peak value + a coarse average uptime (kit shields recur;
     # reactive lifeline shields sit near half-uptime in a drawn-out fight).
-    shield_val = st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"] + st["shieldPctMaxHp"] * st["hp"]
+    shield_val = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+                  + st["shieldPctMaxHp"] * st["hp"]
+                  + st.get("triggeredHp", 0.0) + _overheal_shield(st, r8))
     shield_val *= 1 + st["healShieldAmp"]
-    reactive = st["shieldPctMaxHp"] > 0 or st["shieldPctBonusHp"] > 0
+    reactive = (st["shieldPctMaxHp"] > 0 or st["shieldPctBonusHp"] > 0
+                or st.get("overhealShieldCap", 0.0) > 0
+                or st.get("triggeredHp", 0.0) > 0)
     shields = {"value": round(shield_val),
                "avgUptime": 0.45 if reactive else (0.7 if shield_val else 0.0),
                "amp": round(st["healShieldAmp"] * 100)}
@@ -3735,12 +4194,20 @@ EARLY_GAME_WEIGHTING = True
 STAGE_PLAN = [(1, 0.10), (2, 0.30), (3, 0.35), (4, 0.15), (5, 0.07), (6, 0.03)]
 
 
-def _build_order(items: list[str]) -> list[str]:
-    """Item list in purchase order (boots bought 2nd), matching affordable()."""
-    order = list(items)
-    if len(order) >= 2:
-        order = [order[0], order[-1]] + order[1:-1]
-    return order
+def _build_order(name: str, items: list[str], runes: list[str],
+                 variant: str) -> list[str]:
+    """Return the measured completion order, including the real boot timing.
+
+    The old shortcut silently moved the last slot to purchase two.  That made
+    every staged score assume boots were second even when the optimizer had
+    correctly found an early or late boot spike, and it also let tier-3 boots
+    appear before their tier-2 prerequisite.  Use the same order function the
+    UI shows so scoring and presentation cannot disagree.
+    """
+    boots = next((slug for slug in items
+                  if (ITEMS.get(slug) or {}).get("category") == "Boots"), "")
+    core = [slug for slug in items if slug != boots]
+    return optimal_purchase_order(name, core, boots, runes, variant)
 
 
 def _value(name: str, item_slugs: list[str], runes: list[str], variant: str,
@@ -3755,7 +4222,7 @@ def _staged_score(name: str, items: list[str], runes: list[str], variant: str,
                   weights, fast: bool) -> float:
     """Early-game-weighted value: score the build at successive purchase stages
     and weight toward the first items that decide WR games."""
-    order = _build_order(items)
+    order = _build_order(name, items, runes, variant)
     acc = tw = 0.0
     for n, w in STAGE_PLAN:
         prefix = order if n is None else order[:min(n, len(order))]
@@ -3823,6 +4290,21 @@ def optimal_purchase_order(name: str, items: list[str], boots: str = "",
         best_slug, best_key = remaining[0], None
         for slug in remaining:
             pen = _percent_armor_pen(slug)
+            item = ITEMS.get(slug) or {}
+            flat_pen_boot = (
+                item.get("category") == "Boots"
+                and float((item.get("stats") or {}).get("physicalPenFlat", {})
+                          .get("value", 0) or 0) > 0)
+            if (flat_pen_boot and armor_pressure != "high" and i == 0
+                    and CHAMP_CLASS.get(name, "") == "Marksman"
+                    and any((ITEMS.get(other) or {}).get("category") != "Boots"
+                            for other in remaining if other != slug)):
+                # Dynamism is a strong full-build mathematical answer, but a
+                # ranged carry normally buys attack speed/tempo before flat
+                # penetration. Keep it available for later or explicit
+                # high-armour contexts; do not let the full target profile
+                # force it into the opening purchase.
+                continue
             if (pen and armor_pressure != "high" and i < 2
                     and any(not _percent_armor_pen(other) for other in remaining
                             if other != slug)):
@@ -3858,6 +4340,13 @@ def optimal_purchase_order(name: str, items: list[str], boots: str = "",
                 best_slug, best_key = slug, key
         chosen.append(best_slug)
         remaining.remove(best_slug)
+    # Completing tier-2 boots as the final inventory slot leaves no sensible
+    # window for their tier-3 upgrade.  Preserve the measured choice but move
+    # a last-place boot to the earliest non-forced practical checkpoint; this
+    # is a guard against the full-build stat proxy, not a rule that boots must
+    # be second.
+    if boots and boots in chosen and chosen[-1] == boots and len(chosen) > 2:
+        chosen.insert(min(2, len(chosen) - 1), chosen.pop())
     return chosen
 
 
@@ -4018,10 +4507,16 @@ def champion_target(name: str, level: int, items: list[str],
         "bonusHp": _js_round(bonus_hp),
         # Vamp is excluded on purpose: it needs their damage output, which a
         # one-way calculator does not have. mutual_duel has both sides.
-        "sustainPerSec": max(0.0, kit + st["runeHealPerSec"] + st["healOnHit"] * st["as"]),
+        "sustainPerSec": max(
+            0.0,
+            kit + st["runeHealPerSec"] + st["healOnHit"] * st["as"]
+            + (_active_item_heal(st, SUSTAIN_REF_WINDOW)
+               + _conqueror_heal(st, ref["total"], SUSTAIN_REF_WINDOW)
+               + st.get("triggeredHeal", 0.0)) / SUSTAIN_REF_WINDOW),
         # Sterak's, Maw, Kaenic Rookern and Guardian Angel's revive all land here.
         "shield": max(0.0, st["shield"] + st["shieldPctBonusHp"] * bonus_hp
-                      + st["shieldPctMaxHp"] * with_build["hp"]),
+                      + st["shieldPctMaxHp"] * with_build["hp"]
+                      + st.get("triggeredHp", 0.0) + _overheal_shield(st, ref)),
         "ccDepth": _cc_depth(name),
         "ccSeconds": _cc_seconds(name),
         "stasisSec": st.get("stasisSec", 0.0),
@@ -4330,6 +4825,7 @@ def damage_scenarios(name: str, item_slugs: list[str],
     return {
         "conditionBand": condition_band,
         "conditionalEffects": st.get("conditionalEffects", []),
+        "contextAssumptions": dict(CONTEXT_ASSUMPTIONS),
         "targets": targets,
         "oneVsThree": {
             "windowSeconds": REF_FIGHT,
@@ -4428,8 +4924,19 @@ def evaluation_vector(name: str, item_slugs: list[str],
     shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
               + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
     _dr = st["dr"] if st["dr"] < 1 else 0.99
-    taken = (ad_share * 100.0 / (100.0 + st["armor"]) * (1 - st.get("drPhys", 0.0))
-             + ap_share * 100.0 / (100.0 + st["mr"]) * (1 - st.get("drMagic", 0.0))) or 1.0
+    # The caller-supplied split remains available for counter-specific reads;
+    # the generic tournament uses a class-aware mixed team pressure instead of
+    # treating a tank and a carry as the same defensive target.  True damage
+    # deliberately bypasses resists so stacking one resistance cannot dominate
+    # the max-durability score.
+    _phys_share, _magic_share, _true_share = incoming_damage_mix(name)
+    if (ad_share, ap_share) != (0.5, 0.5):
+        _phys_share, _magic_share, _true_share = ad_share, ap_share, 0.0
+    taken = (_phys_share * 100.0 / (100.0 + st["armor"])
+             * (1 - st.get("drPhys", 0.0))
+             + _magic_share * 100.0 / (100.0 + st["mr"])
+             * (1 - st.get("drMagic", 0.0))
+             + _true_share) or 1.0
     comp_ehp = (st["hp"] + shield) / taken / (1 - _dr)
     # Seconds alive under FOCUS_DPS, the same reference delivered_share uses.
     ttd = ((m["ehp"] + 0.5 * m["sustain"]) / FOCUS_DPS
@@ -4480,6 +4987,7 @@ def evaluation_vector(name: str, item_slugs: list[str],
         "gold": sum((ITEMS.get(s) or {}).get("cost", 0) for s in item_slugs),
         "goldEfficiency": round(build_efficiency(
             name, [s for s in item_slugs if s in ITEMS]), 3),
+        "contextAssumptions": dict(CONTEXT_ASSUMPTIONS),
     }
 
 

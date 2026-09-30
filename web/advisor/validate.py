@@ -260,6 +260,12 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
     keep in line, because failing them here would reject correct builds. This
     check exists for the stochastic tail: the one-in-N build that drifts into
     an archetype nobody builds on this champion."""
+    # Callers pass the full champion card so the prompt and validator share one
+    # object.  The hard limits live below `hardLimits`; accepting that shape
+    # here fixes the silent no-op where the engine/model could return an AP or
+    # crit item for a card that explicitly forbids it.
+    if identity and isinstance(identity.get("hardLimits"), dict):
+        identity = identity["hardLimits"]
     if not identity:
         return []
     avoid = set(identity.get("avoidStats") or [])
@@ -269,8 +275,22 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
     for slug in slugs:
         item = ITEMS.get(slug) or {}
         stats = item.get("stats") or {}
+        passive_text = " ".join(str(line) for line in (item.get("passives") or [])).lower()
+        has_crit = ("crit" in stats
+                    or re.search(r"\bcritical(?:ly)?\b|\bcrit\b", passive_text))
+        has_attack_speed = "attackSpeed" in stats or "attack speed" in passive_text
+        has_armor_pen = ("physicalPen" in stats or "physicalPenFlat" in stats
+                         or "armor penetration" in passive_text
+                         or "lethality" in passive_text)
+        has_magic_pen = ("magicPen" in stats or "magicPenFlat" in stats
+                         or "magic penetration" in passive_text
+                         or "magic resistance reduction" in passive_text
+                         or "magic resist reduction" in passive_text
+                         or "increased magic damage" in passive_text
+                         or "magic damage amplification" in passive_text)
+        has_lifesteal = any(key in stats for key in ("lifesteal", "omnivamp", "physicalVamp"))
         hit = None
-        if "crit" in avoid and "crit" in stats \
+        if "crit" in avoid and has_crit \
                 and "physicalPen" not in stats and "physicalPenFlat" not in stats:
             # pen items carrying crit (Mortal Reminder, LDR) are bought for
             # the pen/anti-heal by no-crit champions; 14% of ladder Aatrox
@@ -278,10 +298,18 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
             hit = "crit"
         elif "ap" in avoid and "ap" in stats and item.get("category") == "Magic":
             hit = "ap"
+        elif "attack_speed" in avoid and has_attack_speed:
+            hit = "attack speed"
+        elif "armor_pen" in avoid and has_armor_pen:
+            hit = "armor penetration"
+        elif "magic_pen" in avoid and has_magic_pen:
+            hit = "magic penetration"
         elif "lethality" in avoid and "physicalPenFlat" in stats and "crit" not in stats:
             # crit items carrying lethality (The Collector) belong to crit
             # builds; 12% of ladder Vaynes buy it inside a no-lethality kit
             hit = "lethality"
+        elif ("lifesteal" in avoid or "omnivamp" in avoid) and has_lifesteal:
+            hit = "lifesteal/omnivamp"
         elif ("healing_power" in avoid or "shield_power" in avoid) and "healShieldPower" in stats:
             hit = "healing/shield power"
         if hit:
@@ -520,6 +548,8 @@ def validate(
         report.fail("boots", f"boots must be a tier-2 boots slug, got {res.get('boots')}")
     else:
         res["boots"] = boots
+        for problem in identity_violations([boots], identity):
+            report.fail("boots", problem)
         res["bootsUpgrade"] = ITEMS[boots].get("upgradesTo")
         try:
             boot_after = int(res.get("bootsPurchaseAfter", 1))

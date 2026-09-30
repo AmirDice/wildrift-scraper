@@ -76,16 +76,19 @@ export function BuildStages({ name, items, boots, bootsPurchaseAfter, bootsUpgra
     // handed that stage two purchases' worth of gain and the spike badge
     // followed the boots rather than the item (the reported Lillia case:
     // "2 items" quietly included Spellslinger's Shoes). Tier-2 boots land
-    // after the first item, the convention players actually follow; the
-    // tier-3 enchant lands where the model timed it and costs the DELTA
+    // wherever the engine's purchase order says they pay off, including
+    // before the first core item; the tier-3 enchant lands where the model
+    // timed it and costs the DELTA
     // (its listed cost is cumulative and it replaces the tier-2 in the set).
     const metric = metricOf(name);
     const t2 = boots || "";
     const t3 = bootsUpgrade || "";
     const itemCost = (slug: string) => DATA.items?.[slug]?.cost ?? 3000;
     const upgradeAt = t3
-      ? (bootsUpgradeAfter && bootsUpgradeAfter > 0
-          ? Math.min(bootsUpgradeAfter, items.length) : 2)
+      ? bootsUpgradeAfter === 0
+        ? 0
+        : (bootsUpgradeAfter && bootsUpgradeAfter > 0
+            ? Math.min(bootsUpgradeAfter, items.length) : 2)
       : 0;
     const t3Delta = t3 ? Math.max(300, itemCost(t3) - (t2 ? itemCost(t2) : 0)) : 0;
 
@@ -94,9 +97,26 @@ export function BuildStages({ name, items, boots, bootsPurchaseAfter, bootsUpgra
     const purchasesFor = (order: string[], at: number): Purchase[] => {
       const seq: Purchase[] = [];
       let completed = 0;
+      let t3Pending = false;
+      const addT3IfReady = () => {
+        if (t3Pending && t3 && t2) {
+          seq.push({ kind: "t3", slug: t3, costG: t3Delta, itemCount: completed });
+          t3Pending = false;
+        }
+      };
+      // Legacy/model-only orders may explicitly place tier-2 boots before
+      // the first completed core item. Insert that purchase before walking
+      // the core list instead of silently dropping it because the old
+      // fallback only checked after an item was completed.
+      if (!engineOrder && (bootsPurchaseAfter ?? 1) === 0 && t2) {
+        seq.push({ kind: "t2", slug: t2, costG: itemCost(t2), itemCount: 0 });
+      }
       order.forEach((slug) => {
         if (slug === t2) {
           seq.push({ kind: "t2", slug: t2, costG: itemCost(t2), itemCount: completed });
+          // Tier-3 boots can never precede their tier-2 purchase, even when
+          // the engine placed tier-2 late in the core order.
+          addT3IfReady();
           return;
         }
         completed += 1;
@@ -104,8 +124,12 @@ export function BuildStages({ name, items, boots, bootsPurchaseAfter, bootsUpgra
         if (!engineOrder && completed === (bootsPurchaseAfter ?? 1) && t2) {
           seq.push({ kind: "t2", slug: t2, costG: itemCost(t2), itemCount: completed });
         }
-        if (completed === at && t3) seq.push({ kind: "t3", slug: t3, costG: t3Delta, itemCount: completed });
+        if (at > 0 && completed === at && t3) {
+          if (t2 && !seq.some((purchase) => purchase.kind === "t2")) t3Pending = true;
+          else seq.push({ kind: "t3", slug: t3, costG: t3Delta, itemCount: completed });
+        }
       });
+      addT3IfReady();
       return seq;
     };
 

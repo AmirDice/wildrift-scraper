@@ -249,7 +249,11 @@ export async function GET(request: Request) {
     champ?.icon && champ.icon.startsWith("http") ? champ.icon : null,
     ...build.items.map(itemPng),
   ]);
-  const bootsFinal = build.bootsUpgrade || build.boots || "";
+  // Older shared cards can carry a stale tier-3 slug alongside
+  // bootsUpgradeAfter: 0. The timing field wins: render tier-2 and label it
+  // "T2 ALL GAME" instead of showing an upgrade the build explicitly skipped.
+  const upgradeActive = Boolean(build.bootsUpgrade && build.bootsUpgradeAfter !== 0);
+  const bootsFinal = (upgradeActive ? build.bootsUpgrade : build.boots) || "";
   const spells = build.summoners ?? [];
   const runes = classifyRunes(build.runes);
   const [bootsArt, spellArtA, spellArtB, ...runeArt] = await Promise.all([
@@ -269,11 +273,11 @@ export async function GET(request: Request) {
   // deliberate skip, and a Lab card keeps the plain label.
   const ORDS = ["", "1ST", "2ND", "3RD", "4TH", "5TH"];
   const upAfter = build.bootsUpgradeAfter;
-  const bootsTag = build.bootsUpgrade && upAfter && upAfter >= 1
+  const bootsTag = upAfter === 0
+    ? "T2 ALL GAME"
+    : upgradeActive && upAfter && upAfter >= 1
     ? upAfter === 1 ? "T3 RUSH" : `T3 AFTER ${ORDS[upAfter]}`
-    : !build.bootsUpgrade && upAfter === 0
-      ? "T2 ALL GAME"
-      : "BOOTS";
+    : "BOOTS";
 
   if (isTikTok) {
     return new ImageResponse(

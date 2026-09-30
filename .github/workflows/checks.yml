@@ -27,6 +27,15 @@ jobs:
           python-version: "3.11"
           cache: pip
 
+      # Hwei's parity regression drives the same TypeScript engine used by
+      # the site.  Install the web workspace here as well as in the web job;
+      # the Python test invokes its Node harness directly.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web-next/package-lock.json
+
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
@@ -35,6 +44,9 @@ jobs:
       # pip-installable.
       - name: Install Tesseract
         run: sudo apt-get update -q && sudo apt-get install -y -q tesseract-ocr
+
+      - name: Install web dependencies for parity tests
+        run: npm install --prefix web-next --no-audit --no-fund
 
       # No API keys are set, so nothing here can call an LLM or scrape. These
       # read the committed data files and fail on the properties that matter.

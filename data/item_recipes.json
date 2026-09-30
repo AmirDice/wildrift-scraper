@@ -1,0 +1,383 @@
+{
+  "_meta": {
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3",
+    "note": "Only authoritative paths printed in the patch notes are included. Missing entries mean recipe data is unavailable, not no recipe."
+  },
+  "abyssal-mask": {
+    "components": [
+      "Kindlegem",
+      "Negatron Cloak"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "amaranths-twinguard": {
+    "components": [
+      "Giant's Belt",
+      "Chain Vest",
+      "Negatron Cloak"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "ardent-censer": {
+    "components": [
+      "Forbidden Idol",
+      "Aether Wisp"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "blade-of-the-ruined-king": {
+    "components": [
+      "Vampiric Scepter",
+      "Pickaxe",
+      "Recurve Bow"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "bloodthirster": {
+    "components": [
+      "Vampiric Scepter",
+      "B. F. Sword"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "dead-mans-plate": {
+    "components": [
+      "Winged Moonplate",
+      "Chain Vest",
+      "Ruby Crystal"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "deaths-dance": {
+    "components": [
+      "Caulfield's Warhammer",
+      "Chain Vest",
+      "Pickaxe"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "diadem-of-songs": {
+    "components": [
+      "Whispering Circlet"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "echoes-of-helia": {
+    "components": [
+      "Bandleglass Mirror",
+      "Kindlegem"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "essence-reaver": {
+    "components": [
+      "Sheen",
+      "Caulfield's Warhammer",
+      "Brawler's Gloves"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "fiendhunter-bolts": {
+    "components": [
+      "Zeal",
+      "Kircheis Shard"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "force-of-nature": {
+    "components": [
+      "Winged Moonplate",
+      "Negatron Cloak",
+      "Ruby Crystal"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "galeforce": {
+    "components": [
+      "Noonquiver",
+      "Pickaxe",
+      "Long Sword"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "guinsoos-rageblade": {
+    "components": [
+      "Amplifying Tome",
+      "Recurve Bow",
+      "Pickaxe"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "harmonic-echo": {
+    "components": [
+      "Bandleglass Mirror",
+      "Kindlegem"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "hexoptics-c44": {
+    "components": [
+      "Pickaxe",
+      "Noonquiver",
+      "Long Sword"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "immortal-shieldbow": {
+    "components": [
+      "Noonquiver",
+      "Pickaxe"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "imperial-mandate": {
+    "components": [
+      "Bandleglass Mirror",
+      "Blasting Wand"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "infinity-edge": {
+    "components": [
+      "B. F. Sword",
+      "Pickaxe",
+      "Brawler's Gloves"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "knights-vow": {
+    "components": [
+      "Kindlegem",
+      "Chain Vest"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "kraken-slayer": {
+    "components": [
+      "Recurve Bow",
+      "Hearthbound Axe",
+      "Long Sword"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "lord-dominiks-regard": {
+    "components": [
+      "Last Whisper",
+      "Noonquiver"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "manamune": {
+    "components": [
+      "Caulfield's Warhammer",
+      "Tear of the Goddess",
+      "Long Sword"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "mantle-of-the-twelfth-hour": {
+    "components": [
+      "Kindlegem",
+      "Giant's Belt"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "mortal-reminder": {
+    "components": [
+      "Last Whisper",
+      "Executioner's Calling",
+      "Brawler's Gloves"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "nashors-tooth": {
+    "components": [
+      "Recurve Bow",
+      "Blasting Wand",
+      "Fiendish Codex"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "phantom-dancer": {
+    "components": [
+      "Zeal",
+      "Dagger"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "radiant-virtue": {
+    "components": [
+      "Giant's Belt",
+      "Cloth Armor",
+      "Null-Magic Mantle"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "rapid-firecannon": {
+    "components": [
+      "Zeal",
+      "Kircheis Shard"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "runaans-hurricane": {
+    "components": [
+      "Zeal",
+      "Kircheis Shard"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "seryldas-grudge": {
+    "components": [
+      "Caulfield's Warhammer",
+      "Last Whisper"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "shurelyas-battlesong": {
+    "components": [
+      "Bandleglass Mirror",
+      "Aether Wisp"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "statikk-shiv": {
+    "components": [
+      "Aether Wisp",
+      "Pickaxe",
+      "Kircheis Shard"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "stormrazor": {
+    "components": [
+      "B. F. Sword",
+      "Kircheis Shard",
+      "Brawler's Gloves"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "terminus": {
+    "components": [
+      "Recurve Bow",
+      "Hearthbound Axe"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "the-collector": {
+    "components": [
+      "Serrated Dirk",
+      "Noonquiver"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "titanic-hydra": {
+    "components": [
+      "Pickaxe",
+      "Jaurim's Fist",
+      "Ruby Crystal"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "trinity-force": {
+    "components": [
+      "Sheen",
+      "Phage",
+      "Hearthbound Axe"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "whispering-circlet": {
+    "components": [
+      "Forbidden Idol",
+      "Tear of the Goddess",
+      "Ruby Crystal"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "winters-approach": {
+    "components": [
+      "Tear of the Goddess",
+      "Giant's Belt",
+      "Kindlegem"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "wits-end": {
+    "components": [
+      "Recurve Bow",
+      "Negatron Cloak",
+      "Dagger"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "yordle-trap": {
+    "components": [
+      "Kindlegem",
+      "Cloth Armor",
+      "Null-Magic Mantle"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "yun-tal-wildarrows": {
+    "components": [
+      "Noonquiver",
+      "Pickaxe",
+      "Kircheis Shard"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  },
+  "zekes-convergence": {
+    "components": [
+      "Kindlegem",
+      "Cloth Armor",
+      "Null-Magic Mantle"
+    ],
+    "source": "data/patch_notes_7_3.json",
+    "patch": "7.3"
+  }
+}

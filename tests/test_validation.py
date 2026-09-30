@@ -2,10 +2,27 @@
 from __future__ import annotations
 
 from conftest import check, make_build
+from web.advisor import validate as validate_mod
 
 
 def errors_in(report, section) -> str:
     return " ".join(report.errors.get(section, []))
+
+
+def test_identity_violation_accepts_full_champion_card_shape():
+    card = {"hardLimits": {"avoidStats": ["ap", "crit"]}}
+    assert validate_mod.identity_violations(["rabadons-deathcap"], card)
+    assert validate_mod.identity_violations(["infinity-edge"], card)
+
+
+def test_magic_damage_amp_is_not_a_free_sett_item():
+    # Abyssal Mask has no AP ratio, but its aura is still a magic-damage
+    # amplification effect. It must not survive as a nominal "tank" slot on a
+    # physical Sett build just because the item has HP/MR.
+    from web.advisor import prompt
+    violations = validate_mod.identity_violations(
+        ["abyssal-mask"], prompt.identity_card("Sett"))
+    assert any("magic penetration" in row for row in violations)
 
 
 class TestBaseline:
@@ -740,3 +757,193 @@ class TestItemToItemSynergyField:
         build["candidateItemScores"][0]["synergyWith"] = [partner, partner]
         assert check(build).ok
         assert build["candidateItemScores"][0]["synergyWith"] == [partner]
+
+
+class TestLadderCoreInCounterMode:
+    """The REQUIRED CANDIDATES rule is what stops identity drift: the model
+    must SCORE the items real top-50 players build on this champion, whether
+    or not they reach the build.
+
+    Counter mode was shown that block and then never held to it, so a counter
+    build could skip the champion's staple items silently. Answering an enemy
+    composition is not a licence to stop playing the champion.
+    """
+
+    def _page(self):
+        return {"keystone": "Lethal Tempo", "minors": ["Brutal", "Cut Down", "Legend: Alacrity"],
+                "flex": "Bone Plating"}
+
+    def test_a_counter_build_that_skips_a_staple_item_fails(self):
+        from web.advisor import prompt as prompt_mod
+        core = [s for s in prompt_mod.ladder_core_slugs("Vayne")
+                if validate_mod._completed_non_boots(s)]
+        assert core, "Vayne should have a ladder core to require"
+        chosen = core[:2]
+        res = {"items": chosen,
+               "candidateItemScores": [{"item": s, "score": 80} for s in chosen],
+               "runes": self._page()}
+        report = check(res, mode="counter", ladder_core=core, hard_cc_count=4)
+        assert not report.ok
+        assert any("required candidates" in str(e) for e in report.errors.get("scores", []))
+
+    def test_the_counter_message_does_not_demand_prose(self):
+        """Counter mode returns scores without reasons on purpose, so the
+        failure must not ask for something the mode forbids."""
+        from web.advisor import prompt as prompt_mod
+        core = [s for s in prompt_mod.ladder_core_slugs("Vayne")
+                if validate_mod._completed_non_boots(s)]
+        res = {"items": core[:1],
+               "candidateItemScores": [{"item": core[0], "score": 80}],
+               "runes": self._page()}
+        report = check(res, mode="counter", ladder_core=core, hard_cc_count=4)
+        text = " ".join(str(e) for e in report.errors.get("scores", []))
+        assert "a score, whether" in text and "reason" not in text
+
+
+class TestAntiHealGate:
+    """Against three of the heaviest healers in the game the model built no
+    Grievous Wounds at all, identically across three runs, and raising the
+    healing signal did not change it. Nothing was blocking it: every anti-heal
+    item was in the pool and named in the prompt, and it scored one at 75 then
+    took five items scoring 88 and above. Prose loses a scoring contest."""
+
+    BUILD = ["blade-of-the-ruined-king", "guinsoos-rageblade", "terminus",
+             "wits-end", "amaranths-twinguard"]
+
+    def _run(self, items, spells=("Flash", "Ghost"), healing="high"):
+        return validate_mod.validate(
+            {"items": list(items), "summoners": list(spells), "counterSummary": {}},
+            mode="counter", healing_level=healing)
+
+    def test_it_fails_a_build_with_no_grievous_wounds(self):
+        assert any("Grievous Wounds" in m for m in self._run(self.BUILD).flat())
+
+    def test_any_anti_heal_item_satisfies_it(self):
+        build = self.BUILD[:3] + ["chempunk-chainsword", "amaranths-twinguard"]
+        assert not any("Grievous Wounds" in m for m in self._run(build).flat())
+
+    def test_ignite_satisfies_it(self):
+        """50% Grievous Wounds out of a summoner slot IS the answer; demanding
+        an item as well would be demanding two."""
+        report = self._run(self.BUILD, spells=("Flash", "Ignite"))
+        assert not any("Grievous Wounds" in m for m in report.flat())
+
+    def test_it_stays_silent_below_high(self):
+        assert not any("Grievous Wounds" in m
+                       for m in self._run(self.BUILD, healing="medium").flat())
+
+    def test_it_stays_silent_outside_counter_mode(self):
+        report = validate_mod.validate({"items": list(self.BUILD), "summoners": ["Flash", "Ghost"]},
+                          mode="studio", healing_level="very_high")
+        assert not any("Grievous Wounds" in m for m in report.flat())
+
+
+class TestCleanseContradiction:
+    """A Hecarim build reported Lissandra's point-and-click ultimate as having
+    no answer while Mercurial Scimitar sat in its own pool -- an item whose
+    entire text is removing all crowd control from you. The item data was never
+    missing; actives reach the prompt with their full text."""
+
+    def _summary(self, threats, items, pool=()):
+        return validate_mod.validate({"items": list(items), "summoners": ["Flash", "Smite"],
+                         "counterSummary": {"unansweredThreats": list(threats)}},
+                        mode="counter", allowed_items=list(pool))
+
+    def test_it_fails_when_the_cleanse_is_in_the_build(self):
+        report = self._summary(["Lissandra's point-and-click ultimate cannot be dodged"],
+                               ["trinity-force", "spear-of-shojin", "deaths-dance",
+                                "seryldas-grudge", "mercurial-scimitar"])
+        assert any("unanswerable" in m for m in report.flat())
+
+    def test_it_fails_when_the_cleanse_is_merely_available(self):
+        report = self._summary(["their stun chain is unavoidable"],
+                               ["trinity-force", "spear-of-shojin", "deaths-dance",
+                                "seryldas-grudge", "black-cleaver"],
+                               pool=["mercurial-scimitar"])
+        assert any("in this champion's pool" in m for m in report.flat())
+
+    def test_it_ignores_a_threat_that_is_not_crowd_control(self):
+        report = self._summary(["their global ultimate covers the whole map"],
+                               ["trinity-force", "spear-of-shojin", "deaths-dance",
+                                "seryldas-grudge", "mercurial-scimitar"])
+        assert not any("unanswerable" in m for m in report.flat())
+
+    def test_it_is_repairable_in_isolation(self):
+        """counterSummary repairs on its own, so the fix is one small call and
+        never a regeneration -- which is why this is a failure rather than a
+        warning that leaves the wrong sentence on screen."""
+        from web.advisor import repair
+        report = self._summary(["their stun is unavoidable"],
+                               ["trinity-force", "spear-of-shojin", "deaths-dance",
+                                "seryldas-grudge", "mercurial-scimitar"])
+        targeted, blocking = repair.plan(report.sections())
+        assert "counterSummary" in targeted and not blocking
+
+    def test_an_ally_targeted_cleanse_does_not_count(self):
+        """Mikael's removes crowd control from an ALLIED champion, which is not
+        an answer to being locked down yourself."""
+        from web.advisor.validate import CLEANSE_ITEMS
+        assert "mikaels-blessing" not in CLEANSE_ITEMS
+        assert "mercurial-scimitar" in CLEANSE_ITEMS
+
+    def test_naming_the_item_and_dismissing_it_is_compliance(self):
+        """The message offers two branches: build it, or say why it is not
+        worth the slot. The model took the second -- "Mercurial Scimitar would
+        compromise the core damage engine" -- and the gate rejected it twice
+        more, which is the check refusing the answer it asked for."""
+        report = self._summary(
+            ["Lissandra's point-and-click stun cannot be dodged; Mercurial "
+             "Scimitar would cost this build its damage engine"],
+            ["trinity-force", "spear-of-shojin", "deaths-dance",
+             "seryldas-grudge", "mercurial-scimitar"])
+        assert not any("unanswerable" in m for m in report.flat())
+
+
+class TestBlueBuffGate:
+    """A jungler holds blue buff from the first clear, so a rune slot spent on
+    mana buys what the map hands over for free."""
+
+    def _page(self, role, minors):
+        return validate_mod.validate(
+            {"items": ["trinity-force", "spear-of-shojin", "deaths-dance",
+                       "seryldas-grudge", "black-cleaver"],
+             "summoners": ["Flash", "Smite"], "counterSummary": {},
+             "runes": {"keystone": "Conqueror", "minors": minors, "flex": "Second Wind"}},
+            mode="counter", role=role)
+
+    def test_a_mana_rune_fails_on_a_jungle_page(self):
+        report = self._page("Jungle", ["Manaflow Band", "Brutal", "Triumph"])
+        assert any("blue buff" in m.lower() for m in report.flat())
+
+    def test_the_same_rune_is_fine_in_a_lane(self):
+        """Blue buff is the jungler's; a mid laner buys its own mana."""
+        report = self._page("Mid", ["Manaflow Band", "Brutal", "Triumph"])
+        assert not any("blue buff" in m.lower() for m in report.flat())
+
+    def test_runes_that_merely_mention_mana_are_untouched(self):
+        """Triumph restores mana on a takedown but is taken for the health,
+        and Fleet Footwork's mana line is incidental to a keystone about
+        movement. Excluding either would cost a jungler a good rune to solve a
+        problem it does not have."""
+        report = self._page("Jungle", ["Triumph", "Brutal", "Legend: Alacrity"])
+        assert not any("blue buff" in m.lower() for m in report.flat())
+        from web.advisor import runemeta
+        assert runemeta.MANA_RUNES == ("Manaflow Band",)
+
+    def test_the_prompt_says_so_too(self):
+        """The gate is the teeth; the pool block is where the model is told,
+        and only a jungle build should carry the note."""
+        from web.advisor import runemeta
+        assert "BLUE BUFF" in runemeta.pool_text_block("Jungle")
+        assert "BLUE BUFF" not in runemeta.pool_text_block("Mid")
+        assert "BLUE BUFF" not in runemeta.pool_text_block()
+
+    def test_it_is_repairable_rather_than_a_regeneration(self):
+        """Runes repair on their own, so a mana rune costs one short call and
+        never a whole regeneration. Asserted on the rune section alone: this
+        fixture is a skeleton and trips other checks that are not the point."""
+        from web.advisor import repair
+        report = self._page("Jungle", ["Manaflow Band", "Brutal", "Triumph"])
+        targeted, _blocking = repair.plan(["runes"])
+        assert "runes" in targeted
+        assert "runes" in report.sections()

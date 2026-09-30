@@ -101,6 +101,19 @@ def test_flexible_champions_get_distinct_cross_path_archetypes():
     assert adv._tournament_candidate_count(paths) >= len(paths)
 
 
+def test_bruiser_pool_keeps_offensive_anchors_but_combo_still_needs_defense():
+    # The pool must contain the item that starts a real bruiser build; the
+    # completed path, however, cannot collapse into five glass damage items.
+    assert adv._item_supports_archetype("blade-of-the-ruined-king", "ad-bruiser")
+    assert adv._item_supports_archetype("trinity-force", "ad-bruiser")
+    assert adv._combo_matches_archetype(
+        ("blade-of-the-ruined-king", "trinity-force", "deaths-dance",
+         "steraks-gage", "guardian-angel"), "ad-bruiser")
+    assert not adv._combo_matches_archetype(
+        ("blade-of-the-ruined-king", "trinity-force", "kraken-slayer",
+         "infinity-edge", "rapid-firecannon"), "ad-bruiser")
+
+
 @pytest.mark.parametrize("champion", ["Caitlyn", "Jinx", "Tristana", "Vayne"])
 def test_marksmen_receive_both_crit_and_attack_speed_on_hit_probes(champion):
     profile = adv.profiles.profile(champion, log=False)
@@ -207,6 +220,18 @@ def test_patch_73_nashors_does_not_keep_removed_adaptive_stats():
 
     assert stats["ap"] == 80
     assert stats["bonusAd"] == 0
+
+
+def test_duration_bound_parries_are_not_permanent_damage_reduction():
+    stats = fe.resolve_stats("Fiora", 15, ["steraks-gage"], [])
+    # Riposte's 100% reduction lasts 0.75s and must be averaged by the fight
+    # window; treating the extracted peak as permanent made Fiora's EHP almost
+    # infinite and could dominate every bruiser tournament.
+    assert stats["dr"] == 0
+    assert any(row.get("drPct") == 1.0 and row.get("durationS") == 0.75
+               for row in stats["timedSteroids"])
+    averaged = fe._for_window("Fiora", stats, 8.0)
+    assert 0 < averaged["dr"] < 0.25
 
 
 def test_cross_stat_health_ratios_survive_for_hybrid_damage_paths():
@@ -755,6 +780,35 @@ def test_defensive_items_carry_the_signal_that_gate_reads():
         assert "defensive" in adv._item_archetype_signals(slug), slug
     for slug in ("infinity-edge", "rabadons-deathcap", "void-staff"):
         assert "defensive" not in adv._item_archetype_signals(slug), slug
+
+
+def test_engine_respects_curated_identity_cards_before_searching():
+    """The challenger must not spend its pool on reviewed dead stats.
+
+    These were the concrete drift cases from the baseline sweep: Vi/Shyvana
+    received crit glass, Rammus/K'Sante received AP, and Volibear received a
+    crit/pen shell.  The same card is passed to the model and the final
+    validator; the engine pool must obey it too.
+    """
+    assert not adv._identity_item_allowed("Vi", "infinity-edge")
+    assert not adv._identity_item_allowed("Shyvana", "yun-tal-wildarrows")
+    assert not adv._identity_item_allowed("Rammus", "rabadons-deathcap")
+    assert not adv._identity_item_allowed("K'Sante", "berserkers-greaves")
+    assert not adv._identity_item_allowed("Volibear", "infinity-edge")
+    assert adv._identity_item_allowed("Vi", "blade-of-the-ruined-king")
+
+
+def test_tournament_score_accepts_breakdown_objects():
+    targets = {name: {"dps8": 100, "burst3": 50}
+               for name in ("adc", "mage", "fighter", "bruiser", "tank")}
+    row = {"engine": {
+        "damageScenarios": {"targets": targets,
+                             "oneVsThree": {"totalDamage": 100}},
+        "healing": {"total": 10}, "shields": {"value": 5},
+        "damagePrevented": {"total": 3}, "survivalTime": {"value": 5},
+        "damageBeforeDeath": 20, "ehp": 100,
+    }}
+    assert adv._tournament_measurement_score(row, "balanced") > 0
 
 
 def test_a_durable_path_still_refuses_the_wrong_scaling():

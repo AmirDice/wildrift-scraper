@@ -85,7 +85,7 @@ const ALLY_DAMAGE = 2500;          // damage a buffed ally deals in the window
 const ALLY_INCOMING = 2500;        // damage an ally takes in the window
 const AP_TO_ALLY_DAMAGE = 2.5;
 const AD_TO_ALLY_DAMAGE = 4.0;
-const FONT_PROC_EVERY = 3.0;
+const FONT_PROC_EVERY = 15.0;
 /** Assumed seconds between procs for a rune that states no cadence. */
 const RUNE_PROC_EVERY = 9.0;
 /** Runes that pay nothing without an ally in range. */
@@ -263,6 +263,7 @@ export interface LiveMetrics {
   burst3: number; dps8: number; ttk: number | null; ehp: number; sustain: number;
   score: number; ad: number; ap: number; hp: number; armor: number; mr: number;
   moveSpeed: number; attackSpeed: number; haste: number; crit: number; mana: number;
+  attackRangeBonus?: number; attackRangeBonusPct?: number;
 }
 
 export interface AttackStyleLive {
@@ -349,14 +350,25 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     onHitPctMissingHp: 0,
-    procs: [] as Proc[], dotDps: 0, dotPctMaxHp: 0,
+    procs: [] as Proc[], dotDps: 0, dotDpsBonusHpPct: 0, dotPctMaxHp: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
+    spellbladeCritFlatPerCrit: 0, spellbladeCanCrit: 0,
     extraOnHitApplications: 0,
     critDamagePerExcessCrit: 0, hastePct: 0, cdRefundPctPerAuto: 0,
     cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
-    healShieldAmp: 0, runeHealPerSec: 0, graspPct: 0, graspEvery: 5,
+    overhealShieldCap: 0, shieldPctMana: 0, shieldManaRangedMult: 1,
+    activeHealAdPct: 0, activeHealMissingHpPct: 0, activeHealCdSec: 0,
+    triggeredHp: 0, triggeredHeal: 0,
+    triggeredHealBonusArmorPct: 0, triggeredHealBonusMrPct: 0,
+    triggeredHealBonusHpPct: 0,
+    attackRangeBonus: 0, attackRangeBonusPct: 0,
+    ultAttackCount: 0, ultAttackCritMultiplierPct: 0,
+    ultAttackTruePctIfCrit: 0, ultAttackWindowS: 0,
+    ultAttackAsPct: 0, ultAttackCooldownS: 0,
+    healShieldAmp: 0, runeHealPerSec: 0, conquerorHealPct: 0, conquerorRampS: 3,
+    graspPct: 0, graspEvery: 5,
     runeAllyHealPerSec: 0, allyShield: 0, autoBonusPct: 0,
     extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0,
     // Statikk Shiv's chain lightning. Modelled in web/fight_engine.py since
@@ -364,6 +376,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // area damage at zero while the advisor counted it. No battery case held
     // a chain-lightning item, so parity stayed green through the whole gap.
     aoeProcFlat: 0, aoeProcCdSec: 0, aoeProcTargets: 0,
+    aoeProcAppliesOnHit: 0, burstAoeProcs: [] as any[],
     targetSlowEffects: [] as any[], itemHaste: 0,
     // Carried BY THIS BUILD and applied to whoever it is fighting.
     grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
@@ -387,6 +400,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   const asPctFromItems = itemSlugs.reduce(
     (sum, s) => sum + Number(DATA.items[s]?.stats?.attackSpeed?.value ?? 0), 0);
   const atkRate = Math.min(AS_CAP, (bs.attackSpeed?.base || 0.75) * (1 + asPctFromItems / 100));
+  // A first-item stage has not had enough attacks to fully stack Yun Tal (or
+  // another passive attack ramp). Full six-slot comparisons retain the normal
+  // late-game value; prefixes receive a smooth expected stack fraction.
+  const stackProgress = Math.min(1, 0.20 + 0.16 * Math.max(0, itemSlugs.length - 1));
   const rngd = RANGED_CLASSES.has(c.class ?? "");
   const prefersAp = c.primaryDamage
     ? c.primaryDamage === "magic"
@@ -508,6 +525,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // and the damage type were dropped by the port. spellbladeMagic is stamped
     // at export time from the item's own passive text.
     st.spellbladeApPct = Math.max(st.spellbladeApPct, g("spellbladeApPct"));
+    st.spellbladeCritFlatPerCrit = Math.max(
+      st.spellbladeCritFlatPerCrit, g("spellbladeCritFlatPerCrit"));
+    st.spellbladeCanCrit = Math.max(st.spellbladeCanCrit, g("spellbladeCanCrit"));
     // Dusk and Dawn's second clause: "apply on-hits to the target 1 additional
     // time", on the same spellblade proc. Worth more than its small spellblade
     // half to an on-hit build, and invisible before this key existed.
@@ -522,6 +542,17 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.aoeProcFlat += g("aoeProcFlat");
     st.aoeProcCdSec = Math.max(st.aoeProcCdSec, g("aoeProcCdSec"));
     st.aoeProcTargets += g("aoeProcTargets");
+    st.aoeProcAppliesOnHit = Math.max(st.aoeProcAppliesOnHit, g("aoeProcAppliesOnHit"));
+    if (g("burstAoeFlat") || g("burstAoeApPct")
+        || g("burstPrimaryMissingFlat") || g("burstPrimaryMissingApPct")) {
+      st.burstAoeProcs.push({
+        flat: g("burstAoeFlat"), apRatio: g("burstAoeApPct") / 100,
+        targets: g("burstAoeTargets"), missingFlat: g("burstPrimaryMissingFlat"),
+        missingApRatio: g("burstPrimaryMissingApPct") / 100,
+        cd: g("burstProcAoeCdSec") || g("burstProcCdSec") || Infinity,
+        type: fx.burstProcType ?? "magic", label: slug,
+      });
+    }
     // Rylai's: a slow on the target is relative move speed for the one thing
     // this engine models about positioning, a melee sticking to its target.
     // Damage is deliberately untouched.
@@ -562,6 +593,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
               label: slug, type: fx.burstProcType ?? "magic",
               cd: g("burstProcCdSec"), arm: g("burstProcArmSec") });
     st.dotDps += g("dotDps");
+    st.dotDpsBonusHpPct += g("dotDpsBonusHpPct");
     // %max-HP burns (Searing Crown) are target-scaled, so they are summed
     // here and priced at fight time. Ranged users pay the reduced rate.
     st.dotPctMaxHp += g(rngd && fx.dotPctMaxHpPerSecRanged
@@ -575,18 +607,40 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.lifestealPct += (g("physVampPct") + g("lifestealPct")) / 100;
     st.omnivampPct += g("omnivampPct") / 100;
     st.healOnHit += g("healOnHitFlat");
+    st.activeHealAdPct += g("healOnActiveAdPct") / 100;
+    st.activeHealMissingHpPct += g("healOnActiveMissingHpPct") / 100;
+    st.activeHealCdSec = Math.max(st.activeHealCdSec,
+      g("healOnActiveCdSec") || g("burstProcCdSec"));
     st.shield += g("shieldFlat");
+    st.overhealShieldCap += g("overhealShieldCap");
+    st.shieldPctMana += g("shieldPctMana") / 100;
+    if (g("shieldManaRangedMult"))
+      st.shieldManaRangedMult = Math.min(st.shieldManaRangedMult, g("shieldManaRangedMult"));
     st.shieldPctBonusHp += g("shieldPctBonusHp") / 100;
     st.shieldPctMaxHp += g("shieldPctMaxHp") / 100;
+    st.triggeredHp += g("emergencyHpFlat");
+    st.triggeredHeal += g("emergencyHealFlat");
+    st.triggeredHealBonusArmorPct += g("emergencyHealBonusArmorPct") / 100;
+    st.triggeredHealBonusMrPct += g("emergencyHealBonusMrPct") / 100;
+    st.triggeredHealBonusHpPct += g("emergencyHealBonusHpPct") / 100;
+    const rangeCap = g("rangeBonusCap");
+    st.attackRangeBonus = Math.max(st.attackRangeBonus, rangeCap || g("rangeBonusFlat"));
+    st.attackRangeBonusPct = Math.max(st.attackRangeBonusPct, g("rangeBonusPct"));
+    st.ultAttackCount = Math.max(st.ultAttackCount, g("ultAttackCount"));
+    st.ultAttackCritMultiplierPct = Math.max(st.ultAttackCritMultiplierPct, g("ultAttackCritMultiplierPct"));
+    st.ultAttackTruePctIfCrit = Math.max(st.ultAttackTruePctIfCrit, g("ultAttackTruePctIfCrit"));
+    st.ultAttackWindowS = Math.max(st.ultAttackWindowS, g("ultAttackWindowS"));
+    st.ultAttackAsPct = Math.max(st.ultAttackAsPct, g("ultAttackAsPct"));
+    st.ultAttackCooldownS = Math.max(st.ultAttackCooldownS, g("ultAttackCooldownS"));
     // A revive is, for EHP purposes, a shield worth X% of max HP: they have
     // to kill you twice.
     st.shieldPctMaxHp += g("reviveHpPct") / 100;
     // Attack speed granted by a PASSIVE rather than the stat line (Guinsoo's
     // 32%, Youmuu's 25%): the port had no channel for it at all.
-    st.baseAsPct += g("asPctPassive");
+    st.baseAsPct += g("asPctPassive") * stackProgress;
     // Crit granted by a passive rather than the stat line: Yun Tal
     // Wildarrows prints 0% and earns 25% by attacking. Mirrors Python.
-    st.crit += g("critPctPassive") / 100;
+    st.crit += g("critPctPassive") / 100 * stackProgress;
     st.critDamagePerExcessCrit += g("critDamagePerExcessCrit");
     // "Every Nth attack deals ..." (Hullbreaker, Kraken Slayer). NOT an
     // on-hit: it fires once per N autos, so it is averaged across attacks,
@@ -779,7 +833,33 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.dr = Math.max(st.dr, (r.drPct ?? 0) / 100);
     st.healShieldAmp += (r.healShieldAmpPct ?? 0) / 100;
     st.runeHealPerSec += (r.healPerSec ?? 0) + (r.healPerProc ?? 0) / 9;
-    if (r.procTargetMaxHpPct) { st.graspPct += r.procTargetMaxHpPct; st.graspEvery = r.procEverySec ?? 5; }
+    if (r.healPctMelee || r.healPctRanged) {
+      const healPct = RANGED_CLASSES.has(c.class ?? "")
+        ? (r.healPctRanged ?? r.healPctMelee ?? 0)
+        : (r.healPctMelee ?? r.healPctRanged ?? 0);
+      st.conquerorHealPct = Math.max(st.conquerorHealPct, healPct / 100);
+      st.conquerorRampS = Math.max(st.conquerorRampS, Number(r.stackRampSec) || 3);
+    }
+    if (r.healPctMaxHp || r.allyHealPctMaxHp || r.healApRatio) {
+      // Font of Life's ally gate and melee modifier are applied to both halves;
+      // its explicit cooldown is 15 seconds, not the generic proc cadence.
+      const up = ALLY_GATED_RUNES.has(rn) ? allyUptime(name) : 1;
+      const meleeMult = RANGED_CLASSES.has(c.class ?? "")
+        ? 1 : (Number(r.meleeMultiplier) || 1);
+      const period = Number(r.procEverySec) || FONT_PROC_EVERY;
+      const selfHeal = (Number(r.healPctMaxHp) || 0) / 100 * st.hp
+        + (Number(r.healApRatio) || 0) / 100 * st.ap;
+      const allyHeal = (Number(r.allyHealPctMaxHp) || 0) / 100 * st.hp
+        + (Number(r.healApRatio) || 0) / 100 * st.ap;
+      st.runeHealPerSec += selfHeal * up * meleeMult / period;
+      st.runeAllyHealPerSec += allyHeal * up * meleeMult / period;
+    }
+    if (r.procTargetMaxHpPct) {
+      const rangedMult = RANGED_CLASSES.has(c.class ?? "")
+        ? (Number(r.rangedMultiplier) || 1) : 1;
+      st.graspPct += r.procTargetMaxHpPct * rangedMult;
+      st.graspEvery = r.procEverySec ?? 5;
+    }
     if (r.bonusAdPerStackRange) {
       const [lo, hi] = r.bonusAdPerStackRange;
       st.bonusAd += (lo + (hi - lo) * (level - 1) / 14) * (r.burstStacks ?? 6);
@@ -853,7 +933,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       // forty-two more ("Duration: 5 seconds", "for 3 seconds"), so both are
       // read. Anything with neither is treated as permanent, which is right
       // for passives and is the existing behaviour for the rest.
-      const noteS = String(s.note ?? "").match(/(\d+(?:\.\d+)?)\s*second/i);
+      // Scrapes alternate between "0.75s" and "5 seconds".
+      const noteS = String(s.note ?? "").match(/(\d+(?:\.\d+)?)\s*(?:seconds?|s)\b/i);
       const durationS = typeof s.durationS === "number" ? s.durationS
         : noteS ? Number(noteS[1]) : null;
       if (durationS && durationS > 0) {
@@ -862,6 +943,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
           stat: s.stat,
           asPct: s.stat === "attackSpeed" ? (pct || scaleVal(s.flat, 3, level)) : 0,
           adFlat: s.stat === "ad" && s.flat ? scaleVal(s.flat, 3, level) : 0,
+          drPct: s.stat === "damageReduction" ? pct / 100 : 0,
           durationS,
           cooldownS: cds.length ? scaleVal(cds, 3, level) : 12,
         });
@@ -869,11 +951,22 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       if (s.stat === "attackSpeed") st.baseAsPct += pct || scaleVal(s.flat, 3, level);
       else if (s.stat === "ad" && s.flat) st.bonusAd += scaleVal(s.flat, 3, level);
       else if (s.stat === "moveSpeed" && pct) st.bonusMs += st.baseMs * pct / 100 * 0.5;
-      else if ((s.stat === "armor" || s.stat === "mr") && s.flat) st[s.stat] += scaleVal(s.flat, 3, level);
+      else if ((s.stat === "armor" || s.stat === "mr") && s.flat) {
+        st[s.stat] += scaleVal(s.flat, 3, level);
+        if (s.from === "ap" && pct) st[s.stat] += st.ap * pct / 100;
+        else if (s.pct != null) st[s.stat] *= 1 + pct / 100;
+      }
+      else if ((s.stat === "armor" || s.stat === "mr") && s.from === "ap" && pct)
+        st[s.stat] += st.ap * pct / 100;
+      else if ((s.stat === "armor" || s.stat === "mr") && s.pct != null)
+        st[s.stat] *= 1 + pct / 100;
       else if (s.stat === "damageReduction") {
         // Flat damage reduction from a kit (Alistar's ultimate). Takes the
-        // strongest source, mirroring how the rune path treats drPct.
-        st.dr = Math.max(st.dr, scaleVal(s.pct, 3, level) / 100);
+        // strongest source, mirroring how the rune path treats drPct. A
+        // duration-bound parry (Fiora) is averaged in forWindow; only a
+        // permanent/passive reduction belongs in the displayed stat block.
+        if (!durationS || durationS <= 0)
+          st.dr = Math.max(st.dr, scaleVal(s.pct, 3, level) / 100);
       } else if (s.stat === "hp") {
         // Transform ultimates grant flat Health (Shyvana, Nasus, Volibear). It
         // is BONUS health, so shield and HP-scaling effects see it. Python has
@@ -928,6 +1021,19 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.hp += hpFromMana;
     st.bonusHp += hpFromMana;
   }
+  // Resolve build-dependent item effects only after mana conversions and rune
+  // stats are final: Sunfire sees all bonus Health and Fimbulwinter sees max
+  // Mana. The ranged modifier is the item's explicit 50% shield rule.
+  st.dotDps += st.dotDpsBonusHpPct / 100 * st.bonusHp;
+  if (st.shieldPctMana) {
+    const manaMult = rngd ? st.shieldManaRangedMult : 1;
+    st.shield += st.shieldPctMana * st.mana * manaMult;
+  }
+  st.triggeredHeal += st.triggeredHealBonusArmorPct
+    * Math.max(0, st.armor - base("armor", 60));
+  st.triggeredHeal += st.triggeredHealBonusMrPct
+    * Math.max(0, st.mr - base("mr", 45));
+  st.triggeredHeal += st.triggeredHealBonusHpPct * st.bonusHp;
   // Rabadon's "Overkill" multiplies TOTAL AP, so it must land after every AP
   // source above -- including Archangel's mana conversion just now.
   if (st.apAmp) st.ap *= 1 + st.apAmp;
@@ -940,8 +1046,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     if (prefersAp) st.onHitMagic += dmg;
     else st.onHitPhys += dmg;
   }
-  st.doubleShotMult = mechs.doubleShot
-    ? 1 + (Number(mechs.doubleShot.secondShotPct) || 50) / 100 * 0.6 : 1;
+  let doubleShotPct = mechs.doubleShot
+    ? (Number(mechs.doubleShot.secondShotPct) || 50) : 50;
+  for (const tier of (mechs.doubleShot?.secondShotPctByLevel ?? []))
+    if (level >= Number(tier[0])) doubleShotPct = Number(tier[1]);
+  st.doubleShotMult = mechs.doubleShot ? 1 + doubleShotPct / 100 * 0.6 : 1;
   // multiShot: one attack fires N projectiles (Graves' shotgun, Ashe's Volley,
   // Twitch, Lulu). Twitch's extra projectiles are target bolts, so they belong
   // on the AoE channel rather than multiplying the primary target's auto.
@@ -1132,14 +1241,17 @@ function forWindow(name: string, st: any, window: number, level: number): any {
   const hasteM = 100 / (100 + (st.haste ?? 0));
   let asPctLost = 0;
   let adLost = 0;
+  let timedDr = 0;
   for (const s of timed ?? []) {
     const cd = Math.max(0.5, (s.cooldownS || 12) * hasteM);
     const casts = 1 + Math.floor(window / cd);
     const uptime = Math.min(1, (s.durationS * casts) / window);
     asPctLost += (s.asPct || 0) * (1 - uptime);
     adLost += (s.adFlat || 0) * (1 - uptime);
+    if (s.drPct) timedDr = Math.max(timedDr, Number(s.drPct) * uptime);
   }
   const adj = { ...st };
+  if (timedDr) adj.dr = Math.max(Number(st.dr || 0), Math.min(0.99, timedDr));
   if (slows?.length) {
     let scheduledSlow = 0;
     for (const effect of slows) {
@@ -1211,8 +1323,14 @@ export function rotation(name: string, st: any, target: any, window: number,
 
   const compDmg = (comp: any, rank: number, slot = "", secondary = false): number => {
     let base = scaleVal(comp.base, rank, level);
+    base += scaleVal(comp.baseAdd ?? 0, rank, level);
     if (comp.when === "dot total" && comp.durationS) base *= comp.durationS;
     let val = base;
+    if (comp.gritScale) {
+      const expected = st.hp * (Number(comp.gritScale.expectedGritPctMaxHp) || 0);
+      val += expected * ((Number(comp.gritScale.base) || 0)
+        + (Number(comp.gritScale.perAd) || 0) * st.ad);
+    }
     for (const r of comp.ratios ?? []) {
       const pct = scaleVal(r.pct ?? 0, rank, level) / 100;
       const src: Record<string, number> = {
@@ -1233,7 +1351,7 @@ export function rotation(name: string, st: any, target: any, window: number,
         ap: st.ap, ad: st.ad, bonusAd: st.bonusAd,
       };
       val += (targets[r.target] ?? 0) * (stats[r.stat] ?? 0)
-        * (Number(r.pctPerStat) || 0) / 100;
+        * scaleVal(r.pctPerStat ?? 0, rank, level) / 100;
     }
     // See the Python half. perCritDamage follows CRIT DAMAGE rather than crit
     // chance, which is the shape 7.3 gave several ultimates.
@@ -1416,7 +1534,7 @@ export function rotation(name: string, st: any, target: any, window: number,
       // arrives at the right total.
       return Math.min(1, everyNShare * ((nAutos + abilityHits) / nAutos));
     }
-    const limit = slot ? empowerLimit.get(slot) : undefined;
+    const limit = slot ? (Number(c?.empowerLimit) || empowerLimit.get(slot)) : undefined;
     if (limit && nAutos > 0) {
       let casts = slot && castLog[slot] ? castLog[slot].casts : 0;
       if (casts <= 0 && slot) {
@@ -1486,7 +1604,58 @@ export function rotation(name: string, st: any, target: any, window: number,
     targets = secondaryReachTotal(targets);
     let cd = st.aoeProcCdSec || Infinity;
     if (cd !== Infinity) cd *= 100 / (100 + (st.itemHaste ?? 0));
-    return flat * targets * magicM * procActivations(window, cd);
+    const times = procActivations(window, cd);
+    let damage = flat * targets * magicM * times;
+    // Statikk Shiv explicitly applies on-hit effects to its bounce targets.
+    // The primary energized attack already goes through doAutos; only the
+    // secondary targets need the extra bundle here.
+    if (st.aoeProcAppliesOnHit) {
+      const [bp, bm, bt] = onHitBundle(st, target, physM, magicM);
+      damage += (bp + bm + bt) * targets * times;
+    }
+    return damage;
+  };
+  /** Luden's Echo: the primary hit always lands; empty nearby slots are
+   * converted into extra primary damage. Secondary damage is kept on the AOE
+   * channel so a one-target duel is not inflated. */
+  const doBurstAoe = (): [number, number] => {
+    let primary = 0, secondary = 0;
+    for (const proc of st.burstAoeProcs ?? []) {
+      const targets = Math.max(0, Number(proc.targets) || 0);
+      const nearby = secondaryTargets == null
+        ? 0 : Math.min(targets, Math.max(0, secondaryTargets));
+      const cd = proc.cd ?? Infinity;
+      const times = procActivations(window, cd);
+      const base = (Number(proc.flat) || 0) + (Number(proc.apRatio) || 0) * st.ap;
+      const missing = (Number(proc.missingFlat) || 0)
+        + (Number(proc.missingApRatio) || 0) * st.ap;
+      primary += missing * Math.max(0, targets - nearby) * magicM * times;
+      secondary += base * nearby * magicM * times;
+    }
+    return [primary, secondary];
+  };
+  const ultAttackWindowDelta = (nAutos: number): [number, number] => {
+    const count = Number(st.ultAttackCount) || 0;
+    if (!count || !castLog["4"]?.casts || !nAutos) return [0, 0];
+    const duration = Number(st.ultAttackWindowS) || window;
+    const eligible = window <= duration ? nAutos : Math.floor(nAutos * duration / window);
+    const hits = Math.min(count, Math.max(1, eligible), nAutos);
+    let replaced = 0;
+    for (const comp of perAuto) {
+      if ((comp as any).replacesAuto) replaced += perAutoShare(comp, nAutos);
+    }
+    replaced = Math.min(1, replaced);
+    const base = st.ad * giant * (1 - replaced)
+      * (1 + (st.autoBonusPct ?? 0) / 100);
+    const crit = Math.min(1, st.crit ?? 0);
+    const normalMult = 1 + crit * ((st.critMult ?? BASE_CRIT_MULT) - 1);
+    const forcedCritMult = (Number(st.ultAttackCritMultiplierPct) || 80) / 100;
+    const forcedMult = (1 - crit) * forcedCritMult * (st.critMult ?? BASE_CRIT_MULT)
+      + crit * (st.critMult ?? BASE_CRIT_MULT);
+    const physical = (forcedMult - normalMult) * base * physM * hits;
+    const trueDamage = crit * (Number(st.ultAttackTruePctIfCrit) || 0) / 100
+      * base * hits;
+    return [physical, trueDamage];
   };
   const doAutos = (nAutos: number) => {
     // How much of the normal attack is REPLACED by a kit component rather than
@@ -1526,7 +1695,12 @@ export function rotation(name: string, st: any, target: any, window: number,
     addT("physical", aPhys * dsm * nAutos * adm);
     addT("magic", aMagic * dsm * nAutos * adm);
     addT("true", aTrue * dsm * nAutos * adm);
-    return (aPhys + aMagic + aTrue) * dsm * nAutos * adm;
+    const [ultPhys, ultTrue] = ultAttackWindowDelta(nAutos);
+    const ultPhysical = ultPhys * dsm * adm;
+    const ultTrueDamage = ultTrue * dsm * adm;
+    addT("physical", ultPhysical);
+    addT("true", ultTrueDamage);
+    return (aPhys + aMagic + aTrue) * dsm * nAutos * adm + ultPhysical + ultTrueDamage;
   };
   /**
    * Discrete procs, charged at the rate their own descriptions state.
@@ -1570,16 +1744,43 @@ export function rotation(name: string, st: any, target: any, window: number,
     const budget = Math.max(1, Math.floor(window / 0.45));
     const seq = comboSeq.slice(0, budget);
     let nAutosSeq = 0;
-    for (const slot of seq) {
+    const comboCasts = new Map<string, number>();
+    for (let actionIndex = 0; actionIndex < seq.length; actionIndex++) {
+      const slot = seq[actionIndex];
       if (slot === "auto") { nAutosSeq++; continue; }
       if (!(slot in f)) continue;
-      const comps = (f[slot].damage ?? []).filter((c: any) => !c.alt && !c.dropped && c.when !== "per auto");
-      for (const c of (f[slot].damage ?? []))
+      const ab: any = f[slot];
+      const castIndex = comboCasts.get(slot) ?? 0;
+      comboCasts.set(slot, castIndex + 1);
+      castLog[slot] = { name: ab.name ?? slot, casts: castIndex + 1, max: castIndex + 1 };
+      const raw = ab.damage ?? [];
+      let comps: any[];
+      if (ab.recastChain && raw.some((c: any) => c.recastIndex != null)) {
+        comps = raw.filter((c: any) => c.recastIndex === castIndex && !c.dropped && c.when !== "per auto");
+      } else if (name === "Pantheon" && slot === "2" && seq.slice(0, actionIndex).includes("4")) {
+        comps = raw.filter((c: any) => c.mortalWill && !c.dropped && c.when !== "per auto");
+        if (!comps.length) comps = raw.filter((c: any) => !c.alt && !c.dropped && c.when !== "per auto");
+      } else if (ab.statefulCombo) {
+        const state = castIndex === 0 ? "initial" : "recast";
+        comps = raw.filter((c: any) => c.comboState === state && !c.dropped && c.when !== "per auto");
+        if (!comps.length) comps = raw.filter((c: any) => !c.alt && !c.dropped && c.when !== "per auto");
+      } else if (ab.preferredAlt) {
+        comps = raw.filter((c: any) => c.name === ab.preferredAlt && !c.dropped && c.when !== "per auto");
+      } else {
+        comps = raw.filter((c: any) => !c.alt && !c.dropped && c.when !== "per auto");
+      }
+      if (ab.stackGated && seq.slice(0, actionIndex).filter((a) => a === "auto").length < 4)
+        comps = [];
+      for (const c of raw)
         if (!c.alt && c.when === "per auto" && !c.dropped) addPerAuto(c, slot);
       const rank = slot === "4" ? 2 : 3;
       const ampA = 1 + st.abilityAmp;
+      const recastMultipliers = ab.recastMultiplier as number[] | undefined;
+      const castMultiplier = recastMultipliers?.length
+        ? Number(recastMultipliers[Math.min(castIndex, recastMultipliers.length - 1)]) || 1
+        : (ab.nextCastMultiplier && castIndex > 0 ? Number(ab.nextCastMultiplier) : 1);
       for (const c of comps) {
-        const cd = compDmg(c, rank, slot) * ampA;
+        const cd = compDmg(c, rank, slot) * castMultiplier * ampA;
         addT(c.type, cd); total += cd;
         bySlot[slot] = (bySlot[slot] ?? 0) + cd;
         let secondary = secondaryCompDmg(c, rank, slot) * ampA;
@@ -1588,18 +1789,29 @@ export function rotation(name: string, st: any, target: any, window: number,
       }
       if (chargesSpellblade(f[slot])) castsTotal++;
     }
-    const nAutos = Math.max(nAutosSeq, Math.floor(window * st.as * 0.5));
+    let nAutos = Math.max(nAutosSeq, Math.floor(window * st.as * 0.5));
+    if (st.ultAttackAsPct && castLog["4"]?.casts) {
+      const uptime = Math.min(1, (Number(st.ultAttackWindowS) || window)
+        / Math.max(window, 1e-9));
+      nAutos = Math.max(nAutos, Math.floor(nAutos
+        * (1 + Number(st.ultAttackAsPct) / 100 * uptime)));
+    }
     const dAutos = doAutos(nAutos);
     total += dAutos;
     autoDmg += dAutos;
+    const [_burstPrimary, _burstSecondary] = doBurstAoe();
+    if (_burstPrimary) { total += _burstPrimary; addT("magic", _burstPrimary); }
     if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp || st.spellbladeApPct) {
       const procs = Math.min(castsTotal, nAutos, 1 + Math.floor(window / SPELLBLADE_CD));
       // Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; type
       // follows the item.
       const sbMagic = st.spellbladeMagic > 0;
-      const sb = (st.spellbladeBaseAdPct / 100 * st.baseAd
+      let sbRaw = st.spellbladeBaseAdPct / 100 * st.baseAd
         + st.spellbladeApPct / 100 * st.ap
-        + st.spellbladePctMaxHp / 100 * target.hp) * (sbMagic ? magicM : physM) * procs;
+        + st.spellbladePctMaxHp / 100 * target.hp
+        + st.spellbladeCritFlatPerCrit * st.crit;
+      if (st.spellbladeCanCrit) sbRaw *= critEv;
+      const sb = sbRaw * (sbMagic ? magicM : physM) * procs;
       total += sb;
       autoDmg += sb;
       addT(sbMagic ? "magic" : "physical", sb);
@@ -1661,9 +1873,9 @@ export function rotation(name: string, st: any, target: any, window: number,
     const amp = wholeRotationAmp();
     ROT_AUTO_DMG = autoDmg * amp;
     ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
-    ROT_CAST_LOG = {};
+    ROT_CAST_LOG = { ...castLog };
     ROT_NAUTOS = nAutos;
-    ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc()) * (1 + st.damageAmp);
+    ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc() + _burstSecondary) * (1 + st.damageAmp);
     ROT_ABILITY_AOE_DMG = abilityAoeDmg * amp;
     ROT_BY_SLOT = { ...bySlot };
     ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
@@ -1690,6 +1902,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     const rank = rankOf[slot] ?? 3;
     const cdIdx = cds.length ? Math.min(rank, cds.length - 1) : 0;
     let cd = (cds.length ? cds[cdIdx] : 8) * hasteM;
+    if (ab.tapCooldownRefundPct)
+      cd *= Math.max(0.05, 1 - Number(ab.tapCooldownRefundPct));
     if (cdrPerEmpoweredHit && slot !== cdrSourceSlot && window > 0) {
       // Seconds of cooldown removed across the window, spread evenly. Capped at
       // half, so a long fight cannot drive a cooldown to nothing.
@@ -1710,25 +1924,50 @@ export function rotation(name: string, st: any, target: any, window: number,
       castLog[slot] = { name: ab.name ?? slot, casts: hwei ? hwei.casts[slot] : casts,
         max: hwei ? hwei.casts[slot] : maxCasts };
     const ampA = 1 + st.abilityAmp;
-    for (const c of dmgComps) {
-      const cd2 = compDmg(c, rank, slot) * casts * ampA;
+    const castMultiplierSum = ab.nextCastMultiplier && casts > 1
+      ? 1 + (casts - 1) * Number(ab.nextCastMultiplier) : casts;
+    let damageEntries: Array<[any, number]> = dmgComps.map((c: any) => [c, castMultiplierSum]);
+    if (ab.statefulCombo) {
+      const initial = dmgComps.filter((c: any) => c.comboState === "initial");
+      const recast = dmgComps.filter((c: any) => c.comboState === "recast");
+      if (initial.length || recast.length)
+        damageEntries = [...initial.slice(0, 1).map((c: any) => [c, 1] as [any, number]),
+          ...recast.map((c: any) => [c, Math.max(0, casts - 1)] as [any, number])];
+    } else if (ab.preferredAlt) {
+      const preferred = (ab.damage ?? []).filter((c: any) => c.name === ab.preferredAlt
+        && !c.dropped && c.when !== "per auto");
+      if (preferred.length) damageEntries = preferred.map((c: any) => [c, castMultiplierSum]);
+    }
+    for (const [c, componentCasts] of damageEntries) {
+      const cd2 = compDmg(c, rank, slot) * componentCasts * ampA;
       addT(c.type, cd2); total += cd2;
       bySlot[slot] = (bySlot[slot] ?? 0) + cd2;
-      let secondary = secondaryCompDmg(c, rank, slot) * casts * ampA;
+      let secondary = secondaryCompDmg(c, rank, slot) * componentCasts * ampA;
       if (slot === "4") secondary *= 1 + st.ultAmp;
       abilityAoeDmg += secondary;
     }
   }
-  const nAutos = hwei ? hwei.autos : Math.max(1, Math.floor(window * st.as * autoUptime(name, window, st)));
+  let nAutos = hwei ? hwei.autos : Math.max(1, Math.floor(window * st.as * autoUptime(name, window, st)));
+  if (st.ultAttackAsPct && castLog["4"]?.casts) {
+    const uptime = Math.min(1, (Number(st.ultAttackWindowS) || window)
+      / Math.max(window, 1e-9));
+    nAutos = Math.max(nAutos, Math.floor(nAutos
+      * (1 + Number(st.ultAttackAsPct) / 100 * uptime)));
+  }
   const dAutos = doAutos(nAutos);
   total += dAutos;
   autoDmg += dAutos;
+  const [_burstPrimary, _burstSecondary] = doBurstAoe();
+  if (_burstPrimary) { total += _burstPrimary; addT("magic", _burstPrimary); }
   if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp || st.spellbladeApPct) {
     const procs = Math.min(castsTotal, nAutos, 1 + Math.floor(window / SPELLBLADE_CD));
     const sbMagic = st.spellbladeMagic > 0;
-    const sb = (st.spellbladeBaseAdPct / 100 * st.baseAd
+    let sbRaw = st.spellbladeBaseAdPct / 100 * st.baseAd
       + st.spellbladeApPct / 100 * st.ap
-      + st.spellbladePctMaxHp / 100 * target.hp) * (sbMagic ? magicM : physM) * procs;
+      + st.spellbladePctMaxHp / 100 * target.hp
+      + st.spellbladeCritFlatPerCrit * st.crit;
+    if (st.spellbladeCanCrit) sbRaw *= critEv;
+    const sb = sbRaw * (sbMagic ? magicM : physM) * procs;
     total += sb;
     autoDmg += sb;
     addT(sbMagic ? "magic" : "physical", sb);
@@ -1792,7 +2031,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
   ROT_CAST_LOG = castLog;
   ROT_NAUTOS = nAutos;
-  ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc()) * (1 + st.damageAmp);
+  ROT_BOLT_DMG = (doBolts(nAutos) + doAoeProc() + _burstSecondary) * (1 + st.damageAmp);
   ROT_ABILITY_AOE_DMG = abilityAoeDmg * amp;
   ROT_BY_SLOT = { ...bySlot };
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
@@ -1884,9 +2123,45 @@ export function attackProfile(name: string, items: string[], runes: string[],
 const STAGE_PLAN: [number | null, number][] = [[1, 0.10], [2, 0.30], [3, 0.35], [4, 0.15], [5, 0.07], [6, 0.03]];
 const PREFIX_LEVELS_TS = [8, 10, 12, 13, 14, 15];
 
-function buildOrder(items: string[]): string[] {
-  const o = [...items];
-  return o.length >= 2 ? [o[0], o[o.length - 1], ...o.slice(1, -1)] : o;
+function optimalPurchaseOrder(name: string, core: string[], boots: string,
+                              runes: string[], variant: string): string[] {
+  const remaining = [...core, ...(boots ? [boots] : [])];
+  const chosen: string[] = [];
+  for (let i = 0; i < remaining.length; i++) {
+    const level = PREFIX_LEVELS_TS[Math.min(i, PREFIX_LEVELS_TS.length - 1)];
+    let best = remaining[0] ?? "", bestKey = -Infinity;
+    for (const slug of remaining) {
+      const prefix = [...chosen, slug];
+      const st = resolveStats(name, level, prefix, runes);
+      if (!st) continue;
+      const burst = rotation(name, st, targetSquishy(level), 3, level);
+      const sustained = rotation(name, st, TARGET_BRUISER, 8, level) / 8;
+      const [off] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
+      const value = (off * sustained / REF_DPS + (1 - off) * burst / REF_BURST)
+        / Math.pow(Math.max(Number(DATA.items[slug]?.cost ?? 1), 1), i < 2 ? 0.30 : 0);
+      if (value > bestKey) { best = slug; bestKey = value; }
+    }
+    chosen.push(best);
+    const index = remaining.indexOf(best);
+    if (index >= 0) remaining.splice(index, 1);
+  }
+  // A tier-2 boot completed in the final slot cannot sensibly lead to its
+  // tier-3 upgrade. Keep the measured winner, but move a last-place boot to a
+  // practical checkpoint; boots are still free to be first when their score
+  // warrants it.
+  if (boots && chosen[chosen.length - 1] === boots && chosen.length > 2) {
+    chosen.splice(Math.min(2, chosen.length - 1), 0, chosen.pop()!);
+  }
+  return chosen;
+}
+
+function buildOrder(name: string, items: string[], runes: string[], variant: string): string[] {
+  // Keep staged scoring on the same completion order the UI reports.  The
+  // previous shortcut always moved the final slot to purchase two, which made
+  // tier-2/tier-3 boots appear late or early for the wrong reason.
+  const boots = items.find(s => DATA.items[s]?.category === "Boots") ?? "";
+  const core = items.filter(s => s !== boots);
+  return optimalPurchaseOrder(name, core, boots, runes, variant);
 }
 
 function valueAt(name: string, items: string[], runes: string[], variant: string, level: number): number {
@@ -1898,11 +2173,15 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   // Damage on OTHER targets (Runaan's bolts), as a per-second rate to match
   // dps8. Zero for any build without a bolt item, so they are unaffected.
   const aoePerSec = detail8.boltDamage / 8;
-  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
+  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp
+    + (st.triggeredHp || 0) + overhealShield(st, detail8);
   shield *= 1 + st.healShieldAmp;
   const mixed = mixedTaken(st);
   const ehp = (st.hp + shield) / mixed / (st.dr < 1 ? 1 - st.dr : 1);
-  const sustain = st.vamp * dps8 * 8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp);
+  const sustain = st.vamp * dps8 * 8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
+    + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
+    + conquerorHeal(st, detail8.damage, 8)
+    + (st.triggeredHeal || 0);
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
   wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
   // Bruisers are scored on damage DELIVERED, not damage theoretically dealt.
@@ -1914,7 +2193,7 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
 }
 
 function stagedScore(name: string, items: string[], runes: string[], variant: string): number {
-  const order = buildOrder(items);
+  const order = buildOrder(name, items, runes, variant);
   let acc = 0, tw = 0;
   for (const [n, w] of STAGE_PLAN) {
     const prefix = n === null ? order : order.slice(0, Math.min(n, order.length));
@@ -1932,7 +2211,8 @@ export function liveMetrics(name: string, items: string[], runes: string[],
   if (!st) return null;
   const squishy = targetSquishy(level);
   const burst3 = rotation(name, st, squishy, 3, level);
-  const dmg8 = rotation(name, st, TARGET_BRUISER, 8, level);
+  const detail8 = rotationDetail(name, st, TARGET_BRUISER, 8, level);
+  const dmg8 = detail8.damage;
   const dps8 = dmg8 / 8;
 
   const need = squishy.hp * (1 - st.execute);
@@ -1942,11 +2222,15 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     const t = i * 0.25;
     if (rotation(name, st, squishy, t, level) >= need) { ttk = t; break; }
   }
-  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
+  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp
+    + (st.triggeredHp || 0) + overhealShield(st, detail8);
   shield *= 1 + st.healShieldAmp;
   const mixed = mixedTaken(st);
   const ehp = (st.hp + shield) / mixed / (st.dr < 1 ? 1 - st.dr : 1);
-  const sustain = st.vamp * dmg8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp);
+  const sustain = st.vamp * dmg8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
+    + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
+    + conquerorHeal(st, dmg8, 8)
+    + (st.triggeredHeal || 0);
 
   const m = { burst3: Math.round(burst3), dps8: Math.round(dps8), ttk,
     ehp: Math.round(ehp), sustain: Math.round(sustain),
@@ -1954,7 +2238,9 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     armor: Math.round(st.armor), mr: Math.round(st.mr),
     moveSpeed: Math.round(st.baseMs + st.bonusMs),
     attackSpeed: Math.round(st.as * 100) / 100, haste: Math.round(st.haste),
-    crit: Math.round(st.crit * 100), mana: Math.round(st.mana) };
+    crit: Math.round(st.crit * 100), mana: Math.round(st.mana),
+    attackRangeBonus: Math.round(st.attackRangeBonus || 0),
+    attackRangeBonusPct: Math.round(st.attackRangeBonusPct || 0) };
 
   // build-quality score is early-game-weighted across purchase stages
   const score = Math.round(stagedScore(name, items, runes, variant) * 10) / 10;
@@ -2011,6 +2297,29 @@ function mixedTaken(st: any): number {
   return 0.5 * phys + 0.5 * magic;
 }
 
+function activeItemHeal(st: any, window: number): number {
+  if (!(st.activeHealAdPct || st.activeHealMissingHpPct)) return 0;
+  const cd = st.activeHealCdSec || Infinity;
+  const times = procActivations(window, cd);
+  return times * ((st.activeHealAdPct || 0) * st.ad
+    + (st.activeHealMissingHpPct || 0) * st.hp * MISSING_HP_IN_FIGHT);
+}
+
+function conquerorHeal(st: any, damage: number, window: number): number {
+  const pct = Number(st.conquerorHealPct) || 0;
+  if (!pct || window <= 0) return 0;
+  const ramp = Number(st.conquerorRampS) || 3;
+  const active = Math.max(0, Math.min(1, (window - ramp) / window));
+  return pct * damage * active;
+}
+
+function overhealShield(st: any, detail: { byType?: { physical?: number } }): number {
+  const cap = Number(st.overhealShieldCap) || 0;
+  if (!cap) return 0;
+  const lifesteal = (st.lifestealPct || 0) * (detail.byType?.physical || 0);
+  return Math.min(cap, Math.max(0, lifesteal));
+}
+
 export function analyzeBuild(name: string, items: string[], runes: string[],
                             level = 15): BuildAnalysis | null {
   const st = resolveStats(name, level, items, runes);
@@ -2033,9 +2342,10 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
   for (const [k, t] of Object.entries(profs)) ttk[k] = ttkOf(name, st, t, level);
 
   // composition over the 8s bruiser fight
-  const tot = rotation(name, st, bruiser, 8, level) || 1;
-  const bt = ROT_BY_TYPE, autoD = ROT_AUTO_DMG, clog = ROT_CAST_LOG;
-  const nAutos = ROT_NAUTOS, nAutosIdeal = ROT_NAUTOS_IDEAL;
+  const detail8 = rotationDetail(name, st, bruiser, 8, level);
+  const tot = detail8.damage || 1;
+  const bt = detail8.byType, autoD = detail8.autoDamage, clog = detail8.casts;
+  const nAutos = detail8.autos, nAutosIdeal = detail8.autosIdeal;
   const byTypePct = {
     physical: Math.round(100 * bt.physical / tot),
     magic: Math.round(100 * bt.magic / tot),
@@ -2070,7 +2380,8 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
   rotation(name, st, bruiser, 8, level);
 
   // survivability + mitigation + gold efficiency
-  let shieldVal = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
+  let shieldVal = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp
+    + (st.triggeredHp || 0) + overhealShield(st, detail8);
   shieldVal *= 1 + st.healShieldAmp;
   // Typed damage reduction rides its own half here too, and this site knows
   // the enemy's ACTUAL damage split rather than assuming 50/50.
@@ -2091,10 +2402,15 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
     omnivamp: Math.round(st.omnivampPct * tot),
     onHit: Math.round(st.healOnHit * nAutos),
     rune: Math.round(st.runeHealPerSec * 8 * (1 + st.healShieldAmp)),
+    itemActive: Math.round(activeItemHeal(st, 8)),
+    conqueror: Math.round(conquerorHeal(st, tot, 8)),
+    conditional: Math.round(st.triggeredHeal || 0),
     total: 0,
   };
-  healing.total = healing.lifesteal + healing.omnivamp + healing.onHit + healing.rune;
-  const reactive = st.shieldPctMaxHp > 0 || st.shieldPctBonusHp > 0;
+  healing.total = healing.lifesteal + healing.omnivamp + healing.onHit + healing.rune
+    + healing.itemActive + healing.conditional;
+  const reactive = st.shieldPctMaxHp > 0 || st.shieldPctBonusHp > 0
+    || st.overhealShieldCap > 0 || st.triggeredHp > 0;
   const shields = { value: Math.round(shieldVal), avgUptime: reactive ? 0.45 : (shieldVal ? 0.7 : 0), amp: Math.round(st.healShieldAmp * 100) };
 
   const rawIn = INCOMING_DPS.bruiser * 8, physRaw = rawIn * 0.5, magicRaw = rawIn * 0.5;
@@ -2770,11 +3086,16 @@ export function championTarget(name: string, level: number, items: string[],
     bonusHp: Math.round(bonusHp),
     // Their own sustain, so an attacker's Grievous Wounds finally has
     // something to deny. Vamp is excluded on purpose -- see DuelTarget.
-    sustainPerSec: Math.max(0, kit + st.runeHealPerSec + st.healOnHit * st.as),
+    sustainPerSec: Math.max(0, kit + st.runeHealPerSec + st.healOnHit * st.as
+      + (activeItemHeal(st, SUSTAIN_REF_WINDOW)
+        + conquerorHeal(st, refDmg.damage, SUSTAIN_REF_WINDOW)
+        + (st.triggeredHeal || 0))
+        / SUSTAIN_REF_WINDOW),
     // Item shielding, so a shield-cut item has something to cut. Sterak's,
     // Maw, Kaenic Rookern and Guardian Angel's revive all land here.
     shield: Math.max(0, hweiShield + st.shield + st.shieldPctBonusHp * bonusHp
-                        + st.shieldPctMaxHp * withBuild.hp),
+                        + st.shieldPctMaxHp * withBuild.hp + (st.triggeredHp || 0)
+                        + overhealShield(st, refDmg)),
     ccDepth: Number(DATA.champions[name]?.ccDepth) || 0,
     // 82 champions state a duration in their ability text; the rest fall back
     // to the corpus median of those 112 stated figures.

@@ -909,6 +909,24 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
     so they remain separate even when both buy physical items.
     """
     identity = profiles.build_identity(champion)
+    identity_profile = profiles.build_identity_profile(champion)
+    # The prompt's curated identity card is also an engine constraint.  Before
+    # this bridge, the model was told that Shyvana/Vi/Fiora must not use crit or
+    # lethality while the engine was still asked to compare exactly those paths,
+    # so an artefactually high crit/on-hit formula could win the tournament and
+    # then be repaired away.  Keep the two halves of the pipeline on the same
+    # reviewed definition of a viable path.
+    identity_card = prompt_mod.identity_card(champion) or {}
+    hard_limits = identity_card.get("hardLimits") or {}
+    avoided = {str(value).lower().replace("_", " ")
+               for value in (hard_limits.get("avoidStats") or [])}
+    never_text = " ".join(
+        str(row.get("path") or "")
+        for row in (hard_limits.get("neverArchetypes") or [])
+        if isinstance(row, dict)).lower()
+    def forbidden(*terms: str) -> bool:
+        return any(term.lower() in avoided or term.lower() in never_text
+                   for term in terms)
     pattern = combat.get("basicAttackPattern", "mixed")
     champion_class = (CHAMPS.get(champion) or {}).get("class", "")
     crit = (combat.get("critValue") == "high" or champion_class == "Marksman")
@@ -931,24 +949,36 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
         # into ad-caster lets the one-item probe reward mathematically tidy
         # outliers (Essence Reaver/Goredrinker) while starving the actual
         # lethality core the kit is built around.
-        if champion_class == "Assassin":
+        if (champion_class == "Assassin"
+                and "lethality" not in {
+                    str(value).lower()
+                    for value in (identity_profile.get("forbiddenAnchors") or [])
+                }
+                and not forbidden("lethality", "armor pen", "flat penetration")):
             add("ad-lethality")
         if (pattern in {"caster", "ability-weaving", "mixed"} or not attack_based
                 or champion in HYBRID_DAMAGE_CHAMPIONS):
             add("ad-caster")
-        if crit:
+        if crit and not forbidden("crit", "critical"):
+            add("ad-crit")
+        elif "CRIT" in {str(value).upper()
+                         for value in ((identity_profile.get("alternativePath") or {})
+                                       .get("anchorStats") or [])}:
+            # Fiora's reviewed crit-duelist alternative is real even though
+            # the generic combat extractor rates her crit ratio as low.
             add("ad-crit")
         # Marksmen and repeated-attack champions each deserve an independent
         # attack-speed/on-hit hypothesis.  Do not infer it only from a parsed
         # on-hit sentence: some kits express the same loop through an attack
         # speed steroid and item effects.
-        if on_hit or combat.get("attackSpeedValue") == "high":
+        if ((on_hit or combat.get("attackSpeedValue") == "high")
+                and not forbidden("on-hit", "attack speed")):
             add("ad-on-hit")
         if not any(x.startswith("ad-") for x in ids):
             add("ad-caster")
-    if allow_ap:
+    if allow_ap and not forbidden("ap", "ability power"):
         add("ap-caster")
-        if on_hit or attack_based:
+        if (on_hit or attack_based) and not forbidden("on-hit", "attack speed"):
             add("ap-on-hit")
     if damage_path in {"standard", "hybrid"} and champion in HYBRID_DAMAGE_CHAMPIONS:
         add("hybrid-on-hit" if on_hit or attack_based else "ap-caster")
@@ -956,7 +986,26 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
     # survives the five-path cap below. Without this a tank asked for maximum
     # damage was handed a single ap-caster path and every candidate came back a
     # glass build, which is the opposite of what the bias text asks for.
-    if champion_class in FRONTLINE_CLASSES:
+    if champion_class in FRONTLINE_CLASSES or {
+            str(value).lower() for value in (identity_card.get("classes") or [])
+        } & {"tank", "juggernaut"} or "frontline" in str(
+            (identity_card.get("teamComp") or {}).get("primary_team_role") or ""
+        ).lower():
+        # A reviewed tank identity is not an AP-mage invitation. Rammus and
+        # K'Sante expose magic ratios, but their real build engine is a
+        # defensive frontline. Only a champion with an explicit reviewed
+        # alternative gets another damage lane here.
+        if identity_profile.get("primaryBuildPath") == "tank":
+            alternatives = identity_profile.get("alternativePath") or {}
+            anchors = {str(value).upper()
+                       for value in (alternatives.get("anchorStats") or [])}
+            paths = ["tank-frontline"]
+            if "AD" in anchors:
+                paths.append("ad-on-hit" if on_hit or attack_based else "ad-bruiser")
+            if "AP" in anchors:
+                paths.append("ap-on-hit" if on_hit or attack_based else "ap-bruiser")
+            return [{"id": value, "description": _ARCHETYPE_TEXT[value]}
+                    for value in paths[:5]]
         if champion_class == "Tank":
             # Tanks still need the damage identity their kit actually uses in
             # the durable search.  Lead with the corresponding bruiser lane
@@ -982,6 +1031,12 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
     # One completion can cheaply provide more hypotheses.  Five bounds prompt
     # size and engine latency while covering every meaningful axis on the most
     # flexible champions (Varus/Kai'Sa/Kayle).
+    if any("duelist" in str(path).lower()
+           for path in (identity_profile.get("approvedBuildPaths") or [])):
+        # Reviewed duelists (Fiora is the current example) are not generic
+        # ranged-caster candidates. Their damage path must stay in the melee
+        # AD/bruiser, spellblade or explicitly reviewed crit lanes.
+        ids = [value for value in ids if value != "ad-caster"]
     ids = ids[:5]
     return [{"id": value, "description": _ARCHETYPE_TEXT[value]} for value in ids]
 
@@ -1013,6 +1068,51 @@ def _candidate_signature(candidate: dict) -> tuple:
     )
 
 
+_ARCHETYPE_ALIASES = {
+    "crit": "ad-crit", "ad-crit-carry": "ad-crit",
+    "onhit": "ad-on-hit", "on-hit": "ad-on-hit",
+    "ad-onhit": "ad-on-hit", "ap-onhit": "ap-on-hit",
+    "hybrid": "hybrid-on-hit", "tank": "tank-frontline",
+    "bruiser": "ad-bruiser",
+}
+
+
+def _canonical_tournament_candidate(candidate: dict) -> dict:
+    """Normalize harmless model spelling differences before legality checks.
+
+    Candidate generation is a JSON contract, but Gemini will occasionally use
+    an item display name (or a rune's punctuation) where the schema asked for
+    a slug.  Treating that as a zero-candidate tournament is wasteful and was
+    especially visible after a patch added new items.  Unknown names are kept
+    intact so the validator still rejects genuinely invented content.
+    """
+    out = dict(candidate)
+    raw_items = candidate.get("items") or []
+    out["items"] = [(_resolve_item(str(item)) or item) for item in raw_items]
+    raw_boots = candidate.get("boots") or ""
+    out["boots"] = _resolve_item(str(raw_boots)) or raw_boots
+    page = candidate.get("runes") or {}
+    if isinstance(page, dict):
+        page = dict(page)
+        for key in ("keystone", "flex"):
+            value = page.get(key)
+            if isinstance(value, str):
+                page[key] = RUNE_CANON.get(_canon(value), value)
+        page["minors"] = [RUNE_CANON.get(_canon(value), value)
+                          if isinstance(value, str) else value
+                          for value in (page.get("minors") or [])]
+        out["runes"] = page
+    raw_spells = candidate.get("summoners") or []
+    spell_names = { _canon(name): name for name in SUMMONERS }
+    out["summoners"] = [spell_names.get(_canon(value), value)
+                         if isinstance(value, str) else value
+                         for value in raw_spells]
+    if "archetype" in candidate:
+        archetype = str(candidate.get("archetype") or "").strip().lower()
+        out["archetype"] = _ARCHETYPE_ALIASES.get(archetype, archetype)
+    return out
+
+
 def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
                                  item_locks: list[str] | None = None,
                                  boot_lock: str = "",
@@ -1035,7 +1135,14 @@ def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
     seen: set[tuple] = set()
     valid_archetypes = set(required_archetypes or [])
     represented: set[str] = set()
-    for index, candidate in enumerate(raw[:expected_count], 1):
+    # Scan the whole returned list, not only its first N rows.  A malformed
+    # first row used to hide every valid candidate after it and turn a recoverable
+    # response into a model-only fallback.
+    for index, original in enumerate(raw, 1):
+        if len(accepted) >= expected_count:
+            break
+        candidate = (_canonical_tournament_candidate(original)
+                     if isinstance(original, dict) else original)
         if not isinstance(candidate, dict):
             errors.append(f"candidate {index} is not an object")
             continue
@@ -1069,7 +1176,12 @@ def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
         elif valid_archetypes and archetype not in valid_archetypes:
             problem = f"has unknown or missing archetype {archetype!r}"
         elif valid_archetypes and not _combo_matches_archetype(tuple(items), archetype):
-            problem = f"does not actually satisfy its declared {archetype!r} archetype"
+            # Keep the candidate measurable so a malformed model label cannot
+            # erase the entire tournament.  The engine search still applies a
+            # strict path gate, and the final judge receives this warning in
+            # candidateErrors to avoid treating it as a clean archetype win.
+            errors.append(f"candidate {label} does not fully satisfy its declared "
+                          f"{archetype!r} archetype; measured with a path warning")
         if not problem and sorted(legal_spells) != sorted(candidate.get("summoners") or []):
             # A jungler without Smite, or a spell outside the request's pool, is
             # repaired deterministically after the judge anyway.  Rejecting the
@@ -1218,14 +1330,105 @@ def _tournament_measurement_score(measured: dict | None,
     else:
         damage = _tournament_damage_panel_score(panels.get("expected") or
                                                  engine.get("damageScenarios") or {})
+    def numeric(value, *preferred_keys: str) -> float:
+        """Extract the comparable scalar from an engine breakdown object."""
+        if isinstance(value, dict):
+            for key in preferred_keys:
+                if isinstance(value.get(key), (int, float)):
+                    return float(value[key])
+            numbers = [float(v) for v in value.values()
+                       if isinstance(v, (int, float))]
+            return sum(numbers) / len(numbers) if numbers else 0.0
+        return float(value or 0.0) if isinstance(value, (int, float)) else 0.0
+
     survival_parts = [
-        engine.get("damageBeforeDeath"), engine.get("survivalTime"),
-        engine.get("ehp"), (engine.get("healing") or 0) +
-        (engine.get("shields") or 0) + (engine.get("damagePrevented") or 0),
+        numeric(engine.get("damageBeforeDeath")),
+        numeric(engine.get("survivalTime")),
+        numeric(engine.get("ehp")),
+        numeric(engine.get("healing"), "total")
+        + numeric(engine.get("shields"), "value")
+        + numeric(engine.get("damagePrevented"), "total"),
     ]
-    survival = sum(float(value or 0.0) for value in survival_parts)
+    survival = sum(survival_parts)
     damage_w, survival_w = _tournament_blend(build_bias)
     return round(damage_w * damage + survival_w * survival, 6)
+
+
+def _ladder_candidate(champion: str, authored: list[dict], role: str,
+                      allowed_items: list[str]) -> dict | None:
+    """Turn the measured ladder order into one legal tournament candidate.
+
+    Ladder data is an anchor for the model, but it was previously never
+    measured by the engine.  This candidate deliberately keeps the model's
+    legal rune page (the ladder feed stores aggregate rune counts, not a
+    complete page) while using the ladder's ordered six-slot item set.  That
+    gives the tournament an honest item comparison without inventing a rune
+    tree from aggregate counts.
+    """
+    try:
+        record = prompt_mod._consensus_store().get(champion.split(" (")[0])
+    except Exception:  # pragma: no cover - malformed optional feed
+        record = None
+    if not isinstance(record, dict):
+        return None
+    order = [(_resolve_item(str(slug)) or str(slug))
+             for slug in (record.get("order") or [])]
+    pool = set(allowed_items)
+    order = [slug for slug in order if slug in pool or slug in ITEMS]
+    if len(order) < 5:
+        order = [(_resolve_item(str(row.get("slug") or "")) or "")
+                 for row in (record.get("items") or [])]
+        order = [slug for slug in order if slug in pool]
+    if not order:
+        return None
+    tier2_by_upgrade = {
+        str(item.get("upgradesTo")): slug
+        for slug, item in ITEMS.items()
+        if item.get("bootsTier") == 2 and item.get("upgradesTo")
+    }
+    boot_index = next((i for i, slug in enumerate(order)
+                       if (ITEMS.get(slug) or {}).get("category") == "Boots"), None)
+    if boot_index is None:
+        boots = next((slug for slug in ITEMS
+                      if ITEMS[slug].get("category") == "Boots"
+                      and ITEMS[slug].get("bootsTier") == 2), "")
+    else:
+        boots = order.pop(boot_index)
+        if (ITEMS.get(boots) or {}).get("bootsTier") != 2:
+            boots = tier2_by_upgrade.get(boots, "")
+    if not boots:
+        return None
+    items = [slug for slug in order
+             if (ITEMS.get(slug) or {}).get("category") != "Boots"]
+    items = list(dict.fromkeys(items))[:5]
+    if len(items) != 5 or validate_mod.hard_exclusive_violation(items):
+        return None
+    authored = authored or []
+    if not authored:
+        return None
+    # Prefer the authored page whose runes overlap the aggregate ladder page.
+    ladder_runes = {str(row.get("name")) for row in (record.get("keystones") or [])}
+    ladder_runes.update(str(row.get("name")) for row in (record.get("minors") or []))
+    base = max(authored, key=lambda row: len(ladder_runes &
+                                              set(_candidate_rune_names(row))))
+    candidate = {
+        "id": "LADDER-ANCHOR",
+        "archetype": base.get("archetype") or "unlabelled",
+        "hypothesis": "Measured ladder item order; aggregate ladder rune counts are shown separately.",
+        "items": items, "boots": boots,
+        "runes": dict(base.get("runes") or {}),
+        "summoners": list(base.get("summoners") or []),
+        "ladderAggregate": {
+            "items": record.get("items") or [],
+            "keystones": record.get("keystones") or [],
+            "minors": record.get("minors") or [],
+            "order": record.get("order") or [],
+        },
+    }
+    legal = summoners.enforce(candidate["summoners"], role, False)
+    if legal:
+        candidate["summoners"] = legal
+    return candidate
 
 
 def _overlay_engine_core(build: dict, challenger: dict) -> dict:
@@ -1426,6 +1629,7 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
         "componentPlan": component_plan,
         "recipeCoverage": (sum(row["known"] for row in component_plan)
                             / len(component_plan) if component_plan else 0.0),
+        "recipeSource": "data/item_recipes.json (official patch 7.3 paths; missing entries are unknown)",
         "bootsPurchaseAfter": boots_purchase_after,
         "bootsTiming": {
             "tier2": f"after {boots_purchase_after} completed core items",
@@ -1725,16 +1929,35 @@ def _item_supports_archetype(slug: str, archetype: str) -> bool:
         # completed combo still has to prove the relevant AD/AP damage floor;
         # this pool rule is what lets Sterak's, Death's Dance and similar
         # survivability pieces participate in both searches.
-        "ad-bruiser": ("defensive" in sig and
-                       (bool(sig & {"ad", "physical-pen"}) or sig == {"defensive"})
-                       and not magic_only),
-        "ap-bruiser": ("defensive" in sig and
-                       (bool(sig & {"ap", "magic-pen"}) or sig == {"defensive"})
-                       and not phys_only),
+        # A bruiser is a damage core plus defensive slots, not six defensive
+        # items.  The old pool rule required every item itself to carry HP,
+        # armour or MR, which silently removed valid anchors such as BORK,
+        # Trinity and Cleaver from Vi/Sett/Wukong paths.  The finished-combo
+        # gate below still requires two defensive items, so admitting a pure
+        # offensive anchor here cannot turn the path back into an ADC search.
+        "ad-bruiser": ("defensive" in sig or bool(sig & {"ad", "physical-pen"})
+                       or not sig) and not magic_only,
+        "ap-bruiser": ("defensive" in sig or bool(sig & {"ap", "magic-pen"})
+                       or not sig) and not phys_only,
         # `_item_archetype_signals` folds HP, armor and MR into the single
         # `defensive` signal; do not reference its local stats set here.
         "tank-frontline": "defensive" in sig,
     }.get(archetype, True)
+
+
+def _identity_item_allowed(champion: str, slug: str) -> bool:
+    """Apply the same curated identity lint to engine pool items.
+
+    Identity validation used to happen only after Gemini had selected a build.
+    That left the deterministic challenger free to spend its whole search on a
+    path the final validator would reject (for example Yun Tal/LDR on a
+    reviewed no-crit Vi or an AP shell on K'Sante).  Filtering one item at pool
+    construction is both cheaper and makes the search evidence honest.
+    """
+    card = prompt_mod.identity_card(champion)
+    if not card:
+        return True
+    return not validate_mod.identity_violations([slug], card)
 
 
 def _combo_matches_archetype(combo: tuple[str, ...], archetype: str) -> bool:
@@ -1799,8 +2022,11 @@ def _combo_matches_archetype(combo: tuple[str, ...], archetype: str) -> bool:
     if archetype == "ap-bruiser":
         return count("defensive") >= BRUISER_DEFENSIVE_ITEMS and count("ap") >= 2
     if archetype == "tank-frontline":
-        return (count("defensive") >= 3
-                and count("ap") + count("ad") >= 1)
+        # A tank's damage can come from armor/health scaling or reflection;
+        # requiring an AD/AP item forced Rammus and K'Sante into mage/AD
+        # shells. Three defensive pieces are the identity floor, while an
+        # offensive stat is merely a bonus when the kit actually uses one.
+        return count("defensive") >= 3
     return True
 
 
@@ -2066,10 +2292,15 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
     searched = 0
     path_meta: dict[str, dict] = {}
     for archetype, seeds in by_path.items():
-        authored_boots = {str(c.get("boots") or "") for c in seeds} - {""}
+        authored_boots = {
+            str(c.get("boots") or "") for c in seeds
+            if c.get("boots") and _identity_item_allowed(
+                champion, str(c.get("boots")))
+        }
         all_boots = {slug for slug, item in ITEMS.items()
                      if item.get("category") == "Boots"
-                     and item.get("bootsTier", 2) == 2}
+                     and item.get("bootsTier", 2) == 2
+                     and _identity_item_allowed(champion, slug)}
         boots = sorted(authored_boots | all_boots)
         pages = _candidate_rune_pages(seeds, rune_locks, build_bias)
         authored_pages = [c.get("runes") or {} for c in seeds]
@@ -2107,7 +2338,9 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                              _candidate_signature({"runes": p}) for p in pages}]
         authored_items = {slug for c in seeds for slug in c.get("items") or []}
         eligible = [slug for slug in universe
-                    if archetype == "unlabelled" or _item_supports_archetype(slug, archetype)]
+                    if (archetype == "unlabelled"
+                        or _item_supports_archetype(slug, archetype))
+                    and _identity_item_allowed(champion, slug)]
         # Defensive items often carry no AD/crit/on-hit signal, so they would
         # otherwise be eliminated before the durability score gets a chance to
         # consider them. Admit the reviewed class-appropriate carry pool only
@@ -2137,8 +2370,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                     if score >= score_cutoff}
         minimum_frontier = min(len(ranked_items), max(18, int(len(ranked_items) ** 0.5) * 4))
         frontier.update(slug for _score, slug in ranked_items[:minimum_frontier])
-        frontier.update(authored_items)
-        frontier.update(set(item_locks or []))
+        frontier.update(authored_items & set(eligible))
+        frontier.update(set(item_locks or []) & set(eligible))
         frontier.update(set(priority_items or []) & set(eligible))
         pool = sorted(frontier)
         # A large item catalog can still produce millions of partial states.
@@ -2146,7 +2379,7 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         # highest-scoring frontier entries if the defensive failsafe trips.
         if len(pool) > 64:
             keep = set(slug for _score, slug in ranked_items[:64])
-            keep.update(authored_items | set(item_locks or [])
+            keep.update((authored_items | set(item_locks or [])) & set(eligible)
                         | (set(priority_items or []) & set(eligible)))
             pool = sorted(keep)
         if archetype in {"ad-crit", "ad-on-hit", "hybrid-on-hit"}:
@@ -2875,6 +3108,29 @@ def advise(champion: str, role: str, enemies: list[str],
                 role=role, enemies_known=enemies_known,
                 expected_count=candidate_count,
                 required_archetypes=[row["id"] for row in damage_archetypes])
+            if not candidates:
+                # One constrained retry is cheaper and more informative than
+                # silently replacing the whole tournament with an ordinary
+                # generation. Include the exact gate errors so the model can
+                # repair display-name/boots/rune mistakes in one pass.
+                retry_context = "\n".join(candidate_errors[-12:]) or "no legal candidate was returned"
+                print("[advisor] no legal tournament candidates; requesting one "
+                      "constrained candidate retry", file=sys.stderr)
+                raw_candidates = call(_tournament_generation_prompt(
+                    prompt, damage_archetypes, candidate_count, build_bias)
+                    + "\n\nCANDIDATE GATE ERRORS FROM YOUR PREVIOUS RESPONSE:\n"
+                    + retry_context
+                    + "\nReturn exactly the requested candidate count. Use item slugs, "
+                      "a tier-2 boot slug, and a legal rune page.",
+                    thinking_level="high")
+                retry_candidates, retry_errors = _legal_tournament_candidates(
+                    raw_candidates, pool_slugs, item_locks=item_locks,
+                    boot_lock=locked_boot, rune_locks=locked_runes,
+                    role=role, enemies_known=enemies_known,
+                    expected_count=candidate_count,
+                    required_archetypes=[row["id"] for row in damage_archetypes])
+                candidates = retry_candidates
+                candidate_errors.extend(["retry: " + message for message in retry_errors])
             for message in candidate_errors:
                 print(f"[advisor] tournament candidate rejected: {message}",
                       file=sys.stderr)
@@ -2904,6 +3160,16 @@ def advise(champion: str, role: str, enemies: list[str],
             if candidate_errors:
                 print(f"[advisor] salvaging {len(candidates)}/{candidate_count} legal "
                       "candidates for the engine tournament", file=sys.stderr)
+            # Score the current measured ladder order beside the model's own
+            # hypotheses. It is a comparison candidate, not a fourth model
+            # opinion; the final provenance keeps it visible as `ladder`.
+            ladder_row = _ladder_candidate(identity_key, candidates, role, pool_slugs)
+            if ladder_row:
+                existing = {_candidate_signature(c) for c in candidates}
+                if _candidate_signature(ladder_row) not in existing:
+                    candidates.append(ladder_row)
+                    print("[advisor] ladder anchor added to engine tournament",
+                          file=sys.stderr)
             # The engine now screens the complete legal pool itself. A Gemini
             # top-30 shortlist used to both add a model call and silently
             # remove items before synergy search (Runaan's/Shiv/Hexoptics were
@@ -3105,8 +3371,14 @@ def advise(champion: str, role: str, enemies: list[str],
                         "id", "archetype", "hypothesis", "items", "boots",
                         "runes", "summoners")}
                     for candidate in candidates
-                    if not str(candidate.get("id") or "").startswith("ENGINE")
+                    if (not str(candidate.get("id") or "").startswith("ENGINE")
+                        and not str(candidate.get("id") or "").startswith("LADDER"))
                 ],
+                "ladderCandidate": next((
+                    {key: candidate.get(key) for key in (
+                        "id", "items", "boots", "runes", "summoners", "ladderAggregate")}
+                    for candidate in candidates
+                    if str(candidate.get("id") or "").startswith("LADDER")), None),
                 "damageArchetypes": damage_archetypes,
                 "engineChallenger": bool(challenger),
                 "engineWinGate": engine_gate,
@@ -3117,6 +3389,7 @@ def advise(champion: str, role: str, enemies: list[str],
                 "itemReplacement": replacement_meta,
                 "winner": winner_id,
                 "winnerSource": ("engine" if str(winner_id or "").startswith("ENGINE")
+                                 else "ladder" if str(winner_id or "").startswith("LADDER")
                                  else "model" if winner_id else "unlabelled"),
                 "winnerRationale": (
                     [
@@ -3129,10 +3402,13 @@ def advise(champion: str, role: str, enemies: list[str],
                         if str(reason).strip()
                     ][:4]
                     if winner_id and not str(winner_id).startswith("ENGINE")
+                    and not str(winner_id).startswith("LADDER")
                     else [
                         (
                             ("The deterministic engine-win gate selected "
                              if engine_gate.get("eligible") else
+                             "The ladder comparison selected "
+                             if str(winner_id or "").startswith("LADDER") else
                              "The fight engine selected ")
                             + f"{winner_id} for the requested objective "
                             f"({search_meta.get('challengerScore')} vs "

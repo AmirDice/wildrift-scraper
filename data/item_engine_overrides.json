@@ -36,7 +36,9 @@
   },
   "essence-reaver": {
     "spellbladeBaseAdPct": 135,
-    "_why": "Spellblade is one hit of 135% base AD (was a 70-damage charge system with Move Speed). The 0-80 that scales with Critical Rate is not modelled: the engine has no crit-scaled spellblade key, so this is the floor of the effect.",
+    "spellbladeCritFlatPerCrit": 80,
+    "spellbladeCanCrit": 1,
+    "_why": "Spellblade is one hit of 135% base AD plus 0-80 linearly with Critical Rate; the bonus can critically strike. Both the crit-scaled flat damage and expected crit multiplier are priced per Spellblade proc.",
     "burstProcFlat": 0,
     "_why_stale_proc": "The spellbladeBaseAdPct:70 correction above was meant to REPLACE the extractor's flat-70 misread, but the override merge in export_engine_data.py only .update()s keys and never removes them, so burstProcFlat:70 survived into engine.json alongside it and the item was charged twice -- once through the one-shot proc channel and again every spellblade cycle.",
     "msFlat": 0
@@ -44,7 +46,8 @@
   "sunfire-aegis": {
     "damageAmpPct": 0,
     "dotDps": 20,
-    "_why": "Immolate is a flat 20 per second plus 1.5% bonus Health; the Health half has no key, and Flametouch's stacking amp is gone."
+    "dotDpsBonusHpPct": 1.5,
+    "_why": "Immolate is 20 plus 1.5% bonus Health per second; the bonus-Health term is resolved after the complete build is assembled. The old stacking amp is gone."
   },
   "divine-sunderer": {
     "spellbladePctMaxHp": 10,
@@ -179,9 +182,11 @@
     "burstProcType": "physical",
     "burstProcCdSec": 12,
     "_why_dedupe": "stat omnivamp 8%; fx omnivampPct 8 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. Zeroed here so exactly one source survives.",
-    "_why": "Thirsting Slash damage is modeled against one champion as 175% total AD every 12 seconds. Its 20% AD + 10% missing-Health heal per champion hit is not modeled.",
+    "healOnActiveAdPct": 20,
+    "healOnActiveMissingHpPct": 10,
+    "_why": "Thirsting Slash deals 175% total AD every 12 seconds and restores 20% AD plus 10% of the user's missing Health per champion hit. The engine models one champion hit in 1v1 and scales the heal by the standard 40% missing-health fight assumption.",
     "burstProcTotalAdRatioRanged": 45,
-    "_why_ranged": "Thirsting Slash is a POINT-BLANK AoE active: 175% total AD to nearby enemies. A marksman attacking from 575+ has to walk into melee to land it, which is a position they would rarely trade for the damage. Charged at full value it put Goredrinker into three separate engine challengers for three different ranged champions, twice in byte-identical builds. 45 is roughly a quarter of the melee number, standing for the occasional use a ranged champion actually gets. This is a TUNABLE ESTIMATE, not a Riot number: the item has no published ranged split, unlike BotRK or Divine Sunderer. The item's real draw for a ranged buyer would be its missing-health healing, which is still unmodelled either way."
+    "_why_ranged": "Thirsting Slash is a POINT-BLANK AoE active: 175% total AD to nearby enemies. A marksman attacking from 575+ has to walk into melee to land it, which is a position they would rarely trade for the damage. Charged at full value it put Goredrinker into three separate engine challengers for three different ranged champions, twice in byte-identical builds. 45 is roughly a quarter of the melee number, standing for the occasional use a ranged champion actually gets. This is a TUNABLE ESTIMATE, not a Riot number: the item has no published ranged split, unlike BotRK or Divine Sunderer. The 20% AD + 10% missing-health heal is modeled separately and is not reduced by this ranged damage assumption."
   },
   "gluttonous-greaves": {
     "omnivampPct": 0,
@@ -198,17 +203,29 @@
     "_why": "Last Whisper is integrated into the stat block as 30% Armor Penetration, so the effect keys would double it."
   },
   "bloodthirster": {
+    "shieldFlat": 0,
+    "overhealShieldCap": {
+      "lvlRange": [
+        165,
+        345
+      ]
+    },
     "physVampPct": 0,
     "physVampPctOnCrit": 0,
     "_why_dedupe": "stat physicalVamp 8% is Bloody's base. The old fx physVampPct 12 folded in '+4% Physical Vamp on Critical Strike' at 100% uptime; Python then added both for 20%. Base from the stat line, the 4% scaled by crit rate.",
-    "_why": "Physical Vamp became the new Lifesteal stat (15%), which the engines read off the item's stat line. Ichorshield's overheal shield is not modelled."
+    "_why": "Physical Vamp became the new Lifesteal stat (15%), read from the stat line. Ichorshield is modeled as a shield capped at 165-345 that is charged only by physical-lifesteal healing, rather than being granted unconditionally."
   },
   "ludens-echo": {
     "burstProcCdSec": 9,
     "_why_cd": "Echo: '(9s Cooldown)'",
     "burstProcFlat": 75,
     "burstProcApPct": 8,
-    "_why": "Echo is 75 + 8% AP (was 140 + 15%). The single-target top-up for each target it misses is not modelled: the engine prices the primary target only."
+    "burstAoeFlat": 75,
+    "burstAoeApPct": 8,
+    "burstAoeTargets": 5,
+    "burstPrimaryMissingFlat": 20,
+    "burstPrimaryMissingApPct": 1.2,
+    "_why": "Echo is 75 + 8% AP to the primary and up to five nearby targets, with 20 + 1.2% AP added to the primary for each nearby target slot that is empty. The single-target, 1v2, and 1v3 values are now separated."
   },
   "unending-despair": {
     "procMaxHpCdSec": 4,
@@ -400,7 +417,9 @@
   "fimbulwinter": {
     "hpFromManaPct": 15,
     "shieldFlat": 120,
-    "_why": "AWE is 15% of max Mana; Frozen Colossus shields a flat 120 plus 4.5% max Mana (the Mana half has no key)."
+    "shieldPctMana": 4.5,
+    "shieldManaRangedMult": 0.5,
+    "_why": "AWE is 15% of max Mana; Frozen Colossus is a 120 + 4.5% max-Mana shield every 8 seconds. The 50% ranged modifier is applied, while the one-nearby-enemy reference remains conservative."
   },
   "mantle-of-the-twelfth-hour": {
     "msFlat": 0,
@@ -411,7 +430,26 @@
       ]
     },
     "hpFlatPassive": 0,
-    "_why": "Lifeline is a heal now (200-400 plus resistance scaling that has no key) with 200-300 temporary Health, at 30% rather than 35% Health."
+    "emergencyHpFlat": {
+      "lvlRange": [
+        200,
+        300
+      ]
+    },
+    "emergencyHealFlat": {
+      "lvlRange": [
+        200,
+        400
+      ]
+    },
+    "emergencyHealBonusArmorPct": 120,
+    "emergencyHealBonusMrPct": 120,
+    "emergencyHealBonusHpPct": 15,
+    "emergencyDurationS": 5,
+    "emergencyCooldownS": 70,
+    "emergencyThresholdPct": 30,
+    "emergencyMsPct": 10,
+    "_why": "Lifeline triggers below 30% health, granting 200-300 temporary max Health for 5 seconds and healing 200-400 + 120% bonus Armor + 120% bonus MR + 15% bonus Health over that window. The engine treats one activation per reference fight and keeps movement/tenacity as utility metadata."
   },
   "staff-of-flowing-water": {
     "allyApFlat": 40,
@@ -453,10 +491,18 @@
   "rapid-firecannon": {
     "burstProcFlat": 80,
     "burstProcCdSec": 6,
-    "_why": "Sharpshooter is 80 magic on the Energized attack; its 35% bonus Attack Range has no key."
+    "rangeBonusPct": 35,
+    "rangeBonusCap": 150,
+    "_why": "Sharpshooter is 80 magic on the Energized attack and grants 35% bonus Attack Range up to 150. The range is carried into the build readout and utility channel; it is not converted into invented raw DPS."
   },
   "fiendhunter-bolts": {
-    "_why": "Opening Barrage's three guaranteed crits after an ultimate are a window the engine cannot open: it has no ultimate timeline. Priced on its stats and the 20 ultimate Ability Haste."
+    "ultAttackCount": 3,
+    "ultAttackCritMultiplierPct": 80,
+    "ultAttackTruePctIfCrit": 15,
+    "ultAttackWindowS": 8,
+    "ultAttackAsPct": 50,
+    "ultAttackCooldownS": 45,
+    "_why": "Opening Barrage is modeled when the rotation casts an ultimate: the next three attacks within 8 seconds are forced crits at 80% normal crit damage, while attacks that would already crit add 15% true damage. The temporary 50% attack-speed window increases the expected attack count for the active portion of the reference fight; the three-hit cap still limits the crit replacement."
   },
   "immortal-shieldbow": {
     "shieldFlat": {
@@ -473,7 +519,8 @@
     "aoeProcFlat": 60,
     "aoeProcCdSec": 6,
     "aoeProcTargets": 5,
-    "_why": "Electrospark's first 60-damage hit is single-target; its five additional level-15 bounces are reported on the AoE axis. On-hit effects carried by those bounces are not modeled."
+    "aoeProcAppliesOnHit": 1,
+    "_why": "Electrospark's first 60-damage hit is single-target; its five additional level-15 bounces are reported on the AoE axis. Each bounce now carries the build's on-hit bundle, matching the tooltip's explicit on-hit clause."
   },
   "whispering-circlet": {
     "_why": "Harmony is Heal and Shield Power from max Mana, which the stat rules carry; there is no separate combat effect."
