@@ -940,7 +940,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "vamp": 0.0, "healOnHit": 0.0,
         "activeHealAdPct": 0.0, "activeHealMissingHpPct": 0.0,
         "activeHealCdSec": 0.0,
-        "shield": 0.0, "shieldPctBonusHp": 0.0, "shieldPctMaxHp": 0.0, "dr": 0.0,
+        "shield": 0.0, "shieldPctBonusHp": 0.0, "shieldPctMaxHp": 0.0,
+        "shieldPctBonusAd": 0.0, "dr": 0.0,
         "overhealShieldCap": 0.0,
         "shieldPctMana": 0.0, "shieldManaRangedMult": 1.0,
         "triggeredHp": 0.0, "triggeredHeal": 0.0,
@@ -956,6 +957,11 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "graspPct": 0.0, "graspEvery": 5.0,
         # component healing shares (for the breakdown; total still == "vamp")
         "lifestealPct": 0.0, "omnivampPct": 0.0,
+        # Sundered Sky's first hit is a guaranteed 160% attack against each
+        # target, separate from ordinary crit chance, and heals from base AD
+        # plus missing health on the same per-target cooldown.
+        "firstHitCritMult": 0.0, "firstHitCritCdSec": 0.0,
+        "firstHitHealBaseAdPct": 0.0, "firstHitHealMissingHpPct": 0.0,
     }
 
     # AD/AP/HP-from-mana percentages, applied after runes (see below).
@@ -1138,7 +1144,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         for _base in ("onHitPctCurrentHp", "onHitPctMaxHp"):
             _k = _base + "Ranged" if (_rngd and (_base + "Ranged") in fx) else _base
             st[_base] += g(_k) / 100.0
-        add_proc(pctMaxHp=g("procMaxHpPct") / 100.0, label=slug,
+        _proc_max = g("procMaxHpPct")
+        if (_rngd and fx.get("procMaxHpPctRanged")):
+            _proc_max = g("procMaxHpPctRanged")
+        add_proc(pctMaxHp=_proc_max / 100.0, label=slug,
                  type=fx.get("procMaxHpType", "physical"),
                  cd=g("procMaxHpCdSec"), arm=g("procMaxHpArmSec"))
         add_proc(flat=g("firstHit"), label=slug, type="physical",
@@ -1176,7 +1185,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["lifestealPct"] += (g("physVampPct") + g("lifestealPct")) / 100.0
         st["omnivampPct"] += g("omnivampPct") / 100.0
         st["healOnHit"] += g("healOnHitFlat")
-        st["shield"] += g("shieldFlat")
+        st["shield"] += (g("shieldFlatRanged") if (_rngd and fx.get("shieldFlatRanged"))
+                          else g("shieldFlat"))
         st["overhealShieldCap"] += g("overhealShieldCap")
         st["shieldPctMana"] += g("shieldPctMana") / 100.0
         if g("shieldManaRangedMult"):
@@ -1184,6 +1194,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 st["shieldManaRangedMult"], g("shieldManaRangedMult"))
         st["shieldPctBonusHp"] += g("shieldPctBonusHp") / 100.0
         st["shieldPctMaxHp"] += g("shieldPctMaxHp") / 100.0
+        _shield_ad = g("shieldPctBonusAd")
+        if (_rngd and fx.get("shieldPctBonusAdRanged")):
+            _shield_ad = g("shieldPctBonusAdRanged")
+        st["shieldPctBonusAd"] += _shield_ad / 100.0
+        st["firstHitCritMult"] = max(st["firstHitCritMult"], g("firstHitCritMult"))
+        st["firstHitCritCdSec"] = max(st["firstHitCritCdSec"], g("firstHitCritCdSec"))
+        st["firstHitHealBaseAdPct"] = max(
+            st["firstHitHealBaseAdPct"], g("firstHitHealBaseAdPct"))
+        st["firstHitHealMissingHpPct"] = max(
+            st["firstHitHealMissingHpPct"], g("firstHitHealMissingHpPct"))
         st["triggeredHp"] += g("emergencyHpFlat")
         st["triggeredHeal"] += g("emergencyHealFlat")
         st["triggeredHealBonusArmorPct"] = st.get("triggeredHealBonusArmorPct", 0.0) + g("emergencyHealBonusArmorPct") / 100.0
@@ -2344,6 +2364,42 @@ def _proc_split(st, target, phys_m, magic_m, window):
     return once_p, once_m, once_t
 
 
+def _first_hit_procs(st: dict, n_autos: int, window: float) -> int:
+    """How many per-target Sundered Sky strikes can land in this window."""
+    cd = float(st.get("firstHitCritCdSec", 0.0) or 0.0)
+    if not st.get("firstHitCritMult") or not n_autos:
+        return 0
+    if cd > 0 and st.get("itemHaste"):
+        cd *= 100.0 / (100.0 + st["itemHaste"])
+    return min(n_autos, _proc_activations(window, cd or float("inf")))
+
+
+def _first_hit_heal(st: dict, rotation_result: dict) -> float:
+    """Sundered Sky's Lightshield Strike healing over one rotation."""
+    procs = int(rotation_result.get("firstHitProcs", 0) or 0)
+    if not procs:
+        return 0.0
+    base_ad = st.get("baseAd", 0.0)
+    missing_hp = st.get("hp", 0.0) * MISSING_HP_IN_FIGHT
+    return procs * (
+        float(st.get("firstHitHealBaseAdPct", 0.0) or 0.0) / 100.0 * base_ad
+        + float(st.get("firstHitHealMissingHpPct", 0.0) or 0.0) / 100.0 * missing_hp
+    )
+
+
+def _first_hit_delta(st: dict, n_autos: int, window: float, giant: float,
+                     phys_m: float, auto_mult: float) -> tuple[float, int]:
+    """Replace the normal expected first auto with Sundered Sky's 160% hit."""
+    procs = _first_hit_procs(st, n_autos, window)
+    forced = float(st.get("firstHitCritMult", 0.0) or 0.0)
+    if not procs or not forced:
+        return 0.0, 0
+    normal = 1.0 + min(1.0, st.get("crit", 0.0)) * (
+        st.get("critMult", BASE_CRIT_MULT) - 1.0)
+    base = st["ad"] * giant * phys_m * auto_mult
+    return (forced - normal) * base * procs, procs
+
+
 def _aoe_proc_damage(st: dict, magic_m: float, window: float,
                      secondary_targets: int | None = None,
                      target: dict | None = None, phys_m: float = 1.0,
@@ -2961,6 +3017,12 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             auto += _ult_p + _ult_t
             add_t("physical", _ult_p)
             add_t("true", _ult_t)
+        _first_d, _first_n = _first_hit_delta(
+            st, n_autos, window, giant, phys_m,
+            dsm * (1.0 + st.get("attackDamageAmp", 0.0)))
+        if _first_d:
+            auto += _first_d
+            add_t("physical", _first_d)
         total += auto
         auto_dmg += auto
         parts.append((f"autos x{n_autos}", auto))
@@ -3040,6 +3102,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         return {"total": total * amp, "parts": parts, "nAutos": n_autos,
                 "spellbladeProcs": min(casts_total, n_autos,
                                         1 + int(window / SPELLBLADE_CD)),
+                "firstHitProcs": _first_n,
                 "boltDmg": bolt_dmg * amp, "bySlot": dict(by_slot_dmg),
                 "abilityAoeDmg": ability_aoe_dmg * amp,
                 "autoDmg": auto_dmg * amp,
@@ -3173,6 +3236,12 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
     d_autos += _ult_p + _ult_t
     add_t("physical", _ult_p)
     add_t("true", _ult_t)
+    _first_d, _first_n = _first_hit_delta(
+        st, n_autos, window, giant, phys_m,
+        dsm * (1.0 + st.get("attackDamageAmp", 0.0)))
+    d_autos += _first_d
+    if _first_d:
+        add_t("physical", _first_d)
     parts.append((f"autos x{n_autos}", d_autos))
     # Bolt damage on OTHER targets, mirroring the combo path above. Both paths
     # need it for the same reason spellblade lives in both: whichever one a
@@ -3263,6 +3332,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
     return {"total": total, "parts": parts, "nAutos": n_autos,
             "spellbladeProcs": min(casts_total, n_autos,
                                     1 + int(window / SPELLBLADE_CD)),
+            "firstHitProcs": _first_n,
             "nAutosIdeal": n_autos_ideal, "castLog": cast_log, "bySlot": dict(by_slot_dmg),
             "autoDmg": auto_dmg * amp, "boltDmg": bolt_dmg * amp,
             "abilityAoeDmg": ability_aoe_dmg * amp,
@@ -3441,6 +3511,7 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
 
     r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
               + st["shieldPctMaxHp"] * st["hp"]
               + st.get("triggeredHp", 0.0) + _overheal_shield(st, r8))
     shield *= 1 + st["healShieldAmp"]  # Revitalize-style amplification
@@ -3453,6 +3524,7 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
                + kit_heal(name, st, level, 8.0, "self", r8["bySlot"], r8["total"])
                + st["healOnHit"] * r8["nAutos"]
                + _spellblade_heal(st, r8, TARGETS["bruiser"])
+               + _first_hit_heal(st, r8)
                + _active_item_heal(st, 8.0) + _conqueror_heal(st, dmg8, 8.0)
                + st.get("triggeredHeal", 0.0))
 
@@ -3804,6 +3876,7 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
 
     _r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
     shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
               + st["shieldPctMaxHp"] * st["hp"]
               + st.get("triggeredHp", 0.0) + _overheal_shield(st, _r8))
     shield *= 1 + st["healShieldAmp"]
@@ -4092,6 +4165,7 @@ def analyze_build(name: str, items: list[str], runes: list[str] | None = None,
         "omnivamp": round(st["omnivampPct"] * tot),
         "onHit": round(st["healOnHit"] * r8["nAutos"]),
         "spellblade": round(_spellblade_heal(st, r8, bruiser)),
+        "firstHit": round(_first_hit_heal(st, r8)),
         "rune": round(st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])),
         "itemActive": round(_active_item_heal(st, 8.0)),
         "conqueror": round(_conqueror_heal(st, tot, 8.0)),
@@ -4102,6 +4176,7 @@ def analyze_build(name: str, items: list[str], runes: list[str] | None = None,
     # #8 shields: peak value + a coarse average uptime (kit shields recur;
     # reactive lifeline shields sit near half-uptime in a drawn-out fight).
     shield_val = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+                  + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
                   + st["shieldPctMaxHp"] * st["hp"]
                   + st.get("triggeredHp", 0.0) + _overheal_shield(st, r8))
     shield_val *= 1 + st["healShieldAmp"]
@@ -4655,6 +4730,7 @@ def champion_target(name: str, level: int, items: list[str],
                + st.get("triggeredHeal", 0.0)) / SUSTAIN_REF_WINDOW),
         # Sterak's, Maw, Kaenic Rookern and Guardian Angel's revive all land here.
         "shield": max(0.0, st["shield"] + st["shieldPctBonusHp"] * bonus_hp
+                      + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
                       + st["shieldPctMaxHp"] * with_build["hp"]
                       + st.get("triggeredHp", 0.0) + _overheal_shield(st, ref)),
         "ccDepth": _cc_depth(name),
@@ -4845,7 +4921,9 @@ def score_vs_comp(name: str, items: list[str], runes: list[str], carry: dict,
             break
         t += 0.25
 
-    shield = st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"] + st["shieldPctMaxHp"] * st["hp"]
+    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
+              + st["shieldPctMaxHp"] * st["hp"])
     shield *= 1 + st["healShieldAmp"]
     # Typed damage reduction rides its own half here too, and this site knows
     # the enemy's ACTUAL damage split rather than assuming 50/50.
@@ -4903,6 +4981,7 @@ def _typed_ehp(st: dict) -> tuple[float, float]:
     250 armour and 60 magic resist is not "averagely durable".
     """
     shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
               + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
     dr = st["dr"] if st["dr"] < 1 else 0.99
     pool = (st["hp"] + shield) / (1 - dr)
@@ -5057,11 +5136,13 @@ def evaluation_vector(name: str, item_slugs: list[str],
 
     phys_ehp, magic_ehp = _typed_ehp(st)
     shielding = ((st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+                  + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
                   + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"]))
     # Effective health against THIS comp's actual damage split. Not a blend of
     # the two typed numbers: effective health is health over the share that
     # gets through, and shares add while their reciprocals do not.
     shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
+              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
               + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
     _dr = st["dr"] if st["dr"] < 1 else 0.99
     # The caller-supplied split remains available for counter-specific reads;

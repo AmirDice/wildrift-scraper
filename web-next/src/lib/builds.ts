@@ -132,7 +132,7 @@ export interface BuildAnalysis {
   goldEff: { gold: number; dmgPerGold: number | null; ehpPerGold: number | null };
   healing: {
     lifesteal: number; omnivamp: number; onHit: number; rune: number;
-    itemActive?: number; conqueror?: number; spellblade?: number;
+    itemActive?: number; conqueror?: number; spellblade?: number; firstHit?: number;
     conditional?: number; total: number;
   };
   shields: { value: number; avgUptime: number; amp: number };

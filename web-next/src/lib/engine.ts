@@ -348,6 +348,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     timedDamageAmps: [] as any[], targetThresholdAmps: [] as any[],
     giant: 0, execute: 0, ultAmp: 0,
     spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0, spellbladeHealPctMaxHp: 0,
+    firstHitCritMult: 0, firstHitCritCdSec: 0,
+    firstHitHealBaseAdPct: 0, firstHitHealMissingHpPct: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     onHitPctMissingHp: 0,
     procs: [] as Proc[], dotDps: 0, dotDpsBonusHpPct: 0, dotPctMaxHp: 0,
@@ -357,7 +359,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     extraOnHitApplications: 0,
     critDamagePerExcessCrit: 0, hastePct: 0, cdRefundPctPerAuto: 0,
     cleaveFlat: 0, cleavePctBonusHp: 0,
-    shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, dr: 0,
+    shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, shieldPctBonusAd: 0, dr: 0,
     overhealShieldCap: 0, shieldPctMana: 0, shieldManaRangedMult: 1,
     activeHealAdPct: 0, activeHealMissingHpPct: 0, activeHealCdSec: 0,
     triggeredHp: 0, triggeredHeal: 0,
@@ -584,7 +586,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       ? g("onHitPctCurrentHpRanged") : g("onHitPctCurrentHp")) / 100;
     st.onHitPctMaxHp += (rngd && fx.onHitPctMaxHpRanged
       ? g("onHitPctMaxHpRanged") : g("onHitPctMaxHp")) / 100;
-    addProc({ pctMaxHp: g("procMaxHpPct") / 100, label: slug,
+    const procMaxHp = rngd && fx.procMaxHpPctRanged
+      ? g("procMaxHpPctRanged") : g("procMaxHpPct");
+    addProc({ pctMaxHp: procMaxHp / 100, label: slug,
               type: fx.procMaxHpType ?? "physical",
               cd: g("procMaxHpCdSec"), arm: g("procMaxHpArmSec") });
     addProc({ flat: g("firstHit"), label: slug, type: "physical",
@@ -617,13 +621,20 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.activeHealMissingHpPct += g("healOnActiveMissingHpPct") / 100;
     st.activeHealCdSec = Math.max(st.activeHealCdSec,
       g("healOnActiveCdSec") || g("burstProcCdSec"));
-    st.shield += g("shieldFlat");
+    st.shield += rngd && fx.shieldFlatRanged ? g("shieldFlatRanged") : g("shieldFlat");
     st.overhealShieldCap += g("overhealShieldCap");
     st.shieldPctMana += g("shieldPctMana") / 100;
     if (g("shieldManaRangedMult"))
       st.shieldManaRangedMult = Math.min(st.shieldManaRangedMult, g("shieldManaRangedMult"));
     st.shieldPctBonusHp += g("shieldPctBonusHp") / 100;
     st.shieldPctMaxHp += g("shieldPctMaxHp") / 100;
+    const shieldAd = rngd && fx.shieldPctBonusAdRanged
+      ? g("shieldPctBonusAdRanged") : g("shieldPctBonusAd");
+    st.shieldPctBonusAd += shieldAd / 100;
+    st.firstHitCritMult = Math.max(st.firstHitCritMult, g("firstHitCritMult"));
+    st.firstHitCritCdSec = Math.max(st.firstHitCritCdSec, g("firstHitCritCdSec"));
+    st.firstHitHealBaseAdPct = Math.max(st.firstHitHealBaseAdPct, g("firstHitHealBaseAdPct"));
+    st.firstHitHealMissingHpPct = Math.max(st.firstHitHealMissingHpPct, g("firstHitHealMissingHpPct"));
     st.triggeredHp += g("emergencyHpFlat");
     st.triggeredHeal += g("emergencyHealFlat");
     st.triggeredHealBonusArmorPct += g("emergencyHealBonusArmorPct") / 100;
@@ -1217,6 +1228,7 @@ let ROT_ABILITY_AOE_DMG = 0;
 let ROT_BY_SLOT: Record<string, number> = {};
 let ROT_NAUTOS_IDEAL = 0;
 let ROT_SPELLBLADE_PROCS = 0;
+let ROT_FIRST_HIT_PROCS = 0;
 
 /** Number of activations for an initially-ready proc inside a fight window. */
 /** How many casts fit in `window`, counting the one at t=0.
@@ -1236,6 +1248,25 @@ function procActivations(window: number, cooldown = Infinity, arm = 0): number {
   if (window + 1e-9 < arm) return 0;
   if (cooldown === Infinity || cooldown <= 0) return 1;
   return 1 + Math.floor((window - arm) / cooldown);
+}
+
+function firstHitProcs(st: any, nAutos: number, window: number): number {
+  const cdRaw = Number(st.firstHitCritCdSec) || 0;
+  if (!(Number(st.firstHitCritMult) > 0) || nAutos <= 0) return 0;
+  const cd = cdRaw > 0 && st.itemHaste
+    ? cdRaw * 100 / (100 + Number(st.itemHaste)) : cdRaw;
+  return Math.min(nAutos, procActivations(window, cd || Infinity));
+}
+
+function firstHitDelta(st: any, nAutos: number, window: number,
+                       giant: number, physM: number, autoMult: number): number {
+  const procs = firstHitProcs(st, nAutos, window);
+  ROT_FIRST_HIT_PROCS = procs;
+  if (!procs) return 0;
+  const normal = 1 + Math.min(1, Number(st.crit) || 0)
+    * ((Number(st.critMult) || BASE_CRIT_MULT) - 1);
+  const base = Number(st.ad) * giant * physM * autoMult;
+  return ((Number(st.firstHitCritMult) || 0) - normal) * base * procs;
 }
 
 /**
@@ -1324,6 +1355,7 @@ function forWindow(name: string, st: any, window: number, level: number): any {
 export function rotation(name: string, st: any, target: any, window: number,
                          level = 13, secondaryTargets?: number): number {
   ROT_SPELLBLADE_PROCS = 0;
+  ROT_FIRST_HIT_PROCS = 0;
   st = forWindow(name, st, window, level);
   // An enemy Frozen Heart's Chill is a real attack-speed cut and belongs here,
   // after forWindow has finished deriving attack speed from the steroids.
@@ -1726,7 +1758,10 @@ export function rotation(name: string, st: any, target: any, window: number,
     const ultTrueDamage = ultTrue * dsm * adm;
     addT("physical", ultPhysical);
     addT("true", ultTrueDamage);
-    return (aPhys + aMagic + aTrue) * dsm * nAutos * adm + ultPhysical + ultTrueDamage;
+    const firstHit = firstHitDelta(st, nAutos, window, giant, physM, dsm * adm);
+    if (firstHit) addT("physical", firstHit);
+    return (aPhys + aMagic + aTrue) * dsm * nAutos * adm
+      + ultPhysical + ultTrueDamage + firstHit;
   };
   /**
    * Discrete procs, charged at the rate their own descriptions state.
@@ -2101,6 +2136,8 @@ export interface RotationDetail {
   autosIdeal: number;
   /** Spellblade activations after the real cooldown and attack caps. */
   spellbladeProcs: number;
+  /** Sundered Sky first-hit activations after its per-target cooldown. */
+  firstHitProcs: number;
 }
 
 /**
@@ -2127,6 +2164,7 @@ export function rotationDetail(name: string, st: any, target: any, window: numbe
     autos: ROT_NAUTOS,
     autosIdeal: ROT_NAUTOS_IDEAL,
     spellbladeProcs: ROT_SPELLBLADE_PROCS,
+    firstHitProcs: ROT_FIRST_HIT_PROCS,
   };
 }
 
@@ -2219,7 +2257,8 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   // Damage on OTHER targets (Runaan's bolts), as a per-second rate to match
   // dps8. Zero for any build without a bolt item, so they are unaffected.
   const aoePerSec = detail8.boltDamage / 8;
-  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp
+  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp
+    + st.shieldPctBonusAd * st.bonusAd + st.shieldPctMaxHp * st.hp
     + (st.triggeredHp || 0) + overhealShield(st, detail8);
   shield *= 1 + st.healShieldAmp;
   const mixed = mixedTaken(st);
@@ -2228,6 +2267,7 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
     + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
     + conquerorHeal(st, detail8.damage, 8)
     + spellbladeHeal(st, TARGET_BRUISER, detail8)
+    + firstHitHeal(st, detail8)
     + (st.triggeredHeal || 0);
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
   wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
@@ -2269,7 +2309,8 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     const t = i * 0.25;
     if (rotation(name, st, squishy, t, level) >= need) { ttk = t; break; }
   }
-  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp
+  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp
+    + st.shieldPctBonusAd * st.bonusAd + st.shieldPctMaxHp * st.hp
     + (st.triggeredHp || 0) + overhealShield(st, detail8);
   shield *= 1 + st.healShieldAmp;
   const mixed = mixedTaken(st);
@@ -2278,6 +2319,7 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
     + conquerorHeal(st, dmg8, 8)
     + spellbladeHeal(st, TARGET_BRUISER, detail8)
+    + firstHitHeal(st, detail8)
     + (st.triggeredHeal || 0);
 
   const m = { burst3: Math.round(burst3), dps8: Math.round(dps8), ttk,
@@ -2368,6 +2410,15 @@ function spellbladeHeal(st: any, target: any, detail: { spellbladeProcs?: number
   return pct / 100 * Number(target.hp || 0) * procs;
 }
 
+function firstHitHeal(st: any, detail: { firstHitProcs?: number }): number {
+  const procs = Number(detail.firstHitProcs) || 0;
+  if (!procs) return 0;
+  const baseAd = Number(st.baseAd) || 0;
+  const missingHp = (Number(st.hp) || 0) * MISSING_HP_IN_FIGHT;
+  return procs * ((Number(st.firstHitHealBaseAdPct) || 0) / 100 * baseAd
+    + (Number(st.firstHitHealMissingHpPct) || 0) / 100 * missingHp);
+}
+
 function overhealShield(st: any, detail: { byType?: { physical?: number } }): number {
   const cap = Number(st.overhealShieldCap) || 0;
   if (!cap) return 0;
@@ -2435,7 +2486,8 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
   rotation(name, st, bruiser, 8, level);
 
   // survivability + mitigation + gold efficiency
-  let shieldVal = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp
+  let shieldVal = st.shield + st.shieldPctBonusHp * st.bonusHp
+    + st.shieldPctBonusAd * st.bonusAd + st.shieldPctMaxHp * st.hp
     + (st.triggeredHp || 0) + overhealShield(st, detail8);
   shieldVal *= 1 + st.healShieldAmp;
   // Typed damage reduction rides its own half here too, and this site knows
@@ -2460,11 +2512,13 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
     itemActive: Math.round(activeItemHeal(st, 8)),
     conqueror: Math.round(conquerorHeal(st, tot, 8)),
     spellblade: Math.round(spellbladeHeal(st, bruiser, detail8)),
+    firstHit: Math.round(firstHitHeal(st, detail8)),
     conditional: Math.round(st.triggeredHeal || 0),
     total: 0,
   };
   healing.total = healing.lifesteal + healing.omnivamp + healing.onHit + healing.rune
-    + healing.itemActive + healing.conqueror + healing.spellblade + healing.conditional;
+    + healing.itemActive + healing.conqueror + healing.spellblade + healing.firstHit
+    + healing.conditional;
   const reactive = st.shieldPctMaxHp > 0 || st.shieldPctBonusHp > 0
     || st.overhealShieldCap > 0 || st.triggeredHp > 0;
   const shields = { value: Math.round(shieldVal), avgUptime: reactive ? 0.45 : (shieldVal ? 0.7 : 0), amp: Math.round(st.healShieldAmp * 100) };
@@ -2755,7 +2809,8 @@ export function scoreVsComp(name: string, items: string[], runes: string[],
       ttk = Math.round(t * 100) / 100; break;
     }
   }
-  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp + st.shieldPctMaxHp * st.hp;
+  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp
+    + st.shieldPctBonusAd * st.bonusAd + st.shieldPctMaxHp * st.hp;
   shield *= 1 + st.healShieldAmp;
   // Typed damage reduction rides its own half here too, and this site knows
   // the enemy's ACTUAL damage split rather than assuming 50/50.
@@ -3150,6 +3205,7 @@ export function championTarget(name: string, level: number, items: string[],
     // Item shielding, so a shield-cut item has something to cut. Sterak's,
     // Maw, Kaenic Rookern and Guardian Angel's revive all land here.
     shield: Math.max(0, hweiShield + st.shield + st.shieldPctBonusHp * bonusHp
+      + st.shieldPctBonusAd * st.bonusAd
                         + st.shieldPctMaxHp * withBuild.hp + (st.triggeredHp || 0)
                         + overhealShield(st, refDmg)),
     ccDepth: Number(DATA.champions[name]?.ccDepth) || 0,

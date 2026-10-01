@@ -377,7 +377,9 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Jarvan IV and Wukong (among others) must be crit-free unless the player
   // enables unrestricted mode. Retire v76 entries so an old crit result cannot
   // survive the stricter identity policy.
-  return `build:v77:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v78: Eclipse and Sundered Sky mechanics were corrected in the engine;
+  // retire cached builds scored before their proc, shield, and sustain fixes.
+  return `build:v78:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

@@ -271,7 +271,20 @@
   },
   "eclipse": {
     "procMaxHpArmSec": 1.8,
-    "_why_arm": "Ever Rising Moon needs '2 separate attacks or abilities within 1.8s'. No repeat cooldown is stated in the text, so it stays once per fight."
+    "procMaxHpCdSec": 6,
+    "procMaxHpPctRanged": 3.5,
+    "shieldFlatRanged": 70,
+    "shieldPctBonusAd": 35,
+    "shieldPctBonusAdRanged": 18,
+    "_why": "Ever Rising Moon is a 7% melee / 3.5% ranged max-health proc after two separate attacks or abilities within 1.8s, on a 6s cooldown. The shield is 140 + 35% bonus AD melee or 70 + 18% bonus AD ranged for 2s."
+  },
+  "sundered-sky": {
+    "critMult": 0,
+    "firstHitCritMult": 1.6,
+    "firstHitCritCdSec": 6,
+    "firstHitHealBaseAdPct": 125,
+    "firstHitHealMissingHpPct": 6,
+    "_why": "Lightshield Strike guarantees the first attack against each champion at 160% damage and restores 125% base AD + 6% missing health, with a 6s cooldown per target. The engine prices the first-hit replacement and its sustain separately from ordinary crit chance."
   },
   "galeforce": {
     "burstProcType": "physical",

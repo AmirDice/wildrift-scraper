@@ -70,6 +70,34 @@ def test_divine_sunderer_uses_melee_ranged_hp_split_and_real_cooldown():
         "healing"]["spellblade"] == round(expected)
 
 
+def test_eclipse_uses_melee_ranged_proc_and_shield_scaling():
+    melee = fe.resolve_stats("Hecarim", 15, ["eclipse"], [])
+    ranged = fe.resolve_stats("Jinx", 15, ["eclipse"], [])
+    melee_proc = next(p for p in melee["procs"] if p["label"] == "eclipse")
+    ranged_proc = next(p for p in ranged["procs"] if p["label"] == "eclipse")
+    assert melee_proc["pctMaxHp"] == 0.07
+    assert ranged_proc["pctMaxHp"] == 0.035
+    assert melee_proc["cd"] == 6
+    assert melee_proc["arm"] == 1.8
+    assert melee["shield"] == 140
+    assert melee["shieldPctBonusAd"] == 0.35
+    assert ranged["shield"] == 70
+    assert ranged["shieldPctBonusAd"] == 0.18
+
+
+def test_sundered_sky_first_hit_and_heal_are_not_global_crit_damage():
+    stats = fe.resolve_stats("Sett", 15, ["sundered-sky"], [])
+    assert stats["critMult"] == fe.BASE_CRIT_MULT
+    assert stats["firstHitCritMult"] == 1.6
+    assert stats["firstHitCritCdSec"] == 6
+    assert stats["firstHitHealBaseAdPct"] == 125
+    assert stats["firstHitHealMissingHpPct"] == 6
+    detail = fe.rotation("Sett", stats, fe.TARGETS["bruiser"], 8.0)
+    assert detail["firstHitProcs"] == 2
+    assert fe.metrics("Sett", ["sundered-sky"], [])["sustain"] > fe.metrics(
+        "Sett", [], [])["sustain"]
+
+
 def test_high_payoff_rune_context_corrections_are_grounded():
     melee = fe.resolve_stats("Darius", 15, [], ["Conqueror"])
     ranged = fe.resolve_stats("Jinx", 15, [], ["Conqueror"])
