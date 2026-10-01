@@ -414,7 +414,7 @@
   },
   "randuins-omen": {
     "critDamageReductionPct": 30,
-    "_why_not_modelled": "NOT MODELLED, deliberately, and recorded so it is not mistaken for an oversight. 'Resilience: Critically Struck deal 30% less damage to you' is real and large, but its worth depends entirely on how much of the incoming damage is critical strikes, which the generic effective-health formula has no way to know -- it is scored against a 50/50 physical-magic split and no enemy at all. Pricing it would mean inventing a crit share. It belongs in scoreVsComp, where the enemy team is known. Same for Countercurrent's slow resist."
+    "_why": "Resilience reduces critical-strike damage by 30%. Generic build scoring stays neutral because it has no enemy crit profile; scoreVsComp applies this channel when carry.critShare is supplied. Countercurrent slow resistance remains context-dependent."
   },
   "phantom-dancer": {
     "asPctPassive": 30,
