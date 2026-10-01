@@ -2,14 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Card } from "@/components/ui";
 import { NotifyForm } from "@/components/notify-form";
-import { CHANGELOG, NEXT_PATCH, SKIPPED_PATCH, WINRATE_PATCH } from "@/lib/announcement";
+import {
+  CHANGELOG,
+  COLLECTION_EXPECTED_FINISH,
+  COLLECTION_REGIONS,
+  COLLECTION_START,
+  NEXT_PATCH,
+  SKIPPED_PATCH,
+  WINRATE_PATCH,
+} from "@/lib/announcement";
 import site from "@/data/site.json";
 import siteNa from "@/data/site_na.json";
 
 export const metadata: Metadata = {
-  title: `Site Updates | Patch ${SKIPPED_PATCH} Applied, Win Rates Held for ${NEXT_PATCH}`,
+  title: `Site Updates | Regional Data Collection Starts ${COLLECTION_START}`,
   description:
-    `Patch ${SKIPPED_PATCH} item and ability changes are live on WrTrueMeta. Win rates stay on the ${WINRATE_PATCH} boards until ${NEXT_PATCH}. Get an email when the numbers move or something new ships.`,
+    `${COLLECTION_REGIONS} ladder data collection starts ${COLLECTION_START} and is expected to finish ${COLLECTION_EXPECTED_FINISH}.`,
   alternates: { canonical: "/updates" },
 };
 
@@ -24,7 +32,7 @@ export default function UpdatesPage() {
           Site update
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          Patch {SKIPPED_PATCH} is applied. Win rates are not being re-collected.
+          {COLLECTION_REGIONS} data collection starts {COLLECTION_START}.
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">
           {/* Built as one string rather than interleaved JSX text and
@@ -32,12 +40,11 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`Everything patch ${SKIPPED_PATCH} changed directly is already on the site: `
-            + `Vi, Swain, Janna, Nautilus and Malphite, plus Eclipse, Unending Despair `
-            + `and Seeker’s Armguard. What is not happening is a fresh scrape of the `
-            + `ladder. The win rates stay on the ${WINRATE_PATCH} boards, the next `
-            + `collection will be for patch ${NEXT_PATCH}, and the time that frees up is `
-            + `going into new features.`}
+          {`${COLLECTION_REGIONS} will be collected from the live leaderboard starting `
+            + `${COLLECTION_START}, with the run expected to finish ${COLLECTION_EXPECTED_FINISH}. `
+            + `Win rates, tiers and builds will update as each region completes. Until then, `
+            + `the current boards remain on ${WINRATE_PATCH}; patch ${SKIPPED_PATCH} item and `
+            + `ability data is already live.`}
         </p>
       </div>
 
@@ -63,9 +70,10 @@ export default function UpdatesPage() {
                   Still measured on {WINRATE_PATCH}
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                  Win rates, tiers, pick rates and movement. These only change when the
-                  leaderboards are re-scraped, and that is the run being skipped. A champion
-                  changed by {SKIPPED_PATCH} is still showing how it performed before the patch.
+                  Win rates, tiers, pick rates and movement. These change when the
+                  leaderboards are re-scraped. The next run begins {COLLECTION_START}; until
+                  then, a champion changed by {SKIPPED_PATCH} still shows how it performed
+                  before the new collection.
                 </p>
               </div>
             </div>
@@ -100,26 +108,22 @@ export default function UpdatesPage() {
           </Card>
 
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-text">Why skip the collection</h2>
+            <h2 className="text-base font-semibold text-text">Why the collection takes until Wednesday</h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
-              A collection is a full scrape of the top of the ladder for every champion, and it
-              is the most expensive thing this site does. Running one for {SKIPPED_PATCH} would
-              produce a board that {NEXT_PATCH} replaces within weeks, and it would cost the
-              whole window in which the tools can actually be improved. Given the choice between
-              one more set of numbers and a better site to read them on, we are taking the
-              better site.
+              A collection is a full scrape of the top of the ladder for every champion across
+              three regions. It runs in sequence so the phone session remains reliable, which is
+              why the announced window runs from {COLLECTION_START} through {COLLECTION_EXPECTED_FINISH}.
+              The site will publish each region as soon as its pass is complete.
             </p>
           </Card>
 
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-text">What is being built instead</h2>
+            <h2 className="text-base font-semibold text-text">What happens during the window</h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
-              Work between now and {NEXT_PATCH} is going into the build and draft tools rather
-              than the data pipeline: the fight engine behind the Build Studio and the Counter
-              Builder, the draft assistant, and the overlay. When {NEXT_PATCH} lands, the item
-              and ability data is updated first, exactly as it was for {SKIPPED_PATCH}, and the
-              boards are collected once enough games have been played on it to be worth
-              measuring.
+              The scraper will collect champion win rates and the most-built player builds for
+              {COLLECTION_REGIONS}. Patch {SKIPPED_PATCH} item and ability data is already used
+              by the Build Studio, Counter Builder, Draft Assistant and champion pages; this run
+              refreshes the empirical ladder layer those tools reference.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link

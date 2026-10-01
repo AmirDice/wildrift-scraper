@@ -48,6 +48,7 @@ export function studioRequest(champion: string, role = ""): BuildRequestKey {
     buildBias: "balanced",
     lockedItems: [],
     lockedRunes: [],
+    unrestrictedMode: false,
   };
 }
 

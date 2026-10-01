@@ -65,6 +65,12 @@ export default async function BuildPage(props: PageProps<"/build">) {
         Optimal builds for every champion. Pick your champion, switch playstyles,
         customize items and runes, or generate the optimal build tuned to your exact game.
       </p>
+      <div className="mt-5 rounded-2xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
+        <p className="font-semibold">Build Studio is currently under maintenance.</p>
+        <p className="mt-1 text-amber-100/75">
+          Build generation and live recommendations may be temporarily unavailable while we update the engine.
+        </p>
+      </div>
       {/* The same live figure the home page shows. It belongs here too: this is
           the page where someone decides whether to spend a generation, and
           "other people are using this" is the most honest thing we can say at

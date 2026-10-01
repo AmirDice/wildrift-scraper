@@ -28,7 +28,8 @@ const VERDICT_LABEL: Record<string, { text: string; cls: string }> = {
 export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buildBias,
                               situational, situationalBoots, bare = false,
                               enemies = [], role = "", itemReasons = [], runeReasons,
-                              bootsReason = "", candidateScores = [] }: {
+                              bootsReason = "", candidateScores = [],
+                              unrestrictedMode = false }: {
   champion: string;
   items: string[];
   boots?: string;
@@ -43,6 +44,7 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
   runeReasons?: { keystone?: string; minors?: string[]; flex?: string };
   bootsReason?: string;
   candidateScores?: { item: string; score: number; reason: string }[];
+  unrestrictedMode?: boolean;
   /** The build's own situational swaps. An item listed here is one the build
    *  already recommends against specific conditions, so the answer must say
    *  WHEN it is right rather than argue it is worse. */
@@ -79,7 +81,8 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
         body: JSON.stringify({ champion, items, boots, runes: runeNames, candidate,
                                playstyle, buildBias, situational, situationalBoots,
                                enemies, role, itemReasons, runeReasons, bootsReason,
-                               candidateScore: candidateScores?.find((r) => r.item === candidate) }),
+                               candidateScore: candidateScores?.find((r) => r.item === candidate),
+                               unrestrictedMode }),
       });
       const data = await res.json();
       setAsked({ candidate, ...data });

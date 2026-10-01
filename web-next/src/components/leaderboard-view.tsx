@@ -10,6 +10,7 @@ import { TierBadge, tierParts, tierRank } from "@/components/tier-badge";
 import { QueuePanel } from "@/components/queue-panel";
 import type { QueueStats } from "@/lib/player-index";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
+import type { BestPlayerPodium } from "@/lib/data";
 
 export type SlimChampion = {
   name: string;
@@ -22,9 +23,12 @@ export type SlimChampion = {
   wr: number;
   isHard: boolean;
   bestPlayer: { player: string; rank: number | null; confidence_wr: number | null } | null;
+  bestPlayerPodium?: BestPlayerPodium | null;
+  globalBestPlayerPodium?: BestPlayerPodium | null;
+  podiumSkins?: { rank: number; name: string; tier: string; url: string; fallback?: string }[];
 };
 
-type Row = { r: number; p: string; w: number | null; g: number | null; s: number | null };
+type Row = { r: number; p: string; w: number | null; g: number | null; s: number | null; v?: string | null; b?: number | null };
 
 type EnrichedPlayer = Row & {
   tag: string | null;
@@ -46,7 +50,7 @@ type EnrichedPlayer = Row & {
 
 type EnrichedPayload = { champion: string; slug: string; capturedAt: string; players: EnrichedPlayer[] };
 
-type SortKey = "r" | "w" | "g" | "s" | "wilson" | "tier";
+type SortKey = "r" | "w" | "g" | "s" | "wilson" | "composite" | "tier";
 
 /**
  * Lower bound of the 95% Wilson score interval, as a percentage.
@@ -132,6 +136,7 @@ function ChampionSpotlight({
   best: EnrichedPlayer | null;
 }) {
   const bp = champ.bestPlayer;
+  const facePortrait = champ.podiumSkins?.find((skin) => skin.rank === 3)?.url ?? champ.icon;
   return (
     <div className="relative mb-6 overflow-hidden rounded-2xl border border-line">
       <div
@@ -165,11 +170,14 @@ function ChampionSpotlight({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={champ.icon}
+                src={facePortrait}
                 alt=""
                 width={64}
                 height={64}
-                className="h-full w-full scale-[1.12] object-cover"
+                className="h-full w-full object-cover"
+                onError={(event) => {
+                  if (event.currentTarget.src !== champ.icon) event.currentTarget.src = champ.icon;
+                }}
               />
             </span>
             <span className="min-w-0">
@@ -234,6 +242,237 @@ function ChampionSpotlight({
         )}
       </div>
     </div>
+  );
+}
+
+/** A compact context strip keeps the selected champion visible without
+ * competing with the podium's hero treatment. */
+function ChampionContextBar({ champ, best }: { champ: SlimChampion; best: EnrichedPlayer | null }) {
+  const bp = champ.bestPlayer;
+  const facePortrait = champ.podiumSkins?.find((skin) => skin.rank === 3)?.url ?? champ.icon;
+  return (
+    <div className="glass mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line px-3 py-3 sm:px-4">
+      <Link href={`/champions/${champ.slug}`} className="group flex min-w-0 items-center gap-3 transition hover:opacity-90">
+        <span className={`h-11 w-11 shrink-0 overflow-hidden rounded-full ${champ.isHard ? "ring-2 ring-bad/70" : "ring-1 ring-white/20"}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={facePortrait}
+            alt=""
+            width={44}
+            height={44}
+            className="h-full w-full object-cover"
+            onError={(event) => {
+              if (event.currentTarget.src !== champ.icon) event.currentTarget.src = champ.icon;
+            }}
+          />
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-base font-semibold leading-tight tracking-tight group-hover:text-accent sm:text-lg">{champ.name}</span>
+          <span className="block truncate text-[0.65rem] uppercase tracking-[0.14em] text-muted">{champ.role} · {champ.class}</span>
+        </span>
+      </Link>
+      <div className="flex flex-wrap items-center gap-2">
+        <TierChip tier={champ.tier} />
+        <span className="rounded-md border border-line bg-white/[0.04] px-2 py-0.5 text-xs font-semibold tabular-nums text-accent sm:text-sm">{champ.wr.toFixed(1)}% win rate</span>
+      </div>
+      {bp && (
+        <div className="flex min-w-0 items-center gap-2 border-l border-line pl-3 sm:ml-auto sm:pl-4">
+          <Glyph d={GLYPHS.crown} className="shrink-0 text-gold" size={16} />
+          <span className="min-w-0">
+            <span className="block text-[0.6rem] uppercase tracking-[0.16em] text-muted">Best this season</span>
+            <span className="block max-w-[10rem] truncate text-sm font-semibold text-gold" title={bp.player}>{bp.player}</span>
+          </span>
+          {best?.tier && <TierBadge tier={best.tier} size={18} />}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PlayerPodium({
+  podium,
+  championName,
+  championIcon,
+  podiumSkins,
+}: {
+  podium?: BestPlayerPodium | null;
+  championName: string;
+  championIcon?: string;
+  podiumSkins?: { rank: number; name: string; tier: string; url: string; fallback?: string }[];
+}) {
+  const players = podium?.players ?? [];
+  if (!players.length) return null;
+  const scopeLabel = podium?.scope === "global" ? "EU, NA and CN normalized together" : `${podium?.server ?? "regional"} leaderboard`;
+  // Keep first place in the visual centre, like a real podium. On narrow
+  // screens the winner returns to the top of the reading order, while the
+  // desktop layout uses the familiar 2–1–3 arrangement.
+  const rankFor = (player: NonNullable<typeof players[number]>) => players.indexOf(player) + 1;
+  const rankTone = (rank: number) => rank === 1
+    ? "bg-gradient-to-b from-[#211b12]/98 via-[#10151f]/98 to-[#080d17]/98 shadow-[0_18px_70px_rgb(255_215_110/0.17)]"
+    : rank === 2
+      ? "bg-gradient-to-b from-[#101d32]/98 via-[#0a1425]/98 to-[#070e1a]/98 shadow-[0_12px_45px_rgb(91_178_255/0.12)]"
+      : "bg-gradient-to-b from-[#291a19]/98 via-[#15131c]/98 to-[#0a0d16]/98 shadow-[0_12px_45px_rgb(221_133_88/0.12)]";
+  const pedestalTone = (rank: number) => rank === 1
+    ? "border-gold/55 bg-gradient-to-b from-[#6d5420]/80 to-[#1a150c]/95 text-gold shadow-[0_10px_35px_rgb(255_215_110/0.22)]"
+    : rank === 2
+      ? "border-sky-300/40 bg-gradient-to-b from-[#263e5e]/90 to-[#101a2b]/95 text-sky-100 shadow-[0_8px_30px_rgb(91_178_255/0.15)]"
+      : "border-orange-300/40 bg-gradient-to-b from-[#593426]/90 to-[#1d1515]/95 text-orange-100 shadow-[0_8px_30px_rgb(221_133_88/0.14)]";
+  const frameTone = (rank: number) => rank === 1
+    ? "bg-[linear-gradient(135deg,#fff1a8_0%,#d39b2b_18%,#6f4d17_45%,#ffe58a_68%,#8d641d_100%)]"
+    : rank === 2
+      ? "bg-[linear-gradient(135deg,#d9f1ff_0%,#6fa8d8_18%,#294e78_48%,#c7e7ff_72%,#3f668e_100%)]"
+      : "bg-[linear-gradient(135deg,#ffd8b8_0%,#bd7750_18%,#643727_48%,#edb18a_72%,#7b432f_100%)]";
+  const rankLabel = (rank: number) => rank === 1 ? "CHAMPION" : `PLACE ${rank}`;
+  return (
+    <section className="no-plate relative mb-5 overflow-hidden rounded-[1.5rem] border border-slate-400/70 bg-[#aebdcd] shadow-[0_28px_90px_rgb(20_44_75/0.24)]">
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_24%,rgb(255_255_255/0.9)_0%,rgb(248_251_253/0.86)_20%,rgb(216_229_241/0.8)_48%,transparent_78%),linear-gradient(90deg,rgb(39_61_84/0.38),transparent_28%,transparent_72%,rgb(39_61_84/0.38)),linear-gradient(180deg,rgb(220_231_241/0.8),rgb(143_162_182/0.98)_100%)]" />
+      {/* Stage lights: soft, angled cones with a brighter source at the ceiling. */}
+      <div aria-hidden className="pointer-events-none absolute -top-8 left-[7%] h-[78%] w-[36%] origin-top -rotate-[17deg] bg-gradient-to-b from-white/52 via-white/24 to-transparent blur-xl" style={{ clipPath: "polygon(40% 0, 60% 0, 100% 100%, 0 100%)" }} />
+      <div aria-hidden className="pointer-events-none absolute -top-8 right-[7%] h-[78%] w-[36%] origin-top rotate-[17deg] bg-gradient-to-b from-white/52 via-white/24 to-transparent blur-xl" style={{ clipPath: "polygon(40% 0, 60% 0, 100% 100%, 0 100%)" }} />
+      <div aria-hidden className="pointer-events-none absolute -top-8 left-1/2 h-[84%] w-[35%] -translate-x-1/2 bg-gradient-to-b from-white/78 via-white/38 to-transparent blur-2xl" style={{ clipPath: "polygon(44% 0, 56% 0, 92% 100%, 8% 100%)" }} />
+      <div aria-hidden className="absolute left-[23%] top-1 h-3 w-3 rounded-full bg-white shadow-[0_0_24px_8px_rgb(255_255_255/0.65)]" />
+      <div aria-hidden className="absolute right-[23%] top-1 h-3 w-3 rounded-full bg-white shadow-[0_0_24px_8px_rgb(255_255_255/0.65)]" />
+      <div aria-hidden className="absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 rounded-full bg-white shadow-[0_0_32px_12px_rgb(255_255_255/0.75)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.13]" style={{ backgroundImage: "radial-gradient(rgb(50 83 116 / 0.3) 0.7px, transparent 0.7px), linear-gradient(115deg, transparent 0%, rgb(255 255 255 / 0.2) 48%, transparent 70%)", backgroundSize: "13px 13px, 100% 100%" }} />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,transparent_0%,transparent_43%,rgb(31_51_72/0.26)_100%)]" />
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-[37%] h-[28%] w-[82%] -translate-x-1/2 rounded-[50%] bg-slate-700/14 blur-3xl" />
+      {/* The back wall ends at a lit horizon; below it is a shallow
+          perspective floor with restrained studio texture. */}
+      <div aria-hidden className="absolute inset-x-0 bottom-[24%] h-px bg-gradient-to-r from-transparent via-slate-500/60 to-transparent shadow-[0_0_18px_rgb(116_160_196/0.45)]" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-[-12%] bottom-[-18%] h-[44%] opacity-40"
+        style={{
+          background: "linear-gradient(180deg, rgba(246,250,253,0.42), rgba(176,196,216,0.2) 42%, rgba(84,108,133,0.18)), radial-gradient(rgb(54 87 119 / 0.22) 0.7px, transparent 0.7px), repeating-linear-gradient(90deg, rgba(68,113,155,0.12) 0 1px, transparent 1px 84px), repeating-linear-gradient(0deg, rgba(68,113,155,0.1) 0 1px, transparent 1px 38px)",
+          backgroundSize: "100% 100%, 11px 11px, auto, auto",
+          transform: "perspective(520px) rotateX(58deg)",
+          transformOrigin: "bottom center",
+        }}
+      />
+      <div aria-hidden className="pointer-events-none absolute bottom-[13%] left-1/2 h-12 w-[74%] -translate-x-1/2 rounded-[50%] bg-slate-700/25 blur-xl" />
+      <div aria-hidden className="pointer-events-none absolute bottom-[17%] left-1/2 h-5 w-[45%] -translate-x-1/2 rounded-[50%] bg-slate-900/20 blur-md" />
+      <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(180deg,transparent,rgb(87_108_130/0.28))]" />
+
+      <div className="relative flex flex-wrap items-center justify-between gap-4 px-5 pt-5 sm:px-8 sm:pt-7">
+        <div className="rounded-xl border border-slate-700/70 bg-[#071427]/90 px-3 py-2 shadow-[0_10px_24px_rgb(12_29_53/0.25)] backdrop-blur-sm">
+          {/* The wordmark is white, so it gets its own dark brand plate on the
+              light studio wall instead of disappearing into the background. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="WrTrueMeta" width={210} height={30} className="block h-5 w-auto sm:h-7" />
+        </div>
+        <button
+          type="button"
+          title="The score combines confidence-adjusted win rate, ladder strength, champion-board position, Champion Score and current-season games."
+          className="rounded-full border border-sky-300/55 bg-[#07162b]/70 px-4 py-2 text-xs font-medium text-sky-50 shadow-[0_0_22px_rgb(91_178_255/0.12)] backdrop-blur transition hover:border-sky-200 hover:bg-[#0a2241]"
+        >
+          How this is scored <span className="ml-1 inline-grid h-4 w-4 place-items-center rounded-full border border-sky-200/70 text-[0.65rem]">i</span>
+        </button>
+      </div>
+
+      <div className="relative px-5 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-14">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-amber-700 drop-shadow-[0_0_12px_rgb(245_190_70/0.35)]">Top 3 this season</p>
+        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+          Best <span className="bg-gradient-to-r from-sky-500 via-blue-600 to-slate-800 bg-clip-text text-transparent">{championName}</span> players
+        </h2>
+
+        <div className="relative mx-auto mt-12 grid max-w-6xl grid-cols-3 items-end gap-2 sm:gap-8 sm:px-5 lg:gap-12 lg:px-12">
+          {players.slice(0, 3).map((player) => {
+            const rank = rankFor(player);
+            const orderClass = rank === 1 ? "order-1 sm:order-2" : rank === 2 ? "order-2 sm:order-1" : "order-3";
+            const portrait = podiumSkins?.find((skin) => skin.rank === rank);
+            return (
+              <article
+                key={`${player.server ?? "?"}-${player.player}-${rank}`}
+                aria-label={`${player.player}, ranked ${rank}`}
+                className={`relative flex min-w-0 flex-col items-center text-center ${orderClass}`}
+              >
+                <Link
+                  href={`/player?p=${encodeURIComponent(player.player)}`}
+                  title={`Open ${player.player}'s player profile`}
+                  className="group block w-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+                >
+                <div className={`relative w-full rounded-2xl p-[2px] sm:p-[3px] shadow-[0_25px_32px_-14px_rgb(17_39_67/0.58)] transition group-hover:-translate-y-1 group-hover:shadow-[0_30px_38px_-14px_rgb(17_39_67/0.68)] ${rank === 1 ? "sm:shadow-[0_32px_42px_-16px_rgb(109_78_16/0.52)]" : ""} ${frameTone(rank)}`}>
+                  <div className={`relative w-full rounded-[0.85rem] px-1.5 pb-3 pt-10 backdrop-blur-md sm:px-6 sm:pb-6 sm:pt-14 ${rankTone(rank)} ${rank === 1 ? "sm:pt-16" : ""}`}>
+                    <div className={`absolute left-1/2 top-0 grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 bg-[#07101e] ${rank === 1 ? "h-16 w-16 border-gold shadow-[0_0_28px_rgb(255_215_110/0.42)] sm:h-28 sm:w-28 sm:shadow-[0_0_35px_rgb(255_215_110/0.42)]" : rank === 2 ? "h-14 w-14 border-sky-200/80 shadow-[0_0_20px_rgb(91_178_255/0.27)] sm:h-24 sm:w-24 sm:shadow-[0_0_24px_rgb(91_178_255/0.27)]" : "h-14 w-14 border-orange-200/75 shadow-[0_0_20px_rgb(221_133_88/0.23)] sm:h-20 sm:w-20 sm:shadow-[0_0_24px_rgb(221_133_88/0.23)]"}`}>
+                    {rank === 1 && (
+                      <>
+                        <span aria-hidden className="pointer-events-none absolute -inset-2 rounded-full border-2 border-gold/80 shadow-[0_0_0_2px_rgb(255_215_110/0.14),0_0_20px_rgb(255_215_110/0.42)] sm:-inset-3 sm:shadow-[0_0_0_3px_rgb(255_215_110/0.14),0_0_28px_rgb(255_215_110/0.42)]" />
+                        <span aria-hidden className="pointer-events-none absolute -inset-1 rounded-full border border-gold/35 sm:-inset-1.5" />
+                      </>
+                    )}
+                    {portrait?.url || championIcon ? (
+                      <span className="absolute inset-0 overflow-hidden rounded-full">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={portrait?.url || championIcon}
+                          alt={portrait?.name || championName}
+                          title={portrait?.name}
+                          width={96}
+                          height={96}
+                          className="block w-full max-w-none rounded-full object-cover"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            aspectRatio: "1 / 1",
+                            objectFit: "cover",
+                            // Skin splash tiles are face-forward but still
+                            // leave more surrounding art than the base icon.
+                            // Give only ranks 1–2 a little extra presence;
+                            // the local base portrait stays at its natural fit.
+                            transform: rank === 3 ? undefined : "scale(1.35)",
+                            transformOrigin: "center",
+                          }}
+                          onError={(event) => {
+                            const skinFallback = portrait?.fallback;
+                            if (skinFallback && event.currentTarget.dataset.skinFallback !== "1") {
+                              event.currentTarget.dataset.skinFallback = "1";
+                              event.currentTarget.src = skinFallback;
+                            } else if (championIcon && event.currentTarget.dataset.baseFallback !== "1") {
+                              event.currentTarget.dataset.baseFallback = "1";
+                              event.currentTarget.src = championIcon;
+                            } else {
+                              event.currentTarget.style.display = "none";
+                            }
+                          }}
+                        />
+                      </span>
+                    ) : <Glyph d={GLYPHS.crown} size={rank === 1 ? 32 : 26} className="text-gold" />}
+                    <span className={`absolute -bottom-2 grid h-7 w-7 place-items-center rounded-lg border text-xs font-black tabular-nums shadow-lg sm:-bottom-3 sm:h-9 sm:w-9 sm:text-base ${pedestalTone(rank)}`}>
+                      {rank}
+                    </span>
+                    {rank === 1 && <Glyph d={GLYPHS.crown} size={22} className="absolute -top-7 text-gold drop-shadow-[0_0_8px_rgb(255_215_110/0.7)]" />}
+                  </div>
+                  <div className="flex min-h-5 items-center justify-center gap-2">
+                    {player.server && <span className="rounded-full border border-white/15 bg-black/20 px-2 py-0.5 text-[0.65rem] font-semibold text-sky-100">{player.server}</span>}
+                    {portrait?.tier && portrait.tier !== "base" && <span className="rounded-full border border-white/15 bg-black/20 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-slate-300">{portrait.tier}</span>}
+                  </div>
+                  <p className={`mt-2 truncate font-semibold ${rank === 1 ? "text-[0.75rem] text-white sm:text-2xl" : "text-[0.7rem] text-white sm:text-xl"}`} title={player.player}>{player.player}</p>
+                  <div className="mt-2 flex min-h-5 flex-wrap justify-center gap-1 text-[0.5rem] text-slate-300 sm:min-h-6 sm:gap-1.5 sm:text-[0.7rem]">
+                    {player.tier && <span className="rounded-md border border-white/15 bg-black/20 px-1 py-0.5 sm:px-2">{player.tier}</span>}
+                    {player.championRank != null && <span className="rounded-md border border-white/15 bg-black/20 px-1 py-0.5 sm:px-2">board #{player.championRank}</span>}
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-x-1 gap-y-2 border-t border-white/15 pt-3 text-left sm:mt-5 sm:gap-x-3 sm:gap-y-3 sm:pt-4">
+                    <div><p className="text-[0.5rem] text-slate-400 sm:text-xs">Score</p><strong className={`text-[0.9rem] tabular-nums sm:text-2xl ${rank === 1 ? "text-gold" : "text-white"}`}>{player.score != null ? player.score.toFixed(1) : "—"}</strong></div>
+                    <div><p className="text-[0.5rem] text-slate-400 sm:text-xs">WR</p><strong className="text-[0.9rem] tabular-nums text-white sm:text-2xl">{player.winRate != null ? `${player.winRate.toFixed(1)}%` : "—"}</strong></div>
+                    <div><p className="text-[0.5rem] text-slate-400 sm:text-xs">Games</p><strong className="text-[0.65rem] tabular-nums text-slate-100 sm:text-base">{player.games ?? "—"}</strong></div>
+                    <div><p className="text-[0.5rem] text-slate-400 sm:text-xs">Champion score</p><strong className="text-[0.65rem] tabular-nums text-slate-100 sm:text-base">{player.championScore ?? "—"}</strong></div>
+                  </div>
+                  </div>
+                </div>
+                <div className={`flex w-full items-center justify-center rounded-t-xl border px-1 text-[0.42rem] font-black tracking-[0.12em] sm:px-3 sm:text-[0.7rem] sm:tracking-[0.25em] ${rank === 1 ? "h-20 sm:h-28" : rank === 2 ? "h-12 sm:h-16" : "h-7 sm:h-9"} ${pedestalTone(rank)}`}>
+                  {rankLabel(rank)}
+                </div>
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+
+      <p className="relative border-t border-slate-400/35 bg-white/25 px-5 py-3 text-[0.7rem] leading-relaxed text-slate-700 sm:px-8">
+        Current-season ranking · {scopeLabel} · scoring {podium?.scoringVersion ?? "best-player-v1"} · higher score means a stronger all-around season
+      </p>
+    </section>
   );
 }
 
@@ -567,16 +806,26 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
     }
   }, [champions]);
 
-  // The thin per-region table. Refetched when the region changes; each region
-  // publishes its own file from the same exporter.
+  // The thin table is published per server. Global and CN files are optional
+  // until the player-level CN collection has completed; a missing file is
+  // handled as an honest unavailable state below.
   useEffect(() => {
     let cancelled = false;
     setData(null);
-    fetch(region === "NA" ? "/players-na.json" : "/players.json")
+    const playersPath = region === "NA" ? "/players-na.json" : region === "CN" ? "/players-cn.json" : region === "Global" ? "/players-global.json" : "/players.json";
+    fetch(playersPath)
       .then((r) => r.json())
       .then((payload) => { if (!cancelled) setData(payload); })
       .catch(() => { if (!cancelled) setData({}); });
     return () => { cancelled = true; };
+  }, [region]);
+
+  useEffect(() => {
+    // The global file is ordered by the composite score, while regional
+    // boards use the Wilson confidence score. Resetting the sort on a view
+    // change prevents a stale regional key from silently reordering Global.
+    setSortKey("r");
+    setDir("asc");
   }, [region]);
 
   // The per-champion enriched file exists only once that champion has been
@@ -590,7 +839,8 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
     }
     let cancelled = false;
     setEnriched(null);
-    fetch(region === "NA" ? `/players/na/${slug}.json` : `/players/${slug}.json`)
+    const detailPath = region === "NA" ? `/players/na/${slug}.json` : region === "CN" ? `/players/cn/${slug}.json` : region === "Global" ? `/players/global/${slug}.json` : `/players/${slug}.json`;
+    fetch(detailPath)
       .then((r) => (r.ok ? r.json() : null))
       .then((payload: EnrichedPayload | null) => {
         enrichedCache.current.set(`${region}:${slug}`, payload);
@@ -616,12 +866,12 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
   const champ = regionChampions.find((c) => c.slug === slug);
   const rows: (Row | EnrichedPlayer)[] = useMemo(() => {
     const base: (Row | EnrichedPlayer)[] = enriched?.players ?? data?.[slug] ?? [];
-    // Two of the sort keys are DERIVED rather than fields on the row: the
-    // Wilson bound from win rate and games, the tier ordinal from the tier
-    // string. Both return null for a row that cannot supply them, which `num`
-    // sorts last in either direction.
+    // Derived sort keys return null when the row cannot supply them, which
+    // `num` sorts last in either direction. Regional and Global exports carry
+    // the same composite `b` value used by the podium.
     const key = (row: Row | EnrichedPlayer) => {
       if (sortKey === "wilson") return wilsonScore(row.w, row.g);
+      if (sortKey === "composite") return row.b ?? null;
       if (sortKey === "tier") return tierRank((row as EnrichedPlayer).tier);
       return row[sortKey];
     };
@@ -644,9 +894,10 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
 
   return (
     <div>
-      {/* Region: CN has no per-player leaderboard data, so only EU / NA here */}
+      {/* Global and CN become fully populated after the player-level CN
+          collection; keeping them visible now makes the rollout state clear. */}
       <div className="mb-5">
-        <RegionToggle region={region} onChange={setRegion} regions={["EU", "NA"] as const} />
+        <RegionToggle region={region} onChange={setRegion} regions={["Global", "EU", "NA", "CN"] as const} />
       </div>
 
       {regionChampions.length === 0 ? (
@@ -663,7 +914,19 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
       </div>
 
       {champ && (
-        <ChampionSpotlight champ={champ} best={matchBestPlayer(champ, enriched)} />
+        <ChampionContextBar
+          champ={region === "Global" || region === "CN" ? { ...champ, bestPlayer: null } : champ}
+          best={region === "Global" || region === "CN" ? null : matchBestPlayer(champ, enriched)}
+        />
+      )}
+
+      {champ && (
+        <PlayerPodium
+          podium={region === "Global" ? champ.globalBestPlayerPodium : region === "CN" ? null : champ.bestPlayerPodium}
+          championName={champ.name}
+          championIcon={champ.icon}
+          podiumSkins={champ.podiumSkins}
+        />
       )}
 
       {/* The hand-recorded build for this champion's best player, when one has
@@ -684,11 +947,10 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
           What does &ldquo;Best&rdquo; mean?
         </summary>
         <p className="mt-2 max-w-xl rounded-xl border border-line bg-black/30 p-3 text-xs leading-relaxed text-muted">
-          <span className="font-semibold text-text">Demonstrably best, not luckily best.</span>{" "}
-          The Best score asks how much of a win rate the games behind it actually back up:
-          100% over 10 games proves less than 75% over 200, so the second scores higher.
-          Sort by it to see who is genuinely strongest on this champion rather than who had
-          a lucky run. It is the same maths that picks the best player in the spotlight above.
+          <span className="font-semibold text-text">A current-season composite, not a raw win-rate race.</span>{" "}
+          It combines confidence-adjusted win rate (45%), ladder strength (20%), champion-board
+          position (20%), Champion Score (10%) and capped games experience (5%). Small samples
+          and pure grinding cannot decide the podium by themselves.
         </p>
       </details>
 
@@ -697,15 +959,18 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
         <div className="glass rounded-2xl p-10 text-center text-muted">Loading players…</div>
       ) : rows.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          No player data for this champion yet.
+          {region === "Global"
+            ? "The global podium will appear after EU, NA and CN player-level collections are complete."
+            : region === "CN"
+              ? "CN player-level data will appear after the next collection finishes."
+              : "No player data for this champion yet."}
         </div>
       ) : (
         <div className="glass overflow-x-auto rounded-2xl">
-          {/* On a phone the enriched table drops Games and Mastery (still
-              sortable from sm up) rather than forcing a sideways scroll:
-              rank, player, build and win rate are the columns people came
-              for, and they fit a 360px screen with room for the chevron. */}
-          <table className="w-full border-collapse text-sm sm:min-w-[560px]">
+          <p className="border-b border-line px-3 py-2 text-[0.65rem] text-faint sm:hidden">
+            Swipe horizontally to see Best score, Games and Mastery →
+          </p>
+          <table className="w-full min-w-[650px] border-collapse text-sm sm:min-w-[760px]">
             <thead>
               <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
                 <Th onClick={() => toggleSort("r")} active={sortKey === "r"} dir={dir} className="w-10 text-center sm:w-16">
@@ -727,15 +992,15 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
                   <span className="hidden sm:inline">Win rate</span>
                   <span className="sm:hidden">WR</span>
                 </Th>
-                <Th onClick={() => toggleSort("wilson")} active={sortKey === "wilson"} dir={dir} right className="hidden sm:table-cell">
-                  <span title="Demonstrably best, not luckily best. A player at 100% from 10 games has shown less than one at 75% from 200, so the second scores higher. Same formula that picks each champion's best player; the spotlight additionally requires enough games to qualify.">
-                    Best
+                <Th onClick={() => toggleSort("composite")} active={sortKey === "composite"} dir={dir} right>
+                  <span title="Composite current-season score: confidence-adjusted win rate, ladder strength, champion-board position, Champion Score and capped games experience.">
+                    Best score
                   </span>
                 </Th>
-                <Th onClick={() => toggleSort("g")} active={sortKey === "g"} dir={dir} right className="hidden sm:table-cell">
+                <Th onClick={() => toggleSort("g")} active={sortKey === "g"} dir={dir} right>
                   Games
                 </Th>
-                <Th onClick={() => toggleSort("s")} active={sortKey === "s"} dir={dir} right className="hidden md:table-cell">
+                <Th onClick={() => toggleSort("s")} active={sortKey === "s"} dir={dir} right>
                   Mastery
                 </Th>
                 {hasDetail && <Th className="w-6 sm:w-10"> </Th>}
@@ -784,6 +1049,7 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
                         >
                           {row.p}
                         </span>
+                        {row.v && <span className="mt-0.5 block text-[0.6rem] font-semibold uppercase tracking-wide text-faint">{row.v}</span>}
                         {(e?.tier || e?.banned) && (
                           <span className="mt-0.5 flex flex-wrap items-center gap-1">
                             {e?.tier && <TierBadge tier={e.tier} />}
@@ -799,7 +1065,7 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
                         )}
                       </td>
                       {hasDetail && (
-                        <td className="px-1.5 py-2.5 sm:px-3">
+                        <td className="min-w-[170px] px-1.5 py-2.5 sm:min-w-0 sm:px-3">
                           {e?.build ? (
                             <span className="flex items-center gap-0.5 sm:gap-1">
                               {e.build.items.slice(0, 6).map((it, j) => (
@@ -818,7 +1084,7 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
                           )}
                         </td>
                       )}
-                      <td className="px-2 py-2.5 text-right font-semibold text-accent sm:px-3">
+                      <td className="px-1.5 py-2.5 text-right font-semibold text-accent sm:px-3">
                         {row.w != null ? (
                           `${row.w.toFixed(1)}%`
                         ) : (
@@ -834,20 +1100,20 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
                           </span>
                         )}
                       </td>
-                      <td className="hidden px-3 py-2.5 text-right text-muted sm:table-cell">
+                      <td className="px-1.5 py-2.5 text-right text-muted sm:px-3">
                         {(() => {
-                          const wl = wilsonScore(row.w, row.g);
-                          return wl != null ? (
-                            <span title={`Win rate ${row.w?.toFixed(1)}% over ${row.g} games`}>
-                              {Math.round(wl)}
+                          const composite = row.b;
+                          return composite != null ? (
+                            <span title="Composite current-season Best Player score">
+                              {composite.toFixed(1)}
                             </span>
                           ) : "-";
                         })()}
                       </td>
-                      <td className="hidden px-3 py-2.5 text-right text-muted sm:table-cell">
+                      <td className="px-1.5 py-2.5 text-right text-muted sm:px-3">
                         {row.g != null ? row.g.toLocaleString() : "-"}
                       </td>
-                      <td className="hidden px-3 py-2.5 text-right text-muted md:table-cell">
+                      <td className="px-1.5 py-2.5 text-right text-muted sm:px-3">
                         {row.s != null ? row.s.toLocaleString() : "-"}
                       </td>
                       {hasDetail && (
@@ -900,7 +1166,7 @@ function Th({
   right?: boolean;
   className?: string;
 }) {
-  const base = `px-3 py-3 font-semibold ${right ? "text-right" : "text-left"} ${className}`;
+  const base = `px-1.5 py-3 font-semibold sm:px-3 ${right ? "text-right" : "text-left"} ${className}`;
   if (!onClick) return <th className={base}>{children}</th>;
   return (
     <th className={base}>

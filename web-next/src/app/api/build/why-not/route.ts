@@ -172,6 +172,7 @@ export async function POST(request: Request) {
     candidate,
     playstyle: clean(body.playstyle) || "standard",
     buildBias: rawBias,
+    unrestrictedMode: body.unrestrictedMode === true,
     // The build's own situational swaps. Without them the answer could argue
     // an item down as "worse here" while the page above already offers it as
     // a swap; the advisor clamps that case to a SITUATIONAL verdict.

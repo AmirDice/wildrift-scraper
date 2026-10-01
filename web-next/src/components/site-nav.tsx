@@ -10,6 +10,7 @@ import { TIKTOK_URL, YOUTUBE_URL, TikTokIcon, YouTubeIcon } from "@/components/s
 import { SupportNavLink, BUYMEACOFFEE_URL, CoffeeIcon } from "@/components/support";
 import { AccountMenu } from "@/components/account-menu";
 import { ChampionCombobox, type ComboItem } from "@/components/champion-combobox";
+import { CollectionTimeline } from "@/components/collection-timeline";
 
 type NavItem = { href: string; label: string; badge?: string; badges?: string[]; desc?: string };
 /** `collapsed` folds the group on MOBILE only, behind a tap. Use it for
@@ -382,6 +383,8 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
         </button>
         </div>
       </nav>
+
+      <CollectionTimeline />
 
       {open && (
         <div className="glass-bar max-h-[75vh] overflow-y-auto border-t border-line px-4 py-3 md:hidden">

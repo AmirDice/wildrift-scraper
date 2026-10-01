@@ -60,8 +60,8 @@ export default function RootLayout({
   const navChampions = [...getChampions(), ...pendingChampions()]
     .map(({ name, slug, icon }) => ({ name, slug, icon }));
   return (
-    <html lang="en" className="h-full">
-      <body className="flex min-h-full flex-col">
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         {/* Ambient fixed background, in three layers.
             The glass material is only as convincing as what sits behind it:
             blur() averages the backdrop, so a backdrop crushed to near-black

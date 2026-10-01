@@ -1,4 +1,5 @@
 import siteData from "@/data/site.json";
+import metaOverrides from "@/data/champion_meta_overrides.json";
 import siteDataNa from "@/data/site_na.json";
 import { getNewChampion, getNewChampions, type NewChampion } from "@/lib/new-champions";
 
@@ -6,13 +7,52 @@ export interface BestPlayer {
   player: string;
   rank: number | null;
   confidence_wr: number | null;
+  server?: string | null;
+  best_score?: number | null;
+  scoring_version?: string | null;
+}
+
+export interface BestPlayerPodiumEntry {
+  player: string;
+  server: string | null;
+  championRank: number | null;
+  tier: string | null;
+  championScore: number | null;
+  games: number | null;
+  winRate: number | null;
+  confidenceWr: number | null;
+  score: number | null;
+  scoreCoverage: number | null;
+  components?: {
+    performance: number | null;
+    ladder: number | null;
+    board: number | null;
+    mastery: number | null;
+    games: number | null;
+  };
+}
+
+export interface BestPlayerPodium {
+  scoringVersion: string;
+  scope: "regional" | "global";
+  server?: string | null;
+  capturedAt: string | null;
+  players: BestPlayerPodiumEntry[];
 }
 
 export interface Champion {
   name: string;
   slug: string;
+  /** Primary role. `roles` carries every role the champion is played in. */
   role: string;
+  /** Every role the champion is really played in, primary first. Present only
+   *  for the flex picks the scrape got wrong; absent means role alone. */
+  roles?: string[];
   class: string;
+  /** Every class the kit really is, primary first. Kayn is two. */
+  classes?: string[];
+  /** "physical" | "magic", corrected where the scrape misread the kit. */
+  primaryDamage?: string;
   difficulty: number;
   difficultyLabel: string;
   isHard: boolean;
@@ -51,6 +91,8 @@ export interface Champion {
   icon: string;
   splash: string;
   bestPlayer: BestPlayer | null;
+  bestPlayerPodium?: BestPlayerPodium | null;
+  globalBestPlayerPodium?: BestPlayerPodium | null;
   /** Shallower pool slices for the tier list's depth toggle, keyed "25" |
    *  "10" | "5". "All" is the top-level wr/tier. EU only: CN's numbers are
    *  Tencent's bracket aggregates with no per-player rows to re-slice. */
@@ -167,8 +209,36 @@ export const tierText: Record<string, string> = {
  *  it say so. */
 export const siteNa = siteDataNa as unknown as Site;
 
+/**
+ * Owner corrections to the scraped champion metadata, applied once.
+ *
+ * The scrape allows one class and one role per champion, and both are wrong
+ * often enough to matter: it calls Warwick an assassin, and it lists Olaf as
+ * Baron only, which hid the best answer in the game to a crowd-control
+ * composition from every jungle main. Fixing it here rather than per-consumer
+ * means the tier list, the draft assistant and the counter builder all see the
+ * same champion. See data/champion_meta_overrides.json.
+ */
+const META = (metaOverrides as { champions?: Record<string, {
+  class?: string; classes?: string[]; roles?: string[]; damage?: string;
+}> }).champions ?? {};
+
+let _corrected: Champion[] | null = null;
+
 export function getChampions(): Champion[] {
-  return site.champions;
+  if (_corrected) return _corrected;
+  _corrected = site.champions.map((c) => {
+    const o = META[c.name];
+    if (!o) return c;
+    return {
+      ...c,
+      ...(o.class ? { class: o.class } : {}),
+      ...(o.classes ? { classes: o.classes } : {}),
+      ...(o.roles?.length ? { role: o.roles[0], roles: o.roles } : {}),
+      ...(o.damage ? { primaryDamage: o.damage } : {}),
+    } as Champion;
+  });
+  return _corrected;
 }
 
 export function getChampionsNa(): Champion[] {

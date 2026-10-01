@@ -151,6 +151,7 @@ type Body = {
   buildBias?: string;
   lockedItems?: string[];
   lockedRunes?: string[];
+  unrestrictedMode?: boolean;
   /** How many times to sample the model before answering. Set by this route on
    *  a cache miss, never by the client. */
   runs?: number;
@@ -332,6 +333,7 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
       "--runs",
       String(b.runs ?? 1),
     ];
+    if (b.unrestrictedMode === true) args.push("--unrestricted-mode");
     let out = "";
     let err = "";
     let started = false;
@@ -465,6 +467,7 @@ async function handlePost(request: Request) {
     // them, so passing a few extra or unknown ones is harmless.
     lockedItems: cleanList(body.lockedItems),
     lockedRunes: cleanList(body.lockedRunes),
+    unrestrictedMode: body.unrestrictedMode === true,
   };
 
   // Cache first, and before the quota is touched. Somebody else already paid

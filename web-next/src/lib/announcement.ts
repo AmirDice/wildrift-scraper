@@ -9,10 +9,7 @@
  *
  * `SKIPPED_PATCH` is deliberately separate from CURRENT_PATCH in lib/patch.ts.
  * CURRENT_PATCH is what the DATA describes and is read from stat_rules.json;
- * this is a patch that exists in the game and that the site has chosen not to
- * follow. Naming it is the honest move: a reader who knows 7.2e is live and
- * sees a page headed 7.2d should be told that gap is a decision, not a
- * failure to keep up.
+ * this is the patch whose live ladder boards are about to be refreshed.
  */
 
 /**
@@ -29,14 +26,19 @@ export const WINRATE_PATCH = "7.2d";
 /** The patch the next collection and the next round of work is aimed at. */
 export const NEXT_PATCH = "7.3a";
 
+/** The announced window for the next EU/NA/CN ladder collection. */
+export const COLLECTION_START = "Monday, October 5, 2026";
+export const COLLECTION_EXPECTED_FINISH = "Wednesday, October 7, 2026";
+export const COLLECTION_REGIONS = "EU, NA and CN";
+
 export const ANNOUNCEMENT = {
   /** Bump when the message changes, so a dismissed banner comes back. */
-  key: "wtm-announce-73a-v1",
+  key: "wtm-announce-collection-2026-10-v1",
   href: "/updates",
-  lead: `Patch ${SKIPPED_PATCH} is live`,
-  short: `Patch 7.3a is live: Hwei is nerfed, Samira, Tristana, Draven and Viego are buffed, and Caitlyn, Senna, Syndra and others are tuned. Win rates stay on the ${WINRATE_PATCH} boards until the next collection.`,
-  cta: "Read why",
-  badges: ["Update"],
+  lead: "Regional data collection starts Monday",
+  short: `${COLLECTION_REGIONS} ladder data collection starts ${COLLECTION_START} and is expected to finish ${COLLECTION_EXPECTED_FINISH}. Win rates and builds will update as each region completes.`,
+  cta: "See the schedule",
+  badges: ["Data refresh"],
   /** Pages the banner points at, so it does not appear on top of itself. */
   hideOn: ["/updates"],
 } as const;
@@ -51,6 +53,14 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "1 October 2026",
+    title: "Regional data collection scheduled",
+    body:
+      `${COLLECTION_REGIONS} collection begins ${COLLECTION_START} and is expected `
+      + `to finish ${COLLECTION_EXPECTED_FINISH}. The ladder boards will update as `
+      + "each region is completed; until then, the current boards remain visible.",
+  },
   {
     date: "29 September 2026",
     title: `Patch ${SKIPPED_PATCH} applied: balance follow-up`,

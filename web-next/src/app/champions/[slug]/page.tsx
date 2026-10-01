@@ -26,6 +26,7 @@ import { MeasuredProfile } from "@/components/measured-profile";
 import { ServerBuilds } from "@/components/server-builds";
 import { SERVER_GAP, toServerBuild } from "@/lib/server-build";
 import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
+import { serverBuildInsights } from "@/lib/server-build-insights";
 import itemsCatalogue from "@/data/items.json";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 
@@ -100,6 +101,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   // server on its own, so promoting the blend hides nothing.
   const blended = getGlobalBySlug(champion.slug);
   const headline = blended ?? champion;
+  const podium = champion.globalBestPlayerPodium ?? champion.bestPlayerPodium;
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
   const stats = champion.statsPending ? [] : [
     { label: "Tier", value: tierLabel(headline.tier), className: tierText[headline.tier] },
@@ -107,6 +109,42 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
     { label: "Ceiling WR", value: headline.maxWr != null ? `${headline.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
     { label: "Median games", value: headline.medianGames != null ? Math.round(headline.medianGames).toLocaleString() : "-", className: "" },
   ];
+
+  // Put the fastest, most copyable answer directly below the hero. The
+  // personalized generator follows this evidence in the same card, rather
+  // than asking a visitor to scroll past several unrelated sections first.
+  const serverBuildCard = (
+    <Card className="p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">Most-built by server</h2>
+        <span className="text-xs text-faint">what the top 50 hold, not what we recommend</span>
+      </div>
+      <div className="mt-4">
+        <ServerBuilds
+          champion={champion.name}
+          builds={{
+            eu: toServerBuild(serverBuilds.eu, catalogueItem,
+              serverBuildInsights(champion.name, serverBuilds.eu)),
+            na: toServerBuild(serverBuilds.na, catalogueItem,
+              serverBuildInsights(champion.name, serverBuilds.na)),
+            cn: toServerBuild(serverBuilds.cn, catalogueItem,
+              serverBuildInsights(champion.name, serverBuilds.cn)),
+          }}
+          gaps={SERVER_GAP}
+          collected={{ eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
+        />
+      </div>
+      <div className="mt-5 flex flex-col gap-3 rounded-xl border border-accent/25 bg-accent/[0.07] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-text">Want a build for your game?</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted">Use this ladder build as a baseline, then tailor the items, boots and runes to your playstyle.</p>
+        </div>
+        <Link href={`/build?champion=${champion.slug}&tab=generate`} className="inline-flex shrink-0 items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-black transition hover:opacity-90">
+          Generate my build →
+        </Link>
+      </div>
+    </Card>
+  );
 
   // Everything in the overview is leaderboard-derived, so a champion without
   // one gets an honest placeholder instead: the kit, base stats and build tabs
@@ -150,28 +188,6 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
             : <RegionStat label="NA" />}
         </div>
       </Card>
-      {/* What the top 50 actually buy, per server. It sits directly under the
-          regional win rates because it answers the next question those raise:
-          the boards already show EU, NA and China disagreeing about who is
-          strong, and this is them disagreeing about what to build. */}
-      <Card className="p-5 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold">Most-built by server</h2>
-          <span className="text-xs text-faint">what the top 50 hold, not what we recommend</span>
-        </div>
-        <div className="mt-4">
-          <ServerBuilds
-            champion={champion.name}
-            builds={{
-              eu: toServerBuild(serverBuilds.eu, catalogueItem),
-              na: toServerBuild(serverBuilds.na, catalogueItem),
-              cn: toServerBuild(serverBuilds.cn, catalogueItem),
-            }}
-            gaps={SERVER_GAP}
-            collected={{ eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
-          />
-        </div>
-      </Card>
       {skew && (
         <Card className="p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Regular-ranked performance</h2><Link href="/ranks" className={`rounded-full px-2.5 py-1 text-xs font-semibold ${skew.climbing ? "bg-emerald-400/15 text-emerald-300" : skew.stomper ? "bg-rose-400/15 text-rose-300" : "bg-white/10 text-muted"}`}>{skew.climbing ? "Improves at higher skill" : skew.stomper ? "Falls off up top" : "Stable across brackets"}</Link></div>
@@ -182,8 +198,35 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
       <MeasuredProfile slug={champion.slug} />
       <Card className="p-5 sm:p-6">
         <h2 className="text-lg font-semibold">Best {champion.name} player</h2>
-        {champion.bestPlayer ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{champion.bestPlayer.player}</span>{champion.bestPlayer.rank ? ` (rank #${champion.bestPlayer.rank})` : ""} leads the EU sample with a confidence-adjusted win rate of <span className="font-medium text-accent">{champion.bestPlayer.confidence_wr?.toFixed(1) ?? "-"}%</span>.</p> : <p className="mt-2 text-muted">Best-player data is being collected.</p>}
+        {champion.bestPlayer ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{champion.bestPlayer.player}</span>{champion.bestPlayer.rank ? ` (rank #${champion.bestPlayer.rank})` : ""} leads the current regional sample with a composite Best Player score of <span className="font-medium text-accent">{champion.bestPlayer.best_score?.toFixed(1) ?? "-"}</span>, backed by a <span className="font-medium text-accent">{champion.bestPlayer.confidence_wr?.toFixed(1) ?? "-"}%</span> confidence-adjusted win rate.</p> : <p className="mt-2 text-muted">Best-player data is being collected.</p>}
       </Card>
+      {podium?.players?.length ? (
+        <Card className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-gold">Top 3 this season</p>
+              <h2 className="mt-1 text-lg font-semibold">The best {champion.name} players</h2>
+            </div>
+            <span className="text-xs text-faint">{podium.scope === "global" ? "Global · EU + NA + CN" : `${podium.server ?? "Regional"} sample`}</span>
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+            {podium.players.slice(0, 3).map((player, index) => (
+              <div key={`${player.server ?? "?"}-${player.player}-${index}`} className={`rounded-xl border p-3 ${index === 0 ? "border-gold/30 bg-gold/5" : "border-line bg-white/[0.025]"}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`text-lg font-semibold ${index === 0 ? "text-gold" : "text-muted"}`}>#{index + 1}</span>
+                  {player.server && <span className="text-[0.65rem] font-semibold text-faint">{player.server}</span>}
+                </div>
+                <p className="mt-2 truncate font-medium" title={player.player}>{player.player}</p>
+                <p className="mt-1 text-xs text-muted">
+                  {player.winRate != null ? `${player.winRate.toFixed(1)}% WR` : "—"} · {player.games ?? "—"} games
+                  {player.score != null ? ` · ${player.score.toFixed(1)} score` : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs leading-relaxed text-faint">The score combines confidence-adjusted win rate, ladder strength, champion-board position, Champion Score and current-season games.</p>
+        </Card>
+      ) : null}
     </div>
   );
 
@@ -233,12 +276,13 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         <div className="absolute inset-0 bg-cover opacity-40" style={{ backgroundImage: `url(${champion.splash})`, backgroundPosition: "center 22%" }}/><div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/30"/><div className="absolute inset-0 bg-gradient-to-t from-bg to-transparent"/>
         <Container className="relative py-10 sm:py-14"><Link href="/champions" className="text-sm text-muted hover:text-text">← All champions</Link><div className="mt-5 flex items-center gap-4"><ChampionAvatar champion={champion} size={72} showBadges={false}/><div className="min-w-0"><div className="flex items-center gap-2"><h1 className="truncate text-3xl font-semibold tracking-tight sm:text-4xl">{champion.name}</h1>{champion.isOtp && <span className="rounded bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white">OTP</span>}</div><p className="mt-1 text-muted">{champion.role} · {champion.class} · <span className={champion.isHard ? "text-bad" : ""}>{champion.difficultyLabel}</span></p></div></div></Container>
       </section>
-      {/* Tool cards go BELOW the hero here, not above it (the global ToolsCta
-          skips champion detail pages for exactly this reason). */}
-      <ToolsCta />
-      <Container className="py-8 sm:py-10">
+       <Container className="py-8 sm:py-10">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{stats.map((stat) => <Card key={stat.label} className="p-4"><p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">{stat.label}</p><p className={`mt-2 text-xl font-semibold sm:text-2xl ${stat.className}`}>{stat.value}</p></Card>)}</div>
-        <ChampionTabs panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}/>
+         <ChampionTabs
+           beforePanel={serverBuildCard}
+           panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}
+         />
+         <ToolsCta />
         {/* In-content, after the champion's own material and before the
             "other champions" grid: the seam where a reader has finished what
             they came for. */}

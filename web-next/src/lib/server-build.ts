@@ -32,6 +32,35 @@ export const SERVER_GAP: Record<BuildServer, string> = {
   cn: "Tencent publishes China win rates but not builds, so there is nothing to show here.",
 };
 
+/** Level-15 profile for a ladder build. These are deterministic engine
+ * estimates, not another win-rate sample: they let readers compare what the
+ * server builds do under the same champion and target assumptions. */
+export interface ServerBuildStats {
+  cost: number;
+  dps8?: number;
+  burst3?: number;
+  ttk?: number | null;
+  ehp?: number;
+  sustain?: number;
+  ad?: number;
+  ap?: number;
+  hp?: number;
+  armor?: number;
+  mr?: number;
+  moveSpeed?: number;
+  attackSpeed?: number;
+  haste?: number;
+  crit?: number;
+  mana?: number;
+  physicalPenFlat?: number;
+  physicalPen?: number;
+  magicPenFlat?: number;
+  magicPen?: number;
+  lethality?: number;
+  lifesteal?: number;
+  profile: string[];
+}
+
 /** What the card renders: one server's most-common build, already named. */
 export interface ServerBuild {
   /** In purchase order when `ordered`, most-built first otherwise. */
@@ -44,6 +73,8 @@ export interface ServerBuild {
   runes: { keystone?: string; minors: string[]; flex?: string };
   /** "41 of 50 players" behind the most-built item. */
   sample?: { count: number; of: number } | null;
+  /** Optional engine/stat profile, calculated server-side for comparison. */
+  stats?: ServerBuildStats;
 }
 
 /** The minimum a consensus build has to look like to be rendered. */
@@ -62,6 +93,7 @@ interface ConsensusLike {
 export function toServerBuild(
   build: ConsensusLike | null,
   item: (slug: string) => { slug: string; name: string; icon: string },
+  stats?: ServerBuildStats,
 ): ServerBuild | null {
   if (!build) return null;
   return {
@@ -75,5 +107,6 @@ export function toServerBuild(
       flex: build.runes.flex,
     },
     sample: build.sampleOf && build.of ? { count: build.sampleOf, of: build.of } : null,
+    stats,
   };
 }

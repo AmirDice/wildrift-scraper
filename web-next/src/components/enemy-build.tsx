@@ -306,7 +306,7 @@ const BIAS_STOPS = [
   { key: "durability", label: "Durability Leaning", blurb: "About 40% damage / 60% durability: take the safer option when viable choices are close." },
   { key: "balanced", label: "Balanced", blurb: "About 60% damage / 40% durability: the default all-around build for most games." },
   { key: "damage", label: "Damage Leaning", blurb: "About 80% damage / 20% durability: take the more aggressive option when choices are close." },
-  { key: "max_damage", label: "Maximum Damage", blurb: "100% damage / 0% durability in the engine objective: the strongest viable damage version, never an off-meta archetype." },
+  { key: "max_damage", label: "Maximum Damage", blurb: "100% damage / 0% durability for carries; frontline champions keep a small 10–15% survival floor so maximum damage stays functional, never an off-meta archetype." },
 ] as const;
 
 const OBJECTIVES = [
@@ -343,6 +343,8 @@ export function Sparkles({ className = "", size = 14 }: { className?: string; si
 }
 
 export type Advice = {
+  /** True when the player explicitly opted out of curated restrictions. */
+  unrestrictedMode?: boolean;
   /** Recommendation provenance: engine-selected, model-selected, or an
    * engine winner refined by Gemini with one validated item replacement. */
   provenance?: "E" | "M" | "E+M";
@@ -445,6 +447,8 @@ export type Advice = {
     optimizationGoal: string;
     riskTolerance: string;
     enemyContext: string;
+    unrestrictedMode?: boolean;
+    restrictionMode?: "curated" | "unrestricted" | string;
   };
   engineEvidence?: {
     available: boolean;
@@ -1016,6 +1020,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   // them. Item slugs (may include one boot); rune display names.
   const [lockedItems, setLockedItems] = useState<string[]>([]);
   const [lockedRunes, setLockedRunes] = useState<string[]>([]);
+  /** Deliberate opt-out from curated identity, archetype and item guidance. */
+  const [unrestrictedMode, setUnrestrictedMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -1132,6 +1138,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     committedBias.current = 2;
     setLockedItems([]);
     setLockedRunes([]);
+    setUnrestrictedMode(false);
   };
 
   const chooseMode = (next: boolean) => {
@@ -1156,6 +1163,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     setAheadEnemy("");
     setLockedItems([]);
     setLockedRunes([]);
+    setUnrestrictedMode(false);
     setBiasIdx(2);
     committedBias.current = 2;
     setAdvice(null);
@@ -1216,6 +1224,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           enemies: isCounter ? selectedEnemies : [],
           allies: isCounter ? selectedAllies : [],
           lockedItems, lockedRunes,
+          unrestrictedMode,
         }),
       });
       setProgress(100);
@@ -1613,6 +1622,28 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             />
           </div>
         )}
+        {advanced && (
+          <div className="rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-3">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={unrestrictedMode}
+                onChange={(e) => setUnrestrictedMode(e.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-amber-400"
+              />
+              <span>
+                <span className="block text-xs font-bold uppercase tracking-wide text-amber-300">
+                  Experimental: unrestricted search <span className="font-normal normal-case opacity-80">· not recommended</span>
+                </span>
+                <span className="mt-1 block text-xs leading-relaxed text-muted">
+                  {unrestrictedMode
+                    ? "Warning: this removes our champion identity, archetype, item-pool and frontline-safety recommendations. It can produce off-meta or impractical builds; use it for exploration only."
+                    : "Explore every legal item and damage path, including off-meta choices. Leave this off for the recommended champion-aware build."}
+                </span>
+              </span>
+            </label>
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2" data-tour="generate">
           <button onClick={() => generate()} disabled={!champ || needsEnemy || loading || outOfBudget} title="Generate the optimal item order, boots, runes, and build evaluation"
             className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2 text-sm font-bold text-black transition hover:opacity-90 disabled:opacity-40">
@@ -1714,6 +1745,15 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 >
                   Generate the safe build instead
                 </button>
+              </div>
+            )}
+            {(advice.unrestrictedMode || advice.requestMeta?.unrestrictedMode) && (
+              <div className="rounded-2xl border border-amber-400/40 bg-amber-400/[0.07] p-4">
+                <p className="text-sm font-bold text-amber-300">Experimental unrestricted build</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted">
+                  Curated champion, archetype, item-family and frontline-safety recommendations
+                  were intentionally bypassed. This result is for exploration, not a normal ranked recommendation.
+                </p>
               </div>
             )}
             <div className="glass rounded-2xl p-4">
@@ -2011,6 +2051,9 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                       : []}
                     playstyle={isCounter ? "counter" : playstyle}
                     buildBias={BIAS_STOPS[biasIdx].key}
+                    unrestrictedMode={advice.unrestrictedMode
+                      ?? advice.requestMeta?.unrestrictedMode
+                      ?? unrestrictedMode}
                     enemies={isCounter ? selectedEnemies : []}
                     role={role}
                     itemReasons={(advice.candidateItemScores ?? [])

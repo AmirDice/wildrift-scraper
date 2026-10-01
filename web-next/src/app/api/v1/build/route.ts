@@ -158,6 +158,7 @@ export async function POST(request: Request) {
       ? body.buildBias : "balanced",
     lockedItems: cleanList(body.lockedItems),
     lockedRunes: cleanList(body.lockedRunes),
+    unrestrictedMode: body.unrestrictedMode === true,
     ...(only ? { only } : {}),
   };
 
@@ -271,7 +272,8 @@ export async function POST(request: Request) {
     // the overlay bundle have something current to show without generating.
     // Only a full studio build with no enemies: a counter build is an answer
     // to one comp and a runes-only reply has no items in it at all.
-    if (!only && mode === "studio" && enemies.length === 0) {
+    if (!only && mode === "studio" && enemies.length === 0
+        && !advisorRequest.unrestrictedMode) {
       after(() => rememberLatestBuild(champion, data));
     }
     return json({

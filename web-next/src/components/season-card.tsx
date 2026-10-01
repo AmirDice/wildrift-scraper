@@ -4,18 +4,26 @@ import { useEffect, useState } from "react";
 import { CURRENT_PATCH } from "@/lib/patch";
 
 // --- Edit these each patch/season ---------------------------------------
-const SEASON_NUM = "22";
-const SEASON_TITLE = "Feast On";
+const SEASON_NUM = "23";
+const SEASON_TITLE = "Center Stage";
 // NOT hardcoded. This card said "Patch 7.2" while the rest of the site said
 // 7.2c, which is the exact failure CURRENT_PATCH exists to prevent: a version
 // string copied into six files goes stale in five. It comes from the same
 // stat_rules.json the item and rune data is validated against, so it moves
 // with the pipeline.
 const PATCH = CURRENT_PATCH;
-const SEASON_START = new Date("2026-07-09T00:00:00Z");
-const SEASON_END = new Date("2026-09-22T00:00:00Z"); // 75 days, not the usual ~3 months
-// Cho'Gath is "Chogath" in Riot's asset keys -- the apostrophe is not in the URL.
-const NEW_CHAMPION = { name: "Cho'Gath", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Chogath_0.jpg" };
+// Both from the 7.3 notes: "Ranked Season S23 begins on September 23, 2026 at
+// 03:00 UTC and is expected to end in January 2027."
+const SEASON_START = new Date("2026-09-23T03:00:00Z");
+// RIOT HAS NOT PUBLISHED THE END DATE. The notes say January 2027 and send
+// players to the in-game Ranked queue for the exact schedule, so this is a
+// mid-January estimate, not a fact. The card says so rather than printing a
+// precise-looking day it cannot support: "days left" and "% complete" are the
+// two most prominent numbers on it, and both are derived from this.
+// Replace with the real date and clear the flag once the client shows it.
+const SEASON_END = new Date("2027-01-14T00:00:00Z");
+const SEASON_END_ESTIMATED = true;
+const NEW_CHAMPION = { name: "Hwei", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Hwei_0.jpg" };
 // ------------------------------------------------------------------------
 
 const WARM = "#4f8dff";
@@ -30,7 +38,12 @@ export function SeasonCard() {
   const daysLeft = now
     ? Math.max(0, Math.ceil((SEASON_END.getTime() - now.getTime()) / 86_400_000))
     : null;
-  const endsAt = SEASON_END.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  // An estimated end gets month and year only. A day number would read as
+  // published fact.
+  const endsAt = SEASON_END.toLocaleDateString("en-US",
+    SEASON_END_ESTIMATED
+      ? { month: "long", year: "numeric" }
+      : { month: "short", day: "numeric", year: "numeric" });
 
   return (
     <div
@@ -55,7 +68,13 @@ export function SeasonCard() {
           <div className="mt-4 h-1.5 w-full max-w-lg overflow-hidden rounded-full bg-white/[0.08]">
             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${WARM}, #8fb8ff)` }} />
           </div>
-          <p className="mt-2.5 text-xs text-muted">
+          <p
+            className="mt-2.5 text-xs text-muted"
+            title={SEASON_END_ESTIMATED
+              ? "Riot has not published the exact end date. The patch notes say January 2027 and point to the in-game Ranked queue for the schedule, so the countdown is approximate."
+              : undefined}
+          >
+            {SEASON_END_ESTIMATED && "about "}
             <strong className="text-text">{daysLeft ?? "-"}</strong> days left
             <span className="mx-2 text-faint">·</span>ends {endsAt}
             <span className="mx-2 text-faint">·</span>{pct.toFixed(0)}% complete

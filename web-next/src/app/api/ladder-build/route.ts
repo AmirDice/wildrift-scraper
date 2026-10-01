@@ -3,6 +3,7 @@ import itemsCatalogue from "@/data/items.json";
 import { site, regionBoard } from "@/lib/data";
 import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
 import { toServerBuild } from "@/lib/server-build";
+import { serverBuildInsights } from "@/lib/server-build-insights";
 
 /**
  * What the top 50 build for one champion, per server.
@@ -40,9 +41,9 @@ export function GET(request: Request) {
     {
       champion,
       builds: {
-        eu: toServerBuild(builds.eu, item),
-        na: toServerBuild(builds.na, item),
-        cn: toServerBuild(builds.cn, item),
+        eu: toServerBuild(builds.eu, item, serverBuildInsights(champion, builds.eu)),
+        na: toServerBuild(builds.na, item, serverBuildInsights(champion, builds.na)),
+        cn: toServerBuild(builds.cn, item, serverBuildInsights(champion, builds.cn)),
       },
       collected: {
         eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined,
