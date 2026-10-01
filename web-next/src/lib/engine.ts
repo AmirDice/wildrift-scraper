@@ -266,6 +266,7 @@ export interface LiveMetrics {
   score: number; ad: number; ap: number; hp: number; armor: number; mr: number;
   moveSpeed: number; attackSpeed: number; haste: number; crit: number; mana: number;
   attackRangeBonus?: number; attackRangeBonusPct?: number;
+  procMaxHealthGain?: number;
 }
 
 export interface AttackStyleLive {
@@ -356,6 +357,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     onHitPctMissingHp: 0,
     procs: [] as Proc[], procHealPctOfDamage: 0,
+    procMaxHealthGainByLabel: {} as Record<string, number>,
     dotDps: 0, dotDpsBonusHpPct: 0, dotPctMaxHp: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
@@ -365,7 +367,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, shieldPctBonusAd: 0, dr: 0,
     overhealShieldCap: 0, shieldPctMana: 0, shieldManaRangedMult: 1,
-    shieldManaNearbyMult: 1,
+    shieldManaNearbyMult: 1, shieldManaComponent: 0,
     activeHealAdPct: 0, activeHealMissingHpPct: 0, activeHealCdSec: 0,
     triggeredHp: 0, triggeredHeal: 0,
     triggeredHealBonusArmorPct: 0, triggeredHealBonusMrPct: 0,
@@ -616,6 +618,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
               apRatio: g("burstProcApPct") / 100,
               label: slug, type: fx.burstProcType ?? "magic",
               cd: g("burstProcCdSec"), arm: g("burstProcArmSec") });
+    if (g("hpFromProcDamagePct"))
+      st.procMaxHealthGainByLabel[slug] = g("hpFromProcDamagePct") / 100;
     st.dotDps += g("dotDps");
     st.dotDpsBonusHpPct += g("dotDpsBonusHpPct");
     // %max-HP burns (Searing Crown) are target-scaled, so they are summed
@@ -1085,7 +1089,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   st.dotDps += st.dotDpsBonusHpPct / 100 * st.bonusHp;
   if (st.shieldPctMana) {
     const manaMult = rngd ? st.shieldManaRangedMult : 1;
-    st.shield += st.shieldPctMana * st.mana * manaMult;
+    const manaShield = st.shieldPctMana * st.mana * manaMult;
+    st.shield += manaShield;
+    st.shieldManaComponent = manaShield;
   }
   st.triggeredHeal += st.triggeredHealBonusArmorPct
     * Math.max(0, st.armor - base("armor", 60));
@@ -1263,6 +1269,7 @@ let ROT_NAUTOS_IDEAL = 0;
 let ROT_SPELLBLADE_PROCS = 0;
 let ROT_FIRST_HIT_PROCS = 0;
 let ROT_PROC_HEALING = 0;
+let ROT_PROC_MAX_HEALTH_GAIN = 0;
 
 /** Number of activations for an initially-ready proc inside a fight window. */
 /** How many casts fit in `window`, counting the one at t=0.
@@ -1391,6 +1398,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_SPELLBLADE_PROCS = 0;
   ROT_FIRST_HIT_PROCS = 0;
   ROT_PROC_HEALING = 0;
+  ROT_PROC_MAX_HEALTH_GAIN = 0;
   st = forWindow(name, st, window, level);
   // An enemy Frozen Heart's Chill is a real attack-speed cut and belongs here,
   // after forWindow has finished deriving attack speed from the steroids.
@@ -1829,11 +1837,14 @@ export function rotation(name: string, st: any, target: any, window: number,
       // The old routing was "physical goes through armour, everything else is
       // true damage", so every magic and adaptive proc bypassed magic resist
       // entirely -- Dark Harvest's whole contribution arrived unmitigated.
-      if (dtype === "magic") m += val * magicM;
-      else if (dtype === "true") t += val;
-      else p += val * physM;
-      procHealing += val * (dtype === "magic" ? magicM : dtype === "true" ? 1 : physM)
-        * (pr.healPct ?? 0);
+      const dealt = dtype === "magic" ? val * magicM
+        : dtype === "true" ? val : val * physM;
+      if (dtype === "magic") m += dealt;
+      else if (dtype === "true") t += dealt;
+      else p += dealt;
+      procHealing += dealt * (pr.healPct ?? 0);
+      ROT_PROC_MAX_HEALTH_GAIN += dealt
+        * (st.procMaxHealthGainByLabel?.[pr.label] ?? 0);
     }
     ROT_PROC_HEALING += procHealing;
     addT("physical", p); addT("magic", m); addT("true", t);
@@ -1992,6 +2003,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     ROT_BY_SLOT = { ...bySlot };
     ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
     ROT_PROC_HEALING *= amp;
+    ROT_PROC_MAX_HEALTH_GAIN *= amp;
     return total * amp;
   }
 
@@ -2158,6 +2170,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_BY_SLOT = { ...bySlot };
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
   ROT_PROC_HEALING *= amp;
+  ROT_PROC_MAX_HEALTH_GAIN *= amp;
   return total * amp;
 }
 
@@ -2184,6 +2197,8 @@ export interface RotationDetail {
   /** Sundered Sky first-hit activations after its per-target cooldown. */
   firstHitProcs: number;
   procHealing: number;
+  /** Permanent max health earned by charged post-proc effects such as Heartsteel. */
+  procMaxHealthGain: number;
 }
 
 /**
@@ -2212,6 +2227,7 @@ export function rotationDetail(name: string, st: any, target: any, window: numbe
     spellbladeProcs: ROT_SPELLBLADE_PROCS,
     firstHitProcs: ROT_FIRST_HIT_PROCS,
     procHealing: ROT_PROC_HEALING,
+    procMaxHealthGain: ROT_PROC_MAX_HEALTH_GAIN,
   };
 }
 
@@ -2379,7 +2395,8 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     attackSpeed: Math.round(st.as * 100) / 100, haste: Math.round(st.haste),
     crit: Math.round(st.crit * 100), mana: Math.round(st.mana),
     attackRangeBonus: Math.round(st.attackRangeBonus || 0),
-    attackRangeBonusPct: Math.round(st.attackRangeBonusPct || 0) };
+    attackRangeBonusPct: Math.round(st.attackRangeBonusPct || 0),
+    procMaxHealthGain: Math.round(detail8.procMaxHealthGain || 0) };
 
   // build-quality score is early-game-weighted across purchase stages
   const score = Math.round(stagedScore(name, items, runes, variant) * 10) / 10;

@@ -130,6 +130,19 @@ def test_item_proc_healing_and_melee_deaths_dance_split():
     assert ranged["dr"] == 0.12
 
 
+def test_contextual_frontline_effects_are_exposed_without_global_inflation():
+    heart = fe.metrics("Darius", ["heartsteel"], [])
+    plain = fe.metrics("Darius", [], [])
+    assert heart["procMaxHealthGain"] > 0
+    assert plain["procMaxHealthGain"] == 0
+
+    fimbul = fe.resolve_stats("Sion", 15, ["fimbulwinter"], [])
+    assert fimbul["shieldManaComponent"] > 0
+    assert fimbul["shieldManaNearbyMult"] == 1.8
+    scenario = fe.damage_scenarios("Sion", ["fimbulwinter"], [])
+    assert scenario["oneVsThree"]["nearbyShieldBonus"] > 0
+
+
 def test_high_payoff_rune_context_corrections_are_grounded():
     melee = fe.resolve_stats("Darius", 15, [], ["Conqueror"])
     ranged = fe.resolve_stats("Jinx", 15, [], ["Conqueror"])

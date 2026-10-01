@@ -931,6 +931,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "onHitPctMissingHp": 0.0,
         "procs": [], "procHealPctOfDamage": 0.0,
+        # Post-proc effects that change max health are kept separate from the
+        # baseline build stats.  Heartsteel earns this only after its charged
+        # hit lands, so it must not be granted at t=0.
+        "procMaxHealthGainByLabel": {},
         "dotDps": 0.0, "dotDpsBonusHpPct": 0.0, "dotPctMaxHp": 0.0,
         # Reactive return damage is conditional on an enemy hitting us.  Keep
         # it separate from ordinary outgoing item procs so a Thornmail owner
@@ -946,6 +950,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "shieldPctBonusAd": 0.0, "dr": 0.0,
         "overhealShieldCap": 0.0,
         "shieldPctMana": 0.0, "shieldManaRangedMult": 1.0,
+        "shieldManaComponent": 0.0,
         "shieldManaNearbyMult": 1.0,
         "triggeredHp": 0.0, "triggeredHeal": 0.0,
         "triggeredHealBonusArmorPct": 0.0, "triggeredHealBonusMrPct": 0.0,
@@ -1180,6 +1185,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                  apRatio=g("burstProcApPct") / 100.0,
                  label=slug, type=fx.get("burstProcType", "magic"),
                  cd=g("burstProcCdSec"), arm=g("burstProcArmSec"))
+        if g("hpFromProcDamagePct"):
+            st["procMaxHealthGainByLabel"][slug] = g("hpFromProcDamagePct") / 100.0
         st["activeHealAdPct"] += g("healOnActiveAdPct") / 100.0
         st["activeHealMissingHpPct"] += g("healOnActiveMissingHpPct") / 100.0
         st["activeHealCdSec"] = max(st["activeHealCdSec"], g("healOnActiveCdSec") or g("burstProcCdSec"))
@@ -1725,7 +1732,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     if st.get("shieldPctMana"):
         _mana_mult = (st.get("shieldManaRangedMult", 1.0)
                       if CHAMP_CLASS.get(name, "") in RANGED_CLASSES else 1.0)
-        st["shield"] += st["shieldPctMana"] * st["mana"] * _mana_mult
+        _mana_shield = st["shieldPctMana"] * st["mana"] * _mana_mult
+        st["shield"] += _mana_shield
+        st["shieldManaComponent"] = _mana_shield
     if st.get("triggeredHealBonusArmorPct") or st.get("triggeredHealBonusMrPct") \
             or st.get("triggeredHealBonusHpPct"):
         st["triggeredHeal"] += (
@@ -2372,9 +2381,9 @@ def _proc_split(st, target, phys_m, magic_m, window):
     `cd` is Infinity when the effect's text states no repeat, which keeps the
     old behaviour for anything with no evidence either way.
 
-    Returns (physical, magic, true, healing).
+    Returns (physical, magic, true, healing, max-health gain).
     """
-    once_p = once_m = once_t = proc_heal = 0.0
+    once_p = once_m = once_t = proc_heal = proc_hp_gain = 0.0
     for pr in st["procs"]:
         arm = pr.get("arm", 0.0)
         cd = pr.get("cd") or float("inf")
@@ -2392,14 +2401,18 @@ def _proc_split(st, target, phys_m, magic_m, window):
         # Everything used to be charged as PHYSICAL through phys_m, so magic
         # procs were mitigated by armour and true procs were mitigated at all.
         if dtype == "magic":
-            once_m += val * magic_m
+            dealt = val * magic_m
+            once_m += dealt
         elif dtype == "true":
-            once_t += val
+            dealt = val
+            once_t += dealt
         else:
-            once_p += val * phys_m
-        proc_heal += val * (magic_m if dtype == "magic" else
-                            phys_m if dtype == "physical" else 1.0) * pr.get("healPct", 0.0)
-    return once_p, once_m, once_t, proc_heal
+            dealt = val * phys_m
+            once_p += dealt
+        proc_heal += dealt * pr.get("healPct", 0.0)
+        proc_hp_gain += dealt * st.get("procMaxHealthGainByLabel", {}).get(
+            pr.get("label", ""), 0.0)
+    return once_p, once_m, once_t, proc_heal, proc_hp_gain
 
 
 def _first_hit_procs(st: dict, n_autos: int, window: float) -> int:
@@ -3119,7 +3132,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                 add_t("true", _et * _mult)
                 total += _extra
                 auto_dmg += _extra
-        once_p, once_m, once_t, proc_heal = _proc_split(
+        once_p, once_m, once_t, proc_heal, proc_hp_gain = _proc_split(
             st, target, phys_m, magic_m, window)
         once = once_p + once_m + once_t
         if once:
@@ -3145,6 +3158,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                                         1 + int(window / SPELLBLADE_CD)),
                 "firstHitProcs": _first_n,
                 "procHealing": proc_heal * amp,
+                "procMaxHealthGain": proc_hp_gain * amp,
                 "boltDmg": bolt_dmg * amp, "bySlot": dict(by_slot_dmg),
                 "abilityAoeDmg": ability_aoe_dmg * amp,
                 "autoDmg": auto_dmg * amp,
@@ -3338,7 +3352,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             auto_dmg += _extra
 
     # one-time procs + burn
-    once_p, once_m, once_t, proc_heal = _proc_split(
+    once_p, once_m, once_t, proc_heal, proc_hp_gain = _proc_split(
         st, target, phys_m, magic_m, window)
     once = once_p + once_m + once_t
     if once:
@@ -3379,6 +3393,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                                     1 + int(window / SPELLBLADE_CD)),
             "firstHitProcs": _first_n,
             "procHealing": proc_heal,
+            "procMaxHealthGain": proc_hp_gain,
             "nAutosIdeal": n_autos_ideal, "castLog": cast_log, "bySlot": dict(by_slot_dmg),
             "autoDmg": auto_dmg * amp, "boltDmg": bolt_dmg * amp,
             "abilityAoeDmg": ability_aoe_dmg * amp,
@@ -3583,6 +3598,10 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
             "aoe8": round(r8.get("boltDmg", 0.0)),
             "ehp": round(ehp), "sustain": round(sustain),
             "support": round(support_value(name, item_slugs, rune_names, level)),
+            # Heartsteel's permanent health is earned after its charged proc;
+            # expose it for the debug/build card without adding it to the
+            # generic full-health score.
+            "procMaxHealthGain": round(r8.get("procMaxHealthGain", 0.0)),
             "ad": round(st["ad"]), "ap": round(st["ap"]), "hp": round(st["hp"]),
             "armor": round(st["armor"]), "mr": round(st["mr"]),
             "moveSpeed": round(st["baseMs"] + st["bonusMs"]),
@@ -5089,6 +5108,11 @@ def damage_scenarios(name: str, item_slugs: list[str],
     primary_damage = round(primary)
     secondary_item_damage = round(secondary_items)
     secondary_ability_damage = round(secondary_abilities)
+    # Fimbulwinter's 80% shield increase requires more than one enemy nearby.
+    # Keep it as an explicit 1v3 context value instead of silently inflating
+    # every generic 1v1 build score.
+    nearby_shield_bonus = st.get("shieldManaComponent", 0.0) * max(
+        0.0, st.get("shieldManaNearbyMult", 1.0) - 1.0)
     return {
         "conditionBand": condition_band,
         "conditionalEffects": st.get("conditionalEffects", []),
@@ -5101,6 +5125,7 @@ def damage_scenarios(name: str, item_slugs: list[str],
             "primaryDamage": primary_damage,
             "secondaryItemAoeDamage": secondary_item_damage,
             "secondaryChampionAoeDamage": secondary_ability_damage,
+            "nearbyShieldBonus": round(nearby_shield_bonus),
             "totalDamage": (primary_damage + secondary_item_damage
                             + secondary_ability_damage),
             "scope": ("outgoing damage only; item and champion-ability AoE are capped "
