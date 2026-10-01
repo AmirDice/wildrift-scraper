@@ -928,6 +928,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # they change.
         "autoDamageMult": 1.0, "externalAsMult": 1.0,
         "drMagic": 0.0, "drPhys": 0.0,
+        "critDamageReductionPct": 0.0,
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "onHitPctMissingHp": 0.0,
         "procs": [], "procHealPctOfDamage": 0.0,
@@ -1290,6 +1291,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # damage only; charging it through the all-damage channel would
         # roughly double its worth against a mixed enemy team.
         st["drMagic"] = max(st["drMagic"], g("drMagicPct") / 100.0)
+        st["critDamageReductionPct"] = max(
+            st.get("critDamageReductionPct", 0.0),
+            g("critDamageReductionPct") / 100.0)
         st["drPhys"] = max(st["drPhys"], g("drPhysPct") / 100.0)
         st["adFlatPassive"] = g("adFlatPassive")
         st["bonusAd"] += g("adFlatPassive")
@@ -4996,6 +5000,15 @@ def score_vs_comp(name: str, items: list[str], runes: list[str], carry: dict,
     # the enemy's ACTUAL damage split rather than assuming 50/50.
     phys_taken = 100 / (100 + st["armor"]) * (1 - st.get("drPhys", 0.0))
     magic_taken = 100 / (100 + st["mr"]) * (1 - st.get("drMagic", 0.0))
+    # Randuin's Resilience only reduces the critical portion of incoming
+    # physical damage.  Ordinary build scoring has no enemy crit profile, so
+    # this stays neutral there; Counter Builder can provide carry.critShare as
+    # a 0..1 fraction (or 0..100 percentage) when the enemy is known.
+    _crit_share = float(carry.get("critShare") or 0.0)
+    if _crit_share > 1.0:
+        _crit_share /= 100.0
+    _crit_share = max(0.0, min(1.0, _crit_share))
+    phys_taken *= 1.0 - st.get("critDamageReductionPct", 0.0) * _crit_share
     taken = (ad_share * phys_taken + ap_share * magic_taken) or 1.0
     dr = st["dr"] if st["dr"] < 1 else 0.99
     ehp_vs_comp = _js_round((st["hp"] + shield) / taken / (1 - dr))

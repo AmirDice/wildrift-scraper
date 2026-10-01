@@ -143,6 +143,17 @@ def test_contextual_frontline_effects_are_exposed_without_global_inflation():
     assert scenario["oneVsThree"]["nearbyShieldBonus"] > 0
 
 
+def test_randuins_crit_reduction_only_applies_with_enemy_crit_context():
+    stats = fe.resolve_stats("Rammus", 15, ["randuins-omen"], [])
+    assert stats["critDamageReductionPct"] == 0.30
+    carry = {"name": "carry", "hp": 2900, "armor": 95, "mr": 60,
+             "bonusHp": 950, "critShare": 1.0}
+    against_crit = fe.score_vs_comp("Rammus", ["randuins-omen"], [], carry,
+                                    0.8, 0.2, 15)
+    without = fe.score_vs_comp("Rammus", [], [], carry, 0.8, 0.2, 15)
+    assert against_crit["ehpVsComp"] > without["ehpVsComp"]
+
+
 def test_high_payoff_rune_context_corrections_are_grounded():
     melee = fe.resolve_stats("Darius", 15, [], ["Conqueror"])
     ranged = fe.resolve_stats("Jinx", 15, [], ["Conqueror"])

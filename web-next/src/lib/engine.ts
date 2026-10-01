@@ -390,7 +390,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     targetSlowEffects: [] as any[], itemHaste: 0,
     // Carried BY THIS BUILD and applied to whoever it is fighting.
     grievousWounds: 0, shieldCut: 0, ccRemoval: 0, stasisSec: 0,
-    drMagic: 0, drPhys: 0,
+    drMagic: 0, drPhys: 0, critDamageReductionPct: 0,
     cloneAdPct: 0, cloneAsFromCritPct: 0, cloneLifetimeS: 0, cloneMaxCount: 0,
     // Carried by this build and applied to whoever is fighting IT. They reach
     // the damage path through championTarget, not from here.
@@ -701,6 +701,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // only; charging it through the all-damage channel would roughly double
     // its worth against a mixed enemy team.
     st.drMagic = Math.max(st.drMagic, g("drMagicPct") / 100);
+    st.critDamageReductionPct = Math.max(st.critDamageReductionPct,
+      g("critDamageReductionPct") / 100);
     st.drPhys = Math.max(st.drPhys, g("drPhysPct") / 100);
     // "Gain 25 Attack Damage OR 50 Ability Power (Adaptive)" grants exactly
     // ONE, picked by the kit's primary damage type -- mirrors the Python
@@ -2845,6 +2847,8 @@ export interface CompTarget {
   basicAttackDr?: number;
   asSlow?: number;
   stasisSec?: number;
+  /** Fraction of the carry's physical damage expected to be critical strikes. */
+  critShare?: number;
 }
 
 /** Score a build against a specific enemy comp: how fast it kills their carry
@@ -2880,8 +2884,12 @@ export function scoreVsComp(name: string, items: string[], runes: string[],
   shield *= 1 + st.healShieldAmp;
   // Typed damage reduction rides its own half here too, and this site knows
   // the enemy's ACTUAL damage split rather than assuming 50/50.
-  const physTaken = 100 / (100 + st.armor) * (1 - (st.drPhys ?? 0));
+  let physTaken = 100 / (100 + st.armor) * (1 - (st.drPhys ?? 0));
   const magicTaken = 100 / (100 + st.mr) * (1 - (st.drMagic ?? 0));
+  let critShare = Number(carry.critShare ?? 0);
+  if (critShare > 1) critShare /= 100;
+  critShare = Math.max(0, Math.min(1, critShare));
+  physTaken *= 1 - (st.critDamageReductionPct ?? 0) * critShare;
   const taken = adShare * physTaken + apShare * magicTaken || 1;
   const dr = st.dr < 1 ? st.dr : 0.99;
   const ehpVsComp = Math.round((st.hp + shield) / taken / (1 - dr));
