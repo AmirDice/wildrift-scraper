@@ -177,7 +177,9 @@
     "everyNthMissingHpPct": 0.75
   },
   "overlords-bloodmail": {
-    "damageAmpPct": 9
+    "damageAmpPct": 0,
+    "adFromBonusHpPct": 2.5,
+    "damageAmpMissingHpPct": 9
   },
   "experimental-hexplate": {
     "asPctPassive": 40,
@@ -188,7 +190,10 @@
     "giantSlayerPct": 15
   },
   "stridebreaker": {
-    "msFlat": 20
+    "msFlat": 20,
+    "burstProcAdRatio": 100,
+    "burstProcType": "physical",
+    "burstProcCdSec": 25
   },
   "goredrinker": {
     "omnivampPct": 8
@@ -307,7 +312,8 @@
     "healShieldAmpPct": 30
   },
   "iceborn-gauntlet": {
-    "spellbladeBaseAdPct": 100
+    "spellbladeBaseAdPct": 100,
+    "spellbladeBonusArmorPct": 25
   },
   "dead-mans-plate": {
     "msPct": 5,

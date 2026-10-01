@@ -256,6 +256,8 @@ export interface Proc {
   arm: number;
   /** 0 = unconditional. 0.5 = target must be under half health. */
   need: number;
+  /** Fraction of post-mitigation proc damage returned as healing. */
+  healPct?: number;
   label: string;
 }
 
@@ -334,7 +336,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   const st: any = {
     baseAd: base("ad", 60), bonusAd: 0, ap: 0,
     hp: base("hp", 1800), bonusHp: 0,
-    armor: base("armor", 60), mr: base("mr", 45),
+    armor: base("armor", 60), baseArmor: base("armor", 60), mr: base("mr", 45),
     // The RATIO percentage bonuses multiply, not the level-1 display value.
     baseAsPct: 0, baseAs: c.asRatio || bs.attackSpeed?.base || 0.75,
     // Real base mana from the champion's stat line (Python parity): mana
@@ -347,12 +349,14 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     conditionalEffects: [] as any[], conditionBand,
     timedDamageAmps: [] as any[], targetThresholdAmps: [] as any[],
     giant: 0, execute: 0, ultAmp: 0,
-    spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0, spellbladeHealPctMaxHp: 0,
+    spellbladeBaseAdPct: 0, spellbladeBonusArmorPct: 0,
+    spellbladePctMaxHp: 0, spellbladeHealPctMaxHp: 0,
     firstHitCritMult: 0, firstHitCritCdSec: 0,
     firstHitHealBaseAdPct: 0, firstHitHealMissingHpPct: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     onHitPctMissingHp: 0,
-    procs: [] as Proc[], dotDps: 0, dotDpsBonusHpPct: 0, dotPctMaxHp: 0,
+    procs: [] as Proc[], procHealPctOfDamage: 0,
+    dotDps: 0, dotDpsBonusHpPct: 0, dotPctMaxHp: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
     spellbladeCritFlatPerCrit: 0, spellbladeCanCrit: 0,
@@ -361,10 +365,12 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     cleaveFlat: 0, cleavePctBonusHp: 0,
     shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, shieldPctBonusAd: 0, dr: 0,
     overhealShieldCap: 0, shieldPctMana: 0, shieldManaRangedMult: 1,
+    shieldManaNearbyMult: 1,
     activeHealAdPct: 0, activeHealMissingHpPct: 0, activeHealCdSec: 0,
     triggeredHp: 0, triggeredHeal: 0,
     triggeredHealBonusArmorPct: 0, triggeredHealBonusMrPct: 0,
     triggeredHealBonusHpPct: 0,
+    timedSteroids: [] as any[],
     attackRangeBonus: 0, attackRangeBonusPct: 0,
     ultAttackCount: 0, ultAttackCritMultiplierPct: 0,
     ultAttackTruePctIfCrit: 0, ultAttackWindowS: 0,
@@ -396,6 +402,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   // AD/AP/HP-from-mana percentages, applied after runes (see below): runes add
   // mana (Manaflow Band's 300), and a resourceless kit zeroes it later still.
   const manaConv = { ad: 0, ap: 0, hp: 0 };
+  let bonusHpAdPct = 0;
   // Attack-rate estimate for stack ramp-up, from the build's own AS items.
   // Deliberately rough (ignores runes and AS passives): it only decides how
   // fast stacking items reach max, a second-order effect.
@@ -425,7 +432,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       // A missing or zero cooldown means "no repeat stated", which is charged
       // once per fight -- exactly what the engine did before this existed.
       cd: e.cd && e.cd > 0 ? e.cd : Infinity,
-      arm: e.arm ?? 0, need: e.need ?? 0, label: e.label ?? "",
+      arm: e.arm ?? 0, need: e.need ?? 0, healPct: e.healPct ?? 0,
+      label: e.label ?? "",
     });
   };
   // Crit-GATED increments (Last Whisper's "+6% Armor Penetration on Critical
@@ -503,6 +511,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     if (fx.disablesCrit) st.critDisabled = 1;
     st.abilityAmp += g("abilityAmpPct") / 100;
     st.damageAmp += g("damageAmpPct") / 100;
+    // Bloodmail's Retribution is earned from missing health; use the shared
+    // reference-fight assumption instead of granting the maximum from t=0.
+    st.damageAmp += g("damageAmpMissingHpPct") / 100 * MISSING_HP_IN_FIGHT;
     const conditionalAttack = fx.conditionalAttackAmpPct;
     if (conditionalAttack && typeof conditionalAttack === "object") {
       const value = Number(conditionalAttack[conditionBand]) || 0;
@@ -520,6 +531,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.giant = Math.max(st.giant, g("giantSlayerPct") / 100);
     st.execute = Math.max(st.execute, g("executePct") / 100);
     st.spellbladeBaseAdPct = Math.max(st.spellbladeBaseAdPct, g("spellbladeBaseAdPct"));
+    st.spellbladeBonusArmorPct = Math.max(
+      st.spellbladeBonusArmorPct, g("spellbladeBonusArmorPct"));
     // Divine Sunderer pays ranged champions 7%, not the melee 10%.
     st.spellbladePctMaxHp = Math.max(st.spellbladePctMaxHp,
       rngd && fx.spellbladePctMaxHpRanged ? g("spellbladePctMaxHpRanged") : g("spellbladePctMaxHp"));
@@ -590,7 +603,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       ? g("procMaxHpPctRanged") : g("procMaxHpPct");
     addProc({ pctMaxHp: procMaxHp / 100, label: slug,
               type: fx.procMaxHpType ?? "physical",
-              cd: g("procMaxHpCdSec"), arm: g("procMaxHpArmSec") });
+              cd: g("procMaxHpCdSec"), arm: g("procMaxHpArmSec"),
+              healPct: g("procHealPctOfDamage") / 100 });
     addProc({ flat: g("firstHit"), label: slug, type: "physical",
               cd: g("firstHitCdSec"), arm: g("firstHitArmSec") });
     // See the Python half: a burst proc delivered at melee range pays a ranged
@@ -626,6 +640,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.shieldPctMana += g("shieldPctMana") / 100;
     if (g("shieldManaRangedMult"))
       st.shieldManaRangedMult = Math.min(st.shieldManaRangedMult, g("shieldManaRangedMult"));
+    if (g("shieldManaNearbyMult"))
+      st.shieldManaNearbyMult = Math.max(st.shieldManaNearbyMult, g("shieldManaNearbyMult"));
     st.shieldPctBonusHp += g("shieldPctBonusHp") / 100;
     st.shieldPctMaxHp += g("shieldPctMaxHp") / 100;
     const shieldAd = rngd && fx.shieldPctBonusAdRanged
@@ -674,7 +690,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
         ? g("everyNthRangedFlat") : g("everyNthFlat")) / nth;
       st.onHitPctMissingHp += g("everyNthMissingHpPct") / 100 / nth;
     }
-    st.dr = Math.max(st.dr, g("drPct") / 100);
+    const drKey = rngd && fx.drPctRanged !== undefined
+      ? "drPctRanged" : (fx.drPctMelee !== undefined ? "drPctMelee" : "drPct");
+    st.dr = Math.max(st.dr, g(drKey) / 100);
     // TYPED damage reduction. Force of Nature reduces incoming MAGIC damage
     // only; charging it through the all-damage channel would roughly double
     // its worth against a mixed enemy team.
@@ -691,6 +709,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // Rabadon's "Overkill": accumulated here, applied to TOTAL AP after
     // every other AP source has landed.
     st.apAmp += g("apAmpPct") / 100;
+    st.bonusAd += st.baseAd * g("adBasePctPassive") / 100;
+    bonusHpAdPct += g("adFromBonusHpPct") / 100;
     st.bonusAd += g("adFlatPassive");
     st.ap += g("apFlatPassive");
     st.haste += g("hasteFlatPassive");
@@ -731,10 +751,23 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.cloneAsFromCritPct = Math.max(st.cloneAsFromCritPct, g("cloneAsFromCritPct"));
     st.cloneLifetimeS = Math.max(st.cloneLifetimeS, g("cloneLifetimeS"));
     st.cloneMaxCount = Math.max(st.cloneMaxCount, g("cloneMaxCount"));
+    if (g("timedArmorPct") || g("timedMrPct")) {
+      st.timedSteroids.push({
+        stat: "item-resist", asPct: 0, adFlat: 0, armorFlat: 0, mrFlat: 0,
+        armorPct: g("timedArmorPct") / 100,
+        mrPct: g("timedMrPct") / 100,
+        drPct: 0,
+        durationS: g("timedResistDurationS") || 3,
+        cooldownS: g("timedResistCooldownS") || 3,
+      });
+    }
     // Their own stasis, which is time the person fighting THEM cannot deal
     // damage. Read off the target's build, not the attacker's.
     st.stasisSec = Math.max(st.stasisSec, g("stasisSec"));
   }
+
+  // Bloodmail's Tyranny scales from the completed build's bonus Health.
+  if (bonusHpAdPct) st.bonusAd += bonusHpAdPct * st.bonusHp;
 
   // runes
   const mech: string[] = c.mechanics ?? [];
@@ -941,7 +974,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
 
   // kit steroids + conversions
   const f = DATA.formulas[name]?.abilities ?? {};
-  st.timedSteroids = [];
+  st.timedSteroids = [...(st.timedSteroids ?? [])];
   for (const [abSlot, ab] of Object.entries<any>(f)) {
     for (const s of ab.steroids ?? []) {
       const pct = s.pct != null ? scaleVal(s.pct, 3, level) : 0;
@@ -1229,6 +1262,7 @@ let ROT_BY_SLOT: Record<string, number> = {};
 let ROT_NAUTOS_IDEAL = 0;
 let ROT_SPELLBLADE_PROCS = 0;
 let ROT_FIRST_HIT_PROCS = 0;
+let ROT_PROC_HEALING = 0;
 
 /** Number of activations for an initially-ready proc inside a fight window. */
 /** How many casts fit in `window`, counting the one at t=0.
@@ -1356,6 +1390,7 @@ export function rotation(name: string, st: any, target: any, window: number,
                          level = 13, secondaryTargets?: number): number {
   ROT_SPELLBLADE_PROCS = 0;
   ROT_FIRST_HIT_PROCS = 0;
+  ROT_PROC_HEALING = 0;
   st = forWindow(name, st, window, level);
   // An enemy Frozen Heart's Chill is a real attack-speed cut and belongs here,
   // after forWindow has finished deriving attack speed from the steroids.
@@ -1771,6 +1806,7 @@ export function rotation(name: string, st: any, target: any, window: number,
    */
   const oneTimes = (damageSoFar: number) => {
     let p = 0, m = 0, t = 0;
+    let procHealing = 0;
     for (const pr of st.procs as Proc[]) {
       // Nothing lands before the effect has armed: Electrocute needs three
       // stacks inside three seconds, Heartsteel charges for 2.5.
@@ -1796,7 +1832,10 @@ export function rotation(name: string, st: any, target: any, window: number,
       if (dtype === "magic") m += val * magicM;
       else if (dtype === "true") t += val;
       else p += val * physM;
+      procHealing += val * (dtype === "magic" ? magicM : dtype === "true" ? 1 : physM)
+        * (pr.healPct ?? 0);
     }
+    ROT_PROC_HEALING += procHealing;
     addT("physical", p); addT("magic", m); addT("true", t);
     return p + m + t;
   };
@@ -1869,6 +1908,8 @@ export function rotation(name: string, st: any, target: any, window: number,
       // follows the item.
       const sbMagic = st.spellbladeMagic > 0;
       let sbRaw = st.spellbladeBaseAdPct / 100 * st.baseAd
+        + (st.spellbladeBonusArmorPct || 0) / 100
+          * Math.max(0, (st.armor || 0) - (st.baseArmor || 0))
         + st.spellbladeApPct / 100 * st.ap
         + st.spellbladePctMaxHp / 100 * target.hp
         + st.spellbladeCritFlatPerCrit * st.crit;
@@ -1950,6 +1991,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     ROT_ABILITY_AOE_DMG = abilityAoeDmg * amp;
     ROT_BY_SLOT = { ...bySlot };
     ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
+    ROT_PROC_HEALING *= amp;
     return total * amp;
   }
 
@@ -2035,6 +2077,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     ROT_SPELLBLADE_PROCS = procs;
     const sbMagic = st.spellbladeMagic > 0;
     let sbRaw = st.spellbladeBaseAdPct / 100 * st.baseAd
+      + (st.spellbladeBonusArmorPct || 0) / 100
+        * Math.max(0, (st.armor || 0) - (st.baseArmor || 0))
       + st.spellbladeApPct / 100 * st.ap
       + st.spellbladePctMaxHp / 100 * target.hp
       + st.spellbladeCritFlatPerCrit * st.crit;
@@ -2113,6 +2157,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   ROT_ABILITY_AOE_DMG = abilityAoeDmg * amp;
   ROT_BY_SLOT = { ...bySlot };
   ROT_NAUTOS_IDEAL = Math.max(1, Math.floor(window * st.as));
+  ROT_PROC_HEALING *= amp;
   return total * amp;
 }
 
@@ -2138,6 +2183,7 @@ export interface RotationDetail {
   spellbladeProcs: number;
   /** Sundered Sky first-hit activations after its per-target cooldown. */
   firstHitProcs: number;
+  procHealing: number;
 }
 
 /**
@@ -2165,6 +2211,7 @@ export function rotationDetail(name: string, st: any, target: any, window: numbe
     autosIdeal: ROT_NAUTOS_IDEAL,
     spellbladeProcs: ROT_SPELLBLADE_PROCS,
     firstHitProcs: ROT_FIRST_HIT_PROCS,
+    procHealing: ROT_PROC_HEALING,
   };
 }
 
@@ -2268,6 +2315,7 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
     + conquerorHeal(st, detail8.damage, 8)
     + spellbladeHeal(st, TARGET_BRUISER, detail8)
     + firstHitHeal(st, detail8)
+    + detail8.procHealing
     + (st.triggeredHeal || 0);
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
   wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
@@ -2320,6 +2368,7 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     + conquerorHeal(st, dmg8, 8)
     + spellbladeHeal(st, TARGET_BRUISER, detail8)
     + firstHitHeal(st, detail8)
+    + detail8.procHealing
     + (st.triggeredHeal || 0);
 
   const m = { burst3: Math.round(burst3), dps8: Math.round(dps8), ttk,

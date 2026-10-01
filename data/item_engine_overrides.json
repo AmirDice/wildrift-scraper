@@ -10,18 +10,21 @@
     "critDamagePerExcessCrit": 0
   },
   "steraks-gage": {
+    "adBasePctPassive": 50,
     "shieldPctBonusHp": 75,
     "_why": "LIFELINE: shield = 75% bonus HP, once per fight",
     "ccRemoval": 1,
     "_why_cc": "Sterak's Fury: 'Triggering Lifeline ... REMOVES ALL CROWD CONTROL EFFECTS ON YOU (except Airborne), and grants 30% Tenacity for 4 seconds.' Lifeline is once per fight on a 75s cooldown, so one instance removed."
   },
   "maw-of-malmortius": {
-    "shieldFlat": 300,
-    "_why": "lifeline-style magic shield; flat approximation"
+    "shieldFlat": {"lvlRange": [220, 530]},
+    "_why": "Lifeline is a 220-530 level-scaled magic shield. The below-35% trigger and combat-only omnivamp are still context-dependent, but the level curve is now preserved."
   },
   "deaths-dance": {
-    "drPct": 12,
-    "_why": "Unchanged for ranged (12%); melee storage went 27% -> 30%, and the engine's single figure is the ranged one."
+    "drPct": 0,
+    "drPctMelee": 30,
+    "drPctRanged": 12,
+    "_why": "Cauterize stores 30% of incoming damage for melee champions and 12% for ranged champions. Defy's takedown heal remains context-dependent and is not included in a one-target fight."
   },
   "dead-mans-plate": {
     "onHitFlatMagic": 0,
@@ -232,11 +235,16 @@
   "unending-despair": {
     "procMaxHpCdSec": 4,
     "procMaxHpType": "magic",
+    "procHealPctOfDamage": 250,
     "_why_cd": "Anguish: 'EVERY 4 SECONDS while in combat with a champion, deal 3% of your max Health as MAGIC damage'. It was charged once per fight and as physical."
   },
   "dawnshroud": {
     "burstProcCdSec": 3,
-    "_why_cd": "Dawnbringer: '(3s Cooldown)'"
+    "timedArmorPct": 20,
+    "timedMrPct": 20,
+    "timedResistDurationS": 3,
+    "timedResistCooldownS": 3,
+    "_why_cd": "Dawnbringer triggers on nearby immobilize, deals 40 + 2.5% bonus Health, and grants 20% Armor and MR for the 3-second cooldown window."
   },
   "imperial-mandate": {
     "burstProcCdSec": 6,
@@ -267,7 +275,11 @@
   "heartsteel": {
     "procMaxHpArmSec": 2.5,
     "burstProcArmSec": 2.5,
-    "_why_arm": "Colossal Consumption 'charges for 2.5 seconds before dealing' the strike, so it cannot land inside a shorter window. No repeat cooldown is stated."
+    "burstProcType": "physical",
+    "hpFromProcDamagePct": 15,
+    "procMaxHpCdSec": 20,
+    "burstProcCdSec": 20,
+    "_why_arm": "Colossal Consumption charges for 2.5 seconds, deals physical damage, grants 15% of that damage as permanent max Health, and has a 20-second cooldown per target. The build snapshot prices one charged proc; the permanent post-fight health snowball is reported separately."
   },
   "eclipse": {
     "procMaxHpArmSec": 1.8,
@@ -434,7 +446,8 @@
     "shieldFlat": 120,
     "shieldPctMana": 4.5,
     "shieldManaRangedMult": 0.5,
-    "_why": "AWE is 15% of max Mana; Frozen Colossus is a 120 + 4.5% max-Mana shield every 8 seconds. The 50% ranged modifier is applied, while the one-nearby-enemy reference remains conservative."
+    "shieldManaNearbyMult": 1.8,
+    "_why": "AWE is 15% of max Mana; Frozen Colossus is a 120 + 4.5% max-Mana shield every 8 seconds, increased by 80% with more than one enemy nearby. The nearby multiplier is exposed for multi-target scenarios; the 50% ranged modifier is applied."
   },
   "mantle-of-the-twelfth-hour": {
     "msFlat": 0,

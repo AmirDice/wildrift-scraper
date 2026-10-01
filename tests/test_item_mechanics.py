@@ -98,6 +98,38 @@ def test_sundered_sky_first_hit_and_heal_are_not_global_crit_damage():
         "Sett", [], [])["sustain"]
 
 
+def test_frontline_item_gaps_use_their_real_damage_and_scaling_channels():
+    sterak = fe.resolve_stats("Darius", 15, ["steraks-gage"], [])
+    bare = fe.resolve_stats("Darius", 15, [], [])
+    assert sterak["bonusAd"] == bare["bonusAd"] + 0.50 * bare["baseAd"]
+
+    bloodmail = fe.resolve_stats("Darius", 15, ["overlords-bloodmail"], [])
+    assert bloodmail["bonusAd"] == 32 + 30 + 0.025 * 450
+    assert 0 < bloodmail["damageAmp"] < 0.09
+
+    stride = fe.resolve_stats("Darius", 15, ["stridebreaker"], [])
+    assert any(p["label"] == "stridebreaker" and p["type"] == "physical"
+               and p["adRatio"] == 1.0 for p in stride["procs"])
+
+    ice = fe.resolve_stats("Darius", 15, ["iceborn-gauntlet"], [])
+    assert ice["spellbladeBonusArmorPct"] == 25
+
+    heart = fe.resolve_stats("Darius", 15, ["heartsteel"], [])
+    assert all(p["type"] == "physical" for p in heart["procs"])
+    assert all(p["cd"] == 20 for p in heart["procs"])
+
+
+def test_item_proc_healing_and_melee_deaths_dance_split():
+    unending = fe.metrics("Rammus", ["unending-despair"], [])
+    plain = fe.metrics("Rammus", [], [])
+    assert unending["sustain"] > plain["sustain"]
+
+    melee = fe.resolve_stats("Darius", 15, ["deaths-dance"], [])
+    ranged = fe.resolve_stats("Jinx", 15, ["deaths-dance"], [])
+    assert melee["dr"] == 0.30
+    assert ranged["dr"] == 0.12
+
+
 def test_high_payoff_rune_context_corrections_are_grounded():
     melee = fe.resolve_stats("Darius", 15, [], ["Conqueror"])
     ranged = fe.resolve_stats("Jinx", 15, [], ["Conqueror"])
