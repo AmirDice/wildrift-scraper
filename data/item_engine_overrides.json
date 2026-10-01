@@ -52,7 +52,9 @@
   "divine-sunderer": {
     "spellbladePctMaxHp": 10,
     "spellbladePctMaxHpRanged": 7,
-    "_why": "Tooltip is 10% melee / 7% ranged of target max HP; extraction stored only the melee 10, overcharging every ranged champion."
+    "spellbladeHealPctMaxHp": 6,
+    "spellbladeHealPctMaxHpRanged": 2.5,
+    "_why": "Spellblade is 10% melee / 7% ranged of target max HP and heals 6% melee / 2.5% ranged of target max HP; the heal is paid once per landed Spellblade proc on its 1.5s cooldown."
   },
   "terminus": {
     "rampAttacks": 6,

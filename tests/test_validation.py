@@ -25,6 +25,58 @@ def test_magic_damage_amp_is_not_a_free_sett_item():
     assert any("magic penetration" in row for row in violations)
 
 
+def test_hecarim_crit_core_is_rejected_as_a_forbidden_path():
+    from web.advisor import prompt
+    items = ["essence-reaver", "lord-dominiks-regard", "infinity-edge",
+             "experimental-hexplate", "spear-of-shojin"]
+    violations = validate_mod.identity_combo_violations(
+        items, prompt.identity_card("Hecarim"))
+    assert any("Crit Damage" in row for row in violations)
+
+
+def test_rammus_attack_damage_items_are_rejected_by_identity():
+    from web.advisor import prompt
+    card = prompt.identity_card("Rammus")
+    violations = validate_mod.identity_violations(
+        ["divine-sunderer", "hullbreaker"], card)
+    assert len(violations) == 2
+    assert all("attack damage" in row for row in violations)
+
+
+def test_frontline_crit_items_are_rejected_by_champion_policy():
+    from web.advisor import prompt
+    violations = validate_mod.identity_violations(
+        ["essence-reaver", "infinity-edge", "lord-dominiks-regard"],
+        prompt.identity_card("Sett"), champion_name="Sett", champion_class="Bruiser")
+    assert len(violations) == 3
+    assert all("critical strike" in row for row in violations)
+
+
+def test_situational_frontline_crit_is_rejected_in_curated_mode():
+    from web.advisor import prompt
+    assert validate_mod.identity_violations(
+        ["infinity-edge"], prompt.identity_card("Olaf"),
+        champion_name="Olaf", champion_class="Bruiser")
+
+
+def test_situational_frontline_crit_roster_is_blocked_but_strong_roster_remains():
+    from web.advisor import crit_policy, prompt
+    for champion in ("Vi", "Jarvan IV", "Wukong"):
+        assert not crit_policy.allows(champion, "Bruiser")
+        assert validate_mod.identity_violations(
+            ["infinity-edge", "essence-reaver", "lord-dominiks-regard"],
+            prompt.identity_card(champion), champion_name=champion,
+            champion_class="Bruiser")
+    assert crit_policy.allows("Yasuo", "Bruiser")
+
+
+def test_wukong_prompt_does_not_keep_the_old_crit_never_rule():
+    from web.advisor import prompt
+    block = prompt.meta_identity_block("Wukong")
+    assert "crit affinity: SITUATIONAL/OFF-META" in block
+    assert "NEVER, at any cost: Crit Fighter" not in block
+
+
 class TestBaseline:
     def test_a_well_formed_build_passes(self, build):
         report = check(build)

@@ -43,7 +43,8 @@ from pathlib import Path
 import requests
 
 from web.advisor import env as advisor_env
-from web.advisor import itemmeta, profiles, repair, runemeta, summoners, supportitem
+from web.advisor import (crit_policy, itemmeta, profiles, repair, runemeta,
+                         summoners, supportitem)
 from web.advisor import prompt as prompt_mod
 from web.advisor import threats as threats_mod
 from web.advisor import validate as validate_mod
@@ -307,6 +308,15 @@ def _enemy_block(enemies: list[str], me: str) -> str:
 
 
 DEFENSIVE_BOOTS = {"mercurys-treads", "plated-steelcaps"}
+# These are the rune choices whose primary purpose is staying alive or
+# protecting a frontline.  They are not hard bans on offensive runes: a
+# durability build still needs a threat.  They are only used as a close-score
+# tie-break after the engine has measured the complete legal page.
+DEFENSIVE_RUNES = frozenset({
+    "Unshakeable", "Second Wind", "Nullifying Orb", "Bone Plating",
+    "Overgrowth", "Revitalize", "Perseverance", "Courage of the Colossus",
+    "Guardian", "Grasp of the Undying", "Ice Overlord",
+})
 OFFENSE_FIRST_CLASSES = {"Bruiser", "Marksman", "Assassin"}
 
 # Summoner spells, mirrored from scripts/build_champions_llm.py so the live
@@ -818,7 +828,11 @@ _FRONTLINE_DEFENSIVE_GUIDANCE = (
     "Sterak's Gage, Death's Dance, Amaranth's Twinguard, Sundered Sky, Black Cleaver, "
     "Maw and matchup-appropriate armor/MR items are candidates, not automatic slots. "
     "A tank asked for damage should become an offensive frontline build, never a "
-    "five-item glass mage unless its kit genuinely scales that way.")
+    "five-item glass mage unless its kit genuinely scales that way. For a maximum-"
+    "damage frontline request, the measured objective still reserves a small safety "
+    "floor (10% survival for bruisers/fighters, 15% for tanks) so the result remains "
+    "a functional frontline build; the unrestricted toggle is the only zero-safety "
+    "exploration mode.")
 
 BUILD_BIAS = {
     "max_durability": (
@@ -900,7 +914,8 @@ ON_HIT_EFFECT_CORE_ITEMS = 2
 
 
 def _damage_archetypes(champion: str, combat: dict, scaling: dict,
-                       damage_path: str = "standard") -> list[dict]:
+                       damage_path: str = "standard",
+                       unrestricted_mode: bool = False) -> list[dict]:
     """Return every credible damage engine the tournament must represent.
 
     This is intentionally conservative.  A stray AP ratio never creates an AP
@@ -908,6 +923,15 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
     damage identity.  Crit and on-hit are delivery engines, not aliases for AD,
     so they remain separate even when both buy physical items.
     """
+    if unrestricted_mode:
+        # This is intentionally one broad hypothesis rather than a curated
+        # class list. The engine will search the complete item catalogue and
+        # the model may still explain which damage path won; no champion
+        # identity or archetype floor is allowed to silently narrow it.
+        return [{
+            "id": "unrestricted",
+            "description": "all legal damage, durability, hybrid and off-meta item paths",
+        }]
     identity = profiles.build_identity(champion)
     identity_profile = profiles.build_identity_profile(champion)
     # The prompt's curated identity card is also an engine constraint.  Before
@@ -929,7 +953,11 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
                    for term in terms)
     pattern = combat.get("basicAttackPattern", "mixed")
     champion_class = (CHAMPS.get(champion) or {}).get("class", "")
-    crit = (combat.get("critValue") == "high" or champion_class == "Marksman")
+    # Crit is not a generic bruiser upgrade. The reviewed affinity roster
+    # explicitly adds legitimate melee alternatives, while every other
+    # frontline champion is kept out of crit paths.
+    crit = (combat.get("critValue") == "high" or champion_class == "Marksman"
+            or champion in crit_policy.STANDARD)
     on_hit = combat.get("repeatedOnHitReliance") in {"medium", "high"}
     attack_based = pattern in {"basic-attack-carry", "repeated-attacks", "mixed"}
     ids: list[str] = []
@@ -959,13 +987,18 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
         if (pattern in {"caster", "ability-weaving", "mixed"} or not attack_based
                 or champion in HYBRID_DAMAGE_CHAMPIONS):
             add("ad-caster")
-        if crit and not forbidden("crit", "critical"):
+        if (crit and crit_policy.allows(champion, champion_class)
+                and (not forbidden("crit", "critical")
+                     or champion in crit_policy.STANDARD)):
             add("ad-crit")
-        elif "CRIT" in {str(value).upper()
-                         for value in ((identity_profile.get("alternativePath") or {})
-                                       .get("anchorStats") or [])}:
-            # Fiora's reviewed crit-duelist alternative is real even though
-            # the generic combat extractor rates her crit ratio as low.
+        elif (crit_policy.allows(champion, champion_class)
+              and "CRIT" in {str(value).upper()
+                              for value in ((identity_profile.get("alternativePath") or {})
+                                            .get("anchorStats") or [])}):
+            # An identity profile may mention a crit alternative, but it still
+            # has to be present in the reviewed crit-affinity roster. The old
+            # unconditional anchor exception kept stale Fiora metadata alive
+            # after her card moved to an explicit no-crit identity.
             add("ad-crit")
         # Marksmen and repeated-attack champions each deserve an independent
         # attack-speed/on-hit hypothesis.  Do not infer it only from a parsed
@@ -1035,7 +1068,8 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
            for path in (identity_profile.get("approvedBuildPaths") or [])):
         # Reviewed duelists (Fiora is the current example) are not generic
         # ranged-caster candidates. Their damage path must stay in the melee
-        # AD/bruiser, spellblade or explicitly reviewed crit lanes.
+        # AD/bruiser or spellblade lane; a crit lane is added only when the
+        # separate reviewed crit-affinity policy allows it.
         ids = [value for value in ids if value != "ad-caster"]
     ids = ids[:5]
     return [{"id": value, "description": _ARCHETYPE_TEXT[value]} for value in ids]
@@ -1119,7 +1153,8 @@ def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
                                  rune_locks: list[str] | None = None,
                                  role: str = "", enemies_known: bool = False,
                                  expected_count: int = 3,
-                                 required_archetypes: list[str] | None = None,
+                                  required_archetypes: list[str] | None = None,
+                                  unrestricted_mode: bool = False,
                                  ) -> tuple[list[dict], list[str]]:
     """Apply the cheap, deterministic core gate before spending engine time.
 
@@ -1175,7 +1210,8 @@ def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
             problem = "has illegal summoner spells"
         elif valid_archetypes and archetype not in valid_archetypes:
             problem = f"has unknown or missing archetype {archetype!r}"
-        elif valid_archetypes and not _combo_matches_archetype(tuple(items), archetype):
+        elif (valid_archetypes and not unrestricted_mode
+              and not _combo_matches_archetype(tuple(items), archetype)):
             # Keep the candidate measurable so a malformed model label cannot
             # erase the entire tournament.  The engine search still applies a
             # strict path gate, and the final judge receives this warning in
@@ -1304,7 +1340,9 @@ def _engine_win_gate(search_meta: dict | None, measured: list[dict],
 
 
 def _tournament_measurement_score(measured: dict | None,
-                                  build_bias: str = "max_damage") -> float | None:
+                                  build_bias: str = "max_damage",
+                                  champion: str = "",
+                                  unrestricted_mode: bool = False) -> float | None:
     """Project a full measurement onto the same damage/survival blend.
 
     This is intentionally used only for validating Gemini's one-item
@@ -1350,7 +1388,8 @@ def _tournament_measurement_score(measured: dict | None,
         + numeric(engine.get("damagePrevented"), "total"),
     ]
     survival = sum(survival_parts)
-    damage_w, survival_w = _tournament_blend(build_bias)
+    damage_w, survival_w = _tournament_blend(
+        build_bias, champion, unrestricted_mode=unrestricted_mode)
     return round(damage_w * damage + survival_w * survival, 6)
 
 
@@ -1826,7 +1865,8 @@ def _rune_probe_frontier(pages: list[dict], limit: int = 2048) -> list[dict]:
     return pages[::stride][:limit]
 
 
-def _ordered_engine_items(combo: tuple[str, ...], candidates: list[dict]) -> list[str]:
+def _ordered_engine_items(combo: tuple[str, ...], candidates: list[dict],
+                          unrestricted_mode: bool = False) -> list[str]:
     """Give an engine-discovered set the purchase order the model implied."""
     missing = 99
     position = {}
@@ -1836,6 +1876,8 @@ def _ordered_engine_items(combo: tuple[str, ...], candidates: list[dict]) -> lis
         position[slug] = sum(seen) / len(seen) if seen else missing
     ordered = sorted(combo, key=lambda slug: (position[slug], slug))
     # Late strategic items still obey their minimum purchase position.
+    if unrestricted_mode:
+        return ordered
     for slug, cfg in itemmeta.LATE_STRATEGIC.items():
         if slug not in ordered:
             continue
@@ -1889,7 +1931,8 @@ def _item_archetype_signals(slug: str) -> set[str]:
     return signals
 
 
-def _item_supports_archetype(slug: str, archetype: str) -> bool:
+def _item_supports_archetype(slug: str, archetype: str,
+                              unrestricted_mode: bool = False) -> bool:
     """Whether an item belongs in a path's search pool.
 
     ATTACK SPEED IS SCALING-AGNOSTIC and must never on its own qualify an item
@@ -1911,6 +1954,8 @@ def _item_supports_archetype(slug: str, archetype: str) -> bool:
     flat magic on-hit and no AP to scale, stay eligible for on-hit paths on
     either side, because nothing about them is wasted.
     """
+    if unrestricted_mode or archetype == "unrestricted":
+        return True
     sig = _item_archetype_signals(slug)
     magic_only = "ap" in sig and "ad" not in sig
     phys_only = "ad" in sig and "ap" not in sig
@@ -1945,7 +1990,8 @@ def _item_supports_archetype(slug: str, archetype: str) -> bool:
     }.get(archetype, True)
 
 
-def _identity_item_allowed(champion: str, slug: str) -> bool:
+def _identity_item_allowed(champion: str, slug: str,
+                           unrestricted_mode: bool = False) -> bool:
     """Apply the same curated identity lint to engine pool items.
 
     Identity validation used to happen only after Gemini had selected a build.
@@ -1954,6 +2000,12 @@ def _identity_item_allowed(champion: str, slug: str) -> bool:
     reviewed no-crit Vi or an AP shell on K'Sante).  Filtering one item at pool
     construction is both cheaper and makes the search evidence honest.
     """
+    if unrestricted_mode:
+        return True
+    champion_class = (CHAMPS.get(champion) or {}).get("class", "")
+    if not crit_policy.allows(champion, champion_class):
+        if crit_policy.item_has_crit(ITEMS.get(slug) or {}):
+            return False
     card = prompt_mod.identity_card(champion)
     if not card:
         return True
@@ -1961,6 +2013,8 @@ def _identity_item_allowed(champion: str, slug: str) -> bool:
 
 
 def _combo_matches_archetype(combo: tuple[str, ...], archetype: str) -> bool:
+    if archetype == "unrestricted":
+        return True
     sigs = [_item_archetype_signals(slug) for slug in combo]
     count = lambda key: sum(key in row for row in sigs)
     if archetype == "ad-crit":
@@ -2035,8 +2089,9 @@ def _combo_matches_archetype(combo: tuple[str, ...], archetype: str) -> bool:
 # was the right place to start -- damage is the axis the engine measures best --
 # but it also meant a durability request was answered by a damage optimizer,
 # and the engine challenger could only ever hand back the bloodiest build it
-# found.  max_damage keeps a survival weight of exactly zero so that path is
-# numerically unchanged.
+# found.  max_damage remains pure damage for carries, while the class-aware
+# blend below gives frontline champions a small survival floor so "maximum
+# damage" cannot silently mean a glass build on a tank.
 TOURNAMENT_BLEND = {
     "max_damage": (1.00, 0.00),
     "damage": (0.80, 0.20),
@@ -2072,8 +2127,38 @@ TOURNAMENT_SURVIVAL_WEIGHTS = {
 TOURNAMENT_BIASES = frozenset(TOURNAMENT_BLEND)
 
 
-def _tournament_blend(build_bias: str) -> tuple[float, float]:
-    return TOURNAMENT_BLEND.get(build_bias, TOURNAMENT_BLEND["max_damage"])
+def _tournament_blend(build_bias: str, champion: str = "",
+                      unrestricted_mode: bool = False) -> tuple[float, float]:
+    """Return the request blend, with a frontline safety floor.
+
+    ``max_damage`` remains pure damage for ranged carries and assassins.  A
+    tank/bruiser maximum is different: it means the most threatening build
+    that still survives long enough to perform its frontline job.  Applying
+    the floor here keeps the generation prompt, prefilter, engine score and
+    final judge on the same definition instead of asking the model for one
+    objective and measuring another.
+    """
+    damage, survival = TOURNAMENT_BLEND.get(
+        build_bias, TOURNAMENT_BLEND["max_damage"])
+    if champion and build_bias == "max_damage" and not unrestricted_mode:
+        champion_class = str((CHAMPS.get(champion) or {}).get("class") or "")
+        card = prompt_mod.identity_card(champion) or {}
+        card_classes = {str(value) for value in (card.get("classes") or [])}
+        frontline = ({champion_class} | card_classes) & FRONTLINE_CLASSES
+        if frontline:
+            # Maximum damage must remain distinct from the next preset down.
+            # The old 20%/25% floors were exactly the same as the public
+            # `damage` blend for fighters and only one step away for tanks, so
+            # a Hecarim/Rammus max-damage request silently ran the damage
+            # objective.  Keep a real frontline safety floor, but leave the
+            # requested bias meaningful: 10% for bruisers/fighters and 15% for
+            # tanks.  The unrestricted toggle still receives the literal
+            # 100% damage / 0% survival objective.
+            floor = 0.15 if "Tank" in frontline else 0.10
+            if survival < floor:
+                survival = floor
+                damage = 1.0 - survival
+    return damage, survival
 
 
 def _tournament_prefilter_weights(base_objective: str, damage_w: float,
@@ -2104,7 +2189,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                        build_bias: str = "max_damage",
                        allowed_items: list[str] | None = None,
                        priority_items: list[str] | None = None,
-                       return_top: int = 0) -> tuple[dict | None, dict]:
+                       return_top: int = 0,
+                       unrestricted_mode: bool = False) -> tuple[dict | None, dict]:
     """Search each declared archetype for an engine challenger.
 
     The model supplies a coherent seed and rune page for every path.  Items are
@@ -2114,8 +2200,9 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
     A challenger is returned only when it
     beats every authored candidate on the objective for THIS request, which is
     a blend of damage delivered and surviving to deliver it: see
-    TOURNAMENT_BLEND.  For max_damage the survival weight is zero and the score
-    is the damage scenario score exactly as it was before the blend existed.
+    TOURNAMENT_BLEND.  For max_damage the survival weight is zero for carries;
+    frontline classes receive the reviewed safety floor in the same helper
+    used by the prompt and judge.
     """
     from web.fight_engine import (REF_BURST, REF_DPS, REF_FIGHT,
                                   conditional_damage_scenarios, evaluation_vector,
@@ -2146,7 +2233,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
 
     base_prefilter = ("burst_damage" if (CHAMPS.get(champion) or {}).get("class")
                       in {"Mage", "Assassin"} else "sustained_damage")
-    damage_w, survival_w = _tournament_blend(build_bias)
+    damage_w, survival_w = _tournament_blend(
+        build_bias, champion, unrestricted_mode=unrestricted_mode)
     prefilter_objective = _tournament_prefilter_weights(
         base_prefilter, damage_w, survival_w)
     objective = ("multi_profile_damage" if not survival_w
@@ -2246,8 +2334,10 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         return not (
             validate_mod.hard_exclusive_violation(list(combo))
             or any(lock not in combo for lock in (item_locks or []))
-            or (not enemies_known and any(s in itemmeta.SITUATIONAL_ONLY for s in combo))
-            or not supportitem.build_is_legal(list(combo), role)
+            or (not unrestricted_mode and not enemies_known
+                and any(s in itemmeta.SITUATIONAL_ONLY for s in combo))
+            or (not unrestricted_mode
+                and not supportitem.build_is_legal(list(combo), role))
         )
 
     # Establish the score to beat across every target profile and the capped
@@ -2295,12 +2385,12 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         authored_boots = {
             str(c.get("boots") or "") for c in seeds
             if c.get("boots") and _identity_item_allowed(
-                champion, str(c.get("boots")))
+                champion, str(c.get("boots")), unrestricted_mode)
         }
         all_boots = {slug for slug, item in ITEMS.items()
                      if item.get("category") == "Boots"
                      and item.get("bootsTier", 2) == 2
-                     and _identity_item_allowed(champion, slug)}
+                     and _identity_item_allowed(champion, slug, unrestricted_mode)}
         boots = sorted(authored_boots | all_boots)
         pages = _candidate_rune_pages(seeds, rune_locks, build_bias)
         authored_pages = [c.get("runes") or {} for c in seeds]
@@ -2315,17 +2405,16 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         # against the same champion/item core rather than only validated after
         # the LLM has chosen them.
         global_pages = _rune_probe_frontier(_all_legal_rune_pages(rune_locks))
-        # Recombine only the rune vocabulary the model supplied. This still
-        # lets the engine find a better keystone/minor pairing, but prevents a
-        # challenger from silently introducing unrelated runes that were never
-        # part of the advisor's grounded candidate set.
-        authored_rune_names = {
-            name for page in authored_pages
-            for name in _candidate_rune_names({"runes": page})
-        }
-        global_pages = [page for page in global_pages
-                        if set(_candidate_rune_names({"runes": page}))
-                        <= authored_rune_names]
+        # Rune optimization is a real engine search, not a validation pass.
+        # Do not reduce the legal page frontier to the names Gemini happened
+        # to mention: that made a durability request inherit an offensive
+        # Precision page forever (for example, Alistar could never discover a
+        # Resolve keystone/tree if the model omitted it).  The complete legal
+        # frontier is already capped by _rune_probe_frontier, and authored
+        # pages remain explicitly retained by _candidate_rune_pages above.
+        # This lets the engine co-optimize keystone, primary tree, minors,
+        # flex and boots against the same item core while keeping the request
+        # bounded and every page legal.
         probe_items = list(seeds[0].get("items") or [])[:2] + [seed_boot]
         page_rank = []
         for page in global_pages:
@@ -2333,14 +2422,46 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                 probe_items, _candidate_rune_names({"runes": page}), fast=True)
             page_rank.append((objective_score(vector, prefilter_objective), page))
         page_rank.sort(key=lambda row: row[0], reverse=True)
-        pages = pages + [page for _score, page in page_rank[:32]
-                         if _candidate_signature({"runes": page}) not in {
-                             _candidate_signature({"runes": p}) for p in pages}]
+        # Keep the strongest global pages, but preserve a small frontier for
+        # every primary tree on survival-weighted requests. A single global
+        # top-32 is a damage-biased shortlist; it can omit Resolve entirely
+        # when a model supplied an offensive Precision page, making a tank's
+        # rune search look co-optimized while it never tests the defensive
+        # tree. The per-tree frontier is still tiny compared with the 52k
+        # legal-page catalogue and stays request-bounded.
+        ranked_pages = [page for _score, page in page_rank[:32]]
+        if survival_w >= 0.40:
+            for tree in sorted({str(page.get("primaryTree") or "")
+                                for _score, page in page_rank} - {""}):
+                tree_pages = [
+                    page for _score, page in page_rank
+                    if page.get("primaryTree") == tree
+                ][:16]
+                ranked_pages.extend(tree_pages)
+        # De-duplicate while retaining score order. The explicit Resolve
+        # frontier above is the important safety net for max durability.
+        pages_seen = {_candidate_signature({"runes": p}) for p in pages}
+        for page in ranked_pages:
+            signature = _candidate_signature({"runes": page})
+            if signature not in pages_seen:
+                pages.append(page)
+                pages_seen.add(signature)
         authored_items = {slug for c in seeds for slug in c.get("items") or []}
         eligible = [slug for slug in universe
-                    if (archetype == "unlabelled"
-                        or _item_supports_archetype(slug, archetype))
-                    and _identity_item_allowed(champion, slug)]
+                    if (archetype in {"unlabelled", "unrestricted"}
+                        or _item_supports_archetype(slug, archetype, unrestricted_mode))
+                    and _identity_item_allowed(champion, slug, unrestricted_mode)]
+        # A support's zero-gold income item is mandatory infrastructure, not a
+        # damage-archetype signal.  If it is left to the signal filter, support
+        # tanks can have no legal durability combination at all (the old sweep
+        # returned empty Blitzcrank/Braum builds for exactly this reason).
+        if supportitem.is_support(role) and not unrestricted_mode:
+            support_slots = {
+                slug for slug in universe
+                if slug in supportitem.SUPPORT_ITEMS
+                and _identity_item_allowed(champion, slug, unrestricted_mode)
+            }
+            eligible = sorted(set(eligible) | support_slots)
         # Defensive items often carry no AD/crit/on-hit signal, so they would
         # otherwise be eliminated before the durability score gets a chance to
         # consider them. Admit the reviewed class-appropriate carry pool only
@@ -2350,6 +2471,15 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
             champion_class = str((CHAMPS.get(champion) or {}).get("class") or "")
             family = (DEFENSE_PROFILE.get("classFamilies") or {}).get(champion_class) or {}
             defensive_pool = set(family.get("preferred") or []) | set(family.get("allowed") or [])
+            # The class-family pool is an additional durability frontier, not
+            # an identity bypass.  Applying it after the main item filter used
+            # to re-introduce Guardian Angel/Divine Sunderer into Rammus and
+            # other no-AD tanks whenever survival had non-zero weight.  Keep
+            # the same per-item identity gate on both sides of the union.
+            defensive_pool = {
+                slug for slug in defensive_pool
+                if _identity_item_allowed(champion, slug, unrestricted_mode)
+            }
             eligible = sorted(set(eligible) | (defensive_pool & set(universe)))
         ranked_items = []
         for slug in eligible:
@@ -2373,11 +2503,11 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         frontier.update(authored_items & set(eligible))
         frontier.update(set(item_locks or []) & set(eligible))
         frontier.update(set(priority_items or []) & set(eligible))
-        pool = sorted(frontier)
+        pool = sorted(eligible) if unrestricted_mode else sorted(frontier)
         # A large item catalog can still produce millions of partial states.
         # Widen only when the score frontier warrants it, and retain the
         # highest-scoring frontier entries if the defensive failsafe trips.
-        if len(pool) > 64:
+        if len(pool) > 64 and not unrestricted_mode:
             keep = set(slug for _score, slug in ranked_items[:64])
             keep.update((authored_items | set(item_locks or [])) & set(eligible)
                         | (set(priority_items or []) & set(eligible)))
@@ -2413,9 +2543,22 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                             sum("defensive" in row for row in combo_signals) >= 1
                             and sum("ad" in row for row in combo_signals) >= 2
                             and sum("crit" in row for row in combo_signals) >= 1)
+                    # Apply forbidden-archetype identity limits before the
+                    # adaptive beam trims the frontier. Waiting until depth 4
+                    # can leave the beam full of high-scoring crit/on-hit
+                    # partials, then reject every completed combo and report
+                    # "0 legal combinations" even though the authored
+                    # identity-safe build is present in the pool.
+                    if (not unrestricted_mode
+                            and validate_mod.identity_combo_violations(
+                                list(combo), prompt_mod.identity_card(champion),
+                                champion_name=champion,
+                                champion_class=(CHAMPS.get(champion) or {}).get(
+                                    "class", ""))):
+                        continue
                     if depth == 4 and (
                             not legal_items(combo)
-                            or (archetype != "unlabelled"
+                            or (archetype not in {"unlabelled", "unrestricted"}
                                 and not (_combo_matches_archetype(combo, archetype)
                                          or durable_carry))):
                         continue
@@ -2479,11 +2622,105 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         }
     finalists.sort(key=lambda row: row[0], reverse=True)
 
+    # Defensive boots are a genuine close-race decision, not a universal
+    # override.  If the durability half of the request matters and two pages
+    # are within this small score band, prefer Steelcaps/Mercury's over an
+    # offensive boot.  Keep the raw score for the engine-win gate so a
+    # defensive tie-break can never turn a losing build into a reported win.
+    # A fixed 0.75-point window was too narrow at the 75--110 point scale:
+    # defensive boots routinely lost by a rounding-sized 1--2 points even on
+    # max-durability requests.  Keep the margin bias-aware and proportional to
+    # the score so a genuine offensive lead still wins, while a close race is
+    # resolved in the direction the player asked for.
+    BOOT_TIE_MARGIN = {
+        "balanced": 1.5,
+        "durability": 2.0,
+        "max_durability": 2.5,
+    }.get(build_bias, 0.75)
+    RUNE_TIE_MARGIN = {
+        "balanced": 1.0,
+        "durability": 1.5,
+        "max_durability": 2.0,
+    }.get(build_bias, 0.75)
+    # A tank's max-durability page must visibly be a defensive page even when
+    # the offensive page reaches the generic time-to-die cap.  Bruisers keep a
+    # tighter band so they retain a real damage threat; tanks get the wider
+    # practical band because Resolve/defensive runes are their identity.
+    champion_class = str((CHAMPS.get(champion) or {}).get("class") or "")
+    if build_bias == "max_durability" and champion_class == "Tank":
+        RUNE_TIE_MARGIN = 5.0
+    elif build_bias == "max_durability" and champion_class in {"Bruiser", "Fighter"}:
+        RUNE_TIE_MARGIN = 5.0
+
+    def _rune_defense_score(page: dict | None) -> float:
+        if not isinstance(page, dict):
+            return 0.0
+        names = set(_candidate_rune_names({"runes": page}))
+        score = float(len(names & DEFENSIVE_RUNES))
+        # Resolve is the tree with the real armor/MR/HP/tenacity slots. Give it
+        # a small structural preference only in a close durability race; the
+        # measured damage/survival score remains primary.
+        if str(page.get("primaryTree") or "") == "Resolve":
+            score += 1.5
+        if str(page.get("keystone") or "") in {
+                "Guardian", "Grasp of the Undying", "Ice Overlord"}:
+            score += 1.0
+        return score
+
+    def _is_defensive_boot(slug: str) -> bool:
+        return slug in DEFENSIVE_BOOTS
+
+    def _boot_margin(score: float | None = None) -> float:
+        # The relative component keeps the tie window useful if the reference
+        # score scale moves with a future patch, without ever dropping below
+        # the explicit bias floor above.
+        return max(BOOT_TIE_MARGIN, abs(float(score or 0.0)) * 0.03)
+
+    def _prefer_evaluated(row, current) -> bool:
+        if current is None:
+            return True
+        delta = row[0] - current[0]
+        if (survival_w >= 0.40
+                and abs(delta) <= max(_boot_margin(current[0]), RUNE_TIE_MARGIN)
+                and (_is_defensive_boot(row[2])
+                     or _rune_defense_score(row[3]) > _rune_defense_score(current[3]))
+                and (_is_defensive_boot(row[2])
+                     or not _is_defensive_boot(current[2]))):
+            # Prefer the more defensive side only when it is genuinely close;
+            # never turn a large measured lead into a cosmetic bias override.
+            if (_rune_defense_score(row[3]) > _rune_defense_score(current[3])
+                    or (_is_defensive_boot(row[2])
+                        and not _is_defensive_boot(current[2]))):
+                return True
+        if delta > 0:
+            return True
+        if (survival_w >= 0.40
+                and abs(delta) <= _boot_margin(current[0])
+                and _is_defensive_boot(row[2])
+                and not _is_defensive_boot(current[2])):
+            return True
+        return False
+
     best: tuple[float, tuple[str, ...], str, dict, str] | None = None
     evaluated: list[tuple[float, tuple[str, ...], str, dict, str]] = []
     scenario_evaluations = 0
     finalist_keys: set[tuple] = set()
-    for _prefilter, combo, boot, page, archetype in finalists[:120]:
+    finalist_frontier = list(finalists[:120])
+    if survival_w >= 0.40:
+        # The cheap prefilter is intentionally damage-heavy for throughput.
+        # Preserve a small defensive-page sample for the expensive objective
+        # too, otherwise Resolve pages can disappear before their survival
+        # score gets a chance to compete with an authored Precision page.
+        finalist_frontier.extend(
+            sorted(finalists,
+                   key=lambda row: _rune_defense_score(row[3]),
+                   reverse=True)[:36]
+        )
+        finalist_frontier.extend(
+            sorted((row for row in finalists if _is_defensive_boot(row[2])),
+                   key=lambda row: row[0], reverse=True)[:36]
+        )
+    for _prefilter, combo, boot, page, archetype in finalist_frontier:
         finalist_key = (tuple(sorted(combo)), boot,
                         tuple(sorted(_candidate_rune_names({"runes": page}))))
         if finalist_key in finalist_keys:
@@ -2493,9 +2730,89 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
             list(combo) + [boot], _candidate_rune_names({"runes": page}))
         scenario_evaluations += 1
         evaluated.append((score, combo, boot, page, archetype))
-        if best is None or score > best[0]:
+        if _prefer_evaluated(evaluated[-1], best):
             best = (score, combo, boot, page, archetype)
-    evaluated.sort(key=lambda row: row[0], reverse=True)
+    # Preserve score order, but put a defensive boot first among the close
+    # alternatives exposed in the debug panel.  Rows outside the best score
+    # band remain strictly score-ranked.
+    leader_score = max((row[0] for row in evaluated), default=0.0)
+    evaluated.sort(
+        key=lambda row: (row[0], 1 if (
+            survival_w >= 0.40
+            and leader_score - row[0] <= _boot_margin(leader_score)
+            and _is_defensive_boot(row[2])) else 0,
+            _rune_defense_score(row[3]) if (
+                survival_w >= 0.40
+                and leader_score - row[0] <= max(
+                    _boot_margin(leader_score), RUNE_TIE_MARGIN)) else 0),
+        reverse=True)
+    rune_policy = {
+        "requested": build_bias,
+        "frontlineDefensivePageRequired": bool(
+            build_bias == "max_durability"
+            and champion_class in {"Tank", "Bruiser", "Fighter"}),
+        "selectedDefensivePage": False,
+    }
+    # For a frontline max-durability request, a page with Resolve plus at least
+    # two defensive minors is the minimum readable expression of the bias. The
+    # item core can still contain BotRK/Divine/GA and remain threatening; the
+    # page is where we stop the optimizer from returning a carry page with one
+    # defensive flex rune. Keep the deterministic guard bounded by a five-point
+    # measured penalty so an actually incompatible defensive page cannot win.
+    if rune_policy["frontlineDefensivePageRequired"]:
+        defensive_pages = [
+            row for row in evaluated
+            if str(row[3].get("primaryTree") or "") == "Resolve"
+            and len(set(_candidate_rune_names({"runes": row[3]}))
+                    & DEFENSIVE_RUNES) >= 2
+        ]
+        if defensive_pages:
+            defensive_best = max(defensive_pages, key=lambda row: row[0])
+            if best is None or defensive_best[0] >= best[0] - 5.0:
+                best = defensive_best
+                rune_policy["selectedDefensivePage"] = True
+    boot_policy = {
+        "requested": build_bias,
+        "defensiveBootCloseRace": False,
+    }
+    if (best is not None and survival_w >= 0.60
+            and champion_class in {"Tank", "Bruiser", "Fighter"}):
+        # Apply the same bias after the rune page guard: selecting a defensive
+        # page must not accidentally put an offensive boot back on the answer.
+        # Prefer a defensive boot on the same five-item core when it is within
+        # the close-race band; otherwise use the strongest measured defensive
+        # boot row still inside the five-point practical window.
+        same_core = [row for row in evaluated
+                     if tuple(sorted(row[1])) == tuple(sorted(best[1]))
+                     and _is_defensive_boot(row[2])
+                     and (not rune_policy["selectedDefensivePage"]
+                          or _rune_defense_score(row[3]) >= 2.0)]
+        boot_rows = same_core or [row for row in evaluated
+                                  if _is_defensive_boot(row[2])
+                                  and (not rune_policy["selectedDefensivePage"]
+                                       or _rune_defense_score(row[3]) >= 2.0)]
+        boot_rows = [row for row in boot_rows
+                     if abs(row[0] - best[0]) <= 5.0]
+        if not boot_rows:
+            # The beam may have discarded the exact same core with a defensive
+            # boot before the final scenario pass. Score those two alternatives
+            # directly so the boot decision is never an accident of the item
+            # frontier.
+            for defensive_boot in sorted(DEFENSIVE_BOOTS):
+                if not _identity_item_allowed(champion, defensive_boot,
+                                               unrestricted_mode):
+                    continue
+                probe_score = skill_adjusted_score(
+                    list(best[1]) + [defensive_boot],
+                    _candidate_rune_names({"runes": best[3]}))
+                boot_rows.append((probe_score, best[1], defensive_boot,
+                                  best[3], best[4]))
+            boot_rows = [row for row in boot_rows
+                         if abs(row[0] - best[0]) <= 5.0]
+        if boot_rows:
+            boot_best = max(boot_rows, key=lambda row: row[0])
+            best = boot_best
+            boot_policy["defensiveBootCloseRace"] = True
     top_engine_builds = []
     seen_top: set[tuple] = set()
     for row in evaluated:
@@ -2510,6 +2827,29 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                                   "runes": row[3], "archetype": row[4]})
         if len(top_engine_builds) >= max(0, int(return_top or 0)):
             break
+    # A single final build is still the least surprising product behavior, but
+    # expose a deterministic tie signal so the judge/UI can explain when two
+    # measured engine cores are effectively interchangeable. Use unrounded
+    # scores here; the displayed one-decimal values can hide a real gap.
+    tie_score_margin = max(0.5, abs(leader_score) * 0.005)
+    tie_rows = []
+    seen_tie: set[tuple] = set()
+    for row in evaluated:
+        signature = tuple(sorted(row[1]))
+        if signature in seen_tie:
+            continue
+        seen_tie.add(signature)
+        if leader_score - row[0] <= tie_score_margin:
+            tie_rows.append({"score": round(row[0], 3),
+                             "items": list(row[1]), "boots": row[2],
+                             "runes": row[3], "archetype": row[4]})
+    engine_tie = {
+        "isTie": len(tie_rows) >= 2,
+        "scoreMargin": round(tie_score_margin, 3),
+        "scoreGap": round((tie_rows[0]["score"] - tie_rows[-1]["score"])
+                           if tie_rows else 0.0, 3),
+        "candidates": tie_rows[:3],
+    }
     if best is None or best[0] <= threshold + 0.1:
         return None, {"objective": objective, "weights": weights,
                       "blend": {"damage": damage_w, "survival": survival_w},
@@ -2523,7 +2863,10 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                       "vectorCacheEntries": len(vector_cache),
                       "conditionalCacheEntries": len(conditional_cache),
                       "scoreCacheEntries": len(score_cache),
-                      "topEngineBuilds": top_engine_builds}
+                      "topEngineBuilds": top_engine_builds,
+                      "engineTie": engine_tie,
+                      "runePolicy": rune_policy,
+                      "bootPolicy": boot_policy}
 
     score, combo, boot, page, archetype = best
     # Summoners do not alter the engine measurements. Keep the most common
@@ -2543,7 +2886,7 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                        f"skill; score {score:.1f} versus authored best "
                        f"{threshold:.1f} across {searched} prefilter trials and "
                        f"{scenario_evaluations} scenario finalists."),
-        "items": _ordered_engine_items(combo, candidates),
+        "items": _ordered_engine_items(combo, candidates, unrestricted_mode),
         "boots": boot, "runes": page, "summoners": spells,
     }
     if _candidate_signature(challenger) in {_candidate_signature(c) for c in candidates}:
@@ -2559,6 +2902,9 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                       "conditionalCacheEntries": len(conditional_cache),
                       "scoreCacheEntries": len(score_cache),
                       "topEngineBuilds": top_engine_builds,
+                      "engineTie": engine_tie,
+                      "runePolicy": rune_policy,
+                      "bootPolicy": boot_policy,
                       "reason": "winner duplicates an authored candidate"}
     return challenger, {"objective": objective, "weights": weights,
                         "blend": {"damage": damage_w, "survival": survival_w},
@@ -2573,14 +2919,20 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                       "vectorCacheEntries": len(vector_cache),
                       "conditionalCacheEntries": len(conditional_cache),
                       "scoreCacheEntries": len(score_cache),
-                      "topEngineBuilds": top_engine_builds}
+                        "topEngineBuilds": top_engine_builds,
+                        "engineTie": engine_tie,
+                        "runePolicy": rune_policy,
+                        "bootPolicy": boot_policy}
 
 
 def _tournament_generation_prompt(prompt: str, archetypes: list[dict] | None = None,
                                   candidate_count: int = 3,
-                                  build_bias: str = "max_damage") -> str:
+                                  build_bias: str = "max_damage",
+                                  champion: str = "",
+                                  unrestricted_mode: bool = False) -> str:
     archetypes = archetypes or []
-    damage_w, survival_w = _tournament_blend(build_bias)
+    damage_w, survival_w = _tournament_blend(
+        build_bias, champion, unrestricted_mode=unrestricted_mode)
     # This pass used to ask for "the requested maximum-damage goal" whatever
     # the bias was.  A champion with as many archetypes as slots (Varus: five)
     # then spent every slot on a pure damage probe, the durability request had
@@ -2613,6 +2965,16 @@ three AD-bearing items; percent-penetration-only items do not satisfy this
 path. A single crit flex such as Collector is allowed when it is coherent.
 These are delivery-path requirements, not suggestions for item names.
 """ if archetypes else "")
+    if unrestricted_mode:
+        path_rule = """
+The player explicitly enabled EXPERIMENTAL UNRESTRICTED MODE. Ignore curated
+champion identity, class/archetype, item-family, frontline-safety, ladder and
+normal-meta restrictions. Explore any supplied catalog item and damage path that
+can improve the requested objective, including off-meta combinations. Keep the
+output mechanically legal: use supplied names, five unique completed non-boot
+items, tier-2 boots and a legal rune page. Label every candidate `unrestricted`.
+This mode is intentionally not recommended for ordinary games.
+"""
     labels = "|".join(chr(ord("A") + i) for i in range(candidate_count))
     return prompt + f"""
 
@@ -2622,7 +2984,8 @@ propose exactly {candidate_count} genuinely competitive, materially different bu
 {goal}. These are hypotheses for measurement, not
 random novelty. One may favour peak sustained DPS, one burst/TTK, and one
 damage delivery or survival where appropriate for this champion. Every build
-must obey every item, rune, role, lock and identity rule above.
+must obey the item, rune, role and lock rules above, except that unrestricted
+mode explicitly removes curated identity and archetype guidance.
 {path_rule}
 
 Return ONLY JSON:
@@ -2686,8 +3049,11 @@ def _validated_item_shortlist(payload: dict, pool_slugs: list[str], limit: int =
 
 
 def _tournament_judge_prompt(prompt: str, measured: list[dict],
-                             build_bias: str = "max_damage") -> str:
-    damage_w, survival_w = _tournament_blend(build_bias)
+                             build_bias: str = "max_damage",
+                             champion: str = "",
+                             unrestricted_mode: bool = False) -> str:
+    damage_w, survival_w = _tournament_blend(
+        build_bias, champion, unrestricted_mode=unrestricted_mode)
     # The judge has to know which question the numbers were ranked against.
     # Without this it read every tournament as a damage contest and explained
     # away a durability winner as "slightly lower DPS", which is the whole
@@ -2705,7 +3071,11 @@ def _tournament_judge_prompt(prompt: str, measured: list[dict],
            "answer: say what the durability buys and what it costs. Still refuse a "
            "build that has stopped threatening anyone -- durability is worth nothing "
            "on a champion who can no longer kill.\n"))
-    return prompt + objective_line + """
+    mode_note = ("\nUNRESTRICTED MODE: compare candidates without restoring curated champion\n"
+                 "identity, archetype or item-family preferences. An off-meta core\n"
+                 "may win when its measured objective is stronger; explain the trade\n"
+                 "using only supplied facts.\n" if unrestricted_mode else "")
+    return prompt + objective_line + mode_note + """
 
 ENGINE TOURNAMENT -- FINAL JUDGE.
 Below are the builds you proposed plus, when it found a measurable
@@ -2749,6 +3119,13 @@ Sudden Impact is now gated by an intrinsic dash, blink, teleport or stealth in
 the champion's own ability text, and Flash is explicitly excluded. Treat other
 unstructured positional or takedown opportunities conservatively.
 
+ENGINE TIES: if two ENGINE-D alternatives are within roughly 0.5% of one
+another on the measured score, treat that as a tie rather than pretending the
+last decimal proves a winner. Return one final build (the application does not
+show duplicate answers by default), choosing the more reliable/practical core
+and explaining the deciding condition. The alternatives remain available in
+the debug metadata for comparison.
+
 DAMAGE SCENARIOS: every candidate includes separate three-second burst and
 eight-second damage/DPS against ADC, mage, fighter, bruiser and tank profiles.
 The oneVsThree case focuses a bruiser while an ADC and mage are available as
@@ -2790,12 +3167,19 @@ def advise(champion: str, role: str, enemies: list[str],
            locked_runes: list[str] | None = None,
            ladder_anchor: bool = True,
            engine_tournament: bool = False,
+           unrestricted_mode: bool = False,
            on_progress=None) -> dict:
     # on_progress(event) is called with {"stage": ...} as the generation moves.
     # It is optional and side-effect free: nothing about the build depends on
     # whether anyone is listening.
     emit = on_progress or (lambda _event: None)
     mode = "counter" if mode == "counter" else "studio"
+    unrestricted_mode = bool(unrestricted_mode)
+    # The experimental mode is intentionally independent of ladder consensus:
+    # feeding the model the top players' items would quietly reintroduce the
+    # curated identity the user just opted out of.
+    if unrestricted_mode:
+        ladder_anchor = False
     # ladder_anchor=False is the "what would you build on your own" switch.
     #
     # The ladder block hands the model the items, keystones, spells and minors
@@ -2842,7 +3226,8 @@ def advise(champion: str, role: str, enemies: list[str],
         }
     game_phase = game_phase if game_phase in GAME_PHASES else "balanced"
     damage_path = damage_path if damage_path in DAMAGE_PATHS else "standard"
-    if damage_path != "standard" and champion not in HYBRID_DAMAGE_CHAMPIONS:
+    if (damage_path != "standard" and champion not in HYBRID_DAMAGE_CHAMPIONS
+            and not unrestricted_mode):
         return {"error": f"{damage_path!r} is not a supported damage path for {champion}"}
     # The key is checked AFTER the request is validated. A malformed request is
     # malformed whether or not this deployment can reach the model, and checking
@@ -2897,11 +3282,21 @@ def advise(champion: str, role: str, enemies: list[str],
     derived = profiles.profile(champion)
     combat = derived["combatProfile"]
     scaling = derived.get("scalingProfile", {})
-    kit_linked_items = itemmeta.mandatory_audit(
-        combat, scaling, damage_identity=profiles.build_identity(champion))
-    pool_slugs, withheld = itemmeta.filter_candidates(
-        champion_record, combat, scaling,
-        damage_path=damage_path, enemies_known=enemies_known, role=role)
+    kit_linked_items = ([] if unrestricted_mode else itemmeta.mandatory_audit(
+        combat, scaling, damage_identity=profiles.build_identity(champion)))
+    if unrestricted_mode:
+        # Remove only catalog entries that are no longer purchasable. Range,
+        # mana, support-role, situational and champion-identity filters are all
+        # deliberately bypassed; the final validator still requires known
+        # completed items and a legal schema.
+        pool_slugs = sorted(
+            slug for slug, item in itemmeta.completed_items().items()
+            if not item.get("removedIn"))
+        withheld = []
+    else:
+        pool_slugs, withheld = itemmeta.filter_candidates(
+            champion_record, combat, scaling,
+            damage_path=damage_path, enemies_known=enemies_known, role=role)
     # Locked items are the player's explicit instruction and outrank the filter:
     # withholding one would make the lock impossible to honour.
     for slug in (locked_items or []):
@@ -2949,7 +3344,12 @@ def advise(champion: str, role: str, enemies: list[str],
 
     prompt = "\n\n".join(x for x in [
         prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
-        prompt_mod.meta_identity_block(identity_key, constrain=(objective != "best")),
+        ("EXPERIMENTAL UNRESTRICTED MODE: ignore curated champion identity, class and "
+         "item-family recommendations and search all supplied legal item paths. This "
+         "is off-meta exploration and is not recommended for normal games. Still use "
+         "real supplied names and a legal build schema."
+         if unrestricted_mode else
+         prompt_mod.meta_identity_block(identity_key, constrain=(objective != "best"))),
         prompt_mod.ladder_consensus_block(identity_key) if ladder_anchor else "",
         f"ROLE: {role}",
         # Every selected option governs the WHOLE loadout. Stated once here
@@ -3003,7 +3403,7 @@ def advise(champion: str, role: str, enemies: list[str],
         _summoner_block(role, enemies_known, immobile=not summoners.has_mobility(
             champion, ' '.join((a.get('text') or '')
                                for a in (champion_record.get('abilities') or [])))),
-        _support_item_block(role),
+        "" if unrestricted_mode else _support_item_block(role),
         # Locks: the player has pinned these and the build MUST contain them.
         # They are a constraint on an otherwise free optimisation, so build the
         # best loadout that still honours them -- do not just append them.
@@ -3048,7 +3448,14 @@ def advise(champion: str, role: str, enemies: list[str],
         _meta_block(champion),
         prompt_mod.audit_block(kit_linked_items, combat),
         prompt_mod.rules_block(enemies_known, combat),
-        prompt_mod.boots_block(champion_record.get("class", ""), enemies_known, damage_path),
+        prompt_mod.boots_block(
+            "" if unrestricted_mode else champion_record.get("class", ""),
+            enemies_known,
+            "standard" if unrestricted_mode else damage_path),
+        ("UNRESTRICTED BOOT OVERRIDE: the boot guidance above is informational only. "
+         "Choose any supplied legal tier-2 boot and time it by the measured objective; "
+         "do not force an offensive, defensive or class-typical boot."
+         if unrestricted_mode else ""),
         runemeta.pool_text_block(),
         prompt_mod.item_pool_block(
             pool_slugs,
@@ -3097,17 +3504,19 @@ def advise(champion: str, role: str, enemies: list[str],
         try:
             tournament_stage = "generating candidates"
             damage_archetypes = _damage_archetypes(
-                champion, combat, scaling, damage_path)
+                champion, combat, scaling, damage_path, unrestricted_mode)
             candidate_count = _tournament_candidate_count(damage_archetypes)
             raw_candidates = call(_tournament_generation_prompt(
-                prompt, damage_archetypes, candidate_count, build_bias))
+                prompt, damage_archetypes, candidate_count, build_bias,
+                champion, unrestricted_mode))
             tournament_stage = "validating candidates"
             candidates, candidate_errors = _legal_tournament_candidates(
                 raw_candidates, pool_slugs, item_locks=item_locks,
                 boot_lock=locked_boot, rune_locks=locked_runes,
                 role=role, enemies_known=enemies_known,
                 expected_count=candidate_count,
-                required_archetypes=[row["id"] for row in damage_archetypes])
+                required_archetypes=[row["id"] for row in damage_archetypes],
+                unrestricted_mode=unrestricted_mode)
             if not candidates:
                 # One constrained retry is cheaper and more informative than
                 # silently replacing the whole tournament with an ordinary
@@ -3117,7 +3526,8 @@ def advise(champion: str, role: str, enemies: list[str],
                 print("[advisor] no legal tournament candidates; requesting one "
                       "constrained candidate retry", file=sys.stderr)
                 raw_candidates = call(_tournament_generation_prompt(
-                    prompt, damage_archetypes, candidate_count, build_bias)
+                    prompt, damage_archetypes, candidate_count, build_bias,
+                    champion, unrestricted_mode)
                     + "\n\nCANDIDATE GATE ERRORS FROM YOUR PREVIOUS RESPONSE:\n"
                     + retry_context
                     + "\nReturn exactly the requested candidate count. Use item slugs, "
@@ -3128,7 +3538,8 @@ def advise(champion: str, role: str, enemies: list[str],
                     boot_lock=locked_boot, rune_locks=locked_runes,
                     role=role, enemies_known=enemies_known,
                     expected_count=candidate_count,
-                    required_archetypes=[row["id"] for row in damage_archetypes])
+                    required_archetypes=[row["id"] for row in damage_archetypes],
+                    unrestricted_mode=unrestricted_mode)
                 candidates = retry_candidates
                 candidate_errors.extend(["retry: " + message for message in retry_errors])
             for message in candidate_errors:
@@ -3154,7 +3565,8 @@ def advise(champion: str, role: str, enemies: list[str],
             # Storm afterwards; that changed the tested signature and erased
             # the tournament winner label even though the tournament itself
             # completed successfully.
-            if build_bias == "max_damage" and not locked_runes:
+            if (build_bias == "max_damage" and not locked_runes
+                    and not unrestricted_mode):
                 for candidate in candidates:
                     _repair_max_damage_runes(candidate, locked_runes)
             if candidate_errors:
@@ -3191,8 +3603,14 @@ def advise(champion: str, role: str, enemies: list[str],
                 item_locks=item_locks, rune_locks=locked_runes,
                 skill_level=skill_level, build_bias=build_bias,
                 allowed_items=engine_pool_slugs,
-                priority_items=[],
-                return_top=3)
+            # Rammus' value is partly the damage enemies deal into him: W's
+            # Spiked Shell and Thornmail only fire when he is attacked.  Keep
+            # Thornmail in the scored frontier even when its one-item probe is
+            # (correctly) zero outgoing damage; the rotation adds its
+            # conditional reflection for the Rammus target profile.
+            priority_items=(['thornmail'] if engine_name == "Rammus" else []),
+                return_top=3,
+                unrestricted_mode=unrestricted_mode)
             if challenger:
                 candidates.append(challenger)
                 print(f"[advisor] engine challenger added: {challenger['items']} "
@@ -3209,7 +3627,8 @@ def advise(champion: str, role: str, enemies: list[str],
             engine_alternatives = []
             for index, row in enumerate(search_meta.get("topEngineBuilds") or [], 1):
                 page = row.get("runes") or {}
-                items = _ordered_engine_items(tuple(row.get("items") or []), candidates)
+                items = _ordered_engine_items(
+                    tuple(row.get("items") or []), candidates, unrestricted_mode)
                 spells = list((candidates[0].get("summoners") or []) if candidates else [])
                 alt = {
                     "id": f"ENGINE-D{index}",
@@ -3241,7 +3660,8 @@ def advise(champion: str, role: str, enemies: list[str],
                 engine_gate["reason"] = "no distinct engine challenger was produced"
             emit({"stage": "judging", "candidates": len(candidates)})
             tournament_stage = "judging candidates"
-            judge_prompt = _tournament_judge_prompt(prompt, measured, build_bias)
+            judge_prompt = _tournament_judge_prompt(
+                prompt, measured, build_bias, champion, unrestricted_mode)
             res = call(judge_prompt, thinking_level="high")
 
             tested_signatures = {_candidate_signature(c) for c in candidates}
@@ -3329,8 +3749,10 @@ def advise(champion: str, role: str, enemies: list[str],
                     comparison_measurements = ([base_measurement] if base_measurement else [])
                     if refined_row:
                         comparison_measurements.append(refined_row)
-                    base_score = _tournament_measurement_score(base_measurement, build_bias)
-                    refined_score = _tournament_measurement_score(refined_row, build_bias)
+                    base_score = _tournament_measurement_score(
+                        base_measurement, build_bias, champion, unrestricted_mode)
+                    refined_score = _tournament_measurement_score(
+                        refined_row, build_bias, champion, unrestricted_mode)
                     competitive = (
                         base_score is not None and refined_score is not None
                         and refined_score >= base_score * ENGINE_REPLACEMENT_MARGIN)
@@ -3363,6 +3785,8 @@ def advise(champion: str, role: str, enemies: list[str],
                 replacement_meta = {"accepted": False,
                                     "rejection": "itemReplacement must be an object or null"}
             tournament_meta = {
+                "restrictionMode": "unrestricted" if unrestricted_mode else "curated",
+                "unrestrictedMode": unrestricted_mode,
                 "candidateCount": len(candidates),
                 "modelCandidateCount": candidate_count,
                 "candidateErrors": candidate_errors,
@@ -3441,7 +3865,8 @@ def advise(champion: str, role: str, enemies: list[str],
             res = call(prompt)
     else:
         res = call(prompt)
-    if build_bias == "max_damage" and not locked_runes:
+    if (build_bias == "max_damage" and not locked_runes
+            and not unrestricted_mode):
         if _repair_max_damage_runes(res):
             print("[advisor] removed avoidable defensive rune from max-damage page",
                   file=sys.stderr)
@@ -3457,7 +3882,8 @@ def advise(champion: str, role: str, enemies: list[str],
             # An explicitly selected alternative damage path is the player
             # overriding the standard identity on purpose; the lint stands
             # down rather than fight the request it was told to honour.
-            identity=identity_card if damage_path == "standard" else None,
+            identity=(identity_card if damage_path == "standard" and not unrestricted_mode
+                      else None),
             # The REQUIRED CANDIDATES block demands a score for each ladder
             # core item. Counter mode receives that block already -- it was
             # only the enforcement that was studio-only, so a counter build
@@ -3466,7 +3892,7 @@ def advise(champion: str, role: str, enemies: list[str],
             # ladder core exists to catch; answering an enemy comp is not a
             # licence to stop playing the champion. Now enforced in both.
             ladder_core=(prompt_mod.ladder_core_slugs(identity_key)
-                         if ladder_anchor else []),
+                         if ladder_anchor and not unrestricted_mode else []),
             # How many enemies actually have hard crowd control, so the
             # validator can reject a tenacity rune bought against one.
             hard_cc_count=(threats_mod.team_threat_profile(enemies).get("hardCcCount")
@@ -3475,6 +3901,7 @@ def advise(champion: str, role: str, enemies: list[str],
             # build that answers three heavy healers with nothing.
             healing_level=(threats_mod.team_threat_profile(enemies).get("healing", "")
                            if mode == "counter" and enemies else ""),
+            unrestricted_mode=unrestricted_mode,
         )
 
     report = _check(res)
@@ -3599,12 +4026,13 @@ def advise(champion: str, role: str, enemies: list[str],
             if isinstance(_row, dict):
                 _row.pop("reason", None)
 
-    fixed_items, changed = supportitem.enforce(
-        res.get("items") or [], role, champion_class)
-    if changed:
-        print(f"[advisor] support item enforced for {champion} ({role}): "
-              f"{res.get('items')} -> {fixed_items}", file=sys.stderr)
-        res["items"] = fixed_items
+    if not unrestricted_mode:
+        fixed_items, changed = supportitem.enforce(
+            res.get("items") or [], role, champion_class)
+        if changed:
+            print(f"[advisor] support item enforced for {champion} ({role}): "
+                  f"{res.get('items')} -> {fixed_items}", file=sys.stderr)
+            res["items"] = fixed_items
 
     raw_summoners = res.get("summoners") or []
     picked = summoners.enforce(raw_summoners, role, enemies_known)
@@ -3669,6 +4097,7 @@ def advise(champion: str, role: str, enemies: list[str],
             identity_key, [s for s in (res.get("items") or []) if s]))
 
     res["schemaVersion"] = 2
+    res["unrestrictedMode"] = unrestricted_mode
     res["requestMeta"] = {
         "mode": mode,
         "requestedPlaystyle": playstyle,
@@ -3680,6 +4109,8 @@ def advise(champion: str, role: str, enemies: list[str],
         "skillLevel": skill_level,
         "buildBias": build_bias,
         "enemyContext": "known" if enemies_known else "unknown",
+        "unrestrictedMode": unrestricted_mode,
+        "restrictionMode": "unrestricted" if unrestricted_mode else "curated",
         # Which transform form this build is for. The studio needs it to
         # show the matching kit: without it a Rhaast build was rendered
         # against Shadow Assassin's abilities and base stats.
@@ -3757,7 +4188,8 @@ def why_not(champion: str, items: list[str], boots: str,
             situational_boots: list | None = None,
             enemies: list[str] | None = None, role: str = "",
             item_reasons: list | None = None, rune_reasons: dict | None = None,
-            boots_reason: str = "", candidate_score: dict | None = None) -> dict:
+            boots_reason: str = "", candidate_score: dict | None = None,
+            unrestricted_mode: bool = False) -> dict:
     """Answer "why is CANDIDATE not in this build" for a build we generated.
 
     People disagree with builds constantly, and the difference between "this
@@ -3809,7 +4241,8 @@ def why_not(champion: str, items: list[str], boots: str,
         pass
     try:
         identity_key = "Kayn (Rhaast)" if champion == "Kayn" and playstyle == "rhaast" else champion
-        brief.append(prompt_mod.meta_identity_block(identity_key))
+        if not unrestricted_mode:
+            brief.append(prompt_mod.meta_identity_block(identity_key))
     except Exception:
         pass
     enemies = [e for e in (enemies or []) if e]
@@ -3925,7 +4358,11 @@ def why_not(champion: str, items: list[str], boots: str,
         + boots_line + "\n"
         + f"Runes: {', '.join(rune_names or []) or 'unknown'}.\n"
         + ("\n".join(rune_lines) + "\n" if rune_lines else "")
-        + bias_line +
+        + bias_line
+        + ("\nEXPERIMENTAL UNRESTRICTED MODE: the build was allowed to consider this item "
+           "without curated identity or item-family restrictions. Explain only the "
+           "measured/practical trade-off; do not restore those restrictions.\n"
+           if unrestricted_mode else "") +
         f"\nTHE ITEM IN QUESTION: {cand.get('name', candidate)} "
         f"(cost {cand.get('cost')}, stats: {cand_stats or 'none'}; "
         f"passives: {cand_passives or 'none'}).\n"
@@ -4210,6 +4647,8 @@ def main() -> None:
     ap.add_argument("--skill-level", choices=tuple(SKILL_LEVEL), default="average")
     ap.add_argument("--locked-items", default="", help="comma-separated item slugs to pin")
     ap.add_argument("--locked-runes", default="", help="comma-separated rune names to pin")
+    ap.add_argument("--unrestricted-mode", action="store_true",
+                    help="experimental: bypass curated champion/archetype/item recommendations")
     ap.add_argument("--runs", type=int, default=1,
                     help="sample the model this many times and return the build the "
                          "samples agree on (default 1: one sample, no vote)")
@@ -4222,7 +4661,8 @@ def main() -> None:
                       playstyle=payload.get("playstyle") or "standard",
                       build_bias=payload.get("buildBias") or "balanced",
                       situational=payload.get("situational") or [],
-                      situational_boots=payload.get("situationalBoots") or [])
+                      situational_boots=payload.get("situationalBoots") or [],
+                      unrestricted_mode=payload.get("unrestrictedMode") is True)
         print(json.dumps(out, ensure_ascii=False))
         return
     res = advise_best_of(args.champion, args.role,
@@ -4235,7 +4675,8 @@ def main() -> None:
                  game_phase=args.game_phase, damage_path=args.damage_path,
                  champion_form=args.champion_form, ahead_enemy=args.ahead_enemy,
                  locked_items=[s.strip() for s in args.locked_items.split(",") if s.strip()],
-                 locked_runes=[s.strip() for s in args.locked_runes.split(",") if s.strip()])
+                 locked_runes=[s.strip() for s in args.locked_runes.split(",") if s.strip()],
+                 unrestricted_mode=args.unrestricted_mode)
     print(json.dumps(res, ensure_ascii=False, indent=2))
 
 

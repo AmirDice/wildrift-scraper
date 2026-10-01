@@ -18,6 +18,21 @@ export function AdvisorDebugPanel({ advice }: { advice: Advice }) {
   const topEngine = search?.topEngineBuilds ?? [];
   const measurements = tournament?.measurements ?? [];
   const paths = Object.entries(search?.paths ?? {});
+  const engineTie = search?.engineTie as {
+    isTie?: boolean;
+    scoreGap?: number;
+    scoreMargin?: number;
+    candidates?: Array<Record<string, unknown>>;
+  } | undefined;
+  const runePolicy = search?.runePolicy as {
+    requested?: string;
+    frontlineDefensivePageRequired?: boolean;
+    selectedDefensivePage?: boolean;
+  } | undefined;
+  const bootPolicy = search?.bootPolicy as {
+    requested?: string;
+    defensiveBootCloseRace?: boolean;
+  } | undefined;
 
   return (
     <details className="rounded-2xl border border-cyan-400/25 bg-cyan-400/[0.04] p-4 text-xs">
@@ -49,6 +64,29 @@ export function AdvisorDebugPanel({ advice }: { advice: Advice }) {
               <p className="mt-1 text-[0.68rem] text-amber-200">
                 Major gaps: {tournament.engineWinGate.majorCoverageGaps.join("; ")}
               </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {engineTie ? (
+          <div className="rounded-lg border border-violet-400/25 bg-violet-400/[0.05] p-3 text-violet-100">
+            <p className="font-bold uppercase tracking-wide">
+              Engine tie: {engineTie.isTie ? "close alternatives" : "clear leader"}
+            </p>
+            <p className="mt-1 text-[0.7rem] leading-relaxed">
+              Gap {Number(engineTie.scoreGap ?? 0).toFixed(3)} · tie band {Number(engineTie.scoreMargin ?? 0).toFixed(3)}.
+              {engineTie.isTie ? " Gemini receives the alternatives and returns one practical build." : " The normal response stays on one build."}
+            </p>
+          </div>
+        ) : null}
+
+        {(runePolicy || bootPolicy) ? (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {runePolicy ? (
+              <Metric label="Rune policy" value={`${runePolicy.selectedDefensivePage ? "defensive page selected" : "score-ranked page"}${runePolicy.frontlineDefensivePageRequired ? " · frontline guard" : ""}`} />
+            ) : null}
+            {bootPolicy ? (
+              <Metric label="Boot policy" value={bootPolicy.defensiveBootCloseRace ? "defensive close-race winner" : "score-ranked boots"} />
             ) : null}
           </div>
         ) : null}

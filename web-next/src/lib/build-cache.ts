@@ -47,6 +47,8 @@ export interface BuildRequestKey {
    *  never serves an unlocked cached build. */
   lockedItems?: string[];
   lockedRunes?: string[];
+  /** Explicit opt-out from curated champion/archetype/item recommendations. */
+  unrestrictedMode?: boolean;
 }
 
 /**
@@ -80,6 +82,7 @@ export function buildCacheKey(request: BuildRequestKey): string {
     allies: [...request.allies].map((a) => a.toLowerCase()).sort(),
     lockedItems: [...(request.lockedItems ?? [])].map((s) => s.toLowerCase()).sort(),
     lockedRunes: [...(request.lockedRunes ?? [])].map((s) => s.toLowerCase()).sort(),
+    unrestrictedMode: request.unrestrictedMode === true,
   });
   // Bump the version whenever the advisor's OUTPUT shape or logic changes, so
   // builds cached under the old behaviour are never served. v3: builds gained
@@ -346,7 +349,35 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v69: deterministic engine-win gate (5% lead + coverage safety),
   // competitive re-simulation for Gemini item replacements, and request-local
   // engine memoization. Older tournament decisions must not bypass the gate.
-  return `build:v69:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v70: the mechanic-coverage sweep expanded champion formula corrections,
+  // item/rune overrides, recipe-aware purchase ordering, and the AP/frontline
+  // identity validation path. Retire builds generated before those corrections
+  // so local and production tests exercise the current engine and advisor.
+  // v71: identity hard limits now apply to completed item combinations. A
+  // forbidden crit/on-hit/lethality path can no longer pass as a bruiser build
+  // merely because each item is individually legal.
+  // v72: apply those identity limits before beam pruning so a valid bruiser
+  // path cannot disappear behind high-scoring forbidden partials; also repair
+  // the bruiser purchase-order survival calculation so evidence and recipes
+  // are emitted instead of failing on an undefined effective-health value.
+  // v73: enforce explicit AD-avoidance on tank identities, add Rammus Ball
+  // Curl's ranked defensive/empowerment mechanics, and apply frontline
+  // survival floors consistently across generation, engine and judge.
+  // v74: experimental unrestricted mode is an explicit request dimension. A
+  // curated build must never be served for the same champion/settings after
+  // the player opts into the zero-curation exploration mode (or vice versa).
+  // v75: frontline objective calibration, reactive Rammus/Thornmail contact
+  // damage, late percentage-penetration ordering, defensive-boot tie breaks,
+  // and stricter attack-speed/on-hit identity filtering.
+  // v76: reviewed crit-affinity policy keeps crit items/paths out of
+  // unreviewed tanks and bruisers while preserving strong and situational
+  // melee crit identities.
+  // v77: situational frontline crit is now explicitly off-meta. Only the
+  // strong reviewed roster can enter a standard curated crit path; Vi,
+  // Jarvan IV and Wukong (among others) must be crit-free unless the player
+  // enables unrestricted mode. Retire v76 entries so an old crit result cannot
+  // survive the stricter identity policy.
+  return `build:v77:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

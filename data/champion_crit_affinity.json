@@ -1,0 +1,21 @@
+{
+  "strong": [
+    "Yasuo",
+    "Yone",
+    "Tryndamere",
+    "Viego",
+    "Garen",
+    "Rengar",
+    "Master Yi"
+  ],
+  "situational": [
+    "Xin Zhao",
+    "Vi",
+    "Pantheon",
+    "Nocturne",
+    "Jarvan IV",
+    "Wukong",
+    "Olaf"
+  ],
+  "policy": "For standard curated builds, frontline crit is reserved for the reviewed strong roster only: Yasuo, Yone, Tryndamere, Viego, Garen, Rengar and Master Yi. Situational entries are retained for research but are off-meta and available only through unrestricted mode. All other tanks and bruisers must not receive crit-stat or crit-passive items unless unrestricted mode is explicitly enabled."
+}

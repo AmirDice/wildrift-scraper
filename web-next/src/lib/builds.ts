@@ -130,7 +130,11 @@ export interface BuildAnalysis {
   ehpSplit: { physical: number; magic: number };
   survivalTime: Record<string, number | null>;
   goldEff: { gold: number; dmgPerGold: number | null; ehpPerGold: number | null };
-  healing: { lifesteal: number; omnivamp: number; onHit: number; rune: number; total: number };
+  healing: {
+    lifesteal: number; omnivamp: number; onHit: number; rune: number;
+    itemActive?: number; conqueror?: number; spellblade?: number;
+    conditional?: number; total: number;
+  };
   shields: { value: number; avgUptime: number; amp: number };
   damagePrevented: { armor: number; mr: number; dr: number; shield: number; total: number };
   cooldownUtil: { efficiency: number };

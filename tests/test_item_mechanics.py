@@ -53,6 +53,23 @@ def test_conditional_healing_and_overheal_shield_enter_metrics():
     assert gore["sustain"] > fe.metrics("Darius", [], [])["sustain"]
 
 
+def test_divine_sunderer_uses_melee_ranged_hp_split_and_real_cooldown():
+    melee = fe.resolve_stats("Hecarim", 15, ["divine-sunderer"], [])
+    ranged = fe.resolve_stats("Jinx", 15, ["divine-sunderer"], [])
+    assert melee["spellbladePctMaxHp"] == 10
+    assert melee["spellbladeHealPctMaxHp"] == 6
+    assert ranged["spellbladePctMaxHp"] == 7
+    assert ranged["spellbladeHealPctMaxHp"] == 2.5
+
+    detail = fe.rotation("Hecarim", melee, fe.TARGETS["bruiser"], 8.0)
+    # Six procs is the 1.5s cooldown cap over an 8-second reference fight;
+    # it must not fire once per auto or once per ability without a cooldown.
+    assert detail["spellbladeProcs"] == 6
+    expected = 0.06 * fe.TARGETS["bruiser"]["hp"] * 6
+    assert fe.analyze_build("Hecarim", ["divine-sunderer"], [])[
+        "healing"]["spellblade"] == round(expected)
+
+
 def test_high_payoff_rune_context_corrections_are_grounded():
     melee = fe.resolve_stats("Darius", 15, [], ["Conqueror"])
     ranged = fe.resolve_stats("Jinx", 15, [], ["Conqueror"])
@@ -84,6 +101,28 @@ def test_durability_pressure_includes_mixed_damage_and_true_damage():
     tank = fe.evaluation_vector("Rammus", ["amaranths-twinguard"], [], fast=True)
     carry = fe.evaluation_vector("Jinx", ["amaranths-twinguard"], [], fast=True)
     assert tank["compEhp"] > 0 and carry["compEhp"] > 0
+
+
+def test_rammus_ball_curl_uses_ranked_defense_and_damage_amp():
+    stats = fe.resolve_stats("Rammus", 15, [], [])
+    # The active defense is duration-bound; it should not be baked into the
+    # displayed base stat block before a fight window is chosen.
+    assert stats["armor"] < 150 and stats["mr"] < 80
+    assert any(row.get("armorPct") == 0.6 for row in stats["timedSteroids"])
+    detail = fe.rotation("Rammus", stats, fe.TARGETS["bruiser"], 8.0)
+    assert any("kit amp" in label for label, _ in detail["parts"])
+
+
+def test_rammus_reactive_reflection_prices_contact_and_thornmail():
+    bare = fe.resolve_stats("Rammus", 15, [], [])
+    thorn = fe.resolve_stats("Rammus", 15, ["thornmail"], [])
+    no_contact = dict(fe.TARGETS["bruiser"], incomingAutoAttacksPerSec=0)
+    assert not any("reactive reflection" in label
+                   for label, _ in fe.rotation("Rammus", bare, no_contact, 8.0)["parts"])
+    reflected = fe.rotation("Rammus", thorn, fe.TARGETS["bruiser"], 8.0)
+    assert any("reactive reflection" in label for label, _ in reflected["parts"])
+    assert reflected["total"] > fe.rotation(
+        "Rammus", bare, fe.TARGETS["bruiser"], 8.0)["total"]
 
 
 def test_context_assumptions_are_disclosed_without_becoming_free_damage():

@@ -636,7 +636,12 @@ def target_squishy(level: int) -> dict:
 
 TARGETS = {
     "squishy": target_squishy(13),  # kept for module-level compat
-    "bruiser": {"hp": 3400, "armor": 130, "mr": 85, "bonusHp": 1700},
+    # The attack-rate fields are used only by reactive mechanics (currently
+    # Rammus W/Thornmail).  They describe how many basic attacks a champion
+    # in this reference profile contributes while focused, not extra outgoing
+    # damage for every other champion.
+    "bruiser": {"hp": 3400, "armor": 130, "mr": 85, "bonusHp": 1700,
+                "incomingAutoAttacksPerSec": 0.90},
 }
 
 # Named reference targets for multi-target TTK / target-type performance. The
@@ -645,11 +650,15 @@ TARGETS = {
 def target_profiles(level: int) -> dict:
     adc = target_squishy(level)
     return {
-        "adc": adc,
-        "mage": {"hp": 2400, "armor": 80, "mr": 80, "bonusHp": 500},
-        "fighter": {"hp": 3000, "armor": 110, "mr": 70, "bonusHp": 1200},
-        "bruiser": {"hp": 3400, "armor": 130, "mr": 85, "bonusHp": 1700},
-        "tank": {"hp": 5000, "armor": 250, "mr": 180, "bonusHp": 3200},
+        "adc": {**adc, "incomingAutoAttacksPerSec": 1.35},
+        "mage": {"hp": 2400, "armor": 80, "mr": 80, "bonusHp": 500,
+                 "incomingAutoAttacksPerSec": 0.35},
+        "fighter": {"hp": 3000, "armor": 110, "mr": 70, "bonusHp": 1200,
+                    "incomingAutoAttacksPerSec": 1.05},
+        "bruiser": {"hp": 3400, "armor": 130, "mr": 85, "bonusHp": 1700,
+                    "incomingAutoAttacksPerSec": 0.90},
+        "tank": {"hp": 5000, "armor": 250, "mr": 180, "bonusHp": 3200,
+                 "incomingAutoAttacksPerSec": 0.60},
     }
 
 # offense/defense weights per build variant: the "kill fast vs live to kill
@@ -869,7 +878,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     st = {
         "baseAd": base("ad", 60), "bonusAd": 0.0, "ap": 0.0,
         "hp": base("hp", 1800), "bonusHp": 0.0,
-        "armor": base("armor", 60), "mr": base("mr", 45),
+        "armor": base("armor", 60), "baseArmor": base("armor", 60),
+        "mr": base("mr", 45),
         "baseAsPct": 0.0,  # bonus attack speed %
         # The champion's OWN bonus attack speed at this level (7.3's published
         # model). Filled in when attack speed is resolved.
@@ -897,6 +907,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # Procs whose condition the rotation has to verify, and ult-only amp.
         "conditionalProcs": [], "ultAmp": 0.0,
         "spellbladeBaseAdPct": 0.0, "spellbladePctMaxHp": 0.0,
+        "spellbladeHealPctMaxHp": 0.0,
         "spellbladeApPct": 0.0, "spellbladeCritFlatPerCrit": 0.0,
         "spellbladeCanCrit": 0.0, "spellbladeMagic": 0.0,
         "extraOnHitApplications": 0.0,
@@ -919,6 +930,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "onHitPhys": 0.0, "onHitMagic": 0.0, "onHitPctCurrentHp": 0.0, "onHitPctMaxHp": 0.0,
         "onHitPctMissingHp": 0.0,
         "procs": [], "dotDps": 0.0, "dotDpsBonusHpPct": 0.0, "dotPctMaxHp": 0.0,
+        # Reactive return damage is conditional on an enemy hitting us.  Keep
+        # it separate from ordinary outgoing item procs so a Thornmail owner
+        # is not credited for damage in a zero-contact duel.
+        "thornmailReflect": 0.0,
         "armorShred": 0.0, "mrShred": 0.0, "mrShredFlat": 0.0,
         "apAmp": 0.0, "hastePct": 0.0, "cdRefundPctPerAuto": 0.0,
         "cleaveFlat": 0.0, "cleavePctBonusHp": 0.0,
@@ -985,6 +1000,11 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         it = ITEMS.get(slug)
         if not it:
             continue
+        if slug == "thornmail":
+            # Thorns is not an outgoing proc: it only exists while an enemy
+            # basic attack actually lands.  Mark the reactive mechanic here;
+            # rotation() prices it against the incoming-auto profile only.
+            st["thornmailReflect"] = 1.0
         for k, v in it["stats"].items():
             _apply_stat(st, k, v["value"], v["percent"])
         # synthetic stat probe (used by stat_marginal_value); goes through the
@@ -1041,6 +1061,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 and fx.get("spellbladePctMaxHpRanged")):
             _sb_max = g("spellbladePctMaxHpRanged")
         st["spellbladePctMaxHp"] = max(st["spellbladePctMaxHp"], _sb_max)
+        # Divine Sunderer's Spellblade heal uses the same proc cadence as its
+        # damage and is also reduced for ranged champions.  Keeping it beside
+        # the damage channel prevents the durability search from treating
+        # Divine as a pure damage/HP stat stick.
+        _sb_heal = g("spellbladeHealPctMaxHp")
+        if (CHAMP_CLASS.get(name, "") in RANGED_CLASSES
+                and fx.get("spellbladeHealPctMaxHpRanged")):
+            _sb_heal = g("spellbladeHealPctMaxHpRanged")
+        st["spellbladeHealPctMaxHp"] = max(
+            st["spellbladeHealPctMaxHp"], _sb_heal)
         st["spellbladeApPct"] = max(st["spellbladeApPct"], g("spellbladeApPct"))
         st["spellbladeCritFlatPerCrit"] = max(
             st["spellbladeCritFlatPerCrit"], g("spellbladeCritFlatPerCrit"))
@@ -1514,10 +1544,20 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                     "stat": stat,
                     "asPct": (pct or _scale_val(s.get("flat"), 3, level)) if stat == "attackSpeed" else 0.0,
                     "adFlat": _scale_val(s["flat"], 3, level) if stat == "ad" and s.get("flat") else 0.0,
+                    "armorFlat": _scale_val(s["flat"], 3, level) if stat == "armor" and s.get("flat") else 0.0,
+                    "mrFlat": _scale_val(s["flat"], 3, level) if stat == "mr" and s.get("flat") else 0.0,
+                    "armorPct": (pct / 100.0) if stat == "armor" and s.get("pct") is not None else 0.0,
+                    "mrPct": (pct / 100.0) if stat == "mr" and s.get("pct") is not None else 0.0,
                     "drPct": (pct / 100.0) if stat == "damageReduction" else 0.0,
                     "durationS": float(duration),
                     "cooldownS": _scale_val(cds, 3, level) if cds else 12.0,
                 })
+            # Defensive timed steroids are averaged in _for_window. Applying
+            # them here as permanent stats would make a six-second Ball Curl
+            # active for the entire fight and inflate both armor-scaling damage
+            # and effective health in short/long windows alike.
+            if duration and duration > 0 and stat in ("armor", "mr"):
+                continue
             if stat == "attackSpeed":
                 st["baseAsPct"] += pct or _scale_val(s.get("flat"), 3, level)
             elif stat == "ad" and s.get("flat"):
@@ -1994,6 +2034,13 @@ def _conqueror_heal(st: dict, damage: float, window: float) -> float:
     return pct * damage * active
 
 
+def _spellblade_heal(st: dict, rotation_result: dict, target: dict) -> float:
+    """Healing paid by Divine Sunderer Spellblade procs in this rotation."""
+    pct = float(st.get("spellbladeHealPctMaxHp", 0.0) or 0.0)
+    procs = int(rotation_result.get("spellbladeProcs", 0) or 0)
+    return pct / 100.0 * float(target.get("hp", 0.0) or 0.0) * procs
+
+
 def _overheal_shield(st: dict, detail: dict) -> float:
     """Bloodthirster's Ichorshield, charged by lifesteal healing only."""
     cap = st.get("overhealShieldCap", 0.0)
@@ -2387,6 +2434,7 @@ def _for_window(name: str, st: dict, window: float) -> dict:
         return st
     haste_m = 100 / (100 + st["haste"])
     as_lost = ad_lost = 0.0
+    armor_gain = mr_gain = 0.0
     timed_dr = 0.0
     for s in timed:
         cd = max(0.5, (s["cooldownS"] or 12) * haste_m)
@@ -2394,9 +2442,23 @@ def _for_window(name: str, st: dict, window: float) -> dict:
         uptime = min(1.0, (s["durationS"] * casts) / window)
         as_lost += s["asPct"] * (1 - uptime)
         ad_lost += s["adFlat"] * (1 - uptime)
+        if s.get("armorFlat") or s.get("armorPct"):
+            armor_gain += uptime * (s.get("armorFlat", 0.0)
+                                    + (st.get("armor", 0.0)
+                                       + s.get("armorFlat", 0.0))
+                                    * s.get("armorPct", 0.0))
+        if s.get("mrFlat") or s.get("mrPct"):
+            mr_gain += uptime * (s.get("mrFlat", 0.0)
+                                 + (st.get("mr", 0.0)
+                                    + s.get("mrFlat", 0.0))
+                                 * s.get("mrPct", 0.0))
         if s.get("drPct"):
             timed_dr = max(timed_dr, float(s["drPct"]) * uptime)
     adj = dict(st)
+    if armor_gain:
+        adj["armor"] = st.get("armor", 0.0) + armor_gain
+    if mr_gain:
+        adj["mr"] = st.get("mr", 0.0) + mr_gain
     if timed_dr:
         adj["dr"] = max(float(st.get("dr", 0.0)), min(0.99, timed_dr))
     if st.get("ultimateArmorPen"):
@@ -2500,6 +2562,20 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             slot = entry.get("slot")
             if slot:                                   # amplifies ONE ability
                 src = by_slot_dmg.get(slot, 0.0)
+                # Some kit amps modify an empowered basic attack rather than
+                # the cast's direct damage (Rammus W is the canonical case).
+                # Per-auto components intentionally do not enter
+                # ``by_slot_dmg`` because that breakdown is cast-oriented, so
+                # opt into their measured contribution explicitly in data.
+                if entry.get("perAuto"):
+                    per_auto_src = 0.0
+                    for comp, comp_slot in per_auto_comps:
+                        if comp_slot != slot:
+                            continue
+                        per_auto_src += comp_dmg(comp, 3, slot) * (
+                            per_auto_share(comp_slot, comp)
+                            if per_auto_share is not None else 1.0)
+                    src += per_auto_src * n_autos
             elif entry.get("appliesTo") == "all":
                 src = total_now
             else:
@@ -2699,6 +2775,45 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         prio = sorted(basic_slots, key=_max_rank_dmg, reverse=True)
         rank_of = {s: (3 if i < 2 else 1) for i, s in enumerate(prio)}
     rank_of["4"] = 2 if level >= 13 else 1  # ult ranks at 5/9/13
+
+    def reactive_reflection_damage() -> float:
+        """Return contact damage Rammus deals back to attackers.
+
+        Rammus' Defensive Ball Curl is not just an armour steroid: every basic
+        attack into him can trigger Spiked Shell, and Thornmail adds its own
+        magic return hit.  A one-way duel has no enemy attack stream, which is
+        why the old engine made Thornmail look like dead armour.  Reference
+        target profiles now carry an expected basic-attack rate; use it only
+        for this reactive mechanic.  The estimate is deliberately conservative
+        and never invents reflected damage for other champions.
+        """
+        if name != "Rammus" or window <= 0:
+            return 0.0
+        incoming_rate = float(target.get("incomingAutoAttacksPerSec", 0.9) or 0.0)
+        if incoming_rate <= 0:
+            return 0.0
+        incoming_hits = incoming_rate * window
+        w_cd = max(0.5, 7.0 * haste_m)
+        w_casts = 1 + int(window / w_cd)
+        w_uptime = min(1.0, (6.0 * w_casts) / window)
+        w_rank = rank_of.get("2", 2)
+        shell = next((row for row in per_auto_comps
+                      if row[1] == "2"), None)
+        if shell:
+            shell_base = comp_dmg(shell[0], w_rank, "2")
+            # comp_dmg already applies target magic mitigation and includes the
+            # armor ratio.  Add the W reflect amp only over its uptime.
+            shell_return = shell_base * (1.0 + 0.40 * w_uptime)
+        else:
+            shell_return = 0.0
+        thorn_return = 0.0
+        if st.get("thornmailReflect"):
+            bonus_armor = max(0.0, st.get("armor", 0.0)
+                              - st.get("baseArmor", st.get("armor", 0.0)))
+            thorn_raw = (20.0 + 0.06 * bonus_armor
+                         + 0.01 * st.get("bonusHp", 0.0))
+            thorn_return = thorn_raw * magic_m
+        return (shell_return + thorn_return) * incoming_hits
 
     # Short windows follow the champion's actual all-in COMBO sequence when one
     # is authored (each action ~0.45s); longer windows use the cooldown rotation.
@@ -2916,8 +3031,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             total += d
         total += kit_amps(total)
         total += threshold_amp_damage(total)
+        reflected = reactive_reflection_damage()
+        if reflected:
+            parts.append(("reactive reflection", reflected))
+            add_t("magic", reflected)
+            total += reflected
         amp = whole_rotation_amp()
         return {"total": total * amp, "parts": parts, "nAutos": n_autos,
+                "spellbladeProcs": min(casts_total, n_autos,
+                                        1 + int(window / SPELLBLADE_CD)),
                 "boltDmg": bolt_dmg * amp, "bySlot": dict(by_slot_dmg),
                 "abilityAoeDmg": ability_aoe_dmg * amp,
                 "autoDmg": auto_dmg * amp,
@@ -3129,11 +3251,18 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
 
     total += kit_amps(total)
     total += threshold_amp_damage(total)
+    reflected = reactive_reflection_damage()
+    if reflected:
+        parts.append(("reactive reflection", reflected))
+        add_t("magic", reflected)
+        total += reflected
 
     amp = whole_rotation_amp()
     total *= amp
     n_autos_ideal = max(1, int(window * st["as"]))  # no uptime discount
     return {"total": total, "parts": parts, "nAutos": n_autos,
+            "spellbladeProcs": min(casts_total, n_autos,
+                                    1 + int(window / SPELLBLADE_CD)),
             "nAutosIdeal": n_autos_ideal, "castLog": cast_log, "bySlot": dict(by_slot_dmg),
             "autoDmg": auto_dmg * amp, "boltDmg": bolt_dmg * amp,
             "abilityAoeDmg": ability_aoe_dmg * amp,
@@ -3323,6 +3452,7 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
                + kit_heal(name, st, level, 8.0, "self", r8["bySlot"], r8["total"])
                + st["healOnHit"] * r8["nAutos"]
+               + _spellblade_heal(st, r8, TARGETS["bruiser"])
                + _active_item_heal(st, 8.0) + _conqueror_heal(st, dmg8, 8.0)
                + st.get("triggeredHeal", 0.0))
 
@@ -3513,6 +3643,14 @@ def delivered_share(m: dict, name: str) -> float:
     """
     if CHAMP_CLASS.get(name) != "Bruiser":
         return 1.0
+    # ``metrics`` predates the class-aware mixed-damage effective-health
+    # panel, so normal purchase-order scoring supplies ``ehp`` rather than a
+    # separate ``compEhp`` field.  Use the richer field when a caller has it,
+    # otherwise fall back to the metric's ordinary effective health.  The old
+    # bare ``comp_ehp`` reference made every Hecarim/bruiser purchase-order
+    # evaluation raise NameError, which hid recipe coverage and left the
+    # advisor evidence panel at zero.
+    comp_ehp = float(m.get("compEhp") or m.get("ehp") or 0.0)
     ttd = ((comp_ehp + 0.5 * m["sustain"]) / FOCUS_DPS
            + float(m.get("ultimateInvulnS", 0.0) or 0.0))
     return min(1.0, ttd / REF_FIGHT)
@@ -3673,6 +3811,7 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
     sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
                + kit_heal(name, st, level, 8.0, "self", _r8["bySlot"], _r8["total"])
+               + _spellblade_heal(st, _r8, TARGETS["bruiser"])
                + _active_item_heal(st, 8.0) + _conqueror_heal(st, dmg8, 8.0)
                + st.get("triggeredHeal", 0.0))
     deff = durability_term(ehp, sustain)
@@ -3952,6 +4091,7 @@ def analyze_build(name: str, items: list[str], runes: list[str] | None = None,
         "lifesteal": round(st["lifestealPct"] * phys8),
         "omnivamp": round(st["omnivampPct"] * tot),
         "onHit": round(st["healOnHit"] * r8["nAutos"]),
+        "spellblade": round(_spellblade_heal(st, r8, bruiser)),
         "rune": round(st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])),
         "itemActive": round(_active_item_heal(st, 8.0)),
         "conqueror": round(_conqueror_heal(st, tot, 8.0)),

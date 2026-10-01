@@ -347,7 +347,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     conditionalEffects: [] as any[], conditionBand,
     timedDamageAmps: [] as any[], targetThresholdAmps: [] as any[],
     giant: 0, execute: 0, ultAmp: 0,
-    spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0,
+    spellbladeBaseAdPct: 0, spellbladePctMaxHp: 0, spellbladeHealPctMaxHp: 0,
     onHitPhys: 0, onHitMagic: 0, onHitPctCurrentHp: 0, onHitPctMaxHp: 0,
     onHitPctMissingHp: 0,
     procs: [] as Proc[], dotDps: 0, dotDpsBonusHpPct: 0, dotPctMaxHp: 0,
@@ -521,6 +521,12 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // Divine Sunderer pays ranged champions 7%, not the melee 10%.
     st.spellbladePctMaxHp = Math.max(st.spellbladePctMaxHp,
       rngd && fx.spellbladePctMaxHpRanged ? g("spellbladePctMaxHpRanged") : g("spellbladePctMaxHp"));
+    // Divine Sunderer's champion heal is target-max-health based and uses the
+    // same melee/ranged split as Spellblade damage. Keep it separate from
+    // lifesteal/omnivamp so the 1.5s Spellblade cooldown is respected.
+    st.spellbladeHealPctMaxHp = Math.max(st.spellbladeHealPctMaxHp,
+      rngd && fx.spellbladeHealPctMaxHpRanged
+        ? g("spellbladeHealPctMaxHpRanged") : g("spellbladeHealPctMaxHp"));
     // Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; the AP half
     // and the damage type were dropped by the port. spellbladeMagic is stamped
     // at export time from the item's own passive text.
@@ -943,11 +949,19 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
           stat: s.stat,
           asPct: s.stat === "attackSpeed" ? (pct || scaleVal(s.flat, 3, level)) : 0,
           adFlat: s.stat === "ad" && s.flat ? scaleVal(s.flat, 3, level) : 0,
+          armorFlat: s.stat === "armor" && s.flat ? scaleVal(s.flat, 3, level) : 0,
+          mrFlat: s.stat === "mr" && s.flat ? scaleVal(s.flat, 3, level) : 0,
+          armorPct: s.stat === "armor" && s.pct != null ? pct / 100 : 0,
+          mrPct: s.stat === "mr" && s.pct != null ? pct / 100 : 0,
           drPct: s.stat === "damageReduction" ? pct / 100 : 0,
           durationS,
           cooldownS: cds.length ? scaleVal(cds, 3, level) : 12,
         });
       }
+      // Defensive timed steroids are averaged in forWindow. Applying them as
+      // permanent stats here would make Rammus's six-second Ball Curl active
+      // for the entire fight and inflate armor-scaling damage.
+      if (durationS && durationS > 0 && (s.stat === "armor" || s.stat === "mr")) continue;
       if (s.stat === "attackSpeed") st.baseAsPct += pct || scaleVal(s.flat, 3, level);
       else if (s.stat === "ad" && s.flat) st.bonusAd += scaleVal(s.flat, 3, level);
       else if (s.stat === "moveSpeed" && pct) st.bonusMs += st.baseMs * pct / 100 * 0.5;
@@ -1202,6 +1216,7 @@ let ROT_BOLT_DMG = 0;
 let ROT_ABILITY_AOE_DMG = 0;
 let ROT_BY_SLOT: Record<string, number> = {};
 let ROT_NAUTOS_IDEAL = 0;
+let ROT_SPELLBLADE_PROCS = 0;
 
 /** Number of activations for an initially-ready proc inside a fight window. */
 /** How many casts fit in `window`, counting the one at t=0.
@@ -1241,6 +1256,8 @@ function forWindow(name: string, st: any, window: number, level: number): any {
   const hasteM = 100 / (100 + (st.haste ?? 0));
   let asPctLost = 0;
   let adLost = 0;
+  let armorGain = 0;
+  let mrGain = 0;
   let timedDr = 0;
   for (const s of timed ?? []) {
     const cd = Math.max(0.5, (s.cooldownS || 12) * hasteM);
@@ -1248,9 +1265,17 @@ function forWindow(name: string, st: any, window: number, level: number): any {
     const uptime = Math.min(1, (s.durationS * casts) / window);
     asPctLost += (s.asPct || 0) * (1 - uptime);
     adLost += (s.adFlat || 0) * (1 - uptime);
+    if (s.armorFlat || s.armorPct)
+      armorGain += uptime * ((s.armorFlat || 0)
+        + ((st.armor || 0) + (s.armorFlat || 0)) * (s.armorPct || 0));
+    if (s.mrFlat || s.mrPct)
+      mrGain += uptime * ((s.mrFlat || 0)
+        + ((st.mr || 0) + (s.mrFlat || 0)) * (s.mrPct || 0));
     if (s.drPct) timedDr = Math.max(timedDr, Number(s.drPct) * uptime);
   }
   const adj = { ...st };
+  if (armorGain) adj.armor = (st.armor || 0) + armorGain;
+  if (mrGain) adj.mr = (st.mr || 0) + mrGain;
   if (timedDr) adj.dr = Math.max(Number(st.dr || 0), Math.min(0.99, timedDr));
   if (slows?.length) {
     let scheduledSlow = 0;
@@ -1298,6 +1323,7 @@ function forWindow(name: string, st: any, window: number, level: number): any {
 
 export function rotation(name: string, st: any, target: any, window: number,
                          level = 13, secondaryTargets?: number): number {
+  ROT_SPELLBLADE_PROCS = 0;
   st = forWindow(name, st, window, level);
   // An enemy Frozen Heart's Chill is a real attack-speed cut and belongs here,
   // after forWindow has finished deriving attack speed from the steroids.
@@ -1803,6 +1829,7 @@ export function rotation(name: string, st: any, target: any, window: number,
     if (_burstPrimary) { total += _burstPrimary; addT("magic", _burstPrimary); }
     if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp || st.spellbladeApPct) {
       const procs = Math.min(castsTotal, nAutos, 1 + Math.floor(window / SPELLBLADE_CD));
+      ROT_SPELLBLADE_PROCS = procs;
       // Lich Bane is "75% base AD + 45% AP" and deals MAGIC damage; type
       // follows the item.
       const sbMagic = st.spellbladeMagic > 0;
@@ -1840,7 +1867,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   // damage into extra true damage (worth 8.5% of his rotation), Kayn's Shadow
   // Assassin adds magic to everything for 3 seconds, Smolder empowers three
   // abilities. Values and the reasoning behind them live in data/kit_amps.json
-  // and were read by the Python engine only.
+  // and are shared with the Python engine through engine.json.
   {
     // Captured BEFORE the loop, so an "all" entry cannot be paid on a bonus an
     // earlier entry just added. fight_engine passes total_now the same way.
@@ -1849,9 +1876,18 @@ export function rotation(name: string, st: any, target: any, window: number,
     for (const entry of ((DATA.kitAmps?.[name]?.amps ?? []) as any[])) {
       const pct = lvlRange(entry.pct, level) / 100;
       if (!pct) continue;
-      const src = entry.slot ? (bySlot[entry.slot] ?? 0)
+      let src = entry.slot ? (bySlot[entry.slot] ?? 0)
         : entry.appliesTo === "all" ? totalNow
         : (byType[entry.appliesTo ?? "magic"] ?? 0);
+      // Rammus W amplifies its per-auto Spiked Shell component, not the
+      // direct cast (which has no damage entry). The browser port keeps the
+      // same explicit opt-in as Python so slot-level amps remain cast-safe.
+      if (entry.slot && entry.perAuto) {
+        for (const comp of perAuto) {
+          if (perAutoSlot.get(comp) !== entry.slot) continue;
+          src += compDmg(comp, 3, entry.slot) * perAutoShare(comp, nAutos) * nAutos;
+        }
+      }
       // A stated duration is a real limit, not a guess: a 3s effect inside an
       // 8s fight earns three eighths of it.
       const dur = Number(entry.durationS) || 0;
@@ -1961,6 +1997,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   if (_burstPrimary) { total += _burstPrimary; addT("magic", _burstPrimary); }
   if (st.spellbladeBaseAdPct || st.spellbladePctMaxHp || st.spellbladeApPct) {
     const procs = Math.min(castsTotal, nAutos, 1 + Math.floor(window / SPELLBLADE_CD));
+    ROT_SPELLBLADE_PROCS = procs;
     const sbMagic = st.spellbladeMagic > 0;
     let sbRaw = st.spellbladeBaseAdPct / 100 * st.baseAd
       + st.spellbladeApPct / 100 * st.ap
@@ -1996,7 +2033,7 @@ export function rotation(name: string, st: any, target: any, window: number,
   // damage into extra true damage (worth 8.5% of his rotation), Kayn's Shadow
   // Assassin adds magic to everything for 3 seconds, Smolder empowers three
   // abilities. Values and the reasoning behind them live in data/kit_amps.json
-  // and were read by the Python engine only.
+  // and are shared with the Python engine through engine.json.
   {
     // Captured BEFORE the loop, so an "all" entry cannot be paid on a bonus an
     // earlier entry just added. fight_engine passes total_now the same way.
@@ -2005,9 +2042,15 @@ export function rotation(name: string, st: any, target: any, window: number,
     for (const entry of ((DATA.kitAmps?.[name]?.amps ?? []) as any[])) {
       const pct = lvlRange(entry.pct, level) / 100;
       if (!pct) continue;
-      const src = entry.slot ? (bySlot[entry.slot] ?? 0)
+      let src = entry.slot ? (bySlot[entry.slot] ?? 0)
         : entry.appliesTo === "all" ? totalNow
         : (byType[entry.appliesTo ?? "magic"] ?? 0);
+      if (entry.slot && entry.perAuto) {
+        for (const comp of perAuto) {
+          if (perAutoSlot.get(comp) !== entry.slot) continue;
+          src += compDmg(comp, 3, entry.slot) * perAutoShare(comp, nAutos) * nAutos;
+        }
+      }
       // A stated duration is a real limit, not a guess: a 3s effect inside an
       // 8s fight earns three eighths of it.
       const dur = Number(entry.durationS) || 0;
@@ -2056,6 +2099,8 @@ export interface RotationDetail {
   casts: Record<string, { name: string; casts: number; max: number }>;
   autos: number;
   autosIdeal: number;
+  /** Spellblade activations after the real cooldown and attack caps. */
+  spellbladeProcs: number;
 }
 
 /**
@@ -2081,6 +2126,7 @@ export function rotationDetail(name: string, st: any, target: any, window: numbe
     casts: JSON.parse(JSON.stringify(ROT_CAST_LOG)),
     autos: ROT_NAUTOS,
     autosIdeal: ROT_NAUTOS_IDEAL,
+    spellbladeProcs: ROT_SPELLBLADE_PROCS,
   };
 }
 
@@ -2181,6 +2227,7 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   const sustain = st.vamp * dps8 * 8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
     + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
     + conquerorHeal(st, detail8.damage, 8)
+    + spellbladeHeal(st, TARGET_BRUISER, detail8)
     + (st.triggeredHeal || 0);
   let [wOff] = VARIANT_WEIGHTS[variant] ?? [0.6, 0.4];
   wOff = Math.max(0.15, Math.min(0.9, wOff + kitAdjust(name)));
@@ -2230,6 +2277,7 @@ export function liveMetrics(name: string, items: string[], runes: string[],
   const sustain = st.vamp * dmg8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
     + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
     + conquerorHeal(st, dmg8, 8)
+    + spellbladeHeal(st, TARGET_BRUISER, detail8)
     + (st.triggeredHeal || 0);
 
   const m = { burst3: Math.round(burst3), dps8: Math.round(dps8), ttk,
@@ -2311,6 +2359,13 @@ function conquerorHeal(st: any, damage: number, window: number): number {
   const ramp = Number(st.conquerorRampS) || 3;
   const active = Math.max(0, Math.min(1, (window - ramp) / window));
   return pct * damage * active;
+}
+
+function spellbladeHeal(st: any, target: any, detail: { spellbladeProcs?: number }): number {
+  const pct = Number(st.spellbladeHealPctMaxHp) || 0;
+  const procs = Number(detail.spellbladeProcs) || 0;
+  if (!pct || !procs) return 0;
+  return pct / 100 * Number(target.hp || 0) * procs;
 }
 
 function overhealShield(st: any, detail: { byType?: { physical?: number } }): number {
@@ -2404,11 +2459,12 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
     rune: Math.round(st.runeHealPerSec * 8 * (1 + st.healShieldAmp)),
     itemActive: Math.round(activeItemHeal(st, 8)),
     conqueror: Math.round(conquerorHeal(st, tot, 8)),
+    spellblade: Math.round(spellbladeHeal(st, bruiser, detail8)),
     conditional: Math.round(st.triggeredHeal || 0),
     total: 0,
   };
   healing.total = healing.lifesteal + healing.omnivamp + healing.onHit + healing.rune
-    + healing.itemActive + healing.conditional;
+    + healing.itemActive + healing.conqueror + healing.spellblade + healing.conditional;
   const reactive = st.shieldPctMaxHp > 0 || st.shieldPctBonusHp > 0
     || st.overhealShieldCap > 0 || st.triggeredHp > 0;
   const shields = { value: Math.round(shieldVal), avgUptime: reactive ? 0.45 : (shieldVal ? 0.7 : 0), amp: Math.round(st.healShieldAmp * 100) };
