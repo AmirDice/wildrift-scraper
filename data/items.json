@@ -173,6 +173,10 @@
       "physicalPenFlat": {
         "value": 15,
         "percent": false
+      },
+      "moveSpeed": {
+        "value": 4,
+        "percent": true
       }
     },
     "passives": [
@@ -2818,8 +2822,8 @@
       }
     },
     "passives": [
-      "Pledge: While in combat, deal magic damage equal to 20–30 plus 1% of bonus Health per second for 5 seconds to nearby enemies. Deals 125% damage against monsters and 200% damage against minions.",
-      "Sacrifice: Killing a neutral monster or an enemy deals magic damage equal to 30 plus 2% of bonus Health in an area around them."
+      "Pledge: When you buy this item, designate an allied champion as Worthy. You can designate a different ally by selling and repurchasing the item.",
+      "Sacrifice: While your Worthy ally is nearby, 12% of the damage they take is redirected to you, and you heal for 10% of the damage they deal to champions."
     ],
     "tags": [
       "sustain"

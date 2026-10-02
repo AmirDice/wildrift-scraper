@@ -224,6 +224,7 @@
   },
   "rod-of-ages": {
     "hpFlatPassive": 150,
+    "manaFlatPassive": 300,
     "apFlatPassive": 40
   },
   "lich-bane": {
@@ -388,15 +389,7 @@
     },
     "burstProcFlat": 30
   },
-  "knights-vow": {
-    "dotDps": {
-      "lvlRange": [
-        20,
-        30
-      ]
-    },
-    "burstProcFlat": 30
-  },
+  "knights-vow": {},
   "unending-despair": {
     "procMaxHpPct": 3
   },
@@ -519,8 +512,8 @@
   "chainlaced-crushers": {
     "shieldFlat": {
       "lvlRange": [
-        10,
-        120
+        20,
+        140
       ]
     },
     "shieldPctMaxHp": 5
@@ -528,11 +521,11 @@
   "armored-advance": {
     "shieldFlat": {
       "lvlRange": [
-        10,
+        20,
         140
       ]
     },
-    "shieldPctMaxHp": 8
+    "shieldPctMaxHp": 5
   },
   "crimson-lucidity": {
     "hastePctPassive": 20,

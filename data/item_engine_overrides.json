@@ -142,7 +142,7 @@
     "_why_dedupe": "stat physicalPenFlat 15; fx flatPen 15 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. The stat line is canonical -- patch deltas update it, the passive prose is not always rewritten. Zeroed here so exactly one source survives.",
     "msFlat": 30,
     "asPctPassive": 0,
-    "_why": "Momentum is a flat out-of-combat 30 Move Speed now, and Spectral Haste (25% Attack Speed) was removed."
+    "_why": "Patch 7.3 gives the item a permanent 4% Movement Speed stat (stored in items.json), changes Momentum to 30 out-of-combat Move Speed (20 ranged), and removes Spectral Haste."
   },
   "serpents-fang": {
     "flatPen": 0,
@@ -340,8 +340,9 @@
     "_why_not_outgoing": "Desolate: 'KILLING a neutral monster or an enemy deals magic damage ... in an area'. It fires on a kill that has already happened, so it cannot contribute to the time-to-kill it is being charged against. Charged as outgoing champion damage, which its own text says it is not."
   },
   "knights-vow": {
+    "dotDps": 0,
     "burstProcFlat": 0,
-    "_why_not_outgoing": "Sacrifice: same on-KILL clause as hollow-radiance. Charged as outgoing champion damage, which its own text says it is not."
+    "_why_not_outgoing": "The extracted damage-over-time and on-kill burst belonged to Hollow Radiance, not Knight's Vow. Knight's Vow redirects 12% of a nearby Worthy ally's damage taken and heals the holder for 10% of that ally's champion damage; those ally-dependent effects require explicit team-context modelling."
   },
   "plated-steelcaps": {
     "basicAttackDrPct": 10,
