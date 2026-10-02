@@ -2410,16 +2410,23 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
             / (REF_DPS * REF_FIGHT * 3.0)
         ), 1)
 
-    def survival_score(items: list[str], rune_names: list[str]) -> float:
+    def survival_score(items: list[str], rune_names: list[str],
+                       scenario_panel: dict | None = None) -> float:
         """The staying-alive half, on the same 0-100 scale as the damage half.
 
         Not conditional-banded: the floor/expected/ceiling panels describe
         execution-dependent DAMAGE triggers, and health, resists and sustain do
         not need a player to land anything.
         """
-        return objective_score(
-            cached_vector(items, rune_names),
-            TOURNAMENT_SURVIVAL_WEIGHTS)
+        vector = dict(cached_vector(items, rune_names))
+        # Triumph is not generic sustain: it exists only after the sequential
+        # 1v3 actually records a first kill. Fold that one heal into the
+        # survival comparison here, never into ordinary 1v1 metrics.
+        takedown_heal = float((((scenario_panel or {}).get("oneVsThree") or {})
+                               .get("postTakedownHealing", 0.0)) or 0.0)
+        if takedown_heal:
+            vector["selfSustain"] = float(vector.get("selfSustain", 0.0)) + takedown_heal
+        return objective_score(vector, TOURNAMENT_SURVIVAL_WEIGHTS)
 
     def skill_adjusted_score(items: list[str], rune_names: list[str]) -> float:
         key = (tuple(sorted(str(item) for item in items)),
@@ -2444,7 +2451,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
             result = round(damage, 1)
         else:
             result = round(damage_w * damage
-                           + survival_w * survival_score(items, rune_names), 1)
+                           + survival_w * survival_score(
+                               items, rune_names, bands.get("expected")), 1)
         score_cache[key] = result
         return result
     def legal_items(combo: tuple[str, ...]) -> bool:

@@ -221,9 +221,10 @@
     "_why_cd": "'(10 second cooldown)'"
   },
   "Hubris": {
-    "adaptiveAd": 0,
-    "adaptiveAp": 0,
-    "_why": "Requires a takedown, so its 30-second Adaptive Force starts after the no-prior-takedown reference fight has been decided."
+    "takedownAdaptiveForceBase": 5,
+    "takedownAdaptiveForcePerKill": 1,
+    "takedownDurationSec": 30,
+    "_why": "Zero before a takedown. In the sequential 1v3 panel the first kill grants 6 Adaptive Force (5 base + the one simulated champion kill) for the remaining window; prior-match champion kills are not assumed. Adaptive Force converts to 1 AD or 2 AP."
   },
   "Eyeball Collector": {
     "adaptiveAd": 12,
@@ -243,7 +244,14 @@
     "onHitAdRatio": 6,
     "onHitApRatio": 3
   },
-  "Triumph": {},
+  "Triumph": {
+    "takedownHealLostHpPct": 10,
+    "takedownResourceMaxPct": 10,
+    "takedownMoveSpeedFlat": 35,
+    "takedownMoveSpeedDurationSec": 2,
+    "takedownExpectedMissingHpPct": 40,
+    "_why": "Zero before a takedown. The sequential 1v3 panel grants the documented 10% of lost Health once after a simulated first kill, using the engine's disclosed 40% missing-Health reference state. Resource restoration and movement speed are reported but not converted into damage."
+  },
   "Battle Zeal": {
     "abilityAmpPct": 0,
     "rampAbilityAmpPct": 4.2,

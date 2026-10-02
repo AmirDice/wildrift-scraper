@@ -645,7 +645,7 @@ SECONDARY_REACH = (0.65, 0.40)
 # place to explain itself.
 CONTEXT_ASSUMPTIONS = {
     "allyProximity": "not simulated; ally-only healing/buffs use the reference 8s support window",
-    "takedownAvailability": "not simulated; reset/range-after-takedown effects are excluded from raw damage",
+    "takedownAvailability": "Triumph and Hubris activate only after a simulated first kill in the sequential 1v3; prior-match kills and later reset chains are not assumed",
     "positioning": "primary target is in range; secondary targets use the reach table and capped 1v3 panel",
     "enemyActions": "enemy damage, crowd control, target switching and peel are not simulated",
     "procOpportunities": "stated cooldowns, arming delays and hit-count gates are enforced; unstructured opportunities are conservative",
@@ -1030,6 +1030,14 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "ultAttackTruePctIfCrit": 0.0, "ultAttackWindowS": 0.0,
         "ultAttackAsPct": 0.0, "ultAttackCooldownS": 0.0,
         "healShieldAmp": 0.0, "runeHealPerSec": 0.0, "runeAllyHealPerSec": 0.0,
+        "takedownHealLostHpPct": 0.0,
+        "takedownExpectedMissingHpPct": 0.0,
+        "takedownResourceMaxPct": 0.0,
+        "takedownMoveSpeedFlat": 0.0,
+        "takedownMoveSpeedDurationSec": 0.0,
+        "takedownAdaptiveForceBase": 0.0,
+        "takedownAdaptiveForcePerKill": 0.0,
+        "takedownDurationSec": 0.0,
         "conquerorHealPct": 0.0, "conquerorRampS": 3.0,
         "allyShield": 0.0,
         "graspPct": 0.0, "graspEvery": 5.0,
@@ -1630,6 +1638,16 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             # Fleet Footwork. Assumed once per 9 seconds, the same convention
             # the curated healPerProc key uses; the rune states no cadence.
             st["runeHealPerSec"] += g("healFlat") / RUNE_PROC_EVERY
+            # Takedown runes stay inert in every ordinary 1v1. Their values are
+            # carried to damage_scenarios(), which alone has an explicit
+            # sequential-kill gate and can therefore activate them honestly.
+            for _key in (
+                "takedownHealLostHpPct", "takedownExpectedMissingHpPct",
+                "takedownResourceMaxPct", "takedownMoveSpeedFlat",
+                "takedownMoveSpeedDurationSec", "takedownAdaptiveForceBase",
+                "takedownAdaptiveForcePerKill", "takedownDurationSec",
+            ):
+                st[_key] = max(st.get(_key, 0.0), g(_key))
             st["runeAllyHealPerSec"] += (g("allyHealPctMaxHp") / 100.0 * st["hp"]
                                          + g("healApRatio") / 100.0 * st["ap"]) / FONT_PROC_EVERY
             # Guardian: shields YOU and the ally. Neither half was applied at
@@ -5787,6 +5805,64 @@ def damage_scenarios(name: str, item_slugs: list[str],
     # every generic 1v1 build score.
     nearby_shield_bonus = st.get("shieldManaComponent", 0.0) * max(
         0.0, st.get("shieldManaNearbyMult", 1.0) - 1.0)
+
+    # Sequential takedown extension. The ordinary 1v3 remains the simultaneous
+    # AoE delivery test above. This extension asks only whether the build can
+    # finish a realistic first target (the ADC) inside the same eight seconds;
+    # if so, takedown-only runes may affect the remainder. No takedown rune is
+    # ever active in the five ordinary 1v1 rows.
+    first_kill = None
+    has_takedown_rune = bool(
+        st.get("takedownHealLostHpPct", 0.0)
+        or st.get("takedownAdaptiveForceBase", 0.0)
+        or st.get("takedownAdaptiveForcePerKill", 0.0)
+    )
+    if has_takedown_rune:
+        first_target = dict(profiles["adc"], label="adc")
+        first_need = first_target["hp"] * (1 - st.get("execute", 0.0))
+        for _tick in range(1, int(REF_FIGHT / 0.25) + 1):
+            _time = _tick * 0.25
+            if rotation(name, st, first_target, _time, level,
+                        secondary_targets=0)["total"] >= first_need:
+                first_kill = _time
+                break
+
+    takedown_heal = 0.0
+    hubris_bonus = 0.0
+    adaptive_stat = "none"
+    adaptive_amount = 0.0
+    if first_kill is not None:
+        missing_pct = st.get("takedownExpectedMissingHpPct", 0.0) / 100.0
+        takedown_heal = (st.get("takedownHealLostHpPct", 0.0) / 100.0
+                         * missing_pct * st["hp"])
+        base_force = st.get("takedownAdaptiveForceBase", 0.0)
+        per_kill = st.get("takedownAdaptiveForcePerKill", 0.0)
+        if base_force or per_kill:
+            # The one simulated kill counts toward Hubris's per-kill term. No
+            # previous scoreboard kills are invented.
+            force = base_force + per_kill
+            boosted = dict(st)
+            if st["ap"] >= st["bonusAd"]:
+                adaptive_stat = "ap"
+                adaptive_amount = 2.0 * force * (1 + st.get("apAmp", 0.0))
+                boosted["ap"] += adaptive_amount
+            else:
+                adaptive_stat = "ad"
+                adaptive_amount = force
+                boosted["bonusAd"] += adaptive_amount
+                boosted["ad"] += adaptive_amount
+            # Measure only the extra damage created after the kill. The
+            # continuing bruiser timeline preserves cooldown cadence instead
+            # of pretending every new target refreshes the champion's spells.
+            follow_target = dict(profiles["bruiser"], label="bruiser")
+            before_base = rotation(name, st, follow_target, first_kill, level)["total"]
+            after_base = rotation(name, st, follow_target, REF_FIGHT, level)["total"]
+            before_buff = rotation(name, boosted, follow_target, first_kill, level)["total"]
+            after_buff = rotation(name, boosted, follow_target, REF_FIGHT, level)["total"]
+            hubris_bonus = max(0.0, (after_buff - before_buff)
+                               - (after_base - before_base))
+
+    base_total = primary_damage + secondary_item_damage + secondary_ability_damage
     return {
         "conditionBand": condition_band,
         "conditionalEffects": st.get("conditionalEffects", []),
@@ -5800,12 +5876,29 @@ def damage_scenarios(name: str, item_slugs: list[str],
             "secondaryItemAoeDamage": secondary_item_damage,
             "secondaryChampionAoeDamage": secondary_ability_damage,
             "nearbyShieldBonus": round(nearby_shield_bonus),
-            "totalDamage": (primary_damage + secondary_item_damage
-                            + secondary_ability_damage),
+            "hubrisBonusDamage": round(hubris_bonus),
+            "postTakedownHealing": round(takedown_heal),
+            "totalDamage": base_total + round(hubris_bonus),
+            "sequentialTakedown": {
+                "firstTarget": "adc",
+                "firstKillSeconds": first_kill,
+                "activated": first_kill is not None,
+                "expectedMissingHealthPct": round(
+                    st.get("takedownExpectedMissingHpPct", 0.0)),
+                "healing": round(takedown_heal),
+                "adaptiveStat": adaptive_stat,
+                "adaptiveAmount": round(adaptive_amount, 2),
+                "resourceRestoreMaxPct": round(
+                    st.get("takedownResourceMaxPct", 0.0), 2),
+                "moveSpeedFlat": round(st.get("takedownMoveSpeedFlat", 0.0), 2),
+                "moveSpeedDurationSeconds": round(
+                    st.get("takedownMoveSpeedDurationSec", 0.0), 2),
+            },
             "scope": ("outgoing damage only; item and champion-ability AoE are capped "
                       "to the two secondary targets; passives and empowered-attack "
-                      "riders stay primary-only; positioning, focus changes, enemy "
-                      "damage and enemy CC are not modeled"),
+                      "riders stay primary-only; Hubris adds only its post-first-kill "
+                      "increment; Triumph healing is reported separately; positioning, "
+                      "enemy damage and enemy CC are not modeled"),
         },
     }
 

@@ -1,5 +1,5 @@
 {
-  "_note": "Only exceptions to ordinary numerical coverage are listed. 'partial' blocks a deterministic engine verdict when the compared page uses the rune. 'excluded' means the effect does not occur in the no-takedown champion-fight scenario and is intentionally worth zero there.",
+  "_note": "Only exceptions to ordinary numerical coverage are listed. 'partial' blocks a deterministic engine verdict when the compared page uses the rune. 'excluded' means the effect does not occur in the champion-fight scenarios and is intentionally worth zero there.",
   "partial": {
     "Fleet Footwork": "Healing and short movement speed are modeled; mana/energy restoration, the next-attack 40% Attack Speed clause, and exact energized timing are contextual.",
     "Aery": "Damage, shield and return cooldown are modeled, but exact travel distance and whether each cast attacks or shields depend on positioning and ally targeting.",
@@ -28,16 +28,16 @@
     "Second Wind": "The documented healing and melee doubling use a 40% missing-Health fight state; exact repeated-damage timing is contextual.",
     "Axiom Arcanist": "Ultimate damage amplification is modeled, including the AoE split; ultimate healing/shielding amplification is not yet included in support value.",
     "Unshakeable": "The ordinary one-enemy 5% Armor/MR state is modeled; nearby-enemy count can raise it to 9% and the three-enemy slow resistance is contextual.",
-    "Hextech Flashtraption": "Engage mobility is real but has no direct damage or durability value inside the synthetic fight."
+    "Hextech Flashtraption": "Engage mobility is real but has no direct damage or durability value inside the synthetic fight.",
+    "Triumph": "The first simulated takedown in the sequential 1v3 grants its heal; exact missing Health, resource value, movement value and later takedowns remain contextual.",
+    "Hubris": "The first simulated takedown in the sequential 1v3 grants 6 Adaptive Force for the remaining window; prior-match champion kills and later takedown stacking remain contextual."
   },
   "excluded": {
-    "Triumph": "Requires a takedown; the reference fight does not assume one before its result.",
     "Demolish": "Affects turrets only, not champion combat.",
     "Botanist": "Plant and gold utility is outside champion combat.",
     "Ixtali Seedjar": "Plant/trinket utility is outside the synthetic fight.",
     "Relentless Hunter": "Out-of-combat movement is rotation/map utility, not an in-fight stat.",
     "Ingenious Hunter": "Removed in patch 7.3.",
-    "Legend: Tenacity": "Removed in patch 7.3.",
-    "Hubris": "Requires a takedown; its temporary Adaptive Force begins after the reference fight's result."
+    "Legend: Tenacity": "Removed in patch 7.3."
   }
 }

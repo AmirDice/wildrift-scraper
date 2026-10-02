@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from web.build_advisor import _engine_major_coverage_gaps
-from web.fight_engine import (TARGETS, resolve_stats, rotation,
+from web.fight_engine import (TARGETS, damage_scenarios, resolve_stats, rotation,
                               rune_mechanics_coverage)
 
 
@@ -78,12 +78,42 @@ def test_empowered_attack_applies_ranged_penalty() -> None:
 def test_partial_rune_blocks_authoritative_engine_gate() -> None:
     coverage = rune_mechanics_coverage(["Fleet Footwork", "Triumph", "Legend: Haste"])
     assert coverage["engineAuthoritative"] is False
-    assert coverage["majorGapCount"] == 2
+    assert coverage["majorGapCount"] == 3
     gaps = _engine_major_coverage_gaps({"engine": {
         "runeCoverageGaps": coverage["gaps"],
     }})
     assert any("Fleet Footwork" in gap for gap in gaps)
-    assert not any("Triumph" in gap for gap in gaps)
+    assert any("Triumph" in gap for gap in gaps)
+
+
+def test_takedown_runes_are_inert_before_a_kill() -> None:
+    items = ["infinity-edge", "bloodthirster"]
+    base = resolve_stats("Jinx", 15, items, [])
+    takedown = resolve_stats("Jinx", 15, items, ["Triumph", "Hubris"])
+    assert takedown["ad"] == base["ad"]
+    assert takedown["ap"] == base["ap"]
+    assert takedown["runeHealPerSec"] == base["runeHealPerSec"]
+
+
+def test_takedown_runes_activate_only_after_sequential_first_kill() -> None:
+    items = ["infinity-edge", "bloodthirster", "the-collector",
+             "mortal-reminder", "youmuus-ghostblade", "boots-of-dynamism"]
+    base = damage_scenarios("Jinx", items, [], level=15)["oneVsThree"]
+    panel = damage_scenarios(
+        "Jinx", items, ["Triumph", "Hubris"], level=15)["oneVsThree"]
+    assert panel["sequentialTakedown"]["activated"] is True
+    assert panel["sequentialTakedown"]["firstKillSeconds"] is not None
+    assert panel["postTakedownHealing"] > 0
+    assert panel["hubrisBonusDamage"] > 0
+    assert panel["totalDamage"] > base["totalDamage"]
+
+
+def test_takedown_runes_do_not_activate_without_a_first_kill() -> None:
+    panel = damage_scenarios(
+        "Alistar", [], ["Triumph", "Hubris"], level=15)["oneVsThree"]
+    assert panel["sequentialTakedown"]["activated"] is False
+    assert panel["postTakedownHealing"] == 0
+    assert panel["hubrisBonusDamage"] == 0
 
 
 if __name__ == "__main__":

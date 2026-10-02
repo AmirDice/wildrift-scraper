@@ -400,6 +400,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     ultAttackTruePctIfCrit: 0, ultAttackWindowS: 0,
     ultAttackAsPct: 0, ultAttackCooldownS: 0,
     healShieldAmp: 0, runeHealPerSec: 0, conquerorHealPct: 0, conquerorRampS: 3,
+    takedownHealLostHpPct: 0, takedownExpectedMissingHpPct: 0,
+    takedownResourceMaxPct: 0, takedownMoveSpeedFlat: 0,
+    takedownMoveSpeedDurationSec: 0, takedownAdaptiveForceBase: 0,
+    takedownAdaptiveForcePerKill: 0, takedownDurationSec: 0,
     graspPct: 0, graspEvery: 5,
     graspPctOwnHp: 0, graspHealPctOwnHp: 0, graspArmSec: 0,
     runeAllyHealPerSec: 0, allyShield: 0, autoBonusPct: 0,
@@ -998,6 +1002,15 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       // healPerProc key uses; the rune states no cadence. Read by neither
       // engine before this, so the keystone's whole point was worth nothing.
       st.runeHealPerSec += g("healFlat") / RUNE_PROC_EVERY;
+      // Carried inertly until an explicit sequential-kill scenario activates
+      // them. Browser 1v1 stats therefore match Python and never pre-grant a
+      // Triumph heal or Hubris adaptive force.
+      for (const key of [
+        "takedownHealLostHpPct", "takedownExpectedMissingHpPct",
+        "takedownResourceMaxPct", "takedownMoveSpeedFlat",
+        "takedownMoveSpeedDurationSec", "takedownAdaptiveForceBase",
+        "takedownAdaptiveForcePerKill", "takedownDurationSec",
+      ]) st[key] = Math.max(Number(st[key] || 0), Number(g(key) || 0));
       // Guardian shields YOU and the ally, and neither half was applied, so the
       // keystone's entire effect was dropped. Bonus HP and max HP are different
       // scalings: it reads "+6% BONUS Health", and charging it off max HP
