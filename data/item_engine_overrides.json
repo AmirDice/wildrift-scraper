@@ -147,8 +147,9 @@
     "_why_summoner": "Same as ionian-boots-of-lucidity: 20% summoner spell haste is not ability CDR."
   },
   "dusk-and-dawn": {
+    "_coverage": "modeled",
     "extraOnHitOnSpellblade": 1,
-    "_why_onhit": "The passive is TWO effects and extraction captured only the first: 'After a brief delay, apply on-hits to the target 1 additional time' on the same 1.5s spellblade proc. For an on-hit build (Nashor's, Wit's End) that re-application is worth more than the item's small 10% AP spellblade half, so the engines scored the item as a weak Lich Bane. Owner-approved 2026-08-18. NOTE: Zhonya's Stasis remains unmodelled by the owner's decision, so the two are not scored on equal footing."
+    "_why_onhit": "The passive is TWO effects and extraction captured only the first: 'After a brief delay, apply on-hits to the target 1 additional time' on the same 1.5s spellblade proc. For an on-hit build (Nashor's, Wit's End) that re-application is worth more than the item's small 10% AP spellblade half, so the engines scored the item as a weak Lich Bane. Zhonya's Stasis is modeled separately through its one-use fight effect."
   },
   "duskblade-of-draktharr": {
     "flatPen": 0,
@@ -275,9 +276,10 @@
     "_why_cd": "Dawnbringer triggers on nearby immobilize, deals 40 + 2.5% bonus Health, and grants 20% Armor and MR for the 3-second cooldown window."
   },
   "imperial-mandate": {
+    "_coverage": "modeled",
     "burstProcCdSec": 6,
     "_why_cd": "Coordinated Fire: '(6 seconds cooldown per enemy champion)'",
-    "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one.",
+    "_why_history": "The old Coordinated Fire ally move-speed effect was removed. Command now applies the modeled damage mark instead.",
     "burstProcFlat": 0,
     "allyProcFlat": 0,
     "allyMsPct": 0,
@@ -454,8 +456,9 @@
     "_why_not_outgoing": "The extracted damage-over-time and on-kill burst belonged to Hollow Radiance. The support model now values the nearby Worthy tether: 12% redirected damage and holder healing equal to 10% of the ally's champion damage."
   },
   "plated-steelcaps": {
+    "_coverage": "modeled",
     "basicAttackDrPct": 10,
-    "_why_target_side": "Block: 'Basic attacks from champions deal 10% reduced damage to you.' Unmodelled because it needs the TARGET to be the one attacking, which the one-way damage calculator had no way to express. Deliberately NOT drPct, which is all damage -- Block is basic attacks only."
+    "_why_target_side": "Block: 'Basic attacks from champions deal 10% reduced damage to you.' The typed basicAttackDrPct channel applies it only to incoming basic-attack damage, rather than incorrectly treating it as all-damage reduction."
   },
   "frozen-heart": {
     "targetAsSlowPct": 25,
@@ -471,6 +474,7 @@
     "_why_cc": "Annul: 'Grants a spell shield that blocks the next hostile ability. (30s Cooldown)'. One hostile ability per fight, so one instance of lockdown removed."
   },
   "quicksilver-sash": {
+    "_coverage": "modeled",
     "ccRemoval": 1,
     "_why_cc": "Quicksilver: 'Removes ALL crowd control effects currently affecting you, and become immune to crowd control for 0.25 seconds.' (60s) One activation per fight. The 30% Tenacity / 1.5s Perseverance tail is left out: 1.5 seconds of tenacity inside a 20-second fight is below the resolution of this model."
   },
@@ -499,14 +503,17 @@
     "_why_slow": "Icy: 'Damaging abilities and empowered attacks slow enemies by 30% for 0.75 second.' The extractor is told to skip slows, which is why this item shipped with an empty fx entry, but a slow is not cosmetic for a MELEE champion: it is the difference between landing attacks and chasing. Modelled only through the melee-sticking term in autoUptime, which already converts move speed into landed attacks, and not as damage. ASSUMPTION, stated rather than buried: targetSlowUptime 50%. The slow lasts 0.75s per damaging ability and a kit casting roughly every 1.5s in a fight holds it about half the time. It is a named guess of the same kind as MELEE_AUTO_UPTIME itself, not a number read off the item."
   },
   "radiant-virtue": {
+    "_coverage": "modeled",
     "shieldPctMaxHp": 10,
     "allyHealPctMaxHp": 15,
     "allyEffectRequiresUlt": 1,
     "allyEffectRangedMult": 50,
     "_why_support_timeline": "Guiding Light triggers once on the holder's ultimate; ranged holders apply the stated 50% ally-healing modifier.",
-    "_why_transcend": "Guiding Light: 'Upon casting your ultimate ability, you Transcend, increasing your max Health by 10% for 6s. While Transcended, allied champions within 1,200 units heal for 2.5% of your max Health per second over the duration.' The self half is 10% max health for six seconds, once per fight on a 60s cooldown, which is the same effective-HP shape Guardian Angel's revive already uses shieldPctMaxHp for. The ally half is 2.5% x 6s = 15% of max health. NOT modelled: the 50% reduction for ranged champions, because the item ally path has no ranged branch."
+    "_why_transcend": "Guiding Light: 'Upon casting your ultimate ability, you Transcend, increasing your max Health by 10% for 6s. While Transcended, allied champions within 1,200 units heal for 2.5% of your max Health per second over the duration.' The self half is 10% max health for six seconds, once per fight. The ally half is 2.5% x 6s = 15% of max health, with the stated 50% ranged-holder modifier."
   },
   "ardent-censer": {
+    "_coverage": "partial",
+    "_coverage_reason": "Ally on-hit damage is modeled, but the ally attack-speed increase cannot be converted safely without that ally's attack-damage profile. The holder's own triggered buff is modeled.",
     "_why_ally_as": "allyAsPct is read by NEITHER engine, deliberately. Censer grants an ally '15-34% Attack Speed and their attacks deal 16-22 bonus magic damage'; the damage half IS priced, through allyOnHitFlatMagic. Pricing the attack-speed half needs a conversion from ally attack speed to ally damage, and that needs to know what share of that ally's damage is autos -- a number this model does not carry. A guessed constant here would be worse than a visible mismatch, so the key stays unread and the item is undervalued by a known amount rather than valued by an invented one.",
     "allyAsPct": 30,
     "allyOnHitFlatMagic": 25,
@@ -517,6 +524,8 @@
     "_why": "Censer is a flat 30% Attack Speed and 25 magic on hit for both of you, no longer scaling with the ally's level."
   },
   "shurelyas-battlesong": {
+    "_coverage": "partial",
+    "_coverage_reason": "The active timing is modeled, but its ally movement-speed delivery value has no damage or survival conversion in the synthetic fight.",
     "allyMsDurationS": 4,
     "allyEffectCooldownS": 60,
     "_why_support_timeline": "One initially-ready active grants nearby allies 30% Move Speed for four seconds in the eight-second reference fight.",
@@ -630,6 +639,8 @@
     "_why": "The item forwards 30% of each ally heal or 35% of each ally shield to another valid ally; the support model applies those shares to measured kit and rune output."
   },
   "hexoptics-c44": {
+    "_coverage": "partial",
+    "_coverage_reason": "Distance-scaled attack damage is modeled in three bands; the post-takedown attack-range window remains outside the no-takedown reference fight.",
     "conditionalAttackAmpPct": {
       "floor": 0,
       "expected": 5,

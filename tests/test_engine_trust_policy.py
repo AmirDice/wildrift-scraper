@@ -98,3 +98,31 @@ def test_missing_scores_return_explicit_insufficient_data_contract():
     assert gate["marginSatisfied"] is False
     assert gate["coverageSafe"] is False
 
+
+def test_tournament_discloses_declared_partial_item_coverage():
+    candidate = {
+        "id": "ENGINE-D",
+        "archetype": "ad-crit",
+        "hypothesis": "coverage contract",
+        "items": ["hexoptics-c44", "infinity-edge", "rapid-firecannon",
+                  "lord-dominiks-regard", "bloodthirster"],
+        "boots": "berserkers-greaves",
+        "runes": {
+            "keystone": "Lethal Tempo",
+            "primaryTree": "Precision",
+            "minors": ["Brutal", "Cut Down", "Legend: Alacrity"],
+            "flex": "Bone Plating",
+        },
+        "summoners": ["Flash", "Barrier"],
+    }
+
+    measured = adv._simulate_tournament("Jinx", [candidate])
+    engine = measured[0]["engine"]
+    hexoptics = next(row for row in engine["coverageGaps"]
+                     if row["item"] == "hexoptics-c44")
+
+    assert hexoptics["status"] == "partial"
+    assert hexoptics["severity"] == "major"
+    assert engine["coverageSummary"]["engineAuthoritative"] is False
+    assert engine["coverageSummary"]["itemMajorGapCount"] == 1
+

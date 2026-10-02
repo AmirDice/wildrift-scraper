@@ -18,8 +18,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 GAP = re.compile(
-    r"not model(?:led|ed)|no (?:separate )?(?:combat )?(?:effect )?key|"
-    r"engine has neither|priced on its stats|left out|cannot (?:open|see|price)",
+    r"not model(?:led|ed)|remains unmodel(?:led|ed)|"
+    r"no (?:separate )?(?:combat )?(?:effect )?key|"
+    r"engine has neither|neither engine|priced on its stats|left out|"
+    r"cannot (?:open|see|price)",
     re.I,
 )
 
@@ -59,25 +61,34 @@ def main() -> None:
         channels = sorted(k for k, v in merged.items()
                           if not k.startswith("_") and effective(v))
         entry = overrides.get(slug) or {}
-        notes = str(entry.get("_why") or " ".join(
+        notes = " ".join(
             str(v) for k, v in entry.items()
-            if k.startswith("_") and isinstance(v, str)))
-        status = "partial" if channels and GAP.search(notes) else (
-            "modeled" if channels else "stats_only")
+            if k.startswith("_") and k not in {"_coverage", "_coverage_reason"}
+            and isinstance(v, str))
+        declared = str(entry.get("_coverage") or "").lower()
+        explicit_gap = declared in {"partial", "unmodeled"}
+        inferred_gap = not declared and bool(GAP.search(notes))
+        if declared == "unmodeled" or ((explicit_gap or inferred_gap) and not channels):
+            status = "unmodeled"
+        elif explicit_gap or inferred_gap:
+            status = "partial"
+        else:
+            status = "modeled" if channels else "stats_only"
         rows.append({"slug": slug, "name": item.get("name", slug),
                      "status": status, "channels": channels,
-                     "gapNote": notes if status != "modeled" else ""})
+                     "gapNote": str(entry.get("_coverage_reason") or notes)
+                     if status not in {"modeled", "stats_only"} else ""})
 
     rows.sort(key=lambda row: (row["status"], row["name"]))
     if args.json:
         print(json.dumps(rows, ensure_ascii=False, indent=2))
         return
     counts = {status: sum(row["status"] == status for row in rows)
-              for status in ("modeled", "partial", "stats_only")}
+              for status in ("modeled", "partial", "unmodeled", "stats_only")}
     print(f"completed items with passives: {len(rows)} | "
           f"modeled {counts['modeled']} | partial {counts['partial']} | "
-          f"stats-only {counts['stats_only']}")
-    for status in ("stats_only", "partial"):
+          f"unmodeled {counts['unmodeled']} | stats-only {counts['stats_only']}")
+    for status in ("stats_only", "partial", "unmodeled"):
         print(f"\n{status.upper()}")
         for row in rows:
             if row["status"] != status:

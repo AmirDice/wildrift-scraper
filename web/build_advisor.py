@@ -1271,7 +1271,7 @@ ENGINE_AUTO_WIN_MARGIN = 0.05
 ENGINE_REPLACEMENT_MARGIN = 0.95
 
 _MISSING_COMBAT_EFFECT_RE = re.compile(
-    r"not model(?:led|ed)|unmodel(?:led|ed)|"
+    r"not model(?:led|ed)|remains unmodel(?:led|ed)|"
     r"no (?:separate )?(?:combat )?(?:effect )?key|"
     r"engine has neither|neither engine|left out|"
     r"cannot (?:open|see|price)", re.I)
@@ -1279,11 +1279,24 @@ _MISSING_COMBAT_EFFECT_RE = re.compile(
 
 def _coverage_gap_is_major(row: dict) -> bool:
     """Whether an item coverage row can invalidate a numeric comparison."""
+    severity = str(row.get("severity") or "").lower()
+    if severity in {"major", "blocking"}:
+        return True
+    if severity in {"informational", "none"}:
+        return False
     status = str(row.get("status") or "").lower()
     limitation = str(row.get("limitation") or "")
     return status in {"missing", "unmodeled"} or (
         status in {"partial", "stats_only"}
         and bool(_MISSING_COMBAT_EFFECT_RE.search(limitation)))
+
+
+def _override_audit_notes(entry: dict) -> str:
+    """Join every human audit note instead of hiding secondary limitations."""
+    return " ".join(
+        str(value) for key, value in entry.items()
+        if key.startswith("_") and key not in {"_coverage", "_coverage_reason"}
+        and isinstance(value, str))
 
 
 def _engine_major_coverage_gaps(measured: dict | None) -> list[str]:
@@ -1592,12 +1605,13 @@ def _simulate_tournament(champion: str, candidates: list[dict],
             active = [k for k, value in fx.items() if not k.startswith("_")
                       and value not in (0, 0.0, None, {}, [])]
             entry = overrides.get(slug) or {}
-            notes = str(entry.get("_why") or " ".join(
-                str(value) for key, value in entry.items()
-                if key.startswith("_") and isinstance(value, str)))
-            incomplete = _MISSING_COMBAT_EFFECT_RE.search(notes)
+            notes = _override_audit_notes(entry)
+            declared = str(entry.get("_coverage") or "").lower()
+            coverage_reason = str(entry.get("_coverage_reason") or "").strip()
+            incomplete = declared in {"partial", "unmodeled"} or (
+                not declared and bool(_MISSING_COMBAT_EFFECT_RE.search(notes)))
             if not active or incomplete:
-                if incomplete and not active:
+                if declared == "unmodeled" or (incomplete and not active):
                     status = "unmodeled"
                 elif incomplete:
                     status = "partial"
@@ -1608,7 +1622,7 @@ def _simulate_tournament(champion: str, candidates: list[dict],
                     "status": status,
                     "severity": "major" if incomplete else "informational",
                     "modeledChannels": sorted(active),
-                    "limitation": notes[:700],
+                    "limitation": (coverage_reason or notes)[:700],
                 })
         return gaps
 
