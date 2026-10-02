@@ -25,7 +25,7 @@ import re
 import cv2
 import numpy as np
 
-from .ocr import _configure_tesseract, preprocess
+from .ocr import _configure_tesseract, ocr_engine, preprocess, read_words
 
 import pytesseract
 
@@ -113,9 +113,24 @@ def _read_batch(img: np.ndarray, boxes: dict, config: str,
 
     base = config.split(" -c ")[-1] if " -c " in config else ""
     cfg = f"--psm {psm}" + (f" -c {base}" if base else "")
+    found: dict[str, list[tuple[int, str]]] = {}
+    if ocr_engine() in {"paddle", "auto"}:
+        try:
+            words = read_words(canvas, config)
+            for word in words:
+                centre = word.y
+                for field, y0, y1 in bands:
+                    if y0 <= centre <= y1:
+                        found.setdefault(field, []).append((word.x, word.text))
+                        break
+            if found or ocr_engine() == "paddle":
+                return {f: " ".join(t for _x, t in sorted(v))
+                        for f, v in found.items()}
+        except Exception:
+            if ocr_engine() == "paddle":
+                raise
     data = pytesseract.image_to_data(canvas, config=cfg,
                                      output_type=pytesseract.Output.DICT)
-    found: dict[str, list[tuple[int, str]]] = {}
     for i, text in enumerate(data.get("text") or []):
         text = (text or "").strip()
         if not text:

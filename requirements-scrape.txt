@@ -19,5 +19,11 @@ opencv-python>=4.9.0
 numpy>=1.26.0
 pytesseract>=0.3.10
 
+# Optional next-generation OCR backend. PaddleOCR is selected explicitly with
+# `src.extract_frames --engine paddle` while it is benchmarked against the
+# existing Tesseract path. PaddlePaddle supplies the CPU runtime.
+paddlepaddle>=3.0.0
+paddleocr>=3.0.0
+
 # Gemini, used by the CN scraper and the item enrichment scripts
 google-genai>=1.0.0

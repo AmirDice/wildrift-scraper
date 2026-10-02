@@ -23,11 +23,13 @@ Run as a CLI to tune against a saved screenshot:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import shlex
 import shutil
 import sys
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -59,6 +61,171 @@ def _configure_tesseract() -> None:
 
 
 _configure_tesseract()
+
+# PaddleOCR is optional at import time: the scraper still needs to run on
+# machines that have only the lightweight Tesseract requirements installed.
+# Set OCR_ENGINE=paddle (or pass --engine paddle to extract_frames) to use it;
+# auto prefers Paddle and falls back to Tesseract when its runtime/model is not
+# available. The default remains tesseract until the capture benchmark proves
+# the new backend is both more accurate and acceptably fast.
+OCR_ENGINE = os.environ.get("OCR_ENGINE", "tesseract").strip().lower()
+_PADDLE_ENGINE = None
+_PADDLE_LOCK = threading.Lock()
+
+
+def ocr_engine() -> str:
+    """Return the selected backend, normalised to ``tesseract``/``paddle``/``auto``."""
+    value = os.environ.get("OCR_ENGINE", OCR_ENGINE).strip().lower()
+    return value if value in {"tesseract", "paddle", "auto"} else "tesseract"
+
+
+def _get_paddle_engine():
+    """Create one process-wide PaddleOCR instance, across all worker threads."""
+    global _PADDLE_ENGINE
+    if _PADDLE_ENGINE is not None:
+        return _PADDLE_ENGINE
+    with _PADDLE_LOCK:
+        if _PADDLE_ENGINE is not None:
+            return _PADDLE_ENGINE
+        try:
+            from paddleocr import PaddleOCR  # type: ignore
+        except Exception as exc:  # noqa: BLE001 -- optional dependency
+            raise RuntimeError(
+                "PaddleOCR is not installed; install requirements-scrape.txt "
+                "or use OCR_ENGINE=tesseract"
+            ) from exc
+        attempts = (
+            # PaddleOCR 3.x: disable document tasks; leaderboard crops are
+            # already rectified and only need text-line recognition.
+            {"lang": "en", "use_doc_orientation_classify": False,
+             "use_doc_unwarping": False, "use_textline_orientation": False},
+            # PaddleOCR 2.x compatibility.
+            {"lang": "en", "use_angle_cls": False, "show_log": False},
+            {"lang": "en"},
+        )
+        last = None
+        for kwargs in attempts:
+            try:
+                _PADDLE_ENGINE = PaddleOCR(**kwargs)
+                return _PADDLE_ENGINE
+            except Exception as exc:  # noqa: BLE001 -- try the next API
+                last = exc
+        raise RuntimeError(f"Could not initialise PaddleOCR: {last}")
+
+
+def _numeric(value) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _sequence(value):
+    """Turn Paddle's numpy/list arrays into a small Python sequence."""
+    if hasattr(value, "tolist"):
+        try:
+            value = value.tolist()
+        except Exception:  # noqa: BLE001 -- leave unusual result objects alone
+            pass
+    return value
+
+
+def _first_value(mapping: dict, *keys):
+    for key in keys:
+        if key in mapping and mapping[key] is not None:
+            return mapping[key]
+    return None
+
+
+def _paddle_words(result) -> list[OCRWord]:
+    """Normalise PaddleOCR 2.x and 3.x result shapes to our OCRWord contract."""
+    found: list[OCRWord] = []
+
+    def add(text, score, box=None) -> None:
+        text = str(text or "").strip()
+        conf = _numeric(score)
+        if not text:
+            return
+        points = []
+        box = _sequence(box)
+        if isinstance(box, (list, tuple)):
+            for point in box:
+                if isinstance(point, (list, tuple)) and len(point) >= 2:
+                    x, y = _numeric(point[0]), _numeric(point[1])
+                    if x is not None and y is not None:
+                        points.append((x, y))
+        if points:
+            xs = [p[0] for p in points]
+            ys = [p[1] for p in points]
+            left, top, right, bottom = min(xs), min(ys), max(xs), max(ys)
+            found.append(OCRWord(text, round((left + right) / 2),
+                                 round((top + bottom) / 2),
+                                 max(1, round(right - left)),
+                                 max(1, round(bottom - top)),
+                                 conf if conf is not None else -1.0))
+        else:
+            found.append(OCRWord(text, 0, 0, 0, 0,
+                                 conf if conf is not None else -1.0))
+
+    def walk(value) -> None:
+        # PaddleOCR 3.x exposes a Result object with a JSON serialisation.
+        if hasattr(value, "json"):
+            try:
+                payload = value.json
+                payload = payload() if callable(payload) else payload
+                if isinstance(payload, str):
+                    payload = json.loads(payload)
+                walk(payload)
+                return
+            except Exception:  # noqa: BLE001 -- inspect other representations
+                pass
+        if isinstance(value, dict):
+            # New API: one dict carries parallel recognition arrays.
+            texts = _sequence(_first_value(value, "rec_texts", "texts"))
+            scores = _sequence(_first_value(value, "rec_scores", "scores"))
+            boxes = _sequence(_first_value(
+                value, "rec_polys", "dt_polys", "boxes", "rec_boxes"))
+            boxes = _sequence(boxes)
+            if isinstance(texts, (list, tuple)):
+                for i, text in enumerate(texts):
+                    score = scores[i] if isinstance(scores, (list, tuple)) and i < len(scores) else -1
+                    box = boxes[i] if isinstance(boxes, (list, tuple)) and i < len(boxes) else None
+                    add(text, score, box)
+                return
+            for item in value.values():
+                walk(item)
+            return
+        if isinstance(value, (list, tuple)):
+            # Old API: [box, (text, score)]
+            if len(value) == 2 and isinstance(value[0], (list, tuple)) \
+                    and isinstance(value[1], (list, tuple)) and len(value[1]) >= 2 \
+                    and isinstance(value[1][0], str):
+                add(value[1][0], value[1][1], value[0])
+                return
+            for item in value:
+                walk(item)
+
+    walk(result)
+    return found
+
+
+def _run_paddle(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
+    engine = _get_paddle_engine()
+    source = img
+    if source.ndim == 2:
+        source = cv2.cvtColor(source, cv2.COLOR_GRAY2BGR)
+    with _PADDLE_LOCK:
+        if hasattr(engine, "predict"):
+            result = engine.predict(source)
+        else:
+            result = engine.ocr(source, cls=False)
+    words = _paddle_words(result)
+    # A malformed/new-API result can carry no coordinates but still expose
+    # text. It remains useful for read_text, while coordinate consumers fall
+    # back to Tesseract rather than guessing positions.
+    text = " ".join(word.text for word in words if word.text)
+    confs = [word.confidence for word in words if word.confidence >= 0]
+    return text, (sum(confs) / len(confs) if confs else -1.0), words
 
 
 # A whitelist scoped to numbers + dot + percent gives Tesseract a strong prior
@@ -136,6 +303,17 @@ def read_text(img: np.ndarray, config: str = WINRATE_TESSERACT_CONFIG) -> OCRRes
     """Try both polarities of Otsu threshold; return the higher-confidence
     result. Falls back to the non-inverted version if confidences are equal
     (or both missing)."""
+    if ocr_engine() in {"paddle", "auto"}:
+        try:
+            text, conf, _words = _run_paddle(img)
+            if text.strip():
+                return OCRResult(text=text, confidence=conf, image=img)
+        except Exception as exc:  # noqa: BLE001 -- optional backend fallback
+            if ocr_engine() == "paddle":
+                raise
+            print(f"[ocr] PaddleOCR unavailable ({exc}); falling back to Tesseract",
+                  file=sys.stderr)
+
     best: OCRResult | None = None
     for invert in (False, True):
         pre = preprocess(img, invert=invert)
@@ -355,6 +533,15 @@ def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[
     Tries both threshold polarities (like read_text) and returns whichever set
     of words had higher mean confidence.
     """
+    if ocr_engine() in {"paddle", "auto"}:
+        try:
+            _text, _conf, words = _run_paddle(img)
+            if words and any(word.x or word.y for word in words):
+                return words
+        except Exception:
+            if ocr_engine() == "paddle":
+                raise
+
     best: tuple[float, list[OCRWord]] | None = None
     for invert in (False, True):
         pre = preprocess(img, invert=invert)
@@ -423,6 +610,20 @@ def read_rank_badge(
     crop = image[y_start: cy + band_half_height, x0:x1]
     if crop.size == 0:
         return None
+
+    if ocr_engine() in {"paddle", "auto"}:
+        try:
+            for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
+                if not word.text.isdigit():
+                    continue
+                rank = int(word.text)
+                if not (1 <= rank <= 999):
+                    continue
+                return (rank, y_start + word.y - word.h // 2,
+                        y_start + word.y + word.h // 2)
+        except Exception:
+            if ocr_engine() == "paddle":
+                raise
 
     for invert in (False, True):
         pre = preprocess(crop, invert=invert)
@@ -499,6 +700,18 @@ def scan_visible_ranks(
 
     scale = 3.0
     candidates: list[tuple[int, int]] = []  # (y_orig_center, ocr_rank)
+
+    if ocr_engine() in {"paddle", "auto"}:
+        try:
+            for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
+                if not word.text.isdigit():
+                    continue
+                rank = int(word.text)
+                if 1 <= rank <= max_rank and word.y:
+                    candidates.append((y0 + word.y, rank))
+        except Exception:
+            if ocr_engine() == "paddle":
+                raise
 
     def _collect(pre: np.ndarray) -> None:
         data = pytesseract.image_to_data(
@@ -759,6 +972,20 @@ def scan_champion_rows(
     a gap of ~2 pitches between named rows means one unread row between them.
     The caller confirms identity from the screen-2 champion label anyway.
     """
+    # 2026-09-25 leaderboard relayout: the CHAMPION tab no longer renders the
+    # champion name as text anywhere. Rows carry a PORTRAIT plus that
+    # champion's rank-1 player and score, and the bottom-left name label on
+    # screen 2 was removed outright. Both callers pass None now, so fail here
+    # with the reason rather than deeper in numpy with a TypeError, or worse,
+    # silently returning "no rows" and letting the recovery loop spin.
+    if name_x_range is None:
+        raise NotImplementedError(
+            "scan_champion_rows needs the champion NAME text, which the 2026-09-25 "
+            "leaderboard relayout removed. Champion identity now has to come "
+            "from portrait matching (src/icon_match.py against "
+            "web-next/public/champions) or from the build popup, which still "
+            "prints the name. See coords/screen_1.json and data/new leaderboard/.")
+
     from . import champions as champ_module
 
     x0, x1 = name_x_range
@@ -868,6 +1095,20 @@ def read_player_name(image: np.ndarray, region: tuple[int, int, int, int]) -> st
 def read_champion_name(image: np.ndarray, region: tuple[int, int, int, int]) -> str | None:
     """OCR a region containing a single champion-name label (e.g. "AATROX")
     and return the canonical champion name. Returns None if no match."""
+    # 2026-09-25 leaderboard relayout: the CHAMPION tab no longer renders the
+    # champion name as text anywhere. Rows carry a PORTRAIT plus that
+    # champion's rank-1 player and score, and the bottom-left name label on
+    # screen 2 was removed outright. Both callers pass None now, so fail here
+    # with the reason rather than deeper in numpy with a TypeError, or worse,
+    # silently returning "no rows" and letting the recovery loop spin.
+    if region is None:
+        raise NotImplementedError(
+            "read_champion_name needs the champion NAME text, which the 2026-09-25 "
+            "leaderboard relayout removed. Champion identity now has to come "
+            "from portrait matching (src/icon_match.py against "
+            "web-next/public/champions) or from the build popup, which still "
+            "prints the name. See coords/screen_1.json and data/new leaderboard/.")
+
     from . import champions as champ_module
 
     def _match(text: str) -> str | None:

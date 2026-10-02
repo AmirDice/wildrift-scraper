@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import difflib
 import json
+import os
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -35,6 +36,9 @@ import numpy as np
 
 from . import champions as champ_module
 from .config import (
+    player_name_region,
+    LEADERBOARD_LAYOUT,
+    LEGACY_BADGE_X_RANGE,
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_2_NAME_HEIGHT,
     SCREEN_2_NAME_X_RANGE,
@@ -136,6 +140,12 @@ def verify_taps(
         if "badge_x0" in cal and "badge_x1" in cal
         else SCREEN_2_BADGE_X_RANGE
     )
+    # Current live calibration must not leak into archived sessions. New
+    # captures carry their layout explicitly; old captures can still relocate.
+    if entries and all(e.get("leaderboard_layout") == LEADERBOARD_LAYOUT for e in entries):
+        badge_x = SCREEN_2_BADGE_X_RANGE
+    elif cal.get("leaderboard_layout") == LEADERBOARD_LAYOUT:
+        badge_x = LEGACY_BADGE_X_RANGE
     located = False
     status: dict[int, str] = {}
     anomalies: list[str] = []
@@ -156,7 +166,8 @@ def verify_taps(
         if img is None:
             continue
         images[e["rank"]] = img
-        _r, p = scan_visible_ranks(img, badge_x, hint=float(e["rank"]))
+        frame_badge_x = tuple(e.get("badge_x_range") or badge_x)
+        _r, p = scan_visible_ranks(img, frame_badge_x, hint=float(e["rank"]))
         if p:
             pitches.append(p)
     session_pitch = sorted(pitches)[len(pitches) // 2] if pitches else None
@@ -168,8 +179,9 @@ def verify_taps(
         if tap_y is None or img is None:
             status[rank] = "unknown"
             continue
+        frame_badge_x = tuple(e.get("badge_x_range") or badge_x)
         ranks_map, pitch = scan_visible_ranks(
-            img, badge_x, hint=float(rank), expected_pitch=session_pitch)
+            img, frame_badge_x, hint=float(rank), expected_pitch=session_pitch)
         if not ranks_map and not located:
             # Badge column may be calibrated for a different device; find it
             # once from the frames themselves.
@@ -220,7 +232,7 @@ def _extract_strip_gemini(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("capture_dir", type=Path, help="A --capture-only session directory")
-    parser.add_argument("--engine", choices=("gemini", "tesseract"), default="gemini",
+    parser.add_argument("--engine", choices=("gemini", "tesseract", "paddle"), default="gemini",
                         help="Strip/name extractor. gemini also reads CJK player names.")
     parser.add_argument("--model", default="gemini-3.5-flash-lite")
     parser.add_argument("--workers", type=int, default=4, help="Parallel frame reads")
@@ -231,6 +243,14 @@ def main() -> int:
                              "win rates than it already holds. Without this, a run that "
                              "comes back emptier is kept aside instead of overwriting.")
     args = parser.parse_args()
+
+    # Keep the extractor backend explicit and process-local. Gemini remains a
+    # model path; its OCR fallback intentionally stays Tesseract unless the
+    # caller explicitly requests Paddle for the benchmark.
+    if args.engine == "paddle":
+        os.environ["OCR_ENGINE"] = "paddle"
+    elif args.engine == "tesseract":
+        os.environ["OCR_ENGINE"] = "tesseract"
 
     entries = _load_manifest(args.capture_dir)
     if not entries:
@@ -283,8 +303,7 @@ def main() -> int:
             img = cv2.imread(str(lb_path))
             if img is None:
                 continue
-            x0, x1 = SCREEN_2_NAME_X_RANGE
-            region = (x0, max(0, int(tap_y) + SCREEN_2_NAME_Y_OFFSET), x1 - x0, SCREEN_2_NAME_HEIGHT)
+            region = player_name_region(tap_y, e.get("leaderboard_layout"))
             name = read_player_name(img, region)
             if name and _usable_ocr_name(name):
                 names[e["rank"]] = name
@@ -407,8 +426,7 @@ def main() -> int:
             img = cv2.imread(str(lb_path))
             if img is None:
                 continue
-            x0, x1 = SCREEN_2_NAME_X_RANGE
-            region = (x0, max(0, int(tap_y) + SCREEN_2_NAME_Y_OFFSET), x1 - x0, SCREEN_2_NAME_HEIGHT)
+            region = player_name_region(tap_y, e.get("leaderboard_layout"))
             t_name = read_player_name(img, region)
             if not t_name or not _looks_like_a_name(t_name):
                 continue
@@ -647,7 +665,14 @@ def main() -> int:
                         ok_q = ("legendary" in shown) == (req == "legendary")
                         if not ok_q:
                             mismatched += 1
-                        w.writerow([st["_rank"], st.get("queue"), req,
+                        # OCR often captures the dropdown as "Legendary Ranked ~"
+                        # (the trailing glyph is the menu icon). Persist the
+                        # canonical queue label while retaining requested_queue
+                        # for auditability.
+                        queue_label = ("Legendary Ranked" if "legendary" in shown
+                                       else "Ranked" if "ranked" in shown
+                                       else st.get("queue"))
+                        w.writerow([st["_rank"], queue_label, req,
                                     st.get("games"), st.get("win_rate"), st.get("kda"),
                                     st.get("teamfight_participation"), st.get("gold_per_minute"),
                                     st.get("damage_dealt_per_match"), st.get("damage_taken_per_match"),

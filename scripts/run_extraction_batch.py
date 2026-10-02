@@ -54,6 +54,7 @@ def _last_write(session: Path) -> float:
 REGION_CAPTURES = {
     "eu": ROOT / "data" / "captures",
     "na": ROOT / "data" / "captures_na",
+    "cn": ROOT / "data" / "captures_cn",
 }
 
 
@@ -61,6 +62,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--region", default="eu", choices=sorted(REGION_CAPTURES),
                     help="which region's captures to extract (default: eu)")
+    ap.add_argument("--engine", default="tesseract",
+                    choices=("tesseract", "paddle"),
+                    help="OCR backend; Paddle is opt-in until the benchmark passes")
     args = ap.parse_args()
 
     global CAPTURES, LOG
@@ -79,14 +83,14 @@ def main() -> int:
         (live if _last_write(d) < STILL_WRITING_MINUTES else pending).append(d)
     for d in live:
         note(f"skipping {d.name}: written {_last_write(d):.1f} min ago, still capturing")
-    note(f"batch start: {len(pending)} pending session(s), engine=tesseract")
+    note(f"batch start: {len(pending)} pending session(s), engine={args.engine}")
     started = time.time()
     ok = failed = 0
     for i, session in enumerate(pending, 1):
         t0 = time.time()
         proc = subprocess.run(
             [sys.executable, "-m", "src.extract_frames", str(session),
-             "--engine", "tesseract"],
+             "--engine", args.engine],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             cwd=str(ROOT))
         dt = time.time() - t0
