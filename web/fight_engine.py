@@ -419,7 +419,8 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
         if not comps:
             continue
         cds = ab.get("cooldowns") or []
-        cd = (_rank_val(cds, 3) if cds else 8.0) * haste_m
+        cd = ((_rank_val(cds, 3) if cds else 8.0)
+              * 100 / (100 + _slot_haste(st, slot)))
         casts = 1 if slot == "4" else max(1, casts_in_window(window, cd))
         for c in comps:
             v = _scale_val(c.get("base"), 3, level)
@@ -827,23 +828,16 @@ def _apply_stat(st: dict, k: str, val: float, pct: bool = False) -> None:
         # entirely, so "+10% Heal and Shield Strength" did nothing.
         st["healShieldAmp"] += val / 100.0
     elif k == "physicalVamp":
-        # Mirrors the physVampPct item effect.
-        st["vamp"] += val / 100.0
-        st["lifestealPct"] += val / 100.0
+        # Physical vamp heals from all physical champion damage. It is neither
+        # lifesteal (attacks/on-hits only) nor omnivamp (all damage types).
+        st["physicalVampPct"] += val / 100.0
     elif k == "lifesteal":
-        # New in 7.3. In game it heals off basic attacks, on-hit damage and
-        # abilities that count as attacks, where physical vamp also heals off
-        # ability damage. The engine has one vamp channel, and the healing
-        # breakdown already charges lifesteal against physical damage only, so
-        # this is approximated as physical vamp. Splitting attack damage out of
-        # the window is its own change, not this patch's.
-        st["vamp"] += val / 100.0
+        # New in 7.3. This heals from attacks and attack-tagged effects only.
         st["lifestealPct"] += val / 100.0
     elif k == "omnivamp":
         # Mirrors the omnivampPct item effect. The stat line is canonical: the
         # fx key duplicated it and on Gluttonous/Immortal Treads carried double
         # the real value, read off stale passive prose.
-        st["vamp"] += val / 100.0
         st["omnivampPct"] += val / 100.0
     elif k == "tenacity":
         # Always a percentage, but the two items carrying it disagree on the
@@ -893,7 +887,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         # Real per-champion mana, scraped at last. A manaless kit has no entry
         # and correctly starts at 0, so Muramana's "AD = % of max mana" grants
         # it nothing without any special-casing.
-        "haste": 0.0, "mana": base("mana", 0.0),
+        "haste": 0.0, "basicHaste": 0.0, "ultimateHaste": 0.0,
+        "mana": base("mana", 0.0),
         "flatPen": 0.0, "pctPenFactors": [], "flatMagicPen": 0.0, "pctMagicPen": 0.0,
         "tenacity": 0.0, "grievousWounds": 0.0, "shieldCut": 0.0,
         "ccRemoval": 0.0, "stasisSec": 0.0, "basicAttackDr": 0.0, "targetAsSlow": 0.0,
@@ -947,7 +942,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "vamp": 0.0, "healOnHit": 0.0,
         "activeHealAdPct": 0.0, "activeHealMissingHpPct": 0.0,
         "activeHealCdSec": 0.0,
-        "shield": 0.0, "shieldPctBonusHp": 0.0, "shieldPctMaxHp": 0.0,
+        "shield": 0.0, "shieldPhysical": 0.0, "shieldMagic": 0.0,
+        "shieldPctBonusHp": 0.0, "shieldPctMaxHp": 0.0,
+        "shieldPhysicalPctMaxHp": 0.0, "shieldMagicPctMaxHp": 0.0,
         "shieldPctBonusAd": 0.0, "dr": 0.0,
         "overhealShieldCap": 0.0,
         "shieldPctMana": 0.0, "shieldManaRangedMult": 1.0,
@@ -966,7 +963,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "allyShield": 0.0,
         "graspPct": 0.0, "graspEvery": 5.0,
         # component healing shares (for the breakdown; total still == "vamp")
-        "lifestealPct": 0.0, "omnivampPct": 0.0,
+        "lifestealPct": 0.0, "physicalVampPct": 0.0, "omnivampPct": 0.0,
         # Sundered Sky's first hit is a guaranteed 160% attack against each
         # target, separate from ordinary crit chance, and heals from base AD
         # plus missing health on the same per-target cooldown.
@@ -1025,6 +1022,15 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["thornmailReflect"] = 1.0
         for k, v in it["stats"].items():
             _apply_stat(st, k, v["value"], v["percent"])
+        # Scoped haste is intentionally kept separate. Basic-ability haste may
+        # increase Q/W/E casts; ultimate haste is reported but has no numeric
+        # fight value because this engine's contract allows one ultimate per
+        # fight, regardless of its between-fight cooldown.
+        _scoped = it.get("scopedStats") or {}
+        st["basicHaste"] += float(
+            (_scoped.get("basicAbilityHaste") or {}).get("value", 0) or 0)
+        st["ultimateHaste"] += float(
+            (_scoped.get("ultimateAbilityHaste") or {}).get("value", 0) or 0)
         # synthetic stat probe (used by stat_marginal_value); goes through the
         # same path so mechanics like reload / asEfficiency still apply.
         fx = ENGINE_FX.get(slug) or {}
@@ -1202,12 +1208,14 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             adaptive_onhit["flat"] += g("adaptiveOnHitFlat")
             adaptive_onhit["adPct"] += g("adaptiveOnHitBonusAdPct") / 100.0
             adaptive_onhit["apPct"] += g("adaptiveOnHitApPct") / 100.0
-        st["vamp"] += (g("physVampPct") + g("omnivampPct") + g("lifestealPct")) / 100.0
-        st["lifestealPct"] += (g("physVampPct") + g("lifestealPct")) / 100.0
+        st["physicalVampPct"] += g("physVampPct") / 100.0
+        st["lifestealPct"] += g("lifestealPct") / 100.0
         st["omnivampPct"] += g("omnivampPct") / 100.0
         st["healOnHit"] += g("healOnHitFlat")
         st["shield"] += (g("shieldFlatRanged") if (_rngd and fx.get("shieldFlatRanged"))
                           else g("shieldFlat"))
+        st["shieldPhysical"] += g("shieldPhysicalFlat")
+        st["shieldMagic"] += g("shieldMagicFlat")
         st["overhealShieldCap"] += g("overhealShieldCap")
         st["shieldPctMana"] += g("shieldPctMana") / 100.0
         if g("shieldManaRangedMult"):
@@ -1218,6 +1226,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                 st["shieldManaNearbyMult"], g("shieldManaNearbyMult"))
         st["shieldPctBonusHp"] += g("shieldPctBonusHp") / 100.0
         st["shieldPctMaxHp"] += g("shieldPctMaxHp") / 100.0
+        st["shieldPhysicalPctMaxHp"] += g("shieldPhysicalPctMaxHp") / 100.0
+        st["shieldMagicPctMaxHp"] += g("shieldMagicPctMaxHp") / 100.0
         _shield_ad = g("shieldPctBonusAd")
         if (_rngd and fx.get("shieldPctBonusAdRanged")):
             _shield_ad = g("shieldPctBonusAdRanged")
@@ -1301,6 +1311,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         bonus_hp_ad_pct += g("adFromBonusHpPct") / 100.0
         st["ap"] += g("apFlatPassive")
         st["haste"] += g("hasteFlatPassive")
+        st["basicHaste"] += g("basicHasteFlatPassive")
+        st["ultimateHaste"] += g("ultimateHasteFlatPassive")
+        st["mana"] += g("manaFlatPassive")
         st["hp"] += g("hpFlatPassive"); st["bonusHp"] += g("hpFlatPassive")
         st["bonusMs"] += g("msFlat") + st["baseMs"] * g("msPct") / 100.0
         # Mana conversions are DEFERRED, not applied here: runes add mana after
@@ -1499,11 +1512,9 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["runeAllyHealPerSec"] += ally_heal * up * melee_mult / period
         # Vamp from a rune. Only items and the LLM rune path fed these, so a
         # curated rune granting omnivamp or lifesteal healed for nothing.
-        _vamp = (r.get("omnivampPct", 0) + r.get("lifestealPct", 0)
-                 + r.get("physVampPct", 0)) / 100.0
-        st["vamp"] += _vamp
         st["omnivampPct"] += r.get("omnivampPct", 0) / 100.0
-        st["lifestealPct"] += (r.get("lifestealPct", 0) + r.get("physVampPct", 0)) / 100.0
+        st["lifestealPct"] += r.get("lifestealPct", 0) / 100.0
+        st["physicalVampPct"] += r.get("physVampPct", 0) / 100.0
         if r.get("procTargetMaxHpPct"):
             ranged_mult = (r.get("rangedMultiplier", 1.0)
                            if CHAMP_CLASS.get(name, "") in RANGED_CLASSES else 1.0)
@@ -1702,8 +1713,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["pctPenFactors"].append(on_crit["pctPen"] / 100.0 * st["crit"])
     if on_crit["physVampPct"]:
         _v = on_crit["physVampPct"] / 100.0 * st["crit"]
-        st["vamp"] += _v
-        st["lifestealPct"] += _v
+        st["physicalVampPct"] += _v
 
     # Kit mechanics (extracted with evidence grounding) that change item math:
     #   fixedAttackSpeed — AS items don't speed this champion's attacks
@@ -2081,6 +2091,46 @@ def _mixed_taken(st: dict) -> float:
     return 0.5 * phys + 0.5 * magic
 
 
+def _shield_pools(st: dict, detail: dict | None = None) -> tuple[float, float, float]:
+    """Return amplified (universal, physical-only, magic-only) shield pools."""
+    universal = (st.get("shield", 0.0)
+                 + st.get("shieldPctBonusHp", 0.0) * st.get("bonusHp", 0.0)
+                 + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
+                 + st.get("shieldPctMaxHp", 0.0) * st.get("hp", 0.0)
+                 + st.get("triggeredHp", 0.0))
+    if detail is not None:
+        universal += _overheal_shield(st, detail)
+    physical = (st.get("shieldPhysical", 0.0)
+                + st.get("shieldPhysicalPctMaxHp", 0.0) * st.get("hp", 0.0))
+    magic = (st.get("shieldMagic", 0.0)
+             + st.get("shieldMagicPctMaxHp", 0.0) * st.get("hp", 0.0))
+    amp = 1 + st.get("healShieldAmp", 0.0)
+    return universal * amp, physical * amp, magic * amp
+
+
+def effective_shield_for_damage_mix(st: dict, physical_share: float = 0.5,
+                                    detail: dict | None = None) -> float:
+    """Shield value for a known physical/magic incoming-damage mix.
+
+    Typed shields contribute only to the damage type they can actually block.
+    The default 50/50 score is the expected value across that mixed profile;
+    a pure physical profile gets zero value from a magic-only shield.
+    """
+    physical_share = max(0.0, min(1.0, physical_share))
+    universal, physical, magic = _shield_pools(st, detail)
+    return universal + physical * physical_share + magic * (1 - physical_share)
+
+
+def _vamp_healing(st: dict, detail: dict) -> float:
+    """Healing from lifesteal, physical vamp and omnivamp by eligible damage."""
+    total = float(detail.get("total", 0.0) or 0.0)
+    physical = float((detail.get("byType") or {}).get("physical", 0.0) or 0.0)
+    attack = float(detail.get("autoDmg", 0.0) or 0.0)
+    return (st.get("lifestealPct", 0.0) * attack
+            + st.get("physicalVampPct", 0.0) * physical
+            + st.get("omnivampPct", 0.0) * total)
+
+
 def _active_item_heal(st: dict, window: float) -> float:
     """Healing from a cooldown-gated item active in the reference fight."""
     if not (st.get("activeHealAdPct") or st.get("activeHealMissingHpPct")):
@@ -2115,7 +2165,7 @@ def _overheal_shield(st: dict, detail: dict) -> float:
     cap = st.get("overhealShieldCap", 0.0)
     if not cap:
         return 0.0
-    lifesteal = st.get("lifestealPct", 0.0) * detail.get("byType", {}).get("physical", 0.0)
+    lifesteal = st.get("lifestealPct", 0.0) * detail.get("autoDmg", 0.0)
     return min(cap, max(0.0, lifesteal))
 
 
@@ -2374,6 +2424,51 @@ def _proc_activations(window: float, cooldown: float = float("inf"),
     if cooldown == float("inf") or cooldown <= 0:
         return 1
     return 1 + int((window - arm) // cooldown)
+
+
+def time_ramp_average(window: float, seconds_per_stack: float,
+                      max_stacks: int, start_stacks: int = 0) -> float:
+    """Average fraction of a time-stacked effect available during a fight.
+
+    Stacks are earned at the end of each interval, so a five-stack item that
+    gains one stack per second has zero value during the first second and only
+    reaches full value after five seconds. This integrates that step timeline
+    instead of pretending the item starts fully stacked.
+    """
+    if window <= 0 or seconds_per_stack <= 0 or max_stacks <= 0:
+        return 0.0
+    stacks = max(0, min(max_stacks, int(start_stacks)))
+    elapsed = 0.0
+    area = 0.0
+    while elapsed < window:
+        next_tick = min(window, elapsed + seconds_per_stack)
+        area += (next_tick - elapsed) * stacks / max_stacks
+        elapsed = next_tick
+        if elapsed < window + 1e-9:
+            stacks = min(max_stacks, stacks + 1)
+    return max(0.0, min(1.0, area / window))
+
+
+def attack_ramp_average(window: float, attacks_per_second: float,
+                        max_stacks: int, stacks_per_attack: int = 1) -> float:
+    """Average stack fraction for an effect earned by basic attacks."""
+    if attacks_per_second <= 0:
+        return 0.0
+    return time_ramp_average(
+        window, 1.0 / attacks_per_second,
+        max_stacks, 0) if stacks_per_attack == 1 else time_ramp_average(
+            window, 1.0 / attacks_per_second,
+            max(1, (max_stacks + stacks_per_attack - 1) // stacks_per_attack), 0)
+
+
+def _slot_haste(st: dict, slot: str) -> float:
+    """Haste that applies to one ability slot under the one-ult contract."""
+    if slot == "4":
+        # Ultimate haste is intentionally irrelevant inside one fight: the
+        # simulator permits one ultimate maximum.
+        return float(st.get("haste", 0.0) or 0.0)
+    return (float(st.get("haste", 0.0) or 0.0)
+            + float(st.get("basicHaste", 0.0) or 0.0))
 
 
 def _proc_split(st, target, phys_m, magic_m, window):
@@ -3196,7 +3291,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         cds = ab.get("cooldowns") or []
         rank = rank_of.get(slot, 3)
         cd_idx = min(rank, len(cds) - 1) if cds else 0
-        cd = (cds[cd_idx] if cds else 8.0) * haste_m
+        slot_haste_m = 100 / (100 + _slot_haste(st, slot))
+        cd = (cds[cd_idx] if cds else 8.0) * slot_haste_m
         if ab.get("tapCooldownRefundPct"):
             cd *= max(0.05, 1.0 - float(ab["tapCooldownRefundPct"]))
         if _cdr_per_hit and slot != _cdr_slot and window > 0:
@@ -3204,7 +3300,8 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             # capped at halving, so a long fight cannot drive one to nothing.
             _empowered = _limits.get(_cdr_slot, 0)
             _src_cds = (f.get(_cdr_slot, {}) or {}).get("cooldowns") or 12
-            _src_cd = max(0.5, (_rank_val(_src_cds, 3) or 12) * haste_m)
+            _src_haste_m = 100 / (100 + _slot_haste(st, _cdr_slot))
+            _src_cd = max(0.5, (_rank_val(_src_cds, 3) or 12) * _src_haste_m)
             _seconds = _cdr_per_hit * _empowered * (1 + int(window / _src_cd))
             cd = max(cd * 0.5, cd - _seconds / max(1.0, window / max(cd, 0.75)))
         casts = 1 if hwei else (casts_in_window(window, cd) if cd else 1)
@@ -3582,17 +3679,14 @@ def metrics(name: str, item_slugs: list[str], rune_names: list[str] | None = Non
             break
 
     r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
-    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
-              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
-              + st["shieldPctMaxHp"] * st["hp"]
-              + st.get("triggeredHp", 0.0) + _overheal_shield(st, r8))
-    shield *= 1 + st["healShieldAmp"]  # Revitalize-style amplification
+    shield = effective_shield_for_damage_mix(st, 0.5, r8)
     mixed_taken = _mixed_taken(st)
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
     # Kit self-healing counts toward staying alive, the same as lifesteal. It
     # used to be credited entirely as ally value, so a champion who sustains
     # through his own kit scored as though he had no sustain at all.
-    sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
+    sustain = (_vamp_healing(st, r8)
+               + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
                + kit_heal(name, st, level, 8.0, "self", r8["bySlot"], r8["total"])
                + st["healOnHit"] * r8["nAutos"]
                + _spellblade_heal(st, r8, TARGETS["bruiser"])
@@ -3952,14 +4046,11 @@ def _fight_value(name: str, level: int, bonus: dict | None) -> float:
     off = 0.6 * (dmg8 / 8.0) / REF_DPS + 0.4 * burst3 / REF_BURST
 
     _r8 = rotation(name, st, TARGETS["bruiser"], 8.0, level)
-    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
-              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
-              + st["shieldPctMaxHp"] * st["hp"]
-              + st.get("triggeredHp", 0.0) + _overheal_shield(st, _r8))
-    shield *= 1 + st["healShieldAmp"]
+    shield = effective_shield_for_damage_mix(st, 0.5, _r8)
     mixed_taken = _mixed_taken(st)
     ehp = (st["hp"] + shield) / mixed_taken / (1 - st["dr"] if st["dr"] < 1 else 1)
-    sustain = (st["vamp"] * dmg8 + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
+    sustain = (_vamp_healing(st, _r8)
+               + st["runeHealPerSec"] * 8.0 * (1 + st["healShieldAmp"])
                + kit_heal(name, st, level, 8.0, "self", _r8["bySlot"], _r8["total"])
                + _spellblade_heal(st, _r8, TARGETS["bruiser"])
                + _r8.get("procHealing", 0.0)
@@ -4239,7 +4330,8 @@ def analyze_build(name: str, items: list[str], runes: list[str] | None = None,
     # omnivamp off all; on-hit and rune heal are flat/time-based).
     phys8 = r8["byType"].get("physical", 0.0)
     healing = {
-        "lifesteal": round(st["lifestealPct"] * phys8),
+        "lifesteal": round(st["lifestealPct"] * r8.get("autoDmg", 0.0)),
+        "physicalVamp": round(st.get("physicalVampPct", 0.0) * phys8),
         "omnivamp": round(st["omnivampPct"] * tot),
         "onHit": round(st["healOnHit"] * r8["nAutos"]),
         "spellblade": round(_spellblade_heal(st, r8, bruiser)),
@@ -4253,12 +4345,11 @@ def analyze_build(name: str, items: list[str], runes: list[str] | None = None,
 
     # #8 shields: peak value + a coarse average uptime (kit shields recur;
     # reactive lifeline shields sit near half-uptime in a drawn-out fight).
-    shield_val = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
-                  + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
-                  + st["shieldPctMaxHp"] * st["hp"]
-                  + st.get("triggeredHp", 0.0) + _overheal_shield(st, r8))
-    shield_val *= 1 + st["healShieldAmp"]
+    universal_shield, physical_shield, magic_shield = _shield_pools(st, r8)
+    shield_val = universal_shield + 0.5 * (physical_shield + magic_shield)
     reactive = (st["shieldPctMaxHp"] > 0 or st["shieldPctBonusHp"] > 0
+                or st.get("shieldPhysicalPctMaxHp", 0.0) > 0
+                or st.get("shieldMagicPctMaxHp", 0.0) > 0
                 or st.get("overhealShieldCap", 0.0) > 0
                 or st.get("triggeredHp", 0.0) > 0)
     shields = {"value": round(shield_val),
@@ -4271,8 +4362,10 @@ def analyze_build(name: str, items: list[str], runes: list[str] | None = None,
     magic_taken = 100 / (100 + st["mr"])
     dr = st["dr"] if st["dr"] < 1 else 0.99
     ehp_split = {
-        "physical": round((st["hp"] + shield_val) / phys_taken / (1 - dr)),
-        "magic": round((st["hp"] + shield_val) / magic_taken / (1 - dr)),
+        "physical": round((st["hp"] + universal_shield + physical_shield)
+                          / phys_taken / (1 - dr)),
+        "magic": round((st["hp"] + universal_shield + magic_shield)
+                       / magic_taken / (1 - dr)),
     }
     raw_in = _INCOMING_DPS["bruiser"] * 8.0
     phys_raw, magic_raw = raw_in * 0.5, raw_in * 0.5
@@ -4999,10 +5092,7 @@ def score_vs_comp(name: str, items: list[str], runes: list[str], carry: dict,
             break
         t += 0.25
 
-    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
-              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
-              + st["shieldPctMaxHp"] * st["hp"])
-    shield *= 1 + st["healShieldAmp"]
+    shield = effective_shield_for_damage_mix(st, ad_share)
     # Typed damage reduction rides its own half here too, and this site knows
     # the enemy's ACTUAL damage split rather than assuming 50/50.
     phys_taken = 100 / (100 + st["armor"]) * (1 - st.get("drPhys", 0.0))
@@ -5067,14 +5157,12 @@ def _typed_ehp(st: dict) -> tuple[float, float]:
     number for deciding whether a build answers THIS enemy team. A build with
     250 armour and 60 magic resist is not "averagely durable".
     """
-    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
-              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
-              + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
+    universal, physical_shield, magic_shield = _shield_pools(st)
     dr = st["dr"] if st["dr"] < 1 else 0.99
-    pool = (st["hp"] + shield) / (1 - dr)
     phys = 100.0 / (100.0 + st["armor"]) * (1 - st.get("drPhys", 0.0))
     magic = 100.0 / (100.0 + st["mr"]) * (1 - st.get("drMagic", 0.0))
-    return pool / phys, pool / magic
+    return ((st["hp"] + universal + physical_shield) / (1 - dr) / phys,
+            (st["hp"] + universal + magic_shield) / (1 - dr) / magic)
 
 
 def damage_scenarios(name: str, item_slugs: list[str],
@@ -5228,15 +5316,10 @@ def evaluation_vector(name: str, item_slugs: list[str],
                              "overkill": (d or {}).get("overkill", 0)}
 
     phys_ehp, magic_ehp = _typed_ehp(st)
-    shielding = ((st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
-                  + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
-                  + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"]))
+    shielding = effective_shield_for_damage_mix(st, 0.5)
     # Effective health against THIS comp's actual damage split. Not a blend of
     # the two typed numbers: effective health is health over the share that
     # gets through, and shares add while their reciprocals do not.
-    shield = (st["shield"] + st["shieldPctBonusHp"] * st["bonusHp"]
-              + st.get("shieldPctBonusAd", 0.0) * st.get("bonusAd", 0.0)
-              + st["shieldPctMaxHp"] * st["hp"]) * (1 + st["healShieldAmp"])
     _dr = st["dr"] if st["dr"] < 1 else 0.99
     # The caller-supplied split remains available for counter-specific reads;
     # the generic tournament uses a class-aware mixed team pressure instead of
@@ -5246,6 +5329,8 @@ def evaluation_vector(name: str, item_slugs: list[str],
     _phys_share, _magic_share, _true_share = incoming_damage_mix(name)
     if (ad_share, ap_share) != (0.5, 0.5):
         _phys_share, _magic_share, _true_share = ad_share, ap_share, 0.0
+    shield = effective_shield_for_damage_mix(
+        st, _phys_share / max(_phys_share + _magic_share, 1e-9))
     taken = (_phys_share * 100.0 / (100.0 + st["armor"])
              * (1 - st.get("drPhys", 0.0))
              + _magic_share * 100.0 / (100.0 + st["mr"])

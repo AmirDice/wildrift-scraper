@@ -443,6 +443,8 @@ def main() -> None:
         "items": {
             it["slug"]: {"name": it["name"], "cost": it["cost"], "icon": it["icon"],
                          "category": it["category"], "stats": it["stats"],
+                         **({"scopedStats": it["scopedStats"]}
+                            if it.get("scopedStats") else {}),
                          **({"removedIn": it["removedIn"]} if it.get("removedIn") else {})}
             for it in items
         },

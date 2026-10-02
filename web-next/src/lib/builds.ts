@@ -131,7 +131,7 @@ export interface BuildAnalysis {
   survivalTime: Record<string, number | null>;
   goldEff: { gold: number; dmgPerGold: number | null; ehpPerGold: number | null };
   healing: {
-    lifesteal: number; omnivamp: number; onHit: number; rune: number;
+    lifesteal: number; physicalVamp?: number; omnivamp: number; onHit: number; rune: number;
     itemActive?: number; conqueror?: number; spellblade?: number; firstHit?: number;
     conditional?: number; total: number;
   };

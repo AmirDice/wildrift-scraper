@@ -343,7 +343,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     // Real base mana from the champion's stat line (Python parity): mana
     // feeds the AD/AP/HP-from-mana conversions, so a flat assumption
     // short-changed every Manamune/Archangel's/Winter's build.
-    crit: 0, critMult: BASE_CRIT_MULT, critDisabled: 0, haste: 0, mana: base("mana", 0),
+    crit: 0, critMult: BASE_CRIT_MULT, critDisabled: 0,
+    haste: 0, basicHaste: 0, ultimateHaste: 0, mana: base("mana", 0),
     flatPen: 0, pctPenFactors: [] as number[], flatMagicPen: 0, pctMagicPen: 0,
     baseMs: bs.moveSpeed?.base || 330, bonusMs: 0, tenacity: 0,
     abilityAmp: 0, damageAmp: 0, attackDamageAmp: 0,
@@ -368,7 +369,10 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     extraOnHitApplications: 0,
     critDamagePerExcessCrit: 0, hastePct: 0, cdRefundPctPerAuto: 0,
     cleaveFlat: 0, cleavePctBonusHp: 0,
-    shield: 0, shieldPctBonusHp: 0, shieldPctMaxHp: 0, shieldPctBonusAd: 0, dr: 0,
+    shield: 0, shieldPhysical: 0, shieldMagic: 0,
+    shieldPctBonusHp: 0, shieldPctMaxHp: 0,
+    shieldPhysicalPctMaxHp: 0, shieldMagicPctMaxHp: 0,
+    shieldPctBonusAd: 0, dr: 0,
     overhealShieldCap: 0, shieldPctMana: 0, shieldManaRangedMult: 1,
     shieldManaNearbyMult: 1, shieldManaComponent: 0,
     activeHealAdPct: 0, activeHealMissingHpPct: 0, activeHealCdSec: 0,
@@ -400,7 +404,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     basicAttackDr: 0, targetAsSlow: 0,
     // Set by duel() from the target's own build; 1 means untouched.
     externalAsMult: 1, autoDamageMult: 1,
-    lifestealPct: 0, omnivampPct: 0,
+    lifestealPct: 0, physicalVampPct: 0, omnivampPct: 0,
     runeOnHitFlat: 0,
   };
 
@@ -475,12 +479,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
         if (pct) st.pctPenFactors.push(val / 100);
         else st.flatPen += val;
       } else if (k === "physicalPenFlat") st.flatPen += val;
-      else if (k === "physicalVamp") { st.vamp += val / 100; st.lifestealPct += val / 100; }
-      // Lifesteal is new in 7.3: it heals off attacks and on-hit damage only,
-      // where physical vamp also heals off abilities. One vamp channel here,
-      // so it is approximated as physical vamp -- see the Python engine.
-      else if (k === "lifesteal") { st.vamp += val / 100; st.lifestealPct += val / 100; }
-      else if (k === "omnivamp") { st.vamp += val / 100; st.omnivampPct += val / 100; }
+      else if (k === "physicalVamp") st.physicalVampPct += val / 100;
+      else if (k === "lifesteal") st.lifestealPct += val / 100;
+      else if (k === "omnivamp") st.omnivampPct += val / 100;
       else if (k === "healShieldPower") st.healShieldAmp += val / 100;
       // Tenacity is always a percentage, but the two items that carry it disagree
       // on the flag -- Mercury's Treads is percent:false and Chainlaced Crushers
@@ -490,6 +491,11 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       // manaRegen and hpRegen are read and dropped on purpose: a duel has no
       // out-of-combat regeneration channel, so they would be dead weight.
     }
+    // Scoped haste remains scoped. Ultimate haste is retained for diagnostics
+    // but cannot create a second ultimate under the one-fight contract.
+    const scoped = it.scopedStats ?? {};
+    st.basicHaste += Number(scoped.basicAbilityHaste?.value ?? 0);
+    st.ultimateHaste += Number(scoped.ultimateAbilityHaste?.value ?? 0);
     let fx = DATA.itemFx[slug] ?? {};
     // STACK RAMP-UP: attack-stacked effects (Terminus' pen, Guinsoo's AS,
     // Cleaver's shred) are not there from second zero. Scale the stack-built
@@ -635,8 +641,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       adaptiveOnHit.adPct += g("adaptiveOnHitBonusAdPct") / 100;
       adaptiveOnHit.apPct += g("adaptiveOnHitApPct") / 100;
     }
-    st.vamp += (g("physVampPct") + g("omnivampPct") + g("lifestealPct")) / 100;
-    st.lifestealPct += (g("physVampPct") + g("lifestealPct")) / 100;
+    st.physicalVampPct += g("physVampPct") / 100;
+    st.lifestealPct += g("lifestealPct") / 100;
     st.omnivampPct += g("omnivampPct") / 100;
     st.healOnHit += g("healOnHitFlat");
     st.activeHealAdPct += g("healOnActiveAdPct") / 100;
@@ -644,6 +650,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.activeHealCdSec = Math.max(st.activeHealCdSec,
       g("healOnActiveCdSec") || g("burstProcCdSec"));
     st.shield += rngd && fx.shieldFlatRanged ? g("shieldFlatRanged") : g("shieldFlat");
+    st.shieldPhysical += g("shieldPhysicalFlat");
+    st.shieldMagic += g("shieldMagicFlat");
     st.overhealShieldCap += g("overhealShieldCap");
     st.shieldPctMana += g("shieldPctMana") / 100;
     if (g("shieldManaRangedMult"))
@@ -652,6 +660,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       st.shieldManaNearbyMult = Math.max(st.shieldManaNearbyMult, g("shieldManaNearbyMult"));
     st.shieldPctBonusHp += g("shieldPctBonusHp") / 100;
     st.shieldPctMaxHp += g("shieldPctMaxHp") / 100;
+    st.shieldPhysicalPctMaxHp += g("shieldPhysicalPctMaxHp") / 100;
+    st.shieldMagicPctMaxHp += g("shieldMagicPctMaxHp") / 100;
     const shieldAd = rngd && fx.shieldPctBonusAdRanged
       ? g("shieldPctBonusAdRanged") : g("shieldPctBonusAd");
     st.shieldPctBonusAd += shieldAd / 100;
@@ -724,6 +734,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.bonusAd += g("adFlatPassive");
     st.ap += g("apFlatPassive");
     st.haste += g("hasteFlatPassive");
+    st.basicHaste += g("basicHasteFlatPassive");
+    st.ultimateHaste += g("ultimateHasteFlatPassive");
+    st.mana += g("manaFlatPassive");
     st.hp += g("hpFlatPassive"); st.bonusHp += g("hpFlatPassive");
     st.bonusMs += g("msFlat") + st.baseMs * g("msPct") / 100;
     // Mana conversions are DEFERRED, not applied here: runes add mana after
@@ -1214,8 +1227,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   if (onCrit.pctPen) st.pctPenFactors.push(onCrit.pctPen / 100 * st.crit);
   if (onCrit.physVampPct) {
     const v = onCrit.physVampPct / 100 * st.crit;
-    st.vamp += v;
-    st.lifestealPct += v;
+    st.physicalVampPct += v;
   }
   let pen = 1;
   for (const p of st.pctPenFactors) pen *= 1 - p;
@@ -1295,6 +1307,63 @@ function procActivations(window: number, cooldown = Infinity, arm = 0): number {
   if (window + 1e-9 < arm) return 0;
   if (cooldown === Infinity || cooldown <= 0) return 1;
   return 1 + Math.floor((window - arm) / cooldown);
+}
+
+export function timeRampAverage(window: number, secondsPerStack: number,
+                                maxStacks: number, startStacks = 0): number {
+  if (window <= 0 || secondsPerStack <= 0 || maxStacks <= 0) return 0;
+  let stacks = Math.max(0, Math.min(maxStacks, Math.floor(startStacks)));
+  let elapsed = 0, area = 0;
+  while (elapsed < window) {
+    const nextTick = Math.min(window, elapsed + secondsPerStack);
+    area += (nextTick - elapsed) * stacks / maxStacks;
+    elapsed = nextTick;
+    if (elapsed < window + 1e-9) stacks = Math.min(maxStacks, stacks + 1);
+  }
+  return Math.max(0, Math.min(1, area / window));
+}
+
+export function attackRampAverage(window: number, attacksPerSecond: number,
+                                  maxStacks: number): number {
+  return attacksPerSecond > 0
+    ? timeRampAverage(window, 1 / attacksPerSecond, maxStacks) : 0;
+}
+
+function slotHaste(st: any, slot: string): number {
+  // One ultimate maximum per fight: ultimate-only haste affects the next
+  // fight, not this one. Basic-only haste remains eligible for Q/W/E casts.
+  return Number(st.haste || 0) + (slot === "4" ? 0 : Number(st.basicHaste || 0));
+}
+
+function shieldPools(st: any, detail?: any): [number, number, number] {
+  let universal = Number(st.shield || 0)
+    + Number(st.shieldPctBonusHp || 0) * Number(st.bonusHp || 0)
+    + Number(st.shieldPctBonusAd || 0) * Number(st.bonusAd || 0)
+    + Number(st.shieldPctMaxHp || 0) * Number(st.hp || 0)
+    + Number(st.triggeredHp || 0);
+  if (detail) universal += overhealShield(st, detail);
+  const physical = Number(st.shieldPhysical || 0)
+    + Number(st.shieldPhysicalPctMaxHp || 0) * Number(st.hp || 0);
+  const magic = Number(st.shieldMagic || 0)
+    + Number(st.shieldMagicPctMaxHp || 0) * Number(st.hp || 0);
+  const amp = 1 + Number(st.healShieldAmp || 0);
+  return [universal * amp, physical * amp, magic * amp];
+}
+
+export function effectiveShieldForDamageMix(st: any, physicalShare = 0.5,
+                                            detail?: any): number {
+  const share = Math.max(0, Math.min(1, physicalShare));
+  const [universal, physical, magic] = shieldPools(st, detail);
+  return universal + physical * share + magic * (1 - share);
+}
+
+function vampHealing(st: any, detail: any): number {
+  const total = Number(detail.damage ?? detail.total ?? 0);
+  const physical = Number(detail.byType?.physical || 0);
+  const attack = Number(detail.autoDamage ?? detail.autoDmg ?? 0);
+  return Number(st.lifestealPct || 0) * attack
+    + Number(st.physicalVampPct || 0) * physical
+    + Number(st.omnivampPct || 0) * total;
 }
 
 function firstHitProcs(st: any, nAutos: number, window: number): number {
@@ -1674,7 +1743,8 @@ export function rotation(name: string, st: any, target: any, window: number,
         // capping it. Fall back to how often its cooldown allows a cast.
         const cds = (DATA.formulas[name]?.abilities?.[slot] as any)?.cooldowns ?? [];
         const cd = rankVal(cds.length ? cds : 12, 3) || 12;
-        casts = Math.max(1, 1 + Math.floor(window / Math.max(0.5, cd * hasteM)));
+        const scopedHasteM = 100 / (100 + slotHaste(st, slot));
+        casts = Math.max(1, 1 + Math.floor(window / Math.max(0.5, cd * scopedHasteM)));
       }
       return Math.min(1, (limit * casts) / nAutos);
     }
@@ -2077,15 +2147,17 @@ export function rotation(name: string, st: any, target: any, window: number,
     const cds = ab.cooldowns ?? [];
     const rank = rankOf[slot] ?? 3;
     const cdIdx = cds.length ? Math.min(rank, cds.length - 1) : 0;
-    let cd = (cds.length ? cds[cdIdx] : 8) * hasteM;
+    const slotHasteM = 100 / (100 + slotHaste(st, slot));
+    let cd = (cds.length ? cds[cdIdx] : 8) * slotHasteM;
     if (ab.tapCooldownRefundPct)
       cd *= Math.max(0.05, 1 - Number(ab.tapCooldownRefundPct));
     if (cdrPerEmpoweredHit && slot !== cdrSourceSlot && window > 0) {
       // Seconds of cooldown removed across the window, spread evenly. Capped at
       // half, so a long fight cannot drive a cooldown to nothing.
       const empowered = empowerLimit.get(cdrSourceSlot) ?? 0;
+      const srcHasteM = 100 / (100 + slotHaste(st, cdrSourceSlot));
       const srcCd = Math.max(0.5, rankVal(
-        (DATA.formulas[name]?.abilities?.[cdrSourceSlot] as any)?.cooldowns ?? 12, 3) * hasteM);
+        (DATA.formulas[name]?.abilities?.[cdrSourceSlot] as any)?.cooldowns ?? 12, 3) * srcHasteM);
       const srcCasts = 1 + Math.floor(window / srcCd);
       const seconds = cdrPerEmpoweredHit * empowered * srcCasts;
       cd = Math.max(cd * 0.5, cd - seconds / Math.max(1, window / Math.max(cd, 0.75)));
@@ -2373,13 +2445,11 @@ function valueAt(name: string, items: string[], runes: string[], variant: string
   // Damage on OTHER targets (Runaan's bolts), as a per-second rate to match
   // dps8. Zero for any build without a bolt item, so they are unaffected.
   const aoePerSec = detail8.boltDamage / 8;
-  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp
-    + st.shieldPctBonusAd * st.bonusAd + st.shieldPctMaxHp * st.hp
-    + (st.triggeredHp || 0) + overhealShield(st, detail8);
-  shield *= 1 + st.healShieldAmp;
+  const shield = effectiveShieldForDamageMix(st, 0.5, detail8);
   const mixed = mixedTaken(st);
   const ehp = (st.hp + shield) / mixed / (st.dr < 1 ? 1 - st.dr : 1);
-  const sustain = st.vamp * dps8 * 8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
+  const sustain = vampHealing(st, detail8)
+    + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
     + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
     + conquerorHeal(st, detail8.damage, 8)
     + spellbladeHeal(st, TARGET_BRUISER, detail8)
@@ -2426,13 +2496,11 @@ export function liveMetrics(name: string, items: string[], runes: string[],
     const t = i * 0.25;
     if (rotation(name, st, squishy, t, level) >= need) { ttk = t; break; }
   }
-  let shield = st.shield + st.shieldPctBonusHp * st.bonusHp
-    + st.shieldPctBonusAd * st.bonusAd + st.shieldPctMaxHp * st.hp
-    + (st.triggeredHp || 0) + overhealShield(st, detail8);
-  shield *= 1 + st.healShieldAmp;
+  const shield = effectiveShieldForDamageMix(st, 0.5, detail8);
   const mixed = mixedTaken(st);
   const ehp = (st.hp + shield) / mixed / (st.dr < 1 ? 1 - st.dr : 1);
-  const sustain = st.vamp * dmg8 + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
+  const sustain = vampHealing(st, detail8)
+    + st.runeHealPerSec * 8 * (1 + st.healShieldAmp)
     + st.healOnHit * detail8.autos + activeItemHeal(st, 8)
     + conquerorHeal(st, dmg8, 8)
     + spellbladeHeal(st, TARGET_BRUISER, detail8)
@@ -2538,10 +2606,10 @@ function firstHitHeal(st: any, detail: { firstHitProcs?: number }): number {
     + (Number(st.firstHitHealMissingHpPct) || 0) / 100 * missingHp);
 }
 
-function overhealShield(st: any, detail: { byType?: { physical?: number } }): number {
+function overhealShield(st: any, detail: { autoDamage?: number }): number {
   const cap = Number(st.overhealShieldCap) || 0;
   if (!cap) return 0;
-  const lifesteal = (st.lifestealPct || 0) * (detail.byType?.physical || 0);
+  const lifesteal = (st.lifestealPct || 0) * (detail.autoDamage || 0);
   return Math.min(cap, Math.max(0, lifesteal));
 }
 
@@ -2605,10 +2673,8 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
   rotation(name, st, bruiser, 8, level);
 
   // survivability + mitigation + gold efficiency
-  let shieldVal = st.shield + st.shieldPctBonusHp * st.bonusHp
-    + st.shieldPctBonusAd * st.bonusAd + st.shieldPctMaxHp * st.hp
-    + (st.triggeredHp || 0) + overhealShield(st, detail8);
-  shieldVal *= 1 + st.healShieldAmp;
+  const [universalShield, physicalShield, magicShield] = shieldPools(st, detail8);
+  const shieldVal = universalShield + 0.5 * (physicalShield + magicShield);
   // Typed damage reduction rides its own half here too, and this site knows
   // the enemy's ACTUAL damage split rather than assuming 50/50.
   const physTaken = 100 / (100 + st.armor) * (1 - (st.drPhys ?? 0));
@@ -2616,15 +2682,17 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
   const dr = st.dr < 1 ? st.dr : 0.99;
   const ehp = Math.round((st.hp + shieldVal) / (0.5 * physTaken + 0.5 * magicTaken) / (1 - dr));
   const ehpSplit = {
-    physical: Math.round((st.hp + shieldVal) / physTaken / (1 - dr)),
-    magic: Math.round((st.hp + shieldVal) / magicTaken / (1 - dr)),
+    physical: Math.round((st.hp + universalShield + physicalShield)
+      / physTaken / (1 - dr)),
+    magic: Math.round((st.hp + universalShield + magicShield)
+      / magicTaken / (1 - dr)),
   };
   const survivalTime: Record<string, number | null> = {};
   for (const k of ["adc", "bruiser", "tank"]) survivalTime[k] = INCOMING_DPS[k] ? Math.round(100 * ehp / INCOMING_DPS[k]) / 100 : null;
 
-  const phys8 = bt.physical;
   const healing = {
-    lifesteal: Math.round(st.lifestealPct * phys8),
+    lifesteal: Math.round(st.lifestealPct * autoD),
+    physicalVamp: Math.round(st.physicalVampPct * bt.physical),
     omnivamp: Math.round(st.omnivampPct * tot),
     onHit: Math.round(st.healOnHit * nAutos),
     rune: Math.round(st.runeHealPerSec * 8 * (1 + st.healShieldAmp)),
@@ -2635,10 +2703,12 @@ export function analyzeBuild(name: string, items: string[], runes: string[],
     conditional: Math.round(st.triggeredHeal || 0),
     total: 0,
   };
-  healing.total = healing.lifesteal + healing.omnivamp + healing.onHit + healing.rune
+  healing.total = healing.lifesteal + healing.physicalVamp
+    + healing.omnivamp + healing.onHit + healing.rune
     + healing.itemActive + healing.conqueror + healing.spellblade + healing.firstHit
     + healing.conditional;
   const reactive = st.shieldPctMaxHp > 0 || st.shieldPctBonusHp > 0
+    || st.shieldPhysicalPctMaxHp > 0 || st.shieldMagicPctMaxHp > 0
     || st.overhealShieldCap > 0 || st.triggeredHp > 0;
   const shields = { value: Math.round(shieldVal), avgUptime: reactive ? 0.45 : (shieldVal ? 0.7 : 0), amp: Math.round(st.healShieldAmp * 100) };
 
@@ -3186,7 +3256,6 @@ export function kitSustain(name: string, st: any, level: number,
   }
   const f = DATA.formulas[name]?.abilities ?? {};
   const amp = 1 + st.healShieldAmp;
-  const hasteM = 100 / (100 + st.haste);
   const who = (DATA.healTargets?.[name] ?? {}) as Record<string, string>;
   let total = 0;
   for (const [slot, ab] of Object.entries<any>(f)) {
@@ -3197,7 +3266,8 @@ export function kitSustain(name: string, st: any, level: number,
       (c: any) => !c.alt && (c.kind === "heal" || c.kind === "shield"));
     if (!comps.length) continue;
     const cds = ab.cooldowns ?? [];
-    const cd = (cds.length ? rankVal(cds, 3) : 8) * hasteM;
+    const cd = (cds.length ? rankVal(cds, 3) : 8)
+      * 100 / (100 + slotHaste(st, slot));
     const casts = slot === "4" ? 1
       : Math.max(1, castsInWindow(window, cd));
     for (const c of comps) {

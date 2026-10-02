@@ -195,6 +195,40 @@ def test_rammus_reflection_requires_incoming_attacks():
     assert any(label == "reactive reflection" for label, _ in contact["parts"])
 
 
+def test_time_ramp_integrates_stack_uptime_instead_of_starting_full():
+    # Stack fractions over eight one-second slices: 0,1,2,3,4,5,5,5 / 5.
+    assert fe.time_ramp_average(8, 1, 5) == pytest.approx(0.625)
+    assert fe.attack_ramp_average(8, 1, 5) == pytest.approx(0.625)
+
+
+def test_typed_shields_only_block_the_matching_damage_type():
+    stats = fe.resolve_stats("Garen", 15, [], [])
+    stats["shieldMagic"] = 1000
+    assert fe.effective_shield_for_damage_mix(stats, 1.0) == 0
+    assert fe.effective_shield_for_damage_mix(stats, 0.0) == 1000
+    assert fe.effective_shield_for_damage_mix(stats, 0.5) == 500
+
+
+def test_vamp_channels_use_only_their_eligible_damage():
+    stats = {"lifestealPct": 0.1, "physicalVampPct": 0.2,
+             "omnivampPct": 0.3}
+    detail = {"total": 1000, "autoDmg": 400,
+              "byType": {"physical": 700, "magic": 300}}
+    assert fe._vamp_healing(stats, detail) == pytest.approx(480)
+
+
+def test_scoped_haste_is_preserved_without_repeating_ultimates():
+    shojin = fe.resolve_stats("Aatrox", 15, ["spear-of-shojin"], [])
+    hexplate = fe.resolve_stats("Aatrox", 15, ["experimental-hexplate"], [])
+    rod = fe.resolve_stats("Annie", 15, ["rod-of-ages"], [])
+
+    assert shojin["basicHaste"] == 20
+    assert shojin["ultimateHaste"] == 0
+    assert hexplate["basicHaste"] == 0
+    assert hexplate["ultimateHaste"] == 20
+    assert rod["mana"] >= 700  # 400 printed + 300 Veteran, before champion Mana.
+
+
 # ---------------------------------------------------------------------------
 # SECONDARY TARGET REACH
 #

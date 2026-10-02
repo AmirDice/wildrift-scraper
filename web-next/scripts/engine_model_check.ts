@@ -24,7 +24,8 @@
  */
 import {
   championTarget, duel, kitSustain, resolveStats, rotation, rotationDetail,
-  supportValue,
+  supportValue, timeRampAverage, attackRampAverage,
+  effectiveShieldForDamageMix,
 } from "../src/lib/engine";
 
 let failures = 0;
@@ -40,6 +41,30 @@ function ok(label: string, condition: boolean, detail = "") {
 const DUMMY = { label: "dummy", hp: 2600, armor: 90, mr: 60, bonusHp: 900 };
 const BRUISER = { label: "bruiser", hp: 3400, armor: 130, mr: 85, bonusHp: 1700 };
 const CARRY = ["essence-reaver", "infinity-edge", "bloodthirster"];
+
+// ----------------------------------------------- shared effect primitives
+{
+  ok("time ramps integrate their stack timeline",
+    Math.abs(timeRampAverage(8, 1, 5) - 0.625) < 1e-9);
+  ok("attack ramps share the same timeline",
+    Math.abs(attackRampAverage(8, 1, 5) - 0.625) < 1e-9);
+
+  const typed: any = resolveStats("Garen", 15, [], []);
+  typed.shieldMagic = 1000;
+  ok("magic shields add no physical EHP",
+    effectiveShieldForDamageMix(typed, 1) === 0);
+  ok("magic shields retain their magic value",
+    effectiveShieldForDamageMix(typed, 0) === 1000);
+
+  const shojin: any = resolveStats("Aatrox", 15, ["spear-of-shojin"], []);
+  const hexplate: any = resolveStats("Aatrox", 15, ["experimental-hexplate"], []);
+  const rod: any = resolveStats("Annie", 15, ["rod-of-ages"], []);
+  ok("Shojin haste remains basic-only",
+    shojin.basicHaste === 20 && shojin.ultimateHaste === 0);
+  ok("Hexplate haste remains ultimate-only",
+    hexplate.basicHaste === 0 && hexplate.ultimateHaste === 20);
+  ok("Rod of Ages grants Veteran mana", rod.mana >= 700, `${rod.mana}`);
+}
 
 // ---------------------------------------------- one-fight contract / reflect
 {
