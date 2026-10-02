@@ -356,6 +356,8 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     conditionalEffects: [] as any[], conditionBand,
     timedDamageAmps: [] as any[], targetThresholdAmps: [] as any[],
     rampDamageAmps: [] as any[], rampOmnivamp: [] as any[],
+    attackArmedDamageAmps: [] as any[],
+    lethalTempo: null as any,
     allyTriggeredSelfEffects: [] as any[],
     giant: 0, execute: 0, ultAmp: 0,
     spellbladeBaseAdPct: 0, spellbladeBonusArmorPct: 0,
@@ -399,6 +401,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     ultAttackAsPct: 0, ultAttackCooldownS: 0,
     healShieldAmp: 0, runeHealPerSec: 0, conquerorHealPct: 0, conquerorRampS: 3,
     graspPct: 0, graspEvery: 5,
+    graspPctOwnHp: 0, graspHealPctOwnHp: 0, graspArmSec: 0,
     runeAllyHealPerSec: 0, allyShield: 0, autoBonusPct: 0,
     extraBolts: 0, extraBoltAdPct: 0, targetSlow: 0,
     // Statikk Shiv's chain lightning. Modelled in web/fight_engine.py since
@@ -901,6 +904,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   // inside this loop, so pricing them here would charge whatever happened
   // to have landed so far. Mirrors fight_engine's ragg.
   const runeOnHit = { adRatio: 0, apRatio: 0 };
+  let runeHpPct = 0;
   const ks = DATA.runeFx.keystones ?? {}, mn = DATA.runeFx.minors ?? {};
   for (const rn of runeNames) {
     if (rn === "Sudden Impact" && !c.suddenImpactTrigger) continue;
@@ -931,6 +935,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
         fx = scaled;
       }
       const g = (k: string) => (k in fx ? lvlRange(fx[k], level) : 0);
+      if (g("requiresChampionCc") && !Number(c.ccDepth || 0)) continue;
       const aAd = g("adaptiveAd"), aAp = g("adaptiveAp");
       if (aAd || aAp) {
         if (st.ap >= st.bonusAd) st.ap += aAp; else st.bonusAd += aAd;
@@ -949,6 +954,26 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       st.tenacity = 1 - (1 - st.tenacity) * (1 - g("tenacityPct") / 100);
       st.armor *= 1 + g("armorPct") / 100;
       st.mr *= 1 + g("mrPct") / 100;
+      if (g("conditionalArmorFlat") || g("conditionalMrFlat")) {
+        st.timedSteroids.push({
+          asPct: 0, adFlat: 0,
+          armorFlat: g("conditionalArmorFlat"), mrFlat: g("conditionalMrFlat"),
+          armorPct: 0, mrPct: 0, drPct: 0,
+          durationS: g("conditionalResistDurationSec") || 1.5,
+          cooldownS: Infinity,
+        });
+      }
+      if (g("timedResistFlat") || g("timedBonusArmorRatio") || g("timedBonusMrRatio")) {
+        st.timedSteroids.push({
+          asPct: 0, adFlat: 0,
+          armorFlat: g("timedResistFlat"), mrFlat: g("timedResistFlat"),
+          armorPct: 0, mrPct: 0,
+          bonusArmorPct: g("timedBonusArmorRatio") / 100,
+          bonusMrPct: g("timedBonusMrRatio") / 100, drPct: 0,
+          durationS: g("timedResistDurationSec") || 2.5,
+          cooldownS: Infinity,
+        });
+      }
       st.abilityAmp += g("abilityAmpPct") / 100;
       // Axiom Arcanist: "Your ultimate ability has 10% increased damage ... (AoE
       // damage is reduced to a 5% increase)". Which rate applies depends on the
@@ -980,22 +1005,57 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       const runeShield = g("shieldFlat")
         + g("shieldPctMaxHp") / 100 * st.hp
         + g("shieldPctBonusHp") / 100 * st.bonusHp
+        + g("shieldBonusAdRatio") / 100 * st.bonusAd
         + g("shieldApRatio") / 100 * st.ap;
-      st.shield += runeShield;
-      st.allyShield += g("allyShieldFlat")
-        + (g("allyShieldFlat") ? runeShield - g("shieldFlat") : 0);
+      const aeryShieldShare = rn === "Aery"
+        ? (c.class === "Enchanter" || c.role === "Support" ? 0.65 : 0.25) : 0;
+      if (rn === "Aery") st.allyShield += runeShield * aeryShieldShare;
+      else {
+        st.shield += runeShield;
+        st.allyShield += g("allyShieldFlat")
+          + (g("allyShieldFlat") ? runeShield - g("shieldFlat") : 0);
+      }
       st.damageAmp += g("ampPct") / 100;
+      if (g("rampAbilityAmpPct")) {
+        st.rampDamageAmps.push({
+          damagePct: 0, abilityPct: g("rampAbilityAmpPct") / 100,
+          stacks: Math.max(1, Math.floor(g("rampAbilityAmpStacks") || 1)),
+          secondsPerStack: g("rampAbilityAmpSecondsPerStack") || 1,
+          source: rn,
+        });
+      }
+      if (g("postAttackAmpPct") && g("postAttackArmHits")) {
+        st.attackArmedDamageAmps.push({
+          pct: g("postAttackAmpPct") / 100,
+          hits: Math.max(1, Math.floor(g("postAttackArmHits"))), source: rn,
+        });
+      }
+      if (g("targetAboveAmpPct") && g("targetAboveHpPct")) {
+        st.targetThresholdAmps.push({
+          pct: g("targetAboveAmpPct") / 100,
+          aboveHpPct: g("targetAboveHpPct") / 100,
+          source: rn,
+        });
+      }
       if (fx.burstProcFlat || fx.burstProcApRatio || fx.burstProcAdRatio)
+      {
+        const hits = Math.max(1, Math.floor(g("burstProcHits") || 1));
+        let procMult = g("rangedDamageMultiplier") && RANGED_CLASSES.has(c.class ?? "")
+          ? g("rangedDamageMultiplier") / 100 : 1;
+        procMult *= 1 - aeryShieldShare;
         addProc({
-          flat: g("burstProcFlat"),
-          adRatio: g("burstProcAdRatio") / 100,
+          flat: (g("burstProcFlat") + g("burstProcBonusHpRatio") / 100 * st.bonusHp)
+            * hits * procMult,
+          adRatio: g("burstProcAdRatio") / 100 * hits * procMult,
           // AP scaling was being dropped outright: six generated entries carry
           // burstProcApRatio and no engine has ever read it, so every AP build
           // undervalued Aery, Arcane Comet, Tyrant and Chain Assault.
-          apRatio: g("burstProcApRatio") / 100,
+          apRatio: g("burstProcApRatio") / 100 * hits * procMult,
           type: fx.burstProcType ?? "magic", label: rn,
           cd: g("burstProcCdSec"), arm: g("burstProcArmSec"),
+          need: fx.burstProcCondition === "targetBelowHalfInWindow" ? 0.5 : 0,
         });
+      }
       continue;
     }
     const gate = AUTO_GATED_RUNES.has(rn) && !autoCentric ? 0.45 : 1;
@@ -1003,7 +1063,20 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     st.haste += r.hasteFlat ?? 0;
     msAmp += (r.msAmpPct ?? 0) / 100;
     st.baseAsPct += (r.asPctAvg ?? 0) * gate;
+    if (rn === "Lethal Tempo" && r.fullStacks) {
+      const ranged = RANGED_CLASSES.has(c.class ?? "");
+      const bulletRange = r[ranged ? "bulletBaseRangeRanged" : "bulletBaseRangeMelee"] ?? [0, 0];
+      st.lethalTempo = {
+        asPctPerStack: Number(r[ranged ? "asPctPerStackRanged" : "asPctPerStackMelee"] || 0) * gate,
+        fullStacks: Number(r.fullStacks || 6),
+        bulletBase: (Number(bulletRange[0])
+          + (Number(bulletRange[bulletRange.length - 1]) - Number(bulletRange[0]))
+            * (level - 1) / 14) * gate,
+        bulletBonusAsScale: Number(r[ranged ? "bulletBonusAsScaleRanged" : "bulletBonusAsScaleMelee"] || 0) * gate,
+      };
+    }
     st.hp += r.hpFlat ?? 0; st.bonusHp += r.hpFlat ?? 0;
+    runeHpPct += Number(r.hpPct || 0) / 100;
     st.dr = Math.max(st.dr, (r.drPct ?? 0) / 100);
     st.healShieldAmp += (r.healShieldAmpPct ?? 0) / 100;
     st.runeHealPerSec += (r.healPerSec ?? 0) + (r.healPerProc ?? 0) / 9;
@@ -1028,15 +1101,22 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
       st.runeHealPerSec += selfHeal * up * meleeMult / period;
       st.runeAllyHealPerSec += allyHeal * up * meleeMult / period;
     }
-    if (r.procTargetMaxHpPct) {
+    if (r.procOwnMaxHpPct) {
       const rangedMult = RANGED_CLASSES.has(c.class ?? "")
         ? (Number(r.rangedMultiplier) || 1) : 1;
-      st.graspPct += r.procTargetMaxHpPct * rangedMult;
+      st.graspPctOwnHp += Number(r.procOwnMaxHpPct) * rangedMult;
+      st.graspHealPctOwnHp += Number(r.healOwnMaxHpPct || 0) * rangedMult;
       st.graspEvery = r.procEverySec ?? 5;
+      st.graspArmSec = r.firstProcArmSec ?? 3;
     }
     if (r.bonusAdPerStackRange) {
       const [lo, hi] = r.bonusAdPerStackRange;
-      st.bonusAd += (lo + (hi - lo) * (level - 1) / 14) * (r.burstStacks ?? 6);
+      if (r.adaptive && st.ap >= st.bonusAd && r.bonusApPerStackRange) {
+        const [apLo, apHi] = r.bonusApPerStackRange;
+        st.ap += (apLo + (apHi - apLo) * (level - 1) / 14) * (r.burstStacks ?? 6);
+      } else {
+        st.bonusAd += (lo + (hi - lo) * (level - 1) / 14) * (r.burstStacks ?? 6);
+      }
     }
     st.bonusAd += r.bonusAdAtStacks ?? 0;
     if (r.bonusAdRange) {
@@ -1091,6 +1171,26 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     } else {
       st.damageAmp += amp;
     }
+    if (r.ampSelfLowPct)
+      st.damageAmp += Number(r.ampSelfLowPct) * Number(r.expectedLowHealthUptime || 0);
+    if (r.healPerProcRange) {
+      const [lo, hi] = r.healPerProcRange;
+      const heal = lo + (hi - lo) * (level - 1) / 14
+        + Number(r.healBonusAdRatio || 0) / 100 * st.bonusAd
+        + Number(r.healApRatio || 0) / 100 * st.ap;
+      st.runeHealPerSec += heal / Number(r.procEverySec || 9);
+    }
+    if (r.healFlatPerTrigger || r.healMissingHpPct) {
+      const missing = st.hp * Number(r.expectedMissingHpPct || 40) / 100;
+      let heal = Number(r.healFlatPerTrigger || 0)
+        + Number(r.healMissingHpPct || 0) / 100 * missing;
+      if (!RANGED_CLASSES.has(c.class ?? "")) heal *= Number(r.meleeMultiplier || 1);
+      st.runeHealPerSec += heal / Number(r.healDurationSec || 5);
+    }
+  }
+  if (runeHpPct) {
+    const gain = st.hp * runeHpPct;
+    st.hp += gain; st.bonusHp += gain;
   }
   st.bonusMs *= 1 + msAmp;
   // Paid once the rune loop is done and the stats it scales off are final.
@@ -1538,7 +1638,7 @@ function forWindow(name: string, st: any, window: number, level: number): any {
   const delayed = st.delayedStats as any[] | undefined;
   const attackRamps = st.attackRampDefenses as any[] | undefined;
   if ((!timed?.length && !slows?.length && !delayed?.length
-       && !attackRamps?.length) || window <= 0) return st;
+       && !attackRamps?.length && !st.lethalTempo) || window <= 0) return st;
   const hasteM = 100 / (100 + (st.haste ?? 0));
   let asPctLost = 0;
   let adLost = 0;
@@ -1554,9 +1654,15 @@ function forWindow(name: string, st: any, window: number, level: number): any {
     if (s.armorFlat || s.armorPct)
       armorGain += uptime * ((s.armorFlat || 0)
         + ((st.armor || 0) + (s.armorFlat || 0)) * (s.armorPct || 0));
+    if (s.bonusArmorPct)
+      armorGain += uptime * Math.max(0, Number(st.armor || 0) - Number(st.baseArmor || 0))
+        * Number(s.bonusArmorPct || 0);
     if (s.mrFlat || s.mrPct)
       mrGain += uptime * ((s.mrFlat || 0)
         + ((st.mr || 0) + (s.mrFlat || 0)) * (s.mrPct || 0));
+    if (s.bonusMrPct)
+      mrGain += uptime * Math.max(0, Number(st.mr || 0) - Number(st.baseMr || 0))
+        * Number(s.bonusMrPct || 0);
     if (s.drPct) timedDr = Math.max(timedDr, Number(s.drPct) * uptime);
   }
   let delayedMs = 0, delayedTenacity = 0;
@@ -1610,14 +1716,28 @@ function forWindow(name: string, st: any, window: number, level: number): any {
     adj.bonusAd = Math.max(0, st.bonusAd - adLost);
     adj.ad = adj.baseAd + adj.bonusAd;
   }
-  if (asPctLost) {
+  let lethalTempoAs = 0;
+  if (st.lethalTempo) {
+    const lt = { ...st.lethalTempo };
+    lt.averageStackFraction = attackRampAverage(window,
+      Math.max(0, Number(st.as) || 0),
+      Math.max(1, Math.floor(Number(lt.fullStacks) || 6)));
+    lethalTempoAs = Number(lt.asPctPerStack || 0)
+      * Math.floor(Number(lt.fullStacks) || 6) * lt.averageStackFraction;
+    lt.bulletDamage = Number(lt.bulletBase || 0) * (1
+      + (Number(st.baseAsPct || 0)
+        + Number(lt.asPctPerStack || 0) * Math.floor(Number(lt.fullStacks) || 6))
+        / 100 * Number(lt.bulletBonusAsScale || 0));
+    adj.lethalTempo = lt;
+  }
+  if (asPctLost || lethalTempoAs) {
     // Mirrors the attack-speed maths in resolveStats, so the two cannot drift.
     const mechs = DATA.formulas[name]?.mechanics
       ? Object.fromEntries((DATA.formulas[name]!.mechanics as any[]).map((m) => [m.kind, m]))
       : {};
     const know = (DATA.formulas[name] as any)?.knowledge ?? {};
     if (!mechs.fixedAttackSpeed) {
-      let asPct = Math.max(0, st.baseAsPct - asPctLost);
+      let asPct = Math.max(0, st.baseAsPct - asPctLost + lethalTempoAs);
       if (!mechs.reload) asPct *= know.asEfficiency ?? 1;
       adj.as = Math.min(adj.baseAs * (1 + (st.innateAsBonus ?? 0) + asPct / 100), AS_CAP);
       if (mechs.reload) {
@@ -1756,11 +1876,16 @@ export function rotation(name: string, st: any, target: any, window: number,
     let added = 0;
     for (const entry of st.targetThresholdAmps ?? []) {
       const threshold = Number(entry.belowHpPct) || 0;
-      if (threshold <= 0) continue;
-      let eligible = Math.min(
-        Math.max(0, totalNow - target.hp * (1 - threshold)),
-        target.hp * threshold,
-      );
+      const above = Number(entry.aboveHpPct) || 0;
+      let eligible = 0;
+      if (threshold > 0) {
+        eligible = Math.min(
+          Math.max(0, totalNow - target.hp * (1 - threshold)),
+          target.hp * threshold,
+        );
+      } else if (above > 0) {
+        eligible = Math.min(Math.max(0, totalNow), target.hp * (1 - above));
+      } else continue;
       if (entry.abilityOnly) eligible = Math.min(eligible,
         Math.max(0, totalNow - autoDmg));
       added += eligible * (Number(entry.pct) || 0);
@@ -1771,7 +1896,14 @@ export function rotation(name: string, st: any, target: any, window: number,
     const timed = (st.timedDamageAmps ?? []).reduce(
       (sum: number, entry: any) => sum + (Number(entry.pct) || 0)
         * Math.min(1, (Number(entry.durationS) || 0) / Math.max(window, 1e-9)), 0);
-    return 1 + st.damageAmp + rampDamageAmp + timed;
+    let attackArmed = 0;
+    for (const entry of st.attackArmedDamageAmps ?? []) {
+      const arm = Math.max(0, Number(entry.hits || 1) - 1)
+        / Math.max(Number(st.as || 0.1), 0.1);
+      const uptime = Math.max(0, window - arm) / Math.max(window, 1e-9);
+      attackArmed += Number(entry.pct || 0) * Math.min(1, uptime);
+    }
+    return 1 + st.damageAmp + rampDamageAmp + timed + attackArmed;
   };
   const ultGroundDamage = (): number => {
     if (!castLog["4"]?.casts) return 0;
@@ -2146,8 +2278,17 @@ export function rotation(name: string, st: any, target: any, window: number,
     addT("true", ultTrueDamage);
     const firstHit = firstHitDelta(st, nAutos, window, giant, physM, dsm * adm);
     if (firstHit) addT("physical", firstHit);
+    const lt = st.lethalTempo ?? {};
+    const ltBullets = Math.max(0, nAutos - Math.floor(Number(lt.fullStacks) || 6));
+    const ltRaw = ltBullets * Number(lt.bulletDamage || 0);
+    let ltDamage = 0;
+    if (ltRaw) {
+      const magic = st.ap >= st.bonusAd;
+      ltDamage = ltRaw * (magic ? magicM : physM);
+      addT(magic ? "magic" : "physical", ltDamage);
+    }
     return (aPhys + aMagic + aTrue) * dsm * nAutos * adm
-      + ultPhysical + ultTrueDamage + firstHit;
+      + ultPhysical + ultTrueDamage + firstHit + ltDamage;
   };
   /**
    * Discrete procs, charged at the rate their own descriptions state.
@@ -2188,6 +2329,14 @@ export function rotation(name: string, st: any, target: any, window: number,
       procHealing += dealt * (pr.healPct ?? 0);
       ROT_PROC_MAX_HEALTH_GAIN += dealt
         * (st.procMaxHealthGainByLabel?.[pr.label] ?? 0);
+    }
+    if (st.graspPctOwnHp) {
+      const procs = procActivations(window, Number(st.graspEvery || 5),
+        Number(st.graspArmSec || 3));
+      const dealt = Number(st.graspPctOwnHp) / 100 * Number(st.hp) * magicM * procs;
+      m += dealt;
+      procHealing += Number(st.graspHealPctOwnHp || 0) / 100
+        * Number(st.hp) * procs;
     }
     ROT_PROC_HEALING += procHealing;
     addT("physical", p); addT("magic", m); addT("true", t);
@@ -2297,10 +2446,6 @@ export function rotation(name: string, st: any, target: any, window: number,
       + st.dotPctMaxHp * target.hp) * window * magicM;
     total += d; addT("magic", d);
   }
-    if (st.graspPct) {
-      const d = st.graspPct / 100 * target.hp * magicM * (1 + Math.floor(window / st.graspEvery));
-      total += d; addT("magic", d);
-    }
   // Kit amplification: a percentage bonus on damage ALREADY counted, which no
   // per-ability formula can express. Amumu's Cursed Touch turns his own magic
   // damage into extra true damage (worth 8.5% of his rotation), Kayn's Shadow
@@ -2480,10 +2625,6 @@ export function rotation(name: string, st: any, target: any, window: number,
   if (st.dotDps || st.dotDpsApPct || st.dotPctMaxHp) {
     const d = (st.dotDps + st.dotDpsApPct * st.ap
       + st.dotPctMaxHp * target.hp) * window * magicM;
-    total += d; addT("magic", d);
-  }
-  if (st.graspPct) {
-    const d = st.graspPct / 100 * target.hp * magicM * (1 + Math.floor(window / st.graspEvery));
     total += d; addT("magic", d);
   }
   // Kit amplification: a percentage bonus on damage ALREADY counted, which no

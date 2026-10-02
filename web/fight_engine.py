@@ -551,6 +551,43 @@ def ability_aoe_rule(name: str, slot: str, component: str) -> dict:
             "maxSecondaryTargets": 0}
 RUNE_FX = _load("rune_effects.json")
 RUNE_ENGINE = _load("rune_engine.json")  # LLM-extracted, used when not hand-curated
+RUNE_COVERAGE = _load("rune_engine_coverage.json") or {}
+
+
+def rune_mechanics_coverage(rune_names: list[str] | None) -> dict:
+    """Disclose rune effects that the synthetic fight cannot fully observe.
+
+    A partial rune is numerically useful, but it cannot support a deterministic
+    engine-over-model verdict because its missing condition may be the reason a
+    player selected it.  Explicitly excluded runes are safe: their effects do
+    not occur in the engine's no-prior-takedown champion-fight contract.
+    """
+    partial = RUNE_COVERAGE.get("partial") or {}
+    excluded = RUNE_COVERAGE.get("excluded") or {}
+    ks = RUNE_FX.get("keystones", {})
+    mn = RUNE_FX.get("minors", {})
+    rows: list[dict] = []
+    for name in dict.fromkeys(str(x) for x in (rune_names or []) if x):
+        if name in excluded:
+            rows.append({"rune": name, "status": "excluded",
+                         "severity": "informational",
+                         "limitation": str(excluded[name])})
+            continue
+        if name in partial:
+            rows.append({"rune": name, "status": "partial",
+                         "severity": "major",
+                         "limitation": str(partial[name])})
+            continue
+        record = ks.get(name) or mn.get(name) or RUNE_ENGINE.get(name) or {}
+        active = sorted(k for k, value in record.items()
+                        if not k.startswith("_") and value not in (0, 0.0, None, {}, []))
+        if not active:
+            rows.append({"rune": name, "status": "unmodeled",
+                         "severity": "major", "modeledChannels": [],
+                         "limitation": "No numerical champion-fight channel is modeled."})
+    major = [row for row in rows if row.get("severity") == "major"]
+    return {"engineAuthoritative": not major, "majorGapCount": len(major),
+            "gaps": rows, "majorGaps": major}
 # Per-ability mana costs (wr-meta, patch 7.2). Read straight from the scrape
 # rather than merged into champions_wr.json, which a re-scrape would overwrite.
 WRMETA_CHAMPS = _load("wrmeta_champions.json")
@@ -919,6 +956,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "conditionalEffects": [], "conditionBand": condition_band,
         "timedDamageAmps": [], "targetThresholdAmps": [],
         "rampDamageAmps": [], "rampOmnivamp": [],
+        "attackArmedDamageAmps": [],
+        "lethalTempo": None,
         "allyTriggeredSelfEffects": [],
         "giant": 0.0, "execute": 0.0,
         # Procs whose condition the rotation has to verify, and ult-only amp.
@@ -994,6 +1033,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "conquerorHealPct": 0.0, "conquerorRampS": 3.0,
         "allyShield": 0.0,
         "graspPct": 0.0, "graspEvery": 5.0,
+        "graspPctOwnHp": 0.0, "graspHealPctOwnHp": 0.0,
+        "graspArmSec": 0.0,
         # component healing shares (for the breakdown; total still == "vamp")
         "lifestealPct": 0.0, "physicalVampPct": 0.0, "omnivampPct": 0.0,
         # Sundered Sky's first hit is a guaranteed 160% attack against each
@@ -1490,8 +1531,10 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         _apply_stat(st, _k, _v)
 
     # runes (numeric models: bonus AD, on-hit, procs, amp, move speed, haste)
-    ragg = {"bonusAd": 0.0, "onHitFlat": 0.0, "onHitAdRatio": 0.0,
+    ragg = {"bonusAd": 0.0, "bonusAp": 0.0,
+            "onHitFlat": 0.0, "onHitAdRatio": 0.0,
             "onHitApRatio": 0.0, "ampPct": 0.0}
+    rune_hp_pct = 0.0
     ms_amp = 0.0
     _champ = CHAMPS.get(name) or {}
     auto_centric = (CHAMP_CLASS.get(name) == "Marksman"
@@ -1533,6 +1576,8 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                             scaled[k] = v
                     fx = scaled
                     g = lambda k: _lvl_range(fx[k], level) if k in fx else 0.0  # noqa: E731
+            if g("requiresChampionCc") and _cc_depth(name) <= 0:
+                continue
             adaptive_ad, adaptive_ap = g("adaptiveAd"), g("adaptiveAp")
             if adaptive_ad or adaptive_ap:  # adaptive: follow the build's dominant stat
                 if st["ap"] >= st["bonusAd"]:
@@ -1554,6 +1599,27 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["tenacity"] = 1 - (1 - st["tenacity"]) * (1 - g("tenacityPct") / 100.0)
             st["armor"] *= 1 + g("armorPct") / 100.0
             st["mr"] *= 1 + g("mrPct") / 100.0
+            if g("conditionalArmorFlat") or g("conditionalMrFlat"):
+                st["timedSteroids"].append({
+                    "asPct": 0.0, "adFlat": 0.0,
+                    "armorFlat": g("conditionalArmorFlat"),
+                    "mrFlat": g("conditionalMrFlat"),
+                    "armorPct": 0.0, "mrPct": 0.0, "drPct": 0.0,
+                    "durationS": g("conditionalResistDurationSec") or 1.5,
+                    "cooldownS": float("inf"),
+                })
+            if g("timedResistFlat") or g("timedBonusArmorRatio") or g("timedBonusMrRatio"):
+                st["timedSteroids"].append({
+                    "asPct": 0.0, "adFlat": 0.0,
+                    "armorFlat": g("timedResistFlat"),
+                    "mrFlat": g("timedResistFlat"),
+                    "armorPct": 0.0, "mrPct": 0.0,
+                    "bonusArmorPct": g("timedBonusArmorRatio") / 100.0,
+                    "bonusMrPct": g("timedBonusMrRatio") / 100.0,
+                    "drPct": 0.0,
+                    "durationS": g("timedResistDurationSec") or 2.5,
+                    "cooldownS": float("inf"),
+                })
             # Font of Life: a self+ally heal. The ally half is priced by
             # support_value via runeAllyHealPerSec.
             _heal = g("healPctMaxHp") / 100.0 * st["hp"] + g("healApRatio") / 100.0 * st["ap"]
@@ -1573,28 +1639,73 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             _sh = (g("shieldFlat")
                    + g("shieldPctMaxHp") / 100.0 * st["hp"]
                    + g("shieldPctBonusHp") / 100.0 * st["bonusHp"]
+                   + g("shieldBonusAdRatio") / 100.0 * st["bonusAd"]
                    + g("shieldApRatio") / 100.0 * st["ap"])
-            st["shield"] += _sh
-            st["allyShield"] += g("allyShieldFlat") + (_sh - g("shieldFlat")
-                                                       if g("allyShieldFlat") else 0.0)
+            aery_shield_share = (0.65 if (rn == "Aery" and
+                (CHAMP_CLASS.get(name) == "Enchanter" or _champ.get("role") == "Support"))
+                else 0.25 if rn == "Aery" else 0.0)
+            if rn == "Aery":
+                st["allyShield"] += _sh * aery_shield_share
+            else:
+                st["shield"] += _sh
+                st["allyShield"] += g("allyShieldFlat") + (_sh - g("shieldFlat")
+                                                           if g("allyShieldFlat") else 0.0)
             ragg["onHitFlat"] += g("onHitFlat")
             # Brutal reads "5 (+6% Bonus Attack Damage + 3% Ability Power)".
             # Both engines charged the flat 5 and dropped both ratios.
             ragg["onHitAdRatio"] += g("onHitAdRatio") / 100.0
             ragg["onHitApRatio"] += g("onHitApRatio") / 100.0
             ragg["ampPct"] += g("ampPct") / 100.0
+            if g("rampAbilityAmpPct"):
+                st["rampDamageAmps"].append({
+                    "damagePct": 0.0,
+                    "abilityPct": g("rampAbilityAmpPct") / 100.0,
+                    "stacks": max(1, int(g("rampAbilityAmpStacks") or 1)),
+                    "secondsPerStack": g("rampAbilityAmpSecondsPerStack") or 1.0,
+                    "source": rn,
+                })
+            if g("postAttackAmpPct") and g("postAttackArmHits"):
+                st["attackArmedDamageAmps"].append({
+                    "pct": g("postAttackAmpPct") / 100.0,
+                    "hits": max(1, int(g("postAttackArmHits"))),
+                    "source": rn,
+                })
+            if g("targetAboveAmpPct") and g("targetAboveHpPct"):
+                st["targetThresholdAmps"].append({
+                    "pct": g("targetAboveAmpPct") / 100.0,
+                    "aboveHpPct": g("targetAboveHpPct") / 100.0,
+                    "source": rn,
+                })
             # Ability amplification from a RUNE. The same key was read for
             # items but never here, so Battle Zeal's ramping ability damage
             # ("up to a maximum of 6%") was extracted, stored, and dropped.
             st["abilityAmp"] += g("abilityAmpPct") / 100.0
             st["ultAmp"] += (g("ultAmpPctAoe") if name in AOE_ULTS
                              else g("ultAmpPct")) / 100.0
-            add_proc(flat=g("burstProcFlat"),
-                     adRatio=g("burstProcAdRatio") / 100.0,
+            proc_hits = max(1, int(g("burstProcHits") or 1))
+            proc_mult = (g("rangedDamageMultiplier") / 100.0
+                         if g("rangedDamageMultiplier")
+                         and CHAMP_CLASS.get(name, "") in RANGED_CLASSES else 1.0)
+            proc_mult *= 1.0 - aery_shield_share
+            proc_flat = (g("burstProcFlat")
+                         + g("burstProcBonusHpRatio") / 100.0 * st["bonusHp"]) * proc_mult
+            proc_condition = fx.get("burstProcCondition")
+            if proc_condition == "targetBelowHalfInWindow":
+                st["conditionalProcs"].append({
+                    "need": 0.5, "flat": proc_flat * proc_hits,
+                    "adRatio": g("burstProcAdRatio") * proc_hits * proc_mult,
+                    "apRatio": g("burstProcApRatio") * proc_hits * proc_mult,
+                    "type": fx.get("burstProcType", "magic"),
+                    "cd": g("burstProcCdSec") or float("inf"),
+                    "arm": g("burstProcArmSec"), "label": rn,
+                })
+            else:
+                add_proc(flat=proc_flat * proc_hits,
+                     adRatio=g("burstProcAdRatio") / 100.0 * proc_hits * proc_mult,
                      # burstProcApRatio was read by neither engine, so every AP
                      # build undervalued Aery, Arcane Comet, Tyrant and Chain
                      # Assault by their entire AP half.
-                     apRatio=g("burstProcApRatio") / 100.0,
+                     apRatio=g("burstProcApRatio") / 100.0 * proc_hits * proc_mult,
                      type=fx.get("burstProcType", "magic"), label=rn,
                      cd=g("burstProcCdSec"), arm=g("burstProcArmSec"))
             continue
@@ -1603,8 +1714,23 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["haste"] += r.get("hasteFlat", 0)
         ms_amp += r.get("msAmpPct", 0) / 100.0
         st["baseAsPct"] += r.get("asPctAvg", 0) * gate
+        if rn == "Lethal Tempo" and r.get("fullStacks"):
+            ranged = CHAMP_CLASS.get(name, "") in RANGED_CLASSES
+            st["lethalTempo"] = {
+                "asPctPerStack": float(r.get("asPctPerStackRanged" if ranged
+                                              else "asPctPerStackMelee", 0)) * gate,
+                "fullStacks": int(r.get("fullStacks", 6)),
+                "bulletBase": (lambda pair: float(pair[0])
+                    + (float(pair[-1]) - float(pair[0])) * (level - 1) / 14.0)(
+                        r.get("bulletBaseRangeRanged" if ranged else
+                              "bulletBaseRangeMelee", [0, 0])) * gate,
+                "bulletBonusAsScale": float(r.get(
+                    "bulletBonusAsScaleRanged" if ranged else
+                    "bulletBonusAsScaleMelee", 0)) * gate,
+            }
         st["hp"] += r.get("hpFlat", 0)
         st["bonusHp"] += r.get("hpFlat", 0)
+        rune_hp_pct += float(r.get("hpPct", 0) or 0) / 100.0
         st["dr"] = max(st["dr"], r.get("drPct", 0) / 100.0)
         st["healShieldAmp"] += r.get("healShieldAmpPct", 0) / 100.0
         st["runeHealPerSec"] += r.get("healPerSec", 0) + r.get("healPerProc", 0) / 9.0
@@ -1634,14 +1760,22 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         st["omnivampPct"] += r.get("omnivampPct", 0) / 100.0
         st["lifestealPct"] += r.get("lifestealPct", 0) / 100.0
         st["physicalVampPct"] += r.get("physVampPct", 0) / 100.0
-        if r.get("procTargetMaxHpPct"):
+        if r.get("procOwnMaxHpPct"):
             ranged_mult = (r.get("rangedMultiplier", 1.0)
                            if CHAMP_CLASS.get(name, "") in RANGED_CLASSES else 1.0)
-            st["graspPct"] += r["procTargetMaxHpPct"] * ranged_mult
+            st["graspPctOwnHp"] += float(r["procOwnMaxHpPct"]) * ranged_mult
+            st["graspHealPctOwnHp"] += float(r.get("healOwnMaxHpPct", 0)) * ranged_mult
             st["graspEvery"] = r.get("procEverySec", 5)
+            st["graspArmSec"] = r.get("firstProcArmSec", 3)
         if "bonusAdPerStackRange" in r:
             lo, hi = r["bonusAdPerStackRange"]
-            ragg["bonusAd"] += (lo + (hi - lo) * (level - 1) / 14.0) * r.get("burstStacks", 6)
+            amount = (lo + (hi - lo) * (level - 1) / 14.0) * r.get("burstStacks", 6)
+            if r.get("adaptive") and st["ap"] >= st["bonusAd"]:
+                ap_lo, ap_hi = r.get("bonusApPerStackRange", [lo, hi])
+                ragg["bonusAp"] += (ap_lo + (ap_hi - ap_lo)
+                                     * (level - 1) / 14.0) * r.get("burstStacks", 6)
+            else:
+                ragg["bonusAd"] += amount
         ragg["bonusAd"] += r.get("bonusAdAtStacks", 0)
         if "bonusAdRange" in r:
             lo, hi = r["bonusAdRange"]
@@ -1697,7 +1831,29 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
                                                "source": rn})
         else:
             ragg["ampPct"] += _amp
+        if r.get("ampSelfLowPct"):
+            ragg["ampPct"] += (float(r.get("ampSelfLowPct", 0) or 0)
+                                * float(r.get("expectedLowHealthUptime", 0) or 0))
+        if r.get("healPerProcRange"):
+            lo, hi = r["healPerProcRange"]
+            base_heal = lo + (hi - lo) * (level - 1) / 14.0
+            heal = (base_heal
+                    + float(r.get("healBonusAdRatio", 0) or 0) / 100.0 * st["bonusAd"]
+                    + float(r.get("healApRatio", 0) or 0) / 100.0 * st["ap"])
+            st["runeHealPerSec"] += heal / float(r.get("procEverySec", 9) or 9)
+        if r.get("healFlatPerTrigger") or r.get("healMissingHpPct"):
+            missing = st["hp"] * float(r.get("expectedMissingHpPct", 40) or 40) / 100.0
+            heal = (float(r.get("healFlatPerTrigger", 0) or 0)
+                    + float(r.get("healMissingHpPct", 0) or 0) / 100.0 * missing)
+            if CHAMP_CLASS.get(name, "") not in RANGED_CLASSES:
+                heal *= float(r.get("meleeMultiplier", 1) or 1)
+            st["runeHealPerSec"] += heal / float(r.get("healDurationSec", 5) or 5)
     st["bonusAd"] += ragg["bonusAd"]
+    st["ap"] += ragg["bonusAp"]
+    if rune_hp_pct:
+        gain = st["hp"] * rune_hp_pct
+        st["hp"] += gain
+        st["bonusHp"] += gain
     st["runeOnHitFlat"] = (ragg["onHitFlat"]
                            + ragg["onHitAdRatio"] * st["bonusAd"]
                            + ragg["onHitApRatio"] * st["ap"])
@@ -2848,7 +3004,8 @@ def _for_window(name: str, st: dict, window: float) -> dict:
     delayed = st.get("delayedStats") or []
     attack_ramps = st.get("attackRampDefenses") or []
     if (not timed and not slows and not delayed and not attack_ramps
-            and not st.get("ultimateArmorPen")) or window <= 0:
+            and not st.get("ultimateArmorPen")
+            and not st.get("lethalTempo")) or window <= 0:
         return st
     haste_m = 100 / (100 + st["haste"])
     as_lost = ad_lost = 0.0
@@ -2865,11 +3022,19 @@ def _for_window(name: str, st: dict, window: float) -> dict:
                                     + (st.get("armor", 0.0)
                                        + s.get("armorFlat", 0.0))
                                     * s.get("armorPct", 0.0))
+        if s.get("bonusArmorPct"):
+            armor_gain += uptime * max(
+                0.0, st.get("armor", 0.0) - st.get("baseArmor", 0.0)) \
+                * s.get("bonusArmorPct", 0.0)
         if s.get("mrFlat") or s.get("mrPct"):
             mr_gain += uptime * (s.get("mrFlat", 0.0)
                                  + (st.get("mr", 0.0)
                                     + s.get("mrFlat", 0.0))
                                  * s.get("mrPct", 0.0))
+        if s.get("bonusMrPct"):
+            mr_gain += uptime * max(
+                0.0, st.get("mr", 0.0) - st.get("baseMr", 0.0)) \
+                * s.get("bonusMrPct", 0.0)
         if s.get("drPct"):
             timed_dr = max(timed_dr, float(s["drPct"]) * uptime)
     delayed_ms = delayed_tenacity = 0.0
@@ -2936,9 +3101,24 @@ def _for_window(name: str, st: dict, window: float) -> dict:
     if ad_lost:
         adj["bonusAd"] = max(0.0, st["bonusAd"] - ad_lost)
         adj["ad"] = adj["baseAd"] + adj["bonusAd"]
-    if as_lost and not mechs.get("fixedAttackSpeed"):
+    lethal_tempo_as = 0.0
+    if st.get("lethalTempo"):
+        lt = dict(st["lethalTempo"])
+        lt["averageStackFraction"] = attack_ramp_average(
+            window, max(0.0, st.get("as", 0.0)),
+            max(1, int(lt.get("fullStacks", 6))))
+        lethal_tempo_as = (float(lt.get("asPctPerStack", 0.0))
+                           * int(lt.get("fullStacks", 6))
+                           * lt["averageStackFraction"])
+        lt["bulletDamage"] = float(lt.get("bulletBase", 0.0)) * (
+            1 + (float(st.get("baseAsPct", 0.0))
+                 + float(lt.get("asPctPerStack", 0.0))
+                 * int(lt.get("fullStacks", 6))) / 100.0
+            * float(lt.get("bulletBonusAsScale", 0.0)))
+        adj["lethalTempo"] = lt
+    if (as_lost or lethal_tempo_as) and not mechs.get("fixedAttackSpeed"):
         # Mirrors the attack-speed maths in resolve_stats, so they cannot drift.
-        as_pct = max(0.0, st["baseAsPct"] - as_lost)
+        as_pct = max(0.0, st["baseAsPct"] - as_lost + lethal_tempo_as)
         if not mechs.get("reload"):
             as_pct *= know.get("asEfficiency") or 1
         adj["as"] = min(adj["baseAs"] * (1 + st.get("innateAsBonus", 0.0)
@@ -2996,6 +3176,34 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
 
     def add_t(dtype: str, amt: float) -> None:
         by_type[dtype] = by_type.get(dtype, 0.0) + amt
+
+    def lethal_tempo_damage(n_autos: int) -> float:
+        """Adaptive max-stack bullets after the six-hit ramp completes."""
+        lt = st.get("lethalTempo") or {}
+        bullets = max(0, n_autos - int(lt.get("fullStacks", 6) or 6))
+        raw = bullets * float(lt.get("bulletDamage", 0.0) or 0.0)
+        if not raw:
+            return 0.0
+        dtype = "magic" if st["ap"] >= st["bonusAd"] else "physical"
+        dealt = raw * (magic_m if dtype == "magic" else phys_m)
+        parts.append((f"Lethal Tempo bullets x{bullets}", dealt))
+        add_t(dtype, dealt)
+        return dealt
+
+    def grasp_damage_heal() -> tuple[float, float, int]:
+        pct = float(st.get("graspPctOwnHp", 0.0) or 0.0) / 100.0
+        if not pct:
+            return 0.0, 0.0, 0
+        procs = _proc_activations(
+            window, float(st.get("graspEvery", 5.0) or 5.0),
+            float(st.get("graspArmSec", 3.0) or 3.0))
+        damage = pct * st["hp"] * magic_m * procs
+        healing = (float(st.get("graspHealPctOwnHp", 0.0) or 0.0)
+                   / 100.0 * st["hp"] * procs)
+        if damage:
+            parts.append((f"Grasp x{procs}", damage))
+            add_t("magic", damage)
+        return damage, healing, procs
 
     def kit_amps(total_now: float) -> float:
         """Kit amplification: a percentage bonus on damage already counted.
@@ -3079,7 +3287,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             if not _times:
                 continue
             dmg *= (magic_m if dtype == "magic" else phys_m) * reach * _times
-            parts.append(("Dark Harvest", dmg))
+            parts.append((str(pr.get("label") or "conditional proc"), dmg))
             add_t(dtype, dmg)
             added += dmg
         return added
@@ -3089,17 +3297,25 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         added = 0.0
         for entry in st.get("targetThresholdAmps", []):
             threshold = float(entry.get("belowHpPct", 0) or 0)
-            if threshold <= 0:
+            above = float(entry.get("aboveHpPct", 0) or 0)
+            if threshold > 0:
+                # Damage before the threshold does not receive the amp. Once
+                # reached, at most that final health slice can.
+                eligible = min(max(0.0, total_now - target["hp"] * (1 - threshold)),
+                               target["hp"] * threshold)
+                label = f"<{threshold:.0%}"
+            elif above > 0:
+                # An above-health amp owns only the opening slice from 100%
+                # down to its threshold (Cut Down: first 40% of max Health).
+                eligible = min(max(0.0, total_now), target["hp"] * (1 - above))
+                label = f">{above:.0%}"
+            else:
                 continue
-            # Damage before the threshold does not receive the amp. Once the
-            # rotation reaches it, at most that final health slice can.
-            eligible = min(max(0.0, total_now - target["hp"] * (1 - threshold)),
-                           target["hp"] * threshold)
             if entry.get("abilityOnly"):
                 eligible = min(eligible, max(0.0, total_now - auto_dmg))
             bonus = eligible * float(entry.get("pct", 0) or 0)
             if bonus:
-                parts.append((f"{entry.get('source', 'threshold amp')} (<{threshold:.0%})",
+                parts.append((f"{entry.get('source', 'threshold amp')} ({label})",
                               bonus))
                 added += bonus
         return added
@@ -3109,7 +3325,13 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
                     * min(1.0, float(entry.get("durationS", 0) or 0)
                           / max(window, 1e-9))
                     for entry in st.get("timedDamageAmps", []))
-        return 1 + st["damageAmp"] + ramp_damage_amp + timed
+        attack_armed = 0.0
+        for entry in st.get("attackArmedDamageAmps", []):
+            arm = max(0.0, float(entry.get("hits", 1) or 1) - 1.0) \
+                / max(float(st.get("as", 0.1) or 0.1), 0.1)
+            uptime = max(0.0, window - arm) / max(window, 1e-9)
+            attack_armed += float(entry.get("pct", 0) or 0) * min(1.0, uptime)
+        return 1 + st["damageAmp"] + ramp_damage_amp + timed + attack_armed
 
     def ult_ground_damage() -> float:
         """Ultimate-triggered ground effects, charged once per fight."""
@@ -3448,6 +3670,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         if _first_d:
             auto += _first_d
             add_t("physical", _first_d)
+        auto += lethal_tempo_damage(n_autos)
         total += auto
         auto_dmg += auto
         parts.append((f"autos x{n_autos}", auto))
@@ -3517,6 +3740,9 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             add_t("magic", once_m)
             add_t("true", once_t)
             total += once
+        grasp_damage, grasp_heal, _ = grasp_damage_heal()
+        total += grasp_damage
+        proc_heal += grasp_heal
         if st["dotDps"] or st["dotDpsApPct"] or st["dotPctMaxHp"]:
             d = (st["dotDps"] + st["dotDpsApPct"] * st["ap"]
                  + st["dotPctMaxHp"] * target["hp"]) * window * magic_m
@@ -3688,6 +3914,7 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
     d_autos += _first_d
     if _first_d:
         add_t("physical", _first_d)
+    d_autos += lethal_tempo_damage(n_autos)
     parts.append((f"autos x{n_autos}", d_autos))
     # Bolt damage on OTHER targets, mirroring the combo path above. Both paths
     # need it for the same reason spellblade lives in both: whichever one a
@@ -3753,6 +3980,9 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         add_t("magic", once_m)
         add_t("true", once_t)
         total += once
+    grasp_damage, grasp_heal, _ = grasp_damage_heal()
+    total += grasp_damage
+    proc_heal += grasp_heal
     if _burst_primary:
         parts.append(("multi-target proc primary top-up", _burst_primary))
         add_t("magic", _burst_primary)
@@ -3763,13 +3993,6 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         parts.append(("burn", d))
         add_t("magic", d)
         total += d
-    if st["graspPct"]:  # Grasp-style recurring %max-HP proc (magic)
-        procs = 1 + int(window / st["graspEvery"])
-        d = st["graspPct"] / 100.0 * target["hp"] * magic_m * procs
-        parts.append((f"Grasp x{procs}", d))
-        add_t("magic", d)
-        total += d
-
     total += kit_amps(total)
     total += threshold_amp_damage(total)
     reflected = reactive_reflection_damage()

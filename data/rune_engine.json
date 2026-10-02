@@ -31,8 +31,10 @@
         165
       ]
     },
-    "ampPct": 8,
-    "burstProcType": "magic"
+    "ampPct": 0,
+    "postAttackAmpPct": 8,
+    "postAttackArmHits": 3,
+    "burstProcType": "adaptive"
   },
   "Lethal Tempo": {
     "asPctPassive": 48,
@@ -101,13 +103,15 @@
     },
     "burstProcAdRatio": 10,
     "burstProcApRatio": 5,
-    "burstProcType": "magic",
+    "burstProcType": "adaptive",
     "shieldFlat": {
       "lvlRange": [
         25,
         120
       ]
     },
+    "shieldBonusAdRatio": 10,
+    "shieldApRatio": 5,
     "burstProcCdSec": 2,
     "_why_cd": "'Aery lingers on the target for 2 seconds before flying back to the user, and cannot be sent out again until she returns.' 2s is the floor on her round trip, so it is the fastest she can re-proc."
   },
@@ -142,7 +146,15 @@
         100
       ]
     },
-    "burstProcType": "magic"
+    "burstProcType": "magic",
+    "burstProcBonusHpRatio": 5,
+    "burstProcArmSec": 2.5,
+    "timedResistFlat": 35,
+    "timedBonusArmorRatio": 75,
+    "timedBonusMrRatio": 75,
+    "timedResistDurationSec": 2.5,
+    "requiresChampionCc": 1,
+    "_why": "Immobilizing a champion grants 35 + 75% bonus Armor/MR for 2.5 seconds, then the ice explodes for 15-100 + 5% bonus Health magic damage. Slow-zone utility is not converted into damage."
   },
   "Cheap Shot": {
     "burstProcFlat": {
@@ -153,6 +165,7 @@
     },
     "burstProcType": "true",
     "burstProcCdSec": 7,
+    "requiresChampionCc": 1,
     "_why_cd": "'(7 seconds cooldown).'"
   },
   "Sudden Impact": {
@@ -173,7 +186,8 @@
         60
       ]
     },
-    "burstProcType": "magic",
+    "burstProcType": "adaptive",
+    "rangedDamageMultiplier": 80,
     "burstProcCdSec": 8,
     "burstProcArmSec": 8,
     "_why_cd": "'Every 8 seconds, the next attack will be empowered.'"
@@ -187,8 +201,9 @@
     },
     "burstProcAdRatio": 3,
     "burstProcApRatio": 1.5,
-    "burstProcType": "magic",
+    "burstProcType": "adaptive",
     "burstProcCdSec": 15,
+    "burstProcHits": 2,
     "_why_cd": "'(15 second cooldown)'"
   },
   "Tyrant": {
@@ -200,13 +215,15 @@
     },
     "burstProcAdRatio": 6,
     "burstProcApRatio": 3,
-    "burstProcType": "magic",
+    "burstProcType": "adaptive",
     "burstProcCdSec": 10,
+    "burstProcCondition": "targetBelowHalfInWindow",
     "_why_cd": "'(10 second cooldown)'"
   },
   "Hubris": {
-    "adaptiveAd": 5,
-    "adaptiveAp": 5
+    "adaptiveAd": 0,
+    "adaptiveAp": 0,
+    "_why": "Requires a takedown, so its 30-second Adaptive Force starts after the no-prior-takedown reference fight has been decided."
   },
   "Eyeball Collector": {
     "adaptiveAd": 12,
@@ -228,13 +245,19 @@
   },
   "Triumph": {},
   "Battle Zeal": {
-    "abilityAmpPct": 4.2
+    "abilityAmpPct": 0,
+    "rampAbilityAmpPct": 4.2,
+    "rampAbilityAmpStacks": 3,
+    "rampAbilityAmpSecondsPerStack": 1,
+    "_why": "Basic-ability damage ramps by 1.4% each second in champion combat, reaching 4.2% after three seconds."
   },
   "Last Stand": {
     "ampPct": 11
   },
   "Cut Down": {
-    "ampPct": 6.57
+    "targetAboveHpPct": 60,
+    "targetAboveAmpPct": 6.57,
+    "_why": "Damage amplification applies only while the target is above 60% Health; the engine prices only that opening 40% Health slice."
   },
   "Coup de Grace": {
     "ampPct": 8
@@ -262,11 +285,14 @@
         45
       ]
     },
-    "shieldPctMaxHp": 1
+    "shieldPctMaxHp": 1,
+    "shieldCooldownSec": 18,
+    "requiresChampionCc": 1
   },
   "Unshakeable": {
-    "armorPct": 9,
-    "mrPct": 9
+    "armorPct": 5,
+    "mrPct": 5,
+    "_why": "Uses one nearby enemy (3% base + 2%). A 1v3 scenario can reach 9%; slow resistance remains contextual."
   },
   "Second Wind": {},
   "Nullifying Orb": {
@@ -283,18 +309,21 @@
   },
   "Revitalize": {},
   "Perseverance": {
-    "armorFlat": {
+    "armorFlat": 0,
+    "mrFlat": 0,
+    "conditionalArmorFlat": {
       "lvlRange": [
         10,
         15
       ]
     },
-    "mrFlat": {
+    "conditionalMrFlat": {
       "lvlRange": [
         10,
         15
       ]
     },
+    "conditionalResistDurationSec": 1.5,
     "tenacityPct": 10,
     "_why_tenacity": "'Gain 10% tenacity.'"
   },

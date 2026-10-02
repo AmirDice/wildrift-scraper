@@ -1,0 +1,390 @@
+{
+  "catalogueCount": 54,
+  "counts": {
+    "excluded": 8,
+    "modeled": 18,
+    "partial": 28
+  },
+  "runtimeFailures": [],
+  "coverageEntriesOutsideLiveCatalogue": [],
+  "runes": [
+    {
+      "name": "Fleet Footwork",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Healing and short movement speed are modeled; mana/energy restoration, the next-attack 40% Attack Speed clause, and exact energized timing are contextual."
+    },
+    {
+      "name": "Electrocute",
+      "type": "Keystone",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Aery",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Damage, shield and return cooldown are modeled, but exact travel distance and whether each cast attacks or shields depend on positioning and ally targeting."
+    },
+    {
+      "name": "Grasp of the Undying",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Champion damage and the ranged modifier are modeled; permanent Health earned from earlier lane procs is match-history dependent."
+    },
+    {
+      "name": "Conqueror",
+      "type": "Keystone",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Font of Life",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Brutal",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Gathering Storm",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Uses the documented 15-minute value; actual value depends on game time."
+    },
+    {
+      "name": "Triumph",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Requires a takedown; the reference fight does not assume one before its result."
+    },
+    {
+      "name": "Manaflow Band",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The completed 300-mana value is modeled; actual stacking progress depends on earlier champion hits."
+    },
+    {
+      "name": "Phase Rush",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Movement speed and Ability Haste are approximated; the one-time 20% current basic-cooldown refund and exact three-hit trigger timing are not modeled."
+    },
+    {
+      "name": "Bone Plating",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Represented as a conservative fight-level reduction; exact damage blocked by the next three champion hits is unavailable in the source data."
+    },
+    {
+      "name": "Second Wind",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The documented healing and melee doubling use a 40% missing-Health fight state; exact repeated-damage timing is contextual."
+    },
+    {
+      "name": "Lethal Tempo",
+      "type": "Keystone",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Cut Down",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Scorch",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Demolish",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Affects turrets only, not champion combat."
+    },
+    {
+      "name": "Nimbus Cloak",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Uses a fight-uptime movement estimate because the engine does not receive summoner-cast timing."
+    },
+    {
+      "name": "Nullifying Orb",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Sudden Impact",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Transcendence",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The 10 Ability Haste is modeled; the level-9 per-ability cooldown refund is not."
+    },
+    {
+      "name": "Perseverance",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Tenacity is modeled permanently and the resistance window is approximated; enemy immobilize timing is contextual."
+    },
+    {
+      "name": "First Strike",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The three-second damage window is modeled; whether the user struck first and its gold income are not."
+    },
+    {
+      "name": "Eyeball Collector",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The engine assumes completed stacks; takedown progress is match-history dependent."
+    },
+    {
+      "name": "Cheap Shot",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Ingenious Hunter",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Removed in patch 7.3."
+    },
+    {
+      "name": "Zombie Ward",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Completed adaptive stacks are modeled; ward takedowns and vision utility are match-history/context dependent."
+    },
+    {
+      "name": "Last Stand",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Uses an expected low-health uptime rather than an incoming-damage timeline tied to the user's current Health."
+    },
+    {
+      "name": "Coup de Grace",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Legend: Alacrity",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The maximum 18% Attack Speed is modeled for the full-build comparison; actual farm/takedown stack progress is match-history dependent."
+    },
+    {
+      "name": "Legend: Tenacity",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Removed in patch 7.3."
+    },
+    {
+      "name": "Legend: Haste",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The maximum 15 Ability Haste is modeled for the full-build comparison; actual farm/takedown stack progress is match-history dependent."
+    },
+    {
+      "name": "Legend: Bloodline",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The guaranteed 1% omnivamp is modeled; seven takedown/farm stacks are not granted for free."
+    },
+    {
+      "name": "Overgrowth",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Thirty stacks and the 3% threshold bonus are modeled; indefinite later farming is not assumed."
+    },
+    {
+      "name": "Revitalize",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The unconditional 5% is modeled; the additional low-health amplification is disclosed as contextual."
+    },
+    {
+      "name": "Hextech Flashtraption",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Engage mobility is real but has no direct damage or durability value inside the synthetic fight."
+    },
+    {
+      "name": "Empowered Attack",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Courage of the Colossus",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Empowerment",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Proc damage and the post-three-attack 8% amp are modeled from the expected attack timeline; interruptions and exiting champion combat remain contextual."
+    },
+    {
+      "name": "Arcane Comet",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Base proc, ratios and cooldown are modeled; the per-hit growth of later comets is not accumulated."
+    },
+    {
+      "name": "Ixtali Seedjar",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Plant/trinket utility is outside the synthetic fight."
+    },
+    {
+      "name": "Dark Harvest",
+      "type": "Keystone",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Celerity",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Axiom Arcanist",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Ultimate damage amplification is modeled, including the AoE split; ultimate healing/shielding amplification is not yet included in support value."
+    },
+    {
+      "name": "Tyrant",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Chain Assault",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Unshakeable",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "The ordinary one-enemy 5% Armor/MR state is modeled; nearby-enemy count can raise it to 9% and the three-enemy slow resistance is contextual."
+    },
+    {
+      "name": "Ice Overlord",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Damage and its temporary resistance layer are modeled and CC-gated; zone slow and sticking value are not."
+    },
+    {
+      "name": "Battle Zeal",
+      "type": "Minor",
+      "status": "modeled",
+      "engineAuthoritative": true,
+      "limitation": ""
+    },
+    {
+      "name": "Botanist",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Plant and gold utility is outside champion combat."
+    },
+    {
+      "name": "Hubris",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Requires a takedown; its temporary Adaptive Force begins after the reference fight's result."
+    },
+    {
+      "name": "Absolute Focus",
+      "type": "Minor",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Adaptive stats are modeled as a fresh-fight ceiling; uptime after falling below 65% Health is contextual."
+    },
+    {
+      "name": "Guardian",
+      "type": "Keystone",
+      "status": "partial",
+      "engineAuthoritative": false,
+      "limitation": "Self/ally shields and ally proximity uptime are modeled; exact guard targeting and damage threshold are contextual."
+    },
+    {
+      "name": "Relentless Hunter",
+      "type": "Minor",
+      "status": "excluded",
+      "engineAuthoritative": true,
+      "limitation": "Out-of-combat movement is rotation/map utility, not an in-fight stat."
+    }
+  ]
+}

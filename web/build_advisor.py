@@ -1327,6 +1327,14 @@ def _engine_major_coverage_gaps(measured: dict | None) -> list[str]:
         if _coverage_gap_is_major(row):
             item = str(row.get("item") or "item mechanic")
             gaps.append(f"{item}: {limitation}" if limitation else item)
+    for row in engine.get("runeCoverageGaps") or []:
+        if not isinstance(row, dict):
+            gaps.append(str(row))
+            continue
+        if _coverage_gap_is_major(row):
+            rune = str(row.get("rune") or "rune mechanic")
+            limitation = str(row.get("limitation") or "")
+            gaps.append(f"{rune}: {limitation}" if limitation else rune)
     return gaps
 
 
@@ -1592,7 +1600,7 @@ def _simulate_tournament(champion: str, candidates: list[dict],
     """Measure every legal candidate under the same level and target suite."""
     from web.fight_engine import (ENGINE_FX, analyze_build, champion_mechanics_coverage,
                                   conditional_damage_scenarios,
-                                  evaluation_vector)
+                                  evaluation_vector, rune_mechanics_coverage)
 
     overrides = _load("item_engine_overrides.json", {}) or {}
 
@@ -1637,8 +1645,10 @@ def _simulate_tournament(champion: str, candidates: list[dict],
             champion, items, runes, level=15, skill_level=skill_level)
         expected_panel = conditional["bands"]["expected"]
         item_coverage = coverage(items)
+        rune_coverage = rune_mechanics_coverage(runes)
         item_major = [row for row in item_coverage
                       if _coverage_gap_is_major(row)]
+        rune_major = list(rune_coverage.get("majorGaps") or [])
         champion_major = list(champion_coverage.get("buildRelevantGaps") or [])
         measured.append({
             "id": candidate.get("id"),
@@ -1662,16 +1672,20 @@ def _simulate_tournament(champion: str, candidates: list[dict],
                 "damageScenarios": expected_panel,
                 "conditionalDamage": conditional,
                 "coverageGaps": item_coverage,
+                "runeCoverageGaps": rune_coverage.get("gaps") or [],
+                "runeMechanicsCoverage": rune_coverage,
                 "championMechanicsCoverage": champion_coverage,
                 "coverageSummary": {
-                    "engineAuthoritative": not item_major and not champion_major,
-                    "majorGapCount": len(item_major) + len(champion_major),
+                    "engineAuthoritative": not item_major and not champion_major and not rune_major,
+                    "majorGapCount": len(item_major) + len(champion_major) + len(rune_major),
                     "itemMajorGapCount": len(item_major),
                     "championMajorGapCount": len(champion_major),
+                    "runeMajorGapCount": len(rune_major),
                     "informationalItemCount": len(item_coverage) - len(item_major),
+                    "informationalRuneCount": len(rune_coverage.get("gaps") or []) - len(rune_major),
                     "policy": (
                         "Numerical comparison may be authoritative for the stated "
-                        "synthetic scenario." if not item_major and not champion_major else
+                        "synthetic scenario." if not item_major and not champion_major and not rune_major else
                         "Treat the numerical result as advisory; a compared build has "
                         "an unresolved build-relevant mechanic."
                     ),

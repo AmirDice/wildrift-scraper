@@ -28,7 +28,11 @@
     "Conqueror": {
       "bonusAdPerStackRange": [
         3,
-        7
+        5
+      ],
+      "bonusApPerStackRange": [
+        5,
+        8.33
       ],
       "burstStacks": 3,
       "fullStacks": 6,
@@ -36,7 +40,7 @@
       "healPctMelee": 9,
       "healPctRanged": 6,
       "stackRampSec": 3,
-      "_why_heal": "At six stacks Conqueror heals for 9% of damage dealt by melee champions and 6% by ranged champions. The engine applies it after a three-second stack ramp in the sustained reference window."
+      "_why_heal": "Patch 7.3 grants 3-5 AD or 5-8.33 AP per stack. The synthetic stat block uses three stacks as the average damage state, follows the build's dominant adaptive stat, and applies full-stack healing only after a three-second ramp."
     },
     "Dark Harvest": {
       "burstProc": {
@@ -73,19 +77,30 @@
       ]
     },
     "Grasp of the Undying": {
-      "procTargetMaxHpPct": 3.3,
+      "procOwnMaxHpPct": 2,
+      "healOwnMaxHpPct": 1.3,
       "procEverySec": 5,
       "rangedMultiplier": 0.6,
-      "_why": "4-stack auto deals 3.3% target max HP about once per 5s of combat; ranged champions receive 60% of the effect, matching the tooltip's 40% reduction."
+      "firstProcArmSec": 3,
+      "_why": "At four combat stacks, the attack deals 2% of the user's max Health and heals 1.3% of the user's max Health. Ranged champions receive 60% of both effects. Permanent Health from earlier procs is match-history dependent and is not granted for free."
     },
     "Lethal Tempo": {
-      "asPctAvg": 40,
-      "_why": "melee 8-16%/stack x6; ramping needs 6 hits, ~40% avg over a real fight"
+      "asPctPerStackMelee": 8,
+      "asPctPerStackRanged": 6.4,
+      "fullStacks": 6,
+      "bulletBaseRangeMelee": [9, 30],
+      "bulletBaseRangeRanged": [6, 24],
+      "bulletBonusAsScaleMelee": 1,
+      "bulletBonusAsScaleRanged": 0.67,
+      "_why": "Patch 7.3: attack speed ramps over six landed attacks. Only attacks after full stacks fire the adaptive bullet, whose damage scales with the build's bonus Attack Speed."
     },
     "Fleet Footwork": {
-      "msPctAvg": 4,
-      "healPerProc": 60,
-      "_why": "energized heal + MS; modest avg-uptime modeling"
+      "msPctAvg": 2.22,
+      "healPerProcRange": [15, 110],
+      "healBonusAdRatio": 15,
+      "healApRatio": 10,
+      "procEverySec": 9,
+      "_why": "The heal includes its level value and AD/AP ratios. The 20% Move Speed for one second is averaged over the same conservative nine-second energized cadence; mana/energy restoration is disclosed but not converted into damage."
     }
   },
   "minors": {
@@ -141,6 +156,7 @@
     },
     "Last Stand": {
       "ampSelfLowPct": 0.11,
+      "expectedLowHealthUptime": 0.5,
       "note": "only when YOU are <60% HP — 0 for burst-from-full",
       "_patch": [
         "7.2 ampSelfLowPct: 0.09 -> 0.11"
@@ -176,24 +192,31 @@
       ]
     },
     "Legend: Alacrity": {
-      "asPctAvg": 20,
-      "_why": "20% AS at max stacks"
+      "asPctAvg": 18,
+      "_why": "Patch 7.3's attack-speed appendix confirms 18% at maximum stacks."
     },
     "Overgrowth": {
-      "hpFlat": 210,
-      "_why": "3 HP/stack, ~60 stacks by mid-game + 3% max HP at 30 stacks approximated flat"
+      "hpFlat": 90,
+      "hpPct": 3,
+      "_why": "Thirty stacks grant 90 flat Health, then increase max Health by 3%. Further infinite stacks depend on match farming and are not granted for free."
     },
     "Bone Plating": {
       "drPct": 5,
       "_why": "blocks 3 champion hits per trigger; ~5% effective DR over a fight"
     },
     "Second Wind": {
-      "healPerSec": 10,
-      "_why": "6+2% missing over 5s after damage, doubled melee; ~10/s in-fight avg"
+      "healFlatPerTrigger": 3,
+      "healMissingHpPct": 1.5,
+      "healDurationSec": 5,
+      "expectedMissingHpPct": 40,
+      "meleeMultiplier": 2,
+      "_why": "After champion damage, regenerate 3 + 1.5% missing Health over five seconds, doubled for melee. The engine uses its documented 40% in-fight missing-Health assumption."
     },
     "Revitalize": {
-      "healShieldAmpPct": 10,
-      "_why": "5% heal/shield amp, +10% under 40% HP; avg 10%"
+      "healShieldAmpPct": 5,
+      "conditionalHealShieldAmpPct": 10,
+      "conditionalBelowHpPct": 40,
+      "_why": "5% is always active. The additional 10% applies only while the healed or shielded target is below 40% Health and remains a disclosed context-dependent ceiling."
     }
   }
 }
