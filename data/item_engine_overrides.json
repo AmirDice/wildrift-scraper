@@ -282,8 +282,12 @@
     "allyProcFlat": 0,
     "allyMsPct": 0,
     "msPct": 0,
-    "damageAmpPct": 7,
-    "_why": "Coordinated Fire is gone. Command marks a crowd-controlled enemy so they take 7% more damage; the mark helps the whole team, and the engine can only price your own share of it."
+    "damageAmpPct": 0,
+    "ccMarkSelfAmpPct": 7,
+    "allyAmpPct": 7,
+    "allyAmpDurationS": 4,
+    "allyBuffRequiresCc": 1,
+    "_why": "Coordinated Fire is gone. Command marks a crowd-controlled enemy for four seconds so they take 7% more damage. Both holder and ally value are gated on the holder actually having crowd control."
   },
   "stormsurge": {
     "burstProcCdSec": 25,
@@ -332,7 +336,22 @@
   },
   "redemption": {
     "procMaxHpType": "true",
+    "allyEffectCooldownS": 60,
     "_why_type": "Intervention: 'deal 10% of max Health as TRUE damage to enemy champions'. The procMaxHp channel defaults to physical."
+  },
+  "locket-of-the-iron-solari": {
+    "allyEffectCooldownS": 60,
+    "_why_support_timeline": "Locket is one initially-ready 60-second team shield, not three free shields per fight."
+  },
+  "mikaels-blessing": {
+    "allyEffectCooldownS": 75,
+    "_why_support_timeline": "Purify is one initially-ready 75-second ally cleanse/heal in the reference fight."
+  },
+  "cryptbloom": {
+    "allyHealFlat": 0,
+    "allyEffectRequiresTakedown": 1,
+    "allyEffectCooldownS": 60,
+    "_why_support_timeline": "Life from Death requires a takedown, which the no-takedown reference fight does not guarantee."
   },
   "kraken-slayer": {
     "burstProcFlat": 0,
@@ -430,7 +449,9 @@
   "knights-vow": {
     "dotDps": 0,
     "burstProcFlat": 0,
-    "_why_not_outgoing": "The extracted damage-over-time and on-kill burst belonged to Hollow Radiance, not Knight's Vow. Knight's Vow redirects 12% of a nearby Worthy ally's damage taken and heals the holder for 10% of that ally's champion damage; those ally-dependent effects require explicit team-context modelling."
+    "allyRedirectPct": 12,
+    "holderHealPctAllyDamage": 10,
+    "_why_not_outgoing": "The extracted damage-over-time and on-kill burst belonged to Hollow Radiance. The support model now values the nearby Worthy tether: 12% redirected damage and holder healing equal to 10% of the ally's champion damage."
   },
   "plated-steelcaps": {
     "basicAttackDrPct": 10,
@@ -480,15 +501,25 @@
   "radiant-virtue": {
     "shieldPctMaxHp": 10,
     "allyHealPctMaxHp": 15,
+    "allyEffectRequiresUlt": 1,
+    "allyEffectRangedMult": 50,
+    "_why_support_timeline": "Guiding Light triggers once on the holder's ultimate; ranged holders apply the stated 50% ally-healing modifier.",
     "_why_transcend": "Guiding Light: 'Upon casting your ultimate ability, you Transcend, increasing your max Health by 10% for 6s. While Transcended, allied champions within 1,200 units heal for 2.5% of your max Health per second over the duration.' The self half is 10% max health for six seconds, once per fight on a 60s cooldown, which is the same effective-HP shape Guardian Angel's revive already uses shieldPctMaxHp for. The ally half is 2.5% x 6s = 15% of max health. NOT modelled: the 50% reduction for ranged champions, because the item ally path has no ranged branch."
   },
   "ardent-censer": {
     "_why_ally_as": "allyAsPct is read by NEITHER engine, deliberately. Censer grants an ally '15-34% Attack Speed and their attacks deal 16-22 bonus magic damage'; the damage half IS priced, through allyOnHitFlatMagic. Pricing the attack-speed half needs a conversion from ally attack speed to ally damage, and that needs to know what share of that ally's damage is autos -- a number this model does not carry. A guessed constant here would be worse than a visible mismatch, so the key stays unread and the item is undervalued by a known amount rather than valued by an invented one.",
     "allyAsPct": 30,
     "allyOnHitFlatMagic": 25,
+    "selfTriggeredAsPct": 30,
+    "selfTriggeredOnHitMagic": 25,
+    "allyTriggerDurationS": 6,
+    "_why_support_timeline": "Both holder and ally buffs last six seconds and require a real ally heal/shield event.",
     "_why": "Censer is a flat 30% Attack Speed and 25 magic on hit for both of you, no longer scaling with the ally's level."
   },
   "shurelyas-battlesong": {
+    "allyMsDurationS": 4,
+    "allyEffectCooldownS": 60,
+    "_why_support_timeline": "One initially-ready active grants nearby allies 30% Move Speed for four seconds in the eight-second reference fight.",
     "_why_ally_ms": "allyMsPct is read by NEITHER engine, deliberately. Ally move speed is real value and this model has no channel that converts it into damage or survival for someone else. Same reasoning as ardent-censer's allyAsPct: undervalued by a known amount rather than valued by a guessed one."
   },
   "gargoyle-stoneplate": {
@@ -575,19 +606,28 @@
   },
   "staff-of-flowing-water": {
     "allyApFlat": 40,
-    "hasteFlatPassive": 15,
-    "_why": "Rapids grants a flat 40 Ability Power and 15 Ability Haste to both of you (was 30-50 by level)."
+    "allyHasteFlat": 15,
+    "allyTriggerDurationS": 6,
+    "hasteFlatPassive": 0,
+    "apFlatPassive": 0,
+    "selfTriggeredApFlat": 40,
+    "selfTriggeredHasteFlat": 15,
+    "_why": "Rapids grants 40 AP and 15 Ability Haste to both players for six seconds only after an ally heal/shield. The old extraction incorrectly granted the holder a second permanent 50 AP and permanent haste."
   },
   "yordle-trap": {
     "mrShredFlat": 0,
     "msPct": 0,
     "allyAsPct": 20,
+    "allyTriggerDurationS": 4,
+    "allyBuffRequiresCc": 1,
     "asPctPassive": 20,
     "_why": "Catcher no longer shreds resistances or grants gold on a kill it marked; it now hands you and nearby allies Attack Speed (30% melee, 20% ranged) after a slow or immobilise."
   },
   "harmonic-echo": {
     "allyHealFlat": 0,
-    "_why": "The item no longer heals by itself: it forwards 30% of a heal or 35% of a shield you cast to a second ally. That is a share of the caster's own healing, which the engine has no key for."
+    "allyForwardHealPct": 30,
+    "allyForwardShieldPct": 35,
+    "_why": "The item forwards 30% of each ally heal or 35% of each ally shield to another valid ally; the support model applies those shares to measured kit and rune output."
   },
   "hexoptics-c44": {
     "conditionalAttackAmpPct": {
@@ -648,16 +688,19 @@
     "_why": "Harmony is Heal and Shield Power from max Mana, which the stat rules carry; there is no separate combat effect."
   },
   "diadem-of-songs": {
-    "allyHealFlat": 10,
-    "_why": "Diadem heals the lowest-Health nearby ally for 0.8% of max Mana each second. At its ~1,200 Mana that is about 10 a second, so it is charged as a flat ally heal."
+    "allyHealFlat": 0,
+    "allyHealPerSecPctMana": 0.8,
+    "_why": "Diadem heals the lowest-Health nearby ally for 0.8% of the holder's actual max Mana each second instead of using a fixed ~1,200-Mana guess."
   },
   "echoes-of-helia": {
-    "allyHealFlat": {
+    "allyHealFlat": 0,
+    "allyFragmentCap": {
       "lvlRange": [
         80,
         250
       ]
     },
-    "_why": "Soul Siphon's fragments cap at 80-250 by level and are spent on the next heal or shield, so the cap is the per-use value."
+    "allyHealFromDamagePct": 30,
+    "_why": "Soul Siphon stores 30% of damage dealt, capped at 80-250, then spends fragments on a real ally heal/shield event. Healing is bounded by both generated damage and eligible events."
   }
 }

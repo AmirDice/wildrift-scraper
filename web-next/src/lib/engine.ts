@@ -83,6 +83,8 @@ const SUPPORT_WINDOW = 8;
 const ALLY_AUTOS = 8;              // buffed ally basic attacks in the window
 const ALLY_DAMAGE = 2500;          // damage a buffed ally deals in the window
 const ALLY_INCOMING = 2500;        // damage an ally takes in the window
+const ALLY_AUTO_DAMAGE_SHARE = 0.55;
+const ALLY_POSITIONING_VALUE = 500; // full reference value of 30% MS for 8s
 const AP_TO_ALLY_DAMAGE = 2.5;
 const AD_TO_ALLY_DAMAGE = 4.0;
 const FONT_PROC_EVERY = 15.0;
@@ -354,6 +356,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     conditionalEffects: [] as any[], conditionBand,
     timedDamageAmps: [] as any[], targetThresholdAmps: [] as any[],
     rampDamageAmps: [] as any[], rampOmnivamp: [] as any[],
+    allyTriggeredSelfEffects: [] as any[],
     giant: 0, execute: 0, ultAmp: 0,
     spellbladeBaseAdPct: 0, spellbladeBonusArmorPct: 0,
     spellbladePctMaxHp: 0, spellbladeHealPctMaxHp: 0,
@@ -535,6 +538,23 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     if (fx.disablesCrit) st.critDisabled = 1;
     st.abilityAmp += g("abilityAmpPct") / 100;
     st.damageAmp += g("damageAmpPct") / 100;
+    if (g("ccMarkSelfAmpPct") && Number(c.ccDepth || 0) > 0) {
+      st.timedDamageAmps.push({
+        pct: g("ccMarkSelfAmpPct") / 100,
+        durationS: g("allyAmpDurationS") || 4,
+        source: slug,
+      });
+    }
+    if (g("selfTriggeredAsPct") || g("selfTriggeredOnHitMagic")
+        || g("selfTriggeredApFlat") || g("selfTriggeredHasteFlat")) {
+      st.allyTriggeredSelfEffects.push({
+        asPct: g("selfTriggeredAsPct"),
+        onHitMagic: g("selfTriggeredOnHitMagic"),
+        apFlat: g("selfTriggeredApFlat"),
+        hasteFlat: g("selfTriggeredHasteFlat"),
+        durationS: g("allyTriggerDurationS") || 6,
+      });
+    }
     if (g("rampDamageAmpPct") || g("rampAbilityAmpPct")) {
       st.rampDamageAmps.push({
         damagePct: g("rampDamageAmpPct") / 100,
@@ -1186,6 +1206,18 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   st.onHitPhys += st.onHitPctMana * st.mana;
   st.onHitPhys += st.onHitPctOwnMaxHp * st.hp;
   st.abilityProcFlatPhys = st.abilityHitPctMana * st.mana;
+  if (st.allyTriggeredSelfEffects.length) {
+    let events = allyTriggerEvents(name, st, level, SUPPORT_WINDOW);
+    if (st.runeAllyHealPerSec || st.allyShield) events += 1;
+    for (const effect of st.allyTriggeredSelfEffects) {
+      const uptime = events
+        ? Math.min(1, events * Number(effect.durationS) / SUPPORT_WINDOW) : 0;
+      st.baseAsPct += Number(effect.asPct) * uptime;
+      st.onHitMagic += Number(effect.onHitMagic) * uptime;
+      st.ap += Number(effect.apFlat) * uptime;
+      st.haste += Number(effect.hasteFlat) * uptime;
+    }
+  }
   // Resolve build-dependent item effects only after mana conversions and rune
   // stats are final: Sunfire sees all bonus Health and Fimbulwinter sees max
   // Mana. The ranged modifier is the item's explicit 50% shield rule.
@@ -3375,23 +3407,70 @@ export function supportValue(name: string, items: string[], runes: string[] = []
   const st = resolveStats(name, level, items, runes);
   if (!st) return 0;
   const amp = 1 + st.healShieldAmp;
-  let total = 0;
-  total += kitSustain(name, st, level, SUPPORT_WINDOW, "ally");
-  total += st.runeAllyHealPerSec * SUPPORT_WINDOW * amp;
-  total += st.allyShield * amp;
+  const kitHealing = kitSustain(name, st, level, SUPPORT_WINDOW,
+    "ally", undefined, undefined, "heal");
+  const kitShielding = kitSustain(name, st, level, SUPPORT_WINDOW,
+    "ally", undefined, undefined, "shield");
+  const runeHealing = st.runeAllyHealPerSec * SUPPORT_WINDOW * amp;
+  const runeShielding = st.allyShield * amp;
+  const baseHealing = kitHealing + runeHealing;
+  const baseShielding = kitShielding + runeShielding;
+  let total = baseHealing + baseShielding;
+  let triggerEvents = allyTriggerEvents(name, st, level, SUPPORT_WINDOW);
+  if (runeHealing || runeShielding) triggerEvents += 1;
+  const hasCc = Number(DATA.champions[name]?.ccDepth || 0) > 0;
+  const holderIsRanged = RANGED_CLASSES.has(DATA.champions[name]?.class ?? "");
+  let ownDamage: number | null = null;
   for (const slug of items) {
     const fx = DATA.itemFx[slug] ?? {};
     const g = (k: string) => (k in fx ? lvlRange(fx[k], level) : 0);
-    total += (g("allyHealFlat") + g("allyShieldFlat")) * 3 * amp;  // a few casts a fight
-    // Percentage-of-max-health ally healing (Radiant Virtue). The item ally
-    // path had flat keys only, so a percentage heal had nowhere to land.
-    total += g("allyHealPctMaxHp") / 100 * st.hp * amp;
-    total += g("allyOnHitFlatMagic") * ALLY_AUTOS;                 // Ardent Censer
-    total += g("allyProcFlat") * 2;                                // Imperial Mandate
-    total += g("allyApFlat") * AP_TO_ALLY_DAMAGE;                  // Staff of Flowing Water
-    total += g("allyAdFlat") * AD_TO_ALLY_DAMAGE;
-    total += ALLY_DAMAGE * g("allyAmpPct") / 100;
-    total += ALLY_INCOMING * g("allyDrPct") / 100;                 // Knight's Vow
+    let activations: number;
+    if (g("allyEffectRequiresTakedown")) activations = 0;
+    else if (g("allyEffectCooldownS"))
+      activations = procActivations(SUPPORT_WINDOW, g("allyEffectCooldownS"));
+    else activations = Math.min(triggerEvents, 1);
+    if (g("allyEffectRequiresUlt"))
+      activations = DATA.formulas[name]?.abilities?.["4"] ? 1 : 0;
+    const rangedMult = holderIsRanged && g("allyEffectRangedMult")
+      ? g("allyEffectRangedMult") / 100 : 1;
+    total += (g("allyHealFlat") + g("allyShieldFlat"))
+      * activations * amp * rangedMult;
+    total += g("allyHealPctMaxHp") / 100 * st.hp
+      * activations * amp * rangedMult;
+    total += g("allyHealPerSecPctMana") / 100 * st.mana
+      * SUPPORT_WINDOW * amp;
+
+    if (g("allyFragmentCap") && triggerEvents) {
+      if (ownDamage == null)
+        ownDamage = rotation(name, st, TARGET_BRUISER, SUPPORT_WINDOW, level);
+      total += Math.min(g("allyFragmentCap") * triggerEvents,
+        ownDamage * g("allyHealFromDamagePct") / 100) * amp;
+    }
+    total += baseHealing * g("allyForwardHealPct") / 100;
+    total += baseShielding * g("allyForwardShieldPct") / 100;
+
+    const requiresCc = Boolean(g("allyBuffRequiresCc"));
+    const buffEvents = requiresCc ? (hasCc ? 1 : 0) : triggerEvents;
+    const duration = g("allyTriggerDurationS") || g("allyAmpDurationS");
+    const uptime = duration && buffEvents
+      ? Math.min(1, buffEvents * duration / SUPPORT_WINDOW) : 0;
+    total += g("allyOnHitFlatMagic") * ALLY_AUTOS * uptime;
+    total += ALLY_DAMAGE * ALLY_AUTO_DAMAGE_SHARE
+      * g("allyAsPct") / 100 * uptime;
+    total += g("allyApFlat") * AP_TO_ALLY_DAMAGE * uptime;
+    const allyHaste = g("allyHasteFlat");
+    if (allyHaste) total += ALLY_DAMAGE * (1 - ALLY_AUTO_DAMAGE_SHARE)
+      * allyHaste / (100 + allyHaste) * uptime;
+    total += g("allyAdFlat") * AD_TO_ALLY_DAMAGE * uptime;
+    total += ALLY_DAMAGE * g("allyAmpPct") / 100 * uptime;
+    total += ALLY_INCOMING * g("allyDrPct") / 100;
+    total += ALLY_INCOMING * g("allyRedirectPct") / 100 * allyUptime(name);
+    total += ALLY_DAMAGE * g("holderHealPctAllyDamage") / 100 * allyUptime(name);
+    if (g("allyMsPct") && g("allyMsDurationS")) {
+      const msUptime = Math.min(1,
+        activations * g("allyMsDurationS") / SUPPORT_WINDOW);
+      total += ALLY_POSITIONING_VALUE * g("allyMsPct") / 30 * msUptime;
+    }
   }
   return total;
 }
@@ -3461,7 +3540,8 @@ const SUSTAIN_REF_TARGET = { label: "ref", hp: 2600, armor: 90, mr: 60, bonusHp:
 export function kitSustain(name: string, st: any, level: number,
                            window: number, audience: "self" | "ally",
                            dmgBySlot?: Record<string, number>,
-                           foe?: { hp: number }): number {
+                           foe?: { hp: number },
+                           kindFilter?: "heal" | "shield"): number {
   if (name === "Hwei" && DATA.formulas[name]?.hwei) {
     const result = hweiTimeline(DATA.formulas[name].hwei, st, { hp: foe?.hp ?? 2600 }, window, level);
     return (audience === "self" ? result.shield : result.allyShield) * (1 + st.healShieldAmp);
@@ -3475,7 +3555,8 @@ export function kitSustain(name: string, st: any, level: number,
     const aud = who[slot] ?? "ally";
     if (aud !== "both" && aud !== audience) continue;
     const comps = (ab.defensive ?? []).filter(
-      (c: any) => !c.alt && (c.kind === "heal" || c.kind === "shield"));
+      (c: any) => !c.alt && (c.kind === "heal" || c.kind === "shield")
+        && (!kindFilter || c.kind === kindFilter));
     if (!comps.length) continue;
     const cds = ab.cooldowns ?? [];
     const cd = (cds.length ? rankVal(cds, 3) : 8)
@@ -3521,6 +3602,23 @@ export function kitSustain(name: string, st: any, level: number,
     }
   }
   return total * amp;
+}
+
+function allyTriggerEvents(name: string, st: any, level: number, window = 8): number {
+  const f = DATA.formulas[name]?.abilities ?? {};
+  const who = (DATA.healTargets?.[name] ?? {}) as Record<string, string>;
+  let events = 0;
+  for (const [slot, ab] of Object.entries<any>(f)) {
+    const audience = who[slot] ?? "ally";
+    if (audience !== "ally" && audience !== "both") continue;
+    if (!(ab.defensive ?? []).some((c: any) => !c.alt
+        && (c.kind === "heal" || c.kind === "shield"))) continue;
+    const cds = ab.cooldowns ?? [];
+    const cd = (cds.length ? rankVal(cds, 3) : 8)
+      * 100 / (100 + slotHaste(st, slot));
+    events += slot === "4" ? 1 : Math.max(1, castsInWindow(window, cd));
+  }
+  return events;
 }
 
 export interface DuelTarget {

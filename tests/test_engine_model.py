@@ -285,6 +285,35 @@ def test_titanic_cone_is_secondary_only():
     assert team["boltDmg"] > 0
 
 
+def test_support_actives_are_once_per_reference_fight_not_three_free_casts():
+    base = fe.support_value("Soraka", [], [], 15)
+    locket = fe.support_value("Soraka", ["locket-of-the-iron-solari"], [], 15)
+    shield = fe._lvl_range(
+        fe.ENGINE_FX["locket-of-the-iron-solari"]["allyShieldFlat"], 15)
+    assert locket > base
+    assert locket - base < shield * 1.5
+
+
+def test_triggered_support_buffs_need_a_real_ally_event():
+    graves_ardent = fe.resolve_stats("Graves", 15, ["ardent-censer"], [])
+    soraka_ardent = fe.resolve_stats("Soraka", 15, ["ardent-censer"], [])
+    assert graves_ardent["onHitMagic"] == 0
+    assert soraka_ardent["onHitMagic"] == pytest.approx(25)
+
+    graves_staff = fe.resolve_stats("Graves", 15, ["staff-of-flowing-water"], [])
+    soraka_staff = fe.resolve_stats("Soraka", 15, ["staff-of-flowing-water"], [])
+    assert graves_staff["ap"] == 50 and graves_staff["haste"] == 10
+    assert soraka_staff["ap"] > graves_staff["ap"]
+    assert soraka_staff["haste"] > graves_staff["haste"]
+
+
+def test_forwarding_fragments_and_tether_add_measured_ally_value():
+    base = fe.support_value("Soraka", [], [], 15)
+    assert fe.support_value("Soraka", ["harmonic-echo"], [], 15) > base
+    assert fe.support_value("Soraka", ["echoes-of-helia"], [], 15) > base
+    assert fe.support_value("Soraka", ["knights-vow"], [], 15) > base
+
+
 # ---------------------------------------------------------------------------
 # SECONDARY TARGET REACH
 #

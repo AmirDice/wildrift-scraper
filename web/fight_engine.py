@@ -398,7 +398,7 @@ def heal_target(name: str, slot: str) -> str:
 
 def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
              dmg_by_slot: dict | None = None, dmg_total: float = 0.0,
-             foe: dict | None = None) -> float:
+             foe: dict | None = None, kind_filter: str | None = None) -> float:
     """Healing and shielding this kit produces for `audience` over a fight.
 
     Shared by the ally-value model and the champion's own sustain so the two
@@ -415,7 +415,8 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
         if target != "both" and target != audience:
             continue
         comps = [c for c in (ab.get("defensive") or [])
-                 if not c.get("alt") and c.get("kind") in ("heal", "shield")]
+                 if not c.get("alt") and c.get("kind") in ("heal", "shield")
+                 and (kind_filter is None or c.get("kind") == kind_filter)]
         if not comps:
             continue
         cds = ab.get("cooldowns") or []
@@ -463,6 +464,24 @@ def kit_heal(name: str, st: dict, level: int, window: float, audience: str,
                 v *= float(c["durationS"])
             total += v * casts
     return total * amp
+
+
+def _ally_trigger_events(name: str, st: dict, level: int,
+                         window: float = 8.0) -> int:
+    """Real ally heal/shield casts that can trigger support-item passives."""
+    events = 0
+    for slot, ab in ((FORMULAS.get(name, {}) or {}).get("abilities", {}) or {}).items():
+        target = heal_target(name, slot)
+        if target not in ("ally", "both"):
+            continue
+        if not any(not c.get("alt") and c.get("kind") in ("heal", "shield")
+                   for c in (ab.get("defensive") or [])):
+            continue
+        cds = ab.get("cooldowns") or []
+        cd = ((_rank_val(cds, 3) if cds else 8.0)
+              * 100 / (100 + _slot_haste(st, slot)))
+        events += 1 if slot == "4" else max(1, casts_in_window(window, cd))
+    return events
 # Ultimates that hit an area. Only Axiom Arcanist cares: it amplifies an ult by
 # 10%, or by 5% when the damage is AoE.
 AOE_ULTS = set((_load("ult_shape.json") or {}).get("aoeUlts", []))
@@ -900,6 +919,7 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
         "conditionalEffects": [], "conditionBand": condition_band,
         "timedDamageAmps": [], "targetThresholdAmps": [],
         "rampDamageAmps": [], "rampOmnivamp": [],
+        "allyTriggeredSelfEffects": [],
         "giant": 0.0, "execute": 0.0,
         # Procs whose condition the rotation has to verify, and ult-only amp.
         "conditionalProcs": [], "ultAmp": 0.0,
@@ -1075,6 +1095,21 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
             st["critDisabled"] = 1.0
         st["abilityAmp"] += g("abilityAmpPct") / 100.0
         st["damageAmp"] += g("damageAmpPct") / 100.0
+        if g("ccMarkSelfAmpPct") and "cc" in (CHAMPS.get(name, {}).get("mechanics") or []):
+            st["timedDamageAmps"].append({
+                "pct": g("ccMarkSelfAmpPct") / 100.0,
+                "durationS": g("allyAmpDurationS") or 4.0,
+                "source": slug,
+            })
+        if (g("selfTriggeredAsPct") or g("selfTriggeredOnHitMagic")
+                or g("selfTriggeredApFlat") or g("selfTriggeredHasteFlat")):
+            st["allyTriggeredSelfEffects"].append({
+                "asPct": g("selfTriggeredAsPct"),
+                "onHitMagic": g("selfTriggeredOnHitMagic"),
+                "apFlat": g("selfTriggeredApFlat"),
+                "hasteFlat": g("selfTriggeredHasteFlat"),
+                "durationS": g("allyTriggerDurationS") or 6.0,
+            })
         if g("rampDamageAmpPct") or g("rampAbilityAmpPct"):
             st["rampDamageAmps"].append({
                 "damagePct": g("rampDamageAmpPct") / 100.0,
@@ -1825,6 +1860,17 @@ def resolve_stats(name: str, level: int, item_slugs: list[str],
     st["onHitPhys"] += st.get("onHitPctMana", 0.0) * st["mana"]
     st["onHitPhys"] += st.get("onHitPctOwnMaxHp", 0.0) * st["hp"]
     st["abilityProcFlatPhys"] = st.get("abilityHitPctMana", 0.0) * st["mana"]
+    if st.get("allyTriggeredSelfEffects"):
+        _events = _ally_trigger_events(name, st, level, SUPPORT_WINDOW)
+        if st.get("runeAllyHealPerSec") or st.get("allyShield"):
+            _events += 1
+        for _effect in st["allyTriggeredSelfEffects"]:
+            _uptime = min(1.0, (_events * _effect["durationS"])
+                          / SUPPORT_WINDOW) if _events else 0.0
+            st["baseAsPct"] += _effect["asPct"] * _uptime
+            st["onHitMagic"] += _effect["onHitMagic"] * _uptime
+            st["ap"] += _effect["apFlat"] * _uptime
+            st["haste"] += _effect["hasteFlat"] * _uptime
     # Effects whose value depends on the completed build must be resolved only
     # after mana conversions and rune stats have landed.  This is the point at
     # which Sunfire sees all bonus health and Fimbulwinter sees final mana.
@@ -3852,6 +3898,8 @@ SUPPORT_WINDOW = 8.0
 ALLY_AUTOS = 8            # buffed ally basic attacks in the window
 ALLY_DAMAGE = 2500.0      # damage a buffed ally deals in the window
 ALLY_INCOMING = 2500.0    # damage an ally takes in the window
+ALLY_AUTO_DAMAGE_SHARE = 0.55
+ALLY_POSITIONING_VALUE = 500.0  # full reference value of a 30% / 8s speed buff
 AP_TO_ALLY_DAMAGE = 2.5   # damage an ally gains per point of AP granted
 AD_TO_ALLY_DAMAGE = 4.0
 REF_SUP = 4000.0          # reference support output, for normalising the score
@@ -3869,36 +3917,89 @@ def support_value(name: str, item_slugs: list[str], rune_names: list[str] | None
         st = resolve_stats(name, level, item_slugs, rune_names or [])
     except Exception:  # noqa: BLE001
         return 0.0
-    f = (FORMULAS.get(name, {}) or {}).get("abilities", {}) or {}
     amp = 1 + st["healShieldAmp"]
-    haste_m = 100 / (100 + st["haste"])
-    total = 0.0
+    kit_healing = kit_heal(
+        name, st, level, SUPPORT_WINDOW, "ally", kind_filter="heal")
+    kit_shielding = kit_heal(
+        name, st, level, SUPPORT_WINDOW, "ally", kind_filter="shield")
+    rune_healing = st["runeAllyHealPerSec"] * SUPPORT_WINDOW * amp
+    rune_shielding = st["allyShield"] * amp
+    base_healing = kit_healing + rune_healing
+    base_shielding = kit_shielding + rune_shielding
+    total = base_healing + base_shielding
+    trigger_events = _ally_trigger_events(name, st, level, SUPPORT_WINDOW)
+    if rune_healing or rune_shielding:
+        trigger_events += 1
+    has_cc = "cc" in (CHAMPS.get(name, {}).get("mechanics") or [])
+    holder_is_ranged = CHAMP_CLASS.get(name, "") in RANGED_CLASSES
+    own_damage = None
 
     # 1) heals and shields this kit puts on ALLIES. A self-heal is not ally
     #    value: counting Swain's Demonic Ascension here gave him 255 points of
     #    support he never provided, while his own sustain read zero.
-    total += kit_heal(name, st, level, SUPPORT_WINDOW, "ally")
-
-    # 1b) ally healing/shielding from RUNES (Font of Life, Guardian). Without
-    #     this the rune search is blind to a support page's whole point, which
-    #     is why enchanter rune optimisation had to be blocked outright.
-    total += st["runeAllyHealPerSec"] * SUPPORT_WINDOW * amp
-    total += st["allyShield"] * amp
-
-    # 2) what the items give allies
+    # 2) Item events and buffs. Every active/proc uses its real trigger or
+    # cooldown; there is no generic "three casts" multiplier anymore.
     for slug in item_slugs:
         fx = ENGINE_FX.get(slug) or {}
         g = lambda k: _lvl_range(fx[k], level) if k in fx else 0.0  # noqa: E731
-        total += (g("allyHealFlat") + g("allyShieldFlat")) * 3 * amp  # a few casts/fight
-        # Percentage-of-max-health ally healing (Radiant Virtue). The item ally
-        # path had flat keys only, so a percentage heal had nowhere to land.
-        total += g("allyHealPctMaxHp") / 100.0 * st["hp"] * amp
-        total += g("allyOnHitFlatMagic") * ALLY_AUTOS                 # Ardent Censer
-        total += g("allyProcFlat") * 2                                # Imperial Mandate
-        total += g("allyApFlat") * AP_TO_ALLY_DAMAGE                  # Staff of Flowing Water
-        total += g("allyAdFlat") * AD_TO_ALLY_DAMAGE
-        total += ALLY_DAMAGE * g("allyAmpPct") / 100.0
-        total += ALLY_INCOMING * g("allyDrPct") / 100.0               # Knight's Vow
+        if g("allyEffectRequiresTakedown"):
+            activations = 0
+        elif g("allyEffectCooldownS"):
+            activations = _proc_activations(
+                SUPPORT_WINDOW, g("allyEffectCooldownS"))
+        else:
+            activations = min(trigger_events, 1)
+        if g("allyEffectRequiresUlt"):
+            activations = (1 if (FORMULAS.get(name, {}).get("abilities") or {})
+                           .get("4") else 0)
+        ranged_mult = (g("allyEffectRangedMult") / 100.0
+                       if holder_is_ranged and g("allyEffectRangedMult") else 1.0)
+        total += ((g("allyHealFlat") + g("allyShieldFlat"))
+                  * activations * amp * ranged_mult)
+        total += (g("allyHealPctMaxHp") / 100.0 * st["hp"]
+                  * activations * amp * ranged_mult)
+        total += (g("allyHealPerSecPctMana") / 100.0 * st["mana"]
+                  * SUPPORT_WINDOW * amp)
+
+        if g("allyFragmentCap") and trigger_events:
+            if own_damage is None:
+                own_damage = rotation(
+                    name, st, TARGETS["bruiser"], SUPPORT_WINDOW, level)["total"]
+            total += min(g("allyFragmentCap") * trigger_events,
+                         own_damage * g("allyHealFromDamagePct") / 100.0) * amp
+        total += base_healing * g("allyForwardHealPct") / 100.0
+        total += base_shielding * g("allyForwardShieldPct") / 100.0
+
+        requires_cc = bool(g("allyBuffRequiresCc"))
+        if requires_cc and not has_cc:
+            buff_events = 0
+        elif requires_cc:
+            buff_events = 1
+        else:
+            buff_events = trigger_events
+        duration = g("allyTriggerDurationS") or g("allyAmpDurationS")
+        uptime = (min(1.0, buff_events * duration / SUPPORT_WINDOW)
+                  if duration and buff_events else 0.0)
+        total += g("allyOnHitFlatMagic") * ALLY_AUTOS * uptime
+        total += (ALLY_DAMAGE * ALLY_AUTO_DAMAGE_SHARE
+                  * g("allyAsPct") / 100.0 * uptime)
+        total += g("allyApFlat") * AP_TO_ALLY_DAMAGE * uptime
+        ally_haste = g("allyHasteFlat")
+        total += (ALLY_DAMAGE * (1 - ALLY_AUTO_DAMAGE_SHARE)
+                  * ally_haste / (100.0 + ally_haste) * uptime
+                  if ally_haste else 0.0)
+        total += g("allyAdFlat") * AD_TO_ALLY_DAMAGE * uptime
+        total += ALLY_DAMAGE * g("allyAmpPct") / 100.0 * uptime
+        total += ALLY_INCOMING * g("allyDrPct") / 100.0
+        total += (ALLY_INCOMING * g("allyRedirectPct") / 100.0
+                  * _ally_uptime(name))
+        total += (ALLY_DAMAGE * g("holderHealPctAllyDamage") / 100.0
+                  * _ally_uptime(name))
+        if g("allyMsPct") and g("allyMsDurationS"):
+            ms_uptime = min(1.0, activations * g("allyMsDurationS")
+                            / SUPPORT_WINDOW)
+            total += (ALLY_POSITIONING_VALUE * g("allyMsPct") / 30.0
+                      * ms_uptime)
     return total
 
 

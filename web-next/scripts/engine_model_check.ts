@@ -227,6 +227,32 @@ const CARRY = ["essence-reaver", "infinity-edge", "bloodthirster"];
   // An enchanter's entire job. Without it every support item is a weak stat stick.
   ok("an enchanter provides ally value", soraka > 1000, `${Math.round(soraka)}`);
   ok("a carry provides none", graves === 0, `${graves}`);
+
+  const baseSoraka = supportValue("Soraka", [], [], 15);
+  const locket = supportValue("Soraka", ["locket-of-the-iron-solari"], [], 15);
+  ok("support actives are not three free casts",
+     locket > baseSoraka && locket - baseSoraka < 600,
+     `${Math.round(baseSoraka)} -> ${Math.round(locket)}`);
+
+  const gravesArdent: any = resolveStats("Graves", 15, ["ardent-censer"], []);
+  const sorakaArdent: any = resolveStats("Soraka", 15, ["ardent-censer"], []);
+  ok("ardent needs a real ally heal or shield trigger",
+     gravesArdent.onHitMagic === 0 && sorakaArdent.onHitMagic === 25,
+     `${gravesArdent.onHitMagic}/${sorakaArdent.onHitMagic}`);
+
+  const gravesStaff: any = resolveStats("Graves", 15, ["staff-of-flowing-water"], []);
+  const sorakaStaff: any = resolveStats("Soraka", 15, ["staff-of-flowing-water"], []);
+  ok("staff buff is conditional rather than a duplicate permanent stat",
+     gravesStaff.ap === 50 && gravesStaff.haste === 10
+       && sorakaStaff.ap > gravesStaff.ap && sorakaStaff.haste > gravesStaff.haste,
+     `${gravesStaff.ap}/${gravesStaff.haste} vs ${sorakaStaff.ap}/${sorakaStaff.haste}`);
+
+  ok("harmonic forwarding adds measured ally value",
+     supportValue("Soraka", ["harmonic-echo"], [], 15) > baseSoraka);
+  ok("helia fragments need damage and a heal event",
+     supportValue("Soraka", ["echoes-of-helia"], [], 15) > baseSoraka);
+  ok("knight's vow tether has ally value",
+     supportValue("Soraka", ["knights-vow"], [], 15) > baseSoraka);
 }
 
 // ------------------------------------------------------------- area damage
