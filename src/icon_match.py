@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import functools
 import json
+import re
 from pathlib import Path
 
 import cv2
@@ -274,3 +275,220 @@ def read_build_icons(image: np.ndarray) -> dict:
         out[kind] = names
         out["_confidence"][kind] = conf
     return out
+
+
+# ---------------------------------------------------------------------------
+# Champion portraits on the leaderboard
+# ---------------------------------------------------------------------------
+# The 2026-09-25 relayout removed the champion NAME text from the CHAMPION tab
+# entirely: rows carry a portrait, that champion's rank-1 player and a score,
+# and the bottom-left name label on screen 2 is gone. OCR has nothing left to
+# read, so identity comes from the portrait, which is the same problem this
+# module already solves for build popups.
+#
+# Portraits are drawn as CIRCLES inside a gold ring, exactly like runes, so
+# they take the circular window for the same reason: a square comparison
+# scores the ring instead of the face.
+
+CHAMPION_DIR = "champions"
+#: (portrait_x, first_row_y, pitch, size, count) at 2340x1080.
+# Refined by the same dy,dx search _align uses, then folded back into the
+# constants. It matters as much here as it does for items: at the nominal
+# (599, 284) the Graves row scored 0.411 with a 0.054 gap and read as an
+# honest "?", while four pixels left it scores 0.939 with a 0.635 gap.
+# Runtime alignment rescued it either way, but starting from the right place
+# leaves the search correcting sub-pixel drift rather than a real error.
+CHAMPION_GEOMETRY = {
+    # screen 1, overview: champion portrait at the left of each row
+    "overview": (593, 282, 158, 90, 5),
+    # screen 2, detail: the persistent champion switcher column
+    "switcher": (595, 282, 158, 90, 5),
+}
+#: Portraits are far more self-similar than items (many champions share
+#: armour, skin tone and background), so the gate is looser than MIN_GAP but
+#: still refuses a coin flip. Measured on the 2026-09-25 captures: correct
+#: matches scored 0.46-0.83 while the two ambiguous rows sat at gaps of
+#: 0.03-0.06, which is what these thresholds are set to exclude.
+CHAMP_MIN_SCORE = 0.30
+CHAMP_MIN_GAP = 0.08
+
+
+@functools.lru_cache(maxsize=1)
+def champion_templates() -> dict[str, np.ndarray]:
+    """{canonical champion name: normalised template} from the shipped art."""
+    from . import champions as champ_module
+
+    # Match on a key with every separator stripped, not a hyphenated slug.
+    # The shipped filenames drop apostrophes outright (kaisa, khazix, chogath,
+    # ksante, kogmaw, velkoz) while a hyphenating slug produces kai-sa and
+    # friends, so seven real Wild Rift champions silently had no template and
+    # could never be identified. Nunu additionally carries an HTML-escaped
+    # ampersand in the filename (nunu-amp-willump), hence the & -> amp variant.
+    by_key: dict[str, str] = {}
+    for name in champ_module.CHAMPIONS:
+        low = name.lower()
+        for variant in (low, low.replace("&", " amp ")):
+            by_key.setdefault(re.sub(r"[^a-z0-9]", "", variant), name)
+    out: dict[str, np.ndarray] = {}
+    folder = PUBLIC / CHAMPION_DIR
+    if not folder.is_dir():
+        return out
+    for f in folder.iterdir():
+        if f.suffix.lower() not in (".png", ".webp", ".jpg", ".jpeg"):
+            continue
+        name = by_key.get(re.sub(r"[^a-z0-9]", "", f.stem.lower()))
+        if name is None:
+            continue
+        art = _load_art(f"{CHAMPION_DIR}/{f.name}")
+        if art is not None:
+            out[name] = _norm_tile(art)
+    return out
+
+
+def match_champion(tile: np.ndarray) -> tuple[str, float, float, str]:
+    """(name_or_?, score, gap, runner_up) for one cropped portrait."""
+    cands = champion_templates()
+    if not cands or tile.size == 0:
+        return "?", 0.0, 0.0, ""
+    t = _norm_tile(tile)
+    w = _weights(False, True)          # circular, no badge overlay on portraits
+    ranked = sorted(((_score(t, w, tpl), n) for n, tpl in cands.items()),
+                    reverse=True)
+    (s1, n1), (s2, n2) = ranked[0], ranked[1] if len(ranked) > 1 else (0.0, "")
+    gap = s1 - s2
+    ok = s1 >= CHAMP_MIN_SCORE and gap >= CHAMP_MIN_GAP
+    return (n1 if ok else "?"), s1, gap, n2
+
+
+def _align_champions(image, layout: str, fy: float, fx: float) -> tuple[int, int]:
+    """Same trick as _align: find the row that already matches best, then
+    slide only that one against only its winning template."""
+    bank = champion_templates()
+    if not bank:
+        return 0, 0
+    x0, y0, pitch, size, count = CHAMPION_GEOMETRY[layout]
+    h, w = int(size * fy), int(size * fx)
+    weights = _weights(False, True)
+
+    def tile_at(i: int, dy: int, dx: int):
+        ty = int((y0 + i * pitch - size / 2) * fy) + dy
+        tx = int((x0 - size / 2) * fx) + dx
+        if ty < 0 or tx < 0:
+            return np.empty(0)
+        return image[ty:ty + h, tx:tx + w]
+
+    anchor = (0.0, None, 0)
+    for i in range(count):
+        tile = tile_at(i, 0, 0)
+        if tile.size == 0:
+            continue
+        norm = _norm_tile(tile)
+        score, name = max((_score(norm, weights, t), n) for n, t in bank.items())
+        if score > anchor[0]:
+            anchor = (score, bank[name], i)
+    if anchor[1] is None:
+        return 0, 0
+    best_score, best = anchor[0], (0, 0)
+    for dy in range(-4, 5):
+        for dx in range(-4, 5):
+            tile = tile_at(anchor[2], dy, dx)
+            if tile.size == 0:
+                continue
+            s = _score(_norm_tile(tile), weights, anchor[1])
+            if s > best_score:
+                best_score, best = s, (dy, dx)
+    return best
+
+
+def read_champion_portraits(image: np.ndarray,
+                            layout: str = "switcher") -> list[dict]:
+    """Identify the champion in each visible row.
+
+    Returns [{"y": row_centre_y, "champion": name_or_None, "score", "gap"}]
+    top to bottom. An unresolved row is champion=None rather than a guess,
+    which is the whole point: the caller can re-read or skip instead of
+    navigating to the wrong champion.
+    """
+    h, w = image.shape[:2]
+    fy, fx = h / 1080.0, w / 2340.0
+    x0, y0, pitch, size, count = CHAMPION_GEOMETRY[layout]
+    dy, dx = _align_champions(image, layout, fy, fx)
+    rows = []
+    for i in range(count):
+        cy = y0 + i * pitch
+        ty = int((cy - size / 2) * fy) + dy
+        tx = int((x0 - size / 2) * fx) + dx
+        tile = image[ty:ty + int(size * fy), tx:tx + int(size * fx)]
+        name, score, gap, runner = match_champion(tile)
+        rows.append({"y": int(cy * fy), "champion": None if name == "?" else name,
+                     "score": round(score, 3), "gap": round(gap, 3),
+                     "runnerUp": runner})
+    return rows
+
+
+#: The switcher box's left edge, native x. Sampled wide enough that a couple
+#: of pixels of capture drift cannot miss a border only a few pixels thick.
+SELECTION_EDGE_X = (438, 472)
+#: Measured on the 2026-09-25 captures: the selected row reads 0.022-0.032 and
+#: every other row reads exactly 0.000, so anything above noise is a hit.
+SELECTION_MIN_GOLD = 0.004
+
+
+def selected_champion_row(image: np.ndarray) -> int | None:
+    """Index of the highlighted switcher row, or None if nothing is selected.
+
+    None is meaningful rather than a failure: the OVERVIEW state has no
+    selection at all, so this doubles as the state test.
+    """
+    h, w = image.shape[:2]
+    fy, fx = h / 1080.0, w / 2340.0
+    _x0, y0, pitch, _size, count = CHAMPION_GEOMETRY["switcher"]
+    a = image.astype(np.float32)
+    x_lo, x_hi = int(SELECTION_EDGE_X[0] * fx), int(SELECTION_EDGE_X[1] * fx)
+    best = (0.0, None)
+    for i in range(count):
+        cy = int((y0 + i * pitch) * fy)
+        strip = a[max(0, cy - int(70 * fy)):cy + int(70 * fy), x_lo:x_hi]
+        if strip.size == 0:
+            continue
+        b, g, r = strip[:, :, 0], strip[:, :, 1], strip[:, :, 2]
+        gold = float(((r > 140) & (g > 110) & (b < 110) & (r > b + 60)).mean())
+        if gold > best[0]:
+            best = (gold, i)
+    return best[1] if best[0] >= SELECTION_MIN_GOLD else None
+
+
+def read_selected_champion(image: np.ndarray) -> str | None:
+    """The champion the detail view is currently showing, or None.
+
+    Replaces read_champion_name() against SCREEN_2_CHAMP_LABEL_REGION, which
+    the 2026-09-25 relayout deleted from the UI.
+    """
+    i = selected_champion_row(image)
+    if i is None:
+        return None
+    rows = read_champion_portraits(image, "switcher")
+    return rows[i]["champion"] if i < len(rows) else None
+
+
+def scan_champion_rows_by_portrait(
+    image: np.ndarray, layout: str = "overview"
+) -> list[tuple[int, str | None]]:
+    """[(row_centre_y, champion_or_None)], the same shape scan_champion_rows
+    returned, so callers that navigated by name keep working unchanged."""
+    return [(r["y"], r["champion"])
+            for r in read_champion_portraits(image, layout)]
+
+
+def leaderboard_state(image: np.ndarray) -> str | None:
+    """"overview", "detail", or None if this is not a champion leaderboard.
+
+    Replaces the old "did any champion NAME OCR?" page test. A frame counts
+    only when at least three rows resolve to real champions: two would let a
+    pair of lucky matches on an unrelated screen pass, and every genuine
+    capture resolved five of five.
+    """
+    rows = read_champion_portraits(image, "switcher")
+    if sum(1 for r in rows if r["champion"]) < 3:
+        return None
+    return "detail" if selected_champion_row(image) is not None else "overview"

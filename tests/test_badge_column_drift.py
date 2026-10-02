@@ -42,7 +42,10 @@ def test_reference_is_present_and_sane_in_calibration():
     cal = json.loads(open("coords/calibration.json", encoding="utf-8").read())
     ref = cal.get("badge_x_ref")
     assert ref, "calibration must carry an immutable badge_x_ref"
-    assert 100 <= ref[1] - ref[0] <= 260, f"implausible column width: {ref}"
+    # The relayout uses a narrow numeral column; archived calibration used a
+    # wider banner. Both are valid when paired with their layout marker.
+    minimum = 50 if cal.get("leaderboard_layout") == "2026-09-25" else 100
+    assert minimum <= ref[1] - ref[0] <= 260, f"implausible column width: {ref}"
     cur = (cal["badge_x0"], cal["badge_x1"])
     assert accepted(cur, tuple(ref)), (
         f"stored column {cur} has drifted from the reference {ref}")

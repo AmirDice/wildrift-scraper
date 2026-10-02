@@ -87,6 +87,30 @@ def canonical_tier(raw: str | None) -> str | None:
     return f"{name} {division}" if division else name
 
 
+def canonical_profile_rank(raw: str | None) -> str | None:
+    """Canonicalise a rank read from the player's main profile.
+
+    Unlike :func:`canonical_tier`, this deliberately accepts the complete
+    ladder.  The leaderboard floor is a data-quality guard for champion
+    boards; it must not erase a real Emerald/Platinum/etc. rank shown on a
+    player's profile.  The profile badge is also the source of truth for the
+    current-season rank, so callers should prefer this value over the legacy
+    popup tier when it is available.
+    """
+    if not raw:
+        return None
+    text = str(raw).strip().split(":", 1)[0].strip()
+    text = re.sub(r"[.…]+$", "", text).strip()
+    text = re.sub(r"\s+", " ", text)
+    if not text:
+        return None
+    name, division, legendary = _base_and_division(text)
+    if not name:
+        return None
+    prefix = "Legendary " if legendary else ""
+    return f"{prefix}{name}" + (f" {division}" if division else "")
+
+
 def resolve_tier(popup_tier: str | None, *stats_tiers: str | None) -> str | None:
     """The tier for a player: the popup's, else whatever the stats pages saw.
 

@@ -9,7 +9,8 @@ from pathlib import Path
 import cv2
 import pytest
 
-from src.config import SCREEN_2_BADGE_X_RANGE
+# Archived frames: read them with the geometry they were captured on.
+from src.config import LEGACY_BADGE_X_RANGE as SCREEN_2_BADGE_X_RANGE
 from src.ocr import scan_visible_ranks
 
 FRAME = Path("data/2_aatrox_leaderboard.png")

@@ -41,7 +41,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src.tiers import canonical_tier  # noqa: E402
+from src.tiers import canonical_profile_rank, canonical_tier  # noqa: E402
 from web.integrity import (  # noqa: E402
     HIDDEN_LABEL, ban_reason, is_advertising_account, is_banned_account)
 
@@ -59,6 +59,12 @@ REGIONS = {
         "winrates": ROOT / "data" / "winrates_na.csv",
         "players": ROOT / "web-next" / "public" / "players" / "na",
         "index": ROOT / "web-next" / "public" / "player-index-na.json",
+    },
+    "cn": {
+        "captures": ROOT / "data" / "captures_cn",
+        "winrates": ROOT / "data" / "winrates_cn.csv",
+        "players": ROOT / "web-next" / "public" / "players" / "cn",
+        "index": ROOT / "web-next" / "public" / "player-index-cn.json",
     },
 }
 
@@ -195,9 +201,9 @@ def _players_by_rank(session: Path) -> dict[int, dict]:
             continue
         tag = (r.get("riot_tag") or "").strip()
         out[rank] = {
-            # The popup's NAME, which until now was read and thrown away. It is
-            # the better of the two readings we already hold -- see the note in
-            # export_champion.
+            # The captured identity name (legacy popup when present, otherwise
+            # the leaderboard fallback), which is still the best display name
+            # available -- see the note in export_champion.
             "name": (r.get("player_name") or "").strip() or None,
             "tag": tag if tag and tag.lower() != "error" else None,
             # Canonicalised on the way out as well as on the way in, so
@@ -205,7 +211,19 @@ def _players_by_rank(session: Path) -> dict[int, dict]:
             # without re-running their extraction. A sub-Diamond reading is
             # the player's Adventure rank sitting in the ranked slot, not a
             # Gold player in a champion's top 50.
-            "tier": canonical_tier(r.get("tier")),
+            # New captures read rank from the main profile.  `tier` remains
+            # the backwards-compatible field consumed by the scorer, while
+            # the explicit fields preserve both badge meanings and counts.
+            "tier": canonical_profile_rank(r.get("current_rank"))
+                    or canonical_profile_rank(r.get("tier"))
+                    or canonical_tier(r.get("tier")),
+            "current_rank": canonical_profile_rank(r.get("current_rank"))
+                            or canonical_profile_rank(r.get("tier")),
+            "current_rank_count": _int(r.get("current_rank_count")),
+            "historical_rank": canonical_profile_rank(r.get("historical_rank")),
+            "historical_rank_count": _int(r.get("historical_rank_count")),
+            "rank_confidence": (r.get("rank_confidence") or "").strip() or None,
+            "rank_source": (r.get("rank_source") or "").strip() or None,
             "level": _int(r.get("level")),
             "guild": (r.get("guild") or "").strip() or None,
         }
@@ -306,6 +324,11 @@ def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
             "w": _float(r.get("winrate")),
             "tag": None if hidden else who.get("tag"),
             "tier": who.get("tier"),
+            "currentRank": who.get("current_rank"),
+            "currentRankCount": who.get("current_rank_count"),
+            "historicalRank": who.get("historical_rank"),
+            "historicalRankCount": who.get("historical_rank_count"),
+            "rankConfidence": who.get("rank_confidence"),
             "level": who.get("level"),
             "build": None if hidden else builds.get(rank),
             "stats": None if hidden else (stats.get(rank) or None),

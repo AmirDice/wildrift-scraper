@@ -1,29 +1,54 @@
 {
-  "device": "127.0.0.1:7555",
-  "resolution": {
-    "width": 2340,
-    "height": 1080
+ "device": "127.0.0.1:7555",
+ "resolution": {
+  "width": 2340,
+  "height": 1080
+ },
+ "_measuredFrom": "data/new leaderboard/screen1.jpg, screen2.jpg, build.jpg (2026-09-25)",
+ "_note": "DETAIL state: left column is the champion switcher, right column is that champion's top players. Only FOUR ranked rows are visible plus your own 'Top N%' row; the old layout showed five. champion_col_* is new and lets the scraper change champion WITHOUT backing out to the overview.",
+ "points": {
+  "player_row_1": {
+   "x": 1111,
+   "y": 284
   },
-  "points": {
-    "player_row_1": {
-      "x": 1256,
-      "y": 246
-    },
-    "player_row_2": {
-      "x": 1256,
-      "y": 399
-    },
-    "player_row_3": {
-      "x": 1260,
-      "y": 537
-    },
-    "player_row_4": {
-      "x": 1260,
-      "y": 687
-    },
-    "player_row_5": {
-      "x": 1256,
-      "y": 832
-    }
+  "player_row_2": {
+   "x": 1111,
+   "y": 442
+  },
+  "player_row_3": {
+   "x": 1111,
+   "y": 600
+  },
+  "player_row_4": {
+   "x": 1111,
+   "y": 758
+  },
+  "self_row": {
+   "x": 1111,
+   "y": 930
+  },
+  "champion_col_1": {
+   "x": 599,
+   "y": 284
+  },
+  "champion_col_2": {
+   "x": 599,
+   "y": 442
+  },
+  "champion_col_3": {
+   "x": 599,
+   "y": 600
+  },
+  "champion_col_4": {
+   "x": 599,
+   "y": 758
+  },
+  "champion_col_5": {
+   "x": 599,
+   "y": 916
   }
+ },
+ "_rowPitch": 158,
+ "_rankedRowsVisible": 4,
+ "_selfRow": "your own entry, shown as 'Top N%' rather than a rank number"
 }

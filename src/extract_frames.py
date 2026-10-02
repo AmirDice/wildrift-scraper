@@ -61,6 +61,7 @@ from .ocr import (
 )
 from .storage import CSVWriter, LeaderboardRow
 from .tiers import canonical_tier, resolve_tier
+from .profile_rank import read_profile_ranks
 
 
 def _load_manifest(capture_dir: Path) -> list[dict]:
@@ -536,6 +537,7 @@ def main() -> int:
         def extract_extras(e: dict) -> tuple[int, dict | None, dict[str, dict], dict | None]:
             rank = e["rank"]
             popup = stats = build = None
+            profile_ranks = None
             stats_by_queue: dict[str, dict] = {}
             img = _read_frame_file(e.get("popup_frame"))
             if img is not None and read_rank_popup is not None:
@@ -597,6 +599,31 @@ def main() -> int:
                 except Exception as exc:  # noqa: BLE001
                     print(f"  [icons] rank {rank}: {exc}")
                     build = None
+            img = _read_frame_file(e.get("profile_frame"))
+            if img is not None:
+                try:
+                    profile_ranks = read_profile_ranks(img)
+                except Exception as exc:  # noqa: BLE001 -- one bad frame must not stop a batch
+                    print(f"  [profile-rank] rank {rank}: {exc}")
+            # The current profile badge supersedes the legacy popup/stats tier.
+            # Keep the old fields for sessions captured before this frame was
+            # added, and preserve the historical badge/count separately.
+            if profile_ranks is not None:
+                popup = popup or {"player_name": names.get(rank, "")}
+                current = profile_ranks.get("current") or {}
+                historical = profile_ranks.get("historical") or {}
+                if current.get("rank"):
+                    popup["tier"] = current["rank"]
+                    popup["current_rank"] = current["rank"]
+                popup["current_rank_count"] = current.get("count")
+                popup["historical_rank"] = historical.get("rank")
+                popup["historical_rank_count"] = historical.get("count")
+                popup["rank_confidence"] = profile_ranks.get("confidence")
+                popup["rank_source"] = profile_ranks.get("source", "template")
+                print(f"  [profile-rank] rank {rank}: "
+                      f"current={current.get('rank') or '?'} ({current.get('count') or '?'}) "
+                      f"historical={historical.get('rank') or '?'} ({historical.get('count') or '?'}) "
+                      f"confidence={profile_ranks.get('confidence', 'low')}")
             # The popup card animates in, so a screenshot taken a beat early
             # catches it before the tier line paints -- 71 of 686 captured
             # players had no tier. The STATS page prints the same tier and is
@@ -604,7 +631,7 @@ def main() -> int:
             # canonicaliser also drops sub-Diamond readings: those are the
             # player's Adventure-mode rank shown in the ranked slot, and
             # nobody below Diamond is in a champion's top 50.
-            if popup is not None:
+            if popup is not None and not (profile_ranks and (profile_ranks.get("current") or {}).get("rank")):
                 before = popup.get("tier")
                 popup["tier"] = resolve_tier(
                     before, *(s.get("tier") for s in stats_by_queue.values()))
@@ -618,7 +645,7 @@ def main() -> int:
                     print(f"  [tier] rank {rank}: {before!r} -> {popup['tier']!r} ({where})")
             return rank, popup, stats_by_queue, build
 
-        has_extras = any(e.get("popup_frame") or e.get("stats_frames") or e.get("build_frame")
+        has_extras = any(e.get("popup_frame") or e.get("profile_frame") or e.get("stats_frames") or e.get("build_frame")
                          for e in entries)
         if has_extras:
             import csv as _csv
@@ -639,13 +666,18 @@ def main() -> int:
             if popups:
                 with (args.capture_dir / "players.csv").open("w", encoding="utf-8", newline="") as f:
                     w = _csv.writer(f)
-                    w.writerow(["rank", "player_name", "riot_tag", "tier", "level", "guild"])
+                    w.writerow(["rank", "player_name", "riot_tag", "tier", "level", "guild",
+                                "current_rank", "current_rank_count", "historical_rank",
+                                "historical_rank_count", "rank_confidence", "rank_source"])
                     for r in sorted(popups):
                         pp = popups[r]
                         w.writerow([r, pp.get("player_name") or names.get(r, ""),
                                     pp.get("riot_tag"), pp.get("tier"),
-                                    pp.get("level"), pp.get("guild")])
-                print(f"players.csv : {len(popups)} rows (tier/level/tag)")
+                                    pp.get("level"), pp.get("guild"),
+                                    pp.get("current_rank"), pp.get("current_rank_count"),
+                                    pp.get("historical_rank"), pp.get("historical_rank_count"),
+                                    pp.get("rank_confidence"), pp.get("rank_source")])
+                print(f"players.csv : {len(popups)} rows (profile rank + tier/level/tag)")
 
             if stats_rows:
                 cols = ["rank", "queue", "requested_queue", "games", "win_rate", "kda",

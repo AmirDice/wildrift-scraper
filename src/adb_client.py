@@ -141,6 +141,23 @@ class ADBClient:
         self._input("input keyevent 4")
         time.sleep(0.05)
 
+    def launch_app(self, package: str) -> None:
+        """Launch an installed app through its launcher activity.
+
+        This is the ADB equivalent of tapping the app icon on the home
+        screen, but it is resolution-independent and does not depend on the
+        user's launcher layout.  ``monkey`` resolves the package's launcher
+        activity on the device, so no activity name is hardcoded here.
+        """
+        self._run([
+            "shell", "monkey", "-p", package,
+            "-c", "android.intent.category.LAUNCHER", "1",
+        ])
+
+    def force_stop(self, package: str) -> None:
+        """Stop an app process after its in-app quit flow has completed."""
+        self._run(["shell", "am", "force-stop", package])
+
     def swipe(self, x1: int, y1: int, x2: int, y2: int, duration_ms: int = 300) -> None:
         self._input(f"input swipe {x1} {y1} {x2} {y2} {duration_ms}")
         time.sleep(duration_ms / 1000 + 0.05)  # blocking semantics, as before

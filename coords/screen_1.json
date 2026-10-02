@@ -1,29 +1,31 @@
 {
-  "device": "127.0.0.1:7555",
-  "resolution": {
-    "width": 2340,
-    "height": 1080
+ "device": "127.0.0.1:7555",
+ "resolution": {
+  "width": 2340,
+  "height": 1080
+ },
+ "_measuredFrom": "data/new leaderboard/screen1.jpg, screen2.jpg, build.jpg (2026-09-25)",
+ "_note": "OVERVIEW state of the CHAMPION tab: one row per champion showing that champion's rank-1 player. Tapping a row switches the SAME screen into the detail state (screen_2), it is not a separate screen any more. Rows are pitch 158 starting at y=284; the old points were pitch ~148 at x=1126 and now land on the row chevron or past it.",
+ "points": {
+  "row_1": {
+   "x": 900,
+   "y": 284
   },
-  "points": {
-    "aatrox": {
-      "x": 1126,
-      "y": 305
-    },
-    "amumu": {
-      "x": 1126,
-      "y": 453
-    },
-    "kayn": {
-      "x": 1128,
-      "y": 604
-    },
-    "rengar": {
-      "x": 1126,
-      "y": 752
-    },
-    "nunu": {
-      "x": 1126,
-      "y": 903
-    }
+  "row_2": {
+   "x": 900,
+   "y": 442
+  },
+  "row_3": {
+   "x": 900,
+   "y": 600
+  },
+  "row_4": {
+   "x": 900,
+   "y": 758
+  },
+  "row_5": {
+   "x": 900,
+   "y": 916
   }
+ }
 }

@@ -1,13 +1,25 @@
 {
-  "device": "RFCX20KTG7K",
-  "resolution": {
-    "width": 2340,
-    "height": 1080
+ "device": "127.0.0.1:7555",
+ "resolution": {
+  "width": 2340,
+  "height": 1080
+ },
+ "_measuredFrom": "data/new leaderboard/screen1.jpg, screen2.jpg, build.jpg (2026-09-25)",
+ "_note": "The mini player-profile popup NO LONGER EXISTS. This file is repurposed to the right-hand button rail, which acts on the currently highlighted player: like, build popup, view profile. 'profile' keeps its name so the existing scrape_timed validation and tap chain keep working, but it is now a rail button on screen 2 rather than a button inside a popup. The chain is still two taps (highlight the row, then tap the rail), so the step count is unchanged.",
+ "points": {
+  "profile": {
+   "x": 2165,
+   "y": 341
   },
-  "points": {
-    "profile": {
-      "x": 1674,
-      "y": 380
-    }
+  "build": {
+   "x": 2165,
+   "y": 241
+  },
+  "like": {
+   "x": 2165,
+   "y": 137
   }
+ },
+ "_wasPopup": "old screen_3 'profile' was (1674, 380) inside the mini popup",
+ "_capturedFrameChanged": "scrape_timed saves a '_popup.jpg' after tapping the row. That popup is gone: the frame now shows the leaderboard with the player highlighted, so it carries NO. rank, guild tag and three stats instead of the old name#tag, tier and account level."
 }

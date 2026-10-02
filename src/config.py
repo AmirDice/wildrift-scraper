@@ -13,7 +13,7 @@ COORDS_DIR = Path(__file__).resolve().parent.parent / "coords"
 CALIBRATION_FILE: Path = COORDS_DIR / "calibration.json"
 
 
-def load_calibration() -> dict[str, float]:
+def load_calibration() -> dict:
     """Return the persisted calibration dict, or {} if file missing/invalid."""
     if not CALIBRATION_FILE.exists():
         return {}
@@ -23,7 +23,7 @@ def load_calibration() -> dict[str, float]:
         return {}
 
 
-def save_calibration(data: dict[str, float]) -> None:
+def save_calibration(data: dict) -> None:
     """Merge `data` into the existing calibration file and write back."""
     existing = load_calibration()
     existing.update(data)
@@ -62,9 +62,11 @@ SCREEN_5_OCR_REGION: tuple[int, int, int, int] = (779, 729, 1561, 201)
 # 1328 is the middle of the real gutter: the avatar's right edge reaches at
 # most x=1322 and the earliest name ink is x=1334, so this clears every
 # avatar and keeps every glyph. Leading background costs Tesseract nothing.
-SCREEN_2_NAME_X_RANGE: tuple[int, int] = (1328, 1686)
-SCREEN_2_NAME_Y_OFFSET: int = -50
-SCREEN_2_NAME_HEIGHT: int = 53
+LEGACY_NAME_GEOMETRY = ((1328, 1686), -50, 53)
+# September relayout: name above score, to the right of the avatar.
+SCREEN_2_NAME_X_RANGE: tuple[int, int] = (1020, 1295)
+SCREEN_2_NAME_Y_OFFSET: int = -40
+SCREEN_2_NAME_HEIGHT: int = 40
 
 # OCR region for the big champion-name label at lower-left of screen 2
 # (e.g. "AATROX") used to verify the bot didn't open the wrong leaderboard page.
@@ -83,12 +85,66 @@ SCREEN_5_STRIP_RIGHT_X: int = _x + _w - 30
 # Rank-badge x-range on screen 2 (used by rank-verification OCR). Each row
 # has a banner-shaped badge at this x-range; vertical center comes from the
 # row pitch.
-SCREEN_2_BADGE_X_RANGE: tuple[int, int] = (575, 695)
+# 2026-09-25 relayout: the rank number moved from a banner badge at (575-695)
+# to a plain gold numeral immediately left of the player avatar. Measured
+# 805-855 on rank 1; the band below carries margin.
+SCREEN_2_BADGE_X_RANGE: tuple[int, int] = (795, 870)
+LEADERBOARD_LAYOUT = "2026-09-25"
+
+
+def resolve_badge_calibration(cal: dict, override: str | None = None):
+    """Resolve current-layout geometry; explicit calibration replaces its anchor.
+
+    Old layout coordinates cannot be trusted, but unrelated calibration values
+    (fling distance, account name) are retained by save_calibration's merge.
+    """
+    def band(value):
+        x0, x1 = map(int, value)
+        if not 0 <= x0 < x1 <= 2340:
+            raise ValueError("badge column must satisfy 0 <= x0 < x1 <= 2340")
+        return x0, x1
+
+    if override is not None:
+        current = reference = band(override.split(","))
+    elif cal.get("leaderboard_layout") != LEADERBOARD_LAYOUT:
+        current = reference = SCREEN_2_BADGE_X_RANGE
+    else:
+        try:
+            current = band((cal["badge_x0"], cal["badge_x1"]))
+            reference = band(cal.get("badge_x_ref") or current)
+        except (KeyError, TypeError, ValueError):
+            current = reference = SCREEN_2_BADGE_X_RANGE
+        if min(current[1], reference[1]) - max(current[0], reference[0]) < 0.7 * (reference[1] - reference[0]):
+            current = reference
+    return current, reference, {
+        "badge_x0": current[0], "badge_x1": current[1],
+        "badge_x_ref": list(reference), "leaderboard_layout": LEADERBOARD_LAYOUT,
+    }
+
+
+def player_name_region(tap_y: int, layout: str | None = None):
+    """Unversioned archived captures use the pre-relayout name geometry."""
+    (x0, x1), offset, height = (
+        (SCREEN_2_NAME_X_RANGE, SCREEN_2_NAME_Y_OFFSET, SCREEN_2_NAME_HEIGHT)
+        if layout == LEADERBOARD_LAYOUT else LEGACY_NAME_GEOMETRY
+    )
+    return x0, max(0, int(tap_y) + offset), x1 - x0, height
+
+# ---- pre-2026-09-25 geometry, kept ONLY for the archived sample frames ----
+# data/2_aatrox_leaderboard.png, data/champions_page.png and the debug_scans
+# frames were all captured on the old layout, so the tests that assert scanner
+# BEHAVIOUR against them have to read them with the geometry they were shot
+# with. Live code must never use these.
+LEGACY_BADGE_X_RANGE: tuple[int, int] = (575, 695)
+LEGACY_SCREEN_1_NAME_X_RANGE: tuple[int, int] = (1180, 1660)
+LEGACY_SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 700, 55)
 
 # ---- extended-capture points (phone 2340x1080, measured from flow_*.png) ----
-# Book icon at the right of every leaderboard row: opens the player's BUILD
-# popup for this champion. Tap at (BOOK_X, detected row y).
-SCREEN_2_BOOK_X: int = 2049
+# 2026-09-25 relayout: the book is no longer a per-row icon tapped at
+# (BOOK_X, row_y). It is one button on the right-hand rail that acts on the
+# CURRENTLY HIGHLIGHTED player, so the row must be tapped first to select it.
+# That reverses the old order, which opened the build before touching the row.
+SCREEN_2_BOOK: tuple[int, int] = (2165, 241)
 # The X that closes the build popup.
 SCREEN_2_BUILD_CLOSE: tuple[int, int] = (1936, 178)
 # STATS tab in the profile's bottom tab bar (same bar as CHAMPION AND LANE).
@@ -97,11 +153,20 @@ SCREEN_5_STATS_TAB: tuple[int, int] = (1178, 1028)
 # the queue dropdown, and the dropdown's option rows when open.
 STATS_LIST_TOGGLE: tuple[int, int] = (2153, 45)
 STATS_QUEUE_DROPDOWN: tuple[int, int] = (1702, 45)
-# Champions page (screen 1, CHAMPION tab): rows carry the champion NAME as
-# text (no number badges). Names live in this x-band; rows share the 146px
-# pitch of the player list.
-SCREEN_1_NAME_X_RANGE: tuple[int, int] = (1180, 1660)
-SCREEN_1_ROW_TAP_X: int = 1220
+# Champions page (screen 1, CHAMPION tab). 2026-09-25 relayout: the rows no
+# longer carry the champion NAME as text at all. Each row now shows the
+# champion as a PORTRAIT only, plus that champion's rank-1 player and score,
+# so champion identity has to come from icon matching (src/icon_match.py
+# against web-next/public/champions) rather than OCR. The old band (1180-1660)
+# now lands entirely on the splash art.
+SCREEN_1_NAME_X_RANGE: tuple[int, int] | None = None
+SCREEN_1_ROW_TAP_X: int = 900
+# Row pitch went from 146 to 158, first row centre at y=284.
+SCREEN_ROW_PITCH: int = 158
+SCREEN_ROW_FIRST_Y: int = 284
+# Champion portrait centres: screen 1 rows and the screen 2 switcher column.
+SCREEN_1_PORTRAIT_X: int = 593
+SCREEN_2_PORTRAIT_X: int = 599
 # Screen 2's top-left back chevron (returns to the champions page) and the
 # champion-name label at the bottom-left (authoritative identity check).
 SCREEN_2_BACK_POINT: tuple[int, int] = (172, 47)
@@ -116,7 +181,13 @@ PROFILE_BACK_POINT: tuple[int, int] = (200, 50)
 # Wide enough for the longest names ("NUNU & WILLUMP" clipped at 260px and a
 # live run skipped him); verified against every flow frame + the main menu
 # that no other screen shows matchable text in this band at width 700.
-SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] = (230, 845, 700, 55)
+# 2026-09-25 relayout: REMOVED from the UI. The bottom-left champion name that
+# served as the authoritative identity check is gone; that region is now empty
+# background. The replacements, in order of preference: the build popup prints
+# the champion name in text (see build.jpg), and the screen 2 switcher column
+# can be icon matched. Left as None so any reader fails loudly instead of
+# OCRing blank art.
+SCREEN_2_CHAMP_LABEL_REGION: tuple[int, int, int, int] | None = None
 
 # Main-menu recovery: climbing back into the leaderboard after a full
 # ejection. Coordinates derived from owner-supplied screenshots
@@ -135,14 +206,18 @@ MAIN_MENU_PANEL_WORDS: tuple[str, ...] = ("wild pass", "stellar", "event(s)", "v
 # ("profile_name") when present and ignored otherwise.
 MAIN_MENU_NAME_REGION: tuple[int, int, int, int] = (300, 40, 420, 70)
 MAIN_MENU_LEADERBOARD_BADGE: tuple[int, int] = (1331, 1016)  # last badge, bottom bar
-LEADERBOARD_CHAMPION_TAB: tuple[int, int] = (698, 1028)      # bottom tab bar
+LEADERBOARD_CHAMPION_TAB: tuple[int, int] = (235, 390)      # left sidebar
 QUIT_DIALOG_REGION: tuple[int, int, int, int] = (809, 369, 740, 330)  # OCR: NOTICE / Quit Game?
 QUIT_DIALOG_CANCEL: tuple[int, int] = (1002, 631)
+# Confirm button in the same Quit Game dialog.  Keeping this beside the
+# cancel point makes the maintenance restart explicit and prevents an
+# accidental tap on the dimmed main-menu art.
+QUIT_DIALOG_CONFIRM: tuple[int, int] = (1315, 631)
 # The leaderboard ROOT screen's bottom tab bar (RANKED / CHAMPION / LANE /
 # COLLECTION / GUILD). System back from a champion's leaderboard lands on the
 # RANKED tab here -- which shows rank badges of its own and fooled the
 # recovery into chevron-tapping its way further out.
-LEADERBOARD_TAB_BAR_REGION: tuple[int, int, int, int] = (155, 995, 2100, 75)
+LEADERBOARD_TAB_BAR_REGION: tuple[int, int, int, int] = (110, 245, 270, 605)
 
 STATS_QUEUE_OPTIONS: dict[str, tuple[int, int]] = {
     "all": (1702, 109),

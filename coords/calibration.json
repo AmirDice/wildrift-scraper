@@ -1,10 +1,11 @@
 {
-  "badge_x0": 985,
-  "badge_x1": 1155,
-  "fling_rows": 12.8,
+  "badge_x0": 795,
+  "badge_x1": 870,
+  "fling_rows": 12.2,
   "profile_name": "wrtruemeta",
   "badge_x_ref": [
-    985,
-    1155
-  ]
+    795,
+    870
+  ],
+  "leaderboard_layout": "2026-09-25"
 }

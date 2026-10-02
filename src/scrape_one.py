@@ -5,13 +5,22 @@ the Leaderboard) with the target champion visible in the same screen position
 as your mapped `screen_1.json` point. For Aatrox with the captured coords,
 the screen should match `data/1_champion_leaderboard.png`.
 
-The script:
-    1. Taps screen_1 point   -> screen 2 (champion's top players)
-    2. Taps screen_2 point   -> screen 3 (small profile popup)
-    3. Taps screen_3 point   -> screen 4 (full profile)
-    4. Taps screen_4 point   -> screen 5 (CHAMPION AND LANE)
-    5. Screenshots, OCRs the champion-tiles strip, prints results
+The script (updated for the 2026-09-25 leaderboard relayout):
+    1. Taps screen_1 row      -> detail state (that champion's top players)
+    2. Taps screen_2 row      -> SELECTS the player. This used to open a mini
+                                 profile popup; that popup no longer exists,
+                                 and the right-hand rail now acts on whatever
+                                 row is selected.
+    3. Taps screen_3 profile  -> screen 4 (full profile). Same step count as
+                                 before, but 'profile' is now a rail button on
+                                 screen 2, not a button inside a popup.
+    4. Taps screen_4 point    -> screen 5 (CHAMPION AND LANE)   [unchanged]
+    5. Screenshots, OCRs the champion-tiles strip, prints results [unchanged]
     6. Presses Android BACK 4 times to return to screen 1
+
+Steps 1 and 2 are no longer separate SCREENS: the champion column persists
+down the left side, so the detail state can switch champion in place via
+screen_2.json:champion_col_* without backing out.
 
 Run:
     python -m src.scrape_one --target Aatrox

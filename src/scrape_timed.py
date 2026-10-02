@@ -50,6 +50,8 @@ import numpy as np
 
 from .adb_client import ADBClient, ADBError
 from .config import (
+    LEADERBOARD_LAYOUT,
+    resolve_badge_calibration,
     LEADERBOARD_CHAMPION_TAB,
     LEADERBOARD_TAB_BAR_REGION,
     MAIN_MENU_LEADERBOARD_BADGE,
@@ -64,13 +66,12 @@ from .config import (
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_2_NAME_HEIGHT,
     SCREEN_2_NAME_X_RANGE,
-    SCREEN_1_NAME_X_RANGE,
     SCREEN_1_ROW_TAP_X,
     PROFILE_BACK_POINT,
+    QUIT_DIALOG_CONFIRM,
     SCREEN_2_BACK_POINT,
-    SCREEN_2_BOOK_X,
+    SCREEN_2_BOOK,
     SCREEN_2_BUILD_CLOSE,
-    SCREEN_2_CHAMP_LABEL_REGION,
     SCREEN_2_NAME_Y_OFFSET,
     SCREEN_5_OCR_REGION,
     SCREEN_5_STATS_TAB,
@@ -81,6 +82,15 @@ from .config import (
     load_screen_points,
     save_calibration,
 )
+# Champion identity moved from OCR to portrait matching in the 2026-09-25
+# relayout: the CHAMPION tab no longer renders champion names as text.
+from .icon_match import (
+    leaderboard_state,
+    read_champion_portraits,
+    read_selected_champion,
+    scan_champion_rows_by_portrait,
+)
+from . import collection_progress
 from .navigator import LeaderboardNavigator
 from .ocr import (
     locate_badge_column,
@@ -270,7 +280,13 @@ def main() -> int:
                         help="Where --capture-only sessions are stored")
     parser.add_argument("--builds", action="store_true",
                         help="capture-only: also capture each player's BUILD popup (book icon "
-                             "on the leaderboard row; ~2s/profile)")
+                             "on the right rail; ~2s/profile)")
+    parser.add_argument("--region", choices=["EU", "NA", "CN"], default=None,
+                        help="Which server this run collects. Publishes live progress to "
+                             "the site's collection bar. There is no way to read the region "
+                             "off the device, so it is declared here; without it nothing is "
+                             "published, which is safer than mislabelling a run and "
+                             "overwriting another server's progress.")
     parser.add_argument("--champions", type=int, default=0,
                         help="Carousel mode: process this many champions from the CHAMPION tab, "
                              "navigating rows by name OCR and returning after each top-N capture. "
@@ -288,6 +304,13 @@ def main() -> int:
                              "other row. Use for a targeted re-scrape ('Veigar,Shen,Nami'); "
                              "unlike --skip-existing it does NOT care whether a champion "
                              "already has a complete session, so it can redo one.")
+    parser.add_argument("--exclude", default="",
+                        help="Carousel: comma-separated champions to SKIP. The mirror of "
+                             "--only, for the common case of 'everything except these'. "
+                             "Patch week is the reason it exists: a champion changed "
+                             "yesterday has a win rate that is still moving, so it is "
+                             "collected LAST, in a second run, once the rest are done "
+                             "and its numbers have had more hours to settle.")
     parser.add_argument("--skip-existing", action="store_true",
                         help="Carousel: skip champions that already have a near-complete capture "
                              "session under --capture-dir (resume overnight runs)")
@@ -296,9 +319,28 @@ def main() -> int:
                              "current champion and move on. Abandoned champions stay below the "
                              "--skip-existing completeness bar, so the next run redoes them.")
     parser.add_argument("--stats", action="store_true",
-                        help="capture-only: also capture the rank popup and the STATS page for "
+                        help="capture-only: also capture the STATS page for "
                              "BOTH queues (Ranked + Legendary Ranked; ~5s/profile)")
+    parser.add_argument("--refresh-after-hours", "--restart-hours", dest="refresh_after_hours",
+                        type=float, default=2.0,
+                        help="Carousel maintenance restart interval. The game is closed and "
+                             "relaunched only between completed champions (0 disables it).")
+    parser.add_argument("--app-start-timeout", type=float, default=75.0,
+                        help="Maximum seconds to wait for Wild Rift's main menu after a "
+                             "maintenance restart (the normal load is about 40s).")
+    parser.add_argument("--app-package", default="com.riotgames.league.wildrift",
+                        help="Android package launched after a maintenance restart.")
+    parser.add_argument("--maintenance-test", action="store_true",
+                        help="Run only the close/relaunch/leaderboard-recovery cycle on the "
+                             "currently selected leaderboard champion; do not scrape ranks.")
     args = parser.parse_args()
+
+    if args.maintenance_test:
+        # Enter the carousel setup so the exact same recovery closure is used,
+        # but short-circuit before a champion/rank capture begins.
+        args.auto_scroll = True
+        args.capture_only = True
+        args.champions = 1
 
     if args.champions and not (args.auto_scroll and args.capture_only):
         print("error: --champions requires --auto-scroll --capture-only", file=sys.stderr)
@@ -332,6 +374,28 @@ def main() -> int:
         if not args.champions:
             args.champions = len(only)
         print(f"restricted to {len(only)} champion(s): {', '.join(sorted(only))}")
+
+    # Resolved here rather than at match time, for the same reason --only is:
+    # a typo would otherwise mean a champion silently collected anyway, and
+    # nobody would notice until the numbers were already in the table.
+    skip: set[str] = set()
+    if args.exclude:
+        unknown = []
+        for raw in args.exclude.split(","):
+            raw = raw.strip()
+            if not raw:
+                continue
+            hit = by_key.get(re.sub(r"[^a-z]", "", raw.lower()))
+            (skip.add(hit) if hit else unknown.append(raw))
+        if unknown:
+            print(f"error: --exclude does not recognise {unknown}. Names must match "
+                  f"src/champions.py.", file=sys.stderr)
+            return 1
+        if only & skip:
+            print(f"error: {sorted(only & skip)} is in both --only and --exclude.",
+                  file=sys.stderr)
+            return 1
+        print(f"excluding {len(skip)} champion(s): {', '.join(sorted(skip))}")
 
     capture_dir: Path | None = None
     if args.capture_only:
@@ -466,32 +530,52 @@ def main() -> int:
             except Exception:
                 player_name = None
 
-        build_frame: str | None = None
-        if capture_dir is not None and args.builds:
-            # BUILD popup via the book icon on the row we just located. The
-            # popup prints "Rank: N" inside, so correlation is intrinsic.
-            client.tap(SCREEN_2_BOOK_X, py, hold_ms=args.tap_hold_ms)
-            time.sleep(args.step_wait + 0.2)
-            build_frame = f"{rank:03d}_build.jpg"
-            cv2.imwrite(str(capture_dir / build_frame), client.screenshot(),
-                        [cv2.IMWRITE_JPEG_QUALITY, 92])
-            client.tap(*SCREEN_2_BUILD_CLOSE, hold_ms=args.tap_hold_ms)
-            time.sleep(args.step_wait)
-        # Single tap per transition. Pause is checked after each step so a
-        # mid-profile 'p' press lands within ~step_wait seconds.
+        # 2026-09-25 relayout. Tapping the row no longer opens a mini profile
+        # popup; it SELECTS the row, and the right-hand rail then acts on that
+        # selection. So the row tap happens once, here, and both the build
+        # popup and the profile are reached from the rail afterwards. The old
+        # order tapped a per-row book icon BEFORE the row.
         client.tap(px, py, hold_ms=args.tap_hold_ms)
         time.sleep(args.step_wait)
         popup_frame: str | None = None
         if capture_dir is not None:
-            # Rank popup: name#tag, tier (Grandmaster etc.), account level --
-            # free, we pass through this screen on the way to the profile.
-            popup_frame = f"{rank:03d}_popup.jpg"
+            # Was the rank popup (name#tag, tier, account level). That popup no
+            # longer exists: this frame is now the leaderboard with the player
+            # selected, which carries NO. rank, guild tag and three stats down
+            # the right-hand side instead. Store it separately from legacy
+            # popup_frame so the extractor does not invent missing fields.
+            popup_frame = f"{rank:03d}_selection.jpg"
             cv2.imwrite(str(capture_dir / popup_frame), client.screenshot(),
                         [cv2.IMWRITE_JPEG_QUALITY, 92])
         _check_pause_or_raise()
 
+        build_frame: str | None = None
+        if capture_dir is not None and args.builds:
+            # BUILD popup via the rail book, on the row selected just above.
+            # The popup prints "Rank: N" inside, so correlation is intrinsic.
+            client.tap(*SCREEN_2_BOOK, hold_ms=args.tap_hold_ms)
+            # The build card is now effectively immediate on the phone. Keep
+            # a short settling floor, but don't carry the full page-transition
+            # wait into this already-rendered popup.
+            time.sleep(min(max(args.step_wait, 0.1) + 0.05, 0.4))
+            build_frame = f"{rank:03d}_build.jpg"
+            cv2.imwrite(str(capture_dir / build_frame), client.screenshot(),
+                        [cv2.IMWRITE_JPEG_QUALITY, 92])
+            client.tap(*SCREEN_2_BUILD_CLOSE, hold_ms=args.tap_hold_ms)
+            time.sleep(min(max(args.step_wait, 0.1), 0.3))
+            _check_pause_or_raise()
+
         client.tap(*s3_view, hold_ms=args.tap_hold_ms)
         time.sleep(args.step_wait)
+        profile_frame: str | None = None
+        if capture_dir is not None:
+            # The main profile is the only authoritative source for the
+            # current-season and historical peak ranks.  Save it before
+            # entering Champion and Lane; the latter no longer carries a
+            # reliable rank badge after the 2026 profile relayout.
+            profile_frame = f"{rank:03d}_profile.jpg"
+            cv2.imwrite(str(capture_dir / profile_frame), client.screenshot(),
+                        [cv2.IMWRITE_JPEG_QUALITY, 92])
         _check_pause_or_raise()
 
         client.tap(*s4_lane, hold_ms=args.tap_hold_ms)
@@ -536,6 +620,8 @@ def main() -> int:
                             [cv2.IMWRITE_JPEG_QUALITY, 92])
                 stats_frames["legendary"] = fn
             entry = {
+                "leaderboard_layout": LEADERBOARD_LAYOUT,
+                "badge_x_range": list(badge_x if args.auto_scroll else SCREEN_2_BADGE_X_RANGE),
                 "champion": args.target,
                 "rank": rank,
                 "strip_frame": strip_name,
@@ -547,7 +633,9 @@ def main() -> int:
             if build_frame:
                 entry["build_frame"] = build_frame
             if popup_frame:
-                entry["popup_frame"] = popup_frame
+                entry["selection_frame"] = popup_frame
+            if profile_frame:
+                entry["profile_frame"] = profile_frame
             if stats_frames:
                 entry["stats_frames"] = stats_frames
             with (capture_dir / "manifest.jsonl").open("a", encoding="utf-8") as f:
@@ -591,7 +679,7 @@ def main() -> int:
             # list finishing its reload. Give it a moment before spending a tap.
             for _press in range(3):
                 img_chk = client.screenshot()
-                if read_champion_name(img_chk, SCREEN_2_CHAMP_LABEL_REGION) is not None:
+                if leaderboard_state(img_chk) is not None:
                     break
                 try:
                     # RAW scan, not the self-relocating wrapper: mid-chain
@@ -665,32 +753,18 @@ def main() -> int:
     # ------------------------------------------------------------------
     if args.auto_scroll:
         cal = load_calibration()
-        if args.badge_x:
-            try:
-                p0, p1 = (int(v) for v in args.badge_x.split(","))
-                badge_x: tuple[int, int] = (p0, p1)
-            except ValueError:
-                print(f"error: --badge-x must be 'x0,x1', got {args.badge_x!r}", file=sys.stderr)
-                return 1
-        elif "badge_x0" in cal and "badge_x1" in cal:
-            badge_x = (int(cal["badge_x0"]), int(cal["badge_x1"]))
-        else:
-            badge_x = SCREEN_2_BADGE_X_RANGE
+        try:
+            badge_x, badge_ref, geometry = resolve_badge_calibration(cal, args.badge_x)
+        except ValueError as exc:
+            print(f"error: invalid --badge-x {args.badge_x!r}: {exc}", file=sys.stderr)
+            return 1
+        if any(cal.get(key) != value for key, value in geometry.items()):
+            print(f"  [detect] updating leaderboard calibration to x={badge_x}")
+            save_calibration(geometry)
         fling_rows = float(cal.get("fling_rows", 10.0))  # rows one fling moves; self-tunes
         # The trusted column for this device. Relocation is measured against
         # this and it is never rewritten by a relocation, so drift cannot
         # accumulate. Seeded once from the calibrated value.
-        badge_ref = tuple(cal.get("badge_x_ref") or badge_x)
-        if list(badge_ref) != list(cal.get("badge_x_ref") or []):
-            save_calibration({"badge_x_ref": list(badge_ref)})
-        # If a previous run persisted a drifted column, snap back to the
-        # reference rather than starting the session already lost.
-        if (min(badge_x[1], badge_ref[1]) - max(badge_x[0], badge_ref[0])
-                < 0.7 * (badge_ref[1] - badge_ref[0])):
-            print(f"  [detect] stored badge column x={badge_x} disagrees with the device "
-                  f"reference x={badge_ref} -- resetting to the reference")
-            badge_x = badge_ref
-            save_calibration({"badge_x0": badge_x[0], "badge_x1": badge_x[1]})
 
         low_reads = 0
 
@@ -912,9 +986,13 @@ def main() -> int:
                 # which moved the current champion's row away and made the
                 # subsequent recovery re-enter the wrong board (a live run
                 # captured an empty Rengar session hunting for Xin Zhao).
-                # 'collection'/'guild' appear only on the root tab bar.
+                # The new sidebar appears in BOTH leaderboard states: check
+                # portrait selection before using its text as a root signal.
+                state = leaderboard_state(img)
+                if state == "detail":
+                    return ""
                 tab = region(LEADERBOARD_TAB_BAR_REGION)
-                if any(w in tab for w in ("collection", "guild")):
+                if state == "overview" or any(w in tab for w in ("collection", "guild")):
                     return "leaderboard root (champions tab)"
                 if _looks_like_main_menu(img):
                     return "main menu"
@@ -954,9 +1032,13 @@ def main() -> int:
         print(f"fling estimate: ~{fling_rows:.0f} rows/fling (self-tuning)")
         print(f"CSV output    : {args.output}")
         print()
-        print("Open the leaderboard at ANY scroll position. The bot finds its own way.")
-        print("Press 'p' anytime to pause after the current profile.")
-        input("Press Enter to start: ")
+        if args.maintenance_test:
+            print("Leave Wild Rift on the currently selected champion leaderboard.")
+            input("Press Enter to start the maintenance test: ")
+        else:
+            print("Open the leaderboard at ANY scroll position. The bot finds its own way.")
+            print("Press 'p' anytime to pause after the current profile.")
+            input("Press Enter to start: ")
 
         # The carousel installs a self-recovery here: from any wrecked
         # mid-chain UI state, walk back to the champions page and re-enter
@@ -1032,7 +1114,7 @@ def main() -> int:
                             # signal; it shows even while the rows repopulate.
                             for _ in range(4):
                                 img_chk = client.screenshot()
-                                if read_champion_name(img_chk, SCREEN_2_CHAMP_LABEL_REGION) is not None:
+                                if leaderboard_state(img_chk) is not None:
                                     break
                                 try:
                                     # raw scan: the wrapper's relocation sweep
@@ -1136,13 +1218,29 @@ def main() -> int:
         print(f"CAROUSEL MODE: {args.champions} champion(s), top {args.n} each"
               + (", builds" if args.builds else "") + (", stats" if args.stats else "")
               + (", UNATTENDED" if args.unattended else ""))
-        print("Open the CHAMPION tab of the leaderboard (the champions list).")
-        input("Press Enter to start: ")
+        if args.maintenance_test:
+            print("Leave Wild Rift on the currently selected champion leaderboard.")
+            input("Press Enter to run the maintenance recovery test: ")
+        else:
+            print("Open the CHAMPION tab of the leaderboard (the champions list).")
+            input("Press Enter to start: ")
 
         done = 0
         stale_pages = 0
         empty_sessions = 0   # consecutive zero-profile champions (down detector)
         t_carousel = time.time()
+
+        # Live progress for the site's collection bar. Declared, never guessed:
+        # see --region. Publishing is entirely best-effort and every call here
+        # swallows its own failures, so KV being down cannot touch the scrape.
+        progress_region = collection_progress.resolve_region(args.region)
+        progress_total = max(args.champions, len(scraped), 1)
+        if progress_region:
+            collection_progress.start(progress_region, progress_total)
+            print(f"[carousel] publishing {progress_region} progress to the site")
+            if scraped:
+                collection_progress.advance(progress_region, len(scraped),
+                                            progress_total, force=True)
 
         def back_to_champions() -> None:
             """Verified return to the champions page (never blind).
@@ -1168,14 +1266,14 @@ def main() -> int:
             at_menu = False
             for _ in range(8):
                 img = client.screenshot()
-                if scan_champion_rows(img, SCREEN_1_NAME_X_RANGE):
+                if leaderboard_state(img) is not None:
                     return
                 # Leaderboard ROOT (any tab): the CHAMPION tab is one tap
                 # away. This must outrank the badge heuristic below -- the
                 # RANKED tab shows rank badges of its own, and a live run
                 # mistook it for a champion leaderboard, chevron-tapped, and
                 # ejected itself further.
-                # 'collection'/'guild' appear ONLY on the root tab bar; the
+                # 'collection'/'guild' identify the leaderboard sidebar; the
                 # profile page's own tabs contain 'champion and lane', so the
                 # word 'champion' would misfire there.
                 tab_bar = _region_text(img, LEADERBOARD_TAB_BAR_REGION)
@@ -1184,7 +1282,7 @@ def main() -> int:
                     client.tap(*LEADERBOARD_CHAMPION_TAB, hold_ms=args.tap_hold_ms)
                     time.sleep(1.2)
                     continue
-                on_leaderboard = read_champion_name(img, SCREEN_2_CHAMP_LABEL_REGION) is not None
+                on_leaderboard = leaderboard_state(img) is not None
                 if not on_leaderboard:
                     try:
                         r_chk, _pc = scan_visible_ranks(img, badge_x,
@@ -1217,6 +1315,27 @@ def main() -> int:
                 client.tap(*PROFILE_BACK_POINT, hold_ms=args.tap_hold_ms)
                 time.sleep(0.7)
 
+        def switch_detail_champion(target: str) -> bool:
+            """Switch from the current detail board using its persistent icon rail.
+
+            The relayout keeps five champion portraits visible while the player
+            list changes. This avoids returning to the overview (and losing the
+            current board/scroll state) between targeted champions.
+            """
+            for _ in range(3):
+                img = stable_screenshot()
+                if leaderboard_state(img) != "detail":
+                    return False
+                rows = read_champion_portraits(img, "switcher")
+                hit = next((r for r in rows if r.get("champion") == target), None)
+                if hit is None:
+                    return False
+                client.tap(599, int(hit["y"]), hold_ms=args.tap_hold_ms)
+                time.sleep(args.step_wait + 0.5)
+                if read_selected_champion(client.screenshot()) == target:
+                    return True
+            return False
+
         def reenter_champion() -> bool:
             """Self-recovery from any wrecked mid-chain state: navigate back
             to the champions page, page down until the CURRENT champion's row
@@ -1226,7 +1345,7 @@ def main() -> int:
             back_to_champions()
             for _page in range(12):
                 img = stable_screenshot()
-                slots = scan_champion_rows(img, SCREEN_1_NAME_X_RANGE)
+                slots = scan_champion_rows_by_portrait(img, "overview")
                 if not slots:
                     return False
                 H = nav.screen_h or img.shape[0]
@@ -1236,8 +1355,7 @@ def main() -> int:
                     client.tap(SCREEN_1_ROW_TAP_X, hit, hold_ms=args.tap_hold_ms)
                     time.sleep(args.step_wait + 0.5)
                     for _read in range(3):
-                        if read_champion_name(client.screenshot(),
-                                              SCREEN_2_CHAMP_LABEL_REGION) == target:
+                        if read_selected_champion(client.screenshot()) == target:
                             return True
                         time.sleep(0.6)
                     return False
@@ -1249,6 +1367,129 @@ def main() -> int:
             return False
 
         recovery["fn"] = reenter_champion
+
+        # A long carousel run can eventually hit a Wild Rift memory leak or a
+        # force-close.  Restart only at this boundary: run_ranks has returned
+        # to the champion leaderboard, so no player/profile chain can be
+        # interrupted and the completed session is already on disk.
+        last_game_restart = [time.time()]
+
+        def restart_game_between_champions(restore_target: str | None = None) -> bool:
+            """Close and relaunch Wild Rift, then restore the current board.
+
+            The owner-verified path is two Android BACK presses from the
+            leaderboard to the Quit Game dialog, followed by CONFIRM.  After
+            the app is relaunched, the normal main-menu/leaderboard recovery
+            is reused instead of introducing a second navigation path.
+            """
+            print("\n[maintenance] restarting Wild Rift between champions")
+            try:
+                # At this point run_ranks has finished the champion and is on
+                # its leaderboard. The first BACK returns to the game's main
+                # menu; wait for that screen before sending the second BACK.
+                # Sending both keys back-to-back can fall through to Android's
+                # launcher while the menu is still loading.
+                client.back()
+                menu_deadline = time.time() + 10.0
+                menu_seen = False
+                while time.time() < menu_deadline:
+                    img = client.screenshot()
+                    if _looks_like_main_menu(img):
+                        menu_seen = True
+                        break
+                    time.sleep(0.6)
+                if not menu_seen:
+                    print("[maintenance] main menu did not appear after the first Back; "
+                          "stopping before risking a home-screen press")
+                    return False
+                client.back()
+                time.sleep(1.0)
+                dialog_seen = False
+                for _ in range(8):
+                    img = client.screenshot()
+                    text = _region_text(img, QUIT_DIALOG_REGION)
+                    if "quit" in text or "notice" in text:
+                        dialog_seen = True
+                        break
+                    time.sleep(0.5)
+                if not dialog_seen:
+                    print("[maintenance] Quit Game dialog was not detected; stopping "
+                          "before risking a wrong screen")
+                    return False
+
+                client.tap(*QUIT_DIALOG_CONFIRM, hold_ms=args.tap_hold_ms)
+                time.sleep(2.0)
+                # A missed tap is recoverable while the dialog is still on
+                # screen, so retry the confirm once before declaring failure.
+                img = client.screenshot()
+                text = _region_text(img, QUIT_DIALOG_REGION)
+                if "quit" in text or "notice" in text:
+                    client.tap(*QUIT_DIALOG_CONFIRM, hold_ms=args.tap_hold_ms)
+                    time.sleep(2.0)
+
+                # The in-game confirmation is the user-visible quit flow. A
+                # force-stop after it guarantees the process is really gone
+                # instead of merely backgrounded/minimized before relaunch.
+                client.force_stop(args.app_package)
+                time.sleep(0.8)
+
+                client.launch_app(args.app_package)
+                deadline = time.time() + max(10.0, args.app_start_timeout)
+                menu_seen = False
+                while time.time() < deadline:
+                    img = client.screenshot()
+                    if _looks_like_main_menu(img):
+                        menu_seen = True
+                        break
+                    time.sleep(2.0)
+                if not menu_seen:
+                    print(f"[maintenance] main menu not detected after {args.app_start_timeout:.0f}s")
+                    return False
+
+                if restore_target:
+                    args.target = restore_target
+                    if not reenter_champion():
+                        print("[maintenance] Wild Rift reopened, but leaderboard recovery "
+                              f"could not restore {restore_target}")
+                        return False
+                else:
+                    # Root-screen test/recovery: re-enter the leaderboard and
+                    # leave it on the Champion overview. There is no selected
+                    # champion to restore when the run began on this screen.
+                    client.tap(*MAIN_MENU_LEADERBOARD_BADGE, hold_ms=args.tap_hold_ms)
+                    time.sleep(2.5)
+                    client.tap(*LEADERBOARD_CHAMPION_TAB, hold_ms=args.tap_hold_ms)
+                    time.sleep(1.5)
+                    if leaderboard_state(client.screenshot()) is None:
+                        print("[maintenance] leaderboard reopened, but Champion overview "
+                              "was not detected")
+                        return False
+                nav.last_center = None
+                last_game_restart[0] = time.time()
+                print("[maintenance] restart complete; leaderboard recovery succeeded")
+                return True
+            except Exception as exc:  # noqa: BLE001 -- caller decides whether to stop
+                print(f"[maintenance] restart failed: {exc}")
+                return False
+
+        if args.maintenance_test:
+            # Read the selected champion before leaving the board so recovery
+            # returns to the exact board the owner left open, rather than the
+            # default target used by ordinary scraping runs.
+            frame = client.screenshot()
+            state = leaderboard_state(frame)
+            selected = read_selected_champion(frame) if state == "detail" else None
+            if state == "detail" and selected:
+                print(f"[maintenance-test] selected champion: {selected}")
+            elif state is not None:
+                print("[maintenance-test] starting from leaderboard overview")
+            else:
+                print("[maintenance-test] current screen is not a recognized leaderboard; "
+                      "stopping before closing the game")
+                return 1
+            ok = restart_game_between_champions(restore_target=selected)
+            print("[maintenance-test] SUCCESS" if ok else "[maintenance-test] FAILED")
+            return 0 if ok else 1
 
         def find_partial_session(champ: str) -> tuple[Path | None, int]:
             """The newest incomplete capture session for `champ`, and the rank
@@ -1296,7 +1537,7 @@ def main() -> int:
         try:
             while done < args.champions:
                 img = stable_screenshot()
-                slots = scan_champion_rows(img, SCREEN_1_NAME_X_RANGE)
+                slots = scan_champion_rows_by_portrait(img, "overview")
                 H = nav.screen_h or img.shape[0]
                 cand = None
                 for y, cname in slots:
@@ -1305,6 +1546,8 @@ def main() -> int:
                     if cname is not None and cname in scraped:
                         continue
                     if only and cname is not None and cname not in only:
+                        continue
+                    if skip and cname is not None and cname in skip:
                         continue
                     # A row whose name did NOT read stays a candidate even
                     # under --only: the champions worth targeting are often
@@ -1353,7 +1596,7 @@ def main() -> int:
                 img_lbl = None
                 for _read in range(3):
                     img_lbl = client.screenshot()
-                    label = read_champion_name(img_lbl, SCREEN_2_CHAMP_LABEL_REGION)
+                    label = read_selected_champion(img_lbl)
                     if label is not None:
                         break
                     time.sleep(0.6)
@@ -1363,13 +1606,21 @@ def main() -> int:
                     # whose name never resolves that is the difference between
                     # collecting them and not.
                     path = _dump_frame(img_lbl, 0) if img_lbl is not None else None
+                    # The old hint OCR'd the champion name label. That label
+                    # no longer exists, so the useful hint is now the portrait
+                    # matcher's own runner-up: it says WHAT it nearly matched
+                    # and how close it was, which is what a human needs to
+                    # confirm or overrule.
                     raw = ""
                     if img_lbl is not None:
                         try:
-                            from .ocr import GENERAL_TESSERACT_CONFIG, read_text
-                            lx, ly, lw, lh = SCREEN_2_CHAMP_LABEL_REGION
-                            raw = " ".join((read_text(img_lbl[ly:ly + lh, lx:lx + lw],
-                                                      GENERAL_TESSERACT_CONFIG).text or "").split())
+                            from .icon_match import (read_champion_portraits,
+                                                     selected_champion_row)
+                            sel = selected_champion_row(img_lbl)
+                            if sel is not None:
+                                r = read_champion_portraits(img_lbl, "switcher")[sel]
+                                raw = (f"best {r['champion'] or r['runnerUp']} "
+                                       f"score {r['score']} gap {r['gap']}")
                         except Exception:  # noqa: BLE001 -- a hint, never a blocker
                             raw = ""
                     print()
@@ -1412,8 +1663,9 @@ def main() -> int:
                     skip_ys.append(y)
                     back_to_champions()
                     continue
-                if only and label not in only:
-                    print(f"[carousel] {label} is not in --only -- backing out")
+                if (only and label not in only) or (skip and label in skip):
+                    why = "excluded" if label in skip else "not in --only"
+                    print(f"[carousel] {label} is {why} -- backing out")
                     skip_ys.append(y)
                     client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
                     time.sleep(args.step_wait + 0.3)
@@ -1452,6 +1704,9 @@ def main() -> int:
                     args.start_rank, args.n = prev_start, prev_n
                 scraped.add(label)
                 done += 1
+                if progress_region:
+                    collection_progress.advance(progress_region, len(scraped),
+                                                progress_total)
                 if args.unattended:
                     # Champions failing with ZERO profiles back-to-back means
                     # the leaderboard itself is broken (rankings lock, server
@@ -1472,12 +1727,49 @@ def main() -> int:
                         )
                     print(f"[carousel] extraction launched in background -> {log_path}")
 
-                client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
-                time.sleep(args.step_wait + 0.4)
-                back_to_champions()
+                # Never restart in the middle of a champion.  The completed
+                # champion is marked and extracted above; only now, when a
+                # next champion is actually needed, is the two-hour timer
+                # allowed to trigger a maintenance cycle.
+                refresh_due = (
+                    args.refresh_after_hours > 0
+                    and done < args.champions
+                    and time.time() - last_game_restart[0]
+                    >= args.refresh_after_hours * 3600
+                )
+                if refresh_due:
+                    if not restart_game_between_champions():
+                        print("[carousel] stopping safely after failed maintenance restart")
+                        break
+
+                # The new detail screen keeps a persistent champion switcher.
+                # Use it for the next requested champion; only fall back to
+                # the overview when that champion is not visible in the rail.
+                remaining = sorted(only - scraped) if only else []
+                switched = False
+                if remaining:
+                    switched = switch_detail_champion(remaining[0])
+                    if switched:
+                        skip_ys.clear()
+                        prev_names.clear()
+                if not switched:
+                    client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
+                    time.sleep(args.step_wait + 0.4)
+                    back_to_champions()
         except KeyboardInterrupt:
             print()
             print("^C -- carousel stopped")
+
+        if progress_region:
+            # Only a run that reached the target is "Completed". A stopped or
+            # partial run stays at its last count, so the bar keeps showing
+            # how far it actually got instead of claiming a finish it never
+            # made and stamping today's date on half a collection.
+            if len(scraped) >= progress_total:
+                collection_progress.finish(progress_region, progress_total)
+            else:
+                collection_progress.advance(progress_region, len(scraped),
+                                            progress_total, force=True)
 
         mins = (time.time() - t_carousel) / 60
         print()

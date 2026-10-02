@@ -62,7 +62,7 @@ def test_trophy_rows_are_never_claimed():
     frame = Path("data/2_aatrox_leaderboard.png")
     if not frame.exists():
         pytest.skip("emulator frame not present")
-    from src.config import SCREEN_2_BADGE_X_RANGE
+    from src.config import LEGACY_BADGE_X_RANGE as SCREEN_2_BADGE_X_RANGE
     got = read_column(cv2.imread(str(frame)), SCREEN_2_BADGE_X_RANGE)
     assert not ({1, 2, 3} & set(got)), f"claimed a trophy row: {sorted(got)}"
 
