@@ -278,3 +278,30 @@ class TestMobility:
 
     def test_a_dash_in_the_text_counts(self):
         assert summoners.has_mobility("Nobody", "Dashes to the target location.")
+
+
+class TestRoleIsInferredWhenBlank:
+    """A blank role is not "no role", it is a role nobody told us -- and every
+    jungle rule is keyed on it, so they all silently stopped applying.
+
+    Reported: a Hecarim counter build came back Flash + Ghost with no Smite.
+    The request carried no role, so as far as the advisor knew it was not a
+    jungle build, and the same blank disabled the mana-rune gate beside it.
+    """
+
+    def test_a_blank_role_falls_back_to_the_champions_own(self):
+        from web import build_advisor
+        assert (build_advisor.CHAMPS.get("Hecarim") or {}).get("role") == "Jungle"
+
+    def test_smite_is_imposed_once_the_role_resolves(self):
+        from web.advisor import summoners
+        picked = summoners.enforce(["Flash", "Ghost"], "Jungle", True)
+        assert picked is not None
+        assert "Smite" in picked
+
+    def test_an_explicit_role_still_wins_over_the_champions_own(self):
+        """Someone asking for a Baron Hecarim must not be handed Smite."""
+        from web.advisor import summoners
+        picked = summoners.enforce(["Flash", "Ghost"], "Baron", True)
+        assert picked is not None
+        assert "Smite" not in picked

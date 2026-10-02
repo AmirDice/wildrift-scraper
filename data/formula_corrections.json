@@ -142,6 +142,17 @@
    },
    "reason": "Thunderclap's passive armor is a multiplicative rank-scaled bonus, and its active extra damage is only on the first attack. Both were previously applied as an always-on flat/always-per-auto effect, biasing armor and attack-speed builds."
   },
+  "Rammus": {
+   "abilities": {
+    "2": {
+     "steroids": [
+      {"stat": "armor", "flat": 30, "pct": [30, 40, 50, 60], "durationS": 6, "note": "Defensive Ball Curl grants 30 flat Armor plus 30% / 40% / 50% / 60% Armor for 6 seconds."},
+      {"stat": "mr", "flat": 10, "pct": [35, 40, 45, 50], "durationS": 6, "note": "Defensive Ball Curl grants 10 flat Magic Resist plus 35% / 40% / 45% / 50% Magic Resist for 6 seconds."}
+     ]
+    }
+   },
+   "reason": "Defensive Ball Curl's extracted flat Armor/MR values retained the percentage bonuses only in prose. Keep the percentage scaling explicit so armor-scaling damage and survivability both use the real rank-4 values. Reflection and the monster-only multiplier remain disclosed as unmodeled mechanics."
+  },
   "Gwen": {
    "knowledge": {
     "asEfficiency": 0.6

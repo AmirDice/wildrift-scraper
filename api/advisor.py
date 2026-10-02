@@ -172,7 +172,8 @@ def build_from_request(body: dict) -> tuple[int, dict]:
                           item_reasons=[r for r in item_reasons if r["item"]],
                           rune_reasons=rune_reasons,
                           boots_reason=_clean_text(why.get("bootsReason")),
-                          candidate_score=candidate_score)
+                          candidate_score=candidate_score,
+                          unrestricted_mode=why.get("unrestrictedMode") is True)
         except SystemExit as exc:            # missing API key, unknown champion
             return 500, {"error": str(exc)}
         return 200, out
@@ -233,6 +234,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             skill_level=_clean(body.get("skillLevel")) or "average",
             locked_items=_clean_list(body.get("lockedItems"), limit=3),
             locked_runes=_clean_list(body.get("lockedRunes"), limit=2),
+            unrestricted_mode=body.get("unrestrictedMode") is True,
         )
     except SystemExit as exc:               # missing API key, unknown champion
         return 500, {"error": str(exc)}

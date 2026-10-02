@@ -35,7 +35,7 @@ _META: dict[str, tuple[str, int]] = {
     "Ornn": ("Tank", 5), "Poppy": ("Tank", 4), "Rammus": ("Tank", 3),
     "Rell": ("Tank", 5), "Sejuani": ("Tank", 4), "Shen": ("Tank", 5),
     "Singed": ("Tank", 5), "Sion": ("Tank", 4), "Skarner": ("Tank", 5),
-    "Taric": ("Tank", 5), "Zac": ("Tank", 5), "Garen": ("Tank", 2),
+    "Taric": ("Tank", 5), "Zac": ("Tank", 5),
     "K'Sante": ("Tank", 9), "Volibear": ("Tank", 4),
 
     # --- Bruisers (fighters / divers / juggernauts / skirmishers) ---
@@ -45,11 +45,11 @@ _META: dict[str, tuple[str, int]] = {
     "Gnar": ("Bruiser", 8), "Gwen": ("Bruiser", 6), "Hecarim": ("Bruiser", 5),
     "Illaoi": ("Bruiser", 6), "Irelia": ("Bruiser", 8), "Jarvan IV": ("Bruiser", 5),
     "Jax": ("Bruiser", 5), "Kled": ("Bruiser", 7),
-    "Lee Sin": ("Bruiser", 10), "Lillia": ("Mage", 6),
+    "Jayce": ("Bruiser", 7), "Lee Sin": ("Bruiser", 10), "Lillia": ("Mage", 6),
     "Mordekaiser": ("Bruiser", 4), "Nasus": ("Bruiser", 3), "Olaf": ("Bruiser", 4),
     "Renekton": ("Bruiser", 5), "Riven": ("Bruiser", 9),
-    "Sett": ("Bruiser", 4), "Trundle": ("Bruiser", 4), "Tryndamere": ("Bruiser", 4),
-    "Udyr": ("Bruiser", 6), "Urgot": ("Bruiser", 7), "Vi": ("Bruiser", 3),
+    "Sett": ("Bruiser", 4), "Shyvana": ("Bruiser", 6), "Trundle": ("Bruiser", 4), "Tryndamere": ("Bruiser", 4),
+    "Udyr": ("Bruiser", 6), "Urgot": ("Bruiser", 7), "Vi": ("Bruiser", 3), "Garen": ("Bruiser", 2),
     "Wukong": ("Bruiser", 5), "Xin Zhao": ("Bruiser", 4), "Yasuo": ("Bruiser", 7),
     "Yorick": ("Bruiser", 5), "Yone": ("Bruiser", 8),
 

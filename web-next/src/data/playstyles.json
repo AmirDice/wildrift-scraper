@@ -16,7 +16,7 @@
       "key": "crit",
       "label": "Crit",
       "description": "Critical-strike scaling and high basic-attack damage.",
-      "prompt": "CRIT: 4+ of the 5 items must grant Critical Rate, and no lethality. Crit only applies to what can crit -- if this champion's ABILITIES cannot crit, the build improves basic attacks only, so weight it toward a kit that attacks often enough for that to matter."
+      "prompt": "CRIT: make critical strike a real part of the core, but do not treat crit and lethality as mutually exclusive. A crit-first build may include a lethality or penetration item when this champion and the target profile convert it well; do not force four crit items when one hybrid slot is clearly stronger. Crit only applies to what can crit -- if this champion's ABILITIES cannot crit, the build improves basic attacks only, so weight it toward a kit that attacks often enough for that to matter."
     },
     {
       "key": "dps",
@@ -167,6 +167,16 @@
       "kiting",
       "vamp",
       "antitank"
+    ],
+    "Tryndamere": [
+      "standard",
+      "crit",
+      "dps",
+      "onhit",
+      "splitpush",
+      "vamp",
+      "antitank",
+      "tanky"
     ],
     "Ambessa": [
       "standard",

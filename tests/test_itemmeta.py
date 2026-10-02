@@ -129,6 +129,12 @@ class TestMetadata:
         assert meta["lateGameStrategic"] is True
         assert meta["situationalTags"] == []
 
+    def test_percent_penetration_items_are_late_strategic(self):
+        for slug in ("lord-dominiks-regard", "mortal-reminder", "seryldas-grudge"):
+            meta = itemmeta.metadata(slug)
+            assert meta["lateGameStrategic"] is True
+            assert itemmeta.LATE_STRATEGIC[slug]["minPosition"] == 3
+
     def test_every_pool_item_produces_metadata(self):
         for slug in itemmeta.completed_items():
             meta = itemmeta.metadata(slug)

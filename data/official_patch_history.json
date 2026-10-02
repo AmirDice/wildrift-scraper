@@ -1,9 +1,338 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-09-21T14:39:07.165Z",
+  "fetchedAt": "2026-09-30T13:35:59.642Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.3a",
+      "title": "Wild Rift Patch Notes 7.3a",
+      "publishedAt": "2026-09-29T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-3a/",
+      "championChanges": [
+        {
+          "champion": "HWEI",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Hwei’s performance has continued to rise as players master his kit, and we expect that trend to continue. We’re reducing his overall damage to keep his growing strength in check.",
+          "changes": [
+            {
+              "ability": "Signature of the Visionary",
+              "text": "Damage: 33 - 333 (Based on level) + 33%Ability Power → 40-285 (Based on level) + 30% Ability Power"
+            },
+            {
+              "ability": "Subject: Disaster - Devastating Fire",
+              "text": "Damage: 50/90/130/170 + 75% Ability Power + 4%/5%/6%/7% Maximum Health → 50/85/120/155 + 70% Ability Power + 4%/5%/6%/7% Maximum Health"
+            },
+            {
+              "ability": "Subject: Disaster - Severing Bolt",
+              "text": "Damage Ratio based on Health lost: 150%/200%/250%/300% → 100%/150%/200%/250%"
+            },
+            {
+              "ability": "Spiraling Despair",
+              "text": "Explosion Damage: 250/350/450 + 75% Ability Power → 200/300/400 + 70% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "SAMIRA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Samira has been underperforming across all skill levels, with both her burst damage and survivability falling short. We’re increasing her damage and durability to help her make a bigger impact when she dives into the fight.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Health per level：128 → 136\n Armor per level：5 → 5.5\n Magic Resistance per level：1.4 → 2"
+            },
+            {
+              "ability": "Daredevil Impulse",
+              "text": "Minimum Attack Damage ratio for melee damage: 3.5% - 10.5% (Based on level) → 5.8% - 17% (Based on level)\n Maximum Attack Damage ratio for melee damage: 7% - 21% (Based on level) → 11.6% - 34% (Based on level)"
+            },
+            {
+              "ability": "Flair",
+              "text": "Attack Damage ratio: 110% → 125%"
+            },
+            {
+              "ability": "Inferno Trigger",
+              "text": "Attack Damage ratio per shot: 40% → 50%"
+            }
+          ]
+        },
+        {
+          "champion": "RAMMUS",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Rammus is clearing the jungle too quickly under the new jungle system. We’re reducing his early Armor to slow down his clear speed and early fighting power while keeping his late-game teamfighting intact.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Armor：45 → 40"
+            },
+            {
+              "ability": "Defensive Ball Curl",
+              "text": "Armor ratio: 45%/50%/55%/60% → 30%/40%/50%/60%"
+            }
+          ]
+        },
+        {
+          "champion": "MALPHITE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Malphite has been too strong across multiple positions. We’re reducing his damage and playmaking power to bring him more in line with his role as a tank.",
+          "changes": [
+            {
+              "ability": "Thunderclap",
+              "text": "Armor Damage Ratio: 20% → 15%"
+            },
+            {
+              "ability": "Ground Slam",
+              "text": "Armor Damage ratio: 45% → 40%"
+            },
+            {
+              "ability": "Unstoppable Force",
+              "text": "Cooldown: 75/70/65s → 85/80/75s"
+            }
+          ]
+        },
+        {
+          "champion": "TRISTANA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Tristana has fallen behind other crit marksmen. We’re increasing her burst and sustained damage to help her keep pace.",
+          "changes": [
+            {
+              "ability": "Rapid Fire",
+              "text": "Attack Speed: 50/75/100/125% → 60/80/100/120%"
+            },
+            {
+              "ability": "Rocket Jump",
+              "text": "Cooldown: 22/20/18/16s → 20/18/16/14s"
+            },
+            {
+              "ability": "Explosive Charge",
+              "text": "Explosion Damage: (80/100/120/140 + 100% Bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 40% + (Crit Damage - 2) × 40% × Critical Rate)→ (80/110/140/170 + 120% Bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 50% + (Crit Damage - 2) × 50% × Critical Rate)"
+            }
+          ]
+        },
+        {
+          "champion": "DRAVEN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Draven has been underperforming, with his burst damage falling short of other marksmen. We’re restoring some of his damage to help his axes hit harder.",
+          "changes": [
+            {
+              "ability": "Spinning Axe",
+              "text": "Bonus Attack Damage ratio: 80/90/100/110% → 90/100/110/120%"
+            },
+            {
+              "ability": "Blood Rush",
+              "text": "Attack Speed: 20/25/30/35% → 25/30/35/40%"
+            },
+            {
+              "ability": "Whirling Death",
+              "text": "Bonus Attack Damage ratio: 130% → 150%"
+            }
+          ]
+        },
+        {
+          "champion": "CAITLYN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Caitlyn has been performing too well without needing to invest in Attack Speed. We’re reducing her sustained damage and slightly lowering her burst damage to bring her back in line.",
+          "changes": [
+            {
+              "ability": "Base stats",
+              "text": "Attack Speed per level: 0.04 → 0.025"
+            },
+            {
+              "ability": "Headshot",
+              "text": "60% -100% (Based on level) → 60% -90% (Based on level)"
+            }
+          ]
+        },
+        {
+          "champion": "SENNA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Senna has been overperforming across all skill levels since we removed her Attack Speed restrictions. We’re adjusting her Attack Speed ratio to rein in how effectively she scales with Attack Speed.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Attack Speed ratio: 0.4 → 0.3\n Base Attack Speed: 0.4 → 0.3\n Base Bonus Attack Speed0.6 → 1.1\n Attack Speed per level: 0.05 → 0.025\n Bonus Attack Speed now provides less benefit toward reducing her basic attack windup."
+            }
+          ]
+        },
+        {
+          "champion": "SYNDRA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Syndra has been scaling too quickly after her recent damage buffs. We’re reducing some of her scaling and damage to keep her power in check.",
+          "changes": [
+            {
+              "ability": "Transcendent",
+              "text": "Upgrade threshold: 40/60/80/100/120 → 50/75/100/125/150"
+            },
+            {
+              "ability": "Force of Will",
+              "text": "Ability Power ratio: 60% → 50%\n Slow: 20%/25%/30%/35% → 25%"
+            }
+          ]
+        },
+        {
+          "champion": "SWAIN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Swain has been struggling in the current burst-heavy environment. We’re increasing his healing and damage to help him stay in the fight longer.",
+          "changes": [
+            {
+              "ability": "Ravenous Flock",
+              "text": "Health Restored: 3% - 4.5% (Based on level) + 0.5% Ability Power -> 4.5% - 6% + 0.2% Ability Power"
+            },
+            {
+              "ability": "Nevermove",
+              "text": "Ability Power ratio of the repeated damage: 25% → 40%"
+            }
+          ]
+        },
+        {
+          "champion": "YUUMI",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Yuumi benefits more than intended from the recent support item changes since the Health tradeoff has little impact on her. We’re reducing some of her sustain to compensate.",
+          "changes": [
+            {
+              "ability": "You and Me!",
+              "text": "Healing and Shield Power: 8%/9%/10%/11% + 0.02% Ability Power → 6%/7%/8%/9% + 0.01%a Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "VIEGO",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Viego hasn’t benefited as much as other champions from the crit system changes and has fallen behind as a result. We’re increasing his crit scaling to help him catch up.",
+          "changes": [
+            {
+              "ability": "Blade of the Ruined King",
+              "text": "Passive Damage: 2%/3%/4%/5% → 3%/4%/5%/6%\n Crit Damage ratio: 80% → 85%"
+            },
+            {
+              "ability": "Heartbreaker",
+              "text": "Crit stats ratio: 50%→ 70%"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Balance changes are here with champion and item adjustments, jungle and Turret Plating tuning, and updates to AAA ARAM.",
+        "The stage is set, but we’re making a few adjustments to the lineup. This patch, we’re tuning some of our marksmen, bringing Hwei’s masterpiece back within the margins, and making adjustments across items, the jungle, and Turret Plating. We’re also following up on AAA ARAM with a round of changes based on your feedback. Let’s get into it!\n Reminder: content will be released throughout the patch.",
+        "Hwei’s performance has continued to rise as players master his kit, and we expect that trend to continue. We’re reducing his overall damage to keep his growing strength in check.",
+        "Damage: 33 - 333 (Based on level) + 33%Ability Power → 40-285 (Based on level) + 30% Ability Power",
+        "Damage: 50/90/130/170 + 75% Ability Power + 4%/5%/6%/7% Maximum Health → 50/85/120/155 + 70% Ability Power + 4%/5%/6%/7% Maximum Health",
+        "Damage Ratio based on Health lost: 150%/200%/250%/300% → 100%/150%/200%/250%",
+        "Explosion Damage: 250/350/450 + 75% Ability Power → 200/300/400 + 70% Ability Power",
+        "Samira has been underperforming across all skill levels, with both her burst damage and survivability falling short. We’re increasing her damage and durability to help her make a bigger impact when she dives into the fight.",
+        "Health per level：128 → 136\n Armor per level：5 → 5.5\n Magic Resistance per level：1.4 → 2",
+        "Minimum Attack Damage ratio for melee damage: 3.5% - 10.5% (Based on level) → 5.8% - 17% (Based on level)\n Maximum Attack Damage ratio for melee damage: 7% - 21% (Based on level) → 11.6% - 34% (Based on level)",
+        "Attack Damage ratio: 110% → 125%",
+        "Attack Damage ratio per shot: 40% → 50%",
+        "Rammus is clearing the jungle too quickly under the new jungle system. We’re reducing his early Armor to slow down his clear speed and early fighting power while keeping his late-game teamfighting intact.",
+        "Armor：45 → 40",
+        "Armor ratio: 45%/50%/55%/60% → 30%/40%/50%/60%",
+        "Malphite has been too strong across multiple positions. We’re reducing his damage and playmaking power to bring him more in line with his role as a tank.",
+        "Armor Damage Ratio: 20% → 15%",
+        "Armor Damage ratio: 45% → 40%",
+        "Cooldown: 75/70/65s → 85/80/75s",
+        "Tristana has fallen behind other crit marksmen. We’re increasing her burst and sustained damage to help her keep pace.",
+        "Attack Speed: 50/75/100/125% → 60/80/100/120%",
+        "Cooldown: 22/20/18/16s → 20/18/16/14s",
+        "Explosion Damage: (80/100/120/140 + 100% Bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 40% + (Crit Damage - 2) × 40% × Critical Rate)→ (80/110/140/170 + 120% Bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 50% + (Crit Damage - 2) × 50% × Critical Rate)",
+        "Draven has been underperforming, with his burst damage falling short of other marksmen. We’re restoring some of his damage to help his axes hit harder.",
+        "Bonus Attack Damage ratio: 80/90/100/110% → 90/100/110/120%",
+        "Attack Speed: 20/25/30/35% → 25/30/35/40%",
+        "Bonus Attack Damage ratio: 130% → 150%",
+        "Caitlyn has been performing too well without needing to invest in Attack Speed. We’re reducing her sustained damage and slightly lowering her burst damage to bring her back in line.",
+        "Attack Speed per level: 0.04 → 0.025",
+        "60% -100% (Based on level) → 60% -90% (Based on level)",
+        "Senna has been overperforming across all skill levels since we removed her Attack Speed restrictions. We’re adjusting her Attack Speed ratio to rein in how effectively she scales with Attack Speed.",
+        "Attack Speed ratio: 0.4 → 0.3\n Base Attack Speed: 0.4 → 0.3\n Base Bonus Attack Speed0.6 → 1.1\n Attack Speed per level: 0.05 → 0.025\n Bonus Attack Speed now provides less benefit toward reducing her basic attack windup.",
+        "Syndra has been scaling too quickly after her recent damage buffs. We’re reducing some of her scaling and damage to keep her power in check.",
+        "Upgrade threshold: 40/60/80/100/120 → 50/75/100/125/150",
+        "Ability Power ratio: 60% → 50%\n Slow: 20%/25%/30%/35% → 25%",
+        "Swain has been struggling in the current burst-heavy environment. We’re increasing his healing and damage to help him stay in the fight longer.",
+        "Health Restored: 3% - 4.5% (Based on level) + 0.5% Ability Power -> 4.5% - 6% + 0.2% Ability Power",
+        "Ability Power ratio of the repeated damage: 25% → 40%",
+        "Yuumi benefits more than intended from the recent support item changes since the Health tradeoff has little impact on her. We’re reducing some of her sustain to compensate.",
+        "Healing and Shield Power: 8%/9%/10%/11% + 0.02% Ability Power → 6%/7%/8%/9% + 0.01%a Ability Power",
+        "Viego hasn’t benefited as much as other champions from the crit system changes and has fallen behind as a result. We’re increasing his crit scaling to help him catch up.",
+        "Passive Damage: 2%/3%/4%/5% → 3%/4%/5%/6%\n Crit Damage ratio: 80% → 85%",
+        "Crit stats ratio: 50%→ 70%",
+        "GAMEPLAY CHANGES\n ITEMS\n Yun Tal Wildarrows\n Yun Tal Wildarrows has been falling behind other first-item options. We’re increasing its base stats and strengthening its effect to make it a more competitive early purchase.\n Base Stats:\n Attack Speed: 25% → 35%\n Flurry:\n Attack Speed: 25% → 35%\n Cooldown: 20s → 25s\n Whispering Circlet\n We’re adjusting Whispering Circlet to match the changes to Diadem of Songs.\n Harmony:\n Healing and Shield Power: 0.5% → 0.25%\n Diadem of Songs\n Diadem of Songs has been outperforming other support item options. We’re reducing its overall power so it’s a more situational choice rather than the go-to option for most supports.\n Harmony:\n Healing and Shield Power: 0.5% → 0.25%\n Death's Dance\n Death's Dance is providing too much value for its cost. Rather than reducing its power as a core fighter item, we’re increasing its price.\n Base Stats:\n 3200 → 3300\n Other Battlefield Content\n Smite\n Smite is providing too much jungle clear speed, particularly in the early and mid game. We’re reducing its base burn damage while preserving its scaling as junglers complete their items.\n Smite’s Damage to Jungle monsters per second: 30 - 198 (Based on level) → 22 - 162 (Based on level)\n Nexus\n The new Turret Plating system is already doing enough to limit sustained pushes, so we’re reverting the Nexus Health increase.\n Maximum Health：5500→4000\n Turret Plating\n Turret Plating is providing too much resistance against sustained pushes. We’re reducing the durability granted after a plate falls to better reward successful pushes.\n Armor and Magic Resistance gained after a plate falls: 30→20\n Duration of Armor and Magic Resistance after a plate falls: 20s→10s\n GAME MODE CHANGES\n AAA ARAM\n Since AAA ARAM launched, we've received a lot of detailed feedback about your experiences with the mode. Thank you to everyone who has shared the issues you've encountered and your thoughts with us. With this hotfix, we're addressing a few areas that have been affecting the experience, and we'll continue monitoring how these changes perform.\n First up is the HEARTSTEEL set. Rhythm Hunter has performed quite differently depending on whether it's facing melee or ranged team comps, so we're adjusting its trigger range and Steel Token multiplier while also making its visual feedback clearer. When Infinite Encore is taken as your fifth Augment after you've already picked up other HEARTSTEEL cards in your first four slots, it still increases your Steel Token gain multiplier, but any remaining rerolls can no longer be used. That didn't feel great, so we're adding the corresponding number of stacks to compensate. If you're able to obtain a sixth Rune Card, those additional rerolls can still be used.\n The updated Ethereal Weapon has opened up a number of interesting builds, and we're happy to see players experimenting with them. However, we also need to keep the experience of playing against it in mind, so we're adding a 1-second cooldown per individual ability against the same target. Blitzcrank can still continuously electrocute enemies for now; we'll continue monitoring how this adjustment plays out in practice.\n We also went a little too far with some of our previous Augment nerfs. We're partially reverting those nerfs with this hotfix, though their overall power will remain lower than before.\n The overall meta still needs some time to settle, so we're keeping champion adjustments relatively light this time around. We'll continue monitoring how these changes perform and listening closely to your feedback. Thanks for continuing to share your thoughts with us, and we hope you have fun!\n Augment Adjustments\n Rhythm Hunter\n Trigger distance: 7 → 11。\n Steelbuff multiplier per stack: 12 → 8。\n Improved Rhythm Hunter’s visual effects.\n Neverending Encore\n When obtaining this Augment in the fifth round or later, immediately gain the number of stacks that would be granted by using 6 rerolls (180 stacks).\n Galestrike\n We're slightly reverting some of the previous nerfs, though these effects will still be weaker overall than in the previous patch.\n Attack Range: 8 → 9\n Cycle of Life\n We're slightly reverting some of the previous nerfs, though these effects will still be weaker overall than in the previous patch.\n Shield ratio gained: 150% → 200%\n Ethereal Weapon\n Each individual ability now has a 1s cooldown per target.\n Duet\n Cooldown per target: 5s → 2s\n Metal Crown\n Stats gained after casting your ultimate: 35 Attack Damage, 70 Ability Power, 50 Armor, 50 Magic Resistance → 30 Attack Damage, 60 Ability Power, 40 Armor, 40 Magic Resistance.\n Hextech Shrapnel\n Damage amplification for the other damage type: 20% → 30%.\n Darkin Beacon\n Damage tracking: Post-mitigation damage → Pre-mitigation damage.\n Stack One Up\n Damage increase per stack: 8 → 12.\n The cooldown of the bonus damage is now affected by Ability Haste; gaining stacks itself has no cooldown.\n Accelerating Sorcery\n Maximum Stack: 100 stacks → 66 stacks\n Pinnacle of Perfection\n Critical Rate cap: 50% → 44.44%\n Conversion ratio for Critical Rate exceeding the cap: 150% → 444%\n Maximum Conversion cap: 305% → 400%\n After this change, you can reach the Crit Damage cap without Infinity Edge.\n Champion Adjustment\n Fiddlestick\n Damage Taken: 90% → 85%\n Nasus\n Damage Taken: 100% → 90%"
+      ],
+      "changeLines": [
+        "Damage: 33 - 333 (Based on level) + 33%Ability Power → 40-285 (Based on level) + 30% Ability Power",
+        "Damage: 50/90/130/170 + 75% Ability Power + 4%/5%/6%/7% Maximum Health → 50/85/120/155 + 70% Ability Power + 4%/5%/6%/7% Maximum Health",
+        "Damage Ratio based on Health lost: 150%/200%/250%/300% → 100%/150%/200%/250%",
+        "Explosion Damage: 250/350/450 + 75% Ability Power → 200/300/400 + 70% Ability Power",
+        "Health per level：128 → 136",
+        "Armor per level：5 → 5.5",
+        "Magic Resistance per level：1.4 → 2",
+        "Minimum Attack Damage ratio for melee damage: 3.5% - 10.5% (Based on level) → 5.8% - 17% (Based on level)",
+        "Maximum Attack Damage ratio for melee damage: 7% - 21% (Based on level) → 11.6% - 34% (Based on level)",
+        "Attack Damage ratio: 110% → 125%",
+        "Attack Damage ratio per shot: 40% → 50%",
+        "Armor：45 → 40",
+        "Armor ratio: 45%/50%/55%/60% → 30%/40%/50%/60%",
+        "Armor Damage Ratio: 20% → 15%",
+        "Armor Damage ratio: 45% → 40%",
+        "Cooldown: 75/70/65s → 85/80/75s",
+        "Attack Speed: 50/75/100/125% → 60/80/100/120%",
+        "Cooldown: 22/20/18/16s → 20/18/16/14s",
+        "Explosion Damage: (80/100/120/140 + 100% Bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 40% + (Crit Damage - 2) × 40% × Critical Rate)→ (80/110/140/170 + 120% Bonus Attack Damage + 50% Ability Power) × (1 + Critical Rate × 50% + (Crit Damage - 2) × 50% × Critical Rate)",
+        "Bonus Attack Damage ratio: 80/90/100/110% → 90/100/110/120%",
+        "Attack Speed: 20/25/30/35% → 25/30/35/40%",
+        "Bonus Attack Damage ratio: 130% → 150%",
+        "Attack Speed per level: 0.04 → 0.025",
+        "60% -100% (Based on level) → 60% -90% (Based on level)",
+        "Attack Speed ratio: 0.4 → 0.3",
+        "Base Attack Speed: 0.4 → 0.3",
+        "Base Bonus Attack Speed0.6 → 1.1",
+        "Attack Speed per level: 0.05 → 0.025",
+        "Upgrade threshold: 40/60/80/100/120 → 50/75/100/125/150",
+        "Ability Power ratio: 60% → 50%",
+        "Slow: 20%/25%/30%/35% → 25%",
+        "Health Restored: 3% - 4.5% (Based on level) + 0.5% Ability Power -> 4.5% - 6% + 0.2% Ability Power",
+        "Ability Power ratio of the repeated damage: 25% → 40%",
+        "Healing and Shield Power: 8%/9%/10%/11% + 0.02% Ability Power → 6%/7%/8%/9% + 0.01%a Ability Power",
+        "Passive Damage: 2%/3%/4%/5% → 3%/4%/5%/6%",
+        "Crit Damage ratio: 80% → 85%",
+        "Crit stats ratio: 50%→ 70%",
+        "Base Stats:",
+        "Attack Speed: 25% → 35%",
+        "Cooldown: 20s → 25s",
+        "Healing and Shield Power: 0.5% → 0.25%",
+        "3200 → 3300",
+        "Smite’s Damage to Jungle monsters per second: 30 - 198 (Based on level) → 22 - 162 (Based on level)",
+        "Maximum Health：5500→4000",
+        "Armor and Magic Resistance gained after a plate falls: 30→20",
+        "Duration of Armor and Magic Resistance after a plate falls: 20s→10s",
+        "Trigger distance: 7 → 11。",
+        "Steelbuff multiplier per stack: 12 → 8。",
+        "Attack Range: 8 → 9",
+        "Shield ratio gained: 150% → 200%",
+        "Cooldown per target: 5s → 2s",
+        "Stats gained after casting your ultimate: 35 Attack Damage, 70 Ability Power, 50 Armor, 50 Magic Resistance → 30 Attack Damage, 60 Ability Power, 40 Armor, 40 Magic Resistance.",
+        "Damage amplification for the other damage type: 20% → 30%.",
+        "Damage tracking: Post-mitigation damage → Pre-mitigation damage.",
+        "Damage increase per stack: 8 → 12.",
+        "Maximum Stack: 100 stacks → 66 stacks",
+        "Critical Rate cap: 50% → 44.44%",
+        "Conversion ratio for Critical Rate exceeding the cap: 150% → 444%",
+        "Maximum Conversion cap: 305% → 400%",
+        "Damage Taken: 90% → 85%",
+        "Damage Taken: 100% → 90%"
+      ]
+    },
     {
       "patch": "7.3",
       "title": "Wild Rift Patch Notes 7.3",

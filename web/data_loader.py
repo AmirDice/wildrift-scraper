@@ -20,12 +20,11 @@ Two winrate philosophies live here, deliberately different:
       3. capped weighting — weights are min(games, champion's p75 games), so
                           a spammer is capped relative to their own peers.
 
-  * BEST-PLAYER score (`confidence_wr`) answers "who is genuinely the best
-    on this champion?". It is the Wilson score lower bound of each player's
-    win proportion — the conservative end of a 95% confidence interval.
-    A small sample widens the interval and pushes the lower bound down, so
-    you can't win the title on 3 lucky games, but a 25-game 88% run (a real
-    22-3 record) legitimately ranks high.
+  * BEST-PLAYER confidence (`confidence_wr`) remains the conservative Wilson
+    lower bound of each player's win proportion. The site podium additionally
+    uses that confidence value in the versioned `best-player-v1` composite,
+    together with ladder strength, champion-board position, Champion Score,
+    and capped current-season games.
 """
 from __future__ import annotations
 
@@ -779,6 +778,219 @@ def best_player_per_champion(df: pd.DataFrame, z: float = 1.96) -> pd.DataFrame:
     out["is_best_for_champ"] = False
     out.loc[idx_best, "is_best_for_champ"] = True
     return out
+
+
+# The composite score is deliberately separate from the legacy Wilson helper
+# above.  A few offline reports still consume `best_player_per_champion`, and
+# keeping that function stable lets us migrate the site export without making
+# those reports silently change meaning.
+BEST_PLAYER_SCORING_VERSION = "best-player-v1"
+BEST_PLAYER_WEIGHTS = {
+    "performance": 45.0,
+    "ladder": 20.0,
+    "board": 20.0,
+    "mastery": 10.0,
+    "games": 5.0,
+}
+
+_TIER_STRENGTH = {
+    "challenger": 1.00,
+    "legendary challenger": 1.00,
+    "grandmaster": 0.90,
+    "legendary grandmaster": 0.90,
+    "master": 0.80,
+    "legendary master": 0.80,
+    "diamond": 0.68,
+    "emerald": 0.56,
+    "platinum": 0.46,
+    "gold": 0.36,
+    "silver": 0.26,
+    "bronze": 0.17,
+    "iron": 0.10,
+}
+
+
+def _percentile_component(values: pd.Series) -> pd.Series:
+    """Return a stable 0..1 percentile component, preserving missing data."""
+    numeric = pd.to_numeric(values, errors="coerce")
+    present = numeric.notna()
+    if not present.any():
+        return pd.Series(index=values.index, dtype=float)
+    out = pd.Series(float("nan"), index=values.index, dtype=float)
+    # A one-row component is fully observed, not zero-quality.
+    if int(present.sum()) == 1:
+        out.loc[present] = 1.0
+    else:
+        out.loc[present] = numeric.loc[present].rank(method="average", pct=True)
+    return out
+
+
+def _server_percentile_component(values: pd.Series, servers: pd.Series | None) -> pd.Series:
+    """Percentile-normalise within each server when a combined pool supplies it."""
+    if servers is None or servers.empty:
+        return _percentile_component(values)
+    out = pd.Series(float("nan"), index=values.index, dtype=float)
+    for _, idx in servers.groupby(servers, dropna=False).groups.items():
+        out.loc[idx] = _percentile_component(values.loc[idx])
+    return out
+
+
+def _tier_component(frame: pd.DataFrame) -> pd.Series:
+    """Map tier/points to a comparable ladder-strength component."""
+    tier_col = next((c for c in ("tier", "rank_tier", "player_tier") if c in frame.columns), None)
+    points_col = next((c for c in ("tier_points", "lp", "rank_points") if c in frame.columns), None)
+    if tier_col is None and points_col is None:
+        return pd.Series(float("nan"), index=frame.index, dtype=float)
+
+    tier = pd.Series(float("nan"), index=frame.index, dtype=float)
+    if tier_col is not None:
+        tier = frame[tier_col].map(
+            lambda value: _TIER_STRENGTH.get(str(value).strip().lower())
+            if pd.notna(value) else float("nan")
+        ).astype(float)
+
+    if points_col is None:
+        return tier
+    points = pd.to_numeric(frame[points_col], errors="coerce")
+    points_component = _server_percentile_component(
+        points, frame["server"] if "server" in frame.columns else None
+    )
+    if tier.notna().any():
+        # Exact points refine a tier without allowing a low-tier grind to leap
+        # over the tier ordering.  When tier is absent, points still provide a
+        # useful server-normalised signal.
+        return tier.where(tier.notna(), points_component) * 0.7 + points_component.fillna(0.0) * 0.3
+    return points_component
+
+
+def best_player_podium_per_champion(
+    df: pd.DataFrame,
+    z: float = 1.96,
+    candidate_depth: int = TOP_N_PLAYERS,
+    podium_size: int = 3,
+) -> pd.DataFrame:
+    """Score and return the current-season podium candidates.
+
+    The function accepts either one regional board or a combined EU/NA/CN
+    frame.  A ``server`` column is optional; when present, rank, Champion
+    Score, games, and ladder points are normalised within that server before
+    the rows are compared globally.  Missing optional metrics are excluded
+    from that row's denominator rather than being turned into zero.
+
+    Returned columns include the legacy ``confidence_wr`` and
+    ``is_best_for_champ`` fields plus ``best_score`` and the component scores.
+    Rows are ordered by champion and descending composite score, with
+    ``podium_rank`` set to 1..N for eligible rows.
+    """
+    base_cols = [
+        "confidence_wr", "best_score", "best_score_performance",
+        "best_score_ladder", "best_score_board", "best_score_mastery",
+        "best_score_games", "score_coverage", "podium_rank",
+        "is_best_for_champ", "scoring_version",
+    ]
+    if df.empty or "champion" not in df.columns:
+        out = df.copy()
+        for col in base_cols:
+            out[col] = pd.Series(dtype=object)
+        return out
+
+    out = df.copy()
+    rank = pd.to_numeric(out.get("rank"), errors="coerce")
+    if rank is not None:
+        if "server" in out.columns:
+            out = out[rank <= candidate_depth].copy()
+        else:
+            out = out[rank <= candidate_depth].copy()
+    if out.empty:
+        return out
+
+    # Use the same adaptive floor as the existing title calculation.
+    games = pd.to_numeric(out.get("games"), errors="coerce").fillna(0.0)
+    qualifies = games >= _adaptive_floor(games, out["champion"])
+    champ_has_q = qualifies.groupby(out["champion"]).transform("any")
+    out = out[qualifies | ~champ_has_q].copy()
+    if out.empty:
+        return out
+
+    games = pd.to_numeric(out.get("games"), errors="coerce")
+    wr = pd.to_numeric(out.get("winrate"), errors="coerce")
+    wins = ((wr / 100.0) * games).round()
+    confidence = pd.Series(
+        [_wilson_lower_bound(w, n, z) * 100.0 if pd.notna(w) and pd.notna(n) else float("nan")
+         for w, n in zip(wins, games)],
+        index=out.index,
+        dtype=float,
+    )
+    out["confidence_wr"] = confidence
+
+    # Components are calculated champion-by-champion, so a score is about who
+    # is best on this champion rather than who happens to play a high-WR pick.
+    out["best_score_performance"] = float("nan")
+    out["best_score_ladder"] = float("nan")
+    out["best_score_board"] = float("nan")
+    out["best_score_mastery"] = float("nan")
+    out["best_score_games"] = float("nan")
+    out["best_score"] = float("nan")
+    out["score_coverage"] = float("nan")
+    out["podium_rank"] = pd.Series(pd.NA, index=out.index, dtype="Int64")
+    out["is_best_for_champ"] = False
+    out["scoring_version"] = BEST_PLAYER_SCORING_VERSION
+
+    for _, idx in out.groupby("champion", sort=False).groups.items():
+        g = out.loc[idx]
+        servers = g["server"] if "server" in g.columns else None
+        components = {
+            "performance": _percentile_component(g["confidence_wr"]),
+            "ladder": _tier_component(g),
+            "board": None,
+            "mastery": _server_percentile_component(
+                g["score"] if "score" in g.columns else pd.Series(float("nan"), index=g.index),
+                servers,
+            ),
+            "games": None,
+        }
+
+        raw_rank = pd.to_numeric(g["rank"], errors="coerce") if "rank" in g.columns else pd.Series(float("nan"), index=g.index)
+        if servers is not None:
+            board = pd.Series(float("nan"), index=g.index, dtype=float)
+            for _, sidx in servers.groupby(servers, dropna=False).groups.items():
+                denom = max(1, candidate_depth - 1)
+                board.loc[sidx] = 1.0 - (raw_rank.loc[sidx] - 1.0).clip(lower=0.0) / denom
+            components["board"] = board.clip(lower=0.0, upper=1.0)
+        else:
+            components["board"] = (1.0 - (raw_rank - 1.0).clip(lower=0.0) / max(1, candidate_depth - 1)).clip(0.0, 1.0)
+
+        # Experience is capped at the group's 95th percentile and uses log
+        # scaling, so one player cannot win by simply having many more games.
+        if games.loc[g.index].notna().any():
+            games_group = games.loc[g.index].astype(float)
+            cap = max(1.0, float(games_group.quantile(0.95)))
+            components["games"] = (games_group.clip(lower=0.0, upper=cap).add(1.0).map(math.log) / math.log(cap + 1.0)).clip(0.0, 1.0)
+        else:
+            components["games"] = pd.Series(float("nan"), index=g.index, dtype=float)
+
+        # Align all components to the group index before summing weights.
+        weighted = pd.Series(0.0, index=g.index, dtype=float)
+        denominator = pd.Series(0.0, index=g.index, dtype=float)
+        for name, component in components.items():
+            c = pd.to_numeric(component, errors="coerce").reindex(g.index)
+            available = c.notna()
+            weighted.loc[available] += c.loc[available] * BEST_PLAYER_WEIGHTS[name]
+            denominator.loc[available] += BEST_PLAYER_WEIGHTS[name]
+            out.loc[g.index, f"best_score_{name}"] = c * 100.0
+        out.loc[g.index, "best_score"] = (weighted / denominator.replace(0.0, float("nan")) * 100.0)
+        out.loc[g.index, "score_coverage"] = denominator / sum(BEST_PLAYER_WEIGHTS.values())
+
+        from web.integrity import eligible_for_title
+        eligible = g["player_name"].apply(eligible_for_title) if "player_name" in g.columns else pd.Series(True, index=g.index)
+        order = out.loc[g.index].assign(_eligible=eligible).query("_eligible and best_score == best_score")
+        order = order.sort_values(["best_score", "confidence_wr", "rank"], ascending=[False, False, True])
+        for position, row_index in enumerate(order.index[:podium_size], start=1):
+            out.loc[row_index, "podium_rank"] = position
+            if position == 1:
+                out.loc[row_index, "is_best_for_champ"] = True
+
+    return out.sort_values(["champion", "podium_rank", "best_score"], ascending=[True, True, False], na_position="last")
 
 
 # Champions kept OUT of sleeper/off-meta suggestions even when the stats

@@ -3,6 +3,49 @@
   "_no_popularity_in_notes": "The notes are quoted VERBATIM into the build prompt, so they must never cite how many players build anything: no percentages, no counts, no mention of a ladder or a top-50. An argument from popularity is one the build model defers to instead of scoring the item on its merits, and free scoring is the whole point of using a model. Record the evidence in _source and _why_here, which are metadata and are never sent. scripts/generate_champion_identity.py::popularity_problems() enforces the same rule on generated cards.",
   "_history": "Viego was corrected here on 2026-08-27 and REMOVED the same day. His generated card had called Blade of the Ruined King mandatory and crit too squishy, while the overwhelming majority of his strongest players build Essence Reaver and Infinity Edge; once the generator was fixed it reached crit on its own, so a hand-written duplicate would only have frozen him against the next meta shift.",
   "champions": {
+    "Vi": {
+      "_source": "owner-reviewed crit affinity policy, 2026-10-01",
+      "_why_here": "Crit is a situational burst alternative for Vi, not a never-build path.",
+      "hardLimits": {
+        "neverArchetypes": [
+          {
+            "path": "Ability Power",
+            "why": "Vi has no coherent AP damage identity in Wild Rift."
+          }
+        ],
+        "avoidStats": ["ap", "magic_pen", "healing_power", "shield_power"]
+      }
+    },
+    "Jarvan IV": {
+      "_source": "owner-reviewed crit affinity policy, 2026-10-01",
+      "_why_here": "Crit is a situational glass-cannon alternative for Jarvan IV, not a never-build path.",
+      "hardLimits": {
+        "neverArchetypes": [
+          {
+            "path": "Attack Speed On-Hit",
+            "why": "Jarvan's kit does not justify a sustained on-hit identity."
+          },
+          {
+            "path": "AP Mage",
+            "why": "Jarvan has no coherent AP damage identity in Wild Rift."
+          }
+        ],
+        "avoidStats": ["ap", "magic_pen", "energy"]
+      }
+    },
+    "Wukong": {
+      "_source": "owner-reviewed crit affinity policy, 2026-10-01",
+      "_why_here": "Crit is a situational glass-cannon alternative for Wukong, not a never-build path.",
+      "hardLimits": {
+        "neverArchetypes": [
+          {
+            "path": "AP Mage",
+            "why": "Wukong has no coherent AP damage identity in Wild Rift."
+          }
+        ],
+        "avoidStats": ["ap", "magic_pen", "mana", "energy"]
+      }
+    },
     "Shen": {
       "_source": "ladder consensus, top 50 Shen players, read 2026-08-27: heartsteel 93%, sunfire-aegis 88%, thornmail 84%, armored-advance 66%, unending-despair 46%, amaranths-twinguard 40%, divine-sunderer 26%, randuins-omen 22%. Wit's End, Titanic Hydra and Iceborn Gauntlet: 0%.",
       "_why_here": "The only champion where the enforced generator could not converge: six attempts each insisted on Wit's End, Titanic Hydra and Iceborn Gauntlet, which none of his strongest players build. That is PC League Shen, not Wild Rift Shen. Generation refused rather than shipping it, which left the stale card in place, so the card is written here by hand instead.",

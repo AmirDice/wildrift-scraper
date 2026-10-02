@@ -114,6 +114,37 @@ def test_bruiser_pool_keeps_offensive_anchors_but_combo_still_needs_defense():
          "infinity-edge", "rapid-firecannon"), "ad-bruiser")
 
 
+def test_frontline_crit_policy_keeps_sett_out_of_crit_and_allows_reviewed_paths():
+    sett = adv.profiles.profile("Sett", log=False)
+    sett_paths = {row["id"] for row in adv._damage_archetypes(
+        "Sett", sett["combatProfile"], sett["scalingProfile"], "standard")}
+    assert "ad-crit" not in sett_paths
+    assert not adv._identity_item_allowed("Sett", "essence-reaver")
+    assert not adv._identity_item_allowed("Sett", "infinity-edge")
+    assert not adv._identity_item_allowed("Sett", "lord-dominiks-regard")
+    # A single empowered attack or a defensive anti-crit passive is not a
+    # crit item: Sundered Sky and Randuin's must remain normal bruiser/tank
+    # options.
+    assert adv._identity_item_allowed("Sett", "sundered-sky")
+    assert adv._identity_item_allowed("Sett", "randuins-omen")
+
+    for champion in ("Yasuo", "Yone", "Tryndamere", "Viego", "Garen",
+                     "Rengar", "Master Yi", "Xin Zhao", "Vi", "Pantheon",
+                     "Nocturne", "Jarvan IV", "Wukong", "Olaf"):
+        profile = adv.profiles.profile(champion, log=False)
+        paths = {row["id"] for row in adv._damage_archetypes(
+            champion, profile["combatProfile"], profile["scalingProfile"],
+            "standard")}
+        assert "ad-crit" in paths, (champion, paths)
+        assert adv._identity_item_allowed(champion, "infinity-edge")
+
+
+def test_non_crit_frontline_pool_excludes_crit_items_but_unrestricted_does_not():
+    assert not adv._identity_item_allowed("Malphite", "infinity-edge")
+    assert not adv._identity_item_allowed("Rammus", "lord-dominiks-regard")
+    assert adv._identity_item_allowed("Malphite", "infinity-edge", True)
+
+
 @pytest.mark.parametrize("champion", ["Caitlyn", "Jinx", "Tristana", "Vayne"])
 def test_marksmen_receive_both_crit_and_attack_speed_on_hit_probes(champion):
     profile = adv.profiles.profile(champion, log=False)
@@ -796,6 +827,9 @@ def test_engine_respects_curated_identity_cards_before_searching():
     assert not adv._identity_item_allowed("K'Sante", "berserkers-greaves")
     assert not adv._identity_item_allowed("Volibear", "infinity-edge")
     assert adv._identity_item_allowed("Vi", "blade-of-the-ruined-king")
+    # Hecarim's reviewed identity bans a dedicated attack-speed/on-hit path;
+    # BORK must not sneak into the engine pool as a one-item exception.
+    assert not adv._identity_item_allowed("Hecarim", "blade-of-the-ruined-king")
 
 
 def test_tournament_score_accepts_breakdown_objects():
@@ -809,6 +843,14 @@ def test_tournament_score_accepts_breakdown_objects():
         "damageBeforeDeath": 20, "ehp": 100,
     }}
     assert adv._tournament_measurement_score(row, "balanced") > 0
+
+
+def test_max_damage_has_a_frontline_survival_floor():
+    assert adv._tournament_blend("max_damage", "Jinx") == (1.0, 0.0)
+    assert adv._tournament_blend("max_damage", "Rammus") == (0.85, 0.15)
+    assert adv._tournament_blend("max_damage", "Hecarim") == (0.9, 0.1)
+    # Maximum damage remains distinct from the ordinary damage-leaning preset.
+    assert adv._tournament_blend("max_damage", "Hecarim")[1] < adv._tournament_blend("damage", "Hecarim")[1]
 
 
 def test_a_durable_path_still_refuses_the_wrong_scaling():

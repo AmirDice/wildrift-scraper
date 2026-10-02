@@ -35,7 +35,8 @@ from web.data_loader import (
     tier_order,
     assign_tier,
     assign_tier_relative,
-    best_player_per_champion,
+    best_player_podium_per_champion,
+    BEST_PLAYER_SCORING_VERSION,
     champion_summary,
     collection_started_on,
     data_collected_on,
@@ -68,6 +69,12 @@ REGION_FILES = {
         "site": ROOT / "web-next" / "src" / "data" / "site_na.json",
         "players": ROOT / "web-next" / "public" / "players-na.json",
         "history": ROOT / "data" / "history" / "na",
+    },
+    "cn": {
+        "csv": ROOT / "data" / "winrates_cn.csv",
+        "site": ROOT / "web-next" / "src" / "data" / "site_cn.json",
+        "players": ROOT / "web-next" / "public" / "players-cn.json",
+        "history": ROOT / "data" / "history" / "cn",
     },
 }
 REGION_CSV: Path | None = None   # None = EU default inside data_loader
@@ -176,8 +183,145 @@ def _i(v):
     return int(round(float(v)))
 
 
+def _best_player_row_payload(row) -> dict:
+    """Compact, frontend-safe representation of a scored podium row."""
+    server = row.get("server") if hasattr(row, "get") else None
+    return {
+        "player": display_name(str(row.get("player_name"))) if pd.notna(row.get("player_name")) else "—",
+        "server": str(server).upper() if pd.notna(server) else REGION.upper(),
+        "championRank": _i(row.get("rank")),
+        "tier": str(row.get("tier")) if pd.notna(row.get("tier")) else None,
+        "championScore": _i(row.get("score")),
+        "games": _i(row.get("games")),
+        "winRate": _f(row.get("winrate")),
+        "confidenceWr": _f(row.get("confidence_wr")),
+        "score": _f(row.get("best_score")),
+        "scoreCoverage": _f(row.get("score_coverage"), 2),
+        "components": {
+            "performance": _f(row.get("best_score_performance")),
+            "ladder": _f(row.get("best_score_ladder")),
+            "board": _f(row.get("best_score_board")),
+            "mastery": _f(row.get("best_score_mastery")),
+            "games": _f(row.get("best_score_games")),
+        },
+    }
+
+
+def _attach_player_metadata(df: pd.DataFrame, region: str) -> pd.DataFrame:
+    """Join captured popup tiers onto the compact win-rate board.
+
+    The historical CSV intentionally stores only the numeric champion row, but
+    the extended capture export already has the player's ranked tier in the
+    per-champion JSON. Joining by champion rank keeps the composite score
+    honest without duplicating that metadata into every CSV row.
+    """
+    if df.empty:
+        return df
+    detail_dir = ROOT / "web-next" / "public" / "players"
+    if region != "eu":
+        detail_dir = detail_dir / region
+    out = df.copy()
+    if "tier" not in out.columns:
+        out["tier"] = None
+    for champion, group in out.groupby("champion"):
+        path = detail_dir / f"{_slug(str(champion))}.json"
+        if not path.exists():
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        tiers = {
+            int(row["r"]): row.get("tier")
+            for row in payload.get("players", [])
+            if row.get("r") is not None and row.get("tier")
+        }
+        if not tiers:
+            continue
+        for idx, rank in group["rank"].items():
+            try:
+                value = tiers.get(int(rank))
+            except (TypeError, ValueError):
+                value = None
+            if value:
+                out.loc[idx, "tier"] = value
+    return out
+
+
+def _global_scored_frame() -> pd.DataFrame:
+    """Build a cross-server podium when all three player boards exist.
+
+    CN is intentionally all-or-nothing here. A two-server blend would look
+    global in the UI while silently excluding the very server this feature is
+    meant to add. The collection can therefore publish EU/NA regional pages
+    first and the global podium appears only after the CN manifest is present.
+    """
+    paths = {
+        "EU": REGION_FILES["eu"]["csv"],
+        "NA": REGION_FILES["na"]["csv"],
+        "CN": REGION_FILES["cn"]["csv"],
+    }
+    if not all(path.exists() for path in paths.values()):
+        return pd.DataFrame()
+    frames = []
+    for server, path in paths.items():
+        frame = _attach_player_metadata(
+            load_leaderboard(csv_path=path),
+            {"EU": "eu", "NA": "na", "CN": "cn"}[server],
+        )
+        if frame.empty:
+            return pd.DataFrame()
+        frame = frame.copy()
+        frame["server"] = server
+        frames.append(frame)
+    combined = pd.concat(frames, ignore_index=True)
+    return best_player_podium_per_champion(combined)
+
+
+def _global_podium_by_champion() -> dict[str, dict]:
+    scored = _global_scored_frame()
+    if scored.empty:
+        return {}
+    out: dict[str, dict] = {}
+    for champ, group in scored.groupby("champion"):
+        rows = group[group["podium_rank"].notna()].sort_values("podium_rank")
+        out[_slug(str(champ))] = {
+            "scoringVersion": BEST_PLAYER_SCORING_VERSION,
+            "scope": "global",
+            "server": None,
+            "capturedAt": data_collected_on(scored),
+            "players": [_best_player_row_payload(row) for _, row in rows.iterrows()],
+        }
+    return out
+
+
+def _export_global_players() -> None:
+    """Write the combined full table once all three regional boards exist."""
+    scored = _global_scored_frame()
+    if scored.empty:
+        return
+    out: dict[str, list[dict]] = {}
+    for champ, group in scored.groupby("champion"):
+        rows = group.sort_values(["best_score", "confidence_wr", "rank"], ascending=[False, False, True])
+        out[_slug(str(champ))] = [
+            {
+                "r": _i(row.get("rank")),
+                "p": display_name(str(row["player_name"])) if pd.notna(row.get("player_name")) else "—",
+                "w": _f(row.get("winrate")),
+                "g": _i(row.get("games")),
+                "s": _i(row.get("score")),
+                "v": str(row.get("server")).upper() if pd.notna(row.get("server")) else None,
+                "b": _f(row.get("best_score")),
+            }
+            for _, row in rows.iterrows()
+        ]
+    path = ROOT / "web-next" / "public" / "players-global.json"
+    path.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    print(f"wrote {path.relative_to(ROOT)} ({sum(len(v) for v in out.values())} player rows)")
+
+
 def build() -> dict:
-    df = load_leaderboard(csv_path=REGION_CSV)
+    df = _attach_player_metadata(load_leaderboard(csv_path=REGION_CSV), REGION)
     if df.empty:
         raise SystemExit(f"{(REGION_CSV or 'data/winrates.csv')} is empty — scrape first.")
 
@@ -210,16 +354,27 @@ def build() -> dict:
     spread = skill_spread(df, summary)
     spread_by_champ = dict(zip(spread["champion"], spread["skill_spread"]))
 
-    # Best player per champion (Wilson), flagged across the whole pool.
-    best_df = best_player_per_champion(df)
-    best_flagged = best_df[best_df["is_best_for_champ"]]
+    # Best player podium: the composite score is used for the new fields while
+    # the legacy bestPlayer shape remains available for older consumers.
+    podium_df = best_player_podium_per_champion(df)
+    best_flagged = podium_df[podium_df["is_best_for_champ"]]
     best_by_champ = {}
     for _, b in best_flagged.iterrows():
         best_by_champ[str(b["champion"])] = {
-            "player": str(b["player_name"]),
+            "player": display_name(str(b["player_name"])),
             "rank": _i(b.get("rank")),
             "confidence_wr": _f(b.get("confidence_wr")),
+            "server": REGION.upper(),
+            "best_score": _f(b.get("best_score")),
+            "scoring_version": BEST_PLAYER_SCORING_VERSION,
         }
+
+    podium_by_champ: dict[str, list[dict]] = {}
+    for champ, group in podium_df.groupby("champion"):
+        rows = group[group["podium_rank"].notna()].sort_values("podium_rank")
+        podium_by_champ[str(champ)] = [_best_player_row_payload(row) for _, row in rows.iterrows()]
+
+    global_podium = _global_podium_by_champion() if REGION == "eu" else {}
 
     # Off-meta champions (pickrate logic) — store as an ordered slug list.
     off_meta = off_meta_picks(df)
@@ -320,6 +475,14 @@ def build() -> dict:
             "icon": icon_url(name),
             "splash": splash_url(name),
             "bestPlayer": best_by_champ.get(name),
+            "bestPlayerPodium": {
+                "scoringVersion": BEST_PLAYER_SCORING_VERSION,
+                "scope": "regional",
+                "server": REGION.upper(),
+                "capturedAt": data_collected_on(df),
+                "players": podium_by_champ.get(name, []),
+            },
+            "globalBestPlayerPodium": global_podium.get(_slug(name)),
             # "All" is the top-level wr/tier; these are the shallower slices.
             "pools": pools_by_champ.get(name) or None,
         })
@@ -532,6 +695,10 @@ def build() -> dict:
         "nChampions": len(champions),
         "nPlayers": int(len(df)),
         "wrOffset": wr_offset,
+        "bestPlayerScoringVersion": BEST_PLAYER_SCORING_VERSION,
+        "bestPlayerScope": "regional",
+        "hasGlobalBestPlayerPodium": bool(global_podium),
+        "server": REGION.upper(),
         "champions": champions,
         "metaBreakdown": meta,
         "winrateByDifficulty": by_diff,
@@ -548,7 +715,7 @@ def build_players() -> dict:
 
     Compact short keys keep the file small (it's served as a static asset the
     leaderboard page fetches on demand): r=rank, p=player, w=winrate,
-    g=games, s=score (mastery).
+    g=games, s=score (mastery), b=composite Best Player score.
     """
     # The board is a mirror of the game, so boosting accounts keep their ROW
     # (ranks stay contiguous) with the name hidden -- unlike every statistic,
@@ -557,6 +724,14 @@ def build_players() -> dict:
     df = load_leaderboard(unfiltered=True, csv_path=REGION_CSV)
     if df.empty:
         return {}
+    scored = best_player_podium_per_champion(
+        _attach_player_metadata(load_leaderboard(csv_path=REGION_CSV), REGION)
+    )
+    score_by_row = {
+        (str(row["champion"]), int(row["rank"])): row.get("best_score")
+        for _, row in scored.iterrows()
+        if pd.notna(row.get("rank"))
+    }
     top = df[df["rank"] <= TOP_N].copy()
     out: dict[str, list[dict]] = {}
     for champ, g in top.groupby("champion"):
@@ -568,6 +743,7 @@ def build_players() -> dict:
                 "w": _f(r.get("winrate")),
                 "g": _i(r.get("games")),
                 "s": _i(r.get("score")),
+                "b": _f(score_by_row.get((str(champ), int(r["rank"])) if pd.notna(r.get("rank")) else None)),
             })
         out[_slug(str(champ))] = rows
     return out
@@ -613,6 +789,8 @@ def main() -> None:
     p_kb = PLAYERS_OUT.stat().st_size / 1024
     n_rows = sum(len(v) for v in players.values())
     print(f"wrote {PLAYERS_OUT.relative_to(ROOT)} ({p_kb:.0f} KB, {n_rows} player rows)")
+    if REGION == "eu":
+        _export_global_players()
 
 
 if __name__ == "__main__":

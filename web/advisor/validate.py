@@ -20,7 +20,7 @@ import re
 import unicodedata
 from dataclasses import dataclass, field
 
-from web.advisor import itemmeta, runemeta
+from web.advisor import crit_policy, itemmeta, runemeta
 
 ITEMS = itemmeta.ITEMS
 
@@ -250,7 +250,9 @@ def _realign_rune_reasons(res: dict, page: dict, report: Report) -> None:
     reasons["minors"] = realigned
 
 
-def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
+def identity_violations(slugs: list[str], identity: dict | None,
+                        *, champion_name: str = "",
+                        champion_class: str = "") -> list[str]:
     """Hard meta-identity lint: items whose defining stat the champion's
     curated identity card marks as never-build.
 
@@ -266,19 +268,41 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
     # crit item for a card that explicitly forbids it.
     if identity and isinstance(identity.get("hardLimits"), dict):
         identity = identity["hardLimits"]
-    if not identity:
-        return []
+    identity = identity or {}
     avoid = set(identity.get("avoidStats") or [])
-    if not avoid:
+    forbidden_paths = " ".join(
+        str(row.get("path") or "")
+        for row in (identity.get("neverArchetypes") or [])
+        if isinstance(row, dict)
+    ).lower()
+    generic_crit_ban = bool(
+        champion_name and not crit_policy.allows(champion_name, champion_class))
+    if not avoid and not forbidden_paths and not generic_crit_ban:
         return []
     out: list[str] = []
     for slug in slugs:
         item = ITEMS.get(slug) or {}
         stats = item.get("stats") or {}
         passive_text = " ".join(str(line) for line in (item.get("passives") or [])).lower()
-        has_crit = ("crit" in stats
-                    or re.search(r"\bcritical(?:ly)?\b|\bcrit\b", passive_text))
+        # ``ad`` is deliberately a hard identity signal when a curated card
+        # says to avoid it.  Tanks such as Rammus can expose small AP/AD
+        # ratios in their tooltip, but their item path is armor/health/MR;
+        # letting raw AD items through made the engine call Divine Sunderer or
+        # Hullbreaker a "maximum damage tank" even though the card explicitly
+        # forbids physical offensive stats.  Read the canonical stat field,
+        # not prose ("bonus damage" is not attack damage).
+        has_ad = "ad" in stats or "bonusAd" in stats
+        has_crit = crit_policy.item_has_crit(item)
         has_attack_speed = "attackSpeed" in stats or "attack speed" in passive_text
+        # A path card that bans Attack Speed On-Hit should reject a single
+        # defining on-hit item (BORK, Wit's End, Guinsoo's), not only a
+        # completed three-item combo.  Pure attack-speed passengers such as
+        # Trinity remain legal; this is deliberately the intersection of the
+        # two signals.
+        has_on_hit = bool(
+            re.search(r"on[- ]hits?\b|attacks?\s+deal|every\s+\d+(?:st|nd|rd|th)?\s+attack",
+                      passive_text, re.I)
+        )
         has_armor_pen = ("physicalPen" in stats or "physicalPenFlat" in stats
                          or "armor penetration" in passive_text
                          or "lethality" in passive_text)
@@ -290,7 +314,11 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
                          or "magic damage amplification" in passive_text)
         has_lifesteal = any(key in stats for key in ("lifesteal", "omnivamp", "physicalVamp"))
         hit = None
-        if "crit" in avoid and has_crit \
+        if generic_crit_ban and crit_policy.item_has_crit(item):
+            hit = "critical strike"
+        elif "ad" in avoid and has_ad:
+            hit = "attack damage"
+        elif "crit" in avoid and has_crit \
                 and "physicalPen" not in stats and "physicalPenFlat" not in stats:
             # pen items carrying crit (Mortal Reminder, LDR) are bought for
             # the pen/anti-heal by no-crit champions; 14% of ladder Aatrox
@@ -312,10 +340,81 @@ def identity_violations(slugs: list[str], identity: dict | None) -> list[str]:
             hit = "lifesteal/omnivamp"
         elif ("healing_power" in avoid or "shield_power" in avoid) and "healShieldPower" in stats:
             hit = "healing/shield power"
+        elif ("attack speed" in forbidden_paths and "on-hit" in forbidden_paths
+              and has_attack_speed and has_on_hit):
+            hit = "attack speed/on-hit"
         if hit:
-            out.append(f"{slug} is a {hit} item, and this champion's meta identity marks "
+            article = "an" if hit[:1].lower() in "aeiou" else "a"
+            out.append(f"{slug} is {article} {hit} item, and this champion's meta identity marks "
                        f"{hit} as never-build; replace it with an item from an approved "
                        "archetype in the META ITEMIZATION IDENTITY block")
+    return out
+
+
+def identity_combo_violations(slugs: list[str], identity: dict | None,
+                              *, champion_name: str = "",
+                              champion_class: str = "") -> list[str]:
+    """Reject a completed item set that forms a forbidden archetype.
+
+    ``identity_violations`` intentionally works one item at a time because
+    most hard limits are stat-level rules.  A card can also forbid a *path*,
+    though: Hecarim's card, for example, says Crit Damage is not a viable
+    identity.  Three crit items can satisfy the per-item AD checks and still
+    turn an ``ad-bruiser`` engine path into exactly that forbidden crit build.
+    Keep this gate combo-level so one incidental crit/penetration item is not
+    rejected while a full off-identity core cannot pass unnoticed.
+    """
+    if identity and isinstance(identity.get("hardLimits"), dict):
+        identity = identity["hardLimits"]
+    if not identity:
+        return []
+    forbidden = " ".join(
+        str(row.get("path") or "")
+        for row in (identity.get("neverArchetypes") or [])
+        if isinstance(row, dict)
+    ).lower()
+    if not forbidden:
+        return []
+
+    crit_count = 0
+    on_hit_count = 0
+    flat_pen_count = 0
+    for slug in slugs:
+        item = ITEMS.get(slug) or {}
+        stats = item.get("stats") or {}
+        passive_text = " ".join(str(line) for line in (item.get("passives") or []))
+        if crit_policy.item_has_crit(item):
+            crit_count += 1
+        has_attack_speed = "attackSpeed" in stats or re.search(
+            r"attack speed", passive_text, re.I)
+        has_on_hit = re.search(
+            r"on[- ]hits?\b|attacks?\s+deal|every\s+\d+(?:st|nd|rd|th)?\s+attack",
+            passive_text, re.I)
+        if has_attack_speed and has_on_hit:
+            on_hit_count += 1
+        if "physicalPenFlat" in stats:
+            flat_pen_count += 1
+
+    out: list[str] = []
+    if ("crit" in forbidden and crit_count >= 3
+            and not (champion_name
+                    and crit_policy.allows(champion_name, champion_class))):
+        out.append(
+            f"the item set contains {crit_count} crit items and forms a Crit Damage "
+            "path, but this champion's curated identity marks Crit Damage as never-build"
+        )
+    if "attack speed" in forbidden and "on-hit" in forbidden and on_hit_count >= 3:
+        out.append(
+            f"the item set contains {on_hit_count} attack-speed/on-hit items and forms "
+            "an Attack Speed On-Hit path, but this champion's curated identity marks "
+            "that path as never-build"
+        )
+    if "lethality" in forbidden and flat_pen_count >= 2:
+        out.append(
+            f"the item set contains {flat_pen_count} flat-penetration items and forms "
+            "a Lethality path, but this champion's curated identity marks Lethality "
+            "as never-build"
+        )
     return out
 
 
@@ -339,6 +438,7 @@ def validate(
     res: dict,
     *,
     champion_class: str = "",
+    champion_name: str = "",
     role: str = "",
     mode: str = "studio",
     enemies_known: bool = False,
@@ -355,6 +455,7 @@ def validate(
     ladder_core: list[str] | None = None,
     hard_cc_count: int | None = None,
     healing_level: str = "",
+    unrestricted_mode: bool = False,
 ) -> Report:
     """Check and normalise the model's build in place. Returns a Report."""
     report = Report()
@@ -518,7 +619,8 @@ def validate(
         if outside:
             report.fail("items", f"{outside} were withheld from the item pool for this "
                                  "request and cannot be selected; pick from the supplied pool")
-        reactive = [s for s in items if s in itemmeta.SITUATIONAL_ONLY] if not enemies_known else []
+        reactive = ([s for s in items if s in itemmeta.SITUATIONAL_ONLY]
+                    if not enemies_known and not unrestricted_mode else [])
         if reactive:
             report.fail("items", f"reactive items {reactive} cannot be in the main 5 with no "
                                  "enemy team supplied -- move them to situational swaps")
@@ -528,17 +630,25 @@ def validate(
         for note in redundancy_notes(items):
             report.warn(note)
         # Late-strategic items are allowed, but not anywhere and not silently.
-        for slug, cfg in itemmeta.LATE_STRATEGIC.items():
-            if slug not in items:
-                continue
-            position = items.index(slug) + 1
-            minimum = int(cfg.get("minPosition", 4))
-            if position < minimum:
-                report.fail("items", f"{slug} is a late strategic purchase and cannot sit at "
-                                     f"position {position}; it may enter the build at "
-                                     f"position {minimum} or later")
-        for problem in identity_violations(items, identity):
-            report.fail("items", problem)
+        if not unrestricted_mode:
+            for slug, cfg in itemmeta.LATE_STRATEGIC.items():
+                if slug not in items:
+                    continue
+                position = items.index(slug) + 1
+                minimum = int(cfg.get("minPosition", 4))
+                if position < minimum:
+                    report.fail("items", f"{slug} is a late strategic purchase and cannot sit at "
+                                         f"position {position}; it may enter the build at "
+                                         f"position {minimum} or later")
+        if not unrestricted_mode:
+            for problem in identity_violations(
+                    items, identity, champion_name=champion_name,
+                    champion_class=champion_class):
+                report.fail("items", problem)
+            for problem in identity_combo_violations(
+                    items, identity, champion_name=champion_name,
+                    champion_class=champion_class):
+                report.fail("items", problem)
 
     main_items = [s for s in items if s]
 
@@ -548,8 +658,11 @@ def validate(
         report.fail("boots", f"boots must be a tier-2 boots slug, got {res.get('boots')}")
     else:
         res["boots"] = boots
-        for problem in identity_violations([boots], identity):
-            report.fail("boots", problem)
+        if not unrestricted_mode:
+            for problem in identity_violations(
+                    [boots], identity, champion_name=champion_name,
+                    champion_class=champion_class):
+                report.fail("boots", problem)
         res["bootsUpgrade"] = ITEMS[boots].get("upgradesTo")
         try:
             boot_after = int(res.get("bootsPurchaseAfter", 1))
@@ -580,7 +693,7 @@ def validate(
             ("ad" in boot_stats or "attackSpeed" in boot_stats) if damage_path == "ap"
             else ("ap" in boot_stats) if damage_path == "ad"
             else False)
-        if off_path:
+        if off_path and not unrestricted_mode:
             report.fail("boots",
                         f"this is an {damage_path.upper()} build and {boots} is an offensive "
                         f"boot for the other damage type ({', '.join(sorted(boot_stats))}). "
@@ -590,13 +703,14 @@ def validate(
         # is right with no enemy team and wrong once a comp is on the table,
         # where the defensive boot is sometimes simply the better choice. So the
         # ban now applies only when there is nothing to be defensive about.
-        if (boots in DEFENSIVE_BOOTS and champion_class in OFFENSE_FIRST_CLASSES
+        if (not unrestricted_mode and boots in DEFENSIVE_BOOTS and champion_class in OFFENSE_FIRST_CLASSES
                 and not enemies_known):
             report.fail("boots",
                         f"{champion_class} main boots cannot be defensive {boots} when no enemy "
                         "team was supplied -- there is no threat to itemise against. Choose "
                         "offensive/utility boots and put this in situationalBoots.")
-        elif boots in DEFENSIVE_BOOTS and champion_class in OFFENSE_FIRST_CLASSES:
+        elif (not unrestricted_mode and boots in DEFENSIVE_BOOTS
+              and champion_class in OFFENSE_FIRST_CLASSES):
             reason = str((res.get("buildScore") or {}).get("reason") or "") + " " + \
                 " ".join(str(w) for w in (res.get("why") or []))
             if len(reason.strip()) < 20:

@@ -47,6 +47,19 @@
           "why": "Dragon Practice: 'Flap, Flap, Flap: Each hit deals an additional 12% magic damage'. The 'extra bolt every 65 stacks' is NOT modelled: bolt count would scale with a stack count we are only estimating."
         }
       ]
+    },
+    "Rammus": {
+      "amps": [
+        {
+          "slot": "2",
+          "perAuto": true,
+          "appliesTo": "all",
+          "dealtAs": "magic",
+          "pct": 40,
+          "durationS": 6,
+          "why": "Defensive Ball Curl: while curled, Spiked Shell deals 40% more damage. The 6-second active duration is averaged over the reference fight; attacker reflection and the 175% monster multiplier remain explicit coverage gaps."
+        }
+      ]
     }
   }
 }

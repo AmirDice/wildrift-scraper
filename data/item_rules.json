@@ -94,6 +94,36 @@
       ],
       "requiresJustification": true,
       "why": "Allowed as a late purchase for divers and engage champions who convert a revive into a second engage, or who carry a large shutdown worth protecting. Never a default: if the reason is only 'it is a good item', pick something that adds damage or uptime instead."
+    },
+    "lord-dominiks-regard": {
+      "minPosition": 3,
+      "allowedPatterns": [
+        "basic-attack-carry",
+        "repeated-attacks",
+        "mixed"
+      ],
+      "requiresJustification": true,
+      "why": "Percentage armor penetration is a mid-game purchase. Keep it third or later so early AD/crit components can do their job before enemy armor is high enough to repay the slot."
+    },
+    "mortal-reminder": {
+      "minPosition": 3,
+      "allowedPatterns": [
+        "basic-attack-carry",
+        "repeated-attacks",
+        "mixed"
+      ],
+      "requiresJustification": true,
+      "why": "The Last Whisper penetration belongs after an early damage core; buy it third or later unless a documented anti-heal matchup makes the earlier slot necessary."
+    },
+    "seryldas-grudge": {
+      "minPosition": 3,
+      "allowedPatterns": [
+        "ability-weaving",
+        "repeated-attacks",
+        "mixed"
+      ],
+      "requiresJustification": true,
+      "why": "Percent armor penetration and its slow are mid-game tools. Keep Serylda's third or later in an unknown matchup so an early haste/AD core is not delayed."
     }
   },
   "defaultStrategy": {

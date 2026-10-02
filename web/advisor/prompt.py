@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from web.advisor import itemmeta, profiles, runemeta, threats
+from web.advisor import crit_policy, itemmeta, profiles, runemeta, threats
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 DATA = ROOT / "data"
@@ -439,6 +439,9 @@ def meta_identity_block(name: str, constrain: bool = True) -> str:
         if card.get("identitySummary"):
             lines.append(f"  is: {_norm(card['identitySummary'])}")
         add_limits()
+        crit_rule = crit_policy.prompt_line(name, card.get("classes") or [])
+        if crit_rule:
+            lines.append(crit_rule)
         lines.append(
             "  Nothing else about this champion's usual build is given to you on "
             "purpose. Decide the archetype and every item in it from the kit "
@@ -479,6 +482,10 @@ def meta_identity_block(name: str, constrain: bool = True) -> str:
             + ", ".join(n.replace("_", " ") for n in needs["situational_needs"]))
     if card.get("statPriorities"):
         lines.append("  stat priorities: " + " > ".join(card["statPriorities"]))
+
+    crit_rule = crit_policy.prompt_line(name, card.get("classes") or [])
+    if crit_rule:
+        lines.append(crit_rule)
 
     team = card.get("teamComp") or {}
     if team:

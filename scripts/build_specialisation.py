@@ -125,14 +125,14 @@ def main() -> int:
     # NA's one-trick numbers were EU's numbers wearing an NA label.
     import argparse
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--region", default="eu", choices=["eu", "na"])
+    ap.add_argument("--region", default="eu", choices=["eu", "na", "cn"])
     args = ap.parse_args()
     global CAPTURES, ARCHIVE, OUT
-    if args.region == "na":
-        CAPTURES = ROOT / "data" / "captures_na"
-        ARCHIVE = ROOT / "data" / "captures_na_archive"
-        OUT = ROOT / "data" / "champion_specialisation_na.json"
-    site_name = "site.json" if args.region == "eu" else "site_na.json"
+    if args.region in ("na", "cn"):
+        CAPTURES = ROOT / "data" / f"captures_{args.region}"
+        ARCHIVE = ROOT / "data" / f"captures_{args.region}_archive"
+        OUT = ROOT / "data" / f"champion_specialisation_{args.region}.json"
+    site_name = "site.json" if args.region == "eu" else f"site_{args.region}.json"
     site_path = ROOT / "web-next" / "src" / "data" / site_name
     site = {c["name"]: c for c in
             json.loads(site_path.read_text(encoding="utf-8"))["champions"]} \
