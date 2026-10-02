@@ -37,6 +37,7 @@ from scripts.export_captures import (  # noqa: E402
     _read_csv, _slug,
 )
 from scripts.ladder_item_order import purchase_order, shown_items  # noqa: E402
+from web.advisor import runemeta  # noqa: E402
 from web.integrity import counts_toward_aggregates, eligible_for_title  # noqa: E402
 from web.runes import canonical_rune, is_known_rune  # noqa: E402
 
@@ -47,6 +48,48 @@ def _rune_trees() -> dict[str, str]:
     a keystone's real tree is not recorded -- only minors carry one."""
     runes = json.loads((ROOT / "data" / "wrmeta_runes.json").read_text(encoding="utf-8"))
     return {r["name"]: (r.get("tree") or r.get("type") or "") for r in runes}
+
+
+def _canonical_rune_page(raw: list[str] | tuple[str, ...]) -> dict | None:
+    """Convert one captured five-rune row into a complete legal page.
+
+    OCR order is not trusted for the four minors. The primary tree is the one
+    represented in all three numbered slots; the remaining off-tree minor is
+    the flex. Invalid or partial reads stay out of exact-page consensus while
+    their individually readable names can still contribute to aggregate use.
+    """
+    names = [canonical_rune(name) for name in (raw or [])]
+    if len(names) != 5 or any(not is_known_rune(name) for name in names):
+        return None
+    keystone = names[0]
+    if runemeta.BY_NAME.get(keystone, {}).get("type") != "Keystone":
+        return None
+    minors = names[1:]
+    for tree in runemeta.TREES:
+        primary = []
+        for slot in (1, 2, 3):
+            matches = [name for name in minors
+                       if runemeta.SLOT_OF.get(name) == (tree, slot)]
+            if len(matches) != 1:
+                break
+            primary.append(matches[0])
+        if len(primary) != 3:
+            continue
+        flexes = [name for name in minors if name not in primary]
+        if len(flexes) != 1:
+            continue
+        page = {"keystone": keystone, "primaryTree": tree,
+                "minors": primary, "flex": flexes[0]}
+        if not runemeta.page_errors(page):
+            return page
+    return None
+
+
+def _rune_page_key(page: dict) -> tuple[str, str, str, str, str, str]:
+    return (str(page.get("keystone") or ""),
+            str(page.get("primaryTree") or ""),
+            *(str(name) for name in (page.get("minors") or [])),
+            str(page.get("flex") or ""))
 
 
 def _weighted(stat: dict) -> float | None:
@@ -142,6 +185,7 @@ def build() -> tuple[dict, dict]:
 
         ks: Counter = Counter()
         minors: Counter = Counter()
+        rune_pages: Counter = Counter()
         spells: Counter = Counter()
         items: Counter = Counter()
         exact: Counter = Counter()
@@ -186,6 +230,9 @@ def build() -> tuple[dict, dict]:
                     if tree and tree != "Keystone":
                         tree_global[tree] += 1
                         _note("tree", tree, *wr_g)
+                page = _canonical_rune_page(b["runes"])
+                if page:
+                    rune_pages[_rune_page_key(page)] += 1
             if b.get("spells"):
                 pair = " + ".join(sorted(b["spells"]))
                 spells[pair] += 1
@@ -383,6 +430,11 @@ def build() -> tuple[dict, dict]:
                       for s, c in items.most_common()],
             **({"order": order, "orderFrom": "same"} if order else {}),
             "keystones": [{"name": k, "count": c, "of": len(builds)} for k, c in ks.most_common()],
+            "runePages": [{
+                "keystone": key[0], "primaryTree": key[1],
+                "minors": list(key[2:5]), "flex": key[5],
+                "count": count, "of": len(builds),
+            } for key, count in rune_pages.most_common()],
             "spells": [{"pair": p, "count": c, "of": len(builds)} for p, c in spells.most_common()],
             "minors": [{"name": m, "count": c, "of": len(builds)} for m, c in minors.most_common()],
         }

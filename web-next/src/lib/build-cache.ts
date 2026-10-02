@@ -379,7 +379,9 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // survive the stricter identity policy.
   // v78: Eclipse and Sundered Sky mechanics were corrected in the engine;
   // retire cached builds scored before their proc, shield, and sustain fixes.
-  return `build:v78:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v79: rune choice is model/ladder-led. The engine measures complete pages
+  // instead of synthesizing and ranking thousands of context-blind pages.
+  return `build:v79:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

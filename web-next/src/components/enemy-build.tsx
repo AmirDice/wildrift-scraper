@@ -487,6 +487,7 @@ export type Advice = {
     candidateErrors?: string[];
     damageArchetypes?: { id: string; description?: string }[];
     modelCandidates?: Array<Record<string, unknown>>;
+    ladderCandidate?: Record<string, unknown> | null;
     engineChallenger?: boolean;
     engineAutoSelected?: boolean;
     engineWinGate?: {
@@ -508,7 +509,7 @@ export type Advice = {
     winner?: string | null;
     judgedWinner?: string | null;
     coreRepairedAfterJudge?: boolean;
-    winnerSource?: "engine" | "model" | "unlabelled";
+    winnerSource?: "engine" | "model" | "ladder" | "unlabelled";
     winnerRationale?: string[];
     level?: number;
     measurements?: Array<Record<string, unknown>>;

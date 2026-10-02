@@ -1147,11 +1147,53 @@ def _canonical_tournament_candidate(candidate: dict) -> dict:
     return out
 
 
+def _rune_policy_errors(champion: str, role: str, page: dict,
+                        rune_locks: list[str] | None = None) -> list[str]:
+    """Reject only rune choices that are mechanically incoherent.
+
+    The model owns contextual rune judgement.  These guards are deliberately
+    narrow: they cover cases where the game mode or champion kit makes the
+    rune's main value unavailable, while explicit user locks still win.
+    """
+    locked = set(rune_locks or [])
+    names = set(_candidate_rune_names({"runes": page}))
+    errors: list[str] = []
+    normalized_role = _canon(role)
+    if normalized_role in {"jungle", "jg"}:
+        wasted_mana = (names & set(runemeta.MANA_RUNES)) - locked
+        if wasted_mana:
+            errors.append(
+                "jungle pages cannot spend a rune slot on mana sustain: "
+                + ", ".join(sorted(wasted_mana)))
+    if champion:
+        base_champion = champion.split(" (")[0]
+        try:
+            attack_speed_value = str(
+                profiles.profile(base_champion, log=False)["combatProfile"].get(
+                    "attackSpeedValue") or "")
+        except Exception:  # pragma: no cover - optional profile safety net
+            attack_speed_value = ""
+        wasted_attack_speed = (
+            names & {"Lethal Tempo", "Legend: Alacrity"}) - locked
+        if attack_speed_value in {"none", "low"} and wasted_attack_speed:
+            errors.append(
+                f"{base_champion}'s attack-speed value is {attack_speed_value}; "
+                "do not spend rune slots on "
+                + ", ".join(sorted(wasted_attack_speed)))
+    # Guardian needs a nearby ally or an ally-targeted ability.  It remains
+    # available to both duo-lane roles, where that condition is credible.
+    if ("Guardian" in names and "Guardian" not in locked
+            and normalized_role in {"jungle", "jg", "mid", "middle", "baron", "top"}):
+        errors.append("Guardian requires reliable ally proximity and is not a solo-role page")
+    return errors
+
+
 def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
                                  item_locks: list[str] | None = None,
                                  boot_lock: str = "",
                                  rune_locks: list[str] | None = None,
-                                 role: str = "", enemies_known: bool = False,
+                                 role: str = "", champion: str = "",
+                                 enemies_known: bool = False,
                                  expected_count: int = 3,
                                   required_archetypes: list[str] | None = None,
                                   unrestricted_mode: bool = False,
@@ -1203,6 +1245,9 @@ def _legal_tournament_candidates(payload: dict, allowed_items: list[str], *,
             problem = "has an illegal rune page: " + rune_errors[0]
         elif any(lock not in runes for lock in (rune_locks or [])):
             problem = "does not preserve every locked rune"
+        elif (not unrestricted_mode and (policy_errors := _rune_policy_errors(
+                champion, role, candidate.get("runes") or {}, rune_locks))):
+            problem = "has an incoherent rune page: " + policy_errors[0]
         elif len(candidate.get("summoners") or []) != 2:
             problem = "must contain two summoner spells"
         elif not (legal_spells := summoners.enforce(
@@ -1482,16 +1527,94 @@ def _tournament_measurement_score(measured: dict | None,
     return round(damage_w * damage + survival_w * survival, 6)
 
 
+def _ladder_rune_page(record: dict, authored: list[dict], champion: str,
+                      role: str, rune_locks: list[str] | None = None
+                      ) -> tuple[dict, str] | tuple[None, str]:
+    """Recover the best complete ladder page, with a legacy-data fallback."""
+    locked = set(rune_locks or [])
+
+    def acceptable(page: dict) -> bool:
+        names = set(_candidate_rune_names({"runes": page}))
+        return (not runemeta.page_errors(page)
+                and not (locked - names)
+                and not _rune_policy_errors(champion, role, page, rune_locks))
+
+    exact_rows = sorted(
+        (row for row in (record.get("runePages") or []) if isinstance(row, dict)),
+        key=lambda row: int(row.get("count") or 0), reverse=True)
+    for row in exact_rows:
+        page = {key: row.get(key) for key in
+                ("keystone", "primaryTree", "minors", "flex")}
+        page["minors"] = list(page.get("minors") or [])
+        if acceptable(page):
+            return page, "exact-ladder-page"
+
+    ladder_names = {
+        runemeta.resolve(str(row.get("name") or ""))
+        for key in ("keystones", "minors")
+        for row in (record.get(key) or []) if isinstance(row, dict)
+    } - {None}
+    if not authored:
+        return None, "unavailable"
+    base = max(authored, key=lambda row: len(
+        ladder_names & set(_candidate_rune_names(row))))
+
+    # Older consensus files stored independent rune frequencies. Reconstruct
+    # only a structurally complete page: one observed minor in each slot of a
+    # single tree, plus an observed off-tree flex. If the old tail omitted the
+    # flex, retain the closest authored flex rather than inventing one.
+    keystone_rows = [row for row in (record.get("keystones") or [])
+                     if isinstance(row, dict)]
+    keystones = [(runemeta.resolve(str(row.get("name") or "")),
+                  int(row.get("count") or 0)) for row in keystone_rows]
+    keystones = [(name, count) for name, count in keystones
+                 if name and runemeta.BY_NAME.get(name, {}).get("type") == "Keystone"]
+    minor_rows = [row for row in (record.get("minors") or [])
+                  if isinstance(row, dict)]
+    minor_counts = {
+        name: max(int(row.get("count") or 0), 0)
+        for row in minor_rows
+        if (name := runemeta.resolve(str(row.get("name") or "")))
+        and runemeta.BY_NAME.get(name, {}).get("type") != "Keystone"
+    }
+    primary_options = []
+    for tree in runemeta.TREES:
+        minors = []
+        for slot in (1, 2, 3):
+            choices = [(count, name) for name, count in minor_counts.items()
+                       if runemeta.SLOT_OF.get(name) == (tree, slot)]
+            if not choices:
+                break
+            minors.append(max(choices)[1])
+        if len(minors) == 3:
+            primary_options.append((sum(minor_counts[name] for name in minors),
+                                    tree, minors))
+    if keystones and primary_options:
+        _score, tree, minors = max(primary_options)
+        flexes = [(count, name) for name, count in minor_counts.items()
+                  if runemeta.SLOT_OF.get(name, ("", 0))[0] not in {"", tree}]
+        base_flex = str((base.get("runes") or {}).get("flex") or "")
+        flex = max(flexes)[1] if flexes else base_flex
+        page = {"keystone": max(keystones, key=lambda row: row[1])[0],
+                "primaryTree": tree, "minors": minors, "flex": flex}
+        if acceptable(page):
+            return page, "aggregate-ladder-page"
+
+    fallback = dict(base.get("runes") or {})
+    if acceptable(fallback):
+        return fallback, "authored-fallback"
+    return None, "unavailable"
+
+
 def _ladder_candidate(champion: str, authored: list[dict], role: str,
-                      allowed_items: list[str]) -> dict | None:
+                      allowed_items: list[str],
+                      rune_locks: list[str] | None = None) -> dict | None:
     """Turn the measured ladder order into one legal tournament candidate.
 
-    Ladder data is an anchor for the model, but it was previously never
-    measured by the engine.  This candidate deliberately keeps the model's
-    legal rune page (the ladder feed stores aggregate rune counts, not a
-    complete page) while using the ladder's ordered six-slot item set.  That
-    gives the tournament an honest item comparison without inventing a rune
-    tree from aggregate counts.
+    New ladder exports include exact complete rune-page frequencies. Legacy
+    aggregate-only files are reconstructed conservatively and finally fall
+    back to the closest authored page. This keeps the ladder candidate legal
+    without pretending independently popular runes were one observed page.
     """
     try:
         record = prompt_mod._consensus_store().get(champion.split(" (")[0])
@@ -1534,23 +1657,40 @@ def _ladder_candidate(champion: str, authored: list[dict], role: str,
     authored = authored or []
     if not authored:
         return None
-    # Prefer the authored page whose runes overlap the aggregate ladder page.
+    # The authored candidate supplies the damage-path label and summoners. Its
+    # rune page is used only as the last fallback for legacy consensus files.
     ladder_runes = {str(row.get("name")) for row in (record.get("keystones") or [])}
     ladder_runes.update(str(row.get("name")) for row in (record.get("minors") or []))
     base = max(authored, key=lambda row: len(ladder_runes &
                                               set(_candidate_rune_names(row))))
+    rune_page, rune_source = _ladder_rune_page(
+        record, authored, champion, role, rune_locks)
+    if not rune_page:
+        return None
+    rune_hypothesis = {
+        "exact-ladder-page": (
+            "Measured ladder item order and its most common complete observed rune page."),
+        "aggregate-ladder-page": (
+            "Measured ladder item order with a legal page reconstructed from legacy "
+            "per-rune counts; it is not claimed as one observed complete page."),
+        "authored-fallback": (
+            "Measured ladder item order with the closest model-authored rune page; "
+            "this historical ladder record has no complete rune page."),
+    }.get(rune_source, "Measured ladder item order with a legal authored rune page.")
     candidate = {
         "id": "LADDER-ANCHOR",
         "archetype": base.get("archetype") or "unlabelled",
-        "hypothesis": "Measured ladder item order; aggregate ladder rune counts are shown separately.",
+        "hypothesis": rune_hypothesis,
         "items": items, "boots": boots,
-        "runes": dict(base.get("runes") or {}),
+        "runes": rune_page,
         "summoners": list(base.get("summoners") or []),
         "ladderAggregate": {
             "items": record.get("items") or [],
             "keystones": record.get("keystones") or [],
             "minors": record.get("minors") or [],
+            "runePages": record.get("runePages") or [],
             "order": record.get("order") or [],
+            "runePageSource": rune_source,
         },
     }
     legal = summoners.enforce(candidate["summoners"], role, False)
@@ -1799,42 +1939,18 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
 
 def _candidate_rune_pages(candidates: list[dict], rune_locks: list[str] | None = None,
                           build_bias: str = "max_damage") -> list[dict]:
-    """Build a small legal page frontier around the model's nominated pages."""
-    from itertools import product
+    """Return exact legal pages authored by the model or measured ladder.
 
+    Rune value is unusually contextual: ally proximity, positioning, takedown
+    access and proc opportunity often cannot be recovered from a synthetic
+    fight.  The engine therefore measures complete authored pages but never
+    splices their individual rune names into a page nobody proposed.
+    ``build_bias`` is retained for call-site compatibility and debug clarity;
+    the bias belongs in Gemini's page hypotheses, not in engine fabrication.
+    """
+    _ = build_bias
     pages: list[dict] = []
     seen: set[tuple] = set()
-    all_names = {r for candidate in candidates for r in _candidate_rune_names(candidate)}
-    keystones = sorted(r for r in all_names
-                       if runemeta.BY_NAME.get(r, {}).get("type") == "Keystone")
-    trees = sorted({str((candidate.get("runes") or {}).get("primaryTree") or "")
-                    for candidate in candidates} - {""})
-    for tree in trees:
-        by_slot = {
-            slot: sorted(r for r in all_names if runemeta.SLOT_OF.get(r) == (tree, slot))
-            for slot in (1, 2, 3)
-        }
-        flexes = sorted(r for r in all_names
-                        if runemeta.BY_NAME.get(r, {}).get("type") != "Keystone"
-                        and runemeta.SLOT_OF.get(r, ("", 0))[0] not in ("", tree))
-        if any(not by_slot[slot] for slot in (1, 2, 3)) or not flexes:
-            continue
-        for keystone, minors, flex in product(
-                keystones, product(by_slot[1], by_slot[2], by_slot[3]), flexes):
-            page = {"keystone": keystone, "primaryTree": tree,
-                    "minors": list(minors), "flex": flex}
-            if runemeta.page_errors(page):
-                continue
-            names = _candidate_rune_names({"runes": page})
-            if any(lock not in names for lock in (rune_locks or [])):
-                continue
-            signature = (keystone, tree, tuple(minors), flex)
-            if signature not in seen:
-                seen.add(signature)
-                pages.append(page)
-
-    # Always retain the authored pages. This also handles a three-build set
-    # whose union cannot form all three slots of another candidate's tree.
     for candidate in candidates:
         page = dict(candidate.get("runes") or {})
         names = _candidate_rune_names({"runes": page})
@@ -1845,32 +1961,6 @@ def _candidate_rune_pages(candidates: list[dict], rune_locks: list[str] | None =
                 and signature not in seen):
             seen.add(signature)
             pages.append(page)
-
-    # Defensive biases need more than one flex choice. Without this frontier,
-    # the engine can change items but every bias is stuck with the exact same
-    # defensive rune page the model happened to nominate.
-    if build_bias in {"balanced", "durability", "max_durability"}:
-        defensive_flexes = (
-            "Bone Plating", "Nullifying Orb", "Second Wind",
-            "Revitalize", "Perseverance")
-        for candidate in candidates:
-            base = dict(candidate.get("runes") or {})
-            tree = str(base.get("primaryTree") or "")
-            if tree not in runemeta.TREES:
-                continue
-            for flex in defensive_flexes:
-                if runemeta.SLOT_OF.get(flex, ("", 0))[0] == tree:
-                    continue
-                page = {**base, "flex": flex}
-                names = _candidate_rune_names({"runes": page})
-                signature = (page.get("keystone"), page.get("primaryTree"),
-                             tuple(page.get("minors") or []), page.get("flex"))
-                if (runemeta.page_errors(page)
-                        or any(lock not in names for lock in (rune_locks or []))
-                        or signature in seen):
-                    continue
-                seen.add(signature)
-                pages.append(page)
     return pages
 
 
@@ -1935,51 +2025,6 @@ def _repair_max_damage_runes(build: dict, rune_locks: list[str] | None = None) -
     if changed:
         build["runes"] = {**page, "minors": minors, "flex": flex}
     return changed
-
-
-def _all_legal_rune_pages(rune_locks: list[str] | None = None) -> list[dict]:
-    """Enumerate the complete legal keystone/minor/flex page frontier."""
-    from itertools import product
-
-    pages: list[dict] = []
-    for tree, slots in runemeta.TREES.items():
-        # Keystone metadata uses the synthetic ``Keystone`` tree rather than
-        # the primary tree in SLOT_OF.  Every keystone is therefore legal as
-        # the keystone choice for each primary tree; page_errors() enforces
-        # the remaining tree/slot rules for the minor and flex runes.
-        keystones = [name for name, row in runemeta.BY_NAME.items()
-                     if row.get("type") == "Keystone"]
-        flexes = [name for name, row in runemeta.BY_NAME.items()
-                  if row.get("type") != "Keystone"
-                  and runemeta.SLOT_OF.get(name, ("", 0))[0] not in ("", tree)]
-        if not keystones or not flexes:
-            continue
-        choices = [list(slots.get(str(i), [])) for i in (1, 2, 3)]
-        if any(not choice for choice in choices):
-            continue
-        for key, minors, flex in product(keystones, product(*choices), flexes):
-            page = {"keystone": key, "primaryTree": tree,
-                    "minors": list(minors), "flex": flex}
-            names = _candidate_rune_names({"runes": page})
-            if (not runemeta.page_errors(page)
-                    and not any(lock not in names for lock in (rune_locks or []))):
-                pages.append(page)
-    return pages
-
-
-def _rune_probe_frontier(pages: list[dict], limit: int = 2048) -> list[dict]:
-    """Keep a deterministic, evenly spaced probe of a large rune frontier.
-
-    The complete legal frontier is useful for validation, but evaluating every
-    page (currently ~52k) against every advisor archetype is too slow for a
-    request-bound server function.  Pages are emitted in tree/keystone order,
-    so an evenly spaced stride still covers every tree and keystone while the
-    authored pages are added separately by the caller.
-    """
-    if len(pages) <= limit:
-        return pages
-    stride = (len(pages) + limit - 1) // limit
-    return pages[::stride][:limit]
 
 
 def _ordered_engine_items(combo: tuple[str, ...], candidates: list[dict],
@@ -2506,6 +2551,10 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
     finalists: list[tuple[float, tuple[str, ...], str, dict, str]] = []
     searched = 0
     path_meta: dict[str, dict] = {}
+    # Rune hypotheses are shared across damage paths. A candidate slot may be
+    # devoted to a different item archetype, but its complete rune page can
+    # still be the right page for another path on the same champion.
+    tournament_pages = _candidate_rune_pages(candidates, rune_locks, build_bias)
     for archetype, seeds in by_path.items():
         authored_boots = {
             str(c.get("boots") or "") for c in seeds
@@ -2517,60 +2566,13 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
                      and item.get("bootsTier", 2) == 2
                      and _identity_item_allowed(champion, slug, unrestricted_mode)}
         boots = sorted(authored_boots | all_boots)
-        pages = _candidate_rune_pages(seeds, rune_locks, build_bias)
-        authored_pages = [c.get("runes") or {} for c in seeds]
+        pages = list(tournament_pages)
+        authored_pages = pages
         if not boots or not pages:
             path_meta[archetype] = {"reason": "no legal boots or rune pages"}
             continue
         seed_boot = Counter(c.get("boots") for c in seeds if c.get("boots")).most_common(1)[0][0]
         probe_page = authored_pages[0]
-        # Expand beyond the model's nominated page, then keep the strongest
-        # legal global pages for the final item/boot tournament. This is the
-        # co-optimization step: keystones, minors, flex and boots are judged
-        # against the same champion/item core rather than only validated after
-        # the LLM has chosen them.
-        global_pages = _rune_probe_frontier(_all_legal_rune_pages(rune_locks))
-        # Rune optimization is a real engine search, not a validation pass.
-        # Do not reduce the legal page frontier to the names Gemini happened
-        # to mention: that made a durability request inherit an offensive
-        # Precision page forever (for example, Alistar could never discover a
-        # Resolve keystone/tree if the model omitted it).  The complete legal
-        # frontier is already capped by _rune_probe_frontier, and authored
-        # pages remain explicitly retained by _candidate_rune_pages above.
-        # This lets the engine co-optimize keystone, primary tree, minors,
-        # flex and boots against the same item core while keeping the request
-        # bounded and every page legal.
-        probe_items = list(seeds[0].get("items") or [])[:2] + [seed_boot]
-        page_rank = []
-        for page in global_pages:
-            vector = cached_vector(
-                probe_items, _candidate_rune_names({"runes": page}), fast=True)
-            page_rank.append((objective_score(vector, prefilter_objective), page))
-        page_rank.sort(key=lambda row: row[0], reverse=True)
-        # Keep the strongest global pages, but preserve a small frontier for
-        # every primary tree on survival-weighted requests. A single global
-        # top-32 is a damage-biased shortlist; it can omit Resolve entirely
-        # when a model supplied an offensive Precision page, making a tank's
-        # rune search look co-optimized while it never tests the defensive
-        # tree. The per-tree frontier is still tiny compared with the 52k
-        # legal-page catalogue and stays request-bounded.
-        ranked_pages = [page for _score, page in page_rank[:32]]
-        if survival_w >= 0.40:
-            for tree in sorted({str(page.get("primaryTree") or "")
-                                for _score, page in page_rank} - {""}):
-                tree_pages = [
-                    page for _score, page in page_rank
-                    if page.get("primaryTree") == tree
-                ][:16]
-                ranked_pages.extend(tree_pages)
-        # De-duplicate while retaining score order. The explicit Resolve
-        # frontier above is the important safety net for max durability.
-        pages_seen = {_candidate_signature({"runes": p}) for p in pages}
-        for page in ranked_pages:
-            signature = _candidate_signature({"runes": page})
-            if signature not in pages_seen:
-                pages.append(page)
-                pages_seen.add(signature)
         authored_items = {slug for c in seeds for slug in c.get("items") or []}
         eligible = [slug for slug in universe
                     if (archetype in {"unlabelled", "unrestricted"}
@@ -2738,6 +2740,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
             "vectorCacheEntries": len(vector_cache),
             "scoreCacheEntries": len(score_cache),
             "legalCombinations": len(shortlist),
+            "runePagesTested": len(pages),
+            "runeSearchMode": "model-and-ladder-pages-only",
             # Kept for the local debug panel.  The engine still searches the
             # bounded pool below; exposing this frontier makes it possible to
             # see whether a promising item was filtered before combination
@@ -2873,6 +2877,8 @@ def _engine_challenger(champion: str, candidates: list[dict], *, role: str = "",
         reverse=True)
     rune_policy = {
         "requested": build_bias,
+        "mode": "model-and-ladder-pages-only",
+        "testedPages": len(tournament_pages),
         "frontlineDefensivePageRequired": bool(
             build_bias == "max_durability"
             and champion_class in {"Tank", "Bruiser", "Fighter"}),
@@ -3111,6 +3117,12 @@ random novelty. One may favour peak sustained DPS, one burst/TTK, and one
 damage delivery or survival where appropriate for this champion. Every build
 must obey the item, rune, role and lock rules above, except that unrestricted
 mode explicitly removes curated identity and archetype guidance.
+Treat each rune page as a complete strategic hypothesis, not filler around the
+items. When more than one page is credible, use at least two materially distinct
+legal pages across the candidates and state the activation/role assumption in
+the hypothesis. Do not change a rune merely for novelty. The engine will measure
+only these complete pages plus an exact measured ladder page when available; it
+will not fabricate pages by mixing individual runes from different candidates.
 {path_rule}
 
 Return ONLY JSON:
@@ -3229,6 +3241,12 @@ when ENGINE-D leads the authored best by at least 5% and has no major recorded
 coverage gap, the engine core is selected automatically and your replacement
 request is ignored. Close scores remain yours to judge; if a mechanic is
 missing, explain the limitation before overriding the engine.
+Rune pages in this tournament are model-authored complete pages or an observed
+ladder page. The engine measures their numerical contribution but does not
+freely construct a page from the full rune catalogue. For contextual runes,
+judge whether ally proximity, positioning, takedowns and proc opportunities are
+credible for the champion, role and skill level; do not treat an optimistic
+synthetic proc as guaranteed.
 Each candidate carries championMechanicsCoverage. If it is partial, do NOT use
 the numeric score to eliminate an archetype whose defining passive, stack,
 recast, conversion or execute appears in buildRelevantGaps. Explain the missing
@@ -3638,7 +3656,7 @@ def advise(champion: str, role: str, enemies: list[str],
             candidates, candidate_errors = _legal_tournament_candidates(
                 raw_candidates, pool_slugs, item_locks=item_locks,
                 boot_lock=locked_boot, rune_locks=locked_runes,
-                role=role, enemies_known=enemies_known,
+                role=role, champion=identity_key, enemies_known=enemies_known,
                 expected_count=candidate_count,
                 required_archetypes=[row["id"] for row in damage_archetypes],
                 unrestricted_mode=unrestricted_mode)
@@ -3661,7 +3679,7 @@ def advise(champion: str, role: str, enemies: list[str],
                 retry_candidates, retry_errors = _legal_tournament_candidates(
                     raw_candidates, pool_slugs, item_locks=item_locks,
                     boot_lock=locked_boot, rune_locks=locked_runes,
-                    role=role, enemies_known=enemies_known,
+                    role=role, champion=identity_key, enemies_known=enemies_known,
                     expected_count=candidate_count,
                     required_archetypes=[row["id"] for row in damage_archetypes],
                     unrestricted_mode=unrestricted_mode)
@@ -3700,7 +3718,8 @@ def advise(champion: str, role: str, enemies: list[str],
             # Score the current measured ladder order beside the model's own
             # hypotheses. It is a comparison candidate, not a fourth model
             # opinion; the final provenance keeps it visible as `ladder`.
-            ladder_row = _ladder_candidate(identity_key, candidates, role, pool_slugs)
+            ladder_row = (None if unrestricted_mode else _ladder_candidate(
+                identity_key, candidates, role, pool_slugs, locked_runes))
             if ladder_row:
                 existing = {_candidate_signature(c) for c in candidates}
                 if _candidate_signature(ladder_row) not in existing:

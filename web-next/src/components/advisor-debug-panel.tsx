@@ -26,6 +26,8 @@ export function AdvisorDebugPanel({ advice }: { advice: Advice }) {
   } | undefined;
   const runePolicy = search?.runePolicy as {
     requested?: string;
+    mode?: string;
+    testedPages?: number;
     frontlineDefensivePageRequired?: boolean;
     selectedDefensivePage?: boolean;
   } | undefined;
@@ -90,7 +92,7 @@ export function AdvisorDebugPanel({ advice }: { advice: Advice }) {
         {(runePolicy || bootPolicy) ? (
           <div className="grid gap-2 sm:grid-cols-2">
             {runePolicy ? (
-              <Metric label="Rune policy" value={`${runePolicy.selectedDefensivePage ? "defensive page selected" : "score-ranked page"}${runePolicy.frontlineDefensivePageRequired ? " · frontline guard" : ""}`} />
+              <Metric label="Rune policy" value={`${runePolicy.mode === "model-and-ladder-pages-only" ? "model + ladder pages" : "score-ranked page"} · ${runePolicy.testedPages ?? "—"} tested${runePolicy.selectedDefensivePage ? " · defensive winner" : ""}${runePolicy.frontlineDefensivePageRequired ? " · frontline guard" : ""}`} />
             ) : null}
             {bootPolicy ? (
               <Metric label="Boot policy" value={bootPolicy.defensiveBootCloseRace ? "defensive close-race winner" : "score-ranked boots"} />
@@ -140,6 +142,15 @@ export function AdvisorDebugPanel({ advice }: { advice: Advice }) {
                 </pre>
               ))}
             </div>
+          ) : <Empty />}
+        </section>
+
+        <section>
+          <Heading>Ladder comparison build</Heading>
+          {tournament?.ladderCandidate ? (
+            <pre className="overflow-auto rounded-lg bg-black/25 p-2 text-[0.68rem] leading-relaxed text-text">
+              {JSON.stringify(tournament.ladderCandidate, null, 2)}
+            </pre>
           ) : <Empty />}
         </section>
 

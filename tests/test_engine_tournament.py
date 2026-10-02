@@ -196,6 +196,77 @@ def test_generation_prompt_carries_the_bias_into_every_candidate():
     assert "EACH archetype" in durable
 
 
+def test_engine_rune_frontier_keeps_only_complete_authored_pages():
+    a = candidate("A", "guardian-angel")
+    b = candidate("B", "wits-end")
+    b["runes"] = {
+        "keystone": "Conqueror", "primaryTree": "Domination",
+        "minors": ["Sudden Impact", "Hubris", "Eyeball Collector"],
+        "flex": "Coup de Grace",
+    }
+
+    pages = adv._candidate_rune_pages([a, b], build_bias="max_durability")
+
+    assert pages == [a["runes"], b["runes"]]
+    # The old search cross-spliced candidate runes and added synthetic
+    # defensive flexes/global pages. The engine now measures hypotheses only.
+    assert all(page["flex"] != "Second Wind" for page in pages)
+
+
+def test_exact_ladder_rune_page_is_preferred_over_aggregate_counts():
+    authored = candidate()
+    exact = {
+        "keystone": "Conqueror", "primaryTree": "Domination",
+        "minors": ["Sudden Impact", "Hubris", "Eyeball Collector"],
+        "flex": "Coup de Grace", "count": 14, "of": 30,
+    }
+    record = {
+        "runePages": [exact],
+        "keystones": [{"name": "Lethal Tempo", "count": 20}],
+        "minors": [],
+    }
+
+    page, source = adv._ladder_rune_page(
+        record, [authored], "Jinx", "Dragon")
+
+    assert source == "exact-ladder-page"
+    assert page == {key: exact[key] for key in
+                    ("keystone", "primaryTree", "minors", "flex")}
+
+
+def test_rune_policy_blocks_only_clear_kit_or_role_mismatches():
+    graves = candidate()["runes"]
+    assert any("attack-speed value" in error for error in
+               adv._rune_policy_errors("Graves", "Jungle", graves))
+
+    mana_jungle = {**candidate()["runes"], "flex": "Manaflow Band"}
+    assert any("mana sustain" in error for error in
+               adv._rune_policy_errors("Jinx", "Jungle", mana_jungle))
+    assert adv._rune_policy_errors(
+        "Jinx", "Jungle", mana_jungle, ["Manaflow Band"]) == []
+
+
+def test_unrestricted_mode_does_not_apply_curated_rune_guards():
+    build = candidate()
+    build["summoners"] = ["Flash", "Smite"]
+    accepted, errors = adv._legal_tournament_candidates(
+        {"candidates": [build]}, list(build["items"]),
+        role="Jungle", champion="Graves", expected_count=1,
+        unrestricted_mode=True)
+
+    assert accepted == [build]
+    assert errors == []
+
+
+def test_generation_prompt_makes_rune_pages_deliberate_hypotheses():
+    prompt = adv._tournament_generation_prompt(
+        "base", [{"id": "ad-crit", "description": "crit autos"}], 3)
+
+    assert "complete strategic hypothesis" in prompt
+    assert "at least two materially distinct" in prompt
+    assert "will not fabricate pages" in prompt
+
+
 def test_candidate_gate_rejects_unknown_items_and_duplicate_builds():
     a = candidate("A", "guardian-angel")
     duplicate = candidate("B", "guardian-angel")
