@@ -1,8 +1,11 @@
 {
   "_note": "Hand-curated engine effects merged OVER item_engine.json at load. For high-impact passives the extractor skipped or that need judgment calls. Every number is taken from the scraped passive text in data/items.json; approximations are documented per entry.",
   "spear-of-shojin": {
-    "abilityAmpPct": 12,
-    "_why": "Focused Will 3% x 4 stacks (spam kits hold max stacks)"
+    "abilityAmpPct": 0,
+    "rampAbilityAmpPct": 12,
+    "rampAbilityAmpStacks": 4,
+    "rampAbilityAmpSecondsPerStack": 1,
+    "_why": "Focused Will gains 3% ability/passive damage per ability hit, up to four stacks. The fight engine ramps it instead of granting 12% from t=0."
   },
   "infinity-edge": {
     "critMult": 2.3,
@@ -17,14 +20,21 @@
     "_why_cc": "Sterak's Fury: 'Triggering Lifeline ... REMOVES ALL CROWD CONTROL EFFECTS ON YOU (except Airborne), and grants 30% Tenacity for 4 seconds.' Lifeline is once per fight on a 75s cooldown, so one instance removed."
   },
   "maw-of-malmortius": {
-    "shieldFlat": {"lvlRange": [220, 530]},
-    "_why": "Lifeline is a 220-530 level-scaled magic shield. The below-35% trigger and combat-only omnivamp are still context-dependent, but the level curve is now preserved."
+    "shieldFlat": 0,
+    "shieldMagicFlat": {"lvlRange": [220, 530]},
+    "omnivampPct": 0,
+    "conditionalOmnivampPct": 10,
+    "conditionalOmnivampBelowHpPct": 35,
+    "_why": "Lifeline is a 220-530 magic-only shield below 35% Health. Its 10% combat omnivamp is kept as a low-health conditional rather than permanent sustain."
   },
   "deaths-dance": {
     "drPct": 0,
-    "drPctMelee": 30,
-    "drPctRanged": 12,
-    "_why": "Cauterize stores 30% of incoming damage for melee champions and 12% for ranged champions. Defy's takedown heal remains context-dependent and is not included in a one-target fight."
+    "drPctMelee": 0,
+    "drPctRanged": 0,
+    "damageDelayPctMelee": 30,
+    "damageDelayPctRanged": 12,
+    "damageDelayDurationS": 3,
+    "_why": "Cauterize delays 30% of incoming damage for melee champions and 12% for ranged champions, then pays it as true damage over 3 seconds. It is not permanent damage reduction. Defy's takedown cleanse/heal is excluded from a no-takedown reference fight."
   },
   "dead-mans-plate": {
     "onHitFlatMagic": 0,
@@ -50,6 +60,7 @@
     "damageAmpPct": 0,
     "dotDps": 20,
     "dotDpsBonusHpPct": 1.5,
+    "dotAoeTargets": 2,
     "_why": "Immolate is 20 plus 1.5% bonus Health per second; the bonus-Health term is resolved after the complete build is assembled. The old stacking amp is gone."
   },
   "divine-sunderer": {
@@ -65,6 +76,9 @@
     "onHitFlatMagic": 30,
     "pctPen": 30,
     "mrShredPct": 30,
+    "rampDefenseAttacks": 6,
+    "rampArmorFlat": {"lvlRange": [15, 24]},
+    "rampMrFlat": {"lvlRange": [15, 24]},
     "_why": "Shadow 35 -> 30 magic on hit. Juxtaposition's dark side is 10% of each penetration per stack, three stacks, and the old 40% cap is gone from the text."
   },
   "guinsoos-rageblade": {
@@ -100,19 +114,24 @@
     "_why_burn": "Fiery Touch: attacks/abilities refresh a 3s burn of 1.4% target max HP per second (0.8% ranged) -- effectively continuous in a sustained fight. Was entirely unmodelled; the item scored as a bare 300hp/50armor statstick."
   },
   "amaranths-twinguard": {
-    "armorPctPassive": 30,
-    "mrPctPassive": 30,
-    "_why_endurance": "Endurance: +30% Armor and MR at 5 stacks (1 stack/s in combat). Pre-averaged over the 8s reference fight: stacks ramp linearly for 5s then cap, so the average multiplier is 30% x 0.6875 = 20.6%. The passive was worth zero before this.",
-    "_why": "Endurance now grants 30% BONUS Armor and Magic Resist at max stacks. It was modelled at 20.6% of total resistances; the new text is explicit about both the number and the base."
+    "armorPctPassive": 0,
+    "mrPctPassive": 0,
+    "delayedBonusArmorPct": 30,
+    "delayedBonusMrPct": 30,
+    "delayedTenacityPct": 20,
+    "delayedActivationS": 5,
+    "_why": "Endurance activates after five one-second stacks, then grants 30% bonus Armor/MR and 20% Tenacity. It no longer starts at full value or multiplies base resistances."
   },
   "kaenic-rookern": {
-    "shieldFlat": {
+    "shieldFlat": 0,
+    "shieldPctMaxHp": 0,
+    "shieldMagicFlat": {
       "lvlRange": [
         50,
         150
       ]
     },
-    "shieldPctMaxHp": 14,
+    "shieldMagicPctMaxHp": 14,
     "_why_72c": "7.2c changed Magebane from '70-180 + 10% of max Health' to '50-150 + 14%'. The apply script updated the TEXT but extraction was never re-run, so the engines shielded with the old numbers."
   },
   "gunmetal-greaves": {
@@ -143,6 +162,12 @@
     "msFlat": 30,
     "asPctPassive": 0,
     "_why": "Patch 7.3 gives the item a permanent 4% Movement Speed stat (stored in items.json), changes Momentum to 30 out-of-combat Move Speed (20 ranged), and removes Spectral Haste."
+  },
+  "muramana": {
+    "onHitPctMana": 1.5,
+    "abilityHitPctManaMelee": 3.5,
+    "abilityHitPctManaRanged": 3,
+    "_why_shock": "Shock adds 1.5% max Mana physical damage to attacks and 3.5% melee / 3% ranged max Mana physical damage to damaging abilities. Awe remains the separate 2% max-Mana-to-AD conversion."
   },
   "serpents-fang": {
     "flatPen": 0,
@@ -186,6 +211,8 @@
     "burstProcTotalAdRatio": 175,
     "burstProcType": "physical",
     "burstProcCdSec": 12,
+    "burstProcAoeTargets": 2,
+    "activeHealPerTarget": 1,
     "_why_dedupe": "stat omnivamp 8%; fx omnivampPct 8 was the same line. STAT/FX DUPLICATE. The item's own stat line already carries this effect (data/items.json stats), and the extractor read the SAME named passive a second time into itemFx. Python applied both and double-counted; TS applied only the fx and inherited its stale prose value. Zeroed here so exactly one source survives.",
     "healOnActiveAdPct": 20,
     "healOnActiveMissingHpPct": 10,
@@ -236,6 +263,7 @@
     "procMaxHpCdSec": 4,
     "procMaxHpType": "magic",
     "procHealPctOfDamage": 250,
+    "procAoeTargets": 2,
     "_why_cd": "Anguish: 'EVERY 4 SECONDS while in combat with a champion, deal 3% of your max Health as MAGIC damage'. It was charged once per fight and as physical."
   },
   "dawnshroud": {
@@ -329,7 +357,66 @@
   "liandrys-torment": {
     "procMaxHpPct": 0,
     "dotPctMaxHpPerSec": 0.667,
+    "damageAmpPct": 0,
+    "rampDamageAmpPct": 6,
+    "rampDamageAmpStacks": 3,
+    "rampDamageAmpSecondsPerStack": 1,
     "_why_channel": "Torment: 'burn enemies for 2% max Health magic damage FOR 3 SECONDS'. That is a damage-over-time, not a one-shot proc, and the dotPctMaxHpPerSec channel already exists and is priced per second of the window. 2% over 3s is 0.667%/s."
+  },
+  "riftmaker": {
+    "damageAmpPct": 0,
+    "omnivampPct": 0,
+    "rampDamageAmpPct": 8,
+    "rampOmnivampPctMelee": 10,
+    "rampOmnivampPctRanged": 6,
+    "rampDamageAmpStacks": 4,
+    "rampDamageAmpSecondsPerStack": 1,
+    "_why_ramp": "Void Corruption gains one 2% damage stack per second, up to four; omnivamp begins only at maximum strength and uses the 10% melee / 6% ranged split."
+  },
+  "blackfire-torch": {
+    "dotDpsApPct": 2,
+    "_why_burn": "Baleful Blaze deals 20 + 2% AP magic damage each second for three seconds. The per-affected-enemy AP bonus remains one 4% stack in a 1v1 and can scale on the explicit 1v3 axis."
+  },
+  "infinity-orb": {
+    "damageAmpPct": 0,
+    "targetThresholdAmpPct": 20,
+    "targetThresholdBelowHpPct": 40,
+    "_why_threshold": "Inevitable Demise applies only to ability and empowered-attack damage while the target is below 40% Health, never to the whole full-health rotation."
+  },
+  "malignance": {
+    "hasteFlatPassive": 0,
+    "dotDps": 0,
+    "mrShredFlat": 0,
+    "ultGroundDotFlatPerSec": 60,
+    "ultGroundDotApPctPerSec": 5,
+    "ultGroundDotDurationS": 3,
+    "ultGroundMrReductionFlat": 10,
+    "_why_trigger": "Hatefog exists only after ultimate damage, lasts three seconds, deals 60 + 5% AP each second and reduces Magic Resist by 10 inside the zone. Ultimate-only haste remains scoped and cannot create a second ultimate in one fight."
+  },
+  "titanic-hydra": {
+    "cleaveSecondaryFlat": 80,
+    "cleaveSecondaryPctBonusHp": 10,
+    "cleaveRangedMult": 75,
+    "_why_cone": "Cleave's 1.75-second attack arms a rear cone for 80 + 10% bonus Health. Ranged users deal 75% of both the primary and cone damage."
+  },
+  "hullbreaker": {
+    "everyNthPctMaxHp": 0,
+    "everyNthPctOwnMaxHp": 5,
+    "_why_owner_hp": "Skipper scales from the owner's max Health, not the target's max Health. The fourth-hit and 40% ranged modifiers remain unchanged."
+  },
+  "chainlaced-crushers": {
+    "shieldFlat": 0,
+    "shieldPctMaxHp": 0,
+    "shieldMagicFlat": {"lvlRange": [20, 140]},
+    "shieldMagicPctMaxHp": 5,
+    "_why_typed": "Noxian Persistence is a magic-only shield."
+  },
+  "armored-advance": {
+    "shieldFlat": 0,
+    "shieldPctMaxHp": 0,
+    "shieldPhysicalFlat": {"lvlRange": [20, 140]},
+    "shieldPhysicalPctMaxHp": 5,
+    "_why_typed": "Noxian Endurance is a physical-only shield."
   },
   "thornmail": {
     "burstProcFlat": 0,
@@ -337,6 +424,7 @@
   },
   "hollow-radiance": {
     "burstProcFlat": 0,
+    "dotAoeTargets": 2,
     "_why_not_outgoing": "Desolate: 'KILLING a neutral monster or an enemy deals magic damage ... in an area'. It fires on a kill that has already happened, so it cannot contribute to the time-to-kill it is being charged against. Charged as outgoing champion damage, which its own text says it is not."
   },
   "knights-vow": {
@@ -409,13 +497,17 @@
   },
   "force-of-nature": {
     "drMagicPct": 0,
-    "msPct": 6,
-    "mrFlat": 70,
-    "_why": "The percentage magic damage reduction is gone; at four stacks the item grants 70 Magic Resist and 6% Move Speed instead. Stack uptime is not modelled, so this is the full value."
+    "msPct": 0,
+    "mrFlat": 0,
+    "delayedMrFlat": 70,
+    "delayedMsPct": 6,
+    "delayedActivationS": 4,
+    "_why": "The percentage magic damage reduction is gone. Steadfast grants 70 Magic Resist and 6% Move Speed only after four incoming magic-damage stacks; the reference timeline conservatively reaches that at four seconds."
   },
   "randuins-omen": {
+    "msPct": 0,
     "critDamageReductionPct": 30,
-    "_why": "Resilience reduces critical-strike damage by 30%. Generic build scoring stays neutral because it has no enemy crit profile; scoreVsComp applies this channel when carry.critShare is supplied. Countercurrent slow resistance remains context-dependent."
+    "_why": "Resilience reduces critical-strike damage by 30%. Countercurrent's Movement Speed is earned only after being critically struck and is not permanent combat speed. Generic scoring stays neutral without an enemy crit profile."
   },
   "phantom-dancer": {
     "asPctPassive": 30,

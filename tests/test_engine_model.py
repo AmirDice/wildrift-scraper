@@ -229,6 +229,62 @@ def test_scoped_haste_is_preserved_without_repeating_ultimates():
     assert rod["mana"] >= 700  # 400 printed + 300 Veteran, before champion Mana.
 
 
+def test_muramana_shock_uses_final_mana_and_requires_a_resource():
+    ezreal = fe.resolve_stats("Ezreal", 15, ["muramana"], [])
+    katarina = fe.resolve_stats("Katarina", 15, ["muramana"], [])
+    assert ezreal["onHitPhys"] > 0
+    assert ezreal["abilityProcFlatPhys"] > ezreal["onHitPhys"]
+    assert katarina["mana"] == 0
+    assert katarina["abilityProcFlatPhys"] == 0
+
+
+def test_real_item_shields_are_typed_not_universal():
+    maw = fe.resolve_stats("Garen", 15, ["maw-of-malmortius"], [])
+    advance = fe.resolve_stats("Garen", 15, ["armored-advance"], [])
+    assert fe.effective_shield_for_damage_mix(maw, 1.0) == 0
+    assert fe.effective_shield_for_damage_mix(maw, 0.0) > 0
+    assert fe.effective_shield_for_damage_mix(advance, 1.0) > 0
+    assert fe.effective_shield_for_damage_mix(advance, 0.0) == 0
+
+
+def test_deaths_dance_delay_is_temporary_not_permanent_dr():
+    stats = fe.resolve_stats("Darius", 15, ["deaths-dance"], [])
+    assert stats["dr"] == 0
+    assert 0 < fe._damage_delay_unpaid(stats, 3.0) < stats["damageDelayPct"]
+    assert fe._damage_delay_unpaid(stats, 12.0) < fe._damage_delay_unpaid(stats, 3.0)
+
+
+def test_delayed_resists_do_not_exist_before_their_trigger():
+    force = fe.resolve_stats("Garen", 15, ["force-of-nature"], [])
+    assert fe._for_window("Garen", force, 3.0)["mr"] == pytest.approx(force["mr"])
+    assert fe._for_window("Garen", force, 8.0)["mr"] > force["mr"]
+    amaranth = fe.resolve_stats("Garen", 15, ["amaranths-twinguard"], [])
+    assert fe._for_window("Garen", amaranth, 4.0)["armor"] == pytest.approx(
+        amaranth["armor"])
+    assert fe._for_window("Garen", amaranth, 8.0)["armor"] > amaranth["armor"]
+
+
+def test_owner_health_proc_is_item_order_independent():
+    a = fe.resolve_stats("Garen", 15, ["hullbreaker", "warmogs-armor"], [])
+    b = fe.resolve_stats("Garen", 15, ["warmogs-armor", "hullbreaker"], [])
+    assert a["onHitPhys"] == pytest.approx(b["onHitPhys"])
+
+
+def test_ultimate_ground_effect_requires_the_ultimate_cast():
+    stats = fe.resolve_stats("Annie", 15, ["malignance"], [])
+    result = fe.rotation("Annie", stats, fe.target_profiles(15)["bruiser"], 8, 15)
+    assert any(label == "ultimate ground effect" for label, _ in result["parts"])
+
+
+def test_titanic_cone_is_secondary_only():
+    stats = fe.resolve_stats("Garen", 15, ["titanic-hydra", "warmogs-armor"], [])
+    target = fe.target_profiles(15)["bruiser"]
+    solo = fe.rotation("Garen", stats, target, 8, 15, secondary_targets=0)
+    team = fe.rotation("Garen", stats, target, 8, 15, secondary_targets=2)
+    assert solo["boltDmg"] == 0
+    assert team["boltDmg"] > 0
+
+
 # ---------------------------------------------------------------------------
 # SECONDARY TARGET REACH
 #

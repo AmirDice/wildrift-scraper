@@ -259,5 +259,48 @@ const CARRY = ["essence-reaver", "infinity-edge", "bloodthirster"];
   // engine still reads itemHasteFlat; bring these back with the next source.
 }
 
+// ----------------------------------------- high-impact item behavior, phase 3
+{
+  const ezreal: any = resolveStats("Ezreal", 15, ["muramana"], []);
+  const katarina: any = resolveStats("Katarina", 15, ["muramana"], []);
+  ok("muramana shock uses final mana",
+     ezreal.onHitPhys > 0 && ezreal.abilityProcFlatPhys > ezreal.onHitPhys,
+     `${ezreal.onHitPhys}/${ezreal.abilityProcFlatPhys}`);
+  ok("muramana grants no shock to a resourceless kit",
+     katarina.mana === 0 && katarina.abilityProcFlatPhys === 0,
+     `${katarina.mana}/${katarina.abilityProcFlatPhys}`);
+
+  const maw: any = resolveStats("Garen", 15, ["maw-of-malmortius"], []);
+  const advance: any = resolveStats("Garen", 15, ["armored-advance"], []);
+  ok("maw shield blocks magic only",
+     effectiveShieldForDamageMix(maw, 1) === 0
+       && effectiveShieldForDamageMix(maw, 0) > 0);
+  ok("armored advance shield blocks physical only",
+     effectiveShieldForDamageMix(advance, 1) > 0
+       && effectiveShieldForDamageMix(advance, 0) === 0);
+
+  const hullFirst: any = resolveStats("Garen", 15,
+    ["hullbreaker", "warmogs-armor"], []);
+  const hullLast: any = resolveStats("Garen", 15,
+    ["warmogs-armor", "hullbreaker"], []);
+  ok("owner-health proc is item-order independent",
+     Math.abs(hullFirst.onHitPhys - hullLast.onHitPhys) < 1e-9,
+     `${hullFirst.onHitPhys}/${hullLast.onHitPhys}`);
+
+  const malignance: any = resolveStats("Annie", 15, ["malignance"], []);
+  const withZone = rotation("Annie", malignance, DUMMY, 8, 15);
+  const noZone = rotation("Annie", { ...malignance, ultGroundDots: [] }, DUMMY, 8, 15);
+  ok("malignance zone follows an ultimate cast", withZone > noZone,
+     `${Math.round(noZone)} -> ${Math.round(withZone)}`);
+
+  const titanic: any = resolveStats("Garen", 15,
+    ["titanic-hydra", "warmogs-armor"], []);
+  const solo = rotationDetail("Garen", titanic, DUMMY, 8, 15, 0);
+  const team = rotationDetail("Garen", titanic, DUMMY, 8, 15, 2);
+  ok("titanic cone stays on the secondary axis",
+     solo.boltDamage === 0 && team.boltDamage > 0,
+     `${solo.boltDamage}/${team.boltDamage}`);
+}
+
 console.log(`engine model: ${checks - failures}/${checks} checks passed`);
 if (failures) process.exit(1);
