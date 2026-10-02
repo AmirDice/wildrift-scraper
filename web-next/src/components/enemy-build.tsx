@@ -491,10 +491,14 @@ export type Advice = {
     engineAutoSelected?: boolean;
     engineWinGate?: {
       eligible?: boolean;
+      decision?: "auto-select-engine" | "defer";
+      trustLevel?: "authoritative-for-scenario" | "coverage-safe-but-close" | "advisory" | "insufficient-data";
       marginThreshold?: number;
+      marginSatisfied?: boolean;
       absoluteLead?: number;
       relativeLead?: number;
       coverageSafe?: boolean;
+      comparisonCandidates?: string[];
       majorCoverageGaps?: string[];
       reason?: string;
     };

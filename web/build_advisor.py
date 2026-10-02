@@ -1270,6 +1270,21 @@ def _settle_tournament_label(res: dict, meta: dict | None,
 ENGINE_AUTO_WIN_MARGIN = 0.05
 ENGINE_REPLACEMENT_MARGIN = 0.95
 
+_MISSING_COMBAT_EFFECT_RE = re.compile(
+    r"not model(?:led|ed)|unmodel(?:led|ed)|"
+    r"no (?:separate )?(?:combat )?(?:effect )?key|"
+    r"engine has neither|neither engine|left out|"
+    r"cannot (?:open|see|price)", re.I)
+
+
+def _coverage_gap_is_major(row: dict) -> bool:
+    """Whether an item coverage row can invalidate a numeric comparison."""
+    status = str(row.get("status") or "").lower()
+    limitation = str(row.get("limitation") or "")
+    return status in {"missing", "unmodeled"} or (
+        status in {"partial", "stats_only"}
+        and bool(_MISSING_COMBAT_EFFECT_RE.search(limitation)))
+
 
 def _engine_major_coverage_gaps(measured: dict | None) -> list[str]:
     """Return coverage limitations that make a numeric engine win unsafe.
@@ -1291,18 +1306,40 @@ def _engine_major_coverage_gaps(measured: dict | None) -> list[str]:
         if not isinstance(row, dict):
             gaps.append(str(row))
             continue
-        status = str(row.get("status") or "").lower()
         limitation = str(row.get("limitation") or "")
-        # Stats-only entries are safe only when there is no written combat
-        # limitation.  A partial entry with an explicit unmodeled effect is a
-        # real reason to defer to Gemini.
-        if status in {"missing", "unmodeled"} or (
-                status == "partial" and limitation and re.search(
-                    r"not model(?:led|ed)|no (?:separate )?(?:combat )?(?:effect )?key|"
-                    r"engine has neither|left out|cannot (?:open|see|price)",
-                    limitation, re.I)):
-            gaps.append(limitation or str(row.get("item") or "item mechanic"))
+        # A stats-only item is safe only when its passive has no missing combat
+        # value.  Previously this branch ignored stats-only rows altogether,
+        # even when their audit note explicitly said a combat effect was not
+        # modeled.
+        if _coverage_gap_is_major(row):
+            item = str(row.get("item") or "item mechanic")
+            gaps.append(f"{item}: {limitation}" if limitation else item)
     return gaps
+
+
+def _gate_comparison_rows(search_meta: dict, measured: list[dict]) -> tuple[list[dict], list[str]]:
+    """Resolve the engine challenger and the authored build it claims to beat."""
+    by_id = {str(row.get("id") or ""): row for row in measured}
+    wanted = ["ENGINE-D"]
+    authored = search_meta.get("authoredScores") or {}
+    if isinstance(authored, dict) and authored:
+        numeric = []
+        for candidate_id, score in authored.items():
+            try:
+                numeric.append((float(score), str(candidate_id)))
+            except (TypeError, ValueError):
+                continue
+        if numeric:
+            wanted.append(max(numeric)[1])
+    else:
+        # Older/local callers may not carry authoredScores. Auditing every
+        # authored row is conservative and prevents a false "coverage safe"
+        # verdict when the exact comparison row cannot be identified.
+        wanted.extend(str(row.get("id") or "") for row in measured
+                      if not str(row.get("id") or "").startswith("ENGINE"))
+    wanted = list(dict.fromkeys(candidate_id for candidate_id in wanted if candidate_id))
+    return [by_id[candidate_id] for candidate_id in wanted if candidate_id in by_id], [
+        candidate_id for candidate_id in wanted if candidate_id not in by_id]
 
 
 def _engine_win_gate(search_meta: dict | None, measured: list[dict],
@@ -1315,27 +1352,58 @@ def _engine_win_gate(search_meta: dict | None, measured: list[dict],
         challenger_score = float(challenger)
         authored_score = float(authored)
     except (TypeError, ValueError):
-        return {"eligible": False, "reason": "missing comparable engine scores"}
+        return {
+            "eligible": False,
+            "decision": "defer",
+            "trustLevel": "insufficient-data",
+            "marginThreshold": margin,
+            "marginSatisfied": False,
+            "coverageSafe": False,
+            "comparisonCandidates": [],
+            "majorCoverageGaps": [],
+            "reason": "missing comparable engine scores",
+        }
     lead = challenger_score - authored_score
     relative = lead / max(abs(authored_score), 1.0)
-    row = next((item for item in measured
-                if str(item.get("id") or "") == "ENGINE-D"), None)
-    gaps = _engine_major_coverage_gaps(row)
-    eligible = relative >= margin and not gaps
+    comparison_rows, missing_rows = _gate_comparison_rows(meta, measured)
+    gaps: list[str] = []
+    for row in comparison_rows:
+        candidate_id = str(row.get("id") or "candidate")
+        gaps.extend(f"{candidate_id}: {gap}"
+                    for gap in _engine_major_coverage_gaps(row))
+    gaps.extend(f"{candidate_id}: measurement missing"
+                for candidate_id in missing_rows)
+    gaps = list(dict.fromkeys(gaps))
+    margin_satisfied = relative >= margin
+    coverage_safe = not gaps and not missing_rows
+    eligible = margin_satisfied and coverage_safe
+    if eligible:
+        reason = ("engine lead meets the deterministic margin and both the "
+                  "challenger and authored comparison are coverage-safe")
+        trust = "authoritative-for-scenario"
+    elif not margin_satisfied and not coverage_safe:
+        reason = "engine lead is below the deterministic margin and coverage gaps remain"
+        trust = "advisory"
+    elif not margin_satisfied:
+        reason = "engine lead is below the deterministic margin"
+        trust = "coverage-safe-but-close"
+    else:
+        reason = "engine lead meets the margin, but comparison coverage is incomplete"
+        trust = "advisory"
     return {
         "eligible": eligible,
+        "decision": "auto-select-engine" if eligible else "defer",
+        "trustLevel": trust,
         "marginThreshold": margin,
+        "marginSatisfied": margin_satisfied,
         "absoluteLead": round(lead, 3),
         "relativeLead": round(relative, 4),
         "challengerScore": challenger_score,
         "authoredBestScore": authored_score,
-        "coverageSafe": not gaps,
+        "comparisonCandidates": [str(row.get("id") or "") for row in comparison_rows],
+        "coverageSafe": coverage_safe,
         "majorCoverageGaps": gaps[:8],
-        "reason": (
-            "engine lead is at least the deterministic margin and no major "
-            "coverage gap is recorded" if eligible else
-            "engine lead is close or a major coverage gap is recorded"
-        ),
+        "reason": reason,
     }
 
 
@@ -1527,14 +1595,18 @@ def _simulate_tournament(champion: str, candidates: list[dict],
             notes = str(entry.get("_why") or " ".join(
                 str(value) for key, value in entry.items()
                 if key.startswith("_") and isinstance(value, str)))
-            incomplete = re.search(
-                r"not model(?:led|ed)|no (?:separate )?(?:combat )?(?:effect )?key|"
-                r"engine has neither|priced on its stats|left out|cannot (?:open|see|price)",
-                notes, re.I)
+            incomplete = _MISSING_COMBAT_EFFECT_RE.search(notes)
             if not active or incomplete:
+                if incomplete and not active:
+                    status = "unmodeled"
+                elif incomplete:
+                    status = "partial"
+                else:
+                    status = "stats_only"
                 gaps.append({
                     "item": slug,
-                    "status": "stats_only" if not active else "partial",
+                    "status": status,
+                    "severity": "major" if incomplete else "informational",
                     "modeledChannels": sorted(active),
                     "limitation": notes[:700],
                 })
@@ -1550,6 +1622,10 @@ def _simulate_tournament(champion: str, candidates: list[dict],
         conditional = conditional_damage_scenarios(
             champion, items, runes, level=15, skill_level=skill_level)
         expected_panel = conditional["bands"]["expected"]
+        item_coverage = coverage(items)
+        item_major = [row for row in item_coverage
+                      if _coverage_gap_is_major(row)]
+        champion_major = list(champion_coverage.get("buildRelevantGaps") or [])
         measured.append({
             "id": candidate.get("id"),
             "archetype": candidate.get("archetype"),
@@ -1571,8 +1647,21 @@ def _simulate_tournament(champion: str, candidates: list[dict],
                 "damageLost": full.get("damageLost"),
                 "damageScenarios": expected_panel,
                 "conditionalDamage": conditional,
-                "coverageGaps": coverage(items),
+                "coverageGaps": item_coverage,
                 "championMechanicsCoverage": champion_coverage,
+                "coverageSummary": {
+                    "engineAuthoritative": not item_major and not champion_major,
+                    "majorGapCount": len(item_major) + len(champion_major),
+                    "itemMajorGapCount": len(item_major),
+                    "championMajorGapCount": len(champion_major),
+                    "informationalItemCount": len(item_coverage) - len(item_major),
+                    "policy": (
+                        "Numerical comparison may be authoritative for the stated "
+                        "synthetic scenario." if not item_major and not champion_major else
+                        "Treat the numerical result as advisory; a compared build has "
+                        "an unresolved build-relevant mechanic."
+                    ),
+                },
             },
         })
     return measured

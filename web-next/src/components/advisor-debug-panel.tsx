@@ -52,14 +52,21 @@ export function AdvisorDebugPanel({ advice }: { advice: Advice }) {
             ? "border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-100"
             : "border-cyan-400/25 bg-cyan-400/[0.04] text-cyan-100"}`}>
             <p className="font-bold uppercase tracking-wide">
-              Engine win gate: {tournament.engineAutoSelected ? "automatic engine selection" : "Gemini judge path"}
+              Engine win gate: {tournament.engineAutoSelected ? "automatic engine selection" : "advisory only"}
             </p>
             <p className="mt-1 text-[0.7rem] leading-relaxed">
               Lead {((tournament.engineWinGate.relativeLead ?? 0) * 100).toFixed(1)}% ·
               required {((tournament.engineWinGate.marginThreshold ?? 0.05) * 100).toFixed(0)}% ·
-              coverage {tournament.engineWinGate.coverageSafe ? "safe" : "has gaps"}.
+              margin {tournament.engineWinGate.marginSatisfied ? "met" : "not met"} ·
+              coverage {tournament.engineWinGate.coverageSafe ? "safe" : "has gaps"} ·
+              trust {tournament.engineWinGate.trustLevel ?? "unknown"}.
               {tournament.engineWinGate.reason ? ` ${tournament.engineWinGate.reason}.` : ""}
             </p>
+            {tournament.engineWinGate.comparisonCandidates?.length ? (
+              <p className="mt-1 text-[0.68rem] text-cyan-200/80">
+                Coverage checked: {tournament.engineWinGate.comparisonCandidates.join(" vs ")}
+              </p>
+            ) : null}
             {tournament.engineWinGate.majorCoverageGaps?.length ? (
               <p className="mt-1 text-[0.68rem] text-amber-200">
                 Major gaps: {tournament.engineWinGate.majorCoverageGaps.join("; ")}
