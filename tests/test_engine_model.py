@@ -145,6 +145,57 @@ def test_both_engines_agree_on_the_decay_constant():
 
 
 # ---------------------------------------------------------------------------
+# ONE-FIGHT CONTRACT AND CHAMPION-SPECIFIC INTERACTIONS
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("champion", ["Jax", "Miss Fortune", "Rammus", "Vayne"])
+def test_an_ultimate_is_never_cast_twice_in_one_fight(champion):
+    stats = fe.resolve_stats(champion, 15, [], [])
+    result = fe.rotation(champion, stats, fe.target_profiles(15)["bruiser"],
+                         20.0, level=15)
+    ultimate = (result.get("castLog") or {}).get("4") or {}
+    assert ultimate.get("casts", 0) <= 1
+
+
+def test_guardian_angel_is_one_second_life_not_repeatable_value():
+    stats = fe.resolve_stats("Caitlyn", 15, ["guardian-angel"], [])
+    assert stats["shieldPctMaxHp"] == pytest.approx(0.5)
+
+
+def test_jax_ultimate_attack_rider_uses_every_second_hit(monkeypatch):
+    """Grandmaster-at-Arms is stored on slot 4, not passive slot P."""
+    target = {"hp": 2600, "armor": 90, "mr": 60, "bonusHp": 900}
+    items = ["titanic-hydra", "hullbreaker"]
+    stats = fe.resolve_stats("Jax", 15, items, [])
+    full = fe.rotation("Jax", stats, dict(target), 8.0, level=15)
+
+    ultimate = fe.FORMULAS["Jax"]["abilities"]["4"]
+    active_only = [row for row in ultimate["damage"]
+                   if row.get("when") != "per auto"]
+    monkeypatch.setitem(ultimate, "damage", active_only)
+    without_rider = fe.rotation("Jax", stats, dict(target), 8.0, level=15)
+
+    # Six autos during the eight-second active produce three, not six, riders.
+    expected_one = 185 * (100 / (100 + target["mr"]))
+    assert full["nAutos"] == 6
+    assert full["total"] - without_rider["total"] == pytest.approx(
+        expected_one * 3, rel=0.01)
+
+
+def test_rammus_reflection_requires_incoming_attacks():
+    stats = fe.resolve_stats("Rammus", 15, ["thornmail"], [])
+    target = {"hp": 2600, "armor": 90, "mr": 60, "bonusHp": 900,
+              "incomingAutoAttacksPerSec": 0.9}
+    contact = fe.rotation("Rammus", stats, dict(target), 8.0, level=15)
+    target["incomingAutoAttacksPerSec"] = 0
+    no_contact = fe.rotation("Rammus", stats, dict(target), 8.0, level=15)
+
+    assert contact["total"] > no_contact["total"]
+    assert any(label == "reactive reflection" for label, _ in contact["parts"])
+
+
+# ---------------------------------------------------------------------------
 # SECONDARY TARGET REACH
 #
 # The multi-target panel charged every secondary effect at full rate for the

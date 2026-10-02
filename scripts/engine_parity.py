@@ -36,6 +36,12 @@ FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "critMult",
           "ccRemoval", "stasisSec", "drMagic", "drPhys", "ehp",
           # The damage path itself, not only the stats feeding it.
           "rot8", "rot8Autos",
+          # Internal rotation decisions. Equal totals can conceal opposite
+          # mistakes (extra ability cast offset by missing proc damage), so the
+          # contract compares the decisions that produced the total as well.
+          "rot8Casts", "rot8UltCasts", "rot8Physical", "rot8Magic",
+          "rot8True", "rot8SpellbladeProcs", "rot8FirstHitProcs",
+          "rot8ProcHealing", "rot8ProcMaxHealthGain",
           # `bonusAd` was here and `ad` was not, so a base-stat divergence was
           # invisible: Kayn resolved 112 AD in one engine and 126 in the other.
           "ad", "baseAd", "baseAs",
@@ -94,6 +100,7 @@ def exhaustive_battery() -> list:
     Slow (a few hundred cases), so it is opt-in rather than the default.
     """
     from web.advisor import runemeta
+    from web import fight_engine as fe
     items = json.loads((ROOT / "data" / "items.json").read_text("utf-8"))
     live = [i["slug"] for i in items
             if not i.get("removedIn") and (i.get("stats") or i.get("passives"))]
@@ -107,7 +114,26 @@ def exhaustive_battery() -> list:
         cases.append(["Lux", ["rabadons-deathcap"], [rune]])
     cases += [["Caitlyn", [slug], []] for slug in live]
     cases += [["Darius", [slug], []] for slug in live]
-    return cases
+    # Every champion exercises its formula, combo, form and champion-specific
+    # branches. The former "exhaustive" sweep covered every item but only two
+    # item carriers, which is how Rammus + Thornmail remained Python-only while
+    # the suite stayed green.
+    cases += [[champion, [], []] for champion in sorted(fe.CHAMPS)]
+    # Intersections whose behavior cannot be proven by a bare champion or a
+    # generic item carrier.
+    cases += [
+        ["Rammus", ["thornmail"], []],
+        ["Jax", ["titanic-hydra", "hullbreaker"], []],
+    ]
+    # Keep the generated battery stable and avoid repeating curated overlaps.
+    seen = set()
+    unique = []
+    for champion, item_slugs, rune_names in cases:
+        key = (champion, tuple(item_slugs), tuple(rune_names))
+        if key not in seen:
+            unique.append([champion, item_slugs, rune_names])
+            seen.add(key)
+    return unique
 
 
 def main() -> int:
@@ -144,6 +170,17 @@ def main() -> int:
                   support=round(fe.support_value(champ, items, runes, 15), 2),
                   pctPen=1 - pen,
                   rot8=round(float(rot["total"]), 2),
+                  rot8Casts=sum(float(row.get("casts", 0) or 0)
+                                for row in (rot.get("castLog") or {}).values()),
+                  rot8UltCasts=float(((rot.get("castLog") or {}).get("4") or {})
+                                     .get("casts", 0) or 0),
+                  rot8Physical=float((rot.get("byType") or {}).get("physical", 0)),
+                  rot8Magic=float((rot.get("byType") or {}).get("magic", 0)),
+                  rot8True=float((rot.get("byType") or {}).get("true", 0)),
+                  rot8SpellbladeProcs=float(rot.get("spellbladeProcs", 0) or 0),
+                  rot8FirstHitProcs=float(rot.get("firstHitProcs", 0) or 0),
+                  rot8ProcHealing=float(rot.get("procHealing", 0) or 0),
+                  rot8ProcMaxHealthGain=float(rot.get("procMaxHealthGain", 0) or 0),
                   rot8Bolts=round(float(rot.get("boltDmg", 0.0)), 2),
                   rot8Autos=round(float(rot.get("autoDmg", 0.0)), 2),
                   rot8AbilityAoe=round(float(rot3.get("abilityAoeDmg", 0.0)), 2))

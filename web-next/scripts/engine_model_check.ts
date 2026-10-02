@@ -41,6 +41,24 @@ const DUMMY = { label: "dummy", hp: 2600, armor: 90, mr: 60, bonusHp: 900 };
 const BRUISER = { label: "bruiser", hp: 3400, armor: 130, mr: 85, bonusHp: 1700 };
 const CARRY = ["essence-reaver", "infinity-edge", "bloodthirster"];
 
+// ---------------------------------------------- one-fight contract / reflect
+{
+  for (const champion of ["Jax", "Miss Fortune", "Rammus", "Vayne"]) {
+    const detail = rotationDetail(champion, resolveStats(champion, 15, [], []),
+      BRUISER, 20, 15);
+    ok(`${champion} ultimate is capped at one cast`,
+      (detail.casts?.["4"]?.casts ?? 0) <= 1,
+      `${detail.casts?.["4"]?.casts ?? 0}`);
+  }
+  const rammus = resolveStats("Rammus", 15, ["thornmail"], []);
+  const contact = rotation("Rammus", rammus,
+    { ...DUMMY, incomingAutoAttacksPerSec: 0.9 }, 8, 15);
+  const noContact = rotation("Rammus", rammus,
+    { ...DUMMY, incomingAutoAttacksPerSec: 0 }, 8, 15);
+  ok("Rammus reflection requires incoming attacks", contact > noContact,
+    `${Math.round(noContact)} -> ${Math.round(contact)}`);
+}
+
 // ---------------------------------------------------------------- proc rate
 {
   const base: any = resolveStats("Zed", 15, ["youmuus-ghostblade", "seryldas-grudge"], []);

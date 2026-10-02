@@ -3028,14 +3028,15 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
         # attack rides 1/N of them, and an ability that empowers N attacks per
         # cast rides N x its casts. Both were riding every attack.
         _share_p, _abilities_stack = every_n_share(name)
-        if name == "Jax":
-            # Grandmaster-at-Arms changes the passive cadence from every third
-            # hit to every second hit for its 8-second active window.
-            active = min(1.0, 8.0 / max(window, 1e-9))
-            _share_p = active * 0.5 + (1.0 - active) * (1.0 / 3.0)
         _limits = empower_limits(name)
 
         def per_auto_share(slot, comp=None, _n=None):
+            if name == "Jax" and slot == "4":
+                # Grandmaster-at-Arms is stored on the ultimate slot, not the
+                # passive slot. During the one allowed ultimate its every-third
+                # hit rider becomes every-second for eight seconds.
+                active = min(1.0, 8.0 / max(window, 1e-9))
+                return active * 0.5 + (1.0 - active) * (1.0 / 3.0)
             if slot == "P":
                 if not _abilities_stack or not n_autos:
                     return _share_p
@@ -3158,8 +3159,11 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
             total += reflected
         amp = whole_rotation_amp()
         return {"total": total * amp, "parts": parts, "nAutos": n_autos,
-                "spellbladeProcs": min(casts_total, n_autos,
-                                        1 + int(window / SPELLBLADE_CD)),
+                "spellbladeProcs": (min(casts_total, n_autos,
+                                         1 + int(window / SPELLBLADE_CD))
+                                     if (st["spellbladeBaseAdPct"]
+                                         or st["spellbladePctMaxHp"]
+                                         or st["spellbladeApPct"]) else 0),
                 "firstHitProcs": _first_n,
                 "procHealing": proc_heal * amp,
                 "procMaxHealthGain": proc_hp_gain * amp,
@@ -3256,12 +3260,12 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
     # attack rides 1/N of them, and an ability that empowers N attacks per
     # cast rides N x its casts. Both were riding every attack.
     _share_p, _abilities_stack = every_n_share(name)
-    if name == "Jax":
-        active = min(1.0, 8.0 / max(window, 1e-9))
-        _share_p = active * 0.5 + (1.0 - active) * (1.0 / 3.0)
     _limits = empower_limits(name)
 
     def per_auto_share(slot, comp=None, _n=None):
+        if name == "Jax" and slot == "4":
+            active = min(1.0, 8.0 / max(window, 1e-9))
+            return active * 0.5 + (1.0 - active) * (1.0 / 3.0)
         if slot == "P":
             if not _abilities_stack or not n_autos:
                 return _share_p
@@ -3393,8 +3397,11 @@ def rotation(name: str, st: dict, target: dict, window: float, level: int = 13,
     total *= amp
     n_autos_ideal = max(1, int(window * st["as"]))  # no uptime discount
     return {"total": total, "parts": parts, "nAutos": n_autos,
-            "spellbladeProcs": min(casts_total, n_autos,
-                                    1 + int(window / SPELLBLADE_CD)),
+            "spellbladeProcs": (min(casts_total, n_autos,
+                                     1 + int(window / SPELLBLADE_CD))
+                                 if (st["spellbladeBaseAdPct"]
+                                     or st["spellbladePctMaxHp"]
+                                     or st["spellbladeApPct"]) else 0),
             "firstHitProcs": _first_n,
             "procHealing": proc_heal,
             "procMaxHealthGain": proc_hp_gain,

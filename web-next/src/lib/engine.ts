@@ -359,6 +359,9 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
     procs: [] as Proc[], procHealPctOfDamage: 0,
     procMaxHealthGainByLabel: {} as Record<string, number>,
     dotDps: 0, dotDpsBonusHpPct: 0, dotPctMaxHp: 0,
+    // Reactive return damage is consumed only by Rammus when a reference
+    // target supplies an incoming attack stream, matching the Python engine.
+    thornmailReflect: 0,
     armorShred: 0, vamp: 0, healOnHit: 0, apAmp: 0,
     mrShred: 0, mrShredFlat: 0, spellbladeApPct: 0, spellbladeMagic: 0,
     spellbladeCritFlatPerCrit: 0, spellbladeCanCrit: 0,
@@ -448,6 +451,7 @@ export function resolveStats(name: string, level: number, itemSlugs: string[],
   for (const slug of itemSlugs) {
     const it = DATA.items[slug];
     if (!it) continue;
+    if (slug === "thornmail") st.thornmailReflect = 1;
     for (const [k, v] of Object.entries<any>(it.stats ?? {})) {
       const val = v.value, pct = v.percent;
       if (k === "ad") st.bonusAd += val;
@@ -1456,6 +1460,23 @@ export function rotation(name: string, st: any, target: any, window: number,
       val += (targets[r.target] ?? 0) * (stats[r.stat] ?? 0)
         * scaleVal(r.pctPerStat ?? 0, rank, level) / 100;
     }
+    // Rank-based percentage-health floors (Vayne) and execute ramps use the
+    // same conservative expected-health assumptions as the Python engine.
+    if (comp.minDamage != null)
+      val = Math.max(val, scaleVal(comp.minDamage, rank, level));
+    if (comp.missingHealthAmp) {
+      const expectedMissing = Math.min(1, Math.max(0,
+        Number(comp.missingHealthAmp.expectedMissing ?? 0.3)));
+      const capMissing = Math.max(1e-6,
+        Number(comp.missingHealthAmp.capMissing ?? 1));
+      val *= 1 + Math.min(1, expectedMissing / capMissing)
+        * (Number(comp.missingHealthAmp.maxAmp) || 0);
+    }
+    if (comp.lowHealthMultiplier) {
+      const uptime = Number(comp.lowHealthMultiplier.uptime ?? 0.35);
+      const multiplier = Number(comp.lowHealthMultiplier.multiplier ?? 1);
+      val *= 1 + uptime * (multiplier - 1);
+    }
     // See the Python half. perCritDamage follows CRIT DAMAGE rather than crit
     // chance, which is the shape 7.3 gave several ultimates.
     if (comp.critScale) {
@@ -1630,6 +1651,12 @@ export function rotation(name: string, st: any, target: any, window: number,
   const abilitiesStack = /abilit/i.test(String(everyN?.evidence ?? ""));
   const perAutoShare = (c: any, nAutos: number): number => {
     const slot = perAutoSlot.get(c);
+    if (name === "Jax" && slot === "4") {
+      // Grandmaster-at-Arms' attack rider lives on slot 4. The old special case
+      // adjusted slot P, so both engines still charged the rider on every hit.
+      const active = Math.min(1, 8 / Math.max(window, 1e-9));
+      return active * 0.5 + (1 - active) / 3;
+    }
     if (slot === "P") {
       if (!abilitiesStack || nAutos <= 0) return everyNShare;
       const abilityHits = Object.values(castLog).reduce((n, v: any) => n + v.casts, 0);
@@ -1759,6 +1786,26 @@ export function rotation(name: string, st: any, target: any, window: number,
     const trueDamage = crit * (Number(st.ultAttackTruePctIfCrit) || 0) / 100
       * base * hits;
     return [physical, trueDamage];
+  };
+  const reactiveReflectionDamage = (): number => {
+    if (name !== "Rammus" || window <= 0) return 0;
+    const incomingRate = Number(target.incomingAutoAttacksPerSec ?? 0.9);
+    if (incomingRate <= 0) return 0;
+    const incomingHits = incomingRate * window;
+    const wCd = Math.max(0.5, 7 * hasteM);
+    const wCasts = 1 + Math.floor(window / wCd);
+    const wUptime = Math.min(1, 6 * wCasts / window);
+    const wRank = rankOf["2"] ?? 2;
+    const shell = perAuto.find((row) => perAutoSlot.get(row) === "2");
+    const shellReturn = shell
+      ? compDmg(shell, wRank, "2") * (1 + 0.4 * wUptime) : 0;
+    let thornReturn = 0;
+    if (st.thornmailReflect) {
+      const bonusArmor = Math.max(
+        0, Number(st.armor) - Number(st.baseArmor ?? st.armor));
+      thornReturn = (20 + 0.06 * bonusArmor + 0.01 * Number(st.bonusHp)) * magicM;
+    }
+    return (shellReturn + thornReturn) * incomingHits;
   };
   const doAutos = (nAutos: number) => {
     // How much of the normal attack is REPLACED by a kit component rather than
@@ -1995,6 +2042,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     addT("magic", ultBonus);
   }
     total += thresholdAmpDamage(total);
+    const reflected = reactiveReflectionDamage();
+    if (reflected) { total += reflected; addT("magic", reflected); }
     const amp = wholeRotationAmp();
     ROT_AUTO_DMG = autoDmg * amp;
     ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };
@@ -2162,6 +2211,8 @@ export function rotation(name: string, st: any, target: any, window: number,
     addT("magic", ultBonus);
   }
   total += thresholdAmpDamage(total);
+  const reflected = reactiveReflectionDamage();
+  if (reflected) { total += reflected; addT("magic", reflected); }
   const amp = wholeRotationAmp();
   ROT_AUTO_DMG = autoDmg * amp;
   ROT_BY_TYPE = { physical: byType.physical * amp, magic: byType.magic * amp, true: byType.true * amp };

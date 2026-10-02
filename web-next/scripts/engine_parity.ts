@@ -27,6 +27,9 @@ const FIELDS = ["ap", "bonusAd", "hp", "bonusHp", "mana", "haste", "crit", "crit
   // See the note on the Python half: the damage path itself, not only the
   // stats feeding it.
   "rot8", "rot8Autos",
+  "rot8Casts", "rot8UltCasts", "rot8Physical", "rot8Magic", "rot8True",
+  "rot8SpellbladeProcs", "rot8FirstHitProcs", "rot8ProcHealing",
+  "rot8ProcMaxHealthGain",
   // See the Python half: `bonusAd` was compared and `ad` was not.
   "ad", "baseAd", "baseAs",
   "runeAllyHealPerSec", "allyShield", "shield", "support", "rot8Bolts",
@@ -56,6 +59,16 @@ for (const [champ, items, runes] of battery) {
   if (st) {
     const rot = rotationDetail(champ, st, PARITY_TARGET, 8, 15);
     st.rot8 = Math.round(rot.damage * 100) / 100;
+    st.rot8Casts = Object.values(rot.casts).reduce(
+      (sum: number, row: any) => sum + (Number(row.casts) || 0), 0);
+    st.rot8UltCasts = Number(rot.casts?.["4"]?.casts) || 0;
+    st.rot8Physical = Number(rot.byType.physical) || 0;
+    st.rot8Magic = Number(rot.byType.magic) || 0;
+    st.rot8True = Number(rot.byType.true) || 0;
+    st.rot8SpellbladeProcs = Number(rot.spellbladeProcs) || 0;
+    st.rot8FirstHitProcs = Number(rot.firstHitProcs) || 0;
+    st.rot8ProcHealing = Number(rot.procHealing) || 0;
+    st.rot8ProcMaxHealthGain = Number(rot.procMaxHealthGain) || 0;
     st.rot8Autos = Math.round(rot.autoDamage * 100) / 100;
     st.support = Math.round(supportValue(champ, items, runes, 15) * 100) / 100;
     const sh = (st.shield + st.shieldPctBonusHp * st.bonusHp
