@@ -144,6 +144,13 @@ class TestHardLegality:
         report = check(build)
         assert "armor-penetration" in errors_in(report, "items")
 
+    def test_base_and_transformed_tear_items_are_exclusive(self):
+        assert validate_mod.hard_exclusive_violation(["manamune", "muramana"])
+        assert validate_mod.hard_exclusive_violation(
+            ["archangels-staff", "seraphs-embrace"])
+        assert validate_mod.hard_exclusive_violation(
+            ["winters-approach", "fimbulwinter"])
+
     def test_an_invented_item_slug_is_rejected(self, build):
         build["items"][0] = "sword-of-a-thousand-truths"
         report = check(build)

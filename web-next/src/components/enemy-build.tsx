@@ -506,6 +506,7 @@ export type Advice = {
     engineAlternatives?: string[];
     itemShortlist?: { requested?: number; selected?: number; items?: string[] } | null;
     itemReplacement?: Record<string, unknown> | null;
+    runePageReplacement?: Record<string, unknown> | null;
     winner?: string | null;
     judgedWinner?: string | null;
     coreRepairedAfterJudge?: boolean;

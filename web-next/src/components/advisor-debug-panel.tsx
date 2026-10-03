@@ -100,6 +100,22 @@ export function AdvisorDebugPanel({ advice }: { advice: Advice }) {
           </div>
         ) : null}
 
+        {tournament?.runePageReplacement ? (
+          <div className={`rounded-lg border p-3 ${tournament.runePageReplacement.accepted
+            ? "border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-100"
+            : "border-amber-400/40 bg-amber-400/[0.08] text-amber-100"}`}>
+            <p className="font-bold uppercase tracking-wide">
+              Final-item rune refinement: {tournament.runePageReplacement.accepted ? "accepted" : "rejected"}
+            </p>
+            <p className="mt-1 text-[0.7rem] leading-relaxed">
+              Target {String(tournament.runePageReplacement.forCandidate ?? "—")} ·
+              score {String(tournament.runePageReplacement.replacementScore ?? "—")} vs {String(tournament.runePageReplacement.baseScore ?? "—")}.
+              {tournament.runePageReplacement.reason ? ` ${String(tournament.runePageReplacement.reason)}` : ""}
+              {tournament.runePageReplacement.rejection ? ` Rejected: ${String(tournament.runePageReplacement.rejection)}.` : ""}
+            </p>
+          </div>
+        ) : null}
+
         {tournament?.ran === false ? (
           <div className="rounded-lg border border-amber-400/40 bg-amber-400/[0.08] p-3 text-amber-200">
             <p className="font-bold uppercase tracking-wide">Engine tournament skipped</p>

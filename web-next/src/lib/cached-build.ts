@@ -17,7 +17,12 @@
  * generation from the player's daily allowance -- we did not pay for it, so
  * neither should they.
  */
-import { buildCacheKey, readCachedBuild, type BuildRequestKey } from "@/lib/build-cache";
+import {
+  BUILD_CACHE_ENABLED,
+  buildCacheKey,
+  readCachedBuild,
+  type BuildRequestKey,
+} from "@/lib/build-cache";
 import { kvGetJson, kvSetJson } from "@/lib/kv";
 
 /** Long enough to outlive a patch cycle; a newer generation overwrites it. */
@@ -72,6 +77,7 @@ export function latestBuildKey(champion: string): string {
 
 /** Record a generated build as this champion's newest plain answer. */
 export async function rememberLatestBuild(champion: string, build: unknown): Promise<void> {
+  if (!BUILD_CACHE_ENABLED) return;
   try {
     await kvSetJson(latestBuildKey(champion), build, LATEST_TTL_SECONDS);
   } catch {
@@ -90,6 +96,7 @@ export async function cachedStudioBuild(
   champion: string,
   role = "",
 ): Promise<Record<string, unknown> | null> {
+  if (!BUILD_CACHE_ENABLED) return null;
   const latest = await kvGetJson<Record<string, unknown> | null>(
     latestBuildKey(champion), null);
   if (latest) return latest;

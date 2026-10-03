@@ -877,6 +877,70 @@ def test_a_durable_path_must_actually_buy_durability():
     assert adv._combo_matches_archetype(durable, "ad-bruiser")
 
 
+def test_max_damage_bruiser_path_allows_only_one_hybrid_defensive_slot():
+    aggressive = ("trinity-force", "eclipse", "youmuus-ghostblade",
+                  "duskblade-of-draktharr", "seryldas-grudge")
+    conventional = ("trinity-force", "black-cleaver", "deaths-dance",
+                    "steraks-gage", "spear-of-shojin")
+
+    assert adv._combo_matches_archetype(
+        aggressive, "ad-bruiser", build_bias="max_damage")
+    assert not adv._combo_matches_archetype(
+        aggressive, "ad-bruiser", build_bias="balanced")
+    assert not adv._combo_matches_archetype(
+        conventional, "ad-bruiser", build_bias="max_damage")
+    assert adv._combo_matches_archetype(
+        conventional, "ad-bruiser", build_bias="balanced")
+
+
+def test_maximum_damage_prompt_is_an_objective_not_a_tiebreaker():
+    bias = adv.BUILD_BIAS["max_damage"]
+    candidate_prompt = adv._tournament_generation_prompt(
+        "BASE", [{"id": "ad-bruiser", "description": "fighter"}],
+        3, "max_damage", "Hecarim")
+    judge_prompt = adv._tournament_judge_prompt(
+        "BASE", [], "max_damage", "Hecarim")
+
+    assert "primary optimisation objective" in bias
+    assert "otherwise close, nothing more" not in bias
+    assert "not a quota for defensive slots" in candidate_prompt
+    assert "no more than one such slot" in candidate_prompt
+    assert "functional floor, not permission" in judge_prompt
+    assert "runePageReplacement" in judge_prompt
+    assert "Keep the selected candidate's ORIGINAL runes" in judge_prompt
+
+
+def test_final_item_aware_phase_rush_page_is_legal_for_hecarim():
+    page = {
+        "keystone": "Phase Rush",
+        "primaryTree": "Sorcery",
+        "minors": ["Axiom Arcanist", "Celerity", "Nimbus Cloak"],
+        "flex": "Sudden Impact",
+    }
+
+    assert adv._rune_refinement_errors(
+        page, champion="Hecarim", role="jungle",
+        build_bias="max_damage") == []
+
+
+def test_final_item_aware_page_preserves_locks_and_max_damage_policy():
+    defensive = {
+        "keystone": "Conqueror",
+        "primaryTree": "Resolve",
+        "minors": ["Courage of the Colossus", "Bone Plating", "Overgrowth"],
+        "flex": "Celerity",
+    }
+    errors = adv._rune_refinement_errors(
+        defensive, champion="Hecarim", role="jungle",
+        rune_locks=["Phase Rush"], build_bias="max_damage")
+    max_damage_errors = adv._rune_refinement_errors(
+        defensive, champion="Hecarim", role="jungle",
+        build_bias="max_damage")
+
+    assert any("locked runes" in error for error in errors)
+    assert any("defensive runes" in error for error in max_damage_errors)
+
+
 def test_defensive_items_carry_the_signal_that_gate_reads():
     for slug in ("steraks-gage", "deaths-dance", "sunfire-aegis"):
         assert "defensive" in adv._item_archetype_signals(slug), slug

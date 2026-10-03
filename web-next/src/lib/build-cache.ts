@@ -26,6 +26,16 @@ const PATCH = (statRules as { targetPatch?: string }).targetPatch ?? "unknown";
 /** Long enough to span a patch cycle; the patch in the key does the real work. */
 const TTL_SECONDS = 60 * 60 * 24 * 45;
 
+/**
+ * Local development must never read or write the shared production build
+ * cache.  This keeps a local experiment from silently reusing (or replacing)
+ * a production answer while still allowing an explicit opt-in when a cache
+ * integration itself needs to be tested.
+ */
+export const BUILD_CACHE_ENABLED =
+  process.env.NODE_ENV !== "development" ||
+  process.env.ENABLE_LOCAL_BUILD_CACHE === "true";
+
 export interface BuildRequestKey {
   champion: string;
   role: string;
@@ -381,14 +391,19 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // retire cached builds scored before their proc, shield, and sustain fixes.
   // v79: rune choice is model/ladder-led. The engine measures complete pages
   // instead of synthesizing and ranking thousands of context-blind pages.
-  return `build:v79:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v80: maximum-damage frontliners no longer inherit a mandatory two-item
+  // defensive shell, and the final judge may tailor one complete rune page to
+  // the engine's finished item core before it is legality-checked and measured.
+  return `build:v80:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
+  if (!BUILD_CACHE_ENABLED) return null;
   return kvGetJson<Record<string, unknown> | null>(key, null);
 }
 
 export async function writeCachedBuild(key: string, build: unknown): Promise<void> {
+  if (!BUILD_CACHE_ENABLED) return;
   try {
     await kvSetJson(key, build, TTL_SECONDS);
   } catch {

@@ -62,10 +62,13 @@
     "mana-awe": {
       "slugs": [
         "manamune",
+        "muramana",
         "archangels-staff",
-        "winters-approach"
+        "seraphs-embrace",
+        "winters-approach",
+        "fimbulwinter"
       ],
-      "evidence": "All three print the named passives 'Awe' and 'Mana Charge'."
+      "evidence": "Wild Rift permits only one Tear of the Goddess item. Include both the purchased and transformed forms so the optimizer cannot equip Manamune with Muramana, Archangel's Staff with Seraph's Embrace, or Winter's Approach with Fimbulwinter as separate slots."
     },
     "momentum": {
       "slugs": [
