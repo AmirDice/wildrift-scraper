@@ -2,6 +2,8 @@ __pycache__/
 .local-python*/
 .wheel-cache/
 .wheel-extract/
+.scrape-lite/
+.scrape-paddle/
 *.py[cod]
 .venv/
 venv/
