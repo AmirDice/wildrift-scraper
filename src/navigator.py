@@ -21,12 +21,6 @@ import numpy as np
 
 Scan = Callable[[np.ndarray, float | None], tuple[dict[int, int], float | None]]
 
-# The relaid-out leaderboard pins the account's own row across the bottom of
-# the list.  A rank badge can remain visible behind that card while its row is
-# no longer tappable, so the old 87% lower boundary is unsafe.
-SAFE_TOP_FRAC = 0.13
-SAFE_BOTTOM_FRAC = 0.72
-
 
 class LeaderboardNavigator:
     def __init__(
@@ -68,16 +62,7 @@ class LeaderboardNavigator:
         self.last_center: float | None = None
         self.screen_h: int | None = None
         self.last_frame: np.ndarray | None = None  # frame behind the last returned y
-        # The leaderboard now preserves its scroll position after visiting a
-        # profile.  Reuse the already-verified visible rows on the next call
-        # instead of taking and OCRing the same screen again.  Any recovery,
-        # movement, or failed journey invalidates this cache.
-        self.last_ranks: dict[int, int] = {}
         self._debug_dumps = 0  # rejected-frame dumps this run (capped)
-
-    def invalidate_position(self) -> None:
-        self.last_center = None
-        self.last_ranks.clear()
 
     def _dump_rejected(self, img: np.ndarray, rank: int) -> None:
         """Save a frame the policy refused to act on, so 'why did the scan
@@ -92,12 +77,6 @@ class LeaderboardNavigator:
     def ensure_visible(self, rank: int) -> int | None:
         """Return the on-screen y of `rank`, travelling to it if needed.
         None = detection lost; the caller falls back to a manual prompt."""
-        if rank in self.last_ranks and self.last_frame is not None:
-            h = self.screen_h or int(self.last_frame.shape[0])
-            y = self.last_ranks[rank]
-            if h * SAFE_TOP_FRAC <= y <= h * SAFE_BOTTOM_FRAC:
-                self.log(f"  [detect] rank {rank} reused from the preserved leaderboard")
-                return y
         empty_scans = 0
         prev_sign = 0
         no_fling = False
@@ -153,11 +132,11 @@ class LeaderboardNavigator:
                         self.log(f"  [detect] not on a leaderboard any more ({where})"
                                  f" -- handing over to recovery immediately")
                         self._dump_rejected(img, rank)
-                        self.invalidate_position()
+                        self.last_center = None
                         return None
                 empty_scans += 1
                 if empty_scans >= 4:
-                    self.invalidate_position()
+                    self.last_center = None
                     return None
                 use_stable = True
                 self._dump_rejected(img, rank)
@@ -278,7 +257,7 @@ class LeaderboardNavigator:
                              + (" (giving up)" if impossible_scans >= 3 else ""))
                     self._dump_rejected(img, rank)
                     if impossible_scans >= 3:
-                        self.invalidate_position()
+                        self.last_center = None
                         return None
                     use_stable = True
                     self.sleep(0.4)
@@ -325,12 +304,11 @@ class LeaderboardNavigator:
                 y = ranks[rank]
                 # Only tap rows fully inside the safe zone; a row hugging the
                 # screen edge may be partially clipped.
-                if H * SAFE_TOP_FRAC <= y <= H * SAFE_BOTTOM_FRAC:
+                if H * 0.13 <= y <= H * 0.87:
                     self.last_center = center
                     self.last_frame = img
-                    self.last_ranks = dict(ranks)
                     return y
-                nudge = 0.8 if y > H * SAFE_BOTTOM_FRAC else -0.8
+                nudge = 0.8 if y > H * 0.87 else -0.8
                 self.drag_rows(nudge, p)
                 settle_pending = False
                 net_down += nudge
@@ -350,12 +328,11 @@ class LeaderboardNavigator:
                 nb = known[0]
                 if abs(nb - rank) <= 4:
                     y_inf = int(round(ranks[nb] + (rank - nb) * pitch))
-                    if H * SAFE_TOP_FRAC <= y_inf <= H * SAFE_BOTTOM_FRAC:
+                    if H * 0.13 <= y_inf <= H * 0.87:
                         self.log(f"  [detect] rank {rank}'s badge did not OCR; "
                                  f"row inferred at y={y_inf} from rank {nb} + grid")
                         self.last_center = center
                         self.last_frame = img
-                        self.last_ranks = dict(ranks)
                         return y_inf
             delta = rank - hi_r if rank > hi_r else rank - lo_r
             sign = 1 if delta > 0 else -1
@@ -374,10 +351,9 @@ class LeaderboardNavigator:
                         careful = self.arbitrate(img)
                         if rank in careful:
                             y = careful[rank]
-                            if H * SAFE_TOP_FRAC <= y <= H * SAFE_BOTTOM_FRAC:
+                            if H * 0.13 <= y <= H * 0.87:
                                 self.last_center = (min(careful) + max(careful)) / 2
                                 self.last_frame = img
-                                self.last_ranks = dict(careful)
                                 return y
                         if careful:
                             ranks = careful
@@ -421,5 +397,5 @@ class LeaderboardNavigator:
             dump_path = self.dump_frame(img, rank)
         self.log(f"  [detect] journey exhausted (net movement ~{net_down:+.0f} rows) -- handing over"
                  + (f"; last frame saved to {dump_path}" if dump_path else ""))
-        self.invalidate_position()
+        self.last_center = None
         return None

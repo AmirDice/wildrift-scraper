@@ -1080,7 +1080,7 @@ def main() -> int:
                                 print(f"[unattended] self-recovery {recoveries}/2: "
                                       f"re-entering {args.target}'s leaderboard")
                                 if recovery["fn"]():
-                                    nav.invalidate_position()
+                                    nav.last_center = None
                                     continue
                             print(f"[unattended] abandoning {args.target} at rank "
                                   f"{current_rank} -- will be redone next run")
@@ -1464,7 +1464,7 @@ def main() -> int:
                         print("[maintenance] leaderboard reopened, but Champion overview "
                               "was not detected")
                         return False
-                nav.invalidate_position()
+                nav.last_center = None
                 last_game_restart[0] = time.time()
                 print("[maintenance] restart complete; leaderboard recovery succeeded")
                 return True
@@ -1688,7 +1688,7 @@ def main() -> int:
                     capture_dir = args.capture_dir / f"{slug}_{time.strftime('%Y%m%d_%H%M')}"
                     capture_dir.mkdir(parents=True, exist_ok=True)
                 args.target = label
-                nav.invalidate_position()   # fresh position memory per champion
+                nav.last_center = None   # fresh position memory per champion
                 print()
                 print(f"#################### {label} ({done + 1}/{args.champions}) ####################")
                 if resume_dir is not None:

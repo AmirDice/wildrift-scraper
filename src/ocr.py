@@ -651,14 +651,7 @@ def read_rank_badge(
     if crop.size == 0:
         return None
 
-    # Rank travel is latency-sensitive and the glyphs are fixed game UI, not
-    # natural-language text.  In hybrid mode keep this path on the dedicated
-    # digit templates + Tesseract passes below.  Letting ``auto`` call
-    # read_words here initialized Paddle after ordinary profile returns and
-    # added several seconds to nearly every rank, while producing no better
-    # rank chain.  Explicit ``--engine paddle`` remains available for OCR
-    # diagnostics; collection's Paddle fallback is for offline names/stats.
-    if ocr_engine() == "paddle":
+    if ocr_engine() in {"paddle", "auto"}:
         try:
             for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
                 if not word.text.isdigit():
@@ -748,11 +741,7 @@ def scan_visible_ranks(
     scale = 3.0
     candidates: list[tuple[int, int]] = []  # (y_orig_center, ocr_rank)
 
-    # As with read_rank_badge, hybrid collection must not initialize Paddle
-    # in this latency-sensitive live-navigation scan.  The fixed digit
-    # templates and numeric Tesseract passes below are both faster and more
-    # reliable for this single UI font.
-    if ocr_engine() == "paddle":
+    if ocr_engine() in {"paddle", "auto"}:
         try:
             for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
                 if not word.text.isdigit():

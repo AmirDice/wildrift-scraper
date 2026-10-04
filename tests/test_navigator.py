@@ -163,20 +163,6 @@ def test_missing_target_badge_grid_inference():
     assert b.actions == []
 
 
-def test_preserved_leaderboard_reuses_verified_next_row_without_rescan():
-    """The current game keeps the same list position after a profile visit.
-    Once a scan verified several visible rows, the next rank should use that
-    exact cached coordinate instead of paying for another screenshot/OCR."""
-    b = FakeBoard(pos=5.0)
-    nav = make_nav(b)
-    first = nav.ensure_visible(7)
-    assert first is not None
-    frames = b.frame
-    second = nav.ensure_visible(8)
-    assert second == b.truth()[8]
-    assert b.frame == frames
-
-
 def _teleport_lie(board: FakeBoard, offset: int):
     """Scan output that misreads every badge `offset` ranks deeper (the
     deterministic '30-34 read as 50-54' failure -- same ys, wrong digits)."""
@@ -202,11 +188,8 @@ def test_confirmed_downward_teleport_refused_when_arbitration_fails():
 
 
 def test_confirmed_downward_teleport_rescued_by_arbitration():
-    """Same lie, but arbitration answers and restores the true window.
-
-    The target may still need one small safety drag when it sits behind the
-    new pinned self-row at the bottom of the leaderboard.
-    """
+    """Same lie, but arbitration answers: it overrules the misread and the
+    journey finishes on the spot with zero movement."""
     b = FakeBoard(pos=30.0)
     nav = make_nav(b)
     nav.last_center = 32.0
@@ -214,7 +197,7 @@ def test_confirmed_downward_teleport_rescued_by_arbitration():
     y = nav.ensure_visible(34)
     assert y is not None
     assert abs(y - b.true_y(34)) <= 3
-    assert all(action[0] == "drag" and abs(action[1]) <= 0.8 for action in b.actions)
+    assert b.actions == []
 
 
 class GlidingBoard(FakeBoard):
