@@ -1080,7 +1080,7 @@ def main() -> int:
                                 print(f"[unattended] self-recovery {recoveries}/2: "
                                       f"re-entering {args.target}'s leaderboard")
                                 if recovery["fn"]():
-                                    nav.last_center = None
+                                    nav.invalidate_position()
                                     continue
                             print(f"[unattended] abandoning {args.target} at rank "
                                   f"{current_rank} -- will be redone next run")
@@ -1464,7 +1464,7 @@ def main() -> int:
                         print("[maintenance] leaderboard reopened, but Champion overview "
                               "was not detected")
                         return False
-                nav.last_center = None
+                nav.invalidate_position()
                 last_game_restart[0] = time.time()
                 print("[maintenance] restart complete; leaderboard recovery succeeded")
                 return True
@@ -1688,7 +1688,7 @@ def main() -> int:
                     capture_dir = args.capture_dir / f"{slug}_{time.strftime('%Y%m%d_%H%M')}"
                     capture_dir.mkdir(parents=True, exist_ok=True)
                 args.target = label
-                nav.last_center = None   # fresh position memory per champion
+                nav.invalidate_position()   # fresh position memory per champion
                 print()
                 print(f"#################### {label} ({done + 1}/{args.champions}) ####################")
                 if resume_dir is not None:
@@ -1721,7 +1721,8 @@ def main() -> int:
                     log_path = capture_dir / "extract.log"
                     with log_path.open("w", encoding="utf-8") as lf:
                         subprocess.Popen(
-                            [sys.executable, "-m", "src.extract_frames", str(capture_dir)],
+                            [sys.executable, "-m", "src.extract_frames", str(capture_dir),
+                             "--engine", "auto"],
                             stdout=lf, stderr=subprocess.STDOUT,
                             cwd=str(Path(__file__).resolve().parent.parent),
                         )

@@ -64,13 +64,21 @@ _configure_tesseract()
 
 # PaddleOCR is optional at import time: the scraper still needs to run on
 # machines that have only the lightweight Tesseract requirements installed.
-# Set OCR_ENGINE=paddle (or pass --engine paddle to extract_frames) to use it;
-# auto prefers Paddle and falls back to Tesseract when its runtime/model is not
-# available. The default remains tesseract until the capture benchmark proves
-# the new backend is both more accurate and acceptably fast.
+# Set OCR_ENGINE=paddle (or pass --engine paddle to extract_frames) to use it.
+# ``auto`` is the collection-friendly hybrid: Tesseract handles the fast path
+# and PaddleOCR is only tried when the result is empty or low confidence. The
+# default remains tesseract so existing one-off extraction commands stay fast.
 OCR_ENGINE = os.environ.get("OCR_ENGINE", "tesseract").strip().lower()
 _PADDLE_ENGINE = None
 _PADDLE_LOCK = threading.Lock()
+
+# Pin the model instead of inheriting whatever model a future PaddleOCR
+# release happens to make its default. The v5 mobile English pair matched the
+# tested server captures at the same labeled accuracy as the larger models,
+# while using a fraction of their CPU time.
+PADDLE_DETECTION_MODEL = "PP-OCRv5_mobile_det"
+PADDLE_RECOGNITION_MODEL = "en_PP-OCRv5_mobile_rec"
+AUTO_PADDLE_CONFIDENCE_THRESHOLD = 55.0
 
 
 def ocr_engine() -> str:
@@ -96,9 +104,16 @@ def _get_paddle_engine():
             ) from exc
         attempts = (
             # PaddleOCR 3.x: disable document tasks; leaderboard crops are
-            # already rectified and only need text-line recognition.
-            {"lang": "en", "use_doc_orientation_classify": False,
-             "use_doc_unwarping": False, "use_textline_orientation": False},
+            # already rectified and only need text-line recognition. Explicit
+            # model names keep upgrades from silently changing the corpus.
+            {"text_detection_model_name": PADDLE_DETECTION_MODEL,
+             "text_recognition_model_name": PADDLE_RECOGNITION_MODEL,
+             "use_doc_orientation_classify": False,
+             "use_doc_unwarping": False, "use_textline_orientation": False,
+             # PaddlePaddle 3.3's Windows oneDNN path cannot execute these
+             # OCR graphs. Plain CPU inference is stable and is what the
+             # benchmark used.
+             "device": "cpu", "enable_mkldnn": False},
             # PaddleOCR 2.x compatibility.
             {"lang": "en", "use_angle_cls": False, "show_log": False},
             {"lang": "en"},
@@ -303,16 +318,14 @@ def read_text(img: np.ndarray, config: str = WINRATE_TESSERACT_CONFIG) -> OCRRes
     """Try both polarities of Otsu threshold; return the higher-confidence
     result. Falls back to the non-inverted version if confidences are equal
     (or both missing)."""
-    if ocr_engine() in {"paddle", "auto"}:
+    mode = ocr_engine()
+    if mode == "paddle":
         try:
             text, conf, _words = _run_paddle(img)
             if text.strip():
                 return OCRResult(text=text, confidence=conf, image=img)
         except Exception as exc:  # noqa: BLE001 -- optional backend fallback
-            if ocr_engine() == "paddle":
-                raise
-            print(f"[ocr] PaddleOCR unavailable ({exc}); falling back to Tesseract",
-                  file=sys.stderr)
+            raise
 
     best: OCRResult | None = None
     for invert in (False, True):
@@ -322,6 +335,21 @@ def read_text(img: np.ndarray, config: str = WINRATE_TESSERACT_CONFIG) -> OCRRes
         if best is None or candidate.confidence > best.confidence:
             best = candidate
     assert best is not None
+
+    # Hybrid mode pays for Paddle only when the cheap OCR result is not
+    # trustworthy. This is the path used by batch data collection to avoid a
+    # Gemini call for ordinary names and numeric fields.
+    if mode == "auto" and (
+        not best.text.strip()
+        or best.confidence < AUTO_PADDLE_CONFIDENCE_THRESHOLD
+    ):
+        try:
+            text, conf, _words = _run_paddle(img)
+            if text.strip():
+                return OCRResult(text=text, confidence=conf, image=img)
+        except Exception as exc:  # noqa: BLE001 -- optional backend fallback
+            print(f"[ocr] PaddleOCR unavailable ({exc}); keeping Tesseract result",
+                  file=sys.stderr)
     return best
 
 
@@ -533,14 +561,14 @@ def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[
     Tries both threshold polarities (like read_text) and returns whichever set
     of words had higher mean confidence.
     """
-    if ocr_engine() in {"paddle", "auto"}:
+    mode = ocr_engine()
+    if mode == "paddle":
         try:
             _text, _conf, words = _run_paddle(img)
             if words and any(word.x or word.y for word in words):
                 return words
         except Exception:
-            if ocr_engine() == "paddle":
-                raise
+            raise
 
     best: tuple[float, list[OCRWord]] | None = None
     for invert in (False, True):
@@ -575,6 +603,18 @@ def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[
         if best is None or mean > best[0]:
             best = (mean, words)
     assert best is not None
+
+    if mode == "auto" and (
+        not best[1]
+        or best[0] < AUTO_PADDLE_CONFIDENCE_THRESHOLD
+    ):
+        try:
+            _text, _conf, words = _run_paddle(img)
+            if words and any(word.x or word.y for word in words):
+                return words
+        except Exception as exc:  # noqa: BLE001 -- optional backend fallback
+            print(f"[ocr] PaddleOCR unavailable ({exc}); keeping Tesseract words",
+                  file=sys.stderr)
     return best[1]
 
 
@@ -611,7 +651,14 @@ def read_rank_badge(
     if crop.size == 0:
         return None
 
-    if ocr_engine() in {"paddle", "auto"}:
+    # Rank travel is latency-sensitive and the glyphs are fixed game UI, not
+    # natural-language text.  In hybrid mode keep this path on the dedicated
+    # digit templates + Tesseract passes below.  Letting ``auto`` call
+    # read_words here initialized Paddle after ordinary profile returns and
+    # added several seconds to nearly every rank, while producing no better
+    # rank chain.  Explicit ``--engine paddle`` remains available for OCR
+    # diagnostics; collection's Paddle fallback is for offline names/stats.
+    if ocr_engine() == "paddle":
         try:
             for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
                 if not word.text.isdigit():
@@ -701,7 +748,11 @@ def scan_visible_ranks(
     scale = 3.0
     candidates: list[tuple[int, int]] = []  # (y_orig_center, ocr_rank)
 
-    if ocr_engine() in {"paddle", "auto"}:
+    # As with read_rank_badge, hybrid collection must not initialize Paddle
+    # in this latency-sensitive live-navigation scan.  The fixed digit
+    # templates and numeric Tesseract passes below are both faster and more
+    # reliable for this single UI font.
+    if ocr_engine() == "paddle":
         try:
             for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
                 if not word.text.isdigit():
