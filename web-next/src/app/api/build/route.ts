@@ -180,6 +180,8 @@ type Body = {
  */
 const CONSENSUS_RUNS = Math.max(1, Number(process.env.BUILD_CONSENSUS_RUNS ?? 1) || 1);
 
+const PUBLIC_ADVISOR_ERROR = "Build generation is temporarily unavailable. Please try again later.";
+
 /**
  * The response for "you have nothing left today", shared by the cache path and
  * the generation path so a player gets the same answer either way.
@@ -523,14 +525,18 @@ async function handlePost(request: Request) {
       runs: mode === "counter" ? 1 : CONSENSUS_RUNS,
     });
     if (!res.ok) {
+      // Provider responses can contain billing state, API details, local file
+      // paths, and full tracebacks. Keep those in server logs; the browser
+      // receives only a stable, actionable message.
+      console.error("Advisor generation failed", res.error);
       const responseQuota = res.quotaRefundable
         ? await refundQuota(user, ip, unlimited)
         : quota;
       return NextResponse.json(
         {
           error: res.quotaRefundable
-            ? `${res.error}. Your generation was restored.`
-            : res.error,
+            ? `${PUBLIC_ADVISOR_ERROR} Your generation was restored.`
+            : PUBLIC_ADVISOR_ERROR,
           quota: responseQuota,
           quotaRefunded: Boolean(res.quotaRefundable),
         },

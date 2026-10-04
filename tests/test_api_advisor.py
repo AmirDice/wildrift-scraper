@@ -97,7 +97,9 @@ class TestFailureHandling:
         status, payload = advisor_api.build_from_request(
             {"champion": "Hecarim", "role": "Jungle"})
         assert status == 502
-        assert "advisor failed" in payload["error"]
+        assert payload["error"] == (
+            "Build generation is temporarily unavailable. Please try again later.")
+        assert "upstream on fire" not in payload["error"]
         # The detail goes to the log, not the response.
         assert "Traceback" not in payload["error"]
         assert "Traceback" in capsys.readouterr().err

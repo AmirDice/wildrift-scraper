@@ -201,7 +201,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             return 500, {"error": str(exc)}
         except Exception as exc:  # noqa: BLE001
             traceback.print_exc(file=sys.stderr)
-            return 502, {"error": f"advisor failed: {type(exc).__name__}: {exc}"}
+            return 502, {"error": "Build generation is temporarily unavailable. Please try again later."}
 
     if mode == "counter" and not enemies:
         return 400, {"error": "at least one enemy is required for a counter build"}
@@ -242,7 +242,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
         # The traceback goes to the function log, never to the caller: it can
         # carry file paths and request detail.
         traceback.print_exc(file=sys.stderr)
-        return 502, {"error": f"advisor failed: {type(exc).__name__}: {exc}"}
+        return 502, {"error": "Build generation is temporarily unavailable. Please try again later."}
 
     if isinstance(result, dict) and result.get("error"):
         return 400, result
