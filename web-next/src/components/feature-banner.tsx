@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
+import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { ANNOUNCEMENT } from "@/lib/announcement";
 
 // Top-of-page highlight for the newest feature. Dismissible (remembered in
@@ -63,6 +63,8 @@ const NOTICE = {
 // It keeps living where it always did (the /updates page and the notices on
 // the win-rate pages read ANNOUNCEMENT directly), so only the top strip moves
 // on. Retire the launch by pointing PROMO back at NOTICE.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept so the
+// launch can be re-pointed at without rewriting it; see PROMO below.
 const LAUNCH = {
   key: "wtm-launch-draft-assistant-v1",
   href: "/draft",
@@ -73,7 +75,17 @@ const LAUNCH = {
   cta: "Try it",
 } satisfies typeof FLAG_PROMO;
 
-const PROMO = DRAFT_TOOL_LIVE ? LAUNCH : NOTICE;
+// The Draft Assistant launch is RETIRED (2026-10-04), the way the comment
+// above says to retire it: point PROMO back at NOTICE. It had held the top
+// strip since 2026-09-18, and a collection that is actually running right now
+// outranks a tool that launched two weeks ago -- a reader about to trust a win
+// rate needs to know the boards are mid-refresh before they need to know a
+// feature exists.
+//
+// LAUNCH and FLAG_PROMO are both left defined on purpose. Neither is dead
+// code: the rotation is meant to be re-pointed here rather than rebuilt, which
+// is what made this a one-line change instead of a rewrite.
+const PROMO = NOTICE;
 const DISMISS_KEY = PROMO.key;
 // pages the banner points at -- no reason to show it there
 const HIDE_ON = PROMO.hideOn;
