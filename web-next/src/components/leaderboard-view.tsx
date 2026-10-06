@@ -296,13 +296,22 @@ function PlayerPodium({
   podium,
   championName,
   championIcon,
+  championIconLocal,
   podiumSkins,
 }: {
   podium?: BestPlayerPodium | null;
   championName: string;
   championIcon?: string;
+  /** `/champions/<slug>.png`, rehosted on our own origin. Preferred over
+   *  `championIcon`, which is a game.gtimg.cn URL: Tencent's CDN is slow to
+   *  reach from Europe and NA, and it is the podium's hero image, so it was
+   *  the slowest thing on the page. The remote URL stays as the fallback. */
+  championIconLocal?: string;
   podiumSkins?: { rank: number; name: string; tier: string; url: string; fallback?: string }[];
 }) {
+  // The button used to carry the explanation in a `title` alone, which is a
+  // native tooltip: hover-only, so on a phone tapping it did nothing at all.
+  const [scoringOpen, setScoringOpen] = useState(false);
   const players = podium?.players ?? [];
   if (!players.length) return null;
   const scopeLabel = podium?.scope === "global" ? "EU, NA and CN normalized together" : `${podium?.server ?? "regional"} leaderboard`;
@@ -365,12 +374,37 @@ function PlayerPodium({
         </div>
         <button
           type="button"
-          title="The score combines confidence-adjusted win rate, ladder strength, champion-board position, Champion Score and current-season games."
+          onClick={() => setScoringOpen((open) => !open)}
+          aria-expanded={scoringOpen}
+          aria-controls="podium-scoring"
           className="rounded-full border border-sky-300/55 bg-[#07162b]/70 px-4 py-2 text-xs font-medium text-sky-50 shadow-[0_0_22px_rgb(91_178_255/0.12)] backdrop-blur transition hover:border-sky-200 hover:bg-[#0a2241]"
         >
           How this is scored <span className="ml-1 inline-grid h-4 w-4 place-items-center rounded-full border border-sky-200/70 text-[0.65rem]">i</span>
         </button>
       </div>
+
+      {scoringOpen && (
+        <div
+          id="podium-scoring"
+          className="relative mx-5 mt-3 rounded-xl border border-slate-700/60 bg-[#071427]/90 px-4 py-3 text-xs leading-relaxed text-slate-200 backdrop-blur sm:mx-8"
+        >
+          <p>
+            A current-season composite out of 100, not a raw win-rate race. Five
+            parts, weighted:
+          </p>
+          <ul className="mt-2 space-y-1">
+            <li><strong className="text-sky-200">Performance, 45%</strong> &mdash; win rate, confidence-adjusted so a short hot streak cannot outrank a long record.</li>
+            <li><strong className="text-sky-200">Ladder, 20%</strong> &mdash; the player&apos;s ranked tier.</li>
+            <li><strong className="text-sky-200">Board position, 20%</strong> &mdash; how high they sit on this champion&apos;s board.</li>
+            <li><strong className="text-sky-200">Champion Score, 10%</strong> &mdash; mastery on the champion, compared within their own server.</li>
+            <li><strong className="text-sky-200">Games, 5%</strong> &mdash; capped, so volume alone cannot win it.</li>
+          </ul>
+          <p className="mt-2 text-slate-400">
+            A part we cannot read for a player is left out and the rest are
+            reweighted, rather than scored as a zero.
+          </p>
+        </div>
+      )}
 
       <div className="relative px-5 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-14">
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-amber-700 drop-shadow-[0_0_12px_rgb(245_190_70/0.35)]">Top 3 this season</p>
@@ -403,15 +437,29 @@ function PlayerPodium({
                         <span aria-hidden className="pointer-events-none absolute -inset-1 rounded-full border border-gold/35 sm:-inset-1.5" />
                       </>
                     )}
-                    {portrait?.url || championIcon ? (
-                      <span className="absolute inset-0 overflow-hidden rounded-full">
+                    {portrait?.url || championIconLocal || championIcon ? (
+                      <span
+                        className="absolute inset-0 overflow-hidden rounded-full bg-cover bg-center"
+                        /* The local champion icon sits UNDER the portrait as a
+                           backdrop. Ranks 1 and 2 use communitydragon splash
+                           tiles, which are remote and the slowest thing on the
+                           page; until one arrives its circle was simply empty.
+                           Painting the rehosted icon behind it means a face is
+                           there immediately and the splash covers it when it
+                           loads, so the wait stops being visible. */
+                        style={championIconLocal && portrait?.url
+                          ? { backgroundImage: `url(${championIconLocal})` }
+                          : undefined}
+                      >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={portrait?.url || championIcon}
+                          src={portrait?.url || championIconLocal || championIcon}
                           alt={portrait?.name || championName}
                           title={portrait?.name}
                           width={96}
                           height={96}
+                          fetchPriority={rank === 1 ? "high" : undefined}
+                          decoding="async"
                           className="block w-full max-w-none rounded-full object-cover"
                           style={{
                             width: "100%",
@@ -950,6 +998,7 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
           podium={region === "Global" ? champ.globalBestPlayerPodium : region === "CN" ? null : champ.bestPlayerPodium}
           championName={champ.name}
           championIcon={champ.icon}
+          championIconLocal={`/champions/${champ.slug}.png`}
           podiumSkins={champ.podiumSkins}
         />
       )}
