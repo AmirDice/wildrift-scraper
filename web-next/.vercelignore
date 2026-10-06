@@ -1,9 +1,22 @@
+# Local build artifacts, NOT uploaded to Vercel.
+#
+# Every directory pattern here is ANCHORED with a leading slash, which is the
+# whole point: a bare `build/` is a gitignore-style pattern that matches a
+# directory of that name at ANY depth, so it silently removed the Build Studio
+# itself from the deployment --
+#     src/app/build/page.tsx
+#     src/app/build/[slug]/page.tsx
+#     src/app/api/build/route.ts
+#     src/app/api/build/why-not/route.ts
+#     src/app/api/v1/build/route.ts
+# and /build and /counter then 404'd in production while every other route
+# worked, because the files were never shipped. Keep the leading slashes.
 .next/
 node_modules/
 .vercel/
 .env*
 *.log
 *.tsbuildinfo
-coverage/
-out/
-build/
+/coverage/
+/out/
+/build/
