@@ -10,6 +10,31 @@ export type Region = (typeof REGIONS)[number] | "Global";
  *  champion has no players. */
 export const REGIONS_WITH_DATA: Region[] = ["EU", "NA", "CN", "Global"];
 
+/**
+ * Resolve a `?region=` query value to a Region, or null.
+ *
+ * The region tabs are client state seeded by a build-time `initialRegion`, so
+ * the server-rendered HTML is deterministic and a crawler always gets one
+ * known ranking. That is deliberate, and it is also why `?region=NA` did
+ * nothing: nothing ever read the URL. Reading it in an effect after mount
+ * keeps the prerendered shell exactly as it was while making shared links
+ * land where they say they do.
+ *
+ * Deliberately NOT useSearchParams: on a statically rendered page that hook
+ * forces a Suspense boundary or the production build fails, and both pages
+ * that need this are static on purpose.
+ *
+ * Case-insensitive, because a link typed by hand says `?region=na`.
+ */
+export function regionFromQuery(
+  search: string, allowed: readonly Region[],
+): Region | null {
+  const raw = new URLSearchParams(search).get("region");
+  if (!raw) return null;
+  const want = raw.trim().toLowerCase();
+  return allowed.find((r) => r.toLowerCase() === want) ?? null;
+}
+
 export function RegionToggle({
   region,
   onChange,

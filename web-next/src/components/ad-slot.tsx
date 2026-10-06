@@ -46,7 +46,7 @@ const HOUSE = [
   {
     eyebrow: "Every champion, ranked",
     title: "What actually wins on your server",
-    body: "Real top-50 win rates for EU, NA and China, confidence-adjusted every patch.",
+    body: "Real top-player win rates for EU, NA and China, confidence-adjusted every patch.",
     href: "/tier-list",
     cta: "Open the tier list",
   },

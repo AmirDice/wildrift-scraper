@@ -9,7 +9,7 @@ import { Glyph, GLYPHS, Laurel } from "@/components/insignia";
 import { TierBadge, tierParts, tierRank } from "@/components/tier-badge";
 import { QueuePanel } from "@/components/queue-panel";
 import type { QueueStats } from "@/lib/player-index";
-import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
+import { RegionToggle, RegionComingSoon, regionFromQuery, type Region } from "@/components/region-toggle";
 import type { BestPlayerPodium } from "@/lib/data";
 
 export type SlimChampion = {
@@ -49,6 +49,9 @@ type EnrichedPlayer = Row & {
 };
 
 type EnrichedPayload = { champion: string; slug: string; capturedAt: string; players: EnrichedPlayer[] };
+
+/** The order the tabs are shown in, and the set `?region=` may select. */
+const LEADERBOARD_REGIONS = ["Global", "EU", "NA", "CN"] as const;
 
 type SortKey = "r" | "w" | "g" | "s" | "wilson" | "composite" | "tier";
 
@@ -640,7 +643,7 @@ function ChampionPulse({ payload, icons, runeIcons, spellIcons }: {
     <div className="glass mb-4 flex flex-wrap items-center gap-x-5 gap-y-3 rounded-2xl px-4 py-3.5 sm:gap-x-8 sm:px-5 sm:py-4">
       <div>
         <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">
-          Core items across the top 50
+          Core items across the board
         </p>
         <div className="mt-1.5 flex items-center gap-1.5">
           {pulse.topItems.map((it) => (
@@ -713,7 +716,7 @@ function ChampionPulse({ payload, icons, runeIcons, spellIcons }: {
         </div>
       )}
       {pulse.pentas > 0 && (
-        <div title="Pentakills across the top 50, ranked queue">
+        <div title="Pentakills across the board, ranked queue">
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">Pentakills</p>
           <p className="mt-1.5 text-sm font-semibold text-gold tabular-nums">{pulse.pentas}</p>
         </div>
@@ -795,6 +798,13 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
   // one champion's enriched file is ~50 KB; keep what was already fetched
   const enrichedCache = useRef<Map<string, EnrichedPayload | null>>(new Map());
 
+  // ?region=NA lands on NA. Runs after mount for the same reason the champion
+  // param below does: the prerendered HTML must stay deterministic.
+  useEffect(() => {
+    const want = regionFromQuery(window.location.search, LEADERBOARD_REGIONS);
+    if (want) setRegion(want);
+  }, []);
+
   useEffect(() => {
     const param = new URLSearchParams(window.location.search).get("champion");
     if (param) {
@@ -865,10 +875,25 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
 
   const champ = regionChampions.find((c) => c.slug === slug);
   const rows: (Row | EnrichedPlayer)[] = useMemo(() => {
-    const base: (Row | EnrichedPlayer)[] = enriched?.players ?? data?.[slug] ?? [];
+    // The composite score `b` is produced by the SCORING pass that writes the
+    // region-wide players file; the enriched per-champion file is a capture
+    // artifact and has never carried it. Since the enriched file wins here,
+    // every champion that has one showed an empty "Best score" column -- on
+    // EU as well as NA. Rather than duplicate the score into the capture
+    // export, carry it across by rank, which keeps one source of truth for it.
+    const scoreByRank = new Map<number, number>();
+    for (const row of data?.[slug] ?? []) {
+      if (row.r != null && row.b != null) scoreByRank.set(row.r, row.b);
+    }
+    const base: (Row | EnrichedPlayer)[] = enriched?.players
+      ? enriched.players.map((row) =>
+          row.b == null && row.r != null && scoreByRank.has(row.r)
+            ? { ...row, b: scoreByRank.get(row.r) }
+            : row,
+        )
+      : data?.[slug] ?? [];
     // Derived sort keys return null when the row cannot supply them, which
-    // `num` sorts last in either direction. Regional and Global exports carry
-    // the same composite `b` value used by the podium.
+    // `num` sorts last in either direction.
     const key = (row: Row | EnrichedPlayer) => {
       if (sortKey === "wilson") return wilsonScore(row.w, row.g);
       if (sortKey === "composite") return row.b ?? null;
@@ -897,7 +922,7 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
       {/* Global and CN become fully populated after the player-level CN
           collection; keeping them visible now makes the rollout state clear. */}
       <div className="mb-5">
-        <RegionToggle region={region} onChange={setRegion} regions={["Global", "EU", "NA", "CN"] as const} />
+        <RegionToggle region={region} onChange={setRegion} regions={LEADERBOARD_REGIONS} />
       </div>
 
       {regionChampions.length === 0 ? (

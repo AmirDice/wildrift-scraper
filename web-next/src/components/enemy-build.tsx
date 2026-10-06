@@ -1791,7 +1791,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                 )}
                 {advice.ladderAgreement && advice.ladderAgreement.score >= 40 && (
                   <span className="ml-1 rounded-md bg-gold/15 px-2 py-0.5 text-[0.65rem] font-bold text-gold"
-                    title={`${advice.ladderAgreement.matched} of ${advice.ladderAgreement.of} items are also equipped by this champion's top-50 ranked players right now`}>
+                    title={`${advice.ladderAgreement.matched} of ${advice.ladderAgreement.of} items are also equipped by this champion's top ranked players right now`}>
                     {advice.ladderAgreement.score}% ladder match
                   </span>
                 )}

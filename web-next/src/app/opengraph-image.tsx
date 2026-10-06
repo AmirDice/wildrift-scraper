@@ -180,7 +180,7 @@ export default async function Image() {
                 maxWidth: 660,
               }}
             >
-              Real Wild Rift win rates from the top 50 players on every champion,
+              Real Wild Rift win rates from the top players on every champion,
               plus build and counter tools.
             </div>
           </div>

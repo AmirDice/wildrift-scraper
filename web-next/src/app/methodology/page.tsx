@@ -6,7 +6,7 @@ import { AdSlot } from "@/components/ad-slot";
 export const metadata: Metadata = {
   title: "Methodology | How WrTrueMeta Calculates Win Rates",
   description:
-    "How WrTrueMeta turns the top 50 players of every Wild Rift champion into a fair tier list: Bayesian shrinkage, Wilson best-player scores, and adaptive games floors.",
+    "How WrTrueMeta turns the top players of every Wild Rift champion into a fair tier list: Bayesian shrinkage, Wilson best-player scores, and adaptive games floors.",
   alternates: { canonical: "/methodology" },
 };
 
@@ -24,7 +24,7 @@ export default function MethodologyPage() {
       <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8 flex max-w-3xl flex-col gap-5">
         <Section title="Win rate shown relative to the average champion">
-          We read the <strong className="text-text">top 50 players</strong> of each champion
+          We read the <strong className="text-text">top players</strong> of each champion
           straight from the in-game leaderboard. These are mains at the highest level, so the raw
           win rates all sit above 50%, which reads oddly on a tier list. So we{" "}
           <strong className="text-text">centre the scale</strong>: the pool average becomes 50%, and
@@ -123,7 +123,7 @@ export default function MethodologyPage() {
         </Section>
 
         <Section title="Updates">
-          Data is refreshed roughly twice a month. Each refresh re-scrapes the top 50 players of
+          Data is refreshed roughly twice a month. Each refresh re-scrapes the top players of
           every champion and recomputes everything above. The Chinese win rates behind the patch
           winners and losers refresh daily.
         </Section>

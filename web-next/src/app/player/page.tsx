@@ -8,9 +8,9 @@ import { NextStep } from "@/components/next-step";
 // per-champion JSON at that path, and a route sharing it would be a trap for
 // whoever touches this next.
 export const metadata: Metadata = {
-  title: "Wild Rift Player Search | Find Any Top 50 Player and Their Champions",
+  title: "Wild Rift Player Search | Find Any Top Player and Their Champions",
   description:
-    "Search any Wild Rift player on the EU top 50 boards by name or #tag. See their ranked tier, level, every champion they rank on, and their win rate and games on each.",
+    "Search any Wild Rift player on the EU champion boards by name or #tag. See their ranked tier, level, every champion they rank on, and their win rate and games on each.",
   alternates: { canonical: "/player" },
 };
 
@@ -37,7 +37,7 @@ export default function PlayerSearchPage() {
       <section className="mt-8">
         <SectionHeading
           title="Search the ladder"
-          subtitle="Only players inside a champion's top 50 are collected, so this covers the top of the ladder rather than every account"
+          subtitle="Only players inside a champion's board are collected, so this covers the top of the ladder rather than every account"
         />
         <PlayerSearch champions={champions} />
       </section>

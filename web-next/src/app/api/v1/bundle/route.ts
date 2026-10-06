@@ -186,7 +186,7 @@ export async function GET() {
     const ladder = ladderConsensusBuild(name);
     if (ladder) {
       builds[name] = [{
-        label: "Top 50 consensus",
+        label: "Top board consensus",
         items: ladder.items,
         boots: ladder.boots,
         runes: {

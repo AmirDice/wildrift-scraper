@@ -7,6 +7,7 @@ import type { CnChampion } from "@/lib/cn";
 import { TierChip, ChampionAvatar } from "@/components/ui";
 import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
 import { RegionUpdated } from "@/components/tierlist-updated";
+import { BOARD_DEPTH } from "@/lib/regions";
 
 type SortKey =
   | "name" | "wr" | "maxWr" | "difficulty" | "totalGames" | "maxScore"
@@ -106,14 +107,15 @@ export function ChampionsExplorer({
 
       {region === "EU" && (
         <p className="mb-4 max-w-2xl text-muted">
-          Every champion tracked on EU, ranked by top-50 player win rates.
+          Every champion tracked on EU, ranked by the win rates of each
+          champion&apos;s top {BOARD_DEPTH.EU} players.
         </p>
       )}
 
       {isNA && (
         <p className="mb-4 max-w-2xl text-muted">
-          Every champion tracked on NA, ranked by top-50 player win rates.
-          Collection is still in progress, so this list grows nightly.
+          Every champion tracked on NA, ranked by the win rates of each
+          champion&apos;s top {BOARD_DEPTH.NA} players.
         </p>
       )}
 

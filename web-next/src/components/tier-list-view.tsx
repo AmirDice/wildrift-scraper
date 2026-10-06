@@ -1,13 +1,16 @@
 "use client";
 
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
 import { cnTier, type CnBracketKey } from "@/lib/cn";
 import { TIER_ORDER, tierClass, tierLabel, site, siteNa } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
 import { AdSlot } from "@/components/ad-slot";
-import { RegionToggle, RegionComingSoon, type Region } from "@/components/region-toggle";
+import { RegionToggle, RegionComingSoon, regionFromQuery, type Region } from "@/components/region-toggle";
+
+/** The order the tabs are shown in, and the set `?region=` may select. */
+const TIER_LIST_REGIONS = ["CN", "EU", "NA", "Global"] as const;
 import { CURRENT_PATCH } from "@/lib/patch";
 
 /** The tier the in-board ad unit follows. */
@@ -56,7 +59,7 @@ const TIER_LIST_TOUR: TourStep[] = [
   {
     target: "tl-regions",
     title: "Four boards, one list",
-    body: "EU and NA are our own scrape of each champion's 50 best players. CN is Tencent's official bracket data with its own rank picker. Global, the default, averages EU and NA.",
+    body: "EU and NA are our own scrape of each champion's best players. CN is Tencent's official bracket data with its own rank picker. Global, the default, averages EU and NA.",
   },
   {
     target: "tl-updated",
@@ -130,6 +133,12 @@ export function TierListView({
 }) {
   const [role, setRole] = useState<string>("All roles");
   const [region, setRegion] = useState<Region>(initialRegion);
+  // ?region=NA lands on NA. After mount, so the prerendered HTML still carries
+  // `initialRegion` and a crawler always reads one known ranking.
+  useEffect(() => {
+    const want = regionFromQuery(window.location.search, TIER_LIST_REGIONS);
+    if (want) { setRegion(want); setRole("All roles"); }
+  }, []);
   // Pool depth: how many of each champion's top players feed the number.
   // EU, NA and Global. The first two are our own top-50 scrape and export the
   // same depth slices; Global blends those two slices per depth (see
@@ -221,7 +230,7 @@ export function TierListView({
       <BuildTour storageKey="tour:tier-list:v1" steps={TIER_LIST_TOUR} label="Tour" />
       {/* Region */}
       <div className="mb-5" data-tour="tl-regions">
-        <RegionToggle region={region} onChange={(next) => { setRegion(next); setRole("All roles"); }} regions={["CN", "EU", "NA", "Global"]} />
+        <RegionToggle region={region} onChange={(next) => { setRegion(next); setRole("All roles"); }} regions={TIER_LIST_REGIONS} />
       </div>
 
       <div className="mb-5 flex flex-wrap items-center gap-3" data-tour="tl-updated">
@@ -344,7 +353,7 @@ export function TierListView({
               </div>
               <p className="mt-1.5 text-xs text-muted">
                 {poolDepth === "all"
-                  ? "Win rates from each champion's full top-50 board."
+                  ? "Win rates from each champion's full board."
                   : `Win rates from each champion's top ${poolDepth} players only. A champion that is strong here but weak on "All players" is carried by its elite, not its player base.`}
               </p>
             </div>
@@ -535,7 +544,7 @@ export function TierListView({
                 return (
                   <p>
                     <span className="font-medium text-text">Win rate shown relative to average</span>:{" "}
-                    every champion here is carried by its top-50 mains, so the pool naturally sits
+                    every champion here is carried by its top-board mains, so the pool naturally sits
                     high; we centre it so 50% = the average champion and you can read the gap at a
                     glance. Tier cutoffs: GOD {c(63)}%+ · S {c(61)}–{c(63)}% · A {c(59)}–{c(61)}% · B{" "}
                     {c(57)}–{c(59)}% · C {c(56)}–{c(57)}% · L under {c(56)}%.

@@ -5,19 +5,20 @@ import { NotifyForm } from "@/components/notify-form";
 import {
   CHANGELOG,
   COLLECTION_EXPECTED_FINISH,
+  COLLECTION_PENDING_REGIONS,
   COLLECTION_REGIONS,
   COLLECTION_START,
-  NEXT_PATCH,
+  EU_WINRATE_PATCH,
+  NA_WINRATE_PATCH,
   SKIPPED_PATCH,
-  WINRATE_PATCH,
 } from "@/lib/announcement";
 import site from "@/data/site.json";
 import siteNa from "@/data/site_na.json";
 
 export const metadata: Metadata = {
-  title: `Site Updates | Regional Data Collection Starts ${COLLECTION_START}`,
+  title: `Site Updates | ${COLLECTION_REGIONS} Data Collection In Progress`,
   description:
-    `${COLLECTION_REGIONS} ladder data collection starts ${COLLECTION_START} and is expected to finish ${COLLECTION_EXPECTED_FINISH}.`,
+    `${COLLECTION_REGIONS} ladder data collection is underway and is expected to finish ${COLLECTION_EXPECTED_FINISH}. Each region publishes as its pass completes.`,
   alternates: { canonical: "/updates" },
 };
 
@@ -32,7 +33,7 @@ export default function UpdatesPage() {
           Site update
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          {COLLECTION_REGIONS} data collection starts {COLLECTION_START}.
+          {COLLECTION_REGIONS} data collection is underway.
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">
           {/* Built as one string rather than interleaved JSX text and
@@ -40,11 +41,13 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`${COLLECTION_REGIONS} will be collected from the live leaderboard starting `
-            + `${COLLECTION_START}, with the run expected to finish ${COLLECTION_EXPECTED_FINISH}. `
-            + `Win rates, tiers and builds will update as each region completes. Until then, `
-            + `the current boards remain on ${WINRATE_PATCH}; patch ${SKIPPED_PATCH} item and `
-            + `ability data is already live.`}
+          {`NA is collected and published: all 142 champions re-read from the live `
+            + `leaderboard on 6 October, the first NA board played entirely on patch `
+            + `${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the builds `
+            + `those players had equipped are live now. ${COLLECTION_PENDING_REGIONS} have not `
+            + `been re-collected yet, so EU still shows its ${EU_WINRATE_PATCH} board and `
+            + `anything that averages the two servers mixes the two. Patch ${SKIPPED_PATCH} `
+            + `item and ability data is already live everywhere.`}
         </p>
       </div>
 
@@ -67,13 +70,13 @@ export default function UpdatesPage() {
               </div>
               <div className="rounded-xl border border-gold/30 bg-gold/[0.07] px-4 py-3">
                 <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-gold">
-                  Still measured on {WINRATE_PATCH}
+                  EU still measured on {EU_WINRATE_PATCH}
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                  Win rates, tiers, pick rates and movement. These change when the
-                  leaderboards are re-scraped. The next run begins {COLLECTION_START}; until
-                  then, a champion changed by {SKIPPED_PATCH} still shows how it performed
-                  before the new collection.
+                  Win rates, tiers, pick rates and movement change only when a region&apos;s
+                  leaderboards are re-scraped. NA has been, and its numbers are on{" "}
+                  {NA_WINRATE_PATCH}. EU has not, so a champion changed by {SKIPPED_PATCH}
+                  {" "}still shows there how it performed before the patch.
                 </p>
               </div>
             </div>
@@ -86,7 +89,7 @@ export default function UpdatesPage() {
                   {EU_COLLECTED ?? "Current dataset"}
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
-                  A full roster, played on {WINRATE_PATCH}.
+                  A full roster, played on {EU_WINRATE_PATCH}.
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
@@ -97,7 +100,7 @@ export default function UpdatesPage() {
                   {NA_COLLECTED ?? "Current dataset"}
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
-                  Held here until {NEXT_PATCH}.
+                  All 142 champions, played on {NA_WINRATE_PATCH}.
                 </dd>
               </div>
             </dl>
@@ -112,15 +115,16 @@ export default function UpdatesPage() {
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
               A collection is a full scrape of the top of the ladder for every champion across
               three regions. It runs in sequence so the phone session remains reliable, which is
-              why the announced window runs from {COLLECTION_START} through {COLLECTION_EXPECTED_FINISH}.
-              The site will publish each region as soon as its pass is complete.
+              why the window runs from {COLLECTION_START} through {COLLECTION_EXPECTED_FINISH}.
+              Each region is published as soon as its pass is complete, and the bar under the
+              menu shows how far each one has got.
             </p>
           </Card>
 
           <Card className="p-5">
             <h2 className="text-base font-semibold text-text">What happens during the window</h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
-              The scraper will collect champion win rates and the most-built player builds for
+              The scraper is collecting champion win rates and the most-built player builds for
               {COLLECTION_REGIONS}. Patch {SKIPPED_PATCH} item and ability data is already used
               by the Build Studio, Counter Builder, Draft Assistant and champion pages; this run
               refreshes the empirical ladder layer those tools reference.

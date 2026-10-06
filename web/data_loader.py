@@ -46,7 +46,14 @@ LEADERBOARD_CSV = DATA_DIR / "winrates.csv"
 # Shown in place of names the OCR couldn't read (usually CJK display names).
 UNNAMED_PLACEHOLDER = "SomeChineseName"
 
-# We rank and aggregate over the top this-many players per champion.
+# We rank and aggregate over AT MOST this many players per champion. It is a
+# ceiling, not a promise: the 2026-09 leaderboard relayout cut the visible board
+# to 30 rows, so NA boards collected after it are 30 deep while EU's last
+# collection is still 49-50. Anything that needs the REAL depth of a board must
+# measure it from the rows in hand rather than read it from here -- see the
+# board component in best_player_podium_per_champion, which used to divide
+# every server's rank by this and so scored the bottom NA player 0.41 instead
+# of 0.
 TOP_N_PLAYERS = 50
 
 # --- Champion-winrate pipeline constants ------------------------------
@@ -794,8 +801,23 @@ BEST_PLAYER_WEIGHTS = {
 }
 
 _TIER_STRENGTH = {
-    "challenger": 1.00,
-    "legendary challenger": 1.00,
+    # Sovereign is Wild Rift's apex rank, above Challenger, and was missing
+    # here entirely -- so the best rank in the game produced NO ladder
+    # component at all, and a Sovereign player's score was renormalised over
+    # the remaining 80%. That scored the top rank BELOW Challenger: two
+    # players identical on everything else, averaging 70 elsewhere, came out
+    # Challenger 76.0 against Sovereign 70.0.
+    #
+    # It takes 1.00 and Challenger steps down to 0.95, rather than Sovereign
+    # going above 1.00, because every other component here is clipped to
+    # [0, 1] and best_score is not clamped: a ladder term over 100 would put
+    # scores over 100 on a page that displays them out of 100. The rest of
+    # the ladder is deliberately left alone so only Challenger and Sovereign
+    # rows move; re-spacing the whole scale would rewrite every podium.
+    "sovereign": 1.00,
+    "legendary sovereign": 1.00,
+    "challenger": 0.95,
+    "legendary challenger": 0.95,
     "grandmaster": 0.90,
     "legendary grandmaster": 0.90,
     "master": 0.80,
@@ -951,14 +973,26 @@ def best_player_podium_per_champion(
         }
 
         raw_rank = pd.to_numeric(g["rank"], errors="coerce") if "rank" in g.columns else pd.Series(float("nan"), index=g.index)
+        # Board position is RELATIVE to the board actually collected, so the
+        # denominator is that server's own depth rather than candidate_depth.
+        # Servers no longer share one: NA is 30 rows since the relayout, EU is
+        # still 49-50. Dividing both by 49 scored the last NA player 0.41 where
+        # the last EU player scored 0.14 and only an exactly-50-deep board ever
+        # reached 0, which quietly handed NA players a higher board component
+        # for the same standing on their own ladder.
+        def _board_from(ranks: pd.Series) -> pd.Series:
+            depth = pd.to_numeric(ranks, errors="coerce").max()
+            if not (depth == depth) or depth < 2:
+                depth = candidate_depth
+            return (1.0 - (ranks - 1.0).clip(lower=0.0) / max(1, depth - 1)).clip(0.0, 1.0)
+
         if servers is not None:
             board = pd.Series(float("nan"), index=g.index, dtype=float)
             for _, sidx in servers.groupby(servers, dropna=False).groups.items():
-                denom = max(1, candidate_depth - 1)
-                board.loc[sidx] = 1.0 - (raw_rank.loc[sidx] - 1.0).clip(lower=0.0) / denom
+                board.loc[sidx] = _board_from(raw_rank.loc[sidx])
             components["board"] = board.clip(lower=0.0, upper=1.0)
         else:
-            components["board"] = (1.0 - (raw_rank - 1.0).clip(lower=0.0) / max(1, candidate_depth - 1)).clip(0.0, 1.0)
+            components["board"] = _board_from(raw_rank)
 
         # Experience is capped at the group's 95th percentile and uses log
         # scaling, so one player cannot win by simply having many more games.

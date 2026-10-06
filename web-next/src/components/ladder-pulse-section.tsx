@@ -108,7 +108,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
     <div className="mt-10">
       <SectionHeading
         title="Ladder pulse"
-        subtitle={`Measured from ${pulse.nPlayers.toLocaleString()} top-50 players and ${pulse.nBuilds.toLocaleString()} live builds across ${pulse.nChampions} freshly collected boards`}
+        subtitle={`Measured from ${pulse.nPlayers.toLocaleString()} top-board players and ${pulse.nBuilds.toLocaleString()} live builds across ${pulse.nChampions} freshly collected boards`}
         href="/leaderboard"
         linkLabel="Browse the boards"
       />
@@ -239,7 +239,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
             Dedication index
           </p>
           <p className="mt-1 text-xs text-faint">
-            Median ranked games a top-50 spot costs on each board.
+            Median ranked games a place on each board costs.
           </p>
           {/* Top five, the rest behind a disclosure. This card used to render
               all {dedication.length} champions, which made it by far the
@@ -299,7 +299,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
             Pentakill boards
           </p>
           <p className="mt-1 text-xs text-faint">
-            Ranked pentakills this season across each board&apos;s top 50, from their
+            Ranked pentakills this season across each board, from their
             account stats pages.
           </p>
           <div className="mt-3 space-y-1">

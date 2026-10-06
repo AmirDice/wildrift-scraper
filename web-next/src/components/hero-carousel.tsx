@@ -99,7 +99,7 @@ function slides(): Slide[] {
       eyebrow: "Real top-player win rates",
       title: <>What actually wins, <em className="not-italic text-accent">not what is loud</em>.</>,
       body:
-        "Every champion ranked by the real win rates of its 50 best players, confidence-adjusted so "
+        "Every champion ranked by the real win rates of its best players, confidence-adjusted so "
         + "hype and lucky streaks never make the cut.",
       claims: ["EU, NA and China", "Confidence-adjusted", "Updated every patch"],
       primary: { href: "/tier-list", label: "See what actually wins" },
@@ -140,7 +140,7 @@ function slides(): Slide[] {
       eyebrow: "Real top-player win rates",
       title: <>What actually wins, <em className="not-italic text-accent">not what is loud</em>.</>,
       body:
-        "Every champion ranked by the real win rates of its 50 best players, confidence-adjusted so "
+        "Every champion ranked by the real win rates of its best players, confidence-adjusted so "
         + "hype and lucky streaks never make the cut. It is the evidence the builds are made from.",
       claims: ["EU, NA and China", "Confidence-adjusted", "Updated every patch"],
       primary: { href: "/tier-list", label: "See what actually wins" },

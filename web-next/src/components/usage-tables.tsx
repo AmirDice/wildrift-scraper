@@ -85,7 +85,7 @@ export function UsageTables() {
     <div className="mt-10">
       <SectionHeading
         title="What high elo actually runs"
-        subtitle={`Every rune and item equipped by ${pulse.nPlayers.toLocaleString()} top-50 players, ordered by use. The percentage is their games-weighted win rate.`}
+        subtitle={`Every rune and item equipped by ${pulse.nPlayers.toLocaleString()} top-board players, ordered by use. The percentage is their games-weighted win rate.`}
       />
 
       {(bestKeystone || bestItem || bestMinor) && (

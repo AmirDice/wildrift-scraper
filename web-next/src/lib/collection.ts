@@ -55,7 +55,11 @@ export interface CollectionState {
 }
 
 const KV_KEY = "collection:progress";
-const ROSTER_TOTAL = 141;
+// Fallback only: used when a region's data file carries no nChampions.
+// The roster is 142 (Hwei joined after this was first written), and a
+// stale value here would show a region as collecting more or fewer
+// champions than exist.
+const ROSTER_TOTAL = 142;
 
 /** "September 3, 2026" and "20260921" are both dates. Neither is ISO. */
 function toIso(value: unknown): string | null {

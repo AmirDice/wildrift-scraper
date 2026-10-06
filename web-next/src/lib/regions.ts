@@ -6,8 +6,9 @@ import { getCnBySlug, CN_META } from "@/lib/cn";
  *
  * WHAT THESE NUMBERS ARE, because they are not the same kind of thing:
  *
- *   EU and NA are OUR measurement -- the top 50 players on each champion's
- *   leaderboard, each player's own win rate, read from the game through the
+ *   EU and NA are OUR measurement -- the top players on each champion's
+ *   leaderboard (see BOARD_DEPTH; EU is 50 deep, NA is 30 since the relayout),
+ *   each player's own win rate, read from the game through the
  *   same pipeline on the same device. A difference between them is a
  *   difference between the SERVERS, because nothing else differs.
  *
@@ -24,6 +25,27 @@ import { getCnBySlug, CN_META } from "@/lib/cn";
  */
 
 export type RegionKey = "EU" | "NA" | "CN";
+
+/**
+ * How deep each server's champion board actually is.
+ *
+ * It used to be 50 everywhere, which is why so much of the site's copy said
+ * "top 50". The 2026-09 leaderboard relayout cut the visible board to 30 rows,
+ * so every board collected after it is 30 deep. NA was re-collected on
+ * 2026-10-06 and is 30; EU's board is still the 2026-09-03 collection and is
+ * 49-50, so one shared number would now be wrong for one server or the other.
+ *
+ * Copy that names a region should read its depth from here. Copy that covers
+ * the site as a whole should say "top players" and name no number at all,
+ * because there is no longer one true number to name.
+ */
+export const BOARD_DEPTH: Record<RegionKey, number | null> = {
+  EU: 50,
+  NA: 30,
+  // Tencent publishes a whole-population bracket aggregate, not a board of
+  // players, so a depth is not a meaningful thing to state for CN.
+  CN: null,
+};
 
 export interface RegionRow {
   slug: string;

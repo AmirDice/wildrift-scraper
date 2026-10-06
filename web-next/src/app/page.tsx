@@ -196,7 +196,7 @@ export default function HomePage() {
                 badge="EU"
                 badgeClass="bg-accent/20 text-accent"
                 title="Tier List"
-                desc="Every champion ranked by the real win rates of its 50 best players, confidence-adjusted so hype and lucky streaks never make the cut."
+                desc="Every champion ranked by the real win rates of its best players, confidence-adjusted so hype and lucky streaks never make the cut."
                 cta="View the tier list"
                 accent="text-accent"
                 ring="hover:border-accent/40"

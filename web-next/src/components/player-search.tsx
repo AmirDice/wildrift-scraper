@@ -109,7 +109,7 @@ export function PlayerSearch({ champions }: { champions: ChampionRef[] }) {
       )}
       {index && typedName.length >= 2 && results.length === 0 && !picked && (
         <p className="mt-3 text-sm text-muted">
-          Nobody by that name is on a top-50 board. Only the top 50 of each champion
+          Nobody by that name is on a champion board. Only the top players of each champion
           is collected, so most players will not appear. If you added a #tag, check it.
         </p>
       )}

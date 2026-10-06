@@ -274,7 +274,7 @@ export function DeepDiveSections() {
       <Container className="py-12">
         <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
           <InsightCard href="/leaderboard#multi-champion-mains" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, href: byName.get(m.champions[0]) ? `/leaderboard?champion=${byName.get(m.champions[0])!.slug}` : undefined, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "-", metricClass: "text-muted" }))} />
-          <InsightCard href="/leaderboard#funniest-names" title="Funniest names" subtitle="Spotted in the top 50, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player, sub: f.champion, href: byName.get(f.champion) ? `/leaderboard?champion=${byName.get(f.champion)!.slug}` : undefined }))} />
+          <InsightCard href="/leaderboard#funniest-names" title="Funniest names" subtitle="Spotted on the boards, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player, sub: f.champion, href: byName.get(f.champion) ? `/leaderboard?champion=${byName.get(f.champion)!.slug}` : undefined }))} />
         </div>
       </Container>
     </>

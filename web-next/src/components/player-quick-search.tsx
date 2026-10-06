@@ -80,7 +80,7 @@ export function PlayerQuickSearch() {
               <p className="px-3 py-2 text-xs text-bad">Player index unavailable.</p>
             ) : results.length === 0 ? (
               <p className="px-3 py-2 text-xs text-muted">
-                Nobody by that name is on a top-50 board.
+                Nobody by that name is on a champion board.
               </p>
             ) : (
               results.map((p) => (

@@ -17,7 +17,7 @@ export const organizationJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
   description:
-    "Wild Rift build platform and meta tracker built on the real win rates of the top 50 players on every champion.",
+    "Wild Rift build platform and meta tracker built on the real win rates of the top players on every champion.",
 };
 
 export const websiteJsonLd = {

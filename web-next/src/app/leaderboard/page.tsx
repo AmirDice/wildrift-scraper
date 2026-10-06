@@ -146,7 +146,7 @@ export default function LeaderboardPage() {
       {/* Above the player table rather than after it: the layout's bottom unit already sits after it. */}
       <AdSlot placement="inline" bare className="my-6" />
       <section id="players" className="mt-8 scroll-mt-24">
-        <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full top-50 player table, with builds, ranked tiers and per-queue stats where freshly captured" />
+        <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full player table, with builds, ranked tiers and per-queue stats where freshly captured" />
         <LeaderboardView
           champions={slim}
           championsNa={slimNa}

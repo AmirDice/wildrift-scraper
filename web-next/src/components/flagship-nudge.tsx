@@ -64,7 +64,7 @@ const FLAGSHIPS: Flagship[] = [
     activeOn: ["/meta"],
     eyebrow: "Meta Overview",
     title: "Want the whole meta on one page?",
-    body: "What the top 50 players on every champion actually build, the runes that win, and who is rising -- all from live boards.",
+    body: "What the top players on every champion actually build, the runes that win, and who is rising -- all from live boards.",
     cta: "See the meta",
   },
   {

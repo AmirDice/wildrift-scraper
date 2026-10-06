@@ -59,7 +59,7 @@ const META_TOOLS: Cta[] = [
   {
     href: "/tier-list", title: "Tier List", short: "Tier List",
     badge: "live", badgeClass: "bg-accent/20 text-accent",
-    body: "Every champion ranked by its 50 best players.",
+    body: "Every champion ranked by its best players.",
     accent: "text-accent", ring: "hover:border-accent/40",
   },
 ];

@@ -70,7 +70,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
   {
     label: "Players",
     items: [
-      { href: "/leaderboard", label: "Leaderboards", desc: "Top 50 players per champion" },
+      { href: "/leaderboard", label: "Leaderboards", desc: "The top players on every champion" },
       { href: "/player", label: "Player Search", desc: "Find a player and every champion they rank on" },
       { href: "/hall-of-fame", label: "Hall of Fame", desc: "Ladder records & guild rankings" },
     ],

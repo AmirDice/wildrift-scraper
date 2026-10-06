@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { RegionRow } from "@/lib/regions";
+import { BOARD_DEPTH, type RegionRow } from "@/lib/regions";
 
 type SortKey = "gap" | "eu" | "na" | "cn" | "average" | "name";
 type Filter = "all" | "diverging" | "universal";
@@ -149,8 +149,8 @@ export function RegionsView({
               >
                 Champion
               </th>
-              <Th k="eu" help="Top-50 players on the EU leaderboard">EU</Th>
-              <Th k="na" help="Top-50 players on the NA leaderboard">NA</Th>
+              <Th k="eu" help={`Top ${BOARD_DEPTH.EU} players on the EU leaderboard`}>EU</Th>
+              <Th k="na" help={`Top ${BOARD_DEPTH.NA} players on the NA leaderboard`}>NA</Th>
               <Th k="cn" help={`Tencent's published ${cnBracket} sample -- a different kind of measurement`}>
                 CN*
               </Th>

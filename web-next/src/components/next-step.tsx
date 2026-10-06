@@ -48,19 +48,19 @@ const STEPS: Record<string, Step> = {
   leaderboard: {
     href: "/leaderboard",
     title: "Learn from the best players",
-    body: "The top 50 on every champion, with the builds, runes and per-queue stats they actually run.",
+    body: "The top players on every champion, with the builds, runes and per-queue stats they actually run.",
     cta: "Browse leaderboards",
   },
   player: {
     href: "/player",
     title: "Look up a player",
-    body: "Search anyone on a top 50 board and see every champion they rank on, with their win rate on each.",
+    body: "Search anyone on a champion board and see every champion they rank on, with their win rate on each.",
     cta: "Open player search",
   },
   champions: {
     href: "/champions",
     title: "Dig into one champion",
-    body: "Abilities, scaling, matchups and how the top 50 play it.",
+    body: "Abilities, scaling, matchups and how the top players play it.",
     cta: "Browse champions",
   },
 };

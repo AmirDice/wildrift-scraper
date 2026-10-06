@@ -11,7 +11,7 @@ import { AdSlot } from "@/components/ad-slot";
 export const metadata: Metadata = {
   title: "EU vs NA vs China | Regional Meta Differences",
   description:
-    "Which Wild Rift champions are stronger on NA than EU? Top-50 player win rates measured the same way on both servers, plus China's ladder, so a regional gap means the region and not the method.",
+    "Which Wild Rift champions are stronger on NA than EU? Top-player win rates measured the same way on both servers, plus China's ladder, so a regional gap means the region and not the method.",
   alternates: { canonical: "/regions" },
 };
 
@@ -30,7 +30,7 @@ export default function RegionsPage() {
       <p className="mt-2 max-w-3xl text-muted">
         The same champion, measured on three servers, on patch {CURRENT_PATCH}.{" "}
         <span className="text-text">EU</span> and <span className="text-text">NA</span> are read the
-        same way -- the top 50 players on each champion&rsquo;s leaderboard, each player&rsquo;s own
+        same way -- the top players on each champion&rsquo;s leaderboard, each player&rsquo;s own
         win rate -- so a difference between them is a difference between the{" "}
         <span className="text-text">servers</span>, not between two ways of counting.
       </p>
@@ -40,7 +40,7 @@ export default function RegionsPage() {
         <p>
           <span className="font-semibold text-text">* China is a different measurement.</span>{" "}
           Those numbers are Tencent&rsquo;s own published {coverage.cnBracket} sample: the whole
-          ladder population, not a top-50 cut. It is real signal about a third server, but an
+          ladder population, not a cut of the top players. It is real signal about a third server, but an
           EU-vs-CN gap mixes the region with the method. Only the{" "}
           <span className="text-text">NA - EU</span> column isolates the region.
         </p>

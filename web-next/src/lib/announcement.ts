@@ -20,25 +20,60 @@
  */
 export const SKIPPED_PATCH = "7.3a";
 
-/** The patch whose games the win rates were actually collected from. */
-export const WINRATE_PATCH = "7.2d";
+/**
+ * The patch whose games the win rates were actually collected from.
+ *
+ * This is PER REGION now, and it has to be: NA was re-collected on 6 October,
+ * after 7.3a went live, while EU's board is still the 3 September collection
+ * from before it. One shared value would have made the site contradict itself
+ * the moment NA was published, which is the drift this module exists to stop.
+ *
+ * WINRATE_PATCH stays as the EU value because that is what every existing
+ * reader of it meant.
+ */
+export const EU_WINRATE_PATCH = "7.2d";
+export const NA_WINRATE_PATCH = "7.3a";
+export const WINRATE_PATCH = EU_WINRATE_PATCH;
+
+/** Regions whose boards this run has already published. */
+export const COLLECTION_DONE_REGIONS = "NA";
+/** Regions this run has still to collect. */
+export const COLLECTION_PENDING_REGIONS = "EU and CN";
 
 /** The patch the next collection and the next round of work is aimed at. */
 export const NEXT_PATCH = "7.3a";
 
-/** The announced window for the next EU/NA/CN ladder collection. */
+/** The announced window for the EU/NA/CN ladder collection. */
 export const COLLECTION_START = "Monday, October 5, 2026";
 export const COLLECTION_EXPECTED_FINISH = "Wednesday, October 7, 2026";
 export const COLLECTION_REGIONS = "EU, NA and CN";
+/**
+ * Is the run underway?
+ *
+ * One flag rather than rewritten copy in two files, because the banner and
+ * /updates have to agree: a banner reading "starts Monday" above a page
+ * reading "in progress" is the exact drift this module exists to prevent.
+ * Flip it back to false once the boards are published.
+ *
+ * The copy below deliberately says "has started" and "underway" rather than
+ * naming the day it began. The announced window and the moment the phone
+ * actually began its first region are not the same thing, and the live
+ * per-region progress in the navbar bar is a better answer to "how far along
+ * is it" than any date in prose.
+ */
+export const COLLECTION_IN_PROGRESS = true;
 
 export const ANNOUNCEMENT = {
-  /** Bump when the message changes, so a dismissed banner comes back. */
-  key: "wtm-announce-collection-2026-10-v1",
+  // Bumped from -v2: that banner said the run was underway. NA has now
+  // finished and is published, which is different news, and anyone who
+  // dismissed v2 would otherwise never be told the boards they were waiting
+  // for are live.
+  key: "wtm-announce-na-live-2026-10-v3",
   href: "/updates",
-  lead: "Regional data collection starts Monday",
-  short: `${COLLECTION_REGIONS} ladder data collection starts ${COLLECTION_START} and is expected to finish ${COLLECTION_EXPECTED_FINISH}. Win rates and builds will update as each region completes.`,
-  cta: "See the schedule",
-  badges: ["Data refresh"],
+  lead: "NA win rates, leaderboard and builds are live",
+  short: `All 142 champions were re-collected from the live NA leaderboard on 6 October, the first NA board played entirely on patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the builds those players actually equipped are published now. ${COLLECTION_PENDING_REGIONS} are still to come.`,
+  cta: "What changed",
+  badges: ["NA updated"],
   /** Pages the banner points at, so it does not appear on top of itself. */
   hideOn: ["/updates"],
 } as const;
@@ -53,6 +88,31 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "6 October 2026",
+    title: "NA win rates, leaderboard and builds are live",
+    body:
+      "All 142 champions were re-collected from the live NA leaderboard, the "
+      + `first NA board played entirely on patch ${NA_WINRATE_PATCH}. That covers `
+      + "champion win rates and tiers, the full top-30 player board for every "
+      + "champion with ranks and per-player records, and the builds those "
+      + "players actually had equipped. Senna comes out the strongest champion "
+      + "on the server by a clear margin, which is the marksman overhaul "
+      + `landing. ${COLLECTION_PENDING_REGIONS} have not been re-collected yet, so `
+      + `EU still shows its ${EU_WINRATE_PATCH} board and anything that averages `
+      + "the two servers mixes the old EU numbers with the new NA ones.",
+  },
+  {
+    date: "4 October 2026",
+    title: "Regional data collection has started",
+    body:
+      `The ${COLLECTION_REGIONS} collection run is underway and is expected to `
+      + `finish ${COLLECTION_EXPECTED_FINISH}. Each region's win rates, tiers and `
+      + "builds are published as soon as its pass completes, so the boards change "
+      + "region by region rather than all at once. The bar under the menu shows "
+      + "how far each region has got, and the current boards stay visible until "
+      + "their region is replaced.",
+  },
   {
     date: "1 October 2026",
     title: "Regional data collection scheduled",

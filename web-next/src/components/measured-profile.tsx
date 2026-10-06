@@ -33,7 +33,7 @@ export function MeasuredProfile({ slug }: { slug: string }) {
   return (
     <Card className="p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">How the top 50 play {p.name}</h2>
+        <h2 className="text-lg font-semibold">How the top players play {p.name}</h2>
         <Link href={`/leaderboard?champion=${slug}`}
           className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-muted transition hover:text-text">
           See the board

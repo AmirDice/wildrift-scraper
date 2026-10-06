@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   // first, charts afterwards for whoever wants to keep reading.
   title: "Meta Overview | Wild Rift Win Rates, Builds & Trends",
   description:
-    "The Wild Rift meta at a glance: what the top 50 players on every champion build, the runes and items that win, tier distribution, and win rate by class and role.",
+    "The Wild Rift meta at a glance: what the top players on every champion build, the runes and items that win, tier distribution, and win rate by class and role.",
   alternates: { canonical: "/meta" },
 };
 
@@ -50,7 +50,7 @@ export default function MetaPage() {
       </p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">The meta at a glance</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        Everything below is built from the same real EU data as the tier list: the top 50 players
+        Everything below is built from the same real EU data as the tier list: the top players
         on each of {h.nChampions} champions, confidence-adjusted so hype never skews the picture.
       </p>
 

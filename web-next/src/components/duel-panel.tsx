@@ -364,7 +364,7 @@ export function DuelPanel({ name, itemSlugs, runeNames, level, scaled = false }:
               aria-label="Enemy build source"
               className="rounded-lg border border-line bg-[#0e1322] px-2 py-1.5 text-xs text-text"
             >
-              {hasLadder && <option value="ladder">most common (top 50)</option>}
+              {hasLadder && <option value="ladder">most common (top board)</option>}
               {variants.map((v) => <option key={v} value={`variant:${v}`}>recommended: {v}</option>)}
               <option value="custom">custom…</option>
             </select>

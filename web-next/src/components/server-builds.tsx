@@ -230,7 +230,7 @@ export function ServerBuilds({
       {build ? (
         <>
           {/* Numbered ONLY when the numbers mean something. With a recorded
-              purchase order the six are shown in the order the top 50 buy
+              purchase order the six are shown in the order the top players buy
               them, boots where they are actually bought -- 63% of players buy
               them first or second, so tacking them on at the end misstated
               the build. Without one, a number would read as an order that is
@@ -293,8 +293,8 @@ export function ServerBuilds({
           )}
           <p className="mt-2 text-[11px] text-faint">
             {build.sample
-              ? `${champion}'s most-built item on ${SERVER_LABEL[server]}: ${build.sample.count} of ${build.sample.of} top-50 players`
-              : `From the ${SERVER_LABEL[server]} top-50 boards`}
+              ? `${champion}'s most-built item on ${SERVER_LABEL[server]}: ${build.sample.count} of ${build.sample.of} top players`
+              : `From the ${SERVER_LABEL[server]} boards`}
             {collected?.[server] ? ` · collected ${collected[server]}` : ""}
           </p>
           {build.stats && (
@@ -356,7 +356,7 @@ export function ServerBuildsPanel({ champion }: { champion: string }) {
         <h3 className="text-sm font-bold uppercase tracking-wide text-muted">
           Most-built by server
         </h3>
-        <span className="text-[11px] text-faint">what the top 50 hold, not what we recommend</span>
+        <span className="text-[11px] text-faint">what the top players hold, not what we recommend</span>
       </div>
       <div className="mt-3">
         {data ? (
