@@ -13,6 +13,10 @@ export type IndexEntry = {
   sc: number | null;
 };
 
+/** The servers we hold per-player boards for. CN is Tencent's published
+ *  bracket aggregate with no player rows at all, so it has no index. */
+export type ServerKey = "EU" | "NA";
+
 export type IndexPlayer = {
   n: string;
   /** FNV-1a of the folded riot tag. There is no plaintext tag in the data. */
@@ -20,7 +24,16 @@ export type IndexPlayer = {
   tier: string | null;
   lv: number | null;
   c: IndexEntry[];
+  /** Which server's board this account is on. Added at load time from the
+   *  file it came from, not present in the JSON. */
+  sv: ServerKey;
 };
+
+/** Where each server's index and per-champion files live. */
+const SERVERS: { key: ServerKey; index: string; players: string }[] = [
+  { key: "EU", index: "/player-index.json", players: "/players" },
+  { key: "NA", index: "/player-index-na.json", players: "/players/na" },
+];
 
 /** Fold case and spaces so "Alpha Rengo", "alpha rengo" and "ALPHARENGO" all
  *  reach the same record. Ladder names are styled in ways nobody types back. */
@@ -48,15 +61,41 @@ export function tagHash(tag: string): string | null {
 
 let cache: Promise<IndexPlayer[]> | null = null;
 
-/** Fetched once per session, shared by every caller. */
+/**
+ * Every server's index, merged, fetched once per session and shared by every
+ * caller.
+ *
+ * It loads them ALL rather than the one a page is showing, because a visitor
+ * searching for a player does not know which server the player is on -- that
+ * is the thing they are trying to find out. Asking them to pick first would
+ * defeat the search. 99% of NA accounts are on no other board, so until this
+ * loaded both files they simply could not be found.
+ *
+ * Each server is independent: if one file is missing or fails, the others
+ * still answer. A region that has never been collected has no index, and the
+ * search is then quietly smaller rather than broken.
+ *
+ * Accounts are NOT merged across servers. Twenty-one names exist on both EU
+ * and NA, and they are different people; collapsing them would show one
+ * account's record under another's name.
+ */
 export function loadPlayerIndex(): Promise<IndexPlayer[]> {
   if (!cache) {
-    cache = fetch("/player-index.json")
-      .then((r) => {
-        if (!r.ok) throw new Error(String(r.status));
-        return r.json();
+    cache = Promise.all(
+      SERVERS.map(({ key, index }) =>
+        fetch(index)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d: { players: IndexPlayer[] } | null) =>
+            (d?.players ?? []).map((p) => ({ ...p, sv: key })),
+          )
+          .catch(() => [] as IndexPlayer[]),
+      ),
+    )
+      .then((lists) => {
+        const merged = lists.flat();
+        if (!merged.length) throw new Error("no player index reachable");
+        return merged;
       })
-      .then((d: { players: IndexPlayer[] }) => d.players)
       .catch((e) => {
         cache = null; // a failed load must not poison later attempts
         throw e;
@@ -128,7 +167,11 @@ export async function fetchAccountStats(player: IndexPlayer): Promise<PlayerQueu
   await Promise.all(
     player.c.map(async (entry) => {
       try {
-        const res = await fetch(`/players/${entry.s}.json`);
+        // The player's own server, not a fixed path: an NA account's rows
+        // live under /players/na, and reading EU's file for them would either
+        // miss or, worse, join to a different account with the same name.
+        const base = SERVERS.find((sv) => sv.key === player.sv)?.players ?? "/players";
+        const res = await fetch(`${base}/${entry.s}.json`);
         if (!res.ok) return;
         const data = (await res.json()) as { players: { r: number; p: string; stats: PlayerQueues }[] };
         // Match on rank AND name: the index and the champion file come from

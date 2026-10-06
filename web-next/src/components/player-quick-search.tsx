@@ -85,7 +85,8 @@ export function PlayerQuickSearch() {
             ) : (
               results.map((p) => (
                 <button
-                  key={p.n}
+                  /* server + name: the two boards share twenty-one names */
+                  key={`${p.sv}-${p.n}`}
                   type="button"
                   // onMouseDown, not onClick: blur fires first on a click and
                   // would close the list before the handler ever ran.
@@ -100,6 +101,9 @@ export function PlayerQuickSearch() {
                     <span className="block text-[0.7rem] text-faint">
                       {p.c.length} champion{p.c.length === 1 ? "" : "s"}
                     </span>
+                  </span>
+                  <span className="shrink-0 rounded border border-line bg-white/[0.05] px-1.5 py-0.5 text-[0.6rem] font-semibold tracking-wide text-muted">
+                    {p.sv}
                   </span>
                   {p.tier && <TierBadge tier={p.tier} size={18} />}
                 </button>

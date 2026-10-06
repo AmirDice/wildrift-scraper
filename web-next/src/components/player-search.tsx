@@ -117,7 +117,10 @@ export function PlayerSearch({ champions }: { champions: ChampionRef[] }) {
       {!picked && results.length > 0 && (
         <ul className="mt-3 divide-y divide-line/60 overflow-hidden rounded-xl border border-line">
           {results.map((p) => (
-            <li key={p.n}>
+            /* Keyed by server AND name: twenty-one names exist on both
+               boards, and a bare name would collide as a React key and drop
+               one of the two from the list. */
+            <li key={`${p.sv}-${p.n}`}>
               <button
                 type="button"
                 onClick={() => choose(p)}
@@ -128,6 +131,11 @@ export function PlayerSearch({ champions }: { champions: ChampionRef[] }) {
                   <span className="block text-xs text-muted">
                     {p.c.length} champion{p.c.length === 1 ? "" : "s"} on the board
                   </span>
+                </span>
+                {/* Which server, on every row. Two accounts can share a name,
+                    and without this they are indistinguishable. */}
+                <span className="shrink-0 rounded border border-line bg-white/[0.05] px-1.5 py-0.5 text-[0.65rem] font-semibold tracking-wide text-muted">
+                  {p.sv}
                 </span>
                 {p.tier && <TierBadge tier={p.tier} size={20} />}
               </button>
@@ -210,6 +218,9 @@ function PlayerProfile({
       <div className="glass mt-3 rounded-2xl p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <h2 className="text-2xl font-semibold tracking-tight">{player.n}</h2>
+          <span className="inline-flex items-center rounded-md border border-line bg-white/[0.04] px-2 py-1 text-xs font-semibold tracking-wide">
+            {player.sv}
+          </span>
           {player.tier && (
             <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-white/[0.04] px-2 py-1 text-xs font-medium">
               <TierBadge tier={player.tier} size={18} />

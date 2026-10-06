@@ -10,7 +10,7 @@ import { NextStep } from "@/components/next-step";
 export const metadata: Metadata = {
   title: "Wild Rift Player Search | Find Any Top Player and Their Champions",
   description:
-    "Search any Wild Rift player on the EU champion boards by name or #tag. See their ranked tier, level, every champion they rank on, and their win rate and games on each.",
+    "Search any Wild Rift player across the EU and NA champion boards by name or #tag. See which server they are on, their ranked tier, level, every champion they rank on, and their win rate and games on each.",
   alternates: { canonical: "/player" },
 };
 
@@ -37,7 +37,7 @@ export default function PlayerSearchPage() {
       <section className="mt-8">
         <SectionHeading
           title="Search the ladder"
-          subtitle="Only players inside a champion's board are collected, so this covers the top of the ladder rather than every account"
+          subtitle="Searches every server we collect. Only players inside a champion's board are collected, so this covers the top of the ladder rather than every account"
         />
         <PlayerSearch champions={champions} />
       </section>
