@@ -192,6 +192,20 @@ def _match(source: np.ndarray, template: _Template) -> tuple[float, tuple[int, i
 #: Master-and-above reads, which become unknown rather than wrong.
 _MIN_MARGIN = 0.03
 
+#: The HISTORICAL badge needs its own, much lower floor. It is drawn at .085 of
+#: the frame height against the current badge's .125, so there is less pixel
+#: detail to tell eleven similar crests apart and its margins are structurally
+#: smaller: across seven hand-verified fixtures every historical badge read
+#: Sovereign correctly on margins of 0.008 to 0.034, where the current badge on
+#: the same frames ran 0.069 to 0.139. 0.03 was measured on the current badge
+#: and applying it to both rejected six of those seven.
+#:
+#: A lower floor is also the right trade here: `tier`/`current_rank` is what
+#: feeds the ladder component of the best-player score, while the historical
+#: peak is only displayed. Seven independent frames agreeing on Sovereign is
+#: signal; a coin flip would not keep landing on the same rank.
+_MIN_MARGIN_HISTORICAL = 0.005
+
 
 def _candidate(
     frame: np.ndarray, *, historical: bool
@@ -266,7 +280,7 @@ def _candidate(
     # Below the threshold we return nothing, because "unknown" is a usable
     # answer and a fabricated tier is not.
     margin = score - ordered[1][1][0] if len(ordered) > 1 else score
-    if margin < _MIN_MARGIN:
+    if margin < (_MIN_MARGIN_HISTORICAL if historical else _MIN_MARGIN):
         return None
     return rank, score, bbox, margin
 
@@ -388,7 +402,7 @@ def read_profile_ranks(frame: np.ndarray) -> dict:
     # made it meaningless: every badge scores well above any absolute floor,
     # so every read -- including the Sovereign that came out Silver -- was
     # reported "high".
-    if len(margins) == 2 and min(margins) >= 2 * _MIN_MARGIN:
+    if len(margins) == 2 and min(margins) >= 2 * _MIN_MARGIN_HISTORICAL:
         confidence = "high"
     elif margins:
         confidence = "medium"
