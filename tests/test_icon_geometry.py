@@ -161,3 +161,70 @@ class TestSupportItemBank:
         got, score, gap, _ru = match_slot(fake_slot, "items")
         assert got == name.split("#")[0]
         assert score >= MIN_SCORE
+
+
+class TestPatch73Items:
+    """The nine items patch 7.3 added or redrew, against the game's own art.
+
+    Worth pinning because the SOURCES differ and that is easy to forget.
+    Runes are harvested from captured popups, so a new rune is invisible to
+    the matcher until someone harvests it -- Legend: Haste sat unresolved in
+    dozens of frames for exactly that reason. Items come from data/items.json
+    plus its shipped art, which patch 7.3 already updated, so these needed no
+    bank work at all. A future catalogue refresh could silently undo that.
+
+    Fixtures are champion-select RECOMMENDED build screens (1256x1080), not
+    leaderboard build popups, so the row geometry below is local to them.
+    """
+
+    FIXTURES = Path("data/patch_7_3_items")
+    #: y, tile size, first x, pitch -- measured on these two screenshots.
+    ROW = (296, 94, 285, 103)
+    EXPECTED = {
+        "recommended_marksman.jpg": ["Fiendhunter Bolts", "Rapid Firecannon",
+                                     "Statikk Shiv", "Hexoptics C44",
+                                     "Yun Tal Wildarrows"],
+        "recommended_fighter.jpg": ["Immortal Shieldbow", "Echoes of Helia",
+                                    "Stormrazor", "Essence Reaver"],
+    }
+
+    def _slots(self, name):
+        path = self.FIXTURES / name
+        if not path.exists():
+            pytest.skip(f"{path} not present")
+        image = cv2.imread(str(path))
+        y0, size, x0, pitch = self.ROW
+        return [image[y0:y0 + size, x0 + i * pitch: x0 + i * pitch + size]
+                for i in range(len(self.EXPECTED[name]))]
+
+    @pytest.mark.parametrize("frame", list(EXPECTED))
+    def test_every_patch_73_item_resolves(self, frame):
+        from src.icon_match import match_slot
+        for tile, want in zip(self._slots(frame), self.EXPECTED[frame]):
+            got, score, gap, runner = match_slot(tile, "items")
+            assert got == want, (
+                f"{frame}: read {got!r} (score {score:.3f}, runner-up "
+                f"{runner!r}), want {want!r}")
+
+    @pytest.mark.parametrize("frame", list(EXPECTED))
+    def test_the_margins_are_not_marginal(self, frame):
+        """Resolving is not enough: an item one bad pixel from its runner-up
+        would flip on the next capture. Essence Reaver is the tight one, at a
+        measured 0.11 -- its art was REDRAWN in 7.3 while the catalogue still
+        ships the previous style."""
+        from src.icon_match import match_slot, MIN_GAP
+        for tile, want in zip(self._slots(frame), self.EXPECTED[frame]):
+            _got, _score, gap, _runner = match_slot(tile, "items")
+            assert gap >= MIN_GAP * 1.5, f"{frame}: {want} gap only {gap:.3f}"
+
+    def test_the_badge_mask_is_not_widened_to_cover_the_new_pips(self):
+        """7.3 stamps "N" (new) and a refresh pip over the bottom CENTRE of a
+        tile, while mask_badge only covers the bottom LEFT, so the obvious
+        move is to widen it. Measured over these nine, widening collapses the
+        worst runner-up gap from 0.114 to 0.004: the extra strip carries more
+        discriminative art than badge. Left alone deliberately."""
+        from src.icon_match import _weights, N, MARGIN
+        w = _weights(True, False)
+        bottom_right = w[int(N * 0.70):, int(N * 0.60):]
+        assert bottom_right.sum() > 0, (
+            "the bottom-right of the tile is being masked; measured worse")

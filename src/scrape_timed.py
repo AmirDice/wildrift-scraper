@@ -64,9 +64,12 @@ from .config import (
     QUIT_DIALOG_REGION,
     ROWS_PER_PAGE,
     SCREEN_2_BADGE_X_RANGE,
+    SCREEN_LIST_Y_RANGE,
     SCREEN_2_NAME_HEIGHT,
     SCREEN_2_NAME_X_RANGE,
+    SCREEN_1_PORTRAIT_X,
     SCREEN_1_ROW_TAP_X,
+    SCREEN_2_PORTRAIT_X,
     PROFILE_BACK_POINT,
     QUIT_DIALOG_CONFIRM,
     SCREEN_2_BACK_POINT,
@@ -81,6 +84,7 @@ from .config import (
     load_calibration,
     load_screen_points,
     save_calibration,
+    badge_band_plausible,
 )
 # Champion identity moved from OCR to portrait matching in the 2026-09-25
 # relayout: the CHAMPION tab no longer renders champion names as text.
@@ -228,6 +232,71 @@ def _check_pause_or_raise() -> None:
     catches it, pauses, and retries the same rank on resume."""
     if _key_pressed() == "p":
         raise PauseRequested()
+
+
+
+#: The phone dims the game to a near-black "Power-saving mode enabled. Tap
+#: anywhere to return to the game." screen when it sits idle, and a slow retry
+#: loop is exactly how the scraper goes idle. Every frame after that is the
+#: overlay, so a run can burn its remaining hours reading a black screen.
+#:
+#: Measured on a captured overlay against real leaderboard frames:
+#:     overlay      mean  16.7   pixels>100  0.29%
+#:     leaderboard  mean  42-54  pixels>100  4.3-11%
+#: Brightness is the cheap gate and runs on every frame; the TEXT confirms it,
+#: so an ordinary dark loading frame is never tapped.
+POWER_SAVING_MAX_MEAN = 25.0
+POWER_SAVING_MAX_BRIGHT_FRAC = 0.015
+POWER_SAVING_WORDS = ("power-saving", "power saving", "tap anywhere")
+
+
+
+def roster_size() -> int:
+    """How many champions a complete collection covers.
+
+    Read from the roster rather than taken from --champions, because that flag
+    is a stop condition for one run and has been wrong against the real roster
+    (144 passed for 142 champions, so the site read 98% at 141/144). Falls back
+    to the icon templates, then to a constant, so a missing file degrades the
+    number instead of taking the scrape down.
+    """
+    try:
+        roster = json.loads(
+            (Path(__file__).resolve().parent.parent / "web-next" / "src" /
+             "data" / "roster.json").read_text(encoding="utf-8"))
+        if isinstance(roster, dict) and roster:
+            return len(roster)
+        if isinstance(roster, list) and roster:
+            return len(roster)
+    except Exception:  # noqa: BLE001 -- never break a scrape over a count
+        pass
+    try:
+        from .icon_match import champion_templates
+        n = len(champion_templates())
+        if n:
+            return n
+    except Exception:  # noqa: BLE001
+        pass
+    return 142
+
+
+def looks_like_power_saving(img) -> bool:
+    """Whether this frame is the device's power-saving overlay."""
+    if img is None or getattr(img, "size", 0) == 0:
+        return False
+    try:
+        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
+        if float(grey.mean()) > POWER_SAVING_MAX_MEAN:
+            return False
+        if float(np.mean(grey > 100)) > POWER_SAVING_MAX_BRIGHT_FRAC:
+            return False
+        h, w = grey.shape[:2]
+        band = img[int(h * 0.60):int(h * 0.70), int(w * 0.25):int(w * 0.75)]
+        from .ocr import GENERAL_TESSERACT_CONFIG, read_text
+        text = (read_text(band, GENERAL_TESSERACT_CONFIG).text or "").lower()
+        return any(word in text for word in POWER_SAVING_WORDS)
+    except Exception:  # noqa: BLE001 -- detection is best effort
+        return False
 
 
 def main() -> int:
@@ -537,16 +606,6 @@ def main() -> int:
         # order tapped a per-row book icon BEFORE the row.
         client.tap(px, py, hold_ms=args.tap_hold_ms)
         time.sleep(args.step_wait)
-        popup_frame: str | None = None
-        if capture_dir is not None:
-            # Was the rank popup (name#tag, tier, account level). That popup no
-            # longer exists: this frame is now the leaderboard with the player
-            # selected, which carries NO. rank, guild tag and three stats down
-            # the right-hand side instead. Store it separately from legacy
-            # popup_frame so the extractor does not invent missing fields.
-            popup_frame = f"{rank:03d}_selection.jpg"
-            cv2.imwrite(str(capture_dir / popup_frame), client.screenshot(),
-                        [cv2.IMWRITE_JPEG_QUALITY, 92])
         _check_pause_or_raise()
 
         build_frame: str | None = None
@@ -566,7 +625,7 @@ def main() -> int:
             _check_pause_or_raise()
 
         client.tap(*s3_view, hold_ms=args.tap_hold_ms)
-        time.sleep(args.step_wait)
+        time.sleep(1.0)
         profile_frame: str | None = None
         if capture_dir is not None:
             # The main profile is the only authoritative source for the
@@ -632,8 +691,6 @@ def main() -> int:
             }
             if build_frame:
                 entry["build_frame"] = build_frame
-            if popup_frame:
-                entry["selection_frame"] = popup_frame
             if profile_frame:
                 entry["profile_frame"] = profile_frame
             if stats_frames:
@@ -686,7 +743,8 @@ def main() -> int:
                     # screens read as empty, and an empty read sends the
                     # wrapper into its ~15s column-relocation sweep.
                     ranks_chk, _pchk = scan_visible_ranks(
-                        img_chk, badge_x, expected_pitch=nav.last_pitch)
+                        img_chk, badge_x, y_range=SCREEN_LIST_Y_RANGE,
+                        expected_pitch=nav.last_pitch)
                     if len(ranks_chk) >= 3:
                         break
                 except NameError:   # manual mode: no scanner state in scope
@@ -767,6 +825,12 @@ def main() -> int:
         # accumulate. Seeded once from the calibrated value.
 
         low_reads = 0
+        #: Consecutive scans the configured column must fail before a REPLACEMENT
+        #: is written to calibration.json. High on purpose: that file outlives
+        #: the run and a wrong value there silently ruins every champion after
+        #: it, while a column that is genuinely wrong fails every single scan
+        #: and reaches this in seconds.
+        RELOCATE_PERSIST_AFTER = 12
 
         def scan(img, hint: float | None = None) -> tuple[dict[int, int], float | None]:
             """Badge scan; re-locates the column on a total miss OR after
@@ -774,13 +838,54 @@ def main() -> int:
             narrow single-digit ranks fine while clipping two-digit ones --
             it looks like flaky deep-rank OCR, but it's geometry.)"""
             nonlocal badge_x, low_reads
+            # y_range confines the scan to the four RANKED rows. Outside it
+            # the badge column holds digits that are not ranks: the "Server"
+            # dropdown above (its S reads as a 5) and the pinned "Top N%" row
+            # below (its N is a real digit in the badge font).
             ranks, pitch = scan_visible_ranks(img, badge_x, hint=hint,
+                                              y_range=SCREEN_LIST_Y_RANGE,
                                               expected_pitch=nav.last_pitch)
             if len(ranks) >= 3:
                 low_reads = 0
                 return ranks, pitch
+
+            # SECOND ENGINE before any waiting or relocating. The badges are
+            # the one field where a bad read used to cost 45s of nudging and
+            # re-reading the same pixels the same way -- which is also how the
+            # phone gets idle enough to drop into power-saving. PaddleOCR
+            # reads this font far better than Tesseract (measured 53/60 against
+            # 44/60 on the name crops), so asking it is strictly better than
+            # asking Tesseract again more slowly.
+            #
+            # Deliberately NO sleep around this: the point is to answer now.
+            if _paddle_available():
+                engine_before = os.environ.get("OCR_ENGINE")
+                try:
+                    os.environ["OCR_ENGINE"] = "paddle"
+                    ranks_p, pitch_p = scan_visible_ranks(
+                        img, badge_x, hint=hint, y_range=SCREEN_LIST_Y_RANGE,
+                        expected_pitch=nav.last_pitch)
+                except Exception:  # noqa: BLE001 -- optional backend
+                    ranks_p, pitch_p = {}, None
+                finally:
+                    if engine_before is None:
+                        os.environ.pop("OCR_ENGINE", None)
+                    else:
+                        os.environ["OCR_ENGINE"] = engine_before
+                if len(ranks_p) > len(ranks):
+                    print(f"  [scan] tesseract read {len(ranks)}, paddle read "
+                          f"{len(ranks_p)} -- using paddle")
+                    ranks, pitch = ranks_p, pitch_p
+                    if len(ranks) >= 3:
+                        low_reads = 0
+                        return ranks, pitch
+
             low_reads += 1
             if not ranks or low_reads >= 2:
+                # Relocation is cheap to TRY and expensive to BELIEVE, so the
+                # two are separated: a couple of bad frames is enough to look
+                # elsewhere for one scan, but replacing a proven column on
+                # disk needs sustained failure.
                 rng, ranks2, pitch2 = locate_badge_column(img)
                 # A re-location gets PERSISTED, so it must prove itself: full
                 # window, physical pitch, and agreement with where the
@@ -807,11 +912,35 @@ def main() -> int:
                     and min(rng[1], badge_ref[1]) - max(rng[0], badge_ref[0])
                         >= 0.7 * (badge_ref[1] - badge_ref[0])
                 )
-                if ok:
+                if ok and badge_band_plausible(rng, badge_ref):
+                    # Plausibly the same column, re-measured. Use it for this
+                    # scan; it is not worth writing, because by definition it
+                    # is within a few pixels of what we already had.
+                    print(f"  [detect] badge column re-measured at x={rng} "
+                          f"(same column as {badge_ref}; not persisted)")
                     badge_x = rng
-                    save_calibration({"badge_x0": rng[0], "badge_x1": rng[1]})
-                    print(f"  [detect] badge column re-located at x={rng} (saved to calibration)")
                     low_reads = 0
+                    return ranks2, pitch2
+                if ok:
+                    # Readable, but NOT plausibly this column -- a sweep window
+                    # or a different column of digits entirely. Use it for this
+                    # ONE scan if it helps, and never write it down.
+                    #
+                    # Runtime does not persist the badge column at all any
+                    # more. Three separate values have been auto-saved to
+                    # calibration.json and each one silently ruined every run
+                    # afterwards, because that file wins over the source
+                    # constant and nothing in the code shows its value. Not one
+                    # auto-relocation has ever been recorded as helping. A run
+                    # that stops is recoverable; a poisoned calibration is not
+                    # noticed until a night of collection is wasted.
+                    if low_reads >= RELOCATE_PERSIST_AFTER:
+                        print(f"  [detect] the configured column {badge_ref} has "
+                              f"failed {low_reads} scans. A sweep suggests "
+                              f"x={rng[0]},{rng[1]} -- if that is right, re-run "
+                              f"with --badge-x {rng[0]},{rng[1]} (it is NOT "
+                              f"saved automatically).")
+                        low_reads = 0
                     return ranks2, pitch2
             return ranks, pitch
 
@@ -841,6 +970,45 @@ def main() -> int:
                 client.swipe(target_x, y_b, target_x, y_a, 120)
             time.sleep(1.0)
 
+        #: The phone dims the game to a near-black "Power-saving mode enabled.
+        #: Tap anywhere to return to the game." screen when it sits idle, and a
+        #: slow retry loop is exactly how the scraper goes idle. Every frame
+        #: after that is the overlay, so a run can burn its remaining hours
+        #: reading a black screen.
+        #:
+        #: Measured on a captured overlay against real leaderboard frames:
+        #:     overlay      mean  16.7   pixels>100  0.29%
+        #:     leaderboard  mean  42-54  pixels>100  4.3-11%
+        #: Brightness is the cheap gate; the text confirms it, so an ordinary
+        #: dark loading frame is not tapped.
+        def _wake_if_power_saving(img) -> bool:
+            """True if this frame was the power-saving overlay and we tapped."""
+            if not looks_like_power_saving(img):
+                return False
+            print("[device] power-saving overlay -- tapping to wake the game")
+            h_img, w_img = img.shape[:2]
+            client.tap(w_img // 2, h_img // 2, hold_ms=args.tap_hold_ms)
+            time.sleep(0.6)
+            return True
+
+        _paddle_checked: list = []
+
+        def _paddle_available() -> bool:
+            """Whether the optional backend can actually run, asked ONCE.
+
+            A missing package does not appear mid-run, and probing it per
+            degraded frame would reintroduce exactly the per-crop import cost
+            that the warning de-duplication removed.
+            """
+            if not _paddle_checked:
+                try:
+                    from .ocr import _get_paddle_engine
+                    _get_paddle_engine()
+                    _paddle_checked.append(True)
+                except Exception:  # noqa: BLE001 -- optional dependency
+                    _paddle_checked.append(False)
+            return bool(_paddle_checked[0])
+
         def stable_screenshot() -> np.ndarray:
             """Screenshot only once the list has STOPPED moving: two frames
             250ms apart must match on the badge column. Every 'clearly visible
@@ -848,6 +1016,8 @@ def main() -> int:
             while the list was still coasting or bounce-settling -- the saved
             (settled) frames from the same runs all scan perfectly."""
             prev = client.screenshot()
+            if _wake_if_power_saving(prev):
+                prev = client.screenshot()
             cur = prev
             for _ in range(4):
                 time.sleep(0.15)
@@ -1120,7 +1290,9 @@ def main() -> int:
                                     # raw scan: the wrapper's relocation sweep
                                     # costs ~15s on every empty mid-chain frame
                                     r_chk, _pc = scan_visible_ranks(
-                                        img_chk, badge_x, expected_pitch=nav.last_pitch)
+                                        img_chk, badge_x,
+                                        y_range=SCREEN_LIST_Y_RANGE,
+                                        expected_pitch=nav.last_pitch)
                                     if len(r_chk) >= 3:
                                         break
                                 except Exception:  # noqa: BLE001
@@ -1195,23 +1367,32 @@ def main() -> int:
         # AUTHORITATIVE identity, capture its top-N, back out verified, and
         # page down when the visible rows are exhausted.
         # ------------------------------------------------------------------
-        scraped: set[str] = set()
-        if args.skip_existing:
+        def completed_on_disk() -> set[str]:
+            """Champions with a COMPLETE capture under --capture-dir.
+
+            Complete means the journey REACHED rank n: top 50 means 50. The
+            old 90% bar declared 45/50 done, which quietly shipped boards
+            missing their last five ranks; with resume support finishing a
+            partial costs minutes, so the bar buys nothing.
+            """
+            found: set[str] = set()
             for mf in args.capture_dir.glob("*/manifest.jsonl"):
-                lines = [ln for ln in mf.read_text(encoding="utf-8").splitlines() if ln.strip()]
+                lines = [ln for ln in mf.read_text(encoding="utf-8").splitlines()
+                         if ln.strip()]
                 if not lines:
                     continue
-                # Complete means the journey REACHED rank n: top 50 means 50.
-                # The old 90% bar declared 45/50 done, which quietly shipped
-                # boards missing their last five ranks; with resume support
-                # finishing a partial costs minutes, so the bar buys nothing.
                 try:
                     ch = json.loads(lines[0]).get("champion")
                     top = max(int(json.loads(ln)["rank"]) for ln in lines)
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
                 if ch and top >= args.n:
-                    scraped.add(ch)
+                    found.add(ch)
+            return found
+
+        scraped: set[str] = set()
+        if args.skip_existing:
+            scraped = completed_on_disk()
             if scraped:
                 print(f"[carousel] resuming: {len(scraped)} champion(s) already captured")
 
@@ -1234,12 +1415,22 @@ def main() -> int:
         # see --region. Publishing is entirely best-effort and every call here
         # swallows its own failures, so KV being down cannot touch the scrape.
         progress_region = collection_progress.resolve_region(args.region)
-        progress_total = max(args.champions, len(scraped), 1)
+        # The site's bar is about the COLLECTION, not this invocation, so
+        # neither number may come from the command line. --champions is a stop
+        # condition: `--only Kayle,Zeri --champions 2` would otherwise publish
+        # a total of 2 and show the region at 100% after two champions. And it
+        # was simply wrong even on a full run -- 144 was passed for a roster of
+        # 142, so the bar read 141/144 at 98% when it was really 141/142.
+        progress_total = max(roster_size(), len(scraped), 1)
+        # Count from DISK, not from this run's bookkeeping: a targeted run
+        # starts with an empty `scraped` and would otherwise report the region
+        # as back at zero.
+        progress_done = len(completed_on_disk())
         if progress_region:
             collection_progress.start(progress_region, progress_total)
             print(f"[carousel] publishing {progress_region} progress to the site")
             if scraped:
-                collection_progress.advance(progress_region, len(scraped),
+                collection_progress.advance(progress_region, progress_done,
                                             progress_total, force=True)
 
         def back_to_champions() -> None:
@@ -1286,6 +1477,7 @@ def main() -> int:
                 if not on_leaderboard:
                     try:
                         r_chk, _pc = scan_visible_ranks(img, badge_x,
+                                                        y_range=SCREEN_LIST_Y_RANGE,
                                                         expected_pitch=nav.last_pitch)
                         on_leaderboard = len(r_chk) >= 3
                     except Exception:  # noqa: BLE001
@@ -1354,10 +1546,13 @@ def main() -> int:
                 if hit is not None:
                     client.tap(SCREEN_1_ROW_TAP_X, hit, hold_ms=args.tap_hold_ms)
                     time.sleep(args.step_wait + 0.5)
+                    # Re-READ rather than re-wait: the screenshot itself takes
+                    # about a second, which is all the settling time a
+                    # transition needs, and a sleep here is dead time the phone
+                    # counts toward going idle.
                     for _read in range(3):
                         if read_selected_champion(client.screenshot()) == target:
                             return True
-                        time.sleep(0.6)
                     return False
                 y_from = int(H * 0.78)
                 y_to = max(int(H * 0.10), y_from - int(4 * 146))
@@ -1389,11 +1584,20 @@ def main() -> int:
                 # menu; wait for that screen before sending the second BACK.
                 # Sending both keys back-to-back can fall through to Android's
                 # launcher while the menu is still loading.
+                # Wake FIRST. This poll is a 10 second idle loop and it reads
+                # raw screenshots, so if the phone had already dimmed into
+                # power-saving every frame here is black, the menu is never
+                # recognised, and the restart aborts a healthy run -- which is
+                # exactly what "main menu did not appear after the first Back"
+                # looks like from the outside.
+                _wake_if_power_saving(client.screenshot())
                 client.back()
                 menu_deadline = time.time() + 10.0
                 menu_seen = False
                 while time.time() < menu_deadline:
                     img = client.screenshot()
+                    if _wake_if_power_saving(img):
+                        continue
                     if _looks_like_main_menu(img):
                         menu_seen = True
                         break
@@ -1534,9 +1738,27 @@ def main() -> int:
         prev_names: set[str] = set()
         skip_ys: list[int] = []   # rows on THIS page that resolved to captured champions
         label_fails: dict[str, int] = {}   # per-champion label-read failures
+        skipped: dict[str, int] = {}       # what this run gave up on, and after how many tries
+        #: Consecutive failures on rows the OVERVIEW could not even name. Those
+        #: cannot be written off by champion, because there is no champion to
+        #: write off, and `skip_ys` does not survive the page scroll -- so
+        #: without a counter of their own an unnameable row can be re-tapped
+        #: for the rest of the run. An unattended overnight run spun on exactly
+        #: this after the label read started failing.
+        blind_fails = 0
+        MAX_LABEL_FAILS = 2       # per champion, before giving up on it
+        MAX_BLIND_FAILS = 3       # unnameable rows in a row, before paging past them
         try:
             while done < args.champions:
                 img = stable_screenshot()
+                # The overview's champion rows and the detail screen's
+                # persistent switcher use the same portrait column. Always
+                # tap that portrait rather than the wider overview row: if a
+                # faded/moving selection border makes the detail screen look
+                # like the overview, x=900 is inside the player list and opens
+                # a player profile instead of switching champions.
+                on_detail = leaderboard_state(img) == "detail"
+                row_x = SCREEN_2_PORTRAIT_X if on_detail else SCREEN_1_PORTRAIT_X
                 slots = scan_champion_rows_by_portrait(img, "overview")
                 H = nav.screen_h or img.shape[0]
                 cand = None
@@ -1569,6 +1791,23 @@ def main() -> int:
                     else:
                         stale_pages += 1
                     prev_names = names or prev_names
+                    if stale_pages >= 3 and on_detail:
+                        # The switcher is a WINDOW on the champion list and it
+                        # is not proven that swiping it pages further. If it
+                        # stops yielding new names, fall back to the overview
+                        # rather than calling it the end of the list: the
+                        # overview definitely pages, and this is the one place
+                        # the staying-on-detail shortcut could otherwise cut a
+                        # run short at five champions.
+                        print("[carousel] switcher has no new champions -- "
+                              "returning to the overview")
+                        client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
+                        time.sleep(args.step_wait + 0.4)
+                        back_to_champions()
+                        stale_pages = 0
+                        skip_ys.clear()
+                        prev_names.clear()
+                        continue
                     if not slots and stale_pages >= 3:
                         print("[carousel] champions page not detected -- stopping")
                         break
@@ -1578,7 +1817,7 @@ def main() -> int:
                     # page exhausted (or unreadable): scroll one page down
                     y_from = int(H * 0.78)
                     y_to = max(int(H * 0.10), y_from - int(4 * 146))
-                    client.swipe(SCREEN_1_ROW_TAP_X, y_from, SCREEN_1_ROW_TAP_X, y_to,
+                    client.swipe(row_x, y_from, row_x, y_to,
                                  max(500, min(1300, int((y_from - y_to) * 1.8))))
                     time.sleep(0.7)
                     skip_ys.clear()       # rows moved; the y blacklist no longer maps
@@ -1587,7 +1826,7 @@ def main() -> int:
                 prev_names = {c for _, c in slots if c}
 
                 y, cname = cand
-                client.tap(SCREEN_1_ROW_TAP_X, y, hold_ms=args.tap_hold_ms)
+                client.tap(row_x, y, hold_ms=args.tap_hold_ms)
                 time.sleep(args.step_wait + 0.5)
                 # One label read is not a verdict: the screen may still be
                 # loading, and a false 'no label' sends us into a back-out
@@ -1657,27 +1896,48 @@ def main() -> int:
                     # unexplained miss). The y blacklist still stops an
                     # immediate re-tap of the same row.
                     if cname:
+                        blind_fails = 0
                         label_fails[cname] = label_fails.get(cname, 0) + 1
-                        if label_fails[cname] >= 2:
+                        if label_fails[cname] >= MAX_LABEL_FAILS:
                             scraped.add(cname)   # twice broken: stop looping on it
+                            skipped[cname] = label_fails[cname]
+                            print(f"[carousel] SKIPPING {cname}: label unreadable "
+                                  f"{label_fails[cname]}x -- moving on")
+                    else:
+                        blind_fails += 1
                     skip_ys.append(y)
                     back_to_champions()
+                    if blind_fails >= MAX_BLIND_FAILS:
+                        # Nothing here can be named from the overview OR from
+                        # the detail screen, so retrying these same rows cannot
+                        # improve. Page past them: the swipe is the only thing
+                        # that changes which rows are on offer, and the
+                        # stale-page counter still ends the run if paging stops
+                        # producing new names.
+                        print(f"[carousel] {blind_fails} unnameable rows in a row "
+                              f"-- paging past this screen")
+                        skipped[f"<unnamed row at y={y}>"] = blind_fails
+                        blind_fails = 0
+                        skip_ys.clear()
+                        y_from = int(H * 0.78)
+                        y_to = max(int(H * 0.10), y_from - int(4 * 146))
+                        client.swipe(row_x, y_from, row_x, y_to,
+                                     max(500, min(1300, int((y_from - y_to) * 1.8))))
+                        time.sleep(0.7)
                     continue
+                # Both of these reached a DETAIL screen with a valid
+                # selection, so the switcher is right there: pick a different
+                # portrait next time round rather than backing out to the
+                # overview and walking back in.
                 if (only and label not in only) or (skip and label in skip):
                     why = "excluded" if label in skip else "not in --only"
-                    print(f"[carousel] {label} is {why} -- backing out")
+                    print(f"[carousel] {label} is {why} -- next")
                     skip_ys.append(y)
-                    client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
-                    time.sleep(args.step_wait + 0.3)
-                    back_to_champions()
                     continue
                 if label in scraped:
-                    print(f"[carousel] {label} already captured -- skipping")
+                    print(f"[carousel] {label} already captured -- next")
                     scraped.add(label)
                     skip_ys.append(y)        # this row IS that champion; never re-tap it
-                    client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
-                    time.sleep(args.step_wait + 0.3)
-                    back_to_champions()
                     continue
 
                 slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
@@ -1705,7 +1965,8 @@ def main() -> int:
                 scraped.add(label)
                 done += 1
                 if progress_region:
-                    collection_progress.advance(progress_region, len(scraped),
+                    collection_progress.advance(progress_region,
+                                                len(completed_on_disk()),
                                                 progress_total)
                 if args.unattended:
                     # Champions failing with ZERO profiles back-to-back means
@@ -1743,17 +2004,19 @@ def main() -> int:
                         print("[carousel] stopping safely after failed maintenance restart")
                         break
 
-                # The new detail screen keeps a persistent champion switcher.
-                # Use it for the next requested champion; only fall back to
-                # the overview when that champion is not visible in the rail.
+                # STAY on the detail board. Its champion switcher is still on
+                # screen with the next champion one tap away, and the loop
+                # reads that column the same way it reads the overview. The
+                # old path backed out, which cost a main-menu round trip per
+                # champion AND was where an unattended run got stuck
+                # re-tapping the CHAMPION tab after a failed label read.
+                #
+                # Only a targeted (--only) run still asks for a SPECIFIC next
+                # champion, because it may not be among the five on screen.
+                skip_ys.clear()
+                prev_names.clear()
                 remaining = sorted(only - scraped) if only else []
-                switched = False
-                if remaining:
-                    switched = switch_detail_champion(remaining[0])
-                    if switched:
-                        skip_ys.clear()
-                        prev_names.clear()
-                if not switched:
+                if remaining and not switch_detail_champion(remaining[0]):
                     client.tap(*SCREEN_2_BACK_POINT, hold_ms=args.tap_hold_ms)
                     time.sleep(args.step_wait + 0.4)
                     back_to_champions()
@@ -1766,10 +2029,11 @@ def main() -> int:
             # partial run stays at its last count, so the bar keeps showing
             # how far it actually got instead of claiming a finish it never
             # made and stamping today's date on half a collection.
-            if len(scraped) >= progress_total:
+            if len(completed_on_disk()) >= progress_total:
                 collection_progress.finish(progress_region, progress_total)
             else:
-                collection_progress.advance(progress_region, len(scraped),
+                collection_progress.advance(progress_region,
+                                            len(completed_on_disk()),
                                             progress_total, force=True)
 
         mins = (time.time() - t_carousel) / 60
@@ -1777,6 +2041,16 @@ def main() -> int:
         print("==================== CAROUSEL DONE ====================")
         print(f"champions captured : {done} in {mins:.1f} min")
         print(f"sessions under     : {args.capture_dir}")
+        if skipped:
+            # Say so loudly. A skip keeps an unattended run moving, but it is
+            # still a champion missing from the collection, and a silent one is
+            # worse than a stall because nothing ever goes back for it.
+            print(f"SKIPPED ({len(skipped)}): "
+                  + ", ".join(f"{k} ({v}x)" for k, v in sorted(skipped.items())))
+            named = [k for k in skipped if not k.startswith("<")]
+            if named:
+                print("re-run just those with: --only "
+                      + ",".join(sorted(named)))
         print("extract each session with: python -m src.extract_frames <session dir>")
         return 0
 

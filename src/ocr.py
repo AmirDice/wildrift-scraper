@@ -69,15 +69,53 @@ _configure_tesseract()
 # and PaddleOCR is only tried when the result is empty or low confidence. The
 # default remains tesseract so existing one-off extraction commands stay fast.
 OCR_ENGINE = os.environ.get("OCR_ENGINE", "tesseract").strip().lower()
-_PADDLE_ENGINE = None
+#: One built engine per language. PaddleOCR loads a recognition model per
+#: SCRIPT FAMILY, so these cannot be collapsed into one.
+_PADDLE_ENGINES: dict[str, object] = {}
 _PADDLE_LOCK = threading.Lock()
+#: Set once the optional backend is known to be absent. A missing package does
+#: not appear mid-process, so re-importing it per OCR call only costs time and
+#: reprints the same line: one extraction run emitted the identical "PaddleOCR
+#: unavailable" warning 50+ times, burying the output that mattered.
+_PADDLE_MISSING: str | None = None
+#: Warnings already printed, so an optional backend reports each distinct
+#: problem once rather than once per crop.
+_PADDLE_WARNED: set[str] = set()
 
-# Pin the model instead of inheriting whatever model a future PaddleOCR
-# release happens to make its default. The v5 mobile English pair matched the
-# tested server captures at the same labeled accuracy as the larger models,
-# while using a fraction of their CPU time.
-PADDLE_DETECTION_MODEL = "PP-OCRv5_mobile_det"
-PADDLE_RECOGNITION_MODEL = "en_PP-OCRv5_mobile_rec"
+
+def _warn_once(message: str) -> None:
+    if message in _PADDLE_WARNED:
+        return
+    _PADDLE_WARNED.add(message)
+    print(message, file=sys.stderr)
+
+# Which scripts the optional backend can read, in the order they are tried.
+#
+# PaddleOCR chooses a recognition model per SCRIPT FAMILY, not per language,
+# and a leaderboard does not hold one script: the NA board carries Korean
+# ("내가 더 잘해"), Chinese ("优雅永不过时") and accented Latin ("Därtâñän")
+# alongside the ASCII majority. Pinning one model, which this used to do with
+# en_PP-OCRv5_mobile_rec, makes the backend useless for everything else.
+#
+# Measured on those exact captures:
+#
+#   "en"      ASCII 1.000, Chinese 1.000, "Därtâñän" 0.978; Korean EMPTY.
+#             ("ch" resolves to the same PP-OCRv6 pair and scored identically
+#             on every case, so it earns nothing as a third entry.)
+#   "korean"  both Korean names 0.99/0.93, ASCII still 0.997; Chinese EMPTY.
+#
+# Two engines therefore cover the whole board, and the failures are clean
+# (empty, not confidently wrong), which is what makes picking by score safe.
+# "latin" is NOT a valid value: it is a family PaddleOCR derives from a real
+# language code, and passing it raises "No models are available".
+PADDLE_LANGS: tuple[str, ...] = tuple(
+    part.strip() for part in
+    os.environ.get("PADDLE_LANGS", "en,korean").split(",") if part.strip()
+) or ("en",)
+#: Stop at the first language scoring this well rather than running the rest.
+#: The common case is an ASCII name, which the first engine answers at ~1.0,
+#: so the extra languages cost nothing until something actually needs them.
+PADDLE_GOOD_SCORE = 0.90
 AUTO_PADDLE_CONFIDENCE_THRESHOLD = 55.0
 
 
@@ -87,27 +125,40 @@ def ocr_engine() -> str:
     return value if value in {"tesseract", "paddle", "auto"} else "tesseract"
 
 
-def _get_paddle_engine():
-    """Create one process-wide PaddleOCR instance, across all worker threads."""
-    global _PADDLE_ENGINE
-    if _PADDLE_ENGINE is not None:
-        return _PADDLE_ENGINE
+def _get_paddle_engine(lang: str = ""):
+    """One process-wide PaddleOCR instance PER LANGUAGE, across all threads."""
+    global _PADDLE_MISSING
+    lang = lang or PADDLE_LANGS[0]
+    engine = _PADDLE_ENGINES.get(lang)
+    if engine is not None:
+        return engine
+    # Already established that the package is not here. Re-importing it per
+    # crop cannot change that, so fail straight away.
+    if _PADDLE_MISSING is not None:
+        raise RuntimeError(_PADDLE_MISSING)
     with _PADDLE_LOCK:
-        if _PADDLE_ENGINE is not None:
-            return _PADDLE_ENGINE
+        engine = _PADDLE_ENGINES.get(lang)
+        if engine is not None:
+            return engine
         try:
             from paddleocr import PaddleOCR  # type: ignore
         except Exception as exc:  # noqa: BLE001 -- optional dependency
-            raise RuntimeError(
+            _PADDLE_MISSING = (
                 "PaddleOCR is not installed; install requirements-scrape.txt "
                 "or use OCR_ENGINE=tesseract"
-            ) from exc
+            )
+            raise RuntimeError(_PADDLE_MISSING) from exc
         attempts = (
             # PaddleOCR 3.x: disable document tasks; leaderboard crops are
-            # already rectified and only need text-line recognition. Explicit
-            # model names keep upgrades from silently changing the corpus.
-            {"text_detection_model_name": PADDLE_DETECTION_MODEL,
-             "text_recognition_model_name": PADDLE_RECOGNITION_MODEL,
+            # already rectified and only need text-line recognition.
+            #
+            # The models are selected by LANGUAGE rather than pinned by name.
+            # Pinning was the old behaviour and it is what limited the backend
+            # to English; it also cannot survive here, because the right model
+            # differs per language AND per OCR version (en resolves to the
+            # PP-OCRv6 pair, korean to PP-OCRv5). The cost of delegating is
+            # that a PaddleOCR upgrade may move a language onto a new model.
+            {"lang": lang,
              "use_doc_orientation_classify": False,
              "use_doc_unwarping": False, "use_textline_orientation": False,
              # PaddlePaddle 3.3's Windows oneDNN path cannot execute these
@@ -115,17 +166,18 @@ def _get_paddle_engine():
              # benchmark used.
              "device": "cpu", "enable_mkldnn": False},
             # PaddleOCR 2.x compatibility.
-            {"lang": "en", "use_angle_cls": False, "show_log": False},
-            {"lang": "en"},
+            {"lang": lang, "use_angle_cls": False, "show_log": False},
+            {"lang": lang},
         )
         last = None
         for kwargs in attempts:
             try:
-                _PADDLE_ENGINE = PaddleOCR(**kwargs)
-                return _PADDLE_ENGINE
+                engine = PaddleOCR(**kwargs)
+                _PADDLE_ENGINES[lang] = engine
+                return engine
             except Exception as exc:  # noqa: BLE001 -- try the next API
                 last = exc
-        raise RuntimeError(f"Could not initialise PaddleOCR: {last}")
+        raise RuntimeError(f"Could not initialise PaddleOCR for {lang!r}: {last}")
 
 
 def _numeric(value) -> float | None:
@@ -224,11 +276,7 @@ def _paddle_words(result) -> list[OCRWord]:
     return found
 
 
-def _run_paddle(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
-    engine = _get_paddle_engine()
-    source = img
-    if source.ndim == 2:
-        source = cv2.cvtColor(source, cv2.COLOR_GRAY2BGR)
+def _run_one_paddle(engine, source: np.ndarray) -> tuple[str, float, list[OCRWord]]:
     with _PADDLE_LOCK:
         if hasattr(engine, "predict"):
             result = engine.predict(source)
@@ -241,6 +289,40 @@ def _run_paddle(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
     text = " ".join(word.text for word in words if word.text)
     confs = [word.confidence for word in words if word.confidence >= 0]
     return text, (sum(confs) / len(confs) if confs else -1.0), words
+
+
+def _run_paddle(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
+    """Read one crop, trying each configured script until one is confident.
+
+    Picking the best SCORE across languages is only safe because the wrong
+    model fails cleanly here: on the captured names the English model returns
+    an empty string for Korean and the Korean model returns an empty string
+    for Chinese, rather than a confident transliteration. A model that
+    guessed loudly in the wrong script would need a different arbitration.
+    """
+    source = img
+    if source.ndim == 2:
+        source = cv2.cvtColor(source, cv2.COLOR_GRAY2BGR)
+    best: tuple[str, float, list[OCRWord]] = ("", -1.0, [])
+    for index, lang in enumerate(PADDLE_LANGS):
+        try:
+            engine = _get_paddle_engine(lang)
+        except Exception:
+            # The FIRST language failing means the backend itself is missing
+            # or broken, which the caller handles. A later one failing is just
+            # that script being unavailable (an un-downloadable model, say),
+            # so carry on with whatever the others can read.
+            if index == 0:
+                raise
+            _warn_once(f"[ocr] PaddleOCR has no usable model for {lang!r}; "
+                       "continuing without that script")
+            continue
+        text, score, words = _run_one_paddle(engine, source)
+        if score > best[1]:
+            best = (text, score, words)
+        if text and score >= PADDLE_GOOD_SCORE:
+            break
+    return best
 
 
 # A whitelist scoped to numbers + dot + percent gives Tesseract a strong prior
@@ -348,8 +430,8 @@ def read_text(img: np.ndarray, config: str = WINRATE_TESSERACT_CONFIG) -> OCRRes
             if text.strip():
                 return OCRResult(text=text, confidence=conf, image=img)
         except Exception as exc:  # noqa: BLE001 -- optional backend fallback
-            print(f"[ocr] PaddleOCR unavailable ({exc}); keeping Tesseract result",
-                  file=sys.stderr)
+            _warn_once(f"[ocr] PaddleOCR unavailable ({exc}); "
+                       "keeping Tesseract results for this run")
     return best
 
 
@@ -385,6 +467,59 @@ _SCORE_PATTERN = re.compile(r"^(\d{1,3}(?:,\d{3})+|\d{3,})$")
 # played 12 games this period), so this is intentionally looser than
 # _SCORE_PATTERN. The 5-digit cap avoids grabbing chunks of the score.
 _GAMES_PATTERN = re.compile(r"^(\d{1,3}(?:,\d{3})?|\d{1,5})$")
+
+
+#: A near-match is only attempted for names at least this long. Tesseract
+#: corrupts a single character often enough to lose a whole tile -- "ZYRA"
+#: reads as "LYRA", "HWEI" as "HWEIl" -- and those strings canonicalise to
+#: nothing, so the tile is skipped and the row goes out blank. Allowing one
+#: edit recovers them. The length floor exists because token-level matching
+#: breaks the roster's own separation: no two CANONICAL names are within one
+#: edit of each other, but "Master Yi" contributes the token "YI", which is
+#: one edit from the champion "Vi". Four characters puts every such pair out
+#: of reach; the eight shorter names (Vi, Jax, Lux, Mel, Vex, Zac, Zed, Zoe)
+#: keep exact matching, which is what they have today.
+_NEAR_MATCH_MIN_LEN = 4
+
+
+def _within_one_edit(a: str, b: str) -> bool:
+    """True when `a` and `b` differ by at most one insert, delete or substitute."""
+    a, b = a.casefold(), b.casefold()
+    if a == b:
+        return True
+    la, lb = len(a), len(b)
+    if abs(la - lb) > 1:
+        return False
+    if la > lb:
+        a, b, la, lb = b, a, lb, la
+    i = 0
+    while i < la and a[i] == b[i]:
+        i += 1
+    if la == lb:                       # substitution: rest must match
+        return a[i + 1:] == b[i + 1:]
+    return a[i:] == b[i + 1:]          # insertion into the longer string
+
+
+def resolve_champion(tokens: list[str], target: str | None = None) -> str | None:
+    """Canonical champion for `tokens`, with a narrow target-aware fallback.
+
+    Exact canonicalisation is tried first and is unchanged. Only when it fails
+    AND the caller already knows which champion it is looking for does a span
+    within one edit of that name resolve to it.
+
+    The fallback can only ever return `target`, so it cannot relabel one
+    champion as another -- the failure it is capable of is anchoring on the
+    wrong TILE, which `_NEAR_MATCH_MIN_LEN` is sized to prevent.
+    """
+    from . import champions as champ_module
+
+    canonical = champ_module.match(tokens)
+    if canonical is not None:
+        return canonical
+    if target and len(target) >= _NEAR_MATCH_MIN_LEN:
+        if _within_one_edit(" ".join(tokens), target):
+            return target
+    return None
 
 
 def find_target_data(
@@ -449,7 +584,7 @@ def find_target_data(
         matched = False
         for span in range(min(max_word_count, len(words) - i), 0, -1):
             tokens = [words[i + k].text for k in range(span)]
-            canonical = champ_module.match(tokens)
+            canonical = resolve_champion(tokens, target)
             if canonical is not None and canonical.lower() == target_lower:
                 xs = [words[i + k].x for k in range(span)]
                 ys = [words[i + k].y for k in range(span)]
@@ -613,8 +748,8 @@ def read_words(img: np.ndarray, config: str = GENERAL_TESSERACT_CONFIG) -> list[
             if words and any(word.x or word.y for word in words):
                 return words
         except Exception as exc:  # noqa: BLE001 -- optional backend fallback
-            print(f"[ocr] PaddleOCR unavailable ({exc}); keeping Tesseract words",
-                  file=sys.stderr)
+            _warn_once(f"[ocr] PaddleOCR unavailable ({exc}); "
+                       "keeping Tesseract results for this run")
     return best[1]
 
 
@@ -733,7 +868,14 @@ def scan_visible_ranks(
     """
     x0, x1 = badge_x_range
     h = image.shape[0]
+    # Full height by default. This primitive is shared by the legacy layout,
+    # by cropped frames in the tests, and by the column auto-locator, so it
+    # cannot assume where the list sits; callers that DO know pass y_range.
+    # On the 2026-09 layout that matters: scanning full height reads the
+    # header's "Server" dropdown and the pinned "Top N%" row as ranks. See
+    # config.SCREEN_LIST_Y_RANGE, which the live scanner passes.
     y0, y1 = y_range if y_range is not None else (0, h)
+    y0, y1 = max(0, y0), min(h, y1)
     crop = image[y0:y1, x0:x1]
     if crop.size == 0:
         return {}, None
@@ -848,6 +990,13 @@ def scan_visible_ranks(
 
     def chain_score(ch: list[tuple[int, int]]) -> float:
         score = float(len(ch))
+        # Chain LENGTH is not only a confidence proxy, it is what produces the
+        # row pitch: a one-link chain has no spacing to measure, so grid
+        # inference cannot extrapolate a window from it. Weighting a trusted
+        # template read above a longer tesseract chain is therefore a trap --
+        # tried, and measured WORSE (6 of 9 captured frames against 8 of 9),
+        # because the trusted link won and then had nothing to extrapolate
+        # with. Leave length as the primary term.
         if hint is not None and abs(chain_mean(ch) - hint) <= 6:
             score += 2.5
         return score
@@ -1113,20 +1262,43 @@ def locate_badge_column(
     return best[1], best[2], best[3]
 
 
-def read_player_name(image: np.ndarray, region: tuple[int, int, int, int]) -> str | None:
+def read_player_name(image: np.ndarray, region: tuple[int, int, int, int],
+                     prefer: str = "") -> str | None:
     """OCR a region containing a player's display name (e.g. shown at the
     top of screen 5). Returns the cleaned-up string (whitespace collapsed,
     leading/trailing junk stripped), or None if OCR returned nothing.
 
     Unlike read_champion_name, this doesn't try to match against any list —
-    it just gives back whatever Tesseract saw. The returned text may contain
+    it just gives back whatever the engine saw. The returned text may contain
     non-ASCII characters (Chinese/Korean etc.) since we use the general
     PSM-6 config without any character whitelist.
+
+    `prefer="paddle"` reads with PaddleOCR FIRST rather than treating it as a
+    low-confidence fallback. That distinction matters because Tesseract does
+    not flag its own errors on this crop: measured over 60 captured names its
+    confidence ran 46-96 when right and 8-92 when WRONG, and 10 of 16 wrong
+    reads cleared the fallback threshold. It catches script failure (CJK
+    scored 8-32) and is blind to character failure ("Därtâñän" read as
+    "Dartanan" at 92), because a plausible ASCII string is exactly what it is
+    confident about. No threshold separates those, so the only way to get the
+    better engine onto this crop is to ask it first.
+
+    Falls back to Tesseract whenever Paddle is unavailable or returns nothing,
+    so a missing optional dependency degrades the result instead of the run.
     """
     x, y, w, h = region
     crop = image[y:y + h, x:x + w]
     if crop.size == 0:
         return None
+    if prefer == "paddle":
+        try:
+            text, _score, _words = _run_paddle(crop)
+            text = " ".join(text.split()).strip()
+            if text:
+                return text
+        except Exception as exc:  # noqa: BLE001 -- optional backend
+            _warn_once(f"[ocr] PaddleOCR unavailable ({exc}); "
+                       "reading names with Tesseract for this run")
     result = read_text(crop, GENERAL_TESSERACT_CONFIG)
     text = " ".join(result.text.split()).strip()
     return text or None
@@ -1204,12 +1376,18 @@ def find_champion_winrates(
     image: np.ndarray,
     region: tuple[int, int, int, int],
     champions: list[str] | None = None,
+    target: str | None = None,
 ) -> dict[str, float]:
     """OCR a region containing one or more champion tiles and return a dict
     mapping canonical champion name -> winrate.
 
     Pairs each champion-name word with the percentage word that is nearest in
     x-position (same column = same tile).
+
+    `target`, when given, lets a span within one edit of that name resolve to
+    it -- see resolve_champion. Callers that already know which champion they
+    want should pass it: without it this function is the gate that rejects a
+    tile whose name OCR'd one character wrong, before the extractor ever runs.
     """
     from . import champions as champ_module
 
@@ -1231,7 +1409,7 @@ def find_champion_winrates(
         matched = False
         for span in range(min(max_words, len(words) - i), 0, -1):
             tokens = [words[i + k].text for k in range(span)]
-            canonical = champ_module_local.match(tokens)
+            canonical = resolve_champion(tokens, target)
             if canonical is not None:
                 xs = [words[i + k].x for k in range(span)]
                 name_hits.append((canonical, sum(xs) // span))

@@ -139,12 +139,17 @@ def _median(a):
     return a[len(a) // 2] if a else None
 
 
-def build() -> tuple[dict, dict]:
-    # 40 matches export_captures --min-ranks: the same five owner-accepted
-    # boards (42-44 filled) were absent from every pulse table while their
-    # champions sat in the tier list, which is how "135 champions" met "we
-    # have 140".
-    sessions = find_sessions(40)
+def build(min_ranks: int = 40) -> tuple[dict, dict]:
+    # 40 matches export_captures --min-ranks on a 50-row board: the same five
+    # owner-accepted boards (42-44 filled) were absent from every pulse table
+    # while their champions sat in the tier list, which is how "135 champions"
+    # met "we have 140".
+    #
+    # It is a PARAMETER because the 2026-09 relayout cut the board to 30 rows,
+    # so a hardcoded 40 silently matches nothing on a post-relayout region and
+    # the pulse comes out empty rather than wrong -- which looks like "nothing
+    # captured yet". Pass the same floor you passed export_captures.
+    sessions = find_sessions(min_ranks)
     item_global: Counter = Counter()
     keystone_global: Counter = Counter()
     spell_global: Counter = Counter()
@@ -600,6 +605,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--region", default="eu", choices=sorted(ec.REGIONS),
                     help="which server's captures to aggregate (default: eu)")
+    ap.add_argument("--min-ranks", type=int, default=40,
+                    help="filled rows a session needs to count; match whatever "
+                         "export_captures was run with (50-row boards: 40, "
+                         "30-row post-relayout boards: 24)")
     args = ap.parse_args()
 
     # Rebind the capture directory the same way export_captures does, so every
@@ -616,7 +625,7 @@ def main() -> int:
               f"run the scraper with --builds against that server first")
         return 1
 
-    pulse, consensus = build()
+    pulse, consensus = build(args.min_ranks)
     # Carrying forward only makes sense against this region's own last run.
     globals()["PULSE_OUT"], globals()["CONSENSUS_OUT"] = pulse_out, consensus_out
     pulse = _carry_forward(pulse)

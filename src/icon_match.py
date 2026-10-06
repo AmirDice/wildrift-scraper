@@ -342,6 +342,25 @@ def champion_templates() -> dict[str, np.ndarray]:
         art = _load_art(f"{CHAMPION_DIR}/{f.name}")
         if art is not None:
             out[name] = _norm_tile(art)
+
+    # Champion OVERLAY bank: portraits harvested from captured frames, for
+    # champions the shipped art cannot identify. Same idea as the item bank
+    # and for the same reason -- the catalogue head icon is drawn at a
+    # different zoom and framing from the circular switcher portrait, and for
+    # most champions that is close enough while for a few it is not.
+    #
+    # Cho'Gath and Hwei both shipped with PC League art and both failed on the
+    # GAP rather than the score: 0.434 with the right answer as runner-up
+    # 0.020 behind, and 0.505 at 0.013. Replacing the catalogue file outright
+    # was the wrong fix -- that file is also what the website renders, and a
+    # ringed in-game portrait next to 140 clean head icons looks broken. The
+    # bank keeps the two uses separate.
+    bank = ROOT / "data" / "icon_bank" / "champions.npz"
+    if bank.exists():
+        with np.load(bank) as z:
+            for key in z.files:
+                if key in by_key.values() or key in champ_module.CHAMPIONS:
+                    out[key] = z[key].astype(np.float32)
     return out
 
 
@@ -361,14 +380,80 @@ def match_champion(tile: np.ndarray) -> tuple[str, float, float, str]:
 
 
 def _align_champions(image, layout: str, fy: float, fx: float) -> tuple[int, int]:
-    """Same trick as _align: find the row that already matches best, then
-    slide only that one against only its winning template."""
+    """Return the portrait column's real offset from its nominal geometry.
+
+    The champion list is not fixed to one y origin.  While the list settles
+    (and after a partial scroll) the same five rows have been observed 10-28
+    pixels above the calibrated grid.  The old +/-4 template search then
+    cropped two portraits together: Rengar became unreadable and Wukong could
+    look more like Warwick.  That is the worst failure mode because it is a
+    confident wrong champion rather than an honest miss.
+
+    Detect the gold portrait circles first.  Their centres are dramatically
+    easier and cheaper to locate than searching every champion template over
+    a wide area, and the median offset rejects a stray circle.  Keep the old
+    small template refinement as a fallback for unusual frames where Hough
+    cannot see enough rings.
+    """
     bank = champion_templates()
     if not bank:
         return 0, 0
     x0, y0, pitch, size, count = CHAMPION_GEOMETRY[layout]
     h, w = int(size * fy), int(size * fx)
     weights = _weights(False, True)
+
+    # Hough's answer, or the nominal grid when it cannot see enough rings.
+    seed_dy, seed_dx = 0, 0
+
+    # Search only the narrow champion-switcher band, so player avatars and
+    # rank emblems elsewhere on the screen cannot join the circle set.
+    band_half = int(115 * fx)
+    band_left = max(0, int(x0 * fx) - band_half)
+    band_right = min(image.shape[1], int(x0 * fx) + band_half)
+    band = image[:, band_left:band_right]
+    if band.size:
+        gray = cv2.cvtColor(band, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (5, 5), 1.2)
+        scale = min(fx, fy)
+        circles = cv2.HoughCircles(
+            gray,
+            cv2.HOUGH_GRADIENT,
+            dp=1.2,
+            minDist=max(20, int(100 * fy)),
+            param1=100,
+            param2=32,
+            minRadius=max(8, int(35 * scale)),
+            maxRadius=max(12, int(56 * scale)),
+        )
+        if circles is not None:
+            offsets: list[tuple[int, int, int]] = []
+            used_rows: set[int] = set()
+            for cx, cy, _radius in sorted(circles[0], key=lambda c: c[1]):
+                absolute_x = int(round(cx)) + band_left
+                absolute_y = int(round(cy))
+                # Scrolling is allowed to move a row by almost half a pitch,
+                # but never far enough to make it the neighbouring slot.
+                nearest = int(round((absolute_y / fy - y0) / pitch))
+                if not 0 <= nearest < count or nearest in used_rows:
+                    continue
+                expected_y = int((y0 + nearest * pitch) * fy)
+                dy = absolute_y - expected_y
+                if abs(dy) > int(pitch * fy * 0.48):
+                    continue
+                used_rows.add(nearest)
+                offsets.append((dy, absolute_x - int(x0 * fx), nearest))
+            if len(offsets) >= 3:
+                dys = sorted(v[0] for v in offsets)
+                dxs = sorted(v[1] for v in offsets)
+                # SEED the template search rather than returning. A ring
+                # centre is only accurate to a pixel or two, and this column
+                # does not tolerate that: on a settled capture Hough answered
+                # (-1, -2) where the true offset was (0, 0), and Graves fell
+                # from 0.939 to 0.655 -- still the right champion, but a
+                # margin that thin is what the confidence gate exists to
+                # refuse. Hough finds the row; the template finds the pixel.
+                seed_dy = dys[len(dys) // 2]
+                seed_dx = dxs[len(dxs) // 2]
 
     def tile_at(i: int, dy: int, dx: int):
         ty = int((y0 + i * pitch - size / 2) * fy) + dy
@@ -379,7 +464,7 @@ def _align_champions(image, layout: str, fy: float, fx: float) -> tuple[int, int
 
     anchor = (0.0, None, 0)
     for i in range(count):
-        tile = tile_at(i, 0, 0)
+        tile = tile_at(i, seed_dy, seed_dx)
         if tile.size == 0:
             continue
         norm = _norm_tile(tile)
@@ -388,9 +473,9 @@ def _align_champions(image, layout: str, fy: float, fx: float) -> tuple[int, int
             anchor = (score, bank[name], i)
     if anchor[1] is None:
         return 0, 0
-    best_score, best = anchor[0], (0, 0)
-    for dy in range(-4, 5):
-        for dx in range(-4, 5):
+    best_score, best = anchor[0], (seed_dy, seed_dx)
+    for dy in range(seed_dy - 4, seed_dy + 5):
+        for dx in range(seed_dx - 4, seed_dx + 5):
             tile = tile_at(anchor[2], dy, dx)
             if tile.size == 0:
                 continue
@@ -420,7 +505,7 @@ def read_champion_portraits(image: np.ndarray,
         tx = int((x0 - size / 2) * fx) + dx
         tile = image[ty:ty + int(size * fy), tx:tx + int(size * fx)]
         name, score, gap, runner = match_champion(tile)
-        rows.append({"y": int(cy * fy), "champion": None if name == "?" else name,
+        rows.append({"y": int(cy * fy) + dy, "champion": None if name == "?" else name,
                      "score": round(score, 3), "gap": round(gap, 3),
                      "runnerUp": runner})
     return rows
@@ -429,9 +514,15 @@ def read_champion_portraits(image: np.ndarray,
 #: The switcher box's left edge, native x. Sampled wide enough that a couple
 #: of pixels of capture drift cannot miss a border only a few pixels thick.
 SELECTION_EDGE_X = (438, 472)
-#: Measured on the 2026-09-25 captures: the selected row reads 0.022-0.032 and
-#: every other row reads exactly 0.000, so anything above noise is a hit.
-SELECTION_MIN_GOLD = 0.004
+#: With the fade-invariant test below, a selected row reads 0.053-0.070 and
+#: every unselected row reads exactly 0.000 across every capture we have. The
+#: only non-zero noise is the build popup, which covers the switcher and peaks
+#: at 0.0038, so this sits ~5x above the noise and ~2.7x below the weakest
+#: real selection.
+#:
+#: It used to be 0.004, which separated a real selection from the build popup
+#: by 0.0002. That margin was never real.
+SELECTION_MIN_GOLD = 0.02
 
 
 def selected_champion_row(image: np.ndarray) -> int | None:
@@ -443,16 +534,31 @@ def selected_champion_row(image: np.ndarray) -> int | None:
     h, w = image.shape[:2]
     fy, fx = h / 1080.0, w / 2340.0
     _x0, y0, pitch, _size, count = CHAMPION_GEOMETRY["switcher"]
+    dy, _dx = _align_champions(image, "switcher", fy, fx)
     a = image.astype(np.float32)
     x_lo, x_hi = int(SELECTION_EDGE_X[0] * fx), int(SELECTION_EDGE_X[1] * fx)
     best = (0.0, None)
     for i in range(count):
-        cy = int((y0 + i * pitch) * fy)
+        cy = int((y0 + i * pitch) * fy) + dy
         strip = a[max(0, cy - int(70 * fy)):cy + int(70 * fy), x_lo:x_hi]
         if strip.size == 0:
             continue
         b, g, r = strip[:, :, 0], strip[:, :, 1], strip[:, :, 2]
-        gold = float(((r > 140) & (g > 110) & (b < 110) & (r > b + 60)).mean())
+        # Gold is RED OVER BLUE, not "blue is low". The absolute ceiling this
+        # used to carry (b < 110) is the one clause a screen transition
+        # breaks: the game fades the whole screen toward white between
+        # champions, every channel rises together, and the border stops
+        # qualifying while still being plainly gold on screen. Measured on two
+        # frames from the 2026-10-05 run, the selected row scored 0.0029 and
+        # 0.0032 against a 0.0040 threshold -- correctly the only gold-bearing
+        # row of the five, and rejected anyway. The carousel read that as "the
+        # tap did not select", backed out, and skipped the champion.
+        #
+        # The relative clause is untouched by the fade (0.07 faded against
+        # 0.06 clean) because adding white to a colour moves r and b together.
+        # Dropping the ceiling takes the selected row from 0.003 to 0.069 on
+        # those frames while every unselected row stays at exactly 0.000.
+        gold = float(((r > 140) & (g > 110) & (r > b + 60)).mean())
         if gold > best[0]:
             best = (gold, i)
     return best[1] if best[0] >= SELECTION_MIN_GOLD else None

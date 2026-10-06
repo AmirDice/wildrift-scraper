@@ -13,6 +13,7 @@ we never turn an uncertain OCR result into a made-up season count.
 """
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass
 from functools import lru_cache
@@ -20,8 +21,9 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+import pytesseract
 
-from .ocr import read_text
+from .ocr import preprocess, read_text
 from .tiers import canonical_profile_rank
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -47,7 +49,22 @@ _REFERENCE_NAME = re.compile(
     r"(?:(?P<historical_count>\d+)x\s+)?(?P<historical>[a-z]+)\s*$",
     re.IGNORECASE,
 )
+#: Single-CHARACTER modes, not single-line. The count is one or two glyphs in
+#: a disc, and psm 7 reads the disc's surroundings as part of a text line.
 _DIGITS = "--oem 3 --psm 7 -c tessedit_char_whitelist=0123456789"
+#: Tried in order on the ISOLATED glyphs. 13 and 8 carry most of them; 10 is
+#: a last resort that rescues the odd glyph the other two decline (one
+#: captured "5" read as nothing under both and cleanly under 10). Order
+#: matters -- 10 is the loosest, so it only ever sees what the others refuse.
+_DIGIT_CFGS = (
+    "--oem 3 --psm 13 -c tessedit_char_whitelist=0123456789",
+    "--oem 3 --psm 8 -c tessedit_char_whitelist=0123456789",
+    "--oem 3 --psm 10 -c tessedit_char_whitelist=0123456789",
+)
+#: The count token's box as a fraction of the badge's own bbox. Measured off
+#: 24 captured badges: the old (.25-.78, .58-1.06) was nearly half the badge
+#: tall, so the token sat in a field of ornate artwork and nothing OCR'd.
+_TOKEN_BOX = (0.28, 0.72, 0.78, 1.12)
 
 
 @dataclass(frozen=True)
@@ -167,7 +184,18 @@ def _match(source: np.ndarray, template: _Template) -> tuple[float, tuple[int, i
     return float(score), (int(loc[0]), int(loc[1]))
 
 
-def _candidate(frame: np.ndarray, *, historical: bool) -> tuple[str, float, tuple[int, int, int, int]] | None:
+#: How far the winning rank must sit above the runner-up rank for the read to
+#: be believed. 0.03 was chosen from the measured distributions: it rejects
+#: every Silver, Bronze and Iron read in the first NA collection while keeping
+#: the nine Diamonds that sit deep on low-population boards (Corki, Rumble,
+#: Sivir) and whose historical peaks corroborate them. It costs about 9% of
+#: Master-and-above reads, which become unknown rather than wrong.
+_MIN_MARGIN = 0.03
+
+
+def _candidate(
+    frame: np.ndarray, *, historical: bool
+) -> tuple[str, float, tuple[int, int, int, int], float] | None:
     """Find the best badge in the expected lower-right profile region."""
     h, w = frame.shape[:2]
     if historical:
@@ -180,7 +208,10 @@ def _candidate(frame: np.ndarray, *, historical: bool) -> tuple[str, float, tupl
     if source.size == 0:
         return None
 
-    best: tuple[float, str, tuple[int, int, int, int]] | None = None
+    # Best adjusted score PER RANK, not one global best. The decision that
+    # matters is "which rank is this", so the number that matters is how far
+    # the winning rank sits above the runner-up rank -- see _MIN_MARGIN.
+    per_rank: dict[str, tuple[float, tuple[int, int, int, int]]] = {}
     for rank in _RANK_ASSETS:
         # The profile layout is stable but phone scaling and crop margins vary.
         for factor in (.72, .86, 1.0, 1.14, 1.28):
@@ -205,40 +236,127 @@ def _candidate(frame: np.ndarray, *, historical: bool) -> tuple[str, float, tupl
             # a decorative badge elsewhere on the profile winning by accident.
             distance = abs((left + right) / 2 - centre) / max(1, w)
             adjusted = score - min(.12, distance * .75)
-            candidate = (adjusted, rank, (left, top, right, bottom))
-            if best is None or candidate[0] > best[0]:
-                best = candidate
+            # Only a FINITE score is a score. Masked correlation returns inf
+            # when the variance under the mask underflows, and every ordinary
+            # guard silently passes it: `inf != inf` is False, `inf < .50` is
+            # False, and `inf - inf` is nan, which then also compares False
+            # against the margin. Every Iron and Bronze read in the first NA
+            # collection came through that gap, each reported "high".
+            if not math.isfinite(float(adjusted)):
+                continue
+            prev = per_rank.get(rank)
+            if prev is None or adjusted > prev[0]:
+                per_rank[rank] = (adjusted, (left, top, right, bottom))
     # A blank is safer than assigning Challenger/Sovereign from a decorative
     # element.  Real badge matches in the supplied references are well above
     # this masked-correlation floor; low scores are deliberately declined.
-    if best is None or best[0] < .50:
+    if not per_rank:
         return None
-    return best[1], best[0], best[2]
+    ordered = sorted(per_rank.items(), key=lambda kv: -kv[1][0])
+    (rank, (score, bbox)) = ordered[0]
+    if score < .50:
+        return None
+    # The ABSOLUTE floor is not enough on its own. Measured over 153 profiles,
+    # every one of the eleven templates scores 0.73-0.80 on a badge, so .50
+    # passes all of them and the winner is whichever happened to edge ahead:
+    # one rank-1 Sovereign was read as Silver because Silver beat Challenger
+    # by 0.0044. What separates a real read from a coin toss is the MARGIN to
+    # the runner-up rank -- median 0.0755 on reads that landed Master or above
+    # against 0.0102 on the sub-Master reads that turned out to be wrong.
+    # Below the threshold we return nothing, because "unknown" is a usable
+    # answer and a fabricated tier is not.
+    margin = score - ordered[1][1][0] if len(ordered) > 1 else score
+    if margin < _MIN_MARGIN:
+        return None
+    return rank, score, bbox, margin
+
+
+def _isolate_digits(binary: np.ndarray) -> np.ndarray | None:
+    """Crop a thresholded token to just its digit glyphs, or None.
+
+    The crop still catches the badge's lower artwork, which thresholds into a
+    jagged mass along the top edge. Dropping any component that touches an
+    edge removes it, because the digits sit inside the disc and never do.
+    """
+    h, w = binary.shape
+    count, _lbl, stats, _c = cv2.connectedComponentsWithStats(
+        (binary > 0).astype(np.uint8), connectivity=8)
+    keep: list[tuple[int, int, int, int]] = []
+    for i in range(1, count):
+        x, y, gw, gh, area = (int(stats[i, cv2.CC_STAT_LEFT]),
+                              int(stats[i, cv2.CC_STAT_TOP]),
+                              int(stats[i, cv2.CC_STAT_WIDTH]),
+                              int(stats[i, cv2.CC_STAT_HEIGHT]),
+                              int(stats[i, cv2.CC_STAT_AREA]))
+        if y <= 1 or y + gh >= h - 1 or x <= 1 or x + gw >= w - 1:
+            continue
+        if not (0.20 * h <= gh <= 0.80 * h):
+            continue
+        if gw > 1.3 * gh or area < 0.15 * gw * gh:
+            continue
+        keep.append((x, y, gw, gh))
+    if not keep:
+        return None
+    # A two-digit count is two glyphs on one baseline; anything off that line
+    # is decoration that survived the edge test.
+    centres = [k[1] + k[3] / 2 for k in keep]
+    mid = sorted(centres)[len(centres) // 2]
+    row = [k for k, c in zip(keep, centres) if abs(c - mid) < 0.25 * h]
+    x0 = min(k[0] for k in row)
+    y0 = min(k[1] for k in row)
+    x1 = max(k[0] + k[2] for k in row)
+    y1 = max(k[1] + k[3] for k in row)
+    pad = max(2, int(0.12 * (y1 - y0)))
+    return binary[max(0, y0 - pad):min(h, y1 + pad),
+                  max(0, x0 - pad):min(w, x1 + pad)]
 
 
 def _badge_count(frame: np.ndarray, bbox: tuple[int, int, int, int]) -> int | None:
+    """The season count stamped on a badge, or None.
+
+    Both POLARITIES are tried, and that is the whole trick. Otsu picks one
+    global threshold, and the two badges sit on different grounds: on the
+    historical badge the digit comes out white on black, while on the larger
+    current badge the disc itself goes white and the digit is a black hole
+    inside it. Searching only for bright glyphs found every historical count
+    and not one current count -- 12 players all reading "?" for a figure that
+    is perfectly legible on screen.
+
+    Measured over 24 captured badges with known values: 0/20 before, 19/20
+    after. Uncertain counts stay None; we never invent a season count.
+    """
     left, top, right, bottom = bbox
     width, height = right - left, bottom - top
-    # The count is painted on the lower centre of the badge. Keep the crop
-    # tight enough that the adjacent small/large badge cannot be read instead.
-    x0 = max(0, left + int(width * .25))
-    x1 = min(frame.shape[1], left + int(width * .78))
-    y0 = max(0, top + int(height * .58))
-    y1 = min(frame.shape[0], bottom + int(height * .06))
+    ax0, ax1, ay0, ay1 = _TOKEN_BOX
+    x0 = max(0, left + int(width * ax0))
+    x1 = min(frame.shape[1], left + int(width * ax1))
+    y0 = max(0, top + int(height * ay0))
+    y1 = min(frame.shape[0], top + int(height * ay1))
     crop = frame[y0:y1, x0:x1]
     if crop.size == 0:
         return None
-    try:
-        result = read_text(crop, config=_DIGITS)
-    except Exception:
-        return None
-    values = [int(value) for value in re.findall(r"\d{1,3}", result.text or "")]
-    values = [value for value in values if 1 <= value <= 999]
-    if not values:
-        return None
-    # A single tight badge crop should produce one token. If OCR split it,
-    # joining the tokens is safer than choosing a random fragment.
-    return int("".join(str(v) for v in values))
+    for invert in (False, True):
+        try:
+            binary = preprocess(crop, scale=3.0, invert=invert)
+        except Exception:  # noqa: BLE001 -- a bad crop must not stop a batch
+            continue
+        glyphs = _isolate_digits(binary)
+        if glyphs is None or glyphs.size == 0:
+            continue
+        padded = cv2.copyMakeBorder(glyphs, 14, 14, 14, 14,
+                                    cv2.BORDER_CONSTANT, value=0)
+        for config in _DIGIT_CFGS:
+            try:
+                text = pytesseract.image_to_string(padded, config=config)
+            except Exception:  # noqa: BLE001
+                continue
+            digits = re.findall(r"\d", text or "")
+            if not digits:
+                continue
+            value = int("".join(digits))
+            if 1 <= value <= 999:
+                return value
+    return None
 
 
 def read_profile_ranks(frame: np.ndarray) -> dict:
@@ -251,23 +369,28 @@ def read_profile_ranks(frame: np.ndarray) -> dict:
     if frame is None or not isinstance(frame, np.ndarray) or frame.size == 0:
         return {"current": None, "historical": None, "confidence": "low", "source": "template"}
     found: dict[str, dict | None] = {}
-    scores: list[float] = []
+    margins: list[float] = []
     for key, historical in (("current", False), ("historical", True)):
         candidate = _candidate(frame, historical=historical)
         if candidate is None:
             found[key] = None
             continue
-        rank, score, bbox = candidate
+        rank, score, bbox, margin = candidate
         found[key] = {
             "rank": rank,
             "count": _badge_count(frame, bbox),
             "score": round(score, 4),
+            "margin": round(margin, 4),
             "bbox": list(bbox),
         }
-        scores.append(score)
-    if len(scores) == 2 and min(scores) >= .58:
+        margins.append(margin)
+    # Confidence tracks the MARGIN, not the raw score. Keying it on the score
+    # made it meaningless: every badge scores well above any absolute floor,
+    # so every read -- including the Sovereign that came out Silver -- was
+    # reported "high".
+    if len(margins) == 2 and min(margins) >= 2 * _MIN_MARGIN:
         confidence = "high"
-    elif scores:
+    elif margins:
         confidence = "medium"
     else:
         confidence = "low"

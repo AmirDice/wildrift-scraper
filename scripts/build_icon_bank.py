@@ -62,7 +62,16 @@ def collect() -> tuple[np.ndarray, list, list]:
     y0, size, x0, pitch, count = GEOMETRY["runes"]
     m = _mask()
     feats, meta, raw = [], [], []
-    for f in sorted(glob.glob(str(ROOT / "data" / "captures" / "*" / "0*_build.jpg"))):
+    # EVERY capture root, not just data/captures. The regional runs write to
+    # data/captures_na (and will to _eu, _cn), and a glob pinned to the
+    # original directory meant the bank never saw a single NA frame -- which
+    # is how Legend: Haste, added in patch 7.3, stayed missing from the bank
+    # while sitting in dozens of captured popups.
+    roots = sorted(glob.glob(str(ROOT / "data" / "captures*")))
+    files: list[str] = []
+    for root in roots:
+        files += glob.glob(os.path.join(root, "*", "0*_build.jpg"))
+    for f in sorted(files):
         img = cv2.imread(f)
         if img is None or img.shape[:2] != (1080, 2340):
             continue
@@ -143,11 +152,69 @@ def _load_frozen() -> dict | None:
     return {"labels": z["labels"], "entries": entries, "art": z["art"]}
 
 
+def _append_new(X, raw, conf, art, entries) -> int:
+    """Group the tiles that matched nothing and append each as a new cluster.
+
+    A frozen numbering is what keeps the owner's labels valid, so a new rune
+    must EXTEND it rather than trigger --recluster, which renumbers all 51 and
+    invalidates every label. Appending is safe precisely because main() assigns
+    tiles by medoid ART rather than by index.
+    """
+    from scipy.cluster.hierarchy import fcluster, linkage
+    from scipy.spatial.distance import pdist, squareform
+
+    idx = np.where(conf < 0.55)[0]
+    if len(idx) < MIN_CLUSTER:
+        print(f"only {len(idx)} unmatched tile(s); nothing new to add")
+        return 0
+    sub = X[idx]
+    D = pdist(sub, "correlation")
+    labels = fcluster(linkage(D, "average"), CLUSTER_THRESHOLD, "distance")
+    Dsq = squareform(D)
+
+    added = []
+    for c in sorted(set(labels)):
+        where = np.where(labels == c)[0]
+        if len(where) < MIN_CLUSTER:
+            continue
+        medoid_local = int(where[Dsq[np.ix_(where, where)].sum(1).argmin()])
+        added.append((int(idx[medoid_local]), len(where)))
+    if not added:
+        print(f"{len(idx)} unmatched tile(s), but none formed a group of "
+              f"{MIN_CLUSTER}+ -- these look like noise, not a new rune")
+        return 0
+
+    z = np.load(FROZEN, allow_pickle=False)
+    first = len(entries) + 1
+    np.savez_compressed(
+        FROZEN,
+        labels=z["labels"],   # per-tile assignments from the ORIGINAL freeze;
+                              # unused by the bank build, kept for provenance
+        medoids=np.concatenate([z["medoids"], [m for m, _ in added]]),
+        sizes=np.concatenate([z["sizes"], [n for _, n in added]]),
+        guesses=np.concatenate([z["guesses"], [""] * len(added)]),
+        agrees=np.concatenate([z["agrees"], [0.0] * len(added)]),
+        art=np.concatenate([z["art"], np.stack(
+            [cv2.resize(raw[m], (100, 100)) for m, _ in added])]),
+    )
+    print(f"appended {len(added)} cluster(s), numbered "
+          f"{first}..{first + len(added) - 1}, from {len(idx)} unmatched tiles:")
+    for k, (_m, n) in enumerate(added, first):
+        print(f"  cluster {k}: {n} tiles")
+    print(f"name them in {LABELS.relative_to(ROOT)} then re-run without --add-new")
+    print("review the art first: python -m scripts.build_icon_bank --sheet")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--sheet", action="store_true", help="write the numbered naming sheet")
     ap.add_argument("--recluster", action="store_true",
                     help="recompute clusters; RENUMBERS everything, labels must be reviewed")
+    ap.add_argument("--add-new", action="store_true",
+                    help="append clusters for tiles matching nothing frozen, so a "
+                         "NEW rune can be named without renumbering the existing "
+                         "ones; prints the numbers to add to the labels file")
     args = ap.parse_args()
 
     X, meta, raw = collect()
@@ -221,15 +288,35 @@ def main() -> int:
         if name:
             by_name.setdefault(name, []).append(i)
 
+    if args.add_new:
+        return _append_new(X, raw, conf, art, entries)
+
     bank = {name: np.stack([cv2.resize(raw[i], (N, N), interpolation=cv2.INTER_AREA)
                             for i in idxs]).astype(np.float32).mean(axis=0)
             for name, idxs in by_name.items()}
 
+    # MERGE into the existing bank rather than replacing it. The bank is
+    # derived, but its source is not reproducible: the capture sessions under
+    # data/captures were cleaned of their JPEGs long ago and only their CSVs
+    # survive, so a rebuild sees whatever frames happen to be on disk right
+    # now. Replacing wholesale took a 52-rune bank down to the 20 runes
+    # visible in one champion's 30 builds. A freshly computed template wins
+    # for every rune we CAN see; the rest keep the one they already had.
     BANK.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(BANK / "runes.npz", **bank)
+    previous = {}
+    if (BANK / "runes.npz").exists():
+        with np.load(BANK / "runes.npz") as z:
+            previous = {k: z[k] for k in z.files}
+    kept = sorted(set(previous) - set(bank))
+    merged = {**previous, **bank}
+    np.savez_compressed(BANK / "runes.npz", **merged)
     covered = sum(len(v) for v in by_name.values())
     print(f"clusters: {len(entries)} ({len(named)} named by owner)")
-    print(f"runes in bank: {len(bank)}")
+    print(f"runes in bank: {len(merged)} "
+          f"({len(bank)} rebuilt from current captures, {len(kept)} kept)")
+    if kept:
+        print(f"kept (no frames on disk any more): {', '.join(kept[:8])}"
+              + (f" +{len(kept) - 8} more" if len(kept) > 8 else ""))
     print(f"tiles covered: {covered}/{len(X)} ({covered / len(X) * 100:.1f}%)")
     if unmatched:
         print(f"tiles matching no known rune: {unmatched} (possible new runes)")

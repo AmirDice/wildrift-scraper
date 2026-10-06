@@ -155,15 +155,15 @@ class LeaderboardNavigator:
                 # nothing: it gets the same 0.5s wait either way.
                 if ranks:
                     self.log(f"  [scan] only {len(ranks)} badge(s) read -- "
-                             + ("rows may still be loading, waiting"
+                             + ("re-reading immediately"
                                 if empty_scans < 2 else
                                 "same pixels re-read the same way, nudging the list"))
                 # Only a PARTIAL read is nudged. A scan that returned nothing
                 # at all is not a misread of the list, it is evidence we may
                 # not be looking at the list -- the main-menu ejection reads
                 # exactly like this -- and moving blind on a screen we cannot
-                # identify is how whole champions got lost. That path waits,
-                # then hands over to recovery.
+                # identify is how whole champions got lost. That path re-reads
+                # and then hands over to recovery.
                 if ranks and empty_scans >= 2:
                     nudge = 0.5 if empty_scans % 2 else -0.5
                     self.drag_rows(nudge, self.last_pitch or (H * 0.135))
@@ -171,7 +171,17 @@ class LeaderboardNavigator:
                     settle_pending = False
                     if expected is not None:
                         expected += nudge
-                self.sleep(0.5)
+                # No wait here. This used to sleep 0.5s per degraded cycle on
+                # the theory that rows were still loading, but the scan now
+                # asks a SECOND OCR engine before it ever gets here, so a
+                # frame that still reads badly is not going to improve by
+                # being looked at again a moment later. The loop is bounded by
+                # empty_scans and each cycle already costs a screenshot, so
+                # dropping the sleep cannot spin.
+                #
+                # It also matters on the device: a slow retry loop is how the
+                # phone goes idle long enough to drop into power-saving, which
+                # blacks out every frame after it.
                 continue
             empty_scans = 0
             # Once the ledger has proven the fast scan wrong, arbitrate every

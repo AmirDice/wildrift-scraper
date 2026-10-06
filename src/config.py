@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import sys as _sys
 from pathlib import Path
 
 # Force the path to resolve absolutely relative to this file's location on disk.
@@ -92,6 +93,40 @@ SCREEN_2_BADGE_X_RANGE: tuple[int, int] = (795, 870)
 LEADERBOARD_LAYOUT = "2026-09-25"
 
 
+def badge_band_plausible(candidate, reference) -> bool:
+    """Whether `candidate` can be the SAME rank column as `reference`.
+
+    ONE definition, used both when a relocation is proposed and when
+    calibration.json is read back, because the two drifted apart and let the
+    same bad value through twice.
+
+    The old test was "overlaps the reference by 70% of its width", and it is
+    the wrong question. The sweep window that proposes a band is 170px wide
+    against a 75px reference, so it can clear 70% overlap while sitting 110px
+    off centre and dragging in a column of unrelated digits. Measured against
+    every band that has actually poisoned a run:
+
+        (985,1155)  centre off 237  width 2.27x   old: rejected
+        (735,905)   centre off  12  width 2.27x   old: ACCEPTED
+        (685,855)   centre off  62  width 2.27x   old: ACCEPTED
+
+    All three are rejected by asking the two questions that matter: is it
+    centred on the same digits, and is it the same KIND of band. A real
+    re-measure of this column shifts it slightly and keeps its width; anything
+    much wider is a sweep window, not a column.
+    """
+    try:
+        cx0, cx1 = int(candidate[0]), int(candidate[1])
+        rx0, rx1 = int(reference[0]), int(reference[1])
+    except (TypeError, ValueError, IndexError):
+        return False
+    width = rx1 - rx0
+    if width <= 0 or cx1 <= cx0:
+        return False
+    centre_off = abs((cx0 + cx1) / 2 - (rx0 + rx1) / 2)
+    return centre_off <= width / 4 and 0.8 <= (cx1 - cx0) / width <= 1.6
+
+
 def resolve_badge_calibration(cal: dict, override: str | None = None):
     """Resolve current-layout geometry; explicit calibration replaces its anchor.
 
@@ -114,7 +149,13 @@ def resolve_badge_calibration(cal: dict, override: str | None = None):
             reference = band(cal.get("badge_x_ref") or current)
         except (KeyError, TypeError, ValueError):
             current = reference = SCREEN_2_BADGE_X_RANGE
-        if min(current[1], reference[1]) - max(current[0], reference[0]) < 0.7 * (reference[1] - reference[0]):
+        # A stored band that is not plausibly this column is a poisoned file,
+        # not a calibration. Fall back to the reference rather than letting it
+        # ruin the run: a wrong value here is invisible in the source.
+        if not badge_band_plausible(current, reference):
+            print(f"[config] calibration badge column {current} is not plausibly "
+                  f"the reference column {reference}; using the reference",
+                  file=_sys.stderr)
             current = reference
     return current, reference, {
         "badge_x0": current[0], "badge_x1": current[1],
@@ -164,6 +205,32 @@ SCREEN_1_ROW_TAP_X: int = 900
 # Row pitch went from 146 to 158, first row centre at y=284.
 SCREEN_ROW_PITCH: int = 158
 SCREEN_ROW_FIRST_Y: int = 284
+#: RANKED rows only. The 2026-09 layout shows four, plus your own pinned row
+#: below them -- see SCREEN_LIST_Y_RANGE and coords/screen_2.json.
+SCREEN_ROW_COUNT: int = 4
+# Vertical extent of the RANKED list, as opposed to the whole screen. The rank
+# scanner must not look outside it, because the badge column contains digits
+# at both ends that are not ranks.
+#
+# ABOVE: the relayout put a "Server" dropdown directly over the column, and
+# the digit bank matches that capital S as a 5 at 0.63 with a 0.13 margin --
+# past both thresholds. Since the scanner keys results by rank and keeps the
+# topmost sighting, the phantom CLAIMED the number 5 and the real rank-5 row
+# lost its position to it, pointing the tap at the header. On 8 of the 10
+# frames the 2026-10-05 NA run rejected.
+#
+# BELOW: your own row is pinned under the list and reads "Top N%" instead of
+# a rank, so for most accounts it puts a real digit in the column in the same
+# font and size as a badge. Nothing about the glyph says it is not a rank.
+#
+# Half a row of slack at each end keeps partially scrolled rows in scope; the
+# pinned row is drawn OVER the list, so a ranked row scrolled past this edge
+# is hidden behind it anyway. Callers clamp this to the frame.
+SCREEN_LIST_Y_RANGE: tuple[int, int] = (
+    SCREEN_ROW_FIRST_Y - SCREEN_ROW_PITCH // 2,
+    SCREEN_ROW_FIRST_Y + (SCREEN_ROW_COUNT - 1) * SCREEN_ROW_PITCH
+    + SCREEN_ROW_PITCH // 2,
+)
 # Champion portrait centres: screen 1 rows and the screen 2 switcher column.
 SCREEN_1_PORTRAIT_X: int = 593
 SCREEN_2_PORTRAIT_X: int = 599

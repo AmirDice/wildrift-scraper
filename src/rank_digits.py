@@ -44,6 +44,25 @@ MIN_GAP = 0.05      # winner must beat the runner-up by this much
 # crop only has to contain them without reaching the neighbouring rows.
 ROW_HALF_H = 45
 
+# Height of the sliding window the brightness threshold is taken in. A little
+# over half the 158px row pitch: wide enough that a window always contains
+# background as well as a glyph (a window of pure glyph has no contrast to
+# measure), narrow enough that two rows lit differently by the splash art
+# never share one threshold.
+_MASK_WINDOW = 90
+
+# Tallest a real glyph gets, as a multiple of its width. Measured over 189
+# confidently-read badges: every digit sits between 1.2 and 1.5 except "1",
+# which runs 2.2 to 3.1 -- so 4.0 keeps every real glyph with room to spare.
+# What it rejects is the PLAYER AVATAR: the badge column is wide enough to
+# hold a two-digit rank, which means its right edge clips the gold ring of
+# the portrait beside it, and that arc segments as a tall thin sliver (8x58,
+# h/w 7.3). The sliver lands on the same row as the digit, the row is then
+# read as a two-glyph number, the sliver matches nothing, and the whole row
+# is discarded -- so a perfectly legible "4" at 0.95 produced no rank at all.
+# Narrowing the column instead would clip two-digit ranks, which fill it.
+MAX_GLYPH_ASPECT = 4.0
+
 
 def glyph_boxes(gray: np.ndarray) -> list[tuple[int, int, int, int]]:
     """Bounding boxes (x0, y0, x1, y1) of the bright glyphs in a row crop,
@@ -81,6 +100,8 @@ def glyph_boxes(gray: np.ndarray) -> list[tuple[int, int, int, int]]:
         if not (18 <= h <= 70):
             continue
         if w > 1.4 * h:          # wider than tall is not a digit
+            continue
+        if h > MAX_GLYPH_ASPECT * w:   # a sliver of the avatar ring, not a glyph
             continue
         boxes.append((x0, y0, x1 + 1, y1 + 1))
     return boxes
@@ -147,11 +168,35 @@ def _bright_mask(gray: np.ndarray) -> np.ndarray:
     find glyph POSITIONS, and the matching then runs on the raw greyscale --
     so flattening can move a boundary by a pixel but can no longer change
     which digit comes out.
+
+    The threshold is taken per WINDOW, not once for the whole column. The
+    2026-09 list panel is translucent over the champion's splash art, so the
+    background behind the badge column is not one surface: measured down a
+    single frame it ran mean 40 behind one row and mean 148 behind another,
+    with the numerals a flat ~190 throughout. One `mean + 2*std` over the
+    full strip is then set by whichever rows the art lit up, and the quiet
+    rows fall under it -- a frame showing ranks 6,7,8,9 read only the 9.
+    Thresholding inside a sliding window asks the question locally, which is
+    where it has an answer: the same frame reads 4 of 4.
+
+    Windows overlap by half so a glyph is never cut by a window edge; the
+    union is taken because a glyph only has to clear the bar in ONE window
+    to be found, and segmentation errs toward finding too much (the shape
+    filters in the callers reject the rest).
     """
     g = gray.astype(np.float32)
     bg = cv2.GaussianBlur(g, (0, 0), sigmaX=25)
     flat = np.clip((g / np.maximum(bg, 1.0)) * 128.0, 0, 255)
-    return flat > (flat.mean() + 2.0 * flat.std())
+    h = flat.shape[0]
+    if h <= _MASK_WINDOW:
+        return flat > (flat.mean() + 2.0 * flat.std())
+    mask = np.zeros(flat.shape, dtype=bool)
+    for top in range(0, h, _MASK_WINDOW // 2):
+        band = flat[top:top + _MASK_WINDOW]
+        if band.size == 0:
+            break
+        mask[top:top + _MASK_WINDOW] |= band > (band.mean() + 2.0 * band.std())
+    return mask
 
 
 def read_column(
@@ -184,6 +229,8 @@ def read_column(
         if not (8 <= gw <= 45 and 18 <= gh <= 70):
             continue
         if gw > 1.4 * gh or area < 0.15 * gw * gh:
+            continue
+        if gh > MAX_GLYPH_ASPECT * gw:   # avatar-ring sliver, see the constant
             continue
         glyphs.append((float(cents[i][1]), int(cents[i][0]), gx, gy, gw, gh))
     if not glyphs:

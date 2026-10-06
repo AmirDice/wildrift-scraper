@@ -1,7 +1,7 @@
 """Offline extractor for --capture-only sessions.
 
 Reads the manifest a capture session wrote, pulls winrate/score/games out of
-each saved strip frame (and player names out of the leaderboard frames), and
+each saved strip frame (and player identities out of the profile frames), and
 writes a CSV in the same schema as the live scraper. Ranks whose strip frame
 does not show the target champion are left blank in the CSV and listed in
 needs_manual.txt with their exact frame paths, so the manual pass is a short
@@ -18,7 +18,7 @@ than the file already on disk does not replace it; see `--force`.
 
 Run:
     python -m src.extract_frames data/captures/aatrox_20260802_1710
-    python -m src.extract_frames data/captures/aatrox_20260802_1710 --engine tesseract
+    python -m src.extract_frames data/captures/aatrox_20260802_1710 --engine auto
 """
 from __future__ import annotations
 
@@ -53,10 +53,12 @@ from .stats_ocr import read_stats_page_ocr, stats_confidence
 STATS_OCR_MIN_CONFIDENCE = 0.85
 
 from .ocr import (
+    GENERAL_TESSERACT_CONFIG,
     find_champion_winrates,
     find_target_data,
     locate_badge_column,
     read_player_name,
+    read_text,
     scan_visible_ranks,
 )
 from .storage import CSVWriter, LeaderboardRow
@@ -104,23 +106,193 @@ def _norm_name(s: str) -> str:
     return "".join(ch for ch in s.casefold() if ch.isalnum())
 
 
-def _usable_ocr_name(s: str) -> bool:
-    """Whether a Tesseract name read is worth believing, so the model is only
-    paid for the ones it is not.
+def _usable_ocr_name(s: str, strict_ascii: bool = True) -> bool:
+    """Whether a SINGLE, uncorroborated name read is worth believing, so the
+    model is only paid for the ones it is not.
 
     Two failure shapes to reject. Tesseract garbles CJK entirely, which shows
     up as a low ASCII share. And it emits whitespace fragments on a bad crop
     ("oe eee iar immm Ae") that are mostly-ASCII and would sail past an ASCII
     filter alone, so a usable read must also contain a real four-character
     word. Same test the tap verification already applies further down.
+
+    The ASCII rule is a proxy for "this backend cannot read that script", not
+    a claim that non-Latin names are invalid. PaddleOCR with a matching
+    language reads them cleanly, so a read that a SECOND crop independently
+    agrees with bypasses this entirely -- see the caller.
     """
     s = (s or "").strip()
     if len(s) < 3:
         return False
+    if s.count(" ") / len(s) > 0.3:
+        return False
+    if not strict_ascii:
+        # The engine that produced this can read the script, so the two tests
+        # below -- both proxies for "Tesseract cannot" -- would only reject a
+        # correct answer.
+        return True
     ascii_share = sum(c.isascii() for c in s) / len(s)
-    if ascii_share < 0.7 or s.count(" ") / len(s) > 0.3:
+    if ascii_share < 0.7:
         return False
     return bool(re.search(r"[A-Za-z0-9]{4}", s))
+
+
+# Fixed identity labels on the 2340x1080 main-profile/build layouts.  The
+# coordinates are scaled to the captured frame, so the same crops work on a
+# resized device screenshot.  Profile is authoritative: unlike the build card
+# it preserves the player's capitalization and also prints the Riot tag.
+_REFERENCE_FRAME = (2340, 1080)
+# Measured by ink projection over 30 captured profiles: the panel's three text
+# rows sit at y 36-60 (the "PROFILE" heading), y 140-162 (the name) and the
+# tag below that. The name box used to be (175, 100, 535, 158), which was
+# wrong on both axes and cost most of the reads:
+#
+#   VERTICALLY it started 40px above the text and ended at 158, clipping the
+#   bottom ~17% of every glyph. Tesseract was reading the top of each letter,
+#   which is exactly the confusion set the 2026-10-05 extraction produced:
+#   l->i, g->c, y->v, z->7, J->l, B->p, 2->?. "caguamamo" read as
+#   "cacuamamo", "Lokij88" as "Loki8s", "Bruno" as "prune".
+#
+#   HORIZONTALLY it ran to 535, past the panel's gold right border, which
+#   OCRs as a trailing "|" or "}". That is the junk on "ColoneliMustang |",
+#   "ALGAGoD |" and "LSS TOPerwaRe . r".
+#
+# Corrected, exact matches against hand-read ground truth go from 9/30 to
+# 23/30, and every one of the 7 that still miss is non-ASCII (CJK, or the
+# diacritics in "Därtâñän" and "Rapąń") -- which is what the model fallback
+# is for. 465 rather than 470 for the right edge: at 470 the longest name on
+# record still caught the border.
+_PROFILE_NAME_BOX = (175, 132, 465, 168)
+# The tag's row is NOT fixed: it sits at y~171 for most players and y~213 for
+# others, so this spans both. Measured 28/30 resolved against 23/30 for the
+# single-row box. It stops short of the avatar, so there is nothing else
+# carrying a "#" inside it.
+_PROFILE_TAG_BOX = (175, 168, 465, 245)
+#: The build card's name had the SAME clipping bug, milder: its glyphs run
+#: y 814-847 and the box ended at 845, so the bottom 2-3px went missing while
+#: 34px of empty card sat inside the top. Corrected, exact matches against
+#: ground truth go from 4/30 to 21/30. It is wide enough already; the name is
+#: centred and the widest on record spans x 342-842.
+_BUILD_NAME_BOX = (330, 808, 850, 852)
+
+
+def _scaled_region(image: np.ndarray, box: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    """Convert a reference-frame (x0,y0,x1,y1) box to an OCR region."""
+    height, width = image.shape[:2]
+    ref_w, ref_h = _REFERENCE_FRAME
+    x0, y0, x1, y1 = box
+    left = max(0, round(x0 * width / ref_w))
+    top = max(0, round(y0 * height / ref_h))
+    right = min(width, round(x1 * width / ref_w))
+    bottom = min(height, round(y1 * height / ref_h))
+    return left, top, max(0, right - left), max(0, bottom - top)
+
+
+#: Which engine reads the profile NAME crop. Split per CROP TYPE rather than
+#: globally, because the two jobs have opposite economics. Measured over one
+#: champion's 60 name crops:
+#:
+#:                 accuracy (all)   accuracy (profile)   ms/crop
+#:   Tesseract        44/60             23/30              892
+#:   PaddleOCR        53/60             27/30             ~3000
+#:
+#: Paddle on the profile crop ALONE beats the whole corroborated hybrid, and
+#: it is one call per rank. The stats strip is the opposite case: numbers, the
+#: highest call volume, and Tesseract already reliable, so paying 3x there
+#: would take a 144-champion extraction from ~4h to ~17h and make extraction
+#: the bottleneck behind a ~5min/champion capture. This costs ~+1.8s a rank.
+#:
+#: "tesseract" restores the old behaviour for an A/B on one champion.
+IDENTITY_ENGINE = os.environ.get("WRTM_IDENTITY_ENGINE", "paddle").strip().lower()
+
+
+def _read_profile_identity(image: np.ndarray) -> tuple[str | None, str | None]:
+    """Read the exact display name and Riot tag from the main profile panel."""
+    name = read_player_name(image, _scaled_region(image, _PROFILE_NAME_BOX),
+                            prefer=IDENTITY_ENGINE)
+    # The TAG stays on Tesseract: it is matched by a `#(\w+)` regex rather
+    # than compared as a string, so a character-level improvement buys nothing
+    # and would double this crop-type's cost.
+    tag_text = read_player_name(image, _scaled_region(image, _PROFILE_TAG_BOX))
+    tag = None
+    if tag_text:
+        match = re.search(r"#\s*([\w-]+)", tag_text, flags=re.UNICODE)
+        if match:
+            tag = match.group(1).strip()
+    return (name.strip() if name else None), tag
+
+
+def pick_identity(
+    profile_name: str | None, build_name: str | None,
+    profile_engine: str = "tesseract",
+) -> tuple[str | None, str]:
+    """Choose a player name from the two crops, or decline.
+
+    Returns (name, source) where source is "profile", "build", "disagree" or
+    "none". Kept as a function rather than inlined in main() so the extraction
+    harness and the tests exercise the SAME decision -- an evaluation script
+    that re-implemented this logic silently measured the old behaviour and
+    reported a fix as having done nothing.
+
+    The build card is a second witness for the profile crop. It renders the
+    same name in caps, so normalised agreement lets us keep the profile's
+    exact capitalization, and disagreement goes to the leaderboard/model
+    fallback rather than storing OCR garbage.
+    """
+    # Two independent witnesses reading the SAME string is stronger evidence
+    # than any single-read heuristic, so it overrides the one below. That
+    # matters for non-Latin names: _usable_ocr_name rejects a low ASCII share
+    # because TESSERACT garbles CJK, but with PaddleOCR configured for the
+    # script (see ocr.PADDLE_LANGS) both crops read the Korean names exactly,
+    # and the ASCII rule was throwing away two perfect reads that agreed.
+    if profile_engine == "paddle":
+        # DIFFERENT engines read the two crops, so they are no longer two
+        # views of the same question and agreement is not evidence. The build
+        # card is on Tesseract, which cannot read Korean at all: asked to
+        # arbitrate it returned "LHT- Cj AroH" against Paddle's correct
+        # "내가 더 잘해", and because that garbage is ASCII it PASSED the
+        # heuristic while the right answer failed it. Corroboration scored
+        # 21/30 here against 27/30 for simply trusting the better engine.
+        #
+        # So the build card demotes to a fallback for when the profile crop
+        # yields nothing. That is not a loss: across every disagreement in the
+        # captured set the profile was the correct one, including the two the
+        # old path escalated (Tintin0201 and Lokij88).
+        if profile_name and _usable_ocr_name(profile_name, strict_ascii=False):
+            return profile_name, "profile"
+        if build_name and _usable_ocr_name(build_name):
+            return build_name, "build"
+        return None, "none"
+
+    # Both crops on the SAME engine: they really are two witnesses, so
+    # agreement is evidence and disagreement is a reason to escalate.
+    #
+    # Two independent witnesses reading the same string also overrides the
+    # single-read heuristic below, which matters for non-Latin names: it
+    # rejects a low ASCII share because Tesseract garbles CJK, and that was
+    # throwing away two perfect reads that agreed with each other.
+    corroborated = bool(
+        profile_name and build_name
+        and len(_norm_name(profile_name)) >= 2
+        and _norm_name(profile_name) == _norm_name(build_name)
+    )
+    profile_ok = bool(profile_name
+                      and (corroborated or _usable_ocr_name(profile_name)))
+    build_ok = bool(build_name
+                    and (corroborated or _usable_ocr_name(build_name)))
+    if profile_ok and (not build_ok
+                       or _norm_name(profile_name) == _norm_name(build_name)):
+        return profile_name, "profile"
+    if build_ok and not profile_ok:
+        return build_name, "build"
+    if profile_ok and build_ok:
+        return None, "disagree"
+    return None, "none"
+
+
+def _read_build_name(image: np.ndarray) -> str | None:
+    """Read the large build-card label; fallback only because it uppercases."""
+    return read_player_name(image, _scaled_region(image, _BUILD_NAME_BOX))
 
 
 def verify_taps(
@@ -208,10 +380,49 @@ def verify_taps(
     return status, anomalies
 
 
+#: Where the lifetime label sits inside the strip region, as fractions of that
+#: region's height. Expressed relatively so it follows the region across phone
+#: and emulator layouts instead of pinning one device's pixels.
+_LABEL_BAND_TOP = 0.28
+_LABEL_BAND_HEIGHT = 0.23
+
+
+def strip_is_all_time(img: np.ndarray, region: tuple[int, int, int, int]) -> bool | None:
+    """True when this strip frame was captured on the ALL-TIME tab.
+
+    The capture taps the season toggle, sleeps a fixed interval and shoots
+    (scrape_timed.py). When the tap does not take -- network lag, a slow
+    relayout -- the frame is a perfectly clean capture of the WRONG lifetime,
+    so every structural check passes and the numbers are silently career
+    totals. One board reached us with 4,298 games on a 35-game ladder.
+
+    The tiles label themselves, so the frame carries the answer:
+        season tab    "Season Highest:"
+        all-time tab  "Highest Achieved:"
+    This is the same trick the STATS capture already uses on its queue label.
+
+    Returns None when the band reads as neither, which must not be treated as
+    a failure: an unreadable label is not evidence of the wrong tab, and
+    rejecting on it would throw away good rows.
+    """
+    x, y, w, h = region
+    by = y + int(h * _LABEL_BAND_TOP)
+    bh = max(1, int(h * _LABEL_BAND_HEIGHT))
+    band = img[by:by + bh, x:x + w]
+    if band.size == 0:
+        return None
+    text = (read_text(band, GENERAL_TESSERACT_CONFIG).text or "").lower()
+    if "achiev" in text:
+        return True
+    if "season" in text:
+        return False
+    return None
+
+
 def _extract_strip_tesseract(
     img: np.ndarray, region: tuple[int, int, int, int], target: str,
 ) -> tuple[float | None, int | None, int | None]:
-    found = find_champion_winrates(img, region)
+    found = find_champion_winrates(img, region, target=target)
     if any(c.lower() == target.lower() for c in found.keys()):
         return find_target_data(img, region, target)
     return (None, None, None)
@@ -233,8 +444,17 @@ def _extract_strip_gemini(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("capture_dir", type=Path, help="A --capture-only session directory")
-    parser.add_argument("--engine", choices=("gemini", "tesseract", "paddle"), default="gemini",
-                        help="Strip/name extractor. gemini also reads CJK player names.")
+    parser.add_argument("--engine", choices=("gemini", "auto", "tesseract", "paddle"), default="auto",
+                        help="Strip/name extractor. auto uses Tesseract first, then PaddleOCR only for low-confidence reads; gemini is the explicit model path.")
+    parser.add_argument("--identity-engine", choices=("paddle", "tesseract"),
+                        default=None,
+                        help="Engine for the profile NAME crop specifically "
+                             "(default paddle). Tesseract cannot flag its own "
+                             "errors here, so this crop is read by the better "
+                             "engine FIRST rather than as a fallback; the "
+                             "stats strip stays on Tesseract because paying 3x "
+                             "there would quadruple a full extraction. Pass "
+                             "tesseract to A/B one champion.")
     parser.add_argument("--model", default="gemini-3.5-flash-lite")
     parser.add_argument("--workers", type=int, default=4, help="Parallel frame reads")
     parser.add_argument("--output", type=Path, default=None,
@@ -252,25 +472,89 @@ def main() -> int:
         os.environ["OCR_ENGINE"] = "paddle"
     elif args.engine == "tesseract":
         os.environ["OCR_ENGINE"] = "tesseract"
+    elif args.engine == "auto":
+        os.environ["OCR_ENGINE"] = "auto"
+    if args.identity_engine:
+        globals()["IDENTITY_ENGINE"] = args.identity_engine
+    # --engine tesseract means "no optional backend at all", including for the
+    # name crop; honouring the per-crop default there would contradict the
+    # flag the user actually passed.
+    if args.engine == "tesseract" and not args.identity_engine:
+        globals()["IDENTITY_ENGINE"] = "tesseract"
 
     entries = _load_manifest(args.capture_dir)
     if not entries:
         raise SystemExit("error: manifest is empty")
     target = entries[0]["champion"]
     out_csv = args.output or (args.capture_dir / "extracted.csv")
-    print(f"{len(entries)} rank(s) in manifest | target: {target} | engine: {args.engine}")
+    print(f"{len(entries)} rank(s) in manifest | target: {target} | "
+          f"engine: {args.engine} | names: {IDENTITY_ENGINE}")
 
     if args.engine == "gemini":
         # Reuse the scraper's key discovery (env var or web-next/.env.local).
         from .scrape_timed import _ensure_gemini_key
         if not _ensure_gemini_key():
-            raise SystemExit("error: GEMINI_API_KEY not found; use --engine tesseract")
+            raise SystemExit("error: GEMINI_API_KEY not found; use --engine auto")
 
-    # ---- names + scores from the leaderboard frames ----
-    # One Gemini page read covers 4-5 ranks, so read frames until every rank
-    # has a name, skipping frames whose ranks are already covered.
+    # ---- player identities: profile first, then build/leaderboard fallback ----
+    # The profile is the canonical source. It shows one player in a fixed,
+    # high-contrast location, preserves mixed case, and carries the Riot tag.
+    # The build card is an excellent OCR fallback but renders names in caps.
+    # The leaderboard remains the final fallback because it has several small
+    # names, variable row backgrounds, truncation, and row-correlation risk.
     names: dict[int, str] = {}
+    profile_tags: dict[int, str] = {}
     lb_scores: dict[int, int] = {}
+    profile_count = 0
+    build_count = 0
+    for e in entries:
+        rank = e["rank"]
+        profile_name = None
+        build_name = None
+        profile_path = args.capture_dir / e.get("profile_frame", "")
+        if profile_path.exists():
+            image = cv2.imread(str(profile_path))
+            if image is not None:
+                try:
+                    profile_name, riot_tag = _read_profile_identity(image)
+                    if riot_tag:
+                        profile_tags[rank] = riot_tag
+                except Exception as exc:  # noqa: BLE001 -- continue through fallbacks
+                    print(f"  [identity/profile] rank {rank}: {exc}")
+
+        build_path = args.capture_dir / e.get("build_frame", "")
+        if build_path.exists():
+            image = cv2.imread(str(build_path))
+            if image is not None:
+                try:
+                    build_name = _read_build_name(image)
+                except Exception as exc:  # noqa: BLE001 -- leaderboard can still resolve it
+                    print(f"  [identity/build] rank {rank}: {exc}")
+
+        # Two independent witnesses reading the SAME string is stronger
+        # evidence than any single-read heuristic, so it overrides the one
+        # below. That matters for non-Latin names: _usable_ocr_name rejects a
+        # low ASCII share because TESSERACT garbles CJK, but with PaddleOCR
+        # configured for the script (see ocr.PADDLE_LANGS) both crops read
+        # "내가 더 잘해" and "반지하의 제왕" exactly, and the ASCII rule was
+        # throwing away two perfect reads that agreed with each other.
+        chosen, source = pick_identity(profile_name, build_name,
+                                       profile_engine=IDENTITY_ENGINE)
+        if source == "profile":
+            names[rank] = chosen  # type: ignore[assignment]
+            profile_count += 1
+        elif source == "build":
+            names[rank] = chosen  # type: ignore[assignment]
+            build_count += 1
+        elif source == "disagree":
+            print(f"  [identity] rank {rank}: profile/build disagree "
+                  f"({profile_name!r} vs {build_name!r}) -> leaderboard fallback")
+
+    print(f"  [identity] profile={profile_count}, build fallback={build_count}, "
+          f"leaderboard pending={len(entries) - len(names)}")
+
+    # One Gemini leaderboard read covers 4-5 ranks, so unresolved names still
+    # retain the old economical page-level fallback.
     if args.engine == "gemini":
         from .gemini_ocr import read_leaderboard
         for e in entries:
@@ -297,6 +581,8 @@ def main() -> int:
         # bill is a handful of calls per champion rather than one per rank.
         needs_model: list[dict] = []
         for e in entries:
+            if e["rank"] in names:
+                continue
             lb_path = args.capture_dir / e.get("lb_frame", "")
             tap_y = e.get("tap_y")
             if not lb_path.exists() or tap_y is None:
@@ -346,13 +632,20 @@ def main() -> int:
     print(f"names resolved: {len(names)}/{len(entries)}")
 
     # ---- winrate/score/games from the strip frames (parallel) ----
-    def extract_one(e: dict) -> tuple[int, tuple[float | None, int | None, int | None]]:
+    Triple = tuple[float | None, int | None, int | None]
+
+    def extract_one(e: dict) -> tuple[int, Triple, bool]:
+        """(rank, (winrate, score, games), captured_on_the_all_time_tab)."""
         rank = e["rank"]
         path = args.capture_dir / e["strip_frame"]
         img = cv2.imread(str(path))
         if img is None:
-            return rank, (None, None, None)
+            return rank, (None, None, None), False
         region = tuple(e.get("strip_region") or SCREEN_5_OCR_REGION)  # type: ignore[arg-type]
+        # Wrong-lifetime frames are rejected BEFORE extraction. Reading them
+        # would succeed and write career totals into a season board.
+        if strip_is_all_time(img, region):
+            return rank, (None, None, None), True
         # A miss is only believed after the OTHER engine confirms it: Gemini
         # occasionally drops visible tiles (retried first -- flaky misses
         # collapse under retries), and Tesseract sees through an entirely
@@ -363,25 +656,34 @@ def main() -> int:
                 for _attempt in range(2):
                     triple = _extract_strip_gemini(img, region, target, args.model)
                     if triple[0] is not None:
-                        return rank, triple
-                return rank, _extract_strip_tesseract(img, region, target)
+                        return rank, triple, False
+                return rank, _extract_strip_tesseract(img, region, target), False
             triple = _extract_strip_tesseract(img, region, target)
             if triple[0] is not None:
-                return rank, triple
+                return rank, triple, False
             try:
-                return rank, _extract_strip_gemini(img, region, target, args.model)
+                return rank, _extract_strip_gemini(img, region, target, args.model), False
             except Exception:  # noqa: BLE001 -- no key/network: keep the miss
-                return rank, triple
+                return rank, triple, False
         except Exception as exc:  # noqa: BLE001 -- a bad frame shouldn't kill the batch
             print(f"  [strip] rank {rank}: {exc}")
-            return rank, (None, None, None)
+            return rank, (None, None, None), False
 
-    results: dict[int, tuple[float | None, int | None, int | None]] = {}
+    results: dict[int, Triple] = {}
+    all_time_ranks: set[int] = set()
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        for rank, triple in pool.map(extract_one, entries):
+        for rank, triple, all_time in pool.map(extract_one, entries):
             results[rank] = triple
+            if all_time:
+                all_time_ranks.add(rank)
             wr = triple[0]
-            print(f"  rank {rank:>3}: {'wr=' + str(wr) if wr is not None else 'TARGET NOT VISIBLE'}")
+            if all_time:
+                note = "ALL-TIME TAB -- season toggle did not take"
+            elif wr is None:
+                note = "TARGET NOT VISIBLE"
+            else:
+                note = f"wr={wr}"
+            print(f"  rank {rank:>3}: {note}")
 
     # ---- correlation verification: prove name<->stats joins from the frames ----
     # 1. Tap verification: the badge at tap_y in the pre-tap frame must read
@@ -463,6 +765,7 @@ def main() -> int:
         staged_csv.unlink()
     writer = CSVWriter(staged_csv)
     missing: list[dict] = []
+    all_time: list[dict] = []
     found = 0
     for e in entries:
         rank = e["rank"]
@@ -471,6 +774,11 @@ def main() -> int:
             sc = lb_scores.get(rank)
         if wr is not None:
             found += 1
+        elif rank in all_time_ranks:
+            # Kept separate from `missing`: the frame is not unreadable, it
+            # holds the wrong lifetime, and no amount of hand-reading turns
+            # career totals into season ones.
+            all_time.append(e)
         else:
             missing.append(e)
         writer.write(LeaderboardRow(
@@ -610,6 +918,11 @@ def main() -> int:
             # added, and preserve the historical badge/count separately.
             if profile_ranks is not None:
                 popup = popup or {"player_name": names.get(rank, "")}
+                # Current profile captures carry the canonical identity even
+                # though the old mini-popup no longer exists.
+                popup["player_name"] = names.get(rank, popup.get("player_name", ""))
+                if profile_tags.get(rank):
+                    popup["riot_tag"] = profile_tags[rank]
                 current = profile_ranks.get("current") or {}
                 historical = profile_ranks.get("historical") or {}
                 if current.get("rank"):
@@ -755,6 +1068,13 @@ def main() -> int:
         sections.append("TARGET NOT VISIBLE -- read these frames by hand and fill the blank CSV rows:\n"
                         + "\n".join(f"  rank {e['rank']:>3}: {args.capture_dir / e['strip_frame']}"
                                     for e in missing))
+    if all_time:
+        sections.append(
+            "ALL-TIME TAB -- these frames were captured before the season toggle"
+            " took, so they show career totals, not this season. They cannot be\n"
+            "read by hand; the ranks below need RE-CAPTURING:\n"
+            + "\n".join(f"  rank {e['rank']:>3}: {args.capture_dir / e['strip_frame']}"
+                        for e in all_time))
     if anomalies:
         sections.append("CORRELATION ANOMALIES -- name and stats may not belong together:\n"
                         + "\n".join(f"  {a}" for a in anomalies))
@@ -768,7 +1088,7 @@ def main() -> int:
           f"{len(entries) - tap_ok - tap_unknown} MISMATCHED")
     print(f"CSV          : {out_csv}")
     if sections:
-        print(f"review       : {len(missing)} missing + {len(anomalies)} anomaly item(s) -> {report}")
+        print(f"review       : {len(missing)} missing + {len(all_time)} all-time + {len(anomalies)} anomaly item(s) -> {report}")
     return 0
 
 

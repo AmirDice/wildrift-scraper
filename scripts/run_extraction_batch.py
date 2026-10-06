@@ -62,9 +62,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--region", default="eu", choices=sorted(REGION_CAPTURES),
                     help="which region's captures to extract (default: eu)")
-    ap.add_argument("--engine", default="tesseract",
-                    choices=("tesseract", "paddle"),
-                    help="OCR backend; Paddle is opt-in until the benchmark passes")
+    ap.add_argument("--engine", default="auto",
+                    choices=("auto", "tesseract", "paddle", "gemini"),
+                    help="OCR backend; auto uses Tesseract first and PaddleOCR only for low-confidence reads")
     args = ap.parse_args()
 
     global CAPTURES, LOG

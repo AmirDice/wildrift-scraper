@@ -152,7 +152,8 @@ def _plan_extract_pending(args: dict) -> list[list[str]]:
                 pending.append(session)
     if not pending:
         return [["cmd", "/c", "echo no pending capture sessions - nothing to extract"]]
-    return [[PY, "-m", "src.extract_frames", str(p)] for p in pending]
+    return [[PY, "-m", "src.extract_frames", str(p), "--engine", "auto"]
+            for p in pending]
 
 
 def _plan_refresh(args: dict) -> list[list[str]]:
