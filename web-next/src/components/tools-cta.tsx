@@ -70,7 +70,7 @@ export function ToolsCta() {
   // pages, so the CTA never points somewhere the visitor cannot go.
   const live = useBuildToolsVisible();
   const TOOLS = live ? LIVE_TOOLS : META_TOOLS;
-  const HIDE_ON = live ? ["/", "/counter", "/build"] : ["/", "/meta"];
+  const HIDE_ON = live ? ["/", "/counter", "/build", "/champions"] : ["/", "/meta", "/champions"];
   if (HIDE_ON.includes(pathname)) return null;
   // Champion detail pages open with a full-bleed hero banner, and a card strip
   // above a hero reads as a mistake. Those pages render <ToolsCta /> themselves,
@@ -86,7 +86,7 @@ export function ToolsCta() {
           <Link
             key={t.href}
             href={t.href}
-            className={`glass-hover group flex flex-col rounded-xl border border-line bg-white/[0.03] p-3 transition hover:bg-white/[0.05] sm:p-4 ${t.ring}`}
+            className={`glass-thin glass-hover group flex flex-col rounded-xl p-3 transition sm:p-4 ${t.ring}`}
           >
             <div className="flex flex-wrap items-center gap-1.5">
               <h3 className="text-sm font-semibold leading-tight sm:text-base">

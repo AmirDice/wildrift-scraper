@@ -49,6 +49,7 @@ export function ChampionsExplorer({
   const [sortKey, setSortKey] = useState<SortKey>("wr");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const [region, setRegion] = useState<Region>("EU");
+  const [view, setView] = useState<"grid" | "list">("grid");
 
   const isCN = region === "CN";
   const isNA = region === "NA";
@@ -83,6 +84,17 @@ export function ChampionsExplorer({
     });
   }, [activeChampions, role, cls, query, sortKey, dir]);
 
+  const snapshot = useMemo(() => {
+    const topWin = [...activeChampions].sort((a, b) => b.wr - a.wr)[0];
+    const ceiling = isCN
+      ? [...activeChampions].sort((a, b) => cnv(b, "pickRate") - cnv(a, "pickRate"))[0]
+      : [...activeChampions].filter((c) => c.maxWr != null).sort((a, b) => num(b.maxWr) - num(a.maxWr))[0];
+    const depth = isCN
+      ? [...activeChampions].sort((a, b) => cnv(b, "banRate") - cnv(a, "banRate"))[0]
+      : [...activeChampions].filter((c) => c.totalGames != null).sort((a, b) => num(b.totalGames) - num(a.totalGames))[0];
+    return { topWin, ceiling, depth };
+  }, [activeChampions, isCN]);
+
   const toggleSort = (key: SortKey) => {
     if (key === sortKey) setDir((d) => (d === "asc" ? "desc" : "asc"));
     else {
@@ -99,28 +111,49 @@ export function ChampionsExplorer({
   };
 
   return (
-    <div>
-      {/* Region */}
-      <div className="mb-5">
-        <RegionToggle region={region} onChange={changeRegion} regions={["CN", "EU", "NA"]} />
+    <div className="champions-atlas">
+      <div className="mb-5 flex justify-start sm:justify-end">
+        <div className="liquid-glass inline-flex items-center rounded-2xl p-2">
+          <RegionToggle region={region} onChange={changeRegion} regions={["CN", "EU", "NA"]} />
+        </div>
       </div>
 
+      <div className="champion-snapshot mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <SnapshotCard label="Tracked" value={activeChampions.length.toLocaleString()} sub="champions with data" tone="cyan" />
+        <SnapshotCard label="Top win rate" value={snapshot.topWin ? `${snapshot.topWin.name} · ${snapshot.topWin.wr.toFixed(1)}%` : "–"} sub={isCN ? cnMeta.bracket : `Top ${region === "EU" ? BOARD_DEPTH.EU : BOARD_DEPTH.NA} players`} tone="violet" />
+        <SnapshotCard
+          label={isCN ? "Most picked" : "Highest ceiling"}
+          value={snapshot.ceiling ? `${snapshot.ceiling.name} · ${isCN ? `${cnv(snapshot.ceiling, "pickRate").toFixed(1)}%` : `${snapshot.ceiling.maxWr?.toFixed(1)}%`}` : "–"}
+          sub={isCN ? "official pick rate" : "elite mastery signal"}
+          tone="blue"
+        />
+        <SnapshotCard
+          label={isCN ? "Most banned" : "Deepest sample"}
+          value={snapshot.depth ? `${snapshot.depth.name} · ${isCN ? `${cnv(snapshot.depth, "banRate").toFixed(1)}%` : `${snapshot.depth.totalGames?.toLocaleString()} games`}` : "–"}
+          sub={isCN ? "official ban rate" : "across top players"}
+          tone="gold"
+        />
+      </div>
+
+      <div className="champion-explorer-shell glass rounded-[1.75rem] p-3 sm:p-4">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-1">
       {region === "EU" && (
-        <p className="mb-4 max-w-2xl text-muted">
+        <p className="max-w-2xl text-sm text-muted">
           Every champion tracked on EU, ranked by the win rates of each
           champion&apos;s top {BOARD_DEPTH.EU} players.
         </p>
       )}
 
       {isNA && (
-        <p className="mb-4 max-w-2xl text-muted">
+        <p className="max-w-2xl text-sm text-muted">
           Every champion tracked on NA, ranked by the win rates of each
           champion&apos;s top {BOARD_DEPTH.NA} players.
         </p>
       )}
 
-      <div className="mb-5">
+      <div>
         <RegionUpdated region={region} euDate={euUpdated} cnDate={cnMeta.date} naDate={naUpdated} />
+      </div>
       </div>
 
       {activeChampions.length === 0 ? (
@@ -135,13 +168,13 @@ export function ChampionsExplorer({
           )}
 
           {/* Filters */}
-          <div className="mb-5 flex flex-col gap-4">
+          <div className="champion-filter-deck mb-5 flex flex-col gap-4 rounded-2xl border border-white/[0.065] bg-[#060c17]/55 p-3 sm:p-4">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search champion…"
-              className="glass w-full rounded-xl px-4 py-2.5 text-sm outline-none transition placeholder:text-faint focus:border-accent/50"
+              className="liquid-glass w-full rounded-xl px-4 py-2.5 text-sm outline-none transition placeholder:text-faint focus:border-accent/50"
             />
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap gap-2">
@@ -168,12 +201,46 @@ export function ChampionsExplorer({
                   </option>
                 ))}
               </select>
+              <select
+                value={sortKey}
+                onChange={(e) => {
+                  const key = e.target.value as SortKey;
+                  setSortKey(key);
+                  setDir(key === "name" ? "asc" : "desc");
+                }}
+                aria-label="Sort champions"
+                className="glass rounded-lg px-3 py-1.5 text-sm text-muted outline-none focus:border-accent/50"
+              >
+                <option value="wr" className="bg-surface-2 text-text">Win rate</option>
+                <option value="name" className="bg-surface-2 text-text">Name</option>
+                {isCN ? (
+                  <>
+                    <option value="pickRate" className="bg-surface-2 text-text">Pick rate</option>
+                    <option value="banRate" className="bg-surface-2 text-text">Ban rate</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="maxWr" className="bg-surface-2 text-text">Skill ceiling</option>
+                    <option value="totalGames" className="bg-surface-2 text-text">Games</option>
+                    <option value="maxScore" className="bg-surface-2 text-text">Top mastery</option>
+                  </>
+                )}
+              </select>
             </div>
           </div>
 
-          <div className="mb-2 flex items-center justify-between">
+          <div className="mb-2 flex items-center justify-between gap-3">
             <p className="text-sm text-faint">{rows.length} champions</p>
-            <p className="text-xs text-faint sm:hidden">swipe table →</p>
+            <div className="glass-thin flex items-center gap-1 rounded-lg p-1" aria-label="Champion view">
+              <button type="button" onClick={() => setView("grid")} aria-label="Grid view" aria-pressed={view === "grid"}
+                className={`grid h-8 w-8 place-items-center rounded-md transition ${view === "grid" ? "bg-white/[0.1] text-text" : "text-muted hover:text-text"}`}>
+                <ViewGlyph view="grid" />
+              </button>
+              <button type="button" onClick={() => setView("list")} aria-label="List view" aria-pressed={view === "list"}
+                className={`grid h-8 w-8 place-items-center rounded-md transition ${view === "list" ? "bg-white/[0.1] text-text" : "text-muted hover:text-text"}`}>
+                <ViewGlyph view="list" />
+              </button>
+            </div>
           </div>
 
           {/* A count lower than the roster used to be unexplained, which reads
@@ -191,7 +258,10 @@ export function ChampionsExplorer({
             </p>
           )}
 
-          {/* Table */}
+          {/* Grid / list */}
+          {view === "grid" ? (
+            <ChampionGrid rows={rows} isCN={isCN} />
+          ) : (
           <div className="glass overflow-x-auto rounded-2xl">
             <table className="w-full min-w-[720px] border-collapse text-sm">
               <thead>
@@ -291,9 +361,89 @@ export function ChampionsExplorer({
               </tbody>
             </table>
           </div>
+          )}
         </>
       )}
+      </div>
     </div>
+  );
+}
+
+function SnapshotCard({ label, value, sub, tone }: { label: string; value: string; sub: string; tone: "cyan" | "violet" | "blue" | "gold" }) {
+  const tones = {
+    cyan: "text-emerald-300",
+    violet: "text-violet-300",
+    blue: "text-accent",
+    gold: "text-gold",
+  } as const;
+  return (
+    <div className={`champion-snapshot-card champion-snapshot-${tone} glass glass-card rounded-2xl p-4 sm:p-5 ${tones[tone]}`}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-faint">{label}</p>
+        <svg viewBox="0 0 72 24" className="h-6 w-[4.5rem]" aria-hidden>
+          <path d="M2 20 C10 18 14 11 21 14 S33 21 40 11 S52 14 60 7 S68 6 70 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </div>
+      <p className="mt-3 truncate text-base font-semibold text-text sm:text-lg">{value}</p>
+      <p className="mt-0.5 text-xs text-muted">{sub}</p>
+    </div>
+  );
+}
+
+function ChampionGrid({ rows, isCN }: { rows: Champion[]; isCN: boolean }) {
+  return (
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {rows.map((c, i) => (
+        <Link key={c.slug} href={`/champions/${c.slug}`}
+          className="champion-grid-card glass glass-hover group rounded-2xl p-3.5">
+          <div className="flex items-center gap-3">
+            <ChampionAvatar champion={c} size={48} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-semibold text-text group-hover:text-accent">{c.name}</p>
+              <p className="mt-0.5 truncate text-xs text-muted">{c.role} · {c.class}</p>
+            </div>
+            <TierChip tier={c.tier} />
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <GridMetric label="Win rate" value={`${c.wr.toFixed(1)}%`} accent />
+            {isCN ? (
+              <GridMetric label="Pick rate" value={`${cnv(c, "pickRate").toFixed(1)}%`} />
+            ) : (
+              <GridMetric label="Ceiling" value={c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "–"} />
+            )}
+          </div>
+          <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.055]">
+            <span className="block h-full rounded-full bg-gradient-to-r from-accent/65 to-accent"
+              style={{ width: `${Math.max(12, Math.min(100, 46 + (c.wr - 50) * 10))}%` }} />
+          </div>
+          <span className="absolute bottom-3.5 right-3.5 text-[0.65rem] text-faint">#{String(i + 1).padStart(2, "0")}</span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function GridMetric({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <span className="rounded-xl border border-line/60 bg-black/15 px-2.5 py-2">
+      <span className="block text-[0.6rem] font-semibold uppercase tracking-wide text-faint">{label}</span>
+      <span className={`mt-0.5 block text-sm font-semibold ${accent ? "text-accent" : "text-text"}`}>{value}</span>
+    </span>
+  );
+}
+
+function ViewGlyph({ view }: { view: "grid" | "list" }) {
+  if (view === "grid") return (
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
+      <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
+    </svg>
+  );
+  return (
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <rect x="1" y="2" width="14" height="3" rx="1"/><rect x="1" y="7" width="14" height="3" rx="1"/>
+      <rect x="1" y="12" width="14" height="3" rx="1"/>
+    </svg>
   );
 }
 

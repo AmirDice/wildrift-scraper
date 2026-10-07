@@ -166,18 +166,6 @@ function Arrow({ dir, onClick }: { dir: "prev" | "next"; onClick: () => void }) 
   );
 }
 
-function Claim({ children }: { children: ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"
-        strokeLinecap="round" strokeLinejoin="round" aria-hidden className="text-accent">
-        <path d="m5 13 4 4L19 7" />
-      </svg>
-      {children}
-    </span>
-  );
-}
-
 export function HeroCarousel() {
   const deck = useRef(slides()).current;
   const [at, setAt] = useState(0);
@@ -216,7 +204,7 @@ export function HeroCarousel() {
     // it covers every slide at once, and the reading-halo rule in globals.css
     // leaves anything inside glass alone.
     <div
-      className="glass mx-auto max-w-6xl rounded-3xl px-5 py-8 sm:px-8 sm:py-10"
+      className="home-cinema glass mx-auto max-w-6xl overflow-hidden rounded-[2rem]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -262,24 +250,21 @@ export function HeroCarousel() {
               inert={!live}
               aria-hidden={!live}
             >
-              <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
-                <div className="text-center lg:text-left">
+              <div className="grid min-h-[31rem] lg:grid-cols-[0.92fr_1.08fr]">
+                <div className="home-cinema-copy flex flex-col justify-center px-6 py-9 text-left sm:px-9 lg:px-12 lg:py-12">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
                     {s.eyebrow}
                   </p>
-                  <Heading className="mt-4 text-3xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
+                  <Heading className="display-title mt-4 max-w-[11ch] text-5xl leading-[0.94] sm:text-6xl lg:text-[4.5rem]">
                     {s.title}
                   </Heading>
-                  <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg lg:mx-0">
+                  <p className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
                     {s.body}
                   </p>
-                  <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium text-text lg:justify-start">
-                    {s.claims.map((c) => <Claim key={c}>{c}</Claim>)}
-                  </div>
-                  <div className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+                  <div className="mt-7 flex flex-wrap items-center gap-3">
                     <Link
                       href={s.primary.href}
-                      className="rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110"
+                      className="primary-action rounded-xl bg-accent px-6 py-3 font-semibold text-[#07121f] transition hover:brightness-110"
                     >
                       {s.primary.label}
                     </Link>
@@ -292,6 +277,16 @@ export function HeroCarousel() {
                       </Link>
                     )}
                   </div>
+                  <div className="home-proof-grid mt-8 grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.07]">
+                    {s.claims.map((c, claimIndex) => (
+                      <div key={c} className="min-w-0 px-3 py-3 sm:px-4">
+                        <span className="mb-1 block text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-faint">
+                          0{claimIndex + 1}
+                        </span>
+                        <span className="block text-xs font-semibold leading-snug text-text sm:text-sm">{c}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* The picture is a link to the thing in it: someone who looks
@@ -301,7 +296,7 @@ export function HeroCarousel() {
                   href={s.primary.href}
                   tabIndex={-1}
                   aria-hidden
-                  className="block overflow-hidden rounded-2xl border border-line bg-[#080b14] shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition hover:border-accent/40"
+                  className="home-cinema-shot group/shot relative flex min-h-[20rem] items-center justify-center overflow-hidden border-t border-line bg-[#080b14] p-5 transition sm:p-8 lg:min-h-full lg:border-l lg:border-t-0 lg:p-10"
                 >
                   <img
                     src={s.shot.src}
@@ -312,10 +307,26 @@ export function HeroCarousel() {
                     // fills the frame without losing its bottom rows; the
                     // phone shot is fitted into the same frame instead, which
                     // is what makes a portrait screenshot read as a phone.
-                    className={`aspect-video w-full ${
-                      s.shot.tall ? "object-contain" : "object-cover object-top"
+                    className={`relative z-[1] max-h-[27rem] w-full rounded-2xl border border-white/10 shadow-2xl transition duration-700 group-hover/shot:scale-[1.015] ${
+                      s.shot.tall ? "h-[27rem] object-contain" : "h-auto object-contain"
                     }`}
                   />
+                  <span aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_72%_16%,rgba(85,165,210,.16),transparent_52%),linear-gradient(135deg,rgba(18,38,66,.7),rgba(4,9,18,.92))]" />
+                  <span className="absolute bottom-4 left-4 right-4 z-[2] flex items-end justify-between rounded-2xl border border-white/10 bg-[#070d18]/78 p-4 backdrop-blur-xl sm:bottom-6 sm:left-6 sm:right-6">
+                    <span>
+                      <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-faint">Live signal</span>
+                      <span className="mt-1 block text-sm font-semibold text-white">Built from top-player data</span>
+                    </span>
+                    <svg viewBox="0 0 120 34" className="h-8 w-28" aria-hidden>
+                      <defs>
+                        <linearGradient id={`pulse-${s.id}`} x1="0" x2="1">
+                          <stop offset="0" stopColor="#6fa8ff" stopOpacity=".25" />
+                          <stop offset="1" stopColor="#7ff7df" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M2 28 C18 26 18 17 32 19 S48 28 61 15 S80 18 92 9 S108 8 118 3" fill="none" stroke={`url(#pulse-${s.id})`} strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+                  </span>
                 </Link>
               </div>
             </div>
@@ -330,7 +341,7 @@ export function HeroCarousel() {
           already knows, it is a target a thumb can hit, and it gives the swipe
           and the arrow keys a visible counterpart. */}
       {deck.length > 1 && (
-        <div className="mt-7 flex items-center justify-center gap-3">
+        <div className="home-cinema-controls flex items-center justify-center gap-3 border-t border-white/[0.07] px-5 py-4">
           <Arrow dir="prev" onClick={() => step(-1)} />
           <div className="flex items-center gap-2">
             {deck.map((s, i) => (

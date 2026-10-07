@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import runeIconsData from "@/data/rune_icons.json";
 import { BUILD_SERVERS, SERVER_GAP, SERVER_LABEL, type BuildServer, type ServerBuild, type ServerBuildStats } from "@/lib/server-build";
 
@@ -32,7 +33,7 @@ const RUNE_ICONS = runeIconsData as Record<string, string>;
 /** The six to draw, left to right: the purchase order with the boots slotted
  *  in where they are bought, or most-built first with the boots last when no
  *  order was recorded. */
-function sequenceOf(build: ServerBuild): { slug: string; name: string; icon: string }[] {
+function sequenceOf(build: ServerBuild): { slug: string; name: string; icon: string; rate?: number }[] {
   const boots = build.boots ?? null;
   if (!boots) return build.items;
   if (build.ordered && build.bootsAt != null) {
@@ -192,6 +193,8 @@ export function ServerBuilds({
   builds,
   gaps,
   collected,
+  compact = false,
+  personalizeHref,
 }: {
   champion: string;
   builds: Partial<Record<BuildServer, ServerBuild | null>>;
@@ -199,6 +202,9 @@ export function ServerBuilds({
   gaps: Record<BuildServer, string>;
   /** When each server's boards were collected, for the honesty line. */
   collected?: Partial<Record<BuildServer, string>>;
+  /** Dense champion-profile presentation matching the analytics concept. */
+  compact?: boolean;
+  personalizeHref?: string;
 }) {
   // Open on a server that actually has something, so the card never greets
   // anyone with an empty tab when a filled one exists.
@@ -209,14 +215,38 @@ export function ServerBuilds({
   const pills = comparisonPills(server, builds);
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center gap-2">
+    <div className={compact ? "relative" : ""}>
+      {compact && (
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold">Most-built by server</h2>
+            <p className="mt-0.5 text-xs text-faint">Top-player purchase order · not a recommendation</p>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {BUILD_SERVERS.map((s) => (
+              <button
+                key={s}
+                onClick={() => setServer(s)}
+                className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
+                  server === s ? "bg-accent/20 text-accent ring-1 ring-accent/25"
+                    : builds[s] ? "glass text-muted hover:text-text"
+                    : "glass text-faint hover:text-muted"
+                }`}
+              >
+                {SERVER_LABEL[s]}{!builds[s] && <span className="ml-1 opacity-60">·</span>}
+              </button>
+            ))}
+            {personalizeHref && <Link href={personalizeHref} className="rounded-lg border border-accent/25 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition hover:bg-accent/15">Personalize →</Link>}
+          </div>
+        </div>
+      )}
+      {!compact && <div className="flex flex-wrap items-center gap-2">
         {BUILD_SERVERS.map((s) => (
           <button
             key={s}
             onClick={() => setServer(s)}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-              server === s ? "bg-accent text-white"
+            className={`${compact ? "rounded-lg px-3.5 py-1.5" : "rounded-full px-3 py-1"} text-xs font-semibold transition ${
+              server === s ? "bg-accent/20 text-accent ring-1 ring-accent/25"
                 : builds[s] ? "glass text-muted hover:text-text"
                 : "glass text-faint hover:text-muted"
             }`}
@@ -225,7 +255,7 @@ export function ServerBuilds({
             {!builds[s] && <span className="ml-1 opacity-60">·</span>}
           </button>
         ))}
-      </div>
+      </div>}
 
       {build ? (
         <>
@@ -235,24 +265,30 @@ export function ServerBuilds({
               them first or second, so tacking them on at the end misstated
               the build. Without one, a number would read as an order that is
               really a popularity rank, so there is none. */}
-          {build.ordered && (
+          {build.ordered && !compact && (
             <p className="mt-3 text-[11px] font-semibold uppercase tracking-wide text-faint">
               In the order they buy them
             </p>
           )}
-          <div className={`${build.ordered ? "mt-2" : "mt-4"} flex flex-wrap items-start gap-2.5`}>
+          <div className={compact
+            ? "mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6"
+            : `${build.ordered ? "mt-2" : "mt-4"} flex flex-wrap items-start gap-2.5`}>
             {sequenceOf(build).map((it, i) => (
-              <span key={it.slug} className="w-16 text-center">
+              <span key={it.slug} className={compact
+                ? "relative min-w-0 rounded-xl border border-white/[0.07] bg-black/15 px-2 py-2.5 text-center"
+                : "w-16 text-center"}>
+                {compact && build.ordered && <span className="absolute left-2 top-2 grid h-4 w-4 place-items-center rounded-full bg-accent/15 text-[0.55rem] font-bold text-accent">{i + 1}</span>}
                 <img src={it.icon} alt={it.name} loading="lazy"
-                  className="mx-auto h-11 w-11 rounded-lg border border-line" />
-                <span className="mt-1 block text-[10px] leading-tight text-muted">
-                  {build.ordered ? `${i + 1}. ` : ""}{it.name}
+                  className={`mx-auto rounded-lg border border-line ${compact ? "h-10 w-10" : "h-11 w-11"}`} />
+                <span className={`mt-1 block truncate leading-tight ${compact ? "text-[0.68rem] text-text" : "text-[10px] text-muted"}`} title={it.name}>
+                  {!compact && build.ordered ? `${i + 1}. ` : ""}{it.name}
                 </span>
+                {compact && it.rate != null && <span className="mt-0.5 block text-[0.62rem] font-semibold text-accent">{Math.round(it.rate)}%</span>}
               </span>
             ))}
           </div>
           {build.runes.keystone && (
-            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted">
+            <div className={`${compact ? "mt-3 border-t border-white/[0.07] pt-3 pr-28" : "mt-3"} flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted`}>
               {[
                 { name: build.runes.keystone, keystone: true, flex: false },
                 ...build.runes.minors.map((name) => ({ name, keystone: false, flex: false })),
@@ -277,7 +313,7 @@ export function ServerBuilds({
               ))}
             </div>
           )}
-          {(pills.length > 0 || build.stats?.profile) && (
+          {(pills.length > 0 || build.stats?.profile) && !compact && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {build.stats?.profile.map((label) => (
                 <span key={label} className="rounded-full bg-accent/10 px-2.5 py-1 text-[10px] font-semibold text-accent">
@@ -291,31 +327,33 @@ export function ServerBuilds({
               ))}
             </div>
           )}
-          <p className="mt-2 text-[11px] text-faint">
+          <div className={compact
+            ? expanded ? "mt-3 flex justify-end" : "absolute bottom-0 right-0"
+            : ""}>
+          <p className={`${compact ? "sr-only" : "mt-2 text-[11px]"} text-faint`}>
             {build.sample
               ? `${champion}'s most-built item on ${SERVER_LABEL[server]}: ${build.sample.count} of ${build.sample.of} top players`
               : `From the ${SERVER_LABEL[server]} boards`}
             {collected?.[server] ? ` · collected ${collected[server]}` : ""}
           </p>
           {build.stats && (
+            <button
+              type="button"
+              onClick={() => setExpanded((value) => !value)}
+              className={`${compact ? "" : "mt-3"} inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-bold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-accent/40 ${expanded
+                ? "border-line bg-white/[0.08] text-text hover:border-accent/50"
+                : "border-accent/50 bg-accent/15 text-accent hover:bg-accent/25"}`}
+              aria-expanded={expanded}
+            >
+              <span>{expanded ? "Show less" : compact ? "Build stats" : "Show more · build stats"}</span>
+              <span aria-hidden="true" className={`text-sm leading-none transition-transform ${expanded ? "rotate-180" : ""}`}>⌄</span>
+            </button>
+          )}
+          </div>
+          {build.stats && expanded && (
             <>
-              <button
-                type="button"
-                onClick={() => setExpanded((value) => !value)}
-                className={`mt-3 inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-xs font-bold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-accent/40 ${expanded
-                  ? "border-line bg-white/[0.08] text-text hover:border-accent/50"
-                  : "border-accent/50 bg-accent/15 text-accent hover:bg-accent/25"}`}
-                aria-expanded={expanded}
-              >
-                <span>{expanded ? "Show less" : "Show more · build stats"}</span>
-                <span aria-hidden="true" className={`text-sm leading-none transition-transform ${expanded ? "rotate-180" : ""}`}>⌄</span>
-              </button>
-              {expanded && (
-                <>
-                  <ServerStats stats={build.stats} />
-                  <ServerComparison builds={builds} />
-                </>
-              )}
+              <ServerStats stats={build.stats} />
+              <ServerComparison builds={builds} />
             </>
           )}
         </>

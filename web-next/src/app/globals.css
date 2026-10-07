@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #070a12;
-  --color-surface: #0f1422;
-  --color-surface-2: #151b2c;
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-line-strong: rgba(255, 255, 255, 0.14);
-  --color-text: #eef2fb;
-  --color-muted: #8b93a7;
+  --color-bg: #081321;
+  --color-surface: #0d1b2e;
+  --color-surface-2: #12243b;
+  --color-line: rgba(181, 211, 255, 0.11);
+  --color-line-strong: rgba(196, 220, 255, 0.2);
+  --color-text: #f7faff;
+  --color-muted: #9aa8bd;
   /* Lifted from #5b6478 when the background stopped being a near-black scrim.
      Measured against the blurred art under the 52% overlay, the old value came
      out at 2.4:1 -- well under the 4.5:1 needed for body text, and this colour
      carries a lot of real information (data dates, stat sublabels, the notes
      under every panel). #7f8a9e reads 4.1:1 on the background and 4.6:1 inside
      a glass card, while staying a clear step below --color-muted. */
-  --color-faint: #7f8a9e;
-  --color-accent: #4f8dff;
-  --color-accent-soft: rgba(79, 141, 255, 0.12);
-  --color-gold: #ffd76e;
-  --color-bad: #ff6a6a;
+  --color-faint: #7e8da6;
+  --color-accent: #72a7ff;
+  --color-accent-soft: rgba(114, 167, 255, 0.13);
+  --color-gold: #f2ca72;
+  --color-bad: #ff7f91;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-display: "Bahnschrift SemiCondensed", "Avenir Next Condensed", "Arial Narrow", sans-serif;
 
   --radius: 0.875rem;
 }
@@ -37,6 +38,14 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   min-height: 100vh;
+}
+
+main h1,
+.display-title {
+  font-family: var(--font-display);
+  font-weight: 590;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
 }
 
 @layer base {
@@ -81,12 +90,12 @@ body {
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.085) 0%,
-      rgba(255, 255, 255, 0.032) 45%,
-      rgba(255, 255, 255, 0.05) 100%
+      rgba(221, 234, 255, 0.105) 0%,
+      rgba(114, 167, 255, 0.032) 45%,
+      rgba(255, 255, 255, 0.04) 100%
     ),
-    rgba(9, 12, 22, 0.46);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+    rgba(7, 15, 29, 0.52);
+  border: 1px solid rgba(187, 215, 255, 0.12);
   /* brightness is back to 1: it existed only to rescue a crushed backdrop, and
      lifting an already-bright one just washes the panel out.
 
@@ -101,10 +110,10 @@ body {
      panel and the cards read as flat grey rectangles. Less blur here lets the
      art's remaining colour and tone register inside the glass, which is the
      thing that makes it look like a material instead of a fill. */
-  backdrop-filter: blur(30px) saturate(200%);
+  backdrop-filter: blur(28px) saturate(165%);
   box-shadow:
     /* specular top edge, then the falloff along the bottom inside edge */
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 1px 0 rgba(239, 246, 255, 0.28),
     inset 0 -1px 0 rgba(0, 0, 0, 0.28),
     inset 1px 0 0 rgba(255, 255, 255, 0.06),
     /* lift: a tight contact shadow plus a wide ambient one */
@@ -119,11 +128,11 @@ body {
      than substance: the tool cards on top of every page were the worst text
      on the site. It keeps the thin sheen and gains a dark base. */
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%),
-    rgba(9, 12, 22, 0.40);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px) saturate(180%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    linear-gradient(180deg, rgba(220, 234, 255, 0.07) 0%, rgba(97, 150, 231, 0.018) 100%),
+    rgba(7, 15, 29, 0.43);
+  border: 1px solid rgba(187, 215, 255, 0.09);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(235, 244, 255, 0.15);
 }
 
 /* Liquid glass: the emphasized variant, for the one or two controls on a page
@@ -141,17 +150,16 @@ body {
   isolation: isolate;
   overflow: hidden;
   background:
-    linear-gradient(120deg, rgba(79, 141, 255, 0.10), rgba(255, 255, 255, 0.02) 40%, rgba(79, 141, 255, 0.08) 100%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.045) 45%, rgba(255, 255, 255, 0.08) 100%),
-    rgba(9, 12, 22, 0.46);
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  backdrop-filter: blur(26px) saturate(200%);
+    linear-gradient(120deg, rgba(114, 167, 255, 0.11), rgba(255, 255, 255, 0.025) 40%, rgba(114, 167, 255, 0.07) 100%),
+    linear-gradient(180deg, rgba(232, 241, 255, 0.13) 0%, rgba(255, 255, 255, 0.035) 48%, rgba(126, 174, 245, 0.055) 100%),
+    rgba(7, 15, 29, 0.52);
+  border: 1px solid rgba(200, 222, 255, 0.18);
+  backdrop-filter: blur(26px) saturate(165%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     inset 0 -1px 0 rgba(0, 0, 0, 0.3),
     0 1px 2px rgba(0, 0, 0, 0.3),
-    0 8px 28px -10px rgba(0, 0, 0, 0.55),
-    0 0 26px -6px rgba(79, 141, 255, 0.3);
+    0 8px 28px -10px rgba(0, 0, 0, 0.55);
 }
 .liquid-glass::after {
   content: "";
@@ -168,7 +176,7 @@ body {
   );
   background-size: 260% 100%;
   background-position: 135% 0;
-  animation: liquid-sheen 6s ease-in-out infinite;
+  animation: liquid-sheen 9s ease-in-out infinite;
 }
 @keyframes liquid-sheen {
   0%, 55% { background-position: 135% 0; }
@@ -205,12 +213,12 @@ body {
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.12) 0%,
-      rgba(255, 255, 255, 0.055) 45%,
-      rgba(255, 255, 255, 0.07) 100%
+      rgba(224, 237, 255, 0.13) 0%,
+      rgba(114, 167, 255, 0.045) 45%,
+      rgba(255, 255, 255, 0.055) 100%
     ),
-    rgba(10, 14, 24, 0.3);
-  border-color: rgba(255, 255, 255, 0.18);
+    rgba(8, 17, 32, 0.42);
+  border-color: rgba(194, 220, 255, 0.2);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
     inset 0 -1px 0 rgba(0, 0, 0, 0.28),
@@ -220,27 +228,499 @@ body {
 }
 @media (prefers-reduced-motion: no-preference) {
   .glass-hover:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 }
 
 /* Sticky top bar. Content scrolls *under* it, which is the one place the site
    gets the real Apple effect: a moving backdrop seen through the material. */
 .glass-bar {
-  background: rgba(9, 13, 23, 0.70);
-  backdrop-filter: blur(24px) saturate(190%);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.07);
+  background: linear-gradient(180deg, rgba(11, 23, 43, 0.82), rgba(5, 11, 23, 0.72));
+  backdrop-filter: blur(26px) saturate(155%);
+  box-shadow: inset 0 -1px 0 rgba(176, 209, 255, 0.1);
 }
 
 /* Floating menus and popovers: more opaque than a card because text sits on
    them directly, but still a material rather than a flat fill. */
 .glass-menu {
-  background: rgba(14, 19, 34, 0.86);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(30px) saturate(200%);
+  background: rgba(10, 21, 39, 0.9);
+  border: 1px solid rgba(184, 214, 255, 0.15);
+  backdrop-filter: blur(30px) saturate(160%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     0 18px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* WRTrueMeta's shared chrome: cool blue glass is the foundation; individual
+   pages can still use gold, green, coral, or champion palette colours as data
+   accents without changing the site's identity. */
+.brand-lens {
+  border: 1px solid rgba(184, 214, 255, 0.1);
+  background: linear-gradient(145deg, rgba(224, 237, 255, 0.09), rgba(72, 126, 207, 0.035));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13);
+}
+
+.glass-card {
+  overflow: clip;
+}
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 18% auto;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(216, 232, 255, 0.38), transparent);
+  opacity: 0.72;
+}
+
+.section-heading {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.section-heading::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.18rem;
+  bottom: 0.18rem;
+  width: 2px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #d8e8ff, var(--color-accent));
+}
+
+.section-heading h2 {
+  font-family: var(--font-display);
+  font-weight: 590;
+  letter-spacing: -0.025em;
+}
+
+.glass-footer {
+  background: linear-gradient(180deg, rgba(6, 14, 28, 0.4), rgba(4, 9, 19, 0.78));
+  backdrop-filter: blur(24px) saturate(145%);
+  box-shadow: inset 0 1px rgba(183, 213, 255, 0.08);
+}
+
+.home-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 58% at 72% 28%, rgba(93, 151, 238, 0.1), transparent 72%),
+    linear-gradient(180deg, rgba(5, 12, 25, 0.02), rgba(5, 12, 25, 0.28));
+}
+
+.home-hero {
+  isolation: isolate;
+  background:
+    linear-gradient(128deg, rgba(220, 234, 255, 0.105), rgba(64, 116, 194, 0.035) 42%, rgba(255, 255, 255, 0.025)),
+    rgba(6, 14, 28, 0.52);
+}
+
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 22% auto;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(222, 237, 255, 0.54), transparent);
+}
+
+.hero-shot {
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 18px 42px -24px rgba(0, 8, 24, 0.82);
+}
+
+.primary-action {
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.35), 0 10px 24px -16px rgba(114, 167, 255, 0.8);
+}
+
+/* Home revamp: a dark editorial dashboard, modelled on the champion atlas
+   concept. The background art is deliberately quiet here; colour comes from
+   the data and the glass, not from one full-screen illustration. */
+.home-revamp {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background:
+    radial-gradient(70rem 34rem at 84% 2%, rgba(45, 134, 167, 0.14), transparent 68%),
+    radial-gradient(54rem 32rem at 8% 22%, rgba(77, 92, 178, 0.12), transparent 72%),
+    linear-gradient(180deg, rgba(5, 9, 20, 0.96), rgba(5, 10, 19, 0.985));
+}
+
+.home-revamp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(139, 180, 236, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 180, 236, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black, transparent 42%);
+}
+
+.home-atlas::before {
+  background:
+    radial-gradient(44% 60% at 77% 18%, rgba(91, 178, 199, 0.12), transparent 72%),
+    radial-gradient(36% 48% at 19% 45%, rgba(86, 112, 218, 0.11), transparent 74%);
+}
+
+.home-cinema {
+  isolation: isolate;
+  border-color: rgba(190, 218, 255, 0.14);
+  background:
+    linear-gradient(125deg, rgba(211, 229, 255, 0.075), transparent 38%, rgba(87, 147, 226, 0.04)),
+    rgba(7, 14, 27, 0.84);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.16),
+    0 34px 80px -52px rgba(0, 0, 0, 0.95);
+}
+
+.home-cinema::before {
+  content: "";
+  position: absolute;
+  inset: 0 14% auto;
+  z-index: 3;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(224, 238, 255, 0.52), transparent);
+}
+
+.home-cinema-copy {
+  position: relative;
+  z-index: 2;
+  background:
+    radial-gradient(22rem 18rem at 16% 15%, rgba(100, 139, 255, 0.1), transparent 72%),
+    linear-gradient(135deg, rgba(7, 14, 28, 0.98), rgba(10, 20, 37, 0.9));
+}
+
+.home-cinema-copy em {
+  background: linear-gradient(110deg, #ffffff, #79adff 66%, #80efd9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.home-proof-grid > div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.home-cinema-shot {
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.home-cinema-controls {
+  background: rgba(5, 11, 22, 0.68);
+}
+
+.home-command-search,
+.home-status-strip {
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.home-command-search input {
+  background: rgba(4, 9, 18, 0.44);
+}
+
+.home-bento-tools > :first-child {
+  min-height: 13rem;
+  background:
+    radial-gradient(20rem 13rem at 92% 12%, rgba(90, 225, 202, 0.11), transparent 68%),
+    linear-gradient(135deg, rgba(80, 133, 217, 0.09), rgba(255, 255, 255, 0.025)),
+    rgba(7, 15, 29, 0.72);
+}
+
+.home-bento-tools > :last-child {
+  background:
+    radial-gradient(18rem 12rem at 90% 5%, rgba(108, 131, 255, 0.12), transparent 70%),
+    rgba(7, 15, 29, 0.72);
+}
+
+.home-data-deck > * {
+  min-width: 0;
+}
+
+.home-signal-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.home-signal-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -14% -55% 34%;
+  z-index: -1;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  opacity: 0.16;
+  filter: blur(22px);
+  background: var(--signal-color, #75a7ff);
+}
+
+.home-signal-blue { --signal-color: #7facff; }
+.home-signal-cyan { --signal-color: #74eadb; }
+.home-signal-gold { --signal-color: #f2ca72; }
+.home-signal-violet { --signal-color: #a998ff; }
+.home-signal-red { --signal-color: #ff8293; }
+
+.mini-spark { filter: drop-shadow(0 0 8px currentColor); opacity: 0.88; }
+.mini-spark-blue { color: #75a7ff; }
+.mini-spark-cyan { color: #70e7d7; }
+.mini-spark-gold { color: #efc66d; }
+.mini-spark-violet { color: #a994ff; }
+.mini-spark-red { color: #ff7f91; }
+
+.home-chart-card {
+  background:
+    radial-gradient(24rem 14rem at 100% 0%, rgba(89, 135, 255, 0.1), transparent 72%),
+    linear-gradient(145deg, rgba(219, 233, 255, 0.06), rgba(34, 68, 119, 0.035)),
+    rgba(7, 14, 27, 0.72);
+}
+
+.home-chart-grid {
+  position: relative;
+}
+
+.home-chart-grid::before {
+  content: "";
+  position: absolute;
+  inset: -0.25rem 4.5rem -0.25rem 5.75rem;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.36;
+  background-image: linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 25% 100%;
+}
+
+.home-chart-grid > * { position: relative; z-index: 1; }
+.home-chart-lead { background: linear-gradient(90deg, #4f7fe6, #78b0ff); box-shadow: 0 0 18px rgba(102, 163, 255, 0.42); }
+.home-chart-rest { background: linear-gradient(90deg, rgba(101, 132, 182, 0.42), rgba(153, 178, 216, 0.72)); }
+
+.home-rank-card {
+  background:
+    linear-gradient(160deg, rgba(212, 228, 255, 0.065), rgba(61, 96, 151, 0.03)),
+    rgba(7, 14, 27, 0.78);
+}
+
+.home-leader-grid > :nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+@media (max-width: 639px) {
+  .home-cinema { border-radius: 1.5rem; }
+  .home-cinema-copy { min-height: 30rem; }
+  .home-proof-grid { grid-template-columns: 1fr; }
+  .home-proof-grid > div + div { border-left: 0; border-top: 1px solid rgba(255,255,255,.07); }
+  .home-status-strip > span { max-width: 100%; }
+  .home-leader-grid > :nth-last-child(-n + 3) { border-bottom: 1px solid var(--color-line); }
+  .home-leader-grid > :last-child { border-bottom: 0; }
+}
+
+.tier-board-row {
+  min-height: 6.75rem;
+  filter: drop-shadow(0 12px 24px rgba(0, 8, 24, 0.14));
+}
+
+.tier-board-label {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(184, 214, 255, 0.14);
+  background: linear-gradient(150deg, rgba(221, 235, 255, 0.12), rgba(50, 91, 151, 0.12));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.14);
+  text-shadow: none;
+}
+
+.tier-board-label::after {
+  content: "";
+  position: absolute;
+  inset: auto 16% 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.58;
+}
+
+.tier-board-label.tier-god { color: #f6f9ff; }
+.tier-board-label.tier-s { color: #a8caff; }
+.tier-board-label.tier-a { color: #9a86ff; }
+.tier-board-label.tier-b { color: #f0c96f; }
+.tier-board-label.tier-c { color: #8fa2bd; }
+.tier-board-label.tier-ass { color: #71809a; }
+
+.tier-board-content {
+  border-color: rgba(175, 207, 255, 0.1);
+  background:
+    linear-gradient(132deg, rgba(126, 172, 240, 0.06), rgba(255, 255, 255, 0.025) 48%, rgba(16, 37, 68, 0.1)),
+    rgba(6, 14, 27, 0.46);
+}
+
+.tier-champion:hover {
+  background: rgba(137, 179, 241, 0.07);
+}
+
+.champion-grid-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.champion-grid-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 16% 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(151, 193, 255, 0.62), transparent);
+}
+
+.champions-revamp {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background:
+    radial-gradient(55rem 28rem at 88% 2%, rgba(52, 170, 173, 0.13), transparent 70%),
+    radial-gradient(42rem 28rem at 8% 18%, rgba(82, 102, 207, 0.11), transparent 72%),
+    linear-gradient(180deg, rgba(8, 19, 33, 0.86), rgba(6, 15, 29, 0.92));
+}
+
+.champions-revamp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(142, 183, 237, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(142, 183, 237, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black, transparent 32%);
+}
+
+.champion-snapshot-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(188, 216, 255, 0.11);
+  background:
+    linear-gradient(145deg, rgba(220, 234, 255, 0.065), rgba(49, 81, 132, 0.025)),
+    rgba(8, 15, 29, 0.76);
+  box-shadow: inset 0 1px rgba(255,255,255,.1), 0 18px 42px -34px rgba(0,0,0,.9);
+}
+
+.champion-snapshot-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -12% -62% 45%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: currentColor;
+  filter: blur(28px);
+  opacity: 0.13;
+  pointer-events: none;
+}
+
+.champion-snapshot-card svg {
+  filter: drop-shadow(0 0 8px currentColor);
+  opacity: 0.9;
+}
+
+.champion-snapshot-cyan { color: #72e6d5; }
+.champion-snapshot-violet { color: #a88dff; }
+.champion-snapshot-blue { color: #72a7ff; }
+.champion-snapshot-gold { color: #efc86e; }
+.champion-snapshot-card p { color: revert; }
+.champion-snapshot-card p.text-text { color: var(--color-text); }
+.champion-snapshot-card p.text-muted { color: var(--color-muted); }
+.champion-snapshot-card p.text-faint { color: var(--color-faint); }
+
+.champion-explorer-shell {
+  border-color: rgba(188, 216, 255, 0.12);
+  background:
+    linear-gradient(150deg, rgba(214, 230, 255, 0.07), rgba(52, 86, 142, 0.025)),
+    rgba(7, 14, 27, 0.82);
+  box-shadow: inset 0 1px rgba(255,255,255,.12), 0 30px 70px -52px rgba(0,0,0,.95);
+}
+
+.champion-filter-deck {
+  box-shadow: inset 0 1px rgba(255,255,255,.055);
+}
+
+.champions-revamp .champion-grid-card {
+  background:
+    radial-gradient(14rem 8rem at 100% 0%, rgba(92, 147, 232, 0.07), transparent 72%),
+    linear-gradient(145deg, rgba(217, 232, 255, 0.065), rgba(50, 82, 134, 0.028)),
+    rgba(8, 15, 29, 0.77);
+}
+
+.champions-revamp .champion-grid-card:hover {
+  background:
+    radial-gradient(14rem 8rem at 100% 0%, rgba(108, 230, 214, 0.1), transparent 72%),
+    linear-gradient(145deg, rgba(225, 237, 255, 0.09), rgba(61, 101, 164, 0.04)),
+    rgba(9, 17, 32, 0.82);
+}
+
+/* Leaderboard podium: the old silver studio stage looked like a separate
+   product. Keep the rank colours, portraits and scoring content, but place
+   them on the same blue-black liquid material as the rest of WrTrueMeta. */
+.leaderboard-revamp .podium-stage {
+  background:
+    radial-gradient(34rem 18rem at 50% 5%, rgba(85, 137, 225, 0.14), transparent 72%),
+    radial-gradient(22rem 16rem at 82% 26%, rgba(84, 224, 203, 0.07), transparent 72%),
+    linear-gradient(145deg, rgba(216, 232, 255, 0.07), rgba(48, 79, 130, 0.025)),
+    rgba(7, 14, 27, 0.88);
+}
+
+.leaderboard-revamp .podium-stage > [aria-hidden] {
+  display: none;
+}
+
+.build-studio-page {
+  background:
+    radial-gradient(48rem 28rem at 78% 0%, rgba(83, 145, 240, 0.15), transparent 72%),
+    radial-gradient(34rem 24rem at 8% 28%, rgba(74, 205, 186, 0.07), transparent 72%),
+    linear-gradient(180deg, rgba(8, 19, 33, 0.84), rgba(6, 15, 29, 0.93));
+}
+
+.build-studio-workspace .build-studio-shell > section,
+.build-studio-workspace .build-studio-shell > div {
+  backdrop-filter: blur(16px) saturate(125%);
+}
+
+.tierlist-revamp .tier-board-row {
+  position: relative;
+  background:
+    linear-gradient(110deg, rgba(218, 233, 255, 0.075), rgba(42, 72, 119, 0.025) 44%),
+    rgba(7, 15, 29, 0.78);
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 16px 38px -32px rgba(0,0,0,.9);
+}
+
+.tierlist-revamp .tier-board-row[data-tier="GOD"] { border-color: rgba(255, 151, 70, 0.24); box-shadow: inset 0 1px rgba(255,255,255,.1), 0 0 30px rgba(255, 126, 44, 0.06); }
+.tierlist-revamp .tier-board-row[data-tier="S"] { border-color: rgba(255, 181, 75, 0.2); }
+.tierlist-revamp .tier-board-row[data-tier="A"] { border-color: rgba(242, 202, 114, 0.18); }
+.tierlist-revamp .tier-board-row[data-tier="B"] { border-color: rgba(114, 167, 255, 0.2); }
+.tierlist-revamp .tier-board-row[data-tier="C"] { border-color: rgba(168, 141, 255, 0.16); }
+
+.tierlist-revamp .tier-board-label {
+  position: relative;
+  overflow: hidden;
+  min-height: 5.35rem;
+  text-shadow: 0 1px rgba(255,255,255,.2);
+  box-shadow: inset 0 1px rgba(255,255,255,.2), 0 0 24px color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.tierlist-revamp .tier-board-label::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255,255,255,.2), transparent 38%, transparent 68%, rgba(255,255,255,.08));
+  pointer-events: none;
+}
+
+.tierlist-revamp .tier-champion:hover {
+  background: rgba(255,255,255,.055);
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 10px 24px -18px rgba(87, 148, 242, .75);
 }
 
 /* Browsers without backdrop-filter (older Firefox, some in-app webviews) get a

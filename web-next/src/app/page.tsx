@@ -84,26 +84,28 @@ export default function HomePage() {
   const leastAdjusted = [...adjustments].reverse().slice(0, 5);
 
   return (
-    <>
+    <div className="home-revamp no-plate">
       {/* Hero.
           WrTrueMeta is positioned as a build platform, not another stats site:
           the tier list is evidence for the builds, not the product. The primary
           call to action is therefore generating a build. While the build tools
           are still held back (BUILD_TOOLS_LIVE), the same promise stays on the
           page but the button points at what is actually open today. */}
-      <section className="relative overflow-hidden border-b border-line">
+      <section className="home-stage home-atlas relative overflow-hidden">
         {/* No hero scrim. A radial ellipse used to sit here to hold the
             headline's contrast against the art; the carousel now brings its
             own glass panel, which does the same job without dimming the
             painting behind it. Removed 2026-09-17. */}
-        <Container className="relative py-20 text-center sm:py-28">
+        <Container className="relative py-9 sm:py-14">
           {/* The hero rotates through the features. It used to be one fixed
               pitch for the build generator, so the draft assistant, the counter
               builder and the overlay were invisible to anyone who did not
               scroll. */}
           <HeroCarousel />
-          <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+          <div className="home-command-search mx-auto mt-4 max-w-6xl rounded-2xl border border-white/[0.07] bg-[#08101d]/70 px-3 py-3 backdrop-blur-xl sm:px-4">
+            <HomeSearch champions={champions.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))} />
+          </div>
+          <div className="home-status-strip mx-auto mt-4 flex max-w-6xl flex-wrap items-center gap-2 rounded-2xl border border-white/[0.07] bg-[#08101d]/55 px-4 py-3 backdrop-blur-xl">
             <BuildsGeneratedPill />
             {/* Both rosters are fully collected now, so these read "collected"
                 with the date rather than "being collected" -- the pulse dot is
@@ -122,7 +124,7 @@ export default function HomePage() {
               </span>
             )}
           </div>
-          <p className="mt-6 text-sm text-faint">
+          <p className="mx-auto mt-4 max-w-6xl text-left text-xs text-faint sm:text-sm">
             Every recommendation is grounded in {site.nChampions} champions and{" "}
             {(site.nPlayers + naBoard.nPlayers).toLocaleString()} player records
             across EU and NA.
@@ -133,7 +135,7 @@ export default function HomePage() {
               it works as a real control, not just decoration. */}
           <a href="#explore"
             aria-label="Scroll to see more"
-            className="group mx-auto mt-10 flex w-fit flex-col items-center gap-1 text-faint transition hover:text-accent">
+            className="group mx-auto mt-7 flex w-fit flex-col items-center gap-1 text-faint transition hover:text-accent">
             <span className="text-[0.7rem] font-medium uppercase tracking-[0.2em]">More below</span>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden
@@ -147,8 +149,8 @@ export default function HomePage() {
       {/* Flagship slot right under the hero for the products we most want people
           to find. The build tools take it once they launch; until then it
           leads with the new Meta Report. */}
-      <Container id="explore" className="scroll-mt-20 py-10">
-        <div className="grid gap-4 md:grid-cols-2">
+      <Container id="explore" className="scroll-mt-20 py-8 sm:py-10">
+        <div className="home-bento-tools grid gap-4 md:grid-cols-[1.2fr_.8fr]">
           {BUILD_TOOLS_LIVE ? (
             <>
               <FlagshipTool
@@ -206,51 +208,42 @@ export default function HomePage() {
         </div>
       </Container>
 
-      {/* Season countdown */}
-      <Container className="py-6">
-        <SeasonCard />
-      </Container>
-
-      {/* Transparent coverage counters: these describe the current generated
-          catalogue, plus one genuinely live figure (builds players have
-          generated), which updates roughly hourly rather than on every view. */}
-      <Container className="py-6">
-        <SectionHeading title="Inside WrTrueMeta" subtitle="What the current site data and build catalogue cover" />
-        <div className={`grid grid-cols-2 gap-3 ${BUILD_TOOLS_LIVE ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
-          {/* No invented placeholder on the count. This card was hidden while
-              the tools were gated, so the old "171" fallback was never seen;
-              now that it ships, a made-up figure would sit on screen under the
-              label "by players" until the real one loads. */}
-          {BUILD_TOOLS_LIVE && (
-            <StatCard
-              label="Builds generated"
-              value={<BuildsGeneratedCount />}
-              sub="by players, updated hourly"
-              href="/build"
-              valueClass="text-accent"
-            />
-          )}
-          <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU and NA performance profiles" href="/champions" />
-          {/* The headline of the whole project: every one of these is a real
-              player's record read off a leaderboard, not a modelled estimate. */}
-          <StatCard
-            label="Players tracked"
-            value={(site.nPlayers + naBoard.nPlayers).toLocaleString()}
-            sub={`${site.nPlayers.toLocaleString()} EU · ${naBoard.nPlayers.toLocaleString()} NA`}
-            href="/leaderboard"
-            valueClass="text-gold"
-          />
-          <StatCard label="Items catalogued" value={ITEM_CATALOG_COUNT.toLocaleString()} sub="stats, passives, and costs" href="/items" />
+      {/* Season and data coverage now read as one compact control deck instead
+          of three unrelated rows of stat cards. */}
+      <Container className="py-8">
+        <div className="home-data-deck grid gap-4 lg:grid-cols-[.85fr_1.65fr]">
+          <div className="min-w-0"><SeasonCard /></div>
+          <div className="glass-card rounded-[1.6rem] p-5 sm:p-6">
+            <SectionHeading title="Inside WrTrueMeta" subtitle="Live coverage, at a glance" />
+            <div className={`grid grid-cols-2 gap-3 ${BUILD_TOOLS_LIVE ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+              {BUILD_TOOLS_LIVE && (
+                <StatCard
+                  label="Builds generated"
+                  value={<BuildsGeneratedCount />}
+                  sub="updated hourly"
+                  href="/build"
+                  valueClass="text-accent"
+                  spark="blue"
+                />
+              )}
+              <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU + NA profiles" href="/champions" spark="cyan" />
+              <StatCard
+                label="Players tracked"
+                value={(site.nPlayers + naBoard.nPlayers).toLocaleString()}
+                sub={`${site.nPlayers.toLocaleString()} EU · ${naBoard.nPlayers.toLocaleString()} NA`}
+                href="/leaderboard"
+                valueClass="text-gold"
+                spark="gold"
+              />
+              <StatCard label="Items catalogued" value={ITEM_CATALOG_COUNT.toLocaleString()} sub="stats + passives" href="/items" spark="violet" />
+            </div>
+          </div>
         </div>
-      </Container>
-
-      {/* Stat cards */}
-      <Container className="py-12">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Current meta" value={topMetaClass.class} sub={`${topMetaClass.wr.toFixed(1)}% avg win rate`} href="/meta#classes" />
-          <StatCard label="Top pick" value={topPick.name} sub={`${topPick.wr.toFixed(1)}% win rate`} avatarSrc={topPick.icon} valueClass="text-accent" href={`/champions/${topPick.slug}`} />
-          {strongestRole && <StatCard label="Strongest role" value={strongestRole[0]} sub={`${strongestRole[1].wr.toFixed(1)}% top picks`} href="/meta#roles" />}
-          {lowest && <StatCard label="Lowest win rate" value={lowest.name} sub={`${lowest.wr.toFixed(1)}% win rate`} avatarSrc={lowest.icon} valueClass="text-bad" href="/win-rates?view=lowest" />}
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatCard label="Current meta" value={topMetaClass.class} sub={`${topMetaClass.wr.toFixed(1)}% avg win rate`} href="/meta#classes" spark="violet" />
+          <StatCard label="Top pick" value={topPick.name} sub={`${topPick.wr.toFixed(1)}% win rate`} avatarSrc={topPick.icon} valueClass="text-accent" href={`/champions/${topPick.slug}`} spark="cyan" />
+          {strongestRole && <StatCard label="Strongest role" value={strongestRole[0]} sub={`${strongestRole[1].wr.toFixed(1)}% top picks`} href="/meta#roles" spark="blue" />}
+          {lowest && <StatCard label="Lowest win rate" value={lowest.name} sub={`${lowest.wr.toFixed(1)}% win rate`} avatarSrc={lowest.icon} valueClass="text-bad" href="/win-rates?view=lowest" spark="red" />}
         </div>
       </Container>
 
@@ -260,53 +253,53 @@ export default function HomePage() {
       </Container>
 
       {/* Featured champion */}
-      <Container className="py-6">
-        <SectionHeading title="Featured champion" subtitle="The strongest pick in the meta right now" />
-        <FeaturedChampion c={featured} />
+      <Container className="py-8">
+        <SectionHeading title="Meta spotlight" subtitle="The strongest pick, with the chasing pack beside it" href="/tier-list" linkLabel="Full tier list" />
+        <div className="grid items-stretch gap-4 lg:grid-cols-[1.45fr_.75fr]">
+          <FeaturedChampion c={featured} />
+          <Card className="home-rank-card overflow-hidden p-3">
+            <div className="px-2 pb-3 pt-1">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-accent">Top meta</p>
+              <p className="mt-1 text-sm text-muted">Global · Top-player signal</p>
+            </div>
+            <div className="space-y-1.5">
+              {topMeta.slice(0, 5).map((c, i) => (
+                <Link key={c.slug} href={`/champions/${c.slug}`} className="group flex items-center gap-3 rounded-xl border border-transparent px-2.5 py-2 transition hover:border-white/10 hover:bg-white/[0.04]">
+                  <span className="w-4 text-center text-xs font-semibold text-faint">{String(i + 1).padStart(2, "0")}</span>
+                  <ChampionAvatar champion={c} size={38} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{c.name}</p>
+                    <p className="text-[0.68rem] text-muted">{c.role} · {c.class}</p>
+                  </div>
+                  <div className="text-right">
+                    <TierChip tier={c.tier} />
+                    <p className="mt-1 text-xs font-semibold text-accent">{c.wr.toFixed(1)}%</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </Card>
+        </div>
       </Container>
 
-      {/* Top meta + top of leaderboard (both lists) */}
-      <Container className="py-6">
-        <div className="grid items-start gap-6 lg:grid-cols-2">
-          <div>
-            <SectionHeading title="Top meta champions" href="/tier-list" linkLabel="Full tier list" />
-            <Card className="divide-y divide-line overflow-hidden">
-              {topMeta.map((c, i) => (
-                <Link key={c.slug} href={`/champions/${c.slug}`} className="flex items-center gap-4 px-4 py-3 transition hover:bg-white/[0.03]">
-                  <span className="w-5 text-center text-sm font-semibold text-faint">{i + 1}</span>
-                  <ChampionAvatar champion={c} size={40} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{c.name}</p>
-                    <p className="text-xs text-muted">{c.role} · {c.class}</p>
-                  </div>
-                  <TierChip tier={c.tier} />
-                  <span className="w-16 text-right font-semibold text-accent">{c.wr.toFixed(1)}%</span>
-                </Link>
-              ))}
-            </Card>
-          </div>
-          <div>
-            <SectionHeading title="Top of the leaderboard" subtitle="Highest champion mastery on the server" href="/leaderboard" linkLabel="All leaderboards" />
-            <Card className="divide-y divide-line overflow-hidden">
-              {topMastery.map((m, i) => (
-                <Link key={`${m.player}-${i}`} href={`/leaderboard?champion=${encodeURIComponent(m.champion)}`} className="flex items-center gap-4 px-4 py-3 transition hover:bg-white/[0.03]">
-                  <span className="w-5 text-center text-sm font-semibold text-faint">{i + 1}</span>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
-                    <img src={m.icon} alt="" width={36} height={36} loading="lazy" className="h-full w-full scale-[1.12] object-cover" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{m.player}</p>
-                    <p className="text-xs text-muted">{m.champion}</p>
-                  </div>
-                  <span className="text-right text-sm font-semibold text-muted">
-                    {m.score != null ? m.score.toLocaleString() : "-"}
-                  </span>
-                </Link>
-              ))}
-            </Card>
-          </div>
-        </div>
+      <Container className="py-8">
+        <SectionHeading title="Top of the leaderboard" subtitle="Highest champion mastery on the server" href="/leaderboard" linkLabel="All leaderboards" />
+        <Card className="home-leader-grid grid overflow-hidden sm:grid-cols-2 lg:grid-cols-3">
+          {topMastery.map((m, i) => (
+            <Link key={`${m.player}-${i}`} href={`/leaderboard?champion=${encodeURIComponent(m.champion)}`} className="group flex items-center gap-3 border-b border-line px-4 py-4 transition hover:bg-white/[0.035] sm:border-r lg:[&:nth-child(3n)]:border-r-0">
+              <span className="text-xl font-semibold text-faint">{String(i + 1).padStart(2, "0")}</span>
+              <span className="h-11 w-11 shrink-0 overflow-hidden rounded-xl ring-1 ring-white/10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={m.icon} alt="" width={44} height={44} loading="lazy" className="h-full w-full scale-[1.12] object-cover" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold">{m.player}</p>
+                <p className="text-xs text-muted">{m.champion}</p>
+              </div>
+              <span className="text-xs font-semibold text-accent">{m.score != null ? m.score.toLocaleString() : "-"}</span>
+            </Link>
+          ))}
+        </Card>
       </Container>
 
       {/* Meta charts */}
@@ -364,7 +357,7 @@ export default function HomePage() {
         </div>
       </Container>
 
-    </>
+    </div>
   );
 }
 
@@ -396,28 +389,30 @@ function FlagshipTool({
 
 function FeaturedChampion({ c }: { c: Champion }) {
   return (
-    <Link href={`/champions/${c.slug}`} className="group relative block min-h-[260px] overflow-hidden rounded-2xl border border-line">
+    <Link href={`/champions/${c.slug}`} className="group relative block min-h-[390px] overflow-hidden rounded-[1.6rem] border border-line">
       <div className="absolute inset-0 bg-cover transition duration-500 group-hover:scale-[1.03]" style={{ backgroundImage: `url(${c.splash})`, backgroundPosition: "72% 24%" }} />
-      <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-bg/95 to-transparent" />
-      <div className="relative flex h-full flex-col justify-between gap-6 p-6 sm:p-8">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#07101d] via-[#07101d]/78 to-[#07101d]/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050a13]/95 via-transparent to-[#0a1422]/20" />
+      <div className="relative flex min-h-[390px] flex-col justify-between gap-8 p-6 sm:p-8">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
             Featured · {tierLabel(c.tier)} tier
           </p>
-          <h3 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{c.name}</h3>
+          <h3 className="display-title mt-3 text-5xl leading-none sm:text-6xl">{c.name}</h3>
           <p className="mt-1 text-muted">
             {c.role} · {c.class} · <span className={c.isHard ? "text-bad" : ""}>{c.difficultyLabel}</span>
           </p>
         </div>
-        <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
-          <Stat label="Win rate" value={`${c.wr.toFixed(1)}%`} className="text-accent" />
-          <Stat label="Ceiling" value={c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "-"} className="text-gold" />
-          <Stat label="Median games" value={c.medianGames != null ? c.medianGames.toLocaleString() : "-"} />
+        <div className="max-w-3xl rounded-2xl border border-white/10 bg-[#060c17]/68 p-3 backdrop-blur-xl">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-xl bg-white/[0.035] p-3"><Stat label="Win rate" value={`${c.wr.toFixed(1)}%`} className="text-accent" /></div>
+            <div className="rounded-xl bg-white/[0.035] p-3"><Stat label="Ceiling" value={c.maxWr != null ? `${c.maxWr.toFixed(1)}%` : "-"} className="text-emerald-300" /></div>
+            <div className="rounded-xl bg-white/[0.035] p-3"><Stat label="Median games" value={c.medianGames != null ? c.medianGames.toLocaleString() : "-"} /></div>
+          </div>
           {c.bestPlayer && (
-            <div>
+            <div className="mt-3 flex items-center justify-between border-t border-white/[0.08] px-2 pt-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">Best player</p>
-              <p className="mt-1 text-lg font-semibold">
+              <p className="text-sm font-semibold">
                 {c.bestPlayer.player}
                 {c.bestPlayer.confidence_wr != null && (
                   <span className="ml-2 text-sm font-normal text-muted">{c.bestPlayer.confidence_wr.toFixed(1)}% adj.</span>
@@ -440,10 +435,13 @@ function Stat({ label, value, className = "" }: { label: string; value: string; 
   );
 }
 
-function StatCard({ label, value, sub, avatarSrc, valueClass = "", href }: { label: string; value: React.ReactNode; sub: string; avatarSrc?: string; valueClass?: string; href?: string }) {
+function StatCard({ label, value, sub, avatarSrc, valueClass = "", href, spark = "blue" }: { label: string; value: React.ReactNode; sub: string; avatarSrc?: string; valueClass?: string; href?: string; spark?: "blue" | "cyan" | "gold" | "violet" | "red" }) {
   const inner = (
-    <Card className="flex h-full flex-col justify-between p-5 glass-hover">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
+    <Card className={`home-signal-card home-signal-${spark} flex h-full min-h-[8.75rem] flex-col justify-between p-5 glass-hover`}>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted">{label}</p>
+        <MiniSpark tone={spark} />
+      </div>
       <div className="mt-3 flex items-center gap-2.5">
         {avatarSrc && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -459,23 +457,41 @@ function StatCard({ label, value, sub, avatarSrc, valueClass = "", href }: { lab
   return href ? <Link href={href}>{inner}</Link> : inner;
 }
 
+function MiniSpark({ tone }: { tone: "blue" | "cyan" | "gold" | "violet" | "red" }) {
+  return (
+    <svg viewBox="0 0 76 24" className={`mini-spark mini-spark-${tone} h-6 w-[4.75rem]`} aria-hidden>
+      <path d="M2 20 C10 18 12 12 20 14 S32 20 39 11 S51 14 58 7 S68 7 74 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function BarCard({ title, subtitle, rows }: { title: string; subtitle?: string; rows: { label: string; wr: number }[] }) {
   const max = Math.max(...rows.map((r) => r.wr));
   const min = Math.min(...rows.map((r) => r.wr));
   const span = max - min || 1;
   return (
-    <Card className="p-5">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {subtitle && <p className="mb-4 mt-0.5 text-sm text-muted">{subtitle}</p>}
-      <div className="mt-2 flex flex-col gap-3">
+    <Card className="home-chart-card overflow-hidden p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-accent">Live meta signal</p>
+          <h2 className="mt-1 text-lg font-semibold">{title}</h2>
+          {subtitle && <p className="mt-0.5 text-sm text-muted">{subtitle}</p>}
+        </div>
+        <div className="rounded-xl border border-accent/20 bg-accent/10 px-3 py-2 text-right">
+          <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-muted">Peak</p>
+          <p className="text-lg font-semibold text-accent">{max.toFixed(1)}%</p>
+        </div>
+      </div>
+      <div className="home-chart-grid mt-6 flex flex-col gap-3.5">
         {rows.map((r) => {
           const lead = r.wr === max;
           const pct = ((r.wr - min) / span) * 100;
           return (
             <div key={r.label} className="flex items-center gap-3">
               <span className="w-20 shrink-0 text-sm font-medium">{r.label}</span>
-              <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
-                <div className="h-full rounded-full" style={{ width: `${Math.max(6, pct)}%`, background: lead ? "var(--color-accent)" : "rgba(255,255,255,0.28)" }} />
+              <div className="home-chart-track relative h-2.5 flex-1 overflow-visible rounded-full bg-white/[0.055]">
+                <div className={`h-full rounded-full ${lead ? "home-chart-lead" : "home-chart-rest"}`} style={{ width: `${Math.max(8, pct)}%` }} />
+                <span className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#0a1220] ${lead ? "bg-accent shadow-[0_0_14px_rgba(114,167,255,.75)]" : "bg-[#7f91aa]"}`} style={{ left: `${Math.max(8, pct)}%` }} />
               </div>
               <span className={`w-14 text-right text-sm font-semibold ${lead ? "text-accent" : "text-muted"}`}>{r.wr.toFixed(1)}%</span>
             </div>

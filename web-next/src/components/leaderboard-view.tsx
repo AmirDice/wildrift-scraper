@@ -336,7 +336,8 @@ function PlayerPodium({
       : "bg-[linear-gradient(135deg,#ffd8b8_0%,#bd7750_18%,#643727_48%,#edb18a_72%,#7b432f_100%)]";
   const rankLabel = (rank: number) => rank === 1 ? "CHAMPION" : `PLACE ${rank}`;
   return (
-    <section className="no-plate relative mb-5 overflow-hidden rounded-[1.5rem] border border-slate-400/70 bg-[#aebdcd] shadow-[0_28px_90px_rgb(20_44_75/0.24)]">
+    <section className="podium-stage no-plate glass relative mb-5 overflow-hidden rounded-[1.5rem] border border-white/[0.11] shadow-[0_28px_90px_rgba(0,0,0,.3)]">
+      <div className="hidden" aria-hidden>
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_24%,rgb(255_255_255/0.9)_0%,rgb(248_251_253/0.86)_20%,rgb(216_229_241/0.8)_48%,transparent_78%),linear-gradient(90deg,rgb(39_61_84/0.38),transparent_28%,transparent_72%,rgb(39_61_84/0.38)),linear-gradient(180deg,rgb(220_231_241/0.8),rgb(143_162_182/0.98)_100%)]" />
       {/* Stage lights: soft, angled cones with a brighter source at the ceiling. */}
       <div aria-hidden className="pointer-events-none absolute -top-8 left-[7%] h-[78%] w-[36%] origin-top -rotate-[17deg] bg-gradient-to-b from-white/52 via-white/24 to-transparent blur-xl" style={{ clipPath: "polygon(40% 0, 60% 0, 100% 100%, 0 100%)" }} />
@@ -364,8 +365,9 @@ function PlayerPodium({
       <div aria-hidden className="pointer-events-none absolute bottom-[13%] left-1/2 h-12 w-[74%] -translate-x-1/2 rounded-[50%] bg-slate-700/25 blur-xl" />
       <div aria-hidden className="pointer-events-none absolute bottom-[17%] left-1/2 h-5 w-[45%] -translate-x-1/2 rounded-[50%] bg-slate-900/20 blur-md" />
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(180deg,transparent,rgb(87_108_130/0.28))]" />
+      </div>
 
-      <div className="relative flex flex-wrap items-center justify-between gap-4 px-5 pt-5 sm:px-8 sm:pt-7">
+      <div className="relative flex flex-wrap items-center justify-between gap-4 px-5 pt-5 sm:px-7 sm:pt-6">
         <div className="rounded-xl border border-slate-700/70 bg-[#071427]/90 px-3 py-2 shadow-[0_10px_24px_rgb(12_29_53/0.25)] backdrop-blur-sm">
           {/* The wordmark is white, so it gets its own dark brand plate on the
               light studio wall instead of disappearing into the background. */}
@@ -377,7 +379,7 @@ function PlayerPodium({
           onClick={() => setScoringOpen((open) => !open)}
           aria-expanded={scoringOpen}
           aria-controls="podium-scoring"
-          className="rounded-full border border-sky-300/55 bg-[#07162b]/70 px-4 py-2 text-xs font-medium text-sky-50 shadow-[0_0_22px_rgb(91_178_255/0.12)] backdrop-blur transition hover:border-sky-200 hover:bg-[#0a2241]"
+          className="rounded-full border border-accent/30 bg-accent/10 px-4 py-2 text-xs font-medium text-accent shadow-[0_0_22px_rgba(91,178,255,.1)] backdrop-blur transition hover:border-accent/50 hover:bg-accent/15"
         >
           How this is scored <span className="ml-1 inline-grid h-4 w-4 place-items-center rounded-full border border-sky-200/70 text-[0.65rem]">i</span>
         </button>
@@ -406,10 +408,10 @@ function PlayerPodium({
         </div>
       )}
 
-      <div className="relative px-5 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-14">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-amber-700 drop-shadow-[0_0_12px_rgb(245_190_70/0.35)]">Top 3 this season</p>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-          Best <span className="bg-gradient-to-r from-sky-500 via-blue-600 to-slate-800 bg-clip-text text-transparent">{championName}</span> players
+      <div className="relative px-5 pb-6 pt-8 sm:px-7 sm:pb-8 sm:pt-10">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-gold">Top 3 this season</p>
+        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-text sm:text-4xl">
+          Best <span className="bg-gradient-to-r from-[#77aaff] via-[#8fbaff] to-[#74e1d0] bg-clip-text text-transparent">{championName}</span> players
         </h2>
 
         <div className="relative mx-auto mt-12 grid max-w-6xl grid-cols-3 items-end gap-2 sm:gap-8 sm:px-5 lg:gap-12 lg:px-12">
@@ -520,7 +522,7 @@ function PlayerPodium({
         </div>
       </div>
 
-      <p className="relative border-t border-slate-400/35 bg-white/25 px-5 py-3 text-[0.7rem] leading-relaxed text-slate-700 sm:px-8">
+      <p className="relative border-t border-white/[0.08] bg-black/15 px-5 py-3 text-[0.68rem] leading-relaxed text-faint sm:px-7">
         Current-season ranking · {scopeLabel} · scoring {podium?.scoringVersion ?? "best-player-v1"} · higher score means a stronger all-around season
       </p>
     </section>
@@ -966,26 +968,30 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
   };
 
   return (
-    <div>
+    <div className="leaderboard-view">
       {/* Global and CN become fully populated after the player-level CN
           collection; keeping them visible now makes the rollout state clear. */}
-      <div className="mb-5">
-        <RegionToggle region={region} onChange={setRegion} regions={LEADERBOARD_REGIONS} />
+      <div className="glass mb-5 grid gap-3 rounded-[1.4rem] border border-white/[0.1] p-3 shadow-[inset_0_1px_rgba(255,255,255,.09)] sm:p-4 lg:grid-cols-[1fr_22rem] lg:items-end">
+        <div>
+          <p className="mb-2 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-faint">Region</p>
+          <RegionToggle region={region} onChange={setRegion} regions={LEADERBOARD_REGIONS} />
+        </div>
+        {regionChampions.length > 0 && (
+          <div>
+            <p className="mb-2 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-faint">Champion</p>
+            <ChampionCombobox
+              champions={byName.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))}
+              placeholder="Search a champion…"
+              onSelect={(s) => setSlug(s)}
+            />
+          </div>
+        )}
       </div>
 
       {regionChampions.length === 0 ? (
         <RegionComingSoon region={region} />
       ) : (
       <>
-      {/* Champion search */}
-      <div className="mb-5 sm:max-w-sm">
-        <ChampionCombobox
-          champions={byName.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon }))}
-          placeholder="Search a champion…"
-          onSelect={(s) => setSlug(s)}
-        />
-      </div>
-
       {champ && (
         <ChampionContextBar
           champ={region === "Global" || region === "CN" ? { ...champ, bestPlayer: null } : champ}

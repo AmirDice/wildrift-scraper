@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { site, getChampions, getChampionsNa } from "@/lib/data";
-import { Container, SectionHeading } from "@/components/ui";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
 import items from "@/data/items.json";
 import runeIcons from "@/data/rune_icons.json";
@@ -124,29 +123,41 @@ export default function LeaderboardPage() {
   const slimNa = toSlim(championsNa);
 
   return (
-    <Container className="py-12">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Leaderboards</h1>
-      <p className="mt-2 max-w-2xl text-muted">
-        See the current-season top three on every champion, then inspect the full player table
-        and sort by win rate, games, mastery or confidence.
-        {site.collectedOn && (
-          <span className="text-faint"> Data collected {site.collectedOn}.</span>
-        )}
-      </p>
-      {/* Looking for a person rather than a champion. Sits above the board
-          because someone who arrived with a name in mind should not have to
-          scan a champion table first. */}
-      <section className="mt-8 sm:max-w-sm">
-        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
-          Looking for a player?
-        </p>
-        <PlayerQuickSearch />
-      </section>
+    <div
+      className="leaderboard-revamp no-plate min-h-screen overflow-x-clip"
+      style={{ background: "linear-gradient(180deg, rgba(8,19,33,.84), rgba(6,15,29,.92))" }}
+    >
+      <div className="mx-auto max-w-[1280px] px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
+        <section className="glass relative overflow-hidden rounded-[1.75rem] border border-white/[0.11] p-5 shadow-[0_26px_90px_rgba(0,0,0,.32)] sm:p-7">
+          <div aria-hidden className="absolute -right-24 -top-28 h-80 w-80 rounded-full bg-[#72a7ff]/10 blur-3xl" />
+          <div className="relative grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-end">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-accent">Current season · top players</span>
+                {site.collectedOn && <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.62rem] font-semibold text-muted">Updated {site.collectedOn}</span>}
+              </div>
+              <h1 className="mt-3 text-4xl leading-[0.98] tracking-[-0.045em] sm:text-[3.35rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>Player Leaderboards</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">Champion specialists ranked by real performance, sample confidence, ladder strength and mastery.</p>
+              <div className="mt-5 flex flex-wrap gap-2 text-[0.68rem] font-semibold text-muted">
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5">EU · NA · CN</span>
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5">Top 50 per champion</span>
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5">Builds + queue stats</span>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/[0.08] bg-black/15 p-4">
+              <div className="flex items-center justify-between gap-3"><p className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-faint">Find a player</p><span className="text-xs text-accent">Across every board</span></div>
+              <div className="mt-3"><PlayerQuickSearch /></div>
+            </div>
+          </div>
+        </section>
 
-      {/* Above the player table rather than after it: the layout's bottom unit already sits after it. */}
-      <AdSlot placement="inline" bare className="my-6" />
-      <section id="players" className="mt-8 scroll-mt-24">
-        <SectionHeading title="Champion player leaderboard" subtitle="Choose a champion and inspect its full player table, with builds, ranked tiers and per-queue stats where freshly captured" />
+        {/* Above the player table rather than after it: the layout's bottom unit already sits after it. */}
+        <AdSlot placement="inline" bare className="my-5" />
+        <section id="players" className="scroll-mt-24">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3 px-1">
+            <div><p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-accent">Champion board</p><h2 className="mt-1 text-xl font-semibold">Choose a champion. Inspect every player.</h2></div>
+            <p className="max-w-lg text-xs text-faint">Sort by WR, games, mastery, rank or the confidence-weighted Best score.</p>
+          </div>
         <LeaderboardView
           champions={slim}
           championsNa={slimNa}
@@ -156,9 +167,9 @@ export default function LeaderboardPage() {
             (spells as { name: string; icon: string }[]).map((s) => [s.name, s.icon])
           )}
         />
-      </section>
-      <NextStep steps={["player", "build", "meta"]} />
-
-    </Container>
+        </section>
+        <NextStep steps={["player", "build", "meta"]} />
+      </div>
+    </div>
   );
 }

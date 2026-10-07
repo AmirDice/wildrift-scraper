@@ -10,7 +10,7 @@ import { TIKTOK_URL, YOUTUBE_URL, TikTokIcon, YouTubeIcon } from "@/components/s
 import { SupportNavLink, BUYMEACOFFEE_URL, CoffeeIcon } from "@/components/support";
 import { AccountMenu } from "@/components/account-menu";
 import { ChampionCombobox, type ComboItem } from "@/components/champion-combobox";
-import { CollectionTimeline } from "@/components/collection-timeline";
+import { CompactCollectionStatus } from "@/components/compact-collection-status";
 
 type NavItem = { href: string; label: string; badge?: string; badges?: string[]; desc?: string };
 /** `collapsed` folds the group on MOBILE only, behind a tap. Use it for
@@ -177,12 +177,12 @@ function NavSearch({ champions }: { champions: ComboItem[] }) {
 
 function Wordmark() {
   return (
-    <Link href="/" className="flex items-center transition hover:opacity-90" aria-label="WrTrueMeta home">
+    <Link href="/" className="brand-lens flex items-center rounded-xl px-2.5 py-2 transition hover:opacity-95" aria-label="WrTrueMeta home">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/logo.png"
         alt="WrTrueMeta"
-        style={{ height: "clamp(20px, 4vw, 26px)", width: "auto" }}
+        style={{ height: "clamp(19px, 4vw, 24px)", width: "auto" }}
       />
     </Link>
   );
@@ -326,7 +326,7 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
 
   return (
     <header className="glass-bar sticky top-0 z-50 border-b border-line">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+      <nav className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between px-5">
         <Wordmark />
 
         <div className="hidden items-center gap-1 md:flex">
@@ -346,6 +346,7 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
               </Link>
             ),
           )}
+          <CompactCollectionStatus />
           <NavSearch champions={champions} />
           <span className="mx-1 h-5 w-px bg-line" />
           <DiscordNavLink />
@@ -384,11 +385,10 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
         </div>
       </nav>
 
-      <CollectionTimeline />
-
       {open && (
         <div className="glass-bar max-h-[75vh] overflow-y-auto border-t border-line px-4 py-3 md:hidden">
           <div className="flex flex-col gap-1">
+            <CompactCollectionStatus variant="drawer" />
             {NAV.map((e) =>
               isGroup(e) ? (
                 <MobileGroup

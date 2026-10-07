@@ -64,8 +64,8 @@ export interface ServerBuildStats {
 /** What the card renders: one server's most-common build, already named. */
 export interface ServerBuild {
   /** In purchase order when `ordered`, most-built first otherwise. */
-  items: { slug: string; name: string; icon: string }[];
-  boots?: { slug: string; name: string; icon: string } | null;
+  items: { slug: string; name: string; icon: string; rate?: number }[];
+  boots?: { slug: string; name: string; icon: string; rate?: number } | null;
   /** Where the boots fall among all six in the purchase order, 0-based. */
   bootsAt?: number | null;
   /** The card may number these as a buying order only when this is true. */
@@ -80,6 +80,8 @@ export interface ServerBuild {
 /** The minimum a consensus build has to look like to be rendered. */
 interface ConsensusLike {
   items: string[];
+  /** Pick rate per item, when the ladder record includes counts. */
+  itemRates?: Record<string, number>;
   boots?: string;
   bootsAt?: number;
   ordered?: boolean;
@@ -97,8 +99,8 @@ export function toServerBuild(
 ): ServerBuild | null {
   if (!build) return null;
   return {
-    items: build.items.map(item),
-    boots: build.boots ? item(build.boots) : null,
+    items: build.items.map((slug) => ({ ...item(slug), rate: build.itemRates?.[slug] })),
+    boots: build.boots ? { ...item(build.boots), rate: build.itemRates?.[build.boots] } : null,
     bootsAt: build.bootsAt ?? null,
     ordered: Boolean(build.ordered),
     runes: {

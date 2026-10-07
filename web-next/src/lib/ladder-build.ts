@@ -64,6 +64,8 @@ export interface LadderBuild {
   /** The five non-boot items. In PURCHASE order when `ordered` is set,
    *  otherwise most-built first. */
   items: string[];
+  /** Pick rate for each shown item, derived from the same top-player sample. */
+  itemRates?: Record<string, number>;
   boots?: string;
   /** Where the boots fall in the purchase order, 0-based across all six. */
   bootsAt?: number;
@@ -210,10 +212,19 @@ export function ladderConsensusBuild(
   // same catalogue, so they agree; the check is there so that a mismatch
   // falls back to most-built order instead of silently dropping an item.
   const shown = boots ? [...items, boots] : [...items];
+  const itemRates = Object.fromEntries(
+    (entry.items ?? []).flatMap((row) => {
+      const slug = row.slug ?? "";
+      return slug && row.count != null && row.of
+        ? [[slug, (row.count / row.of) * 100] as const]
+        : [];
+    }),
+  );
   const order = entry.order ?? [];
   const covers = order.length === shown.length && shown.every((slug) => order.includes(slug));
   return {
     items: covers ? order.filter((slug) => slug !== boots) : items,
+    itemRates,
     boots,
     bootsAt: covers && boots ? order.indexOf(boots) : undefined,
     ordered: covers,

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { site, getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel, regionBoard } from "@/lib/data";
@@ -12,7 +14,7 @@ import { ChampionCombo } from "@/components/champion-combo";
 import { getChampionDetails, type AbilityCard } from "@/lib/champion-details";
 import { getChampionHistory } from "@/lib/champion-history";
 import { getPlaystyleProfile } from "@/lib/playstyle-profile";
-import { Container, TierChip, ChampionAvatar, Card } from "@/components/ui";
+import { TierChip, ChampionAvatar, Card } from "@/components/ui";
 import { BracketCurve } from "@/components/bracket-curve";
 import { ChampionTabs } from "@/components/champion-tabs";
 import { ChampionHistory } from "@/components/champion-history";
@@ -24,6 +26,7 @@ import { AdSlot } from "@/components/ad-slot";
 import { ToolsCta } from "@/components/tools-cta";
 import { MeasuredProfile } from "@/components/measured-profile";
 import { ServerBuilds } from "@/components/server-builds";
+import { ChampionAnalytics, type AnalyticsPlayer } from "@/components/champion-analytics";
 import { SERVER_GAP, toServerBuild } from "@/lib/server-build";
 import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
 import { serverBuildInsights } from "@/lib/server-build-insights";
@@ -36,6 +39,18 @@ const ARCHETYPE_LABEL: Record<string, string> = { spellcaster: "Spell-caster", a
 const MECHANIC_LABEL: Record<string, string> = { cc: "Crowd control", dash: "Mobility", heal: "Healing", onHit: "On-hit", shield: "Shielding", poke: "Poke", stealth: "Stealth" };
 const SCALES_LABEL: Record<string, string> = { ad: "AD", ap: "AP", maxHp: "Max HP", attackSpeed: "Attack speed", crit: "Crit", mana: "Mana", abilityHaste: "Ability haste", lethality: "Lethality" };
 const pretty = (map: Record<string, string>, key: string) => map[key] ?? key;
+
+function loadAnalyticsPlayers(slug: string): AnalyticsPlayer[] {
+  try {
+    const file = path.join(process.cwd(), "public", "players", `${slug}.json`);
+    const parsed = JSON.parse(readFileSync(file, "utf8")) as { players?: AnalyticsPlayer[] };
+    return (parsed.players ?? []).filter((player) =>
+      Number.isFinite(player.r) && Number.isFinite(player.w) && Number.isFinite(player.g),
+    );
+  } catch {
+    return [];
+  }
+}
 
 export function generateStaticParams() {
   return [...getChampions(), ...pendingChampions()].map((champion) => ({ slug: champion.slug }));
@@ -102,6 +117,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const blended = getGlobalBySlug(champion.slug);
   const headline = blended ?? champion;
   const podium = champion.globalBestPlayerPodium ?? champion.bestPlayerPodium;
+  const analyticsPlayers = loadAnalyticsPlayers(champion.slug);
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
   const stats = champion.statsPending ? [] : [
     { label: "Tier", value: tierLabel(headline.tier), className: tierText[headline.tier] },
@@ -109,19 +125,20 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
     { label: "Ceiling WR", value: headline.maxWr != null ? `${headline.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
     { label: "Median games", value: headline.medianGames != null ? Math.round(headline.medianGames).toLocaleString() : "-", className: "" },
   ];
+  const movement = headline.wrDelta ?? 0;
+  const metaSignal = champion.statsPending ? "Collecting" : movement > 0.2 ? "Rising" : movement < -0.2 ? "Cooling" : "Stable";
+  const signalTone = movement > 0.2 ? "text-emerald-300" : movement < -0.2 ? "text-rose-300" : "text-sky-300";
 
   // Put the fastest, most copyable answer directly below the hero. The
   // personalized generator follows this evidence in the same card, rather
   // than asking a visitor to scroll past several unrelated sections first.
   const serverBuildCard = (
-    <Card className="p-5 sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">Most-built by server</h2>
-        <span className="text-xs text-faint">what the top 50 hold, not what we recommend</span>
-      </div>
-      <div className="mt-4">
+    <Card className="rounded-[1.5rem] p-4 sm:p-5">
+      <div>
         <ServerBuilds
           champion={champion.name}
+          compact
+          personalizeHref={`/build?champion=${champion.slug}&tab=generate`}
           builds={{
             eu: toServerBuild(serverBuilds.eu, catalogueItem,
               serverBuildInsights(champion.name, serverBuilds.eu)),
@@ -133,15 +150,6 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           gaps={SERVER_GAP}
           collected={{ eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
         />
-      </div>
-      <div className="mt-5 flex flex-col gap-3 rounded-xl border border-accent/25 bg-accent/[0.07] p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-text">Want a build for your game?</p>
-          <p className="mt-1 text-xs leading-relaxed text-muted">Use this ladder build as a baseline, then tailor the items, boots and runes to your playstyle.</p>
-        </div>
-        <Link href={`/build?champion=${champion.slug}&tab=generate`} className="inline-flex shrink-0 items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-bold text-black transition hover:opacity-90">
-          Generate my build →
-        </Link>
       </div>
     </Card>
   );
@@ -170,24 +178,19 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   );
 
   const overview = (
-    <div className="space-y-6">
-      <Card className="p-5 sm:p-6">
-        <h2 className="text-lg font-semibold">{champion.name} at a glance</h2>
-        <p className="mt-2 leading-relaxed text-muted">
-          {champion.name} is currently <span className="font-medium text-text">{tierLabel(headline.tier)} tier</span> across EU and NA, with a top-50-main win rate of <span className="font-medium text-accent">{headline.wr.toFixed(1)}%</span>. The best tracked main on either server peaks at <span className="font-medium text-gold">{headline.maxWr != null ? `${headline.maxWr.toFixed(1)}%` : "-"}</span>.
-        </p>
-      </Card>
-      <Card className="p-5 sm:p-6">
-        <h2 className="text-lg font-semibold">Win rate by region</h2>
-        <p className="mt-1 text-sm text-muted">A consistent 50%-centred scale makes regional performance easier to compare.</p>
-        <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
-          <RegionStat label="EU" wr={champion.wr} sub={`${champion.tier} tier`} />
-          {cn ? <RegionStat label="CN" wr={cn.wr} sub={`${cn.cnPickRate.toFixed(1)}% pick`} /> : <RegionStat label="CN" />}
-          {na && Number.isFinite(na.wr)
-            ? <RegionStat label="NA" wr={na.wr} sub={`${na.tier} tier`} />
-            : <RegionStat label="NA" />}
-        </div>
-      </Card>
+    <div className="space-y-4">
+      <ChampionAnalytics
+        champion={champion.name}
+        players={analyticsPlayers}
+        regions={[
+          { label: "EU", value: Number.isFinite(champion.wr) ? champion.wr : null },
+          { label: "NA", value: na && Number.isFinite(na.wr) ? na.wr : null },
+          { label: "CN", value: cn && Number.isFinite(cn.wr) ? cn.wr : null },
+        ]}
+        winRate={headline.wr}
+        winRateDelta={headline.wrDelta}
+        winrateStd={headline.winrateStd}
+      />
       {skew && (
         <Card className="p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Regular-ranked performance</h2><Link href="/ranks" className={`rounded-full px-2.5 py-1 text-xs font-semibold ${skew.climbing ? "bg-emerald-400/15 text-emerald-300" : skew.stomper ? "bg-rose-400/15 text-rose-300" : "bg-white/10 text-muted"}`}>{skew.climbing ? "Improves at higher skill" : skew.stomper ? "Falls off up top" : "Stable across brackets"}</Link></div>
@@ -272,23 +275,82 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           { name: champion.name, path: `/champions/${champion.slug}` },
         ])}
       />
-      <section className="no-plate relative overflow-hidden border-b border-line">
-        <div className="absolute inset-0 bg-cover opacity-40" style={{ backgroundImage: `url(${champion.splash})`, backgroundPosition: "center 22%" }}/><div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/30"/><div className="absolute inset-0 bg-gradient-to-t from-bg to-transparent"/>
-        <Container className="relative py-10 sm:py-14"><Link href="/champions" className="text-sm text-muted hover:text-text">← All champions</Link><div className="mt-5 flex items-center gap-4"><ChampionAvatar champion={champion} size={72} showBadges={false}/><div className="min-w-0"><div className="flex items-center gap-2"><h1 className="truncate text-3xl font-semibold tracking-tight sm:text-4xl">{champion.name}</h1>{champion.isOtp && <span className="rounded bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white">OTP</span>}</div><p className="mt-1 text-muted">{champion.role} · {champion.class} · <span className={champion.isHard ? "text-bad" : ""}>{champion.difficultyLabel}</span></p></div></div></Container>
-      </section>
-       <Container className="py-8 sm:py-10">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{stats.map((stat) => <Card key={stat.label} className="p-4"><p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">{stat.label}</p><p className={`mt-2 text-xl font-semibold sm:text-2xl ${stat.className}`}>{stat.value}</p></Card>)}</div>
-         <ChampionTabs
-           beforePanel={serverBuildCard}
-           panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}
-         />
-         <ToolsCta />
-        {/* In-content, after the champion's own material and before the
-            "other champions" grid: the seam where a reader has finished what
-            they came for. */}
-        <AdSlot placement="inline" bare className="my-8" />
-        {related.length > 0 && <div className="mt-10"><h2 className="mb-4 text-lg font-semibold">Other {champion.role} champions</h2><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{related.map((entry) => <Link key={entry.slug} href={`/champions/${entry.slug}`} className="glass glass-hover flex flex-col items-center gap-2 rounded-xl p-3 text-center"><ChampionAvatar champion={entry} size={48}/><span className="w-full truncate text-sm font-medium">{entry.name}</span><div className="flex items-center gap-1.5"><TierChip tier={entry.tier}/><span className="text-xs font-semibold text-accent">{entry.wr.toFixed(1)}%</span></div></Link>)}</div></div>}
-      </Container>
+      <div
+        className="no-plate min-h-screen overflow-x-clip"
+        style={{ backgroundImage: "radial-gradient(circle at 18% 8%, rgba(72,137,235,.22), transparent 29rem), radial-gradient(circle at 88% 34%, rgba(53,175,188,.1), transparent 24rem), linear-gradient(180deg,rgba(10,22,38,.86) 0%,rgba(8,19,33,.9) 50%,rgba(7,17,31,.94) 100%)" }}
+      >
+        <section className="relative overflow-hidden pt-7 sm:pt-9">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
+            <Link href="/champions" className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted transition hover:text-text">← Champion atlas</Link>
+            <div className="glass relative mt-4 grid overflow-hidden rounded-[1.75rem] border border-white/[0.11] shadow-[0_28px_100px_rgba(0,0,0,.34)] lg:grid-cols-[.88fr_1.12fr]">
+              <div className="relative z-10 order-2 flex flex-col justify-between p-6 lg:order-1 lg:min-h-[248px] lg:px-7 lg:py-6">
+                <div>
+                  <div className="flex items-center gap-4">
+                    <ChampionAvatar champion={champion} size={72} showBadges={false}/>
+                    <div className="min-w-0">
+                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-accent">Champion profile</p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <h1 className="truncate text-4xl leading-[0.98] tracking-[-0.045em] sm:text-[3.2rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>{champion.name}</h1>
+                        {champion.isOtp && <span className="rounded-md bg-orange-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white">OTP</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-muted">
+                    <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-3 py-1.5">{champion.role}</span>
+                    <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-3 py-1.5">{champion.class}</span>
+                    <span className={`rounded-full border border-white/[0.09] bg-white/[0.045] px-3 py-1.5 ${champion.isHard ? "text-rose-300" : ""}`}>{champion.difficultyLabel}</span>
+                  </div>
+                </div>
+                {stats.length ? (
+                  <div className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15 sm:grid-cols-4 lg:grid-cols-4">
+                    {stats.map((stat, index) => (
+                      <div key={stat.label} className={`p-3.5 sm:p-4 ${index % 2 ? "border-l border-white/[0.07]" : ""} ${index > 1 ? "border-t border-white/[0.07] sm:border-t-0 lg:border-t xl:border-t-0" : ""}`}>
+                        <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-faint">{stat.label}</p>
+                        <p className={`mt-1.5 text-lg font-semibold ${stat.className}`}>{stat.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="mt-8 text-sm text-muted">Leaderboard sample pending.</p>}
+              </div>
+
+              <div className="relative order-1 min-h-[260px] overflow-hidden lg:order-2 lg:min-h-[248px]">
+                <img src={champion.splash} alt="" aria-hidden className="absolute -inset-5 h-[calc(100%+2.5rem)] w-[calc(100%+2.5rem)] object-cover object-[center_22%] opacity-45 blur-2xl saturate-125" />
+                <img src={champion.splash} alt="" className="absolute inset-0 h-full w-full object-contain object-center" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07101d] via-transparent to-black/10 lg:bg-gradient-to-r lg:from-[#08101d] lg:via-transparent lg:to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07101d]/80 via-transparent to-transparent lg:hidden" />
+                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/[0.13] bg-[#07101d]/75 p-4 shadow-2xl backdrop-blur-xl sm:bottom-5 sm:left-auto sm:right-5 sm:w-[16.5rem]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-faint">Meta signal</p>
+                      <p className={`mt-1 text-lg font-semibold ${signalTone}`}>{metaSignal}</p>
+                    </div>
+                    <svg viewBox="0 0 98 38" className="w-24" role="img" aria-label={`${metaSignal} collection trend`}>
+                      <path d={movement < -0.2 ? "M3 8 C20 10 29 14 44 13 S69 25 95 30" : movement > 0.2 ? "M3 30 C20 29 28 23 43 24 S70 12 95 7" : "M3 21 C20 18 31 22 45 19 S70 20 95 17"} fill="none" stroke={movement < -0.2 ? "#fb7185" : movement > 0.2 ? "#6ee7c7" : "#7cb8ff"} strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between border-t border-white/[0.08] pt-3 text-[0.68rem] text-muted">
+                    <span>{analyticsPlayers.length || 50} tracked players</span>
+                    <span className={signalTone}>{headline.wrDelta == null ? "Fresh sample" : `${movement >= 0 ? "+" : ""}${movement.toFixed(1)} pp`}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
+          <ChampionTabs
+            beforePanel={serverBuildCard}
+            panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}
+          />
+          <ToolsCta />
+          {/* In-content, after the champion's own material and before the
+              "other champions" grid: the seam where a reader has finished what
+              they came for. */}
+          <AdSlot placement="inline" bare className="my-8" />
+          {related.length > 0 && <div className="mt-10"><h2 className="mb-4 text-lg font-semibold">Other {champion.role} champions</h2><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{related.map((entry) => <Link key={entry.slug} href={`/champions/${entry.slug}`} className="glass glass-hover flex flex-col items-center gap-2 rounded-xl p-3 text-center"><ChampionAvatar champion={entry} size={48}/><span className="w-full truncate text-sm font-medium">{entry.name}</span><div className="flex items-center gap-1.5"><TierChip tier={entry.tier}/><span className="text-xs font-semibold text-accent">{entry.wr.toFixed(1)}%</span></div></Link>)}</div></div>}
+        </div>
+      </div>
     </>
   );
 }
@@ -310,8 +372,4 @@ function BuildOrder({ build }: { build: Build }) {
 
 function Matchups({ title, accent, matchups }: { title: string; accent: string; matchups: ResolvedMatchup[] }) {
   return <Card className="p-5"><h2 className={`text-sm font-semibold ${accent}`}>{title}</h2><div className="mt-4 space-y-2">{matchups.slice(0, 5).map(({ champion, reason }) => <div key={champion.slug} className="relative rounded-lg border border-transparent transition hover:border-line/60 hover:bg-white/[0.035]"><Link href={`/champions/${champion.slug}`} className="group flex items-center gap-3 py-2 pl-2 pr-11"><ChampionAvatar champion={champion} size={42} showBadges={false}/><span className="min-w-0 truncate text-sm font-medium group-hover:text-accent">{champion.name}</span></Link>{reason && <><button type="button" aria-label={`Why ${champion.name} is in this list`} className="peer absolute right-2 top-2.5 grid h-7 w-7 place-items-center rounded-full border border-line bg-bg/80 text-xs font-bold text-muted transition hover:border-accent/50 hover:text-accent focus:border-accent/50 focus:text-accent focus:outline-none">i</button><span role="tooltip" className="pointer-events-none invisible absolute right-2 top-10 z-20 w-[min(260px,calc(100vw-4rem))] rounded-lg border border-line bg-[#111827] p-3 text-xs leading-relaxed text-muted opacity-0 shadow-2xl transition peer-hover:visible peer-hover:opacity-100 peer-focus:visible peer-focus:opacity-100">{reason}</span></>}</div>)}</div></Card>;
-}
-
-function RegionStat({ label, wr, sub }: { label: string; wr?: number; sub?: string }) {
-  return <div className="glass min-w-0 rounded-xl p-3 text-center sm:p-4"><div className="text-xs font-bold uppercase tracking-wide text-faint">{label}</div>{wr == null ? <div className="mt-2 text-sm text-faint">soon</div> : <><div className={`mt-1.5 text-xl font-semibold sm:text-2xl ${wr >= 50 ? "text-accent" : "text-muted"}`}>{wr.toFixed(1)}%</div>{sub && <div className="mt-0.5 truncate text-[0.65rem] text-muted">{sub}</div>}</>}</div>;
 }

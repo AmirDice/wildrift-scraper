@@ -226,14 +226,15 @@ export function TierListView({
   }, [role, activeChampions, options, region, poolDepth, depthActive]);
 
   return (
-    <div>
+    <div className="tierlist-view">
       <BuildTour storageKey="tour:tier-list:v1" steps={TIER_LIST_TOUR} label="Tour" />
       {/* Region */}
-      <div className="mb-5" data-tour="tl-regions">
+      <section className="glass mb-4 rounded-[1.4rem] border border-white/[0.1] p-3 shadow-[inset_0_1px_rgba(255,255,255,.09)] sm:p-4">
+      <div data-tour="tl-regions">
         <RegionToggle region={region} onChange={(next) => { setRegion(next); setRole("All roles"); }} regions={TIER_LIST_REGIONS} />
       </div>
 
-      <div className="mb-5 flex flex-wrap items-center gap-3" data-tour="tl-updated">
+      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.07] pt-3" data-tour="tl-updated">
         <RegionUpdated region={region} euDate={site.collectedOn} cnDate={cnMeta.date} naDate={naUpdated} />
         {/* CN is excluded: Tencent publishes raw rates, so there is no centring
             to undo and the button would be a no-op that implies otherwise. */}
@@ -264,12 +265,12 @@ export function TierListView({
           Share as image
         </a>
       </div>
+      </section>
       {showRaw && !isCN && (
-        <p className="mb-5 text-xs leading-relaxed text-faint">
-          Raw numbers: what these players actually posted, un-centred. A champion&rsquo;s top mains
-          win far more than half their games, so the whole field sits high and the tiers below still
-          come from the centred scale. Order and tier are unchanged either way.
-        </p>
+        <details className="group mb-4 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-xs text-faint">
+          <summary className="cursor-pointer list-none font-semibold text-accent">Raw rates are on · tap for context</summary>
+          <p className="mt-2 leading-relaxed">These are the players&rsquo; un-centred results. Tiers and order still use the same relative scale, so only the printed percentage changes.</p>
+        </details>
       )}
 
       {activeFreshness?.stale && (
@@ -321,19 +322,17 @@ export function TierListView({
             </div>
           )}
           {isGlobal && (
-            <p className="mb-5 text-sm text-muted">
+            <p className="mb-4 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-xs text-muted">
               Combined <span className="text-text">EU + NA</span> ranking of the champions strongest
-              across both western servers. China measures a whole bracket rather than a champion&rsquo;s
-              best players, so it is kept separate. See the{" "}
+              across both western servers. China stays separate because its sample is bracket-wide. {" "}
               <Link href="/global" className="text-accent hover:underline">
-                side-by-side comparison
+                Compare regions →
               </Link>
-              .
             </p>
           )}
 
           {!isCN && (
-            <div className="mb-5" data-tour="tl-pool">
+            <div className="glass mb-2 rounded-2xl border border-white/[0.08] p-3" data-tour="tl-pool">
               <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="Player pool depth">
                 <span className="text-xs font-bold uppercase tracking-wide text-faint">Player pool</span>
                 {([["all", "All players"], ["25", "Top 25"], ["10", "Top 10"], ["5", "Top 5"]] as const).map(([key, label]) => (
@@ -351,16 +350,17 @@ export function TierListView({
                   </button>
                 ))}
               </div>
-              <p className="mt-1.5 text-xs text-muted">
+              <p className="mt-1.5 text-[0.68rem] text-faint">
                 {poolDepth === "all"
-                  ? "Win rates from each champion's full board."
-                  : `Win rates from each champion's top ${poolDepth} players only. A champion that is strong here but weak on "All players" is carried by its elite, not its player base.`}
+                  ? "Full top-50 sample for every champion."
+                  : `Only the top ${poolDepth} players per champion. Use this to spot elite-player gaps.`}
               </p>
             </div>
           )}
 
           {/* Role filter */}
-          <div className="mb-6 flex flex-wrap gap-2" data-tour="tl-roles">
+          <div className="glass mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.08] p-2" data-tour="tl-roles">
+            <span className="px-2 text-[0.62rem] font-bold uppercase tracking-[0.15em] text-faint">Role</span>
             {options.map((o) => (
               <button
                 key={o}
@@ -375,7 +375,7 @@ export function TierListView({
           </div>
 
           {/* Tiers */}
-          <div className="flex flex-col gap-2.5" data-tour="tl-tiers">
+          <div className="tier-board flex flex-col gap-2" data-tour="tl-tiers">
             {TIER_ORDER.map((t) => (
               <Fragment key={t}>
               {(() => {
@@ -387,26 +387,26 @@ export function TierListView({
               // the band is genuinely unoccupied.
               if (champs.length === 0) {
                 return (
-                  <div key={t} className="flex items-stretch gap-1.5 opacity-45 sm:gap-2.5">
+                  <div key={t} data-tier={t} className="tier-board-row flex items-stretch gap-1.5 overflow-hidden rounded-[1.35rem] border border-white/[0.08] p-1.5 opacity-45 sm:gap-2">
                     <div
-                      className={`grid w-11 shrink-0 place-items-center rounded-xl text-lg font-black sm:w-20 sm:text-2xl ${tierClass[t]}`}
+                      className={`tier-board-label grid w-12 shrink-0 place-items-center rounded-[1rem] text-lg font-black sm:w-[4.75rem] sm:text-2xl ${tierClass[t]}`}
                     >
                       {tierLabel(t)}
                     </div>
-                    <div className="glass flex flex-1 items-center rounded-xl p-2 text-sm text-faint sm:p-4">
+                    <div className="tier-board-content flex flex-1 items-center rounded-2xl p-2 text-sm text-faint sm:p-3">
                       No champions in this tier
                     </div>
                   </div>
                 );
               }
               return (
-                <div key={t} className="flex items-stretch gap-1.5 sm:gap-2.5">
+                <div key={t} data-tier={t} className="tier-board-row flex items-stretch gap-1.5 overflow-hidden rounded-[1.35rem] border border-white/[0.08] p-1.5 sm:gap-2">
                   <div
-                    className={`grid w-11 shrink-0 place-items-center rounded-xl text-lg font-black sm:w-20 sm:text-2xl ${tierClass[t]}`}
+                    className={`tier-board-label grid w-12 shrink-0 place-items-center rounded-[1rem] text-lg font-black sm:w-[4.75rem] sm:text-2xl ${tierClass[t]}`}
                   >
                     {tierLabel(t)}
                   </div>
-                  <div className="glass flex flex-1 flex-wrap content-center gap-x-1.5 gap-y-2 rounded-xl p-2 sm:gap-4 sm:p-4">
+                  <div className="tier-board-content flex flex-1 flex-wrap content-center gap-x-1.5 gap-y-2 rounded-2xl p-2 sm:gap-3 sm:p-3">
                     {champs.map((c) => {
                       const cnMovement = isCN ? moverBySlug(c.slug, cnBracket) : null;
                       // EU, NA and Global all carry wrDelta in centred units
@@ -459,7 +459,7 @@ export function TierListView({
                         <Link
                           key={c.slug}
                           href={`/champions/${c.slug}`}
-                          className="group flex w-[46px] flex-col items-center text-center transition sm:w-[68px]"
+                          className="tier-champion group flex w-[46px] flex-col items-center rounded-xl py-1 text-center transition sm:w-[68px]"
                           title={changed && mv
                             ? `${c.name} · ${shownWr(c).toFixed(1)}% WR · ${isGlobal ? `since the previous EU (${site.movementSince ?? "collection"}) and NA (${siteNa.movementSince ?? "collection"}) collections` : isCN ? "previous CN scrape" : `since ${(isNA ? siteNa.movementSince : site.movementSince) ?? "the previous collection"}`}${bandsBefore && bandsAfter ? ` ${tierLabel(bandsBefore)} → ${tierLabel(bandsAfter)},` : ""} ${mv.oldWr}% → ${mv.newWr}% (${mv.delta > 0 ? "+" : ""}${mv.delta})`
                             : `${c.name} · ${shownWr(c).toFixed(1)}% WR`}

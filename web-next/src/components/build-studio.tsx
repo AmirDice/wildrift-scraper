@@ -182,7 +182,7 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
     : champs;
 
   return (
-    <div>
+    <div className="build-studio-shell">
       {/* One tour per tab, not one for the studio. Each tab is a different
           tool with different controls, and a single walkthrough could only ever
           describe the tab that happened to be open. Keying by tab remounts the
@@ -195,33 +195,44 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
         label="Tour"
       />
       {/* champion search + selector strip */}
-      <input
-        value={champQuery}
-        onChange={(e) => setChampQuery(e.target.value)}
-        placeholder="Search champion…"
-        data-tour="champion-search"
-        className="glass mb-2 w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
-      />
-      <div data-tour="champion-strip" className="-mx-1 flex gap-1.5 overflow-x-auto pb-2">
+      <section className="glass rounded-[1.5rem] border border-white/[0.1] p-3.5 sm:p-4">
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-accent">Choose champion</p>
+            <p className="mt-0.5 text-xs text-faint">Your selection follows every tool.</p>
+          </div>
+          <div className="relative w-full sm:w-72">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint">⌕</span>
+            <input
+              value={champQuery}
+              onChange={(e) => setChampQuery(e.target.value)}
+              placeholder="Search champion…"
+              data-tour="champion-search"
+              className="w-full rounded-xl border border-white/[0.09] bg-black/15 py-2.5 pl-9 pr-3 text-sm text-text outline-none transition focus:border-accent/50 focus:bg-white/[0.045]"
+            />
+          </div>
+        </div>
+        <div data-tour="champion-strip" className="flex gap-2 overflow-x-auto pb-1 pt-0.5">
         {filteredChamps.map((c) => (
           <button
             key={c.slug}
             onClick={() => switchChamp(c.slug)}
-            className={`shrink-0 rounded-full p-0.5 transition ${c.slug === slug ? "ring-2 ring-accent" : "opacity-60 hover:opacity-100"}`}
+            className={`shrink-0 rounded-full p-0.5 transition ${c.slug === slug ? "bg-accent/10 ring-2 ring-accent shadow-[0_0_18px_rgba(114,167,255,.3)]" : "opacity-55 grayscale-[.2] hover:opacity-100 hover:grayscale-0"}`}
             title={c.champion.name}
           >
             <ChampionAvatar champion={c.champion} size={44} showBadges={false} />
           </button>
         ))}
         {filteredChamps.length === 0 && <span className="py-3 text-sm text-faint">No champion matches.</span>}
-      </div>
+        </div>
+      </section>
 
       {/* champion header with splash-art banner */}
-      <div className="relative mt-3 overflow-hidden rounded-2xl border border-line">
+      <div className="relative mt-3 min-h-[8.5rem] overflow-hidden rounded-[1.5rem] border border-white/[0.1] shadow-[inset_0_1px_rgba(255,255,255,.1)]">
         {rec.champion.splash && (
           <>
-            <img src={rec.champion.splash} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-top opacity-30" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#070a12] via-[#070a12]/80 to-transparent" />
+            <img src={rec.champion.splash} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[center_24%] opacity-40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#07101d] via-[#07101d]/85 to-[#07101d]/20" />
           </>
         )}
         <div className="relative flex flex-wrap items-center gap-3 p-4">
@@ -287,14 +298,14 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
           all three fit and none of them needs discovering. */}
       <div
         data-tour="tabs"
-        className={`glass mt-4 grid gap-1 rounded-xl p-1 ${availableTabs.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
+        className={`glass mt-4 grid gap-1.5 rounded-[1.4rem] border border-white/[0.1] p-1.5 ${availableTabs.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
       >
         {availableTabs.map((entry) => (
           <button
             key={entry.id}
             onClick={() => setTab(entry.id)}
             title={entry.help}
-            className={`min-w-0 rounded-lg px-1.5 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${effectiveTab === entry.id ? "bg-accent/20 text-accent" : "text-muted hover:text-text"}`}
+            className={`min-w-0 rounded-2xl px-1.5 py-3 text-xs font-semibold transition sm:px-3 sm:text-sm ${effectiveTab === entry.id ? "bg-gradient-to-b from-accent/25 to-accent/10 text-[#a9caff] shadow-[inset_0_1px_rgba(255,255,255,.12),0_0_20px_rgba(81,137,226,.12)] ring-1 ring-accent/25" : "text-muted hover:bg-white/[0.04] hover:text-text"}`}
           >
             <span className="sm:hidden">{entry.shortLabel}</span>
             <span className="hidden sm:inline">{entry.label}</span>

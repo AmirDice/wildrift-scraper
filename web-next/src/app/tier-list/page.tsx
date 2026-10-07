@@ -4,7 +4,6 @@ import { site, getChampions, regionBoard } from "@/lib/data";
 import { freshness } from "@/lib/patch-freshness";
 import { getCnChampionsByBracket, getCnRolesByBracket, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
 import { AdSlot } from "@/components/ad-slot";
-import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { NextStep } from "@/components/next-step";
@@ -27,50 +26,41 @@ export const metadata: Metadata = {
 export default function TierListPage() {
   const champions = getChampions();
   return (
-    <Container className="py-12">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Wild Rift Tier List
-          {CURRENT_PATCH && <span className="text-muted"> · Patch {CURRENT_PATCH}</span>}
-        </h1>
-        <Link
-          href="/consistency"
-          className="glass glass-hover inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium text-accent"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-            <rect x="3" y="12" width="4" height="8" rx="1" />
-            <rect x="10" y="7" width="4" height="13" rx="1" />
-            <rect x="17" y="3" width="4" height="17" rx="1" />
-          </svg>
-          Consistency chart
-        </Link>
-      </div>
-      <p className="mt-2 max-w-2xl text-muted">
-        Every Wild Rift champion ranked for {CURRENT_PATCH ? `patch ${CURRENT_PATCH}` : "the current patch"} by
-        the confidence-adjusted win rate of their top players. Global averages our EU and NA measurements;
-        switch to any one server, then filter by role for role-specific tiers.
-      </p>
+    <div
+      className="tierlist-revamp no-plate min-h-screen overflow-x-clip"
+      style={{ background: "linear-gradient(180deg, rgba(8,19,33,.84), rgba(6,15,29,.92))" }}
+    >
+      <div className="mx-auto max-w-[1280px] px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
+        <section className="glass relative overflow-hidden rounded-[1.75rem] border border-white/[0.11] px-5 py-6 shadow-[0_26px_90px_rgba(0,0,0,.32)] sm:px-7 sm:py-7">
+          <div aria-hidden className="absolute -right-24 -top-32 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
+          <div className="relative grid gap-7 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-accent">Every champion · ranked</span>
+                {CURRENT_PATCH && <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-muted">Patch {CURRENT_PATCH}</span>}
+              </div>
+              <h1 className="mt-3 text-4xl leading-[0.98] tracking-[-0.045em] sm:text-[3.35rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>Wild Rift Tier List</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">Real top-player performance across Global, EU, NA and China. Switch server, role or player depth without leaving the board.</p>
+            </div>
+            <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15">
+              <TierMetric label="Champions" value={champions.length.toString()} />
+              <TierMetric label="Regions" value="3" bordered />
+              <TierMetric label="Player pool" value="Top 50" bordered />
+            </div>
+          </div>
+          <div className="relative mt-5 grid gap-2 border-t border-white/[0.07] pt-4 sm:grid-cols-2">
+            <div className="flex items-center gap-3 rounded-xl bg-white/[0.025] px-3 py-2.5">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold">↻</span>
+              <div className="min-w-0"><p className="text-xs font-semibold text-text">New-season schedule</p><p className="truncate text-[0.68rem] text-faint">Collected after one week, once samples stabilize.</p></div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white/[0.025] px-3 py-2.5">
+              <div className="min-w-0"><p className="text-xs font-semibold text-text">Mastery curves</p><p className="truncate text-[0.68rem] text-faint">Diamond+ to Challenger performance.</p></div>
+              <div className="flex items-center gap-3 text-xs font-semibold"><Link href="/ranks" className="text-gold hover:text-text">Ranks →</Link><Link href="/consistency" className="text-accent hover:text-text">Consistency →</Link></div>
+            </div>
+          </div>
+        </section>
 
-      <div className="mt-5 max-w-3xl rounded-xl border border-gold/25 bg-gold/[0.07] px-4 py-3">
-        <p className="text-sm font-semibold text-gold">New-season collection schedule</p>
-        <p className="mt-1 text-sm leading-relaxed text-muted">
-          Win rates will be collected one week into the season, once the ladder has enough games
-          for the rankings to be meaningful.
-        </p>
-      </div>
-
-      <Link
-        href="/ranks"
-        className="glass glass-hover mt-5 flex max-w-3xl flex-col gap-2 rounded-xl border border-gold/25 px-4 py-3 transition sm:flex-row sm:items-center sm:justify-between"
-      >
-        <span>
-          <span className="block font-semibold text-text">Which champions reward mastery?</span>
-          <span className="mt-0.5 block text-sm text-muted">See who gains or loses win rate across China&rsquo;s Diamond+, Master+, and Challenger samples.</span>
-        </span>
-        <span className="shrink-0 text-sm font-semibold text-gold">View skill-bracket trends →</span>
-      </Link>
-
-      <div className="mt-8">
+        <div className="mt-5">
         <TierListView
           champions={champions}
           naChampions={regionBoard("NA").champions}
@@ -86,12 +76,16 @@ export default function TierListPage() {
           globalRoles={globalRoles()}
           initialRegion="Global"
         />
+        </div>
+        {/* Below the board. The longest page on the site, so the layout's bottom
+            unit is thousands of pixels from anyone still reading here. */}
+        <AdSlot placement="inline" bare className="my-10" />
+        <NextStep steps={["build", "counter", "meta"]} />
       </div>
-      {/* Below the board. The longest page on the site, so the layout's bottom
-          unit is thousands of pixels from anyone still reading here. */}
-      <AdSlot placement="inline" bare className="my-10" />
-      <NextStep steps={["build", "counter", "meta"]} />
-
-    </Container>
+    </div>
   );
+}
+
+function TierMetric({ label, value, bordered = false }: { label: string; value: string; bordered?: boolean }) {
+  return <div className={`min-w-[5.5rem] px-3 py-3 sm:min-w-[7rem] sm:px-4 ${bordered ? "border-l border-white/[0.07]" : ""}`}><p className="text-[0.55rem] font-bold uppercase tracking-[0.14em] text-faint">{label}</p><p className="mt-1 text-base font-semibold text-text sm:text-lg">{value}</p></div>;
 }

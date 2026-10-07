@@ -27,14 +27,25 @@ export default function ChampionsPage() {
     EU: roster.filter((name) => !euNames.has(name)).sort((a, b) => a.localeCompare(b)),
   };
   return (
-    <Container className="py-12">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Champions</h1>
+    <section
+      className="champions-revamp no-plate"
+      style={{
+        backgroundImage:
+          "radial-gradient(55rem 28rem at 88% 2%, rgba(52,170,173,.16), transparent 70%), radial-gradient(42rem 28rem at 8% 18%, rgba(82,130,225,.15), transparent 72%), linear-gradient(180deg, rgba(8,19,33,.84), rgba(6,15,29,.91))",
+      }}
+    >
+      <Container className="relative py-10 sm:py-14">
+      <div className="flex flex-wrap items-end justify-between gap-5">
+        <div className="max-w-2xl">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-emerald-300">Champion atlas</p>
+          <h1 className="display-title text-6xl leading-[0.9] sm:text-7xl lg:text-[5.5rem]">Champions</h1>
+          <p className="mt-4 text-base text-muted sm:text-lg">Find the right pick. See what matters.</p>
+        </div>
         <Link
           href="/compare"
-          className="glass glass-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-text"
+          className="liquid-glass glass-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-text"
         >
-          Want to compare champions? Click here <span aria-hidden>→</span>
+          Compare champions <span aria-hidden>→</span>
         </Link>
       </div>
       <div className="mt-8">
@@ -61,6 +72,7 @@ export default function ChampionsPage() {
       </div>
       <NextStep steps={["build", "tierList"]} />
 
-    </Container>
+      </Container>
+    </section>
   );
 }

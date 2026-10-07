@@ -3,8 +3,6 @@ import Script from "next/script";
 import "./globals.css";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { ToolsCta } from "@/components/tools-cta";
-import { FeatureBanner } from "@/components/feature-banner";
 import { FlagshipNudge } from "@/components/flagship-nudge";
 import { SocialDock } from "@/components/social-dock";
 import { AccountProvider } from "@/components/account-provider";
@@ -88,7 +86,7 @@ export default function RootLayout({
             // so it was taken down a further step on 2026-09-18 at the
             // owner's request. Darkened, not blurred: blur was offered twice
             // and turned down both times as boring.
-            filter: "saturate(0.86) brightness(0.86)",
+            filter: "saturate(0.82) brightness(0.84) hue-rotate(3deg)",
           }}
         />
         {/* 2. a light scrim. It was 0.54-0.64 when it had to carry text
@@ -101,7 +99,7 @@ export default function RootLayout({
           className="fixed inset-0 -z-20"
           style={{
             background:
-              "linear-gradient(180deg, rgba(7,10,18,0.36) 0%, rgba(7,10,18,0.40) 45%, rgba(7,10,18,0.44) 100%)",
+              "linear-gradient(180deg, rgba(5,13,26,0.22) 0%, rgba(5,13,26,0.3) 52%, rgba(4,11,23,0.42) 100%), radial-gradient(72% 62% at 78% 0%, rgba(82,151,255,0.2), transparent 72%)",
           }}
         />
         {/* 3. vignette: darkens only the far corners so the eye settles in
@@ -112,25 +110,13 @@ export default function RootLayout({
           className="fixed inset-0 -z-20"
           style={{
             background:
-              "radial-gradient(125% 105% at 50% 45%, transparent 55%, rgba(3,5,11,0.42) 88%, rgba(3,5,11,0.62) 100%)",
+              "radial-gradient(125% 105% at 50% 40%, transparent 52%, rgba(3,10,22,0.3) 86%, rgba(3,9,20,0.52) 100%)",
           }}
         />
         {/* Who publishes this site, stated once for every page. */}
         <JsonLd data={[organizationJsonLd, websiteJsonLd]} />
         <AccountProvider>
-          <FeatureBanner />
           <SiteNav champions={navChampions} />
-          {/* Above the page, not above the footer: these are the two things we
-              most want a visitor to try, and below the fold they were never
-              seen. Kept small enough to sit in one row on a phone. */}
-          <ToolsCta />
-          {/* Two units on every page that takes them, top and bottom, which is
-              the whole site-wide inventory. A third goes in-content on the
-              pages that are long enough to earn it (<AdSlot placement="inline">),
-              and ad-free routes are listed in lib/ads.ts. Each slot reserves
-              its height, so a page is the same shape whether or not anything
-              fills it. */}
-          <AdSlot placement="top" className="mt-4" />
           <main className="flex-1">{children}</main>
           <AdSlot placement="bottom" className="mt-10" />
           {/* Bottom-right suggestion card; engagement-triggered, capped, and

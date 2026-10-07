@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BuildStudio } from "@/components/build-studio";
-import { Container } from "@/components/ui";
 import { BuildsGeneratedPill } from "@/components/builds-counter";
 import { BUILD_STUDIO_VERSION, BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { buildToolsVisible } from "@/lib/access";
@@ -50,35 +49,46 @@ export default async function BuildPage(props: PageProps<"/build">) {
   // setup means.
   const studioKey = JSON.stringify([initialChampion, initialTab, initialLab, hasConfig ? initialConfig : null]);
   return (
-    <Container className="py-8">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Build Studio</h1>
-        <span className="rounded-md bg-emerald-400/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-300">
-          New
-        </span>
-        {/* The version history lives with BUILD_STUDIO_VERSION in lib/flags. */}
-        <span className="rounded-md bg-accent/20 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-accent">
-          {BUILD_STUDIO_VERSION}
-        </span>
+    <div className="build-studio-page no-plate min-h-screen overflow-x-clip">
+      <div className="mx-auto max-w-[1280px] px-4 pb-14 pt-8 sm:px-6 sm:pt-10">
+        <section className="glass relative overflow-hidden rounded-[1.75rem] border border-white/[0.11] p-5 shadow-[0_28px_90px_rgba(0,0,0,.28)] sm:p-7">
+          <div aria-hidden className="absolute -right-20 -top-32 h-96 w-96 rounded-full bg-accent/12 blur-3xl" />
+          <div aria-hidden className="absolute -bottom-24 left-[28%] h-56 w-56 rounded-full bg-emerald-400/[0.07] blur-3xl" />
+          <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-accent">Build engine</span>
+                <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-emerald-300">New</span>
+                <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-muted">{BUILD_STUDIO_VERSION}</span>
+              </div>
+              <h1 className="mt-3 text-4xl leading-[0.95] tracking-[-0.05em] sm:text-[3.65rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>Build Studio</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">One champion. Three ways to solve the build.</p>
+            </div>
+            <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15">
+              {[["01", "Personal"], ["02", "Counter"], ["03", "Lab"]].map(([number, label], index) => (
+                <div key={label} className={`min-w-[6.5rem] px-4 py-3 ${index ? "border-l border-white/[0.07]" : ""}`}>
+                  <p className="text-[0.58rem] font-bold tracking-[0.16em] text-accent">{number}</p>
+                  <p className="mt-1 text-xs font-semibold text-text">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="relative mt-6 flex flex-col gap-3 border-t border-white/[0.07] pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3 text-sm">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-amber-300/20 bg-amber-300/10 text-amber-200">↻</span>
+              <div>
+                <p className="font-semibold text-amber-100">Engine maintenance</p>
+                <p className="text-xs text-muted">Live generations may pause while recommendations update.</p>
+              </div>
+            </div>
+            <BuildsGeneratedPill />
+          </div>
+        </section>
+
+        <div className="build-studio-workspace mt-5">
+          <BuildStudio key={studioKey} initialChampion={initialChampion} initialTab={initialTab} initialLab={initialLab} initialConfig={hasConfig ? initialConfig : undefined} />
+        </div>
       </div>
-      <p className="mt-1 max-w-xl text-sm text-muted">
-        Optimal builds for every champion. Pick your champion, switch playstyles,
-        customize items and runes, or generate the optimal build tuned to your exact game.
-      </p>
-      <div className="mt-5 rounded-2xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
-        <p className="font-semibold">Build Studio is currently under maintenance.</p>
-        <p className="mt-1 text-amber-100/75">
-          Build generation and live recommendations may be temporarily unavailable while we update the engine.
-        </p>
-      </div>
-      {/* The same live figure the home page shows. It belongs here too: this is
-          the page where someone decides whether to spend a generation, and
-          "other people are using this" is the most honest thing we can say at
-          that moment. It refreshes on its own while the page is open. */}
-      <div className="mb-6 mt-3">
-        <BuildsGeneratedPill />
-      </div>
-      <BuildStudio key={studioKey} initialChampion={initialChampion} initialTab={initialTab} initialLab={initialLab} initialConfig={hasConfig ? initialConfig : undefined} />
-    </Container>
+    </div>
   );
 }

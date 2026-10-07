@@ -27,8 +27,8 @@ const FOOTER_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-line">
-      <div className="mx-auto max-w-6xl px-5 py-10 text-center text-sm leading-relaxed text-muted">
+    <footer className="glass-footer mt-24 border-t border-line">
+      <div className="mx-auto max-w-6xl px-5 py-12 text-center text-sm leading-relaxed text-muted">
         <nav className="mb-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
           {FOOTER_LINKS.filter((l) => BUILD_TOOLS_LIVE || l.href !== "/build").map((l) => (
             <Link key={l.href} href={l.href} className="text-muted transition hover:text-text">
