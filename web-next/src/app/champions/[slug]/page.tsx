@@ -326,8 +326,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               </div>
 
               <div className="relative order-1 min-h-[260px] overflow-hidden lg:order-2 lg:min-h-[248px]">
-                <img src={heroSplash} alt="" aria-hidden className="absolute -inset-5 h-[calc(100%+2.5rem)] w-[calc(100%+2.5rem)] object-cover object-center opacity-45 blur-2xl saturate-125" />
-                <img src={heroSplash} alt="" className="absolute inset-0 h-full w-full object-contain object-center" />
+                <img src={heroSplash} alt="" className="absolute inset-0 h-full w-full object-cover object-center" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07101d] via-transparent to-black/10 lg:bg-gradient-to-r lg:from-[#08101d] lg:via-transparent lg:to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07101d]/80 via-transparent to-transparent lg:hidden" />
                 <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/[0.13] bg-[#07101d]/75 p-4 shadow-2xl backdrop-blur-xl sm:bottom-5 sm:left-auto sm:right-5 sm:w-[16.5rem]">
