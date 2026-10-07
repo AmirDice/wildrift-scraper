@@ -11,10 +11,8 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]["key"];
 
-export function ChampionTabs({ panels, beforePanel }: {
+export function ChampionTabs({ panels }: {
   panels: Record<TabKey, ReactNode>;
-  /** Shared content shown after the tab controls and before the active panel. */
-  beforePanel?: ReactNode;
 }) {
   const [active, setActive] = useState<TabKey>("overview");
   return (
@@ -41,7 +39,6 @@ export function ChampionTabs({ panels, beforePanel }: {
           ))}
         </div>
       </div>
-      {beforePanel && <div className="mt-6">{beforePanel}</div>}
       {TABS.map((tab) => (
         <section
           key={tab.key}

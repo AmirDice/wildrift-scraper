@@ -40,6 +40,14 @@ const MECHANIC_LABEL: Record<string, string> = { cc: "Crowd control", dash: "Mob
 const SCALES_LABEL: Record<string, string> = { ad: "AD", ap: "AP", maxHp: "Max HP", attackSpeed: "Attack speed", crit: "Crit", mana: "Mana", abilityHaste: "Ability haste", lethality: "Lethality" };
 const pretty = (map: Record<string, string>, key: string) => map[key] ?? key;
 
+/** Data Dragon's `loading` art is the tall champion-card crop. The matching
+ *  `splash` URL is the full horizontal painting intended for wide heroes.
+ *  Local overrides (such as Hecarim's 2048×934 artwork) are already wide and
+ *  pass through unchanged. */
+function horizontalSplash(source: string): string {
+  return source.replace("/cdn/img/champion/loading/", "/cdn/img/champion/splash/");
+}
+
 function loadAnalyticsPlayers(slug: string): AnalyticsPlayer[] {
   try {
     const file = path.join(process.cwd(), "public", "players", `${slug}.json`);
@@ -71,7 +79,8 @@ export async function generateMetadata(props: PageProps<"/champions/[slug]">): P
   const description = champion.statsPending
     ? `${champion.name} in Wild Rift: full kit, ability numbers, base stats and item build. Win rate and tier arrive once there is a ranked sample to build them from.`
     : `${champion.name} is ${tierLabel(meta.tier)} tier in Wild Rift with a ${meta.wr.toFixed(1)}% win rate across its 50 best players in EU and NA. Counters, matchups, abilities, runes, item build and full patch history.`;
-  return { title, description, alternates: { canonical: `/champions/${champion.slug}` }, openGraph: { title, description, images: [champion.splash] }, twitter: { card: "summary_large_image", title, description, images: [champion.splash] } };
+  const splash = horizontalSplash(champion.splash);
+  return { title, description, alternates: { canonical: `/champions/${champion.slug}` }, openGraph: { title, description, images: [splash] }, twitter: { card: "summary_large_image", title, description, images: [splash] } };
 }
 
 /** An item's name and icon for the per-server build card. Unknown slugs still
@@ -92,6 +101,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const { slug } = await props.params;
   const champion = getChampion(slug);
   if (!champion) notFound();
+  const heroSplash = horizontalSplash(champion.splash);
 
   const cn = getCnBySlug(champion.slug);
   const skew = getSkewBySlug(champion.slug);
@@ -159,6 +169,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   // still carry real data and stay exactly as they are.
   const pendingOverview = (
     <div className="space-y-6">
+      {serverBuildCard}
       <Card className="p-5 sm:p-6">
         <h2 className="text-lg font-semibold">{champion.name} stats are pending</h2>
         <p className="mt-2 leading-relaxed text-muted">
@@ -179,6 +190,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
 
   const overview = (
     <div className="space-y-4">
+      {serverBuildCard}
       <ChampionAnalytics
         champion={champion.name}
         players={analyticsPlayers}
@@ -314,8 +326,8 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               </div>
 
               <div className="relative order-1 min-h-[260px] overflow-hidden lg:order-2 lg:min-h-[248px]">
-                <img src={champion.splash} alt="" aria-hidden className="absolute -inset-5 h-[calc(100%+2.5rem)] w-[calc(100%+2.5rem)] object-cover object-[center_22%] opacity-45 blur-2xl saturate-125" />
-                <img src={champion.splash} alt="" className="absolute inset-0 h-full w-full object-contain object-center" />
+                <img src={heroSplash} alt="" aria-hidden className="absolute -inset-5 h-[calc(100%+2.5rem)] w-[calc(100%+2.5rem)] object-cover object-center opacity-45 blur-2xl saturate-125" />
+                <img src={heroSplash} alt="" className="absolute inset-0 h-full w-full object-contain object-center" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07101d] via-transparent to-black/10 lg:bg-gradient-to-r lg:from-[#08101d] lg:via-transparent lg:to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07101d]/80 via-transparent to-transparent lg:hidden" />
                 <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/[0.13] bg-[#07101d]/75 p-4 shadow-2xl backdrop-blur-xl sm:bottom-5 sm:left-auto sm:right-5 sm:w-[16.5rem]">
@@ -340,7 +352,6 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
 
         <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
           <ChampionTabs
-            beforePanel={serverBuildCard}
             panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}
           />
           <ToolsCta />
