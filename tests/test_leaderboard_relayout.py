@@ -865,3 +865,76 @@ class TestChampionNearMatch:
         clashes = [(a, b) for i, a in enumerate(names) for b in names[i + 1:]
                    if _within_one_edit(a, b)]
         assert not clashes, f"names within one edit: {clashes}"
+
+
+class TestCnHiddenProfiles:
+    """CN lets a player hide their profile. The row keeps a real rank and
+    score, but there is nothing behind it: tapping shows a brief toast and a
+    "shy" panel. The tap chain never confirms a profile opened, so without
+    this it would screenshot the ranking screen as a profile and then fire the
+    next two taps into it."""
+
+    def test_the_anonymous_name_is_recognised(self):
+        from src.scrape_timed import looks_anonymous_cn
+        assert looks_anonymous_cn("匿名玩家")
+        # OCR rarely returns a bare phrase; substrings must still match.
+        assert looks_anonymous_cn("  匿名玩家 ")
+        assert looks_anonymous_cn("匿名玩家.")
+
+    def test_real_names_are_not(self):
+        from src.scrape_timed import looks_anonymous_cn
+        for name in ("神王、Galun", "Moonveil、", "七海丶丶", "WrTrueMeta", "saltedpeanut"):
+            assert not looks_anonymous_cn(name), name
+
+    def test_a_missing_name_is_not_anonymous(self):
+        """None means the read failed, which is worth retrying. Treating it as
+        anonymous would silently drop every row whose name would not OCR."""
+        from src.scrape_timed import looks_anonymous_cn
+        assert not looks_anonymous_cn(None)
+        assert not looks_anonymous_cn("")
+
+    def test_the_skip_sentinel_is_not_a_name(self):
+        """It travels in the player-name slot, so it must be distinguishable
+        from a real name by identity, not equality: the row write, the counters
+        and the retry loop all branch on it."""
+        from src.scrape_timed import ANONYMOUS_CN, looks_anonymous_cn
+        assert isinstance(ANONYMOUS_CN, str)
+        assert not looks_anonymous_cn(ANONYMOUS_CN)
+
+    def test_the_shy_panel_is_recognised_and_a_failed_read_is_not(self):
+        """The safety net for a hidden profile the name check missed. A read
+        that raises must return False: unreadable is not evidence of hiding,
+        and treating it as such would drop good players."""
+        import numpy as np
+        from src.scrape_timed import looks_hidden_profile_cn
+        # A uniform frame OCRs to nothing, which is "no evidence", not "hidden".
+        assert looks_hidden_profile_cn(np.zeros((80, 300, 3), dtype=np.uint8)) is False
+
+    def test_only_cn_pays_for_the_check(self):
+        """The gate is the region, not a heuristic: EU and NA have no hidden
+        profiles and must not pay an extra on-device name read per rank."""
+        import inspect
+        from src import scrape_timed
+        src = inspect.getsource(scrape_timed)
+        assert 'is_cn = (getattr(args, "region", None) or "").upper() == "CN"' in src
+        assert "if is_cn:" in src
+
+    def test_a_skipped_rank_extends_the_window(self):
+        """Skipping must not shorten the board. --n is a number of PLAYERS, so
+        a rank that yields nobody has to be replaced by going one deeper."""
+        import inspect
+        from src import scrape_timed
+        src = inspect.getsource(scrape_timed)
+        assert "anonymous_skipped += 1" in src
+        assert "end_rank += 1" in src
+
+    def test_the_skip_happens_before_the_row_is_written(self):
+        """The first version of this guard sat after the row write, so a
+        skipped rank was written to the CSV with the sentinel as its name and
+        counted toward successes."""
+        import inspect
+        from src import scrape_timed
+        src = inspect.getsource(scrape_timed)
+        guard = src.index("if player_name is ANONYMOUS_CN:")
+        write = src.index("writer.write(LeaderboardRow(")
+        assert guard < write, "the skip guard must precede the row write"

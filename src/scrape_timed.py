@@ -63,6 +63,8 @@ from .config import (
     QUIT_DIALOG_CANCEL,
     QUIT_DIALOG_REGION,
     ROWS_PER_PAGE,
+    CN_ANONYMOUS_NAME_MARKERS,
+    CN_HIDDEN_PROFILE_MARKERS,
     SCREEN_2_BADGE_X_RANGE,
     SCREEN_LIST_Y_RANGE,
     SCREEN_2_NAME_HEIGHT,
@@ -278,6 +280,42 @@ def roster_size() -> int:
     except Exception:  # noqa: BLE001
         pass
     return 142
+
+
+#: Returned in the player-name slot when a CN row was skipped because the
+#: profile is hidden. Distinct from None, which means "the name could not be
+#: read" -- those are worth retrying and these are not.
+ANONYMOUS_CN = "<anonymous-cn>"
+
+
+def looks_anonymous_cn(name: str | None) -> bool:
+    """True when a CN leaderboard row belongs to a hidden profile.
+
+    CN lets a player hide their profile. The row keeps its real rank and
+    score, but the name reads "匿名玩家" and there is nothing behind it:
+    tapping through shows a brief toast and a "shy" panel. Only CN does
+    this, so callers gate on the region rather than paying for the check --
+    an extra on-device name read -- on EU and NA.
+    """
+    if not name:
+        return False
+    return any(m in name for m in CN_ANONYMOUS_NAME_MARKERS)
+
+
+def looks_hidden_profile_cn(image) -> bool:
+    """True when the screen is CN's "this player is shy" panel, not a profile.
+
+    The safety net behind the name check, and the reason it is worth having:
+    the tap chain never confirms a profile opened, so without this it would
+    screenshot the ranking screen as a profile and then fire the next two
+    taps into it, which can navigate away and desync every champion after.
+    """
+    from .ocr import GENERAL_TESSERACT_CONFIG, read_text
+    try:
+        text = (read_text(image, GENERAL_TESSERACT_CONFIG).text or "")
+    except Exception:  # noqa: BLE001 -- a failed read is not evidence either way
+        return False
+    return any(m in text for m in CN_HIDDEN_PROFILE_MARKERS)
 
 
 def looks_like_power_saving(img) -> bool:
@@ -554,6 +592,10 @@ def main() -> int:
             return (target_x, row_ys[slot])
         return (target_x, int(round(start_y + slot * pitch_y)))
 
+    #: CN is the only region that lets a player hide their profile, and the
+    #: extra name read this costs is not worth paying anywhere else.
+    is_cn = (getattr(args, "region", None) or "").upper() == "CN"
+
     def scrape_one(rank: int, tap_y: int) -> tuple[float | None, int | None, int | None, str | None]:
         """Tap chain through one player's profile at the given row y. Returns
         (winrate, score, games, player_name). Raises PauseRequested if the user
@@ -604,6 +646,26 @@ def main() -> int:
         # selection. So the row tap happens once, here, and both the build
         # popup and the profile are reached from the rail afterwards. The old
         # order tapped a per-row book icon BEFORE the row.
+        # CN only: a hidden profile is identifiable from the row itself, so
+        # skip the whole excursion rather than tapping into a toast. The
+        # leaderboard frame is already saved above, which is where the rank
+        # and score live, so nothing true about this player is lost.
+        if is_cn:
+            probe = None
+            try:
+                probe = pre_img if capture_dir is not None else client.screenshot()
+            except Exception:  # noqa: BLE001
+                probe = None
+            if probe is not None:
+                name_x0, name_x1 = SCREEN_2_NAME_X_RANGE
+                cn_name = read_player_name(probe, (
+                    name_x0, max(0, py + SCREEN_2_NAME_Y_OFFSET),
+                    name_x1 - name_x0, SCREEN_2_NAME_HEIGHT,
+                ))
+                if looks_anonymous_cn(cn_name):
+                    print(f"  [cn] rank {rank}: hidden profile -- row kept, profile skipped")
+                    return (None, None, None, ANONYMOUS_CN)
+
         client.tap(px, py, hold_ms=args.tap_hold_ms)
         time.sleep(args.step_wait)
         _check_pause_or_raise()
@@ -633,7 +695,16 @@ def main() -> int:
             # entering Champion and Lane; the latter no longer carries a
             # reliable rank badge after the 2026 profile relayout.
             profile_frame = f"{rank:03d}_profile.jpg"
-            cv2.imwrite(str(capture_dir / profile_frame), client.screenshot(),
+            profile_img = client.screenshot()
+            # Safety net: if the profile did not open, the following taps
+            # would land on whatever IS on screen. Back out instead.
+            if is_cn and looks_hidden_profile_cn(profile_img):
+                print(f"  [cn] rank {rank}: profile did not open (shy panel) -- backing out")
+                for _ in range(2):
+                    client.back()
+                    time.sleep(0.4)
+                return (None, None, None, ANONYMOUS_CN)
+            cv2.imwrite(str(capture_dir / profile_frame), profile_img,
                         [cv2.IMWRITE_JPEG_QUALITY, 92])
         _check_pause_or_raise()
 
@@ -1226,6 +1297,7 @@ def main() -> int:
             current_rank = args.start_rank
             end_rank = args.start_rank + args.n - 1
             successes = 0
+            anonymous_skipped = 0
             total = 0
             recoveries = 0
             t0 = time.time()
@@ -1267,6 +1339,15 @@ def main() -> int:
                     for attempt in range(args.max_retries_per_player):
                         try:
                             wr, sc, gm, player_name = scrape_one(current_rank, tap_y)
+                            if player_name is ANONYMOUS_CN:
+                                # A hidden profile is not a failure and not a
+                                # row: it yields nothing to write. It must not
+                                # consume one of the ranks asked for either, so
+                                # the window grows by one and the board still
+                                # ends up --n players deep.
+                                anonymous_skipped += 1
+                                end_rank += 1
+                                break
                             # Capture mode has no live read result -- one clean pass
                             # through the tap chain is success by definition.
                             if wr is not None or capture_dir is not None:
@@ -1309,6 +1390,15 @@ def main() -> int:
                             break
                         tap_y = ny
 
+                    # A hidden CN profile yields no row at all. This has to
+                    # come before the row write and before total/successes:
+                    # the sentinel is not a player name, and the rank was
+                    # never collected, so counting it would overstate the
+                    # board and write a bogus name into the CSV.
+                    if player_name is ANONYMOUS_CN:
+                        current_rank += 1
+                        continue
+
                     # Collect the async Gemini page read (if any): its names beat
                     # Tesseract's (CJK), and its screen-2 score fills a missing one.
                     if name_reader is not None:
@@ -1347,6 +1437,9 @@ def main() -> int:
                 print(f"next step        : python -m src.extract_frames \"{capture_dir}\"")
             else:
                 print(f"winrate parsed   : {successes}")
+                if anonymous_skipped:
+                    print(f"hidden profiles  : {anonymous_skipped} skipped "
+                          f"(CN); window extended to rank {end_rank}")
                 print(f"CSV              : {args.output}")
             if interrupted:
                 raise KeyboardInterrupt

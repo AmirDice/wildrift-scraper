@@ -328,3 +328,24 @@ def first_point(points: dict[str, tuple[int, int]]) -> tuple[str, int, int]:
         raise ValueError("Cannot extract coordinates from an empty points dictionary.")
     name, (x, y) = next(iter(points.items()))
     return name, x, y
+
+
+# --- China (国服) -------------------------------------------------------
+# CN players can hide their profile. The leaderboard still lists them, with a
+# real rank and 评分, but the name reads "匿名玩家" (anonymous player) over a
+# generic shield avatar, and opening the profile shows only a brief toast and
+# a "玩家有点害羞~" ("this player is a bit shy") panel -- there is no profile
+# to read. The row's rank and score are still true and still on the board.
+#
+# This matters beyond a missing frame: the tap chain never verifies that a
+# profile opened, so on a hidden player it would screenshot the ranking screen
+# and then send the "Champion and Lane" and "Recent" taps into it, which can
+# navigate somewhere unexpected and desync every champion after it.
+#
+# Matched as substrings against the OCR'd name, because the reader may return
+# the phrase with surrounding punctuation or a stray glyph.
+CN_ANONYMOUS_NAME_MARKERS: tuple[str, ...] = ("匿名玩家", "匿名")
+
+#: The panel shown instead of a profile. The safety net for a hidden player
+#: the name check did not catch.
+CN_HIDDEN_PROFILE_MARKERS: tuple[str, ...] = ("玩家有点害羞", "害羞")
