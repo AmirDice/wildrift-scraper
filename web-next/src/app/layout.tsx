@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { SiteNav } from "@/components/site-nav";
+import { FeatureBanner } from "@/components/feature-banner";
 import { SiteFooter } from "@/components/site-footer";
 import { FlagshipNudge } from "@/components/flagship-nudge";
 import { SocialDock } from "@/components/social-dock";
@@ -116,6 +117,11 @@ export default function RootLayout({
         {/* Who publishes this site, stated once for every page. */}
         <JsonLd data={[organizationJsonLd, websiteJsonLd]} />
         <AccountProvider>
+          {/* Restored after the liquid-glass revamp (f7c8a3c) dropped it: the
+              site-wide announcement had no reader at all for a day, so the
+              copy went on being maintained while nothing displayed it. Above
+              the nav, which is where it has always sat. */}
+          <FeatureBanner />
           <SiteNav champions={navChampions} />
           <main className="flex-1">{children}</main>
           <AdSlot placement="bottom" className="mt-10" />
