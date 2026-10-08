@@ -36,7 +36,7 @@ export default function GlobalPage() {
     <Container className="py-12">
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Global Win Rates</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        Every champion&rsquo;s win rate on <span className="text-text">EU</span> (top-50 mains) and{" "}
+        Every champion&rsquo;s win rate on <span className="text-text">EU</span> (top-board mains) and{" "}
         <span className="text-text">CN</span> ({CN_META.bracket}), on the same 50%-centred scale.
         Champions strong on <span className="text-emerald-300">both servers</span> are the safest
         picks. A big <span className="text-text">Gap</span> means a champion is server-specific

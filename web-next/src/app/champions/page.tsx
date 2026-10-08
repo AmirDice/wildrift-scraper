@@ -12,7 +12,7 @@ import { NextStep } from "@/components/next-step";
 export const metadata: Metadata = {
   title: "Wild Rift Champions | Stats & Win Rates",
   description:
-    "Every Wild Rift champion ranked by real EU top-50 player win rates. Search and filter by role, then open a champion for full stats and its best player.",
+    "Every Wild Rift champion ranked by the real win rates of its top players on EU and NA. Search and filter by role, then open a champion for full stats and its best player.",
   alternates: { canonical: "/champions" },
 };
 

@@ -31,14 +31,14 @@ export const SKIPPED_PATCH = "7.3a";
  * WINRATE_PATCH stays as the EU value because that is what every existing
  * reader of it meant.
  */
-export const EU_WINRATE_PATCH = "7.2d";
+export const EU_WINRATE_PATCH = "7.3a";
 export const NA_WINRATE_PATCH = "7.3a";
 export const WINRATE_PATCH = EU_WINRATE_PATCH;
 
 /** Regions whose boards this run has already published. */
-export const COLLECTION_DONE_REGIONS = "NA";
+export const COLLECTION_DONE_REGIONS = "EU and NA";
 /** Regions this run has still to collect. */
-export const COLLECTION_PENDING_REGIONS = "EU and CN";
+export const COLLECTION_PENDING_REGIONS = "CN";
 
 /** The patch the next collection and the next round of work is aimed at. */
 export const NEXT_PATCH = "7.3a";
@@ -64,16 +64,15 @@ export const COLLECTION_REGIONS = "EU, NA and CN";
 export const COLLECTION_IN_PROGRESS = true;
 
 export const ANNOUNCEMENT = {
-  // Bumped from -v2: that banner said the run was underway. NA has now
-  // finished and is published, which is different news, and anyone who
-  // dismissed v2 would otherwise never be told the boards they were waiting
-  // for are live.
-  key: "wtm-announce-na-live-2026-10-v3",
+  // Bumped from -v3: that banner said NA was live and EU was still to come.
+  // EU has now been re-collected too, so both western boards are on 7.3a
+  // and the comparison between them is finally like for like.
+  key: "wtm-announce-eu-na-live-2026-10-v4",
   href: "/updates",
-  lead: "NA win rates, leaderboard and builds are live",
-  short: `All 142 champions were re-collected from the live NA leaderboard on 6 October, the first NA board played entirely on patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the builds those players actually equipped are published now. ${COLLECTION_PENDING_REGIONS} are still to come.`,
+  lead: "EU and NA win rates are both on patch 7.3a",
+  short: `Both western boards have been re-collected: NA on 6 October and EU on 7 October, all 142 champions each, the first boards played entirely on patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the builds those players equipped are live for both, so comparing the two servers is finally like for like. ${COLLECTION_PENDING_REGIONS} is still to come.`,
   cta: "What changed",
-  badges: ["NA updated"],
+  badges: ["EU + NA updated"],
   /** Pages the banner points at, so it does not appear on top of itself. */
   hideOn: ["/updates"],
 } as const;
@@ -88,6 +87,19 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "7 October 2026",
+    title: "EU win rates are on patch 7.3a",
+    body:
+      "EU has been re-collected, all 142 champions, the first EU board played "
+      + "entirely on 7.3a. With NA re-collected the day before, both western "
+      + "servers are now measured on the same patch and the same 30-deep "
+      + "boards, so an EU-versus-NA gap is a difference between the servers "
+      + "rather than between two collection dates. Senna comes out strongest "
+      + "on both (61.6 EU, 62.0 NA), which is the marksman overhaul landing "
+      + "the same way twice. China is unchanged; those figures come from "
+      + "Tencent and follow their own cycle.",
+  },
   {
     date: "6 October 2026",
     title: "NA win rates, leaderboard and builds are live",

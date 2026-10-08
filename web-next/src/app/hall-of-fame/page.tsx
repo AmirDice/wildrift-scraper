@@ -79,7 +79,7 @@ export default function HallOfFamePage() {
         </div>
       </div>
       <p className="mt-3 max-w-2xl text-muted">
-        Crowned from {pulse.nPlayers.toLocaleString()} top-50 players across{" "}
+        Crowned from {pulse.nPlayers.toLocaleString()} top-board players across{" "}
         {pulse.nChampions} champion boards, measured from their real ranked history.
         Every record has a name on it. Updated with every collection, last on {pulse.generatedAt}.
       </p>
@@ -165,7 +165,7 @@ export default function HallOfFamePage() {
       </section>
 
       <section className="mt-12">
-        <SectionHeading title="Multi-board masters" subtitle="Players holding a top-50 spot on two or more champions at once" />
+        <SectionHeading title="Multi-board masters" subtitle="Players holding a board spot on two or more champions at once" />
         <div className="glass overflow-x-auto rounded-2xl">
           <table className="w-full border-collapse text-sm sm:min-w-[480px]">
             <thead>
@@ -203,7 +203,7 @@ export default function HallOfFamePage() {
       </section>
 
       <section className="mt-12">
-        <SectionHeading title="Guild power ranking" subtitle="Guilds holding the most top-50 spots across all boards" />
+        <SectionHeading title="Guild power ranking" subtitle="Guilds holding the most board spots across all boards" />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {hof.guilds.map((g, i) => (
             <div key={g.guild} className="glass flex items-center justify-between rounded-xl px-4 py-3">

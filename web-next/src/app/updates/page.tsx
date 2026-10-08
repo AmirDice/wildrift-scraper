@@ -41,13 +41,13 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`NA is collected and published: all 142 champions re-read from the live `
-            + `leaderboard on 6 October, the first NA board played entirely on patch `
-            + `${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the builds `
-            + `those players had equipped are live now. ${COLLECTION_PENDING_REGIONS} have not `
-            + `been re-collected yet, so EU still shows its ${EU_WINRATE_PATCH} board and `
-            + `anything that averages the two servers mixes the two. Patch ${SKIPPED_PATCH} `
-            + `item and ability data is already live everywhere.`}
+          {`Both western boards are collected and published: NA on 6 October, EU on `
+            + `7 October, all 142 champions each and the first boards played entirely on `
+            + `patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the `
+            + `builds those players had equipped are live for both, so an EU-versus-NA `
+            + `comparison is now a difference between the servers rather than between two `
+            + `collection dates. ${COLLECTION_PENDING_REGIONS} is still to come. Patch `
+            + `${SKIPPED_PATCH} item and ability data is already live everywhere.`}
         </p>
       </div>
 
@@ -69,14 +69,14 @@ export default function UpdatesPage() {
                 </p>
               </div>
               <div className="rounded-xl border border-gold/30 bg-gold/[0.07] px-4 py-3">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-gold">
-                  EU still measured on {EU_WINRATE_PATCH}
+                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-emerald-300">
+                  Measured on {EU_WINRATE_PATCH}
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">
                   Win rates, tiers, pick rates and movement change only when a region&apos;s
-                  leaderboards are re-scraped. NA has been, and its numbers are on{" "}
-                  {NA_WINRATE_PATCH}. EU has not, so a champion changed by {SKIPPED_PATCH}
-                  {" "}still shows there how it performed before the patch.
+                  leaderboards are re-scraped. Both EU and NA have now been, on 30-deep
+                  boards one day apart, so a champion changed by {SKIPPED_PATCH} shows how
+                  it performs after the patch on both servers.
                 </p>
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function UpdatesPage() {
                   {EU_COLLECTED ?? "Current dataset"}
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
-                  A full roster, played on {EU_WINRATE_PATCH}.
+                  All 142 champions, played on {EU_WINRATE_PATCH}.
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">

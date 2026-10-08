@@ -49,7 +49,11 @@ from web.integrity import (  # noqa: E402
 # other script already reads; a new region gets its own everything.
 REGIONS = {
     "eu": {
-        "captures": ROOT / "data" / "captures",
+        # EU moved to a region-suffixed directory on 2026-10-07, matching na
+        # and cn. data/captures still holds the 2026-09-03 collection, which
+        # is the 50-row pre-relayout board; pointing here at that would have
+        # silently re-exported September as though it were the new run.
+        "captures": ROOT / "data" / "captures_eu",
         "winrates": ROOT / "data" / "winrates.csv",
         "players": ROOT / "web-next" / "public" / "players",
         "index": ROOT / "web-next" / "public" / "player-index.json",

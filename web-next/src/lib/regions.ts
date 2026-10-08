@@ -31,16 +31,18 @@ export type RegionKey = "EU" | "NA" | "CN";
  *
  * It used to be 50 everywhere, which is why so much of the site's copy said
  * "top 50". The 2026-09 leaderboard relayout cut the visible board to 30 rows,
- * so every board collected after it is 30 deep. NA was re-collected on
- * 2026-10-06 and is 30; EU's board is still the 2026-09-03 collection and is
- * 49-50, so one shared number would now be wrong for one server or the other.
+ * so every board collected after it is 30 deep. Both western servers have
+ * now been re-collected on it: NA on 2026-10-06, EU on 2026-10-07, so both
+ * read 30. It stays a per-server map rather than one constant because that
+ * is only true of a server once it has been re-collected, and CN is not a
+ * board of players at all.
  *
  * Copy that names a region should read its depth from here. Copy that covers
  * the site as a whole should say "top players" and name no number at all,
  * because there is no longer one true number to name.
  */
 export const BOARD_DEPTH: Record<RegionKey, number | null> = {
-  EU: 50,
+  EU: 30,
   NA: 30,
   // Tencent publishes a whole-population bracket aggregate, not a board of
   // players, so a depth is not a meaningful thing to state for CN.

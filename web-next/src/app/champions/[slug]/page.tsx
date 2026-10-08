@@ -173,7 +173,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
       <Card className="p-5 sm:p-6">
         <h2 className="text-lg font-semibold">{champion.name} stats are pending</h2>
         <p className="mt-2 leading-relaxed text-muted">
-          {champion.name} is live in Wild Rift but has no top-50 leaderboard here yet, and every
+          {champion.name} is live in Wild Rift but has no leaderboard here yet, and every
           ranking on this site is built from those players. Rather than publish a win rate we
           cannot stand behind, this page shows the kit and base stats now, and the rankings
           arrive with the first collected sample.

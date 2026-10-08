@@ -136,7 +136,7 @@ export async function GET(request: Request) {
     : region;
   const basis = region === "CN"
     ? "Official China server data, lolm.qq.com"
-    : "Confidence-adjusted win rates of each champion's top 50 players";
+    : "Confidence-adjusted win rates of each champion's top players";
 
   return new ImageResponse(
     (
