@@ -835,7 +835,9 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
   runeIcons: Record<string, string>;
   spellIcons: Record<string, string>;
 }) {
-  const [region, setRegion] = useState<Region>("EU");
+  // Global is the default: it is the point of collecting more than one
+  // server, and until it had data this page could only open on EU.
+  const [region, setRegion] = useState<Region>("Global");
   // The champion list follows the region: NA covers fewer champions while its
   // collection runs, and picking one it has no board for would render an
   // empty table rather than an honest "not collected yet".
@@ -904,9 +906,35 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
     }
     let cancelled = false;
     setEnriched(null);
-    const detailPath = region === "NA" ? `/players/na/${slug}.json` : region === "CN" ? `/players/cn/${slug}.json` : region === "Global" ? `/players/global/${slug}.json` : `/players/${slug}.json`;
-    fetch(detailPath)
-      .then((r) => (r.ok ? r.json() : null))
+    // Global has no enriched file of its own and never will: builds and
+    // per-queue stats live in each SERVER's capture export. So it fetches
+    // both and merges, tagging every row with the server it came from --
+    // without that tag a merged row is ambiguous, because EU rank 1 and NA
+    // rank 1 are different players.
+    const detail = (path: string, sv: string) =>
+      fetch(path)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((payload: EnrichedPayload | null) =>
+          payload ? payload.players.map((row) => ({ ...row, v: sv })) : null,
+        )
+        .catch(() => null);
+    const load: Promise<EnrichedPayload | null> =
+      region === "Global"
+        ? Promise.all([
+            detail(`/players/${slug}.json`, "EU"),
+            detail(`/players/na/${slug}.json`, "NA"),
+          ]).then(([eu, na]) => {
+            const players = [...(eu ?? []), ...(na ?? [])];
+            return players.length ? { champion: slug, slug, capturedAt: "", players } : null;
+          })
+        : fetch(
+            region === "NA"
+              ? `/players/na/${slug}.json`
+              : region === "CN"
+                ? `/players/cn/${slug}.json`
+                : `/players/${slug}.json`,
+          ).then((r) => (r.ok ? r.json() : null));
+    load
       .then((payload: EnrichedPayload | null) => {
         enrichedCache.current.set(`${region}:${slug}`, payload);
         if (!cancelled) setEnriched(payload);
@@ -936,16 +964,19 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
     // every champion that has one showed an empty "Best score" column -- on
     // EU as well as NA. Rather than duplicate the score into the capture
     // export, carry it across by rank, which keeps one source of truth for it.
-    const scoreByRank = new Map<number, number>();
+    // Keyed on SERVER and rank, not rank alone: on Global the same rank
+    // appears once per server, and keying on the number alone would hand
+    // one player the other's composite score.
+    const scoreKey = (sv: unknown, r: unknown) => `${sv ?? ""}:${r ?? ""}`;
+    const scoreByRank = new Map<string, number>();
     for (const row of data?.[slug] ?? []) {
-      if (row.r != null && row.b != null) scoreByRank.set(row.r, row.b);
+      if (row.r != null && row.b != null) scoreByRank.set(scoreKey(row.v, row.r), row.b);
     }
     const base: (Row | EnrichedPlayer)[] = enriched?.players
-      ? enriched.players.map((row) =>
-          row.b == null && row.r != null && scoreByRank.has(row.r)
-            ? { ...row, b: scoreByRank.get(row.r) }
-            : row,
-        )
+      ? enriched.players.map((row) => {
+          const found = scoreByRank.get(scoreKey(row.v, row.r));
+          return row.b == null && found != null ? { ...row, b: found } : row;
+        })
       : data?.[slug] ?? [];
     // Derived sort keys return null when the row cannot supply them, which
     // `num` sorts last in either direction.
@@ -976,7 +1007,12 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
     <div className="leaderboard-view">
       {/* Global and CN become fully populated after the player-level CN
           collection; keeping them visible now makes the rollout state clear. */}
-      <div className="glass mb-5 grid gap-3 rounded-[1.4rem] border border-white/[0.1] p-3 shadow-[inset_0_1px_rgba(255,255,255,.09)] sm:p-4 lg:grid-cols-[1fr_22rem] lg:items-end">
+      {/* z-30: this bar holds the champion search, whose dropdown overflows it.
+          .glass carries backdrop-filter, so each panel is its own stacking
+          context and the list cannot escape this one; with the panel below also
+          .glass and neither having a z-index, document order put it on top and
+          covered the lower third of the results. */}
+      <div className="glass relative z-30 mb-5 grid gap-3 rounded-[1.4rem] border border-white/[0.1] p-3 shadow-[inset_0_1px_rgba(255,255,255,.09)] sm:p-4 lg:grid-cols-[1fr_22rem] lg:items-end">
         <div>
           <p className="mb-2 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-faint">Region</p>
           <RegionToggle region={region} onChange={setRegion} regions={LEADERBOARD_REGIONS} />
