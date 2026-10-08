@@ -249,31 +249,40 @@ def _attach_player_metadata(df: pd.DataFrame, region: str) -> pd.DataFrame:
 
 
 def _global_scored_frame() -> pd.DataFrame:
-    """Build a cross-server podium when all three player boards exist.
+    """Build a cross-server podium from every player board that exists.
 
-    CN is intentionally all-or-nothing here. A two-server blend would look
-    global in the UI while silently excluding the very server this feature is
-    meant to add. The collection can therefore publish EU/NA regional pages
-    first and the global podium appears only after the CN manifest is present.
+    It used to require all three and produce nothing without CN, on the
+    grounds that a two-server blend "would look global while silently
+    excluding the very server this feature is meant to add". The silence was
+    the real problem, not the blend: the rest of the site already uses
+    "Global" to mean the servers we have -- the tier list's Global averages
+    EU and NA and says so -- while this one produced an empty page for
+    months. So it now builds from whatever boards exist and REPORTS which,
+    and the UI names them instead of claiming all three.
+
+    Two is the floor: one server is not a cross-server anything, and the
+    regional view already covers it.
     """
     paths = {
         "EU": REGION_FILES["eu"]["csv"],
         "NA": REGION_FILES["na"]["csv"],
         "CN": REGION_FILES["cn"]["csv"],
     }
-    if not all(path.exists() for path in paths.values()):
-        return pd.DataFrame()
     frames = []
     for server, path in paths.items():
+        if not path.exists():
+            continue
         frame = _attach_player_metadata(
             load_leaderboard(csv_path=path),
             {"EU": "eu", "NA": "na", "CN": "cn"}[server],
         )
         if frame.empty:
-            return pd.DataFrame()
+            continue
         frame = frame.copy()
         frame["server"] = server
         frames.append(frame)
+    if len(frames) < 2:
+        return pd.DataFrame()
     combined = pd.concat(frames, ignore_index=True)
     return best_player_podium_per_champion(combined)
 
@@ -283,12 +292,16 @@ def _global_podium_by_champion() -> dict[str, dict]:
     if scored.empty:
         return {}
     out: dict[str, dict] = {}
+    servers = sorted(scored["server"].dropna().unique().tolist())
     for champ, group in scored.groupby("champion"):
         rows = group[group["podium_rank"].notna()].sort_values("podium_rank")
         out[_slug(str(champ))] = {
             "scoringVersion": BEST_PLAYER_SCORING_VERSION,
             "scope": "global",
             "server": None,
+            # Which boards this actually blends, so the UI can name them
+            # rather than assert three servers it may not have.
+            "servers": servers,
             "capturedAt": data_collected_on(scored),
             "players": [_best_player_row_payload(row) for _, row in rows.iterrows()],
         }
@@ -296,7 +309,7 @@ def _global_podium_by_champion() -> dict[str, dict]:
 
 
 def _export_global_players() -> None:
-    """Write the combined full table once all three regional boards exist."""
+    """Write the combined full table from every regional board that exists."""
     scored = _global_scored_frame()
     if scored.empty:
         return

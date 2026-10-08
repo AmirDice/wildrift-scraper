@@ -314,7 +314,12 @@ function PlayerPodium({
   const [scoringOpen, setScoringOpen] = useState(false);
   const players = podium?.players ?? [];
   if (!players.length) return null;
-  const scopeLabel = podium?.scope === "global" ? "EU, NA and CN normalized together" : `${podium?.server ?? "regional"} leaderboard`;
+  // Name the servers the podium actually blends. It used to assert "EU, NA
+  // and CN" unconditionally, which would have been a straight falsehood the
+  // moment the global podium stopped requiring all three.
+  const scopeLabel = podium?.scope === "global"
+    ? `${(podium.servers ?? []).join(" and ") || "multiple servers"} normalized together`
+    : `${podium?.server ?? "regional"} leaderboard`;
   // Keep first place in the visual centre, like a real podium. On narrow
   // screens the winner returns to the top of the reading order, while the
   // desktop layout uses the familiar 2–1–3 arrangement.

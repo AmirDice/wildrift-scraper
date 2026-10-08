@@ -422,6 +422,17 @@ main h1,
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
 }
 
+/* The champion search holds a dropdown, and this element creates a stacking
+   context (it carries backdrop-filter via .glass). That traps the list's own
+   z-50 inside: the lower half of the results rendered UNDER .home-status-strip,
+   the section after it, so the options there could not be clicked. A z-index
+   on the trapping ancestor is the fix -- raising it on the list cannot work,
+   because the list can never escape the context it is painted in. */
+.home-command-search {
+  position: relative;
+  z-index: 40;
+}
+
 .home-command-search input {
   background: rgba(4, 9, 18, 0.44);
 }

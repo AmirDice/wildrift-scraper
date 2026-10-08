@@ -36,6 +36,10 @@ export interface BestPlayerPodium {
   scoringVersion: string;
   scope: "regional" | "global";
   server?: string | null;
+  /** On a global podium, the servers it actually blends. Present because
+   *  the podium no longer requires all three: the UI names these rather
+   *  than asserting "EU, NA and CN". */
+  servers?: string[] | null;
   capturedAt: string | null;
   players: BestPlayerPodiumEntry[];
 }
