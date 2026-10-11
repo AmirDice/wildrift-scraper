@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -180,17 +181,35 @@ def build() -> Path:
     return STAGE
 
 
+def _vercel_env() -> dict:
+    """Environment for the CLI, with telemetry off.
+
+    Not a preference. The CLI saves telemetry by SPAWNING A CHILD PROCESS
+    after the command it was asked to run, and on a machine that refuses
+    the spawn the whole invocation dies with `spawn EPERM` inside
+    TelemetryEventStore.sendToSubprocess -- after `vercel link` had already
+    succeeded, so the deploy was abandoned over a stats upload. Disabling
+    it removes the subprocess rather than the error handling.
+    """
+    env = dict(os.environ)
+    env["VERCEL_TELEMETRY_DISABLED"] = "1"
+    env["NEXT_TELEMETRY_DISABLED"] = "1"
+    return env
+
+
 def deploy(stage: Path) -> int:
     """Link and deploy. Secrets are NOT set here; see the printed steps."""
     npx = shutil.which("npx") or "npx"
+    env = _vercel_env()
     link = subprocess.run(
         [npx, "vercel", "link", "--project", PROJECT, "--yes"],
-        cwd=stage, text=True)
+        cwd=stage, text=True, env=env)
     if link.returncode != 0:
         print("vercel link failed", file=sys.stderr)
         return link.returncode
     return subprocess.run(
-        [npx, "vercel", "deploy", "--prod", "--yes"], cwd=stage, text=True).returncode
+        [npx, "vercel", "deploy", "--prod", "--yes"],
+        cwd=stage, text=True, env=env).returncode
 
 
 def main() -> None:
