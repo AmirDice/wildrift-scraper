@@ -394,7 +394,15 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v80: maximum-damage frontliners no longer inherit a mandatory two-item
   // defensive shell, and the final judge may tailor one complete rune page to
   // the engine's finished item core before it is legality-checked and measured.
-  return `build:v80:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v81: the engine-judged tournament is off, so every build is one model
+  // draw again. This is the reverse of the v39-v46 bumps and retires the
+  // cache for the same reason they did: a v80 hit on any damage or
+  // durability lean was produced by a different process -- three legal cores
+  // proposed, measured by the fight engine, then chosen from disclosed DPS,
+  // TTK, AoE and durability numbers -- and serving it would mask the change
+  // for the rest of the 45-day TTL. Put the tournament back and this bumps
+  // again, in the other direction.
+  return `build:v81:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

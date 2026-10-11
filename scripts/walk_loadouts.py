@@ -18,6 +18,9 @@ rather than inferred from which hero-list tabs the champion appears under.
 It is RESUMABLE and keyed by (champion, lane), so a run that dies at
 champion 90 picks up at 90.
 
+--lanes narrows which hero-list TABS are walked, not what is captured from
+the champions found there.
+
 Run:
     python -m scripts.walk_loadouts --bracket challenger --mode classic-ranked
     python -m scripts.walk_loadouts --bracket challenger --mode classic-ranked --lanes baron,jungle
@@ -283,8 +286,13 @@ def set_rank(client, nodes, target_cn: str) -> tuple[bool, list]:
     return _set_filter(client, nodes, target_cn, set(L.BRACKETS), "rank", 1)
 
 
-def lanes_for_champion(client, nodes) -> tuple[list[str], list, list]:
-    """(lanes offered, the still-OPEN options, the latest dump).
+def lanes_for_champion(client, nodes) -> tuple[list[str], list, list, str]:
+    """(lanes offered, the still-OPEN options, the latest dump, current lane).
+
+    The fourth value is the label the chip was showing BEFORE the dropdown
+    was opened. The caller needs it to close a menu it has no selection to
+    make in, and it cannot be read back afterwards: _chips anchors on the
+    rank chip, which a dialog covering the page removes from the hierarchy.
 
     THIS IS THE ROLE COUNT. The loadout tables are per lane: Shen played
     Baron and Shen played Jungle are two different datasets, and so are
@@ -303,7 +311,8 @@ def lanes_for_champion(client, nodes) -> tuple[list[str], list, list]:
     """
     chip = _chips(nodes)[0]
     if chip is None:
-        return [], [], nodes
+        return [], [], nodes, ""
+    current = chip.label.strip()
     options, nodes = _open_dropdown(client, nodes, chip, set(L.LANES))
     if not options:
         # Said out loud, because the quiet version of this is the whole
@@ -311,14 +320,14 @@ def lanes_for_champion(client, nodes) -> tuple[list[str], list, list]:
         # text looks exactly like a champion with one role, and we would
         # capture Shen's Baron table and never know Jungle existed.
         print(f"    ! lane dropdown did not open; assuming "
-              f"{chip.label.strip()} is this champion's only role")
-        return [chip.label.strip()], [], nodes
+              f"{current} is this champion's only role")
+        return [current], [], nodes, current
     labels: list[str] = []
     for node in options:
         label = node.label.strip()
         if label not in labels:
             labels.append(label)
-    return labels, options, nodes
+    return labels, options, nodes, current
 
 
 def _back_to_champion(client, depth: int = 2):
@@ -407,32 +416,36 @@ def capture_one(client, node_label: str, champion: str, args,
         _back_to_list(client)
         return failed("champion page never appeared")
 
-    lanes_cn, options, nodes = lanes_for_champion(client, nodes)
+    lanes_cn, options, nodes, current_lane = lanes_for_champion(client, nodes)
     if not lanes_cn:
         _back_to_list(client)
         return failed("no lane filter on the champion page")
     if len(lanes_cn) > 1:
         print(f"    {len(lanes_cn)} roles: {' '.join(lanes_cn)}")
 
+    # NOT filtered by --lanes. That argument chooses which hero-list tabs
+    # to walk; once a champion's page is open, every role its dropdown
+    # offers is captured. Filtering here as well meant --lanes dragon found
+    # Vayne offering 上单 and ADC and kept only the ADC half, discarding a
+    # role whose page was already loaded and already listed in the menu.
     wanted = []
     for lane_cn in lanes_cn:
         lane_en = L.LANES.get(lane_cn, lane_cn).lower()
-        if args.lanes and lane_en not in args.lanes:
-            continue
         if (champion, lane_en) in done:
             print(f"    - {lane_en:8s} already captured")
             continue
         wanted.append((lane_cn, lane_en))
 
     # Spend the open dropdown on the first lane we actually want, rather
-    # than closing it and reopening to pick the same thing.
+    # than closing it and reopening to pick the same thing. With nothing
+    # wanted, reselect whatever was already set, purely to dismiss the menu.
     if options:
-        first = wanted[0][0] if wanted else _chips(nodes)[0].label.strip()
-        after = _commit(client, options, first, "lane")
-        nodes = after if after is not None else nodes
+        first = wanted[0][0] if wanted else current_lane
+        after = _commit(client, options, first, "lane") if first else None
         if after is None:
             client.back()
-            nodes = uiauto.dump(client)
+            after = uiauto.dump(client)
+        nodes = after
 
     out: list[tuple[str, str]] = []
     for lane_cn, lane_en in wanted:
@@ -642,9 +655,12 @@ def main() -> int:
     ap.add_argument("--mode", default="",
                     help="the mode chip selected, e.g. 'classic-ranked'")
     ap.add_argument("--lanes", default="",
-                    help="comma-separated subset, e.g. 'baron,jungle'; "
-                         "default walks all five. Filters BOTH the hero-list "
-                         "tabs walked and the lanes captured per champion.")
+                    help="comma-separated subset of hero-list TABS to walk, "
+                         "e.g. 'baron,jungle'; default walks all five. It "
+                         "does not limit what is captured: every role a "
+                         "champion's own lane dropdown offers is taken, so "
+                         "walking one tab can still produce two captures for "
+                         "a champion played in two lanes.")
     ap.add_argument("--device", default=ADBClient.device)
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--data-wait", type=float, default=25.0,
