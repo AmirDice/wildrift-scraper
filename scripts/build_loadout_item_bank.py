@@ -132,6 +132,118 @@ def cluster(samples) -> list[list[int]]:
     return members
 
 
+FROZEN = ROOT / "data" / "icon_bank" / "loadout_item_clusters.npz"
+LABELS = ROOT / "data" / "loadout_item_labels.json"
+SHEET = ROOT / "data" / "debug_scans" / "_loadout_items_to_name.png"
+
+#: Clusters smaller than this are left off the sheet. They are
+#: overwhelmingly mis-segmented fragments and half-icons rather than rare
+#: items -- of 509 clusters, 231 were singletons -- and putting 500 cells
+#: in front of a person to find 130 real ones is how a naming pass gets
+#: abandoned. Raise it to see fewer, pass 1 to see everything.
+SHEET_MIN_SIZE = 3
+
+
+def freeze(samples, groups) -> dict:
+    """Number the clusters once and write them down, with one tile each.
+
+    The stored art is the member CLOSEST to its cluster's centre, which
+    is the cleanest look at that item rather than whichever instance
+    happened to be first.
+    """
+    art, sizes, names = [], [], []
+    for group in groups:
+        vecs = np.stack([samples[i][1] for i in group])
+        centre = vecs.mean(axis=0)
+        norm = float(np.linalg.norm(centre))
+        if norm > 1e-6:
+            centre = centre / norm
+        best = group[int((vecs @ centre).argmax())]
+        art.append(samples[best][0])
+        sizes.append(len(group))
+        names.append(auto_name(samples, group) or "")
+    FROZEN.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(FROZEN, art=np.stack(art),
+                        sizes=np.array(sizes),
+                        guesses=np.array(names, dtype=object),
+                        members=np.array(
+                            [np.array(g, dtype=np.int32) for g in groups],
+                            dtype=object))
+    return {"art": np.stack(art), "sizes": sizes, "guesses": names}
+
+
+def load_frozen() -> dict | None:
+    if not FROZEN.exists():
+        return None
+    with np.load(FROZEN, allow_pickle=True) as z:
+        return {"art": z["art"], "sizes": list(z["sizes"]),
+                "guesses": [str(g) for g in z["guesses"]]}
+
+
+def owner_labels() -> dict[str, str]:
+    if not LABELS.exists():
+        return {}
+    data = json.loads(LABELS.read_text(encoding="utf-8"))
+    return {k: v for k, v in data.items()
+            if not k.startswith("_") and isinstance(v, str) and v.strip()}
+
+
+def auto_name(samples, group) -> str | None:
+    """The catalogue's own verdict on a cluster, or None if it has none."""
+    votes = Counter()
+    for idx in group[:12]:
+        name, score, _gap, _ru = icon_match.match_slot(samples[idx][0], "items")
+        if name != "?" and score >= icon_match.MIN_SCORE:
+            votes[name] += 1
+    total = sum(votes.values())
+    if total < MIN_VOTES:
+        return None
+    best, count = votes.most_common(1)[0]
+    return best if count / total >= MIN_SHARE else None
+
+
+def write_sheet(frozen: dict) -> int:
+    """A numbered contact sheet, biggest clusters first."""
+    owner = owner_labels()
+    order = sorted(range(len(frozen["sizes"])),
+                   key=lambda k: -frozen["sizes"][k])
+    order = [k for k in order if frozen["sizes"][k] >= SHEET_MIN_SIZE]
+    cells = []
+    for k in order:
+        cell = np.full((164, 118, 3), (26, 20, 15), np.uint8)
+        tile = cv2.resize(frozen["art"][k].astype(np.uint8), (100, 100))
+        cell[6:106, 9:109] = tile
+        number = str(k + 1)                  # 1-based, as on the rune sheet
+        cv2.putText(cell, number, (6, 24), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.62, (0, 0, 0), 4)
+        cv2.putText(cell, number, (6, 24), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.62, (80, 220, 255), 1)
+        have = owner.get(number) or frozen["guesses"][k]
+        for j, txt in enumerate([(have or "UNNAMED")[:17],
+                                 f"n={frozen['sizes'][k]}"]):
+            col = (150, 240, 160) if (j == 0 and have) else (140, 140, 150)
+            cv2.putText(cell, txt, (5, 124 + j * 16), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.36, col, 1, cv2.LINE_AA)
+        cells.append(cell)
+    if not cells:
+        print("no clusters big enough for the sheet", file=sys.stderr)
+        return 2
+    cols = 8
+    while len(cells) % cols:
+        cells.append(np.zeros((164, 118, 3), np.uint8))
+    SHEET.parent.mkdir(parents=True, exist_ok=True)
+    cv2.imwrite(str(SHEET), np.vstack([np.hstack(cells[i:i + cols])
+                                       for i in range(0, len(cells), cols)]))
+    named = sum(1 for k in order
+                if owner.get(str(k + 1)) or frozen["guesses"][k])
+    print(f"{len(order)} clusters (of {len(frozen['sizes'])}, "
+          f"those with {SHEET_MIN_SIZE}+ icons) -> {SHEET.relative_to(ROOT)}")
+    print(f"  {named} already have a name, {len(order) - named} say UNNAMED")
+    print(f"  put names in {LABELS.relative_to(ROOT)} keyed by the number "
+          f"printed on each cell, then rerun without --sheet")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -139,7 +251,16 @@ def main() -> int:
                     help="report what would be learned, write nothing")
     ap.add_argument("--limit", type=int, default=0,
                     help="only the first N captures, for a quick look")
+    ap.add_argument("--sheet", action="store_true",
+                    help="write the numbered naming sheet and stop")
+    ap.add_argument("--recluster", action="store_true",
+                    help="recompute the clusters. INVALIDATES every name in "
+                         "the labels file, because the numbers move.")
     args = ap.parse_args()
+
+    frozen = None if args.recluster else load_frozen()
+    if frozen is not None and args.sheet:
+        return write_sheet(frozen)
 
     print("harvesting item icons from the loadout captures ...")
     samples = harvest(args.limit)
@@ -154,27 +275,32 @@ def main() -> int:
           f"(largest {len(groups[0])}, singletons "
           f"{sum(1 for g in groups if len(g) == 1)})")
 
-    print("naming clusters from the reads the catalogue IS sure about ...")
-    named: dict[str, list[int]] = defaultdict(list)
-    unnamed = 0
-    for group in groups:
-        votes = Counter()
-        # Sampling, not every member: a cluster of 200 identical icons
-        # answers the same way on the tenth as on the two hundredth.
-        for idx in group[:12]:
-            name, score, _gap, _ru = icon_match.match_slot(samples[idx][0], "items")
-            if name != "?" and score >= icon_match.MIN_SCORE:
-                votes[name] += 1
-        total = sum(votes.values())
-        if total >= MIN_VOTES:
-            best, count = votes.most_common(1)[0]
-            if count / total >= MIN_SHARE:
-                named[best].extend(group)
-                continue
-        unnamed += 1
+    if args.recluster and FROZEN.exists():
+        print("  RECLUSTERED: every number in "
+              f"{LABELS.relative_to(ROOT)} now points somewhere else and "
+              "must be reviewed against a fresh sheet.")
+    frozen = freeze(samples, groups)
+    print(f"  numbering frozen -> {FROZEN.relative_to(ROOT)}")
+    if args.sheet:
+        return write_sheet(frozen)
 
-    print(f"  named {len(named)} items from {len(groups) - unnamed} clusters; "
-          f"{unnamed} clusters unnamed")
+    print("naming clusters: owner labels first, catalogue reads second ...")
+    owner = owner_labels()
+    named: dict[str, list[int]] = defaultdict(list)
+    from_owner = unnamed = 0
+    for k, group in enumerate(groups):
+        # The owner's word beats the machine's: a hand-written label only
+        # exists because somebody looked at the icon.
+        label = owner.get(str(k + 1)) or frozen["guesses"][k]
+        if owner.get(str(k + 1)):
+            from_owner += 1
+        if label:
+            named[label].extend(group)
+        else:
+            unnamed += 1
+
+    print(f"  named {len(named)} items from {len(groups) - unnamed} clusters "
+          f"({from_owner} by hand); {unnamed} clusters unnamed")
 
     # Pick the most DISSIMILAR members per item: a template that looks like
     # one already in the bank adds nothing to recognise with.
