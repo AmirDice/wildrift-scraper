@@ -75,8 +75,13 @@ DRY_SCROLLS = 2
 #: Cho'Gath: 查看更多 opens but 国服数据 never finishes loading. Tried twice
 #: per lane across two runs at 25s each, and confirmed by hand on the
 #: device. Retrying costs 100 seconds a run for nothing.
+#: Yunara: the same, confirmed on the device the same day. She is a recent
+#: champion and Cho'Gath is not, so whatever the app is failing at, it is
+#: not simply missing data for new releases -- worth retrying both after an
+#: app update rather than treating the list as permanent.
 SKIP_CHAMPIONS = {
     "Cho'Gath": "国服数据 never loads in the app (checked 2026-10-11)",
+    "Yunara": "国服数据 never loads in the app (checked 2026-10-11)",
 }
 
 #: Where the skips are written down, beside the captures they are absent
