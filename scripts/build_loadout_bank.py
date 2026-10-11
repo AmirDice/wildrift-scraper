@@ -40,10 +40,39 @@ from src import loadouts as L  # noqa: E402
 from src import icon_match  # noqa: E402
 
 CAPTURES = ROOT / "data" / "captures_loadouts"
-BANK = ROOT / "data" / "icon_bank" / "items.npz"
 
-#: Tabs whose entity column holds ITEM icons.
-ITEM_TABS = ("equip", "boots")
+#: What each kind of icon needs. Separate frozen numbering, labels and
+#: sheet per kind: cluster 7 of the items has nothing to do with cluster
+#: 7 of the runes, and one shared file would quietly cross them.
+KINDS = {
+    "items": {
+        "tabs": ("equip", "boots"),
+        "bank": ROOT / "data" / "icon_bank" / "items.npz",
+        "frozen": ROOT / "data" / "icon_bank" / "loadout_item_clusters.npz",
+        "labels": ROOT / "data" / "loadout_item_labels.json",
+        "sheet": ROOT / "data" / "debug_scans" / "_loadout_items_to_name.png",
+        "circular": False,
+    },
+    "runes": {
+        "tabs": ("runes",),
+        "bank": ROOT / "data" / "icon_bank" / "runes.npz",
+        "frozen": ROOT / "data" / "icon_bank" / "loadout_rune_clusters.npz",
+        "labels": ROOT / "data" / "loadout_rune_labels.json",
+        "sheet": ROOT / "data" / "debug_scans" / "_loadout_runes_to_name.png",
+        # Runes are drawn as circles inside a tree-coloured ring, and the
+        # matcher scores them through a circular window for that reason.
+        # Clustering has to use the same window or it would group by ring
+        # colour, which is the rune TREE, not the rune.
+        "circular": True,
+    },
+}
+
+#: Set from --kind before anything below reads them.
+KIND = "items"
+BANK = KINDS["items"]["bank"]
+FROZEN = KINDS["items"]["frozen"]
+LABELS = KINDS["items"]["labels"]
+SHEET = KINDS["items"]["sheet"]
 
 #: Cosine similarity above which two icons are the same item. High on
 #: purpose: a cluster that merges two items poisons every template it
@@ -76,7 +105,7 @@ def _vector(tile: np.ndarray, weights: np.ndarray) -> np.ndarray:
 
 def harvest(limit: int) -> list[tuple[np.ndarray, np.ndarray]]:
     """[(normalised tile, unit vector)] for every item icon on disk."""
-    weights = icon_match._weights(True, False)
+    weights = icon_match._weights(True, KINDS[KIND]["circular"])
     out = []
     folders = sorted(d for d in CAPTURES.iterdir()
                      if (d / "manifest.json").is_file())
@@ -84,7 +113,7 @@ def harvest(limit: int) -> list[tuple[np.ndarray, np.ndarray]]:
         folders = folders[:limit]
     for folder in folders:
         manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
-        for tab in ITEM_TABS:
+        for tab in KINDS[KIND]["tabs"]:
             info = manifest["tabs"].get(tab)
             if not info or not info["frames"]:
                 continue
@@ -131,10 +160,6 @@ def cluster(samples) -> list[list[int]]:
                  else np.vstack([stack, vec[None, :]]))
     return members
 
-
-FROZEN = ROOT / "data" / "icon_bank" / "loadout_item_clusters.npz"
-LABELS = ROOT / "data" / "loadout_item_labels.json"
-SHEET = ROOT / "data" / "debug_scans" / "_loadout_items_to_name.png"
 
 #: Clusters smaller than this are left off the sheet. They are
 #: overwhelmingly mis-segmented fragments and half-icons rather than rare
@@ -192,7 +217,7 @@ def auto_name(samples, group) -> str | None:
     """The catalogue's own verdict on a cluster, or None if it has none."""
     votes = Counter()
     for idx in group[:12]:
-        name, score, _gap, _ru = icon_match.match_slot(samples[idx][0], "items")
+        name, score, _gap, _ru = icon_match.match_slot(samples[idx][0], KIND)
         if name != "?" and score >= icon_match.MIN_SCORE:
             votes[name] += 1
     total = sum(votes.values())
@@ -245,6 +270,10 @@ def write_sheet(frozen: dict) -> int:
 
 
 def main() -> int:
+    # Declared up front: Python requires it before the name is READ, and
+    # --min-size reads SHEET_MIN_SIZE for its default.
+    global KIND, BANK, FROZEN, LABELS, SHEET, SHEET_MIN_SIZE
+
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry-run", action="store_true",
@@ -256,16 +285,30 @@ def main() -> int:
     ap.add_argument("--recluster", action="store_true",
                     help="recompute the clusters. INVALIDATES every name in "
                          "the labels file, because the numbers move.")
+    ap.add_argument("--kind", default="items", choices=sorted(KINDS),
+                    help="which icons to harvest and bank (default: items)")
+    ap.add_argument("--min-size", type=int, default=SHEET_MIN_SIZE,
+                    help=f"smallest cluster put on the sheet (default "
+                         f"{SHEET_MIN_SIZE}). Pass 1 to see every cluster, "
+                         f"including the mis-segmented singletons.")
     args = ap.parse_args()
+
+    KIND = args.kind
+    cfg = KINDS[KIND]
+    BANK, FROZEN = cfg["bank"], cfg["frozen"]
+    LABELS, SHEET = cfg["labels"], cfg["sheet"]
+    SHEET_MIN_SIZE = max(1, args.min_size)
+    print(f"kind: {KIND}  (tabs {', '.join(cfg['tabs'])} -> "
+          f"{BANK.relative_to(ROOT)})")
 
     frozen = None if args.recluster else load_frozen()
     if frozen is not None and args.sheet:
         return write_sheet(frozen)
 
-    print("harvesting item icons from the loadout captures ...")
+    print(f"harvesting {KIND} icons from the loadout captures ...")
     samples = harvest(args.limit)
     if not samples:
-        print("no item icons found", file=sys.stderr)
+        print(f"no {KIND} icons found", file=sys.stderr)
         return 2
     print(f"  {len(samples)} icons")
 
