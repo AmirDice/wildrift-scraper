@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site, getChampions, regionBoard } from "@/lib/data";
-import { getCnChampionsByBracket, getCnRolesByBracket, CN_BRACKETS, CN_META, getGlobalChampions, globalRoles, type CnBracketKey } from "@/lib/cn";
+import { getCnChampionsBySample, getCnRolesBySample, CN_SAMPLES, CN_META, getGlobalChampions, globalRoles, type CnSampleKey } from "@/lib/cn";
 import { Container } from "@/components/ui";
 import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
+import { freshness } from "@/lib/patch-freshness";
 import { AdSlot } from "@/components/ad-slot";
 
 /**
@@ -38,8 +39,8 @@ export default async function ChinaTierListPage({
   searchParams: Promise<{ bracket?: string }>;
 }) {
   const requestedBracket = (await searchParams).bracket;
-  const initialCnBracket: CnBracketKey = CN_BRACKETS.some(({ key }) => key === requestedBracket)
-    ? requestedBracket as CnBracketKey
+  const initialCnBracket: CnSampleKey = CN_SAMPLES.some(({ key }) => key === requestedBracket)
+    ? requestedBracket as CnSampleKey
     : CN_META.defaultBracket;
   return (
     <Container className="py-12">
@@ -79,8 +80,9 @@ export default async function ChinaTierListPage({
           naRoles={regionBoard("NA").roles}
           naUpdated={regionBoard("NA").collectedOn}
           roles={site.roles}
-          cnChampionsByBracket={getCnChampionsByBracket()}
-          cnRolesByBracket={getCnRolesByBracket()}
+          cnChampionsByBracket={getCnChampionsBySample()}
+          cnRolesByBracket={getCnRolesBySample()}
+          cnFreshness={freshness(CN_META.ladderDate)}
           cnMeta={CN_META}
           globalChampions={getGlobalChampions()}
           globalRoles={globalRoles()}

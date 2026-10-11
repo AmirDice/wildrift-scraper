@@ -1,5 +1,5 @@
 import cnData from "@/data/cn.json";
-import { getChampion, getChampions, regionBoard, tierClass, TIER_ORDER, type Champion } from "@/lib/data";
+import { getChampion, getChampions, regionBoard, siteCn, tierClass, TIER_ORDER, type Champion } from "@/lib/data";
 import { getNewChampion } from "@/lib/new-champions";
 
 interface CnEntry {
@@ -33,6 +33,27 @@ export const CN_BRACKETS = [
 
 export type CnBracketKey = (typeof CN_BRACKETS)[number]["key"];
 
+/** The China samples the tier list offers: Tencent's four published
+ *  brackets, plus our own top-30 ladder board.
+ *
+ *  A separate type from CnBracketKey on purpose. That one indexes
+ *  @/data/cn.json, and the ladder board is not in that file -- a "ladder"
+ *  reaching getCnChampions would quietly return an empty list rather than
+ *  fail, which is the kind of bug that ships. */
+export type CnSampleKey = CnBracketKey | "ladder";
+
+export const CN_SAMPLES = [
+  { key: "ladder", label: "Top 30 ladder", short: "Top 30", kind: "ladder" },
+  ...CN_BRACKETS,
+] as const;
+
+/** The China tab opens on the ladder board. It is the same measurement as
+ *  the EU and NA tabs beside it -- the best players on each champion, 30
+ *  deep, centred on 50 -- so a reader switching region now compares like
+ *  with like by default. Tencent's brackets are one tap away and answer the
+ *  other question, which is the whole ladder rather than the top of it. */
+export const CN_TIERLIST_DEFAULT: CnSampleKey = "ladder";
+
 /** Challenger is the default standard-ranked sample. */
 export const CN_DEFAULT_BRACKET: CnBracketKey = "3";
 
@@ -42,6 +63,16 @@ export const CN_META = {
   bracket: CN.bracketLabels[CN_DEFAULT_BRACKET] ?? "Challenger",
   defaultBracket: CN_DEFAULT_BRACKET,
   brackets: CN_BRACKETS,
+  /** The tier list's own China selector: brackets plus the ladder board. */
+  samples: CN_SAMPLES,
+  tierListDefault: CN_TIERLIST_DEFAULT,
+  /** When our CN ladder board was captured, and the centring it carries.
+   *  Tencent's figures are published raw, the ladder board is centred like
+   *  EU and NA, so the two cannot share one offset. */
+  ladderDate: siteCn.collectedOn,
+  ladderOffset: siteCn.wrOffset ?? 0,
+  ladderChampions: siteCn.nChampions,
+  ladderMovementSince: siteCn.movementSince ?? null,
 };
 
 /** CN win rates cluster near 50% (whole-ladder), so tiers use CN-specific cutoffs. */
@@ -179,6 +210,21 @@ export function getCnRolesByBracket(): Record<CnBracketKey, string[]> {
   ) as Record<CnBracketKey, string[]>;
 }
 
+/** Champions for every China sample the tier list can show. */
+export function getCnChampionsBySample(): Record<CnSampleKey, Champion[]> {
+  return {
+    ladder: regionBoard("CN").champions,
+    ...getCnChampionsByBracket(),
+  };
+}
+
+export function getCnRolesBySample(): Record<CnSampleKey, string[]> {
+  return {
+    ladder: regionBoard("CN").roles,
+    ...getCnRolesByBracket(),
+  };
+}
+
 const byBracketSlug = new Map<CnBracketKey, Map<string, CnChampion>>();
 export function getCnBySlug(
   slug: string,
@@ -225,37 +271,43 @@ export function tierCrossing(before: string | null, after: string | null): "up" 
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
-/** Champion objects with wr = the mean of the EU and NA top-50 measurements,
- *  and a global tier.
+/** Champion objects with wr = the mean of every regional board that has the
+ *  champion, and a tier ranked inside that blend.
  *
- *  CN was part of this average until 2026-08-11 and was removed deliberately.
+ *  TENCENT'S CN WAS REMOVED FROM THIS AVERAGE ON 2026-08-11 AND STAYS OUT.
  *  It is not a third region of the same measurement: EU and NA are our own
- *  scrape of the 50 best players on a champion, while CN is Tencent's
- *  published rate across a whole bracket population. Averaging them produced
- *  a number that answered neither question, most visibly on Hecarim, who read
- *  59.5 in the west, 50.9 in CN, and 55.2 blended, a figure no group of
- *  players anywhere achieves.
+ *  scrape of the best players on a champion, while @/data/cn.json is
+ *  Tencent's published rate across a whole bracket population. Averaging
+ *  them produced a number that answered neither question, most visibly on
+ *  Hecarim, who read 59.5 in the west, 50.9 in CN, and 55.2 blended, a
+ *  figure no group of players anywhere achieves. The correlations agreed:
+ *  EU and NA sit at r = +0.71, while Tencent's CN is +0.46 against EU and
+ *  +0.44 against NA, roughly equally distant from both, which points at the
+ *  methodology rather than a European quirk. Dropping it moved 47 of 140
+ *  champions across a tier boundary.
  *
- *  The correlations said the same thing. EU and NA agree at r = +0.71, while
- *  CN sits at +0.46 against EU and +0.44 against NA: roughly equally distant
- *  from both, which points at the methodology rather than at a European
- *  quirk. Dropping CN moved 47 of 140 champions across a tier boundary.
+ *  WHAT IS IN THIS BLEND SINCE 2026-10-11 IS A DIFFERENT CN DATASET: our own
+ *  capture of the top 30 of each champion's in-client leaderboard
+ *  (site_cn.json, regionBoard("CN")). Same method as EU and NA, same depth
+ *  -- all three boards are 30 deep and all three centre on 50.0 -- so it is
+ *  the same measurement taken on a third server, which is exactly what the
+ *  2026-08 removal said was missing. Tencent's bracket data keeps its own
+ *  tab, /ranks and /rising, where the disagreement is the product rather
+ *  than noise to be averaged away.
  *
- *  CN keeps its own tab, /ranks and /rising, where the disagreement is the
- *  product rather than noise to be averaged away.
- *
- *  Both regions are required. A single-server number is not a global one, it
- *  is that server's number wearing a different label. */
-/** Mean of the values that exist, or null when neither region has one. */
-function mean2(a: number | null | undefined, b: number | null | undefined): number | null {
-  const parts = [a, b].filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+ *  Two boards remain the floor. A single-server number is not a global one,
+ *  it is that server's number wearing a different label. */
+
+/** Mean of the values that exist, or null when none do. */
+function meanOf(values: (number | null | undefined)[]): number | null {
+  const parts = values.filter((v): v is number => typeof v === "number" && Number.isFinite(v));
   if (!parts.length) return null;
   return Math.round((parts.reduce((x, y) => x + y, 0) / parts.length) * 100) / 100;
 }
 
-/** Sum of the values that exist, or null when neither region has one. */
-function sum2(a: number | null | undefined, b: number | null | undefined): number | null {
-  const parts = [a, b].filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+/** Sum of the values that exist, or null when none do. */
+function sumOf(values: (number | null | undefined)[]): number | null {
+  const parts = values.filter((v): v is number => typeof v === "number" && Number.isFinite(v));
   if (!parts.length) return null;
   return parts.reduce((x, y) => x + y, 0);
 }
@@ -271,50 +323,63 @@ function sum2(a: number | null | undefined, b: number | null | undefined): numbe
  *
  * Each depth carries its OWN offset (a shallower pool is centred harder), so
  * the offsets are averaged alongside the win rates rather than assumed equal.
- * A depth is emitted only when BOTH boards have it: half a blend is not a
- * blend, and a champion with fewer than N counted players on one server would
- * otherwise be silently represented by the other server alone.
+ * A depth is emitted only when EVERY board in the blend has it: half a blend
+ * is not a blend, and a champion with fewer than N counted players on one
+ * server would otherwise be silently represented by the others alone.
  */
 type DepthValue = { wr: number; wrOffset: number; nPlayers: number };
 
 /** The blended numbers for each pool depth, tiers assigned later once the
  *  whole pool is known (a percentile band needs everyone else's number). */
-function blendPoolValues(eu: Champion, na: Champion): Record<string, DepthValue> | null {
-  if (!eu.pools || !na.pools) return null;
+function blendPoolValues(boards: Champion[]): Record<string, DepthValue> | null {
+  if (boards.some((b) => !b.pools)) return null;
   const out: Record<string, DepthValue> = {};
   for (const depth of ["25", "10", "5"]) {
-    const a = eu.pools[depth];
-    const b = na.pools[depth];
-    if (!a || !b || a.wr == null || b.wr == null) continue;
+    const slices = boards.map((b) => b.pools?.[depth]);
+    if (slices.some((v) => !v || v.wr == null)) continue;
+    const have = slices as { wr: number; wrOffset?: number; nPlayers?: number | null }[];
     out[depth] = {
-      wr: r1((a.wr + b.wr) / 2),
-      wrOffset: Math.round((((a.wrOffset ?? 0) + (b.wrOffset ?? 0)) / 2) * 100) / 100,
-      nPlayers: (a.nPlayers ?? 0) + (b.nPlayers ?? 0),
+      wr: r1(have.reduce((t, v) => t + v.wr, 0) / have.length),
+      wrOffset: Math.round(
+        (have.reduce((t, v) => t + (v.wrOffset ?? 0), 0) / have.length) * 100) / 100,
+      nPlayers: have.reduce((t, v) => t + (v.nPlayers ?? 0), 0),
     };
   }
   return Object.keys(out).length ? out : null;
 }
 
+/** The servers whose boards are averaged, in the order a tooltip names them. */
+const GLOBAL_SERVERS = ["NA", "CN"] as const;
+
 export function getGlobalChampions(): Champion[] {
-  const na = new Map(regionBoard("NA").champions.map((c) => [c.slug, c]));
+  const others = GLOBAL_SERVERS.map(
+    (key) => new Map(regionBoard(key).champions.map((c) => [c.slug, c])),
+  );
   type Entry = {
-    eu: Champion; na: Champion; g: number; delta: number | null;
+    eu: Champion; boards: Champion[]; g: number; delta: number | null;
     depths: Record<string, DepthValue> | null;
   };
   const entries: Entry[] = [];
-  for (const eu of getChampions()) {
-    const naChamp = na.get(eu.slug);
-    if (!naChamp || !Number.isFinite(eu.wr) || !Number.isFinite(naChamp.wr)) continue;
-    const g = r1((eu.wr + naChamp.wr) / 2);
-    // Movement is the mean of the two regional deltas, each measured in
-    // centred units against ITS OWN previous collection (EU since 6 August,
-    // NA since 9 August, both before 7.2c). Half a blend is not a blend: a
-    // champion with a delta on one board only reports none, rather than one
-    // region's move scaled down and presented as the world's.
-    const delta = typeof eu.wrDelta === "number" && typeof naChamp.wrDelta === "number"
-      ? Math.round(((eu.wrDelta + naChamp.wrDelta) / 2) * 100) / 100
+  for (const champ of getChampions()) {
+    if (!Number.isFinite(champ.wr)) continue;
+    const boards = [champ];
+    for (const other of others) {
+      const row = other.get(champ.slug);
+      if (row && Number.isFinite(row.wr)) boards.push(row);
+    }
+    // Two is the floor, so a champion missing from one server is still
+    // Global on the strength of the other two rather than disappearing.
+    if (boards.length < 2) continue;
+    const g = r1(boards.reduce((t, b) => t + b.wr, 0) / boards.length);
+    // Movement is the mean of the regional deltas, each measured in centred
+    // units against ITS OWN previous collection. Half a blend is not a
+    // blend: a champion with a delta on only some boards reports none,
+    // rather than part of the world's movement presented as all of it.
+    const deltas = boards.map((b) => b.wrDelta);
+    const delta = deltas.every((d) => typeof d === "number")
+      ? Math.round(((deltas as number[]).reduce((x, y) => x + y, 0) / deltas.length) * 100) / 100
       : null;
-    entries.push({ eu, na: naChamp, g, delta, depths: blendPoolValues(eu, naChamp) });
+    entries.push({ eu: champ, boards, g, delta, depths: blendPoolValues(boards) });
   }
 
   // Every band is a rank inside a pool: the whole blend for the tier, the
@@ -329,8 +394,8 @@ export function getGlobalChampions(): Champion[] {
 
   const out: Champion[] = [];
   for (const e of entries) {
-    const { eu, na: naChamp, g } = e;
-    const roleEntries = inRole(eu.role);
+    const { eu: euChamp, boards, g } = e;
+    const roleEntries = inRole(euChamp.role);
     const tier = relativeTier(g, all);
     const tierRole = relativeTier(g, roleEntries.map((x) => x.g));
     const prev = prevOf(e);
@@ -354,32 +419,32 @@ export function getGlobalChampions(): Champion[] {
     // overwriting only wr used to leave a global win rate sitting beside EU's
     // player count and EU's best player, with nothing marking the difference.
     //
-    // Counts add, averages average, and the ceiling is the higher of the two
-    // ceilings -- with the player who set it, so "best tracked main" names the
-    // right person on the right server instead of always naming EU's.
-    const euCeiling = eu.maxWr ?? -Infinity;
-    const naCeiling = naChamp.maxWr ?? -Infinity;
-    const peak = naCeiling > euCeiling ? naChamp : eu;
+    // Counts add, averages average, and the ceiling is the highest of the
+    // boards' ceilings -- with the player who set it, so "best tracked main"
+    // names the right person on the right server instead of always naming
+    // EU's.
+    const peak = boards.reduce((best, b) =>
+      (b.maxWr ?? -Infinity) > (best.maxWr ?? -Infinity) ? b : best);
 
     out.push({
-      ...eu,
+      ...euChamp,
       wr: g,
       tier,
       tierCss: tierClass[tier],
       tierRole,
       tierRoleCss: tierClass[tierRole],
-      globalParts: 2,
-      meanWr: mean2(eu.meanWr, naChamp.meanWr),
+      globalParts: boards.length,
+      meanWr: meanOf(boards.map((b) => b.meanWr)),
       maxWr: peak.maxWr,
       maxScore: peak.maxScore,
       topPlayer: peak.topPlayer,
       bestPlayer: peak.bestPlayer,
-      nPlayers: sum2(eu.nPlayers, naChamp.nPlayers),
-      totalGames: sum2(eu.totalGames, naChamp.totalGames),
-      medianGames: mean2(eu.medianGames, naChamp.medianGames),
-      medianMastery: mean2(eu.medianMastery, naChamp.medianMastery),
-      otpScore: mean2(eu.otpScore, naChamp.otpScore),
-      isOtp: eu.isOtp && naChamp.isOtp,
+      nPlayers: sumOf(boards.map((b) => b.nPlayers)),
+      totalGames: sumOf(boards.map((b) => b.totalGames)),
+      medianGames: meanOf(boards.map((b) => b.medianGames)),
+      medianMastery: meanOf(boards.map((b) => b.medianMastery)),
+      otpScore: meanOf(boards.map((b) => b.otpScore)),
+      isOtp: boards.every((b) => b.isOtp),
 
       // Deliberately dropped rather than averaged: pooling a spread needs the
       // per-player rows, not two summary numbers. Averaging two standard

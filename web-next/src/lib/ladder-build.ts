@@ -18,6 +18,7 @@
  */
 import ladderData from "@/data/ladder_builds.json";
 import ladderDataNa from "@/data/ladder_builds_na.json";
+import ladderDataCn from "@/data/ladder_builds_cn.json";
 import { BUILD_SERVERS, type BuildServer } from "@/lib/server-build";
 import engineData from "@/data/engine.json";
 import itemsData from "@/data/items.json";
@@ -50,7 +51,7 @@ type LadderEntry = {
 const BY_SERVER: Record<BuildServer, Record<string, LadderEntry>> = {
   eu: ladderData as Record<string, LadderEntry>,
   na: ladderDataNa as Record<string, LadderEntry>,
-  cn: {},
+  cn: ladderDataCn as Record<string, LadderEntry>,
 };
 
 /** The EU record, which every older caller means by "the ladder". */

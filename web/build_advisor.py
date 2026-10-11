@@ -2333,10 +2333,18 @@ TOURNAMENT_SURVIVAL_WEIGHTS = {
 # blend table because it is a LATENCY decision, not a modelling one: the engine
 # search costs roughly 25-30 seconds of local compute on top of two model calls
 # (the advisor function allows 300s, so it fits, but the user waits for it).
-# Dropping "balanced" from this set is the one-line way to keep the default
-# generation on the fast single-call path while every explicit lean still gets
-# measured.
-TOURNAMENT_BIASES = frozenset(TOURNAMENT_BLEND)
+#
+# EMPTY SINCE 2026-10-11, BY REQUEST: every generation is model-only again.
+# Nothing else is torn out -- TOURNAMENT_BLEND, the survival weights and the
+# whole measurement path below are untouched and still tested, because the
+# question this set answers is "does the engine run today", not "does the
+# engine work". Put the biases back with:
+#
+#     TOURNAMENT_BIASES = frozenset(TOURNAMENT_BLEND)
+#
+# or name a subset to measure only the explicit leans and leave "balanced",
+# the default generation, on the fast single-call path.
+TOURNAMENT_BIASES: frozenset[str] = frozenset()
 
 
 def _tournament_blend(build_bias: str, champion: str = "",

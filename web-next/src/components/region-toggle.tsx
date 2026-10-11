@@ -1,7 +1,8 @@
 "use client";
 
 export const REGIONS = ["EU", "NA", "CN"] as const;
-/** "Global" is not a server; it's the combined EU+CN view (tier list only). */
+/** "Global" is not a server; it averages the regional boards that have the
+ *  champion, which is EU + NA + CN since 2026-10-11. */
 export type Region = (typeof REGIONS)[number] | "Global";
 
 /** Regions/views we currently have data for. NA joined 2026-08-08; its

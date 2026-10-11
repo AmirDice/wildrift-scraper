@@ -34,11 +34,12 @@ from src.rank_digits import BANK, N, ROW_HALF_H, glyph_boxes, normalise
 
 ROOT = Path(__file__).resolve().parent.parent
 CAPTURES = ROOT / "data" / "captures"
-PITCH = 146.7          # device row pitch, measured
+PITCH = 146.7          # device row pitch, measured (EU/NA captures)
 NEIGHBOURS = (-2, -1, 0, 1, 2)
 
 
-def harvest(sessions: list[Path], badge_x: tuple[int, int]) -> dict[int, list[np.ndarray]]:
+def harvest(sessions: list[Path], badge_x: tuple[int, int],
+            pitch: float = PITCH) -> dict[int, list[np.ndarray]]:
     """digit -> list of normalised tiles, labelled from the manifests."""
     tiles: dict[int, list[np.ndarray]] = defaultdict(list)
     for s in sessions:
@@ -65,7 +66,7 @@ def harvest(sessions: list[Path], badge_x: tuple[int, int]) -> dict[int, list[np
                 # must not pollute the digit templates.
                 if r < 4:
                     continue
-                y = int(round(tap_y + step * PITCH))
+                y = int(round(tap_y + step * pitch))
                 y0, y1 = y - ROW_HALF_H, y + ROW_HALF_H
                 if y0 < 0 or y1 > img.shape[0]:
                     continue
@@ -114,6 +115,18 @@ def contact_sheet(bank: dict[int, np.ndarray], path: Path) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--pitch", type=float, default=PITCH,
+                    help="row pitch of the captures being harvested. The "
+                         "neighbour rows are found by multiplying this, so a "
+                         "wrong value mislabels 4 of every 5 tiles: building "
+                         "CN captures (pitch ~158) with the EU/NA 146.7 cost "
+                         "33 points of badge-read rate.")
+    ap.add_argument("--captures", type=Path, default=None,
+                    help="capture root to harvest from (default data/captures). "
+                         "Use data/captures_cn to build from a CN collection.")
+    ap.add_argument("--out", type=Path, default=None,
+                    help="write the bank here instead of over the live one, "
+                         "so a candidate can be compared before replacing it")
     ap.add_argument("--sessions", type=int, default=14,
                     help="how many capture sessions to sample (0 = all)")
     ap.add_argument("--sheet", action="store_true",
@@ -136,13 +149,18 @@ def main() -> None:
                int(cal.get("badge_x1", SCREEN_2_BADGE_X_RANGE[1])))
     print(f"badge column: x={badge_x}")
 
-    sessions = sorted(p for p in CAPTURES.iterdir() if p.is_dir())
+    captures = args.captures or CAPTURES
+    bank_path = args.out or BANK
+    if not captures.exists():
+        raise SystemExit(f"no capture root at {captures}")
+    sessions = sorted(p for p in captures.iterdir() if p.is_dir())
     if args.sessions and len(sessions) > args.sessions:
         random.seed(7)
         sessions = random.sample(sessions, args.sessions)
     print(f"harvesting from {len(sessions)} capture session(s)")
 
-    tiles = harvest(sessions, badge_x)
+    print(f"row pitch: {args.pitch}")
+    tiles = harvest(sessions, badge_x, args.pitch)
     if not tiles:
         raise SystemExit("no tiles harvested -- are there captures on disk?")
     missing = [d for d in range(10) if len(tiles.get(d, [])) < 20]
@@ -154,8 +172,8 @@ def main() -> None:
             f"freezing a bank that cannot read them")
 
     bank = {d: consolidate(tiles[d]) for d in range(10)}
-    BANK.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(BANK, **{str(d): t for d, t in bank.items()})
+    bank_path.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(bank_path, **{str(d): t for d, t in bank.items()})
     contact_sheet(bank, sheet)
     print(f"\nbank  -> {BANK}")
     print(f"sheet -> {sheet}   (check every glyph matches its label)")

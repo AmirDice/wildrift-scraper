@@ -20,16 +20,19 @@ export const SERVER_LABEL: Record<BuildServer, string> = { eu: "EU", na: "NA", c
 /**
  * Why a server has nothing to show, in its own words.
  *
- * China is not "coming soon". Tencent publishes per-lane win, pick and ban
- * rates -- which is where the CN boards come from -- and no item data: the
- * per-champion build endpoint is not public, and CN builds live behind the
- * in-app companion API with signed parameters. Until that changes, the honest
- * answer is that there is nothing to show.
+ * China used to be a permanent blank here, and the reason was sound while it
+ * lasted: Tencent publishes per-lane win, pick and ban rates and no item
+ * data, the per-champion build endpoint is not public, and CN builds sit
+ * behind the in-app companion API with signed parameters. None of that
+ * changed -- we stopped asking the API and read the client instead. The
+ * China column is now the same thing as the other two: what the top 30
+ * players on that champion's own leaderboard actually had equipped,
+ * captured from the phone on 2026-10-11.
  */
 export const SERVER_GAP: Record<BuildServer, string> = {
   eu: "No ladder record for this champion yet.",
   na: "NA win rates are collected; NA builds are not, yet. They arrive with the next NA collection.",
-  cn: "Tencent publishes China win rates but not builds, so there is nothing to show here.",
+  cn: "No China ladder record for this champion yet.",
 };
 
 /** Level-15 profile for a ladder build. These are deterministic engine

@@ -1,6 +1,6 @@
 import site from "@/data/site.json";
 import siteNa from "@/data/site_na.json";
-import cn from "@/data/cn.json";
+import siteCn from "@/data/site_cn.json";
 import { kvGetJson } from "@/lib/kv";
 
 /**
@@ -8,11 +8,13 @@ import { kvGetJson } from "@/lib/kv";
  *
  * The three regions are collected by three different processes on three
  * different clocks, and a visitor reading a win rate has no way to know which
- * of them produced it or how old it is. EU and NA are overnight ADB runs on
- * the phone here, one champion at a time through 141 champions; CN is a daily
- * pull from Tencent's published figures. A run can also be part way through,
- * which is the case this exists for: the tier list is live and changing while
- * the numbers behind it are still being replaced.
+ * of them produced it or how old it is. All three are now overnight ADB runs
+ * on the phone here, one champion at a time through 141 champions -- CN
+ * joined them on 2026-10-11 and this bar reports OUR China capture, not the
+ * daily pull from Tencent's published figures, which keeps its own date in
+ * lib/cn.ts. A run can also be part way through, which is the case this
+ * exists for: the tier list is live and changing while the numbers behind it
+ * are still being replaced.
  *
  * Two sources, in priority order:
  *
@@ -105,8 +107,7 @@ function baseline(): Record<RegionKey, RegionProgress> {
   return {
     EU: rest("EU", toIso(site.collectedOn), site.nChampions || ROSTER_TOTAL),
     NA: rest("NA", toIso(siteNa.collectedOn), siteNa.nChampions || ROSTER_TOTAL),
-    CN: rest("CN", toIso((cn as { date?: string }).date),
-             (cn as { nChampions?: number }).nChampions || ROSTER_TOTAL),
+    CN: rest("CN", toIso(siteCn.collectedOn), siteCn.nChampions || ROSTER_TOTAL),
   };
 }
 

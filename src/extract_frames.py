@@ -55,6 +55,9 @@ STATS_OCR_MIN_CONFIDENCE = 0.85
 from .ocr import (
     GENERAL_TESSERACT_CONFIG,
     find_champion_winrates,
+    read_cn_profile,
+    read_cn_strip,
+    CN_PROFILE_ID_PREFIX,
     find_target_data,
     locate_badge_column,
     read_player_name,
@@ -106,6 +109,16 @@ def _norm_name(s: str) -> str:
     return "".join(ch for ch in s.casefold() if ch.isalnum())
 
 
+#: CJK ranges that matter here: unified ideographs, plus the kana a CN or
+#: JP display name can mix in.
+_CJK = re.compile(r"[぀-ヿ㐀-䶿一-鿿豈-﫿]")
+
+
+def _is_cjk(s: str) -> bool:
+    """Is this name written in CJK rather than Latin?"""
+    return bool(_CJK.search(s or ""))
+
+
 def _usable_ocr_name(s: str, strict_ascii: bool = True) -> bool:
     """Whether a SINGLE, uncorroborated name read is worth believing, so the
     model is only paid for the ones it is not.
@@ -122,7 +135,11 @@ def _usable_ocr_name(s: str, strict_ascii: bool = True) -> bool:
     agrees with bypasses this entirely -- see the caller.
     """
     s = (s or "").strip()
-    if len(s) < 3:
+    # The 3-character floor is a LATIN rule: "ab" from Tesseract is noise,
+    # but a one-glyph CJK name is ordinary and carries as much as several
+    # Latin letters. Applying it to CJK silently dropped real CN players --
+    # 媚, 教父, 自牧 -- as if they had not been read at all.
+    if len(s) < (1 if _is_cjk(s) else 3):
         return False
     if s.count(" ") / len(s) > 0.3:
         return False
@@ -206,8 +223,27 @@ def _scaled_region(image: np.ndarray, box: tuple[int, int, int, int]) -> tuple[i
 IDENTITY_ENGINE = os.environ.get("WRTM_IDENTITY_ENGINE", "paddle").strip().lower()
 
 
+#: Whether this session's profile frames use the CN panel layout. None
+#: until the first frame settles it; see _read_profile_identity.
+_CN_PROFILE_SESSION: bool | None = None
+#: Set once a CN strip has been read successfully, so later ranks skip
+#: the Tesseract attempt that cannot read them.
+_CN_STRIP_SESSION: bool = False
+
+
 def _read_profile_identity(image: np.ndarray) -> tuple[str | None, str | None]:
     """Read the exact display name and Riot tag from the main profile panel."""
+    # On a CN session, go straight to the reader that works. The two reads
+    # below are calibrated for EU/NA and on this panel return the account
+    # id and nothing -- but under OCR_ENGINE=auto each still falls through
+    # to Paddle first, so they were costing two extra engine calls a rank
+    # to produce answers that are then thrown away.
+    global _CN_PROFILE_SESSION
+    if _CN_PROFILE_SESSION:
+        cn_name, cn_id = read_cn_profile(image)
+        if cn_name:
+            return cn_name, cn_id
+
     name = read_player_name(image, _scaled_region(image, _PROFILE_NAME_BOX),
                             prefer=IDENTITY_ENGINE)
     # The TAG stays on Tesseract: it is matched by a `#(\w+)` regex rather
@@ -219,7 +255,31 @@ def _read_profile_identity(image: np.ndarray) -> tuple[str | None, str | None]:
         match = re.search(r"#\s*([\w-]+)", tag_text, flags=re.UNICODE)
         if match:
             tag = match.group(1).strip()
-    return (name.strip() if name else None), tag
+    name = name.strip() if name else None
+
+    # CN sits one line lower: the box calibrated for EU/NA lands on 编号, the
+    # account id, and returns it as confidently as a real name -- which is how
+    # rows came out as "编号：2011716603". Recognising that and re-reading the
+    # panel properly is cheap, and only happens when the normal read already
+    # failed or plainly returned the id line.
+    # Which panel layout this session uses is decided ONCE, on the first
+    # profile frame, and cached. Sniffing each name for "does this look
+    # wrong" cannot work: the EU/NA box on a CN panel returns the account id
+    # ("编号：2011716603"), bare digits ("78964") and plain noise ("4 4 7 ry")
+    # interchangeably, and only the last is distinguishable from a real
+    # unusual name. read_cn_profile refuses non-CN panels, so the probe is
+    # self-validating and costs one OCR call per session.
+    if _CN_PROFILE_SESSION is None:
+        probe_name, _probe_id = read_cn_profile(image)
+        _CN_PROFILE_SESSION = probe_name is not None
+    if _CN_PROFILE_SESSION:
+        cn_name, cn_id = read_cn_profile(image)
+        if cn_name:
+            # CN has no Riot tag; 编号 is the stable per-account number, so it
+            # takes the tag slot and gives these rows something to match on
+            # besides a decorated display name.
+            return cn_name, (cn_id or tag)
+    return name, tag
 
 
 def pick_identity(
@@ -428,6 +488,25 @@ def _extract_strip_tesseract(
     return (None, None, None)
 
 
+def _extract_strip_cn(
+    img: np.ndarray, region: tuple[int, int, int, int], target: str,
+) -> tuple[float | None, int | None, int | None]:
+    """Read a CN strip, whose champion names and field labels are Chinese.
+
+    Tesseract cannot read any of it -- on a strip plainly showing 亚托克斯 /
+    赛季最高：14839 / 场次：89 / 胜率：61.8% it returns "Nf NN NNN Wt seuK Be
+    FER", so no champion matches and the rank is reported "target not
+    visible". Paddle reads the same crop exactly, which is what this uses.
+
+    Tried only AFTER the normal path returns nothing, so an EU or NA strip
+    never pays for it.
+    """
+    for champion, triple in read_cn_strip(img, region, target=target).items():
+        if champion.lower() == target.lower():
+            return triple
+    return (None, None, None)
+
+
 def _extract_strip_gemini(
     img: np.ndarray, region: tuple[int, int, int, int], target: str, model: str,
 ) -> tuple[float | None, int | None, int | None]:
@@ -464,6 +543,12 @@ def main() -> int:
                              "win rates than it already holds. Without this, a run that "
                              "comes back emptier is kept aside instead of overwriting.")
     args = parser.parse_args()
+
+    # Reset per RUN, not per process. run_extraction_batch now calls main()
+    # in-process for every session, so a CN session would otherwise leave
+    # this latched True and send the next EU session down the CN path.
+    globals()["_CN_PROFILE_SESSION"] = None
+    globals()["_CN_STRIP_SESSION"] = False
 
     # Keep the extractor backend explicit and process-local. Gemini remains a
     # model path; its OCR fallback intentionally stays Tesseract unless the
@@ -658,9 +743,23 @@ def main() -> int:
                     if triple[0] is not None:
                         return rank, triple, False
                 return rank, _extract_strip_tesseract(img, region, target), False
+            # Once a session is known to be CN, stop paying for the Tesseract
+            # pass. It cannot read any of the strip -- not the champion name,
+            # not the labels -- so on CN it is 3.2s of guaranteed failure per
+            # rank before the read that works. Worst case the flag is still
+            # unset on the first rank or two and they pay it once.
+            if _CN_STRIP_SESSION:
+                cn_first = _extract_strip_cn(img, region, target)
+                if cn_first[0] is not None:
+                    return rank, cn_first, False
             triple = _extract_strip_tesseract(img, region, target)
             if triple[0] is not None:
                 return rank, triple, False
+            # A CN strip always lands here, because none of it is Latin.
+            cn_triple = _extract_strip_cn(img, region, target)
+            if cn_triple[0] is not None:
+                globals()["_CN_STRIP_SESSION"] = True
+                return rank, cn_triple, False
             try:
                 return rank, _extract_strip_gemini(img, region, target, args.model), False
             except Exception:  # noqa: BLE001 -- no key/network: keep the miss

@@ -20638,5 +20638,79 @@
       "score": 11378,
       "wr": 83.0
     }
+  ],
+  "globalTopMastery": [
+    {
+      "player": "小乖煜",
+      "champion": "Heimerdinger",
+      "slug": "heimerdinger",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10127.png",
+      "score": 20036,
+      "wr": 68.3,
+      "server": "CN"
+    },
+    {
+      "player": "SomeChineseName",
+      "champion": "Irelia",
+      "slug": "irelia",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10094.png",
+      "score": 19490,
+      "wr": 53.7,
+      "server": "CN"
+    },
+    {
+      "player": "5100508060 27",
+      "champion": "Singed",
+      "slug": "singed",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10096.png",
+      "score": 19354,
+      "wr": 63.0,
+      "server": "CN"
+    },
+    {
+      "player": "快龙Drgon",
+      "champion": "Shen",
+      "slug": "shen",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10118.png",
+      "score": 19295,
+      "wr": 67.0,
+      "server": "CN"
+    },
+    {
+      "player": "ea. /Dsle—Clt«..",
+      "champion": "Riven",
+      "slug": "riven",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10092.png",
+      "score": 19295,
+      "wr": 79.5,
+      "server": "CN"
+    },
+    {
+      "player": "Jx电竞影宴",
+      "champion": "Pyke",
+      "slug": "pyke",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10124.png",
+      "score": 19266,
+      "wr": 72.3,
+      "server": "CN"
+    },
+    {
+      "player": "不练腿不练腿",
+      "champion": "Taliyah",
+      "slug": "taliyah",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10146.png",
+      "score": 18905,
+      "wr": 61.3,
+      "server": "CN"
+    },
+    {
+      "player": "命",
+      "champion": "K'Sante",
+      "slug": "ksante",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10152.png",
+      "score": 18905,
+      "wr": 59.2,
+      "server": "CN"
+    }
   ]
 }

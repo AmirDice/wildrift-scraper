@@ -33,12 +33,16 @@ export const SKIPPED_PATCH = "7.3a";
  */
 export const EU_WINRATE_PATCH = "7.3a";
 export const NA_WINRATE_PATCH = "7.3a";
+export const CN_WINRATE_PATCH = "7.3a";
 export const WINRATE_PATCH = EU_WINRATE_PATCH;
 
 /** Regions whose boards this run has already published. */
-export const COLLECTION_DONE_REGIONS = "EU and NA";
-/** Regions this run has still to collect. */
-export const COLLECTION_PENDING_REGIONS = "CN";
+export const COLLECTION_DONE_REGIONS = "EU, NA and CN";
+/** Regions this run has still to collect. Empty: the run is finished.
+ *  Live copy must not print a dangling "X is still to come" when this is
+ *  blank, so the sentence is gone from the places that used it rather than
+ *  being left to interpolate nothing. */
+export const COLLECTION_PENDING_REGIONS = "";
 
 /** The patch the next collection and the next round of work is aimed at. */
 export const NEXT_PATCH = "7.3a";
@@ -61,18 +65,18 @@ export const COLLECTION_REGIONS = "EU, NA and CN";
  * per-region progress in the navbar bar is a better answer to "how far along
  * is it" than any date in prose.
  */
-export const COLLECTION_IN_PROGRESS = true;
+export const COLLECTION_IN_PROGRESS = false;
 
 export const ANNOUNCEMENT = {
-  // Bumped from -v3: that banner said NA was live and EU was still to come.
-  // EU has now been re-collected too, so both western boards are on 7.3a
-  // and the comparison between them is finally like for like.
-  key: "wtm-announce-eu-na-live-2026-10-v4",
+  // Bumped from -v4: that banner said EU and NA were live and CN was still
+  // to come. China is collected now, so the run is finished and the key
+  // changes to show the banner again to people who dismissed the last one.
+  key: "wtm-announce-all-three-live-2026-10-v5",
   href: "/updates",
-  lead: "EU and NA win rates are both on patch 7.3a",
-  short: `Both western boards have been re-collected: NA on 6 October and EU on 7 October, all 142 champions each, the first boards played entirely on patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the builds those players equipped are live for both, so comparing the two servers is finally like for like. ${COLLECTION_PENDING_REGIONS} is still to come.`,
+  lead: "EU, NA and China win rates are all on patch 7.3a",
+  short: `All three boards are collected: NA on 6 October, EU on 7 October and China on 11 October, 142 champions each on patch ${CN_WINRATE_PATCH}. China is new in kind, not just refreshed: until now its numbers were Tencent's published bracket rates, and this is our own capture of the top 30 players on every champion, with their ranks, records and the builds they had equipped. The Global ranking averages all three servers again. The Build Studio is off maintenance and generating normally.`,
   cta: "What changed",
-  badges: ["EU + NA updated"],
+  badges: ["China board live"],
   /** Pages the banner points at, so it does not appear on top of itself. */
   hideOn: ["/updates"],
 } as const;
@@ -87,6 +91,34 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "11 October 2026",
+    title: "The Build Studio is live again",
+    body:
+      "Generations are running normally and the maintenance notice is gone. "
+      + "Builds are authored by the model alone for now: the engine-judged "
+      + "tournament, which measured several candidate builds and fed the "
+      + "numbers back before the final pick, is switched off. It cost 25 to "
+      + "30 seconds on every biased generation, and turning it off is a "
+      + "latency decision rather than a verdict on the measurements, which "
+      + "are unchanged and still tested.",
+  },
+  {
+    date: "11 October 2026",
+    title: "China win rates, leaderboard and builds are live",
+    body:
+      "All 142 champions were captured from the live China leaderboard, the "
+      + "top 30 players on each. This is a different kind of China data than "
+      + "the site has carried before: the existing figures are Tencent's "
+      + "published win, pick and ban rates across a whole bracket, which are "
+      + "still here and still the right answer to how a champion does in "
+      + "China generally. These are the best players on each champion, "
+      + "measured the same way EU and NA are, which makes a three-server "
+      + "comparison like for like for the first time. The Global ranking "
+      + "averages all three boards again, the leaderboard has 3,713 Chinese "
+      + "players with the builds they had equipped, and player search covers "
+      + "them. Hwei comes out strongest on the board by a wide margin.",
+  },
   {
     date: "7 October 2026",
     title: "EU win rates are on patch 7.3a",
@@ -110,9 +142,9 @@ export const CHANGELOG: { date: string; title: string; body: string }[] = [
       + "champion with ranks and per-player records, and the builds those "
       + "players actually had equipped. Senna comes out the strongest champion "
       + "on the server by a clear margin, which is the marksman overhaul "
-      + `landing. ${COLLECTION_PENDING_REGIONS} have not been re-collected yet, so `
-      + `EU still shows its ${EU_WINRATE_PATCH} board and anything that averages `
-      + "the two servers mixes the old EU numbers with the new NA ones.",
+      + "landing. CN has not been re-collected yet, so EU still shows its "
+      + "older board and anything that averages the two servers mixes the "
+      + "old EU numbers with the new NA ones.",
   },
   {
     date: "4 October 2026",

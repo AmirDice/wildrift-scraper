@@ -117,6 +117,11 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const history = getChampionHistory(champion.name);
   const naBoard = regionBoard("NA");
   const na = naBoard.champions.find((c) => c.slug === champion.slug);
+  // The region comparison below is three LADDER boards now. It used to put
+  // Tencent's whole-ladder China rate beside EU's and NA's top-30 numbers,
+  // which is three bars that look comparable and are not. Tencent's figure
+  // is still on the page -- the bracket curve underneath is built from it.
+  const cnLadder = regionBoard("CN").champions.find((c) => c.slug === champion.slug);
   // What each server's top 50 actually hold. Per server on purpose: see
   // components/server-builds.tsx for why China is empty and stays empty.
   const serverBuilds = buildsByServer(champion.name);
@@ -197,7 +202,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         regions={[
           { label: "EU", value: Number.isFinite(champion.wr) ? champion.wr : null },
           { label: "NA", value: na && Number.isFinite(na.wr) ? na.wr : null },
-          { label: "CN", value: cn && Number.isFinite(cn.wr) ? cn.wr : null },
+          { label: "CN", value: cnLadder && Number.isFinite(cnLadder.wr) ? cnLadder.wr : null },
         ]}
         winRate={headline.wr}
         winRateDelta={headline.wrDelta}

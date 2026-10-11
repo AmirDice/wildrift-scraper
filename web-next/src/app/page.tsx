@@ -4,6 +4,7 @@ import { site, getChampions, tierLabel, type Champion, regionBoard } from "@/lib
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { getCnChampions, getGlobalChampions } from "@/lib/cn";
 import { risingPicks, overratedInEu } from "@/lib/gap";
+import { classMeta, roleMeta } from "@/lib/meta-stats";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, TierChip, ChampionAvatar, SectionHeading, Card } from "@/components/ui";
 import { HeroCarousel } from "@/components/hero-carousel";
@@ -53,13 +54,20 @@ export default function HomePage() {
   const featured = globalChamps[0];
   const topPick = globalChamps[0];
   const lowest = globalWeakestFirst[0];
-  const topMetaClass = site.metaBreakdown[0];
-  const strongestRole = Object.entries(site.roleStrength)
-    .filter(([, s]) => !s.lowConfidence)
-    .sort((a, b) => b[1].wr - a[1].wr)[0];
+  // Blended, like every other figure on this page. These were the last
+  // two reading site.metaBreakdown and site.roleStrength, which are EU
+  // numbers baked at export time and were being printed as facts about
+  // the game.
+  const classBars = classMeta();
+  const roleBars = roleMeta();
+  const topMetaClass = classBars[0];
+  const strongestRole = roleBars.find((r) => !r.lowConfidence) ?? roleBars[0];
 
   const topMeta = globalChamps.slice(0, 6);
-  const topMastery = site.topMastery.slice(0, 6);
+  // Cross-server where the export provides it, EU otherwise -- an older
+  // site.json simply has no globalTopMastery, and a homepage that renders
+  // nothing is worse than one showing the board it does have.
+  const topMastery = (site.globalTopMastery ?? site.topMastery).slice(0, 6);
   const highestWr = globalChamps.slice(0, 5);
   const lowestWr = globalWeakestFirst.slice(0, 5);
   const offMeta = site.offMetaSlugs.map((s) => globalBySlug.get(s)).filter(Boolean).slice(0, 5) as Champion[];
@@ -242,7 +250,7 @@ export default function HomePage() {
         <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard label="Current meta" value={topMetaClass.class} sub={`${topMetaClass.wr.toFixed(1)}% avg win rate`} href="/meta#classes" spark="violet" />
           <StatCard label="Top pick" value={topPick.name} sub={`${topPick.wr.toFixed(1)}% win rate`} avatarSrc={topPick.icon} valueClass="text-accent" href={`/champions/${topPick.slug}`} spark="cyan" />
-          {strongestRole && <StatCard label="Strongest role" value={strongestRole[0]} sub={`${strongestRole[1].wr.toFixed(1)}% top picks`} href="/meta#roles" spark="blue" />}
+          {strongestRole && <StatCard label="Strongest role" value={strongestRole.role} sub={`${strongestRole.wr.toFixed(1)}% top picks`} href="/meta#roles" spark="blue" />}
           {lowest && <StatCard label="Lowest win rate" value={lowest.name} sub={`${lowest.wr.toFixed(1)}% win rate`} avatarSrc={lowest.icon} valueClass="text-bad" href="/win-rates?view=lowest" spark="red" />}
         </div>
       </Container>
@@ -283,9 +291,13 @@ export default function HomePage() {
       </Container>
 
       <Container className="py-8">
-        <SectionHeading title="Top of the leaderboard" subtitle="Highest champion mastery on the server" href="/leaderboard" linkLabel="All leaderboards" />
+        <SectionHeading title="Top of the leaderboard" subtitle="Highest champion mastery across every server we track" href="/leaderboard" linkLabel="All leaderboards" />
         <Card className="home-leader-grid grid overflow-hidden sm:grid-cols-2 lg:grid-cols-3">
-          {topMastery.map((m, i) => (
+          {topMastery.map((m, i) => {
+            // Present only on the cross-server rows; a regional fallback
+            // has no server to name and simply omits it.
+            const server = (m as { server?: string | null }).server ?? null;
+            return (
             <Link key={`${m.player}-${i}`} href={`/leaderboard?champion=${encodeURIComponent(m.champion)}`} className="group flex items-center gap-3 border-b border-line px-4 py-4 transition hover:bg-white/[0.035] sm:border-r lg:[&:nth-child(3n)]:border-r-0">
               <span className="text-xl font-semibold text-faint">{String(i + 1).padStart(2, "0")}</span>
               <span className="h-11 w-11 shrink-0 overflow-hidden rounded-xl ring-1 ring-white/10">
@@ -294,11 +306,15 @@ export default function HomePage() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{m.player}</p>
-                <p className="text-xs text-muted">{m.champion}</p>
+                <p className="text-xs text-muted">
+                  {m.champion}
+                  {server ? <span className="text-faint"> · {server}</span> : null}
+                </p>
               </div>
               <span className="text-xs font-semibold text-accent">{m.score != null ? m.score.toLocaleString() : "-"}</span>
             </Link>
-          ))}
+            );
+          })}
         </Card>
       </Container>
 
@@ -306,13 +322,11 @@ export default function HomePage() {
       <Container className="py-12">
         <SectionHeading title="Meta at a glance" subtitle="Win rate by class and role" href="/meta" linkLabel="Full meta overview" />
         <div className="grid gap-6 lg:grid-cols-2">
-          <BarCard title="Meta by class" subtitle="Avg win rate of each class's top 5 picks" rows={site.metaBreakdown.map((m) => ({ label: m.class, wr: m.wr }))} />
+          <BarCard title="Meta by class" subtitle="Avg win rate of each class's top 5 picks" rows={classBars.map((m) => ({ label: m.class, wr: m.wr }))} />
           <BarCard
             title="Win rate by role"
             subtitle="Strength of each role's top meta picks"
-            rows={Object.entries(site.roleStrength)
-              .sort((a, b) => b[1].wr - a[1].wr)
-              .map(([role, s]) => ({ label: role, wr: s.wr }))}
+            rows={roleBars.map((r) => ({ label: r.role, wr: r.wr }))}
           />
         </div>
       </Container>

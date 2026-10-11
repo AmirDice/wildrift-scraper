@@ -81,16 +81,22 @@ export function RegionUpdated({
   euDate,
   cnDate,
   naDate,
+  cnDaily = true,
 }: {
   region: Region;
   euDate?: string | null;
   cnDate?: string | null;
   naDate?: string | null;
+  /** True when cnDate comes from Tencent's daily publication, which is
+   *  current by definition and so reads as today. False when it is our own
+   *  China capture, which has a collection date like every other board and
+   *  must not be dressed up as fresher than it is. */
+  cnDaily?: boolean;
 }) {
   const eu = readableDate(euDate);
   const na = readableDate(naDate);
   const today = useToday();
-  const cn = today ?? readableDate(cnDate);
+  const cn = cnDaily ? today ?? readableDate(cnDate) : readableDate(cnDate);
   // NA used to return null here because it had no data; it collects on its
   // own schedule now and reports its own date like everyone else.
   if (region === "NA" && !na) return null;
@@ -99,16 +105,17 @@ export function RegionUpdated({
     <span className="glass inline-flex flex-wrap items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-muted">
       <CalendarIcon />
       {region === "Global" ? (
-        // Only the regions the Global number is actually built from. CN stopped
-        // feeding it on 2026-08-11, so printing a CN date here would advertise
-        // freshness the ranking does not draw on. Pages that really do compare
-        // against CN (/global, /rising) pass no naDate and keep their CN date.
+        // Only the regions the Global number is actually built from. That was
+        // EU and NA alone between 2026-08-11 and 2026-10-11, while the only
+        // China data here was Tencent's bracket aggregate; our own China
+        // board rejoined the blend, so it is named alongside them. A caller
+        // that passes no naDate is still comparing EU against China only
+        // (/global, /rising) and gets the two it has.
         <>
           Data updated
           {eu && <><span className="text-faint">·</span><span className="text-text">EU {eu}</span></>}
-          {na
-            ? <><span className="text-faint">·</span><span className="text-text">NA {na}</span></>
-            : cn && <><span className="text-faint">·</span><span className="text-text">CN {cn}</span></>}
+          {na && <><span className="text-faint">·</span><span className="text-text">NA {na}</span></>}
+          {cn && <><span className="text-faint">·</span><span className="text-text">CN {cn}</span></>}
         </>
       ) : (
         <>Last updated <span className="text-faint">·</span> <span className="text-text">{region === "CN" ? cn : region === "NA" ? na : eu}</span></>

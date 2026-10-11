@@ -75,10 +75,10 @@ export default async function BuildPage(props: PageProps<"/build">) {
           </div>
           <div className="relative mt-6 flex flex-col gap-3 border-t border-white/[0.07] pt-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3 text-sm">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-amber-300/20 bg-amber-300/10 text-amber-200">↻</span>
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-emerald-300/20 bg-emerald-300/10 text-emerald-300">✓</span>
               <div>
-                <p className="font-semibold text-amber-100">Engine maintenance</p>
-                <p className="text-xs text-muted">Live generations may pause while recommendations update.</p>
+                <p className="font-semibold text-emerald-100">Generating normally</p>
+                <p className="text-xs text-muted">Maintenance is over. Every build is generated on request.</p>
               </div>
             </div>
             <BuildsGeneratedPill />

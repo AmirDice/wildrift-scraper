@@ -99,6 +99,7 @@ from .icon_match import (
 from . import collection_progress
 from .navigator import LeaderboardNavigator
 from .ocr import (
+    _run_paddle,
     locate_badge_column,
     read_champion_name,
     read_player_name,
@@ -287,6 +288,47 @@ def roster_size() -> int:
 #: read" -- those are worth retrying and these are not.
 ANONYMOUS_CN = "<anonymous-cn>"
 
+#: Half the CN row pitch. Rows are ~150px apart, so a window this tall around
+#: the tap point always contains the row's own name and never the neighbour's.
+_CN_ROW_HALF = 75
+#: The score line that sits ~38px UNDER every name ("评分：14250"). It is not a
+#: name, and OCR mangles it variously (平分, 中力, or just the digits), so the
+#: filter has to catch the shape rather than the exact characters.
+_CN_SCORE_LINE = re.compile(r"^(?:[评平苹][分价]|中力)|^[\d\s,.:：]+$")
+
+
+def read_cn_row_name(image, tap_y: int) -> str | None:
+    """The player name on the CN row at `tap_y`.
+
+    FINDS the name rather than assuming an offset. Measured across one
+    champion's 12 rows, the name sits anywhere from 60px above the tap point
+    to 58px below it -- the fixed EU/NA offset landed on the name for some
+    rows and on the score line underneath for others, which is how half the
+    hidden profiles went unnoticed: 3 of 6 detected.
+
+    So: read a window half a row tall, discard the score lines, and take
+    whichever remains closest to the tap point.
+    """
+    x0, x1 = SCREEN_2_NAME_X_RANGE
+    top = max(0, tap_y - _CN_ROW_HALF)
+    bottom = min(image.shape[0], tap_y + _CN_ROW_HALF)
+    crop = image[top:bottom, x0:x1]
+    if crop.size == 0:
+        return None
+    try:
+        _text, _score, words = _run_paddle(crop)
+    except Exception:  # noqa: BLE001 -- OCR backend missing; caller copes
+        return None
+    best, best_dy = None, None
+    for word in words:
+        label = (word.text or "").strip()
+        if not label or _CN_SCORE_LINE.match(label):
+            continue
+        dy = abs((top + word.y) - tap_y)
+        if best_dy is None or dy < best_dy:
+            best, best_dy = label, dy
+    return best
+
 
 def looks_anonymous_cn(name: str | None) -> bool:
     """True when a CN leaderboard row belongs to a hidden profile.
@@ -353,6 +395,15 @@ def main() -> int:
     parser.add_argument("--no-connect", action="store_true")
     parser.add_argument("--step-wait", type=float, default=0.8,
                         help="Wait after each tap. Lower if your device's UI transitions are fast.")
+    parser.add_argument("--profile-wait", type=float, default=1.0,
+                        help="Wait after tapping VIEW PROFILE. Separate from "
+                             "--step-wait because it is a full page load, not "
+                             "a popup: it was hardcoded at 1.0s and ignored "
+                             "--step-wait entirely. It is the single longest "
+                             "wait per rank, so lower it first if a run feels "
+                             "slow -- but the profile frame is the only source "
+                             "of the season and peak ranks, so too low "
+                             "captures a half-rendered page.")
     parser.add_argument("--tap-hold-ms", type=int, default=60,
                         help="How long each tap is held (ms). 60 is fast and reliable; raise if taps get dropped.")
     parser.add_argument("--output", type=Path, default=Path("data/winrates.csv"))
@@ -429,9 +480,11 @@ def main() -> int:
                         help="capture-only: also capture the STATS page for "
                              "BOTH queues (Ranked + Legendary Ranked; ~5s/profile)")
     parser.add_argument("--refresh-after-hours", "--restart-hours", dest="refresh_after_hours",
-                        type=float, default=2.0,
-                        help="Carousel maintenance restart interval. The game is closed and "
-                             "relaunched only between completed champions (0 disables it).")
+                        type=float, default=0.0,
+                        help="Carousel maintenance restart interval, in hours. OFF by "
+                             "default: the game is closed and relaunched only between "
+                             "completed champions, and only if you ask for it. Pass e.g. "
+                             "2 to restore the old two-hour cycle.")
     parser.add_argument("--app-start-timeout", type=float, default=75.0,
                         help="Maximum seconds to wait for Wild Rift's main menu after a "
                              "maintenance restart (the normal load is about 40s).")
@@ -658,10 +711,13 @@ def main() -> int:
                 probe = None
             if probe is not None:
                 name_x0, name_x1 = SCREEN_2_NAME_X_RANGE
-                cn_name = read_player_name(probe, (
-                    name_x0, max(0, py + SCREEN_2_NAME_Y_OFFSET),
-                    name_x1 - name_x0, SCREEN_2_NAME_HEIGHT,
-                ))
+                # Paddle, and a FOUND name rather than a fixed offset. The
+                # default reader is Tesseract, which cannot read Chinese and
+                # does not fail quietly: on a crop plainly showing 匿名玩家 it
+                # returned "BRITK". And the EU/NA offset does not fit CN rows,
+                # where the name moves +-60px relative to the tap point. Each
+                # fault alone hid profiles; together they hid all of them.
+                cn_name = read_cn_row_name(probe, py)
                 if looks_anonymous_cn(cn_name):
                     print(f"  [cn] rank {rank}: hidden profile -- row kept, profile skipped")
                     return (None, None, None, ANONYMOUS_CN)
@@ -687,7 +743,7 @@ def main() -> int:
             _check_pause_or_raise()
 
         client.tap(*s3_view, hold_ms=args.tap_hold_ms)
-        time.sleep(1.0)
+        time.sleep(args.profile_wait)
         profile_frame: str | None = None
         if capture_dir is not None:
             # The main profile is the only authoritative source for the
@@ -2094,6 +2150,11 @@ def main() -> int:
                 )
                 if refresh_due:
                     if not restart_game_between_champions():
+                        # Opt-in now, so reaching here means the restart was
+                        # asked for. It still ends the run rather than
+                        # continuing from an unknown screen, because a failed
+                        # restart leaves the app wherever the Back presses
+                        # landed.
                         print("[carousel] stopping safely after failed maintenance restart")
                         break
 

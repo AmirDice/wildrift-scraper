@@ -27,7 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "data" / "ladder_consensus.json"
 OUT = ROOT / "web-next" / "src" / "data" / "ladder_builds.json"
-REGIONS = ("eu", "na")
+REGIONS = ("eu", "na", "cn")
 
 ITEMS_KEPT = 10
 KEYSTONES_KEPT = 3

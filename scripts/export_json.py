@@ -74,7 +74,18 @@ REGION_FILES = {
         "csv": ROOT / "data" / "winrates_cn.csv",
         "site": ROOT / "web-next" / "src" / "data" / "site_cn.json",
         "players": ROOT / "web-next" / "public" / "players-cn.json",
-        "history": ROOT / "data" / "history" / "cn",
+        # NOT data/history/cn. That directory is the DAILY TENCENT series
+        # (scripts/scrape_cn.py, read by scripts/build_movers.py): whole-
+        # ladder win rates sitting near 50% with pick and ban beside them.
+        # This board is the top 30 of each champion's leaderboard, a
+        # different population measured a different way, and the two cannot
+        # share a series. Writing here would have done two things at once:
+        # overwritten a day of the Tencent history with ladder numbers, and
+        # measured this collection's movement against Tencent's previous
+        # day -- 140 champions is over the 90% bar, so it would have been
+        # accepted as a baseline and every delta on the page would have
+        # been the gap between two datasets rather than movement in one.
+        "history": ROOT / "data" / "history" / "cn_ladder",
     },
 }
 REGION_CSV: Path | None = None   # None = EU default inside data_loader
@@ -268,6 +279,24 @@ def _global_scored_frame() -> pd.DataFrame:
         "NA": REGION_FILES["na"]["csv"],
         "CN": REGION_FILES["cn"]["csv"],
     }
+    combined = _combined_frame(paths)
+    if combined.empty:
+        return pd.DataFrame()
+    return best_player_podium_per_champion(combined)
+
+
+def _combined_frame(paths: dict[str, Path] | None = None) -> pd.DataFrame:
+    """Every server's board in one frame, tagged with which server.
+
+    Empty below two servers, for the reason given above: one server is not
+    a cross-server anything.
+    """
+    if paths is None:
+        paths = {
+            "EU": REGION_FILES["eu"]["csv"],
+            "NA": REGION_FILES["na"]["csv"],
+            "CN": REGION_FILES["cn"]["csv"],
+        }
     frames = []
     for server, path in paths.items():
         if not path.exists():
@@ -283,8 +312,42 @@ def _global_scored_frame() -> pd.DataFrame:
         frames.append(frame)
     if len(frames) < 2:
         return pd.DataFrame()
-    combined = pd.concat(frames, ignore_index=True)
-    return best_player_podium_per_champion(combined)
+    return pd.concat(frames, ignore_index=True)
+
+
+def _global_top_mastery(limit: int = 8) -> list[dict]:
+    """Highest champion scores across every board, one row per player.
+
+    Same cut as the per-region topMastery -- top of each champion's board,
+    deduped by player keeping their single best, title-eligible accounts
+    only -- taken over the servers together rather than one at a time, and
+    carrying `server` so the card can say where each row is from.
+    """
+    df = _combined_frame()
+    if df.empty:
+        return []
+    pool = df[df["rank"] <= TOP_N].dropna(subset=["score"]).copy()
+    pool = pool.sort_values("score", ascending=False)
+    out: list[dict] = []
+    seen_players: set[str] = set()
+    for _, r in pool.iterrows():
+        name = str(r["player_name"]) if pd.notna(r.get("player_name")) else "—"
+        if name in seen_players or not eligible_for_title(name):
+            continue
+        seen_players.add(name)
+        champ = str(r["champion"])
+        out.append({
+            "player": name,
+            "champion": champ,
+            "slug": _slug(champ),
+            "icon": icon_url(champ),
+            "score": _i(r.get("score")),
+            "wr": _f(r.get("winrate")),
+            "server": str(r.get("server")).upper() if pd.notna(r.get("server")) else None,
+        })
+        if len(out) >= limit:
+            break
+    return out
 
 
 def _global_podium_by_champion() -> dict[str, dict]:
@@ -720,6 +783,9 @@ def build() -> dict:
         "funnyNames": funny,
         "offMetaSlugs": off_meta_slugs,
         "topMastery": top_mastery,
+        # The same card across every board. Present in each region's file
+        # because the homepage reads site.json and the figure is not EU's.
+        "globalTopMastery": _global_top_mastery(),
     }
 
 

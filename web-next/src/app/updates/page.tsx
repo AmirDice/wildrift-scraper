@@ -41,12 +41,12 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`Both western boards are collected and published: NA on 6 October, EU on `
-            + `7 October, all 142 champions each and the first boards played entirely on `
-            + `patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player boards and the `
-            + `builds those players had equipped are live for both, so an EU-versus-NA `
-            + `comparison is now a difference between the servers rather than between two `
-            + `collection dates. ${COLLECTION_PENDING_REGIONS} is still to come. Patch `
+          {`All three boards are collected and published: NA on 6 October, EU on `
+            + `7 October and China on 11 October, 142 champions each and every one played `
+            + `entirely on patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player `
+            + `boards and the builds those players had equipped are live for all three, so `
+            + `a comparison between any two servers is a difference between the servers `
+            + `rather than between two collection dates. Patch `
             + `${SKIPPED_PATCH} item and ability data is already live everywhere.`}
         </p>
       </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { site, getChampions, regionBoard } from "@/lib/data";
 import { freshness } from "@/lib/patch-freshness";
-import { getCnChampionsByBracket, getCnRolesByBracket, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
+import { getCnChampionsBySample, getCnRolesBySample, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
 import { AdSlot } from "@/components/ad-slot";
 import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
@@ -45,7 +45,7 @@ export default function TierListPage() {
             <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15">
               <TierMetric label="Champions" value={champions.length.toString()} />
               <TierMetric label="Regions" value="3" bordered />
-              <TierMetric label="Player pool" value="Top 50" bordered />
+              <TierMetric label="Player pool" value="Top 30" bordered />
             </div>
           </div>
           <div className="relative mt-5 grid gap-2 border-t border-white/[0.07] pt-4 sm:grid-cols-2">
@@ -69,8 +69,9 @@ export default function TierListPage() {
           euFreshness={freshness(site.collectedOn)}
           naFreshness={freshness(regionBoard("NA").collectedOn)}
           roles={site.roles}
-          cnChampionsByBracket={getCnChampionsByBracket()}
-          cnRolesByBracket={getCnRolesByBracket()}
+          cnChampionsByBracket={getCnChampionsBySample()}
+          cnRolesByBracket={getCnRolesBySample()}
+          cnFreshness={freshness(CN_META.ladderDate)}
           cnMeta={CN_META}
           globalChampions={getGlobalChampions()}
           globalRoles={globalRoles()}

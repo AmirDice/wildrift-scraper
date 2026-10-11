@@ -3,7 +3,7 @@ import path from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
 import { getChampions, regionBoard, TIER_ORDER, tierLabel, type Champion } from "@/lib/data";
-import { getGlobalChampions, getCnChampionsByBracket, CN_META, type CnBracketKey } from "@/lib/cn";
+import { getGlobalChampions } from "@/lib/cn";
 import { CURRENT_PATCH } from "@/lib/patch";
 
 /**
@@ -103,12 +103,15 @@ export async function GET(request: Request) {
   const roleParam = url.searchParams.get("role") ?? "";
   const role = ROLES.find((r) => r === roleParam) ?? null;
 
-  const cnBracket = CN_META.defaultBracket as CnBracketKey;
+  // The card has to show what the page shows, so China means our own
+  // board here too -- a share image ranking Tencent's brackets under a
+  // heading the page no longer uses would be wrong in the one place
+  // nobody can click through to check.
   const champions: Champion[] =
     region === "Global" ? getGlobalChampions()
     : region === "EU" ? getChampions()
     : region === "NA" ? regionBoard("NA").champions
-    : (getCnChampionsByBracket()[cnBracket] as unknown as Champion[]);
+    : regionBoard("CN").champions;
 
   // Same bucketing as the page: role boards re-tier within the role.
   const pool = role ? champions.filter((c) => c.role === role) : champions;
@@ -130,13 +133,10 @@ export async function GET(request: Request) {
   ]);
   const iconBySlug = new Map(shownChamps.map((c, i) => [c.slug, icons[i]]));
 
-  const bracketLabel = CN_META.brackets.find((b) => b.key === cnBracket)?.label ?? "";
-  const regionLabel = region === "Global" ? "Global · EU + NA"
-    : region === "CN" ? `China · ${bracketLabel}`
+  const regionLabel = region === "Global" ? "Global · EU + NA + CN"
+    : region === "CN" ? "China · Top 30 ladder"
     : region;
-  const basis = region === "CN"
-    ? "Official China server data, lolm.qq.com"
-    : "Confidence-adjusted win rates of each champion's top players";
+  const basis = "Confidence-adjusted win rates of each champion's top players";
 
   return new ImageResponse(
     (

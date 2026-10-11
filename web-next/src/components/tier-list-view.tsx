@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
-import { cnTier, type CnBracketKey } from "@/lib/cn";
+import { cnTier, type CnBracketKey, type CnSampleKey } from "@/lib/cn";
 import { TIER_ORDER, tierClass, tierLabel, site, siteNa } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
 import { AdSlot } from "@/components/ad-slot";
@@ -92,6 +92,7 @@ export function TierListView({
   naUpdated,
   euFreshness = null,
   naFreshness = null,
+  cnFreshness = null,
   cnChampionsByBracket,
   cnRolesByBracket,
   cnMeta,
@@ -109,23 +110,40 @@ export function TierListView({
    *  the server so the 38KB change summary never reaches the client. */
   euFreshness?: Freshness | null;
   naFreshness?: Freshness | null;
-  cnChampionsByBracket: Record<CnBracketKey, Champion[]>;
-  cnRolesByBracket: Record<CnBracketKey, string[]>;
+  /** The CN LADDER board's staleness. Tencent's brackets are daily and have
+   *  none by definition; our own China capture ages exactly like EU's. */
+  cnFreshness?: Freshness | null;
+  cnChampionsByBracket: Record<CnSampleKey, Champion[]>;
+  cnRolesByBracket: Record<CnSampleKey, string[]>;
   cnMeta: {
     source: string;
     date: string | null;
     bracket: string;
-    defaultBracket: CnBracketKey;
+    defaultBracket: CnSampleKey;
+    /** Which sample the CHINA TAB opens on. Separate from defaultBracket,
+     *  which is Tencent's Challenger and is what /ranks and /rising mean. */
+    tierListDefault?: CnSampleKey;
+    ladderDate?: string | null;
+    ladderOffset?: number;
+    ladderMovementSince?: string | null;
     brackets: readonly {
-      key: CnBracketKey;
+      key: CnSampleKey;
       label: string;
       short: string;
-      kind: "regular" | "legendary";
+      kind: "regular" | "legendary" | "ladder";
+    }[];
+    /** Brackets plus the ladder board. Optional so a caller that predates
+     *  the ladder still renders, falling back to the brackets alone. */
+    samples?: readonly {
+      key: CnSampleKey;
+      label: string;
+      short: string;
+      kind: "regular" | "legendary" | "ladder";
     }[];
   };
   globalChampions: Champion[];
   globalRoles: string[];
-  initialCnBracket?: CnBracketKey;
+  initialCnBracket?: CnSampleKey;
   /** Which region the list opens on. The region tabs are client state, so this
    *  is what decides which ranking ends up in the server-rendered HTML -- and
    *  therefore which one a crawler can read. See /tier-list/china. */
@@ -147,22 +165,29 @@ export function TierListView({
   // its figures are Tencent's bracket aggregates, with no per-player rows to
   // re-slice at all.
   const [poolDepth, setPoolDepth] = useState<"all" | "25" | "10" | "5">("all");
-  const [cnBracket, setCnBracket] = useState<CnBracketKey>(initialCnBracket ?? cnMeta.defaultBracket);
+  const [cnBracket, setCnBracket] = useState<CnSampleKey>(
+    initialCnBracket ?? cnMeta.tierListDefault ?? cnMeta.defaultBracket);
   // Win rates ship centred so 50% reads as "the average champion". The raw
   // number is what the players actually posted, and people keep asking for it,
   // so it is a toggle rather than a rewrite of the scale.
   const [showRaw, setShowRaw] = useState(false);
 
-  const isCN = region === "CN";
+  const isChina = region === "CN";
+  // Our own CN board behaves like EU and NA in every respect -- centred win
+  // rates, pool depths, a collection date, a staleness warning -- so it is
+  // NOT what the isCN branches below are about. Those are all about
+  // Tencent's bracket aggregates, which is what this now says.
+  const isCnLadder = isChina && cnBracket === "ladder";
+  const isCN = isChina && !isCnLadder;
   const isGlobal = region === "Global";
   const isNA = region === "NA";
   const activeCnChampions = cnChampionsByBracket[cnBracket];
   const activeCnRoles = cnRolesByBracket[cnBracket];
-  const activeChampions = isCN ? activeCnChampions
+  const activeChampions = isChina ? activeCnChampions
     : isGlobal ? globalChampions
     : isNA ? naChampions
     : champions;
-  const activeRoles = isCN ? activeCnRoles
+  const activeRoles = isChina ? activeCnRoles
     : isGlobal ? globalRoles
     : isNA ? naRoles
     : roles;
@@ -172,6 +197,7 @@ export function TierListView({
   // patch cycle. Global reports the STALER of its two halves, because a
   // blend is only as current as the oldest board in it.
   const activeFreshness = isCN ? null
+    : isCnLadder ? cnFreshness ?? null
     : isNA ? naFreshness
     : isGlobal
       ? [euFreshness, naFreshness].filter((f): f is Freshness => Boolean(f?.stale))
@@ -185,13 +211,15 @@ export function TierListView({
   const offsetFor = (c: Champion): number => {
     if (isCN) return 0;                       // Tencent publishes raw already
     if (depthActive) return c.pools?.[poolDepth]?.wrOffset ?? 0;
+    if (isCnLadder) return cnMeta.ladderOffset ?? 0;
     if (isGlobal) return ((site.wrOffset ?? 0) + (siteNa.wrOffset ?? 0)) / 2;
     return (isNA ? siteNa.wrOffset : site.wrOffset) ?? 0;
   };
   const shownWr = (c: Champion): number => (showRaw ? c.wr - offsetFor(c) : c.wr);
 
-  const activeCnBracket = cnMeta.brackets.find((option) => option.key === cnBracket)
-    ?? cnMeta.brackets.find((option) => option.key === cnMeta.defaultBracket)!;
+  const cnSamples = cnMeta.samples ?? cnMeta.brackets;
+  const activeCnBracket = cnSamples.find((option) => option.key === cnBracket)
+    ?? cnSamples.find((option) => option.key === cnMeta.defaultBracket)!;
   const options = useMemo(() => ["All roles", ...activeRoles], [activeRoles]);
 
   // A role filter changes which BAND a champion is shown in -- buckets sort by
@@ -235,7 +263,15 @@ export function TierListView({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.07] pt-3" data-tour="tl-updated">
-        <RegionUpdated region={region} euDate={site.collectedOn} cnDate={cnMeta.date} naDate={naUpdated} />
+        <RegionUpdated
+          region={region}
+          euDate={site.collectedOn}
+          // Global now blends our China board, so the badge names its date;
+          // the China TAB names whichever sample is on screen.
+          cnDate={isCN ? cnMeta.date : cnMeta.ladderDate}
+          cnDaily={isCN}
+          naDate={naUpdated}
+        />
         {/* CN is excluded: Tencent publishes raw rates, so there is no centring
             to undo and the button would be a no-op that implies otherwise. */}
         {!isCN && (
@@ -281,7 +317,7 @@ export function TierListView({
         <RegionComingSoon region={region} />
       ) : (
         <>
-          {isCN && (
+          {isChina && (
             <div className="mb-5">
               {/* The region tabs are client state, not separate URLs, so this
                   heading is what tells a reader (and a crawler reading the
@@ -290,6 +326,16 @@ export function TierListView({
                 Wild Rift China server tier list
                 {CURRENT_PATCH && <span className="text-muted"> · Patch {CURRENT_PATCH}</span>}
               </h2>
+              {isCnLadder ? (
+                <p className="mt-1 text-sm text-muted">
+                  The{" "}
+                  <span className="text-text">top 30 players on each champion&rsquo;s
+                  in-client leaderboard</span>, captured{" "}
+                  {cnMeta.ladderDate ?? "recently"} the same way the EU and NA boards
+                  are, so the three tabs measure the same thing. Switch to a bracket
+                  below for Tencent&rsquo;s published whole-ladder rates instead.
+                </p>
+              ) : (
               <p className="mt-1 text-sm text-muted">
                 Official China server win rates from{" "}
                 <span className="text-text">{activeCnBracket.label}</span>
@@ -301,8 +347,9 @@ export function TierListView({
                 . Source: lolm.qq.com. China usually plays the patch ahead of the West, so this list is the
                 earliest read on where the meta is going.
               </p>
+              )}
               <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="China skill bracket">
-                {cnMeta.brackets.map((option) => (
+                {cnSamples.map((option) => (
                   <button
                     key={option.key}
                     type="button"
@@ -408,7 +455,12 @@ export function TierListView({
                   </div>
                   <div className="tier-board-content flex flex-1 flex-wrap content-center gap-x-1.5 gap-y-2 rounded-2xl p-2 sm:gap-3 sm:p-3">
                     {champs.map((c) => {
-                      const cnMovement = isCN ? moverBySlug(c.slug, cnBracket) : null;
+                      // Tencent's movers only, hence the cast: isCN is
+                      // false on the ladder board, which has its own deltas
+                      // in the champion rows.
+                      const cnMovement = isCN
+                        ? moverBySlug(c.slug, cnBracket as CnBracketKey)
+                        : null;
                       // EU, NA and Global all carry wrDelta in centred units
                       // against their own previous collection. Global's is the
                       // mean of the two regional deltas, present only when both
@@ -531,6 +583,13 @@ export function TierListView({
                 rates centre on 50%, so tiers use a China-specific scale. GOD 53.5%+ · S 52–53.5% ·
                 A 50.8–52% · B 49.5–50.8% · C 48–49.5% · L under 48%.
               </p>
+            ) : isCnLadder ? (
+              <p>
+                <span className="font-medium text-text">CN ladder cutoffs</span>: percentile bands
+                inside this board, the same way EU and NA are banded. Every champion here is
+                carried by the 30 best players on it, so the pool sits high and the win rate is
+                centred to make 50% the average champion.
+              </p>
             ) : isGlobal ? (
               <p>
                 <span className="font-medium text-text">Global cutoffs</span>: the average of the
@@ -569,6 +628,7 @@ export function TierListView({
               <span className="font-semibold text-bad">&#9660;</span> badge means the champion{" "}
               <span className="font-medium text-text">changed tier</span> since{" "}
               {isCN ? "the previous China scrape"
+                : isCnLadder ? cnMeta.ladderMovementSince ?? "the previous China collection"
                 : isGlobal ? `the previous EU (${site.movementSince ?? "collection"}) and NA (${siteNa.movementSince ?? "collection"}) collections`
                 : (isNA ? siteNa.movementSince : site.movementSince) ?? "the previous collection"}
               {role === "All roles" ? "" : ` (within ${role})`}. The small{" "}

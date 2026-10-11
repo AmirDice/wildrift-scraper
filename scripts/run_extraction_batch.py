@@ -58,6 +58,48 @@ REGION_CAPTURES = {
 }
 
 
+def _extract_in_process(session: Path, engine: str) -> tuple[int, str, str]:
+    """Run one session's extraction inside THIS process.
+
+    The point is the OCR models. Spawning `python -m src.extract_frames` per
+    champion made every champion pay PaddleOCR's cold start -- about a minute
+    each, so roughly 2.4 hours of pure model loading across a 142-champion
+    batch, every time the batch was run. In-process they load once.
+
+    What this gives up is crash isolation, which is why it was subprocesses in
+    the first place. Python-level failures are caught here and the batch
+    carries on; a hard native crash still takes the process down, but the
+    batch skips any session that already has extracted.csv, so restarting
+    resumes rather than redoing. That trade is worth 2.4 hours.
+    """
+    import contextlib
+    from src import extract_frames
+
+    out, err = io.StringIO(), io.StringIO()
+    argv = sys.argv
+    sys.argv = ["extract_frames", str(session), "--engine", engine]
+    try:
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = extract_frames.main() or 0
+    except SystemExit as exc:                     # argparse or an explicit exit
+        code = int(exc.code or 0)
+    except Exception as exc:                      # one bad session, not the batch
+        code = 1
+        err.write(f"{type(exc).__name__}: {exc}")
+    finally:
+        sys.argv = argv
+    return code, out.getvalue(), err.getvalue()
+
+
+def _extract_isolated(session: Path, engine: str) -> tuple[int, str, str]:
+    proc = subprocess.run(
+        [sys.executable, "-m", "src.extract_frames", str(session),
+         "--engine", engine],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        cwd=str(ROOT))
+    return proc.returncode, proc.stdout or "", proc.stderr or ""
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--region", default="eu", choices=sorted(REGION_CAPTURES),
@@ -65,6 +107,10 @@ def main() -> int:
     ap.add_argument("--engine", default="auto",
                     choices=("auto", "tesseract", "paddle", "gemini"),
                     help="OCR backend; auto uses Tesseract first and PaddleOCR only for low-confidence reads")
+    ap.add_argument("--isolate", action="store_true",
+                    help="run each session in its own subprocess, as this "
+                         "used to. Survives a hard native crash, but every "
+                         "session then pays the OCR model cold start again.")
     args = ap.parse_args()
 
     global CAPTURES, LOG
@@ -83,28 +129,26 @@ def main() -> int:
         (live if _last_write(d) < STILL_WRITING_MINUTES else pending).append(d)
     for d in live:
         note(f"skipping {d.name}: written {_last_write(d):.1f} min ago, still capturing")
-    note(f"batch start: {len(pending)} pending session(s), engine={args.engine}")
+    note(f"batch start: {len(pending)} pending session(s), engine={args.engine}, "
+         f"{'isolated subprocesses' if args.isolate else 'in-process (models load once)'}")
     started = time.time()
     ok = failed = 0
     for i, session in enumerate(pending, 1):
         t0 = time.time()
-        proc = subprocess.run(
-            [sys.executable, "-m", "src.extract_frames", str(session),
-             "--engine", args.engine],
-            capture_output=True, text=True, encoding="utf-8", errors="replace",
-            cwd=str(ROOT))
+        run = _extract_isolated if args.isolate else _extract_in_process
+        code, stdout, stderr = run(session, args.engine)
         dt = time.time() - t0
-        tail = [ln for ln in (proc.stdout or "").splitlines() if ln.strip()]
+        tail = [ln for ln in stdout.splitlines() if ln.strip()]
         # The lines worth keeping: what each output file got, and the totals.
         summary = " | ".join(
             ln.strip() for ln in tail
             if ln.startswith(("extracted ", "tap-verified", "stats.csv",
                               "builds.jsonl", "players.csv")))
         fallbacks = sum(1 for ln in tail if "-> model" in ln)
-        if proc.returncode:
+        if code:
             failed += 1
-            err = (proc.stderr or "").strip().splitlines()
-            note(f"{i}/{len(pending)} {session.name}: FAILED rc={proc.returncode} "
+            err = stderr.strip().splitlines()
+            note(f"{i}/{len(pending)} {session.name}: FAILED rc={code} "
                  f"{err[-1][:160] if err else ''}")
         else:
             ok += 1

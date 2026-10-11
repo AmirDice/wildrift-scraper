@@ -828,9 +828,10 @@ function ExpandedRow({ p, icons, runeIcons, spellIcons }: {
   );
 }
 
-export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, spellIcons }: {
+export function LeaderboardView({ champions, championsNa, championsCn, itemIcons, runeIcons, spellIcons }: {
   champions: SlimChampion[];
   championsNa: SlimChampion[];
+  championsCn: SlimChampion[];
   itemIcons: Record<string, string>;
   runeIcons: Record<string, string>;
   spellIcons: Record<string, string>;
@@ -841,7 +842,8 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
   // The champion list follows the region: NA covers fewer champions while its
   // collection runs, and picking one it has no board for would render an
   // empty table rather than an honest "not collected yet".
-  const regionChampions = region === "NA" ? championsNa : champions;
+  const regionChampions =
+    region === "NA" ? championsNa : region === "CN" ? championsCn : champions;
   const byName = useMemo(
     () => [...regionChampions].sort((a, b) => a.name.localeCompare(b.name)),
     [regionChampions]
@@ -923,8 +925,9 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
         ? Promise.all([
             detail(`/players/${slug}.json`, "EU"),
             detail(`/players/na/${slug}.json`, "NA"),
-          ]).then(([eu, na]) => {
-            const players = [...(eu ?? []), ...(na ?? [])];
+            detail(`/players/cn/${slug}.json`, "CN"),
+          ]).then(([eu, na, cn]) => {
+            const players = [...(eu ?? []), ...(na ?? []), ...(cn ?? [])];
             return players.length ? { champion: slug, slug, capturedAt: "", players } : null;
           })
         : fetch(
@@ -1035,14 +1038,14 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
       <>
       {champ && (
         <ChampionContextBar
-          champ={region === "Global" || region === "CN" ? { ...champ, bestPlayer: null } : champ}
-          best={region === "Global" || region === "CN" ? null : matchBestPlayer(champ, enriched)}
+          champ={region === "Global" ? { ...champ, bestPlayer: null } : champ}
+          best={region === "Global" ? null : matchBestPlayer(champ, enriched)}
         />
       )}
 
       {champ && (
         <PlayerPodium
-          podium={region === "Global" ? champ.globalBestPlayerPodium : region === "CN" ? null : champ.bestPlayerPodium}
+          podium={region === "Global" ? champ.globalBestPlayerPodium : champ.bestPlayerPodium}
           championName={champ.name}
           championIcon={champ.icon}
           championIconLocal={`/champions/${champ.slug}.png`}
@@ -1081,10 +1084,8 @@ export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, 
       ) : rows.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
           {region === "Global"
-            ? "The global podium will appear after EU, NA and CN player-level collections are complete."
-            : region === "CN"
-              ? "CN player-level data will appear after the next collection finishes."
-              : "No player data for this champion yet."}
+            ? "The global podium needs at least two servers to have captured this champion."
+            : "No player data for this champion yet."}
         </div>
       ) : (
         <div className="glass overflow-x-auto rounded-2xl">

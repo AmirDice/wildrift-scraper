@@ -23,11 +23,14 @@ Run as a CLI to tune against a saved screenshot:
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import os
 import re
 import shlex
 import shutil
+import socket
+import struct
 import sys
 import threading
 from dataclasses import dataclass
@@ -125,6 +128,130 @@ def ocr_engine() -> str:
     return value if value in {"tesseract", "paddle", "auto"} else "tesseract"
 
 
+#: Pin the LIGHT model pair for the Latin/Chinese script.
+#:
+#: Letting PaddleOCR choose by language lands "en" on the PP-OCRv6 medium
+#: pair. Measured back to back in one process, against the mobile v5 pair, on
+#: CN leaderboard names and loadout percentages:
+#:
+#:     PP-OCRv6_medium   43.5s to load   4728 ms/crop   chinese 3/3  numbers 11/11
+#:     PP-OCRv5_mobile   10.8s to load    604 ms/crop   chinese 3/3  numbers 11/11
+#:
+#: Same answers, 7.8x the speed. (The absolute figures ran high under disk
+#: pressure; the ratio is the trustworthy part.)
+#:
+#: ONLY for the Latin/Chinese script. PP-OCRv5_mobile_rec does not cover
+#: Korean, and the NA board carries Korean player names, so "korean" must
+#: still resolve to its own recogniser -- which is the reason this file
+#: selects by language rather than pinning in the first place. Detection is
+#: script-independent, but it is pinned alongside so the pair stays matched.
+PADDLE_MOBILE = os.environ.get("PADDLE_MOBILE", "1").strip().lower() not in {
+    "0", "false", "no", "off"}
+_MOBILE_SCRIPTS = {"en", "ch", "chinese_cht", ""}
+_MOBILE_MODELS = {
+    "text_detection_model_name": "PP-OCRv5_mobile_det",
+    "text_recognition_model_name": "PP-OCRv5_mobile_rec",
+}
+
+
+def _mobile_models(lang: str) -> dict:
+    if PADDLE_MOBILE and lang.strip().lower() in _MOBILE_SCRIPTS:
+        return dict(_MOBILE_MODELS)
+    return {}
+
+
+#: Run the PP-OCRv4 models under onnxruntime (via RapidOCR) instead of
+#: PaddlePaddle. SAME MODELS -- rapidocr bundles ch_PP-OCRv4_det_infer.onnx
+#: and ch_PP-OCRv4_rec_infer.onnx -- just a different runtime.
+#:
+#: Benchmarked on 36 CN leaderboard strips across 6 champions, scored as an
+#: exact match on (win rate, score, games) for the target champion:
+#:
+#:     PP-OCRv5_mobile   PaddlePaddle   12.50 s/strip   100%
+#:     PP-OCRv4_mobile   PaddlePaddle   12.29 s/strip   100%
+#:     PP-OCRv4          onnxruntime     4.51 s/strip   100%
+#:     PP-OCRv4 side=384 onnxruntime     2.42 s/strip   100%
+#:
+#: The model version is irrelevant (v4 and v5 are within 2% under Paddle);
+#: the runtime is everything. 384 rather than the 192 where accuracy still
+#: held, to keep margin on frames harder than the 36 measured.
+#:
+#: CHINESE AND LATIN ONLY. These models do not cover Korean, and the NA board
+#: carries Korean player names, so "korean" still goes to PaddleOCR -- which
+#: is why this replaces one entry in the language chain rather than the chain.
+RAPIDOCR_ENABLED = os.environ.get("WRTM_RAPIDOCR", "1").strip().lower() not in {
+    "0", "false", "no", "off"}
+RAPIDOCR_DET_SIDE = int(os.environ.get("WRTM_RAPIDOCR_SIDE", "384"))
+_RAPIDOCR = None
+_RAPIDOCR_MISSING: str | None = None
+
+
+def _get_rapidocr():
+    """One process-wide RapidOCR, or None when it is not installed."""
+    global _RAPIDOCR, _RAPIDOCR_MISSING
+    if not RAPIDOCR_ENABLED or _RAPIDOCR_MISSING is not None:
+        return None
+    if _RAPIDOCR is not None:
+        return _RAPIDOCR
+    with _PADDLE_LOCK:
+        if _RAPIDOCR is not None:
+            return _RAPIDOCR
+        try:
+            from rapidocr_onnxruntime import RapidOCR
+        except Exception as exc:  # noqa: BLE001 -- optional dependency
+            _RAPIDOCR_MISSING = str(exc)
+            _warn_once("[ocr] rapidocr-onnxruntime not installed; using "
+                       "PaddleOCR (about 5x slower on these crops)")
+            return None
+        _RAPIDOCR = RapidOCR(det_limit_side_len=RAPIDOCR_DET_SIDE)
+        return _RAPIDOCR
+
+
+def _run_rapidocr(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
+    engine = _get_rapidocr()
+    if engine is None:
+        return ("", -1.0, [])
+    result, _elapsed = engine(img)
+    words: list[OCRWord] = []
+    for box, text, score in (result or []):
+        xs = [pt[0] for pt in box]
+        ys = [pt[1] for pt in box]
+        words.append(OCRWord(
+            text=text or "",
+            x=int(sum(xs) / len(xs)), y=int(sum(ys) / len(ys)),
+            w=int(max(xs) - min(xs)), h=int(max(ys) - min(ys)),
+            confidence=float(score),
+        ))
+    confs = [w.confidence for w in words if w.confidence >= 0]
+    text = " ".join(w.text for w in words if w.text)
+    return text, (sum(confs) / len(confs) if confs else -1.0), words
+
+
+def _rapidocr_line(img: np.ndarray) -> tuple[str, float]:
+    """Recognise a crop that is ALREADY one line of text. ("", -1) on failure.
+
+    Detection is skipped because there is nothing to find: the caller cut
+    this crop out itself. That is not just a saving, it is the only thing
+    that works on a one-glyph name -- the DB detector returns no box at all
+    for a lone 烬 (Jhin), at 1x, 2x, 3x, 5x, 8x or padded, while the
+    recognizer handed the same crop reads it immediately.
+    """
+    engine = _get_rapidocr()
+    if engine is None:
+        return ("", -1.0)
+    try:
+        result, _elapsed = engine(img, use_det=False, use_cls=False, use_rec=True)
+    except Exception:  # noqa: BLE001 -- an older rapidocr without the flags
+        return ("", -1.0)
+    best_text, best_score = "", -1.0
+    for row in (result or []):
+        # (text, score) with detection off; (box, text, score) with it on.
+        text, score = (row[0], row[1]) if len(row) == 2 else (row[1], row[2])
+        if float(score) > best_score:
+            best_text, best_score = (text or "").strip(), float(score)
+    return best_text, best_score
+
+
 def _get_paddle_engine(lang: str = ""):
     """One process-wide PaddleOCR instance PER LANGUAGE, across all threads."""
     global _PADDLE_MISSING
@@ -158,13 +285,18 @@ def _get_paddle_engine(lang: str = ""):
             # differs per language AND per OCR version (en resolves to the
             # PP-OCRv6 pair, korean to PP-OCRv5). The cost of delegating is
             # that a PaddleOCR upgrade may move a language onto a new model.
-            {"lang": lang,
+            {**({} if _mobile_models(lang) else {"lang": lang}),
              "use_doc_orientation_classify": False,
              "use_doc_unwarping": False, "use_textline_orientation": False,
              # PaddlePaddle 3.3's Windows oneDNN path cannot execute these
              # OCR graphs. Plain CPU inference is stable and is what the
              # benchmark used.
-             "device": "cpu", "enable_mkldnn": False},
+             "device": "cpu", "enable_mkldnn": False,
+             # Pinned models make `lang` meaningless -- PaddleOCR warns that
+             # it is ignored -- so drop it rather than pass a value that does
+             # nothing. `lang` still keys the engine cache either way.
+             **({k: v for k, v in _mobile_models(lang).items()}
+                if _mobile_models(lang) else {})},
             # PaddleOCR 2.x compatibility.
             {"lang": lang, "use_angle_cls": False, "show_log": False},
             {"lang": lang},
@@ -291,7 +423,69 @@ def _run_one_paddle(engine, source: np.ndarray) -> tuple[str, float, list[OCRWor
     return text, (sum(confs) / len(confs) if confs else -1.0), words
 
 
+#: "host:port" of a scripts/ocr_server.py holding the models in memory.
+#:
+#: Loading PaddleOCR costs ~45-75s: ~30s of imports (paddlex drags in
+#: modelscope, which imports torch) plus model construction and a graph
+#: warm-up. That is paid per PROCESS, so a one-champion extraction spends
+#: longer starting up than reading. Pointing this at a resident server moves
+#: the whole cost to the server's startup, once.
+#:
+#: Unset, or unreachable, and everything behaves exactly as before: the
+#: models load in-process. A dead server degrades to local rather than
+#: failing the run.
+OCR_SERVER = os.environ.get("WRTM_OCR_SERVER", "").strip()
+_SERVER_GIVEN_UP = False
+
+
+def _recv_exactly(sock: socket.socket, n: int) -> bytes:
+    chunks = []
+    while n > 0:
+        part = sock.recv(min(n, 1 << 20))
+        if not part:
+            raise ConnectionError("OCR server closed the connection")
+        chunks.append(part)
+        n -= len(part)
+    return b"".join(chunks)
+
+
+def _ask_ocr_server(img: np.ndarray):
+    """Hand one crop to the resident server. None means 'do it locally'."""
+    global _SERVER_GIVEN_UP
+    if not OCR_SERVER or _SERVER_GIVEN_UP:
+        return None
+    try:
+        host, _, port = OCR_SERVER.partition(":")
+        source = img if img.ndim == 3 else cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        ok, buf = cv2.imencode(".png", source)
+        if not ok:
+            return None
+        payload = buf.tobytes()
+        with socket.create_connection((host or "127.0.0.1", int(port or 8765)),
+                                      timeout=180) as sock:
+            sock.sendall(struct.pack("!Q", len(payload)) + payload)
+            size = struct.unpack("!Q", _recv_exactly(sock, 8))[0]
+            data = json.loads(_recv_exactly(sock, size).decode("utf-8"))
+        if data.get("error"):
+            raise RuntimeError(data["error"])
+        words = [OCRWord(**w) for w in data.get("words", [])]
+        return data.get("text", ""), float(data.get("score", -1.0)), words
+    except Exception as exc:  # noqa: BLE001 -- any failure falls back to local
+        _SERVER_GIVEN_UP = True
+        _warn_once(f"[ocr] OCR server {OCR_SERVER} unusable ({exc}); "
+                   "loading models in-process for the rest of this run")
+        return None
+
+
 def _run_paddle(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
+    """Read one crop, via the resident server when one is configured."""
+    served = _ask_ocr_server(img)
+    if served is not None:
+        return served
+    return _run_paddle_local(img)
+
+
+def _run_paddle_local(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
     """Read one crop, trying each configured script until one is confident.
 
     Picking the best SCORE across languages is only safe because the wrong
@@ -304,7 +498,24 @@ def _run_paddle(img: np.ndarray) -> tuple[str, float, list[OCRWord]]:
     if source.ndim == 2:
         source = cv2.cvtColor(source, cv2.COLOR_GRAY2BGR)
     best: tuple[str, float, list[OCRWord]] = ("", -1.0, [])
-    for index, lang in enumerate(PADDLE_LANGS):
+
+    # onnxruntime first for the Latin/Chinese script. When it answers
+    # confidently the Paddle engines are never built, which is where the 5x
+    # comes from; a low score still falls through to them, and to Korean.
+    langs = list(PADDLE_LANGS)
+    if _get_rapidocr() is not None:
+        try:
+            text, score, words = _run_rapidocr(source)
+            if score > best[1]:
+                best = (text, score, words)
+            if text and score >= PADDLE_GOOD_SCORE:
+                return best
+        except Exception as exc:  # noqa: BLE001 -- fall back to Paddle
+            _warn_once(f"[ocr] rapidocr failed ({exc}); using PaddleOCR")
+        else:
+            langs = [l for l in langs if l.strip().lower() not in _MOBILE_SCRIPTS]
+
+    for index, lang in enumerate(langs):
         try:
             engine = _get_paddle_engine(lang)
         except Exception:
@@ -883,18 +1094,6 @@ def scan_visible_ranks(
     scale = 3.0
     candidates: list[tuple[int, int]] = []  # (y_orig_center, ocr_rank)
 
-    if ocr_engine() in {"paddle", "auto"}:
-        try:
-            for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
-                if not word.text.isdigit():
-                    continue
-                rank = int(word.text)
-                if 1 <= rank <= max_rank and word.y:
-                    candidates.append((y0 + word.y, rank))
-        except Exception:
-            if ocr_engine() == "paddle":
-                raise
-
     def _collect(pre: np.ndarray) -> None:
         data = pytesseract.image_to_data(
             pre,
@@ -932,6 +1131,25 @@ def scan_visible_ranks(
     for _rank, _cy in rank_digits.read_column(image, badge_x_range, (y0, y1)).items():
         if 1 <= _rank <= max_rank:
             candidates.append((_cy, _rank))
+
+    # OCR only when the templates came up short. This used to run FIRST and
+    # unconditionally, so the expensive engine was paid even on the frames the
+    # bank answered on its own. Measured over 120 CN leaderboard frames, the
+    # templates reach four badges on 75.8% of them at ~13ms, against seconds
+    # for a Paddle pass -- and on a live run Paddle loads its models mid-scrape
+    # the first time it is reached. The later fallbacks below already carried
+    # this exact guard; this one simply did not.
+    if len(candidates) < 4 and ocr_engine() in {"paddle", "auto"}:
+        try:
+            for word in read_words(crop, GENERAL_TESSERACT_CONFIG):
+                if not word.text.isdigit():
+                    continue
+                rank = int(word.text)
+                if 1 <= rank <= max_rank and word.y:
+                    candidates.append((y0 + word.y, rank))
+        except Exception:
+            if ocr_engine() == "paddle":
+                raise
 
     if len(candidates) < 4:
         # Illumination flattening before Otsu: the panel's vertical luminance
@@ -1499,3 +1717,287 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# --------------------------------------------------------------- CN strip --
+#: The CN leaderboard strip is Chinese end to end: the champion name AND all
+#: three field labels. Tesseract reads it as "Nf NN NNN Wt seuK Be FER", so
+#: find_champion_winrates matches no champion and every CN rank is reported
+#: "target not visible". Paddle reads the same crop exactly.
+#:
+#: Paddle also returns each field as ONE line ("胜率：61.8%") rather than a
+#: bare percentage token, so the value is searched for inside the label line
+#: instead of matched against the whole word.
+CN_STRIP_LABELS = {
+    "score": ("赛季最高", "赛李最高", "赛季最髙"),   # season high
+    "games": ("场次",),
+    "winrate": ("胜率", "肚率"),
+}
+#: Tiles sit ~276px apart on the reference strip; half that separates them
+#: without splitting a tile whose lines wander a few px in x.
+_CN_TILE_X_TOLERANCE = 130
+_CN_NUMBER = re.compile(r"(\d+(?:[.,]\d+)?)")
+
+
+#: What the GAME CLIENT renders, where that differs from Tencent's published
+#: hero list (which is where cn_winrates.json gets its names).
+#:
+#: Both observed on captured strips, not guessed:
+#:   慧      Hwei is absent from the hero list entirely, so the map had no
+#:           spelling of him at all and every Hwei tile was discarded.
+#:   塔莉娅   the client writes 娅 where the list writes 垭. Same champion,
+#:           different character, and an exact lookup cannot bridge it.
+CN_NAME_OVERRIDES = {
+    "慧": "Hwei",
+    "塔莉娅": "Taliyah",
+}
+
+
+@functools.lru_cache(maxsize=1)
+def cn_champion_names() -> dict[str, str]:
+    """Chinese champion name -> our English name, from data already on disk."""
+    path = Path(__file__).resolve().parent.parent / "data" / "cn_winrates.json"
+    names = dict(CN_NAME_OVERRIDES)
+    if not path.exists():
+        return names
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 -- a malformed file must not kill a run
+        return names
+    for champion in data.get("champions", []):
+        if champion.get("cnName"):
+            names.setdefault(champion["cnName"], champion["name"])
+    return names
+
+
+#: Below this length a one-character substitution is not a typo, it is a
+#: different champion. MEASURED on the 141-name map: every one-character
+#: name (烬 易 洛 慎 蔚 霞 劫) is one substitution from every other, and at
+#: two characters there are 25 confusable pairs -- 布隆/泰隆, 艾克/艾希,
+#: 凯尔/纳尔/梅尔/芮尔. At three or more there are two such pairs and both
+#: are caught by the uniqueness rule below.
+_CN_FUZZY_MIN_LEN = 3
+
+
+def match_cn_name(text: str, names: dict[str, str]) -> str | None:
+    """English champion for a CN name the OCR produced, or None.
+
+    Three rules, each requiring the answer to be UNIQUE, tried in order of
+    how much they assume:
+
+      exact         what the map says, always preferred.
+      unique prefix the OCR dropped trailing characters -- 尼 for 尼菈,
+                    which is Nilah every time because no other champion's
+                    name starts that way. 卡 is rejected: seven do.
+      unique 1-sub  one character came back wrong -- 塔莉址 and 塔莉娅 for
+                    塔莉垭. Only at three characters or more, and only when
+                    exactly one name is that close.
+
+    A tie is never broken, because the cost of the two outcomes is not
+    symmetric: no match loses one row, a wrong match files a champion's
+    numbers under another champion's name.
+    """
+    text = (text or "").strip()
+    if not text:
+        return None
+    if text in names:
+        return names[text]
+
+    starts = {english for cn, english in names.items() if cn.startswith(text)}
+    if len(starts) == 1:
+        return next(iter(starts))
+
+    if len(text) >= _CN_FUZZY_MIN_LEN:
+        close = {english for cn, english in names.items()
+                 if len(cn) == len(text)
+                 and sum(a != b for a, b in zip(cn, text)) == 1}
+        if len(close) == 1:
+            return next(iter(close))
+    return None
+
+
+def looks_like_cn_strip(words) -> bool:
+    """Does this strip carry the Chinese field labels?"""
+    blob = "".join((w.text or "") for w in words)
+    return any(tag in blob for group in CN_STRIP_LABELS.values() for tag in group)
+
+
+#: The name row of a tile, as fractions of strip height. TIGHT on purpose.
+#: With detection off the recognizer treats the whole crop as one text line
+#: and squeezes it to its own 48px working height, so a generous crop makes
+#: the glyph SMALLER, not safer: a 248x70 band read nothing where a 130x48
+#: band around the same character read it at every scale tried.
+_CN_TILE_NAME_Y = (0.07, 0.31)
+#: Half-width of that band as a fraction of the tile pitch. 0.24 of a 276px
+#: pitch is ~66px either side of centre, which holds a four-character name
+#: without reaching into the neighbouring tile.
+_CN_TILE_NAME_HALF = 0.24
+#: Upscale before recognition. Barely matters once detection is off, since
+#: the recognizer rescales to its own height anyway; 2x keeps the
+#: interpolation kind to a small glyph without making the line long.
+_CN_TILE_RETRY_SCALE = 2
+
+
+def _retry_cn_tile_name(crop: np.ndarray, column, columns, names,
+                        target_cn: str | None = None) -> str | None:
+    """Read the name of one tile again, with the recognizer alone.
+
+    `target_cn` is the champion whose board this strip came from. It buys a
+    rule the general matcher cannot have: a one-character difference is
+    accepted when the candidate is THAT champion, even at one character
+    long. match_cn_name refuses that globally and must -- every one-glyph
+    name is one substitution from every other, so against 143 names it is a
+    coin toss. Against ONE name it is a confirmation: the recognizer reads
+    Jhin's 烬 as 炬, and the only question is whether this tile is the Jhin
+    we came here for or something else entirely.
+    """
+    xs = [w.x for w in column]
+    if not xs:
+        return None
+    centre = sum(xs) / len(xs)
+    # Tile width from the gaps between neighbouring columns, so this needs
+    # no constant of its own and survives a different tile count.
+    centres = sorted(sum(w.x for w in c) / len(c) for c in columns if c)
+    gaps = [b - a for a, b in zip(centres, centres[1:]) if b > a]
+    pitch = sorted(gaps)[len(gaps) // 2] if gaps else crop.shape[1] / 6
+    half = max(40, int(pitch * _CN_TILE_NAME_HALF))
+    x0 = max(0, int(centre - half))
+    x1 = min(crop.shape[1], int(centre + half))
+    y0 = max(0, int(crop.shape[0] * _CN_TILE_NAME_Y[0]))
+    y1 = max(y0 + 1, int(crop.shape[0] * _CN_TILE_NAME_Y[1]))
+    band = crop[y0:y1, x0:x1]
+    if band.size == 0:
+        return None
+    bigger = cv2.resize(band, None, fx=_CN_TILE_RETRY_SCALE, fy=_CN_TILE_RETRY_SCALE,
+                        interpolation=cv2.INTER_CUBIC)
+    text, _score = _rapidocr_line(bigger)
+    if not text:
+        return None
+
+    matched = match_cn_name(text, names)
+    if matched is not None:
+        return matched
+    if target_cn and len(text) == len(target_cn) and text != target_cn:
+        if sum(a != b for a, b in zip(text, target_cn)) == 1:
+            return names.get(target_cn)
+    return None
+
+
+def read_cn_strip(image: np.ndarray, region: tuple[int, int, int, int],
+                  target: str | None = None,
+                  ) -> dict[str, tuple[float | None, int | None, int | None]]:
+    """English champion name -> (winrate, score, games) for every CN tile.
+
+    Tiles are grouped by x, because the four lines of one tile share a column
+    and neighbouring tiles are far apart. A tile clipped at the edge of the
+    strip simply yields None for whatever it lost.
+    """
+    x, y, w, h = region
+    crop = image[y:y + h, x:x + w]
+    if crop.size == 0:
+        return {}
+    try:
+        _text, _score, words = _run_paddle(crop)
+    except Exception:  # noqa: BLE001 -- no backend: caller falls back
+        return {}
+
+    names = cn_champion_names()
+    # The CN spelling of the champion this strip belongs to, for the retry.
+    target_cn = None
+    if target:
+        wanted = target.strip().lower()
+        target_cn = next((cn for cn, english in names.items()
+                          if english.lower() == wanted), None)
+    columns: list[list] = []
+    for word in sorted(words, key=lambda z: z.x):
+        if columns and abs(word.x - columns[-1][0].x) <= _CN_TILE_X_TOLERANCE:
+            columns[-1].append(word)
+        else:
+            columns.append([word])
+
+    out: dict[str, tuple[float | None, int | None, int | None]] = {}
+    for column in columns:
+        champion = None
+        fields: dict[str, float] = {}
+        for word in column:
+            text = (word.text or "").strip()
+            if not text:
+                continue
+            if champion is None:
+                matched = match_cn_name(text, names)
+                if matched is not None:
+                    champion = matched
+                    continue
+            for field, tags in CN_STRIP_LABELS.items():
+                if any(text.startswith(tag) for tag in tags):
+                    m = _CN_NUMBER.search(text)
+                    if m:
+                        fields[field] = float(m.group(1).replace(",", "."))
+                    break
+        if champion is None and fields:
+            # Numbers but no name. A one-glyph name is the known cause --
+            # 烬 (Jhin) never comes back from the detector at any working
+            # size, 384 through 1280 -- and the tile is otherwise perfectly
+            # readable, so rather than lose the row, look again at just the
+            # name and give the recognizer something bigger to work with.
+            champion = _retry_cn_tile_name(crop, column, columns, names,
+                                           target_cn=target_cn)
+        if champion is None:
+            continue
+        wr = fields.get("winrate")
+        out[champion] = (
+            wr if wr is None or 0 <= wr <= 100 else None,
+            int(fields["score"]) if "score" in fields else None,
+            int(fields["games"]) if "games" in fields else None,
+        )
+    return out
+
+
+#: The CN profile panel, as a fraction of frame width/height. Generous: this
+#: is a search window, not a crop that has to land on the name.
+CN_PROFILE_PANEL = (0.050, 0.000, 0.270, 0.360)
+#: Furniture on that panel that is never the player's name. 个人资料 is the
+#: "Personal Profile" heading; 编号 prefixes the numeric account id, which is
+#: what the EU/NA name box lands on -- it sits one line BELOW the name, which
+#: is why CN rows came out as "编号：2011716603" instead of a name.
+CN_PROFILE_HEADING = ("个人资料", "个人资科")
+CN_PROFILE_ID_PREFIX = ("编号", "编昙", "缩号")
+_CN_ID_DIGITS = re.compile(r"(\d{6,})")
+
+
+def read_cn_profile(image: np.ndarray) -> tuple[str | None, str | None]:
+    """(display name, account id) from a CN profile frame.
+
+    FINDS the name instead of assuming an offset, for the same reason
+    read_cn_row_name does: the EU/NA box is calibrated one line low here and
+    returns the account id with no sign that it is not a name.
+
+    The id is worth keeping. CN has no Riot tag, and 编号 is the stable
+    per-account number, so it fills the tag slot and gives these rows
+    something to be matched on besides a decorated display name.
+    """
+    h, w = image.shape[:2]
+    x0, y0, x1, y1 = CN_PROFILE_PANEL
+    panel = image[round(y0 * h):round(y1 * h), round(x0 * w):round(x1 * w)]
+    if panel.size == 0:
+        return None, None
+    try:
+        _text, _score, words = _run_paddle(panel)
+    except Exception:  # noqa: BLE001 -- no backend: caller falls back
+        return None, None
+
+    name, account = None, None
+    for word in sorted(words, key=lambda z: z.y):
+        text = (word.text or "").strip()
+        if not text:
+            continue
+        if any(text.startswith(t) for t in CN_PROFILE_ID_PREFIX):
+            m = _CN_ID_DIGITS.search(text)
+            if m:
+                account = m.group(1)
+            continue
+        if any(t in text for t in CN_PROFILE_HEADING):
+            continue
+        if name is None:
+            name = text
+    return name, account
