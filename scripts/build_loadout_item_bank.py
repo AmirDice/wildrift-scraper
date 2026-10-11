@@ -95,7 +95,7 @@ def harvest(limit: int) -> list[tuple[np.ndarray, np.ndarray]]:
                 continue
             for row in L.find_rows(image):
                 cells = L.row_cells(image, row)
-                for icon in L.segment_icons(cells["entity"], L.TABS[tab]["icons"]):
+                for icon in L.segment_icons(cells["entity"], L.TABS[tab]["icons"], tab):
                     if icon.size == 0:
                         continue
                     tile = icon_match._norm_tile(icon)

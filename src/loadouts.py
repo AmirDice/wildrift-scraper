@@ -35,6 +35,7 @@ let the rows fall out of it.
 from __future__ import annotations
 
 import numpy as np
+from pathlib import Path
 
 #: Portrait phone frame these fractions were measured on. Everything below is
 #: a FRACTION of width/height, so a different device resolution needs no
@@ -113,6 +114,44 @@ BRACKETS = {
     "王者以上": ("3", "Challenger"),
     "峡谷之巅": ("4", "Legendary"),
 }
+
+#: Hand-measured geometry, overriding anything below it.
+#:
+#: Everything in this module is a fraction of the frame, so a measurement
+#: taken on one screenshot holds on any resolution. The file is optional:
+#: absent, the constants in this module apply exactly as before.
+#:
+#:   {"columns": {"rank": [x0, x1], "entity": [...], ...},
+#:    "icons":   {"equip": {"centres": [0.14, 0.42, 0.70], "size": 0.26}}}
+#:
+#: `columns` are fractions of FRAME width. `icons.centres` and
+#: `icons.size` are fractions of the ENTITY crop's width, because that is
+#: the box the icons sit in -- scripts/calibrate_loadouts.py draws the
+#: current values on a real frame so they can be read off and corrected.
+_OVERRIDE_PATH = Path(__file__).resolve().parent.parent / "coords" / "loadouts.json"
+
+
+def _overrides() -> dict:
+    try:
+        import json as _json
+        return _json.loads(_OVERRIDE_PATH.read_text(encoding="utf-8"))
+    except Exception:      # noqa: BLE001 -- absent or malformed: use the defaults
+        return {}
+
+
+OVERRIDES = _overrides()
+
+
+def icon_slots(tab: str) -> dict | None:
+    """Hand-measured icon positions for a tab, or None to infer them."""
+    spec = (OVERRIDES.get("icons") or {}).get(tab)
+    if not isinstance(spec, dict):
+        return None
+    centres, size = spec.get("centres"), spec.get("size")
+    if not centres or not isinstance(size, (int, float)):
+        return None
+    return {"centres": [float(c) for c in centres], "size": float(size)}
+
 
 #: The lane filter. Options are per champion -- Shen offers only 上单/打野.
 #:
@@ -262,16 +301,31 @@ def row_cells(image: np.ndarray, row: tuple[int, int]) -> dict[str, np.ndarray]:
     # label-below tab extend above and below that ink.
     pad = round(0.012 * h)
     t, b = max(0, top - pad), min(h, bottom + pad)
+    cols = OVERRIDES.get("columns") or {}
     out = {}
     for key, xr in (("rank", RANK_X), ("entity", ENTITY_X),
                     ("winrate", WINRATE_X), ("pickrate", PICKRATE_X)):
+        band = cols.get(key)
+        if isinstance(band, (list, tuple)) and len(band) == 2:
+            xr = (float(band[0]), float(band[1]))
         x0, x1 = round(xr[0] * w), round(xr[1] * w)
         out[key] = image[t:b, x0:x1]
     return out
 
 
-def segment_icons(entity: np.ndarray, expected: int) -> list[np.ndarray]:
+def segment_icons(entity: np.ndarray, expected: int,
+                  tab: str | None = None) -> list[np.ndarray]:
+    """Icon images, left to right. See icon_spans for how they are found."""
+    return [entity[:, a:b] for a, b in icon_spans(entity, expected, tab)]
+
+
+def icon_spans(entity: np.ndarray, expected: int,
+               tab: str | None = None) -> list[tuple[int, int]]:
     """Split an entity crop into its icon images, left to right.
+
+    Pass `tab` to allow hand-measured slots from coords/loadouts.json to
+    take over; without it, or without an entry for that tab, the icons
+    are found from the image as before.
 
     Segments on SATURATION rather than brightness. The icons are saturated
     artwork while the CN item names under them and the champion names beside
@@ -282,6 +336,17 @@ def segment_icons(entity: np.ndarray, expected: int) -> list[np.ndarray]:
         return []
     import cv2
     h, w = entity.shape[:2]
+
+    # A hand-measured panel is not a guess and is not re-derived per frame.
+    slots = icon_slots(tab) if tab else None
+    if slots:
+        side = max(1, round(slots["size"] * w))
+        out = []
+        for frac in slots["centres"][:expected]:
+            x0 = int(round(frac * w - side / 2))
+            x0 = max(0, min(x0, w - side)) if w >= side else 0
+            out.append((x0, x0 + side))
+        return out
     sat = cv2.cvtColor(entity, cv2.COLOR_BGR2HSV)[..., 1]
     cols = (sat > 60).sum(axis=0) > (0.15 * h)
     runs: list[tuple[int, int]] = []
@@ -328,7 +393,7 @@ def segment_icons(entity: np.ndarray, expected: int) -> list[np.ndarray]:
     for cx in centres:
         x0 = int(round(cx - side / 2))
         x0 = max(0, min(x0, w - side)) if w >= side else 0
-        out.append(entity[:, x0:x0 + side])
+        out.append((x0, x0 + side))
     return out
 
 

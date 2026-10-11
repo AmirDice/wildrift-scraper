@@ -178,7 +178,7 @@ def extract_tab(frame_paths: list[Path], tab: str, icon_dir: Path,
             rank = offset + i
             if rank in rows_out:          # dedupe across scroll frames
                 continue
-            icons = L.segment_icons(cells["entity"], spec["icons"])
+            icons = L.segment_icons(cells["entity"], spec["icons"], tab)
             entities = []
             for j, icon in enumerate(icons):
                 name = f"{tab}_r{rank:02d}_i{j}.png"
