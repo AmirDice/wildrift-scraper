@@ -278,11 +278,12 @@ def segment_icons(entity: np.ndarray, expected: int) -> list[np.ndarray]:
     them are white or grey, so saturation separates icon from label where a
     brightness projection would merge the two into one blob.
     """
-    if entity.size == 0 or entity.ndim != 3:
+    if entity.size == 0 or entity.ndim != 3 or expected < 1:
         return []
     import cv2
+    h, w = entity.shape[:2]
     sat = cv2.cvtColor(entity, cv2.COLOR_BGR2HSV)[..., 1]
-    cols = (sat > 60).sum(axis=0) > (0.15 * entity.shape[0])
+    cols = (sat > 60).sum(axis=0) > (0.15 * h)
     runs: list[tuple[int, int]] = []
     start = None
     for i, on in enumerate(cols):
@@ -293,11 +294,42 @@ def segment_icons(entity: np.ndarray, expected: int) -> list[np.ndarray]:
             start = None
     if start is not None:
         runs.append((start, len(cols)))
-    # Keep the widest `expected` runs, then restore left-to-right order.
-    runs = [r for r in runs if r[1] - r[0] >= 0.04 * entity.shape[1]]
-    runs.sort(key=lambda r: r[0] - r[1])
-    runs = sorted(runs[:expected])
-    return [entity[:, a:b] for a, b in runs]
+    if not runs:
+        return []
+
+    # An icon is square and fills the row, so the row height IS its side.
+    side = min(h, w)
+
+    # Repair split icons BEFORE counting them. A pale band down the middle
+    # of one icon reads as two runs, and counting first would then treat
+    # the halves as two icons and discard a real neighbour.
+    merged: list[list[int]] = [list(runs[0])]
+    for a, b in runs[1:]:
+        if a - merged[-1][1] < side * 0.33:
+            merged[-1][1] = b
+        else:
+            merged.append([a, b])
+    merged = [r for r in merged if r[1] - r[0] >= side * 0.25]
+
+    if len(merged) >= expected:
+        # Widest first for the pick, left-to-right for the output.
+        chosen = sorted(sorted(merged, key=lambda r: r[0] - r[1])[:expected])
+        centres = [(a + b) / 2 for a, b in chosen]
+    else:
+        # Fewer runs than the panel has icons: two icons have run together,
+        # or one is too dark to register. Neither is recoverable from the
+        # runs, so fall back to the geometry and cut an even pitch across
+        # everything saturated.
+        left, right = merged[0][0], merged[-1][1]
+        pitch = (right - left) / expected
+        centres = [left + pitch * (i + 0.5) for i in range(expected)]
+
+    out = []
+    for cx in centres:
+        x0 = int(round(cx - side / 2))
+        x0 = max(0, min(x0, w - side)) if w >= side else 0
+        out.append(entity[:, x0:x0 + side])
+    return out
 
 
 #: The leftmost tab's label, wide enough for the 4-character 最佳拍档 and the

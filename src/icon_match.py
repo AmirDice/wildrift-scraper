@@ -67,6 +67,10 @@ N = 64            # comparison resolution
 MARGIN = 0.12     # fraction of the tile edge ignored (game-drawn border)
 MIN_SCORE = 0.22  # below this, no candidate is credible
 MIN_GAP = 0.06    # winner must beat the runner-up by this much
+#: How many tied candidates get the shape second opinion. Three: the pairs
+#: that tie here are pairs, and widening it would start asking the question
+#: of icons that were never credible.
+TIE_CANDIDATES = 3
 
 
 def _load_art(rel: str) -> np.ndarray | None:
@@ -158,6 +162,46 @@ def _weights(mask_badge: bool, circular: bool = False) -> np.ndarray:
     return w
 
 
+def _edges(tile: np.ndarray) -> np.ndarray:
+    """Gradient magnitude of a normalised tile, as a single channel.
+
+    Colour is dropped on purpose: this exists to separate candidates that
+    already agree on colour, and keeping it would reproduce the tie.
+    """
+    grey = tile.mean(axis=2)
+    gx = cv2.Sobel(grey, cv2.CV_32F, 1, 0, ksize=3)
+    gy = cv2.Sobel(grey, cv2.CV_32F, 0, 1, ksize=3)
+    return cv2.magnitude(gx, gy)
+
+
+def _edge_score(tile_edges: np.ndarray, w: np.ndarray,
+                template_edges: np.ndarray) -> float:
+    """Weighted correlation of two gradient-magnitude maps."""
+    denom = w.sum()
+    xd = (tile_edges - (tile_edges * w).sum() / denom) * w
+    yd = (template_edges - (template_edges * w).sum() / denom) * w
+    return float((xd * yd).sum()
+                 / (np.sqrt((xd ** 2).sum() * (yd ** 2).sum()) + 1e-6))
+
+
+@functools.lru_cache(maxsize=4)
+def _edge_bank(kind: str) -> dict[str, np.ndarray]:
+    """Edge maps for one kind's templates, folded to the base name.
+
+    Built once per kind and only when a tie actually needs it, so a run
+    that never ties never pays for it.
+    """
+    out: dict[str, np.ndarray] = {}
+    for name, tpl in templates()[kind].items():
+        base = name.split("#")[0]
+        edges = _edges(tpl)
+        # Keep the strongest-edged stage, matching the score fold's habit
+        # of letting the best stage represent the base name.
+        if base not in out or float(edges.sum()) > float(out[base].sum()):
+            out[base] = edges
+    return out
+
+
 def _score(tile: np.ndarray, w: np.ndarray, template: np.ndarray) -> float:
     total = 0.0
     denom = w.sum()
@@ -169,7 +213,27 @@ def _score(tile: np.ndarray, w: np.ndarray, template: np.ndarray) -> float:
     return total / 3.0
 
 
-def match_slot(tile: np.ndarray, kind: str) -> tuple[str, float, float, str]:
+@functools.lru_cache(maxsize=1)
+def keystones() -> frozenset[str]:
+    """Rune names the game allows in the keystone slot.
+
+    From data/runes.json, which records a type per rune. Empty if the file
+    is unreadable, and every caller treats empty as "do not constrain", so
+    a missing catalogue degrades to the old behaviour rather than matching
+    nothing.
+    """
+    path = ROOT / "data" / "runes.json"
+    try:
+        rows = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 -- a missing catalogue must not stop a read
+        return frozenset()
+    return frozenset(r["name"] for r in rows
+                     if isinstance(r, dict) and r.get("type") == "Keystone"
+                     and r.get("name"))
+
+
+def match_slot(tile: np.ndarray, kind: str,
+               only: frozenset[str] | None = None) -> tuple[str, float, float, str]:
     """(name_or_?, score, gap, runner_up) for one cropped slot.
 
     Scores fold to the BASE name first ("Black Mist Scythe#1" counts as
@@ -177,8 +241,19 @@ def match_slot(tile: np.ndarray, kind: str) -> tuple[str, float, float, str]:
     stages of the same item occupy first and second place, the winner's gap
     over "the runner-up" collapses to ~0, and the confidence gate rejects an
     item precisely because the bank knows it too well.
+
+    `only` restricts the candidates to names the slot can legally hold.
+    Used for the keystone, where art alone cannot separate Lethal Tempo
+    from Empowered Attack -- both are an arrow on a dark ground -- but the
+    rules can: one is a keystone and the other is a Domination minor.
+    Ignored when it would leave nothing to match against, so a catalogue
+    that has drifted from the icon bank cannot silently blank a slot.
     """
     cands = templates()[kind]
+    if only:
+        narrowed = {n: t for n, t in cands.items() if n.split("#")[0] in only}
+        if narrowed:
+            cands = narrowed
     if not cands or tile.size == 0:
         return "?", 0.0, 0.0, ""
     t = _norm_tile(tile)
@@ -192,8 +267,22 @@ def match_slot(tile: np.ndarray, kind: str) -> tuple[str, float, float, str]:
     ranked = sorted(((s, n) for n, s in best.items()), reverse=True)
     (s1, n1), (s2, n2) = ranked[0], ranked[1] if len(ranked) > 1 else (0.0, "")
     gap = s1 - s2
-    ok = s1 >= MIN_SCORE and gap >= MIN_GAP
-    return (n1 if ok else "?"), s1, gap, n2
+    if s1 >= MIN_SCORE and gap >= MIN_GAP:
+        return n1, s1, gap, n2
+
+    # A tie among credible candidates, not a bad match: ask shape.
+    if s1 >= MIN_SCORE and len(ranked) > 1:
+        close = [n for s, n in ranked if s1 - s < MIN_GAP][:TIE_CANDIDATES]
+        if len(close) > 1:
+            bank = _edge_bank(kind)
+            te = _edges(t)
+            scored = sorted(((_edge_score(te, w, bank[n]), n)
+                             for n in close if n in bank), reverse=True)
+            if len(scored) > 1:
+                (e1, en1), (e2, en2) = scored[0], scored[1]
+                if e1 - e2 >= MIN_GAP:
+                    return en1, s1, e1 - e2, en2
+    return "?", s1, gap, n2
 
 
 def _align(image: np.ndarray, kind: str, fy: float, fx: float) -> tuple[int, int]:
@@ -266,7 +355,9 @@ def read_build_icons(image: np.ndarray) -> dict:
         for i in range(count):
             ty, tx = int(y0 * fy) + dy, int((x0 + i * pitch) * fx) + dx
             tile = image[ty:ty + int(size * fy), tx:tx + int(size * fx)]
-            name, score, gap, _ = match_slot(tile, kind)
+            # Slot 0 of the rune row is the keystone and holds nothing else.
+            only = keystones() if (kind == "runes" and i == 0) else None
+            name, score, gap, _ = match_slot(tile, kind, only)
             names.append(name)
             conf.append((name, round(score, 3), round(gap, 3)))
         if kind == "items":                       # trailing empty slots

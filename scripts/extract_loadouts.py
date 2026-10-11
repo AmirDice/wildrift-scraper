@@ -283,6 +283,70 @@ def extract_dir(capture_dir: Path, out: Path | None, engine: str) -> int:
     return 0
 
 
+#: Environment that pins a worker to one compute thread. Set in the PARENT
+#: before the pool is created, so every spawned child inherits it at import
+#: time -- which is the only moment it can take effect, because the native
+#: libraries read it when they load.
+_SINGLE_THREAD_ENV = {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+}
+
+
+def _extract_one(job: tuple[Path, str]) -> tuple[str, int, float, str]:
+    """(name, returncode, seconds, captured output) for one capture.
+
+    Output is captured and handed back rather than printed, so four
+    workers cannot interleave half-lines into one unreadable log. The
+    parent prints each block whole when the capture finishes.
+    """
+    import contextlib
+    import io
+    import time as _time
+
+    folder, engine = job
+    try:
+        cv2.setNumThreads(1)
+    except Exception:  # noqa: BLE001 -- older builds without the setter
+        pass
+    buf = io.StringIO()
+    start = _time.time()
+    try:
+        with contextlib.redirect_stdout(buf):
+            rc = extract_dir(folder, None, engine)
+    except Exception as exc:  # noqa: BLE001 -- one bad capture must not end the run
+        return folder.name, 1, _time.time() - start, f"{type(exc).__name__}: {exc}"
+    return folder.name, rc, _time.time() - start, buf.getvalue()
+
+
+def _run_pool(todo: list[Path], engine: str, workers: int) -> int:
+    """Extract `todo` across `workers` processes. Returns the failure count."""
+    import concurrent.futures
+    import os
+    import time as _time
+
+    os.environ.update(_SINGLE_THREAD_ENV)
+    done = bad = 0
+    started = _time.time()
+    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(_extract_one, (d, engine)): d for d in todo}
+        for future in concurrent.futures.as_completed(futures):
+            name, rc, secs, output = future.result()
+            done += 1
+            bad += rc != 0
+            rate = (_time.time() - started) / done
+            left = rate * (len(todo) - done)
+            print("")
+            print(f"[{done}/{len(todo)}] {name}  {secs:.0f}s"
+                  f"{'' if rc == 0 else '  FAILED'}"
+                  f"   ~{left / 60:.0f} min left")
+            if output.strip():
+                print(output.rstrip())
+    return bad
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -298,6 +362,14 @@ def main() -> int:
     ap.add_argument("--engine", choices=("paddle", "tesseract"), default="paddle",
                     help="paddle (default) is more accurate AND faster here; "
                          "tesseract is the psm-8 fast path at ~90%% on numbers")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="captures to extract at once when given a parent "
+                         "directory. DEFAULT 1, because parallel measured "
+                         "SLOWER on this machine: three workers took 709.7s "
+                         "on the same three captures that ran 636.4s one "
+                         "after another, a 0.90x speedup. Raise it only "
+                         "against a measurement on an idle machine. 0 picks "
+                         "one worker per core, leaving one free.")
     args = ap.parse_args()
 
     if (args.capture_dir / "manifest.json").exists():
@@ -312,6 +384,14 @@ def main() -> int:
     todo = [d for d in dirs if args.force or not (d / "loadouts.json").exists()]
     print(f"{len(dirs)} captures, {len(dirs) - len(todo)} already extracted, "
           f"{len(todo)} to do")
+    if not todo:
+        return 0
+    workers = args.workers or max(1, (os.cpu_count() or 2) - 1)
+    workers = min(workers, len(todo))
+    if workers > 1:
+        print(f"{workers} at a time")
+        return 1 if _run_pool(todo, args.engine, workers) else 0
+
     bad = 0
     for i, d in enumerate(todo, start=1):
         print("")
