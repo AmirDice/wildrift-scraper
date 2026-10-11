@@ -48,6 +48,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.adb_client import ADBClient, ADBError
 from src import uiauto
 from src import loadouts as L
+from src.ocr import cn_champion_names
 from scripts.scrape_loadouts import capture_champion, DEFAULT_OUT
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -103,9 +104,16 @@ LIST_BOTTOM = 0.90
 
 
 def _cn_names() -> dict[str, str]:
-    """Chinese champion name -> our English name, straight off disk."""
-    data = json.loads(CN_WINRATES.read_text(encoding="utf-8"))
-    return {c["cnName"]: c["name"] for c in data["champions"] if c.get("cnName")}
+    """Chinese champion name -> our English name.
+
+    Shared with the extractor rather than re-read here, because the file on
+    its own is not enough: Tencent's hero list has no Hwei at any spelling
+    and writes Taliyah as 塔莉垭 where the client shows 塔莉娅. src/ocr.py
+    carries those corrections, and a second copy of this map that did not
+    have them is exactly how Hwei went uncaptured while every count looked
+    almost right.
+    """
+    return cn_champion_names()
 
 
 def _wait_for(client, *sig, timeout: float = 8.0):
@@ -499,6 +507,7 @@ def walk(client, args) -> int:
         print(f"resuming: {len(done)} (champion, lane) pairs already captured, "
               f"{len(complete)} champions complete")
     visited: set[str] = set()
+    unknown: set[str] = set()
 
     wanted = [(cn, en) for cn, en in LANE_ORDER
               if not args.lanes or en in args.lanes]
@@ -545,6 +554,12 @@ def walk(client, args) -> int:
                 seen.add(label)
                 champion = cn_map.get(label)
                 if champion is None:
+                    # Never silent. A row the app lists and we cannot name
+                    # is a new champion or a stale map, and the old bare
+                    # `continue` is how Hwei disappeared without a trace.
+                    if label not in unknown:
+                        unknown.add(label)
+                        print(f"  ? {label:16s} not in the champion name map, skipped")
                     continue
                 # Skipped by CHAMPION, not by (champion, lane): one visit
                 # captures every lane the champion offers, so meeting it
@@ -578,6 +593,11 @@ def walk(client, args) -> int:
                     print(f"done: {captured} captured, {failed} failed")
                     return 0 if failed == 0 else 1
 
+    if unknown:
+        print(f"\n! {len(unknown)} hero-list row(s) had no champion name: "
+              f"{' '.join(sorted(unknown))}")
+        print("  add them to data/cn_winrates.json or to CN_NAME_OVERRIDES "
+              "in src/ocr.py, then rerun.")
     _write_no_data(args.out, skipped)
     tail = f", {len(skipped)} with no data in the app" if skipped else ""
     print(f"\ndone: {captured} captured, {failed} failed{tail}")
