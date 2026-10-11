@@ -118,16 +118,23 @@ class TestSupportItemBank:
     averaged from 363 captured tiles, assigned by CHAMPION evidence (every
     Braum game carries the shield, every Yuumi game the sickle), not by
     eyeballing icons.
+
+    The bank is no longer only those two lines. scripts/build_loadout_item_bank.py
+    adds "#ld" templates harvested from the loadout panel, where the game
+    draws items at its own zoom and the catalogue art matches about half of
+    them. So the assertion below is containment rather than equality: the
+    support lines are what this class exists to protect, and they must
+    survive every rebuild, but the bank is allowed to learn more.
     """
 
-    def test_bank_exists_with_both_lines(self):
+    def test_bank_keeps_both_support_lines(self):
         import numpy as np
         bank = Path("data/icon_bank/items.npz")
         if not bank.exists():
             pytest.skip("items.npz not built")
         with np.load(bank) as z:
             bases = {n.split("#")[0] for n in z.files}
-        assert bases == {"Black Mist Scythe", "Bulwark of the Mountain"}
+        assert {"Black Mist Scythe", "Bulwark of the Mountain"} <= bases
 
     @pytest.mark.parametrize("frame,expected", [
         ("data/captures/lux_20260803_0608/010_build.jpg", "Black Mist Scythe"),
