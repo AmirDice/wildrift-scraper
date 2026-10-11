@@ -37,6 +37,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from web.build_advisor import ITEMS, advise_runes, advise_best_of, why_not  # noqa: E402
+from web.site_agent import answer_site_question  # noqa: E402
 
 # Shared secret so only our own Next.js route can spend DeepSeek credit. Without
 # it this endpoint is an open, billable API.
@@ -104,8 +105,58 @@ def _clean_text(value, limit: int = 160) -> str:
     return " ".join(kept.split())[:limit]
 
 
+def _agent_text(value, limit: int = 500) -> str:
+    """Free text for the site agent: printable, single-spaced and bounded."""
+    if not isinstance(value, str):
+        return ""
+    return " ".join(c for c in value if c.isprintable()).strip()[:limit]
+
+
+def _agent_value(value, depth: int = 0):
+    """Bound the trusted context again at the billable endpoint boundary."""
+    if depth > 6:
+        return None
+    if isinstance(value, str):
+        return value[:800]
+    if isinstance(value, (int, float, bool)) or value is None:
+        return value
+    if isinstance(value, list):
+        return [_agent_value(item, depth + 1) for item in value[:20]]
+    if isinstance(value, dict):
+        return {
+            str(key)[:80]: _agent_value(item, depth + 1)
+            for key, item in list(value.items())[:40]
+        }
+    return str(value)[:200]
+
+
 def build_from_request(body: dict) -> tuple[int, dict]:
     """Validate the request and run the advisor. Returns (status, payload)."""
+    if body.get("task") == "site-agent":
+        question = _agent_text(body.get("question"))
+        if not question:
+            return 400, {"error": "question is required"}
+        context = _agent_value(body.get("context"))
+        history = []
+        for message in (body.get("history") or [])[:6]:
+            if not isinstance(message, dict):
+                continue
+            role = message.get("role")
+            content = _agent_text(message.get("content"), 600)
+            if role in {"user", "assistant"} and content:
+                history.append({"role": role, "content": content})
+        try:
+            return 200, answer_site_question(
+                question,
+                context if isinstance(context, dict) else {},
+                history,
+            )
+        except SystemExit as exc:
+            return 500, {"error": str(exc)}
+        except Exception:  # noqa: BLE001
+            traceback.print_exc(file=sys.stderr)
+            return 502, {"error": "The site agent is temporarily unavailable. Please try again later."}
+
     champion = _clean(body.get("champion"))
     if not champion:
         return 400, {"error": "champion is required"}

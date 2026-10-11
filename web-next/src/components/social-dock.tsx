@@ -55,7 +55,7 @@ export function SocialDock() {
       role="complementary"
       className="dock-bottom fixed right-4 z-50 print:hidden"
     >
-      <div className="liquid-glass flex items-center gap-1 rounded-2xl p-1.5">
+      <div className="liquid-glass flex items-center gap-0.5 rounded-xl p-1">
         {CHANNELS.map(({ key, href, label, Icon, hover }) => (
           <Link
             key={key}
@@ -65,9 +65,9 @@ export function SocialDock() {
             aria-label={label}
             title={label}
             data-social={key}
-            className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-muted transition ${hover}`}
+            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted transition ${hover}`}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-4 w-4" />
           </Link>
         ))}
       </div>

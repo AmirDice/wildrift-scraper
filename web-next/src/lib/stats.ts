@@ -52,6 +52,14 @@ export const TRACKED_EVENTS = [
   // Joined the notify list. Counted so the overlay page can be judged on
   // whether it collects anyone, not on whether it looks finished.
   "notify_signup",
+  // Site-wide assistant. Data answers are free and deterministic; model
+  // answers spend the assistant's own daily allowance, so they are separated.
+  "agent_opened",
+  "agent_data_answered",
+  "agent_model_answered",
+  "agent_cache_hit",
+  "agent_limit_reached",
+  "agent_feedback",
 ] as const;
 
 export type TrackedEvent = (typeof TRACKED_EVENTS)[number];

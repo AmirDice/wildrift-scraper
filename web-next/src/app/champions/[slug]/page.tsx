@@ -32,6 +32,7 @@ import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
 import { serverBuildInsights } from "@/lib/server-build-insights";
 import itemsCatalogue from "@/data/items.json";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
+import { AgentPromptChips } from "@/components/site-agent";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -353,6 +354,8 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
             </div>
           </div>
         </section>
+
+        <AgentPromptChips champion={champion.name} />
 
         <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
           <ChampionTabs

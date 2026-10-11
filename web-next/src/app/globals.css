@@ -346,7 +346,7 @@ main h1,
   background:
     radial-gradient(70rem 34rem at 84% 2%, rgba(45, 134, 167, 0.14), transparent 68%),
     radial-gradient(54rem 32rem at 8% 22%, rgba(77, 92, 178, 0.12), transparent 72%),
-    linear-gradient(180deg, rgba(5, 9, 20, 0.96), rgba(5, 10, 19, 0.985));
+    linear-gradient(180deg, rgba(5, 9, 20, 0.44), rgba(5, 10, 19, 0.62));
 }
 
 .home-revamp::before {
@@ -1011,3 +1011,8 @@ body {
    offset. */
 .dock-bottom { bottom: calc(1rem + var(--anchor-h, 0px)); }
 .dock-bottom-high { bottom: calc(5rem + var(--anchor-h, 0px)); }
+.agent-launcher {
+  top: auto;
+  bottom: calc(5rem + var(--anchor-h, 0px));
+  transform: none;
+}

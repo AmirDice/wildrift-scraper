@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { FlagshipNudge } from "@/components/flagship-nudge";
 import { SocialDock } from "@/components/social-dock";
 import { AccountProvider } from "@/components/account-provider";
+import { SiteAgentProvider } from "@/components/site-agent";
 import { AdSlot } from "@/components/ad-slot";
 import { AnchorAd } from "@/components/anchor-ad";
 import { ADSENSE_CLIENT, ADS_LIVE } from "@/lib/ads";
@@ -117,6 +118,7 @@ export default function RootLayout({
         {/* Who publishes this site, stated once for every page. */}
         <JsonLd data={[organizationJsonLd, websiteJsonLd]} />
         <AccountProvider>
+          <SiteAgentProvider champions={navChampions}>
           {/* Restored after the liquid-glass revamp (f7c8a3c) dropped it: the
               site-wide announcement had no reader at all for a day, so the
               copy went on being maintained while nothing displayed it. Above
@@ -134,6 +136,7 @@ export default function RootLayout({
               unit on the site, and the only one that pays for its space by
               reserving it. Renders nothing until an anchor unit is configured. */}
           <AnchorAd />
+          </SiteAgentProvider>
         </AccountProvider>
         {/* AdSense, once, for the whole site. It carries Google's own consent
             message for EEA visitors, which is why there is no CMP of ours: a
