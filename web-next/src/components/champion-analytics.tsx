@@ -145,7 +145,7 @@ function Distribution({ players, min, max, median, average, selected, onSelect }
         <line x1={x(average)} y1="15" x2={x(average)} y2="82" stroke="#9e87ff" strokeDasharray="4 4" />
         {players.map((player, index) => {
           const color = ["#72a7ff", "#78e3d4", "#a88dff", "#f2ca72"][Math.min(3, Math.floor(index / Math.max(1, Math.ceil(players.length / 4))))];
-          return <circle key={`${player.r}-${player.p}`} cx={x(player.w)} cy={65 - (index % 4) * 12} r={selected?.r === player.r ? 5.5 : 4} fill={selected?.r === player.r ? "#ffffff" : color} opacity={selected && selected.r !== player.r ? .38 : .9} style={{ filter: `drop-shadow(0 0 ${selected?.r === player.r ? 7 : 3}px ${color})` }} onClick={() => onSelect(player)} className="cursor-pointer outline-none" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onSelect(player); }}><title>{player.p}: {player.w.toFixed(1)}% over {player.g} games</title></circle>;
+          return <circle key={`${player.r}-${player.p}`} cx={x(player.w)} cy={65 - (index % 4) * 12} r={selected?.r === player.r ? 5.5 : 4} fill={selected?.r === player.r ? "#ffffff" : color} opacity={selected && selected.r !== player.r ? .38 : .9} style={{ filter: `drop-shadow(0 0 ${selected?.r === player.r ? 7 : 3}px ${color})` }} onClick={() => onSelect(player)} className="cursor-pointer outline-none" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onSelect(player); }}><title>{`${player.p}: ${player.w.toFixed(1)}% over ${player.g} games`}</title></circle>;
         })}
       </svg>
       <div className="flex gap-4 text-[0.62rem] uppercase tracking-[0.12em] text-faint"><span className="text-emerald-300">Median</span><span className="text-violet-300">Average</span></div>
@@ -159,13 +159,16 @@ function Scatter({ players, selected, onSelect }: { players: AnalyticsPlayer[]; 
   const maxGames = Math.max(...players.map((player) => player.g));
   const minWr = Math.floor(Math.min(...players.map((player) => player.w)) - 3);
   const maxWr = Math.ceil(Math.max(...players.map((player) => player.w)) + 3);
-  const x = (games: number) => 38 + (Math.log1p(games) / Math.log1p(maxGames)) * (width - 58);
-  const y = (wr: number) => 12 + ((maxWr - wr) / Math.max(1, maxWr - minWr)) * (height - 42);
+  // Keep server and browser SVG attributes byte-for-byte stable. Tiny
+  // floating-point serialization differences otherwise trigger hydration
+  // warnings even though the plotted point is visually identical.
+  const x = (games: number) => Number((38 + (Math.log1p(games) / Math.log1p(maxGames)) * (width - 58)).toFixed(3));
+  const y = (wr: number) => Number((12 + ((maxWr - wr) / Math.max(1, maxWr - minWr)) * (height - 42)).toFixed(3));
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img" aria-label="Win rate versus games played">
       {[0, .25, .5, .75, 1].map((step) => <line key={step} x1="38" x2={width - 20} y1={12 + step * (height - 42)} y2={12 + step * (height - 42)} stroke="rgba(255,255,255,.055)" />)}
       <text x="38" y={height - 5} fill="#7e8da6" fontSize="10">games →</text>
-      {players.map((player, index) => { const color = ["#72a7ff", "#78e3d4", "#a88dff", "#f2ca72"][index % 4]; return <circle key={`${player.r}-${player.p}`} cx={x(player.g)} cy={y(player.w)} r={selected?.r === player.r ? 6 : 4.2} fill={selected?.r === player.r ? "#ffffff" : color} opacity={selected && selected.r !== player.r ? .35 : .82} style={{ filter: `drop-shadow(0 0 ${selected?.r === player.r ? 7 : 3}px ${color})` }} onClick={() => onSelect(player)} className="cursor-pointer" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onSelect(player); }}><title>{player.p}: {player.w.toFixed(1)}% · {player.g} games</title></circle>; })}
+      {players.map((player, index) => { const color = ["#72a7ff", "#78e3d4", "#a88dff", "#f2ca72"][index % 4]; return <circle key={`${player.r}-${player.p}`} cx={x(player.g)} cy={y(player.w)} r={selected?.r === player.r ? 6 : 4.2} fill={selected?.r === player.r ? "#ffffff" : color} opacity={selected && selected.r !== player.r ? .35 : .82} style={{ filter: `drop-shadow(0 0 ${selected?.r === player.r ? 7 : 3}px ${color})` }} onClick={() => onSelect(player)} className="cursor-pointer" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onSelect(player); }}><title>{`${player.p}: ${player.w.toFixed(1)}% · ${player.g} games`}</title></circle>; })}
     </svg>
   );
 }
