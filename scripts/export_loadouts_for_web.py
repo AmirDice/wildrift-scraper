@@ -271,7 +271,7 @@ def main() -> None:
     missing = sorted(all_slugs - captured_slugs)
     output = {
         "generatedAt": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
-        "source": "CN companion app · Legendary ranked",
+        "source": "CN server · Legendary ranked",
         "coverage": {
             "champions": len(captured_slugs),
             "totalChampions": len(all_slugs),

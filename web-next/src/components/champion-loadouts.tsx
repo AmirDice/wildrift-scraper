@@ -117,7 +117,7 @@ function StandardRow({ row, kind }: { row: LoadoutRow; kind: TabKey }) {
         </div>
       </div>
       <div className="mt-2.5 grid grid-cols-2 gap-3 border-t border-white/[0.07] pt-2.5 sm:hidden">
-        <Rate label="Observed WR" value={row.winRate} accent />
+        <Rate label="WR" value={row.winRate} accent />
         <Rate label="Pick rate" value={row.pickRate} />
       </div>
     </article>
@@ -192,8 +192,8 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   const favorable = [...lane.tabs.versus.rows].sort((a, b) => b.winRate - a.winRate).slice(0, 5);
   const difficult = [...lane.tabs.versus.rows].sort((a, b) => a.winRate - b.winRate).slice(0, 5);
   const versusCopy = lane.versusKind === "partners"
-    ? "Lane partners with the strongest observed results alongside this champion."
-    : "Observed matchup win rates from the strongest to the most difficult opponents.";
+    ? "Lane partners with the strongest results alongside this champion."
+    : "Matchup win rates from the strongest to the most difficult opponents.";
 
   return (
     <Card className="relative overflow-hidden border border-sky-300/[0.12] p-0">
@@ -203,11 +203,11 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-sky-200">CN player lab</span>
+              <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-sky-200">CN server</span>
               <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-faint">Legendary ranked</span>
             </div>
             <h2 className="mt-3 text-xl font-semibold tracking-tight">What top {champion} players are running</h2>
-            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">Lane-specific loadouts from the CN companion app, with observed win rate and popularity kept side by side.</p>
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">Lane-specific loadouts from the CN server, with win rate and popularity kept side by side.</p>
           </div>
           {loadouts.length > 1 ? (
             <div className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-black/15 p-1" role="tablist" aria-label="Loadout lane">
@@ -285,7 +285,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
         )}
 
         <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
-          <p>Observed data, not a causal claim: a higher row win rate does not prove the loadout caused the wins.</p>
+          <p>A higher row win rate does not prove the loadout caused the wins.</p>
           <p className={`shrink-0 ${older ? "text-amber-200/80" : ""}`}>Source snapshot: {formatDataDate(tab.date)}{older ? " · older tab" : ""}</p>
         </div>
       </div>

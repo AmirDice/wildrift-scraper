@@ -71,10 +71,10 @@ export const ANNOUNCEMENT = {
   // Bumped from -v4: that banner said EU and NA were live and CN was still
   // to come. China is collected now, so the run is finished and the key
   // changes to show the banner again to people who dismissed the last one.
-  key: "wtm-announce-all-three-live-2026-10-v5",
+  key: "wtm-announce-cn-server-loadouts-2026-10-v6",
   href: "/updates",
   lead: "EU, NA and China win rates are all on patch 7.3a",
-  short: `All three boards are collected: NA on 6 October, EU on 7 October and China on 11 October, 142 champions each on patch ${CN_WINRATE_PATCH}. China is new in kind, not just refreshed: until now its numbers were Tencent's published bracket rates, and this is our own capture of the top 30 players on every champion, with their ranks, records and the builds they had equipped. The Global ranking averages all three servers again. The Build Studio is off maintenance and generating normally.`,
+  short: `All three boards are collected: NA on 6 October, EU on 7 October and China on 11 October, 142 champions each on patch ${CN_WINRATE_PATCH}. China is new in kind, not just refreshed: until now its numbers were Tencent's published bracket rates, and this is our own capture of the top 30 players on every champion, with their ranks, records and the builds they had equipped. CN server player loadouts are now live on champion pages, including item cores, runes, boots, spells and matchups. The Global ranking averages all three servers again. The Build Studio is off maintenance and generating normally.`,
   cta: "What changed",
   badges: ["China board live"],
   /** Pages the banner points at, so it does not appear on top of itself. */
