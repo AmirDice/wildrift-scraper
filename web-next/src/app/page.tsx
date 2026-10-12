@@ -26,6 +26,8 @@ export const metadata: Metadata = {
 export default function HomePage() {
   const champions = getChampions();
   const naBoard = regionBoard("NA");
+  const cnBoard = regionBoard("CN");
+  const totalTrackedPlayers = site.nPlayers + naBoard.nPlayers + cnBoard.nPlayers;
   const bySlug = new Map(champions.map((c) => [c.slug, c]));
   const byName = new Map(champions.map((c) => [c.name, c]));
   const ranked = champions.filter((c) => (c.nPlayers ?? 0) >= 20);
@@ -126,6 +128,10 @@ export default function HomePage() {
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               NA win rates · collected {naBoard.collectedOn}
             </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
+              <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+              CN win rates · collected {cnBoard.collectedOn}
+            </span>
             {!BUILD_TOOLS_LIVE && (
               <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium text-gold">
                 Build Studio · launching this month
@@ -134,8 +140,8 @@ export default function HomePage() {
           </div>
           <p className="mx-auto mt-4 max-w-6xl text-left text-xs text-faint sm:text-sm">
             Every recommendation is grounded in {site.nChampions} champions and{" "}
-            {(site.nPlayers + naBoard.nPlayers).toLocaleString()} player records
-            across EU and NA.
+            {totalTrackedPlayers.toLocaleString()} player records
+            across EU, NA and CN.
           </p>
 
           {/* Scroll cue. The hero fills the first screen, so without this the
@@ -234,11 +240,11 @@ export default function HomePage() {
                   spark="blue"
                 />
               )}
-              <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU + NA profiles" href="/champions" spark="cyan" />
+              <StatCard label="Champions tracked" value={champions.length.toLocaleString()} sub="EU + NA + CN profiles" href="/champions" spark="cyan" />
               <StatCard
                 label="Players tracked"
-                value={(site.nPlayers + naBoard.nPlayers).toLocaleString()}
-                sub={`${site.nPlayers.toLocaleString()} EU · ${naBoard.nPlayers.toLocaleString()} NA`}
+                value={totalTrackedPlayers.toLocaleString()}
+                sub={`${site.nPlayers.toLocaleString()} EU · ${naBoard.nPlayers.toLocaleString()} NA · ${cnBoard.nPlayers.toLocaleString()} CN`}
                 href="/leaderboard"
                 valueClass="text-gold"
                 spark="gold"
