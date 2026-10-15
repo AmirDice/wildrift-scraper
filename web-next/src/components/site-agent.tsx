@@ -329,7 +329,11 @@ function AgentMessage({ message, onFollowUp }: { message: Message; onFollowUp: (
       {!message.error && (
         <div className="flex items-center gap-1 text-faint">
           <span className="mr-1 text-[0.65rem]">Helpful?</span>
-          {["Yes", "No"].map((label) => <button key={label} type="button" disabled={rated} onClick={() => { setRated(true); track("agent_feedback"); }} className="rounded-md px-2 py-1 text-[0.65rem] transition hover:bg-white/[0.06] hover:text-text disabled:opacity-40">{rated ? "Thanks" : label}</button>)}
+          {["Yes", "No"].map((label) => <button key={label} type="button" disabled={rated} onClick={() => {
+            setRated(true);
+            const path = message.source === "model" ? "model" : "data";
+            track(label === "Yes" ? `agent_feedback_yes_${path}` : `agent_feedback_no_${path}`);
+          }} className="rounded-md px-2 py-1 text-[0.65rem] transition hover:bg-white/[0.06] hover:text-text disabled:opacity-40">{rated ? "Thanks" : label}</button>)}
         </div>
       )}
       {message.followUps && message.followUps.length > 0 && (

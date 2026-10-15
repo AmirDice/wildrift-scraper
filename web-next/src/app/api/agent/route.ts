@@ -17,6 +17,7 @@ import { buildAgentContext, championSlugFromQuestion, resolveAgentAnswer } from 
 import type { AgentHistoryMessage } from "@/lib/agent-types";
 import { clientIp } from "@/lib/quota";
 import { kvGetJson, kvSetJson } from "@/lib/kv";
+import { CURRENT_PATCH } from "@/lib/patch";
 import { isAdmin, readSession, SESSION_COOKIE } from "@/lib/session";
 import { trackEvent } from "@/lib/stats";
 
@@ -70,8 +71,13 @@ function agentCacheKey(question: string, context: ReturnType<typeof buildAgentCo
   // Include the page, named champion and collection dates so a deploy or fresh
   // regional scrape naturally gets a new answer without storing the full data
   // snapshot in the key itself.
+  // v4: the context now carries the tier list by role, the latest patch,
+  // items, runes and China's loadouts, so v3 answers were made with less.
+  // The patch is in the key because an answer about "the latest patch" is
+  // wrong the moment the next one lands, and the TTL is twelve hours.
   const identity = JSON.stringify({
-    v: 3,
+    v: 4,
+    patch: CURRENT_PATCH,
     question: question.toLowerCase().replace(/\s+/g, " ").trim(),
     page: context.page,
     champion: context.championSlug ?? "",
@@ -224,7 +230,7 @@ export async function POST(request: Request) {
   const championSlug = cleanText(body.championSlug, 60).toLowerCase().replace(/[^a-z0-9-]/g, "");
   // A named champion wins over the page champion: asking about Caitlyn while
   // reading Jinx should not silently ground the answer in Jinx's data.
-  const context = buildAgentContext(pathname, championSlugFromQuestion(question) || championSlug);
+  const context = buildAgentContext(pathname, championSlugFromQuestion(question) || championSlug, question);
 
   const grounded = resolveAgentAnswer(question, context);
   if (grounded) {

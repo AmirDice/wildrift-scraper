@@ -60,6 +60,13 @@ export const TRACKED_EVENTS = [
   "agent_cache_hit",
   "agent_limit_reached",
   "agent_feedback",
+  // The vote, and which path produced the answer. "agent_feedback" alone
+  // recorded Yes and No as the same event, so every rating up to now says
+  // only that somebody clicked.
+  "agent_feedback_yes_data",
+  "agent_feedback_no_data",
+  "agent_feedback_yes_model",
+  "agent_feedback_no_model",
 ] as const;
 
 export type TrackedEvent = (typeof TRACKED_EVENTS)[number];
