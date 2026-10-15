@@ -7,6 +7,7 @@ import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
 import { clientIp, consumeQuota } from "@/lib/quota";
 import { trackEvent } from "@/lib/stats";
 import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
+import { getSubscription, isProSubscription, PRO_DAILY_BUILDS } from "@/lib/subscription";
 
 /**
  * "Why not this item?" -- challenge the generator about one absent item.
@@ -219,12 +220,18 @@ export async function POST(request: Request) {
   const store = await cookies();
   const user = readSession(store.get(SESSION_COOKIE)?.value);
   const access = readAccessCookie(store.get(ACCESS_COOKIE)?.value);
+  const subscription = user ? await getSubscription(user.sub) : null;
   const unlimited = (access?.unlimited ?? false) || isAdmin(user);
   const ip = clientIp(request);
-  const { ok, quota } = await consumeQuota(user, ip, unlimited);
+  const { ok, quota } = await consumeQuota(
+    user,
+    ip,
+    unlimited,
+    isProSubscription(subscription) ? PRO_DAILY_BUILDS : undefined,
+  );
   if (!ok) {
     return NextResponse.json(
-      { error: `That is your ${quota.limit} free ${quota.limit === 1 ? "generation" : "generations"} for today; a question costs one like a build does.`, quota },
+      { error: `Daily generation limit reached (${quota.limit}/day); a question costs one like a build does.`, quota },
       { status: 429 },
     );
   }

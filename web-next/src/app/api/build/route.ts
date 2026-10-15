@@ -11,6 +11,7 @@ import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-ca
 import { checkAbuseGuards } from "@/lib/build-guards";
 import { recordBiasUse, recordGenerationEngagement, trackEvent } from "@/lib/stats";
 import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
+import { getSubscription, isProSubscription, PRO_DAILY_BUILDS } from "@/lib/subscription";
 
 /**
  * Live build advisor. POST { champion, role, enemies[], allies[], playstyle, mode }
@@ -200,7 +201,9 @@ function outOfAllowance(quota: QuotaState): NextResponse {
     {
       error: quota.canUnlockBySigningIn
         ? `That is your ${ANON_DAILY_BUILDS} free build for today. Sign in with Google for ${SIGNED_IN_DAILY_BUILDS} more, or come back in ~${hours}h.`
-        : `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h.`,
+        : quota.plusAvailable
+          ? `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h, or Plus raises it to ${PRO_DAILY_BUILDS} a day: wrtruemeta.com/account`
+          : `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h.`,
       quota,
     },
     { status: 429, headers: { "X-RateLimit-Remaining": "0" } },
@@ -424,10 +427,12 @@ async function handlePost(request: Request) {
   const store = await cookies();
   const user = readSession(store.get(SESSION_COOKIE)?.value);
   const access = readAccessCookie(store.get(ACCESS_COOKIE)?.value);
+  const subscription = user ? await getSubscription(user.sub) : null;
   // Either route to an exempt account: an access code's cookie, or being one of
   // the ADMIN_EMAILS. Usage is still counted for both (see consumeQuota), so
   // the cost of a beta remains visible.
   const unlimited = (access?.unlimited ?? false) || isAdmin(user);
+  const paidLimit = isProSubscription(subscription) ? PRO_DAILY_BUILDS : undefined;
 
   // guard the shell-out: only plausible names/values reach argv
   const clean = (s: unknown) =>
@@ -494,7 +499,7 @@ async function handlePost(request: Request) {
     // builds a day, never reach the cap, and register as ordinary -- hiding
     // exactly the person worth learning about before there is anything to
     // monetise. Owner's call, 2026-08-09.
-    const { ok, quota } = await consumeQuota(user, cacheIp, unlimited);
+    const { ok, quota } = await consumeQuota(user, cacheIp, unlimited, paidLimit);
     if (!ok) return outOfAllowance(quota);
     after(() => trackEvent(mode === "counter" ? "counter_generated" : "build_generated"));
     after(() => recordBiasUse(advisorRequest.buildBias));
@@ -521,7 +526,7 @@ async function handlePost(request: Request) {
 
   const ip = clientIp(request);
   try {
-    const { ok, quota } = await consumeQuota(user, ip, unlimited);
+    const { ok, quota } = await consumeQuota(user, ip, unlimited, paidLimit);
     if (!ok) return outOfAllowance(quota);
 
     const res = await runAdvisor({
@@ -534,7 +539,7 @@ async function handlePost(request: Request) {
       // receives only a stable, actionable message.
       console.error("Advisor generation failed", res.error);
       const responseQuota = res.quotaRefundable
-        ? await refundQuota(user, ip, unlimited)
+        ? await refundQuota(user, ip, unlimited, paidLimit)
         : quota;
       return NextResponse.json(
         {

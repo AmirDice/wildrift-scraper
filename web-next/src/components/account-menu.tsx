@@ -76,6 +76,13 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
                 </p>
               )}
               <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="mt-3 block rounded-lg border border-line px-3 py-2 text-sm font-medium text-muted transition hover:text-text"
+              >
+                Account & WRTrueMeta Plus
+              </Link>
+              <Link
                 href="/albums"
                 onClick={() => setOpen(false)}
                 className="mt-3 block rounded-lg bg-accent/15 px-3 py-2 text-sm font-semibold text-accent transition hover:bg-accent/25"
@@ -102,6 +109,13 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
               <div className="mt-3">
                 <GoogleSignInButton onDone={() => setOpen(false)} />
               </div>
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="mt-3 block rounded-lg border border-line px-3 py-2 text-center text-sm font-medium text-muted transition hover:text-text"
+              >
+                View WRTrueMeta Plus
+              </Link>
               <p className="mt-3 text-[0.65rem] leading-relaxed text-faint">
                 We only store your Google name, email and avatar to count your daily generations.
               </p>

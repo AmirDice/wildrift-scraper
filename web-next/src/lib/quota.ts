@@ -17,6 +17,7 @@ import type { SessionUser } from "@/lib/session";
 // components can read the same numbers instead of restating them in prose.
 export { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 import { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
+import { stripeConfigured } from "@/lib/stripe";
 
 const DAY_SECONDS = 60 * 60 * 24;
 
@@ -25,6 +26,12 @@ export interface QuotaState {
   limit: number;
   remaining: number;
   signedIn: boolean;
+  /** The paid tier that supplied this limit, when applicable. */
+  plan?: "free" | "plus" | "pro";
+  /** A signed-in free player on a deployment that can sell Plus: the limit
+   *  wall offers it. False until Stripe is configured, so nothing advertises
+   *  a subscription that cannot be bought. */
+  plusAvailable?: boolean;
   /** True when the anonymous allowance is spent and signing in would add more. */
   canUnlockBySigningIn: boolean;
   /** Epoch ms when the window rolls over (next UTC midnight). */
@@ -74,14 +81,16 @@ function nextUtcMidnight(): number {
   return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
 }
 
-function state(used: number, user: SessionUser | null): QuotaState {
-  const limit = user ? SIGNED_IN_DAILY_BUILDS : ANON_DAILY_BUILDS;
+function state(used: number, user: SessionUser | null, limitOverride?: number): QuotaState {
+  const limit = limitOverride ?? (user ? SIGNED_IN_DAILY_BUILDS : ANON_DAILY_BUILDS);
   const remaining = Math.max(0, limit - used);
   return {
     used,
     limit,
     remaining,
     signedIn: Boolean(user),
+    plan: limitOverride != null ? "plus" : "free",
+    plusAvailable: Boolean(user) && limitOverride == null && stripeConfigured(),
     canUnlockBySigningIn: !user && remaining === 0,
     resetAt: nextUtcMidnight(),
   };
@@ -92,9 +101,10 @@ export async function peekQuota(
   user: SessionUser | null,
   ip: string,
   unlimited = false,
+  limitOverride?: number,
 ): Promise<QuotaState> {
   const used = await kvGetNumber(keyFor(user, ip));
-  return unlimited ? unlimitedState(used, Boolean(user)) : state(used, user);
+  return unlimited ? unlimitedState(used, Boolean(user)) : state(used, user, limitOverride);
 }
 
 /**
@@ -122,9 +132,9 @@ export async function consumeQuota(
   }
   const limit = limitOverride
     ?? (user ? SIGNED_IN_DAILY_BUILDS : ANON_DAILY_BUILDS);
-  if (used >= limit) return { ok: false, quota: state(used, user) };
+  if (used >= limit) return { ok: false, quota: state(used, user, limitOverride) };
   const next = await kvIncr(key, 1, DAY_SECONDS);
-  return { ok: true, quota: state(next, user) };
+  return { ok: true, quota: state(next, user, limitOverride) };
 }
 
 /**
@@ -139,6 +149,7 @@ export async function refundQuota(
   user: SessionUser | null,
   ip: string,
   unlimited = false,
+  limitOverride?: number,
 ): Promise<QuotaState> {
   const key = keyFor(user, ip);
   let next = await kvIncr(key, -1, DAY_SECONDS);
@@ -150,7 +161,7 @@ export async function refundQuota(
     next = 0;
   }
 
-  return unlimited ? unlimitedState(next, Boolean(user)) : state(next, user);
+  return unlimited ? unlimitedState(next, Boolean(user)) : state(next, user, limitOverride);
 }
 
 /**

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { AUTH_CONFIGURED, SESSION_COOKIE, readSession, isAdmin } from "@/lib/session";
 import { clientIp, peekQuota } from "@/lib/quota";
 import { ACCESS_COOKIE, readAccessCookie } from "@/lib/access";
+import { getSubscription, isProSubscription, PRO_DAILY_BUILDS, subscriptionSummary } from "@/lib/subscription";
 
 /**
  * GET -- who is signed in, and how many build generations are left today.
@@ -16,16 +17,23 @@ export async function GET(request: Request) {
   const store = await cookies();
   const user = readSession(store.get(SESSION_COOKIE)?.value);
   const access = readAccessCookie(store.get(ACCESS_COOKIE)?.value);
+  const subscription = user ? await getSubscription(user.sub) : null;
   // Match the build route exactly, or the nav would advertise a cap the
   // generator does not actually apply.
   const unlimited = (access?.unlimited ?? false) || isAdmin(user);
-  const quota = await peekQuota(user, clientIp(request), unlimited);
+  const quota = await peekQuota(
+    user,
+    clientIp(request),
+    unlimited,
+    isProSubscription(subscription) ? PRO_DAILY_BUILDS : undefined,
+  );
 
   return NextResponse.json(
     {
       authConfigured: AUTH_CONFIGURED,
       user: user ? { name: user.name, email: user.email, picture: user.picture } : null,
       quota,
+      subscription: subscriptionSummary(subscription),
       // Drives early access to the gated build tools in client components,
       // which cannot read the cookie themselves.
       access: access

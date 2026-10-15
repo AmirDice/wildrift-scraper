@@ -16,6 +16,8 @@ export interface QuotaState {
   limit: number | null;
   remaining: number | null;
   signedIn: boolean;
+  plan?: "free" | "plus" | "pro";
+  plusAvailable?: boolean;
   canUnlockBySigningIn: boolean;
   resetAt: number;
   unlimited?: boolean;

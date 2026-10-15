@@ -15,5 +15,6 @@ export const ANON_DAILY_BUILDS = 1;
 /** Extra allowance unlocked by signing in, per Google account per UTC day. */
 export const SIGNED_IN_DAILY_BUILDS = 3;
 
-/** What a signed-in player gets in a day, in total. */
+/** What a signed-in player gets in a day, in total. Plus uses its own 20/day
+ * entitlement from lib/subscription.ts. */
 export const TOTAL_DAILY_BUILDS = ANON_DAILY_BUILDS + SIGNED_IN_DAILY_BUILDS;

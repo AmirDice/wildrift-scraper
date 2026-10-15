@@ -40,8 +40,8 @@ const itemName = (slug: string) => DATA.items?.[slug]?.name ?? slug;
  * marginal DPS jump per gold-equivalent slot, which is the honest version of
  * "when is this build scariest".
  *
- * When advisor evidence includes an engine order, boots are inserted at the
- * measured completion point; older responses retain the legacy placement.
+ * When advisor evidence includes Gemini's authored order, boots are inserted
+ * at the model's completion point; older responses retain the legacy placement.
  */
 export function BuildStages({ name, items, boots, bootsPurchaseAfter, bootsUpgrade, bootsUpgradeAfter, runeNames, level = 15, bare = false, powerCurve, candidates, purchaseOrder }: {
   name: string;
@@ -63,7 +63,7 @@ export function BuildStages({ name, items, boots, bootsPurchaseAfter, bootsUpgra
   powerCurve?: string;
   /** The model's scored item alternatives, the substitution candidate pool. */
   candidates?: { item: string; score?: number }[];
-  /** Engine-selected completion order, including boots where they belong. */
+  /** Gemini-authored completion order, including boots where they belong. */
   purchaseOrder?: string[];
 }) {
   const stages = useMemo(() => {

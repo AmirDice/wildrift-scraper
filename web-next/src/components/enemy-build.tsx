@@ -952,6 +952,11 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
           <GoogleSignInButton />
         </div>
       )}
+      {!canUpgrade && quota.plusAvailable && (
+        <Link href="/account" className="mt-3 inline-flex rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-black transition hover:opacity-90">
+          Get Plus: 20 builds a day
+        </Link>
+      )}
     </div>
   );
 }
