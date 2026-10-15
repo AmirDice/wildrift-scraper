@@ -408,7 +408,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Grasp and Aery changed. Tryndamere's Spinning Slash also scales off bonus
   // AD now rather than total, and Rammus and Samira finally carry their 7.3a
   // base stats on the page. Every cached build predates all of it.
-  return `build:v83:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v84: the ladder consensus behind the advisor prompt was rebuilt after the
+  // Lethal Tempo repair. Lethal Tempo had been invisible to it, so 14 to 15
+  // champions per region -- the marksmen, Master Yi, Tryndamere, Yone -- were
+  // described to the model with their runner-up keystone as the main one.
+  return `build:v84:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

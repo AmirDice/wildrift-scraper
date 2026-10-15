@@ -3532,8 +3532,111 @@
    "gunmetal-greaves"
   ],
   "orderFrom": "same",
-  "keystones": [],
-  "runePages": [],
+  "keystones": [
+   {
+    "name": "Lethal Tempo",
+    "count": 29,
+    "of": 30
+   }
+  ],
+  "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 13,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Celerity",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 4,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Celerity",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Celerity",
+    "count": 1,
+    "of": 30
+   }
+  ],
   "spells": [
    {
     "pair": "Flash + Ghost",
@@ -6172,6 +6275,11 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 28,
+    "of": 30
+   },
+   {
     "name": "Fleet Footwork",
     "count": 2,
     "of": 30
@@ -6179,11 +6287,71 @@
   ],
   "runePages": [
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 16,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Absolute Focus",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 3,
+    "of": 30
+   },
+   {
     "keystone": "Fleet Footwork",
     "primaryTree": "Precision",
     "minors": [
      "Brutal",
      "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
      "Legend: Bloodline"
     ],
     "flex": "Bone Plating",
@@ -6199,6 +6367,18 @@
      "Legend: Alacrity"
     ],
     "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Celerity",
     "count": 1,
     "of": 30
    }
@@ -17441,6 +17621,11 @@
     "name": "Conqueror",
     "count": 3,
     "of": 30
+   },
+   {
+    "name": "Lethal Tempo",
+    "count": 1,
+    "of": 30
    }
   ],
   "runePages": [
@@ -17657,6 +17842,18 @@
      "Perseverance"
     ],
     "flex": "Legend: Alacrity",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Perseverance",
     "count": 1,
     "of": 30
    }
@@ -18982,6 +19179,11 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 26,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 1,
     "of": 30
@@ -18993,6 +19195,42 @@
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 14,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Hubris",
+    "count": 2,
+    "of": 30
+   },
    {
     "keystone": "Conqueror",
     "primaryTree": "Precision",
@@ -19006,6 +19244,30 @@
     "of": 30
    },
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Bloodline"
+    ],
+    "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
     "keystone": "Ice Overlord",
     "primaryTree": "Resolve",
     "minors": [
@@ -19014,6 +19276,30 @@
      "Perseverance"
     ],
     "flex": "Gathering Storm",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Absolute Focus",
     "count": 1,
     "of": 30
    }
@@ -19607,12 +19893,29 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 15,
+    "of": 29
+   },
+   {
     "name": "Empowerment",
     "count": 1,
     "of": 29
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 15,
+    "of": 29
+   },
    {
     "keystone": "Empowerment",
     "primaryTree": "Precision",
@@ -19767,8 +20070,99 @@
    "amaranths-twinguard"
   ],
   "orderFrom": "same",
-  "keystones": [],
-  "runePages": [],
+  "keystones": [
+   {
+    "name": "Lethal Tempo",
+    "count": 27,
+    "of": 30
+   }
+  ],
+  "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 15,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 3,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 3,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Sudden Impact",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Resolve",
+    "minors": [
+     "Unshakeable",
+     "Bone Plating",
+     "Perseverance"
+    ],
+    "flex": "Brutal",
+    "count": 1,
+    "of": 30
+   }
+  ],
   "spells": [
    {
     "pair": "Barrier + Flash",
@@ -21437,6 +21831,11 @@
     "name": "Conqueror",
     "count": 5,
     "of": 30
+   },
+   {
+    "name": "Lethal Tempo",
+    "count": 1,
+    "of": 30
    }
   ],
   "runePages": [
@@ -21569,6 +21968,18 @@
      "Perseverance"
     ],
     "flex": "Transcendence",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Perseverance",
     "count": 1,
     "of": 30
    },
@@ -22638,6 +23049,11 @@
     "of": 30
    },
    {
+    "name": "Lethal Tempo",
+    "count": 3,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 2,
     "of": 30
@@ -22659,6 +23075,18 @@
     ],
     "flex": "Bone Plating",
     "count": 5,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
     "of": 30
    },
    {
@@ -22710,6 +23138,18 @@
     "of": 30
    },
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
     "keystone": "Electrocute",
     "primaryTree": "Precision",
     "minors": [
@@ -22727,6 +23167,18 @@
     "minors": [
      "Brutal",
      "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
      "Legend: Alacrity"
     ],
     "flex": "Bone Plating",
@@ -23787,12 +24239,65 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 27,
+    "of": 30
+   },
+   {
     "name": "Dark Harvest",
     "count": 1,
     "of": 30
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 12,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 9,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Overgrowth",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Perseverance",
+    "count": 1,
+    "of": 30
+   },
    {
     "keystone": "Dark Harvest",
     "primaryTree": "Sorcery",
@@ -23802,6 +24307,42 @@
      "Gathering Storm"
     ],
     "flex": "Triumph",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Gathering Storm",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Overgrowth",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Absolute Focus",
     "count": 1,
     "of": 30
    }
@@ -27881,12 +28422,89 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 23,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 2,
     "of": 30
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Resolve",
+    "minors": [
+     "Unshakeable",
+     "Bone Plating",
+     "Overgrowth"
+    ],
+    "flex": "Legend: Alacrity",
+    "count": 4,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Resolve",
+    "minors": [
+     "Unshakeable",
+     "Bone Plating",
+     "Perseverance"
+    ],
+    "flex": "Legend: Alacrity",
+    "count": 3,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Cut Down",
+     "Legend: Haste"
+    ],
+    "flex": "Perseverance",
+    "count": 3,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Perseverance",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Overgrowth",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Perseverance",
+    "count": 2,
+    "of": 30
+   },
    {
     "keystone": "Conqueror",
     "primaryTree": "Precision",
@@ -27908,6 +28526,90 @@
      "Legend: Alacrity"
     ],
     "flex": "Nullifying Orb",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Coup de Grace",
+     "Legend: Bloodline"
+    ],
+    "flex": "Perseverance",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Perseverance",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Sudden Impact",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Last Stand",
+     "Legend: Bloodline"
+    ],
+    "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Overgrowth",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Coup de Grace",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Bloodline"
+    ],
+    "flex": "Perseverance",
     "count": 1,
     "of": 30
    }
@@ -29031,6 +29733,11 @@
     "name": "Arcane Comet",
     "count": 1,
     "of": 30
+   },
+   {
+    "name": "Lethal Tempo",
+    "count": 1,
+    "of": 30
    }
   ],
   "runePages": [
@@ -29139,6 +29846,18 @@
      "Legend: Alacrity"
     ],
     "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Nimbus Cloak",
     "count": 1,
     "of": 30
    },
@@ -42908,6 +43627,11 @@
     "name": "Fleet Footwork",
     "count": 11,
     "of": 30
+   },
+   {
+    "name": "Lethal Tempo",
+    "count": 1,
+    "of": 30
    }
   ],
   "runePages": [
@@ -42980,6 +43704,18 @@
      "Perseverance"
     ],
     "flex": "Legend: Alacrity",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Resolve",
+    "minors": [
+     "Unshakeable",
+     "Bone Plating",
+     "Perseverance"
+    ],
+    "flex": "Legend: Bloodline",
     "count": 1,
     "of": 30
    },
@@ -44102,6 +44838,11 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 23,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 6,
     "of": 30
@@ -44113,6 +44854,30 @@
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 17,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 4,
+    "of": 30
+   },
    {
     "keystone": "Conqueror",
     "primaryTree": "Precision",
@@ -44135,6 +44900,30 @@
     ],
     "flex": "Bone Plating",
     "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
     "of": 30
    },
    {
@@ -48996,6 +49785,11 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 25,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 3,
     "of": 30
@@ -49013,6 +49807,30 @@
   ],
   "runePages": [
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 16,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 5,
+    "of": 30
+   },
+   {
     "keystone": "Fleet Footwork",
     "primaryTree": "Precision",
     "minors": [
@@ -49021,6 +49839,18 @@
      "Legend: Alacrity"
     ],
     "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Second Wind",
     "count": 1,
     "of": 30
    },
@@ -49038,6 +49868,18 @@
    },
    {
     "keystone": "Conqueror",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
     "primaryTree": "Precision",
     "minors": [
      "Brutal",
@@ -49069,6 +49911,30 @@
      "Legend: Alacrity"
     ],
     "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Overgrowth",
     "count": 1,
     "of": 30
    }
@@ -49305,12 +50171,29 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 25,
+    "of": 30
+   },
+   {
     "name": "Grasp of the Undying",
     "count": 3,
     "of": 30
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 15,
+    "of": 30
+   },
    {
     "keystone": "Grasp of the Undying",
     "primaryTree": "Precision",
@@ -49324,6 +50207,42 @@
     "of": 30
    },
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Second Wind",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Sudden Impact",
+    "count": 1,
+    "of": 30
+   },
+   {
     "keystone": "Grasp of the Undying",
     "primaryTree": "Precision",
     "minors": [
@@ -49332,6 +50251,66 @@
      "Legend: Haste"
     ],
     "flex": "Sudden Impact",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Nullifying Orb",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Sudden Impact",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Axiom Arcanist",
     "count": 1,
     "of": 30
    }
@@ -50053,6 +51032,11 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 16,
+    "of": 26
+   },
+   {
     "name": "Conqueror",
     "count": 5,
     "of": 26
@@ -50064,6 +51048,30 @@
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 8,
+    "of": 26
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 6,
+    "of": 26
+   },
    {
     "keystone": "Conqueror",
     "primaryTree": "Precision",
@@ -50125,6 +51133,18 @@
     "of": 26
    },
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Axiom Arcanist",
+    "count": 1,
+    "of": 26
+   },
+   {
     "keystone": "Empowerment",
     "primaryTree": "Precision",
     "minors": [
@@ -50145,6 +51165,18 @@
      "Legend: Bloodline"
     ],
     "flex": "Bone Plating",
+    "count": 1,
+    "of": 26
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Axiom Arcanist",
     "count": 1,
     "of": 26
    }
@@ -50958,6 +51990,11 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 20,
+    "of": 30
+   },
+   {
     "name": "Empowerment",
     "count": 4,
     "of": 30
@@ -50974,6 +52011,30 @@
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 17,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 3,
+    "of": 30
+   },
    {
     "keystone": "Empowerment",
     "primaryTree": "Precision",
@@ -51322,8 +52383,99 @@
    "terminus"
   ],
   "orderFrom": "same",
-  "keystones": [],
-  "runePages": [],
+  "keystones": [
+   {
+    "name": "Lethal Tempo",
+    "count": 26,
+    "of": 30
+   }
+  ],
+  "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 11,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 9,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Perseverance",
+    "count": 1,
+    "of": 30
+   }
+  ],
   "spells": [
    {
     "pair": "Flash + Ghost",
@@ -54826,6 +55978,11 @@
     "of": 30
    },
    {
+    "name": "Lethal Tempo",
+    "count": 3,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 2,
     "of": 30
@@ -54918,6 +56075,18 @@
      "Perseverance"
     ],
     "flex": "Nimbus Cloak",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Resolve",
+    "minors": [
+     "Unshakeable",
+     "Second Wind",
+     "Perseverance"
+    ],
+    "flex": "Battle Zeal",
     "count": 1,
     "of": 30
    },
@@ -55018,6 +56187,18 @@
     "of": 30
    },
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Bloodline"
+    ],
+    "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
     "keystone": "Grasp of the Undying",
     "primaryTree": "Precision",
     "minors": [
@@ -55050,6 +56231,18 @@
      "Perseverance"
     ],
     "flex": "Absolute Focus",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Triumph",
+     "Last Stand",
+     "Legend: Haste"
+    ],
+    "flex": "Overgrowth",
     "count": 1,
     "of": 30
    }
@@ -55385,6 +56578,11 @@
     "of": 30
    },
    {
+    "name": "Lethal Tempo",
+    "count": 3,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 2,
     "of": 30
@@ -55433,6 +56631,18 @@
     "of": 30
    },
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Nimbus Cloak"
+    ],
+    "flex": "Legend: Haste",
+    "count": 2,
+    "of": 30
+   },
+   {
     "keystone": "Empowerment",
     "primaryTree": "Precision",
     "minors": [
@@ -55442,6 +56652,18 @@
     ],
     "flex": "Axiom Arcanist",
     "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Haste"
+    ],
+    "flex": "Transcendence",
+    "count": 1,
     "of": 30
    },
    {
@@ -56491,6 +57713,11 @@
     "name": "Conqueror",
     "count": 29,
     "of": 30
+   },
+   {
+    "name": "Lethal Tempo",
+    "count": 1,
+    "of": 30
    }
   ],
   "runePages": [
@@ -56528,6 +57755,18 @@
     ],
     "flex": "Bone Plating",
     "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
     "of": 30
    },
    {
@@ -57363,6 +58602,11 @@
     "of": 30
    },
    {
+    "name": "Lethal Tempo",
+    "count": 3,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 1,
     "of": 30
@@ -57526,6 +58770,18 @@
     "of": 30
    },
    {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Second Wind",
+    "count": 1,
+    "of": 30
+   },
+   {
     "keystone": "Grasp of the Undying",
     "primaryTree": "Domination",
     "minors": [
@@ -57534,6 +58790,18 @@
      "Relentless Hunter"
     ],
     "flex": "Second Wind",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Coup de Grace",
+     "Legend: Bloodline"
+    ],
+    "flex": "Perseverance",
     "count": 1,
     "of": 30
    },
@@ -57567,6 +58835,18 @@
     "minors": [
      "Battle Zeal",
      "Coup de Grace",
+     "Legend: Alacrity"
+    ],
+    "flex": "Second Wind",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
      "Legend: Alacrity"
     ],
     "flex": "Second Wind",
@@ -57835,6 +59115,11 @@
     "name": "Fleet Footwork",
     "count": 1,
     "of": 30
+   },
+   {
+    "name": "Lethal Tempo",
+    "count": 1,
+    "of": 30
    }
   ],
   "runePages": [
@@ -57955,6 +59240,18 @@
      "Legend: Alacrity"
     ],
     "flex": "Overgrowth",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Last Stand",
+     "Legend: Alacrity"
+    ],
+    "flex": "Second Wind",
     "count": 1,
     "of": 30
    },
@@ -58299,12 +59596,41 @@
   "orderFrom": "same",
   "keystones": [
    {
+    "name": "Lethal Tempo",
+    "count": 24,
+    "of": 30
+   },
+   {
     "name": "Conqueror",
     "count": 1,
     "of": 30
    }
   ],
   "runePages": [
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 20,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 3,
+    "of": 30
+   },
    {
     "keystone": "Conqueror",
     "primaryTree": "Precision",
@@ -58314,6 +59640,18 @@
      "Legend: Alacrity"
     ],
     "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Absolute Focus",
     "count": 1,
     "of": 30
    }
@@ -59354,6 +60692,11 @@
     "name": "Conqueror",
     "count": 26,
     "of": 30
+   },
+   {
+    "name": "Lethal Tempo",
+    "count": 2,
+    "of": 30
    }
   ],
   "runePages": [
@@ -59379,6 +60722,30 @@
     ],
     "flex": "Bone Plating",
     "count": 10,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Alacrity"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Lethal Tempo",
+    "primaryTree": "Precision",
+    "minors": [
+     "Brutal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
     "of": 30
    },
    {

@@ -605,10 +605,15 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--region", default="eu", choices=sorted(ec.REGIONS),
                     help="which server's captures to aggregate (default: eu)")
-    ap.add_argument("--min-ranks", type=int, default=40,
-                    help="filled rows a session needs to count; match whatever "
-                         "export_captures was run with (50-row boards: 40, "
-                         "30-row post-relayout boards: 24)")
+    # Default 15, not 40. 40 was right for the 50-row boards; every board has
+    # been 30 rows since the relayout, so at 40 no session qualifies and the
+    # run reads zero champions. 15 is what publish_cn.sh uses and, measured
+    # on 2026-10-15, it reproduces all three published pulses exactly
+    # (142 champions each, same players and builds); 24 drops one EU
+    # champion and five Chinese ones.
+    ap.add_argument("--min-ranks", type=int, default=15,
+                    help="filled rows a session needs to count (default 15, "
+                         "for the 30-row post-relayout boards)")
     args = ap.parse_args()
 
     # Rebind the capture directory the same way export_captures does, so every
@@ -626,6 +631,24 @@ def main() -> int:
         return 1
 
     pulse, consensus = build(args.min_ranks)
+    # Refuse rather than empty the site. With the old default of 40 every
+    # session failed the row check, this read ZERO champions, and the run
+    # still wrote both files and exited 0 -- export_ladder_builds then wrote
+    # a 0KB ladder_builds.json and every champion page would have lost its
+    # builds on the next deploy. Losing champions against the file on disk
+    # is the same failure in a milder form.
+    prior_champions = 0
+    if pulse_out.exists():
+        try:
+            prior_champions = json.loads(pulse_out.read_text(encoding="utf-8")).get("nChampions") or 0
+        except (OSError, json.JSONDecodeError):
+            prior_champions = 0
+    if pulse["nChampions"] == 0 or pulse["nChampions"] < prior_champions * 0.9:
+        print(f"  REFUSING TO WRITE: this run read {pulse['nChampions']} champions "
+              f"against {prior_champions} in {pulse_out.name}. Check --min-ranks "
+              f"(now {args.min_ranks}) against the board size and that "
+              f"{ec.CAPTURES.relative_to(ROOT)} holds the sessions you expect.")
+        return 1
     # Carrying forward only makes sense against this region's own last run.
     globals()["PULSE_OUT"], globals()["CONSENSUS_OUT"] = pulse_out, consensus_out
     pulse = _carry_forward(pulse)

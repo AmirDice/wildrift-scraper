@@ -68,6 +68,12 @@ def main() -> None:
             # The purchase order of the six the card shows (ladder_item_order.py).
             if rec.get("order"):
                 out[name]["order"] = rec["order"]
+    # An empty consensus makes an empty file, and an empty file deploys as
+    # every champion page losing its builds. Refuse it.
+    if not out:
+        raise SystemExit(
+            f"refusing to write {out_path.name}: {src.name} yields no champions. "
+            f"Rebuild it with python -m scripts.build_ladder_pulse --region {args.region}")
     out_path.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")),
                         encoding="utf-8")
     size = out_path.stat().st_size

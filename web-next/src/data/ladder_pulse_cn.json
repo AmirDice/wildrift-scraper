@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-11 16:50",
+ "generatedAt": "2026-10-15 17:30",
  "nChampions": 142,
  "nPlayers": 4158,
  "nBuilds": 4180,
@@ -127,6 +127,10 @@
    "count": 386
   },
   {
+   "name": "Lethal Tempo",
+   "count": 354
+  },
+  {
    "name": "Phase Rush",
    "count": 310
   },
@@ -141,10 +145,6 @@
   {
    "name": "Dark Harvest",
    "count": 149
-  },
-  {
-   "name": "First Strike",
-   "count": 147
   }
  ],
  "spellMeta": [
@@ -220,6 +220,11 @@
    "name": "Fleet Footwork",
    "count": 386,
    "wr": 59.22
+  },
+  {
+   "name": "Lethal Tempo",
+   "count": 354,
+   "wr": 59.47
   },
   {
    "name": "Phase Rush",
@@ -1554,7 +1559,11 @@
    "gamesMedian": null,
    "legendaryTax": null,
    "legendaryTaxN": null,
-   "keystone": null,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 29,
+    "of": 30
+   },
    "spells": {
     "pair": "Flash + Ghost",
     "count": 17,
@@ -1784,8 +1793,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Fleet Footwork",
-    "count": 2,
+    "name": "Lethal Tempo",
+    "count": 28,
     "of": 30
    },
    "spells": {
@@ -2766,8 +2775,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 1,
+    "name": "Lethal Tempo",
+    "count": 26,
     "of": 30
    },
    "spells": {
@@ -2834,8 +2843,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Empowerment",
-    "count": 1,
+    "name": "Lethal Tempo",
+    "count": 15,
     "of": 29
    },
    "spells": {
@@ -2867,7 +2876,11 @@
    "gamesMedian": null,
    "legendaryTax": null,
    "legendaryTaxN": null,
-   "keystone": null,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 27,
+    "of": 30
+   },
    "spells": {
     "pair": "Barrier + Flash",
     "count": 20,
@@ -3170,8 +3183,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Dark Harvest",
-    "count": 1,
+    "name": "Lethal Tempo",
+    "count": 27,
     "of": 30
    },
    "spells": {
@@ -3510,8 +3523,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 2,
+    "name": "Lethal Tempo",
+    "count": 23,
     "of": 30
    },
    "spells": {
@@ -4734,8 +4747,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 6,
+    "name": "Lethal Tempo",
+    "count": 23,
     "of": 30
    },
    "spells": {
@@ -5105,8 +5118,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 3,
+    "name": "Lethal Tempo",
+    "count": 25,
     "of": 30
    },
    "spells": {
@@ -5140,8 +5153,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Grasp of the Undying",
-    "count": 3,
+    "name": "Lethal Tempo",
+    "count": 25,
     "of": 30
    },
    "spells": {
@@ -5208,8 +5221,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 5,
+    "name": "Lethal Tempo",
+    "count": 16,
     "of": 26
    },
    "spells": {
@@ -5278,8 +5291,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Empowerment",
-    "count": 4,
+    "name": "Lethal Tempo",
+    "count": 20,
     "of": 30
    },
    "spells": {
@@ -5311,7 +5324,11 @@
    "gamesMedian": null,
    "legendaryTax": null,
    "legendaryTaxN": null,
-   "keystone": null,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 26,
+    "of": 30
+   },
    "spells": {
     "pair": "Flash + Ghost",
     "count": 14,
@@ -5818,8 +5835,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 1,
+    "name": "Lethal Tempo",
+    "count": 24,
     "of": 30
    },
    "spells": {
