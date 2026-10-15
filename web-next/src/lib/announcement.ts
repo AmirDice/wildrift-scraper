@@ -18,7 +18,7 @@
  * apart: every number a patch changes directly (ability ratios, cooldowns,
  * item stats) is on this patch, and only the measured win rates are not.
  */
-export const SKIPPED_PATCH = "7.3a";
+export const SKIPPED_PATCH = "7.3b";
 
 /**
  * The patch whose games the win rates were actually collected from.
@@ -45,7 +45,7 @@ export const COLLECTION_DONE_REGIONS = "EU, NA and CN";
 export const COLLECTION_PENDING_REGIONS = "";
 
 /** The patch the next collection and the next round of work is aimed at. */
-export const NEXT_PATCH = "7.3a";
+export const NEXT_PATCH = "7.3b";
 
 /** The announced window for the EU/NA/CN ladder collection. */
 export const COLLECTION_START = "Monday, October 5, 2026";
@@ -71,12 +71,14 @@ export const ANNOUNCEMENT = {
   // Bumped from -v4: that banner said EU and NA were live and CN was still
   // to come. China is collected now, so the run is finished and the key
   // changes to show the banner again to people who dismissed the last one.
-  key: "wtm-announce-cn-server-loadouts-2026-10-v6",
+  // -v7: patch 7.3b. A new key so the banner shows again to everyone who
+  // dismissed the China-board one.
+  key: "wtm-announce-patch-7-3b-2026-10-v7",
   href: "/updates",
-  lead: "EU, NA and China win rates are all on patch 7.3a",
-  short: `All three boards are collected: NA on 6 October, EU on 7 October and China on 11 October, 142 champions each on patch ${CN_WINRATE_PATCH}. China is new in kind, not just refreshed: until now its numbers were Tencent's published bracket rates, and this is our own capture of the top 30 players on every champion, with their ranks, records and the builds they had equipped. CN server player loadouts are now live on champion pages, including item cores, runes, boots, spells and matchups. The Global ranking averages all three servers again. The Build Studio is off maintenance and generating normally.`,
+  lead: `Patch ${SKIPPED_PATCH} is live`,
+  short: `Every ability, item and rune number on the site is on ${SKIPPED_PATCH}: Volibear, Jhin, Tryndamere and Yasuo were buffed, Hwei, Nocturne, Yunara and Senna were nerfed, Youmuu's, Locket, Statikk Shiv and Yun Tal got cheaper and Thornmail dearer, and Electrocute, Cheap Shot, Grasp and Aery changed. Win rates are still the ${CN_WINRATE_PATCH} boards collected 6 to 11 October, so the eight changed champions show how they performed before the patch until the next collection.`,
   cta: "What changed",
-  badges: ["China board live"],
+  badges: [`Patch ${SKIPPED_PATCH}`],
   /** Pages the banner points at, so it does not appear on top of itself. */
   hideOn: ["/updates"],
 } as const;
@@ -91,6 +93,40 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "15 October 2026",
+    title: "Patch 7.3b applied",
+    body:
+      "Volibear's Frenzied Maul hits harder and heals more, Jhin reaches his "
+      + "missing-Health cap at level 10, Tryndamere gets a flat 0.5% crit per "
+      + "Fury and a stronger Spinning Slash, and Yasuo's shield and crit damage "
+      + "went up. Hwei's passive, shield, Stirring Lights and Crushing Maw were "
+      + "cut, Nocturne lost early damage, Health growth and ultimate uptime, "
+      + "Yunara's on-hit damage and ultimate cooldown were nerfed, and Senna "
+      + "lost crit damage, Attack Damage per Mist and Piercing Darkness damage. "
+      + "Youmuu's, Statikk Shiv and Yun Tal are 100 gold cheaper, Locket is 100 "
+      + "cheaper with 100 more Health, Thornmail is 150 dearer, and Warmog's "
+      + "needs 1250 bonus Health. Electrocute hits harder early, Cheap Shot "
+      + "recovers in 5 seconds, and Grasp and Aery were trimmed. Win rates are "
+      + "still the 7.3a boards until the next collection.",
+  },
+  {
+    date: "15 October 2026",
+    title: "Five numbers that were wrong before 7.3b",
+    body:
+      "Applying the patch meant checking every number it touched against what "
+      + "Riot said it had been, and five did not match. Grasp of the Undying "
+      + "was listed and simulated at 2% of max Health when the game had it at "
+      + "3.3%, so tanks running it were undersold. Tryndamere's Spinning Slash "
+      + "scaled off total Attack Damage in the fight engine when it scales off "
+      + "bonus, which overrated it. Yasuo's shield, Tryndamere's crit per Fury "
+      + "and Hwei's passive text were also out of date. Separately, Rammus and "
+      + "Samira's champion pages were still showing their base stats from "
+      + "before 7.3a, and the patch history had credited Vi, Sion, Mel and six "
+      + "others with 79 bug fixes they never had, because a name was matched "
+      + "inside other words: Sion in 'occasionally', Mel in 'melee'. All of "
+      + "these are corrected.",
+  },
   {
     date: "11 October 2026",
     title: "The Build Studio is live again",
@@ -167,7 +203,7 @@ export const CHANGELOG: { date: string; title: string; body: string }[] = [
   },
   {
     date: "29 September 2026",
-    title: `Patch ${SKIPPED_PATCH} applied: balance follow-up`,
+    title: "Patch 7.3a applied: balance follow-up",
     body:
       "Hwei's damage was reduced, Samira, Tristana, Draven and Viego were "
       + "buffed, and Rammus, Malphite, Caitlyn, Senna, Syndra, Swain and Yuumi "
@@ -175,11 +211,11 @@ export const CHANGELOG: { date: string; title: string; body: string }[] = [
       + "Flurry cooldown, Whispering Circlet and Diadem of Songs use 0.25% "
       + "Harmony, Death's Dance costs 3300 gold, Smite burns for less early, and "
       + "the post-plating turret resistance window and main crystal health were reduced."
-      + ` Win rates remain on the ${WINRATE_PATCH} boards until the next collection.`,
+      + " Win rates stayed on the previous boards until the next collection.",
   },
   {
     date: "21 September 2026",
-    title: `Patch ${SKIPPED_PATCH} applied: the marksman overhaul`,
+    title: "Patch 7.3 applied: the marksman overhaul",
     body:
       "Ten items joined the shop (Yun Tal Wildarrows, Stormrazor, Rapid Firecannon, "
       + "Fiendhunter Bolts, Hexoptics C44, Immortal Shieldbow, Statikk Shiv, Echoes of "
@@ -189,8 +225,8 @@ export const CHANGELOG: { date: string; title: string; body: string }[] = [
       + "heals from attacks only. Legend: Tenacity became Legend: Haste and Ingenious "
       + "Hunter is gone. Thirty-two champions changed abilities, and every champion in "
       + "the game has new attack speed numbers, so the damage and build figures across "
-      + "the site have all moved. Win rates are still measured on the "
-      + `${WINRATE_PATCH} boards until the next collection.`,
+      + "the site have all moved. Win rates stayed on the previous boards "
+      + "until the next collection.",
   },
   {
     date: "18 September 2026",
@@ -217,10 +253,10 @@ export const CHANGELOG: { date: string; title: string; body: string }[] = [
   },
   {
     date: "11 September 2026",
-    title: `Patch ${SKIPPED_PATCH} applied to items and abilities`,
+    title: "Patch 7.2e applied to items and abilities",
     body:
       `Vi, Janna, Swain, Nautilus and Malphite, plus Eclipse, Unending Despair `
-      + `and Seeker's Armguard. Win rates stay on the ${WINRATE_PATCH} boards; see `
-      + `above for why.`,
+      + "and Seeker's Armguard. Win rates stayed on the previous boards until "
+      + "the next collection.",
   },
 ];

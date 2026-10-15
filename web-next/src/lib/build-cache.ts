@@ -402,7 +402,13 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // TTK, AoE and durability numbers -- and serving it would mask the change
   // for the rest of the 45-day TTL. Put the tournament back and this bumps
   // again, in the other direction.
-  return `build:v81:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v83: patch 7.3b. Volibear, Jhin, Tryndamere, Hwei, Nocturne, Yunara,
+  // Senna and Yasuo formulas changed; Youmuu's, Locket, Thornmail, Statikk
+  // and Yun Tal prices moved, Locket gained Health; Electrocute, Cheap Shot,
+  // Grasp and Aery changed. Tryndamere's Spinning Slash also scales off bonus
+  // AD now rather than total, and Rammus and Samira finally carry their 7.3a
+  // base stats on the page. Every cached build predates all of it.
+  return `build:v83:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

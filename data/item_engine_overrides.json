@@ -693,7 +693,10 @@
     "aoeProcCdSec": 6,
     "aoeProcTargets": 5,
     "aoeProcAppliesOnHit": 1,
-    "_why": "Electrospark's first 60-damage hit is single-target; its five additional level-15 bounces are reported on the AoE axis. Each bounce now carries the build's on-hit bundle, matching the tooltip's explicit on-hit clause."
+    "_why": "Electrospark's first 60-damage hit is single-target; its five additional level-15 bounces are reported on the AoE axis. Each bounce now carries the build's on-hit bundle, matching the tooltip's explicit on-hit clause.",
+    "_patch": [
+      "7.3b raised ElectroShock from 5 to 7 bonus Energized stacks per attack, which makes Electrospark fire more often. The 6s cadence here was chosen rather than derived from the stack count, so it has NOT been rescaled: Statikk's 7.3b buff is in the text and the price, not yet in the simulation."
+    ]
   },
   "whispering-circlet": {
     "_why": "Harmony is Heal and Shield Power from max Mana, which the stat rules carry; there is no separate combat effect."

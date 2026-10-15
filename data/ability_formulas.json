@@ -11275,7 +11275,7 @@
             "ratios": [
               {
                 "stat": "targetMissingHp",
-                "pct": 11
+                "pct": 11.5
               }
             ],
             "hits": 1,
@@ -11294,7 +11294,9 @@
         "unmodeled": [
           "Attack Damage scales with Critical Rate and bonus Attack Speed; Attack speed converted to Attack Damage.",
           "7.3: Fourth-shot bonus damage to turrets: 135% / 162% (with Infinity Edge) → 150% / 172.5% (with Infinity Edge)",
-          "7.3: Attack Damage conversion ratio: bonus Attack Speed × 30% + Critical Rate × 45% + level × 4.5% → bonus Attack Speed × 30% + Critical Rate × 40% + level × 3%"
+          "7.3: Attack Damage conversion ratio: bonus Attack Speed × 30% + Critical Rate × 45% + level × 4.5% → bonus Attack Speed × 30% + Critical Rate × 40% + level × 3%",
+          "7.3b: 4th-shot missing-Health damage 11% - 25% capped at level 15 -> 11.5% - 25% capped at level 10; the model carries the level-1 floor only.",
+          "7.3b: Standard Critical Strike Damage 80% -> 85% (not modelled)."
         ]
       }
     },
@@ -16889,10 +16891,10 @@
             "name": "Duskbringer",
             "type": "physical",
             "base": [
-              70,
-              125,
-              180,
-              235
+              60,
+              115,
+              170,
+              225
             ],
             "ratios": [
               {
@@ -16908,10 +16910,10 @@
           {
             "stat": "ad",
             "flat": [
-              20,
-              30,
+              10,
+              25,
               40,
-              50
+              55
             ],
             "note": "while on Dusk Trail"
           },
@@ -17010,9 +17012,9 @@
       "4": {
         "name": "Paranoia",
         "cooldowns": [
-          110,
-          90,
-          70
+          120,
+          100,
+          80
         ],
         "damage": [
           {
@@ -21946,10 +21948,10 @@
             "name": "Piercing Darkness",
             "type": "physical",
             "base": [
-              50,
-              80,
-              110,
-              140
+              30,
+              60,
+              90,
+              120
             ],
             "ratios": [
               {
@@ -22119,10 +22121,11 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Each stack of Mist grants 1.25 Attack Damage; every 20 stacks grant 15 Attack Range and 15% Critical Chance.",
+          "Each stack of Mist grants 0.9 Attack Damage (7.3b); every 20 stacks grant 15 Attack Range and 15% Critical Chance.",
           "Proc requires two hits on the same enemy champion within 4 seconds; 6 second cooldown per target.",
           "7.3: Damage based on Current Health: 1.2%~12% (based on level) → 1%~10% (based on level)",
-          "7.3a attack-speed benefit rate 0.3; base AS 0.3; base bonus AS 1.1; AS growth 0.025."
+          "7.3a attack-speed benefit rate 0.3; base AS 0.3; base bonus AS 1.1; AS growth 0.025.",
+          "7.3b: Standard Critical Strike Damage 90% -> 80% (not modelled)."
         ]
       }
     },
@@ -25024,14 +25027,14 @@
             "type": "physical",
             "base": [
               80,
-              120,
-              160,
-              200
+              130,
+              180,
+              230
             ],
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 100
+                "stat": "bonusAd",
+                "pct": 110
               },
               {
                 "stat": "ap",
@@ -25076,7 +25079,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Fury system: gains 5 fury per attack, 10 per crit, 15 per kill; loses 5 fury/s after 8s out of combat. Each fury gives 0.32% crit chance. Converts excess crit rate (>100%) to AD at 1:1 ratio."
+          "Fury system: gains 5 fury per attack, 10 per crit, 15 per kill; loses 5 fury/s after 8s out of combat. Each fury gives 0.5% crit chance (7.3b). Converts excess crit rate (>100%) to AD at 1:1 ratio."
         ]
       }
     },
@@ -27512,7 +27515,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 100
+                "pct": 110
               },
               {
                 "stat": "bonusHp",
@@ -27534,7 +27537,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 160
+                "pct": 176
               },
               {
                 "stat": "bonusHp",
@@ -27559,11 +27562,16 @@
             "ratios": [
               {
                 "stat": "targetMissingHp",
-                "pct": 5
+                "pct": [
+                  5,
+                  8,
+                  11,
+                  14
+                ]
               }
             ],
             "alt": true,
-            "note": "frenzy cast only, also gains +1% missing health per rank (5/6/7/8%)"
+            "note": "frenzy cast only; missing-health share 5/8/11/14% by rank (7.3b)"
           }
         ],
         "unmodeled": [
@@ -29186,8 +29194,8 @@
             "kind": "shield",
             "base": {
               "lvlRange": [
-                115,
-                500
+                77,
+                630
               ]
             },
             "ratios": [
@@ -29201,7 +29209,8 @@
         ],
         "unmodeled": [
           "Shield triggers when damage is received from a champion or monster while at max Flow; lasts 1 second.",
-          "Yasuo's Critical Rate is doubled; excess Critical Rate above 100% converts to Attack Damage at a rate of 0.6 Attack Damage per 1% Critical Rate."
+          "Yasuo's Critical Rate is doubled; excess Critical Rate above 100% converts to Attack Damage at a rate of 0.6 Attack Damage per 1% Critical Rate.",
+          "7.3b: Standard Critical Strike Damage 90% -> 95% (not modelled)."
         ]
       }
     },
@@ -30036,10 +30045,10 @@
             "name": "Spirit Charge",
             "type": "magic",
             "base": [
+              5,
               10,
               15,
-              20,
-              25
+              20
             ],
             "ratios": [
               {
@@ -30079,7 +30088,8 @@
         "defensive": [],
         "unmodeled": [
           "Unleash stack mechanic; spread critically strikes if attack crits; spread increased to 250% vs minions below 30% HP",
-          "7.3: Bonus Attack Speed: 22.5% / 35% / 47.5% / 60% → 25% / 35% / 45% / 55%"
+          "7.3: Bonus Attack Speed: 22.5% / 35% / 47.5% / 60% → 25% / 35% / 45% / 55%",
+          "7.3b: Spirit Unbound's on-hit damage 10/15/20/25 -> 5/10/15/20, the same values as the passive line the model carries."
         ]
       },
       "2": {
@@ -30190,8 +30200,8 @@
         "name": "Transcend One's Self",
         "cooldowns": [
           70,
-          60,
-          50
+          65,
+          60
         ],
         "damage": [],
         "steroids": [],
@@ -30741,10 +30751,10 @@
             "name": "Stirring Lights",
             "type": "magic",
             "base": [
+              20,
               30,
               40,
-              50,
-              60
+              50
             ],
             "ratios": [
               {
@@ -30761,15 +30771,15 @@
           {
             "kind": "shield",
             "base": [
-              108,
-              128,
-              148,
-              168
+              98,
+              118,
+              138,
+              158
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 71
+                "pct": 60
               }
             ],
             "alt": true
@@ -30827,15 +30837,15 @@
             "name": "Crushing Maw",
             "type": "magic",
             "base": [
-              70,
-              120,
-              170,
-              220
+              60,
+              110,
+              160,
+              210
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 70
+                "pct": 60
               }
             ],
             "when": "per cast",
@@ -30844,7 +30854,9 @@
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": []
+        "unmodeled": [
+          "7.3b: Crushing Maw cast range 7.5 -> 7 and jaw hitbox optimised (not modelled: single-target, all spells hit)."
+        ]
       },
       "4": {
         "name": "Spiraling Despair",
@@ -30903,14 +30915,14 @@
             "type": "magic",
             "base": {
               "lvlRange": [
-                40,
-                285
+                30,
+                280
               ]
             },
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 30
+                "pct": 25
               }
             ],
             "when": "two distinct spells"
@@ -30924,7 +30936,7 @@
     "hwei": {
       "source": "https://wr-meta.com/505-hwei.html",
       "crossCheck": "https://www.wildriftfire.com/guide/hwei",
-      "patch": "7.3a",
+      "patch": "7.3b",
       "reviewedOn": "2026-09-22",
       "note": "WR-Meta supplies the complete ultimate and is used consistently for growth and cooldowns where the guides disagree. Recheck against in-game tooltips when available.",
       "assumptions": [
@@ -31032,10 +31044,10 @@
       },
       "passive": {
         "base": [
-          40,
-          285
+          30,
+          280
         ],
-        "ap": 0.3,
+        "ap": 0.25,
         "markSeconds": 4
       },
       "spells": {
@@ -31116,19 +31128,19 @@
         "WW": {
           "name": "Pool of Reflection",
           "shieldBase": [
-            60,
-            80,
-            100,
-            120
+            50,
+            70,
+            90,
+            110
           ],
-          "shieldAp": 0.35,
+          "shieldAp": 0.3,
           "maxShieldBase": [
-            108,
-            128,
-            148,
-            168
+            98,
+            118,
+            138,
+            158
           ],
-          "maxShieldAp": 0.71,
+          "maxShieldAp": 0.6,
           "rampSeconds": 1.5,
           "duration": 3,
           "allyMultiplier": 0.85
@@ -31136,10 +31148,10 @@
         "WE": {
           "name": "Stirring Lights",
           "base": [
+            20,
             30,
             40,
-            50,
-            60
+            50
           ],
           "ap": 0.15,
           "charges": 3,
@@ -31185,12 +31197,12 @@
         "EE": {
           "name": "Crushing Maw",
           "base": [
-            70,
-            120,
-            170,
-            220
+            60,
+            110,
+            160,
+            210
           ],
-          "ap": 0.7,
+          "ap": 0.6,
           "slow": [
             0.4,
             0.5,

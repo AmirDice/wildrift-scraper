@@ -765,6 +765,36 @@
     ]
   },
   {
+    "slug": "thornmail",
+    "name": "Thornmail",
+    "cost": 2850,
+    "icon": "/items/thornmail.webp",
+    "category": "Defense",
+    "categories": [
+      "Defense"
+    ],
+    "tags": [
+      "antiHeal",
+      "sustain"
+    ],
+    "stats": {
+      "hp": {
+        "value": 200,
+        "percent": false
+      },
+      "armor": {
+        "value": 75,
+        "percent": false
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Thorns: When struck by an attack, deal 20 + 6% bonus Armor + 1% bonus Health magic damage to the attacker.",
+      "Entwine: Apply 50% Grievous Wounds to enemy champions for 3 seconds when stuck by their attacks or dealing damage to them. Grievous Wounds reduces the effectiveness of Healing and Regeneration effects."
+    ]
+  },
+  {
     "slug": "warmogs-armor",
     "name": "Warmog's Armor",
     "cost": 2850,
@@ -795,7 +825,7 @@
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Warmog's Heart: If you have at least 950 bonus Health, restore 3.5% Health per second if you haven't taken damage within the last 5 seconds.",
+      "Warmog's Heart: If you have at least 1250 bonus Health, restore 3.5% Health per second if you haven't taken damage within the last 5 seconds.",
       "Blessed: Increases all healing and shielding effects on you by 30%."
     ]
   },
@@ -1021,36 +1051,6 @@
     ],
     "removedIn": "7.3",
     "removedWhy": "Removed in 7.3: the new jungle system has no need for a jungle-specific Sunfire Aegis."
-  },
-  {
-    "slug": "thornmail",
-    "name": "Thornmail",
-    "cost": 2700,
-    "icon": "/items/thornmail.webp",
-    "category": "Defense",
-    "categories": [
-      "Defense"
-    ],
-    "tags": [
-      "antiHeal",
-      "sustain"
-    ],
-    "stats": {
-      "hp": {
-        "value": 200,
-        "percent": false
-      },
-      "armor": {
-        "value": 75,
-        "percent": false
-      }
-    },
-    "scopedStats": {},
-    "statRules": {},
-    "passives": [
-      "Thorns: When struck by an attack, deal 20 + 6% bonus Armor + 1% bonus Health magic damage to the attacker.",
-      "Entwine: Apply 50% Grievous Wounds to enemy champions for 3 seconds when stuck by their attacks or dealing damage to them. Grievous Wounds reduces the effectiveness of Healing and Regeneration effects."
-    ]
   },
   {
     "slug": "radiant-virtue",
@@ -2754,45 +2754,6 @@
     ]
   },
   {
-    "slug": "yun-tal-wildarrows",
-    "name": "Yun Tal Wildarrows",
-    "cost": 3100,
-    "icon": "/items/yun-tal-wildarrows.png",
-    "category": "Physical",
-    "categories": [
-      "Physical"
-    ],
-    "tags": [],
-    "stats": {
-      "ad": {
-        "value": 50,
-        "percent": false
-      },
-      "attackSpeed": {
-        "value": 35,
-        "percent": true
-      }
-    },
-    "scopedStats": {},
-    "statRules": {
-      "conditional": [
-        {
-          "label": "Practice Makes Perfect",
-          "detail": "Attacks permanently grant Critical Rate, 0.2% per attack for ranged and 0.4% for melee, up to 25%."
-        },
-        {
-          "label": "Flurry",
-          "detail": "Attacking a champion grants 35% Attack Speed for 6 seconds."
-        }
-      ]
-    },
-    "passives": [
-      "Practice Makes Perfect: Attacks permanently grant Critical Rate, 0.4% per attack for melee and 0.2% for ranged, up to 25%.",
-      "Flurry: Attacking an enemy champion grants 35% Attack Speed for 6 seconds. (25s Cooldown, reduced by 1s per attack and 2s on a Critical Strike)"
-    ],
-    "addedIn": "7.3"
-  },
-  {
     "slug": "black-cleaver",
     "name": "Black Cleaver",
     "cost": 3000,
@@ -3141,53 +3102,6 @@
     ]
   },
   {
-    "slug": "statikk-shiv",
-    "name": "Statikk Shiv",
-    "cost": 3000,
-    "icon": "/items/statikk-shiv.png",
-    "category": "Physical",
-    "categories": [
-      "Physical",
-      "Magic"
-    ],
-    "tags": [
-      "onHit"
-    ],
-    "stats": {
-      "ad": {
-        "value": 40,
-        "percent": false
-      },
-      "ap": {
-        "value": 40,
-        "percent": false
-      },
-      "attackSpeed": {
-        "value": 30,
-        "percent": true
-      },
-      "moveSpeed": {
-        "value": 4,
-        "percent": true
-      }
-    },
-    "scopedStats": {},
-    "statRules": {
-      "conditional": [
-        {
-          "label": "Electrospark",
-          "detail": "The Energized attack chains to 3-6 targets for 60 magic damage each, 90 against minions and monsters, and applies on-hit effects to them."
-        }
-      ]
-    },
-    "passives": [
-      "Energized: Moving and attacking generate an Energized attack.",
-      "Electrospark: Your Energized attack fires chain lightning that bounces to 3/4/5/6 targets (at levels 1/5/9/13), dealing 60 magic damage, or 90 against minions and monsters. On-hit effects apply to the bounce targets.",
-      "ElectroShock: Attacks grant 5 bonus Energized stacks."
-    ],
-    "addedIn": "7.3"
-  },
-  {
     "slug": "stormrazor",
     "name": "Stormrazor",
     "cost": 3000,
@@ -3355,42 +3269,43 @@
     ]
   },
   {
-    "slug": "youmuus-ghostblade",
-    "name": "Youmuu's Ghostblade",
+    "slug": "yun-tal-wildarrows",
+    "name": "Yun Tal Wildarrows",
     "cost": 3000,
-    "icon": "/items/youmuus-ghostblade.webp",
+    "icon": "/items/yun-tal-wildarrows.png",
     "category": "Physical",
     "categories": [
       "Physical"
     ],
-    "tags": [
-      "lethality",
-      "mobility"
-    ],
+    "tags": [],
     "stats": {
       "ad": {
-        "value": 55,
+        "value": 50,
         "percent": false
       },
-      "abilityHaste": {
-        "value": 15,
-        "percent": false
-      },
-      "physicalPenFlat": {
-        "value": 15,
-        "percent": false
-      },
-      "moveSpeed": {
-        "value": 4,
+      "attackSpeed": {
+        "value": 35,
         "percent": true
       }
     },
     "scopedStats": {},
-    "statRules": {},
+    "statRules": {
+      "conditional": [
+        {
+          "label": "Practice Makes Perfect",
+          "detail": "Attacks permanently grant Critical Rate, 0.2% per attack for ranged and 0.4% for melee, up to 25%."
+        },
+        {
+          "label": "Flurry",
+          "detail": "Attacking a champion grants 35% Attack Speed for 6 seconds."
+        }
+      ]
+    },
     "passives": [
-      "Slice: +15 Armor Penetration.",
-      "Momentum: 3 seconds after combat with enemy champions ends, gain 30 bonus Movement Speed (20 for ranged champions)."
-    ]
+      "Practice Makes Perfect: Attacks permanently grant Critical Rate, 0.4% per attack for melee and 0.2% for ranged, up to 25%.",
+      "Flurry: Attacking an enemy champion grants 35% Attack Speed for 6 seconds. (25s Cooldown, reduced by 1s per attack and 2s on a Critical Strike)"
+    ],
+    "addedIn": "7.3"
   },
   {
     "slug": "eclipse",
@@ -3584,6 +3499,91 @@
     "statRules": {},
     "passives": [
       "Gnaw: Attacks deal 15 + 20% bonus Ability Power magic damage on hit."
+    ]
+  },
+  {
+    "slug": "statikk-shiv",
+    "name": "Statikk Shiv",
+    "cost": 2900,
+    "icon": "/items/statikk-shiv.png",
+    "category": "Physical",
+    "categories": [
+      "Physical",
+      "Magic"
+    ],
+    "tags": [
+      "onHit"
+    ],
+    "stats": {
+      "ad": {
+        "value": 40,
+        "percent": false
+      },
+      "ap": {
+        "value": 40,
+        "percent": false
+      },
+      "attackSpeed": {
+        "value": 30,
+        "percent": true
+      },
+      "moveSpeed": {
+        "value": 4,
+        "percent": true
+      }
+    },
+    "scopedStats": {},
+    "statRules": {
+      "conditional": [
+        {
+          "label": "Electrospark",
+          "detail": "The Energized attack chains to 3-6 targets for 60 magic damage each, 90 against minions and monsters, and applies on-hit effects to them."
+        }
+      ]
+    },
+    "passives": [
+      "Energized: Moving and attacking generate an Energized attack.",
+      "Electrospark: Your Energized attack fires chain lightning that bounces to 3/4/5/6 targets (at levels 1/5/9/13), dealing 60 magic damage, or 90 against minions and monsters. On-hit effects apply to the bounce targets.",
+      "ElectroShock: Attacks grant 7 bonus Energized stacks."
+    ],
+    "addedIn": "7.3"
+  },
+  {
+    "slug": "youmuus-ghostblade",
+    "name": "Youmuu's Ghostblade",
+    "cost": 2900,
+    "icon": "/items/youmuus-ghostblade.webp",
+    "category": "Physical",
+    "categories": [
+      "Physical"
+    ],
+    "tags": [
+      "lethality",
+      "mobility"
+    ],
+    "stats": {
+      "ad": {
+        "value": 55,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15,
+        "percent": false
+      },
+      "physicalPenFlat": {
+        "value": 15,
+        "percent": false
+      },
+      "moveSpeed": {
+        "value": 4,
+        "percent": true
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Slice: +15 Armor Penetration.",
+      "Momentum: 3 seconds after combat with enemy champions ends, gain 30 bonus Movement Speed (20 for ranged champions)."
     ]
   },
   {
@@ -3895,41 +3895,6 @@
     ]
   },
   {
-    "slug": "locket-of-the-iron-solari",
-    "name": "Locket of the Iron Solari",
-    "cost": 2600,
-    "icon": "/items/locket-of-the-iron-solari.webp",
-    "category": "Support",
-    "categories": [
-      "Support",
-      "Active"
-    ],
-    "tags": [],
-    "stats": {
-      "hp": {
-        "value": 200,
-        "percent": false
-      },
-      "armor": {
-        "value": 30,
-        "percent": false
-      },
-      "mr": {
-        "value": 30,
-        "percent": false
-      },
-      "abilityHaste": {
-        "value": 10,
-        "percent": false
-      }
-    },
-    "scopedStats": {},
-    "statRules": {},
-    "passives": [
-      "Locket (Active): Grants a shield to yourself and nearby allied champions that each absorbs 250-370 damage for 2.5 seconds. (60s Cooldown) This effect is reduced by 50% if the target has been affected by another Locket in the last 20 seconds."
-    ]
-  },
-  {
     "slug": "shurelyas-battlesong",
     "name": "Shurelya's Battlesong",
     "cost": 2600,
@@ -4000,6 +3965,41 @@
     "statRules": {},
     "passives": [
       "Harmonic Echo: Healing or shielding an allied champion links the effect to the nearest allied champion with the lowest percentage Health, excluding yourself, granting them 30% of that heal or 35% of that shield. With no other ally in range, the original target receives it instead."
+    ]
+  },
+  {
+    "slug": "locket-of-the-iron-solari",
+    "name": "Locket of the Iron Solari",
+    "cost": 2500,
+    "icon": "/items/locket-of-the-iron-solari.webp",
+    "category": "Support",
+    "categories": [
+      "Support",
+      "Active"
+    ],
+    "tags": [],
+    "stats": {
+      "hp": {
+        "value": 300,
+        "percent": false
+      },
+      "armor": {
+        "value": 30,
+        "percent": false
+      },
+      "mr": {
+        "value": 30,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 10,
+        "percent": false
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Locket (Active): Grants a shield to yourself and nearby allied champions that each absorbs 250-370 damage for 2.5 seconds. (60s Cooldown) This effect is reduced by 50% if the target has been affected by another Locket in the last 20 seconds."
     ]
   },
   {

@@ -6639,7 +6639,7 @@
         "slot": "P",
         "name": "Whisper",
         "cooldowns": [],
-        "text": "Jhin's hand cannon, Whisper, carries 4 shots before needing to be reloaded and fires at a fixed rate. ( Attack speed will be converted into Attack Damage ). The final bullet will critically strike and deal additional 11% missing Health physical damage . Whenever Whisper crits, Jhin gains a burst of 14% ( +0.44% per 1% bonus AS ) movement speed for 2 seconds. Attack Damage scales with Critical Rate and bonus Attack Speed. Jhin's critical strikes deal 80% of normal critical strike damage.",
+        "text": "Jhin's hand cannon, Whisper, carries 4 shots before needing to be reloaded and fires at a fixed rate. ( Attack speed will be converted into Attack Damage ). The final bullet will critically strike and deal additional 11.5% - 25% (based on level, capped at level 10) missing Health physical damage . Whenever Whisper crits, Jhin gains a burst of 14% ( +0.44% per 1% bonus AS ) movement speed for 2 seconds. Attack Damage scales with Critical Rate and bonus Attack Speed. Jhin's critical strikes deal 85% of normal critical strike damage.",
         "damageTypes": [
           "physical"
         ],
@@ -12021,8 +12021,8 @@
     "baseStats": {
       "hp": {
         "base": 660,
-        "perLevel": 134,
-        "lvl15": 2536
+        "perLevel": 128,
+        "lvl15": 2452
       },
       "hpRegen": {
         "base": 10,
@@ -12106,7 +12106,7 @@
           "7",
           "7"
         ],
-        "text": "Throws a shadow claw in a target direction, dealing 70 / 125 / 180 / 235 ( +85% bonus AD ) physical damage and leaving a Dusk Trail in its wake for 5 seconds. Enemy champions and large monster hit by the claw also leave a Dusk Trail behind when they move Gains 20 / 30 / 40 / 50 Attack Damage and 20% / 25% / 30% / 35% Movement Speed on Dusk Trails .",
+        "text": "Throws a shadow claw in a target direction, dealing 60 / 115 / 170 / 225 ( +85% bonus AD ) physical damage and leaving a Dusk Trail in its wake for 5 seconds. Enemy champions and large monster hit by the claw also leave a Dusk Trail behind when they move Gains 10 / 25 / 40 / 55 Attack Damage and 20% / 25% / 30% / 35% Movement Speed on Dusk Trails .",
         "damageTypes": [
           "physical"
         ],
@@ -12158,9 +12158,9 @@
         "slot": "4",
         "name": "Paranoia",
         "cooldowns": [
-          "110",
-          "90",
-          "70"
+          "120",
+          "100",
+          "80"
         ],
         "text": "Darkens the map, reducing the field of vision of all enemy champions and removing their vision of allies for 6 seconds. Can be recast during the duration. Recast : Launches himself at an enemy champion, dealing 150 / 275 / 400 ( +120% bonus AD ) physical damage . Nocturne is unstoppable while launching.",
         "damageTypes": [
@@ -14893,7 +14893,7 @@
         "slot": "P",
         "name": "Absolution",
         "cooldowns": [],
-        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1% - 10% (based on level) of their current Health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 1.25 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 10% Critical Chance. Critical strikes from basic attacks deal 90% of normal critical strike damage.",
+        "text": "Senna can absorb Mist by attacking souls that spawn from dead enemies. She can also siphon Mist from enemy champions she hits twice within a 4 seconds, dealing 1% - 10% (based on level) of their current Health as bonus physical damage (6 second cooldown per target). If not attacked, souls nearby Senna will be absorbed automatically on disappearance. Each stack of Mist grants 0.9 Attack Damage . Every 20 stacks of Mist grant 15 Attack Range and 10% Critical Chance. Critical strikes from basic attacks deal 80% of normal critical strike damage.",
         "damageTypes": [
           "physical"
         ],
@@ -14911,7 +14911,7 @@
           "15",
           "15"
         ],
-        "text": "Shoots a bolt of piercing shadow through any object, dealing 50 / 80 / 110 / 140 ( +60% AD ) physical damage to enemies, slowing enemies by 15% ( +0.1 AD +0.06 AP ) for 0.75 / 1 / 1.25 / 1.5 seconds and restoring 40 / 70 / 100 / 130 ( +40% AD +25% AP ) Health to ally champions. Attacks reduces Piercing Darkness's cooldown by 1 seconds. This Ability's cast range matches Senna's attack range and its cast time is improved with Attack Speed. It applies on-hit effects to enemy champions.",
+        "text": "Shoots a bolt of piercing shadow through any object, dealing 30 / 60 / 90 / 120 ( +60% AD ) physical damage to enemies, slowing enemies by 15% ( +0.1 AD +0.06 AP ) for 0.75 / 1 / 1.25 / 1.5 seconds and restoring 40 / 70 / 100 / 130 ( +40% AD +25% AP ) Health to ally champions. Attacks reduces Piercing Darkness's cooldown by 1 seconds. This Ability's cast range matches Senna's attack range and its cast time is improved with Attack Speed. It applies on-hit effects to enemy champions.",
         "damageTypes": [
           "physical"
         ],
@@ -17844,7 +17844,7 @@
         "slot": "P",
         "name": "Battle Fury",
         "cooldowns": [],
-        "text": "Gains 0.32% Critical Rate for each point of Fury. Gains 5 Fury with every attack, 10 from critical strikes and 15 from kills. Loses 5 Fury per second after Tryndamere has been out of combat for 8 seconds. Tryndamere converts Critical Rate above 100% into Attack Damage at a rate of 1 Attack Damage per 1% Critical Rate.",
+        "text": "Gains 0.5% Critical Rate for each point of Fury. Gains 5 Fury with every attack, 10 from critical strikes and 15 from kills. Loses 5 Fury per second after Tryndamere has been out of combat for 8 seconds. Tryndamere converts Critical Rate above 100% into Attack Damage at a rate of 1 Attack Damage per 1% Critical Rate.",
         "damageTypes": [],
         "scales": [
           "attackSpeed"
@@ -17894,7 +17894,7 @@
           "9",
           "8"
         ],
-        "text": "Dashes, dealing 80 / 120 / 160 / 200 ( +100% bonus AD +80% AP ) physical damage . Critical Strikes against minions, monsters, champion-summoned units, and other units that can be critically struck reduce the cooldown of Spinning Slash by 1 second, doubled against champions. Gains 2 Fury for each enemy hit.",
+        "text": "Dashes, dealing 80 / 130 / 180 / 230 ( +110% bonus AD +80% AP ) physical damage . Critical Strikes against minions, monsters, champion-summoned units, and other units that can be critically struck reduce the cooldown of Spinning Slash by 1 second, doubled against champions. Gains 2 Fury for each enemy hit.",
         "damageTypes": [
           "physical"
         ],
@@ -19896,7 +19896,7 @@
           "5",
           "5"
         ],
-        "text": "Volibear mauls an enemy, dealing 5 / 30 / 55 / 80 ( +100% AD + 6.5% bonus HP ) physical damage . If Volibear maul's a champion or Large Monster he goes into a Frenzy for 8 seconds. If this Ability is used when in a Frenzy, its damage is increased to 8 / 48 / 88 / 128 ( +160% AD + 10.4% bonus HP ) physical damage and Volibear restores 10 + 10% ( 7% ) missing Health . This Ability applies on-hit effects. Base Health Regeneration: 20 / 30 / 40 / 50 ( +5% / 6% / 7% / 8% lost Health ). Damage ratio to monsters: 80% .",
+        "text": "Volibear mauls an enemy, dealing 5 / 30 / 55 / 80 ( +110% AD + 6.5% bonus HP ) physical damage . If Volibear maul's a champion or Large Monster he goes into a Frenzy for 8 seconds. If this Ability is used when in a Frenzy, its damage is increased to 8 / 48 / 88 / 128 ( +176% AD + 10.4% bonus HP ) physical damage and Volibear restores 10 + 10% ( 7% ) missing Health . This Ability applies on-hit effects. Base Health Regeneration: 20 / 30 / 40 / 50 ( +5% / 8% / 11% / 14% lost Health ). Damage ratio to monsters: 80% .",
         "damageTypes": [
           "physical"
         ],
@@ -20678,7 +20678,7 @@
         "slot": "P",
         "name": "Way of the Wanderer",
         "cooldowns": [],
-        "text": "Resolve : Moving builds Flow, wich is tracked on Yasuo's resource bar. At max Flow, damage from a champion or monster grants a shield that absorbs 115 - 500 ( +100% Critical Strike Rate ) damage and lasts 1 second. Intent : Yasuo's Critcal Rate is doubled. Yasuo converts Critical Rate above 100% into Attack Damge at a rate of 0.5 Attack Damage per 1% Critical Rate. Yasuo's basic attacks and Steel Tempest critical strikes deal 90% of normal critical strike damage.",
+        "text": "Resolve : Moving builds Flow, wich is tracked on Yasuo's resource bar. At max Flow, damage from a champion or monster grants a shield that absorbs 77 - 630 ( +100% Critical Strike Rate ) damage and lasts 1 second. Intent : Yasuo's Critcal Rate is doubled. Yasuo converts Critical Rate above 100% into Attack Damge at a rate of 0.5 Attack Damage per 1% Critical Rate. Yasuo's basic attacks and Steel Tempest critical strikes deal 95% of normal critical strike damage.",
         "damageTypes": [],
         "scales": [],
         "tags": [
@@ -21009,7 +21009,7 @@
           "0",
           "0"
         ],
-        "text": "S pirit Charge (Passive) : Attacks deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage ; When not active, launching an attack grants 1 Unleash. Attacking again refreshes Unleash's duration. Max Unleash is 6. If the duration is not refreshed, Yunara loses 1 Unleash every 0.5 seconds. Spirit Unbound (Active) : On cast, consumes Unleash, gaining 25% / 35% / 45% / 55% Attack Speed for 5 seconds. Attacks are empowered during this time to: Deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage on-hit; Spread to enemies nearby the target, dealing them 18 ( 30% AD ) physical damage . Transcendent State : This ability automatically activates until Yunara exits the state. If the attack Critically Strikes, its spread damage will also Critically Strike. Damage from spread attacks is increased to 250% against minions below 30% Health.",
+        "text": "S pirit Charge (Passive) : Attacks deal an additional 5 / 10 / 15 / 20 ( +20% AP ) magic damage ; When not active, launching an attack grants 1 Unleash. Attacking again refreshes Unleash's duration. Max Unleash is 6. If the duration is not refreshed, Yunara loses 1 Unleash every 0.5 seconds. Spirit Unbound (Active) : On cast, consumes Unleash, gaining 25% / 35% / 45% / 55% Attack Speed for 5 seconds. Attacks are empowered during this time to: Deal an additional 5 / 10 / 15 / 20 ( +20% AP ) magic damage on-hit; Spread to enemies nearby the target, dealing them 18 ( 30% AD ) physical damage . Transcendent State : This ability automatically activates until Yunara exits the state. If the attack Critically Strikes, its spread damage will also Critically Strike. Damage from spread attacks is increased to 250% against minions below 30% Health.",
         "damageTypes": [
           "physical",
           "magic"
@@ -21069,8 +21069,8 @@
         "name": "Transcend One's Self",
         "cooldowns": [
           "70",
-          "60",
-          "50"
+          "65",
+          "60"
         ],
         "text": "Passive : Arc of Ruin's base damage and Untouchable Shadow's dash speed scale with this ability's level. Transcendent State (Active) : Enters a Transcendent State for 15 seconds. During this time, Yunara's basic abilities are empowered and cost no Mana. Cultivation of Spirit : Activates automatically for the duration. Arc of Judgment : Upgrades to Arc of Ruin . Its remaining cooldown reduces by 80% when Yunara enters or exits a Transcendent State. Kanmei's Steps : Upgrades to Untouchable Shadow . Its cooldown refreshes when Yunara enters or exits a Transcendent State.",
         "damageTypes": [],
@@ -22243,7 +22243,7 @@
       {
         "slot": "P",
         "name": "Signature of the Visionary",
-        "text": "Different spell hits combine into a delayed area explosion: 33–333 by level +33% AP. Marks expire after 4s; repeated hits from one cast cannot repeatedly trigger it.",
+        "text": "Different spell hits combine into a delayed area explosion: 30–280 by level +25% AP. Marks expire after 4s; repeated hits from one cast cannot repeatedly trigger it.",
         "cooldowns": [],
         "damageTypes": [
           "magic"

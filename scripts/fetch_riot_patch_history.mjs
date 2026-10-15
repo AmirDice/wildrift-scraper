@@ -218,7 +218,14 @@ async function buildChampionHistory(patches) {
       .map((line) => line.trim())
       .filter((line) => /fixed|bug|incorrect|issue/i.test(line));
     for (const [upperName, name] of canonical) {
-      for (const line of bugLines.filter((candidate) => candidate.toUpperCase().includes(upperName))) {
+      // Whole names only. A bare substring test credited Sion with 7.3b's
+      // Yun Tal fix because the line says "occaSIONally", and a two-letter
+      // name like Vi matches "preVIously" and "VIsual" in almost any patch.
+      // Names carry punctuation (Kai'Sa, Dr. Mundo), so the boundary is
+      // "no letter or digit either side" rather than \b.
+      const escaped = upperName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const whole = new RegExp(`(?<![A-Z0-9])${escaped}(?![A-Z0-9])`);
+      for (const line of bugLines.filter((candidate) => whole.test(candidate.toUpperCase()))) {
         add(name, {
           patch: patch.patch,
           publishedAt: patch.publishedAt,

@@ -1,0 +1,642 @@
+{
+ "patch": "7.3b",
+ "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-3b/",
+ "parsedAt": "2026-10-15T10:12:37+00:00",
+ "blades": [
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 0,
+     "title": "",
+     "path": [
+      ""
+     ],
+     "notes": [
+      "It's time for another round of balance changes! In this patch, we're lending a hand to champions who haven't quite found their footing in the new meta, while taking some power away from those who've been enjoying a little too much success. We're also giving assassins some extra tools to help them turn early leads into victories, adjusting item options across several classes, and tuning a few runes that have been stealing the spotlight. We've also got some jungle adjustments to round things out. Let's get into the changes!",
+      "Reminder: content will be released throughout the patch."
+     ],
+     "lines": []
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "VOLIBEAR",
+   "summary": "Volibear has been having a tough time finding his footing this patch, so we're giving him some extra Attack Damage scaling and survivability to help him make a bigger impact in teamfights.",
+   "blocks": [
+    {
+     "title": "Frenzied Maul",
+     "lines": [
+      "Damage Attack Damage ratio: 100% → 110%",
+      "Empowered Damage Attack Damage ratio: 160% → 176%",
+      "Empowered Healing based on Missing Health: 5/6/7/8% → 5%/8%/11%/14%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "JHIN",
+   "summary": "Jhin has been struggling to keep up this patch, so we're shifting some of his power earlier in the game to help him hit his power spikes sooner, rather than having to wait until max level to really shine.",
+   "blocks": [
+    {
+     "title": "Whisper",
+     "lines": [
+      "Standard Critical Strike Damage: 80% → 85%",
+      "Damage based on missing Health:11% - 25% (reach the cap at level 15) → 11.5% - 25% (reach the cap at level 10)"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "TRYNDAMERE",
+   "summary": "Tryndamere hasn't been getting as much out of the recent crit item overhaul as we'd hoped, so we're making some changes to help his Critical Strikes and overall damage output feel more consistent.",
+   "blocks": [
+    {
+     "title": "Battle Fury",
+     "lines": [
+      "Critical Strike Chance per Fury: 0.3%–0.5% (based on level) → 0.5%"
+     ]
+    },
+    {
+     "title": "Spinning Slash",
+     "lines": [
+      "Damage: 80/120/160/200 + 100% Bonus Attack Damage + 80% Ability Power → 80/130/180/230 + 110% Bonus Attack Damage + 80% Ability Power"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "HWEI",
+   "summary": "Hwei is still painting a little too far outside the lines when it comes to his overall power, so we're dialing back his consistent damage, shielding, and crowd control to give his opponents more room to fight back.",
+   "blocks": [
+    {
+     "title": "Signature of the Visionary",
+     "lines": [
+      "Damage: 40 - 285 (Based on level) + 30% Ability Power → 30 - 280 (Based on level) + 25% Ability Power"
+     ]
+    },
+    {
+     "title": "Subject: Serenity - Pool of Reflection",
+     "lines": [
+      "Initial shield: 60/80/100/120 + 35% Ability Power → 50/70/90/110 + 30% Ability Power",
+      "Maximum shield: 108/128/148/168 + 71% Ability Power → 98/118/138/158 + 60% Ability Power"
+     ]
+    },
+    {
+     "title": "Subject: Serenity - Stirring Lights",
+     "lines": [
+      "Bonus base damage: 30/40/50/60 → 20/30/40/50"
+     ]
+    },
+    {
+     "title": "Subject: Torment - Crushing Maw",
+     "lines": [
+      "Optimized the hitbox of the jaws",
+      "Cast range: 7.5 → 7",
+      "Damage: 70/120/170/220 + 70% Ability Power → 60/110/160/210 + 60% Ability Power"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "NOCTURNE",
+   "summary": "Following the jungle overhaul, Nocturne has been clearing camps and hunting down his enemies a little too efficiently. We're dialing back his jungle clear speed and ability to find opportunities to strike, giving his prey a little more breathing room before darkness falls.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Health per level: 134 → 128"
+     ]
+    },
+    {
+     "title": "Duskbringer",
+     "lines": [
+      "Attack Damage: 20/30/40/50 → 10/25/40/55",
+      "Base Damage: 70/125/180/235 → 60/115/170/225"
+     ]
+    },
+    {
+     "title": "Paranoia",
+     "lines": [
+      "Cooldown: 110/90/70s → 120/100/80s"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "YUNARA",
+   "summary": "We've been happy with Yunara's performance since her release, but as players have gotten more comfortable with her kit, she's started to become a little too powerful. We're dialing back some of her sustained damage to bring her more in line with other marksmen.",
+   "blocks": [
+    {
+     "title": "Cultivation of Spirit",
+     "lines": [
+      "Passive Damage: 10/15/20/25 → 5/10/15/20",
+      "Active Damage: 10/15/20/25 → 5/10/15/20"
+     ]
+    },
+    {
+     "title": "Transcend One's Self",
+     "lines": [
+      "Cooldown: 70/60/50s →70/65/60s"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "SENNA",
+   "summary": "Senna continues to stand above the rest of the roster, so we're taking another pass at her scaling to bring her power more in line with other champions and give both marksmen and supports more room to shine.",
+   "blocks": [
+    {
+     "title": "Absolution",
+     "lines": [
+      "Standard Critical Strike Damage: 90% → 80%",
+      "Attack Damage per Black Mist stack: 1.25 → 0.9"
+     ]
+    },
+    {
+     "title": "Piercing Darkness",
+     "lines": [
+      "Base Damage: 50/80/110/140 → 30/60/90/120"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "YASUO",
+   "summary": "Yasuo has been struggling since losing the crit version of Bloodthirster, so we're giving him some extra damage and survivability in the mid to late game to help him hold his own as fights heat up.",
+   "blocks": [
+    {
+     "title": "Way of the Wanderer",
+     "lines": [
+      "Standard Critical Strike Damage: 90% → 95%",
+      "Shield Value: 77 - 529 (Based on level) → 77 - 630 (Based on level)"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "GAMEPLAY CHANGES",
+     "path": [
+      "GAMEPLAY CHANGES"
+     ],
+     "notes": [
+      "Assassins have been struggling to turn early leads into wins, even when they manage to get ahead. We're making a series of changes to their items and runes to give them more opportunities to snowball their advantages and make their early successes feel more rewarding."
+     ],
+     "lines": []
+    },
+    {
+     "level": 2,
+     "title": "Items",
+     "path": [
+      "Items"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Youmuu's Ghostblade",
+     "path": [
+      "Items",
+      "Youmuu's Ghostblade"
+     ],
+     "notes": [
+      "Base Stats"
+     ],
+     "lines": [
+      "Price: 3000 → 2900"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Locket of the Iron Solari",
+     "path": [
+      "Items",
+      "Locket of the Iron Solari"
+     ],
+     "notes": [
+      "We're giving Locket of the Iron Solari a boost to make it a more appealing option for tank supports. This should help tank supports better protect their carries and close the gap between playing alongside a tank support versus an enchanter.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Price: 2600 → 2500",
+      "Health: 200 → 300"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Thornmail",
+     "path": [
+      "Items",
+      "Thornmail"
+     ],
+     "notes": [
+      "Thornmail has been offering a little too much value for its cost, giving tanks access to a large amount of Armor and Grievous Wounds earlier than intended. We're adjusting its cost to better align with other first completed items across classes and keep power spikes at a more consistent pace.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Price: 2700 → 2850"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Warmog's Armor",
+     "path": [
+      "Items",
+      "Warmog's Armor"
+     ],
+     "notes": [
+      "Warmog's Armor has been finding its way into a few too many builds, especially among enchanter supports who aren't necessarily looking for all that extra Health. We're adjusting its requirements to make it a less appealing option for enchanters while keeping it a reliable choice for tank supports.",
+      "Warmog’s Heart"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Warmog’s Heart",
+     "path": [
+      "Items",
+      "Warmog's Armor",
+      "Warmog’s Heart"
+     ],
+     "notes": [],
+     "lines": [
+      "Trigger threshold: 900 → 1250"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Statikk Shiv",
+     "path": [
+      "Items",
+      "Statikk Shiv"
+     ],
+     "notes": [
+      "Statikk Shiv hasn't been quite keeping up with other item options, so we're giving it a small boost to help it feel like a more rewarding pickup.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Price: 3000→2900",
+      "Attacks grant extra Energized stacks: 5 → 7"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Yun Tal Wildarrows",
+     "path": [
+      "Items",
+      "Yun Tal Wildarrows"
+     ],
+     "notes": [
+      "Despite our previous buffs, Yun Tal Wildarrows is still struggling to keep up with other marksman items. We're lowering its cost to make it a more competitive option and help its users hit their power spikes a little sooner.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Price: 3100 → 3000"
+     ]
+    },
+    {
+     "level": 2,
+     "title": "Runes",
+     "path": [
+      "Runes"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Electrocute",
+     "path": [
+      "Runes",
+      "Electrocute"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage: 40 - 210 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power → 60 - 210 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Cheap Shot",
+     "path": [
+      "Runes",
+      "Cheap Shot"
+     ],
+     "notes": [],
+     "lines": [
+      "Cool down: 7s → 5s"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Grasp of the Undying",
+     "path": [
+      "Runes",
+      "Grasp of the Undying"
+     ],
+     "notes": [
+      "Grasp of the Undying has been gaining an edge over Conqueror, so we're dialing back some of its laning damage and scaling. This should help keep it from overshadowing other rune choices or letting champions bypass their intended strengths and weaknesses."
+     ],
+     "lines": [
+      "Damage: 3.3% Maximum Health → 3% Maximum Health",
+      "Maximum Health Growth: 10 → 8"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Aery",
+     "path": [
+      "Runes",
+      "Aery"
+     ],
+     "notes": [
+      "With the new support items making it easier to trigger Aery's shield more frequently, she's been providing a little too much protection. We're dialing back her late-game shielding power to keep her in line with other rune options."
+     ],
+     "lines": [
+      "Shield value: 25 - 120 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power → 20-100 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power"
+     ]
+    },
+    {
+     "level": 2,
+     "title": "Other Battlefield Content",
+     "path": [
+      "Other Battlefield Content"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Jungle Monsters",
+     "path": [
+      "Other Battlefield Content",
+      "Jungle Monsters"
+     ],
+     "notes": [
+      "Raptors have become a little too easy to clear in the mid and late game, making them an easy target for jungle invades. We're making them a bit tougher to take down to reduce the pressure on junglers defending their camps.",
+      "Crimson Raptor"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Crimson Raptor",
+     "path": [
+      "Other Battlefield Content",
+      "Jungle Monsters",
+      "Crimson Raptor"
+     ],
+     "notes": [
+      "Raptor"
+     ],
+     "lines": [
+      "Base Health: 1000 → 1100",
+      "Health per level: 110 → 125"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 5,
+     "title": "Raptor",
+     "path": [
+      "Other Battlefield Content",
+      "Jungle Monsters",
+      "Raptor"
+     ],
+     "notes": [],
+     "lines": [
+      "Base Health: 500 → 550",
+      "Health per level: 55 → 65"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 2,
+     "title": "GAME MODE CHANGES",
+     "path": [
+      "GAME MODE CHANGES"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 3,
+     "title": "AAA ARAM",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM"
+     ],
+     "notes": [
+      "Soothing Slipstream"
+     ],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Soothing Slipstream",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Soothing Slipstream"
+     ],
+     "notes": [
+      "Rock Solid"
+     ],
+     "lines": [
+      "Healing effects: 1.5% Maximum Health → 1% Maximum Health"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Rock Solid",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Rock Solid"
+     ],
+     "notes": [
+      "Poro Head"
+     ],
+     "lines": [
+      "Damage Reduction: 3.75 - 14.25 (Based on level) → 3.5 - 10.5 (Based on level)"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Poro Head",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Poro Head"
+     ],
+     "notes": [
+      "Origin: Lethal Tempo"
+     ],
+     "lines": [
+      "Damage Reduction: 3 - 15 (Based on level) → 3 - 12 (Based on level)",
+      "Reduced True Damage: 50% → 40%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Origin: Lethal Tempo",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Origin: Lethal Tempo"
+     ],
+     "notes": [
+      "Eureka"
+     ],
+     "lines": [
+      "Attack Speed per stack: 9% → 6%",
+      "Attack Range at maximum stacks: 50 → 25"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Eureka",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Eureka"
+     ],
+     "notes": [
+      "Upgrade Sword of Blossoming Dawn"
+     ],
+     "lines": [
+      "Ability Haste: 25% Bonus Attack Damage + 12% Ability Power → 20% Bonus Attack Damage+10% Ability Power"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Upgrade Sword of Blossoming Dawn",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Upgrade Sword of Blossoming Dawn"
+     ],
+     "notes": [
+      "Bigger and Bigger"
+     ],
+     "lines": [
+      "Reduced basic Attack Damage converted into healing ratio: 100% → 300%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Bigger and Bigger",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Bigger and Bigger"
+     ],
+     "notes": [
+      "Goliath"
+     ],
+     "lines": [
+      "Bonus Health on each take down participation: 15 → 30"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Goliath",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Goliath"
+     ],
+     "notes": [
+      "Fast and Furious"
+     ],
+     "lines": [
+      "Bonus Health gained: 20% → 30%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Fast and Furious",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Fast and Furious"
+     ],
+     "notes": [],
+     "lines": [
+      "Movement Speed and Attack Speed gained on Critical Strike: 15% → 25%"
+     ],
+     "fromParagraph": true
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "BUG FIXES",
+     "path": [
+      "BUG FIXES"
+     ],
+     "notes": [],
+     "lines": [
+      "Fixed an issue where Yun Tal Wildarrows' Attack Speed effect would occasionally trigger incorrectly.",
+      "Fixed an issue where activating Yordle Snap Trap would reduce Armor and Magic Resist.",
+      "Fixed an issue with the description of Smolder's (1).",
+      "Fixed an issue with the cast range of Veigar's (1)."
+     ]
+    },
+    {
+     "level": 2,
+     "title": "Guild Leaderboard Settlement Rules Optimization",
+     "path": [
+      "Guild Leaderboard Settlement Rules Optimization"
+     ],
+     "notes": [
+      "Optimized the timing of Guild Leaderboard point calculations. Rankings will now be calculated based on points at 11:55 PM every Sunday, with the leaderboard refreshing at 12:00 AM."
+     ],
+     "lines": []
+    },
+    {
+     "level": 2,
+     "title": "Legends Legends Showdown Volibear Chroma Lucky Chest and Legends Showdown Volibear Random Chroma Chest",
+     "path": [
+      "Legends Legends Showdown Volibear Chroma Lucky Chest and Legends Showdown Volibear Random Chroma Chest"
+     ],
+     "notes": [
+      "Legends Showdown Volibear Chroma Lucky Chest and Legends Showdown Volibear Random Chroma Chest will officially become available in the Legendary Collection Worlds Redemption Store and Loot Redemption Store on October 15, 2026. For every 10 Legends Showdown Volibear Chroma Lucky Chests opened, you’re guaranteed to receive a Legends Showdown Volibear Random Chroma Chest. The drop rates when guaranteed reward is not triggered are as follows:",
+      "The Legends Showdown Volibear Random Chroma Chest contains six hidden chromas for Legends Showdown Volibear, representing LPL, LCK, LEC, LCS, LCP, and CBLOL. The drop rates are as follows:",
+      "Availability: After the patch update on October 15, 2026, through January 6, 2027, at 11:59 PM.",
+      "The Legends Showdown Volibear Chroma Lucky Chest can be redeemed in the Loot Redeem Store for 10 Orange Gemstones each, with a purchase limit of 10 per transaction and 60 total. The Legends Showdown Volibear Random Chroma Chest can be redeemed in the Worlds Redemption Store for 120 Wild Cores + 970 Dreamchaser Badge, with a purchase limit of 1."
+     ],
+     "lines": []
+    }
+   ]
+  }
+ ]
+}

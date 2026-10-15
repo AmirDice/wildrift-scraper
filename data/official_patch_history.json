@@ -1,9 +1,231 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-09-30T13:35:59.642Z",
+  "fetchedAt": "2026-10-15T10:30:43.729Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.3b",
+      "title": "Wild Rift Patch Notes 7.3b",
+      "publishedAt": "2026-10-14T09:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-3b/",
+      "championChanges": [
+        {
+          "champion": "VOLIBEAR",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Volibear has been having a tough time finding his footing this patch, so we're giving him some extra Attack Damage scaling and survivability to help him make a bigger impact in teamfights.",
+          "changes": [
+            {
+              "ability": "Frenzied Maul",
+              "text": "Damage Attack Damage ratio: 100% → 110%\n Empowered Damage Attack Damage ratio: 160% → 176%\n Empowered Healing based on Missing Health: 5/6/7/8% → 5%/8%/11%/14%"
+            }
+          ]
+        },
+        {
+          "champion": "JHIN",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Jhin has been struggling to keep up this patch, so we're shifting some of his power earlier in the game to help him hit his power spikes sooner, rather than having to wait until max level to really shine.",
+          "changes": [
+            {
+              "ability": "Whisper",
+              "text": "Standard Critical Strike Damage: 80% → 85%\n Damage based on missing Health：11% - 25% (reach the cap at level 15) → 11.5% - 25% (reach the cap at level 10)"
+            }
+          ]
+        },
+        {
+          "champion": "TRYNDAMERE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Tryndamere hasn't been getting as much out of the recent crit item overhaul as we'd hoped, so we're making some changes to help his Critical Strikes and overall damage output feel more consistent.",
+          "changes": [
+            {
+              "ability": "Battle Fury",
+              "text": "Critical Strike Chance per Fury: 0.3%–0.5% (based on level) → 0.5%"
+            },
+            {
+              "ability": "Spinning Slash",
+              "text": "Damage: 80/120/160/200 + 100% Bonus Attack Damage + 80% Ability Power → 80/130/180/230 + 110% Bonus Attack Damage + 80% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "HWEI",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Hwei is still painting a little too far outside the lines when it comes to his overall power, so we're dialing back his consistent damage, shielding, and crowd control to give his opponents more room to fight back.",
+          "changes": [
+            {
+              "ability": "Signature of the Visionary",
+              "text": "Damage: 40 - 285 (Based on level) + 30% Ability Power → 30 - 280 (Based on level) + 25% Ability Power"
+            },
+            {
+              "ability": "Subject: Serenity - Pool of Reflection",
+              "text": "Initial shield: 60/80/100/120 + 35% Ability Power → 50/70/90/110 + 30% Ability Power\n Maximum shield: 108/128/148/168 + 71% Ability Power → 98/118/138/158 + 60% Ability Power"
+            },
+            {
+              "ability": "Subject: Serenity - Stirring Lights",
+              "text": "Bonus base damage: 30/40/50/60 → 20/30/40/50"
+            },
+            {
+              "ability": "Subject: Torment - Crushing Maw",
+              "text": "Optimized the hitbox of the jaws\n Cast range: 7.5 → 7\n Damage: 70/120/170/220 + 70% Ability Power → 60/110/160/210 + 60% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "NOCTURNE",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Following the jungle overhaul, Nocturne has been clearing camps and hunting down his enemies a little too efficiently. We're dialing back his jungle clear speed and ability to find opportunities to strike, giving his prey a little more breathing room before darkness falls.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Health per level: 134 → 128"
+            },
+            {
+              "ability": "Duskbringer",
+              "text": "Attack Damage: 20/30/40/50 → 10/25/40/55\n Base Damage: 70/125/180/235 → 60/115/170/225"
+            },
+            {
+              "ability": "Paranoia",
+              "text": "Cooldown: 110/90/70s → 120/100/80s"
+            }
+          ]
+        },
+        {
+          "champion": "YUNARA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "We've been happy with Yunara's performance since her release, but as players have gotten more comfortable with her kit, she's started to become a little too powerful. We're dialing back some of her sustained damage to bring her more in line with other marksmen.",
+          "changes": [
+            {
+              "ability": "Cultivation of Spirit",
+              "text": "Passive Damage: 10/15/20/25 → 5/10/15/20\n Active Damage: 10/15/20/25 → 5/10/15/20"
+            },
+            {
+              "ability": "Transcend One's Self",
+              "text": "Cooldown: 70/60/50s →70/65/60s"
+            }
+          ]
+        },
+        {
+          "champion": "SENNA",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Senna continues to stand above the rest of the roster, so we're taking another pass at her scaling to bring her power more in line with other champions and give both marksmen and supports more room to shine.",
+          "changes": [
+            {
+              "ability": "Absolution",
+              "text": "Standard Critical Strike Damage: 90% → 80%\n Attack Damage per Black Mist stack: 1.25 → 0.9"
+            },
+            {
+              "ability": "Piercing Darkness",
+              "text": "Base Damage: 50/80/110/140 → 30/60/90/120"
+            }
+          ]
+        },
+        {
+          "champion": "YASUO",
+          "scope": "CHAMPION CHANGES",
+          "modeOnly": false,
+          "summary": "Yasuo has been struggling since losing the crit version of Bloodthirster, so we're giving him some extra damage and survivability in the mid to late game to help him hold his own as fights heat up.",
+          "changes": [
+            {
+              "ability": "Way of the Wanderer",
+              "text": "Standard Critical Strike Damage: 90% → 95%\n Shield Value: 77 - 529 (Based on level) → 77 - 630 (Based on level)"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Champion balance changes, item and rune updates, and more in the latest Wild Rift patch notes!",
+        "It's time for another round of balance changes! In this patch, we're lending a hand to champions who haven't quite found their footing in the new meta, while taking some power away from those who've been enjoying a little too much success. We're also giving assassins some extra tools to help them turn early leads into victories, adjusting item options across several classes, and tuning a few runes that have been stealing the spotlight. We've also got some jungle adjustments to round things out. Let's get into the changes!\n Reminder: content will be released throughout the patch.",
+        "Volibear has been having a tough time finding his footing this patch, so we're giving him some extra Attack Damage scaling and survivability to help him make a bigger impact in teamfights.",
+        "Damage Attack Damage ratio: 100% → 110%\n Empowered Damage Attack Damage ratio: 160% → 176%\n Empowered Healing based on Missing Health: 5/6/7/8% → 5%/8%/11%/14%",
+        "Jhin has been struggling to keep up this patch, so we're shifting some of his power earlier in the game to help him hit his power spikes sooner, rather than having to wait until max level to really shine.",
+        "Standard Critical Strike Damage: 80% → 85%\n Damage based on missing Health：11% - 25% (reach the cap at level 15) → 11.5% - 25% (reach the cap at level 10)",
+        "Tryndamere hasn't been getting as much out of the recent crit item overhaul as we'd hoped, so we're making some changes to help his Critical Strikes and overall damage output feel more consistent.",
+        "Critical Strike Chance per Fury: 0.3%–0.5% (based on level) → 0.5%",
+        "Damage: 80/120/160/200 + 100% Bonus Attack Damage + 80% Ability Power → 80/130/180/230 + 110% Bonus Attack Damage + 80% Ability Power",
+        "Hwei is still painting a little too far outside the lines when it comes to his overall power, so we're dialing back his consistent damage, shielding, and crowd control to give his opponents more room to fight back.",
+        "Damage: 40 - 285 (Based on level) + 30% Ability Power → 30 - 280 (Based on level) + 25% Ability Power",
+        "Initial shield: 60/80/100/120 + 35% Ability Power → 50/70/90/110 + 30% Ability Power\n Maximum shield: 108/128/148/168 + 71% Ability Power → 98/118/138/158 + 60% Ability Power",
+        "Bonus base damage: 30/40/50/60 → 20/30/40/50",
+        "Optimized the hitbox of the jaws\n Cast range: 7.5 → 7\n Damage: 70/120/170/220 + 70% Ability Power → 60/110/160/210 + 60% Ability Power",
+        "Following the jungle overhaul, Nocturne has been clearing camps and hunting down his enemies a little too efficiently. We're dialing back his jungle clear speed and ability to find opportunities to strike, giving his prey a little more breathing room before darkness falls.",
+        "Health per level: 134 → 128",
+        "Attack Damage: 20/30/40/50 → 10/25/40/55\n Base Damage: 70/125/180/235 → 60/115/170/225",
+        "Cooldown: 110/90/70s → 120/100/80s",
+        "We've been happy with Yunara's performance since her release, but as players have gotten more comfortable with her kit, she's started to become a little too powerful. We're dialing back some of her sustained damage to bring her more in line with other marksmen.",
+        "Passive Damage: 10/15/20/25 → 5/10/15/20\n Active Damage: 10/15/20/25 → 5/10/15/20",
+        "Cooldown: 70/60/50s →70/65/60s",
+        "Senna continues to stand above the rest of the roster, so we're taking another pass at her scaling to bring her power more in line with other champions and give both marksmen and supports more room to shine.",
+        "Standard Critical Strike Damage: 90% → 80%\n Attack Damage per Black Mist stack: 1.25 → 0.9",
+        "Base Damage: 50/80/110/140 → 30/60/90/120",
+        "Yasuo has been struggling since losing the crit version of Bloodthirster, so we're giving him some extra damage and survivability in the mid to late game to help him hold his own as fights heat up.",
+        "Standard Critical Strike Damage: 90% → 95%\n Shield Value: 77 - 529 (Based on level) → 77 - 630 (Based on level)",
+        "GAMEPLAY CHANGES\n Assassins have been struggling to turn early leads into wins, even when they manage to get ahead. We're making a series of changes to their items and runes to give them more opportunities to snowball their advantages and make their early successes feel more rewarding.\n Items\n Youmuu's Ghostblade\n Base Stats\n Price: 3000 → 2900\n Locket of the Iron Solari\n We're giving Locket of the Iron Solari a boost to make it a more appealing option for tank supports. This should help tank supports better protect their carries and close the gap between playing alongside a tank support versus an enchanter.\n Base Stats\n Price: 2600 → 2500\n Health: 200 → 300\n Thornmail\n Thornmail has been offering a little too much value for its cost, giving tanks access to a large amount of Armor and Grievous Wounds earlier than intended. We're adjusting its cost to better align with other first completed items across classes and keep power spikes at a more consistent pace.\n Base Stats\n Price: 2700 → 2850\n Warmog's Armor\n Warmog's Armor has been finding its way into a few too many builds, especially among enchanter supports who aren't necessarily looking for all that extra Health. We're adjusting its requirements to make it a less appealing option for enchanters while keeping it a reliable choice for tank supports.\n Warmog’s Heart\n Trigger threshold: 900 → 1250\n Statikk Shiv\n Statikk Shiv hasn't been quite keeping up with other item options, so we're giving it a small boost to help it feel like a more rewarding pickup.\n Base Stats\n Price: 3000→2900\n Attacks grant extra Energized stacks: 5 → 7\n Yun Tal Wildarrows\n Despite our previous buffs, Yun Tal Wildarrows is still struggling to keep up with other marksman items. We're lowering its cost to make it a more competitive option and help its users hit their power spikes a little sooner.\n Base Stats\n Price: 3100 → 3000\n Runes\n Electrocute\n Damage: 40 - 210 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power → 60 - 210 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power\n Cheap Shot\n Cool down: 7s → 5s\n Grasp of the Undying\n Grasp of the Undying has been gaining an edge over Conqueror, so we're dialing back some of its laning damage and scaling. This should help keep it from overshadowing other rune choices or letting champions bypass their intended strengths and weaknesses.\n Damage: 3.3% Maximum Health → 3% Maximum Health\n Maximum Health Growth: 10 → 8\n Aery\n With the new support items making it easier to trigger Aery's shield more frequently, she's been providing a little too much protection. We're dialing back her late-game shielding power to keep her in line with other rune options.\n Shield value: 25 - 120 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power → 20-100 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power\n Other Battlefield Content\n Jungle Monsters\n Raptors have become a little too easy to clear in the mid and late game, making them an easy target for jungle invades. We're making them a bit tougher to take down to reduce the pressure on junglers defending their camps.\n Crimson Raptor\n Base Health: 1000 → 1100\n Health per level: 110 → 125\n Raptor\n Base Health: 500 → 550\n Health per level: 55 → 65\n GAME MODE CHANGES\n AAA ARAM\n Soothing Slipstream\n Healing effects: 1.5% Maximum Health → 1% Maximum Health\n Rock Solid\n Damage Reduction: 3.75 - 14.25 (Based on level) → 3.5 - 10.5 (Based on level)\n Poro Head\n Damage Reduction: 3 - 15 (Based on level) → 3 - 12 (Based on level)\n Reduced True Damage: 50% → 40%\n Origin: Lethal Tempo\n Attack Speed per stack: 9% → 6%\n Attack Range at maximum stacks: 50 → 25\n Eureka\n Ability Haste: 25% Bonus Attack Damage + 12% Ability Power → 20% Bonus Attack Damage+10% Ability Power\n Upgrade Sword of Blossoming Dawn\n Reduced basic Attack Damage converted into healing ratio: 100% → 300%\n Bigger and Bigger\n Bonus Health on each take down participation: 15 → 30\n Goliath\n Bonus Health gained: 20% → 30%\n Fast and Furious\n Movement Speed and Attack Speed gained on Critical Strike: 15% → 25%",
+        "BUG FIXES\n Fixed an issue where Yun Tal Wildarrows' Attack Speed effect would occasionally trigger incorrectly.\n Fixed an issue where activating Yordle Snap Trap would reduce Armor and Magic Resist.\n Fixed an issue with the description of Smolder's (1).\n Fixed an issue with the cast range of Veigar's (1).\n Guild Leaderboard Settlement Rules Optimization\n Optimized the timing of Guild Leaderboard point calculations. Rankings will now be calculated based on points at 11:55 PM every Sunday, with the leaderboard refreshing at 12:00 AM.\n\n Legends Legends Showdown Volibear Chroma Lucky Chest and Legends Showdown Volibear Random Chroma Chest\n Legends Showdown Volibear Chroma Lucky Chest and Legends Showdown Volibear Random Chroma Chest will officially become available in the Legendary Collection Worlds Redemption Store and Loot Redemption Store on October 15, 2026. For every 10 Legends Showdown Volibear Chroma Lucky Chests opened, you’re guaranteed to receive a Legends Showdown Volibear Random Chroma Chest. The drop rates when guaranteed reward is not triggered are as follows:\n Legends Showdown Volibear Chroma Lucky Chest Probability Legends Showdown Volibear Random Chroma Chest 5.83% Silver Stardust x200 11.07% Silver Stardust x100 27.74% Silver Stardust x80 33.22% Silver Stardust x60 22.14% The Legends Showdown Volibear Random Chroma Chest contains six hidden chromas for Legends Showdown Volibear, representing LPL, LCK, LEC, LCS, LCP, and CBLOL. The drop rates are as follows:\n Legends Showdown Volibear Random Chroma Chest Probability Legends Showdown Volibear LPL 16.67% Legends Showdown Volibear LCK 16.67% Legends Showdown Volibear LEC 16.67% Legends Showdown Volibear CBLOL 16.67% Legends Showdown Volibear LCS 16.67% Legends Showdown Volibear LCP 16.67% Availability: After the patch update on October 15, 2026, through January 6, 2027, at 11:59 PM.\n The Legends Showdown Volibear Chroma Lucky Chest can be redeemed in the Loot Redeem Store for 10 Orange Gemstones each, with a purchase limit of 10 per transaction and 60 total. The Legends Showdown Volibear Random Chroma Chest can be redeemed in the Worlds Redemption Store for 120 Wild Cores + 970 Dreamchaser Badge, with a purchase limit of 1."
+      ],
+      "changeLines": [
+        "Damage Attack Damage ratio: 100% → 110%",
+        "Empowered Damage Attack Damage ratio: 160% → 176%",
+        "Empowered Healing based on Missing Health: 5/6/7/8% → 5%/8%/11%/14%",
+        "Standard Critical Strike Damage: 80% → 85%",
+        "Damage based on missing Health：11% - 25% (reach the cap at level 15) → 11.5% - 25% (reach the cap at level 10)",
+        "Critical Strike Chance per Fury: 0.3%–0.5% (based on level) → 0.5%",
+        "Damage: 80/120/160/200 + 100% Bonus Attack Damage + 80% Ability Power → 80/130/180/230 + 110% Bonus Attack Damage + 80% Ability Power",
+        "Damage: 40 - 285 (Based on level) + 30% Ability Power → 30 - 280 (Based on level) + 25% Ability Power",
+        "Initial shield: 60/80/100/120 + 35% Ability Power → 50/70/90/110 + 30% Ability Power",
+        "Maximum shield: 108/128/148/168 + 71% Ability Power → 98/118/138/158 + 60% Ability Power",
+        "Bonus base damage: 30/40/50/60 → 20/30/40/50",
+        "Cast range: 7.5 → 7",
+        "Damage: 70/120/170/220 + 70% Ability Power → 60/110/160/210 + 60% Ability Power",
+        "Health per level: 134 → 128",
+        "Attack Damage: 20/30/40/50 → 10/25/40/55",
+        "Base Damage: 70/125/180/235 → 60/115/170/225",
+        "Cooldown: 110/90/70s → 120/100/80s",
+        "Passive Damage: 10/15/20/25 → 5/10/15/20",
+        "Active Damage: 10/15/20/25 → 5/10/15/20",
+        "Cooldown: 70/60/50s →70/65/60s",
+        "Standard Critical Strike Damage: 90% → 80%",
+        "Attack Damage per Black Mist stack: 1.25 → 0.9",
+        "Base Damage: 50/80/110/140 → 30/60/90/120",
+        "Standard Critical Strike Damage: 90% → 95%",
+        "Shield Value: 77 - 529 (Based on level) → 77 - 630 (Based on level)",
+        "Base Stats",
+        "Price: 3000 → 2900",
+        "Price: 2600 → 2500",
+        "Health: 200 → 300",
+        "Price: 2700 → 2850",
+        "Trigger threshold: 900 → 1250",
+        "Price: 3000→2900",
+        "Attacks grant extra Energized stacks: 5 → 7",
+        "Price: 3100 → 3000",
+        "Damage: 40 - 210 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power → 60 - 210 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power",
+        "Cool down: 7s → 5s",
+        "Damage: 3.3% Maximum Health → 3% Maximum Health",
+        "Maximum Health Growth: 10 → 8",
+        "Shield value: 25 - 120 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power → 20-100 (Based on level) + 10% Bonus Attack Damage + 5% Ability Power",
+        "Base Health: 1000 → 1100",
+        "Health per level: 110 → 125",
+        "Base Health: 500 → 550",
+        "Health per level: 55 → 65",
+        "Healing effects: 1.5% Maximum Health → 1% Maximum Health",
+        "Damage Reduction: 3.75 - 14.25 (Based on level) → 3.5 - 10.5 (Based on level)",
+        "Damage Reduction: 3 - 15 (Based on level) → 3 - 12 (Based on level)",
+        "Reduced True Damage: 50% → 40%",
+        "Attack Speed per stack: 9% → 6%",
+        "Attack Range at maximum stacks: 50 → 25",
+        "Ability Haste: 25% Bonus Attack Damage + 12% Ability Power → 20% Bonus Attack Damage+10% Ability Power",
+        "Reduced basic Attack Damage converted into healing ratio: 100% → 300%",
+        "Bonus Health on each take down participation: 15 → 30",
+        "Bonus Health gained: 20% → 30%",
+        "Movement Speed and Attack Speed gained on Critical Strike: 15% → 25%"
+      ]
+    },
     {
       "patch": "7.3a",
       "title": "Wild Rift Patch Notes 7.3a",

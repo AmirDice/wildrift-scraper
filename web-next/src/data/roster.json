@@ -5076,8 +5076,8 @@
     "baseStats": {
       "hp": {
         "base": 660,
-        "perLevel": 134,
-        "lvl15": 2536
+        "perLevel": 128,
+        "lvl15": 2452
       },
       "armor": {
         "base": 43,
@@ -9378,6 +9378,7 @@
       "physical": 0.0,
       "globalPressure": 0.0
     },
+    "iconLocal": "/champions/hwei.png",
     "pctHpDamage": true,
     "trueDamage": false,
     "ccImmune": false,
@@ -9402,7 +9403,6 @@
         "perLevel": 3.5,
         "lvl15": 103
       }
-    },
-    "iconLocal": "/champions/hwei.png"
+    }
   }
 }

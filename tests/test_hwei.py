@@ -13,11 +13,23 @@ from web import fight_engine as fe
 ROOT = Path(__file__).resolve().parent.parent
 KIT = json.loads((ROOT / "data/hwei_kit.json").read_text(encoding="utf-8"))
 TARGET = {"hp":4000,"armor":90,"mr":60,"bonusHp":1000}
+AP = 100
+
+# Expected damage is read from the KIT, not typed in. These tests are about
+# the timeline -- what gets cast, when R explodes, that WW and WE exclude
+# each other -- and pinning a patch's numbers here meant they quietly tested
+# 7.3 values for three weeks after 7.3a, because hwei_kit.json had not been
+# updated and nothing compared it with the live kit.
+SPELLS = KIT["spells"]
+WE_HIT = SPELLS["WE"]["base"][3] + SPELLS["WE"]["ap"] * AP
+R_TICK = SPELLS["R"]["tickBase"][2] + SPELLS["R"]["tickAp"] * AP
+R_BLAST = SPELLS["R"]["base"][2] + SPELLS["R"]["ap"] * AP
+WW_MAX = SPELLS["WW"]["maxShieldBase"][3] + SPELLS["WW"]["maxShieldAp"] * AP
 
 
 class HweiTests(unittest.TestCase):
     def run_kit(self, window=8, level=15, choices=None, **stats):
-        st = {"ap":100,"haste":0,"mana":2000,"as":0.75,"hweiChoices":choices or {}, **stats}
+        st = {"ap":AP,"haste":0,"mana":2000,"as":0.75,"hweiChoices":choices or {}, **stats}
         return timeline(KIT,st,TARGET,window,level)
 
     def test_level_one_has_only_q(self):
@@ -31,19 +43,19 @@ class HweiTests(unittest.TestCase):
         self.assertEqual(r["empoweredHits"],3)
         self.assertEqual(r["manaRestored"],180)
         self.assertEqual(r["passives"],2)
-        self.assertEqual(r["damage"]["2"],3*(60+15))
+        self.assertAlmostEqual(r["damage"]["2"],3*WE_HIT)
 
     def test_ultimate_waits_for_explosion(self):
         before, after = self.run_kit(window=4.59), self.run_kit(window=4.61)
-        self.assertEqual(before["damage"]["4"],2*35)
-        self.assertEqual(after["damage"]["4"],3*35+525)
+        self.assertAlmostEqual(before["damage"]["4"],2*R_TICK)
+        self.assertAlmostEqual(after["damage"]["4"],3*R_TICK+R_BLAST)
 
     def test_ww_trades_away_we(self):
         r = self.run_kit(choices={"2":"WW"})
         self.assertEqual(r["damage"]["2"],0)
         self.assertEqual(r["empoweredHits"],0)
-        self.assertEqual(r["shield"],168+71)
-        self.assertAlmostEqual(r["allyShield"],(168+71)*0.85)
+        self.assertAlmostEqual(r["shield"],WW_MAX)
+        self.assertAlmostEqual(r["allyShield"],WW_MAX*SPELLS["WW"]["allyMultiplier"])
         self.assertEqual(self.run_kit()["shield"],0)
 
     def test_mana_is_required(self):
@@ -83,6 +95,15 @@ class HweiTests(unittest.TestCase):
                 for key, val in ts["stats"].items(): self.assertAlmostEqual(st[key],val,delta=0.01)
                 shield=fe.kit_heal("Hwei",st,c["level"],c["window"],"self")
                 self.assertAlmostEqual(shield,ts["shield"],delta=0.01)
+
+    def test_kit_matches_the_live_kit(self):
+        # Both engines read Hwei from ability_formulas.json. hwei_kit.json is
+        # what add_hwei.py builds him FROM, so if the two drift apart a re-run
+        # of that generator silently rolls Hwei back a patch.
+        live = json.loads((ROOT / "data/ability_formulas.json")
+                          .read_text(encoding="utf-8"))["Hwei"]["hwei"]
+        self.assertEqual(KIT["passive"], live["passive"])
+        self.assertEqual(KIT["spells"], live["spells"])
 
     def test_published_data_is_complete(self):
         for filename in ("engine","roster","builds","champion_details"):

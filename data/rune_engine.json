@@ -2,7 +2,7 @@
   "Electrocute": {
     "burstProcFlat": {
       "lvlRange": [
-        40,
+        60,
         210
       ]
     },
@@ -106,8 +106,8 @@
     "burstProcType": "adaptive",
     "shieldFlat": {
       "lvlRange": [
-        25,
-        120
+        20,
+        100
       ]
     },
     "shieldBonusAdRatio": 10,
@@ -164,9 +164,9 @@
       ]
     },
     "burstProcType": "true",
-    "burstProcCdSec": 7,
+    "burstProcCdSec": 5,
     "requiresChampionCc": 1,
-    "_why_cd": "'(7 seconds cooldown).'"
+    "_why_cd": "'(5 seconds cooldown).' (7.3b: 7s -> 5s)"
   },
   "Sudden Impact": {
     "burstProcFlat": {

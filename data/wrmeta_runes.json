@@ -5,7 +5,7 @@
     "tagline": "Burst Damage",
     "tree": "Keystone",
     "type": "Keystone",
-    "text": "Within 3 seconds, hit the same enemy champion with 3 basic attacks or abilities to cause additional adaptive damage to the target. Damage value: 40-210 (based on level) + 10% extra [ad] + 5% [ap] Cooldown: 20-13s (based on level)",
+    "text": "Within 3 seconds, hit the same enemy champion with 3 basic attacks or abilities to cause additional adaptive damage to the target. Damage value: 60-210 (based on level) + 10% extra [ad] + 5% [ap] Cooldown: 20-13s (based on level)",
     "image": "/items/electrocute.webp"
   },
   {
@@ -59,7 +59,7 @@
     "tagline": "Tank, Heal",
     "tree": "Keystone",
     "type": "Keystone",
-    "text": "Every 3s in combat, your next attack on a champion will be enhanced. Bonus magic damage: 3.3% [hp] Heal: 1.3% [hp] Permanently health increase: 10 On Ranged champions, the effects are reduced by 60%.",
+    "text": "Every 3s in combat, your next attack on a champion will be enhanced. Bonus magic damage: 3% [hp] Heal: 1.3% [hp] Permanently health increase: 8 On Ranged champions, the effects are reduced by 60%.",
     "image": "/items/grasp-of-the-undying.webp"
   },
   {
@@ -77,7 +77,7 @@
     "tagline": "Poke, Protect",
     "tree": "Keystone",
     "type": "Keystone",
-    "text": "Your attacks and abilities send Aery to a target, damaging enemies or shielding allies. Damage: 15-70 (based on level) + 10% bonus [ad] + 5% [ap] Shield: 25-120 (based on level) + 10% bonus [ad] + 5% [ap] Aery cannot be sent out again until she returns to you.",
+    "text": "Your attacks and abilities send Aery to a target, damaging enemies or shielding allies. Damage: 15-70 (based on level) + 10% bonus [ad] + 5% [ap] Shield: 20-100 (based on level) + 10% bonus [ad] + 5% [ap] Aery cannot be sent out again until she returns to you.",
     "image": "/items/aery.webp"
   },
   {
@@ -122,7 +122,7 @@
     "tagline": "Targets movement-impaired enemies",
     "tree": "Domination",
     "type": "Minor",
-    "text": "Deals 10-45 bonus true damage to enemies whose movement is impaired. Cooldown: 7s",
+    "text": "Deals 10-45 bonus true damage to enemies whose movement is impaired. Cooldown: 5s",
     "image": "/items/cheap-shot.webp"
   },
   {

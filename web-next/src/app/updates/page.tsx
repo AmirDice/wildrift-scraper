@@ -4,7 +4,9 @@ import { Container, Card } from "@/components/ui";
 import { NotifyForm } from "@/components/notify-form";
 import {
   CHANGELOG,
+  CN_WINRATE_PATCH,
   COLLECTION_EXPECTED_FINISH,
+  COLLECTION_IN_PROGRESS,
   COLLECTION_PENDING_REGIONS,
   COLLECTION_REGIONS,
   COLLECTION_START,
@@ -14,16 +16,21 @@ import {
 } from "@/lib/announcement";
 import site from "@/data/site.json";
 import siteNa from "@/data/site_na.json";
+import siteCn from "@/data/site_cn.json";
 
 export const metadata: Metadata = {
-  title: `Site Updates | ${COLLECTION_REGIONS} Data Collection In Progress`,
-  description:
-    `${COLLECTION_REGIONS} ladder data collection is underway and is expected to finish ${COLLECTION_EXPECTED_FINISH}. Each region publishes as its pass completes.`,
+  title: COLLECTION_IN_PROGRESS
+    ? `Site Updates | ${COLLECTION_REGIONS} Data Collection In Progress`
+    : `Site Updates | Patch ${SKIPPED_PATCH} Is Live`,
+  description: COLLECTION_IN_PROGRESS
+    ? `${COLLECTION_REGIONS} ladder data collection is underway and is expected to finish ${COLLECTION_EXPECTED_FINISH}. Each region publishes as its pass completes.`
+    : `Ability, item and rune data is on patch ${SKIPPED_PATCH}. Win rates are the ${CN_WINRATE_PATCH} boards for EU, NA and China until the next collection.`,
   alternates: { canonical: "/updates" },
 };
 
 const EU_COLLECTED = (site as { collectedOn?: string }).collectedOn ?? null;
 const NA_COLLECTED = (siteNa as { collectedOn?: string }).collectedOn ?? null;
+const CN_COLLECTED = (siteCn as { collectedOn?: string }).collectedOn ?? null;
 
 export default function UpdatesPage() {
   return (
@@ -33,7 +40,9 @@ export default function UpdatesPage() {
           Site update
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          {COLLECTION_REGIONS} data collection is underway.
+          {COLLECTION_IN_PROGRESS
+            ? `${COLLECTION_REGIONS} data collection is underway.`
+            : `Patch ${SKIPPED_PATCH} is live.`}
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">
           {/* Built as one string rather than interleaved JSX text and
@@ -41,13 +50,11 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`All three boards are collected and published: NA on 6 October, EU on `
-            + `7 October and China on 11 October, 142 champions each and every one played `
-            + `entirely on patch ${NA_WINRATE_PATCH}. Win rates, tiers, the full player `
-            + `boards and the builds those players had equipped are live for all three, so `
-            + `a comparison between any two servers is a difference between the servers `
-            + `rather than between two collection dates. Patch `
-            + `${SKIPPED_PATCH} item and ability data is already live everywhere.`}
+          {`Every ability, item and rune number on the site is on patch ${SKIPPED_PATCH}. `
+            + `The win rates are not, and cannot be until the ladders are collected again: `
+            + `NA was collected on 6 October, EU on 7 October and China on 11 October, `
+            + `142 champions each, all played on patch ${NA_WINRATE_PATCH}. So a champion `
+            + `${SKIPPED_PATCH} changed still shows how it performed before the change.`}
         </p>
       </div>
 
@@ -73,14 +80,15 @@ export default function UpdatesPage() {
                   Measured on {EU_WINRATE_PATCH}
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                  Win rates, tiers, pick rates and movement change only when a region&apos;s
-                  leaderboards are re-scraped. Both EU and NA have now been, on 30-deep
-                  boards one day apart, so a champion changed by {SKIPPED_PATCH} shows how
-                  it performs after the patch on both servers.
+                  {`Win rates, tiers, pick rates and movement change only when a region's `
+                    + `leaderboards are re-scraped. All three boards were collected on `
+                    + `${EU_WINRATE_PATCH}, so Volibear, Jhin, Tryndamere, Hwei, Nocturne, `
+                    + `Yunara, Senna and Yasuo show their ${EU_WINRATE_PATCH} results until the `
+                    + `next collection, not how ${SKIPPED_PATCH} has moved them.`}
                 </p>
               </div>
             </div>
-            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+            <dl className="mt-4 grid gap-3 sm:grid-cols-3">
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
                 <dt className="text-[0.65rem] font-semibold uppercase tracking-wide text-faint">
                   Europe, collected
@@ -103,13 +111,25 @@ export default function UpdatesPage() {
                   All 142 champions, played on {NA_WINRATE_PATCH}.
                 </dd>
               </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                <dt className="text-[0.65rem] font-semibold uppercase tracking-wide text-faint">
+                  China, collected
+                </dt>
+                <dd className="mt-1 text-sm font-semibold text-text">
+                  {CN_COLLECTED ?? "Current dataset"}
+                </dd>
+                <dd className="mt-0.5 text-xs text-muted">
+                  All 142 champions, played on {CN_WINRATE_PATCH}.
+                </dd>
+              </div>
             </dl>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              China is unaffected. Those figures come from Tencent, refresh daily and follow
-              their own patch cycle, so they keep moving as normal.
+              Tencent&apos;s own China bracket rates are separate from these boards. They refresh
+              daily and follow their own cycle, so they keep moving as normal.
             </p>
           </Card>
 
+          {COLLECTION_IN_PROGRESS && (
           <Card className="p-5">
             <h2 className="text-base font-semibold text-text">Why the collection takes until Wednesday</h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
@@ -120,14 +140,22 @@ export default function UpdatesPage() {
               menu shows how far each one has got.
             </p>
           </Card>
+          )}
 
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-text">What happens during the window</h2>
+            <h2 className="text-base font-semibold text-text">
+              {COLLECTION_IN_PROGRESS ? "What happens during the window" : "Where the patch shows up"}
+            </h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
-              The scraper is collecting champion win rates and the most-built player builds for
-              {COLLECTION_REGIONS}. Patch {SKIPPED_PATCH} item and ability data is already used
-              by the Build Studio, Counter Builder, Draft Assistant and champion pages; this run
-              refreshes the empirical ladder layer those tools reference.
+              {COLLECTION_IN_PROGRESS
+                ? `The scraper is collecting champion win rates and the most-built player builds for `
+                  + `${COLLECTION_REGIONS}. Patch ${SKIPPED_PATCH} item and ability data is already used `
+                  + `by the Build Studio, Counter Builder, Draft Assistant and champion pages; this run `
+                  + `refreshes the empirical ladder layer those tools reference.`
+                : `Patch ${SKIPPED_PATCH} item, rune and ability data is what the Build Studio, Counter `
+                  + `Builder, Draft Assistant and champion pages calculate from, so every build and `
+                  + `damage figure generated from today uses it. Builds cached before the patch were `
+                  + `retired rather than served.`}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link

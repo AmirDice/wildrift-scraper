@@ -77,12 +77,16 @@
       ]
     },
     "Grasp of the Undying": {
-      "procOwnMaxHpPct": 2,
+      "procOwnMaxHpPct": 3,
       "healOwnMaxHpPct": 1.3,
       "procEverySec": 5,
       "rangedMultiplier": 0.6,
       "firstProcArmSec": 3,
-      "_why": "At four combat stacks, the attack deals 2% of the user's max Health and heals 1.3% of the user's max Health. Ranged champions receive 60% of both effects. Permanent Health from earlier procs is match-history dependent and is not granted for free."
+      "_why": "At four combat stacks, the attack deals 3% of the user's max Health and heals 1.3% of the user's max Health. Ranged champions receive 60% of both effects. Permanent Health from earlier procs is match-history dependent and is not granted for free.",
+      "_patch": [
+        "7.3b procOwnMaxHpPct: 2 -> 3. Riot lists the pre-patch value as 3.3%, so this was underrated before 7.3b as well.",
+        "7.3b permanent Health per proc: 10 -> 8 (not modelled; see _why)."
+      ]
     },
     "Lethal Tempo": {
       "asPctPerStackMelee": 8,

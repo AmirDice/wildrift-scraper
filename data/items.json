@@ -160,7 +160,7 @@
     "categories": [
       "Physical"
     ],
-    "cost": 3000,
+    "cost": 2900,
     "stats": {
       "ad": {
         "value": 55,
@@ -2187,7 +2187,7 @@
     "categories": [
       "Defense"
     ],
-    "cost": 2700,
+    "cost": 2850,
     "stats": {
       "hp": {
         "value": 200,
@@ -2232,7 +2232,7 @@
       }
     },
     "passives": [
-      "Warmog's Heart: If you have at least 950 bonus Health, restore 3.5% Health per second if you haven't taken damage within the last 5 seconds.",
+      "Warmog's Heart: If you have at least 1250 bonus Health, restore 3.5% Health per second if you haven't taken damage within the last 5 seconds.",
       "Blessed: Increases all healing and shielding effects on you by 30%."
     ],
     "tags": [
@@ -3135,10 +3135,10 @@
       "Support",
       "Active"
     ],
-    "cost": 2600,
+    "cost": 2500,
     "stats": {
       "hp": {
-        "value": 200,
+        "value": 300,
         "percent": false
       },
       "armor": {
@@ -3750,7 +3750,7 @@
     "categories": [
       "Physical"
     ],
-    "cost": 3100,
+    "cost": 3000,
     "stats": {
       "ad": {
         "value": 50,
@@ -3912,7 +3912,7 @@
       "Physical",
       "Magic"
     ],
-    "cost": 3000,
+    "cost": 2900,
     "stats": {
       "ad": {
         "value": 40,
@@ -3934,7 +3934,7 @@
     "passives": [
       "Energized: Moving and attacking generate an Energized attack.",
       "Electrospark: Your Energized attack fires chain lightning that bounces to 3/4/5/6 targets (at levels 1/5/9/13), dealing 60 magic damage, or 90 against minions and monsters. On-hit effects apply to the bounce targets.",
-      "ElectroShock: Attacks grant 5 bonus Energized stacks."
+      "ElectroShock: Attacks grant 7 bonus Energized stacks."
     ],
     "tags": [
       "onHit"
