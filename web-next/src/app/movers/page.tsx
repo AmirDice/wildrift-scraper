@@ -84,7 +84,7 @@ export default function MoversPage() {
         Source: official China server data (lolm.qq.com). Champions below a 0.5% pick
         rate are excluded so one-trick swings don&rsquo;t read as meta movement. For what
         the patch notes themselves changed, see the{" "}
-        <Link href="/champion-changes" className="font-semibold text-accent transition hover:opacity-80">
+        <Link href="/changes-report" className="font-semibold text-accent transition hover:opacity-80">
           Balance Report
         </Link>.
       </p>

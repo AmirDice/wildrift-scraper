@@ -1,21 +1,12 @@
-import type { Metadata } from "next";
+/** was /ranks, merged into /regions (2026-10-16): the page's own code, rendered as a section. */
 import Link from "next/link";
 import { site } from "@/lib/data";
 import { getEloSkews } from "@/lib/skew";
-import { Container } from "@/components/ui";
 import { EloSkewView, type SkewRow } from "@/components/elo-skew-view";
 import { ChinaUpdated } from "@/components/tierlist-updated";
-import { NextStep } from "@/components/next-step";
-import { AdSlot } from "@/components/ad-slot";
 
-export const metadata: Metadata = {
-  title: "Win Rate by Skill Bracket | Wild Rift China Rank Data",
-  description:
-    "Compare Wild Rift champion win rates across China's cumulative Diamond+, Master+, and Challenger samples, with CN Legendary shown as a separate solo-queue benchmark.",
-  alternates: { canonical: "/ranks" },
-};
 
-export default function RanksPage() {
+export function BracketsSection() {
   const rows: SkewRow[] = getEloSkews().map((s) => ({
     slug: s.champion.slug,
     name: s.champion.name,
@@ -32,8 +23,8 @@ export default function RanksPage() {
   }));
 
   return (
-    <Container className="py-12">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Win Rate by Skill Bracket</h1>
+    <section id="brackets" className="scroll-mt-24 pt-14">
+      <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Win Rate by Skill Bracket</h2>
       <p className="mt-2 max-w-2xl text-muted">
         Follow champion performance through Tencent&rsquo;s cumulative{" "}
         <span className="text-text">Diamond+ → Master+ → Challenger</span> samples. This is a
@@ -44,8 +35,6 @@ export default function RanksPage() {
       <div className="mt-4">
         <ChinaUpdated />
       </div>
-
-      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <EloSkewView rows={rows} roles={site.roles} />
       </div>
@@ -58,13 +47,12 @@ export default function RanksPage() {
         </p>
         <p>
           Want the cross-server view instead? See{" "}
-          <Link href="/rising" className="text-accent hover:underline">
-            the meta gap
-          </Link>.
+          <Link href="#china-ahead" className="text-accent hover:underline">
+            China ahead of the West
+          </Link>{" "}above.
         </p>
       </div>
-      <NextStep steps={["tierList", "meta"]} />
 
-    </Container>
+    </section>
   );
 }

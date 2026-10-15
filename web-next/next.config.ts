@@ -45,9 +45,24 @@ const nextConfig: NextConfig = {
         // URLs land on the Balance Report -- the surviving page that answers
         // the same question (what changed, who won, who lost).
         source: "/patch",
-        destination: "/champion-changes",
+        destination: "/changes-report",
         permanent: true,
       },
+      // Pages removed or merged on 2026-10-16 to make the site less
+      // overwhelming. Each lands where its content went, so shared links and
+      // search results keep working.
+      ...([
+        ["/global", "/regions"],
+        ["/rising", "/regions#china-ahead"],
+        ["/ranks", "/regions#brackets"],
+        ["/consistency", "/meta#consistency"],
+        ["/otp-champions", "/meta#one-trick"],
+        ["/hall-of-fame", "/leaderboard#records"],
+        ["/champion-changes", "/changes-report#unchanged"],
+        ["/win-rates", "/tier-list"],
+        ["/news", "/updates"],
+        ["/tier-list/china", "/tier-list?region=CN"],
+      ] as const).map(([source, destination]) => ({ source, destination, permanent: true })),
       {
         source: "/recap",
         destination: "/movers",

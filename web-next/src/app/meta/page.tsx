@@ -12,6 +12,8 @@ import {
 } from "@/lib/meta-stats";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { NextStep } from "@/components/next-step";
+import { ConsistencySection } from "@/components/merged/consistency-section";
+import { OneTrickSection } from "@/components/merged/one-trick-section";
 import {
   MetaScatter, TierBars, RoleTierHeatmap, WrHistogram, ValueBars, SkewDumbbell,
   type SkewRow,
@@ -94,7 +96,7 @@ export default function MetaPage() {
           <SectionHeading
             title="Who scales with elo"
             subtitle="Win rate at Diamond+ vs the Challenger bracket (CN ranked data). A long line means the champion plays very differently at the top."
-            href="/ranks"
+            href="/regions#brackets"
             linkLabel="Every champion by rank"
           />
           <Card className="p-5 sm:p-6">
@@ -128,7 +130,7 @@ export default function MetaPage() {
           </Card>
         </div>
         <div id="roles" className="scroll-mt-24">
-          <SectionHeading title="Win rate by role" subtitle="Strength of each role's meta picks" href="/ranks" linkLabel="Skill-bracket trends" />
+          <SectionHeading title="Win rate by role" subtitle="Strength of each role's meta picks" href="/regions#brackets" linkLabel="Skill-bracket trends" />
           <Card className="p-5 sm:p-6">
             <ValueBars rows={roles.map((r) => ({ label: r.role, value: r.wr }))} />
           </Card>
@@ -141,6 +143,10 @@ export default function MetaPage() {
         <Card className="p-5 sm:p-6"><RoleTierHeatmap rows={heat} /></Card>
       </div>
 
+
+      {/* Merged 2026-10-16 from /consistency and /otp-champions. */}
+      <ConsistencySection />
+      <OneTrickSection />
 
       <p className="mt-10 text-sm text-faint">
         Want the raw ordering instead of the charts?{" "}

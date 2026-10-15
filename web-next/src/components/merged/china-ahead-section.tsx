@@ -1,21 +1,13 @@
-import type { Metadata } from "next";
+/** was /rising, merged into /regions (2026-10-16): the page's own code, rendered as a section. */
 import Link from "next/link";
 import { site } from "@/lib/data";
 import { CN_META } from "@/lib/cn";
 import { getMetaGaps } from "@/lib/gap";
-import { Container } from "@/components/ui";
 import { MetaGapView, type GapRow } from "@/components/meta-gap-view";
 import { RegionUpdated } from "@/components/tierlist-updated";
-import { AdSlot } from "@/components/ad-slot";
 
-export const metadata: Metadata = {
-  title: "Rising Picks | What China Is Playing Before the West",
-  description:
-    "Wild Rift champions China's Challenger sample rates far higher than EU does, a leading indicator of the meta. Plus the champions EU overrates that fall off against high-skill play.",
-  alternates: { canonical: "/rising" },
-};
 
-export default function RisingPage() {
+export function ChinaAheadSection() {
   const rows: GapRow[] = getMetaGaps().map((g) => ({
     slug: g.champion.slug,
     name: g.champion.name,
@@ -32,8 +24,8 @@ export default function RisingPage() {
   }));
 
   return (
-    <Container className="py-12">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">The Meta Gap</h1>
+    <section id="china-ahead" className="scroll-mt-24 pt-14">
+      <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">China ahead of the West</h2>
       <p className="mt-2 max-w-2xl text-muted">
         Where China&rsquo;s top elo (<span className="text-text">{CN_META.bracket}</span>) disagrees
         with EU. Because the highest CN bracket runs ahead of the West, a champion much stronger
@@ -44,8 +36,6 @@ export default function RisingPage() {
       <div className="mt-4">
         <RegionUpdated region="Global" euDate={site.collectedOn} cnDate={CN_META.date} />
       </div>
-
-      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <MetaGapView rows={rows} roles={site.roles} />
       </div>
@@ -58,12 +48,12 @@ export default function RisingPage() {
         </p>
         <p>
           Prefer the raw side-by-side numbers? See the{" "}
-          <Link href="/global" className="text-accent hover:underline">
-            cross-server table
+          <Link href="#top" className="text-accent hover:underline">
+            region table at the top of this page
           </Link>
           .
         </p>
       </div>
-    </Container>
+    </section>
   );
 }

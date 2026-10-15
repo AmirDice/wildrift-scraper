@@ -1,21 +1,14 @@
-import type { Metadata } from "next";
+/** was /champion-changes, merged into /changes-report (2026-10-16): the page's own code, rendered as a section. */
 import Link from "next/link";
-import { Container, Card, ChampionAvatar } from "@/components/ui";
+import { Card, ChampionAvatar } from "@/components/ui";
 import { ChampionChangeList, type ChampionChangeListEntry } from "@/components/champion-change-list";
 import { getChampions } from "@/lib/data";
 import {getChampionChangeAge,
   getChampionChangeRanking} from "@/lib/champion-change-ranking";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
-import { NextStep } from "@/components/next-step";
-import { AdSlot } from "@/components/ad-slot";
 
-export const metadata: Metadata = {
-  title: "Champion Change History | Wild Rift",
-  description: "See how many days every Wild Rift champion has gone without a standard balance change, ordered from longest unchanged to newest update.",
-  alternates: { canonical: "/champion-changes" },
-};
 
-export default function ChampionChangesPage() {
+export function UnchangedSection() {
   const champions = getChampions();
   const ranking = getChampionChangeRanking(champions);
   const entries: ChampionChangeListEntry[] = ranking.map((entry) => ({
@@ -35,10 +28,10 @@ export default function ChampionChangesPage() {
   entries.sort((left, right) => (right.days ?? -1) - (left.days ?? -1) || left.name.localeCompare(right.name));
 
   return (
-    <Container className="py-10 sm:py-14">
+    <section id="unchanged" className="scroll-mt-24 pt-14">
       <div className="max-w-3xl">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Official patch history</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">How long has every champion gone unchanged?</h1>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">How long has every champion gone unchanged?</h2>
         <p className="mt-3 leading-relaxed text-muted">Every champion in the current site roster, ranked by days since their last standard balance change. Special-mode updates are excluded.</p>
       </div>
 
@@ -72,13 +65,11 @@ export default function ChampionChangesPage() {
 
 
       {/* Before the list itself, not inside the tool-promo block above it. */}
-      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <ChampionChangeList entries={entries} />
       </div>
-      <NextStep steps={["tierList", "meta"]} />
 
-    </Container>
+    </section>
   );
 }
 

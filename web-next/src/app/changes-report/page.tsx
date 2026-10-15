@@ -1,3 +1,4 @@
+import { UnchangedSection } from "@/components/merged/unchanged-section";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Card, ChampionAvatar } from "@/components/ui";
@@ -160,9 +161,13 @@ export default function ChangesReportPage() {
 
       <p className="mt-3 text-center text-[0.65rem] leading-relaxed text-faint">
         Source: official Wild Rift patch notes through patch {CURRENT_PATCH}. Standard balance changes only;
-        mode-only tuning excluded. Full per-champion history at wrtruemeta.com/champion-changes
+        mode-only tuning excluded. Every champion's full history is below and on its own page
         {site.collectedOn ? ` · Win rates collected ${site.collectedOn}` : ""}
       </p>
+
+      {/* Merged 2026-10-16 from /champion-changes: the full list under the
+          headline report, instead of a second page with the same name. */}
+      <UnchangedSection />
     </Container>
   );
 }

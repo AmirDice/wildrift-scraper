@@ -1,19 +1,12 @@
-import type { Metadata } from "next";
+/** was /consistency, merged into /meta (2026-10-16): the page's own code, rendered as a section. */
 import Link from "next/link";
 import { getGlobalChampions } from "@/lib/cn";
 import { getSkillCeilingRows, topSkillCeilings } from "@/lib/regions";
-import { Container, ChampionAvatar } from "@/components/ui";
+import { ChampionAvatar } from "@/components/ui";
 import { WinrateScatter } from "@/components/winrate-scatter";
-import { AdSlot } from "@/components/ad-slot";
 
-export const metadata: Metadata = {
-  title: "Consistency & Skill Ceiling | Wild Rift Meta Chart",
-  description:
-    "Every Wild Rift champion plotted by win rate vs skill ceiling. Spot the reliably-strong picks, and the high-variance champions that only pay off with mastery.",
-  alternates: { canonical: "/consistency" },
-};
 
-export default function ConsistencyPage() {
+export function ConsistencySection() {
   // EU and NA blended, the same rule the videos use: a champion's ceiling is
   // the mean of its two regional gaps, and only where the two regions agree.
   // The EU-only chart put Lillia on top at a 48% win rate because one NA
@@ -26,8 +19,8 @@ export default function ConsistencyPage() {
   const top = topSkillCeilings(5);
   const bySlug = new Map(champions.map((c) => [c.slug, c]));
   return (
-    <Container className="py-12">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Consistency &amp; Skill Ceiling</h1>
+    <section id="consistency" className="scroll-mt-24 pt-14">
+      <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Consistency &amp; Skill Ceiling</h2>
       <p className="mt-2 max-w-2xl text-muted">
         Every champion by <span className="text-text">win rate</span> (how strong) and{" "}
         <span className="text-text">skill ceiling</span> (how much a champion&rsquo;s top mains
@@ -56,7 +49,6 @@ export default function ConsistencyPage() {
           ))}
         </ol>
       </div>
-      <AdSlot placement="inline" bare className="my-6" />
       <div className="mt-8">
         <WinrateScatter champions={champions} />
       </div>
@@ -83,6 +75,6 @@ export default function ConsistencyPage() {
           </span>
         ))}
       </div>
-    </Container>
+    </section>
   );
 }

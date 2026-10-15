@@ -319,7 +319,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
 
       <p className="mt-3 text-xs text-faint">
         More boards join with every collection run. See the{" "}
-        <Link href="/hall-of-fame" className="text-accent hover:underline">Hall of Fame</Link>
+        <Link href="/leaderboard#records" className="text-accent hover:underline">Hall of Fame</Link>
         {" "}for the individual record holders.
       </p>
     </div>

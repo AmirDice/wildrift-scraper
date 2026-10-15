@@ -237,7 +237,7 @@ export const POSTS: BlogPost[] = [
       { kind: "champions", source: "otp", limit: 8 },
       {
         kind: "cta",
-        href: "/ranks",
+        href: "/regions#brackets",
         label: "See win rate by skill bracket",
         text: "The full breakdown of how every champion performs from Diamond+ through Challenger, with CN Legendary shown separately.",
       },
@@ -271,7 +271,7 @@ export const POSTS: BlogPost[] = [
       },
       {
         kind: "cta",
-        href: "/rising",
+        href: "/regions#china-ahead",
         label: "See the full meta gap",
         text: "Every champion where China's top elo and the Western ladder disagree, in both directions.",
       },

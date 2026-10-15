@@ -7,11 +7,13 @@ import { site, regionBoard } from "@/lib/data";
 import { CN_META } from "@/lib/cn";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { AdSlot } from "@/components/ad-slot";
+import { ChinaAheadSection } from "@/components/merged/china-ahead-section";
+import { BracketsSection } from "@/components/merged/brackets-section";
 
 export const metadata: Metadata = {
-  title: "EU vs NA vs China | Regional Meta Differences",
+  title: "Regions & Skill Brackets | EU vs NA vs China",
   description:
-    "Which Wild Rift champions are stronger on NA than EU? Top-player win rates measured the same way on both servers, plus China's ladder, so a regional gap means the region and not the method.",
+    "Where each Wild Rift champion is strong: EU vs NA vs China top-player win rates, the picks China plays before the West, and how win rates change from Diamond+ to Challenger.",
   alternates: { canonical: "/regions" },
 };
 
@@ -24,7 +26,7 @@ export default function RegionsPage() {
 
   return (
     <Container className="py-12">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+      <h1 id="top" className="scroll-mt-24 text-3xl font-semibold tracking-tight sm:text-4xl">
         EU vs NA vs China
       </h1>
       <p className="mt-2 max-w-3xl text-muted">
@@ -34,6 +36,12 @@ export default function RegionsPage() {
         win rate -- so a difference between them is a difference between the{" "}
         <span className="text-text">servers</span>, not between two ways of counting.
       </p>
+
+      <nav aria-label="On this page" className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
+        <a href="#top" className="rounded-full border border-line bg-white/[0.04] px-3 py-1.5 text-muted transition hover:border-accent/40 hover:text-text">By region</a>
+        <a href="#china-ahead" className="rounded-full border border-line bg-white/[0.04] px-3 py-1.5 text-muted transition hover:border-accent/40 hover:text-text">China ahead of the West</a>
+        <a href="#brackets" className="rounded-full border border-line bg-white/[0.04] px-3 py-1.5 text-muted transition hover:border-accent/40 hover:text-text">By skill bracket</a>
+      </nav>
 
       {/* The honest caveat, stated before the numbers rather than under them. */}
       <div className="mt-5 glass rounded-2xl p-4 text-sm leading-relaxed text-muted">
@@ -108,6 +116,11 @@ export default function RegionsPage() {
         </Link>
         .
       </p>
+
+      {/* Merged 2026-10-16 from /rising and /ranks: one page for "where is
+          this champion strong", by server and by rank. */}
+      <ChinaAheadSection />
+      <BracketsSection />
     </Container>
   );
 }

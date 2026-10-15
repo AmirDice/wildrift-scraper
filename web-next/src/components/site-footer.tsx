@@ -7,18 +7,15 @@ import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 
 const FOOTER_LINKS = [
   { href: "/tier-list", label: "Tier List" },
-  { href: "/global", label: "Global" },
-  { href: "/rising", label: "Rising Picks" },
-  { href: "/ranks", label: "Win Rate by Rank" },
+  { href: "/regions", label: "Regions & Brackets" },
+  { href: "/meta", label: "Meta" },
   { href: "/compare", label: "Compare" },
-  { href: "/consistency", label: "Consistency" },
   // Dropped below while the build tools are held back: /build redirects home.
   { href: "/build", label: "Builds" },
   { href: "/items", label: "Items" },
   { href: "/runes-spells", label: "Runes & Spells" },
   { href: "/blog", label: "Guides" },
   { href: "/creators", label: "Creators" },
-  { href: "/news", label: "News" },
   { href: "/changes-report", label: "Balance Report" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },

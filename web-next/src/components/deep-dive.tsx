@@ -60,14 +60,14 @@ export function DeepDiveSections() {
         <SectionHeading
           title="CN Legendary solo queue"
           subtitle="The best and worst performers in China's separate solo-queue dataset"
-          href="/tier-list/china?bracket=4"
+          href="/tier-list?region=CN&bracket=4"
           linkLabel="Open CN Legendary tier list"
         />
         <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
           <InsightCard
             title="Best solo-queue champions"
             subtitle="CN · Legendary · minimum 0.5% pick rate"
-            href="/tier-list/china?bracket=4"
+            href="/tier-list?region=CN&bracket=4"
             items={legendaryBest.map((c) => ({
               icon: c.icon,
               name: c.name,
@@ -80,7 +80,7 @@ export function DeepDiveSections() {
           <InsightCard
             title="Worst solo-queue champions"
             subtitle="CN · Legendary · minimum 0.5% pick rate"
-            href="/tier-list/china?bracket=4"
+            href="/tier-list?region=CN&bracket=4"
             items={legendaryWorst.map((c) => ({
               icon: c.icon,
               name: c.name,
@@ -98,7 +98,7 @@ export function DeepDiveSections() {
         <SectionHeading
           title="Across all servers"
           subtitle="Combined EU + NA · who's genuinely strong on both western servers"
-          href="/global"
+          href="/regions"
           linkLabel="Cross-server comparison"
         />
         <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
@@ -136,14 +136,14 @@ export function DeepDiveSections() {
         <SectionHeading
           title="The meta gap"
           subtitle="Where China's Challenger sample disagrees with EU, often a patch ahead"
-          href="/rising"
+          href="/regions#china-ahead"
           linkLabel="Full meta gap"
         />
         <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
           <InsightCard
             title="Rising in China"
             subtitle="Rated far higher in CN top elo · learn early"
-            href="/rising"
+            href="/regions#china-ahead"
             items={rising.map((g) => ({
               icon: g.champion.icon,
               name: g.champion.name,
@@ -156,7 +156,7 @@ export function DeepDiveSections() {
           <InsightCard
             title="Overrated in EU"
             subtitle="EU rates them above China's best players"
-            href="/rising"
+            href="/regions#china-ahead"
             items={overrated.map((g) => ({
               icon: g.champion.icon,
               name: g.champion.name,
@@ -174,14 +174,14 @@ export function DeepDiveSections() {
         <SectionHeading
           title="By skill bracket"
           subtitle="How champions move from China's cumulative Diamond+ sample to Challenger"
-          href="/ranks"
+          href="/regions#brackets"
           linkLabel="Explore skill brackets"
         />
         <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
           <InsightCard
             title="Scales with elo"
             subtitle="High-skill specialists · better the higher you climb"
-            href="/ranks"
+            href="/regions#brackets"
             items={climbing.map((s) => ({
               icon: s.champion.icon,
               name: s.champion.name,
@@ -194,7 +194,7 @@ export function DeepDiveSections() {
           <InsightCard
             title="Low-elo stompers"
             subtitle="Strong to climb with, fall off at the top"
-            href="/ranks"
+            href="/regions#brackets"
             items={stompers.map((s) => ({
               icon: s.champion.icon,
               name: s.champion.name,
@@ -211,11 +211,11 @@ export function DeepDiveSections() {
       <Container className="py-6">
         <SectionHeading title="Champion insights" subtitle="Cut the data a few different ways" />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <InsightCard href="/otp-champions" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
-          <InsightCard href="/consistency" title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
-          <InsightCard href="/consistency" title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
+          <InsightCard href="/meta#one-trick" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+          <InsightCard href="/meta#consistency" title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
+          <InsightCard href="/meta#consistency" title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
           <InsightCard
-            href="/champion-changes"
+            href="/changes-report"
             title="Longest unchanged"
             subtitle="Standard balance changes only"
             items={longestUnchanged.map((entry) => ({
@@ -235,14 +235,14 @@ export function DeepDiveSections() {
         <SectionHeading
           title="Most adjusted champions"
           subtitle="Times each champion has appeared in the patch notes since we started tracking"
-          href="/champion-changes"
+          href="/changes-report"
           linkLabel="Full champion changes"
         />
         <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
           <InsightCard
             title="Riot cannot leave them alone"
             subtitle="Most patch-note appearances, all kinds"
-            href="/champion-changes"
+            href="/changes-report"
             items={mostAdjusted.map((entry) => ({
               icon: entry.champion.icon,
               name: entry.champion.name,
@@ -255,7 +255,7 @@ export function DeepDiveSections() {
           <InsightCard
             title="Barely touched"
             subtitle="Fewest patch-note appearances"
-            href="/champion-changes"
+            href="/changes-report"
             items={leastAdjusted.map((entry) => ({
               icon: entry.champion.icon,
               name: entry.champion.name,

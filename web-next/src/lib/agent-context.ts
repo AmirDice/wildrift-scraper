@@ -231,7 +231,8 @@ function pageName(pathname: string): string {
   if (pathname.startsWith("/build")) return "Build Studio";
   if (pathname.startsWith("/items")) return "item catalogue";
   if (pathname.startsWith("/runes")) return "runes and spells";
-  if (pathname.startsWith("/win-rates")) return "win rates";
+  if (pathname.startsWith("/regions")) return "regions and skill brackets";
+  if (pathname.startsWith("/meta")) return "meta overview";
   if (pathname.startsWith("/methodology")) return "methodology";
   return "WRTrueMeta";
 }
@@ -1012,7 +1013,7 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
       source: "data",
       answer: `Using a 50% win rate as the line, these champions are above it in two regions and below it in one:\n${lines.join("\n")}\n\nThat describes the split; it does not prove a region caused it. Sample size, matchups and regional meta can all contribute.`,
       evidence: lines,
-      actions: [action("Compare region results", "/tier-list"), action("Open win rates", "/win-rates")],
+      actions: [action("Compare region results", "/regions"), action("Open tier list", "/tier-list")],
       followUps: ["Why do regions have different results?", "How is Global calculated?"],
     };
   }
@@ -1069,7 +1070,7 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
           : "",
       ].filter(Boolean).join("\n\n"),
       evidence: patch.champions.slice(0, 4).map((entry) => `${entry.name}: ${entry.summary.slice(0, 160)}`),
-      actions: [action("What changed", "/updates"), action("Champion changes", "/champion-changes")],
+      actions: [action("What changed", "/updates"), action("Balance report", "/changes-report")],
       followUps: patch.champions.slice(0, 2).map((entry) => `What changed for ${entry.name}?`),
     };
   }
@@ -1161,7 +1162,7 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
     return {
       source: "data",
       answer: "WRTrueMeta collects current-season results from the top champion-leaderboard players in each region. Regional boards stay separate, and the Global view blends comparable regional samples rather than mixing in unrelated public bracket statistics.",
-      actions: [action("Open win rates", "/win-rates"), action("Open tier list", "/tier-list")],
+      actions: [action("Open tier list", "/tier-list"), action("Open meta overview", "/meta")],
     };
   }
   if (/what.*build studio|how.*build studio|what.*optimi[sz]/.test(q)) {

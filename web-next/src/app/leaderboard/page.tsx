@@ -5,6 +5,7 @@ import items from "@/data/items.json";
 import runeIcons from "@/data/rune_icons.json";
 import spells from "@/data/spells.json";
 import { NextStep } from "@/components/next-step";
+import { RecordsSection } from "@/components/merged/records-section";
 import { PlayerQuickSearch } from "@/components/player-quick-search";
 import { AdSlot } from "@/components/ad-slot";
 import championSkins from "@/data/champion_skins.json";
@@ -174,6 +175,8 @@ export default function LeaderboardPage() {
           )}
         />
         </section>
+        {/* Merged 2026-10-16 from /hall-of-fame. */}
+        <RecordsSection />
         <NextStep steps={["player", "build", "meta"]} />
       </div>
     </div>

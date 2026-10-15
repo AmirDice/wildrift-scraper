@@ -154,9 +154,16 @@ export function TierListView({
   const [region, setRegion] = useState<Region>(initialRegion);
   // ?region=NA lands on NA. After mount, so the prerendered HTML still carries
   // `initialRegion` and a crawler always reads one known ranking.
+  // ?bracket= picks a China sample too (1-4 or "ladder"): the old
+  // /tier-list/china page took it, and its links now land here.
   useEffect(() => {
     const want = regionFromQuery(window.location.search, TIER_LIST_REGIONS);
     if (want) { setRegion(want); setRole("All roles"); }
+    const bracket = new URLSearchParams(window.location.search).get("bracket");
+    const samples = cnMeta.samples ?? cnMeta.brackets;
+    const match = samples.find((option) => option.key === bracket);
+    if (want === "CN" && match) setCnBracket(match.key as CnSampleKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Pool depth: how many of each champion's top players feed the number.
   // EU, NA and Global. The first two are our own top-50 scrape and export the
@@ -385,7 +392,7 @@ export function TierListView({
             <p className="mb-4 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-xs text-muted">
               Combined <span className="text-text">EU + NA</span> ranking of the champions strongest
               across both western servers. China stays separate because its sample is bracket-wide. {" "}
-              <Link href="/global" className="text-accent hover:underline">
+              <Link href="/regions" className="text-accent hover:underline">
                 Compare regions →
               </Link>
             </p>

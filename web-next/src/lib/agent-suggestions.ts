@@ -26,13 +26,13 @@ export function agentSuggestions(pathname: string, championName?: string): strin
   if (pathname.startsWith("/leaderboard")) return ["How is the Best Player score calculated?", "Is the player pool 30 per region?"];
   if (pathname.startsWith("/build")) return ["What does Build Studio optimize?", "What items are good against healing?"];
   if (pathname.startsWith("/items")) return ["What items are good against healing?", "What does Essence Reaver do?"];
-  if (pathname.startsWith("/tier-list") || pathname.startsWith("/win-rates")) return [
+  if (pathname.startsWith("/tier-list")) return [
     "Who is the best jungler right now?",
     "What does GOD tier mean?",
     "Why do regions have different results?",
     "Is the player pool 30 per region?",
   ];
-  if (pathname.startsWith("/champion-changes") || pathname.startsWith("/updates") || pathname.startsWith("/movers")) return [
+  if (pathname.startsWith("/changes-report") || pathname.startsWith("/updates") || pathname.startsWith("/movers")) return [
     "What changed in the latest patch?",
     "How often is the tier list updated?",
   ];

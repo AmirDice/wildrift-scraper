@@ -72,21 +72,19 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
     items: [
       { href: "/leaderboard", label: "Leaderboards", desc: "The top players on every champion" },
       { href: "/player", label: "Player Search", desc: "Find a player and every champion they rank on" },
-      { href: "/hall-of-fame", label: "Hall of Fame", desc: "Ladder records & guild rankings" },
     ],
   },
   buildsEntry(buildToolsLive),
   {
     label: "Meta",
     items: [
-      { href: "/meta", label: "Meta Overview", desc: "Builds, win rates & trends" },
+      // Eight links became four on 2026-10-16: /global, /rising and /ranks
+      // are sections of Regions & Brackets now, /consistency a section of
+      // Meta Overview. Old URLs redirect (next.config.ts).
+      { href: "/meta", label: "Meta Overview", desc: "Trends, consistency & one-trick picks" },
       { href: "/movers", label: "Patch Movers", desc: "Biggest winners & losers right now" },
-      { href: "/ranks", label: "Win Rate by Skill Bracket", desc: "Diamond+ to Challenger trends" },
+      { href: "/regions", label: "Regions & Brackets", desc: "EU vs NA vs China, and by skill bracket" },
       { href: "/compare", label: "Compare Champions", desc: "Two champions side by side" },
-      { href: "/rising", label: "Rising Picks", desc: "What China plays before the West" },
-      { href: "/regions", label: "EU vs NA vs China", desc: "Which champions are region-specific" },
-      { href: "/global", label: "Global Win Rates", desc: "EU vs CN cross-server meta" },
-      { href: "/consistency", label: "Consistency", desc: "Skill ceiling & reliability" },
     ],
   },
   {
@@ -95,9 +93,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
     items: [
       { href: "/updates", label: "Site Updates", badges: ["new"], desc: "What patch the data is on, and email alerts" },
       { href: "/blog", label: "Guides", desc: "Best picks per role, climbing & meta reads" },
-      { href: "/creators", label: "Creators", desc: "Wild Rift channels still uploading" },
-      { href: "/news", label: "Latest News", desc: "Patches, champions & updates" },
-      { href: "/champion-changes", label: "Balance Report", desc: "Most changed & never changed" },
+      { href: "/changes-report", label: "Balance Report", desc: "Most changed & never changed" },
     ],
   },
   // Methodology lives in the FOOTER, not here. It is a trust page rather than

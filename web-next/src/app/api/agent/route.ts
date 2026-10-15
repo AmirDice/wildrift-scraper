@@ -193,8 +193,8 @@ function modelActions(context: ReturnType<typeof buildAgentContext>) {
     { label: "Open leaderboard", href: "/leaderboard" },
     { label: "Read methodology", href: "/methodology" },
   ];
-  if (context.page === "win rates") return [
-    { label: "Open win rates", href: "/win-rates" },
+  if (context.page === "meta overview") return [
+    { label: "Open meta overview", href: "/meta" },
     { label: "Compare regions", href: "/regions" },
   ];
   if (context.page === "item catalogue") return [{ label: "Open items", href: "/items" }];

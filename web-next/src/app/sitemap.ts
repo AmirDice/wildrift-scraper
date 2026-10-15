@@ -25,15 +25,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${BASE}/tier-list`, lastModified: now, changeFrequency: "weekly", priority: 0.95 },
-    { url: `${BASE}/tier-list/china`, lastModified: collected, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE}/champions`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/meta`, lastModified: now, changeFrequency: "weekly", priority: 0.88 },
-    { url: `${BASE}/global`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
-    { url: `${BASE}/rising`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE}/movers`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE}/ranks`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE}/compare`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE}/consistency`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     // Only listed once the Build Optimizer launches. /counter is NOT here:
     // it is a permanent redirect into /build now, and a sitemap that lists a
     // redirect asks a crawler to index a URL that does not serve a page.
@@ -50,12 +45,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/overlay`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/items`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/runes-spells`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE}/news`, lastModified: now, changeFrequency: "daily", priority: 0.75 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/albums`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/creators`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE}/champion-changes`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE}/changes-report`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
+    { url: `${BASE}/player`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE}/leaderboard`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE}/methodology`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
