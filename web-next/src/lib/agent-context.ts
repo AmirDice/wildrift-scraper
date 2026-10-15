@@ -8,6 +8,7 @@ import { getChampionDetails } from "@/lib/champion-details";
 import { getChampionHistory } from "@/lib/champion-history";
 import { getChampionLoadouts, type LoadoutTab } from "@/lib/cn-loadouts";
 import { getMatchups } from "@/lib/counters";
+import { MOVERS_META, moverBySlug } from "@/lib/movers";
 import { buildsByServer } from "@/lib/ladder-build";
 import { CURRENT_PATCH } from "@/lib/patch";
 import type { AgentAnswer } from "@/lib/agent-types";
@@ -535,10 +536,13 @@ function action(label: string, href: string) {
   return { label, href };
 }
 
-function latestChange(context: NonNullable<AgentPageContext["champion"]>) {
+function latestChange(context: NonNullable<AgentPageContext["champion"]>, patch?: string | null) {
   // Riot leaves the summary blank on some entries; the change lines are the
   // substance. Printing summary alone produced "7.3:" with nothing after it.
-  const change = context.recentChanges.find((entry) => entry.summary || entry.changes.length);
+  // A patch named in the question wins: "did 7.3a help Nocturne" is about
+  // 7.3a even though his latest change is 7.3b.
+  const change = context.recentChanges.find((entry) =>
+    (entry.summary || entry.changes.length) && (!patch || entry.patch === patch));
   if (!change) return null;
   const lines = change.changes.map((line) => `${line.ability}: ${line.text}`.replace(/\s+/g, " "));
   return { change, lines };
@@ -592,6 +596,51 @@ function deterministicChampionAnswer(question: string, context: NonNullable<Agen
       evidence: [...lane.bestMatchups.slice(0, 2).map(row), ...lane.worstMatchups.slice(0, 2).map(row)],
       actions: [action("See all China matchups", href)],
       followUps: [`What do Chinese players build on ${name}?`, `What runes do top players use on ${name}?`],
+    };
+  }
+
+  // "Did the patch help X?" -- answered with what the data can actually say.
+  // The honest answer is often "nothing measures that yet", and it has to be
+  // said that plainly: the boards and China's daily rates can both predate
+  // the change, and quoting them as its effect would be inventing a result.
+  if (/\b(help|helped|hurt|hurts|effect|impact|work|worked|stronger|weaker|better|worse|good now|bad now)\b/.test(q)
+    && /\b(patch|buff|buffs|buffed|nerf|nerfs|nerfed|change|changes|changed|update|rework|\d+ \d+[a-z]?)\b/.test(q)) {
+    const namedPatch = q.match(/\b(\d+ \d+[a-z]?)\b/)?.[1]?.replace(" ", ".") ?? null;
+    const latest = latestChange(context, namedPatch);
+    if (!latest) {
+      // Asked about a patch that did not touch this champion: say so, and
+      // name the change that did, rather than handing it to the model.
+      const last = latestChange(context);
+      if (!namedPatch || !last) return null;
+      return {
+        source: "data",
+        answer: `${name} was not changed in patch ${namedPatch}. ${name}'s most recent change was in patch ${last.change.patch}${last.change.summary ? `: ${last.change.summary}` : "."}`,
+        evidence: last.lines.slice(0, 3),
+        actions: [action("Open patch history", href)],
+        followUps: [`Did patch ${last.change.patch} help ${name}?`],
+      };
+    }
+    const { change, lines } = latest;
+    const mover = MOVERS_META.patch === change.patch ? moverBySlug(context.slug) : null;
+    const before = context.global
+      ? `${name} is ${context.global.tier} tier at ${pct(context.global.winRate)} on the Global boards`
+      : `${name} has no published Global result`;
+    const measured = mover
+      ? `In China (${MOVERS_META.scope}), ${name} went from ${pct(mover.oldWr)} to ${pct(mover.newWr)} between ${MOVERS_META.before} and ${MOVERS_META.after}, a ${mover.delta >= 0 ? "gain" : "drop"} of ${Math.abs(mover.delta).toFixed(2)} points, on a ${pct(mover.pickRate)} pick rate.`
+      : change.patch === CURRENT_PATCH && WINRATE_PATCH !== CURRENT_PATCH
+        ? `Nothing on the site measures that yet. ${before}, but those boards were collected on ${WINRATE_PATCH}, before this change, and China's daily rates have not been updated since it either. The next collection will show it.`
+        : `${before}, collected on ${WINRATE_PATCH}, after this change. That shows where ${name} stands now, not a before and after.`;
+    return {
+      source: "data",
+      answer: [
+        `${name} was changed in patch ${change.patch}.`,
+        change.summary,
+        lines.length ? lines.slice(0, 4).join("\n") : "",
+        measured,
+      ].filter(Boolean).join("\n\n"),
+      evidence: [...lines.slice(0, 2), mover ? `China: ${pct(mover.oldWr)} to ${pct(mover.newWr)}` : `Win rates collected on ${WINRATE_PATCH}`],
+      actions: [action("Open patch history", href), action("Patch winners and losers", "/movers")],
+      followUps: [`Where does ${name} rank now?`, `What runes do top players use on ${name}?`],
     };
   }
 
@@ -977,18 +1026,4 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
     if (answer) return answer;
   }
   return null;
-}
-
-export function agentSuggestions(pathname: string, championName?: string): string[] {
-  if (championName) return [
-    `What runes do top players use on ${championName}?`,
-    `Who counters ${championName}?`,
-    `What is ${championName}'s skill order?`,
-    `What changed for ${championName} recently?`,
-  ];
-  if (pathname.startsWith("/leaderboard")) return ["How is the Best Player score calculated?", "What makes the global leaderboard fair?"];
-  if (pathname.startsWith("/build")) return ["What does Build Studio optimize?", "When should I use a counter build?"];
-  if (pathname.startsWith("/items")) return ["What items are good against healing?", "What does Essence Reaver do?"];
-  if (pathname.startsWith("/tier-list") || pathname.startsWith("/win-rates")) return ["Who is the best jungler right now?", "What does GOD tier mean?", "Why do regions have different results?", "Is the player pool 30 per region?"];
-  return ["What changed in the latest patch?", "Who is the strongest ADC right now?", "What champion should I play as a new player?"];
 }

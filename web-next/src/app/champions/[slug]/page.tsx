@@ -32,7 +32,7 @@ import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
 import { serverBuildInsights } from "@/lib/server-build-insights";
 import itemsCatalogue from "@/data/items.json";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
-import { AgentPromptChips } from "@/components/site-agent";
+import { AgentPromptChips, AskAgent } from "@/components/site-agent";
 import { ChampionLoadouts } from "@/components/champion-loadouts";
 import { getChampionLoadouts } from "@/lib/cn-loadouts";
 
@@ -279,6 +279,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
       {BUILD_TOOLS_LIVE && recommendedBuildsLive(champion.name) && standardBuild && <Card className="p-5 sm:p-6"><div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Recommended build</h2><Link href={`/build?champion=${champion.slug}`} className="rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">Open Build Studio →</Link></div><BuildOrder build={standardBuild}/><div className="mt-4 flex flex-wrap items-center gap-2"><BuildLikeButton buildId={`${champion.slug}:${standardKey}`}/><ShareBuildButton path={`/build?champion=${champion.slug}&variant=${standardKey}`} title={`${champion.name} recommended build`} text={`${champion.name} recommended build on WrTrueMeta: full item order, boots timing and runes.`}/></div></Card>}
       {BUILD_TOOLS_LIVE && champion.name === "Kayn" && <Card className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Form-specific build</h2><p className="mt-2 text-sm text-muted">Kayn does not have one responsible standard build: Shadow Assassin and Rhaast value different fights, runes, and items.</p><Link href="/build?champion=kayn&tab=generate" className="mt-4 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-bold text-black">Choose a form and generate →</Link></Card>}
       {(matchups.strong.length > 0 || matchups.weak.length > 0) && <div className="grid gap-4 sm:grid-cols-2"><Matchups title={`${champion.name} is strong against`} accent="text-accent" matchups={matchups.strong}/><Matchups title={`${champion.name} is weak against`} accent="text-bad" matchups={matchups.weak}/></div>}
+      {(matchups.strong.length > 0 || matchups.weak.length > 0) && cnLoadouts.length > 0 && <div className="-mt-1"><AskAgent question={`What are ${champion.name}'s matchups in China?`} label={`How ${champion.name}'s matchups go in China`} /></div>}
     </div>
   );
 
@@ -364,7 +365,14 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
 
         <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
           <ChampionTabs
-            panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/> }}
+            panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <>
+              {history.changes[0] && (
+                <div className="mb-4">
+                  <AskAgent question={`Did patch ${history.changes[0].patch} help ${champion.name}?`} />
+                </div>
+              )}
+              <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/>
+            </> }}
           />
           <ToolsCta />
           {/* In-content, after the champion's own material and before the

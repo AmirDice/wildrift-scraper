@@ -3,11 +3,21 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui";
+import { AskAgent } from "@/components/site-agent";
 import type { ChampionLoadoutLane, LoadoutEntity, LoadoutRow, LoadoutTab } from "@/lib/cn-loadouts";
 
 /* eslint-disable @next/next/no-img-element */
 
 type TabKey = "items" | "runes" | "boots" | "spells" | "versus";
+
+/** The agent question beside each tab. Every one is answered from this same
+ *  China data by the agent's fast path, so asking costs no AI answer. */
+const TAB_QUESTION: Partial<Record<TabKey, (champion: string) => string>> = {
+  items: (champion) => `What do Chinese players build on ${champion}?`,
+  runes: (champion) => `What runes do top players use on ${champion}?`,
+  boots: (champion) => `What boots do players buy on ${champion}?`,
+  versus: (champion) => `What is ${champion}'s best matchup in China?`,
+};
 
 const BASE_TABS: { key: TabKey; label: string; short: string }[] = [
   { key: "items", label: "Core items", short: "Cores" },
@@ -258,6 +268,11 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
             ))}
           </div>
         </div>
+        {TAB_QUESTION[activeTab] && (
+          <div className="mt-3">
+            <AskAgent question={TAB_QUESTION[activeTab]!(champion)} />
+          </div>
+        )}
 
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[0.07] pb-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

@@ -15,6 +15,7 @@ import { useAccount } from "@/components/account-provider";
 import type { AgentAction, AgentAnswer, AgentQuotaState } from "@/lib/agent-types";
 import { track } from "@/components/share-build";
 import { SIGNED_IN_DAILY_AGENT_QUESTIONS } from "@/lib/agent-quota-limits";
+import { agentSuggestions, championPrompts } from "@/lib/agent-suggestions";
 
 type NavChampion = { name: string; slug: string; icon?: string };
 type Message = {
@@ -40,19 +41,6 @@ const AgentContext = createContext<AgentContextValue | null>(null);
 // under-grounded; users should not keep seeing those stale replies after the
 // data layer is corrected.
 const STORAGE_KEY = "wtm:site-agent:v2";
-
-function suggestions(pathname: string, championName?: string): string[] {
-  if (championName) return [
-    `How difficult is ${championName}?`,
-    `Where does ${championName} rank?`,
-    `What is ${championName}'s skill combo?`,
-    `Who counters ${championName}?`,
-  ];
-  if (pathname.startsWith("/leaderboard")) return ["How is the Best Player score calculated?", "How does the global leaderboard work?"];
-  if (pathname.startsWith("/build")) return ["What does Build Studio optimize?", "When should I use a counter build?"];
-  if (pathname.startsWith("/tier-list") || pathname.startsWith("/win-rates")) return ["Why do regions have different results?", "Is the player pool 30 per region?", "What regions are currently tracked in the tier list?", "What data is available in the tier list?"];
-  return ["How are win rates calculated?", "How is the Best Player score calculated?", "What does Build Studio optimize?"];
-}
 
 function freshId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -85,7 +73,7 @@ export function SiteAgentProvider({
   const championSlug = pathname.match(/^\/champions\/([^/?#]+)/)?.[1] ?? "";
   const champion = champions.find((entry) => entry.slug === championSlug);
   const contextualSuggestions = useMemo(
-    () => suggestions(pathname, champion?.name),
+    () => agentSuggestions(pathname, champion?.name),
     [pathname, champion?.name],
   );
 
@@ -359,15 +347,41 @@ function AgentThinking() {
   );
 }
 
+/**
+ * The site agent, for any component that wants to put a question to it.
+ * Null outside the provider (it wraps the whole app in layout.tsx), so a
+ * caller renders nothing rather than a button that does nothing.
+ */
+export function useSiteAgent(): AgentContextValue | null {
+  return useContext(AgentContext);
+}
+
+/**
+ * An inline "ask the agent" button, placed beside the data it asks about.
+ *
+ * Pass a question the fast path answers from site data where you can: a
+ * question that reaches the model spends an anonymous visitor's one AI answer
+ * for the day, and a button is easy to click without thinking about that.
+ */
+export function AskAgent({ question, label, className = "" }: { question: string; label?: string; className?: string }) {
+  const agent = useContext(AgentContext);
+  if (!agent) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => agent.ask(question)}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent/[0.06] px-3 py-1.5 text-left text-xs font-semibold text-accent transition hover:border-accent/45 hover:bg-accent/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${className}`}
+    >
+      <AgentSpark className="h-3.5 w-3.5 shrink-0" />
+      {label ?? question}
+    </button>
+  );
+}
+
 export function AgentPromptChips({ champion }: { champion: string }) {
   const agent = useContext(AgentContext);
   if (!agent) return null;
-  const prompts = [
-    `How difficult is ${champion}?`,
-    `Where does ${champion} rank?`,
-    `What is ${champion}'s skill combo?`,
-    `Who counters ${champion}?`,
-  ];
+  const prompts = championPrompts(champion);
   return (
     <div className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-6" aria-label={`Ask about ${champion}`}>
       <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
