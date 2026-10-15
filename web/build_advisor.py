@@ -680,6 +680,8 @@ GAME_PHASES = {
 
 # Curated: these champions have genuinely playable AD and AP item paths in Wild
 # Rift. Raw ability tags are too noisy (many champions have one incidental ratio).
+# This no longer GATES the damage path selector -- every champion can ask for
+# AD, AP or hybrid -- it only decides what "standard" explores on its own.
 HYBRID_DAMAGE_CHAMPIONS = {
     "Akali", "Corki", "Ezreal", "Jax", "Kai'Sa", "Katarina", "Kayle",
     "Shyvana", "Teemo", "Twitch", "Varus", "Volibear", "Warwick",
@@ -694,6 +696,33 @@ DAMAGE_PATHS = {
     "hybrid": "HYBRID DAMAGE PATH: deliberately combine AD and AP/on-hit scaling only where the "
               "kit converts both efficiently. Every mixed purchase must have a kit-linked reason.",
 }
+
+#: How the damage is delivered, chosen by the player. Orthogonal to the AD/AP
+#: path: an AP on-hit Kai'Sa and an AD on-hit Vayne are both "on-hit". Offered
+#: for every champion, because players run these off the reviewed lists (crit
+#: Riven is common on the ladder now), and an explicit choice overrules the
+#: identity card and crit policy for that delivery path only.
+DAMAGE_STYLES = {
+    "auto": "",
+    "crit": ("DAMAGE TYPE: CRITICAL STRIKE, chosen by the player. Build a real crit path: at "
+             "least three of the five core items carry critical strike, and the first or "
+             "second item completes the crit engine. This overrides any crit policy or "
+             "identity limit above for crit. Say what the kit gains from crit and what "
+             "the build gives up for it."),
+    "onhit": ("DAMAGE TYPE: ON-HIT, chosen by the player. Build an attack-speed/on-hit path: "
+              "at least two core items with on-hit effects plus attack speed to fire them, "
+              "scaled with the selected damage path's stat. This overrides any attack-speed "
+              "or on-hit limit above. Say how the kit's attacks use it."),
+    "lethality": ("DAMAGE TYPE: LETHALITY, chosen by the player. Build a flat-penetration "
+                  "burst path: at least two lethality/flat armor penetration items, front-"
+                  "loaded so the burst spike comes early. This overrides any lethality or "
+                  "armor penetration limit above."),
+    "ability": ("DAMAGE TYPE: ABILITY DAMAGE, chosen by the player. Build for spell damage: "
+                "ability haste and items whose passives fire on ability hits, scaled with the "
+                "selected damage path's stat; basic-attack items only where the kit's "
+                "abilities empower attacks."),
+}
+_STYLE_ARCHETYPE = {"crit": "ad-crit", "lethality": "ad-lethality"}
 
 # Split per form into KIT FACTS (always sent) and the form's DEFAULT identity
 # (sent only when no explicit playstyle was chosen). The identity used to be an
@@ -925,7 +954,8 @@ ON_HIT_EFFECT_CORE_ITEMS = 2
 
 def _damage_archetypes(champion: str, combat: dict, scaling: dict,
                        damage_path: str = "standard",
-                       unrestricted_mode: bool = False) -> list[dict]:
+                       unrestricted_mode: bool = False,
+                       damage_style: str = "auto") -> list[dict]:
     """Return every credible damage engine the tournament must represent.
 
     This is intentionally conservative.  A stray AP ratio never creates an AP
@@ -942,6 +972,17 @@ def _damage_archetypes(champion: str, combat: dict, scaling: dict,
             "id": "unrestricted",
             "description": "all legal damage, durability, hybrid and off-meta item paths",
         }]
+    if damage_style in DAMAGE_STYLES and damage_style != "auto":
+        # The player named the delivery path; every candidate is that path.
+        magic = damage_path == "ap" or (
+            damage_path == "standard" and profiles.build_identity(champion) == "magic")
+        if damage_style == "onhit":
+            chosen = "ap-on-hit" if magic else "ad-on-hit"
+        elif damage_style == "ability":
+            chosen = "ap-caster" if magic else "ad-caster"
+        else:
+            chosen = _STYLE_ARCHETYPE[damage_style]
+        return [{"id": chosen, "description": _ARCHETYPE_TEXT[chosen]}]
     identity = profiles.build_identity(champion)
     identity_profile = profiles.build_identity_profile(champion)
     # The prompt's curated identity card is also an engine constraint.  Before
@@ -2240,7 +2281,8 @@ def _item_supports_archetype(slug: str, archetype: str,
 
 
 def _identity_item_allowed(champion: str, slug: str,
-                           unrestricted_mode: bool = False) -> bool:
+                           unrestricted_mode: bool = False,
+                           damage_style: str = "auto") -> bool:
     """Apply the same curated identity lint to engine pool items.
 
     Identity validation used to happen only after Gemini had selected a build.
@@ -2249,16 +2291,18 @@ def _identity_item_allowed(champion: str, slug: str,
     reviewed no-crit Vi or an AP shell on K'Sante).  Filtering one item at pool
     construction is both cheaper and makes the search evidence honest.
     """
-    if unrestricted_mode:
+    if unrestricted_mode or crit_policy.ladder_built(champion, slug):
         return True
     champion_class = (CHAMPS.get(champion) or {}).get("class", "")
-    if not crit_policy.allows(champion, champion_class):
+    if not crit_policy.allows(champion, champion_class) and damage_style != "crit":
         if crit_policy.item_has_crit(ITEMS.get(slug) or {}):
             return False
     card = prompt_mod.identity_card(champion)
     if not card:
         return True
-    return not validate_mod.identity_violations([slug], card)
+    return not validate_mod.identity_violations(
+        [slug], card, ladder_name=champion,
+        allow=validate_mod.DAMAGE_STYLE_ALLOWS.get(damage_style, set()))
 
 
 def _combo_matches_archetype(combo: tuple[str, ...], archetype: str,
@@ -3453,6 +3497,7 @@ def advise(champion: str, role: str, enemies: list[str],
            ladder_anchor: bool = True,
            engine_tournament: bool = False,
            unrestricted_mode: bool = False,
+           damage_style: str = "auto",
            on_progress=None) -> dict:
     # on_progress(event) is called with {"stage": ...} as the generation moves.
     # It is optional and side-effect free: nothing about the build depends on
@@ -3511,9 +3556,10 @@ def advise(champion: str, role: str, enemies: list[str],
         }
     game_phase = game_phase if game_phase in GAME_PHASES else "early"
     damage_path = damage_path if damage_path in DAMAGE_PATHS else "standard"
-    if (damage_path != "standard" and champion not in HYBRID_DAMAGE_CHAMPIONS
-            and not unrestricted_mode):
-        return {"error": f"{damage_path!r} is not a supported damage path for {champion}"}
+    # Every champion may ask for AD, AP or hybrid now. An off-identity path
+    # (AP Riven) is the player's explicit choice; the prompt says so and the
+    # identity lint stands down for it, as it always did for the hybrid roster.
+    damage_style = damage_style if damage_style in DAMAGE_STYLES else "auto"
     # The key is checked AFTER the request is validated. A malformed request is
     # malformed whether or not this deployment can reach the model, and checking
     # in the other order made the answer depend on the environment: the same bad
@@ -3687,7 +3733,10 @@ def advise(champion: str, role: str, enemies: list[str],
          "in the order the player should complete them and use `bootsPurchaseAfter` for "
          "tier-2 boots. Follow the selected power-curve goal below; the engine measures "
          "your order but does not rewrite it."),
-        DAMAGE_PATHS[damage_path],
+        DAMAGE_PATHS[damage_path]
+        + (" The player chose this path explicitly; it overrides the damage limits in "
+           "the identity block above." if damage_path != "standard" else ""),
+        DAMAGE_STYLES[damage_style],
         kayn_form_block(champion_form, playstyle),
         # Counter mode gets the structured, weighted threat picture; other modes
         # get the plain enemy line (usually "unknown" in studio).
@@ -3808,7 +3857,8 @@ def advise(champion: str, role: str, enemies: list[str],
         try:
             tournament_stage = "generating candidates"
             damage_archetypes = _damage_archetypes(
-                champion, combat, scaling, damage_path, unrestricted_mode)
+                champion, combat, scaling, damage_path, unrestricted_mode,
+                damage_style)
             candidate_count = _tournament_candidate_count(damage_archetypes)
             raw_candidates = call(_tournament_generation_prompt(
                 prompt, damage_archetypes, candidate_count, build_bias,
@@ -4307,6 +4357,7 @@ def advise(champion: str, role: str, enemies: list[str],
         return validate_mod.validate(
             build, champion_class=champion_class, role=role, mode=mode,
             enemies_known=enemies_known, damage_path=damage_path,
+            damage_style=damage_style, ladder_name=identity_key,
             required_audit_items=kit_linked_items,
             allowed_items=pool_slugs, item_locks=item_locks, boot_lock=locked_boot,
             rune_locks=locked_runes, resolve_item=_resolve_item,
@@ -4539,6 +4590,8 @@ def advise(champion: str, role: str, enemies: list[str],
         "riskTolerance": risk_tolerance,
         "skillLevel": skill_level,
         "buildBias": build_bias,
+        "damagePath": damage_path,
+        "damageStyle": damage_style,
         "enemyContext": "known" if enemies_known else "unknown",
         "unrestrictedMode": unrestricted_mode,
         "restrictionMode": "unrestricted" if unrestricted_mode else "curated",
@@ -5073,6 +5126,7 @@ def main() -> None:
     ap.add_argument("--objective", default="balanced")
     ap.add_argument("--game-phase", choices=tuple(GAME_PHASES), default="early")
     ap.add_argument("--damage-path", choices=tuple(DAMAGE_PATHS), default="standard")
+    ap.add_argument("--damage-style", choices=tuple(DAMAGE_STYLES), default="auto")
     ap.add_argument("--champion-form", default="")
     ap.add_argument("--ahead-enemy", default="")
     ap.add_argument("--mode", choices=("studio", "counter"), default="studio")
@@ -5108,6 +5162,7 @@ def main() -> None:
                  risk_tolerance=args.risk_tolerance, skill_level=args.skill_level,
                  build_bias=args.build_bias,
                  game_phase=args.game_phase, damage_path=args.damage_path,
+                 damage_style=args.damage_style,
                  champion_form=args.champion_form, ahead_enemy=args.ahead_enemy,
                  locked_items=[s.strip() for s in args.locked_items.split(",") if s.strip()],
                  locked_runes=[s.strip() for s in args.locked_runes.split(",") if s.strip()],

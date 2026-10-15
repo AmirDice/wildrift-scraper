@@ -12,6 +12,21 @@ export const DAMAGE_PATHS = [
   { key: "hybrid", label: "Hybrid", description: "Use both AD and AP/on-hit scaling when the kit converts both efficiently." },
 ] as const;
 
+/** How the damage is delivered, independent of AD/AP. Offered for every
+ *  champion: an explicit pick overrules the curated "never" for that path only
+ *  (crit Riven, on-hit Riven), which is what web/build_advisor.py DAMAGE_STYLES
+ *  tells the model. */
+export const DAMAGE_STYLES = [
+  { key: "auto", label: "Auto", description: "Let the builder choose how the damage is delivered." },
+  { key: "crit", label: "Crit", description: "A critical strike path: at least three crit items, even where it is not this champion's usual build." },
+  { key: "onhit", label: "On-hit", description: "Attack speed and on-hit effects, scaled with the chosen damage path." },
+  { key: "lethality", label: "Lethality", description: "Flat armor penetration burst, front-loaded for an early spike." },
+  { key: "ability", label: "Abilities", description: "Spell damage: ability haste and items that fire on ability hits." },
+] as const;
+
+/** Champions whose AD and AP paths are both standard. No longer gates the
+ *  damage path selector (every champion can ask for AD, AP or hybrid); kept
+ *  for what "Standard" explores on its own. */
 export const HYBRID_DAMAGE_CHAMPIONS = new Set([
   "Akali", "Corki", "Ezreal", "Jax", "Kai'Sa", "Katarina", "Kayle",
   "Shyvana", "Teemo", "Twitch", "Varus", "Volibear", "Warwick",

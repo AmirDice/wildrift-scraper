@@ -1006,3 +1006,63 @@ class TestBlueBuffGate:
         targeted, _blocking = repair.plan(["runes"])
         assert "runes" in targeted
         assert "runes" in report.sections()
+
+
+def test_ladder_built_crit_items_are_not_never_build():
+    """Vi's ladder buys Mortal Reminder in two thirds of EU games; the generic
+    frontline crit ban rejected it. A tenth of the ladder overrules the ban,
+    one item at a time -- Infinity Edge on Vi is still rejected."""
+    from web.advisor import validate
+    assert validate.identity_violations(
+        ["mortal-reminder"], {"avoidStats": []}, champion_name="Vi",
+        champion_class="Bruiser") == []
+    assert validate.identity_violations(
+        ["infinity-edge"], {"avoidStats": []}, champion_name="Vi",
+        champion_class="Bruiser")
+
+
+def test_ladder_unlocks_a_crit_path_only_where_the_card_allows_it():
+    """Riven's ladder runs Infinity Edge and Essence Reaver and her card does
+    not forbid crit; Darius's EU Galeforce builds do not overrule a card that
+    says crit does nothing for his execute. Pen items carrying crit (Mortal
+    Reminder, LDR) never make a crit path on their own."""
+    from web.advisor import crit_policy
+    assert crit_policy.ladder_crit_path("Riven")
+    assert crit_policy.allows("Riven", "Bruiser")
+    assert not crit_policy.ladder_crit_path("Darius")
+    assert not crit_policy.ladder_crit_path("Renekton")
+
+
+def test_an_explicit_damage_type_stands_down_only_its_own_limit():
+    from web.advisor import prompt, validate
+    card = prompt.identity_card("Riven")
+    assert validate.identity_violations(["blade-of-the-ruined-king"], card, ladder_name="Riven")
+    assert validate.identity_violations(
+        ["blade-of-the-ruined-king"], card, ladder_name="Riven",
+        allow=validate.DAMAGE_STYLE_ALLOWS["onhit"]) == []
+    # It stands down damage-stat limits only: Leona's lifesteal ban stays.
+    leona = prompt.identity_card("Leona")
+    assert validate.identity_violations(
+        ["infinity-edge"], leona, ladder_name="Leona",
+        allow=validate.DAMAGE_STYLE_ALLOWS["crit"]) == []
+    assert validate.identity_violations(
+        ["bloodthirster"], leona, ladder_name="Leona",
+        allow=validate.DAMAGE_STYLE_ALLOWS["crit"])
+
+
+def test_a_chosen_damage_type_must_show_up_in_the_build():
+    from web.advisor import validate
+    tank = ["sunfire-aegis", "iceborn-gauntlet", "thornmail", "kaenic-rookern",
+            "amaranths-twinguard"]
+    assert validate.damage_style_shortfall(tank, "crit")
+    assert validate.damage_style_shortfall(
+        ["essence-reaver", "the-collector", "infinity-edge", "lord-dominiks-regard",
+         "deaths-dance"], "crit") is None
+    assert validate.damage_style_shortfall(tank, "auto") is None
+
+
+def test_crit_prompt_lines_never_cite_popularity():
+    from web.advisor import crit_policy
+    for name, cls in [("Riven", "Bruiser"), ("Vi", "Bruiser"), ("Renekton", "Bruiser")]:
+        line = crit_policy.prompt_line(name, [cls]).lower()
+        assert "top players" not in line and "ladder" not in line and "%" not in line

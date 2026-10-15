@@ -278,6 +278,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             mode=mode,
             game_phase=_clean(body.get("gamePhase")) or "early",
             damage_path=_clean(body.get("damagePath")) or "standard",
+            damage_style=_clean(body.get("damageStyle")) or "auto",
             champion_form=_clean(body.get("championForm")),
             ahead_enemy=_clean(body.get("aheadEnemy")),
             risk_tolerance=_clean(body.get("riskTolerance")) or "medium",

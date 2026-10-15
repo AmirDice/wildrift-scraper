@@ -7,7 +7,7 @@ import { CounterReasoning, EnemyRead } from "@/components/counter-intel";
 import { GlassSlider } from "@/components/glass-slider";
 import engineData from "@/data/engine.json";
 import playstyleData from "@/data/playstyles.json";
-import { DAMAGE_PATHS, GAME_PHASES, HYBRID_DAMAGE_CHAMPIONS, KAYN_FORMS } from "@/lib/build-options";
+import { DAMAGE_PATHS, DAMAGE_STYLES, GAME_PHASES, KAYN_FORMS } from "@/lib/build-options";
 import { useAccount, type QuotaState } from "@/components/account-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in";
 import { BuildFeedback } from "@/components/build-feedback";
@@ -1019,6 +1019,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     } catch { /* private mode */ }
   }, []);
   const [damagePath, setDamagePath] = useState<string>("standard");
+  const [damageStyle, setDamageStyle] = useState<string>("auto");
   const [championForm, setChampionForm] = useState<string>(presetForm || "shadow-assassin");
   const [enemies, setEnemies] = useState<(string | null)[]>(Array(5).fill(null));
   const [allies, setAllies] = useState<(string | null)[]>(Array(4).fill(null));
@@ -1080,7 +1081,6 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const safeAheadEnemy = selectedEnemies.includes(aheadEnemy) ? aheadEnemy : "";
   const needsEnemy = isCounter && selectedEnemies.length === 0;
   const roleMismatch = Boolean(champ && role && naturalRole && role !== naturalRole);
-  const supportsDamagePath = Boolean(champ && HYBRID_DAMAGE_CHAMPIONS.has(champ));
   // `remaining` is null for unlimited accounts (Infinity does not survive
   // JSON), and in JS `null <= 0` is true -- so without the guards the more
   // privileged the account, the more locked-out the UI: the server exempted
@@ -1102,6 +1102,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     setChamp(name);
     setPlaystyle(defaultPlaystyle);
     setDamagePath("standard");
+    setDamageStyle("auto");
     setChampionForm("shadow-assassin");
     setEnemies((current) => current.map((enemy) => enemy === name ? null : enemy));
     setAllies((current) => current.map((ally) => ally === name ? null : ally));
@@ -1141,6 +1142,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     setGamePhase("early");
     setSkillLevel("average");
     setDamagePath("standard");
+    setDamageStyle("auto");
     setBiasIdx(2);
     committedBias.current = 2;
     setLockedItems([]);
@@ -1164,6 +1166,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     setObjective("balanced");
     setGamePhase("early");
     setDamagePath("standard");
+    setDamageStyle("auto");
     setChampionForm("shadow-assassin");
     setEnemies(Array(5).fill(null));
     setAllies(Array(4).fill(null));
@@ -1224,6 +1227,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           champion: champ, role, playstyle: requestedStyle, objective, gamePhase, damagePath,
+          damageStyle,
           skillLevel,
           buildBias: BIAS_STOPS[biasIdx].key,
           championForm: champ === "Kayn" ? championForm : "",
@@ -1420,13 +1424,23 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               </select>
             </div>
           )}
-          {advanced && supportsDamagePath && (
+          {advanced && (
             <div>
               <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Damage path</p>
               <select value={damagePath} onChange={(e) => setDamagePath(e.target.value)}
                 title={DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}
                 className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
                 {DAMAGE_PATHS.map((path) => <option key={path.key} value={path.key}>{path.label}</option>)}
+              </select>
+            </div>
+          )}
+          {advanced && (
+            <div>
+              <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Damage type</p>
+              <select value={damageStyle} onChange={(e) => setDamageStyle(e.target.value)}
+                title={DAMAGE_STYLES.find((style) => style.key === damageStyle)?.description}
+                className="rounded-lg border border-line bg-[#0e1322] px-2 py-2 text-sm text-text outline-none">
+                {DAMAGE_STYLES.map((style) => <option key={style.key} value={style.key}>{style.label}</option>)}
               </select>
             </div>
           )}
@@ -1526,7 +1540,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           <div className="space-y-1 text-xs text-muted">
             <p>{selectedPlaystyle.description}</p>
             <p><span className="font-medium text-text">Power spike:</span> {GAME_PHASES.find((phase) => phase.key === gamePhase)?.description}</p>
-            {supportsDamagePath && <p><span className="font-medium text-text">Damage path:</span> {DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}</p>}
+            {damagePath !== "standard" && <p><span className="font-medium text-text">Damage path:</span> {DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}</p>}
+            {damageStyle !== "auto" && <p><span className="font-medium text-text">Damage type:</span> {DAMAGE_STYLES.find((style) => style.key === damageStyle)?.description}</p>}
             {champ === "Kayn" && <p><span className="font-medium text-text">Form:</span> {KAYN_FORMS.find((form) => form.key === championForm)?.description}</p>}
           </div>
         )}

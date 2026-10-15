@@ -250,9 +250,61 @@ def _realign_rune_reasons(res: dict, page: dict, report: Report) -> None:
     reasons["minors"] = realigned
 
 
+#: What an explicitly chosen damage type stands down in the identity lint:
+#: every DAMAGE-stat limit, the same way an explicit AD/AP path already turns
+#: the card off. Narrower versions failed live: crit Malphite died on his
+#: card's "never AD" (every crit item carries AD), and Leona's card bans AD,
+#: AP, crit and attack speed at once, so no damage type could ever pass on
+#: her. Non-damage limits (lifesteal, heal/shield power) still stand, and
+#: damage_style_shortfall makes sure the build really is the chosen type.
+_DAMAGE_STATS = frozenset({"ad", "ap", "crit", "lethality", "attack_speed",
+                           "armor_pen", "magic_pen", "on_hit"})
+DAMAGE_STYLE_ALLOWS = {style: set(_DAMAGE_STATS)
+                       for style in ("crit", "onhit", "lethality", "ability")}
+
+
+#: How many of the five core items must carry a chosen damage type for the
+#: build to BE that type. Malphite asked for crit came back as Sunfire,
+#: Iceborn, Thornmail, Kaenic and Twinguard: the request lived only in the
+#: prompt, and nothing checked the answer.
+DAMAGE_STYLE_MINIMUM = {"crit": 3, "onhit": 2, "lethality": 2}
+
+
+def _style_item(slug: str, style: str) -> bool:
+    item = ITEMS.get(slug) or {}
+    stats = item.get("stats") or {}
+    passive_text = " ".join(str(line) for line in (item.get("passives") or []))
+    if style == "crit":
+        return crit_policy.item_has_crit(item)
+    if style == "onhit":
+        return bool(re.search(
+            r"on[- ]hits?|attacks?\s+deal|every\s+\d+(?:st|nd|rd|th)?\s+attack",
+            passive_text, re.I))
+    if style == "lethality":
+        return "physicalPenFlat" in stats or bool(re.search(r"lethality", passive_text, re.I))
+    return False
+
+
+def damage_style_shortfall(slugs: list[str], style: str) -> str | None:
+    """Why the build is not the damage type the player chose, or None."""
+    need = DAMAGE_STYLE_MINIMUM.get(style)
+    if not need:
+        return None
+    have = [slug for slug in slugs if _style_item(slug, style)]
+    if len(have) >= need:
+        return None
+    label = {"crit": "critical strike", "onhit": "on-hit", "lethality": "lethality"}[style]
+    return (f"the player chose the {label} damage type, which needs at least {need} "
+            f"{label} items in the five, and this build has {len(have)}"
+            + (f" ({', '.join(have)})" if have else "")
+            + f". Rebuild it as a {label} build, keeping what the kit needs to function.")
+
+
 def identity_violations(slugs: list[str], identity: dict | None,
                         *, champion_name: str = "",
-                        champion_class: str = "") -> list[str]:
+                        champion_class: str = "",
+                        ladder_name: str = "",
+                        allow: set[str] | None = None) -> list[str]:
     """Hard meta-identity lint: items whose defining stat the champion's
     curated identity card marks as never-build.
 
@@ -269,18 +321,28 @@ def identity_violations(slugs: list[str], identity: dict | None,
     if identity and isinstance(identity.get("hardLimits"), dict):
         identity = identity["hardLimits"]
     identity = identity or {}
-    avoid = set(identity.get("avoidStats") or [])
+    allow = allow or set()
+    avoid = set(identity.get("avoidStats") or []) - allow
     forbidden_paths = " ".join(
         str(row.get("path") or "")
         for row in (identity.get("neverArchetypes") or [])
         if isinstance(row, dict)
     ).lower()
+    if "on_hit" in allow:
+        forbidden_paths = forbidden_paths.replace("on-hit", "").replace("attack speed", "")
     generic_crit_ban = bool(
-        champion_name and not crit_policy.allows(champion_name, champion_class))
+        champion_name and "crit" not in allow
+        and not crit_policy.allows(champion_name, champion_class))
+    ladder_name = ladder_name or champion_name
     if not avoid and not forbidden_paths and not generic_crit_ban:
         return []
     out: list[str] = []
     for slug in slugs:
+        # An item a tenth of this champion's top players build is not
+        # never-build, whatever the card says. Vi's ladder buys Mortal
+        # Reminder in 67% of EU games and the generic crit ban rejected it.
+        if ladder_name and crit_policy.ladder_built(ladder_name, slug):
+            continue
         item = ITEMS.get(slug) or {}
         stats = item.get("stats") or {}
         passive_text = " ".join(str(line) for line in (item.get("passives") or [])).lower()
@@ -353,7 +415,9 @@ def identity_violations(slugs: list[str], identity: dict | None,
 
 def identity_combo_violations(slugs: list[str], identity: dict | None,
                               *, champion_name: str = "",
-                              champion_class: str = "") -> list[str]:
+                              champion_class: str = "",
+                              ladder_name: str = "",
+                              allow: set[str] | None = None) -> list[str]:
     """Reject a completed item set that forms a forbidden archetype.
 
     ``identity_violations`` intentionally works one item at a time because
@@ -395,15 +459,19 @@ def identity_combo_violations(slugs: list[str], identity: dict | None,
         if "physicalPenFlat" in stats:
             flat_pen_count += 1
 
+    allow = allow or set()
+    ladder_name = ladder_name or champion_name
     out: list[str] = []
-    if ("crit" in forbidden and crit_count >= 3
+    if ("crit" in forbidden and crit_count >= 3 and "crit" not in allow
+            and not (ladder_name and crit_policy.ladder_crit_path(ladder_name))
             and not (champion_name
                     and crit_policy.allows(champion_name, champion_class))):
         out.append(
             f"the item set contains {crit_count} crit items and forms a Crit Damage "
             "path, but this champion's curated identity marks Crit Damage as never-build"
         )
-    if "attack speed" in forbidden and "on-hit" in forbidden and on_hit_count >= 3:
+    if ("attack speed" in forbidden and "on-hit" in forbidden and on_hit_count >= 3
+            and "on_hit" not in allow):
         out.append(
             f"the item set contains {on_hit_count} attack-speed/on-hit items and forms "
             "an Attack Speed On-Hit path, but this champion's curated identity marks "
@@ -443,6 +511,8 @@ def validate(
     mode: str = "studio",
     enemies_known: bool = False,
     damage_path: str = "standard",
+    damage_style: str = "auto",
+    ladder_name: str = "",
     required_audit_items: list[str] | None = None,
     allowed_items: list[str] | None = None,
     item_locks: list[str] | None = None,
@@ -641,14 +711,20 @@ def validate(
                                          f"position {position}; it may enter the build at "
                                          f"position {minimum} or later")
         if not unrestricted_mode:
+            allow = DAMAGE_STYLE_ALLOWS.get(damage_style, set())
             for problem in identity_violations(
                     items, identity, champion_name=champion_name,
-                    champion_class=champion_class):
+                    champion_class=champion_class, ladder_name=ladder_name,
+                    allow=allow):
                 report.fail("items", problem)
             for problem in identity_combo_violations(
                     items, identity, champion_name=champion_name,
-                    champion_class=champion_class):
+                    champion_class=champion_class, ladder_name=ladder_name,
+                    allow=allow):
                 report.fail("items", problem)
+            shortfall = damage_style_shortfall(items, damage_style)
+            if shortfall:
+                report.fail("items", shortfall)
 
     main_items = [s for s in items if s]
 
@@ -661,7 +737,8 @@ def validate(
         if not unrestricted_mode:
             for problem in identity_violations(
                     [boots], identity, champion_name=champion_name,
-                    champion_class=champion_class):
+                    champion_class=champion_class, ladder_name=ladder_name,
+                    allow=DAMAGE_STYLE_ALLOWS.get(damage_style, set())):
                 report.fail("boots", problem)
         res["bootsUpgrade"] = ITEMS[boots].get("upgradesTo")
         try:

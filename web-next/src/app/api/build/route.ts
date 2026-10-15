@@ -140,6 +140,7 @@ type Body = {
   objective?: string;
   gamePhase?: string;
   damagePath?: string;
+  damageStyle?: string;
   championForm?: string;
   aheadEnemy?: string;
   mode?: string;
@@ -316,6 +317,8 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
       b.gamePhase ?? "early",
       "--damage-path",
       b.damagePath ?? "standard",
+      "--damage-style",
+      b.damageStyle ?? "auto",
       "--champion-form",
       b.championForm ?? "",
       "--ahead-enemy",
@@ -455,6 +458,7 @@ async function handlePost(request: Request) {
     objective: clean(body.objective) || "balanced",
     gamePhase: clean(body.gamePhase) || "early",
     damagePath: clean(body.damagePath) || "standard",
+    damageStyle: clean(body.damageStyle) || "auto",
     championForm: clean(body.championForm),
     aheadEnemy: clean(body.aheadEnemy),
     mode,

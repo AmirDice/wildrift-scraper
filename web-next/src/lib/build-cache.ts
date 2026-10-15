@@ -43,6 +43,9 @@ export interface BuildRequestKey {
   objective: string;
   gamePhase: string;
   damagePath: string;
+  /** auto | crit | onhit | lethality | ability. Optional so older callers
+   *  (the v1 API, cached-build) keep their keys. */
+  damageStyle?: string;
   championForm: string;
   aheadEnemy: string;
   mode: string;
@@ -75,6 +78,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
     objective: request.objective,
     gamePhase: request.gamePhase,
     damagePath: request.damagePath,
+    // Only a chosen damage type joins the key, so an Auto request hashes
+    // exactly as it did before the selector existed.
+    ...(request.damageStyle && request.damageStyle !== "auto"
+      ? { damageStyle: request.damageStyle }
+      : {}),
     championForm: request.championForm,
     aheadEnemy: request.aheadEnemy,
     mode: request.mode,
@@ -418,7 +426,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // model's. The default power curve is now an early-game spike, and
   // unrestricted mode must depart from the ladder's build instead of handing
   // it back under an experimental banner. Every cached build has the old order.
-  return `build:v85:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v86: the crit policy reads the ladder. Items a tenth of a champion's top
+  // players build are no longer "never-build" (Mortal Reminder on Vi, 67% of
+  // EU games, was rejected), Riven may build a crit path, and every champion
+  // can choose an AD/AP/hybrid path and a damage type.
+  return `build:v86:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {
