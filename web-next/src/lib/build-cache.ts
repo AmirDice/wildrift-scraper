@@ -412,7 +412,13 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Lethal Tempo repair. Lethal Tempo had been invisible to it, so 14 to 15
   // champions per region -- the marksmen, Master Yi, Tryndamere, Yone -- were
   // described to the model with their runner-up keystone as the main one.
-  return `build:v84:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v85: Gemini owns the purchase order. The engine used to re-sort the
+  // model's items by its own staged score before the UI saw them, so "Optimal
+  // build order" showed the engine's order while the reasoning described the
+  // model's. The default power curve is now an early-game spike, and
+  // unrestricted mode must depart from the ladder's build instead of handing
+  // it back under an experimental banner. Every cached build has the old order.
+  return `build:v85:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

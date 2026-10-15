@@ -457,6 +457,7 @@ export type Advice = {
     powerCurve?: string;
     measuredLevels?: number[];
     buildOrder?: string[];
+    orderSource?: "model" | "engine" | string;
     componentPlan?: Array<{ item: string; components?: string[]; known?: boolean }>;
     recipeCoverage?: number;
     recipeSource?: string;
@@ -816,9 +817,9 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
   // Older cached builds carry no timing and read as the old fixed 2.
   const stayT2 = advice.bootsUpgradeAfter === 0;
   const upAfter = Math.min(Math.max(advice.bootsUpgradeAfter ?? 2, 1), Math.max(items.length, 1));
-  const engineOrder = advice.engineEvidence?.buildOrder?.filter(Boolean) ?? [];
-  const displayOrder = engineOrder.length
-    ? engineOrder
+  const authoredOrder = advice.engineEvidence?.buildOrder?.filter(Boolean) ?? [];
+  const displayOrder = authoredOrder.length
+    ? authoredOrder
     : [advice.boots, ...items].filter(Boolean) as string[];
   const coreOrder = displayOrder.filter((slug) => slug !== advice.boots);
   const bootsIndex = advice.boots ? displayOrder.indexOf(advice.boots) : -1;
@@ -906,10 +907,10 @@ function ItemStrip({ advice, lockedItems, onToggleLock }: {
         );
       })}
     </div>
-    {engineOrder.length > 0 && (
+    {authoredOrder.length > 0 && (
       <p className="mt-2 text-[0.65rem] text-faint">
-        Engine order: <span className="font-semibold text-text">
-          {engineOrder.map((slug) => itemName(slug)).join(" → ")}
+        Gemini order: <span className="font-semibold text-text">
+          {authoredOrder.map((slug) => itemName(slug)).join(" → ")}
         </span>
       </p>
     )}
@@ -989,7 +990,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [role, setRole] = useState(initialConfig?.role || presetRole);
   const [playstyle, setPlaystyle] = useState<string>(initialConfig?.playstyle || defaultPlaystyle);
   const [objective, setObjective] = useState<string>("balanced");
-  const [gamePhase, setGamePhase] = useState<string>("balanced");
+  const [gamePhase, setGamePhase] = useState<string>("early");
   const [skillLevel, setSkillLevel] = useState<string>("average");
   // Slider position, 0..4 into BIAS_STOPS. Deliberately NOT reset when the
   // champion changes: the lean is a preference about how to itemise, not a
@@ -1137,7 +1138,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const simplify = () => {
     setPlaystyle(defaultPlaystyle);
     setObjective("balanced");
-    setGamePhase("balanced");
+    setGamePhase("early");
     setSkillLevel("average");
     setDamagePath("standard");
     setBiasIdx(2);
@@ -1161,7 +1162,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
     setRole(presetRole);
     setPlaystyle(defaultPlaystyle);
     setObjective("balanced");
-    setGamePhase("balanced");
+    setGamePhase("early");
     setDamagePath("standard");
     setChampionForm("shadow-assassin");
     setEnemies(Array(5).fill(null));

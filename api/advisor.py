@@ -276,7 +276,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             playstyle=_clean(body.get("playstyle")) or "standard",
             objective=_clean(body.get("objective")) or "balanced",
             mode=mode,
-            game_phase=_clean(body.get("gamePhase")) or "balanced",
+            game_phase=_clean(body.get("gamePhase")) or "early",
             damage_path=_clean(body.get("damagePath")) or "standard",
             champion_form=_clean(body.get("championForm")),
             ahead_enemy=_clean(body.get("aheadEnemy")),

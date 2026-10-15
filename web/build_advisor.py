@@ -1646,6 +1646,30 @@ def _ladder_rune_page(record: dict, authored: list[dict], champion: str,
     return None, "unavailable"
 
 
+def _ladder_core(champion: str) -> list[str]:
+    """The five core items top players build on this champion, in order.
+
+    Unrestricted mode names this build so the model departs from it. Without
+    it the mode only LIFTED restrictions, and on most champions the model
+    concluded the meta build was still best: Jinx came back as Stormrazor,
+    IE, Runaan's, Mortal Reminder and Bloodthirster under an "Experimental"
+    banner, which is the build the player already had.
+    """
+    try:
+        record = prompt_mod._consensus_store().get(champion.split(" (")[0])
+    except Exception:  # pragma: no cover - malformed optional feed
+        return []
+    if not isinstance(record, dict):
+        return []
+    order = [(_resolve_item(str(slug)) or str(slug)) for slug in (record.get("order") or [])]
+    if len(order) < 5:
+        order = [(_resolve_item(str(row.get("slug") or "")) or "")
+                 for row in (record.get("items") or [])]
+    core = [slug for slug in order
+            if slug in ITEMS and (ITEMS.get(slug) or {}).get("category") != "Boots"]
+    return list(dict.fromkeys(core))[:5]
+
+
 def _ladder_candidate(champion: str, authored: list[dict], role: str,
                       allowed_items: list[str],
                       rune_locks: list[str] | None = None) -> dict | None:
@@ -1875,6 +1899,28 @@ def _simulate_tournament(champion: str, candidates: list[dict],
     return measured
 
 
+def _model_purchase_order(build: dict) -> list[str]:
+    """Return Gemini's authored purchase order, including tier-2 boots.
+
+    ``items`` is already an ordered list in the advisor contract. The boots
+    timing is separate because boots are not one of the five core items, so
+    insert them at the number of completed core items Gemini chose. This keeps
+    the engine's evidence pass observational instead of silently replacing the
+    model's order with a mathematical one.
+    """
+    core = [str(slug) for slug in (build.get("items") or [])
+            if str(slug) and str(slug) != str(build.get("boots") or "")]
+    boots = str(build.get("boots") or "")
+    if not boots:
+        return core
+    try:
+        after = int(build.get("bootsPurchaseAfter", 1))
+    except (TypeError, ValueError):
+        after = 1
+    after = max(0, min(len(core), after))
+    return [*core[:after], boots, *core[after:]]
+
+
 def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
                              objective: str, playstyle: str) -> dict:
     """Measure the returned build for the UI's power-curve/objective controls.
@@ -1887,7 +1933,7 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
     across multiple builds.
     """
     from web.fight_engine import (analyze_build, evaluation_vector,
-                                  item_components, optimal_purchase_order)
+                                  item_components)
 
     items = list(build.get("items") or [])
     boots = str(build.get("boots") or "")
@@ -1897,11 +1943,11 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
 
     levels = {"early": 7, "mid": 11, "late": 15}
     levels_to_measure = [levels[game_phase]] if game_phase in levels else [7, 11, 15]
-    purchase_order = optimal_purchase_order(
-        champion, items, boots, runes, "standard")
-    # Boots are a normal candidate in the engine order. Do not force them
-    # after the first item: some champions/builds are measurably strongest with
-    # tier-2 boots before the first completed core item.
+    # Gemini owns purchase order. The engine measures the order it authored;
+    # it must not silently rewrite that choice while preparing evidence for the
+    # UI. Boots remain a separate schema field and are inserted at the model's
+    # requested completion point.
+    purchase_order = _model_purchase_order(build)
     ordered_core = [slug for slug in purchase_order if slug != boots]
     boots_purchase_after = (
         next((i for i, slug in enumerate(purchase_order)
@@ -1958,7 +2004,8 @@ def _engine_request_evidence(champion: str, build: dict, *, game_phase: str,
     return {
         "available": True,
         "engineRole": "measurement",
-        "playstyleValidation": "semantic choice remains LLM-led; mechanics are measured here",
+        "orderSource": "model",
+        "playstyleValidation": "Gemini authors the order; the engine measures its power curve",
         "powerCurve": game_phase,
         "measuredLevels": levels_to_measure,
         "buildOrder": purchase_order,
@@ -3397,7 +3444,7 @@ MEASUREMENTS:
 def advise(champion: str, role: str, enemies: list[str],
            allies: list[str] | None = None, playstyle: str = "standard",
            objective: str = "balanced", mode: str = "studio",
-           game_phase: str = "balanced", damage_path: str = "standard",
+           game_phase: str = "early", damage_path: str = "standard",
            champion_form: str = "", ahead_enemy: str = "",
            risk_tolerance: str = "medium", skill_level: str = "average",
            build_bias: str = "balanced",
@@ -3462,7 +3509,7 @@ def advise(champion: str, role: str, enemies: list[str],
             "availablePlaystyles": (["adaptive"] + [s for s in allowed_styles if s != "standard"]
                                     if mode == "counter" else allowed_styles),
         }
-    game_phase = game_phase if game_phase in GAME_PHASES else "balanced"
+    game_phase = game_phase if game_phase in GAME_PHASES else "early"
     damage_path = damage_path if damage_path in DAMAGE_PATHS else "standard"
     if (damage_path != "standard" and champion not in HYBRID_DAMAGE_CHAMPIONS
             and not unrestricted_mode):
@@ -3586,6 +3633,14 @@ def advise(champion: str, role: str, enemies: list[str],
          "item-family recommendations and search all supplied legal item paths. This "
          "is off-meta exploration and is not recommended for normal games. Still use "
          "real supplied names and a legal build schema."
+         + (("\nTHE BUILD TO DEPART FROM: top players build "
+             + ", ".join(ITEMS[slug]["name"] for slug in _ladder_core(identity_key))
+             + ". The player already has that build and asked for something else. At "
+             "least TWO of your five core items must be outside that list, chosen "
+             "because they exploit something real in this kit. Returning that build, "
+             "or it with one item swapped, fails the request. Say in the reasoning what "
+             "the departure buys and what it gives up.")
+            if len(_ladder_core(identity_key)) >= 4 and not item_locks else "")
          if unrestricted_mode else
          prompt_mod.meta_identity_block(identity_key, constrain=(objective != "best"))),
         prompt_mod.ladder_consensus_block(identity_key) if ladder_anchor else "",
@@ -3621,6 +3676,17 @@ def advise(champion: str, role: str, enemies: list[str],
         bias,
         skill,
         GAME_PHASES[game_phase],
+        ("PURCHASE-ORDER AUTHORITY: Gemini owns the exact purchase order. Return `items` "
+         "in the order the player should complete them and use `bootsPurchaseAfter` for "
+         "tier-2 boots. The default request is an EARLY-GAME POWER SPIKE: prefer the "
+         "earliest practical lane, skirmish and first-objective spike while keeping the "
+         "complete build coherent. The engine may measure this order and report evidence, "
+         "but it must not reorder it."
+         if game_phase == "early" else
+         "PURCHASE-ORDER AUTHORITY: Gemini owns the exact purchase order. Return `items` "
+         "in the order the player should complete them and use `bootsPurchaseAfter` for "
+         "tier-2 boots. Follow the selected power-curve goal below; the engine measures "
+         "your order but does not rewrite it."),
         DAMAGE_PATHS[damage_path],
         kayn_form_block(champion_form, playstyle),
         # Counter mode gets the structured, weighted threat picture; other modes
@@ -5005,7 +5071,7 @@ def main() -> None:
     ap.add_argument("--allies", default="")
     ap.add_argument("--playstyle", default="standard")
     ap.add_argument("--objective", default="balanced")
-    ap.add_argument("--game-phase", choices=tuple(GAME_PHASES), default="balanced")
+    ap.add_argument("--game-phase", choices=tuple(GAME_PHASES), default="early")
     ap.add_argument("--damage-path", choices=tuple(DAMAGE_PATHS), default="standard")
     ap.add_argument("--champion-form", default="")
     ap.add_argument("--ahead-enemy", default="")

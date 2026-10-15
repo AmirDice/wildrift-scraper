@@ -43,7 +43,7 @@ export function studioRequest(champion: string, role = ""): BuildRequestKey {
     allies: [],
     playstyle: "standard",
     objective: "balanced",
-    gamePhase: "balanced",
+    gamePhase: "early",
     damagePath: "standard",
     championForm: "",
     aheadEnemy: "",

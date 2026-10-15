@@ -147,7 +147,7 @@ export async function POST(request: Request) {
     allies,
     playstyle: clean(body.playstyle) || "standard",
     objective: clean(body.objective) || "balanced",
-    gamePhase: clean(body.gamePhase) || "balanced",
+    gamePhase: clean(body.gamePhase) || "early",
     damagePath: clean(body.damagePath) || "standard",
     championForm: clean(body.championForm),
     aheadEnemy: clean(body.aheadEnemy),
