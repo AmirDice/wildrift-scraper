@@ -75,20 +75,6 @@ function formatDataDate(value: string | null): string {
     : "Date unavailable";
 }
 
-function newestTabDate(lane: ChampionLoadoutLane): Date | null {
-  const dates = Object.values(lane.tabs)
-    .map((tab) => parseDataDate(tab.date))
-    .filter((date): date is Date => Boolean(date));
-  return dates.length ? new Date(Math.max(...dates.map((date) => date.getTime()))) : null;
-}
-
-function isOlderSample(tab: LoadoutTab, lane: ChampionLoadoutLane): boolean {
-  const date = parseDataDate(tab.date);
-  const newest = newestTabDate(lane);
-  if (!date || !newest) return false;
-  return newest.getTime() - date.getTime() > 1000 * 60 * 60 * 24 * 30;
-}
-
 function EntityIcon({ entity, large = false }: { entity: LoadoutEntity; large?: boolean }) {
   const image = (
     <img
@@ -207,7 +193,6 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   if (!lane) return <EmptyState champion={champion} />;
 
   const tab = lane.tabs[activeTab];
-  const older = isOlderSample(tab, lane);
   const rows = tab.rows;
   const visibleRows = expanded ? rows : rows.slice(0, 6);
   const favorable = [...lane.tabs.versus.rows].sort((a, b) => b.winRate - a.winRate).slice(0, 5);
@@ -312,7 +297,6 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
 
         <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>A higher row win rate does not prove the loadout caused the wins.</p>
-          <p className={`shrink-0 ${older ? "text-amber-200/80" : ""}`}>Source snapshot: {formatDataDate(tab.date)}{older ? " · older tab" : ""}</p>
         </div>
       </div>
     </Card>
