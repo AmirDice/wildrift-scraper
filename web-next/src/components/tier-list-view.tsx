@@ -390,8 +390,9 @@ export function TierListView({
           )}
           {isGlobal && (
             <p className="mb-4 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-xs text-muted">
-              Combined <span className="text-text">EU + NA</span> ranking of the champions strongest
-              across both western servers. China stays separate because its sample is bracket-wide. {" "}
+              Combined <span className="text-text">EU + NA + China</span> ranking: each champion&rsquo;s
+              top 30 players on all three regional leaderboards, averaged. China&rsquo;s Tencent brackets
+              (Diamond+ to Legendary) are a different measurement and stay under the China tab.{" "}
               <Link href="/regions" className="text-accent hover:underline">
                 Compare regions →
               </Link>

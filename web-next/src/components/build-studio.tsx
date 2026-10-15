@@ -231,7 +231,7 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
       <div className="relative mt-3 min-h-[8.5rem] overflow-hidden rounded-[1.5rem] border border-white/[0.1] shadow-[inset_0_1px_rgba(255,255,255,.1)]">
         {rec.champion.splash && (
           <>
-            <img src={rec.champion.splash} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[center_24%] opacity-40" />
+            <img src={rec.champion.splash} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-top opacity-40" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#07101d] via-[#07101d]/85 to-[#07101d]/20" />
           </>
         )}

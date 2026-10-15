@@ -410,7 +410,7 @@ function FlagshipTool({
 function FeaturedChampion({ c }: { c: Champion }) {
   return (
     <Link href={`/champions/${c.slug}`} className="group relative block min-h-[390px] overflow-hidden rounded-[1.6rem] border border-line">
-      <div className="absolute inset-0 bg-cover transition duration-500 group-hover:scale-[1.03]" style={{ backgroundImage: `url(${c.splash})`, backgroundPosition: "72% 24%" }} />
+      <div className="absolute inset-0 bg-cover transition duration-500 group-hover:scale-[1.03]" style={{ backgroundImage: `url(${c.splash})`, backgroundPosition: "72% top" }} />
       <div className="absolute inset-0 bg-gradient-to-r from-[#07101d] via-[#07101d]/78 to-[#07101d]/10" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#050a13]/95 via-transparent to-[#0a1422]/20" />
       <div className="relative flex min-h-[390px] flex-col justify-between gap-8 p-6 sm:p-8">

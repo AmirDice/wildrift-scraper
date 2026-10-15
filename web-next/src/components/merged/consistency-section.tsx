@@ -24,7 +24,8 @@ export function ConsistencySection() {
       <p className="mt-2 max-w-2xl text-muted">
         Every champion by <span className="text-text">win rate</span> (how strong) and{" "}
         <span className="text-text">skill ceiling</span> (how much a champion&rsquo;s top mains
-        out-perform the average), both averaged across <span className="text-text">EU and NA</span>.{" "}
+        out-perform the average). Win rate is averaged across <span className="text-text">EU, NA and China</span>;
+        skill ceiling across <span className="text-text">EU and NA</span>, where the player-level data lives.{" "}
         <span className="text-accent">Bottom-right</span> = reliably strong;{" "}
         <span className="text-gold">top-right</span> = strong but rewards mastery;
         the higher a champion sits, the more its win rate depends on the player. Hover any dot.

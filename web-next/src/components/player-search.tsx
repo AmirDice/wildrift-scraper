@@ -284,7 +284,7 @@ function PlayerProfile({
                   loading="lazy"
                   aria-hidden
                   className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-                  style={{ objectPosition: "center 18%" }}
+                  style={{ objectPosition: "center top" }}
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/70 to-transparent" />

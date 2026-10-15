@@ -86,7 +86,7 @@ export function RecordsSection() {
           return (
             <div key={title} className="relative overflow-hidden rounded-2xl border border-gold/30">
               {art && (
-                <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${art.splash})` }} />
+                <div className="absolute inset-0 bg-cover" style={{ backgroundImage: `url(${art.splash})`, backgroundPosition: "center top" }} />
               )}
               <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/40" />
               <div className="absolute inset-0 bg-gradient-to-t from-bg/95 via-transparent to-bg/30" />

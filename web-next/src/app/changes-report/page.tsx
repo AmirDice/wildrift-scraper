@@ -210,7 +210,7 @@ function HeroPanel({
           <div
             aria-hidden
             className="absolute inset-0 bg-cover"
-            style={{ backgroundImage: `url(${champion.splash})`, backgroundPosition: "70% 26%" }}
+            style={{ backgroundImage: `url(${champion.splash})`, backgroundPosition: "70% top" }}
           />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-bg via-bg/90 to-bg/45" />
         </>

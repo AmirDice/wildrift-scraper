@@ -65,7 +65,7 @@ export default async function SharedBuildPage(props: PageProps<"/b/[id]">) {
       <div className="glass relative mx-auto max-w-2xl overflow-hidden rounded-3xl">
         {champ?.splash && (
           <div aria-hidden className="absolute inset-0 -z-10">
-            <img src={champ.splash} alt="" className="h-full w-full object-cover opacity-25" />
+            <img src={champ.splash} alt="" className="h-full w-full object-cover object-top opacity-25" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg/60 to-bg/90" />
           </div>
         )}

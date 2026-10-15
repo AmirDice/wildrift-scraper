@@ -56,7 +56,7 @@ function percentileFn(vals: number[]) {
 function ChampHeader({ c, color }: { c: Champion; color: string }) {
   return (
     <Link href={`/champions/${c.slug}`} className="group relative block overflow-hidden rounded-xl">
-      <div className="absolute inset-0 bg-cover opacity-40 transition group-hover:opacity-50" style={{ backgroundImage: `url(${c.splash})`, backgroundPosition: "center 20%" }} />
+      <div className="absolute inset-0 bg-cover opacity-40 transition group-hover:opacity-50" style={{ backgroundImage: `url(${c.splash})`, backgroundPosition: "center top" }} />
       <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/70 to-transparent" />
       <div className="relative flex w-full flex-col items-center gap-1 p-3 text-center">
         <span className="h-12 w-12 overflow-hidden rounded-full sm:h-14 sm:w-14" style={{ boxShadow: `0 0 0 2px ${color}` }}>

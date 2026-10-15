@@ -144,7 +144,7 @@ function ChampionSpotlight({
     <div className="relative mb-6 overflow-hidden rounded-2xl border border-line">
       <div
         className="absolute inset-0 bg-cover"
-        style={{ backgroundImage: `url(${champ.splash})`, backgroundPosition: "center 25%" }}
+        style={{ backgroundImage: `url(${champ.splash})`, backgroundPosition: "center top" }}
       />
       {/* One horizontal scrim, not three: text sits on solid ground at the
           left while the art stays legible on the right. */}
