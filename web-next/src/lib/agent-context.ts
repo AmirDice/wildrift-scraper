@@ -67,12 +67,33 @@ const STAT_NAME: Record<string, string> = {
   physicalPenPct: "Armor Pen", magicPenFlat: "Magic Pen", magicPenPct: "Magic Pen", hsPower: "Heal and Shield Power",
 };
 
-/** What the tiers mean, in the methodology page's own words, so the agent
- *  cannot drift from the page it points at. */
-const TIER_MEANING = "Champions are bucketed GOD, S, A, B, C and L by their confidence-adjusted win rate. "
-  + "The all-roles list uses fixed cutoffs: GOD 63%+, S 61 to 63%, A 59 to 61%, B 57 to 59%, C 56 to 57%, "
-  + "L under 56%. L is the bottom tier. Filtered to one role, the cutoffs switch to percentiles so every "
-  + "tier stays populated. The win rates are the top players' results, which is why they sit above 50%.";
+/**
+ * What the tiers mean, as the CODE assigns them -- not as the methodology page
+ * words it. That page says the all-roles list uses fixed cutoffs of GOD 63%+
+ * and so on, which is true only of each region's board, on a raw win rate the
+ * site never shows: the board shows that rate shifted so the average champion
+ * sits at 50% (EU by -9.4 points), so EU's GOD line is 53.6% on screen. The
+ * Global list uses percentile bands instead. The agent quoted the page's
+ * version for a day and would have told a reader Senna was GOD at 60.1% under
+ * a 63% line.
+ */
+const TIER_MEANING = "Tiers run GOD, S, A, B, C and L, best to worst; L is the bottom tier. How a champion lands in "
+  + "one depends on the view. The Global list ranks the blended win rate: GOD is the top 8%, S the next band to "
+  + "25%, A to 50%, B to 75%, C to 92%, and L the bottom 8%. Each region's top 30 board uses fixed lines on its "
+  + "top players' win rate (GOD 63%, S 61%, A 59%, B 57%, C 56%), but shows that rate shifted so the average "
+  + "champion sits at 50%, so on screen the lines are about 9 to 10 points lower. Any role filter switches to "
+  + "the same percentile bands within that role, so every role has a full spread. China's Tencent brackets use "
+  + "their own lines on the whole-bracket win rate: GOD 53.5%, S 52%, A 50.8%, B 49.5%, C 48%.";
+
+const TIER_KEYS: Record<string, string> = { god: "GOD", s: "S", a: "A", b: "B", c: "C", l: "Ass" };
+const BAND_SHARE: Record<string, [number, number]> = {
+  GOD: [0, 8], S: [8, 25], A: [25, 50], B: [50, 75], C: [75, 92], Ass: [92, 100],
+};
+/** Fixed lines on a region board's RAW win rate (web/data_loader.py). */
+const RAW_LINE: Record<string, number> = { GOD: 63, S: 61, A: 59, B: 57, C: 56, Ass: 0 };
+/** China's Tencent bracket lines, on the rate as shown (lib/cn.ts cnTier). */
+const CN_LINE: Record<string, number> = { GOD: 53.5, S: 52, A: 50.8, B: 49.5, C: 48, Ass: 0 };
+const TIER_UP: Record<string, string | null> = { GOD: null, S: "GOD", A: "S", B: "A", C: "B", Ass: "C" };
 const REFRESH = "Ladder data is refreshed roughly twice a month: each refresh re-scrapes the top players of "
   + "every champion in each region. Tencent's China win rates behind patch winners and losers refresh daily.";
 
@@ -118,7 +139,10 @@ function needsReasoning(q: string): boolean {
 function roleFromQuestion(q: string): Role | null {
   if (/\b(jungle|jungler|junglers|jg)\b/.test(q)) return "Jungle";
   if (/\b(mid|midlane|middle|mid lane|midlaner)\b/.test(q)) return "Mid";
-  if (/\b(baron|top|toplane|top lane|toplaner|solo lane)\b/.test(q)) return "Baron";
+  // "top" is the Baron lane only when it is not "top 30", "top players" or
+  // "top tier": the tier list asks about "China's top 30" and that is a
+  // board, not a role filter.
+  if (/\b(baron|toplane|top lane|toplaner|solo lane)\b|\btop\b(?!\s*(\d+|players?|tier|tiers|of|ranked|ranking))/.test(q)) return "Baron";
   if (/\b(dragon|adc|adcs|bot|botlane|bot lane|marksman|marksmen|carry)\b/.test(q)) return "Dragon";
   if (/\b(support|supports|supp|sup)\b/.test(q)) return "Support";
   return null;
@@ -140,10 +164,16 @@ function namedChampions(question: string): Champion[] {
   for (const champion of pool) {
     for (const name of new Set([plain(champion.name), plain(champion.slug.replace(/-/g, " ")), champion.slug.replace(/-/g, "")])) {
       if (!name) continue;
-      const at = haystack.indexOf(` ${name} `);
+      // "ornns tier" is a possessive typed without the apostrophe.
+      let hit = name;
+      let at = haystack.indexOf(` ${name} `);
+      if (at < 0) {
+        hit = `${name}s`;
+        at = haystack.indexOf(` ${hit} `);
+      }
       if (at < 0) continue;
       found.push({ champion, at });
-      haystack = haystack.slice(0, at) + " " + "_".repeat(name.length) + " " + haystack.slice(at + name.length + 2);
+      haystack = haystack.slice(0, at) + " " + "_".repeat(hit.length) + " " + haystack.slice(at + hit.length + 2);
       break;
     }
   }
@@ -778,6 +808,113 @@ function deterministicChampionAnswer(question: string, context: NonNullable<Agen
   return null;
 }
 
+/** Which tier-list view a question is about. */
+function tierView(q: string) {
+  const region = regionFromQuestion(q);
+  const bracket = /\b(diamond|master|challenger|legendary)\b/.exec(q)?.[1] ?? null;
+  const tencent = region === "CN" && Boolean(bracket);
+  // Tencent's brackets have no role tiers: tierRole equals tier there.
+  const role = tencent ? null : roleFromQuestion(q);
+  const scope = tencent
+    ? `China's ${{ diamond: "Diamond+", master: "Master+", challenger: "Challenger", legendary: "Legendary" }[bracket!]} bracket`
+    : region
+      ? `${region === "CN" ? "China" : region}'s top 30 board`
+      : "the Global list";
+  return { region, role, tencent, scope: role ? `${scope}, among ${role} champions` : scope };
+}
+
+/** The champions a view ranks, best first, each with the tier it shows there. */
+function tierPool(view: ReturnType<typeof tierView>) {
+  const source = view.region && !view.tencent ? regionBoard(view.region).champions : getGlobalChampions();
+  return source
+    .filter((c) => !c.statsPending && Number.isFinite(c.wr))
+    .filter((c) => !view.role || c.role === view.role)
+    .map((c) => ({ name: c.name, slug: c.slug, wr: c.wr, tier: view.role ? c.tierRole : c.tier }))
+    .sort((a, b) => b.wr - a.wr);
+}
+
+/** One tier's rule for a view, in the numbers that view shows. */
+function bandRule(tier: string, view: ReturnType<typeof tierView>): string {
+  const label = tierLabel(tier);
+  if (view.tencent) {
+    const up = TIER_UP[tier];
+    return tier === "Ass"
+      ? `${label} is everything under ${CN_LINE.C}% in this bracket's whole-ladder win rate.`
+      : `${label} starts at ${CN_LINE[tier]}%${up ? ` and runs to just under ${CN_LINE[up]}%` : ""}, on the whole bracket's win rate.`;
+  }
+  if (view.region && !view.role) {
+    const offset = regionBoard(view.region).wrOffset;
+    const shown = (raw: number) => (raw + offset).toFixed(1);
+    const up = TIER_UP[tier];
+    const line = tier === "Ass"
+      ? `${label} is everything under ${shown(RAW_LINE.C)}%`
+      : `${label} starts at ${shown(RAW_LINE[tier])}%${up ? ` and runs to just under ${shown(RAW_LINE[up])}%` : ""}`;
+    return `${line} on this board. The tiers are fixed lines on the top players' raw win rate (${label === "L" ? "under 56%" : `${RAW_LINE[tier]}%`}), and the board shows every rate shifted by ${offset} points so the average champion sits at 50%, which is why the line on screen is lower.`;
+  }
+  const [from, to] = BAND_SHARE[tier];
+  return from === 0
+    ? `${label} is the top ${to}% of the list, ranked by win rate.`
+    : to === 100
+      ? `${label} is the bottom ${100 - from}% of the list, ranked by win rate.`
+      : `${label} is the band from the top ${from}% to the top ${to}% of the list, ranked by win rate.`;
+}
+
+/** "What puts a champion in S tier in EU?" */
+function tierBandAnswer(q: string, tier: string): AgentAnswer {
+  const view = tierView(q);
+  const rule = bandRule(tier, view);
+  if (view.tencent) {
+    return {
+      source: "data",
+      answer: `In ${view.scope}, ${rule} Those are every player's games at that rank, not the top 30, which is why they sit close to 50%.`,
+      evidence: [rule],
+      actions: [action("Open tier list", "/tier-list"), action("Read methodology", "/methodology")],
+    };
+  }
+  const pool = tierPool(view);
+  const members = pool.filter((c) => c.tier === tier);
+  const label = tierLabel(tier);
+  const range = members.length
+    ? `Right now that is ${members.length} champion${members.length === 1 ? "" : "s"}, from ${pct(members[0].wr)} down to ${pct(members[members.length - 1].wr)}: ${members.slice(0, 4).map((c) => c.name).join(", ")}${members.length > 4 ? " and others" : ""}.`
+    : `No champion is in ${label} in this view right now.`;
+  return {
+    source: "data",
+    answer: `On ${view.scope}: ${rule}\n\n${range}`,
+    evidence: [rule, ...members.slice(0, 3).map((c) => `${c.name}: ${pct(c.wr)}`)],
+    actions: [action("Open tier list", "/tier-list"), action("Read methodology", "/methodology")],
+    followUps: members.slice(0, 2).map((c) => `Why is ${c.name} ${label} tier${view.region ? ` in ${view.region}` : ""}?`),
+  };
+}
+
+/** "Why is Hwei GOD tier?" -- where the champion sits against its view's lines. */
+function championTierAnswer(q: string, champion: Champion): AgentAnswer | null {
+  const view = tierView(q);
+  if (view.tencent) return null;
+  const pool = tierPool(view);
+  const index = pool.findIndex((c) => c.slug === champion.slug);
+  if (index < 0) return null;
+  const entry = pool[index];
+  const label = tierLabel(entry.tier);
+  const rule = bandRule(entry.tier, view);
+  const above = index === 0 ? "the top of the list" : `with ${Math.round((index / pool.length) * 100)}% of the list above`;
+  const up = TIER_UP[entry.tier];
+  let gap = "";
+  if (up && view.region && !view.role) {
+    const nextLine = RAW_LINE[up] + regionBoard(view.region).wrOffset;
+    gap = ` ${tierLabel(up)} starts at ${nextLine.toFixed(1)}%, ${(nextLine - entry.wr).toFixed(1)} points higher.`;
+  } else if (up) {
+    const needRank = Math.max(1, Math.floor((BAND_SHARE[up][1] / 100) * pool.length));
+    gap = index + 1 > needRank ? ` ${tierLabel(up)} would need roughly rank ${needRank} or better.` : "";
+  }
+  return {
+    source: "data",
+    answer: `${champion.name} is ${label} tier on ${view.scope}: ${pct(entry.wr)}, ranked ${index + 1} of ${pool.length}, ${above}.\n\n${rule}${gap}`,
+    evidence: [`${champion.name}: ${pct(entry.wr)}, rank ${index + 1} of ${pool.length}`, rule],
+    actions: [action(`Open ${champion.name}`, `/champions/${champion.slug}`), action("Open tier list", "/tier-list")],
+    followUps: [`Who counters ${champion.name}?`, `Did patch ${CURRENT_PATCH} help ${champion.name}?`],
+  };
+}
+
 function rankingAnswer(champions: Champion[]): AgentAnswer {
   const rows = champions.map((champion) => {
     const global = getGlobalBySlug(champion.slug);
@@ -878,12 +1015,24 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
     };
   }
 
-  // What the tiers mean, straight from the methodology page.
+  // A tier in a particular view: "what puts a champion in S tier in EU",
+  // "why is Hwei GOD tier". Answered from the bands the code really uses.
+  const namedTier = /\b(god|s|a|b|c|l) tier\b/.exec(q)?.[1] ?? null;
+  // "why is ornn's tier so low" names no tier but asks the same thing.
+  if (named.length === 1 && (namedTier ? /\bwhy\b|\bhow (is|come)\b|\bwhat (puts|makes|gets)\b/ : /\bwhy\b.*\btier(ed)?\b/).test(q)) {
+    const answer = championTierAnswer(q, named[0]);
+    if (answer) return answer;
+  }
+  if (namedTier && !named.length && /\bwhat (puts|makes|gets)\b|\b(mean|means|meaning|cutoff|cutoffs|threshold|line)\b|\bhow (do|does|is|are)\b/.test(q)) {
+    return tierBandAnswer(q, TIER_KEYS[namedTier]);
+  }
+
+  // What the tiers mean, in general.
   if (/\b(god|s|a|b|c|l) tier\b.*\b(mean|means|meaning)\b|\btiers?\b.*\b(mean|means|meaning|work|cutoff|cutoffs|calculated|decided)\b|\bwhat is (god|l) tier\b/.test(q)) {
     return {
       source: "data",
       answer: context.site.tierMeaning,
-      evidence: ["GOD 63%+, S 61 to 63%, A 59 to 61%, B 57 to 59%, C 56 to 57%, L under 56%"],
+      evidence: ["Global: percentile bands, GOD the top 8%", "Region boards: fixed lines on the raw top-player win rate", "Role filters: percentile bands within the role"],
       actions: [action("Read methodology", "/methodology"), action("Open tier list", "/tier-list")],
       followUps: ["Why are all the win rates above 50%?", "Is the player pool 30 per region?"],
     };

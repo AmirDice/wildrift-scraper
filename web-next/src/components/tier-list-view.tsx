@@ -6,6 +6,7 @@ import type { Champion } from "@/lib/data";
 import { cnTier, type CnBracketKey, type CnSampleKey } from "@/lib/cn";
 import { TIER_ORDER, tierClass, tierLabel, site, siteNa } from "@/lib/data";
 import { ChampionAvatar } from "@/components/ui";
+import { AskAgent } from "@/components/site-agent";
 import { AdSlot } from "@/components/ad-slot";
 import { RegionToggle, RegionComingSoon, regionFromQuery, type Region } from "@/components/region-toggle";
 
@@ -225,6 +226,18 @@ export function TierListView({
   // A role filter changes which BAND a champion is shown in -- buckets sort by
   // tierRole, not tier -- so it has to change which movement is reported too.
   const roleActive = options.includes(role) && role !== "All roles";
+
+  // The question each tier row's ask button sends: the band, in exactly the
+  // view on screen, which the agent answers from data with the lines that
+  // view really uses (percentiles, a region's shifted fixed lines, or
+  // Tencent's bracket lines). Phrased without possessives so the parser
+  // reads "China" as the region.
+  const viewPhrase = isCN ? ` in China, ${activeCnBracket.label} bracket`
+    : isCnLadder ? " in China, ladder board"
+    : isGlobal ? ""
+    : ` in ${region}`;
+  const rowQuestion = (t: string) =>
+    `What puts a champion in ${tierLabel(t)} tier${viewPhrase}${roleActive && !isCN ? ` among ${role} champions` : ""}?`;
 
   const buckets = useMemo(() => {
     const inRole = options.includes(role) ? role : "All roles";
@@ -451,7 +464,10 @@ export function TierListView({
                   <div
                     className={`tier-board-label grid w-12 shrink-0 place-items-center rounded-[1rem] text-lg font-black sm:w-[4.75rem] sm:text-2xl ${tierClass[t]}`}
                   >
-                    {tierLabel(t)}
+                    <span className="flex flex-col items-center gap-1">
+                      {tierLabel(t)}
+                      <AskAgent compact question={rowQuestion(t)} />
+                    </span>
                   </div>
                   <div className="tier-board-content flex flex-1 flex-wrap content-center gap-x-1.5 gap-y-2 rounded-2xl p-2 sm:gap-3 sm:p-3">
                     {champs.map((c) => {

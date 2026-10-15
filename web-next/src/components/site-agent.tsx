@@ -363,9 +363,23 @@ export function useSiteAgent(): AgentContextValue | null {
  * question that reaches the model spends an anonymous visitor's one AI answer
  * for the day, and a button is easy to click without thinking about that.
  */
-export function AskAgent({ question, label, className = "" }: { question: string; label?: string; className?: string }) {
+export function AskAgent({ question, label, className = "", compact = false }: { question: string; label?: string; className?: string; compact?: boolean }) {
   const agent = useContext(AgentContext);
   if (!agent) return null;
+  // Icon-only, for cells too narrow for a sentence (the tier list's labels).
+  if (compact) {
+    return (
+      <button
+        type="button"
+        onClick={() => agent.ask(question)}
+        aria-label={label ?? question}
+        title={label ?? question}
+        className={`grid h-6 w-6 place-items-center rounded-full bg-black/25 text-white/80 transition hover:bg-black/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white ${className}`}
+      >
+        <AgentSpark className="h-3.5 w-3.5" />
+      </button>
+    );
+  }
   return (
     <button
       type="button"

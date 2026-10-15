@@ -279,6 +279,10 @@ export function regionBoard(region: "EU" | "NA" | "CN") {
     collectedOn: source.collectedOn,
     nChampions: source.nChampions,
     nPlayers: source.nPlayers,
+    /** Points added to every raw win rate so the board averages 50%. Tiers
+     *  are cut on the RAW rate, so a tier line in shown numbers is the raw
+     *  line plus this. */
+    wrOffset: (source as { wrOffset?: number }).wrOffset ?? 0,
   };
 }
 
