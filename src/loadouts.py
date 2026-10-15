@@ -321,6 +321,10 @@ _ICON_SCAN_X = (0.150, 0.620)
 #: Row band padding. find_rows measures the win-rate DIGITS, and the icons
 #: stand taller than them on every tab.
 _ICON_PAD = 0.016
+#: Rows at the top and bottom of a padded strip that are always panel: the
+#: pad is ~37px on the reference frame and the art overhangs the digits by
+#: ~25px, which leaves comfortably more than this above and below it.
+_ICON_EDGE = 4
 #: Plausible icon width, as a fraction of frame width. Measured: the runes
 #: are the narrowest at 78/1080 = 7.2% and the items the widest at 89/1080
 #: = 8.2%.
@@ -341,7 +345,7 @@ _ICON_PAD = 0.016
 _ICON_WIDTH = (0.020, 0.120)
 
 
-def _icon_mask(strip: np.ndarray) -> np.ndarray:
+def _icon_mask(strip: np.ndarray, border: bool = False) -> np.ndarray:
     """Per-pixel: is this NOT the panel background?
 
     Segmenting on BACKGROUND rather than saturation. The earlier version
@@ -355,7 +359,18 @@ def _icon_mask(strip: np.ndarray) -> np.ndarray:
     shades alternate rows very slightly, and a fixed #1f1f1f marks half of
     them as content from edge to edge.
     """
-    bg = np.median(strip.reshape(-1, strip.shape[-1]), axis=0)
+    if border:
+        # The fallback. The median above assumes the panel is most of the
+        # strip, and on a dense page it is not: five warm icons on Jax's
+        # runes tab cover more of the strip than the grey does, the median
+        # lands on an icon colour, and the gaps between icons read as
+        # content -- the vote returned one 508px "icon". The strip's top and
+        # bottom edges are padding above and below the art and are always
+        # panel, so they give the grey directly.
+        edge = np.concatenate([strip[:_ICON_EDGE], strip[-_ICON_EDGE:]])
+        bg = np.median(edge.reshape(-1, strip.shape[-1]), axis=0)
+    else:
+        bg = np.median(strip.reshape(-1, strip.shape[-1]), axis=0)
     return np.abs(strip.astype(np.float32) - bg).max(axis=2) > _ICON_TOL
 
 
@@ -390,7 +405,8 @@ def _row_strips(image: np.ndarray, rows: list[tuple[int, int]]):
 
 
 def icon_grid(image: np.ndarray, rows: list[tuple[int, int]],
-              expected: int | None = None) -> list[tuple[int, int]]:
+              expected: int | None = None,
+              border: bool = False) -> list[tuple[int, int]]:
     """Icon column spans as (x0, x1) frame pixels, left to right.
 
     Measured over EVERY row of the frame at once rather than per row. A rune
@@ -401,6 +417,16 @@ def icon_grid(image: np.ndarray, rows: list[tuple[int, int]],
 
     It also makes the grid one measurement per frame instead of one per row,
     which is what makes measuring it at all cheap enough to do.
+
+    THE VOTE HAS A BLIND SPOT, and it is the most common page on the
+    ladder. It works because a dark rune in one row sits beside a bright
+    one in the next. A tank's runes tab opens every row on the same
+    keystone, and Grasp of the Undying -- a green hand on a near-black
+    square -- fills 33% of its column against a 40% threshold in all eleven
+    rows at once. The column never appeared, the grid came back four wide,
+    and the frame was refused whole: Dr. Mundo, Ornn, Poppy, Shen, Sion and
+    Wukong all lost their runes that way, and were blamed on the capture.
+    _fill_gap recovers it from the pitch the other columns establish.
     """
     if image.ndim != 3 or not rows:
         return []
@@ -409,7 +435,7 @@ def icon_grid(image: np.ndarray, rows: list[tuple[int, int]],
     for _t, _x0, strip in _row_strips(image, rows):
         if strip.size == 0:
             continue
-        col = _icon_mask(strip).mean(axis=0)
+        col = _icon_mask(strip, border).mean(axis=0)
         acc = col if acc is None else acc + col
     if acc is None:
         return []
@@ -424,8 +450,51 @@ def icon_grid(image: np.ndarray, rows: list[tuple[int, int]],
         # so keep the widest `expected` and put them back in order.
         spans = sorted(sorted(spans, key=lambda s: s[1] - s[0],
                               reverse=True)[:expected])
+    if expected and len(spans) == expected - 1:
+        spans = _fill_gap(spans, acc)
     off = round(_ICON_SCAN_X[0] * w)
     return [(off + a, off + b) for a, b in _snap(spans)]
+
+
+#: A recovered column must still be clearly darker-art-than-panel. Grasp of
+#: the Undying measures 0.33; an empty slot measures ~0.0. This is the line
+#: between "a dark icon is there" and "nothing is there", and it is far
+#: below anything real and far above the noise.
+_GAP_FILL = 0.15
+
+
+def _fill_gap(spans: list[tuple[int, int]],
+              acc: np.ndarray) -> list[tuple[int, int]]:
+    """Add the ONE column the vote missed, where the pitch says it is.
+
+    The columns are a regular grid, so the ones that were found fix where
+    the missing one has to be: inside a gap twice the pitch, or one pitch
+    beyond either end. Candidates are scored on the same column profile the
+    vote used, and one is added only if it is clearly not empty panel --
+    so a tab that genuinely has a slot missing is still refused rather than
+    given an invented icon. One column, never more: two missing columns
+    means the frame is wrong, not dark.
+    """
+    if len(spans) < 2:
+        return spans
+    starts = [a for a, _b in spans]
+    pitch = float(np.median(np.diff(starts)))
+    width = int(np.median([b - a + 1 for a, b in spans]))
+    cands = []
+    for (a0, _b0), (a1, _b1) in zip(spans, spans[1:]):
+        if abs((a1 - a0) - 2 * pitch) < 0.15 * pitch:
+            cands.append(int(round(a0 + pitch)))
+    if not cands:
+        cands = [int(round(starts[0] - pitch)), int(round(starts[-1] + pitch))]
+    best, best_fill = None, _GAP_FILL
+    for x0 in cands:
+        x1 = x0 + width - 1
+        if x0 < 0 or x1 >= len(acc):
+            continue
+        fill = float(acc[x0:x1 + 1].mean())
+        if fill >= best_fill:
+            best, best_fill = (x0, x1), fill
+    return sorted(spans + [best]) if best else spans
 
 
 def _snap(spans: list[tuple[int, int]]) -> list[tuple[int, int]]:
@@ -450,7 +519,8 @@ def _snap(spans: list[tuple[int, int]]) -> list[tuple[int, int]]:
 
 
 def icon_vertical(image: np.ndarray, rows: list[tuple[int, int]],
-                  spans: list[tuple[int, int]]) -> tuple[int, int]:
+                  spans: list[tuple[int, int]],
+                  border: bool = False) -> tuple[int, int]:
     """(offset below the padded row top, side) for this frame's icons.
 
     Measured once per frame, like the grid, and for the same reason: the art
@@ -465,7 +535,7 @@ def icon_vertical(image: np.ndarray, rows: list[tuple[int, int]],
     for t, x_off, strip in _row_strips(image, rows):
         if strip.size == 0:
             continue
-        m = _icon_mask(strip)
+        m = _icon_mask(strip, border)
         for sx0, sx1 in spans:
             sub = m[:, sx0 - x_off:sx1 - x_off + 1]
             vert = _icon_runs(sub.mean(axis=1) > _ICON_FILL, min_len=4, join=3)
@@ -539,11 +609,16 @@ def measure_icons(image: np.ndarray, rows: list[tuple[int, int]],
     five is a frame whose rows would all be cut in the wrong places, and
     extracting it anyway is how a whole tab ends up subtly wrong.
     """
-    spans = icon_grid(image, rows, expected)
-    if not spans or (expected is not None and len(spans) != expected):
-        return None
-    off, side = icon_vertical(image, rows, spans)
-    return IconGeometry(spans, off, side)
+    # The whole-strip median first, then the edge estimate only if that
+    # fails. Not the edge estimate everywhere: every frame that measures
+    # correctly today would then be cut a pixel differently, and the owner's
+    # labelled references were cut from those frames.
+    for border in (False, True):
+        spans = icon_grid(image, rows, expected, border)
+        if spans and (expected is None or len(spans) == expected):
+            off, side = icon_vertical(image, rows, spans, border)
+            return IconGeometry(spans, off, side)
+    return None
 
 
 def segment_icons(image: np.ndarray, row: tuple[int, int],
