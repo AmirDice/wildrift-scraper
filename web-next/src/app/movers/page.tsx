@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Container } from "@/components/ui";
 import { getChampion } from "@/lib/data";
 import { topWinners, topLosers, MOVERS_META, type Mover } from "@/lib/movers";
-import { CURRENT_PATCH } from "@/lib/patch";
 import { NextStep } from "@/components/next-step";
 import { AdSlot } from "@/components/ad-slot";
 
@@ -21,10 +20,12 @@ import { AdSlot } from "@/components/ad-slot";
  * what the ladder did about it.
  */
 
+const PATCH = MOVERS_META.patch;
+
 export const metadata: Metadata = {
-  title: `Wild Rift Biggest Winners & Losers | Patch ${CURRENT_PATCH} Movers`,
+  title: `Wild Rift Biggest Winners & Losers | Patch ${PATCH} Movers`,
   description:
-    `Every Wild Rift champion whose China win rate moved since the last collection, patch ${CURRENT_PATCH}: the biggest risers and fallers at ${MOVERS_META.scope}, updated with each scrape.`,
+    `Every Wild Rift champion whose China win rate has moved since patch ${PATCH} went live: the biggest risers and fallers at ${MOVERS_META.scope}, updated daily.`,
   alternates: { canonical: "/movers" },
 };
 
@@ -47,21 +48,37 @@ export default function MoversPage() {
     <Container className="py-12">
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
         Biggest Winners &amp; Losers
-        {CURRENT_PATCH && <span className="text-muted"> · Patch {CURRENT_PATCH}</span>}
+        {PATCH && <span className="text-muted"> · Patch {PATCH}</span>}
       </h1>
-      <p className="mt-2 max-w-2xl text-muted">
-        Every champion whose win rate moved between our last two China collections
-        ({dateLabel(MOVERS_META.before)} → {dateLabel(MOVERS_META.after)}), measured at{" "}
-        {MOVERS_META.scope}. Movement is the ladder&rsquo;s verdict on the patch:
-        what actually got stronger or weaker in real games, not what the patch
-        notes intended.
-      </p>
+      {MOVERS_META.measuresPatch ? (
+        <p className="mt-2 max-w-2xl text-muted">
+          {`Every champion whose China win rate has moved since the last collection before patch ${PATCH} `
+            + `(${dateLabel(MOVERS_META.before)} to ${dateLabel(MOVERS_META.after)}, `
+            + `${MOVERS_META.postPatchDays} ${MOVERS_META.postPatchDays === 1 ? "day" : "days"} of games on ${PATCH}), `
+            + `measured at ${MOVERS_META.scope}. Movement is the ladder's verdict on the patch: what actually got `
+            + `stronger or weaker in real games, not what the patch notes intended.`}
+          {MOVERS_META.postPatchDays < 3 && " With this few days of games, treat small moves as noise."}
+        </p>
+      ) : (
+        <div className="mt-4 max-w-2xl rounded-2xl border border-accent/25 bg-accent/[0.05] p-5">
+          <p className="text-sm font-semibold text-text">{`Waiting for the first day of ${PATCH} games in China.`}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            {`Patch ${PATCH} went live on ${dateLabel(MOVERS_META.patchLive)}. China's win rates are published `
+              + `a day behind, and the newest collection (${dateLabel(MOVERS_META.after)}) still predates the `
+              + `patch. Showing it now would present a week of pre-patch drift as the patch's verdict, so the `
+              + `winners and losers appear here once the first day of ${PATCH} games is in, and grow more `
+              + `reliable each day after.`}
+          </p>
+        </div>
+      )}
 
       <AdSlot placement="inline" bare className="my-6" />
-      <div className="mt-8 grid gap-5 lg:grid-cols-2">
-        <MoverColumn title="Biggest Winners" accent="#22c55e" up movers={winners} />
-        <MoverColumn title="Biggest Losers" accent="#ef4444" movers={losers} />
-      </div>
+      {MOVERS_META.measuresPatch && (
+        <div className="mt-8 grid gap-5 lg:grid-cols-2">
+          <MoverColumn title="Biggest Winners" accent="#22c55e" up movers={winners} />
+          <MoverColumn title="Biggest Losers" accent="#ef4444" movers={losers} />
+        </div>
+      )}
 
       <p className="mt-6 text-xs leading-relaxed text-faint">
         Source: official China server data (lolm.qq.com). Champions below a 0.5% pick

@@ -621,14 +621,17 @@ function deterministicChampionAnswer(question: string, context: NonNullable<Agen
       };
     }
     const { change, lines } = latest;
-    const mover = MOVERS_META.patch === change.patch ? moverBySlug(context.slug) : null;
+    // Only a window that holds games on the patch measures it. A window that
+    // names the patch but ends the day before it went live is drift.
+    const mover = MOVERS_META.patch === change.patch && MOVERS_META.measuresPatch
+      ? moverBySlug(context.slug) : null;
     const before = context.global
       ? `${name} is ${context.global.tier} tier at ${pct(context.global.winRate)} on the Global boards`
       : `${name} has no published Global result`;
     const measured = mover
-      ? `In China (${MOVERS_META.scope}), ${name} went from ${pct(mover.oldWr)} to ${pct(mover.newWr)} between ${MOVERS_META.before} and ${MOVERS_META.after}, a ${mover.delta >= 0 ? "gain" : "drop"} of ${Math.abs(mover.delta).toFixed(2)} points, on a ${pct(mover.pickRate)} pick rate.`
+      ? `In China (${MOVERS_META.scope}), ${name} went from ${pct(mover.oldWr)} before the patch to ${pct(mover.newWr)} after ${MOVERS_META.postPatchDays} ${MOVERS_META.postPatchDays === 1 ? "day" : "days"} of ${change.patch} games, a ${mover.delta >= 0 ? "gain" : "drop"} of ${Math.abs(mover.delta).toFixed(2)} points on a ${pct(mover.pickRate)} pick rate.${MOVERS_META.postPatchDays < 3 ? " That is very little data yet; small moves are noise." : ""}`
       : change.patch === CURRENT_PATCH && WINRATE_PATCH !== CURRENT_PATCH
-        ? `Nothing on the site measures that yet. ${before}, but those boards were collected on ${WINRATE_PATCH}, before this change, and China's daily rates have not been updated since it either. The next collection will show it.`
+        ? `Nothing on the site measures that yet. ${before}, but those boards were collected on ${WINRATE_PATCH}, before this change, and China's daily win rates do not include a day of ${change.patch} games yet. They will within a day or two, and this answer will use them.`
         : `${before}, collected on ${WINRATE_PATCH}, after this change. That shows where ${name} stands now, not a before and after.`;
     return {
       source: "data",

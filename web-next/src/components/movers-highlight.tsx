@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getChampion } from "@/lib/data";
 import { topWinners, topLosers, MOVERS_META, type Mover } from "@/lib/movers";
-import { CURRENT_PATCH } from "@/lib/patch";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -9,7 +8,9 @@ import { CURRENT_PATCH } from "@/lib/patch";
 export function MoversHighlight() {
   const winners = topWinners(5);
   const losers = topLosers(5);
-  if (!winners.length && !losers.length) return null;
+  // Hidden until the window holds games on its patch: the home page has no
+  // room to explain why a list is pre-patch drift, so it does not show one.
+  if (!MOVERS_META.measuresPatch || (!winners.length && !losers.length)) return null;
 
   return (
     <div
@@ -20,7 +21,9 @@ export function MoversHighlight() {
         <div>
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-accent">China · biggest movers</p>
           <h2 className="mt-1 text-xl font-black tracking-tight sm:text-2xl">
-            Patch {CURRENT_PATCH || "7.2a"} Biggest Winners &amp; Losers
+            {/* One string: the compiler drops the space after a JSX expression
+                here, and this heading rendered "Patch 7.3bBiggest Winners". */}
+            {`Patch ${MOVERS_META.patch} Biggest Winners & Losers`}
           </h2>
           <p className="mt-0.5 text-xs text-muted">{MOVERS_META.scope} win rate</p>
         </div>

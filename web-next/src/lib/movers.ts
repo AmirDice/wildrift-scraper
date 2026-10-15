@@ -16,6 +16,10 @@ const DATA = moversData as unknown as {
   beforeDate: string;
   afterDate: string;
   patch: string;
+  /** First day of games on `patch`, yyyymmdd. */
+  patchLive?: string;
+  /** Days of games on `patch` inside the after-snapshot. 0 = none yet. */
+  postPatchDays?: number;
   scope: string;
   defaultBracket?: CnBracketKey;
   champions: Mover[];
@@ -24,9 +28,21 @@ const DATA = moversData as unknown as {
 
 export const MOVERS_META = {
   patch: DATA.patch,
+  patchLive: DATA.patchLive ?? "",
+  postPatchDays: DATA.postPatchDays ?? 0,
   scope: DATA.scope,
   before: DATA.beforeDate,
   after: DATA.afterDate,
+  /**
+   * Does this window measure its patch at all?
+   *
+   * The labels used to come from the site's CURRENT_PATCH, so the moment the
+   * data moved to 7.3b the page announced "Patch 7.3b Movers" over a window
+   * that ran from 25 August to 21 September. The window now names its own
+   * patch, and until it holds at least one day of games on that patch it is
+   * pre-patch drift, which must not be presented as the patch's verdict.
+   */
+  measuresPatch: Boolean(DATA.patch) && (DATA.postPatchDays ?? 0) >= 1,
 };
 
 const bracketRows = (bracket: CnBracketKey) => DATA.byBracket?.[bracket]

@@ -1,13 +1,24 @@
 name: Scrape China win rates
 
 # The official China server (lolm.qq.com) publishes fresh champion win/pick/ban
-# rates daily. Automatic collection is paused; keep the manual trigger so a
-# deliberate refresh can still be run when collection resumes.
+# rates daily, so this runs daily to match. It used to run every three days,
+# which left the site showing numbers up to 72 hours old and kept newly
+# released champions out of the rank brackets for days after they picked up
+# enough games to appear.
+#
+# Paused 2026-09-23 and resumed 2026-10-15. While it was off, the movers page
+# went on showing the 7.3 window under the current patch's name and nothing
+# recorded China's last pre-7.3b days, so the 7.3b baseline had to fall back
+# to 7 October. On a patch day, move MOVERS_PATCH, MOVERS_PATCH_LIVE and
+# MOVERS_BASELINE_DATE in scripts/scrape_cn.mjs together.
 #
 # The job commits data/cn_winrates.json, web-next/src/data/cn.json and the dated
 # snapshot under data/history/cn/, then (optionally) pings a Vercel deploy hook
 # so the statically generated pages pick the new numbers up.
 on:
+  schedule:
+    # 06:00 UTC daily.
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 permissions:

@@ -20,14 +20,27 @@ const HISTORY_DIR = path.join(ROOT, "data", "history", "cn");
 // it to the last pre-patch snapshot instead, so the window widens by a day with
 // every daily run and always measures the patch.
 //
-// Tencent's feed is a day behind: the file dated the 25th holds the 25th's
-// games. 7.2d shipped 2026-08-26, so the 25th's snapshot is the last one no
-// 7.2d game can be in -- the clean pre-patch baseline, the same way the 12th
-// was for 7.2c. Update this the next time a patch ships.
-const MOVERS_BASELINE_DATE = "2026-08-25";
-// History snapshots only carry the DEFAULT bracket, so only that bracket can be
-// pinned. The rest keep the day-over-day comparison, and every bracket now
-// reports which baseline it used so the UI cannot mislabel them.
+// Tencent's feed is a day behind: the file dated D holds day D's games.
+//
+// THREE VALUES THAT MOVE TOGETHER on every patch day:
+//   MOVERS_PATCH          the patch this window measures
+//   MOVERS_PATCH_LIVE     the first day of games on it
+//   MOVERS_BASELINE_DATE  the last snapshot no game on it can be in
+//
+// 7.3b went live on 15 October 2026 (Riot published the notes on the 14th;
+// the patch content arrived with the update on the 15th). The daily job was
+// paused from 23 September to 15 October, so there are no snapshots between
+// 7 October and the patch: the 7th is the last clean pre-patch baseline we
+// hold, and the window therefore carries a week of pre-patch drift. China's
+// server can also run on its own schedule; if its 7.3b landed on a different
+// day, move MOVERS_PATCH_LIVE to it.
+//
+// Until the after-snapshot contains at least one day of games on the patch,
+// postPatchDays is 0 and the site says it is waiting rather than presenting
+// pre-patch drift as the patch's verdict.
+const MOVERS_PATCH = "7.3b";
+const MOVERS_PATCH_LIVE = "2026-10-15";
+const MOVERS_BASELINE_DATE = "2026-10-07";
 
 const HERO_LIST_URL = "https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js";
 const RANK_URL = "https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2";
@@ -135,22 +148,30 @@ async function main() {
   if (!previous || previous.date === date) previous = await jsonFile(PREVIOUS_OUT).catch(() => null);
   const previousBySlug = new Map((previous?.champions ?? []).map((champion) => [champion.slug, champion]));
 
-  // The pinned pre-patch snapshot, for the default bracket only.
+  // The pinned pre-patch snapshot. Snapshots record every bracket now, so
+  // every bracket is pinned where the snapshot has it; a bracket it lacks
+  // falls back to day-over-day and says so in baselineByBracket. The last
+  // window pinned Challenger alone, and Challenger -- the bracket the page
+  // shows -- went on measuring from before 7.2d through all of 7.3.
   const baseline = await jsonFile(path.join(HISTORY_DIR, `${MOVERS_BASELINE_DATE}.json`))
     .catch(() => null);
   if (!baseline) {
-    console.warn(`No pinned baseline at ${MOVERS_BASELINE_DATE}; the default bracket falls back to day-over-day.`);
+    console.warn(`No pinned baseline at ${MOVERS_BASELINE_DATE}; every bracket falls back to day-over-day.`);
   }
+  const pinnedWr = (bracket, slugKey) => {
+    const entry = baseline?.champions?.[slugKey];
+    if (!entry) return null;
+    if (entry.byBracket?.[bracket]) return entry.byBracket[bracket].wr;
+    return bracket === DEFAULT_BRACKET ? entry.wr : null;
+  };
   const baselineDates = {};
   const moversByBracket = {};
   for (const bracket of Object.keys(BRACKET_LABELS)) {
-    // Only the default bracket has a pinned pre-patch baseline available,
-    // because history snapshots store that bracket alone.
-    const pinned = bracket === DEFAULT_BRACKET && baseline;
+    const pinned = Boolean(baseline) && sorted.some((champion) => pinnedWr(bracket, champion.slug) != null);
     baselineDates[bracket] = pinned ? MOVERS_BASELINE_DATE.replace(/-/g, "") : (previous?.date ?? "");
     moversByBracket[bracket] = sorted.flatMap((champion) => {
       const oldWr = pinned
-        ? baseline.champions?.[champion.slug]?.wr
+        ? pinnedWr(bracket, champion.slug)
         : previousBySlug.get(champion.slug)?.byBracket?.[bracket]?.winRate;
       const newEntry = champion.byBracket[bracket];
       if (oldWr == null || !newEntry) return [];
@@ -165,6 +186,13 @@ async function main() {
     }).sort((left, right) => right.delta - left.delta);
   }
   const movers = moversByBracket[DEFAULT_BRACKET];
+  // Days of games on the patch inside the after-snapshot: the snapshot dated
+  // D holds day D's games, so a snapshot dated the go-live day holds one.
+  const ymd = (s) => Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8));
+  const live = MOVERS_PATCH_LIVE.replace(/-/g, "");
+  const postPatchDays = /^\d{8}$/.test(date ?? "")
+    ? Math.max(0, Math.round((ymd(date) - ymd(live)) / 86_400_000) + 1)
+    : 0;
   await writeFile(MOVERS_OUT, `${JSON.stringify({
     // The default bracket's window, which is what the home page shows.
     beforeDate: baselineDates[DEFAULT_BRACKET] || (previous?.date ?? ""),
@@ -172,7 +200,9 @@ async function main() {
     // Per-bracket baselines: the default bracket is pinned pre-patch, the rest
     // are day-over-day, and the UI needs to know which is which.
     baselineByBracket: baselineDates,
-    patch: "",
+    patch: MOVERS_PATCH,
+    patchLive: live,
+    postPatchDays,
     scope: "China · Challenger",
     defaultBracket: DEFAULT_BRACKET,
     bracketLabels: BRACKET_LABELS,
