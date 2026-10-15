@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui";
 import type { ChampionLoadoutLane, LoadoutEntity, LoadoutRow, LoadoutTab } from "@/lib/cn-loadouts";
 
@@ -39,6 +39,23 @@ function parseDataDate(value: string | null): Date | null {
   const day = Number(value.slice(6, 8));
   const date = new Date(Date.UTC(year, month, day));
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+/**
+ * When WE captured this lane, as "Oct 15, 2026".
+ *
+ * The chip used to print the visitor's own date, set in an effect on every
+ * page load, so it read "Updated" today on every day whether or not anything
+ * had been collected. This is the capture's own timestamp, which moves only
+ * when the lane is collected again. Formatted in UTC from the stored string
+ * rather than through the visitor's clock, so the server and the browser
+ * render the same text.
+ */
+function formatCaptureDate(value: string | null | undefined): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value ?? "");
+  if (!m) return null;
+  const date = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  return date.toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 }
 
 function formatDataDate(value: string | null): string {
@@ -172,12 +189,6 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   const [laneIndex, setLaneIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>("items");
   const [expanded, setExpanded] = useState(false);
-  const [todayLabel, setTodayLabel] = useState("");
-
-  useEffect(() => {
-    setTodayLabel(new Date().toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }));
-  }, []);
-
   const lane = loadouts[Math.min(laneIndex, Math.max(loadouts.length - 1, 0))];
   const tabs = useMemo(() => BASE_TABS.map((tab) => tab.key === "versus"
     ? { ...tab, label: lane?.versusKind === "partners" ? "Best partners" : "Matchups", short: lane?.versusKind === "partners" ? "Partners" : "Matchups" }
@@ -256,7 +267,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           <div className="flex flex-wrap items-center gap-1.5 text-[0.62rem] font-semibold">
             <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{tab.recognizedRows}/{tab.sourceRows} rows verified</span>
             {tab.visibleCoverage > 0 && <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{Math.min(tab.visibleCoverage, 100).toFixed(1)}% visible pick share</span>}
-            <span className="rounded-full bg-emerald-300/10 px-2.5 py-1 text-emerald-200">Updated {todayLabel || formatDataDate(tab.date)}</span>
+            <span className="rounded-full bg-emerald-300/10 px-2.5 py-1 text-emerald-200">Updated {formatCaptureDate(lane.capturedAt) ?? formatDataDate(tab.date)}</span>
           </div>
         </div>
 
