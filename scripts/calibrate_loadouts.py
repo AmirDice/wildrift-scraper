@@ -76,30 +76,33 @@ def overlay(image: np.ndarray, tab: str) -> np.ndarray:
         _label(out, f"{name} {f0:.3f}-{f1:.3f}", (x0 + 4, 18), GREY)
 
     expected = L.TABS[tab]["icons"]
-    slots = L.icon_slots(tab)
+    # The SAME geometry the extractor cuts with, not a reconstruction of it.
+    # Drawing it any other way is how this overlay once reported two icons
+    # on a three-icon row that the segmenter had split correctly.
+    geom = L.measure_icons(image, rows, expected) if rows else None
+    if geom is None:
+        _label(out, f"{tab}: {len(rows)} rows, NO ICON GRID "
+                    f"({expected} columns expected)", (8, h - 12), PINK, 0.5)
+        for top, bottom in rows:
+            cv2.line(out, (0, top), (w, top), PINK, 1)
+            cv2.line(out, (0, bottom), (w, bottom), PINK, 1)
+        return out
+
     _label(out, f"{tab}: {len(rows)} rows, {expected} icons/row, "
-                f"slots {'MEASURED' if slots else 'inferred from the image'}",
-           (8, h - 12), CYAN, 0.5)
+                f"side {geom.side}px (art measures {geom.height}px tall), "
+                f"bleed {L.ICON_BLEED}px", (8, h - 12), CYAN, 0.5)
 
     for ri, (top, bottom) in enumerate(rows):
         cv2.line(out, (0, top), (w, top), PINK, 1)
         cv2.line(out, (0, bottom), (w, bottom), PINK, 1)
-        cells = L.row_cells(image, (top, bottom))
-        ex0 = round(bands["entity"][0] * w)
-        ew = cells["entity"].shape[1]
-        # The SAME spans the extractor crops, not a reconstruction of them.
-        # Drawing it any other way is how this overlay first reported two
-        # icons on a three-icon row that the segmenter had split correctly.
-        spans = L.icon_spans(cells["entity"], expected, tab)
-        for ii, (x0, x1) in enumerate(spans):
-            iw = x1 - x0
-            ax0 = ex0 + x0
-            colour = GREEN if iw > 0.5 * (bottom - top) else (90, 90, 250)
-            cv2.rectangle(out, (ax0, top), (ax0 + iw, bottom), colour, 2)
+        for ii, (x0, y0, side) in enumerate(geom.boxes(image, (top, bottom))):
+            inside = (x0 >= 0 and y0 >= 0
+                      and x0 + side <= w and y0 + side <= h)
+            colour = GREEN if inside else (90, 90, 250)
+            cv2.rectangle(out, (x0, y0), (x0 + side, y0 + side), colour, 2)
             if ri == 0:
-                frac = (x0 + iw / 2) / max(1, ew)
-                _label(out, f"{ii}: c={frac:.3f} w={iw}px",
-                       (ax0 + 2, top - 6), colour, 0.38)
+                _label(out, f"{ii}: x={x0} w={side}px",
+                       (x0 + 2, y0 - 6), colour, 0.38)
     return out
 
 
@@ -139,24 +142,24 @@ def main() -> int:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     cv2.imwrite(str(out_path), overlay(image, args.tab))
 
-    slots = L.icon_slots(args.tab)
     print(f"{folder.name} / {name}  ({image.shape[1]}x{image.shape[0]})")
     print(f"drew {out_path.relative_to(ROOT)}")
     print()
-    print("green box = an icon the matcher will be given; blue = suspiciously")
-    print("narrow, which is the fragment bug and means the crop is wrong.")
+    print("green box = an icon the matcher will be given; blue = a box that")
+    print("runs off the frame, which the extractor drops rather than cuts.")
     print()
-    if slots:
-        print(f"{args.tab} slots are MEASURED, from coords/loadouts.json:")
-        print(f"  centres {slots['centres']}  size {slots['size']}")
-    else:
-        print(f"{args.tab} slots are INFERRED. To measure them instead, put "
-              f"this in coords/loadouts.json and adjust until the boxes sit "
-              f"on the icons:")
-        print(json.dumps({"icons": {args.tab: {
-            "centres": [round((i + 0.5) / L.TABS[args.tab]["icons"], 3)
-                        for i in range(L.TABS[args.tab]["icons"])],
-            "size": round(1.0 / L.TABS[args.tab]["icons"], 3)}}}, indent=2))
+    rows = L.find_rows(image)
+    geom = L.measure_icons(image, rows, L.TABS[args.tab]["icons"]) if rows else None
+    if geom is None:
+        print(f"{args.tab}: no icon grid on this frame. A tab with no data "
+              f"for this champion draws an illustration instead of a table, "
+              f"and that is what this looks like.")
+        return 0
+    print(f"{args.tab} geometry, measured off the panel background:")
+    print(f"  columns  {[f'{a}-{b}' for a, b in geom.spans]}")
+    print(f"  pitch    {[geom.spans[i + 1][0] - geom.spans[i][0] for i in range(len(geom.spans) - 1)]}")
+    print(f"  art      {geom.height}px tall, cut as {geom.side}px square "
+          f"plus {L.ICON_BLEED}px bleed")
     return 0
 
 

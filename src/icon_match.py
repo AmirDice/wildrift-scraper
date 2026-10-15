@@ -86,14 +86,60 @@ def _load_art(rel: str) -> np.ndarray | None:
     return im
 
 
+#: Padding kept around the detected artwork, as a fraction of its size.
+#: A little margin stops a one-pixel difference in where the threshold
+#: lands from shifting the whole frame.
+_BBOX_PAD = 0.06
+#: Content is anything this many standard deviations above the tile's own
+#: mean brightness. Relative, not absolute, because these icons are drawn
+#: on backgrounds from near-black to pale gold.
+_BBOX_K = 0.35
+
+
+def _content_box(im: np.ndarray) -> tuple[int, int, int, int] | None:
+    """(y0, y1, x0, x1) around the artwork, or None if it fills the tile."""
+    grey = im.mean(axis=2) if im.ndim == 3 else im
+    ys, xs = np.where(grey > grey.mean() + _BBOX_K * grey.std())
+    if len(ys) < 20:
+        return None
+    y0, y1 = int(ys.min()), int(ys.max()) + 1
+    x0, x1 = int(xs.min()), int(xs.max()) + 1
+    py, px = int((y1 - y0) * _BBOX_PAD), int((x1 - x0) * _BBOX_PAD)
+    return (max(0, y0 - py), min(im.shape[0], y1 + py),
+            max(0, x0 - px), min(im.shape[1], x1 + px))
+
+
 def _norm_tile(im: np.ndarray) -> np.ndarray:
+    """A tile at comparison resolution, framed on its own artwork.
+
+    The framing is the point. Resizing a crop to 64x64 only lines it up
+    with a template if the art occupies the same part of both frames,
+    and on the loadout panel it does not -- the icon sits small inside
+    its tile with dark padding, so Conqueror correlated at 0.04 against
+    its own template while an unrelated bright blob reached 0.37.
+    Cropping to the content first removes the scale and the offset
+    together: 2 of 47 owner-labelled clusters read correctly before,
+    28 after.
+
+    A no-op where it should be. A build-popup tile is already filled by
+    its icon, so its content box is the whole tile and nothing moves,
+    which is why the bank built from those frames still matches them.
+    """
+    box = _content_box(im)
+    if box is not None:
+        y0, y1, x0, x1 = box
+        if (y1 - y0) >= 8 and (x1 - x0) >= 8:
+            im = im[y0:y1, x0:x1]
     return cv2.resize(im, (N, N), interpolation=cv2.INTER_AREA).astype(np.float32)
 
 
 @functools.lru_cache(maxsize=1)
 def templates() -> dict[str, dict[str, np.ndarray]]:
     """{"items"|"runes"|"spells": {name: normalised template}}."""
-    out: dict[str, dict[str, np.ndarray]] = {"items": {}, "runes": {}, "spells": {}}
+    out: dict[str, dict[str, np.ndarray]] = {
+        "items": {}, "runes": {}, "spells": {},
+        "loadout_items": {}, "loadout_runes": {},
+    }
 
     items = json.loads((ROOT / "data" / "items.json").read_text(encoding="utf-8"))
     for it in items:
@@ -132,6 +178,25 @@ def templates() -> dict[str, dict[str, np.ndarray]]:
                 art = _load_art(icon)
                 if art is not None:
                     out["runes"][name] = _norm_tile(art)
+
+    # The LOADOUT kinds: the extraction's bank plus templates harvested
+    # from the loadout panel, where the game draws the same icons at a
+    # different size on a different background.
+    #
+    # Separate kinds rather than extra entries in "items" and "runes",
+    # because those two are what the CN leaderboard extraction matches
+    # build popups against and that path works. Folding loadout art into
+    # them would mean every loadout rebuild quietly re-tuned a pipeline
+    # nobody was touching.
+    for kind, extra in (("items", "loadout_items.npz"),
+                        ("runes", "loadout_runes.npz")):
+        merged = dict(out[kind])
+        path_extra = ROOT / "data" / "icon_bank" / extra
+        if path_extra.exists():
+            with np.load(path_extra) as z:
+                for name in z.files:
+                    merged[name] = z[name].astype(np.float32)
+        out[f"loadout_{kind}"] = merged
 
     spells = ROOT / "web-next" / "src" / "data" / "spells.json"
     if spells.exists():
@@ -257,7 +322,7 @@ def match_slot(tile: np.ndarray, kind: str,
     if not cands or tile.size == 0:
         return "?", 0.0, 0.0, ""
     t = _norm_tile(tile)
-    w = _weights(True, kind == "runes")
+    w = _weights(True, kind in ("runes", "loadout_runes"))
     best: dict[str, float] = {}
     for name, tpl in cands.items():
         base = name.split("#")[0]
@@ -306,7 +371,7 @@ def _align(image: np.ndarray, kind: str, fy: float, fx: float) -> tuple[int, int
         return 0, 0
     y0, size, x0, pitch, count = GEOMETRY[kind]
     h, w = int(size * fy), int(size * fx)
-    weights = _weights(True, kind == "runes")
+    weights = _weights(True, kind in ("runes", "loadout_runes"))
 
     def tile_at(i: int, dy: int, dx: int) -> np.ndarray:
         ty, tx = int(y0 * fy) + dy, int((x0 + i * pitch) * fx) + dx

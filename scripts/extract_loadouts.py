@@ -3,16 +3,20 @@
 Reads a capture directory written by scripts/scrape_loadouts.py and pulls the
 numbers out of every row: rank, win rate, pick rate, plus one crop per icon.
 
-WHAT IT RESOLVES TODAY: the numbers on all five tabs, and the partner
-champion names (CN -> English, bridged through the cnName field already in
-data/cn_winrates.json, so no network call and no new map).
+WHAT IT RESOLVES: the numbers on all five tabs, the partner champion names
+(CN -> English, bridged through the cnName field already in
+data/cn_winrates.json, so no network call and no new map), and -- since the
+owner named the panel's art on 2026-10-12 -- which item each equip and boots
+icon is and which rune each rune icon is.
 
-WHAT IT DOES NOT RESOLVE YET: which item each equip/boots icon is, and which
-rune or ability each rune/skill icon is. Those need an icon bank built at the
-device's real resolution, and guessing at crops before seeing a real capture
-is how you calibrate against the wrong thing. So every icon is written to
-disk next to its row and the CN label is OCR'd where the panel shows one;
-identification is a second pass over frames that never need re-capturing.
+Items and runes are matched against the LOADOUT banks, not the banks the CN
+leaderboard extraction uses. Same icons, differently drawn: the panel renders
+them smaller, on its own backgrounds, and the catalogue art alone managed 17
+of 33. See scripts/build_loadout_bank.py.
+
+STILL UNRESOLVED: the skills tab. Those are champion abilities, which have no
+bank. Every icon is still written to disk beside its row either way, so a
+later pass never needs the frames re-captured.
 
 Run:
     python -m scripts.extract_loadouts data/captures_loadouts/milio_20261008_1252
@@ -42,6 +46,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 # every crop where the first engine scores under PADDLE_GOOD_SCORE.
 os.environ.setdefault("PADDLE_LANGS", "en")
 
+from src import icon_match
 from src import loadouts as L
 from src import ocr as ocr_module
 
@@ -155,10 +160,32 @@ def _read_cn(crop: np.ndarray) -> str:
     return re.sub(r"\s+", "", text or "")
 
 
+#: Which bank names each tab's icons. The skills tab is absent on purpose:
+#: those are champion abilities and no bank holds them.
+_ICON_BANK = {"equip": "loadout_items", "boots": "loadout_items",
+              "runes": "loadout_runes"}
+
+
+def _identify(icon: np.ndarray, tab: str, slot: int) -> dict:
+    """{"name", "score"} for one icon, or {} where nothing can name it."""
+    kind = _ICON_BANK.get(tab)
+    if kind is None:
+        return {}
+    # The game only ever puts a KEYSTONE in the first rune slot, and art
+    # alone cannot separate Lethal Tempo from Empowered Attack -- both are
+    # an arrow on a dark ground. The rule can. This is also the independent
+    # check on the bank: a keystone slot that comes back a minor rune is a
+    # matcher error the score would not have flagged.
+    only = icon_match.keystones() if (tab == "runes" and slot == 0) else None
+    name, score, _gap, _runner = icon_match.match_slot(icon, kind, only)
+    return {"name": name, "score": round(score, 3)}
+
+
 def extract_tab(frame_paths: list[Path], tab: str, icon_dir: Path,
                 cn_map: dict[str, str], engine: str = "paddle") -> dict:
     spec = L.TABS[tab]
     rows_out: dict[int, dict] = {}
+    tab_review: list[str] = []
     date = None
 
     for frame_path in frame_paths:
@@ -172,18 +199,41 @@ def extract_tab(frame_paths: list[Path], tab: str, icon_dir: Path,
             m = re.search(r"(20\d{6})", d)
             date = m.group(1) if m else None
 
-        found = [L.row_cells(image, r) for r in L.find_rows(image)]
+        rows = L.find_rows(image)
+        # Icon geometry is a property of the FRAME, not of the row: measured
+        # once over every row at once, because a near-black rune leaves a
+        # column its own row cannot distinguish from the panel. None means
+        # the frame did not yield the column count this tab has -- the
+        # no-data illustration, most often -- and cutting it anyway would
+        # write a row of nonsense that nothing downstream could spot.
+        geom = L.measure_icons(image, rows, spec["icons"]) if rows else None
+        if rows and geom is None:
+            tab_review.append(f"{frame_path.name}: no icon grid "
+                              f"({spec['icons']} columns expected); "
+                              f"numbers kept, icons skipped")
+        found = [L.row_cells(image, r) for r in rows]
         offset = _frame_offset([_read_rank(c["rank"]) for c in found])
         for i, cells in enumerate(found):
             rank = offset + i
-            if rank in rows_out:          # dedupe across scroll frames
+            # Dedupe across scroll frames -- but a rank already held by a
+            # row with NO icons does not count as done. The app renders the
+            # table before the artwork, so a tab captured a moment early has
+            # a first frame with every number and no icons; first-wins there
+            # claims all eleven ranks and the later frames that do have the
+            # icons are skipped as duplicates. Braum lost his whole equip
+            # tab to this: 21 rows of win rates and not one item.
+            held = rows_out.get(rank)
+            if held is not None and (held["entities"] or not geom):
                 continue
-            icons = L.segment_icons(cells["entity"], spec["icons"], tab)
+            icons = L.segment_icons(image, rows[i], geom) if geom else []
             entities = []
             for j, icon in enumerate(icons):
+                if icon is None:
+                    entities.append({"icon": None})
+                    continue
                 name = f"{tab}_r{rank:02d}_i{j}.png"
                 cv2.imwrite(str(icon_dir / name), icon)
-                entities.append({"icon": name})
+                entities.append({"icon": name, **_identify(icon, tab, j)})
             # Labels: items name themselves under the icon, partners beside it.
             if spec["labels"]:
                 label = _read_cn(cells["entity"])
@@ -220,8 +270,13 @@ def extract_tab(frame_paths: list[Path], tab: str, icon_dir: Path,
     # Shares of one champion's games cannot add to more than 100. When they
     # do, a cell was misread even though every individual value looked like a
     # legal percentage -- which is exactly the failure a range check misses.
-    review = [f"rank {r['rank']}: {k} unreadable"
-              for r in rows for k in ("winRate", "pickRate") if r[k] is None]
+    review = list(tab_review)
+    review += [f"rank {r['rank']}: {k} unreadable"
+               for r in rows for k in ("winRate", "pickRate") if r[k] is None]
+    unknown = sum(1 for r in rows for e in r["entities"]
+                  if e.get("name") == "?")
+    if unknown:
+        review.append(f"{unknown} icons could not be identified")
     if coverage is not None and coverage > 101.0:
         review.append(f"pick rates sum to {coverage}%, which is impossible; "
                       f"at least one cell is misread")
@@ -353,6 +408,11 @@ def main() -> int:
     ap.add_argument("capture_dir", type=Path,
                     help="one capture directory, or a parent holding many "
                          "(every child with a manifest.json is extracted)")
+    ap.add_argument("--no-skip", action="store_true",
+                    help="extract the captures _recapture.json holds back "
+                         "too. Those lost a whole tab to a frame grabbed "
+                         "before the app drew its artwork, so the rows come "
+                         "out looking complete with no icons in them")
     ap.add_argument("--force", action="store_true",
                     help="re-extract directories that already have a "
                          "loadouts.json; by default they are skipped, so a "
@@ -381,6 +441,26 @@ def main() -> int:
     if not dirs:
         print(f"no captures found under {args.capture_dir}", file=sys.stderr)
         return 2
+
+    # Captures whose artwork had not rendered when the frame was taken.
+    # Held back by NAME rather than by deleting anything: a re-capture
+    # writes a new timestamped directory, which is not in the list, so it
+    # is picked up without anyone having to edit the file.
+    held: dict[str, list[str]] = {}
+    skip_file = args.capture_dir / "_recapture.json"
+    if skip_file.exists() and not args.no_skip:
+        try:
+            held = json.loads(skip_file.read_text(encoding="utf-8"))["skip"]
+        except Exception as exc:                            # noqa: BLE001
+            print(f"ignoring {skip_file.name}: {exc}", file=sys.stderr)
+    dirs2 = [d for d in dirs if d.name not in held]
+    if held:
+        tabs = sorted({t for v in held.values() for t in v})
+        print(f"holding back {len(dirs) - len(dirs2)} captures listed in "
+              f"{skip_file.name} ({', '.join(tabs)} lost to a half-drawn "
+              f"frame); --no-skip extracts them anyway")
+    dirs = dirs2
+
     todo = [d for d in dirs if args.force or not (d / "loadouts.json").exists()]
     print(f"{len(dirs)} captures, {len(dirs) - len(todo)} already extracted, "
           f"{len(todo)} to do")

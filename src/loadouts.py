@@ -121,13 +121,16 @@ BRACKETS = {
 #: taken on one screenshot holds on any resolution. The file is optional:
 #: absent, the constants in this module apply exactly as before.
 #:
-#:   {"columns": {"rank": [x0, x1], "entity": [...], ...},
-#:    "icons":   {"equip": {"centres": [0.14, 0.42, 0.70], "size": 0.26}}}
+#:   {"columns": {"rank": [x0, x1], "entity": [...], ...}}
 #:
-#: `columns` are fractions of FRAME width. `icons.centres` and
-#: `icons.size` are fractions of the ENTITY crop's width, because that is
-#: the box the icons sit in -- scripts/calibrate_loadouts.py draws the
-#: current values on a real frame so they can be read off and corrected.
+#: `columns` are fractions of FRAME width.
+#:
+#: There is deliberately no override for the ICON positions. There was
+#: one, because the icons were being inferred badly enough to want
+#: hand-measurement; they are now measured off the panel background on
+#: every frame, which is both more accurate than a hand-measured constant
+#: and correct on a frame that scrolled. scripts/calibrate_loadouts.py
+#: draws what was measured.
 _OVERRIDE_PATH = Path(__file__).resolve().parent.parent / "coords" / "loadouts.json"
 
 
@@ -140,17 +143,6 @@ def _overrides() -> dict:
 
 
 OVERRIDES = _overrides()
-
-
-def icon_slots(tab: str) -> dict | None:
-    """Hand-measured icon positions for a tab, or None to infer them."""
-    spec = (OVERRIDES.get("icons") or {}).get(tab)
-    if not isinstance(spec, dict):
-        return None
-    centres, size = spec.get("centres"), spec.get("size")
-    if not centres or not isinstance(size, (int, float)):
-        return None
-    return {"centres": [float(c) for c in centres], "size": float(size)}
 
 
 #: The lane filter. Options are per champion -- Shen offers only 上单/打野.
@@ -313,88 +305,251 @@ def row_cells(image: np.ndarray, row: tuple[int, int]) -> dict[str, np.ndarray]:
     return out
 
 
-def segment_icons(entity: np.ndarray, expected: int,
-                  tab: str | None = None) -> list[np.ndarray]:
-    """Icon images, left to right. See icon_spans for how they are found."""
-    return [entity[:, a:b] for a, b in icon_spans(entity, expected, tab)]
+#: How far either side of the measured square to keep. The art has a soft
+#: edge and the square is measured off a threshold, so a couple of pixels of
+#: panel are cheaper than a shaved corner.
+ICON_BLEED = 2
+#: A column counts as icon when this much of the row strip's height is not
+#: background. 0.40 clears the CN item name underneath (sparse white glyphs,
+#: well under a third of the strip) without losing a dark rune.
+_ICON_FILL = 0.40
+#: Channel distance from the measured background before a pixel is content.
+_ICON_TOL = 18.0
+#: The entity column, a little wider than ENTITY_X either side, so a grid
+#: measured inside it is not clipped by the band doing the measuring.
+_ICON_SCAN_X = (0.150, 0.620)
+#: Row band padding. find_rows measures the win-rate DIGITS, and the icons
+#: stand taller than them on every tab.
+_ICON_PAD = 0.016
+#: Plausible icon width, as a fraction of frame width. Measured: the runes
+#: are the narrowest at 78/1080 = 7.2% and the items the widest at 89/1080
+#: = 8.2%.
+#:
+#: The CEILING is the guard that matters. A tab with no data for this
+#: champion renders a full-panel illustration instead of a table;
+#: find_rows picks ink out of the artwork and the column vote then returns
+#: one 507px-wide "icon". Without the ceiling that frame extracts nonsense
+#: tiles and nothing says anything is wrong.
+#:
+#: The FLOOR is deliberately far below a real icon. A rune dark enough that
+#: only its bright core clears the threshold measures as little as 37px, and
+#: a floor set near the true width drops that column -- which costs the
+#: whole frame, because the grid then has four columns where the tab has
+#: five. Six of the owner's labelled references came off frames exactly
+#: this happened on. Narrow columns are repaired by _snap below, not
+#: rejected here.
+_ICON_WIDTH = (0.020, 0.120)
 
 
-def icon_spans(entity: np.ndarray, expected: int,
-               tab: str | None = None) -> list[tuple[int, int]]:
-    """Split an entity crop into its icon images, left to right.
+def _icon_mask(strip: np.ndarray) -> np.ndarray:
+    """Per-pixel: is this NOT the panel background?
 
-    Pass `tab` to allow hand-measured slots from coords/loadouts.json to
-    take over; without it, or without an entry for that tab, the icons
-    are found from the image as before.
+    Segmenting on BACKGROUND rather than saturation. The earlier version
+    projected saturation, on the reasoning that the art is colourful and the
+    CN captions are grey -- true, but it also made a near-grey icon
+    (Perseverance, Bone Plating) invisible and let a bright caption glyph
+    read as art. The background is the one thing on this panel that is
+    genuinely uniform, so what is NOT it is the icon.
 
-    Segments on SATURATION rather than brightness. The icons are saturated
-    artwork while the CN item names under them and the champion names beside
-    them are white or grey, so saturation separates icon from label where a
-    brightness projection would merge the two into one blob.
+    The background is each strip's own median, not a constant. This panel
+    shades alternate rows very slightly, and a fixed #1f1f1f marks half of
+    them as content from edge to edge.
     """
-    if entity.size == 0 or entity.ndim != 3 or expected < 1:
-        return []
-    import cv2
-    h, w = entity.shape[:2]
+    bg = np.median(strip.reshape(-1, strip.shape[-1]), axis=0)
+    return np.abs(strip.astype(np.float32) - bg).max(axis=2) > _ICON_TOL
 
-    # A hand-measured panel is not a guess and is not re-derived per frame.
-    slots = icon_slots(tab) if tab else None
-    if slots:
-        side = max(1, round(slots["size"] * w))
-        out = []
-        for frac in slots["centres"][:expected]:
-            x0 = int(round(frac * w - side / 2))
-            x0 = max(0, min(x0, w - side)) if w >= side else 0
-            out.append((x0, x0 + side))
-        return out
-    sat = cv2.cvtColor(entity, cv2.COLOR_BGR2HSV)[..., 1]
-    cols = (sat > 60).sum(axis=0) > (0.15 * h)
-    runs: list[tuple[int, int]] = []
-    start = None
-    for i, on in enumerate(cols):
-        if on and start is None:
-            start = i
-        elif not on and start is not None:
-            runs.append((start, i))
-            start = None
-    if start is not None:
-        runs.append((start, len(cols)))
-    if not runs:
-        return []
 
-    # An icon is square and fills the row, so the row height IS its side.
-    side = min(h, w)
-
-    # Repair split icons BEFORE counting them. A pale band down the middle
-    # of one icon reads as two runs, and counting first would then treat
-    # the halves as two icons and discard a real neighbour.
-    merged: list[list[int]] = [list(runs[0])]
-    for a, b in runs[1:]:
-        if a - merged[-1][1] < side * 0.33:
-            merged[-1][1] = b
-        else:
-            merged.append([a, b])
-    merged = [r for r in merged if r[1] - r[0] >= side * 0.25]
-
-    if len(merged) >= expected:
-        # Widest first for the pick, left-to-right for the output.
-        chosen = sorted(sorted(merged, key=lambda r: r[0] - r[1])[:expected])
-        centres = [(a + b) / 2 for a, b in chosen]
-    else:
-        # Fewer runs than the panel has icons: two icons have run together,
-        # or one is too dark to register. Neither is recoverable from the
-        # runs, so fall back to the geometry and cut an even pitch across
-        # everything saturated.
-        left, right = merged[0][0], merged[-1][1]
-        pitch = (right - left) / expected
-        centres = [left + pitch * (i + 0.5) for i in range(expected)]
-
-    out = []
-    for cx in centres:
-        x0 = int(round(cx - side / 2))
-        x0 = max(0, min(x0, w - side)) if w >= side else 0
-        out.append((x0, x0 + side))
+def _icon_runs(flags, min_len: int, join: int) -> list[tuple[int, int]]:
+    """Contiguous True runs, bridging gaps shorter than `join`."""
+    out: list[tuple[int, int]] = []
+    start, gap = None, 0
+    for i, on in enumerate(flags):
+        if on:
+            if start is None:
+                start = i
+            gap = 0
+        elif start is not None:
+            gap += 1
+            if gap > join:
+                if i - gap - start >= min_len:
+                    out.append((start, i - gap))
+                start, gap = None, 0
+    if start is not None and len(flags) - start >= min_len:
+        out.append((start, len(flags) - 1))
     return out
+
+
+def _row_strips(image: np.ndarray, rows: list[tuple[int, int]]):
+    """(top, left, strip) for every row, over the icon scan band."""
+    h, w = image.shape[:2]
+    pad = round(_ICON_PAD * h)
+    x0, x1 = round(_ICON_SCAN_X[0] * w), round(_ICON_SCAN_X[1] * w)
+    for top, bottom in rows:
+        t, b = max(0, top - pad), min(h, bottom + pad)
+        yield t, x0, image[t:b, x0:x1]
+
+
+def icon_grid(image: np.ndarray, rows: list[tuple[int, int]],
+              expected: int | None = None) -> list[tuple[int, int]]:
+    """Icon column spans as (x0, x1) frame pixels, left to right.
+
+    Measured over EVERY row of the frame at once rather than per row. A rune
+    whose art is nearly black leaves a column barely distinguishable from the
+    panel and its own row cannot see it -- the runes tab reported four slots
+    of five on a third of its rows that way. Across eleven rows the slot is
+    dark in one and bright in the next, and the column always shows.
+
+    It also makes the grid one measurement per frame instead of one per row,
+    which is what makes measuring it at all cheap enough to do.
+    """
+    if image.ndim != 3 or not rows:
+        return []
+    w = image.shape[1]
+    acc = None
+    for _t, _x0, strip in _row_strips(image, rows):
+        if strip.size == 0:
+            continue
+        col = _icon_mask(strip).mean(axis=0)
+        acc = col if acc is None else acc + col
+    if acc is None:
+        return []
+    acc /= len(rows)
+    spans = _icon_runs(acc > _ICON_FILL, min_len=round(0.030 * w),
+                       join=round(0.006 * w))
+    lo, hi = round(_ICON_WIDTH[0] * w), round(_ICON_WIDTH[1] * w)
+    spans = [s for s in spans if lo <= s[1] - s[0] + 1 <= hi]
+    if expected and len(spans) > expected:
+        # A caption glyph that happens to stack in the same place on every
+        # row can survive the vote. It cannot outvote a column of solid art,
+        # so keep the widest `expected` and put them back in order.
+        spans = sorted(sorted(spans, key=lambda s: s[1] - s[0],
+                              reverse=True)[:expected])
+    off = round(_ICON_SCAN_X[0] * w)
+    return [(off + a, off + b) for a, b in _snap(spans)]
+
+
+def _snap(spans: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    """Give every column the median width, keeping its own centre.
+
+    The panel draws one size of icon per tab -- that is a fact about the
+    layout, not a guess -- so a column that measured narrower than its
+    siblings did not find a smaller icon, it found a darker one. Taking the
+    median across the columns and re-centring each on itself turns a
+    threshold accident back into the square that is actually there, and
+    keeps the crop stable between a frame where an icon is bright and one
+    where the same icon is dim.
+    """
+    if len(spans) < 2:
+        return spans
+    med = int(np.median([b - a + 1 for a, b in spans]))
+    out = []
+    for a, b in spans:
+        c = (a + b) / 2.0
+        out.append((int(round(c - med / 2)), int(round(c + med / 2)) - 1))
+    return out
+
+
+def icon_vertical(image: np.ndarray, rows: list[tuple[int, int]],
+                  spans: list[tuple[int, int]]) -> tuple[int, int]:
+    """(offset below the padded row top, side) for this frame's icons.
+
+    Measured once per frame, like the grid, and for the same reason: the art
+    sits at the same height in every row, and a per-row measurement is at the
+    mercy of whichever icon happens to be dark in that row.
+
+    The mask is taken over the WHOLE strip and then sliced. Masking the icon
+    column on its own makes the ICON the median, so the panel around it reads
+    as content and every box comes back the full height of the strip.
+    """
+    offs, sides = [], []
+    for t, x_off, strip in _row_strips(image, rows):
+        if strip.size == 0:
+            continue
+        m = _icon_mask(strip)
+        for sx0, sx1 in spans:
+            sub = m[:, sx0 - x_off:sx1 - x_off + 1]
+            vert = _icon_runs(sub.mean(axis=1) > _ICON_FILL, min_len=4, join=3)
+            if not vert:
+                continue
+            vy0, vy1 = max(vert, key=lambda r: r[1] - r[0])
+            if vy1 - vy0 + 1 < 0.6 * (sx1 - sx0 + 1):
+                continue                 # a caption line, not the art
+            offs.append(vy0)
+            sides.append(vy1 - vy0 + 1)
+    if not offs:
+        side = max(s[1] - s[0] + 1 for s in spans)
+        return max(0, round(_ICON_PAD * image.shape[0]) - side // 4), side
+    return int(np.median(offs)), int(np.median(sides))
+
+
+class IconGeometry:
+    """Where this frame draws its icons. Measured once, used for every row."""
+
+    __slots__ = ("spans", "offset", "height", "side")
+
+    def __init__(self, spans, offset, height):
+        self.spans = spans
+        self.offset = offset
+        #: The vertical extent actually measured. It CENTRES the square:
+        #: on the item tabs the art fades at top and bottom and measures
+        #: 84px tall against an 89px column, and centring on the width
+        #: instead would push every item crop 2.5px down the row.
+        self.height = height
+        #: The square is sized by the LARGER of the two, because the width
+        #: is voted across every row and the height is not, and a square cut
+        #: to the shorter of them shaves the sides off a wide icon.
+        self.side = max(height, max((b - a + 1 for a, b in spans),
+                                    default=height))
+
+    def __len__(self) -> int:
+        return len(self.spans)
+
+    def boxes(self, image: np.ndarray, row: tuple[int, int],
+              bleed: int = ICON_BLEED) -> list[tuple[int, int, int]]:
+        """(x, y, side) squares for one row, in frame pixels."""
+        t = max(0, row[0] - round(_ICON_PAD * image.shape[0]))
+        half = self.side / 2 + bleed
+        out = []
+        for sx0, sx1 in self.spans:
+            cx = (sx0 + sx1 + 1) / 2
+            cy = t + self.offset + self.height / 2
+            out.append((int(round(cx - half)), int(round(cy - half)),
+                        int(round(2 * half))))
+        return out
+
+    def tiles(self, image: np.ndarray, row: tuple[int, int],
+              bleed: int = ICON_BLEED) -> list:
+        """One square crop per icon; None where the box leaves the frame."""
+        h, w = image.shape[:2]
+        out = []
+        for x, y, s in self.boxes(image, row, bleed):
+            if x < 0 or y < 0 or x + s > w or y + s > h:
+                out.append(None)
+            else:
+                out.append(image[y:y + s, x:x + s])
+        return out
+
+
+def measure_icons(image: np.ndarray, rows: list[tuple[int, int]],
+                  expected: int | None = None):
+    """This frame's icon geometry, or None when it cannot be measured.
+
+    `expected` is the tab's icon count. Returning None rather than a partial
+    grid is deliberate: a frame that yields four columns where the tab has
+    five is a frame whose rows would all be cut in the wrong places, and
+    extracting it anyway is how a whole tab ends up subtly wrong.
+    """
+    spans = icon_grid(image, rows, expected)
+    if not spans or (expected is not None and len(spans) != expected):
+        return None
+    off, side = icon_vertical(image, rows, spans)
+    return IconGeometry(spans, off, side)
+
+
+def segment_icons(image: np.ndarray, row: tuple[int, int],
+                  geom: "IconGeometry") -> list:
+    """Icon images for one row, left to right."""
+    return geom.tiles(image, row)
 
 
 #: The leftmost tab's label, wide enough for the 4-character 最佳拍档 and the

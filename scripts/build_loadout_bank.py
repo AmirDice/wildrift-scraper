@@ -1,33 +1,53 @@
-"""Teach the item bank what items look like in the LOADOUT panel.
+"""Build the item and rune template banks for the LOADOUT panel.
 
-The catalogue art matches a loadout equip icon about half the time: 17 of
-33 on the benchmark capture, and the residue fails on SCORE rather than
-on ties, which is the signature of art that genuinely differs rather than
-of a gate set too tight. Same story the rune bank already told -- the
-game draws its own icons at its own zoom, on its own backgrounds, and no
-amount of threshold tuning closes that.
+The catalogue art matches a loadout icon about half the time: 17 of 33 on
+the benchmark capture, failing on SCORE rather than on ties, which is the
+signature of art that genuinely differs rather than of a gate set too
+tight. The game draws its own icons at its own zoom on its own
+backgrounds, and no amount of threshold tuning closes that. So the bank
+is built from the panel's own pixels.
 
-The rune bank was built from owner-labelled clusters because nothing
-could name a rune automatically. Items do not need that: the catalogue
-already matches HALF of them, so a cluster of the same item seen two
-hundred times across the roster usually contains several confident
-reads, and those name the cluster for the rest. Where they do not, the
-cluster is reported rather than guessed at, and can be named by hand the
-way the runes were.
+NAMING IS NOT INFERRED. An earlier version tried to name clusters by
+catalogue votes and got most of them wrong, including icons whose colour
+was nothing like the guess. The names now come from
+data/loadout_icon_labels.json, where the owner named 202 groups by hand
+on 2026-10-12, covering 97.7% of harvested item tiles and 99.9% of rune
+tiles.
 
-    python -m scripts.build_loadout_item_bank --dry-run   # what it would learn
-    python -m scripts.build_loadout_item_bank             # write the bank
+AND THE LABELS ARE KEYED TO PICTURES, NOT NUMBERS. Each label points at
+a reference tile in data/icon_bank/loadout_labelled.npz -- the exact
+image the owner was shown. This file never has to reproduce the
+clustering that produced those groups, which is the whole point: the
+last bank was lost when a two-pixel change to the crop moved 430
+clusters to 406 and slid 47 labels silently onto their neighbours.
 
-Templates are ADDED to data/icon_bank/items.npz under "<name>#ld<n>"
-keys. match_slot folds a suffixed key into its base name, so a new look
-at an item is another chance to recognise it and never a second item.
+RUN scripts/recut_loadout_refs.py AFTER ANY GEOMETRY CHANGE, and before
+this. A reference and a live tile have to be cut by the same rule.
+When they were not, Font of Life scored 0.524 against its own reference
+-- it is a featureless green glow, so a few pixels of framing move it
+further than they move an icon with structure -- the 0.55 gate refused
+all 89 of its tiles, the name never entered the bank, and every Font of
+Life on the ladder would have read as Triumph. Nothing warned: the name
+simply was not there.
+
+    python -m scripts.build_loadout_bank --dry-run      # what it would learn
+    python -m scripts.build_loadout_bank                # write both banks
+    python -m scripts.build_loadout_bank --kind runes   # just one
+    python -m scripts.build_loadout_bank --holdout      # score it honestly
+
+Templates are written to data/icon_bank/loadout_items.npz and
+loadout_runes.npz under "<name>#ld<n>" keys. NOT to items.npz or
+runes.npz: those two are what the CN leaderboard extraction matches build
+popups against, that path works, and nothing here should be able to
+re-tune it. icon_match merges each pair into the "loadout_items" and
+"loadout_runes" kinds.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import sys
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 
 import cv2
@@ -40,342 +60,307 @@ from src import loadouts as L  # noqa: E402
 from src import icon_match  # noqa: E402
 
 CAPTURES = ROOT / "data" / "captures_loadouts"
+BANKS = ROOT / "data" / "icon_bank"
+LABELS = ROOT / "data" / "loadout_icon_labels.json"
+REFERENCE = BANKS / "loadout_labelled.npz"
 
-#: What each kind of icon needs. Separate frozen numbering, labels and
-#: sheet per kind: cluster 7 of the items has nothing to do with cluster
-#: 7 of the runes, and one shared file would quietly cross them.
+#: Which tabs feed which bank. Boots are items: the panel draws a
+#: second-tier boot at exactly the item size, and they share a catalogue.
 KINDS = {
-    "items": {
-        "tabs": ("equip", "boots"),
-        "bank": ROOT / "data" / "icon_bank" / "items.npz",
-        "frozen": ROOT / "data" / "icon_bank" / "loadout_item_clusters.npz",
-        "labels": ROOT / "data" / "loadout_item_labels.json",
-        "sheet": ROOT / "data" / "debug_scans" / "_loadout_items_to_name.png",
-        "circular": False,
-    },
-    "runes": {
-        "tabs": ("runes",),
-        "bank": ROOT / "data" / "icon_bank" / "runes.npz",
-        "frozen": ROOT / "data" / "icon_bank" / "loadout_rune_clusters.npz",
-        "labels": ROOT / "data" / "loadout_rune_labels.json",
-        "sheet": ROOT / "data" / "debug_scans" / "_loadout_runes_to_name.png",
-        # Runes are drawn as circles inside a tree-coloured ring, and the
-        # matcher scores them through a circular window for that reason.
-        # Clustering has to use the same window or it would group by ring
-        # colour, which is the rune TREE, not the rune.
-        "circular": True,
-    },
+    "items": {"tabs": ("equip", "boots"), "bank": BANKS / "loadout_items.npz",
+              "circular": False, "match": "loadout_items"},
+    "runes": {"tabs": ("runes",), "bank": BANKS / "loadout_runes.npz",
+              # Runes are drawn as circles inside a tree-coloured ring, and
+              # the matcher scores them through a circular window for that
+              # reason. Everything here has to use the same window or it
+              # compares ring colour, which is the rune TREE, not the rune.
+              "circular": True, "match": "loadout_runes"},
 }
 
-#: Set from --kind before anything below reads them.
-KIND = "items"
-BANK = KINDS["items"]["bank"]
-FROZEN = KINDS["items"]["frozen"]
-LABELS = KINDS["items"]["labels"]
-SHEET = KINDS["items"]["sheet"]
-
-#: Cosine similarity above which two icons are the same item. High on
-#: purpose: a cluster that merges two items poisons every template it
-#: contributes, while an item split across two clusters costs nothing but
-#: a second entry, and match_slot folds those back together anyway.
-JOIN = 0.90
-
-#: A cluster is named only on this much agreement among the reads that
-#: were confident enough to produce a name at all.
-MIN_VOTES = 3
-MIN_SHARE = 0.60
-
-#: Templates kept per item. The members furthest apart are the useful
-#: ones -- near-duplicates of a template already in the bank teach it
-#: nothing -- so this caps the bank's growth without losing coverage.
-PER_ITEM = 4
+#: A harvested tile joins a reference's name above this correlation. The
+#: references were cut at a deliberately tight clustering threshold, so a
+#: tile that is the same artwork scores far above this and the gate is
+#: there to reject the genuinely unseen, not to arbitrate between names.
+ASSIGN = 0.55
+#: Within one name, looks closer than this are the same look and average
+#: together into one template.
+LOOK = 0.93
+#: Templates kept per name, biggest look first. More is not better: every
+#: template is another chance for an unrelated icon to find a friendly
+#: angle, and the tail looks are near-duplicates of the head.
+PER_NAME = 4
+#: A look needs this many tiles to become a template of its own.
+MIN_LOOK = 3
 
 
-def _vector(tile: np.ndarray, weights: np.ndarray) -> np.ndarray:
-    """A tile as a unit vector, weighted and mean-removed like _score."""
-    flat = []
-    for ch in range(3):
-        x = tile[:, :, ch]
-        xd = (x - (x * weights).sum() / weights.sum()) * weights
-        flat.append(xd.ravel())
-    v = np.concatenate(flat)
-    n = float(np.linalg.norm(v))
-    return v / n if n > 1e-6 else v
+# ----------------------------------------------------------------- harvest --
+def harvest(kind: str, limit: int = 0):
+    """[(tile, source)] for every icon of this kind on disk.
 
-
-def harvest(limit: int) -> list[tuple[np.ndarray, np.ndarray]]:
-    """[(normalised tile, unit vector)] for every item icon on disk."""
-    weights = icon_match._weights(True, KINDS[KIND]["circular"])
+    Geometry comes from src.loadouts: the panel's flat grey background is
+    what says where an icon starts and ends, voted across a whole frame so
+    one dark rune cannot hide its own column. A frame whose column count
+    disagrees with the tab is skipped rather than cut in the wrong places --
+    that is how the no-data illustration gets refused.
+    """
+    tabs = KINDS[kind]["tabs"]
     out = []
-    folders = sorted(d for d in CAPTURES.iterdir()
-                     if (d / "manifest.json").is_file())
+    sessions = sorted(d for d in CAPTURES.iterdir() if d.is_dir())
     if limit:
-        folders = folders[:limit]
-    for folder in folders:
-        manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
-        for tab in KINDS[KIND]["tabs"]:
-            info = manifest["tabs"].get(tab)
-            if not info or not info["frames"]:
+        sessions = sessions[:limit]
+    for n, session in enumerate(sessions, 1):
+        for frame in sorted(session.glob("*.png")):
+            tab = frame.stem.split("_")[0]
+            if tab not in tabs:
                 continue
-            # The first frame of each tab is enough: later frames are the
-            # same table scrolled, so they repeat items already seen.
-            image = cv2.imread(str(folder / info["frames"][0]))
+            image = cv2.imread(str(frame))
             if image is None:
                 continue
-            for row in L.find_rows(image):
-                cells = L.row_cells(image, row)
-                for icon in L.segment_icons(cells["entity"], L.TABS[tab]["icons"], tab):
-                    if icon.size == 0:
+            rows = L.find_rows(image)
+            if not rows:
+                continue
+            geom = L.measure_icons(image, rows, L.TABS[tab]["icons"])
+            if geom is None:
+                continue
+            for r, row in enumerate(rows, 1):
+                for i, tile in enumerate(geom.tiles(image, row)):
+                    if tile is None or tile.size == 0:
                         continue
-                    tile = icon_match._norm_tile(icon)
-                    out.append((tile, _vector(tile, weights)))
+                    out.append((tile, f"{session.name}/{frame.stem} r{r} s{i}"))
+        if n % 40 == 0:
+            print(f"  {n}/{len(sessions)} sessions, {len(out)} tiles",
+                  flush=True)
     return out
 
 
-def cluster(samples) -> list[list[int]]:
-    """Greedy single-pass clustering on cosine similarity."""
-    centres: list[np.ndarray] = []
-    members: list[list[int]] = []
-    # Centres also live stacked, so each sample is one matrix-vector
-    # product instead of a Python loop over several hundred centres. At
-    # six thousand icons that is the difference between minutes and
-    # seconds, and it computes exactly the same similarities.
-    stack: np.ndarray | None = None
-    for i, (_tile, vec) in enumerate(samples):
-        if centres:
-            sims = stack @ vec
-            best = int(sims.argmax())
-            if sims[best] >= JOIN:
-                members[best].append(i)
-                n = len(members[best])
-                centres[best] = centres[best] * ((n - 1) / n) + vec / n
-                norm = float(np.linalg.norm(centres[best]))
-                if norm > 1e-6:
-                    centres[best] /= norm
-                stack[best] = centres[best]
+# -------------------------------------------------------------- references --
+def references(kind: str):
+    """(names, vectors) for the owner's labelled tiles of this kind."""
+    doc = json.loads(LABELS.read_text(encoding="utf-8"))
+    labels = doc["labels"]
+    names, vecs = [], []
+    with np.load(REFERENCE) as z:
+        for key in z.files:
+            if not key.startswith(kind + "-") or key not in labels:
                 continue
-        centres.append(vec.copy())
-        members.append([i])
-        stack = (vec[None, :].copy() if stack is None
-                 else np.vstack([stack, vec[None, :]]))
-    return members
+            names.append(labels[key])
+            vecs.append(icon_match._norm_tile(z[key]))
+    return names, vecs
 
 
-#: Clusters smaller than this are left off the sheet. They are
-#: overwhelmingly mis-segmented fragments and half-icons rather than rare
-#: items -- of 509 clusters, 231 were singletons -- and putting 500 cells
-#: in front of a person to find 130 real ones is how a naming pass gets
-#: abandoned. Raise it to see fewer, pass 1 to see everything.
-SHEET_MIN_SIZE = 3
+def _unit(tile: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    """One tile as three unit vectors, one per channel.
 
-
-def freeze(samples, groups) -> dict:
-    """Number the clusters once and write them down, with one tile each.
-
-    The stored art is the member CLOSEST to its cluster's centre, which
-    is the cleanest look at that item rather than whichever instance
-    happened to be first.
+    icon_match._score is a weighted, mean-centred correlation per channel,
+    averaged. Centre and normalise once here and that score becomes a plain
+    dot product, which turns the 1.4 million comparisons this file makes
+    into a handful of matrix multiplies. The arithmetic is the same -- the
+    assertion in main() checks it against _score itself rather than trusting
+    that claim.
     """
-    art, sizes, names = [], [], []
-    for group in groups:
-        vecs = np.stack([samples[i][1] for i in group])
-        centre = vecs.mean(axis=0)
-        norm = float(np.linalg.norm(centre))
-        if norm > 1e-6:
-            centre = centre / norm
-        best = group[int((vecs @ centre).argmax())]
-        art.append(samples[best][0])
-        sizes.append(len(group))
-        names.append(auto_name(samples, group) or "")
-    FROZEN.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(FROZEN, art=np.stack(art),
-                        sizes=np.array(sizes),
-                        guesses=np.array(names, dtype=object),
-                        members=np.array(
-                            [np.array(g, dtype=np.int32) for g in groups],
-                            dtype=object))
-    return {"art": np.stack(art), "sizes": sizes, "guesses": names}
+    denom = weights.sum()
+    out = np.empty((3, weights.size), np.float32)
+    for ch in range(3):
+        x = tile[:, :, ch]
+        xd = (x - (x * weights).sum() / denom) * weights
+        n = float(np.sqrt((xd ** 2).sum()))
+        out[ch] = (xd / n if n > 1e-6 else xd).ravel()
+    return out
 
 
-def load_frozen() -> dict | None:
-    if not FROZEN.exists():
-        return None
-    with np.load(FROZEN, allow_pickle=True) as z:
-        return {"art": z["art"], "sizes": list(z["sizes"]),
-                "guesses": [str(g) for g in z["guesses"]]}
-
-
-def owner_labels() -> dict[str, str]:
-    if not LABELS.exists():
-        return {}
-    data = json.loads(LABELS.read_text(encoding="utf-8"))
-    return {k: v for k, v in data.items()
-            if not k.startswith("_") and isinstance(v, str) and v.strip()}
-
-
-def auto_name(samples, group) -> str | None:
-    """The catalogue's own verdict on a cluster, or None if it has none."""
-    votes = Counter()
-    for idx in group[:12]:
-        name, score, _gap, _ru = icon_match.match_slot(samples[idx][0], KIND)
-        if name != "?" and score >= icon_match.MIN_SCORE:
-            votes[name] += 1
-    total = sum(votes.values())
-    if total < MIN_VOTES:
-        return None
-    best, count = votes.most_common(1)[0]
-    return best if count / total >= MIN_SHARE else None
-
-
-def write_sheet(frozen: dict) -> int:
-    """A numbered contact sheet, biggest clusters first."""
-    owner = owner_labels()
-    order = sorted(range(len(frozen["sizes"])),
-                   key=lambda k: -frozen["sizes"][k])
-    order = [k for k in order if frozen["sizes"][k] >= SHEET_MIN_SIZE]
-    cells = []
-    for k in order:
-        cell = np.full((164, 118, 3), (26, 20, 15), np.uint8)
-        tile = cv2.resize(frozen["art"][k].astype(np.uint8), (100, 100))
-        cell[6:106, 9:109] = tile
-        number = str(k + 1)                  # 1-based, as on the rune sheet
-        cv2.putText(cell, number, (6, 24), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.62, (0, 0, 0), 4)
-        cv2.putText(cell, number, (6, 24), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.62, (80, 220, 255), 1)
-        have = owner.get(number) or frozen["guesses"][k]
-        for j, txt in enumerate([(have or "UNNAMED")[:17],
-                                 f"n={frozen['sizes'][k]}"]):
-            col = (150, 240, 160) if (j == 0 and have) else (140, 140, 150)
-            cv2.putText(cell, txt, (5, 124 + j * 16), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.36, col, 1, cv2.LINE_AA)
-        cells.append(cell)
-    if not cells:
-        print("no clusters big enough for the sheet", file=sys.stderr)
-        return 2
-    cols = 8
-    while len(cells) % cols:
-        cells.append(np.zeros((164, 118, 3), np.uint8))
-    SHEET.parent.mkdir(parents=True, exist_ok=True)
-    cv2.imwrite(str(SHEET), np.vstack([np.hstack(cells[i:i + cols])
-                                       for i in range(0, len(cells), cols)]))
-    named = sum(1 for k in order
-                if owner.get(str(k + 1)) or frozen["guesses"][k])
-    print(f"{len(order)} clusters (of {len(frozen['sizes'])}, "
-          f"those with {SHEET_MIN_SIZE}+ icons) -> {SHEET.relative_to(ROOT)}")
-    print(f"  {named} already have a name, {len(order) - named} say UNNAMED")
-    print(f"  put names in {LABELS.relative_to(ROOT)} keyed by the number "
-          f"printed on each cell, then rerun without --sheet")
-    return 0
-
-
-def main() -> int:
-    # Declared up front: Python requires it before the name is READ, and
-    # --min-size reads SHEET_MIN_SIZE for its default.
-    global KIND, BANK, FROZEN, LABELS, SHEET, SHEET_MIN_SIZE
-
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--dry-run", action="store_true",
-                    help="report what would be learned, write nothing")
-    ap.add_argument("--limit", type=int, default=0,
-                    help="only the first N captures, for a quick look")
-    ap.add_argument("--sheet", action="store_true",
-                    help="write the numbered naming sheet and stop")
-    ap.add_argument("--recluster", action="store_true",
-                    help="recompute the clusters. INVALIDATES every name in "
-                         "the labels file, because the numbers move.")
-    ap.add_argument("--kind", default="items", choices=sorted(KINDS),
-                    help="which icons to harvest and bank (default: items)")
-    ap.add_argument("--min-size", type=int, default=SHEET_MIN_SIZE,
-                    help=f"smallest cluster put on the sheet (default "
-                         f"{SHEET_MIN_SIZE}). Pass 1 to see every cluster, "
-                         f"including the mis-segmented singletons.")
-    args = ap.parse_args()
-
-    KIND = args.kind
-    cfg = KINDS[KIND]
-    BANK, FROZEN = cfg["bank"], cfg["frozen"]
-    LABELS, SHEET = cfg["labels"], cfg["sheet"]
-    SHEET_MIN_SIZE = max(1, args.min_size)
-    print(f"kind: {KIND}  (tabs {', '.join(cfg['tabs'])} -> "
-          f"{BANK.relative_to(ROOT)})")
-
-    frozen = None if args.recluster else load_frozen()
-    if frozen is not None and args.sheet:
-        return write_sheet(frozen)
-
-    print(f"harvesting {KIND} icons from the loadout captures ...")
-    samples = harvest(args.limit)
-    if not samples:
-        print(f"no {KIND} icons found", file=sys.stderr)
-        return 2
-    print(f"  {len(samples)} icons")
-
-    groups = cluster(samples)
-    groups.sort(key=len, reverse=True)
-    print(f"  {len(groups)} clusters "
-          f"(largest {len(groups[0])}, singletons "
-          f"{sum(1 for g in groups if len(g) == 1)})")
-
-    if args.recluster and FROZEN.exists():
-        print("  RECLUSTERED: every number in "
-              f"{LABELS.relative_to(ROOT)} now points somewhere else and "
-              "must be reviewed against a fresh sheet.")
-    frozen = freeze(samples, groups)
-    print(f"  numbering frozen -> {FROZEN.relative_to(ROOT)}")
-    if args.sheet:
-        return write_sheet(frozen)
-
-    print("naming clusters: owner labels first, catalogue reads second ...")
-    owner = owner_labels()
-    named: dict[str, list[int]] = defaultdict(list)
-    from_owner = unnamed = 0
-    for k, group in enumerate(groups):
-        # The owner's word beats the machine's: a hand-written label only
-        # exists because somebody looked at the icon.
-        label = owner.get(str(k + 1)) or frozen["guesses"][k]
-        if owner.get(str(k + 1)):
-            from_owner += 1
-        if label:
-            named[label].extend(group)
+def assign(tiles, names, refs, weights):
+    """name -> [tile index], plus the indices nothing claimed."""
+    bank = np.stack([_unit(r, weights) for r in refs])       # (R, 3, P)
+    bank = np.ascontiguousarray(bank.transpose(1, 0, 2))     # (3, R, P)
+    taken: dict[str, list[int]] = defaultdict(list)
+    loose: list[int] = []
+    for i, (tile, _src) in enumerate(tiles):
+        u = _unit(icon_match._norm_tile(tile), weights)
+        scores = sum(bank[ch] @ u[ch] for ch in range(3)) / 3.0
+        j = int(scores.argmax())
+        if float(scores[j]) >= ASSIGN:
+            taken[names[j]].append(i)
         else:
-            unnamed += 1
+            loose.append(i)
+        if (i + 1) % 4000 == 0:
+            print(f"  assigned {i + 1}/{len(tiles)}", flush=True)
+    return taken, loose
 
-    print(f"  named {len(named)} items from {len(groups) - unnamed} clusters "
-          f"({from_owner} by hand); {unnamed} clusters unnamed")
 
-    # Pick the most DISSIMILAR members per item: a template that looks like
-    # one already in the bank adds nothing to recognise with.
-    additions: dict[str, np.ndarray] = {}
-    for name, idxs in sorted(named.items()):
-        chosen: list[int] = []
-        for idx in idxs:
-            if len(chosen) >= PER_ITEM:
+# ---------------------------------------------------------------- templates --
+def looks(vecs, weights):
+    """Group one name's tiles into distinct looks, biggest first."""
+    units = [_unit(v, weights) for v in vecs]
+    groups: list[list[int]] = []
+    heads: list[np.ndarray] = []
+    for i, u in enumerate(units):
+        for j, head in enumerate(heads):
+            if float(sum((head[ch] * u[ch]).sum() for ch in range(3))) / 3.0 >= LOOK:
+                groups[j].append(i)
                 break
-            vec = samples[idx][1]
-            if all(float(vec @ samples[c][1]) < JOIN for c in chosen):
-                chosen.append(idx)
-        for n, idx in enumerate(chosen):
-            additions[f"{name}#ld{n}"] = samples[idx][0]
+        else:
+            heads.append(u)
+            groups.append([i])
+    order = sorted(range(len(groups)), key=lambda j: len(groups[j]),
+                   reverse=True)
+    return [groups[j] for j in order]
 
-    print(f"  {len(additions)} templates for {len(named)} items")
+
+def build(kind: str, tiles, taken, weights, hold: float = 0.0):
+    """{'<name>#ld<n>': template}, plus the tile indices held back.
+
+    `hold` keeps that share of each look out of the averaging so there is
+    something honest left to score the result on. Zero by default: a bank
+    built for use should use everything it has.
+    """
+    bank, report, held = {}, [], []
+    for name in sorted(taken):
+        idx = taken[name]
+        vecs = [icon_match._norm_tile(tiles[i][0]) for i in idx]
+        kept = 0
+        for group in looks(vecs, weights):
+            if hold and len(group) >= 4:
+                cut = max(1, int(len(group) * hold))
+                held.extend((name, idx[i]) for i in group[:cut])
+                group = group[cut:]
+            if kept and len(group) < MIN_LOOK:
+                break                 # the tail is noise, not another look
+            if kept >= PER_NAME:
+                break
+            # Average the look rather than pick a member. The panel
+            # re-renders the same icon with slightly different compression
+            # every frame, and the mean of forty of them is cleaner than any
+            # one of them.
+            bank[f"{name}#ld{kept}"] = np.mean([vecs[i] for i in group],
+                                               axis=0).astype(np.float32)
+            kept += 1
+        report.append((name, len(idx), kept))
+    return bank, report, held
+
+
+# ---------------------------------------------------------------- holdout --
+def holdout(kind: str, tiles, taken, bank):
+    """Score the bank on tiles it was NOT built from.
+
+    READ THE NUMBER NARROWLY. Every tile here was given its name by the
+    same nearest-reference step that chose the templates, so this measures
+    whether the bank GENERALISES from the frames it was averaged over to
+    other frames of the same art. It does not independently verify the
+    name: that came from the owner labelling the reference tile, and
+    nothing here can re-check it.
+
+    The first version of this reported 100.0% and meant nothing at all,
+    because --holdout ran after build() had averaged every assigned tile
+    into its template, so the test tile was literally part of the thing it
+    was scored against. build_split() now keeps a share of each look out of
+    the averaging, and those are the tiles scored here.
+    """
+    icon_match.templates.cache_clear()
+    hits = misses = refused = 0
+    confusions: dict[tuple[str, str], int] = defaultdict(int)
+    step = max(1, len(taken) // 2000)
+    for name, i in taken[::step]:
+        got, _s, _g, _r = icon_match.match_slot(tiles[i][0],
+                                                KINDS[kind]["match"])
+        if got == "?":
+            refused += 1
+        elif got == name:
+            hits += 1
+        else:
+            misses += 1
+            confusions[(name, got)] += 1
+    total = hits + misses + refused
+    return hits, misses, refused, total, confusions
+
+
+# -------------------------------------------------------------------- main --
+def run(kind: str, args) -> int:
+    cfg = KINDS[kind]
+    print(f"\n=== {kind} ===", flush=True)
+    names, refs = references(kind)
+    print(f"{len(names)} labelled references, "
+          f"{len(set(names))} distinct names", flush=True)
+
+    tiles = harvest(kind, args.limit)
+    print(f"{len(tiles)} tiles harvested", flush=True)
+    if not tiles:
+        print("nothing to build from")
+        return 1
+
+    weights = icon_match._weights(True, cfg["circular"])
+    taken, loose = assign(tiles, names, refs, weights)
+    claimed = sum(len(v) for v in taken.values())
+    print(f"{claimed}/{len(tiles)} tiles named ({100 * claimed / len(tiles):.1f}%), "
+          f"{len(loose)} unclaimed", flush=True)
+
+    # A --holdout run builds a DELIBERATELY WEAKER bank, so that there is
+    # something left to score it on. It must not be the bank that ships.
+    bank, report, held = build(kind, tiles, taken, weights,
+                               hold=0.35 if args.holdout else 0.0)
+    thin = [(n, c, k) for n, c, k in report if k == 0]
+    print(f"{len(bank)} templates for {len({k.split('#')[0] for k in bank})} names")
+    if thin:
+        print(f"  {len(thin)} names with no template: "
+              + ", ".join(n for n, _c, _k in thin[:8]))
+    if args.verbose:
+        for name, count, kept in sorted(report, key=lambda r: -r[1]):
+            print(f"    {name:34s} {count:5d} tiles -> {kept} templates")
+
     if args.dry_run:
-        for name in sorted(named)[:15]:
-            print(f"    {name:28s} {len(named[name]):4d} icons")
-        print("dry run: nothing written")
+        print(f"dry run: would write {cfg['bank'].name}")
         return 0
 
-    existing = {}
-    if BANK.exists():
-        with np.load(BANK) as z:
-            existing = {k: z[k] for k in z.files}
-        print(f"  existing bank: {len(existing)} templates (kept)")
-    existing.update(additions)
-    BANK.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(BANK, **existing)
-    print(f"wrote {BANK.relative_to(ROOT)} ({len(existing)} templates)")
+    np.savez_compressed(cfg["bank"], **bank)
+    icon_match.templates.cache_clear()
+    print(f"wrote {cfg['bank'].name}: {len(bank)} templates, "
+          f"{cfg['bank'].stat().st_size // 1024} KB")
+
+    if args.holdout:
+        hits, misses, refused, total, conf = holdout(kind, tiles, held, bank)
+        print(f"held-out: {hits}/{total} correct "
+              f"({100 * hits / max(1, total):.1f}%), "
+              f"{misses} wrong, {refused} refused "
+              f"-- on a bank built WITHOUT these tiles, so re-run without "
+              f"--holdout before shipping it")
+        for (want, got), n in sorted(conf.items(), key=lambda p: -p[1])[:8]:
+            print(f"    {n:4d}x  {want}  read as  {got}")
     return 0
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--kind", choices=sorted(KINDS), action="append",
+                    help="build only this bank (repeatable)")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="report what it would learn, write nothing")
+    ap.add_argument("--holdout", action="store_true",
+                    help="score the new bank on tiles it was not built from")
+    ap.add_argument("--limit", type=int, default=0,
+                    help="use only the first N capture sessions")
+    ap.add_argument("--verbose", action="store_true",
+                    help="list every name and its template count")
+    args = ap.parse_args(argv)
+
+    if not LABELS.exists() or not REFERENCE.exists():
+        print(f"missing {LABELS.name} or {REFERENCE.name}; "
+              f"nothing can be named without them")
+        return 2
+
+    # _unit claims to reproduce icon_match._score exactly. Check it, on real
+    # templates, before 25,000 tiles are filed by it.
+    probe = icon_match._weights(True, True)
+    bank = list(icon_match.templates()["runes"].values())[:6]
+    for a in bank[:2]:
+        for b in bank:
+            ua, ub = _unit(a, probe), _unit(b, probe)
+            fast = float(sum((ua[c] * ub[c]).sum() for c in range(3))) / 3.0
+            slow = icon_match._score(a, probe, b)
+            assert abs(fast - slow) < 1e-4, (fast, slow)
+
+    rc = 0
+    for kind in (args.kind or sorted(KINDS)):
+        rc |= run(kind, args)
+    return rc
 
 
 if __name__ == "__main__":
