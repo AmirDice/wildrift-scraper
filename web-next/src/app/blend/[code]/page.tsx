@@ -3,7 +3,7 @@ import { Container } from "@/components/ui";
 import { BlendView } from "@/components/blend-view";
 
 export const metadata: Metadata = {
-  title: "Duo Blend | WrTrueMeta",
+  title: "Duo Blend",
   description: "Two players' Wild Rift build albums, mixed: shared picks, taste match and a duo queue list.",
   robots: { index: false, follow: false },
 };

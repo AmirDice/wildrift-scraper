@@ -22,6 +22,9 @@ const FOOTER_LINKS = [
   { href: "/changes-report", label: "Balance Report" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/terms", label: "Terms" },
   { href: "/privacy", label: "Privacy & Ads" },
 ];
 

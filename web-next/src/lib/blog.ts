@@ -28,6 +28,8 @@ export type Block =
       note?: string;
     };
 
+import { CURRENT_PATCH } from "@/lib/patch";
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -35,6 +37,11 @@ export interface BlogPost {
   description: string;
   /** ISO date. */
   date: string;
+  /** ISO date of the last real revision, shown and sent as dateModified. */
+  updated?: string;
+  /** Unpublished: kept out of the index, the sitemap and search, but
+   *  readable at its URL so it can be reviewed before it goes live. */
+  draft?: boolean;
   /** Short label shown on the card. */
   tag: string;
   /** Opening paragraph, rendered above the body in a larger face. */
@@ -44,19 +51,85 @@ export interface BlogPost {
 
 export const POSTS: BlogPost[] = [
   {
-    slug: "best-junglers-patch-7-2a",
-    title: "The best junglers in Wild Rift right now (patch 7.2a)",
+    slug: "patch-7-3b-analysis",
+    title: "Patch 7.3b: Riot nerfed the top of the tier list and buffed the bottom",
     description:
-      "The strongest Wild Rift junglers this patch, ranked by the real win rates of each champion's 50 best players rather than by overall pick rate.",
-    date: "2026-07-23",
-    tag: "Tier list",
+      "Patch 7.3b changes eight Wild Rift champions. Against the WrTrueMeta tier list, the four nerfs hit champions ranked 1st, 3rd, 7th and 13th, and the four buffs hit 80th, 91st, 128th and 139th.",
+    date: "2026-10-16",
+    tag: "Patch analysis",
+    draft: true,
     lede:
-      "Jungle decides more games than any other role in Wild Rift, and it is the role where the gap between what is popular and what actually wins is widest. These are the junglers carrying patch 7.2a.",
+      "Patch 7.3b changes eight champions. Line them up against the WrTrueMeta Global tier list collected on patch 7.3a and the pattern is hard to miss: the four nerfs land on champions ranked 1st, 3rd, 7th and 13th of 142, and the four buffs land on champions ranked 80th, 91st, 128th and 139th.",
     blocks: [
       {
         kind: "p",
         text:
-          "Every ranking below comes from the same place: the top 50 ranked players on each champion, with their win rates confidence-adjusted so a 12-game hot streak cannot outrank a 300-game grinder. That matters more in jungle than anywhere else, because jungle win rates are dragged down hardest by players who picked the role up last week.",
+          "That is what a balance patch is supposed to look like, and it is also a useful check on the data. Riot balances from every game on the server; this site ranks champions by how their best players do. When two very different measurements point at the same champions, both are probably right.",
+      },
+      { kind: "h2", text: "The nerfs: Senna, Hwei, Nocturne and Yunara" },
+      {
+        kind: "ul",
+        items: [
+          "Senna, 1st of 142 (GOD tier, 60.1%). Riot calls this another pass at her scaling, so expect the change to bite hardest late, where her stacking passive used to run away with games.",
+          "Hwei, 3rd (GOD, 56.1%). His damage, shielding and crowd control all come down. His top players in China post 62.4% against 52.0% in NA, so the nerf may land very differently by region.",
+          "Nocturne, 7th (GOD, 54.0%). Slower jungle clears and fewer chances to find a target, a direct answer to how well he came out of the jungle overhaul.",
+          "Yunara, 13th (S, 53.1%). Her sustained damage is trimmed now that players have learned her kit, which is the usual arc for a newer champion.",
+        ],
+      },
+      { kind: "h2", text: "The buffs: Volibear, Jhin, Yasuo and Tryndamere" },
+      {
+        kind: "ul",
+        items: [
+          "Volibear, 80th (B, 49.7%). More Attack Damage scaling and more survivability, aimed at team fights rather than lane.",
+          "Jhin, 91st (B, 49.2%). Power moves earlier in the game, so he no longer waits for max level to hit his spikes.",
+          "Yasuo, 128th (C, 47.1%). Extra mid and late game damage and survivability, which Riot ties to his losing the crit version of Bloodthirster.",
+          "Tryndamere, 139th (L, 46.4%). Changes to make his critical strikes and damage more consistent after the crit item overhaul did less for him than intended.",
+        ],
+      },
+      {
+        kind: "p",
+        text:
+          "Yasuo and Tryndamere are the two buffs to watch. Both were near the bottom because of the crit item rework rather than their own kits, so if the buffs work they should climb faster than a normal buff would suggest.",
+      },
+      { kind: "h2", text: "Items and runes" },
+      {
+        kind: "ul",
+        items: [
+          "Assassins: Youmuu's Ghostblade and Statikk Shiv drop to 2900 gold, Statikk's attacks build more Energized stacks, Electrocute's base damage rises and Cheap Shot's cooldown falls from 7 to 5 seconds. Riot's stated goal is to let assassins turn early leads into wins.",
+          "Tanks: Thornmail costs 150 more, so the Armor and anti-heal spike arrives later. Locket of the Iron Solari gets cheaper and gains 100 Health to make tank supports more attractive.",
+          "Grasp of the Undying and Aery both lose some strength, and Yun Tal Wildarrows is 100 gold cheaper.",
+          "Raptors gain Health, which slows full clears a little for every jungler, not only Nocturne.",
+        ],
+      },
+      { kind: "h2", text: "When the numbers will show it" },
+      {
+        kind: "p",
+        text:
+          "The tier list was collected on 7.3a, so it does not reflect any of this yet. China's daily data moves first: the winners and losers page fills in as the first days of 7.3b games arrive, and the next leaderboard collection moves the tier list itself. Each champion's page already lists its 7.3b changes.",
+      },
+      {
+        kind: "cta",
+        href: "/movers",
+        label: "See the 7.3b winners and losers",
+        text: "Win rate movement in China since the patch went live, updated daily.",
+      },
+    ],
+  },
+  {
+    slug: "best-junglers-patch-7-2a",
+    title: `The best junglers in Wild Rift right now (patch ${CURRENT_PATCH})`,
+    description:
+      "The strongest Wild Rift junglers this patch, ranked by the real win rates of each champion's best players rather than by overall pick rate.",
+    date: "2026-07-23",
+    updated: "2026-10-16",
+    tag: "Tier list",
+    lede:
+      "Jungle decides more games than any other role in Wild Rift, and it is the role where the gap between what is popular and what actually wins is widest. These are the junglers carrying the current patch.",
+    blocks: [
+      {
+        kind: "p",
+        text:
+          "Every ranking below comes from the same place: the top 30 ranked players on each champion in every region, with their win rates confidence-adjusted so a 12-game hot streak cannot outrank a 300-game grinder. That matters more in jungle than anywhere else, because jungle win rates are dragged down hardest by players who picked the role up last week.",
       },
       { kind: "h2", text: "The best junglers this patch" },
       {
@@ -64,7 +137,7 @@ export const POSTS: BlogPost[] = [
         source: "role",
         role: "Jungle",
         limit: 10,
-        note: "Ranked by confidence-adjusted win rate across each champion's 50 best players.",
+        note: "Ranked by confidence-adjusted win rate across each champion's best players in every region.",
       },
       { kind: "h2", text: "Junglers that scale with your own rank" },
       {
@@ -206,10 +279,11 @@ export const POSTS: BlogPost[] = [
   },
   {
     slug: "best-baron-laners-patch-7-2a",
-    title: "The best Baron laners in Wild Rift (patch 7.2a)",
+    title: `The best Baron laners in Wild Rift (patch ${CURRENT_PATCH})`,
     description:
       "The strongest Wild Rift Baron lane champions this patch, ranked by the real win rates of each champion's best players, plus who to pick into a bad matchup.",
     date: "2026-07-19",
+    updated: "2026-10-16",
     tag: "Tier list",
     lede:
       "Baron lane is the most isolated role in Wild Rift, which makes champion choice matter more there than anywhere else. Get the matchup wrong and no amount of mechanics saves the lane.",
@@ -220,7 +294,7 @@ export const POSTS: BlogPost[] = [
         source: "role",
         role: "Baron",
         limit: 10,
-        note: "Ranked by confidence-adjusted win rate across each champion's 50 best players.",
+        note: "Ranked by confidence-adjusted win rate across each champion's best players in every region.",
       },
       { kind: "h2", text: "Losing the matchup?" },
       {
@@ -238,8 +312,9 @@ export const POSTS: BlogPost[] = [
   },
 ];
 
+/** Published posts, newest first. Drafts are left out. */
 export function getPosts(): BlogPost[] {
-  return [...POSTS].sort((left, right) => right.date.localeCompare(left.date));
+  return POSTS.filter((post) => !post.draft).sort((left, right) => right.date.localeCompare(left.date));
 }
 
 export function getPost(slug: string): BlogPost | null {

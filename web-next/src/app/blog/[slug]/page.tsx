@@ -19,11 +19,13 @@ export async function generateMetadata(props: PageProps<"/blog/[slug]">): Promis
     title: post.title,
     description: post.description,
     alternates: { canonical: `/blog/${post.slug}` },
+    ...(post.draft ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       type: "article",
       title: post.title,
       description: post.description,
       publishedTime: post.date,
+      ...(post.updated ? { modifiedTime: post.updated } : {}),
     },
     twitter: { card: "summary_large_image", title: post.title, description: post.description },
   };
@@ -51,7 +53,7 @@ export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updated ?? post.date,
     author: { "@type": "Organization", name: "WrTrueMeta" },
     publisher: { "@type": "Organization", name: "WrTrueMeta" },
     mainEntityOfPage: `https://wrtruemeta.com/blog/${post.slug}`,
@@ -79,9 +81,15 @@ export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
             {post.tag}
           </span>
           <span className="text-xs text-faint">
-            {DATE_FORMAT.format(new Date(post.date))} · {readingMinutes(post)} min read
+            {DATE_FORMAT.format(new Date(post.date))}
+            {post.updated ? ` · Updated ${DATE_FORMAT.format(new Date(post.updated))}` : ""} · {readingMinutes(post)} min read
           </span>
         </div>
+        {post.draft && (
+          <p className="mt-3 inline-block rounded-lg border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold">
+            Draft: not published, not in search or the blog index
+          </p>
+        )}
         <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{post.title}</h1>
         <p className="mt-4 text-lg leading-relaxed text-text/90">{post.lede}</p>
 

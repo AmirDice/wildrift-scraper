@@ -32,6 +32,7 @@ export async function GET(request: Request) {
     FEEDBACK_REASON_KEYS.map(async (reason) => [reason, await kvGetNumber(`feedback:build:reason:${reason}`)] as const),
   );
   const notes = await kvList("feedback:build:log", 50);
+  const contact = await kvList("contact:messages", 100);
   const [uniqueAccounts, signInsLog, engagement, engagementAll] = await Promise.all([
     kvSetCount("auth:google:subs"),
     kvList("auth:signins:log", 30),
@@ -58,6 +59,8 @@ export async function GET(request: Request) {
       reasons: Object.fromEntries(reasonCounts),
       recent: notes.map(parse),
     },
+    // The contact form's inbox, newest first.
+    contact: contact.map(parse),
     accounts: {
       // Unique Google accounts ever signed in (tracked from 2026-08-07; the
       // signed_in EVENT total goes further back but counts repeat sign-ins).

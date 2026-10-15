@@ -4,7 +4,7 @@ import { Container, Card } from "@/components/ui";
 import { ADSENSE_CLIENT, ADS_LIVE } from "@/lib/ads";
 
 export const metadata: Metadata = {
-  title: "Privacy & Ads | WrTrueMeta",
+  title: "Privacy & Ads",
   description:
     "What WrTrueMeta stores, what it does not, and how advertising, analytics and Google sign-in work on the site.",
   alternates: { canonical: "/privacy" },
@@ -120,10 +120,23 @@ export default function PrivacyPage() {
         </Card>
 
         <Card>
+          <h2 className="text-lg font-semibold">The contact form</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            A message sent through the contact form is stored with the topic, and the name and
+            email address if you give them, so it can be read and answered. Both are optional.
+            Messages are not shared with anyone and are deleted on request.
+          </p>
+        </Card>
+
+        <Card>
           <h2 className="text-lg font-semibold">Your data, and getting in touch</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             You can ask what is stored about you, ask for it to be deleted, or object to
-            advertising cookies. The fastest route is a message in{" "}
+            advertising cookies. Use the{" "}
+            <Link href="/contact" className="font-medium text-accent transition hover:opacity-80">
+              contact form
+            </Link>
+            , a message in{" "}
             <Link href="/creators" className="font-medium text-accent transition hover:opacity-80">
               the Discord
             </Link>

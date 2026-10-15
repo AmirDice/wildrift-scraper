@@ -5,7 +5,7 @@ import { AdminConsole } from "@/components/admin-console";
 // Never indexed, never linked from the site. Everything it does is gated by
 // ADMIN_TOKEN server-side; the page itself is only a form.
 export const metadata: Metadata = {
-  title: "Admin | WrTrueMeta",
+  title: "Admin",
   robots: { index: false, follow: false, nocache: true },
 };
 

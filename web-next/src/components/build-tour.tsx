@@ -39,10 +39,13 @@ function rectFor(target: string | undefined): Rect | null {
 /**
  * First-run guided tour for the build tools.
  *
- * Walks through the page one control at a time, dimming everything else. Runs
- * once per storage key (bump the key when the tool changes shape), can be
- * skipped at any step, and can be replayed from the "Tour" button that stays in
- * the corner afterwards.
+ * Walks through the page one control at a time, dimming everything else. Can
+ * be skipped at any step and replayed from the corner button.
+ *
+ * Opt-in. It used to open itself 600ms into a first visit, so the first screen
+ * anyone saw -- including an AdSense reviewer -- was a "Step 1 of 5" card over
+ * a dimmed page. A first-time visitor now gets a highlighted "Take the tour"
+ * button instead; the storage key only records that they have taken it.
  */
 export function BuildTour({
   storageKey,
@@ -65,6 +68,8 @@ export function BuildTour({
    * always counts.
    */
   const [live, setLive] = useState<TourStep[]>(steps);
+  /** Has this visitor taken (or skipped) the tour? Unknown until mounted. */
+  const [seen, setSeen] = useState(true);
 
   const open = index != null;
   const step = open ? live[index] : null;
@@ -83,18 +88,18 @@ export function BuildTour({
     track("tour_started");
   }, [present]);
 
-  // First visit: start on the next frame, once the page has laid out.
+  // First visit: invite, never open. Read after mount so the server markup
+  // and the first client render agree.
   useEffect(() => {
-    let seen = true;
-    try {
-      seen = localStorage.getItem(storageKey) === "1";
-    } catch {
-      /* storage unavailable: treat as seen so we never nag in a loop */
-    }
-    if (seen) return;
-    const timer = window.setTimeout(start, 600);
+    const timer = window.setTimeout(() => {
+      try {
+        setSeen(localStorage.getItem(storageKey) === "1");
+      } catch {
+        /* storage unavailable: treat as seen so we never nag */
+      }
+    }, 0);
     return () => window.clearTimeout(timer);
-  }, [storageKey, start]);
+  }, [storageKey]);
 
   // Track the spotlight to its target across scroll, resize and step changes.
   useEffect(() => {
@@ -124,6 +129,7 @@ export function BuildTour({
         /* ignore */
       }
       track(reason === "completed" ? "tour_completed" : "tour_skipped");
+      setSeen(true);
       setIndex(null);
       setRect(null);
     },
@@ -150,9 +156,13 @@ export function BuildTour({
     <>
       <button
         onClick={restart}
-        className="dock-bottom fixed right-[4.5rem] z-40 grid h-11 place-items-center rounded-full border border-line bg-[#0e1322]/90 px-4 text-xs font-bold text-accent shadow-2xl backdrop-blur transition hover:border-accent/60"
+        className={`dock-bottom fixed right-[4.5rem] z-40 grid h-11 place-items-center rounded-full border px-4 text-xs font-bold shadow-2xl backdrop-blur transition ${
+          seen
+            ? "border-line bg-[#0e1322]/90 text-accent hover:border-accent/60"
+            : "border-accent/60 bg-accent text-black hover:opacity-90"
+        }`}
       >
-        {label}
+        {seen ? label : "New here? Take the tour"}
       </button>
 
       {open && step && (

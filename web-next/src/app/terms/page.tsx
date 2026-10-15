@@ -1,0 +1,78 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Container, Card } from "@/components/ui";
+
+export const metadata: Metadata = {
+  title: "Terms of Use",
+  description: "The terms for using WrTrueMeta: what the data and the build tools are, what they are not, and the rules for accounts.",
+  alternates: { canonical: "/terms" },
+};
+
+const UPDATED = "October 16, 2026";
+
+/**
+ * Plain-language terms of use. Written for what the site does today; paid
+ * plans get their own section when they go on sale, together with the
+ * operator details German law requires for selling to consumers.
+ */
+export default function TermsPage() {
+  return (
+    <Container className="py-12">
+      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Terms of use</h1>
+      <p className="mt-2 max-w-2xl text-muted">Last updated {UPDATED}.</p>
+
+      <div className="mt-8 flex max-w-3xl flex-col gap-5">
+        <Section title="Using the site">
+          WrTrueMeta is free to read and use. By using it you agree to these terms. If you do not
+          agree, please do not use the site.
+        </Section>
+        <Section title="What the data is">
+          Win rates, tiers, builds and player statistics are measured from public leaderboards and
+          published game data, and processed as described in the{" "}
+          <Link href="/methodology" className="font-medium text-accent hover:opacity-80">methodology</Link>.
+          They describe what has happened in ranked games. They are not a promise about what will
+          happen in yours, and they can contain errors. If you find one, please{" "}
+          <Link href="/contact" className="font-medium text-accent hover:opacity-80">tell us</Link>.
+        </Section>
+        <Section title="Generated builds">
+          The Build Studio and Counter Builder use a language model to choose items and runes and a
+          simulation engine to measure them. A generated build is a suggestion for you to judge, not
+          advice you have to follow, and it can be wrong. Builds marked experimental are deliberately
+          off the standard path.
+        </Section>
+        <Section title="Accounts and fair use">
+          Signing in with Google is optional and only raises your daily allowance of generations. Do
+          not try to get around the daily limits, overload the site, or collect its data
+          automatically in bulk. We may block access that does.
+        </Section>
+        <Section title="Content and trademarks">
+          Wild Rift and League of Legends, their names, art and game data belong to Riot Games, Inc.
+          WrTrueMeta is not affiliated with or endorsed by Riot Games or Tencent. The site&rsquo;s own
+          text, statistics, charts and code may not be republished wholesale without permission;
+          quoting and linking with credit is welcome.
+        </Section>
+        <Section title="Availability and liability">
+          The site is provided as it is, without guarantees that it will always be available or
+          error free. To the extent the law allows, we are not liable for losses arising from using
+          it, such as a ranked game lost on a build it suggested.
+        </Section>
+        <Section title="Changes">
+          These terms may change as the site does. The date at the top shows the latest version.
+        </Section>
+        <Section title="Privacy">
+          How data about you is handled is described on the{" "}
+          <Link href="/privacy" className="font-medium text-accent hover:opacity-80">privacy page</Link>.
+        </Section>
+      </div>
+    </Container>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card>
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-muted">{children}</p>
+    </Card>
+  );
+}

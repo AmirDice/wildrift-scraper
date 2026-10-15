@@ -176,7 +176,10 @@ interface UsageData {
     recent: FeedbackEntry[];
   };
   accounts: { unique: number; recentSignIns: SignInEntry[] };
+  contact?: ContactEntry[];
 }
+
+interface ContactEntry { at?: string; topic?: string; name?: string; email?: string; message?: string }
 
 const REASON_LABELS = Object.fromEntries(FEEDBACK_REASONS.map((r) => [r.key, r.label]));
 
@@ -541,6 +544,24 @@ function UsagePanel({ token }: { token: string }) {
             {showAllFeedback ? "Show fewer" : `Show all ${feedbackEntries.length}`}
           </button>
         )}
+      </Card>
+
+      <Card className="mt-4 p-4">
+        <h3 className="text-sm font-semibold">Contact form</h3>
+        <div className="mt-2 divide-y divide-line/60">
+          {(data.contact ?? []).filter((entry) => entry && typeof entry === "object").map((entry, index) => (
+            <div key={`${entry.at}-${index}`} className="py-2.5">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="rounded-full border border-line px-2 py-0.5 text-[0.65rem] text-muted">{entry.topic}</span>
+                {entry.name && <span className="font-medium text-text">{entry.name}</span>}
+                {entry.email && <a href={`mailto:${entry.email}`} className="text-accent hover:opacity-80">{entry.email}</a>}
+                <span className="ml-auto text-faint">{timeAgo(entry.at)}</span>
+              </div>
+              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-muted">{entry.message}</p>
+            </div>
+          ))}
+          {!(data.contact ?? []).length && <p className="py-4 text-center text-sm text-faint">No messages yet.</p>}
+        </div>
       </Card>
     </section>
   );

@@ -35,6 +35,7 @@ import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { AgentPromptChips, AskAgent } from "@/components/site-agent";
 import { ChampionLoadouts } from "@/components/champion-loadouts";
 import { getChampionLoadouts } from "@/lib/cn-loadouts";
+import { championSummary } from "@/lib/champion-summary";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -137,6 +138,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const headline = blended ?? champion;
   const podium = champion.globalBestPlayerPodium ?? champion.bestPlayerPodium;
   const analyticsPlayers = loadAnalyticsPlayers(champion.slug);
+  const summary = championSummary(champion.slug);
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
   const stats = champion.statsPending ? [] : [
     { label: "Tier", value: tierLabel(headline.tier), className: tierText[headline.tier] },
@@ -362,6 +364,17 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         </section>
 
         <AgentPromptChips champion={champion.name} />
+
+        {summary.length > 0 && (
+          <section className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-6" aria-labelledby="at-a-glance">
+            <div className="glass rounded-[1.5rem] border border-white/[0.09] p-5 sm:p-6">
+              <h2 id="at-a-glance" className="text-lg font-semibold">{champion.name} at a glance</h2>
+              <div className="mt-2 max-w-4xl space-y-2 text-sm leading-relaxed text-muted">
+                {summary.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
+            </div>
+          </section>
+        )}
 
         <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
           <ChampionTabs

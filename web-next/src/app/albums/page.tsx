@@ -4,7 +4,7 @@ import { AlbumsView } from "@/components/albums-view";
 import { StartBlend } from "@/components/start-blend";
 
 export const metadata: Metadata = {
-  title: "Build Albums | WrTrueMeta",
+  title: "Build Albums",
   description:
     "Collect your Wild Rift builds into albums: your one-tricks, your climbing picks, the builds you want to try next patch. Then blend albums with a friend.",
   alternates: { canonical: "/albums" },

@@ -5,7 +5,7 @@ import { AlbumDetail } from "@/components/album-detail";
 // Albums are unlisted: anyone with the link can read one, but they are not
 // indexed and nothing links to them from the site.
 export const metadata: Metadata = {
-  title: "Build Album | WrTrueMeta",
+  title: "Build Album",
   description: "A shared collection of Wild Rift builds.",
   robots: { index: false, follow: false },
 };

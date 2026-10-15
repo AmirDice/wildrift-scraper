@@ -65,23 +65,32 @@ export function ChampionAnalytics({
 
   if (!stats) return null;
 
+  // Each caption states this champion's finding. They used to be the same
+  // explanation on all 143 champion pages, which is a large share of why the
+  // pages read as near-duplicates to a crawler.
+  const mostPlayed = valid.reduce((top, player) => (player.g > top.g ? player : top), valid[0]);
+  const regionRows = regions.filter((region): region is { label: string; value: number } => region.value != null)
+    .sort((a, b) => b.value - a.value);
+  const peakBand = stats.bands.filter((band) => band.value != null)
+    .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))[0];
+
   return (
     <section aria-label={`${champion} player analytics`} className="grid gap-3 lg:grid-cols-12">
-      <GraphCard className="lg:col-span-7" title="Top-player WR spread" value={`Median ${stats.median.toFixed(1)}%`} tip="Each dot is one ranked player. Tap a dot to see the player, games, and win rate.">
+      <GraphCard className="lg:col-span-7" title="Top-player WR spread" value={`Median ${stats.median.toFixed(1)}%`} tip={`${valid.length} ${champion} players, from ${stats.min.toFixed(1)}% to ${stats.max.toFixed(1)}%. Tap a dot to see one.`}>
         <Distribution players={valid} min={stats.min} max={stats.max} median={stats.median} average={stats.average} selected={selected} onSelect={setSelected} />
         <PlayerReadout player={selected} fallback={`Median ${stats.median.toFixed(1)}% · average ${stats.average.toFixed(1)}%`} />
       </GraphCard>
 
-      <GraphCard className="lg:col-span-5" title="Region pulse" value={`${regions.filter((region) => region.value != null).length} servers`} tip="The same champion compared across every region that currently has a usable sample.">
+      <GraphCard className="lg:col-span-5" title="Region pulse" value={`${regions.filter((region) => region.value != null).length} servers`} tip={regionRows.length > 1 ? `${champion} is strongest in ${regionRows[0].label} (${regionRows[0].value.toFixed(1)}%) and weakest in ${regionRows[regionRows.length - 1].label} (${regionRows[regionRows.length - 1].value.toFixed(1)}%).` : `${champion} has one region with a usable sample.`}>
         <RegionBars regions={regions} />
       </GraphCard>
 
-      <GraphCard className="lg:col-span-7" title="WR × games played" value={`${valid.length} players`} tip="Every dot is a player. This reveals whether a huge win rate comes from a deep sample or a short hot streak.">
+      <GraphCard className="lg:col-span-7" title="WR × games played" value={`${valid.length} players`} tip={`The most-played ${champion} here has ${mostPlayed.g.toLocaleString("en-US")} games at ${mostPlayed.w.toFixed(1)}%. A high win rate on few games is a hot streak, not a trend.`}>
         <Scatter players={valid} selected={selected} onSelect={setSelected} />
         <PlayerReadout player={selected} fallback="Tap a player dot" />
       </GraphCard>
 
-      <GraphCard className="lg:col-span-5" title="Skill ceiling" value={stats.topFive == null ? "–" : `${(stats.topFive - winRate).toFixed(1)} pp`} tip="The gap between the first five leaderboard positions and the full tracked pool.">
+      <GraphCard className="lg:col-span-5" title="Skill ceiling" value={stats.topFive == null ? "–" : `${(stats.topFive - winRate).toFixed(1)} pp`} tip={stats.topFive == null ? "Not enough top-five players to compare." : `The top five ${champion} players average ${stats.topFive.toFixed(1)}%, against ${winRate.toFixed(1)}% for the whole pool.`}>
         <div className="grid grid-cols-[auto_1fr] items-center gap-4 py-1">
           <div className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full border border-accent/25 bg-[conic-gradient(#72a7ff_var(--score),#a88dff_var(--score),rgba(255,255,255,.06)_0)] p-1.5 shadow-[0_0_22px_rgba(114,167,255,.14)]" style={{ "--score": `${stats.consistency}%` } as CSSProperties}>
             <div className="grid h-full w-full place-items-center rounded-full bg-[#09111e] text-center">
@@ -96,11 +105,11 @@ export function ChampionAnalytics({
         </div>
       </GraphCard>
 
-      <GraphCard className="lg:col-span-7" title="Leaderboard bands" value={`${Math.max(...stats.bands.map((band) => band.value ?? 0)).toFixed(1)}% peak`} tip="Average win rate by leaderboard position. This shows whether performance stays deep or is carried by only a handful of players.">
+      <GraphCard className="lg:col-span-7" title="Leaderboard bands" value={`${Math.max(...stats.bands.map((band) => band.value ?? 0)).toFixed(1)}% peak`} tip={peakBand ? `${champion}'s best band is positions ${peakBand.label}, at ${peakBand.value!.toFixed(1)}%.` : "Average win rate by leaderboard position."}>
         <BandBars bands={stats.bands} />
       </GraphCard>
 
-      <GraphCard className="lg:col-span-5" title="Collection momentum" value={winRateDelta == null ? "Fresh" : `${winRateDelta >= 0 ? "+" : ""}${winRateDelta.toFixed(1)} pp`} tip="Change since the previous collected leaderboard snapshot, not a live match-to-match estimate.">
+      <GraphCard className="lg:col-span-5" title="Collection momentum" value={winRateDelta == null ? "Fresh" : `${winRateDelta >= 0 ? "+" : ""}${winRateDelta.toFixed(1)} pp`} tip="Change since the previous collection, not a live estimate.">
         <Momentum current={winRate} delta={winRateDelta ?? 0} />
       </GraphCard>
     </section>
