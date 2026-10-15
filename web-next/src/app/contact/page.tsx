@@ -18,10 +18,10 @@ export default function ContactPage() {
         is read.
       </p>
       <div className="mt-8 grid max-w-4xl gap-5 lg:grid-cols-[1fr_18rem]">
-        <Card>
+        <Card className="p-5 sm:p-6">
           <ContactForm />
         </Card>
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-base font-semibold">Faster answers</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             The Discord is the quickest way to ask a question or report something that looks off,

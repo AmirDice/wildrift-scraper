@@ -23,8 +23,8 @@ export default function TermsPage() {
 
       <div className="mt-8 flex max-w-3xl flex-col gap-5">
         <Section title="Using the site">
-          WrTrueMeta is free to read and use. By using it you agree to these terms. If you do not
-          agree, please do not use the site.
+          Reading WrTrueMeta is free, and the Build Studio has a free daily allowance. By using
+          the site you agree to these terms. If you do not agree, please do not use it.
         </Section>
         <Section title="What the data is">
           Win rates, tiers, builds and player statistics are measured from public leaderboards and
@@ -39,6 +39,12 @@ export default function TermsPage() {
           simulation engine to measure them. A generated build is a suggestion for you to judge, not
           advice you have to follow, and it can be wrong. Builds marked experimental are deliberately
           off the standard path.
+        </Section>
+        <Section title="WRTrueMeta Plus">
+          Plus is an optional paid subscription that raises the daily Build Studio allowance. The
+          price, billing period and the terms of the purchase, including your right of withdrawal,
+          are shown before you pay. Payments are processed by Stripe, and you can cancel at any
+          time from your account page; access continues until the end of the period already paid.
         </Section>
         <Section title="Accounts and fair use">
           Signing in with Google is optional and only raises your daily allowance of generations. Do
@@ -70,7 +76,7 @@ export default function TermsPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Card>
+    <Card className="p-5 sm:p-6">
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted">{children}</p>
     </Card>

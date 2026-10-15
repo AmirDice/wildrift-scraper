@@ -133,14 +133,13 @@ function latestChange(name: string): string | null {
 /** The sharpest matchups the matchup data records. */
 function matchups(slug: string, name: string): string | null {
   const { strong, weak } = getMatchups(slug);
-  const top = (rows: typeof strong) => [...rows]
-    .sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0))
-    .slice(0, 2)
-    .map((row) => row.champion.name);
+  // Already sorted strongest edge first, measured in China.
+  const top = (rows: typeof strong) => rows.slice(0, 2)
+    .map((row) => `${row.champion.name} (${row.winRate.toFixed(1)}%)`);
   const good = top(strong), bad = top(weak);
   if (!good.length && !bad.length) return null;
-  if (good.length && bad.length) return `${name}'s best matchups are ${list(good)}; the hardest are ${list(bad)}.`;
-  return good.length ? `${name}'s best matchups are ${list(good)}.` : `${name}'s hardest matchups are ${list(bad)}.`;
+  if (good.length && bad.length) return `In China, ${name}'s best matchups are ${list(good)}; the hardest are ${list(bad)}.`;
+  return good.length ? `In China, ${name}'s best matchups are ${list(good)}.` : `In China, ${name}'s hardest matchups are ${list(bad)}.`;
 }
 
 export function championSummary(slug: string): string[] {

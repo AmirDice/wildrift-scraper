@@ -470,8 +470,9 @@ function championContext(champion: Champion) {
     })),
     combo,
     matchups: {
-      strong: matchups.strong.slice(0, 5).map((entry) => ({ name: entry.champion.name, reason: entry.reason })),
-      weak: matchups.weak.slice(0, 5).map((entry) => ({ name: entry.champion.name, reason: entry.reason })),
+      // Measured in China Legendary ranked (lib/counters.ts), not opinion.
+      strong: matchups.strong.slice(0, 5).map((entry) => ({ name: entry.champion.name, winRate: entry.winRate, reason: entry.reason })),
+      weak: matchups.weak.slice(0, 5).map((entry) => ({ name: entry.champion.name, winRate: entry.winRate, reason: entry.reason })),
     },
     recentChanges: history.changes.slice(0, 3).map((change) => ({
       patch: change.patch,
@@ -690,12 +691,13 @@ function deterministicChampionAnswer(question: string, context: NonNullable<Agen
   }
 
   if (/\b(counter|counters|countered|matchup|matchups|strong against|weak against|beats|good against|bad against)\b/.test(q)) {
-    const weak = context.matchups.weak.map((entry) => entry.name).join(", ");
-    const strong = context.matchups.strong.map((entry) => entry.name).join(", ");
+    const show = (entry: { name: string; winRate: number }) => `${entry.name} (${entry.winRate.toFixed(1)}%)`;
+    const weak = context.matchups.weak.map(show).join(", ");
+    const strong = context.matchups.strong.map(show).join(", ");
     if (!weak && !strong) return null;
     return {
       source: "data",
-      answer: `${name} struggles into ${weak || "no confirmed matchups yet"}, and does well into ${strong || "no confirmed matchups yet"}. The profile has the reason for each.`,
+      answer: `Measured in China Legendary ranked, ${name} struggles most into ${weak || "no matchup with enough games yet"}, and does best into ${strong || "no matchup with enough games yet"}. Each number is ${name}'s win rate in that matchup.`,
       evidence: [weak ? `Weak against: ${weak}` : "", strong ? `Strong against: ${strong}` : ""].filter(Boolean),
       actions: [action("Open champion profile", href), action("Create counter build", `/build?champion=${context.slug}&tab=generate`)],
       followUps: [`What are ${name}'s matchups in China?`, `What should I build against them?`],

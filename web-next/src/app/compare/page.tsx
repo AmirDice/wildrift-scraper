@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { getChampions } from "@/lib/data";
 import { getCnBySlug } from "@/lib/cn";
 import { getChampionDetails } from "@/lib/champion-details";
-import countersData from "@/data/counters.json";
 import { Container } from "@/components/ui";
 import { ChampionCompare } from "@/components/champion-compare";
 import { getPlaystyleProfile, type PlaystyleProfileData } from "@/lib/playstyle-profile";
-import type { MatchupReference } from "@/lib/counters";
+import { matchupTable } from "@/lib/counters";
 
-type RawReference = string | MatchupReference;
-const COUNTERS = countersData as unknown as Record<string, { weak: RawReference[]; strong: RawReference[] }>;
+// Measured China matchups (see lib/counters.ts), trimmed for the client.
+const COUNTERS = matchupTable();
 
 export const metadata: Metadata = {
   title: "Compare Champions | Wild Rift Win Rates Side by Side",

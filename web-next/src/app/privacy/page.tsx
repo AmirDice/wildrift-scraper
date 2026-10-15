@@ -30,10 +30,11 @@ export default function PrivacyPage() {
       </p>
 
       <div className="mt-8 flex max-w-3xl flex-col gap-5">
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">The short version</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
-            There is no account required to use anything on the site, and nothing here is sold.
+            Nothing on the site requires an account, and your data is never sold. The one paid
+            product is the optional WRTrueMeta Plus subscription, whose payments Stripe handles.
             What is stored is the minimum that makes the tools work: a hashed form of your IP
             address to count your daily build generations, the builds you choose to save, and
             anonymous page analytics. Advertising is the one place where a third party sets its
@@ -41,7 +42,7 @@ export default function PrivacyPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Advertising</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             The site carries display advertising and, while a build is generating, a short video
@@ -83,7 +84,7 @@ export default function PrivacyPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Build generation</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             Generating a build sends your champion, role and chosen settings, plus the enemy or
@@ -99,7 +100,7 @@ export default function PrivacyPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Signing in, and what you save</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             Signing in is optional and uses Google. If you do, we store your Google account
@@ -109,7 +110,7 @@ export default function PrivacyPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Analytics</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             Page views and a small number of product events (which tool was opened, whether a
@@ -119,7 +120,19 @@ export default function PrivacyPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
+          <h2 className="text-lg font-semibold">Payments</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            WRTrueMeta Plus is an optional paid subscription that raises the daily Build Studio
+            allowance. Checkout, payment details and invoices are handled entirely by Stripe:
+            card details never reach this site. What is stored here is the Stripe customer and
+            subscription reference, the plan and its status, linked to your Google sign-in, so
+            the site knows which allowance applies. Stripe&rsquo;s own privacy policy covers what
+            it processes.
+          </p>
+        </Card>
+
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">The contact form</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             A message sent through the contact form is stored with the topic, and the name and
@@ -128,7 +141,7 @@ export default function PrivacyPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Your data, and getting in touch</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             You can ask what is stored about you, ask for it to be deleted, or object to

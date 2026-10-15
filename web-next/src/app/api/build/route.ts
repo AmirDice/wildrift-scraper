@@ -494,7 +494,7 @@ async function handlePost(request: Request) {
     // It used to be free, on the reasoning that a lookup costs us nothing and
     // charging for it charges for work we did not do. That is true about COST
     // and wrong about MEASUREMENT, which is what the allowance is really for
-    // here: nothing is being sold, so the five-a-day exists to tell us how
+    // here: before Plus, nothing was being sold, so the daily cap existed to tell us how
     // much people want. Free cache hits meant a heavy user could take twenty
     // builds a day, never reach the cap, and register as ordinary -- hiding
     // exactly the person worth learning about before there is anything to

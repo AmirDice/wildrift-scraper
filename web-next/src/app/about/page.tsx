@@ -29,7 +29,7 @@ export default function AboutPage() {
       </p>
 
       <div className="mt-8 flex max-w-3xl flex-col gap-5">
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Why it exists</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             Most tier lists either average every ranked game, which mostly measures how easy a
@@ -41,7 +41,7 @@ export default function AboutPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Where the data comes from</h2>
           <ul className="mt-2 flex flex-col gap-2 text-sm leading-relaxed text-muted">
             {boards.map((board) => (
@@ -70,7 +70,7 @@ export default function AboutPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Who runs it</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             WrTrueMeta is built and maintained by one independent developer who plays Wild Rift. The
@@ -79,7 +79,7 @@ export default function AboutPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">How it is kept current</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             The leaderboards are collected again roughly twice a month, China&rsquo;s bracket data every
@@ -89,7 +89,7 @@ export default function AboutPage() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Get in touch</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             Spotted a wrong number, or have an idea? Use the{" "}
