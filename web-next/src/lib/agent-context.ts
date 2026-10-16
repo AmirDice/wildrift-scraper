@@ -9,6 +9,7 @@ import { getChampionHistory } from "@/lib/champion-history";
 import { getChampionLoadouts, type LoadoutTab } from "@/lib/cn-loadouts";
 import { getMatchups } from "@/lib/counters";
 import { ITEM_ALIASES } from "@/lib/item-search";
+import { recommendedRow } from "@/lib/loadout-score";
 import { MOVERS_META, moverBySlug } from "@/lib/movers";
 import { buildsByServer } from "@/lib/ladder-build";
 import { CURRENT_PATCH } from "@/lib/patch";
@@ -428,6 +429,12 @@ function chinaLoadouts(slug: string) {
   const popular = (tab: LoadoutTab | undefined, n: number) => [...(tab?.rows ?? [])]
     .sort((a, b) => (b.pickRate ?? 0) - (a.pickRate ?? 0)).slice(0, n)
     .map((row) => ({ picks: row.entities.map((entity) => entity.name).join(" + "), winRate: row.winRate, pickRate: row.pickRate }));
+  // The loadout panel's "Recommended" row: win rate weighted by how often it
+  // is played (lib/loadout-score.ts), so the agent and the page agree.
+  const pick = (tab: LoadoutTab | undefined) => {
+    const row = recommendedRow(tab?.rows ?? []);
+    return row ? { picks: row.entities.map((entity) => entity.name).join(" + "), winRate: row.winRate, pickRate: row.pickRate } : null;
+  };
   return getChampionLoadouts(slug).map((lane) => {
     const versus = (lane.tabs.versus?.rows ?? []).filter((row) => (row.pickRate ?? 0) >= 1);
     const byWin = [...versus].sort((a, b) => (b.winRate ?? 0) - (a.winRate ?? 0));
@@ -436,6 +443,8 @@ function chinaLoadouts(slug: string) {
       lane: lane.lane,
       capturedAt: lane.capturedAt.slice(0, 10),
       versusKind: lane.versusKind,
+      recommendedItemCore: pick(lane.tabs.items),
+      recommendedRunePage: pick(lane.tabs.runes),
       mostPlayedItemCores: popular(lane.tabs.items, 3),
       highestWinItemCores: top(lane.tabs.items, 3),
       mostPlayedRunePages: popular(lane.tabs.runes, 3),
@@ -749,8 +758,11 @@ function deterministicChampionAnswer(question: string, context: NonNullable<Agen
       .filter((entry): entry is [string, NonNullable<(typeof context.serverBuilds)[string]>] => Boolean(entry[1]?.runes?.length))
       .map(([server, build]) => `${server} top players: ${build.runes.join(", ")}`);
     const china = context.chinaLegendaryLoadouts[0];
-    const chinaLines = (china?.mostPlayedRunePages ?? []).slice(0, 2)
-      .map((page) => `China Legendary: ${page.picks} (${pct(page.winRate)} win, ${pct(page.pickRate)} of games)`);
+    const chinaLines = [
+      ...(china?.recommendedRunePage ? [`China Legendary, recommended: ${china.recommendedRunePage.picks} (${pct(china.recommendedRunePage.winRate)} win, ${pct(china.recommendedRunePage.pickRate)} of games)`] : []),
+      ...(china?.mostPlayedRunePages ?? []).filter((page) => page.picks !== china?.recommendedRunePage?.picks).slice(0, 1)
+        .map((page) => `China Legendary, most played: ${page.picks} (${pct(page.winRate)} win, ${pct(page.pickRate)} of games)`),
+    ];
     if (!servers.length && !chinaLines.length) return null;
     return {
       source: "data",
@@ -782,8 +794,12 @@ function deterministicChampionAnswer(question: string, context: NonNullable<Agen
       .filter((entry): entry is [string, NonNullable<(typeof context.serverBuilds)[string]>] => Boolean(entry[1]))
       .filter(([server]) => !region || server === region)
       .map(([server, build]) => `${server} top players: ${[...build.items, build.boots].filter(Boolean).join(", ")}`);
-    const chinaLines = (!region || region === "CN" ? context.chinaLegendaryLoadouts[0]?.mostPlayedItemCores ?? [] : [])
-      .slice(0, 2).map((core) => `China Legendary core: ${core.picks} (${pct(core.winRate)} win, ${pct(core.pickRate)} of games)`);
+    const china = !region || region === "CN" ? context.chinaLegendaryLoadouts[0] : undefined;
+    const chinaLines = [
+      ...(china?.recommendedItemCore ? [`China Legendary, recommended core: ${china.recommendedItemCore.picks} (${pct(china.recommendedItemCore.winRate)} win, ${pct(china.recommendedItemCore.pickRate)} of games)`] : []),
+      ...(china?.mostPlayedItemCores ?? []).filter((core) => core.picks !== china?.recommendedItemCore?.picks).slice(0, 1)
+        .map((core) => `China Legendary, most played core: ${core.picks} (${pct(core.winRate)} win, ${pct(core.pickRate)} of games)`),
+    ];
     if (!rows.length && !chinaLines.length) return null;
     return {
       source: "data",

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { rankByBalance, recommendedRow, tabAverage } from "@/lib/loadout-score";
 import { Card } from "@/components/ui";
 import { AskAgent } from "@/components/site-agent";
 import type { ChampionLoadoutLane, LoadoutEntity, LoadoutRow, LoadoutTab } from "@/lib/cn-loadouts";
@@ -152,14 +153,14 @@ function WinRateMove({ row, since }: { row: LoadoutRow; since: string | null }) 
   return <Move delta={delta} note={movementNote(row, since)} />;
 }
 
-function StandardRow({ row, kind, since }: { row: LoadoutRow; kind: TabKey; since: string | null }) {
+function StandardRow({ row, kind, since, position, recommended = false }: { row: LoadoutRow; kind: TabKey; since: string | null; position: number; recommended?: boolean }) {
   const names = row.entities.map((entity) => entity.name).join(" · ");
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-white/[0.075] bg-black/[0.16] p-3 transition hover:border-accent/25 hover:bg-white/[0.035]">
+    <article className={`group relative overflow-hidden rounded-2xl border p-3 transition hover:border-accent/25 hover:bg-white/[0.035] ${recommended ? "border-gold/40 bg-gold/[0.06]" : "border-white/[0.075] bg-black/[0.16]"}`}>
       <div className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-accent/50 to-transparent opacity-0 transition group-hover:opacity-100" />
       <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
         <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.045] text-[0.65rem] font-bold text-faint">
-          {row.rank}
+          {position}
         </span>
         <div className="flex shrink-0 -space-x-1.5">
           {row.entities.map((entity, index) => (
@@ -172,6 +173,7 @@ function StandardRow({ row, kind, since }: { row: LoadoutRow; kind: TabKey; sinc
           <p className="truncate text-xs font-semibold text-text" title={names}>{names}</p>
           <p className="mt-0.5 flex items-center gap-1.5 text-[0.64rem] text-faint">
             {kind === "items" ? "Three-item core" : kind === "runes" ? "Full rune page" : kind === "boots" ? "Tier 2 boots" : kind === "spells" ? "Spell pair" : "Opponent"}
+            {recommended && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold">Recommended</span>}
             <NewTag row={row} since={since} />
           </p>
         </div>
@@ -236,6 +238,9 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   const [laneIndex, setLaneIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>("items");
   const [expanded, setExpanded] = useState(false);
+  // "Best" weighs win rate against how often a row is played
+  // (lib/loadout-score.ts); the raw orders stay one click away.
+  const [sortMode, setSortMode] = useState<"best" | "winRate" | "popular">("best");
   const lane = loadouts[Math.min(laneIndex, Math.max(loadouts.length - 1, 0))];
   const tabs = useMemo(() => BASE_TABS.map((tab) => tab.key === "versus"
     ? { ...tab, label: lane?.versusKind === "partners" ? "Best partners" : "Matchups", short: lane?.versusKind === "partners" ? "Partners" : "Matchups" }
@@ -245,8 +250,13 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
 
   const tab = lane.tabs[activeTab];
   const since = formatCaptureDate(lane.previousCapturedAt);
-  const rows = tab.rows;
+  const rows = activeTab === "versus" ? tab.rows
+    : sortMode === "best" ? rankByBalance(tab.rows)
+    : sortMode === "popular" ? [...tab.rows].sort((a, b) => b.pickRate - a.pickRate)
+    : [...tab.rows].sort((a, b) => b.winRate - a.winRate);
   const visibleRows = expanded ? rows : rows.slice(0, 6);
+  const recommended = activeTab === "versus" ? null : recommendedRow(tab.rows);
+  const average = tabAverage(tab.rows);
   const favorable = [...lane.tabs.versus.rows].sort((a, b) => b.winRate - a.winRate).slice(0, 5);
   const difficult = [...lane.tabs.versus.rows].sort((a, b) => a.winRate - b.winRate).slice(0, 5);
   const versusCopy = lane.versusKind === "partners"
@@ -323,6 +333,27 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           </div>
         </div>
 
+        {activeTab !== "versus" && rows.length > 1 && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            {recommended && average != null ? (
+              <p className="max-w-xl text-xs leading-relaxed text-muted">
+                <span className="font-semibold text-gold">Recommended:</span>{" "}
+                <span className="font-semibold text-text">{recommended.entities.map((entity) => entity.name).join(" · ")}</span>
+                {`, the best balance of win rate and how often it is played: ${recommended.winRate.toFixed(1)}% over ${recommended.pickRate.toFixed(1)}% of games.`}
+              </p>
+            ) : <span />}
+            <div role="tablist" aria-label="Sort rows" className="flex rounded-full border border-white/[0.09] bg-white/[0.035] p-0.5 text-[0.65rem] font-semibold">
+              {([["best", "Best balance"], ["winRate", "Win rate"], ["popular", "Most played"]] as const).map(([key, label]) => (
+                <button key={key} type="button" role="tab" aria-selected={sortMode === key} onClick={() => setSortMode(key)}
+                  title={key === "best" ? `Win rate weighted by sample: each row is pulled toward the ${average?.toFixed(1)}% average, harder the less it is played` : undefined}
+                  className={`rounded-full px-3 py-1 transition ${sortMode === key ? "bg-accent text-black" : "text-muted hover:text-text"}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {rows.length ? (
           activeTab === "versus" && lane.versusKind === "matchup" ? (
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
@@ -332,7 +363,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           ) : (
             <>
               <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
-                {visibleRows.map((row) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={activeTab} since={since} />)}
+                {visibleRows.map((row, index) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={activeTab} since={since} position={index + 1} recommended={row === recommended} />)}
               </div>
               {rows.length > 6 && (
                 <div className="mt-4 flex justify-center">
