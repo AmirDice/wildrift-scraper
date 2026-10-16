@@ -9,6 +9,10 @@ type RawRow = {
   winRate: number;
   pickRate: number;
   entities: string[];
+  /** The same row in the previous snapshot (scripts/export_loadouts_for_web.py). */
+  prev?: { rank: number; winRate: number; pickRate: number };
+  /** Listed now, not in the previous snapshot. */
+  new?: boolean;
 };
 
 type RawTab = {
@@ -26,6 +30,8 @@ type RawLane = {
   bracket: string;
   mode: string;
   versusKind: "matchup" | "partners";
+  /** When the snapshot the movement compares against was captured. */
+  previousCapturedAt?: string;
   tabs: {
     items: RawTab;
     runes: RawTab;

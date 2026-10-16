@@ -93,16 +93,66 @@ function EntityIcon({ entity, large = false }: { entity: LoadoutEntity; large?: 
   );
 }
 
-function Rate({ label, value, accent = false }: { label: string; value: number; accent?: boolean }) {
+function Rate({ label, value, accent = false, move }: { label: string; value: number; accent?: boolean; move?: React.ReactNode }) {
   return (
     <div className="text-right">
-      <p className={`text-sm font-bold tabular-nums ${accent ? "text-accent" : "text-text"}`}>{value.toFixed(1)}%</p>
+      <p className={`text-sm font-bold tabular-nums ${accent ? "text-accent" : "text-text"}`}>{value.toFixed(1)}%{move}</p>
       <p className="text-[0.57rem] font-semibold uppercase tracking-[0.12em] text-faint">{label}</p>
     </div>
   );
 }
 
-function StandardRow({ row, kind }: { row: LoadoutRow; kind: TabKey }) {
+/**
+ * Movement since the previous capture, shown only when it clears the noise.
+ * Measured on the Oct 11 -> Oct 15 captures: Legendary win rates swing hard
+ * between captures (a third of rows above 5% pick rate moved 3+ points in
+ * four days), so a win-rate arrow needs 5 points on a 5%+ row. Pick rate is
+ * the steadier signal, what players are switching to: an arrow at 2+ points
+ * and 40%+ relative, on rows played 3%+, marks about 6% of rows. Rank is
+ * ordered by win rate, so a position arrow would only repeat that noise.
+ */
+const PICK_MIN = 3;
+const PICK_MIN_ABS = 2;
+const PICK_MIN_REL = 0.4;
+const WR_MIN_PICK = 5;
+const WR_MIN_DELTA = 5;
+const NEW_MIN_PICK = 5;
+
+function movementNote(row: LoadoutRow, since: string | null): string | undefined {
+  if (!row.prev || !since) return undefined;
+  return `Since ${since}: pick rate ${row.prev.pickRate.toFixed(1)}% → ${row.pickRate.toFixed(1)}%, `
+    + `win rate ${row.prev.winRate.toFixed(1)}% → ${row.winRate.toFixed(1)}%`;
+}
+
+function NewTag({ row, since }: { row: LoadoutRow; since: string | null }) {
+  if (!since || !row.new || row.pickRate < NEW_MIN_PICK) return null;
+  return <span title={`Not in the ${since} capture`} className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-accent">New</span>;
+}
+
+function Move({ delta, note }: { delta: number; note?: string }) {
+  return (
+    <span title={note} className={`ml-1 text-[0.6rem] font-bold ${delta > 0 ? "text-emerald-300" : "text-rose-300"}`}>
+      {delta > 0 ? "▲" : "▼"}{Math.abs(delta).toFixed(1)}
+    </span>
+  );
+}
+
+function PickRateMove({ row, since }: { row: LoadoutRow; since: string | null }) {
+  if (!since || !row.prev) return null;
+  const delta = row.pickRate - row.prev.pickRate;
+  if (Math.max(row.pickRate, row.prev.pickRate) < PICK_MIN || Math.abs(delta) < PICK_MIN_ABS
+      || Math.abs(delta) / Math.max(row.prev.pickRate, 0.1) < PICK_MIN_REL) return null;
+  return <Move delta={delta} note={movementNote(row, since)} />;
+}
+
+function WinRateMove({ row, since }: { row: LoadoutRow; since: string | null }) {
+  if (!since || !row.prev || row.pickRate < WR_MIN_PICK) return null;
+  const delta = row.winRate - row.prev.winRate;
+  if (Math.abs(delta) < WR_MIN_DELTA) return null;
+  return <Move delta={delta} note={movementNote(row, since)} />;
+}
+
+function StandardRow({ row, kind, since }: { row: LoadoutRow; kind: TabKey; since: string | null }) {
   const names = row.entities.map((entity) => entity.name).join(" · ");
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-white/[0.075] bg-black/[0.16] p-3 transition hover:border-accent/25 hover:bg-white/[0.035]">
@@ -120,24 +170,25 @@ function StandardRow({ row, kind }: { row: LoadoutRow; kind: TabKey }) {
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs font-semibold text-text" title={names}>{names}</p>
-          <p className="mt-0.5 text-[0.64rem] text-faint">
+          <p className="mt-0.5 flex items-center gap-1.5 text-[0.64rem] text-faint">
             {kind === "items" ? "Three-item core" : kind === "runes" ? "Full rune page" : kind === "boots" ? "Tier 2 boots" : kind === "spells" ? "Spell pair" : "Opponent"}
+            <NewTag row={row} since={since} />
           </p>
         </div>
         <div className="hidden shrink-0 grid-cols-2 gap-3 border-l border-white/[0.07] pl-3 sm:grid">
-          <Rate label="WR" value={row.winRate} accent />
-          <Rate label="Pick" value={row.pickRate} />
+          <Rate label="WR" value={row.winRate} accent move={<WinRateMove row={row} since={since} />} />
+          <Rate label="Pick" value={row.pickRate} move={<PickRateMove row={row} since={since} />} />
         </div>
       </div>
       <div className="mt-2.5 grid grid-cols-2 gap-3 border-t border-white/[0.07] pt-2.5 sm:hidden">
-        <Rate label="WR" value={row.winRate} accent />
-        <Rate label="Pick rate" value={row.pickRate} />
+        <Rate label="WR" value={row.winRate} accent move={<WinRateMove row={row} since={since} />} />
+        <Rate label="Pick rate" value={row.pickRate} move={<PickRateMove row={row} since={since} />} />
       </div>
     </article>
   );
 }
 
-function MatchupPanel({ title, tone, rows }: { title: string; tone: "good" | "bad"; rows: LoadoutRow[] }) {
+function MatchupPanel({ title, tone, rows, since }: { title: string; tone: "good" | "bad"; rows: LoadoutRow[]; since: string | null }) {
   return (
     <section className="rounded-2xl border border-white/[0.075] bg-black/[0.12] p-3.5">
       <div className="flex items-center justify-between gap-3">
@@ -152,7 +203,7 @@ function MatchupPanel({ title, tone, rows }: { title: string; tone: "good" | "ba
               <p className="truncate text-xs font-semibold text-text">{row.entities[0]?.name}</p>
               <p className="mt-0.5 text-[0.62rem] text-faint">{row.pickRate.toFixed(1)}% of listed matchups</p>
             </div>
-            <span className={`text-sm font-bold tabular-nums ${tone === "good" ? "text-emerald-300" : "text-rose-300"}`}>{row.winRate.toFixed(1)}%</span>
+            <span className={`text-sm font-bold tabular-nums ${tone === "good" ? "text-emerald-300" : "text-rose-300"}`}>{row.winRate.toFixed(1)}%<WinRateMove row={row} since={since} /></span>
           </div>
         ))}
       </div>
@@ -193,6 +244,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   if (!lane) return <EmptyState champion={champion} />;
 
   const tab = lane.tabs[activeTab];
+  const since = formatCaptureDate(lane.previousCapturedAt);
   const rows = tab.rows;
   const visibleRows = expanded ? rows : rows.slice(0, 6);
   const favorable = [...lane.tabs.versus.rows].sort((a, b) => b.winRate - a.winRate).slice(0, 5);
@@ -274,13 +326,13 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
         {rows.length ? (
           activeTab === "versus" && lane.versusKind === "matchup" ? (
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
-              <MatchupPanel title="Best observed matchups" tone="good" rows={favorable} />
-              <MatchupPanel title="Most difficult matchups" tone="bad" rows={difficult} />
+              <MatchupPanel title="Best observed matchups" tone="good" rows={favorable} since={since} />
+              <MatchupPanel title="Most difficult matchups" tone="bad" rows={difficult} since={since} />
             </div>
           ) : (
             <>
               <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
-                {visibleRows.map((row) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={activeTab} />)}
+                {visibleRows.map((row) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={activeTab} since={since} />)}
               </div>
               {rows.length > 6 && (
                 <div className="mt-4 flex justify-center">
@@ -297,6 +349,11 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
 
         <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>A higher row win rate does not prove the loadout caused the wins.</p>
+          {since && (
+            <p className="shrink-0">
+              {`Arrows: change since the ${since} capture, shown only for clear moves. Hover one for the numbers.`}
+            </p>
+          )}
         </div>
       </div>
     </Card>

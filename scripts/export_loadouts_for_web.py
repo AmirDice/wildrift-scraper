@@ -5,15 +5,25 @@ The capture folders remain the source of truth.  This export deliberately:
 * keeps only rows whose icons have a name in the website catalogues;
 * resolves the capture's ``skills`` tab as summoner-spell pairs;
 * records visible coverage separately from the app's reported coverage; and
-* selects the newest capture for each champion/lane pair.
+* selects the newest capture for each champion/lane pair;
+* archives every run as a dated snapshot in data/history/cn_loadouts/, so the
+  numbers outlive the screenshots they were read from; and
+* marks each row with its rank, win rate and pick rate in the previous
+  snapshot, which is what the site's movement arrows read.
 
 Run from the repository root:
 
     python scripts/export_loadouts_for_web.py
+
+Archive an older run from its own capture folder (once, before its
+screenshots are deleted):
+
+    python scripts/export_loadouts_for_web.py --archive-only data/captures_loadouts/old
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import re
@@ -30,6 +40,10 @@ CAPTURES = ROOT / "data" / "captures_loadouts"
 WEB_DATA = ROOT / "web-next" / "src" / "data"
 PUBLIC = ROOT / "web-next" / "public"
 OUTPUT = WEB_DATA / "cn_loadouts.json"
+HISTORY = ROOT / "data" / "history" / "cn_loadouts"
+#: A previous snapshot this close to the current one is the same run, not a
+#: comparison point.
+MIN_GAP_DAYS = 1
 
 
 def load_json(path: Path) -> Any:
@@ -185,7 +199,94 @@ def exported_tab(source: dict[str, Any], rows: list[dict[str, Any]]) -> dict[str
     }
 
 
+def run_date(champions: dict[str, list[dict[str, Any]]]) -> str:
+    """The date most of a snapshot's lanes were captured on (YYYY-MM-DD)."""
+    counts: dict[str, int] = {}
+    for records in champions.values():
+        for record in records:
+            day = str(record.get("capturedAt") or "")[:10]
+            if day:
+                counts[day] = counts.get(day, 0) + 1
+    return max(counts, key=counts.get) if counts else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def archive(output: dict[str, Any]) -> Path:
+    """Write the snapshot under its run date, refusing to replace a fuller
+    snapshot with an emptier one (a half-failed extraction must not erase
+    the record it was meant to extend)."""
+    HISTORY.mkdir(parents=True, exist_ok=True)
+    path = HISTORY / f"{run_date(output['champions'])}.json"
+    if path.exists():
+        existing = load_json(path)
+        if existing.get("coverage", {}).get("lanePages", 0) > output["coverage"]["lanePages"]:
+            print(f"Kept {path.relative_to(ROOT)}: it has more lane pages than this run")
+            return path
+    path.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"Archived {path.relative_to(ROOT)}")
+    return path
+
+
+def previous_snapshot(current_date: str) -> dict[str, Any] | None:
+    """The newest archived snapshot from an earlier run."""
+    if not HISTORY.exists():
+        return None
+    current = datetime.fromisoformat(current_date)
+    earlier = sorted(
+        path for path in HISTORY.glob("*.json")
+        if (current - datetime.fromisoformat(path.stem)).days >= MIN_GAP_DAYS
+    )
+    return load_json(earlier[-1]) if earlier else None
+
+
+def row_key(row: dict[str, Any]) -> str:
+    return " + ".join(str(entity) for entity in row.get("entities") or [])
+
+
+def attach_movement(output: dict[str, Any], previous: dict[str, Any]) -> int:
+    """Give every row its numbers from the previous snapshot.
+
+    `prev` holds the old rank, win rate and pick rate; a row the previous
+    snapshot did not list is `new`. Lanes the previous run did not capture
+    get neither, so no row claims a movement it cannot show.
+    """
+    marked = 0
+    for slug, records in output["champions"].items():
+        before = {record["lane"]: record for record in previous.get("champions", {}).get(slug, [])}
+        for record in records:
+            old = before.get(record["lane"])
+            if not old or str(old.get("capturedAt"))[:10] >= str(record.get("capturedAt"))[:10]:
+                continue
+            record["previousCapturedAt"] = old.get("capturedAt")
+            for name, tab in record["tabs"].items():
+                old_tab = old.get("tabs", {}).get(name, {})
+                old_rows = {row_key(row): row for row in old_tab.get("rows", [])}
+                if not old_rows:
+                    continue
+                # A row is only "new" if the previous run read the whole tab:
+                # Riven's Baron items had 8 of their rows recognised on Oct 11
+                # and 14 on Oct 15, and a core the old pass failed to read is
+                # not a core players started building.
+                old_complete = old_tab.get("recognizedRows", 0) >= old_tab.get("sourceRows", 0) > 0
+                for row in tab["rows"]:
+                    match = old_rows.get(row_key(row))
+                    if match:
+                        row["prev"] = {"rank": match.get("rank"), "winRate": match.get("winRate"),
+                                       "pickRate": match.get("pickRate")}
+                    elif old_complete:
+                        row["new"] = True
+                    else:
+                        continue
+                    marked += 1
+    return marked
+
+
 def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--archive-only", type=Path, default=None,
+                    help="build a snapshot from this capture folder alone and archive it, "
+                         "without touching the website data")
+    args = ap.parse_args()
+    captures = args.archive_only.resolve() if args.archive_only else CAPTURES
     site = load_json(WEB_DATA / "site.json")
     items = load_json(WEB_DATA / "items.json")
     runes = load_json(WEB_DATA / "rune_icons.json")
@@ -198,7 +299,7 @@ def main() -> None:
     match_spell = spell_matcher(spells)
 
     newest: dict[tuple[str, str], tuple[datetime, Path, dict[str, Any]]] = {}
-    for path in CAPTURES.rglob("loadouts.json"):
+    for path in captures.rglob("loadouts.json"):
         payload = load_json(path)
         champion = str(payload.get("champion", "")).strip()
         lane = str(payload.get("lane", "")).strip().lower()
@@ -281,6 +382,16 @@ def main() -> None:
         "recognizedRows": {key: value for key, value in totals.items() if key != "lanes"},
         "champions": champions,
     }
+    if args.archive_only:
+        archive(output)
+        return
+    archive(output)
+    previous = previous_snapshot(run_date(champions))
+    if previous:
+        marked = attach_movement(output, previous)
+        print(f"Movement against the {run_date(previous['champions'])} snapshot: {marked} rows")
+    else:
+        print("No earlier snapshot: rows carry no movement yet")
     OUTPUT.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(
         f"Wrote {OUTPUT.relative_to(ROOT)}: "
