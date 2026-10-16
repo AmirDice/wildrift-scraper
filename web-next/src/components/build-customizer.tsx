@@ -25,6 +25,7 @@ import { getChampions, pendingChampions } from "@/lib/data";
 import { CURRENT_PATCH } from "@/lib/patch";
 import engineData from "@/data/engine.json";
 import { itemMatches } from "@/lib/item-search";
+import { chinaSeed, useChinaRecommended } from "@/components/china-recommended";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -275,6 +276,8 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
     () => [...getChampions(), ...pendingChampions()].find((entry) => entry.name === name)?.slug ?? "",
     [name],
   );
+  // China's recommended loadout, for the "Start from" button.
+  const chinaLane = useChinaRecommended(championSlug);
   const allItems = useMemo(() => customizerItems(), []);
   const allRunes = useMemo(() => customizerRunes(), []);
   const itemMeta = useMemo(() => new Map(allItems.map((i) => [i.slug, i])), [allItems]);
@@ -530,6 +533,23 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
             ))}
           </div>
         )}
+        {chinaLane && (() => {
+          const seedFromChina = chinaSeed(chinaLane);
+          if (!seedFromChina.items.length && !seedFromChina.runes.length) return null;
+          return (
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <button type="button"
+                onClick={() => setState(labSeedFromFlat(seedFromChina.items, seedFromChina.runes))}
+                title="Fills the slots with China's recommended core, boots and rune page: the best balance of win rate and pick rate in its Legendary queue"
+                className="rounded-full border border-gold/35 bg-gold/[0.07] px-3 py-1.5 font-semibold text-gold transition hover:bg-gold/[0.14]">
+                Start from China&rsquo;s recommended build
+              </button>
+              <span className="text-faint">
+                {`${chinaLane.core ? `${chinaLane.core.winRate.toFixed(1)}% win rate over ${chinaLane.core.pickRate.toFixed(1)}% of games` : ""}. Fill in the last two items yourself.`}
+              </span>
+            </div>
+          );
+        })()}
         <AlbumImportRow
           champion={name}
           onLoad={(itemSlugs, importedRunes) => {

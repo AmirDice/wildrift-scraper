@@ -8,6 +8,7 @@ import { GlassSlider } from "@/components/glass-slider";
 import engineData from "@/data/engine.json";
 import playstyleData from "@/data/playstyles.json";
 import { DAMAGE_PATHS, DAMAGE_STYLES, GAME_PHASES, KAYN_FORMS } from "@/lib/build-options";
+import { ChinaRecommendedCard, useChinaRecommended } from "@/components/china-recommended";
 import { useAccount, type QuotaState } from "@/components/account-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in";
 import { BuildFeedback } from "@/components/build-feedback";
@@ -1078,6 +1079,8 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
 
   // the champion's home role, to flag off-role picks (Support Graves etc.)
   const championMeta = champ ? roster.find((c) => c.name === champ) : undefined;
+  // China's recommended loadout, shown beside a generated build as a reference.
+  const chinaRecommended = useChinaRecommended(championMeta?.slug, role);
   const naturalRole = championMeta?.role ?? "";
   const availablePlaystyles = playstylesFor(championMeta, mode);
   const selectedPlaystyle = availablePlaystyles.find((style) => style.key === playstyle);
@@ -1915,6 +1918,11 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
                       ? [advice.runes.keystone, ...advice.runes.minors, advice.runes.flex].filter(Boolean)
                       : []}
                   />
+                </div>
+              )}
+              {champ && chinaRecommended && !advice.error && (advice.items?.length ?? 0) > 0 && (
+                <div className="mt-4">
+                  <ChinaRecommendedCard lane={chinaRecommended} champion={champ} />
                 </div>
               )}
               {/* The ONLY save/share row, and it closes the build card: the
