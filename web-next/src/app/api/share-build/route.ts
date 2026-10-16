@@ -37,6 +37,8 @@ export interface SharedBuild {
   summoners?: string[];
   /** Legacy skin number retained so older shared payloads remain compatible. */
   skin?: number;
+  /** The Wild Rift skin drawn on the card (lib/skins.ts key). */
+  skinKey?: string;
   /** Optional display name the player chose to put on their card. */
   player?: string;
   /** Short social-card hook explaining what the generated build is for. */
@@ -76,6 +78,7 @@ export async function POST(request: Request) {
     summoners: list(body.summoners, 2, (x) => text(x, 12)),
     skin: Number.isInteger(body.skin) && (body.skin as number) >= 0 && (body.skin as number) <= 99
       ? (body.skin as number) : undefined,
+    skinKey: typeof body.skinKey === "string" ? body.skinKey.replace(/[^a-z0-9]/g, "").slice(0, 80) || undefined : undefined,
     player: text(body.player, 24) || undefined,
     tagline: text(body.tagline, 100) || undefined,
     createdAt: new Date().toISOString(),

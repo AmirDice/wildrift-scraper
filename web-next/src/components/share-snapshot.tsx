@@ -38,8 +38,8 @@ export function ShareSnapshotButton({ build, align = "right" }: {
 }) {
   const [open, setOpen] = useState(false);
   const [player, setPlayer] = useState("");
-  const [skin, setSkin] = useState(0);
-  const [skins, setSkins] = useState<{ num: number; name: string }[]>([]);
+  const [skin, setSkin] = useState("");
+  const [skins, setSkins] = useState<{ key: string; name: string }[]>([]);
   const [state, setState] = useState<"idle" | "busy" | "copied" | "error">("idle");
   const [id, setId] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -83,7 +83,7 @@ export function ShareSnapshotButton({ build, align = "right" }: {
   const payload = () => ({
     ...build,
     player: player.trim().slice(0, 24) || undefined,
-    skin: skin || undefined,
+    skinKey: skin || undefined,
   });
 
   const copyLink = async () => {
@@ -160,10 +160,11 @@ export function ShareSnapshotButton({ build, align = "right" }: {
               <select
                 id="share-skin"
                 value={skin}
-                onChange={(e) => setSkin(Number(e.target.value))}
+                onChange={(e) => setSkin(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-line bg-[#0e1322] px-2.5 py-1.5 text-xs text-text outline-none focus:border-accent/50"
               >
-                {skins.map((s) => <option key={s.num} value={s.num}>{s.name}</option>)}
+                <option value="">Default art</option>
+                {skins.map((s) => <option key={s.key} value={s.key}>{s.name}</option>)}
               </select>
             </>
           )}

@@ -6,6 +6,7 @@ import { kvGetJson } from "@/lib/kv";
 import { getChampion } from "@/lib/data";
 import type { SharedBuild } from "@/app/api/share-build/route";
 import engineData from "@/data/engine.json";
+import { getChampionSkins } from "@/lib/skins";
 
 /**
  * The shareable build card, as an actual image.
@@ -158,10 +159,18 @@ async function splashUri(
   fallback: string | undefined,
   width = 1200,
   height = 630,
+  skinKey?: string,
 ): Promise<string | null> {
   try {
-    let buf: Buffer;
-    try {
+    let buf: Buffer | null = null;
+    // A skin the player picked: its art from the official Wild Rift site.
+    const picked = skinKey ? getChampionSkins(slug).find((skin) => skin.key === skinKey) : undefined;
+    if (picked) {
+      const res = await fetch(`${picked.image}&w=${Math.max(width, 1280)}`);
+      if (res.ok) buf = Buffer.from(await res.arrayBuffer());
+    }
+    // Otherwise the batch asset, then the site's own splash.
+    if (!buf) try {
       buf = await readFile(path.join(PUBLIC_DIR, "wildrift-skins", `${slug}.jpg`));
     } catch {
       if (!fallback) return null;
@@ -211,6 +220,7 @@ function parsePayload(raw: string): SharedBuild | null {
       summoners: list(decoded.summoners, 2, (x) => t(x, 12)).filter((n) => n in SUMMONER_DD),
       skin: Number.isInteger(decoded.skin) && (decoded.skin as number) >= 0 && (decoded.skin as number) <= 99
         ? (decoded.skin as number) : 0,
+      skinKey: typeof decoded.skinKey === "string" ? decoded.skinKey.replace(/[^a-z0-9]/g, "").slice(0, 80) || undefined : undefined,
       player: t(decoded.player, 24) || undefined,
       tagline: t(decoded.tagline, 100) || undefined,
       createdAt: "",
@@ -245,6 +255,7 @@ export async function GET(request: Request) {
       champ?.splash,
       isTikTok ? 1080 : 1200,
       isTikTok ? 940 : 630,
+      build.skinKey,
     ),
     champ?.icon && champ.icon.startsWith("http") ? champ.icon : null,
     ...build.items.map(itemPng),

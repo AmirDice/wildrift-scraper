@@ -104,7 +104,7 @@ def skins_of(slug: str, champion: str = "") -> list[dict]:
     return []
 
 
-def main() -> None:
+def main() -> int:
     site = json.loads(SITE.read_text(encoding="utf-8"))
     ours = {norm(champion["slug"]): champion["slug"] for champion in site["champions"]}
     ours.update({norm(champion["name"]): champion["slug"] for champion in site["champions"]})
@@ -129,6 +129,22 @@ def main() -> None:
         time.sleep(0.4)  # one page at a time, politely
 
     total = sum(len(skins) for skins in champions.values())
+
+    # Unattended in the daily job, so two guards before writing:
+    # unchanged lists are not rewritten (no daily commit for a timestamp),
+    # and a run that lost champions or skins is refused rather than
+    # published (a redesign of the official page would otherwise wipe the
+    # Skins tab overnight).
+    if OUT.exists():
+        previous = json.loads(OUT.read_text(encoding="utf-8")).get("champions", {})
+        before = sum(len(skins) for skins in previous.values())
+        if champions == previous:
+            print(f"Unchanged: {len(champions)} champions, {total} skins. Not rewritten.")
+            return 0
+        if len(champions) < len(previous) - 3 or total < before * 0.95:
+            print(f"REFUSED: this run found {len(champions)} champions / {total} skins against "
+                  f"{len(previous)} / {before} on file. Check the official page layout.")
+            return 2
     OUT.write_text(json.dumps({
         "generatedAt": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "source": "wildrift.leagueoflegends.com champion pages, Available Skins",
@@ -140,7 +156,8 @@ def main() -> None:
     print("Pages without a skins carousel:", empty or "none")
     print("Failed:", failed or "none")
     print("Our champions with no official page:", missing or "none")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

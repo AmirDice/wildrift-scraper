@@ -12,6 +12,8 @@ name: Scrape China win rates
 # to 7 October. On a patch day, move MOVERS_PATCH, MOVERS_PATCH_LIVE and
 # MOVERS_BASELINE_DATE in scripts/scrape_cn.mjs together.
 #
+# The job also refreshes the official Wild Rift skin list (wr_skins.json).
+#
 # The job commits data/cn_winrates.json, web-next/src/data/cn.json and the dated
 # snapshot under data/history/cn/, then (optionally) pings a Vercel deploy hook
 # so the statically generated pages pick the new numbers up.
@@ -37,17 +39,29 @@ jobs:
       - name: Scrape China win rates
         run: node scripts/scrape_cn.mjs
 
+      # Official Wild Rift skin list for the champion pages' Skins tab.
+      # Rewrites web-next/src/data/wr_skins.json only when a skin was added
+      # or renamed, and refuses a run that lost champions or skins, so a
+      # failure here never touches the China data or the published list.
+      - name: Fetch Wild Rift skins
+        continue-on-error: true
+        run: python3 scripts/fetch_wr_skins.py
+
       - name: Commit updated data
         id: commit
         run: |
           git config user.name "wrtruemeta-bot"
           git config user.email "actions@github.com"
-          git add data/cn_winrates.json data/history/cn web-next/src/data/cn.json web-next/src/data/cn_movers.json
+          git add data/cn_winrates.json data/history/cn web-next/src/data/cn.json web-next/src/data/cn_movers.json web-next/src/data/wr_skins.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No CN win-rate changes."
           else
-            git commit -m "Update China win rates ($(date -u +%Y-%m-%d))"
+            if git diff --cached --quiet -- web-next/src/data/wr_skins.json; then
+              git commit -m "Update China win rates ($(date -u +%Y-%m-%d))"
+            else
+              git commit -m "Update China win rates and Wild Rift skins ($(date -u +%Y-%m-%d))"
+            fi
             git push
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
