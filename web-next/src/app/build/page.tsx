@@ -23,6 +23,7 @@ export default async function BuildPage(props: PageProps<"/build">) {
   const initialTab = search.tab === "generate" ? "generate" as const
     : search.tab === "counter" ? "counter" as const
     : search.tab === "lab" ? "customize" as const
+    : search.tab === "ranked" ? "ranked" as const
     : undefined;
   // ?items=slug,slug&runes=Name,Name imports a saved album build into the Lab.
   const initialLab = typeof search.items === "string" && search.items
@@ -62,11 +63,11 @@ export default async function BuildPage(props: PageProps<"/build">) {
                 <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-muted">{BUILD_STUDIO_VERSION}</span>
               </div>
               <h1 className="mt-3 text-4xl leading-[0.95] tracking-[-0.05em] sm:text-[3.65rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>Build Studio</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">One champion. Three ways to solve the build.</p>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">One champion. Three ways to solve the build, and what the ladder actually builds.</p>
             </div>
-            <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15">
-              {[["01", "Personal"], ["02", "Counter"], ["03", "Lab"]].map(([number, label], index) => (
-                <div key={label} className={`min-w-[6.5rem] px-4 py-3 ${index ? "border-l border-white/[0.07]" : ""}`}>
+            <div className="grid grid-cols-4 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15">
+              {[["01", "Personal"], ["02", "Counter"], ["03", "Ranked"], ["04", "Lab"]].map(([number, label], index) => (
+                <div key={label} className={`min-w-0 px-3 py-3 sm:min-w-[6.5rem] sm:px-4 ${index ? "border-l border-white/[0.07]" : ""}`}>
                   <p className="text-[0.58rem] font-bold tracking-[0.16em] text-accent">{number}</p>
                   <p className="mt-1 text-xs font-semibold text-text">{label}</p>
                 </div>

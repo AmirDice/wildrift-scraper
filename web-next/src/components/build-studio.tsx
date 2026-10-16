@@ -15,7 +15,7 @@ import { Tip } from "@/components/build-view";
 import { ChampionAvatar, TierChip } from "@/components/ui";
 import { EnemyBuildAdvisor, type Advice } from "@/components/enemy-build";
 import { BuildCustomizer, labSeedFromFlat, type CustomBuildState as LabSeed } from "@/components/build-customizer";
-import { ServerBuildsPanel } from "@/components/server-builds";
+import { RankedBuilds } from "@/components/ranked-builds";
 import { BuildStatsPanel, ChampionAbilitiesPanel } from "@/components/build-details";
 import { DUAL_FORM_CHAMPIONS, hasSimulatableKit, ultTransform } from "@/lib/customizer-data";
 import { BuildComparison, type ComparableBuild } from "@/components/build-comparison";
@@ -49,6 +49,12 @@ const TABS = [
     label: "Build vs Enemy Team",
     shortLabel: "vs Enemy Team",
     help: "Name the five champions you are up against and get the build that beats exactly those picks: items, purchase order, boots and runes, with what it can and cannot answer.",
+  },
+  {
+    id: "ranked",
+    label: "Ranked Builds",
+    shortLabel: "Ranked",
+    help: "What players actually build on this champion: every item core, rune page, boots and spell pair from China's Legendary queue with win and pick rates, and each server's top-player build.",
   },
   {
     id: "customize",
@@ -298,7 +304,7 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
           all three fit and none of them needs discovering. */}
       <div
         data-tour="tabs"
-        className={`glass mt-4 grid gap-1.5 rounded-[1.4rem] border border-white/[0.1] p-1.5 ${availableTabs.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
+        className={`glass mt-4 grid gap-1.5 rounded-[1.4rem] border border-white/[0.1] p-1.5 ${availableTabs.length === 4 ? "grid-cols-2 sm:grid-cols-4" : availableTabs.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
       >
         {availableTabs.map((entry) => (
           <button
@@ -341,14 +347,13 @@ export function BuildStudio({ initialChampion, initialTab, initialLab, initialCo
             mode="counter"
           />
         )}
-        {/* What the top 50 on each server actually hold for this champion, in
-            the order they buy it. Under the tool rather than in it: the studio
-            answers "what should I build", and this is the check on that
-            answer. On every tab, the enemy-team one included: a counter build
-            is easiest to read against the build it departs from. */}
-        <div className="mt-4">
-          <ServerBuildsPanel champion={rec.champion.name} />
-        </div>
+        {/* What players actually build: China's Legendary loadouts and each
+            server's top-player build. Its own tab since 2026-10-16; the
+            server builds used to sit under every tool, which made the
+            generator page long before a build was even asked for. */}
+        {effectiveTab === "ranked" && (
+          <RankedBuilds champion={rec.champion.name} slug={rec.champion.slug} />
+        )}
         {effectiveTab === "customize" && builds && (
           <BuildCustomizer
             key={labSeed?.id ?? "empty"}
@@ -521,6 +526,21 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
         body: "The full stat sheet and every ability's live value with this build, folded into one drawer. Stats is the whole build resolved onto the champion at level 15; Abilities recalculates each spell against those numbers. Guaranteed versus Fully scaled shows how greedy the build is."
           + (ctx.transforms ? " This champion transforms, so the toggles inside read either state." : ""),
       }] : []),
+    ],
+  },
+  ranked: {
+    storageKey: "wtm_tour_ranked_v1",
+    steps: [
+      {
+        target: "ranked-servers",
+        title: "Each server's top players",
+        body: "What the top players on EU, NA and China hold for this champion, in the order they buy it. Use it to sanity-check a generated build: when it departs from these, the reasoning should say why.",
+      },
+      {
+        target: "ranked-loadouts",
+        title: "What China's Legendary players build",
+        body: "Every item core, rune page, boots and spell pair from China's Legendary queue, with how often it wins and how often it is played. The list opens on the best balance of the two, so a lucky build played a handful of times does not top it; switch to Win rate or Most played for the raw lists.",
+      },
     ],
   },
   customize: {
