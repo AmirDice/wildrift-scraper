@@ -14,6 +14,9 @@
 export type Block =
   | { kind: "p"; text: string }
   | { kind: "h2"; text: string }
+  | { kind: "h3"; text: string }
+  /** A simple table: a header row and string cells. */
+  | { kind: "table"; head: string[]; rows: string[][] }
   | { kind: "ul"; items: string[] }
   | { kind: "quote"; text: string }
   | { kind: "cta"; href: string; label: string; text: string }
@@ -51,69 +54,530 @@ export interface BlogPost {
 
 export const POSTS: BlogPost[] = [
   {
-    slug: "patch-7-3b-analysis",
-    title: "Patch 7.3b: Riot nerfed the top of the tier list and buffed the bottom",
-    description:
-      "Patch 7.3b changes eight Wild Rift champions. Against the WrTrueMeta tier list, the four nerfs hit champions ranked 1st, 3rd, 7th and 13th, and the four buffs hit 80th, 91st, 128th and 139th.",
-    date: "2026-10-16",
-    tag: "Patch analysis",
-    draft: true,
-    lede:
-      "Patch 7.3b changes eight champions. Line them up against the WrTrueMeta Global tier list collected on patch 7.3a and the pattern is hard to miss: the four nerfs land on champions ranked 1st, 3rd, 7th and 13th of 142, and the four buffs land on champions ranked 80th, 91st, 128th and 139th.",
-    blocks: [
+    "slug": "patch-7-3b-analysis",
+    "title": "Wild Rift Patch 7.3b: Senna and Hwei Nerfed, Assassins Buffed, and the Meta Shifts Again",
+    "description": "Patch 7.3b nerfs Senna, Hwei, Nocturne and Yunara, buffs Yasuo, Jhin, Tryndamere and Volibear, and makes assassin items and burst runes stronger. What changed and what it means for the Wild Rift meta.",
+    "date": "2026-10-16",
+    "tag": "Patch analysis",
+    "lede": "Wild Rift Patch 7.3b is here, and Riot is already making changes to the meta introduced in 7.3. Some of the strongest champions are getting pulled back, struggling picks are receiving much-needed buffs, and assassins might finally have a better chance of turning early leads into wins.",
+    "blocks": [
       {
-        kind: "p",
-        text:
-          "That is what a balance patch is supposed to look like, and it is also a useful check on the data. Riot balances from every game on the server; this site ranks champions by how their best players do. When two very different measurements point at the same champions, both are probably right.",
+        "kind": "p",
+        "text": "Senna, Hwei, Nocturne, and Yunara are among the champions receiving nerfs, while Yasuo, Jhin, Tryndamere, and Volibear are getting some help."
       },
-      { kind: "h2", text: "The nerfs: Senna, Hwei, Nocturne and Yunara" },
       {
-        kind: "ul",
-        items: [
-          "Senna, 1st of 142 (GOD tier, 60.1%). Riot calls this another pass at her scaling, so expect the change to bite hardest late, where her stacking passive used to run away with games.",
-          "Hwei, 3rd (GOD, 56.1%). His damage, shielding and crowd control all come down. His top players in China post 62.4% against 52.0% in NA, so the nerf may land very differently by region.",
-          "Nocturne, 7th (GOD, 54.0%). Slower jungle clears and fewer chances to find a target, a direct answer to how well he came out of the jungle overhaul.",
-          "Yunara, 13th (S, 53.1%). Her sustained damage is trimmed now that players have learned her kit, which is the usual arc for a newer champion.",
+        "kind": "p",
+        "text": "But the champion changes aren't the whole story. Cheaper assassin items, stronger burst runes, and adjustments to tank and support items could have just as much influence on the next few weeks of ranked."
+      },
+      {
+        "kind": "p",
+        "text": "Here's what's changing and what it means for the meta."
+      },
+      {
+        "kind": "h2",
+        "text": "Senna and Hwei Take Some Big Hits"
+      },
+      {
+        "kind": "p",
+        "text": "Let's start with two champions that have been particularly frustrating to deal with."
+      },
+      {
+        "kind": "h3",
+        "text": "Senna: Her Infinite Scaling Just Got Weaker"
+      },
+      {
+        "kind": "p",
+        "text": "Senna has been one of the standout picks of the recent meta, offering a combination of damage, range, healing, and scaling that makes her difficult to deal with as games go longer."
+      },
+      {
+        "kind": "p",
+        "text": "Patch 7.3b targets several parts of her kit."
+      },
+      {
+        "kind": "ul",
+        "items": [
+          "Critical strike damage drops from 90% to 80%.",
+          "Attack Damage gained per Black Mist stack decreases from 1.25 to 0.9.",
+          "Piercing Darkness loses 20 base damage at every rank."
+        ]
+      },
+      {
+        "kind": "p",
+        "text": "The Black Mist change is particularly important. At 100 stacks, Senna now gains 90 AD instead of 125 AD, a difference of 35 AD."
+      },
+      {
+        "kind": "p",
+        "text": "That's a significant amount of damage lost without even considering the reductions to her critical strikes and Q."
+      },
+      {
+        "kind": "p",
+        "text": "Senna will still bring plenty of utility, and her range scaling remains valuable. However, her ability to become a late-game damage threat while providing support utility has taken a noticeable hit."
+      },
+      {
+        "kind": "p",
+        "text": "**WRTrueMeta take:** This is one of the most meaningful nerfs in the patch. Senna should remain playable, but her damage-oriented builds are going to feel weaker, especially in longer games."
+      },
+      {
+        "kind": "h3",
+        "text": "Hwei: Less Damage, Less Shielding, Less Safety"
+      },
+      {
+        "kind": "p",
+        "text": "Hwei has been another major presence in Patch 7.3, and Riot is hitting several abilities rather than targeting just one."
+      },
+      {
+        "kind": "p",
+        "text": "His passive loses damage and AP scaling, his shielding is weaker, and Stirring Lights loses 10 base damage at every rank."
+      },
+      {
+        "kind": "p",
+        "text": "Crushing Maw is also getting nerfed:"
+      },
+      {
+        "kind": "ul",
+        "items": [
+          "Cast range decreases from 7.5 to 7.",
+          "Base damage decreases by 10 at every rank.",
+          "AP ratio drops from 70% to 60%.",
+          "Its hitbox has been adjusted."
+        ]
+      },
+      {
+        "kind": "p",
+        "text": "These changes matter because Hwei's strength isn't limited to dealing damage. He can control space, protect teammates, and punish enemies trying to engage."
+      },
+      {
+        "kind": "p",
+        "text": "Reducing his shielding and crowd-control reach gives opponents more opportunities to fight back instead of being constantly kept at a distance."
+      },
+      {
+        "kind": "p",
+        "text": "**WRTrueMeta take:** Hwei is losing power across several parts of his kit, but his versatility hasn't disappeared. Players who rely on his range and control will need to be more careful with positioning."
+      },
+      {
+        "kind": "h2",
+        "text": "Nocturne and Yunara Are Also Getting Nerfed"
+      },
+      {
+        "kind": "h3",
+        "text": "Nocturne: Slower Clears and Fewer Ultimates"
+      },
+      {
+        "kind": "p",
+        "text": "Nocturne has been benefiting from the jungle changes introduced in Patch 7.3, and Riot is now looking to slow him down."
+      },
+      {
+        "kind": "p",
+        "text": "His health growth drops from 134 to 128 per level, while Duskbringer loses base damage at every rank. Its bonus Attack Damage is also reduced at earlier ranks, although the final rank receives a small increase."
+      },
+      {
+        "kind": "p",
+        "text": "The biggest change for many players will be his ultimate."
+      },
+      {
+        "kind": "p",
+        "text": "Paranoia's cooldown increases by 10 seconds at every rank, going from 110/90/70 to 120/100/80 seconds."
+      },
+      {
+        "kind": "p",
+        "text": "That means fewer opportunities to force fights, punish isolated carries, and influence lanes across the map."
+      },
+      {
+        "kind": "p",
+        "text": "Nocturne can still be dangerous when ahead, but he'll have to be more selective about when to commit."
+      },
+      {
+        "kind": "h3",
+        "text": "Yunara: Less Sustained Damage"
+      },
+      {
+        "kind": "p",
+        "text": "Yunara is receiving a fairly straightforward damage nerf."
+      },
+      {
+        "kind": "p",
+        "text": "Both the passive and active damage on Cultivation of Spirit lose 5 damage at every rank. Her ultimate cooldown also increases at ranks two and three."
+      },
+      {
+        "kind": "p",
+        "text": "The damage reduction might look small, but for a champion built around repeated attacks, losing damage on abilities used throughout a fight can add up."
+      },
+      {
+        "kind": "p",
+        "text": "Yunara should still have strong sustained damage, but her opponents will have slightly more room to survive extended trades."
+      },
+      {
+        "kind": "h2",
+        "text": "Yasuo, Jhin, Tryndamere, and Volibear Get Buffed"
+      },
+      {
+        "kind": "p",
+        "text": "Not everyone is leaving this patch weaker."
+      },
+      {
+        "kind": "h3",
+        "text": "Yasuo: More Damage and a Bigger Shield"
+      },
+      {
+        "kind": "p",
+        "text": "Yasuo hasn't had the easiest time adapting to the recent critical strike item changes, particularly after the removal of the crit version of Bloodthirster."
+      },
+      {
+        "kind": "p",
+        "text": "Patch 7.3b gives him two buffs:"
+      },
+      {
+        "kind": "ul",
+        "items": [
+          "Critical strike damage increases from 90% to 95%.",
+          "His passive shield's maximum value increases from 529 to 630."
+        ]
+      },
+      {
+        "kind": "p",
+        "text": "The extra shield is especially useful against poke and during mid-to-late-game fights, while the crit damage increase improves his offensive potential."
+      },
+      {
+        "kind": "p",
+        "text": "This doesn't suddenly solve every difficult matchup, but it's a welcome improvement for Yasuo players."
+      },
+      {
+        "kind": "h3",
+        "text": "Jhin: His Damage Comes Online Earlier"
+      },
+      {
+        "kind": "p",
+        "text": "Jhin receives a change aimed at making his damage spikes arrive sooner."
+      },
+      {
+        "kind": "p",
+        "text": "His standard critical strike damage increases from 80% to 85%, while the missing-health damage on Whisper reaches its maximum value at level 10 instead of level 15."
+      },
+      {
+        "kind": "p",
+        "text": "That's an important difference for a champion who wants to capitalize on his mid-game item spikes."
+      },
+      {
+        "kind": "p",
+        "text": "Jhin no longer needs to wait until the very late game to access the full missing-health damage bonus."
+      },
+      {
+        "kind": "p",
+        "text": "With several marksman items also becoming cheaper, he'll be one to keep an eye on."
+      },
+      {
+        "kind": "h3",
+        "text": "Tryndamere: A More Reliable Crit Threat"
+      },
+      {
+        "kind": "p",
+        "text": "Tryndamere is receiving two useful buffs."
+      },
+      {
+        "kind": "p",
+        "text": "His Critical Strike Chance per Fury is now fixed at 0.5%, instead of scaling from 0.3% to 0.5% with level."
+      },
+      {
+        "kind": "p",
+        "text": "His Spinning Slash also gains more damage at later ranks, alongside an increase to its bonus AD ratio from 100% to 110%."
+      },
+      {
+        "kind": "p",
+        "text": "The Fury change should make his early-game critical strikes more consistent, while the Spinning Slash buff improves his damage as the game progresses."
+      },
+      {
+        "kind": "p",
+        "text": "This could make him more threatening in extended duels and side-lane fights."
+      },
+      {
+        "kind": "h3",
+        "text": "Volibear: Stronger Trades and Better Healing"
+      },
+      {
+        "kind": "p",
+        "text": "Volibear receives more AD scaling and improved healing on Frenzied Maul."
+      },
+      {
+        "kind": "p",
+        "text": "The ability's normal AD ratio increases from 100% to 110%, while its empowered damage ratio rises from 160% to 176%."
+      },
+      {
+        "kind": "p",
+        "text": "His empowered missing-health healing also gets a substantial increase at higher ability ranks, reaching 14% instead of 8%."
+      },
+      {
+        "kind": "p",
+        "text": "That extra sustain should help him survive longer during extended fights, especially when he's already taken damage."
+      },
+      {
+        "kind": "p",
+        "text": "Volibear has struggled to establish himself in the current meta, so these buffs are a step in the right direction."
+      },
+      {
+        "kind": "h2",
+        "text": "Assassins Could Be the Biggest Winners of Patch 7.3b"
+      },
+      {
+        "kind": "p",
+        "text": "While the champion changes are getting most of the attention, the item and rune adjustments might have a broader impact."
+      },
+      {
+        "kind": "p",
+        "text": "Riot has made it clear that assassins have been struggling to convert early advantages into victories."
+      },
+      {
+        "kind": "p",
+        "text": "Patch 7.3b attempts to address that."
+      },
+      {
+        "kind": "p",
+        "text": "**Youmuu's Ghostblade** is now 100 gold cheaper, dropping from 3000 to 2900."
+      },
+      {
+        "kind": "p",
+        "text": "**Electrocute** receives a base damage buff at early levels, increasing its damage floor from 40 to 60."
+      },
+      {
+        "kind": "p",
+        "text": "**Cheap Shot** also gets a cooldown reduction from 7 seconds to 5 seconds."
+      },
+      {
+        "kind": "p",
+        "text": "Individually, these aren't massive changes. Together, however, they give burst-focused champions more opportunities to capitalize on early fights."
+      },
+      {
+        "kind": "p",
+        "text": "Getting Youmuu's slightly earlier can make a difference in Wild Rift, where games move quickly and early item timings matter."
+      },
+      {
+        "kind": "p",
+        "text": "The Electrocute buff also makes short trades and early all-ins more threatening, particularly for champions that can reliably trigger it."
+      },
+      {
+        "kind": "p",
+        "text": "Don't expect every assassin to suddenly become top tier, but this is a clear attempt to make early aggression more rewarding."
+      },
+      {
+        "kind": "h2",
+        "text": "Tank and Support Items Are Getting Rebalanced"
+      },
+      {
+        "kind": "p",
+        "text": "Assassins aren't the only ones receiving item changes."
+      },
+      {
+        "kind": "p",
+        "text": "Several defensive and marksman items are also being adjusted."
+      },
+      {
+        "kind": "table",
+        "head": [
+          "Item",
+          "Patch 7.3b change"
         ],
-      },
-      { kind: "h2", text: "The buffs: Volibear, Jhin, Yasuo and Tryndamere" },
-      {
-        kind: "ul",
-        items: [
-          "Volibear, 80th (B, 49.7%). More Attack Damage scaling and more survivability, aimed at team fights rather than lane.",
-          "Jhin, 91st (B, 49.2%). Power moves earlier in the game, so he no longer waits for max level to hit his spikes.",
-          "Yasuo, 128th (C, 47.1%). Extra mid and late game damage and survivability, which Riot ties to his losing the crit version of Bloodthirster.",
-          "Tryndamere, 139th (L, 46.4%). Changes to make his critical strikes and damage more consistent after the crit item overhaul did less for him than intended.",
-        ],
-      },
-      {
-        kind: "p",
-        text:
-          "Yasuo and Tryndamere are the two buffs to watch. Both were near the bottom because of the crit item rework rather than their own kits, so if the buffs work they should climb faster than a normal buff would suggest.",
-      },
-      { kind: "h2", text: "Items and runes" },
-      {
-        kind: "ul",
-        items: [
-          "Assassins: Youmuu's Ghostblade and Statikk Shiv drop to 2900 gold, Statikk's attacks build more Energized stacks, Electrocute's base damage rises and Cheap Shot's cooldown falls from 7 to 5 seconds. Riot's stated goal is to let assassins turn early leads into wins.",
-          "Tanks: Thornmail costs 150 more, so the Armor and anti-heal spike arrives later. Locket of the Iron Solari gets cheaper and gains 100 Health to make tank supports more attractive.",
-          "Grasp of the Undying and Aery both lose some strength, and Yun Tal Wildarrows is 100 gold cheaper.",
-          "Raptors gain Health, which slows full clears a little for every jungler, not only Nocturne.",
-        ],
-      },
-      { kind: "h2", text: "When the numbers will show it" },
-      {
-        kind: "p",
-        text:
-          "The tier list was collected on 7.3a, so it does not reflect any of this yet. China's daily data moves first: the winners and losers page fills in as the first days of 7.3b games arrive, and the next leaderboard collection moves the tier list itself. Each champion's page already lists its 7.3b changes.",
+        "rows": [
+          [
+            "Youmuu's Ghostblade",
+            "Cost: 3000 → 2900"
+          ],
+          [
+            "Locket of the Iron Solari",
+            "Cost: 2600 → 2500, Health: 200 → 300"
+          ],
+          [
+            "Thornmail",
+            "Cost: 2700 → 2850"
+          ],
+          [
+            "Warmog's Armor",
+            "Passive Health requirement: 900 → 1250"
+          ],
+          [
+            "Statikk Shiv",
+            "Cost: 3000 → 2900, more Energized stacks per attack"
+          ],
+          [
+            "Yun Tal Wildarrows",
+            "Cost: 3100 → 3000"
+          ]
+        ]
       },
       {
-        kind: "cta",
-        href: "/movers",
-        label: "See the 7.3b winners and losers",
-        text: "Win rate movement in China since the patch went live, updated daily.",
+        "kind": "h3",
+        "text": "Tank Supports Get a Better Locket"
       },
-    ],
+      {
+        "kind": "p",
+        "text": "Locket of the Iron Solari receives one of the better item buffs this patch."
+      },
+      {
+        "kind": "p",
+        "text": "It costs 100 gold less and provides an additional 100 Health."
+      },
+      {
+        "kind": "p",
+        "text": "For tank supports looking to protect their carries, that's a fairly attractive improvement."
+      },
+      {
+        "kind": "p",
+        "text": "On the other hand, Thornmail is becoming 150 gold more expensive, delaying access to its armor and anti-healing effects."
+      },
+      {
+        "kind": "p",
+        "text": "Warmog's Armor also requires significantly more bonus Health to activate its passive, making it harder to use effectively in builds that aren't heavily invested in Health."
+      },
+      {
+        "kind": "p",
+        "text": "That change is particularly aimed at discouraging enchanters from picking up Warmog's too easily."
+      },
+      {
+        "kind": "h3",
+        "text": "Marksman Items Get Cheaper"
+      },
+      {
+        "kind": "p",
+        "text": "Statikk Shiv and Yun Tal Wildarrows both receive 100-gold price reductions."
+      },
+      {
+        "kind": "p",
+        "text": "Statikk Shiv also grants more Energized stacks through basic attacks, increasing from 5 to 7."
+      },
+      {
+        "kind": "p",
+        "text": "These changes should make both items more competitive with alternative marksman purchases."
+      },
+      {
+        "kind": "p",
+        "text": "However, the best option will still depend on the champion, their attack patterns, and what the enemy team is building."
+      },
+      {
+        "kind": "p",
+        "text": "A cheaper item isn't automatically the best item."
+      },
+      {
+        "kind": "h2",
+        "text": "Grasp and Aery Are Getting Weaker"
+      },
+      {
+        "kind": "p",
+        "text": "Two defensive rune options are also being nerfed."
+      },
+      {
+        "kind": "p",
+        "text": "**Grasp of the Undying** now deals 3% maximum Health damage instead of 3.3%, and its permanent Health gain decreases from 10 to 8."
+      },
+      {
+        "kind": "p",
+        "text": "This weakens both its lane trading and long-term scaling."
+      },
+      {
+        "kind": "p",
+        "text": "For champions that frequently activate Grasp, the reduced permanent Health gain will accumulate throughout a match."
+      },
+      {
+        "kind": "p",
+        "text": "**Aery** is also losing shielding power. Its base shield decreases from 25-120 to 20-100, while its AD and AP ratios stay unchanged."
+      },
+      {
+        "kind": "p",
+        "text": "These changes reduce some of the defensive value that tanks and enchanters have been getting from their rune setups."
+      },
+      {
+        "kind": "p",
+        "text": "Combined with the Electrocute and Cheap Shot buffs, Patch 7.3b looks like an attempt to bring more offensive options back into consideration."
+      },
+      {
+        "kind": "h2",
+        "text": "Jungle Changes: Raptors Are Harder to Steal"
+      },
+      {
+        "kind": "p",
+        "text": "There's also a small jungle adjustment worth mentioning."
+      },
+      {
+        "kind": "p",
+        "text": "Raptor camps are becoming tankier:"
+      },
+      {
+        "kind": "ul",
+        "items": [
+          "Crimson Raptor base Health: 1000 → 1100.",
+          "Crimson Raptor Health per level: 110 → 125.",
+          "Small Raptor base Health: 500 → 550.",
+          "Small Raptor Health per level: 55 → 65."
+        ]
+      },
+      {
+        "kind": "p",
+        "text": "The idea is to make Raptors less vulnerable to quick mid-game and late-game invades."
+      },
+      {
+        "kind": "p",
+        "text": "Junglers who previously cleared these camps almost instantly may notice a small difference, especially when trying to steal enemy camps before rotating to an objective."
+      },
+      {
+        "kind": "p",
+        "text": "The changes aren't enough to completely reshape jungle pathing, but they could make opportunistic invades slightly less efficient."
+      },
+      {
+        "kind": "h2",
+        "text": "What Does Patch 7.3b Mean for the Meta?"
+      },
+      {
+        "kind": "p",
+        "text": "There are three changes worth watching closely."
+      },
+      {
+        "kind": "p",
+        "text": "First, some of the strongest ranged champions are losing power. Senna, Hwei, and Yunara have all received nerfs that should make them less oppressive, although their actual performance will depend on how players adapt."
+      },
+      {
+        "kind": "p",
+        "text": "Second, Riot is making early burst damage more rewarding. The cheaper Youmuu's Ghostblade and buffs to Electrocute and Cheap Shot give assassins a better chance of converting successful early fights into meaningful advantages."
+      },
+      {
+        "kind": "p",
+        "text": "Finally, itemization is shifting again. Several marksman and support items are becoming cheaper, while popular defensive options like Thornmail and Warmog's Armor are facing restrictions."
+      },
+      {
+        "kind": "p",
+        "text": "It's still too early to declare the biggest winners and losers based on patch notes alone. A champion getting buffed doesn't necessarily mean their win rate will increase significantly, especially when their common opponents and items are changing at the same time."
+      },
+      {
+        "kind": "p",
+        "text": "That's where the actual match data becomes important."
+      },
+      {
+        "kind": "h2",
+        "text": "Track the Patch 7.3b Meta on WRTrueMeta"
+      },
+      {
+        "kind": "p",
+        "text": "Patch notes tell us what Riot changed. They don't always tell us how those changes will affect ranked games."
+      },
+      {
+        "kind": "p",
+        "text": "At **WRTrueMeta**, we track Wild Rift leaderboard data across EU, NA, and CN to help players understand how champions are performing."
+      },
+      {
+        "kind": "p",
+        "text": "As new Patch 7.3b data becomes available, you can explore champion win rates, regional tier lists, popular builds, and build recommendations based on the current meta."
+      },
+      {
+        "kind": "p",
+        "text": "Whether you're looking for the strongest junglers, trying to find a better build for your main, or wondering if a recently nerfed champion is still worth playing, the numbers will help paint a clearer picture."
+      },
+      {
+        "kind": "cta",
+        "href": "/tier-list",
+        "label": "Explore the latest Wild Rift meta",
+        "text": "Champion win rates, regional tier lists and builds from the top players in EU, NA and China."
+      },
+      {
+        "kind": "p",
+        "text": "Source: Riot Games, Wild Rift Patch Notes 7.3b, October 14, 2026."
+      }
+    ]
   },
   {
     slug: "best-junglers-patch-7-2a",
@@ -323,7 +787,8 @@ export function getPost(slug: string): BlogPost | null {
 
 /** Rough reading time, for the post header. */
 export function readingMinutes(post: BlogPost): number {
-  const words = [post.lede, ...post.blocks.map((block) => ("text" in block ? block.text : ""))]
+  const words = [post.lede, ...post.blocks.map((block) => ("text" in block ? block.text
+    : block.kind === "ul" ? block.items.join(" ") : ""))]
     .join(" ")
     .split(/\s+/).length;
   return Math.max(2, Math.round(words / 190));

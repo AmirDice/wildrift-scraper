@@ -85,6 +85,15 @@ function resolve(block: Extract<Block, { kind: "champions" }>): ListRow[] {
   }
 }
 
+/** Renders **bold** spans inside a paragraph or list item. Nothing else of
+ *  Markdown is interpreted: post text is data, not markup. */
+function rich(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, index) => (part.startsWith("**") && part.endsWith("**") && part.length > 4
+    ? <strong key={index} className="font-semibold text-text">{part.slice(2, -2)}</strong>
+    : part));
+}
+
 export function BlogBody({ blocks }: { blocks: Block[] }) {
   return (
     <div className="mt-8 space-y-5">
@@ -96,11 +105,36 @@ export function BlogBody({ blocks }: { blocks: Block[] }) {
                 {block.text}
               </h2>
             );
+          case "h3":
+            return (
+              <h3 key={index} className="pt-2 text-lg font-semibold tracking-tight">
+                {block.text}
+              </h3>
+            );
           case "p":
             return (
               <p key={index} className="leading-relaxed text-muted">
-                {block.text}
+                {rich(block.text)}
               </p>
+            );
+          case "table":
+            return (
+              <div key={index} className="glass overflow-x-auto rounded-xl border border-line">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-faint">
+                    <tr>{block.head.map((cell) => <th key={cell} className="px-4 py-2.5 font-semibold">{cell}</th>)}</tr>
+                  </thead>
+                  <tbody className="divide-y divide-line/60">
+                    {block.rows.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((cell, cellIndex) => (
+                          <td key={cellIndex} className={`px-4 py-2.5 ${cellIndex === 0 ? "font-medium text-text" : "text-muted"}`}>{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             );
           case "ul":
             return (
@@ -108,7 +142,7 @@ export function BlogBody({ blocks }: { blocks: Block[] }) {
                 {block.items.map((item, itemIndex) => (
                   <li key={itemIndex} className="flex gap-2.5 leading-relaxed text-muted">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/70" />
-                    <span>{item}</span>
+                    <span>{rich(item)}</span>
                   </li>
                 ))}
               </ul>
