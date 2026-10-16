@@ -448,7 +448,7 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
       {
         target: "generate",
         title: "Generate, then read the reasoning",
-        body: "You get the optimal loadout in about 30 seconds. Items, runes and summoner spells sit open at the top because they are the build; everything under them starts folded, so tap Show to open it. Tap any item or rune for its cost, its stats and the reason it is there -- and against a known comp, the reasons name the enemies they answer.",
+        body: "You get the optimal loadout in about a minute. Items, runes and summoner spells sit open at the top because they are the build; everything under them starts folded, so tap Show to open it. Tap any item or rune for its cost, its stats and the reason it is there -- and against a known comp, the reasons name the enemies they answer.",
       },
       {
         target: "generate",
@@ -458,7 +458,7 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
     ],
   },
   generate: {
-    storageKey: "wtm_tour_generate_v2",
+    storageKey: "wtm_tour_generate_v3",
     steps: [
       {
         target: "your-champion",
@@ -486,6 +486,12 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
         body: "Early, mid, late or balanced. This changes the purchase order more than the item list, because in a 15-20 minute game when an item lands matters as much as which item it is.",
       },
       {
+        target: "damage",
+        optional: true,
+        title: "Choose how the damage is dealt",
+        body: "Damage path picks the stat, AD, AP or hybrid, and damage type picks the delivery: crit, on-hit, lethality or abilities. Leave both on Standard and Auto for the champion's usual build; pick one and the build has to commit to it, even where it is off the beaten path, like crit Riven.",
+      },
+      {
         target: "locks",
         optional: true,
         title: "Force in an item or rune you insist on",
@@ -494,7 +500,7 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
       {
         target: "generate",
         title: "Generate, then read the reasoning",
-        body: "You get the full loadout in about 30 seconds, all in one card: item order with boot timing, the rune page, your summoner spells, and when the build spikes. Under it sit the swaps for games that go differently, then the guide; the deeper analysis stays folded until you want it.",
+        body: "You get the full loadout in about a minute, all in one card: item order with boot timing, the rune page, your summoner spells, and when the build spikes. Under it sit the swaps for games that go differently, then the guide; the deeper analysis stays folded until you want it.",
       },
       {
         target: "generate",

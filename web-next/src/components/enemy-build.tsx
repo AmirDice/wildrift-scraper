@@ -1430,7 +1430,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             </div>
           )}
           {advanced && (
-            <div>
+            <div data-tour="damage">
               <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-wide text-faint">Damage path</p>
               <select value={damagePath} onChange={(e) => setDamagePath(e.target.value)}
                 title={DAMAGE_PATHS.find((path) => path.key === damagePath)?.description}

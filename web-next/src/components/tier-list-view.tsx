@@ -60,7 +60,7 @@ const TIER_LIST_TOUR: TourStep[] = [
   {
     target: "tl-regions",
     title: "Four boards, one list",
-    body: "EU and NA are our own scrape of each champion's best players. CN is Tencent's official bracket data with its own rank picker. Global, the default, averages EU and NA.",
+    body: "EU, NA and China are each champion's top 30 players on that region's leaderboard. Global, the default, averages all three. The China tab also has Tencent's own bracket data, Diamond+ to Legendary, as a separate picker.",
   },
   {
     target: "tl-updated",
@@ -71,7 +71,7 @@ const TIER_LIST_TOUR: TourStep[] = [
     target: "tl-pool",
     title: "Player pool depth",
     optional: true,
-    body: "Re-rank by each champion's top 25, 10 or 5 players instead of the full board. A champion strong at top 5 but weak on all players is carried by its elite. EU, NA and Global only; CN has no per-player rows.",
+    body: "Re-rank by each champion's top 25, 10 or 5 players instead of the full board. A champion strong at top 5 but weak on all players is carried by its elite. Not available on Tencent's brackets, which have no per-player rows.",
   },
   {
     target: "tl-roles",

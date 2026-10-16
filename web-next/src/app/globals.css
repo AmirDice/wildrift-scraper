@@ -694,8 +694,11 @@ main h1,
     linear-gradient(180deg, rgba(8, 19, 33, 0.84), rgba(6, 15, 29, 0.93));
 }
 
+/* Not the guided tour's overlay: it is also a direct child of the shell, and
+   inheriting this blur frosted the whole page INCLUDING the spotlight hole, so
+   every Build Studio tour step pointed at a control nobody could read. */
 .build-studio-workspace .build-studio-shell > section,
-.build-studio-workspace .build-studio-shell > div {
+.build-studio-workspace .build-studio-shell > div:not([role="dialog"]) {
   backdrop-filter: blur(16px) saturate(125%);
 }
 
