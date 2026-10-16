@@ -137,6 +137,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const blended = getGlobalBySlug(champion.slug);
   const headline = blended ?? champion;
   const podium = champion.globalBestPlayerPodium ?? champion.bestPlayerPodium;
+  const globalBest = champion.globalBestPlayerPodium?.players?.[0] ?? null;
   const analyticsPlayers = loadAnalyticsPlayers(champion.slug);
   const summary = championSummary(champion.slug);
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
@@ -225,15 +226,19 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
       )}
       <MeasuredProfile slug={champion.slug} />
       <Card className="p-5 sm:p-6">
-        <h2 className="text-lg font-semibold">Best {champion.name} player</h2>
-        {champion.bestPlayer ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{champion.bestPlayer.player}</span>{champion.bestPlayer.rank ? ` (rank #${champion.bestPlayer.rank})` : ""} leads the current regional sample with a composite Best Player score of <span className="font-medium text-accent">{champion.bestPlayer.best_score?.toFixed(1) ?? "-"}</span>, backed by a <span className="font-medium text-accent">{champion.bestPlayer.confidence_wr?.toFixed(1) ?? "-"}%</span> confidence-adjusted win rate.</p> : <p className="mt-2 text-muted">Best-player data is being collected.</p>}
+        {/* The GLOBAL winner (EU, NA and China boards together), the same
+            ranking as the top-3 podium below; EU's own best is the fallback
+            for a champion without a global podium. */}
+        <h2 className="text-lg font-semibold">Best {champion.name} player {globalBest ? "globally" : "in EU"}</h2>
+        {globalBest ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{globalBest.player}</span>{globalBest.server ? ` (${globalBest.server}${globalBest.championRank ? `, rank #${globalBest.championRank}` : ""})` : ""} leads every server&rsquo;s board with a composite Best Player score of <span className="font-medium text-accent">{globalBest.score?.toFixed(1) ?? "-"}</span>{globalBest.confidenceWr != null ? <>, backed by a <span className="font-medium text-accent">{globalBest.confidenceWr.toFixed(1)}%</span> confidence-adjusted win rate</> : null}.</p>
+          : champion.bestPlayer ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{champion.bestPlayer.player}</span>{champion.bestPlayer.rank ? ` (rank #${champion.bestPlayer.rank})` : ""} leads the EU sample with a composite Best Player score of <span className="font-medium text-accent">{champion.bestPlayer.best_score?.toFixed(1) ?? "-"}</span>, backed by a <span className="font-medium text-accent">{champion.bestPlayer.confidence_wr?.toFixed(1) ?? "-"}%</span> confidence-adjusted win rate.</p> : <p className="mt-2 text-muted">Best-player data is being collected.</p>}
       </Card>
       {podium?.players?.length ? (
         <Card className="p-5 sm:p-6">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-gold">Top 3 this season</p>
-              <h2 className="mt-1 text-lg font-semibold">The best {champion.name} players</h2>
+              <h2 className="mt-1 text-lg font-semibold">The best {champion.name} players {podium.scope === "global" ? "globally" : `in ${podium.server ?? "this region"}`}</h2>
             </div>
             <span className="text-xs text-faint">{podium.scope === "global" ? "Global · EU + NA + CN" : `${podium.server ?? "Regional"} sample`}</span>
           </div>

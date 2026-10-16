@@ -154,6 +154,20 @@ const ITEM_FLAT_FX: Record<string, {
   physVampPct: { stat: "physicalVamp", printedAs: "physicalVamp", note: (v) => `${v}% Physical Vamp with the passive up` },
   lifestealPct: { stat: "lifesteal", printedAs: "lifesteal", note: (v) => `${v}% Lifesteal with the passive up` },
   healShieldAmpPct: { stat: "healShieldPower", printedAs: "healShieldPower", note: (v) => `+${v}% Heal & Shield Power` },
+  // Stacked and ramped stats the engine data carried but this sheet never
+  // read: a player toggling "fully scaled" on Force of Nature, Terminus or
+  // Rod of Ages saw no change at all (reported for Twinguard and Bloodmail,
+  // which are handled below because they scale off other stats).
+  delayedMrFlat: { stat: "mr", note: (v) => `+${v} Magic Resist at max Steadfast stacks` },
+  delayedMsPct: { stat: "moveSpeedPct", note: (v) => `+${v}% Move Speed at max stacks` },
+  delayedTenacityPct: { stat: "tenacity", note: (v) => `+${v}% Tenacity at max Endurance stacks` },
+  rampArmorFlat: { stat: "armor", note: (v) => `+${v} Armor at full Light stacks` },
+  rampMrFlat: { stat: "mr", note: (v) => `+${v} Magic Resist at full Light stacks` },
+  manaFlatPassive: { stat: "mana", note: (v) => `+${v} Mana once fully grown` },
+  critPctPassive: { stat: "crit", note: (v) => `+${v}% Critical Rate once fully stacked` },
+  conditionalOmnivampPct: { stat: "omnivamp", note: (v) => `+${v}% Omnivamp while below the Health threshold` },
+  timedArmorPct: { stat: "armorPct", note: (v) => `+${v}% Armor for 3 seconds after an immobilize` },
+  timedMrPct: { stat: "mrPct", note: (v) => `+${v}% Magic Resist for 3 seconds after an immobilize` },
 };
 
 /** Rune fields in the older damage-engine model, used only for runes that
@@ -244,6 +258,13 @@ export function scaledBuildStats(
 
   const add = (source: string, stat: ScalingContribution["stat"], amount: number, note: string) => {
     if (!Number.isFinite(amount) || Math.abs(amount) < 0.01) return;
+    // Tenacity sources multiply rather than add: 20% and 20% is 36%, not 40%.
+    if (stat === "tenacity") {
+      const before = stats.tenacity;
+      stats.tenacity = 100 - (100 - before) * (1 - amount / 100);
+      contributions.push({ source, stat, amount: Math.round((stats.tenacity - before) * 100) / 100, note });
+      return;
+    }
     if (stat === "attackSpeedPct") attackSpeedPercent += amount;
     else if (stat === "moveSpeedPct") moveSpeedPercent += amount;
     else if (stat === "armorPct") armorPercent += amount;
@@ -359,6 +380,12 @@ export function scaledBuildStats(
       }
     }
 
+    // Riftmaker pays melee and ranged champions different omnivamp.
+    const rampVamp = resolve(ranged ? fx.rampOmnivampPctRanged : fx.rampOmnivampPctMelee, level);
+    if (rampVamp) {
+      add(source, "omnivamp", rampVamp, `+${rampVamp}% Omnivamp at full ramp (${ranged ? "ranged" : "melee"})`);
+    }
+
     const adaptiveAd = resolve(fx.adaptiveAdFlat, level);
     const adaptiveAp = resolve(fx.adaptiveApFlat, level);
     if (adaptiveAd || adaptiveAp) {
@@ -397,6 +424,41 @@ export function scaledBuildStats(
       const bonusHp = Math.max(0, stats.hp - baseOnly.hp);
       add(source, "ap", bonusHp * apFromBonusHp / 100,
         `${apFromBonusHp}% of ${Math.round(bonusHp)} bonus Health as AP`);
+    }
+    // Overlord's Bloodmail (Tyranny): AD from bonus Health.
+    const adFromBonusHp = resolve(fx.adFromBonusHpPct, level);
+    if (adFromBonusHp) {
+      const bonusHp = Math.max(0, stats.hp - baseOnly.hp);
+      add(source, "ad", bonusHp * adFromBonusHp / 100,
+        `${adFromBonusHp}% of ${Math.round(bonusHp)} bonus Health as AD`);
+    }
+    // Sterak's Gage (Heavy Handed): a share of BASE AD as bonus AD.
+    const adFromBaseAd = resolve(fx.adBasePctPassive, level);
+    if (adFromBaseAd) {
+      add(source, "ad", baseOnly.ad * adFromBaseAd / 100,
+        `${adFromBaseAd}% of ${Math.round(baseOnly.ad)} base AD as bonus AD`);
+    }
+  }
+
+  /* ── bonus-resistance multipliers, once every flat resistance is in ───── */
+  // Amaranth's Twinguard at 5 Endurance stacks: +30% BONUS Armor and MR. It
+  // reads the bonus part of the finished sheet, so it runs after every flat
+  // source above (items, runes, Terminus' stacks, Force of Nature).
+  for (const slug of itemSlugs) {
+    const fx = DATA.itemFx?.[slug];
+    if (!fx) continue;
+    const source = itemName(slug);
+    const bonusArmorPct = resolve(fx.delayedBonusArmorPct, level);
+    if (bonusArmorPct) {
+      const bonusArmor = Math.max(0, stats.armor - baseOnly.armor);
+      add(source, "armor", bonusArmor * bonusArmorPct / 100,
+        `+${bonusArmorPct}% of ${Math.round(bonusArmor)} bonus Armor at max stacks`);
+    }
+    const bonusMrPct = resolve(fx.delayedBonusMrPct, level);
+    if (bonusMrPct) {
+      const bonusMr = Math.max(0, stats.mr - baseOnly.mr);
+      add(source, "mr", bonusMr * bonusMrPct / 100,
+        `+${bonusMrPct}% of ${Math.round(bonusMr)} bonus Magic Resist at max stacks`);
     }
   }
 

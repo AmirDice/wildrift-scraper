@@ -320,6 +320,9 @@ function PlayerPodium({
   const scopeLabel = podium?.scope === "global"
     ? `${(podium.servers ?? []).join(" and ") || "multiple servers"} normalized together`
     : `${podium?.server ?? "regional"} leaderboard`;
+  // Where these three are the best: "globally" or "in EU", at the end of the
+  // heading, so a regional podium is never read as the world's.
+  const whereLabel = podium?.scope === "global" ? "globally" : podium?.server ? `in ${podium.server}` : "";
   // Keep first place in the visual centre, like a real podium. On narrow
   // screens the winner returns to the top of the reading order, while the
   // desktop layout uses the familiar 2–1–3 arrangement.
@@ -416,7 +419,7 @@ function PlayerPodium({
       <div className="relative px-5 pb-6 pt-8 sm:px-7 sm:pb-8 sm:pt-10">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-gold">Top 3 this season</p>
         <h2 className="mt-2 text-3xl font-semibold tracking-tight text-text sm:text-4xl">
-          Best <span className="bg-gradient-to-r from-[#77aaff] via-[#8fbaff] to-[#74e1d0] bg-clip-text text-transparent">{championName}</span> players
+          Best <span className="bg-gradient-to-r from-[#77aaff] via-[#8fbaff] to-[#74e1d0] bg-clip-text text-transparent">{championName}</span> players{whereLabel ? ` ${whereLabel}` : ""}
         </h2>
 
         <div className="relative mx-auto mt-12 grid max-w-6xl grid-cols-3 items-end gap-2 sm:gap-8 sm:px-5 lg:gap-12 lg:px-12">

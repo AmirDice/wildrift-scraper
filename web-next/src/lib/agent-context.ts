@@ -8,6 +8,7 @@ import { getChampionDetails } from "@/lib/champion-details";
 import { getChampionHistory } from "@/lib/champion-history";
 import { getChampionLoadouts, type LoadoutTab } from "@/lib/cn-loadouts";
 import { getMatchups } from "@/lib/counters";
+import { ITEM_ALIASES } from "@/lib/item-search";
 import { MOVERS_META, moverBySlug } from "@/lib/movers";
 import { buildsByServer } from "@/lib/ladder-build";
 import { CURRENT_PATCH } from "@/lib/patch";
@@ -186,10 +187,27 @@ export function championSlugFromQuestion(question: string): string {
   return namedChampions(question)[0]?.slug ?? "";
 }
 
+/**
+ * Abbreviations the agent accepts inside a sentence. A subset of the item
+ * pickers' list (lib/item-search.ts): in free text "cap", "sky" or "tf"
+ * (Twisted Fate) would match by accident, so only acronyms and nicknames
+ * that are not ordinary words count here.
+ */
+const AGENT_ITEM_ALIASES = new Set([
+  "botrk", "bork", "brk", "ldr", "ie", "bt", "dd", "ga", "qss", "roa", "rfc", "dmp", "bc", "bms",
+  "bft", "fon", "fh", "ibg", "kv", "pd", "sofw", "yg", "eon", "cpc", "dnd", "hs", "dcap",
+  "zhonya", "zhonyas", "rabadon", "rabadons", "deathcap", "triforce", "shieldbow", "rageblade",
+  "guinsoo", "guinsoos", "warmog", "warmogs", "morello", "liandry", "liandrys", "luden", "ludens",
+  "nashor", "nashors", "rylai", "rylais", "sterak", "steraks", "youmuu", "youmuus", "ghostblade",
+  "bloodmail", "twinguard", "hexplate", "duskblade", "kraken", "navori", "shojin", "serylda",
+  "shurelya", "mikael", "mikaels", "randuin", "randuins", "dominik", "dominiks",
+]);
+
 function namedItems(question: string): ItemRecord[] {
   const haystack = ` ${plain(question)} `;
   return ITEMS
-    .filter((item) => haystack.includes(` ${plain(item.name)} `))
+    .filter((item) => haystack.includes(` ${plain(item.name)} `)
+      || (ITEM_ALIASES[item.slug] ?? []).some((alias) => AGENT_ITEM_ALIASES.has(alias) && haystack.includes(` ${alias} `)))
     .slice(0, 4);
 }
 

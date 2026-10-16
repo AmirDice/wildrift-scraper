@@ -7,6 +7,7 @@ import { rosterList } from "@/lib/threat";
 import engineData from "@/data/engine.json";
 import buildsData from "@/data/builds.json";
 import ladderBuildsData from "@/data/ladder_builds.json";
+import { itemMatches } from "@/lib/item-search";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -499,7 +500,7 @@ function LoadoutEditor({ label, picked, options, max, onChange, round = false, i
   const q = query.trim().toLowerCase();
   const matches = q
     ? options.filter((o) => !picked.includes(o.key) && !isBlocked?.(picked, o.key)
-        && o.name.toLowerCase().includes(q)).slice(0, 8)
+        && itemMatches({ slug: o.key, name: o.name }, q)).slice(0, 8)
     : [];
   return (
     <div className="min-w-0 flex-1 rounded-xl border border-line/60 bg-white/[0.02] p-2 text-left">

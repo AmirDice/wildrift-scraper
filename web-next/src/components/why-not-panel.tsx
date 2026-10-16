@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import engineData from "@/data/engine.json";
+import { itemMatches } from "@/lib/item-search";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -126,7 +127,7 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
           {listOpen && (
             <div className="absolute left-0 right-0 top-full z-40 mt-1 max-h-56 overflow-y-auto rounded-xl border border-line bg-[#0e1322] p-1 shadow-2xl">
               {options
-                .filter((o) => o.name.toLowerCase().includes(query.trim().toLowerCase()))
+                .filter((o) => itemMatches(o, query))
                 .slice(0, 8)
                 .map((o) => (
                   <button
@@ -139,7 +140,7 @@ export function WhyNotPanel({ champion, items, boots, runeNames, playstyle, buil
                     {o.name}
                   </button>
                 ))}
-              {options.filter((o) => o.name.toLowerCase().includes(query.trim().toLowerCase())).length === 0 && (
+              {options.filter((o) => itemMatches(o, query)).length === 0 && (
                 <p className="px-2.5 py-1.5 text-xs text-faint">Nothing matches.</p>
               )}
             </div>

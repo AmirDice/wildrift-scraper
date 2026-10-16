@@ -24,6 +24,7 @@ import { useAccount } from "@/components/account-provider";
 import { getChampions, pendingChampions } from "@/lib/data";
 import { CURRENT_PATCH } from "@/lib/patch";
 import engineData from "@/data/engine.json";
+import { itemMatches } from "@/lib/item-search";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -429,7 +430,7 @@ export function BuildCustomizer({ name, data, comparisonChoices, seed }: {
         // icons, so "find me a magic resist item" meant recognising every
         // icon or knowing the name already.
         .filter((i) => category === "All" || i.category === category)
-        .filter((i) => i.name.toLowerCase().includes(q))
+        .filter((i) => itemMatches(i, q))
         .sort((a, b) => a.name.localeCompare(b.name));
     }
     if (picker.kind === "keystone")

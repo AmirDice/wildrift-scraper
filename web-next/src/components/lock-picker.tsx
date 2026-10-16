@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { customizerItems, customizerRunes } from "@/lib/customizer-data";
+import { itemMatches } from "@/lib/item-search";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -130,7 +131,7 @@ function SearchAdd({
 }) {
   const [query, setQuery] = useState("");
   const results = query
-    ? options.filter((o) => o.name.toLowerCase().includes(query.toLowerCase())).slice(0, 6)
+    ? options.filter((o) => itemMatches({ slug: o.id, name: o.name }, query)).slice(0, 6)
     : [];
 
   return (

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ITEMS, ITEM_CATEGORIES, statLines, type Item } from "@/lib/items";
+import { itemMatches } from "@/lib/item-search";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -79,7 +80,7 @@ export function ItemsExplorer() {
       if (it.removedIn && !query) return false;
       if (!query) return true;
       return (
-        it.name.toLowerCase().includes(query) ||
+        itemMatches(it, query) ||
         it.passives.some((p) => p.toLowerCase().includes(query)) ||
         Object.keys(it.stats).some((k) => k.toLowerCase().includes(query))
       );
