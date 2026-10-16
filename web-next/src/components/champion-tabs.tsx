@@ -7,6 +7,7 @@ const TABS = [
   { key: "playstyle", label: "Playstyle" },
   { key: "abilities", label: "Abilities" },
   { key: "history", label: "History" },
+  { key: "skins", label: "Skins" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -22,7 +23,7 @@ export function ChampionTabs({ panels }: {
             overflowed and "History" sat off-screen on a 375px viewport with
             nothing to show it was scrollable. These four labels fit four
             columns unaided; the minimum only applies once there is room. */}
-        <div className="grid grid-cols-4 gap-1 sm:min-w-[420px]">
+        <div className="grid grid-cols-5 gap-1 sm:min-w-[480px]">
           {TABS.map((tab) => (
             <button
               key={tab.key}

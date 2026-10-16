@@ -36,6 +36,8 @@ import { AgentPromptChips, AskAgent } from "@/components/site-agent";
 import { ChampionLoadouts } from "@/components/champion-loadouts";
 import { getChampionLoadouts } from "@/lib/cn-loadouts";
 import { championSummary } from "@/lib/champion-summary";
+import { getChampionSkins } from "@/lib/skins";
+import { ChampionSkins } from "@/components/champion-skins";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -384,7 +386,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
 
         <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
           <ChampionTabs
-            panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, history: <>
+            panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, skins: <ChampionSkins champion={champion.name} slug={champion.slug} skins={getChampionSkins(champion.slug)} />, history: <>
               {history.changes[0] && (
                 <div className="mb-4">
                   <AskAgent question={`Did patch ${history.changes[0].patch} help ${champion.name}?`} />
