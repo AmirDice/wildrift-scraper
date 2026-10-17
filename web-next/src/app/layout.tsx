@@ -13,6 +13,7 @@ import { AnchorAd } from "@/components/anchor-ad";
 import { ADSENSE_CLIENT, ADS_LIVE } from "@/lib/ads";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/next";
+import { CONSENT_REGIONS, GA_ID } from "@/lib/analytics";
 import { getChampions, pendingChampions } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -155,6 +156,30 @@ export default function RootLayout({
             crossOrigin="anonymous"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
           />
+        )}
+        {/* Google Analytics 4 under Consent Mode v2. The consent defaults
+            are set before the config call: denied in the EU/EEA, UK and
+            Switzerland until Google's consent message (the same one AdSense
+            uses) records a choice, granted elsewhere. Denied still sends
+            cookieless pings, so EU traffic is counted without storing
+            anything on the device. */}
+        {GA_ID && (
+          <>
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied',
+  region: ${JSON.stringify(CONSENT_REGIONS)}, wait_for_update: 500
+});
+gtag('consent', 'default', {
+  ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', analytics_storage: 'granted'
+});
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+            </Script>
+            <Script id="ga-tag" strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+          </>
         )}
         <Analytics />
       </body>

@@ -118,6 +118,31 @@ export default function PrivacyPage() {
             and does not identify individual visitors. It tells us which tools are worth working
             on and nothing else.
           </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            The site also uses Google Analytics 4 to understand how visitors find and use it. In
+            the EU, the EEA, the UK and Switzerland it runs under Google Consent Mode: until you
+            accept in the consent message, it stores no cookies and sends only anonymous,
+            cookieless measurements. If you accept, Google may set cookies to recognise repeat
+            visits. Google explains its use of this data in{" "}
+            <a
+              href="https://policies.google.com/technologies/partner-sites"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-accent transition hover:opacity-80"
+            >
+              How Google uses information from sites that use its services
+            </a>
+            , and you can opt out with Google&rsquo;s{" "}
+            <a
+              href="https://tools.google.com/dlpage/gaoptout"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-accent transition hover:opacity-80"
+            >
+              Analytics opt-out add-on
+            </a>
+            .
+          </p>
         </Card>
 
         <Card className="p-5 sm:p-6">
