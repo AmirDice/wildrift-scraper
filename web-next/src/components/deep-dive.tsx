@@ -1,10 +1,11 @@
-import { site, getChampions, type Champion } from "@/lib/data";
+import { site, getChampions } from "@/lib/data";
 import { getCnChampions, getGlobalChampions } from "@/lib/cn";
 import { risingPicks, overratedInEu } from "@/lib/gap";
 import { climbingPicks, stomperPicks } from "@/lib/skew";
 import { Container, SectionHeading } from "@/components/ui";
 import { InsightCard } from "@/components/insight-card";
 import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champion-change-ranking";
+import { topSkillCeilings } from "@/lib/regions";
 
 /**
  * The deeper sections that used to run down the home page: cross-server data, the
@@ -39,12 +40,11 @@ export function DeepDiveSections() {
   // base, while a reader looking at "best OTP champions" is asking which one
   // is worth committing to. Sorting by the score put the most one-tricked
   // champion on top whether or not one-tricking it wins games.
-  const bestOtp = champions
+  const bestOtp = globalChamps
     .filter((c) => c.isOtp && Number.isFinite(c.wr))
     .sort((left, right) => right.wr - left.wr)
     .slice(0, 5);
-  const skillCeiling = [...ranked].filter((c) => c.skillSpread != null)
-    .sort((a, b) => (b.skillSpread ?? 0) - (a.skillSpread ?? 0)).slice(0, 5);
+  const skillCeiling = topSkillCeilings(5);
   const consistent = [...ranked].filter((c) => c.winrateStd != null)
     .sort((a, b) => (a.winrateStd ?? 99) - (b.winrateStd ?? 99)).slice(0, 5);
   const longestUnchanged = getChampionChangeRanking(champions)
@@ -211,9 +211,9 @@ export function DeepDiveSections() {
       <Container className="py-6">
         <SectionHeading title="Champion insights" subtitle="Cut the data a few different ways" />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <InsightCard href="/meta#one-trick" title="Best OTP champions" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
-          <InsightCard href="/meta#consistency" title="Highest skill ceiling" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${(c.skillSpread ?? 0).toFixed(1)}`, metricClass: "text-accent" }))} />
-          <InsightCard href="/meta#consistency" title="Most consistent" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
+          <InsightCard href="/meta#one-trick" title="Best OTP champions" subtitle="Global · EU + NA + China" items={bestOtp.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `${c.wr.toFixed(1)}%`, metricClass: "text-gold" }))} />
+          <InsightCard href="/meta#consistency" title="Highest skill ceiling" subtitle="EU + NA · agreement-filtered" items={skillCeiling.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `+${c.blended.toFixed(1)}`, metricClass: "text-accent" }))} />
+          <InsightCard href="/meta#consistency" title="Most consistent" subtitle="EU only · regional player spread" items={consistent.map((c) => ({ icon: c.icon, name: c.name, href: `/champions/${c.slug}`, metric: `±${(c.winrateStd ?? 0).toFixed(1)}`, metricClass: "text-muted" }))} />
           <InsightCard
             href="/changes-report"
             title="Longest unchanged"
@@ -272,6 +272,7 @@ export function DeepDiveSections() {
 
       {/* Players */}
       <Container className="py-12">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">EU player highlights</p>
         <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
           <InsightCard href="/leaderboard#multi-champion-mains" title="Multi-champion mains" subtitle="Top 50 on three or more champions" items={site.multiChampionMains.slice(0, 6).map((m) => ({ icon: m.firstChampionIcon ?? undefined, name: m.player, sub: `${m.nChampions} champs · best #${m.bestRank}`, href: byName.get(m.champions[0]) ? `/leaderboard?champion=${byName.get(m.champions[0])!.slug}` : undefined, metric: m.avgWr != null ? `${m.avgWr.toFixed(0)}%` : "-", metricClass: "text-muted" }))} />
           <InsightCard href="/leaderboard#funniest-names" title="Funniest names" subtitle="Spotted on the boards, lightly cleaned" items={site.funnyNames.slice(0, 6).map((f) => ({ icon: f.icon, name: f.player, sub: f.champion, href: byName.get(f.champion) ? `/leaderboard?champion=${byName.get(f.champion)!.slug}` : undefined }))} />

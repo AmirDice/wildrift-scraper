@@ -1,4 +1,4 @@
-import { site, TIER_ORDER, tierLabel, type Champion, type Tier } from "./data";
+import { TIER_ORDER, tierLabel, type Champion, type Tier } from "./data";
 import { getGlobalChampions, globalRoles } from "./cn";
 
 // Aggregations powering the Meta Report charts. All derived on the fly from

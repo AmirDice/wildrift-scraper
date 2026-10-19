@@ -1,11 +1,11 @@
 import { Card, SectionHeading } from "@/components/ui";
-import pulse from "@/data/ladder_pulse.json";
+import { globalUsage, finishedItemRows, leastUsedRows } from "@/lib/global-usage";
 import items from "@/data/items.json";
 import runeIcons from "@/data/rune_icons.json";
 
-// What the top 50 of every collected champion actually equip, ordered.
+// What the collected top-player boards actually equip, ordered.
 // Win rates here are games-weighted and only shown once a bucket clears 200
-// games, so one lucky player cannot top a table. They are top-50 win rates,
+// games, so one lucky player cannot top a table. They are top-player win rates,
 // so they all sit high; what matters is the gap between them.
 
 type Row = { name: string; count: number; wr: number | null; slug?: string; tree?: string };
@@ -37,6 +37,11 @@ function UsageList({ rows, art, tone = "bg-accent/70", showTree = false }: {
 }) {
   const max = Math.max(...rows.map((r) => r.count), 1);
   return (
+    <div>
+      <div className="mb-2 flex justify-end gap-2 text-[0.6rem] uppercase tracking-wide text-faint">
+        <span className="w-16 text-right">Uses</span>
+        <span className="w-14 text-right">Player WR</span>
+      </div>
     <ul className="space-y-1.5">
       {rows.map((r, i) => (
         <li key={r.name} className="flex items-center gap-2 text-sm">
@@ -49,28 +54,31 @@ function UsageList({ rows, art, tone = "bg-accent/70", showTree = false }: {
           <span className="min-w-0 flex-1 truncate">{r.name}</span>
           <Bar value={r.count} max={max}
             tone={showTree && r.tree ? TREE_TONE[r.tree] ?? tone : tone} />
-          <span className="w-10 shrink-0 text-right text-xs tabular-nums text-muted">{r.count}</span>
-          <span className="w-12 shrink-0 text-right text-xs tabular-nums text-accent">
+          <span className="w-16 shrink-0 text-right text-xs font-semibold tabular-nums text-text" aria-label={`${r.count} captured uses`}>
+            {r.count.toLocaleString("en-US")}
+          </span>
+          <span className="w-14 shrink-0 text-right text-xs tabular-nums text-accent">
             {r.wr != null ? `${r.wr.toFixed(1)}%` : "-"}
           </span>
         </li>
       ))}
     </ul>
+    </div>
   );
 }
 
 export function UsageTables() {
+  const pulse = globalUsage();
   const art = icons();
   const runeArt = runeIcons as Record<string, string>;
   const trees = pulse.treeMeta as Row[];
   const keystones = pulse.keystoneAll as Row[];
   const minors = pulse.minorMeta as Row[];
-  const allItems = pulse.itemAll as Row[];
+  const allItems = finishedItemRows(pulse.itemAll);
   if (!trees?.length) return null;
 
-  const played = (r: Row) => r.count > 0;
-  const leastItems = [...allItems].filter(played).reverse().slice(0, 10);
-  const leastMinors = [...minors].filter(played).reverse().slice(0, 8);
+  const leastItems = leastUsedRows(allItems, 10);
+  const leastMinors = leastUsedRows(minors, 8);
 
   // "wins the most": best games-weighted win rate among choices with a real
   // sample, not the most popular one.
@@ -85,8 +93,13 @@ export function UsageTables() {
     <div className="mt-10">
       <SectionHeading
         title="What high elo actually runs"
-        subtitle={`Every rune and item equipped by ${pulse.nPlayers.toLocaleString()} top-board players, ordered by use. The percentage is their games-weighted win rate.`}
+        subtitle={`EU + NA + China · ${pulse.nBuilds.toLocaleString()} captured builds across ${pulse.nChampions} champions, ordered by use. Percentages are the wearers' games-weighted champion win rates, not wins caused by the item or rune.`}
       />
+      <p className="mb-4 text-xs text-faint">
+        Build aggregation dates: {pulse.sources.map((s) => `${s.server} ${s.buildsFrom}`).join(" · ")}.
+        Board appearances can include the same account on multiple champions.
+        {" "}Uses = captured rune selections or item appearances, not matches or unique players.
+      </p>
 
       {(bestKeystone || bestItem || bestMinor) && (
         <div className="mb-4 grid gap-3 sm:grid-cols-3 [&>*]:min-w-0">
@@ -106,6 +119,7 @@ export function UsageTables() {
                     {label as string}
                   </p>
                   <p className="truncate text-sm font-medium">{r.name}</p>
+                  <p className="text-xs tabular-nums text-faint">{r.count.toLocaleString("en-US")} uses</p>
                 </div>
                 <span className="ml-auto shrink-0 text-lg font-semibold text-accent tabular-nums">
                   {r.wr?.toFixed(1)}%
@@ -145,6 +159,7 @@ export function UsageTables() {
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
             Most used items
           </p>
+          <p className="mb-2 text-[0.7rem] text-faint">Current finished items and boots; components and removed items excluded.</p>
           <UsageList rows={allItems.slice(0, 12)} art={art} tone="bg-gold/60" />
         </Card>
         <Card className="p-5">
@@ -152,7 +167,9 @@ export function UsageTables() {
             Least used items
           </p>
           <p className="mb-2 text-[0.7rem] text-faint">
-            Items that were built at least once. Anything absent was never built at all.
+            Finished items and boots seen at least once, lowest global count first.
+            Components and removed items excluded. Missing items were not observed in these snapshots,
+            not necessarily never built in games. Transformed items are counted separately from their base item.
           </p>
           <UsageList rows={leastItems} art={art} tone="bg-white/25" />
         </Card>

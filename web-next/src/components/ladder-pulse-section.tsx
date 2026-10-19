@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SectionHeading, Card } from "@/components/ui";
 import pulse from "@/data/ladder_pulse.json";
+import { globalUsage } from "@/lib/global-usage";
 import items from "@/data/items.json";
 
 // What the freshly scraped top-50 boards agree on, aggregated across every
@@ -45,12 +46,13 @@ function extreme(
 }
 
 export function LadderPulseSection({ championIcons }: { championIcons: Record<string, string> }) {
+  const usage = globalUsage();
   const icons = itemIconMap();
   const champs = Object.entries(pulse.champions as Record<string, ChampProfile>);
   if (!champs.length) return null;
 
-  const ksTotal = pulse.keystoneMeta.reduce((a, k) => a + k.count, 0);
-  const spTotal = pulse.spellMeta.reduce((a, s) => a + s.count, 0);
+  const ksTotal = usage.keystoneAll.reduce((a, k) => a + k.count, 0);
+  const spTotal = usage.spellMeta.reduce((a, s) => a + s.count, 0);
 
   const extremes: { label: string; key: keyof ChampProfile; dir?: "max" | "min"; fmt: (v: number) => string }[] = [
     { label: "Highest damage", key: "dmgDealt", fmt: (v) => `${Math.round(v / 100) / 10}k per match` },
@@ -108,7 +110,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
     <div className="mt-10">
       <SectionHeading
         title="Ladder pulse"
-        subtitle={`Measured from ${pulse.nPlayers.toLocaleString()} top-board players and ${pulse.nBuilds.toLocaleString()} live builds across ${pulse.nChampions} freshly collected boards`}
+        subtitle={`EU + NA + China · ${usage.nBuilds.toLocaleString()} captured builds across ${usage.nChampions} champions. Item, keystone and spell usage below is global; player-profile cards below use EU only.`}
         href="/leaderboard"
         linkLabel="Browse the boards"
       />
@@ -119,11 +121,11 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
             Most equipped items in high elo
           </p>
           <div className="mt-3 flex flex-wrap gap-3">
-            {pulse.itemMeta.slice(0, 12).map((it) => (
+            {usage.itemMeta.slice(0, 12).map((it) => (
               <span key={it.slug} className="flex flex-col items-center gap-1" title={it.name}>
-                {icons[it.slug] ? (
+                {icons[it.slug ?? ""] ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={icons[it.slug]} alt={it.name} width={34} height={34}
+                  <img src={icons[it.slug ?? ""]} alt={it.name} width={34} height={34}
                     className="h-[34px] w-[34px] rounded-md border border-line/70 bg-black/30 object-cover" />
                 ) : (
                   <span className="grid h-[34px] w-[34px] place-items-center rounded-md border border-line bg-white/5 text-[0.6rem] text-faint">?</span>
@@ -139,7 +141,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
             Keystone meta share
           </p>
           <div className="mt-3 space-y-1.5">
-            {pulse.keystoneMeta.slice(0, 6).map((k) => (
+            {usage.keystoneAll.slice(0, 6).map((k) => (
               <div key={k.name} className="flex items-center gap-2 text-sm">
                 <span className="w-40 truncate">{k.name}</span>
                 <span className="h-2 rounded-full bg-accent/70"
@@ -152,7 +154,7 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
           </div>
           <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted">Spell pairs</p>
           <p className="mt-1.5 text-sm text-muted">
-            {pulse.spellMeta.slice(0, 3).map((s, i) => (
+            {usage.spellMeta.slice(0, 3).map((s, i) => (
               <span key={s.pair}>
                 {i > 0 && " · "}
                 <span className="text-text">{s.pair}</span>{" "}
@@ -163,6 +165,9 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
         </Card>
       </div>
 
+      <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-muted">
+        EU player profiles · regional sample, not global
+      </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
         {extremes.map(({ label, key, dir, fmt }) => {
           const hit = extreme(champs, key, dir);

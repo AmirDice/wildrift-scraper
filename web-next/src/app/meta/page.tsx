@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site, getChampions } from "@/lib/data";
+import { getChampions, regionBoard } from "@/lib/data";
 import { AdSlot } from "@/components/ad-slot";
 import { Container, Card, SectionHeading } from "@/components/ui";
 import { LadderPulseSection } from "@/components/ladder-pulse-section";
@@ -48,12 +48,19 @@ export default function MetaPage() {
   return (
     <Container className="py-12">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-        Meta Overview{site.collectedOn ? ` · ${site.collectedOn}` : ""}
+        Meta Overview · Global
       </p>
+
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">The meta at a glance</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        Everything below is built from the same real EU data as the tier list: the top players
-        on each of {h.nChampions} champions, confidence-adjusted so hype never skews the picture.
+        Global rankings and charts combine the top-player boards from EU, NA and China
+        across {h.nChampions} champions, using the same confidence-adjusted win rates as
+        the Global tier list. Regional comparisons and specialist metrics name their sources below.
+      </p>
+      <p className="mt-3 max-w-3xl text-xs text-faint">
+        Board captures: {(["EU", "NA", "CN"] as const).map((server) => `${server} ${regionBoard(server).collectedOn ?? "date unavailable"}`).join(" · ")}.
+        Global champion win rates weight each available server equally; these are top-player
+        estimates, not win rates across all ranked matches.
       </p>
 
       {/* headline strip */}

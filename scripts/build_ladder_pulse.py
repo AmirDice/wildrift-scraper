@@ -92,6 +92,14 @@ def _rune_page_key(page: dict) -> tuple[str, str, str, str, str, str]:
             str(page.get("flex") or ""))
 
 
+def _minor_rune(name: str | None) -> str | None:
+    """An OCR slot position cannot turn a keystone into a minor rune."""
+    canonical = canonical_rune(name)
+    if _rune_trees().get(canonical) not in {"Precision", "Resolve", "Sorcery", "Domination"}:
+        return None
+    return canonical
+
+
 def _weighted(stat: dict) -> float | None:
     """Games-weighted mean win rate for a usage bucket, or None if too thin.
 
@@ -225,8 +233,8 @@ def build(min_ranks: int = 40) -> tuple[dict, dict]:
                     keystone_global[key] += 1
                     _note("keystone", key, *wr_g)
                 for minor in b["runes"][1:]:
-                    m = canonical_rune(minor)
-                    if not is_known_rune(m):
+                    m = _minor_rune(minor)
+                    if m is None:
                         continue
                     minors[m] += 1
                     minor_global[m] += 1
@@ -520,13 +528,28 @@ def build(min_ranks: int = 40) -> tuple[dict, dict]:
             "multiBoard": multi[:12],
         },
     }
+    # Keep the actual weighting evidence, not just the rounded regional rate.
+    # The meta overview combines these buckets across servers; build counts
+    # are NOT the denominator for a games-weighted win rate.
+    for table, bucket, identity in (
+        ("treeMeta", "tree", "name"),
+        ("keystoneAll", "keystone", "name"),
+        ("minorMeta", "minor", "name"),
+        ("itemAll", "item", "slug"),
+    ):
+        for row in pulse[table]:
+            evidence = perf.get(bucket + "|" + row[identity], {})
+            row["games"] = evidence.get("games", 0)
+            row["wrGames"] = evidence.get("wr_games", 0.0)
+    # Top six per region cannot recover the global top six reliably.
+    pulse["spellAll"] = [{"pair": p, "count": c} for p, c in spell_global.most_common()]
     return pulse, consensus
 
 
 # Sections computed ENTIRELY from player builds. A win-rate-only collection
 # has no builds in it, so these come back empty -- not because the meta is
 # empty, but because this run never looked at it.
-BUILD_DERIVED = ("itemMeta", "keystoneMeta", "spellMeta", "treeMeta",
+BUILD_DERIVED = ("itemMeta", "keystoneMeta", "spellMeta", "spellAll", "treeMeta",
                  "keystoneAll", "minorMeta", "itemAll")
 
 
@@ -597,6 +620,33 @@ def _carry_consensus(consensus: dict) -> dict:
     return consensus
 
 
+def usage_evidence_only(prior: dict, measured: dict) -> dict:
+    """Backfill exact weights without republishing other capture changes.
+
+    Refuse if the measured usage no longer describes the existing snapshot.
+    This migration must not quietly blend today's weights with older counts.
+    """
+    import copy
+    updated = copy.deepcopy(prior)
+    if prior["nBuilds"] != measured["nBuilds"]:
+        raise ValueError("Build counts changed; run a normal regional publication first")
+    for table, identity in (("treeMeta", "name"), ("keystoneAll", "name"),
+                            ("minorMeta", "name"), ("itemAll", "slug")):
+        current = {row[identity]: row for row in measured[table]}
+        old = {row[identity]: row for row in prior[table]}
+        if {k: r["count"] for k, r in old.items()} != {k: r["count"] for k, r in current.items()}:
+            raise ValueError(f"{table} counts changed; cannot backfill this snapshot")
+        for row in updated[table]:
+            evidence = current[row[identity]]
+            if row.get("wr") != evidence.get("wr"):
+                raise ValueError(f"{table} win rate changed; cannot backfill this snapshot")
+            row.update(games=evidence["games"], wrGames=evidence["wrGames"])
+    if prior["spellMeta"] != measured["spellMeta"]:
+        raise ValueError("Spell counts changed; cannot backfill this snapshot")
+    updated["spellAll"] = measured["spellAll"]
+    return updated
+
+
 def main() -> int:
     import argparse
 
@@ -605,6 +655,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--region", default="eu", choices=sorted(ec.REGIONS),
                     help="which server's captures to aggregate (default: eu)")
+    ap.add_argument("--usage-evidence-only", action="store_true",
+                    help="backfill global usage weights only; refuse if the snapshot changed")
     # Default 15, not 40. 40 was right for the 50-row boards; every board has
     # been 30 rows since the relayout, so at 40 no session qualifies and the
     # run reads zero champions. 15 is what publish_cn.sh uses and, measured
@@ -631,6 +683,12 @@ def main() -> int:
         return 1
 
     pulse, consensus = build(args.min_ranks)
+    if args.usage_evidence_only:
+        prior = json.loads(pulse_out.read_text(encoding="utf-8"))
+        updated = usage_evidence_only(prior, pulse)
+        pulse_out.write_text(json.dumps(updated, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"{pulse_out.name}: usage weights backfilled; other data unchanged")
+        return 0
     # Refuse rather than empty the site. With the old default of 40 every
     # session failed the row check, this read ZERO champions, and the run
     # still wrote both files and exited 0 -- export_ladder_builds then wrote

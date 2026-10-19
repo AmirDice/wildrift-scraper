@@ -177,84 +177,116 @@
   {
    "name": "Resolve",
    "count": 5134,
-   "wr": 58.9
+   "wr": 58.9,
+   "games": 274764,
+   "wrGames": 16183672.30000005
   },
   {
    "name": "Precision",
    "count": 5117,
-   "wr": 58.99
+   "wr": 58.99,
+   "games": 276656,
+   "wrGames": 16321178.000000117
   },
   {
    "name": "Sorcery",
    "count": 3803,
-   "wr": 59.44
+   "wr": 59.44,
+   "games": 197400,
+   "wrGames": 11734148.00000001
   },
   {
    "name": "Domination",
    "count": 2743,
-   "wr": 59.26
+   "wr": 59.26,
+   "games": 140387,
+   "wrGames": 8320016.499999994
   }
  ],
  "keystoneAll": [
   {
    "name": "Conqueror",
    "count": 844,
-   "wr": 59.35
+   "wr": 59.35,
+   "games": 41408,
+   "wrGames": 2457593.5999999973
   },
   {
    "name": "Lethal Tempo",
    "count": 435,
-   "wr": 59.13
+   "wr": 59.13,
+   "games": 23366,
+   "wrGames": 1381627.7000000014
   },
   {
    "name": "Electrocute",
    "count": 434,
-   "wr": 58.67
+   "wr": 58.67,
+   "games": 23957,
+   "wrGames": 1405501.3999999992
   },
   {
    "name": "Grasp of the Undying",
    "count": 406,
-   "wr": 58.51
+   "wr": 58.51,
+   "games": 20965,
+   "wrGames": 1226662.1999999995
   },
   {
    "name": "Ice Overlord",
    "count": 386,
-   "wr": 59.45
+   "wr": 59.45,
+   "games": 20892,
+   "wrGames": 1242041.799999999
   },
   {
    "name": "Fleet Footwork",
    "count": 325,
-   "wr": 59.7
+   "wr": 59.7,
+   "games": 16680,
+   "wrGames": 995873.2000000002
   },
   {
    "name": "Phase Rush",
    "count": 293,
-   "wr": 58.82
+   "wr": 58.82,
+   "games": 19515,
+   "wrGames": 1147835.4
   },
   {
    "name": "Dark Harvest",
    "count": 268,
-   "wr": 59.18
+   "wr": 59.18,
+   "games": 13166,
+   "wrGames": 779140.5000000005
   },
   {
    "name": "Aery",
    "count": 246,
-   "wr": 59.94
+   "wr": 59.94,
+   "games": 13178,
+   "wrGames": 789925.4000000003
   },
   {
    "name": "First Strike",
    "count": 228,
-   "wr": 60.46
+   "wr": 60.46,
+   "games": 11691,
+   "wrGames": 706788.3000000003
   },
   {
    "name": "Arcane Comet",
    "count": 172,
-   "wr": 57.21
+   "wr": 57.21,
+   "games": 9052,
+   "wrGames": 517883.79999999993
   },
   {
    "name": "Empowerment",
    "count": 129,
-   "wr": 57.96
+   "wr": 57.96,
+   "games": 6896,
+   "wrGames": 399702.7000000002
   }
  ],
  "minorMeta": [
@@ -262,247 +294,329 @@
    "name": "Bone Plating",
    "count": 1342,
    "tree": "Resolve",
-   "wr": 59.05
+   "wr": 59.05,
+   "games": 75548,
+   "wrGames": 4461360.999999994
   },
   {
    "name": "Cut Down",
    "count": 1125,
    "tree": "Precision",
-   "wr": 59.5
+   "wr": 59.5,
+   "games": 59723,
+   "wrGames": 3553297.9999999935
   },
   {
    "name": "Transcendence",
    "count": 986,
    "tree": "Sorcery",
-   "wr": 59.67
+   "wr": 59.67,
+   "games": 50020,
+   "wrGames": 2984682.5000000023
   },
   {
    "name": "Brutal",
    "count": 961,
    "tree": "Precision",
-   "wr": 59.28
+   "wr": 59.28,
+   "games": 49237,
+   "wrGames": 2918656.5999999954
   },
   {
    "name": "Sudden Impact",
    "count": 930,
    "tree": "Domination",
-   "wr": 59.7
+   "wr": 59.7,
+   "games": 46541,
+   "wrGames": 2778282.6999999983
   },
   {
    "name": "Second Wind",
    "count": 900,
    "tree": "Resolve",
-   "wr": 58.74
+   "wr": 58.74,
+   "games": 47168,
+   "wrGames": 2770544.300000001
   },
   {
    "name": "Legend: Alacrity",
    "count": 898,
    "tree": "Precision",
-   "wr": 59.17
+   "wr": 59.17,
+   "games": 45424,
+   "wrGames": 2687582.599999997
   },
   {
    "name": "Perseverance",
    "count": 633,
    "tree": "Resolve",
-   "wr": 59.05
+   "wr": 59.05,
+   "games": 32971,
+   "wrGames": 1947076.8000000014
   },
   {
    "name": "Overgrowth",
    "count": 622,
    "tree": "Resolve",
-   "wr": 58.78
+   "wr": 58.78,
+   "games": 31886,
+   "wrGames": 1874299.799999999
   },
   {
    "name": "Legend: Bloodline",
    "count": 620,
    "tree": "Precision",
-   "wr": 58.83
+   "wr": 58.83,
+   "games": 36890,
+   "wrGames": 2170268.0000000005
   },
   {
    "name": "Eyeball Collector",
    "count": 611,
    "tree": "Domination",
-   "wr": 59.16
+   "wr": 59.16,
+   "games": 31470,
+   "wrGames": 1861799.3000000003
   },
   {
    "name": "Absolute Focus",
    "count": 517,
    "tree": "Sorcery",
-   "wr": 59.7
+   "wr": 59.7,
+   "games": 25769,
+   "wrGames": 1538400.1999999997
   },
   {
    "name": "Unshakeable",
    "count": 509,
    "tree": "Resolve",
-   "wr": 59.23
+   "wr": 59.23,
+   "games": 27148,
+   "wrGames": 1608096.9000000008
   },
   {
    "name": "Chain Assault",
    "count": 455,
    "tree": "Domination",
-   "wr": 59.09
+   "wr": 59.09,
+   "games": 23137,
+   "wrGames": 1367146.3999999997
   },
   {
    "name": "Battle Zeal",
    "count": 438,
    "tree": "Precision",
-   "wr": 58.61
+   "wr": 58.61,
+   "games": 27441,
+   "wrGames": 1608448.4000000013
   },
   {
    "name": "Axiom Arcanist",
    "count": 435,
    "tree": "Sorcery",
-   "wr": 59.28
+   "wr": 59.28,
+   "games": 23101,
+   "wrGames": 1369536.9000000004
   },
   {
    "name": "Nimbus Cloak",
    "count": 399,
    "tree": "Sorcery",
-   "wr": 59.37
+   "wr": 59.37,
+   "games": 21775,
+   "wrGames": 1292752.9999999993
   },
   {
    "name": "Legend: Haste",
    "count": 377,
    "tree": "Precision",
-   "wr": 59.22
+   "wr": 59.22,
+   "games": 19888,
+   "wrGames": 1177747.5
   },
   {
    "name": "Manaflow Band",
    "count": 369,
    "tree": "Sorcery",
-   "wr": 59.3
+   "wr": 59.3,
+   "games": 18250,
+   "wrGames": 1082200.0999999996
   },
   {
    "name": "Demolish",
    "count": 335,
    "tree": "Resolve",
-   "wr": 58.04
+   "wr": 58.04,
+   "games": 16627,
+   "wrGames": 965075.9000000005
   },
   {
    "name": "Scorch",
    "count": 333,
    "tree": "Sorcery",
-   "wr": 58.8
+   "wr": 58.8,
+   "games": 16988,
+   "wrGames": 998957.7999999999
   },
   {
    "name": "Gathering Storm",
    "count": 329,
    "tree": "Sorcery",
-   "wr": 60.01
+   "wr": 60.01,
+   "games": 16478,
+   "wrGames": 988831.0000000007
   },
   {
    "name": "Coup de Grace",
    "count": 281,
    "tree": "Precision",
-   "wr": 57.72
+   "wr": 57.72,
+   "games": 15319,
+   "wrGames": 884256.0000000005
   },
   {
    "name": "Courage of the Colossus",
    "count": 279,
    "tree": "Resolve",
-   "wr": 58.01
+   "wr": 58.01,
+   "games": 15254,
+   "wrGames": 884899.1000000001
   },
   {
    "name": "Tyrant",
    "count": 264,
    "tree": "Domination",
-   "wr": 59.27
+   "wr": 59.27,
+   "games": 13866,
+   "wrGames": 821770.6000000008
   },
   {
    "name": "Last Stand",
    "count": 253,
    "tree": "Precision",
-   "wr": 58.0
+   "wr": 58.0,
+   "games": 14477,
+   "wrGames": 839614.2000000001
   },
   {
    "name": "Revitalize",
    "count": 243,
    "tree": "Resolve",
-   "wr": 59.36
+   "wr": 59.36,
+   "games": 13459,
+   "wrGames": 798931.7000000001
   },
   {
    "name": "Cheap Shot",
    "count": 193,
    "tree": "Domination",
-   "wr": 57.3
+   "wr": 57.3,
+   "games": 10618,
+   "wrGames": 608410.2000000001
   },
   {
    "name": "Font of Life",
    "count": 183,
    "tree": "Resolve",
-   "wr": 60.36
+   "wr": 60.36,
+   "games": 9757,
+   "wrGames": 588899.5
   },
   {
    "name": "Hextech Flashtraption",
    "count": 168,
    "tree": "Sorcery",
-   "wr": 58.98
+   "wr": 58.98,
+   "games": 9801,
+   "wrGames": 578060.7999999998
   },
   {
    "name": "Triumph",
    "count": 164,
    "tree": "Precision",
-   "wr": 58.29
+   "wr": 58.29,
+   "games": 8257,
+   "wrGames": 481306.7000000001
   },
   {
    "name": "Celerity",
    "count": 159,
    "tree": "Sorcery",
-   "wr": 59.75
+   "wr": 59.75,
+   "games": 9299,
+   "wrGames": 555617.2
   },
   {
    "name": "Zombie Ward",
    "count": 151,
    "tree": "Domination",
-   "wr": 60.32
+   "wr": 60.32,
+   "games": 7676,
+   "wrGames": 462998.1000000001
   },
   {
    "name": "Nullifying Orb",
    "count": 88,
    "tree": "Resolve",
-   "wr": 57.52
+   "wr": 57.52,
+   "games": 4946,
+   "wrGames": 284487.30000000005
   },
   {
    "name": "Hubris",
    "count": 80,
    "tree": "Domination",
-   "wr": 59.47
+   "wr": 59.47,
+   "games": 4061,
+   "wrGames": 241488.69999999998
   },
   {
    "name": "Lethal Tempo",
    "count": 73,
    "tree": "Keystone",
-   "wr": 59.39
+   "wr": 59.39,
+   "games": 3738,
+   "wrGames": 221993.5
   },
   {
    "name": "Botanist",
    "count": 70,
    "tree": "Sorcery",
-   "wr": 59.9
+   "wr": 59.9,
+   "games": 3718,
+   "wrGames": 222699.69999999998
   },
   {
    "name": "Relentless Hunter",
    "count": 59,
    "tree": "Domination",
-   "wr": 59.02
+   "wr": 59.02,
+   "games": 3018,
+   "wrGames": 178120.5
   },
   {
    "name": "Ixtali Seedjar",
    "count": 38,
    "tree": "Sorcery",
-   "wr": 55.62
+   "wr": 55.62,
+   "games": 2201,
+   "wrGames": 122408.79999999997
   },
   {
    "name": "First Strike",
    "count": 1,
    "tree": "Keystone",
-   "wr": null
+   "wr": null,
+   "games": 18,
+   "wrGames": 1299.6000000000001
   },
   {
    "name": "Dark Harvest",
    "count": 1,
    "tree": "Keystone",
-   "wr": null
+   "wr": null,
+   "games": 41,
+   "wrGames": 2300.1
   }
  ],
  "itemAll": [
@@ -510,715 +624,953 @@
    "slug": "rabadons-deathcap",
    "name": "Rabadon's Deathcap",
    "count": 1233,
-   "wr": 58.56
+   "wr": 58.56,
+   "games": 70049,
+   "wrGames": 4102117.999999998
   },
   {
    "slug": "spellslingers-shoes",
    "name": "Spellslinger's Shoes",
    "count": 1098,
-   "wr": 58.61
+   "wr": 58.61,
+   "games": 62788,
+   "wrGames": 3679775.6999999993
   },
   {
    "slug": "amaranths-twinguard",
    "name": "Amaranth's Twinguard",
    "count": 869,
-   "wr": 58.58
+   "wr": 58.58,
+   "games": 45417,
+   "wrGames": 2660679.1999999983
   },
   {
    "slug": "infinity-orb",
    "name": "Infinity Orb",
    "count": 859,
-   "wr": 58.47
+   "wr": 58.47,
+   "games": 44067,
+   "wrGames": 2576676.2999999993
   },
   {
    "slug": "void-staff",
    "name": "Void Staff",
    "count": 752,
-   "wr": 59.06
+   "wr": 59.06,
+   "games": 38746,
+   "wrGames": 2288321.5000000005
   },
   {
    "slug": "armored-advance",
    "name": "Armored Advance",
    "count": 667,
-   "wr": 58.3
+   "wr": 58.3,
+   "games": 34299,
+   "wrGames": 1999472.0000000007
   },
   {
    "slug": "infinity-edge",
    "name": "Infinity Edge",
    "count": 656,
-   "wr": 60.03
+   "wr": 60.03,
+   "games": 32021,
+   "wrGames": 1922257.8000000014
   },
   {
    "slug": "guardian-angel",
    "name": "Guardian Angel",
    "count": 569,
-   "wr": 59.14
+   "wr": 59.14,
+   "games": 28194,
+   "wrGames": 1667449.9000000006
   },
   {
    "slug": "thornmail",
    "name": "Thornmail",
    "count": 540,
-   "wr": 58.47
+   "wr": 58.47,
+   "games": 29960,
+   "wrGames": 1751615.9999999998
   },
   {
    "slug": "gunmetal-greaves",
    "name": "Gunmetal Greaves",
    "count": 504,
-   "wr": 58.86
+   "wr": 58.86,
+   "games": 26203,
+   "wrGames": 1542372.7000000007
   },
   {
    "slug": "trinity-force",
    "name": "Trinity Force",
    "count": 487,
-   "wr": 59.61
+   "wr": 59.61,
+   "games": 22593,
+   "wrGames": 1346697.300000001
   },
   {
    "slug": "lord-dominiks-regard",
    "name": "Lord Dominik's Regards",
    "count": 451,
-   "wr": 60.32
+   "wr": 60.32,
+   "games": 22357,
+   "wrGames": 1348554.4000000015
   },
   {
    "slug": "blade-of-the-ruined-king",
    "name": "Blade of the Ruined King",
    "count": 448,
-   "wr": 57.71
+   "wr": 57.71,
+   "games": 24870,
+   "wrGames": 1435135.1
   },
   {
    "slug": "liandrys-torment",
    "name": "Liandry's Torment",
    "count": 406,
-   "wr": 57.93
+   "wr": 57.93,
+   "games": 28534,
+   "wrGames": 1652980.8
   },
   {
    "slug": "deaths-dance",
    "name": "Death's Dance",
    "count": 400,
-   "wr": 59.88
+   "wr": 59.88,
+   "games": 19883,
+   "wrGames": 1190580.7999999998
   },
   {
    "slug": "immortal-treads",
    "name": "Immortal Treads",
    "count": 400,
-   "wr": 59.53
+   "wr": 59.53,
+   "games": 18361,
+   "wrGames": 1093039.2000000002
   },
   {
    "slug": "seryldas-grudge",
    "name": "Serylda's Grudge",
    "count": 386,
-   "wr": 61.64
+   "wr": 61.64,
+   "games": 17207,
+   "wrGames": 1060568.0
   },
   {
    "slug": "stormrazor",
    "name": "Stormrazor",
    "count": 359,
-   "wr": 59.52
+   "wr": 59.52,
+   "games": 17858,
+   "wrGames": 1062928.5000000007
   },
   {
    "slug": "mortal-reminder",
    "name": "Mortal Reminder",
    "count": 351,
-   "wr": 59.91
+   "wr": 59.91,
+   "games": 17401,
+   "wrGames": 1042557.4000000008
   },
   {
    "slug": "unending-despair",
    "name": "Unending Despair",
    "count": 344,
-   "wr": 58.14
+   "wr": 58.14,
+   "games": 17862,
+   "wrGames": 1038445.1000000002
   },
   {
    "slug": "the-collector",
    "name": "The Collector",
    "count": 333,
-   "wr": 59.4
+   "wr": 59.4,
+   "games": 17120,
+   "wrGames": 1016892.7000000002
   },
   {
    "slug": "bulwark-of-the-mountain",
    "name": "Bulwark of the Mountain",
    "count": 325,
-   "wr": 58.03
+   "wr": 58.03,
+   "games": 18370,
+   "wrGames": 1066084.0000000002
   },
   {
    "slug": "blackfire-torch",
    "name": "Blackfire Torch",
    "count": 301,
-   "wr": 58.19
+   "wr": 58.19,
+   "games": 15940,
+   "wrGames": 927479.9999999998
   },
   {
    "slug": "black-mist-scythe",
    "name": "Black Mist Scythe",
    "count": 301,
-   "wr": 60.17
+   "wr": 60.17,
+   "games": 15488,
+   "wrGames": 931907.6999999997
   },
   {
    "slug": "essence-reaver",
    "name": "Essence Reaver",
    "count": 295,
-   "wr": 60.8
+   "wr": 60.8,
+   "games": 13496,
+   "wrGames": 820580.4000000005
   },
   {
    "slug": "zhonyas-hourglass",
    "name": "Zhonya's Hourglass",
    "count": 293,
-   "wr": 57.91
+   "wr": 57.91,
+   "games": 20613,
+   "wrGames": 1193781.1999999993
   },
   {
    "slug": "crimson-lucidity",
    "name": "Crimson Lucidity",
    "count": 291,
-   "wr": 59.83
+   "wr": 59.83,
+   "games": 14900,
+   "wrGames": 891410.7999999998
   },
   {
    "slug": "banshees-veil",
    "name": "Banshee's Veil",
    "count": 286,
-   "wr": 59.77
+   "wr": 59.77,
+   "games": 14594,
+   "wrGames": 872311.0
   },
   {
    "slug": "titanic-hydra",
    "name": "Titanic Hydra",
    "count": 273,
-   "wr": 59.31
+   "wr": 59.31,
+   "games": 13675,
+   "wrGames": 811105.2000000005
   },
   {
    "slug": "stormsurge",
    "name": "Stormsurge",
    "count": 272,
-   "wr": 57.95
+   "wr": 57.95,
+   "games": 15463,
+   "wrGames": 896104.9999999995
   },
   {
    "slug": "bloodthirster",
    "name": "Bloodthirster",
    "count": 272,
-   "wr": 60.99
+   "wr": 60.99,
+   "games": 12995,
+   "wrGames": 792548.7000000004
   },
   {
    "slug": "malignance",
    "name": "Malignance",
    "count": 262,
-   "wr": 59.17
+   "wr": 59.17,
+   "games": 13791,
+   "wrGames": 815989.9000000003
   },
   {
    "slug": "eclipse",
    "name": "Eclipse",
    "count": 258,
-   "wr": 61.32
+   "wr": 61.32,
+   "games": 12719,
+   "wrGames": 779954.2000000002
   },
   {
    "slug": "armorcrusher-boots",
    "name": "Armorcrusher Boots",
    "count": 257,
-   "wr": 61.36
+   "wr": 61.36,
+   "games": 12845,
+   "wrGames": 788211.5000000005
   },
   {
    "slug": "lich-bane",
    "name": "Lich Bane",
    "count": 255,
-   "wr": 59.27
+   "wr": 59.27,
+   "games": 12786,
+   "wrGames": 757805.2000000001
   },
   {
    "slug": "serpents-fang",
    "name": "Serpent's Fang",
    "count": 252,
-   "wr": 61.96
+   "wr": 61.96,
+   "games": 11740,
+   "wrGames": 727393.3
   },
   {
    "slug": "heartsteel",
    "name": "Heartsteel",
    "count": 248,
-   "wr": 57.93
+   "wr": 57.93,
+   "games": 13377,
+   "wrGames": 774912.3000000004
   },
   {
    "slug": "force-of-nature",
    "name": "Force of Nature",
    "count": 237,
-   "wr": 58.51
+   "wr": 58.51,
+   "games": 13837,
+   "wrGames": 809629.3000000004
   },
   {
    "slug": "harmonic-echo",
    "name": "Harmonic Echo",
    "count": 234,
-   "wr": 60.49
+   "wr": 60.49,
+   "games": 12152,
+   "wrGames": 735031.8000000002
   },
   {
    "slug": "riftmaker",
    "name": "Riftmaker",
    "count": 233,
-   "wr": 57.87
+   "wr": 57.87,
+   "games": 16811,
+   "wrGames": 972789.9
   },
   {
    "slug": "ludens-echo",
    "name": "Luden's Echo",
    "count": 231,
-   "wr": 56.73
+   "wr": 56.73,
+   "games": 12604,
+   "wrGames": 715076.1
   },
   {
    "slug": "runaans-hurricane",
    "name": "Runaan's Hurricane",
    "count": 216,
-   "wr": 59.24
+   "wr": 59.24,
+   "games": 11504,
+   "wrGames": 681480.1000000002
   },
   {
    "slug": "spear-of-shojin",
    "name": "Spear of Shojin",
    "count": 215,
-   "wr": 60.99
+   "wr": 60.99,
+   "games": 9590,
+   "wrGames": 584885.7999999998
   },
   {
    "slug": "warmogs-armor",
    "name": "Warmog's Armor",
    "count": 198,
-   "wr": 57.44
+   "wr": 57.44,
+   "games": 11112,
+   "wrGames": 638244.4999999994
   },
   {
    "slug": "oceanids-trident",
    "name": "Oceanid's Trident",
    "count": 190,
-   "wr": 60.17
+   "wr": 60.17,
+   "games": 9924,
+   "wrGames": 597100.7000000002
   },
   {
    "slug": "cryptbloom",
    "name": "Cryptbloom",
    "count": 189,
-   "wr": 58.34
+   "wr": 58.34,
+   "games": 9625,
+   "wrGames": 561482.8
   },
   {
    "slug": "boots-of-mana",
    "name": "Boots of Mana",
    "count": 185,
-   "wr": 58.43
+   "wr": 58.43,
+   "games": 10319,
+   "wrGames": 602973.1999999995
   },
   {
    "slug": "duskblade-of-draktharr",
    "name": "Duskblade of Draktharr",
    "count": 179,
-   "wr": 61.32
+   "wr": 61.32,
+   "games": 9038,
+   "wrGames": 554246.1
   },
   {
    "slug": "guinsoos-rageblade",
    "name": "Guinsoo's Rageblade",
    "count": 176,
-   "wr": 58.75
+   "wr": 58.75,
+   "games": 9491,
+   "wrGames": 557576.4000000003
   },
   {
    "slug": "sundered-sky",
    "name": "Sundered Sky",
    "count": 175,
-   "wr": 58.58
+   "wr": 58.58,
+   "games": 8821,
+   "wrGames": 516691.9999999999
   },
   {
    "slug": "terminus",
    "name": "Terminus",
    "count": 175,
-   "wr": 58.54
+   "wr": 58.54,
+   "games": 9197,
+   "wrGames": 538370.9
   },
   {
    "slug": "nashors-tooth",
    "name": "Nashor's Tooth",
    "count": 173,
-   "wr": 59.37
+   "wr": 59.37,
+   "games": 9081,
+   "wrGames": 539174.2
   },
   {
    "slug": "ardent-censer",
    "name": "Ardent Censer",
    "count": 164,
-   "wr": 59.88
+   "wr": 59.88,
+   "games": 9287,
+   "wrGames": 556129.1000000001
   },
   {
    "slug": "frozen-heart",
    "name": "Frozen Heart",
    "count": 159,
-   "wr": 57.97
+   "wr": 57.97,
+   "games": 8787,
+   "wrGames": 509395.9000000002
   },
   {
    "slug": "plated-steelcaps",
    "name": "Plated Steelcaps",
    "count": 158,
-   "wr": 59.18
+   "wr": 59.18,
+   "games": 8662,
+   "wrGames": 512603.0999999998
   },
   {
    "slug": "kraken-slayer",
    "name": "Kraken Slayer",
    "count": 158,
-   "wr": 57.85
+   "wr": 57.85,
+   "games": 9274,
+   "wrGames": 536537.5
   },
   {
    "slug": "randuins-omen",
    "name": "Randuin's Omen",
    "count": 158,
-   "wr": 60.63
+   "wr": 60.63,
+   "games": 8254,
+   "wrGames": 500476.80000000005
   },
   {
    "slug": "steraks-gage",
    "name": "Sterak's Gage",
    "count": 152,
-   "wr": 58.33
+   "wr": 58.33,
+   "games": 8650,
+   "wrGames": 504596.3
   },
   {
    "slug": "hollow-radiance",
    "name": "Hollow Radiance",
    "count": 144,
-   "wr": 58.37
+   "wr": 58.37,
+   "games": 8326,
+   "wrGames": 486010.1
   },
   {
    "slug": "chainlaced-crushers",
    "name": "Chainlaced Crushers",
    "count": 142,
-   "wr": 58.82
+   "wr": 58.82,
+   "games": 8329,
+   "wrGames": 489891.6000000001
   },
   {
    "slug": "sunfire-aegis",
    "name": "Sunfire Aegis",
    "count": 142,
-   "wr": 60.14
+   "wr": 60.14,
+   "games": 7050,
+   "wrGames": 423997.7999999999
   },
   {
    "slug": "whispering-circlet",
    "name": "Whispering Circlet",
    "count": 142,
-   "wr": 60.97
+   "wr": 60.97,
+   "games": 7196,
+   "wrGames": 438723.00000000006
   },
   {
    "slug": "rylais-crystal-scepter",
    "name": "Rylai's Crystal Scepter",
    "count": 139,
-   "wr": 59.6
+   "wr": 59.6,
+   "games": 7418,
+   "wrGames": 442091.19999999995
   },
   {
    "slug": "staff-of-flowing-water",
    "name": "Staff of Flowing Waters",
    "count": 136,
-   "wr": 61.14
+   "wr": 61.14,
+   "games": 6676,
+   "wrGames": 408201.10000000003
   },
   {
    "slug": "dusk-and-dawn",
    "name": "Dusk and Dawn",
    "count": 133,
-   "wr": 59.17
+   "wr": 59.17,
+   "games": 6825,
+   "wrGames": 403868.1
   },
   {
    "slug": "black-cleaver",
    "name": "Black Cleaver",
    "count": 133,
-   "wr": 55.94
+   "wr": 55.94,
+   "games": 7415,
+   "wrGames": 414806.2
   },
   {
    "slug": "edge-of-night",
    "name": "Edge of Night",
    "count": 132,
-   "wr": 61.52
+   "wr": 61.52,
+   "games": 6667,
+   "wrGames": 410131.4999999999
   },
   {
    "slug": "youmuus-ghostblade",
    "name": "Youmuu's Ghostblade",
    "count": 132,
-   "wr": 62.28
+   "wr": 62.28,
+   "games": 6144,
+   "wrGames": 382624.80000000005
   },
   {
    "slug": "gluttonous-greaves",
    "name": "Gluttonous Greaves",
    "count": 118,
-   "wr": 60.06
+   "wr": 60.06,
+   "games": 5878,
+   "wrGames": 353050.1000000001
   },
   {
    "slug": "hullbreaker",
    "name": "Hullbreaker",
    "count": 117,
-   "wr": 57.99
+   "wr": 57.99,
+   "games": 6475,
+   "wrGames": 375493.3
   },
   {
    "slug": "berserkers-greaves",
    "name": "Berserker's Greaves",
    "count": 116,
-   "wr": 60.24
+   "wr": 60.24,
+   "games": 6652,
+   "wrGames": 400689.8999999999
   },
   {
    "slug": "echoes-of-helia",
    "name": "Echoes of Helia",
    "count": 115,
-   "wr": 61.24
+   "wr": 61.24,
+   "games": 5278,
+   "wrGames": 323219.00000000006
   },
   {
    "slug": "manamune",
    "name": "Manamune",
    "count": 107,
-   "wr": 60.46
+   "wr": 60.46,
+   "games": 4747,
+   "wrGames": 287004.39999999997
   },
   {
    "slug": "yun-tal-wildarrows",
    "name": "Yun Tal Wildarrows",
    "count": 106,
-   "wr": 59.54
+   "wr": 59.54,
+   "games": 5623,
+   "wrGames": 334781.29999999993
   },
   {
    "slug": "dead-mans-plate",
    "name": "Dead Man's Plate",
    "count": 103,
-   "wr": 59.07
+   "wr": 59.07,
+   "games": 5964,
+   "wrGames": 352293.3
   },
   {
    "slug": "gargoyle-stoneplate",
    "name": "Gargoyle Stoneplate",
    "count": 102,
-   "wr": 56.01
+   "wr": 56.01,
+   "games": 5981,
+   "wrGames": 334999.2
   },
   {
    "slug": "seekers-armguard",
    "name": "Seeker's Armguard",
    "count": 98,
-   "wr": 58.16
+   "wr": 58.16,
+   "games": 5822,
+   "wrGames": 338589.3
   },
   {
    "slug": "mercurial-scimitar",
    "name": "Mercurial Scimitar",
    "count": 96,
-   "wr": 57.83
+   "wr": 57.83,
+   "games": 5153,
+   "wrGames": 297991.1
   },
   {
    "slug": "galeforce",
    "name": "Galeforce",
    "count": 95,
-   "wr": 59.49
+   "wr": 59.49,
+   "games": 4937,
+   "wrGames": 293704.0000000001
   },
   {
    "slug": "zekes-convergence",
    "name": "Zeke's Convergence",
    "count": 94,
-   "wr": 58.5
+   "wr": 58.5,
+   "games": 4883,
+   "wrGames": 285668.80000000005
   },
   {
    "slug": "knights-vow",
    "name": "Knight's Vow",
    "count": 92,
-   "wr": 57.91
+   "wr": 57.91,
+   "games": 5567,
+   "wrGames": 322398.0
   },
   {
    "slug": "hexoptics-c44",
    "name": "Hexoptics C44",
    "count": 87,
-   "wr": 61.06
+   "wr": 61.06,
+   "games": 4057,
+   "wrGames": 247730.29999999996
   },
   {
    "slug": "iceborn-gauntlet",
    "name": "Iceborn Gauntlet",
    "count": 81,
-   "wr": 59.84
+   "wr": 59.84,
+   "games": 4420,
+   "wrGames": 264495.19999999995
   },
   {
    "slug": "horizon-focus",
    "name": "Horizon Focus",
    "count": 78,
-   "wr": 56.52
+   "wr": 56.52,
+   "games": 4347,
+   "wrGames": 245693.40000000002
   },
   {
    "slug": "navori-quickblades",
    "name": "Navori Quickblades",
    "count": 77,
-   "wr": 57.36
+   "wr": 57.36,
+   "games": 4048,
+   "wrGames": 232206.19999999995
   },
   {
    "slug": "immortal-shieldbow",
    "name": "Immortal Shieldbow",
    "count": 75,
-   "wr": 59.48
+   "wr": 59.48,
+   "games": 3739,
+   "wrGames": 222392.69999999995
   },
   {
    "slug": "rapid-firecannon",
    "name": "Rapid Firecannon",
    "count": 75,
-   "wr": 60.29
+   "wr": 60.29,
+   "games": 3749,
+   "wrGames": 226019.10000000006
   },
   {
    "slug": "bloodletters-curse",
    "name": "Bloodletter's Curse",
    "count": 75,
-   "wr": 56.9
+   "wr": 56.9,
+   "games": 9731,
+   "wrGames": 553662.1
   },
   {
    "slug": "archangels-staff",
    "name": "Archangel's Staff",
    "count": 75,
-   "wr": 61.46
+   "wr": 61.46,
+   "games": 3415,
+   "wrGames": 209889.99999999997
   },
   {
    "slug": "mikaels-blessing",
    "name": "Mikael's Blessing",
    "count": 74,
-   "wr": 59.65
+   "wr": 59.65,
+   "games": 4010,
+   "wrGames": 239203.4
   },
   {
    "slug": "boots-of-dynamism",
    "name": "Boots of Dynamism",
    "count": 68,
-   "wr": 63.25
+   "wr": 63.25,
+   "games": 2868,
+   "wrGames": 181400.39999999997
   },
   {
    "slug": "ionian-boots-of-lucidity",
    "name": "Ionian Boots of Lucidity",
    "count": 63,
-   "wr": 59.2
+   "wr": 59.2,
+   "games": 3444,
+   "wrGames": 203896.79999999993
   },
   {
    "slug": "radiant-virtue",
    "name": "Radiant Virtue",
    "count": 61,
-   "wr": 58.06
+   "wr": 58.06,
+   "games": 3414,
+   "wrGames": 198215.69999999998
   },
   {
    "slug": "abyssal-mask",
    "name": "Abyssal Mask",
    "count": 60,
-   "wr": 59.68
+   "wr": 59.68,
+   "games": 3244,
+   "wrGames": 193611.40000000002
   },
   {
    "slug": "overlords-bloodmail",
    "name": "Overlord's Bloodmail",
    "count": 58,
-   "wr": 56.13
+   "wr": 56.13,
+   "games": 3558,
+   "wrGames": 199709.8
   },
   {
    "slug": "imperial-mandate",
    "name": "Imperial Mandate",
    "count": 55,
-   "wr": 60.79
+   "wr": 60.79,
+   "games": 2492,
+   "wrGames": 151491.39999999994
   },
   {
    "slug": "kaenic-rookern",
    "name": "Kaenic Rookern",
    "count": 54,
-   "wr": 57.61
+   "wr": 57.61,
+   "games": 2756,
+   "wrGames": 158779.99999999997
   },
   {
    "slug": "dawnshroud",
    "name": "Dawnshroud",
    "count": 51,
-   "wr": 62.75
+   "wr": 62.75,
+   "games": 2373,
+   "wrGames": 148911.40000000002
   },
   {
    "slug": "mercurys-treads",
    "name": "Mercury's Treads",
    "count": 49,
-   "wr": 60.55
+   "wr": 60.55,
+   "games": 2639,
+   "wrGames": 159783.2
   },
   {
    "slug": "morellonomicon",
    "name": "Morellonomicon",
    "count": 46,
-   "wr": 58.71
+   "wr": 58.71,
+   "games": 2742,
+   "wrGames": 160975.20000000004
   },
   {
    "slug": "cosmic-drive",
    "name": "Cosmic Drive",
    "count": 46,
-   "wr": 57.34
+   "wr": 57.34,
+   "games": 2283,
+   "wrGames": 130898.09999999998
   },
   {
    "slug": "stridebreaker",
    "name": "Stridebreaker",
    "count": 44,
-   "wr": 59.02
+   "wr": 59.02,
+   "games": 2509,
+   "wrGames": 148087.49999999997
   },
   {
    "slug": "rod-of-ages",
    "name": "Rod of Ages",
    "count": 44,
-   "wr": 59.6
+   "wr": 59.6,
+   "games": 1871,
+   "wrGames": 111508.3
   },
   {
    "slug": "divine-sunderer",
    "name": "Divine Sunderer",
    "count": 41,
-   "wr": 61.4
+   "wr": 61.4,
+   "games": 1917,
+   "wrGames": 117699.20000000001
   },
   {
    "slug": "locket-of-the-iron-solari",
    "name": "Locket of the Iron Solari",
    "count": 39,
-   "wr": 58.42
+   "wr": 58.42,
+   "games": 2333,
+   "wrGames": 136288.0
   },
   {
    "slug": "wits-end",
    "name": "At Wit's End",
    "count": 38,
-   "wr": 58.11
+   "wr": 58.11,
+   "games": 1755,
+   "wrGames": 101984.3
   },
   {
    "slug": "statikk-shiv",
    "name": "Statikk Shiv",
    "count": 36,
-   "wr": 63.64
+   "wr": 63.64,
+   "games": 1592,
+   "wrGames": 101309.59999999996
   },
   {
    "slug": "maw-of-malmortius",
    "name": "Maw of Malmortius",
    "count": 35,
-   "wr": 62.47
+   "wr": 62.47,
+   "games": 1612,
+   "wrGames": 100703.60000000002
   },
   {
    "slug": "yordle-trap",
    "name": "Yordle Trap",
    "count": 34,
-   "wr": 57.41
+   "wr": 57.41,
+   "games": 1914,
+   "wrGames": 109883.20000000003
   },
   {
    "slug": "fiendhunter-bolts",
    "name": "Fiendhunter Bolts",
    "count": 34,
-   "wr": 59.22
+   "wr": 59.22,
+   "games": 1582,
+   "wrGames": 93690.7
   },
   {
    "slug": "experimental-hexplate",
    "name": "Experimental Hexplate",
    "count": 30,
-   "wr": 60.85
+   "wr": 60.85,
+   "games": 1548,
+   "wrGames": 94192.69999999997
   },
   {
    "slug": "quicksilver-sash",
    "name": "Quicksilver Sash",
    "count": 26,
-   "wr": 59.33
+   "wr": 59.33,
+   "games": 1365,
+   "wrGames": 80985.7
   },
   {
    "slug": "redemption",
    "name": "Salvation",
    "count": 26,
-   "wr": 62.83
+   "wr": 62.83,
+   "games": 1052,
+   "wrGames": 66096.1
   },
   {
    "slug": "goredrinker",
    "name": "Goredrinker",
    "count": 21,
-   "wr": 60.65
+   "wr": 60.65,
+   "games": 897,
+   "wrGames": 54399.100000000006
   },
   {
    "slug": "chempunk-chainsword",
    "name": "Chempunk Chainsword",
    "count": 19,
-   "wr": 57.7
+   "wr": 57.7,
+   "games": 1102,
+   "wrGames": 63589.60000000001
   },
   {
    "slug": "phantom-dancer",
    "name": "Phantom Dancer",
    "count": 16,
-   "wr": 58.48
+   "wr": 58.48,
+   "games": 956,
+   "wrGames": 55911.1
   },
   {
    "slug": "shurelyas-battlesong",
    "name": "Shurelya's Battlesong",
    "count": 10,
-   "wr": 57.39
+   "wr": 57.39,
+   "games": 760,
+   "wrGames": 43614.8
   },
   {
    "slug": "winters-approach",
    "name": "Winter's Approach",
    "count": 10,
-   "wr": 60.81
+   "wr": 60.81,
+   "games": 472,
+   "wrGames": 28702.299999999996
   },
   {
    "slug": "searing-crown",
    "name": "Searing Crown",
    "count": 2,
-   "wr": null
+   "wr": null,
+   "games": 118,
+   "wrGames": 6495.200000000001
   }
  ],
  "tierComposition": {
@@ -6794,5 +7146,119 @@
     ]
    }
   ]
- }
+ },
+ "spellAll": [
+  {
+   "pair": "Flash + Ignite",
+   "count": 1286
+  },
+  {
+   "pair": "Flash + Smite",
+   "count": 732
+  },
+  {
+   "pair": "Barrier + Flash",
+   "count": 678
+  },
+  {
+   "pair": "Flash + Heal",
+   "count": 438
+  },
+  {
+   "pair": "Flash + Ghost",
+   "count": 360
+  },
+  {
+   "pair": "Flash + Teleport",
+   "count": 234
+  },
+  {
+   "pair": "Exhaust + Flash",
+   "count": 139
+  },
+  {
+   "pair": "Ghost + Smite",
+   "count": 119
+  },
+  {
+   "pair": "Cleanse + Flash",
+   "count": 107
+  },
+  {
+   "pair": "Ghost + Teleport",
+   "count": 20
+  },
+  {
+   "pair": "Ghost + Ignite",
+   "count": 19
+  },
+  {
+   "pair": "Heal + Ignite",
+   "count": 19
+  },
+  {
+   "pair": "? + Heal",
+   "count": 18
+  },
+  {
+   "pair": "? + ?",
+   "count": 14
+  },
+  {
+   "pair": "Exhaust + Heal",
+   "count": 14
+  },
+  {
+   "pair": "Barrier + Ghost",
+   "count": 9
+  },
+  {
+   "pair": "Barrier + Ignite",
+   "count": 7
+  },
+  {
+   "pair": "? + Ignite",
+   "count": 5
+  },
+  {
+   "pair": "Ignite + Teleport",
+   "count": 4
+  },
+  {
+   "pair": "? + Flash",
+   "count": 4
+  },
+  {
+   "pair": "Exhaust + Ignite",
+   "count": 3
+  },
+  {
+   "pair": "Ghost + Heal",
+   "count": 3
+  },
+  {
+   "pair": "Barrier + Cleanse",
+   "count": 2
+  },
+  {
+   "pair": "Ignite + Smite",
+   "count": 2
+  },
+  {
+   "pair": "Heal + Heal",
+   "count": 2
+  },
+  {
+   "pair": "? + Cleanse",
+   "count": 1
+  },
+  {
+   "pair": "? + Ghost",
+   "count": 1
+  },
+  {
+   "pair": "Ignite + Ignite",
+   "count": 1
+  }
+ ]
 }
