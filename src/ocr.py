@@ -1962,6 +1962,7 @@ CN_PROFILE_PANEL = (0.050, 0.000, 0.270, 0.360)
 #: is why CN rows came out as "编号：2011716603" instead of a name.
 CN_PROFILE_HEADING = ("个人资料", "个人资科")
 CN_PROFILE_ID_PREFIX = ("编号", "编昙", "缩号")
+_EN_PROFILE_HEADING = re.compile(r"[<\s]*P?ROFILE", re.IGNORECASE)
 _CN_ID_DIGITS = re.compile(r"(\d{6,})")
 
 
@@ -1998,6 +1999,12 @@ def read_cn_profile(image: np.ndarray) -> tuple[str | None, str | None]:
             continue
         if any(t in text for t in CN_PROFILE_HEADING):
             continue
+        # The EU/NA panel's own heading. Without this check the probe in
+        # extract_frames took "PROFILE" for a CN name, classed every EU/NA
+        # session from 2026-10-11 on as CN, and wrote "PROFILE" as all 30
+        # player names. An English heading means this is not a CN panel.
+        if _EN_PROFILE_HEADING.fullmatch(text):
+            return None, None
         if name is None:
             name = text
     return name, account

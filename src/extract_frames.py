@@ -538,6 +538,13 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=4, help="Parallel frame reads")
     parser.add_argument("--output", type=Path, default=None,
                         help="CSV path (default: <capture_dir>/extracted.csv)")
+    parser.add_argument("--no-ranks", action="store_true",
+                        help="Skip the profile rank badges. For a collection whose "
+                             "profile frames were taken before the badge animation "
+                             "finished (2026-10-19 on): a half-faded badge sits between "
+                             "Challenger and Sovereign and reads as nothing or as the "
+                             "wrong one. Name and tag are still read. Also ~5x faster: "
+                             "the badges were ~168s of a 207s session.")
     parser.add_argument("--force", action="store_true",
                         help="Replace the existing CSV even when this run read fewer "
                              "win rates than it already holds. Without this, a run that "
@@ -1006,7 +1013,11 @@ def main() -> int:
                 except Exception as exc:  # noqa: BLE001
                     print(f"  [icons] rank {rank}: {exc}")
                     build = None
-            img = _read_frame_file(e.get("profile_frame"))
+            img = None if args.no_ranks else _read_frame_file(e.get("profile_frame"))
+            if args.no_ranks and e.get("profile_frame"):
+                # Still take the branch below, so name and tag are written.
+                profile_ranks = {"current": None, "historical": None,
+                                 "confidence": None, "source": "skipped"}
             if img is not None:
                 try:
                     profile_ranks = read_profile_ranks(img)

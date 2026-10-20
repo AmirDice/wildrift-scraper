@@ -58,7 +58,7 @@ REGION_CAPTURES = {
 }
 
 
-def _extract_in_process(session: Path, engine: str) -> tuple[int, str, str]:
+def _extract_in_process(session: Path, engine: str, extra: list[str]) -> tuple[int, str, str]:
     """Run one session's extraction inside THIS process.
 
     The point is the OCR models. Spawning `python -m src.extract_frames` per
@@ -77,7 +77,7 @@ def _extract_in_process(session: Path, engine: str) -> tuple[int, str, str]:
 
     out, err = io.StringIO(), io.StringIO()
     argv = sys.argv
-    sys.argv = ["extract_frames", str(session), "--engine", engine]
+    sys.argv = ["extract_frames", str(session), "--engine", engine, *extra]
     try:
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
             code = extract_frames.main() or 0
@@ -91,10 +91,10 @@ def _extract_in_process(session: Path, engine: str) -> tuple[int, str, str]:
     return code, out.getvalue(), err.getvalue()
 
 
-def _extract_isolated(session: Path, engine: str) -> tuple[int, str, str]:
+def _extract_isolated(session: Path, engine: str, extra: list[str]) -> tuple[int, str, str]:
     proc = subprocess.run(
         [sys.executable, "-m", "src.extract_frames", str(session),
-         "--engine", engine],
+         "--engine", engine, *extra],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         cwd=str(ROOT))
     return proc.returncode, proc.stdout or "", proc.stderr or ""
@@ -111,7 +111,10 @@ def main() -> int:
                     help="run each session in its own subprocess, as this "
                          "used to. Survives a hard native crash, but every "
                          "session then pays the OCR model cold start again.")
+    ap.add_argument("--no-ranks", action="store_true",
+                    help="skip profile rank badges (see extract_frames --no-ranks)")
     args = ap.parse_args()
+    extra = ["--no-ranks"] if args.no_ranks else []
 
     global CAPTURES, LOG
     CAPTURES = REGION_CAPTURES[args.region]
@@ -130,13 +133,14 @@ def main() -> int:
     for d in live:
         note(f"skipping {d.name}: written {_last_write(d):.1f} min ago, still capturing")
     note(f"batch start: {len(pending)} pending session(s), engine={args.engine}, "
+         f"{'ranks SKIPPED, ' if args.no_ranks else ''}"
          f"{'isolated subprocesses' if args.isolate else 'in-process (models load once)'}")
     started = time.time()
     ok = failed = 0
     for i, session in enumerate(pending, 1):
         t0 = time.time()
         run = _extract_isolated if args.isolate else _extract_in_process
-        code, stdout, stderr = run(session, args.engine)
+        code, stdout, stderr = run(session, args.engine, extra)
         dt = time.time() - t0
         tail = [ln for ln in stdout.splitlines() if ln.strip()]
         # The lines worth keeping: what each output file got, and the totals.
