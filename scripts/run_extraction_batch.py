@@ -52,7 +52,9 @@ def _last_write(session: Path) -> float:
 #: EU directory, so an NA collection sat un-extracted with the runner cheerfully
 #: reporting "0 pending".
 REGION_CAPTURES = {
-    "eu": ROOT / "data" / "captures",
+    # captures_eu, as in export_captures. data/captures holds the cleared
+    # September run, so pointing here made an EU batch find 0 sessions.
+    "eu": ROOT / "data" / "captures_eu",
     "na": ROOT / "data" / "captures_na",
     "cn": ROOT / "data" / "captures_cn",
 }
