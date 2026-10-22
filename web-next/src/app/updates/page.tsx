@@ -12,6 +12,7 @@ import {
   COLLECTION_START,
   EU_WINRATE_PATCH,
   NA_WINRATE_PATCH,
+  NOT_RECAPTURED,
   SKIPPED_PATCH,
 } from "@/lib/announcement";
 import site from "@/data/site.json";
@@ -21,10 +22,10 @@ import siteCn from "@/data/site_cn.json";
 export const metadata: Metadata = {
   title: COLLECTION_IN_PROGRESS
     ? `Site Updates | ${COLLECTION_REGIONS} Data Collection In Progress`
-    : `Site Updates | Patch ${SKIPPED_PATCH} Is Live`,
+    : `Site Updates | EU and NA Win Rates on Patch ${EU_WINRATE_PATCH}`,
   description: COLLECTION_IN_PROGRESS
     ? `${COLLECTION_REGIONS} ladder data collection is underway and is expected to finish ${COLLECTION_EXPECTED_FINISH}. Each region publishes as its pass completes.`
-    : `Ability, item and rune data is on patch ${SKIPPED_PATCH}. Win rates are the ${CN_WINRATE_PATCH} boards for EU, NA and China until the next collection.`,
+    : `EU and NA win rates were re-collected on patch ${EU_WINRATE_PATCH}, 19 to 22 October. China's board is still ${CN_WINRATE_PATCH}.`,
   alternates: { canonical: "/updates" },
 };
 
@@ -42,7 +43,7 @@ export default function UpdatesPage() {
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
           {COLLECTION_IN_PROGRESS
             ? `${COLLECTION_REGIONS} data collection is underway.`
-            : `Patch ${SKIPPED_PATCH} is live.`}
+            : `EU and NA win rates are on patch ${EU_WINRATE_PATCH}.`}
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">
           {/* Built as one string rather than interleaved JSX text and
@@ -50,10 +51,10 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`Every ability, item and rune number on the site is on patch ${SKIPPED_PATCH}. `
-            + `The win rates are not, and cannot be until the ladders are collected again: `
-            + `NA was collected on 6 October, EU on 7 October and China on 11 October, `
-            + `142 champions each, all played on patch ${NA_WINRATE_PATCH}. So a champion `
+          {`Every ability, item and rune number on the site is on patch ${SKIPPED_PATCH}, `
+            + `and now so are the EU and NA win rates: both ladders were collected again `
+            + `from 19 to 22 October, the first boards played on ${EU_WINRATE_PATCH}. `
+            + `China's board is still the ${CN_WINRATE_PATCH} one from 11 October, so there a champion `
             + `${SKIPPED_PATCH} changed still shows how it performed before the change.`}
         </p>
       </div>
@@ -77,14 +78,15 @@ export default function UpdatesPage() {
               </div>
               <div className="rounded-xl border border-gold/30 bg-gold/[0.07] px-4 py-3">
                 <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-emerald-300">
-                  Measured on {EU_WINRATE_PATCH}
+                  Still on {CN_WINRATE_PATCH}
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">
                   {`Win rates, tiers, pick rates and movement change only when a region's `
-                    + `leaderboards are re-scraped. All three boards were collected on `
-                    + `${EU_WINRATE_PATCH}, so Volibear, Jhin, Tryndamere, Hwei, Nocturne, `
-                    + `Yunara, Senna and Yasuo show their ${EU_WINRATE_PATCH} results until the `
-                    + `next collection, not how ${SKIPPED_PATCH} has moved them.`}
+                    + `leaderboards are re-scraped. China's board, and these champions that `
+                    + `were not captured cleanly this time, keep their ${CN_WINRATE_PATCH} `
+                    + `numbers until they are: ${NOT_RECAPTURED.EU.join(", ")} in EU, and `
+                    + `${NOT_RECAPTURED.NA.join(" and ")} in NA. Player rank badges are blank on `
+                    + `the new boards; they could not be read reliably this time.`}
                 </p>
               </div>
             </div>
@@ -97,7 +99,7 @@ export default function UpdatesPage() {
                   {EU_COLLECTED ?? "Current dataset"}
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
-                  All 142 champions, played on {EU_WINRATE_PATCH}.
+                  {`${142 - NOT_RECAPTURED.EU.length} champions on ${EU_WINRATE_PATCH}, ${NOT_RECAPTURED.EU.length} still on ${CN_WINRATE_PATCH}.`}
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
@@ -108,7 +110,7 @@ export default function UpdatesPage() {
                   {NA_COLLECTED ?? "Current dataset"}
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
-                  All 142 champions, played on {NA_WINRATE_PATCH}.
+                  {`${142 - NOT_RECAPTURED.NA.length} champions on ${NA_WINRATE_PATCH}, ${NOT_RECAPTURED.NA.length} still on ${CN_WINRATE_PATCH}.`}
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">

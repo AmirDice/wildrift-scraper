@@ -31,18 +31,29 @@ export const SKIPPED_PATCH = "7.3b";
  * WINRATE_PATCH stays as the EU value because that is what every existing
  * reader of it meant.
  */
-export const EU_WINRATE_PATCH = "7.3a";
-export const NA_WINRATE_PATCH = "7.3a";
+export const EU_WINRATE_PATCH = "7.3b";
+export const NA_WINRATE_PATCH = "7.3b";
 export const CN_WINRATE_PATCH = "7.3a";
 export const WINRATE_PATCH = EU_WINRATE_PATCH;
 
 /** Regions whose boards this run has already published. */
-export const COLLECTION_DONE_REGIONS = "EU, NA and CN";
+export const COLLECTION_DONE_REGIONS = "EU and NA";
 /** Regions this run has still to collect. Empty: the run is finished.
  *  Live copy must not print a dangling "X is still to come" when this is
  *  blank, so the sentence is gone from the places that used it rather than
  *  being left to interpolate nothing. */
 export const COLLECTION_PENDING_REGIONS = "";
+
+/**
+ * Champions this collection did not refresh, by region. They keep their
+ * earlier board until recaptured (export_captures merges rather than
+ * replacing), and /updates names them so a reader can tell which numbers are
+ * older. Empty a list once its champions are recaptured.
+ */
+export const NOT_RECAPTURED: Record<"EU" | "NA", string[]> = {
+  EU: ["Janna", "Lucian", "Norra", "Swain", "Vel'Koz", "Warwick"],
+  NA: ["Ambessa", "Vel'Koz"],
+};
 
 /** The patch the next collection and the next round of work is aimed at. */
 export const NEXT_PATCH = "7.3b";
@@ -73,12 +84,14 @@ export const ANNOUNCEMENT = {
   // changes to show the banner again to people who dismissed the last one.
   // -v7: patch 7.3b. A new key so the banner shows again to everyone who
   // dismissed the China-board one.
-  key: "wtm-announce-patch-7-3b-2026-10-v7",
+  // -v8: the EU and NA boards were re-collected on 7.3b. A new key so the
+  // banner shows again to everyone who dismissed the patch one.
+  key: "wtm-announce-eu-na-7-3b-2026-10-v8",
   href: "/updates",
-  lead: `Patch ${SKIPPED_PATCH} is live`,
-  short: `Every ability, item and rune number on the site is on ${SKIPPED_PATCH}: Volibear, Jhin, Tryndamere and Yasuo were buffed, Hwei, Nocturne, Yunara and Senna were nerfed, Youmuu's, Locket, Statikk Shiv and Yun Tal got cheaper and Thornmail dearer, and Electrocute, Cheap Shot, Grasp and Aery changed. Win rates are still the ${CN_WINRATE_PATCH} boards collected 6 to 11 October, so the eight changed champions show how they performed before the patch until the next collection.`,
+  lead: `EU and NA win rates are on ${EU_WINRATE_PATCH}`,
+  short: `The EU and NA leaderboards were collected again from 19 to 22 October, the first boards played on patch ${EU_WINRATE_PATCH}. Volibear, Jhin, Tryndamere, Yasuo, Hwei, Nocturne, Yunara and Senna now show how the patch moved them. China's board is still the ${CN_WINRATE_PATCH} one from 11 October, and a few champions keep their earlier numbers until they are recaptured.`,
   cta: "What changed",
-  badges: [`Patch ${SKIPPED_PATCH}`],
+  badges: [`EU + NA on ${EU_WINRATE_PATCH}`],
   /** Pages the banner points at, so it does not appear on top of itself. */
   hideOn: ["/updates"],
 } as const;
@@ -93,6 +106,19 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "22 October 2026",
+    title: "EU and NA boards collected on 7.3b",
+    body:
+      "Both western ladders were scraped again from 19 to 22 October, the first "
+      + "boards played on 7.3b: 136 champions in EU and 140 in NA, the top 30 "
+      + "players of each. Janna, Lucian, Norra, Swain, Vel'Koz and Warwick in EU, "
+      + "and Ambessa and Vel'Koz in NA, were not captured cleanly and keep their "
+      + "7.3a numbers until they are. Player rank badges are missing from this "
+      + "collection: the profile screenshots were taken before the badge had "
+      + "finished drawing, so they could not be read reliably and were left "
+      + "blank rather than guessed. China's board is unchanged.",
+  },
   {
     date: "15 October 2026",
     title: "Patch 7.3b applied",
