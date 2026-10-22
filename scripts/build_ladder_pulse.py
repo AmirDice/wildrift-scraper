@@ -615,6 +615,13 @@ def _carry_consensus(consensus: dict) -> dict:
         if old and old.get("items"):
             consensus[champ] = old
             carried += 1
+    # A champion with no session in this run at all (not recaptured yet, or
+    # its session was discarded) keeps its last consensus as well. Dropping
+    # it removed the champion's ladder builds from the site and the advisor.
+    for champ, old in prior.items():
+        if champ not in consensus and isinstance(old, dict) and old.get("items"):
+            consensus[champ] = old
+            carried += 1
     if carried:
         print(f"  no builds for {carried} champions: carried their consensus forward")
     return consensus
@@ -711,6 +718,17 @@ def main() -> int:
     globals()["PULSE_OUT"], globals()["CONSENSUS_OUT"] = pulse_out, consensus_out
     pulse = _carry_forward(pulse)
     consensus = _carry_consensus(consensus)
+    # Same for the per-champion profiles: a champion this run did not read
+    # keeps its previous profile instead of vanishing from the pulse.
+    try:
+        prior_profiles = json.loads(pulse_out.read_text(encoding="utf-8")).get("champions") or {}
+    except (OSError, json.JSONDecodeError):
+        prior_profiles = {}
+    kept = [c for c in prior_profiles if c not in pulse["champions"]]
+    for champ in kept:
+        pulse["champions"][champ] = prior_profiles[champ]
+    if kept:
+        print(f"  not in this run, previous profile kept: {', '.join(sorted(kept))}")
     pulse_out.write_text(json.dumps(pulse, ensure_ascii=False, indent=1), encoding="utf-8")
     consensus_out.write_text(json.dumps(consensus, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"{pulse_out.name}: {pulse['nChampions']} champions, {pulse['nPlayers']} players, "

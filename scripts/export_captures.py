@@ -468,6 +468,17 @@ def main() -> int:
         print(f"  {champ}: {len(csv_rows)} rows, {n_builds} builds, {n_stats} stat sets "
               f"({session.name}) -> {out.relative_to(ROOT)}")
 
+    # A merge keeps old rows for champions with no new session; their players
+    # stay searchable too. Indexing only the fresh payloads dropped every
+    # player of a carried champion out of player search.
+    carried = sorted({r.get("champion") for r in keep} - set(sessions))
+    for champ in carried:
+        old = PLAYERS_DIR / f"{_slug(champ)}.json"
+        if old.exists():
+            payloads.append(json.loads(old.read_text(encoding="utf-8")))
+    if carried:
+        print(f"carried (old data kept): {', '.join(carried)}")
+
     index = build_player_index(payloads)
     INDEX_FILE.write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
     multi = sum(1 for p in index["players"] if len(p["c"]) > 1)
