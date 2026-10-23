@@ -106,11 +106,12 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
     .slice(0, 10);
   const maxPentas = pentaBoards.length ? pentaBoards[0][1].pentas : 1;
 
+  const hasProfiles = extremes.some(({ key, dir }) => extreme(champs, key, dir));
   return (
     <div className="mt-10">
       <SectionHeading
         title="Ladder pulse"
-        subtitle={`EU + NA + China · ${usage.nBuilds.toLocaleString()} captured builds across ${usage.nChampions} champions. Item, keystone and spell usage below is global; player-profile cards below use EU only.`}
+        subtitle={`EU + NA + China · ${usage.nBuilds.toLocaleString()} captured builds across ${usage.nChampions} champions.${hasProfiles ? " Item, keystone and spell usage below is global; player-profile cards below use EU only." : ""}`}
         href="/leaderboard"
         linkLabel="Browse the boards"
       />
@@ -165,9 +166,13 @@ export function LadderPulseSection({ championIcons }: { championIcons: Record<st
         </Card>
       </div>
 
+      {/* Only with profiles under it: a collection captured without the stats
+          pages leaves every extreme empty, and the heading then sat alone. */}
+      {hasProfiles && (
       <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-muted">
         EU player profiles · regional sample, not global
       </p>
+      )}
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
         {extremes.map(({ label, key, dir, fmt }) => {
           const hit = extreme(champs, key, dir);

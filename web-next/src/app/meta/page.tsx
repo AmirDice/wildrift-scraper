@@ -5,6 +5,7 @@ import { AdSlot } from "@/components/ad-slot";
 import { Container, Card, SectionHeading } from "@/components/ui";
 import { LadderPulseSection } from "@/components/ladder-pulse-section";
 import { UsageTables } from "@/components/usage-tables";
+import { MetaTabs } from "@/components/meta-tabs";
 import { ChinaThisWeek } from "@/components/china-this-week";
 import { chinaThisWeek } from "@/lib/china-meta";
 import { SKIPPED_PATCH } from "@/lib/announcement";
@@ -56,44 +57,69 @@ export default function MetaPage() {
 
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">The meta at a glance</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        Global rankings and charts combine the top-player boards from EU, NA and China
-        across {h.nChampions} champions, using the same confidence-adjusted win rates as
-        the Global tier list. Regional comparisons and specialist metrics name their sources below.
+        {`What wins, what gets built and who is rising, from the top-player boards of EU, NA and China across ${h.nChampions} champions.`}
       </p>
-      <p className="mt-3 max-w-3xl text-xs text-faint">
+      <p className="mt-2 max-w-3xl text-xs text-faint">
         Board captures: {(["EU", "NA", "CN"] as const).map((server) => `${server} ${regionBoard(server).collectedOn ?? "date unavailable"}`).join(" · ")}.
-        Global champion win rates weight each available server equally; these are top-player
-        estimates, not win rates across all ranked matches.
+        {" "}Global figures weight each server equally; they are top-player estimates, not every ranked match.
       </p>
 
-      {/* headline strip */}
-      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Head label="Champions ranked" value={`${h.ranked}`} sub={`of ${h.nChampions} tracked`} />
-        <Head label="Meta-defining" value={`${h.metaDefining}`} sub="in GOD or S tier" accent="text-accent" />
-        <Head label="Strongest class" value={h.topClass.class} sub={`${h.topClass.wr.toFixed(1)}% top-5 WR`} accent="text-gold" />
-        <Head label="Strongest role" value={h.topRole.role} sub={`${h.topRole.wr.toFixed(1)}% top picks`} />
-      </div>
-
-      {/* the freshly scraped boards: builds, queues and match-history evidence */}
-      <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
-
-      {/* rune and item usage, ordered, with the win rate behind each choice */}
-      <UsageTables />
-
-      <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
-
-      {/* everything that used to run down the home page */}
-      <DeepDiveSections />
-
-      {/* The charts live BELOW the cards and tables on purpose: most visitors
-          want "what do I play and what do I build", and a scatter plot as the
-          opening image reads like an exam. The chart-minded scroll; everyone
-          else has already been served. */}
-      <AdSlot placement="inline" bare className="mt-10" />
-      <div className="mt-12 border-t border-line/60 pt-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">For the chart-minded</p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight">The same meta, visualized</h2>
-      </div>
+      <MetaTabs panels={[
+        {
+          key: "overview",
+          label: "Overview",
+          blurb: "The headline numbers, and what the freshly collected boards agree on.",
+          content: (
+            <>
+              <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <Head label="Champions ranked" value={`${h.ranked}`} sub={`of ${h.nChampions} tracked`} />
+                <Head label="Meta-defining" value={`${h.metaDefining}`} sub="in GOD or S tier" accent="text-accent" />
+                <Head label="Strongest class" value={h.topClass.class} sub={`${h.topClass.wr.toFixed(1)}% top-5 WR`} accent="text-gold" />
+                <Head label="Strongest role" value={h.topRole.role} sub={`${h.topRole.wr.toFixed(1)}% top picks`} />
+              </div>
+              <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
+            </>
+          ),
+        },
+        {
+          key: "builds",
+          label: "Builds",
+          blurb: "Every rune and item the top boards equip, and what China's Legendary players are building this week.",
+          anchors: ["china-this-week"],
+          content: (
+            <>
+              <UsageTables />
+              <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
+            </>
+          ),
+        },
+        {
+          key: "champions",
+          label: "Champions",
+          short: "Picks",
+          blurb: "Who is strong everywhere, who China rates ahead of EU, who scales with elo, and the patch-note regulars.",
+          content: <div className="-mx-4 sm:-mx-6"><DeepDiveSections /></div>,
+        },
+        {
+          key: "specialists",
+          label: "Specialists",
+          short: "OTPs",
+          blurb: "Champions worth one-tricking, and the ones whose top players win most consistently.",
+          anchors: ["one-trick", "consistency"],
+          content: (
+            <>
+              <OneTrickSection />
+              <ConsistencySection />
+            </>
+          ),
+        },
+        {
+          key: "charts",
+          label: "Charts",
+          blurb: "The same meta, visualised: win rate against popularity, elo scaling, tiers, classes and roles.",
+          anchors: ["classes", "roles"],
+          content: (
+            <>
       {/* centerpiece scatter */}
       <div className="mt-10">
         <SectionHeading title="Win rate vs popularity" subtitle="Every ranked champion, mapped by how much it wins against how much it is played. Top-left is a hidden gem, top-right is a proven meta pillar." />
@@ -156,10 +182,12 @@ export default function MetaPage() {
       </div>
 
 
-      {/* Merged 2026-10-16 from /consistency and /otp-champions. */}
-      <ConsistencySection />
-      <OneTrickSection />
+            </>
+          ),
+        },
+      ]} />
 
+      <AdSlot placement="inline" bare className="mt-10" />
       <p className="mt-10 text-sm text-faint">
         Want the raw ordering instead of the charts?{" "}
         <Link href="/tier-list" className="text-accent hover:underline">See the full tier list</Link>
