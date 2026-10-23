@@ -82,11 +82,14 @@ export default function UpdatesPage() {
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">
                   {`Win rates, tiers, pick rates and movement change only when a region's `
-                    + `leaderboards are re-scraped. China's board, and these champions that `
-                    + `were not captured cleanly this time, keep their ${CN_WINRATE_PATCH} `
-                    + `numbers until they are: ${NOT_RECAPTURED.EU.join(", ")} in EU, and `
-                    + `${NOT_RECAPTURED.NA.join(" and ")} in NA. Player rank badges are blank on `
-                    + `the new boards; they could not be read reliably this time.`}
+                    + `leaderboards are re-scraped. China's board keeps its ${CN_WINRATE_PATCH} `
+                    + `numbers until the next China collection`
+                    + (NOT_RECAPTURED.EU.length || NOT_RECAPTURED.NA.length
+                      ? `, as do these champions, which were not captured cleanly this time: `
+                        + [NOT_RECAPTURED.EU.length ? `${NOT_RECAPTURED.EU.join(", ")} in EU` : "",
+                          NOT_RECAPTURED.NA.length ? `${NOT_RECAPTURED.NA.join(", ")} in NA` : ""].filter(Boolean).join(", and ")
+                      : "")
+                    + `. Player rank badges are blank on the new boards; they could not be read reliably this time.`}
                 </p>
               </div>
             </div>
@@ -99,7 +102,9 @@ export default function UpdatesPage() {
                   {EU_COLLECTED ?? "Current dataset"}
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
-                  {`${142 - NOT_RECAPTURED.EU.length} champions on ${EU_WINRATE_PATCH}, ${NOT_RECAPTURED.EU.length} still on ${CN_WINRATE_PATCH}.`}
+                  {NOT_RECAPTURED.EU.length
+                    ? `${142 - NOT_RECAPTURED.EU.length} champions on ${EU_WINRATE_PATCH}, ${NOT_RECAPTURED.EU.length} still on ${CN_WINRATE_PATCH}.`
+                    : `All 142 champions, played on ${EU_WINRATE_PATCH}.`}
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
@@ -110,7 +115,9 @@ export default function UpdatesPage() {
                   {NA_COLLECTED ?? "Current dataset"}
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
-                  {`${142 - NOT_RECAPTURED.NA.length} champions on ${NA_WINRATE_PATCH}, ${NOT_RECAPTURED.NA.length} still on ${CN_WINRATE_PATCH}.`}
+                  {NOT_RECAPTURED.NA.length
+                    ? `${142 - NOT_RECAPTURED.NA.length} champions on ${NA_WINRATE_PATCH}, ${NOT_RECAPTURED.NA.length} still on ${CN_WINRATE_PATCH}.`
+                    : `All 142 champions, played on ${NA_WINRATE_PATCH}.`}
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">

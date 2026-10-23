@@ -12,8 +12,10 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]["key"];
 
-export function ChampionTabs({ panels }: {
+export function ChampionTabs({ panels, toolbar }: {
   panels: Record<TabKey, ReactNode>;
+  /** Shown beside the tabs in the sticky bar (the page's region toggle). */
+  toolbar?: ReactNode;
 }) {
   const [active, setActive] = useState<TabKey>("overview");
   return (
@@ -23,7 +25,8 @@ export function ChampionTabs({ panels }: {
             overflowed and "History" sat off-screen on a 375px viewport with
             nothing to show it was scrollable. These four labels fit four
             columns unaided; the minimum only applies once there is room. */}
-        <div className="grid grid-cols-5 gap-1 sm:min-w-[480px]">
+        <div className="flex flex-wrap items-center gap-1">
+        <div className="grid min-w-0 flex-1 grid-cols-5 gap-1 sm:min-w-[480px]">
           {TABS.map((tab) => (
             <button
               key={tab.key}
@@ -38,6 +41,8 @@ export function ChampionTabs({ panels }: {
               {tab.label}
             </button>
           ))}
+        </div>
+        {toolbar && <div className="ml-auto pl-1">{toolbar}</div>}
         </div>
       </div>
       {TABS.map((tab) => (

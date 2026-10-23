@@ -51,8 +51,9 @@ export const COLLECTION_PENDING_REGIONS = "";
  * older. Empty a list once its champions are recaptured.
  */
 export const NOT_RECAPTURED: Record<"EU" | "NA", string[]> = {
-  EU: ["Janna", "Lucian", "Norra", "Swain", "Vel'Koz", "Warwick"],
-  NA: ["Ambessa", "Vel'Koz"],
+  // Emptied 2026-10-23: all eight were recaptured.
+  EU: [],
+  NA: [],
 };
 
 /** The patch the next collection and the next round of work is aimed at. */
@@ -86,10 +87,11 @@ export const ANNOUNCEMENT = {
   // dismissed the China-board one.
   // -v8: the EU and NA boards were re-collected on 7.3b. A new key so the
   // banner shows again to everyone who dismissed the patch one.
-  key: "wtm-announce-eu-na-7-3b-2026-10-v8",
+  // -v9: all 142 recaptured, plus the win-rate history chart and region switch.
+  key: "wtm-announce-eu-na-7-3b-2026-10-v9",
   href: "/updates",
   lead: `EU and NA win rates are on ${EU_WINRATE_PATCH}`,
-  short: `The EU and NA leaderboards were collected again from 19 to 22 October, the first boards played on patch ${EU_WINRATE_PATCH}. Volibear, Jhin, Tryndamere, Yasuo, Hwei, Nocturne, Yunara and Senna now show how the patch moved them. China's board is still the ${CN_WINRATE_PATCH} one from 11 October, and a few champions keep their earlier numbers until they are recaptured.`,
+  short: `The EU and NA leaderboards were collected again from 19 to 22 October, the first boards played on patch ${EU_WINRATE_PATCH}. All 142 champions in both regions, so Volibear, Jhin, Tryndamere, Yasuo, Hwei, Nocturne, Yunara and Senna now show how the patch moved them, and every champion page has a win-rate history chart with a Global, EU, NA and China switch. China's board is still the ${CN_WINRATE_PATCH} one from 11 October.`,
   cta: "What changed",
   badges: [`EU + NA on ${EU_WINRATE_PATCH}`],
   /** Pages the banner points at, so it does not appear on top of itself. */
@@ -106,6 +108,18 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "23 October 2026",
+    title: "Full EU and NA boards, and win rate over time",
+    body:
+      "The eight champions the first pass missed are recaptured, so all 142 "
+      + "are on 7.3b in both EU and NA. Every champion page now has a chart of "
+      + "its win rate across each collection since June, with balance patches "
+      + "marked, and a Global, EU, NA and China switch that changes every chart "
+      + "and stat on the page to that server's board. In China the chart adds "
+      + "Tencent's daily rate over every ranked game, drawn dashed because it "
+      + "measures all players rather than the top of the ladder.",
+  },
   {
     date: "22 October 2026",
     title: "EU and NA boards collected on 7.3b",

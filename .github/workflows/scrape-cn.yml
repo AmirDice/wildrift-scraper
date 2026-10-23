@@ -47,12 +47,19 @@ jobs:
         continue-on-error: true
         run: python3 scripts/fetch_wr_skins.py
 
+      # The champion pages' win-rate history chart. Adds today's China
+      # daily point to web-next/src/data/wr_history.json; reads only the
+      # history snapshots, so a failure here leaves the China data alone.
+      - name: Rebuild win-rate history
+        continue-on-error: true
+        run: python3 scripts/export_wr_history.py
+
       - name: Commit updated data
         id: commit
         run: |
           git config user.name "wrtruemeta-bot"
           git config user.email "actions@github.com"
-          git add data/cn_winrates.json data/history/cn web-next/src/data/cn.json web-next/src/data/cn_movers.json web-next/src/data/wr_skins.json
+          git add data/cn_winrates.json data/history/cn web-next/src/data/cn.json web-next/src/data/cn_movers.json web-next/src/data/wr_skins.json web-next/src/data/wr_history.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No CN win-rate changes."

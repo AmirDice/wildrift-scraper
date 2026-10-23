@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { site, getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel, regionBoard } from "@/lib/data";
+import { site, getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel, regionBoard, type Champion, type BestPlayerPodium } from "@/lib/data";
 import { getCnBySlug, getGlobalBySlug } from "@/lib/cn";
 import { getMatchups, matchupsCapturedOn, type ResolvedMatchup } from "@/lib/counters";
 import { getSkewBySlug } from "@/lib/skew";
@@ -38,6 +38,14 @@ import { getChampionLoadouts } from "@/lib/cn-loadouts";
 import { championSummary } from "@/lib/champion-summary";
 import { getChampionSkins } from "@/lib/skins";
 import { ChampionSkins } from "@/components/champion-skins";
+import { ForRegion, RegionProvider, RegionToggle } from "@/components/region-scope";
+import { REGION_LABEL, REGION_LONG, type Region } from "@/lib/region-labels";
+import { WinRateHistory } from "@/components/win-rate-history";
+import { getWinRateHistory } from "@/lib/wr-history";
+
+/** One server choice on the champion page: its board record, its players
+ *  and its best-player ranking. */
+type RegionView = { key: Region; board: Champion | undefined; players: AnalyticsPlayer[]; podium: BestPlayerPodium | null };
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -54,9 +62,9 @@ function horizontalSplash(source: string): string {
   return source.replace("/cdn/img/champion/loading/", "/cdn/img/champion/splash/");
 }
 
-function loadAnalyticsPlayers(slug: string): AnalyticsPlayer[] {
+function loadAnalyticsPlayers(slug: string, server: "eu" | "na" | "cn" = "eu"): AnalyticsPlayer[] {
   try {
-    const file = path.join(process.cwd(), "public", "players", `${slug}.json`);
+    const file = path.join(process.cwd(), "public", "players", ...(server === "eu" ? [] : [server]), `${slug}.json`);
     const parsed = JSON.parse(readFileSync(file, "utf8")) as { players?: AnalyticsPlayer[] };
     return (parsed.players ?? []).filter((player) =>
       Number.isFinite(player.r) && Number.isFinite(player.w) && Number.isFinite(player.g),
@@ -138,20 +146,44 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   // server on its own, so promoting the blend hides nothing.
   const blended = getGlobalBySlug(champion.slug);
   const headline = blended ?? champion;
-  const podium = champion.globalBestPlayerPodium ?? champion.bestPlayerPodium;
-  const globalBest = champion.globalBestPlayerPodium?.players?.[0] ?? null;
-  const analyticsPlayers = loadAnalyticsPlayers(champion.slug);
   const summary = championSummary(champion.slug);
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
-  const stats = champion.statsPending ? [] : [
-    { label: "Tier", value: tierLabel(headline.tier), className: tierText[headline.tier] },
-    { label: "Win rate", value: `${headline.wr.toFixed(1)}%`, className: "text-accent" },
-    { label: "Ceiling WR", value: headline.maxWr != null ? `${headline.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
-    { label: "Median games", value: headline.medianGames != null ? Math.round(headline.medianGames).toLocaleString() : "-", className: "" },
+  const wrHistory = getWinRateHistory(champion.slug, champion.name);
+
+  // One view per server choice. Every region-dependent card on the page reads
+  // its numbers from the selected view, so the hero, the charts and the
+  // player cards always describe the same board (see components/region-scope).
+  const euPlayers = loadAnalyticsPlayers(champion.slug, "eu");
+  const naPlayers = loadAnalyticsPlayers(champion.slug, "na");
+  const cnPlayers = loadAnalyticsPlayers(champion.slug, "cn");
+  const views: RegionView[] = [
+    { key: "global", board: headline, players: [...euPlayers, ...naPlayers, ...cnPlayers],
+      podium: champion.globalBestPlayerPodium ?? champion.bestPlayerPodium ?? null },
+    { key: "eu", board: Number.isFinite(champion.wr) ? champion : undefined, players: euPlayers, podium: champion.bestPlayerPodium ?? null },
+    { key: "na", board: na && Number.isFinite(na.wr) ? na : undefined, players: naPlayers, podium: na?.bestPlayerPodium ?? null },
+    { key: "cn", board: cnLadder && Number.isFinite(cnLadder.wr) ? cnLadder : undefined, players: cnPlayers, podium: cnLadder?.bestPlayerPodium ?? null },
   ];
-  const movement = headline.wrDelta ?? 0;
-  const metaSignal = champion.statsPending ? "Collecting" : movement > 0.2 ? "Rising" : movement < -0.2 ? "Cooling" : "Stable";
-  const signalTone = movement > 0.2 ? "text-emerald-300" : movement < -0.2 ? "text-rose-300" : "text-sky-300";
+  const regionAvailable = Object.fromEntries(views.map((view) => [view.key, Boolean(view.board)])) as Record<Region, boolean>;
+  const heroStats = (board: Champion) => [
+    { label: "Tier", value: tierLabel(board.tier), className: tierText[board.tier] },
+    { label: "Win rate", value: `${board.wr.toFixed(1)}%`, className: "text-accent" },
+    { label: "Ceiling WR", value: board.maxWr != null ? `${board.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
+    { label: "Median games", value: board.medianGames != null ? Math.round(board.medianGames).toLocaleString() : "-", className: "" },
+  ];
+  const signalOf = (board: Champion | undefined) => {
+    const movement = board?.wrDelta ?? 0;
+    return {
+      movement,
+      label: champion.statsPending ? "Collecting" : movement > 0.2 ? "Rising" : movement < -0.2 ? "Cooling" : "Stable",
+      tone: movement > 0.2 ? "text-emerald-300" : movement < -0.2 ? "text-rose-300" : "text-sky-300",
+      fresh: board?.wrDelta == null,
+    };
+  };
+  const regionBars = [
+    { label: "EU", value: Number.isFinite(champion.wr) ? champion.wr : null },
+    { label: "NA", value: na && Number.isFinite(na.wr) ? na.wr : null },
+    { label: "CN", value: cnLadder && Number.isFinite(cnLadder.wr) ? cnLadder.wr : null },
+  ];
 
   // Put the fastest, most copyable answer directly below the hero. The
   // personalized generator follows this evidence in the same card, rather
@@ -207,33 +239,45 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
     <div className="space-y-4">
       {serverBuildCard}
       <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} />
-      <ChampionAnalytics
-        champion={champion.name}
-        players={analyticsPlayers}
-        regions={[
-          { label: "EU", value: Number.isFinite(champion.wr) ? champion.wr : null },
-          { label: "NA", value: na && Number.isFinite(na.wr) ? na.wr : null },
-          { label: "CN", value: cnLadder && Number.isFinite(cnLadder.wr) ? cnLadder.wr : null },
-        ]}
-        winRate={headline.wr}
-        winRateDelta={headline.wrDelta}
-        winrateStd={headline.winrateStd}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-faint">Charts and player cards below show the selected server&rsquo;s board.</p>
+        <RegionToggle available={regionAvailable} />
+      </div>
+      {views.map((view) => view.board && (
+        <ForRegion key={view.key} region={view.key}>
+          <ChampionAnalytics
+            champion={champion.name}
+            players={view.players}
+            regions={regionBars}
+            winRate={view.board.wr}
+            winRateDelta={view.board.wrDelta}
+            winrateStd={view.board.winrateStd}
+          />
+        </ForRegion>
+      ))}
+      {wrHistory && <WinRateHistory champion={champion.name} history={wrHistory} />}
       {skew && (
         <Card className="p-5 sm:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Regular-ranked performance</h2><Link href="/regions#brackets" className={`rounded-full px-2.5 py-1 text-xs font-semibold ${skew.climbing ? "bg-emerald-400/15 text-emerald-300" : skew.stomper ? "bg-rose-400/15 text-rose-300" : "bg-white/10 text-muted"}`}>{skew.climbing ? "Improves at higher skill" : skew.stomper ? "Falls off up top" : "Stable across brackets"}</Link></div>
+          <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Regular-ranked performance <span className="text-sm font-normal text-faint">· China, every ranked game</span></h2><Link href="/regions#brackets" className={`rounded-full px-2.5 py-1 text-xs font-semibold ${skew.climbing ? "bg-emerald-400/15 text-emerald-300" : skew.stomper ? "bg-rose-400/15 text-rose-300" : "bg-white/10 text-muted"}`}>{skew.climbing ? "Improves at higher skill" : skew.stomper ? "Falls off up top" : "Stable across brackets"}</Link></div>
           <div className="mt-4 flex justify-center"><BracketCurve curve={skew.curve} skew={skew.skew} labeled width={460} height={150} className="h-auto w-full max-w-[460px]" /></div>
           {skew.legendary && <p className="mt-3 text-center text-sm text-muted">CN Legendary solo-queue benchmark: <span className="font-semibold text-gold">{skew.legendary.wr.toFixed(1)}%</span></p>}
         </Card>
       )}
-      <MeasuredProfile slug={champion.slug} />
+      {(["eu", "na", "cn"] as const).map((server) => (
+        <ForRegion key={server} region={server}><MeasuredProfile slug={champion.slug} region={server} /></ForRegion>
+      ))}
+      {views.map(({ key, podium }) => {
+        const best = podium?.players?.[0] ?? null;
+        const where = podium?.scope === "global" ? "globally" : `in ${podium?.server ?? REGION_LABEL[key]}`;
+        return (
+        <ForRegion key={key} region={key}>
       <Card className="p-5 sm:p-6">
-        {/* The GLOBAL winner (EU, NA and China boards together), the same
-            ranking as the top-3 podium below; EU's own best is the fallback
-            for a champion without a global podium. */}
-        <h2 className="text-lg font-semibold">Best {champion.name} player {globalBest ? "globally" : "in EU"}</h2>
-        {globalBest ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{globalBest.player}</span>{globalBest.server ? ` (${globalBest.server}${globalBest.championRank ? `, rank #${globalBest.championRank}` : ""})` : ""} leads every server&rsquo;s board with a composite Best Player score of <span className="font-medium text-accent">{globalBest.score?.toFixed(1) ?? "-"}</span>{globalBest.confidenceWr != null ? <>, backed by a <span className="font-medium text-accent">{globalBest.confidenceWr.toFixed(1)}%</span> confidence-adjusted win rate</> : null}.</p>
-          : champion.bestPlayer ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{champion.bestPlayer.player}</span>{champion.bestPlayer.rank ? ` (rank #${champion.bestPlayer.rank})` : ""} leads the EU sample with a composite Best Player score of <span className="font-medium text-accent">{champion.bestPlayer.best_score?.toFixed(1) ?? "-"}</span>, backed by a <span className="font-medium text-accent">{champion.bestPlayer.confidence_wr?.toFixed(1) ?? "-"}%</span> confidence-adjusted win rate.</p> : <p className="mt-2 text-muted">Best-player data is being collected.</p>}
+        {/* The selected view's winner: the global ranking (EU, NA and China
+            boards together) or one server's own, the same ranking as the
+            top-3 podium below. */}
+        <h2 className="text-lg font-semibold">Best {champion.name} player {best ? where : `in ${REGION_LONG[key]}`}</h2>
+        {best ? <p className="mt-2 leading-relaxed text-muted"><span className="font-medium text-text">{best.player}</span>{best.server ? ` (${best.server}${best.championRank ? `, rank #${best.championRank}` : ""})` : ""} leads {podium?.scope === "global" ? "every server’s board" : `the ${podium?.server ?? REGION_LABEL[key]} board`} with a composite Best Player score of <span className="font-medium text-accent">{best.score?.toFixed(1) ?? "-"}</span>{best.confidenceWr != null ? <>, backed by a <span className="font-medium text-accent">{best.confidenceWr.toFixed(1)}%</span> confidence-adjusted win rate</> : null}.</p>
+          : <p className="mt-2 text-muted">{`No ${REGION_LONG[key]} best-player ranking for ${champion.name} yet.`}</p>}
       </Card>
       {podium?.players?.length ? (
         <Card className="p-5 sm:p-6">
@@ -262,6 +306,9 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           <p className="mt-3 text-xs leading-relaxed text-faint">The score combines confidence-adjusted win rate, ladder strength, champion-board position, Champion Score and current-season games.</p>
         </Card>
       ) : null}
+        </ForRegion>
+        );
+      })}
     </div>
   );
 
@@ -302,7 +349,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   );
 
   return (
-    <>
+    <RegionProvider>
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Champions", path: "/champions" },
@@ -335,13 +382,29 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
                     <span className={`rounded-full border border-white/[0.09] bg-white/[0.045] px-3 py-1.5 ${champion.isHard ? "text-rose-300" : ""}`}>{champion.difficultyLabel}</span>
                   </div>
                 </div>
-                {stats.length ? (
-                  <div className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15 sm:grid-cols-4 lg:grid-cols-4">
-                    {stats.map((stat, index) => (
-                      <div key={stat.label} className={`p-3.5 sm:p-4 ${index % 2 ? "border-l border-white/[0.07]" : ""} ${index > 1 ? "border-t border-white/[0.07] sm:border-t-0 lg:border-t xl:border-t-0" : ""}`}>
-                        <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-faint">{stat.label}</p>
-                        <p className={`mt-1.5 text-lg font-semibold ${stat.className}`}>{stat.value}</p>
-                      </div>
+                {!champion.statsPending ? (
+                  <div className="mt-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      {views.map((view) => (
+                        <ForRegion key={view.key} region={view.key}>
+                          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-faint">{`${REGION_LONG[view.key]} board`}</p>
+                        </ForRegion>
+                      ))}
+                      <RegionToggle available={regionAvailable} />
+                    </div>
+                    {views.map((view) => (
+                      <ForRegion key={view.key} region={view.key}>
+                        {view.board ? (
+                          <div className="mt-2 grid grid-cols-2 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15 sm:grid-cols-4 lg:grid-cols-4">
+                            {heroStats(view.board).map((stat, index) => (
+                              <div key={stat.label} className={`p-3.5 sm:p-4 ${index % 2 ? "border-l border-white/[0.07]" : ""} ${index > 1 ? "border-t border-white/[0.07] sm:border-t-0 lg:border-t xl:border-t-0" : ""}`}>
+                                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-faint">{stat.label}</p>
+                                <p className={`mt-1.5 text-lg font-semibold ${stat.className}`}>{stat.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : <p className="mt-3 text-sm text-muted">{`No ${REGION_LONG[view.key]} board for ${champion.name} yet.`}</p>}
+                      </ForRegion>
                     ))}
                   </div>
                 ) : <p className="mt-8 text-sm text-muted">Leaderboard sample pending.</p>}
@@ -354,21 +417,28 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
                 <img src={heroSplash} alt="" className="absolute inset-0 h-full w-full object-cover object-[right_top]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07101d] via-transparent to-black/10 lg:bg-gradient-to-r lg:from-[#08101d] lg:via-transparent lg:to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07101d]/80 via-transparent to-transparent lg:hidden" />
+                {views.map((view) => {
+                  const signal = signalOf(view.board);
+                  return (
+                <ForRegion key={view.key} region={view.key}>
                 <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/[0.13] bg-[#07101d]/75 p-4 shadow-2xl backdrop-blur-xl sm:bottom-5 sm:left-5 sm:right-auto sm:w-[16.5rem]">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-faint">Meta signal</p>
-                      <p className={`mt-1 text-lg font-semibold ${signalTone}`}>{metaSignal}</p>
+                      <p className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-faint">{`Meta signal · ${REGION_LABEL[view.key]}`}</p>
+                      <p className={`mt-1 text-lg font-semibold ${signal.tone}`}>{view.board ? signal.label : "No board"}</p>
                     </div>
-                    <svg viewBox="0 0 98 38" className="w-24" role="img" aria-label={`${metaSignal} collection trend`}>
-                      <path d={movement < -0.2 ? "M3 8 C20 10 29 14 44 13 S69 25 95 30" : movement > 0.2 ? "M3 30 C20 29 28 23 43 24 S70 12 95 7" : "M3 21 C20 18 31 22 45 19 S70 20 95 17"} fill="none" stroke={movement < -0.2 ? "#fb7185" : movement > 0.2 ? "#6ee7c7" : "#7cb8ff"} strokeWidth="3" strokeLinecap="round" />
+                    <svg viewBox="0 0 98 38" className="w-24" role="img" aria-label={`${signal.label} collection trend`}>
+                      <path d={signal.movement < -0.2 ? "M3 8 C20 10 29 14 44 13 S69 25 95 30" : signal.movement > 0.2 ? "M3 30 C20 29 28 23 43 24 S70 12 95 7" : "M3 21 C20 18 31 22 45 19 S70 20 95 17"} fill="none" stroke={signal.movement < -0.2 ? "#fb7185" : signal.movement > 0.2 ? "#6ee7c7" : "#7cb8ff"} strokeWidth="3" strokeLinecap="round" />
                     </svg>
                   </div>
                   <div className="mt-3 flex items-center justify-between border-t border-white/[0.08] pt-3 text-[0.68rem] text-muted">
-                    <span>{analyticsPlayers.length || 50} tracked players</span>
-                    <span className={signalTone}>{headline.wrDelta == null ? "Fresh sample" : `${movement >= 0 ? "+" : ""}${movement.toFixed(1)} pp`}</span>
+                    <span>{view.players.length} tracked players</span>
+                    <span className={signal.tone}>{signal.fresh ? "Fresh sample" : `${signal.movement >= 0 ? "+" : ""}${signal.movement.toFixed(1)} pp`}</span>
                   </div>
                 </div>
+                </ForRegion>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -389,6 +459,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
 
         <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
           <ChampionTabs
+            toolbar={champion.statsPending ? undefined : <RegionToggle available={regionAvailable} />}
             panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, skins: <ChampionSkins champion={champion.name} slug={champion.slug} skins={getChampionSkins(champion.slug)} />, history: <>
               {history.changes[0] && (
                 <div className="mb-4">
@@ -406,7 +477,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           {related.length > 0 && <div className="mt-10"><h2 className="mb-4 text-lg font-semibold">Other {champion.role} champions</h2><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{related.map((entry) => <Link key={entry.slug} href={`/champions/${entry.slug}`} className="glass glass-hover flex flex-col items-center gap-2 rounded-xl p-3 text-center"><ChampionAvatar champion={entry} size={48}/><span className="w-full truncate text-sm font-medium">{entry.name}</span><div className="flex items-center gap-1.5"><TierChip tier={entry.tier}/><span className="text-xs font-semibold text-accent">{entry.wr.toFixed(1)}%</span></div></Link>)}</div></div>}
         </div>
       </div>
-    </>
+    </RegionProvider>
   );
 }
 

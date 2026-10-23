@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { Card } from "@/components/ui";
-import pulse from "@/data/ladder_pulse.json";
+import pulseEu from "@/data/ladder_pulse.json";
+import pulseNa from "@/data/ladder_pulse_na.json";
+import pulseCn from "@/data/ladder_pulse_cn.json";
+
+const PULSE = { eu: pulseEu, na: pulseNa, cn: pulseCn } as const;
 
 // How the top 50 actually play this champion, measured from their ranked
 // match history during the latest collection. Each bar compares the
@@ -24,11 +28,14 @@ const BARS: { key: keyof Profile; label: string; fmt: (v: number) => string }[] 
   { key: "gpm", label: "Gold per minute", fmt: (v) => `${Math.round(v)}` },
 ];
 
-export function MeasuredProfile({ slug }: { slug: string }) {
+export function MeasuredProfile({ slug, region = "eu" }: { slug: string; region?: keyof typeof PULSE }) {
+  const pulse = PULSE[region];
   const champs = pulse.champions as Record<string, Profile>;
   const p = champs[slug];
   const base = pulse.baseline as Record<string, number | null>;
-  if (!p) return null;
+  // A collection captured without the stats pages leaves every bar empty;
+  // an empty card is worse than none.
+  if (!p || BARS.every(({ key }) => p[key] == null)) return null;
 
   return (
     <Card className="p-5 sm:p-6">

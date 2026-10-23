@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRegionScope } from "@/components/region-scope";
 import Link from "next/link";
 import runeIconsData from "@/data/rune_icons.json";
 import { BUILD_SERVERS, SERVER_GAP, SERVER_LABEL, type BuildServer, type ServerBuild, type ServerBuildStats } from "@/lib/server-build";
@@ -211,6 +212,15 @@ export function ServerBuilds({
   const first = BUILD_SERVERS.find((s) => builds[s]) ?? "eu";
   const [server, setServer] = useState<BuildServer>(first);
   const [expanded, setExpanded] = useState(false);
+  // On a champion page, follow the page's server choice. Global keeps
+  // whichever server is open; the card's own tabs still work.
+  const pageRegion = useRegionScope()?.region;
+  useEffect(() => {
+    if (pageRegion && pageRegion !== "global" && (BUILD_SERVERS as readonly string[]).includes(pageRegion) && builds[pageRegion as BuildServer]) {
+      const timer = setTimeout(() => setServer(pageRegion as BuildServer), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [pageRegion, builds]);
   const build = builds[server] ?? null;
   const pills = comparisonPills(server, builds);
 
