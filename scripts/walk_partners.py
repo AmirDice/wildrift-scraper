@@ -71,6 +71,10 @@ RANKS = ("钻石以上", "大师以上", "王者以上", "峡谷之巅")
 RANK_SHEET = "段位选择"
 CONFIRM = "确定"
 
+#: Every list holds the top 100 pairs. The walk stops once ranks 1..100 are
+#: all read, instead of waiting for scrolls that reveal nothing.
+LIST_ROWS = 100
+
 PERCENT = re.compile(r"^\s*(\d{1,3}(?:\.\d+)?)\s*%\s*$")
 #: The sidebar is the left strip of the screen.
 SIDEBAR_MAX_X = 0.2
@@ -138,6 +142,9 @@ def parse_rows(nodes, width, names: dict[str, str]) -> list[dict]:
     if head_wr and head_pick:
         wr_first = head_wr.center[0] < head_pick.center[0]
 
+    numbers = [n for n in nodes
+               if (n.label or "").strip().isdigit() and n.center[0] > width * SIDEBAR_MAX_X
+               and 1 <= int(n.label.strip()) <= LIST_ROWS]
     named = []
     lane_labels = []
     for n in nodes:
@@ -167,7 +174,9 @@ def parse_rows(nodes, width, names: dict[str, str]) -> list[dict]:
             continue
         a, b = band[0], band[-1]
         first, second = line[0][1], line[1][1]
+        rank = next((int(n.label.strip()) for n in numbers if abs(n.center[1] - y) <= pitch / 2), None)
         rows.append({
+            "rank": rank,
             "a": a[1], "aLane": lane_under(a[0]), "b": b[1], "bLane": lane_under(b[0]),
             "cn": [a[2], b[2]],
             "winRate": first if wr_first else second,
@@ -177,11 +186,20 @@ def parse_rows(nodes, width, names: dict[str, str]) -> list[dict]:
 
 
 def capture_list(client, width, height, names) -> tuple[list[dict], list[list[dict]]]:
-    """Rows of the list now on screen, scrolling until nothing new appears."""
+    """All rows of the list on screen: until ranks 1..100 are read, or
+    scrolling stops revealing new pairs (a list shorter than 100).
+
+    The hierarchy often holds the whole list at once, which makes this one
+    dump; if the app renders rows lazily, it scrolls about a screen at a time
+    and merges, keyed by the pair.
+    """
     seen: dict[tuple[str, str], dict] = {}
     raw_dumps = []
     dry = 0
     while dry < DRY_SCROLLS:
+        ranks = {r["rank"] for r in seen.values() if r.get("rank")}
+        if len(ranks) >= LIST_ROWS or len(seen) >= LIST_ROWS:
+            break
         nodes = uiauto.dump(client)
         raw_dumps.append(_nodes_json(nodes))
         new = 0
@@ -324,8 +342,14 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
                 _tap(client, head)
                 time.sleep(1.0)
                 more, more_dumps = capture_list(client, width, height, names)
-                known = {(r["a"], r["b"]) for r in rows}
-                rows += [r for r in more if (r["a"], r["b"]) not in known]
+                # The two sorts number their rows separately: keep both.
+                by_pair = {(r["a"], r["b"]): r for r in rows}
+                for r in more:
+                    pick_rank = r.pop("rank", None)
+                    if (r["a"], r["b"]) in by_pair:
+                        by_pair[(r["a"], r["b"])]["pickRank"] = pick_rank
+                    else:
+                        rows.append({**r, "rank": None, "pickRank": pick_rank})
                 dumps += more_dumps
                 back = uiauto.find(uiauto.dump(client), *HEAD_WR)
                 if back is not None:
@@ -333,7 +357,9 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
                     time.sleep(0.8)
             (out / f"{own_en}__{partner_en}.nodes.json").write_text(json.dumps(dumps, ensure_ascii=False), encoding="utf-8")
             result["lists"].append({"lane": own_en, "partnerLane": partner_en, "rows": rows})
-            print(f"  partners: {own_en} + {partner_en}: {len(rows)} pairs")
+            missing = sorted(set(range(1, LIST_ROWS + 1)) - {r["rank"] for r in rows if r.get("rank")})
+            print(f"  partners: {own_en} + {partner_en}: {len(rows)} pairs"
+                  + (f" (ranks not read by win rate: {len(missing)})" if missing and len(rows) < LIST_ROWS else ""))
             for _ in range(3):
                 client.swipe(int(width * 0.6), int(height * 0.3), int(width * 0.6), int(height * 0.85), 300)
             time.sleep(0.6)
