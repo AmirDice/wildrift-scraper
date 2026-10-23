@@ -32,6 +32,20 @@ type RawWeek = {
   rows: RawRow[];
 };
 
+/** One core or rune page scored patch by patch
+ *  (scripts/export_loadouts_for_web.py attach_patches). */
+type RawPatchRow = {
+  entities: string[];
+  /** Mean edge over each patch's lane average, older patches weighted 0.7x per patch back. */
+  score: number;
+  byPatch: Record<string, { wr: number; pick: number; edge: number }>;
+  /** proven: beat the previous patch's average, now played half as much or not at all.
+   *  outdated: the same, but an item or rune of it changed since. */
+  flag?: "proven" | "outdated";
+  changed?: string[];
+};
+type RawPatches = { order: string[]; captures: Record<string, number>; rows: RawPatchRow[] };
+
 type RawTab = {
   date: string | null;
   sourceRows: number;
@@ -40,6 +54,7 @@ type RawTab = {
   visibleCoverage: number;
   rows: RawRow[];
   week?: RawWeek;
+  patches?: RawPatches;
 };
 
 type RawLane = {
@@ -80,10 +95,13 @@ export type LoadoutRow = Omit<RawRow, "entities"> & {
 };
 
 export type LoadoutWeek = Omit<RawWeek, "rows"> & { rows: LoadoutRow[] };
+export type LoadoutPatchRow = Omit<RawPatchRow, "entities"> & { entities: LoadoutEntity[] };
+export type LoadoutPatches = Omit<RawPatches, "rows"> & { rows: LoadoutPatchRow[] };
 
-export type LoadoutTab = Omit<RawTab, "rows" | "week"> & {
+export type LoadoutTab = Omit<RawTab, "rows" | "week" | "patches"> & {
   rows: LoadoutRow[];
   week?: LoadoutWeek;
+  patches?: LoadoutPatches;
   /** The tab's own data date is weeks older than the capture: China's app
    *  stopped refreshing it (boots have read July since October). */
   stale?: boolean;
@@ -146,11 +164,12 @@ function resolveTab(kind: keyof RawLane["tabs"], tab: RawTab, capturedAt: string
     ...row,
     entities: row.entities.map((name) => resolveEntity(kind, name)),
   }));
-  const { week, ...rest } = tab;
+  const { week, patches, ...rest } = tab;
   return {
     ...rest,
     rows: resolveRows(tab.rows),
     ...(week ? { week: { ...week, rows: resolveRows(week.rows) } } : {}),
+    ...(patches ? { patches: { ...patches, rows: patches.rows.map((row) => ({ ...row, entities: row.entities.map((name) => resolveEntity(kind, name)) })) } } : {}),
     ...(isStale(tab, capturedAt) ? { stale: true } : {}),
   };
 }

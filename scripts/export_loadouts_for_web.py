@@ -382,6 +382,149 @@ def attach_week_and_trend(output: dict[str, Any]) -> tuple[int, int]:
     return pooled_lanes, trended
 
 
+PATCH_HISTORY = ROOT / "data" / "official_patch_history.json"
+#: How much each older patch counts in the across-patch score, per patch back.
+PATCH_DECAY = 0.7
+#: "Proven on the previous patch": beat that patch's lane average by this many
+#: points after shrinkage, on at least PROVEN_MIN_PICK % of games.
+PROVEN_MIN_EDGE = 1.0
+PROVEN_MIN_PICK = 3
+#: ...and, where it is still played, not clearly losing on the new patch.
+#: Jax's 7.3a core fell to 40% on 7.3b: players left it for a reason, and
+#: calling it an overlooked build would be wrong.
+PROVEN_MAX_DROP = -0.5
+
+
+def _patch_calendar() -> tuple[list[tuple[str, str]], dict[str, set[str]]]:
+    """[(patch, live date)] oldest first, and the item and rune names each
+    patch's notes mention (so a core can say an item of it changed)."""
+    doc = load_json(PATCH_HISTORY)
+    items = [item["name"] for item in load_json(WEB_DATA / "items.json")]
+    runes = list(load_json(WEB_DATA / "rune_icons.json"))
+    calendar, changed = [], {}
+    for entry in doc.get("patches", []):
+        calendar.append((entry["patch"], str(entry["publishedAt"])[:10]))
+        text = json.dumps(entry.get("changeLines", []), ensure_ascii=False) + json.dumps(entry.get("textBlocks", []), ensure_ascii=False)
+        changed[entry["patch"]] = {
+            name for name in items + runes
+            if len(name) > 4 and re.search(r"(?<![A-Za-z])" + re.escape(name) + r"(?![A-Za-z])", text)
+        }
+    calendar.sort(key=lambda pair: pair[1])
+    return calendar, changed
+
+
+def _pool(captures: list[list[dict[str, Any]]]) -> list[dict[str, Any]]:
+    acc: dict[str, dict[str, Any]] = {}
+    for rows in captures:
+        for row in rows:
+            a = acc.setdefault(row_key(row), {"entities": row["entities"], "wr": 0.0, "pick": 0.0, "seen": 0})
+            a["wr"] += row["winRate"] * row["pickRate"]
+            a["pick"] += row["pickRate"]
+            a["seen"] += 1
+    return [{"entities": a["entities"], "winRate": a["wr"] / a["pick"] if a["pick"] else 0.0,
+             "pickRate": a["pick"] / len(captures), "seen": a["seen"]} for a in acc.values()]
+
+
+def attach_patches(output: dict[str, Any]) -> int:
+    """Score each core and rune page patch by patch, so an old build that
+    still wins is not buried the moment players move on to a new one.
+
+    1. Each archived capture belongs to the patch that was live on the TAB's
+       own data date (a capture on Oct 15 reads Oct 13 data: still 7.3a).
+    2. Captures are pooled per patch, and each row is scored against ITS
+       patch's lane average after the usual shrinkage. A patch lifts or sinks
+       every core at once; the edge over that patch's average is what carries
+       from one patch to the next.
+    3. The across-patch score averages those edges, each older patch counting
+       PATCH_DECAY times the one after it.
+    4. A row that beat the average on the previous patch and is now played
+       half as much, or not at all, is flagged: "proven" when no item or rune
+       of it was mentioned in the patch notes since, "outdated" when one was,
+       because then the old numbers describe a different item.
+    """
+    calendar, changed = _patch_calendar()
+    if not calendar:
+        return 0
+
+    def patch_of(data_date: str | None) -> str | None:
+        m = re.fullmatch(r"(\d{4})(\d{2})(\d{2})", data_date or "")
+        if not m:
+            return None
+        day = f"{m[1]}-{m[2]}-{m[3]}"
+        live = [patch for patch, date in calendar if date <= day]
+        return live[-1] if live else None
+
+    snapshots = [doc for path in sorted(HISTORY.glob("????-??-??.json"))
+                 if isinstance((doc := load_json(path)).get("champions"), dict)]
+    order = [patch for patch, _date in calendar]
+    scored = 0
+    for slug, records in output["champions"].items():
+        for record in records:
+            by_day: dict[str, dict[str, Any]] = {}
+            for doc in snapshots:
+                for old in doc["champions"].get(slug, []):
+                    if old.get("lane") == record["lane"]:
+                        by_day[str(old.get("capturedAt"))[:10]] = old
+            by_day[str(record.get("capturedAt"))[:10]] = record
+            for name in ("items", "runes"):
+                groups: dict[str, list[list[dict[str, Any]]]] = {}
+                for day in sorted(by_day):
+                    tab = by_day[day]["tabs"].get(name) or {}
+                    patch = patch_of(tab.get("date"))
+                    if patch and tab.get("rows"):
+                        groups.setdefault(patch, []).append(tab["rows"])
+                patches = sorted(groups, key=order.index)
+                if len(patches) < 2:
+                    continue
+                per_patch: dict[str, dict[str, dict[str, Any]]] = {}
+                for patch in patches:
+                    rows = _pool(groups[patch])
+                    total = sum(row["pickRate"] for row in rows)
+                    average = sum(row["winRate"] * row["pickRate"] for row in rows) / total if total else 0.0
+                    per_patch[patch] = {}
+                    for row in rows:
+                        shrunk = (row["winRate"] * row["pickRate"] + average * PRIOR) / (row["pickRate"] + PRIOR)
+                        per_patch[patch][row_key(row)] = {
+                            "entities": row["entities"], "wr": round(row["winRate"], 1),
+                            "pick": round(row["pickRate"], 1), "edge": round(shrunk - average, 2),
+                        }
+                newest, previous = patches[-1], patches[-2]
+                since = order[order.index(previous) + 1:order.index(newest) + 1]
+                changed_since = set().union(*(changed.get(patch, set()) for patch in since))
+                keys = set(per_patch[newest]) | set(per_patch[previous])
+                rows_out = []
+                for key in keys:
+                    entries = [(i, per_patch[patch][key]) for i, patch in enumerate(reversed(patches)) if key in per_patch[patch]]
+                    weight = sum(PATCH_DECAY ** i for i, _e in entries)
+                    score = sum(PATCH_DECAY ** i * e["edge"] for i, e in entries) / weight
+                    # Played somewhere: a row that never reached 1% is noise.
+                    if max(e["pick"] for _i, e in entries) < 1:
+                        continue
+                    old, now = per_patch[previous].get(key), per_patch[newest].get(key)
+                    flag = None
+                    touched = sorted(set(key.split(" + ")) & changed_since)
+                    if old and old["edge"] >= PROVEN_MIN_EDGE and old["pick"] >= PROVEN_MIN_PICK \
+                            and (not now or now["pick"] < old["pick"] / 2)                             and (not now or now["edge"] > PROVEN_MAX_DROP):
+                        flag = "outdated" if touched else "proven"
+                    entities = (now or old)["entities"]
+                    rows_out.append({
+                        "entities": entities,
+                        "score": round(score, 2),
+                        "byPatch": {patch: {k: per_patch[patch][key][k] for k in ("wr", "pick", "edge")}
+                                    for patch in patches if key in per_patch[patch]},
+                        **({"flag": flag} if flag else {}),
+                        **({"changed": touched} if touched else {}),
+                    })
+                rows_out.sort(key=lambda row: -row["score"])
+                record["tabs"][name]["patches"] = {
+                    "order": patches,
+                    "captures": {patch: len(groups[patch]) for patch in patches},
+                    "rows": rows_out[:12],
+                }
+                scored += 1
+    return scored
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--archive-only", type=Path, default=None,
@@ -496,6 +639,7 @@ def main() -> None:
         print("No earlier snapshot: rows carry no movement yet")
     lanes, rows = attach_week_and_trend(output)
     print(f"Week and trend: {lanes} lanes, {rows} rows trended")
+    print(f"Across patches: {attach_patches(output)} tabs scored")
     OUTPUT.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(
         f"Wrote {OUTPUT.relative_to(ROOT)}: "

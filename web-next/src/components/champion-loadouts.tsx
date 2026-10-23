@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { rankByBalance, recommendedRow, tabAverage } from "@/lib/loadout-score";
 import { Card } from "@/components/ui";
 import { AskAgent } from "@/components/site-agent";
-import type { ChampionLoadoutLane, LoadoutEntity, LoadoutRow, LoadoutTab } from "@/lib/cn-loadouts";
+import type { ChampionLoadoutLane, LoadoutEntity, LoadoutPatches, LoadoutPatchRow, LoadoutRow, LoadoutTab } from "@/lib/cn-loadouts";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -220,6 +220,46 @@ function StandardRow({ row, kind, since, position, recommended = false, week, tr
   );
 }
 
+const edgeText = (edge: number) => `${edge >= 0 ? "+" : ""}${edge.toFixed(1)}`;
+
+/** A core or rune page across patches: its edge over each patch's lane
+ *  average, so a build players moved away from can still rank first. */
+function PatchRowCard({ row, patches, position }: { row: LoadoutPatchRow; patches: LoadoutPatches; position: number }) {
+  const names = row.entities.map((entity) => entity.name).join(" · ");
+  return (
+    <article className={`rounded-2xl border p-3 ${row.flag === "proven" ? "border-gold/40 bg-gold/[0.06]" : "border-white/[0.075] bg-black/[0.16]"}`}>
+      <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.045] text-[0.65rem] font-bold text-faint">{position}</span>
+        <div className="flex shrink-0 -space-x-1.5">
+          {row.entities.map((entity, index) => (
+            <span key={`${entity.name}-${index}`} className="relative" style={{ zIndex: row.entities.length - index }}><EntityIcon entity={entity} /></span>
+          ))}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-semibold text-text" title={names}>{names}</p>
+          <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[0.64rem] text-faint">
+            {patches.order.map((patch) => {
+              const cell = row.byPatch[patch];
+              return (
+                <span key={patch} title={cell ? `${patch}: ${cell.wr.toFixed(1)}% WR over ${cell.pick.toFixed(1)}% of games, ${edgeText(cell.edge)} vs that patch's lane average` : `Not listed on ${patch}`}
+                  className={`rounded-md px-1.5 py-0.5 tabular-nums ${cell ? "bg-white/[0.05] text-muted" : "bg-white/[0.02] text-faint/70"}`}>
+                  {cell ? `${patch} ${cell.wr.toFixed(1)}% · ${cell.pick.toFixed(1)}%` : `${patch} not listed`}
+                </span>
+              );
+            })}
+            {row.flag === "proven" && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold" title="Beat the average last patch and is played far less now. Nothing in it was changed since.">Proven, rarely played now</span>}
+            {row.flag === "outdated" && <span className="rounded-md bg-amber-300/10 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-amber-200" title={`Strong last patch, but ${row.changed?.join(", ")} changed since, so those numbers describe a different build`}>{`${row.changed?.[0] ?? "Item"} changed`}</span>}
+          </p>
+        </div>
+        <div className="shrink-0 border-l border-white/[0.07] pl-3 text-right">
+          <p className={`text-sm font-bold tabular-nums ${row.score > 0 ? "text-emerald-300" : row.score < 0 ? "text-rose-300" : "text-text"}`}>{edgeText(row.score)}</p>
+          <p className="text-[0.57rem] font-semibold uppercase tracking-[0.12em] text-faint">vs avg</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function MatchupPanel({ title, tone, rows, since }: { title: string; tone: "good" | "bad"; rows: LoadoutRow[]; since: string | null }) {
   return (
     <section className="rounded-2xl border border-white/[0.075] bg-black/[0.12] p-3.5">
@@ -273,7 +313,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   const [sortMode, setSortMode] = useState<"best" | "winRate" | "popular">("best");
   // "This week" pools every capture from the last 7 days: a single capture's
   // pick changed for ~70% of lanes between captures, the week's barely does.
-  const [period, setPeriod] = useState<"week" | "latest">("week");
+  const [period, setPeriod] = useState<"week" | "latest" | "patches">("week");
   const lane = loadouts[Math.min(laneIndex, Math.max(loadouts.length - 1, 0))];
   const tabs = useMemo(() => BASE_TABS.map((tab) => tab.key === "versus"
     ? { ...tab, label: lane?.versusKind === "partners" ? "Best partners" : "Matchups", short: lane?.versusKind === "partners" ? "Partners" : "Matchups" }
@@ -284,7 +324,10 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   const tab = lane.tabs[activeTab];
   const since = formatCaptureDate(lane.previousCapturedAt);
   const week = activeTab !== "versus" && tab.week && tab.week.captures > 1 ? tab.week : null;
+  const patchView = activeTab !== "versus" && tab.patches && tab.patches.order.length > 1 ? tab.patches : null;
+  const usingPatches = Boolean(patchView) && period === "patches";
   const usingWeek = Boolean(week) && period === "week";
+  const proven = (patchView?.rows ?? []).filter((row) => row.flag === "proven").slice(0, 2);
   const source = usingWeek ? week!.rows : tab.rows;
   const trendOf = new Map((week?.rows ?? []).map((row) => [rowKey(row), row.trend]));
   const rows = activeTab === "versus" ? source
@@ -292,7 +335,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
     : sortMode === "popular" ? [...source].sort((a, b) => b.pickRate - a.pickRate)
     : [...source].sort((a, b) => b.winRate - a.winRate);
   const visibleRows = expanded ? rows : rows.slice(0, 6);
-  const recommended = activeTab === "versus" ? null
+  const recommended = activeTab === "versus" || usingPatches ? null
     : usingWeek ? source.find((row) => rowKey(row) === week!.best) ?? null
     : recommendedRow(tab.rows);
   const average = tabAverage(source);
@@ -393,18 +436,22 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
               </p>
             ) : <span />}
             <div className="flex flex-wrap items-center gap-1.5">
-            {week && (
+            {(week || patchView) && (
               <div role="tablist" aria-label="Period" className="flex rounded-full border border-white/[0.09] bg-white/[0.035] p-0.5 text-[0.65rem] font-semibold">
-                {([["week", `This week · ${week.captures}`], ["latest", "Latest capture"]] as const).map(([key, label]) => (
+                {([
+                  ...(week ? [["week", `This week · ${week.captures}`] as const] : []),
+                  ["latest", "Latest capture"] as const,
+                  ...(patchView ? [["patches", "Across patches"] as const] : []),
+                ]).map(([key, label]) => (
                   <button key={key} type="button" role="tab" aria-selected={period === key} onClick={() => { setPeriod(key); setExpanded(false); }}
-                    title={key === "week" ? `Every capture from ${weekRange}, pooled` : `The ${formatCaptureDate(lane.capturedAt)} capture alone`}
+                    title={key === "week" ? `Every capture from ${weekRange}, pooled` : key === "patches" ? `Scored against each patch's own average: ${patchView?.order.join(", ")}` : `The ${formatCaptureDate(lane.capturedAt)} capture alone`}
                     className={`rounded-full px-3 py-1 transition ${period === key ? "bg-sky-300 text-black" : "text-muted hover:text-text"}`}>
                     {label}
                   </button>
                 ))}
               </div>
             )}
-            <div role="tablist" aria-label="Sort rows" className="flex rounded-full border border-white/[0.09] bg-white/[0.035] p-0.5 text-[0.65rem] font-semibold">
+            {!usingPatches && <div role="tablist" aria-label="Sort rows" className="flex rounded-full border border-white/[0.09] bg-white/[0.035] p-0.5 text-[0.65rem] font-semibold">
               {([["best", "Best balance"], ["winRate", "Win rate"], ["popular", "Most played"]] as const).map(([key, label]) => (
                 <button key={key} type="button" role="tab" aria-selected={sortMode === key} onClick={() => setSortMode(key)}
                   title={key === "best" ? `Win rate weighted by sample: each row is pulled toward the ${average?.toFixed(1)}% average, harder the less it is played` : undefined}
@@ -412,12 +459,28 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
                   {label}
                 </button>
               ))}
-            </div>
+            </div>}
             </div>
           </div>
         )}
 
-        {rows.length ? (
+        {usingPatches && patchView ? (
+          <>
+            <p className="mt-4 max-w-3xl text-xs leading-relaxed text-muted">
+              {`Each row's edge over its own patch's lane average (${patchView.order.map((patch) => `${patch}: ${patchView.captures[patch]} ${patchView.captures[patch] === 1 ? "capture" : "captures"}`).join(", ")}), with the older patch counting 0.7x. A patch lifts or sinks every build at once, so the edge is what carries over, and a build players moved away from can still rank first.`}
+            </p>
+            <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
+              {(expanded ? patchView.rows : patchView.rows.slice(0, 6)).map((row, index) => <PatchRowCard key={rowKey(row as unknown as LoadoutRow)} row={row} patches={patchView} position={index + 1} />)}
+            </div>
+            {patchView.rows.length > 6 && (
+              <div className="mt-4 flex justify-center">
+                <button type="button" onClick={() => setExpanded((value) => !value)} className="rounded-full border border-white/[0.09] bg-white/[0.035] px-4 py-2 text-xs font-semibold text-muted transition hover:border-accent/25 hover:bg-accent/10 hover:text-accent">
+                  {expanded ? "Show fewer" : `Show all ${patchView.rows.length}`}
+                </button>
+              </div>
+            )}
+          </>
+        ) : rows.length ? (
           activeTab === "versus" && lane.versusKind === "matchup" ? (
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
               <MatchupPanel title="Best observed matchups" tone="good" rows={favorable} since={since} />
@@ -439,6 +502,20 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           )
         ) : (
           <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-8 text-center text-sm text-muted">No verified rows are available for this tab yet.</div>
+        )}
+
+        {!usingPatches && proven.length > 0 && (
+          <button type="button" onClick={() => { setPeriod("patches"); setExpanded(false); }}
+            className="mt-4 block w-full rounded-xl border border-gold/25 bg-gold/[0.05] px-3 py-2.5 text-left text-xs leading-relaxed text-muted transition hover:border-gold/40">
+            <span className="font-semibold text-gold">Older build worth a look: </span>
+            {proven.map((row) => {
+              const last = patchView!.order.filter((patch) => row.byPatch[patch]).slice(-1)[0];
+              const prev = patchView!.order[patchView!.order.length - 2];
+              const cell = row.byPatch[prev];
+              return `${row.entities.map((entity) => entity.name).join(" · ")} beat ${prev}'s average (${cell?.wr.toFixed(1)}% over ${cell?.pick.toFixed(1)}% of games) and is ${last === prev ? "no longer listed" : "played far less"} now.`;
+            }).join(" ")}
+            <span className="ml-1 font-semibold text-gold">See across patches →</span>
+          </button>
         )}
 
         <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
