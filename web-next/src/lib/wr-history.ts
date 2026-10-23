@@ -63,6 +63,9 @@ export function getWinRateHistory(slug: string, name: string): WinRateHistory | 
   const patches = getChampionHistory(name).changes
     .filter((change) => !change.modeOnly && from && change.publishedAt.slice(0, 10) >= from)
     .map((change) => ({ patch: change.patch, date: change.publishedAt.slice(0, 10), kind: change.kind }))
+    // One marker per patch and day: a champion changed twice in the same
+    // notes (Riven, 7.3) would draw two lines on top of each other.
+    .filter((change, index, all) => all.findIndex((other) => other.patch === change.patch && other.date === change.date) === index)
     .sort((a, b) => a.date.localeCompare(b.date));
 
   return { eu, na, cn, global, globalServers, daily: rec.daily ?? [], patches };

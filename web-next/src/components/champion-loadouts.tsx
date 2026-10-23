@@ -153,7 +153,30 @@ function WinRateMove({ row, since }: { row: LoadoutRow; since: string | null }) 
   return <Move delta={delta} note={movementNote(row, since)} />;
 }
 
-function StandardRow({ row, kind, since, position, recommended = false }: { row: LoadoutRow; kind: TabKey; since: string | null; position: number; recommended?: boolean }) {
+const rowKey = (row: LoadoutRow) => row.entities.map((entity) => entity.name).join(" + ");
+
+/** The row's win rate across the archived captures, as a tiny line. */
+function Trend({ points }: { points?: [string, number, number][] }) {
+  if (!points || points.length < 2) return null;
+  const rates = points.map(([, wr]) => wr);
+  const lo = Math.min(...rates);
+  const hi = Math.max(...rates);
+  const x = (i: number) => Math.round((i / (points.length - 1)) * 56 * 10) / 10 + 2;
+  const y = (wr: number) => Math.round((16 - ((wr - lo) / Math.max(1, hi - lo)) * 12) * 10) / 10;
+  const last = points[points.length - 1][1];
+  const first = points[0][1];
+  const label = points.map(([d, wr, pick]) => `${d}: ${wr.toFixed(1)}% WR, ${pick.toFixed(1)}% pick`).join("\n");
+  return (
+    <svg viewBox="0 0 60 18" className="h-[18px] w-[60px] shrink-0" role="img" aria-label={`Win rate per capture: ${label}`}>
+      <title>{label}</title>
+      <polyline points={points.map(([, wr], i) => `${x(i)},${y(wr)}`).join(" ")} fill="none" strokeWidth="1.6"
+        stroke="currentColor" className={last > first + 1 ? "text-emerald-300" : last < first - 1 ? "text-rose-300" : "text-sky-300"} />
+      <circle cx={x(points.length - 1)} cy={y(last)} r="1.8" fill="currentColor" className="text-text" />
+    </svg>
+  );
+}
+
+function StandardRow({ row, kind, since, position, recommended = false, week, trend }: { row: LoadoutRow; kind: TabKey; since: string | null; position: number; recommended?: boolean; week?: number; trend?: [string, number, number][] }) {
   const names = row.entities.map((entity) => entity.name).join(" · ");
   return (
     <article className={`group relative overflow-hidden rounded-2xl border p-3 transition hover:border-accent/25 hover:bg-white/[0.035] ${recommended ? "border-gold/40 bg-gold/[0.06]" : "border-white/[0.075] bg-black/[0.16]"}`}>
@@ -174,17 +197,24 @@ function StandardRow({ row, kind, since, position, recommended = false }: { row:
           <p className="mt-0.5 flex items-center gap-1.5 text-[0.64rem] text-faint">
             {kind === "items" ? "Three-item core" : kind === "runes" ? "Full rune page" : kind === "boots" ? "Tier 2 boots" : kind === "spells" ? "Spell pair" : "Opponent"}
             {recommended && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold">Recommended</span>}
-            <NewTag row={row} since={since} />
+            {week && row.seen != null && (
+              <span title={`Listed in ${row.seen} of the week's ${week} captures${row.bestIn ? `, and the day's pick in ${row.bestIn}` : ""}`}
+                className={`rounded-md px-1.5 py-0.5 text-[0.58rem] font-semibold ${row.seen === week ? "bg-white/[0.06] text-muted" : "bg-amber-300/10 text-amber-200"}`}>
+                {`${row.seen}/${week} captures`}
+              </span>
+            )}
+            {!week && <NewTag row={row} since={since} />}
           </p>
         </div>
+        <span className="hidden sm:block"><Trend points={trend} /></span>
         <div className="hidden shrink-0 grid-cols-2 gap-3 border-l border-white/[0.07] pl-3 sm:grid">
-          <Rate label="WR" value={row.winRate} accent move={<WinRateMove row={row} since={since} />} />
-          <Rate label="Pick" value={row.pickRate} move={<PickRateMove row={row} since={since} />} />
+          <Rate label="WR" value={row.winRate} accent move={week ? undefined : <WinRateMove row={row} since={since} />} />
+          <Rate label="Pick" value={row.pickRate} move={week ? undefined : <PickRateMove row={row} since={since} />} />
         </div>
       </div>
       <div className="mt-2.5 grid grid-cols-2 gap-3 border-t border-white/[0.07] pt-2.5 sm:hidden">
-        <Rate label="WR" value={row.winRate} accent move={<WinRateMove row={row} since={since} />} />
-        <Rate label="Pick rate" value={row.pickRate} move={<PickRateMove row={row} since={since} />} />
+        <Rate label="WR" value={row.winRate} accent move={week ? undefined : <WinRateMove row={row} since={since} />} />
+        <Rate label="Pick rate" value={row.pickRate} move={week ? undefined : <PickRateMove row={row} since={since} />} />
       </div>
     </article>
   );
@@ -241,6 +271,9 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   // "Best" weighs win rate against how often a row is played
   // (lib/loadout-score.ts); the raw orders stay one click away.
   const [sortMode, setSortMode] = useState<"best" | "winRate" | "popular">("best");
+  // "This week" pools every capture from the last 7 days: a single capture's
+  // pick changed for ~70% of lanes between captures, the week's barely does.
+  const [period, setPeriod] = useState<"week" | "latest">("week");
   const lane = loadouts[Math.min(laneIndex, Math.max(loadouts.length - 1, 0))];
   const tabs = useMemo(() => BASE_TABS.map((tab) => tab.key === "versus"
     ? { ...tab, label: lane?.versusKind === "partners" ? "Best partners" : "Matchups", short: lane?.versusKind === "partners" ? "Partners" : "Matchups" }
@@ -250,13 +283,21 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
 
   const tab = lane.tabs[activeTab];
   const since = formatCaptureDate(lane.previousCapturedAt);
-  const rows = activeTab === "versus" ? tab.rows
-    : sortMode === "best" ? rankByBalance(tab.rows)
-    : sortMode === "popular" ? [...tab.rows].sort((a, b) => b.pickRate - a.pickRate)
-    : [...tab.rows].sort((a, b) => b.winRate - a.winRate);
+  const week = activeTab !== "versus" && tab.week && tab.week.captures > 1 ? tab.week : null;
+  const usingWeek = Boolean(week) && period === "week";
+  const source = usingWeek ? week!.rows : tab.rows;
+  const trendOf = new Map((week?.rows ?? []).map((row) => [rowKey(row), row.trend]));
+  const rows = activeTab === "versus" ? source
+    : sortMode === "best" ? rankByBalance(source)
+    : sortMode === "popular" ? [...source].sort((a, b) => b.pickRate - a.pickRate)
+    : [...source].sort((a, b) => b.winRate - a.winRate);
   const visibleRows = expanded ? rows : rows.slice(0, 6);
-  const recommended = activeTab === "versus" ? null : recommendedRow(tab.rows);
-  const average = tabAverage(tab.rows);
+  const recommended = activeTab === "versus" ? null
+    : usingWeek ? source.find((row) => rowKey(row) === week!.best) ?? null
+    : recommendedRow(tab.rows);
+  const average = tabAverage(source);
+  const shortDay = (value: string) => formatCaptureDate(value)?.replace(/, \d{4}$/, "") ?? value;
+  const weekRange = week ? `${shortDay(week.from)} to ${shortDay(week.to)}` : "";
   const favorable = [...lane.tabs.versus.rows].sort((a, b) => b.winRate - a.winRate).slice(0, 5);
   const difficult = [...lane.tabs.versus.rows].sort((a, b) => a.winRate - b.winRate).slice(0, 5);
   const versusCopy = lane.versusKind === "partners"
@@ -329,19 +370,40 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           <div className="flex flex-wrap items-center gap-1.5 text-[0.62rem] font-semibold">
             <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{tab.recognizedRows}/{tab.sourceRows} rows verified</span>
             {tab.visibleCoverage > 0 && <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{Math.min(tab.visibleCoverage, 100).toFixed(1)}% visible pick share</span>}
-            <span className="rounded-full bg-emerald-300/10 px-2.5 py-1 text-emerald-200">Updated {formatCaptureDate(lane.capturedAt) ?? formatDataDate(tab.date)}</span>
+            {tab.stale
+              ? <span className="rounded-full bg-amber-300/10 px-2.5 py-1 text-amber-200">{`China's data from ${formatDataDate(tab.date)}`}</span>
+              : <span className="rounded-full bg-emerald-300/10 px-2.5 py-1 text-emerald-200">Updated {formatCaptureDate(lane.capturedAt) ?? formatDataDate(tab.date)}</span>}
           </div>
         </div>
+        {tab.stale && (
+          <p className="mt-3 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2 text-xs leading-relaxed text-amber-100/90">
+            {`China's app has not refreshed this tab since ${formatDataDate(tab.date)}, while the rest of this lane is from ${formatCaptureDate(lane.capturedAt)}. These rows are older than everything else here, and Build Studio leaves them out when it starts from China's build.`}
+          </p>
+        )}
 
         {activeTab !== "versus" && rows.length > 1 && (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             {recommended && average != null ? (
               <p className="max-w-xl text-xs leading-relaxed text-muted">
-                <span className="font-semibold text-gold">Recommended:</span>{" "}
+                <span className="font-semibold text-gold">{usingWeek ? "Recommended this week:" : "Recommended:"}</span>{" "}
                 <span className="font-semibold text-text">{recommended.entities.map((entity) => entity.name).join(" · ")}</span>
-                {`, the best balance of win rate and how often it is played: ${recommended.winRate.toFixed(1)}% over ${recommended.pickRate.toFixed(1)}% of games.`}
+                {usingWeek
+                  ? `, the best balance of win rate and play rate across the ${week!.captures} captures from ${weekRange}: ${recommended.winRate.toFixed(1)}% over ${recommended.pickRate.toFixed(1)}% of games${recommended.bestIn ? `, and the day's pick in ${recommended.bestIn} of ${week!.captures}` : ""}.`
+                  : `, the best balance of win rate and how often it is played: ${recommended.winRate.toFixed(1)}% over ${recommended.pickRate.toFixed(1)}% of games.`}
               </p>
             ) : <span />}
+            <div className="flex flex-wrap items-center gap-1.5">
+            {week && (
+              <div role="tablist" aria-label="Period" className="flex rounded-full border border-white/[0.09] bg-white/[0.035] p-0.5 text-[0.65rem] font-semibold">
+                {([["week", `This week · ${week.captures}`], ["latest", "Latest capture"]] as const).map(([key, label]) => (
+                  <button key={key} type="button" role="tab" aria-selected={period === key} onClick={() => { setPeriod(key); setExpanded(false); }}
+                    title={key === "week" ? `Every capture from ${weekRange}, pooled` : `The ${formatCaptureDate(lane.capturedAt)} capture alone`}
+                    className={`rounded-full px-3 py-1 transition ${period === key ? "bg-sky-300 text-black" : "text-muted hover:text-text"}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
             <div role="tablist" aria-label="Sort rows" className="flex rounded-full border border-white/[0.09] bg-white/[0.035] p-0.5 text-[0.65rem] font-semibold">
               {([["best", "Best balance"], ["winRate", "Win rate"], ["popular", "Most played"]] as const).map(([key, label]) => (
                 <button key={key} type="button" role="tab" aria-selected={sortMode === key} onClick={() => setSortMode(key)}
@@ -350,6 +412,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
                   {label}
                 </button>
               ))}
+            </div>
             </div>
           </div>
         )}
@@ -363,7 +426,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           ) : (
             <>
               <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
-                {visibleRows.map((row, index) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={activeTab} since={since} position={index + 1} recommended={row === recommended} />)}
+                {visibleRows.map((row, index) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={activeTab} since={since} position={index + 1} recommended={row === recommended} week={usingWeek ? week!.captures : undefined} trend={trendOf.get(rowKey(row))} />)}
               </div>
               {rows.length > 6 && (
                 <div className="mt-4 flex justify-center">
@@ -379,8 +442,10 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
         )}
 
         <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
-          <p>A higher row win rate does not prove the loadout caused the wins.</p>
-          {since && (
+          <p>{usingWeek
+            ? "This week pools the captures by each row's share of games, since China gives no game counts. A higher row win rate does not prove the loadout caused the wins."
+            : "A higher row win rate does not prove the loadout caused the wins."}</p>
+          {since && !usingWeek && (
             <p className="shrink-0">
               {`Arrows: change since the ${since} capture, shown only for clear moves. Hover one for the numbers.`}
             </p>

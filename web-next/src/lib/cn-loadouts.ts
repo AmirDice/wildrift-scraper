@@ -3,6 +3,7 @@ import itemsData from "@/data/items.json";
 import runeIconsData from "@/data/rune_icons.json";
 import siteData from "@/data/site.json";
 import spellsData from "@/data/spells.json";
+import { recommendedRow } from "@/lib/loadout-score";
 
 type RawRow = {
   rank: number;
@@ -13,6 +14,22 @@ type RawRow = {
   prev?: { rank: number; winRate: number; pickRate: number };
   /** Listed now, not in the previous snapshot. */
   new?: boolean;
+  /** Week rows only: captures the row appeared in, and was the day's pick in. */
+  seen?: number;
+  bestIn?: number;
+  /** Week rows only: [MM-DD, win rate, pick rate] per archived capture. */
+  trend?: [string, number, number][];
+};
+
+/** This lane's captures from the last 7 days, pooled
+ *  (scripts/export_loadouts_for_web.py attach_week_and_trend). */
+type RawWeek = {
+  from: string;
+  to: string;
+  captures: number;
+  /** The weekly pick's row key, entities joined with " + ". */
+  best: string | null;
+  rows: RawRow[];
 };
 
 type RawTab = {
@@ -22,6 +39,7 @@ type RawTab = {
   reportedCoverage: number;
   visibleCoverage: number;
   rows: RawRow[];
+  week?: RawWeek;
 };
 
 type RawLane = {
@@ -61,8 +79,14 @@ export type LoadoutRow = Omit<RawRow, "entities"> & {
   entities: LoadoutEntity[];
 };
 
-export type LoadoutTab = Omit<RawTab, "rows"> & {
+export type LoadoutWeek = Omit<RawWeek, "rows"> & { rows: LoadoutRow[] };
+
+export type LoadoutTab = Omit<RawTab, "rows" | "week"> & {
   rows: LoadoutRow[];
+  week?: LoadoutWeek;
+  /** The tab's own data date is weeks older than the capture: China's app
+   *  stopped refreshing it (boots have read July since October). */
+  stale?: boolean;
 };
 
 export type ChampionLoadoutLane = Omit<RawLane, "tabs"> & {
@@ -106,30 +130,59 @@ function resolveEntity(kind: keyof RawLane["tabs"], name: string): LoadoutEntity
   };
 }
 
-function resolveTab(kind: keyof RawLane["tabs"], tab: RawTab): LoadoutTab {
+/** A tab whose data date trails the capture by more than this is stale. */
+const STALE_DAYS = 14;
+
+function isStale(tab: RawTab, capturedAt: string): boolean {
+  const m = /^(\d{4})(\d{2})(\d{2})$/.exec(tab.date ?? "");
+  if (!m) return false;
+  const data = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const captured = Date.parse(capturedAt.slice(0, 10));
+  return Number.isFinite(captured) && (captured - data) / 86_400_000 > STALE_DAYS;
+}
+
+function resolveTab(kind: keyof RawLane["tabs"], tab: RawTab, capturedAt: string): LoadoutTab {
+  const resolveRows = (rows: RawRow[]) => rows.map((row) => ({
+    ...row,
+    entities: row.entities.map((name) => resolveEntity(kind, name)),
+  }));
+  const { week, ...rest } = tab;
   return {
-    ...tab,
-    rows: tab.rows.map((row) => ({
-      ...row,
-      entities: row.entities.map((name) => resolveEntity(kind, name)),
-    })),
+    ...rest,
+    rows: resolveRows(tab.rows),
+    ...(week ? { week: { ...week, rows: resolveRows(week.rows) } } : {}),
+    ...(isStale(tab, capturedAt) ? { stale: true } : {}),
   };
 }
 
 export function getChampionLoadouts(slug: string): ChampionLoadoutLane[] {
-  const raw = (loadoutData as RawData).champions[slug] ?? [];
+  const raw = (loadoutData as unknown as RawData).champions[slug] ?? [];
   return raw.map((lane) => ({
     ...lane,
     tabs: {
-      items: resolveTab("items", lane.tabs.items),
-      runes: resolveTab("runes", lane.tabs.runes),
-      boots: resolveTab("boots", lane.tabs.boots),
-      spells: resolveTab("spells", lane.tabs.spells),
-      versus: resolveTab("versus", lane.tabs.versus),
+      items: resolveTab("items", lane.tabs.items, lane.capturedAt),
+      runes: resolveTab("runes", lane.tabs.runes, lane.capturedAt),
+      boots: resolveTab("boots", lane.tabs.boots, lane.capturedAt),
+      spells: resolveTab("spells", lane.tabs.spells, lane.capturedAt),
+      versus: resolveTab("versus", lane.tabs.versus, lane.capturedAt),
     },
   }));
 }
 
+/**
+ * The row the site recommends for a tab: the weekly pick when the lane has
+ * two or more captures in the last 7 days, else the latest capture's, and
+ * nothing for a tab China stopped refreshing (boots since July).
+ */
+export function recommendedLoadout(tab: LoadoutTab | undefined): LoadoutRow | null {
+  if (!tab || tab.stale) return null;
+  if (tab.week && tab.week.captures > 1) {
+    const key = tab.week.best;
+    return tab.week.rows.find((row) => row.entities.map((entity) => entity.name).join(" + ") === key) ?? null;
+  }
+  return recommendedRow(tab.rows);
+}
+
 export function cnLoadoutCoverage() {
-  return (loadoutData as RawData).coverage;
+  return (loadoutData as unknown as RawData).coverage;
 }

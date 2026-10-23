@@ -6,10 +6,9 @@ import { getChampion, getChampions, pendingChampions, regionBoard, tierLabel, ty
 import { getGlobalBySlug, getGlobalChampions } from "@/lib/cn";
 import { getChampionDetails } from "@/lib/champion-details";
 import { getChampionHistory } from "@/lib/champion-history";
-import { getChampionLoadouts, type LoadoutTab } from "@/lib/cn-loadouts";
+import { recommendedLoadout, getChampionLoadouts, type LoadoutTab } from "@/lib/cn-loadouts";
 import { getMatchups } from "@/lib/counters";
 import { ITEM_ALIASES } from "@/lib/item-search";
-import { recommendedRow } from "@/lib/loadout-score";
 import { MOVERS_META, moverBySlug } from "@/lib/movers";
 import { buildsByServer } from "@/lib/ladder-build";
 import { CURRENT_PATCH } from "@/lib/patch";
@@ -432,7 +431,7 @@ function chinaLoadouts(slug: string) {
   // The loadout panel's "Recommended" row: win rate weighted by how often it
   // is played (lib/loadout-score.ts), so the agent and the page agree.
   const pick = (tab: LoadoutTab | undefined) => {
-    const row = recommendedRow(tab?.rows ?? []);
+    const row = recommendedLoadout(tab);
     return row ? { picks: row.entities.map((entity) => entity.name).join(" + "), winRate: row.winRate, pickRate: row.pickRate } : null;
   };
   return getChampionLoadouts(slug).map((lane) => {

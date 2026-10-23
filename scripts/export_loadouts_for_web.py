@@ -280,6 +280,108 @@ def attach_movement(output: dict[str, Any], previous: dict[str, Any]) -> int:
     return marked
 
 
+#: The site's balance score (web-next/src/lib/loadout-score.ts), mirrored so
+#: the weekly pick is chosen here the same way the page chooses today's.
+PRIOR = 15
+RECOMMEND_MIN_PICK = 3
+#: How far back "this week" reaches from the newest capture of a lane.
+WEEK_DAYS = 7
+#: Points kept in each row's trend.
+TREND_POINTS = 8
+#: Tabs that are pooled and trended. Matchups stay on the latest capture.
+POOLED_TABS = ("items", "runes", "boots", "spells")
+
+
+def _recommended(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    total = sum(row["pickRate"] for row in rows)
+    if not total:
+        return None
+    average = sum(row["winRate"] * row["pickRate"] for row in rows) / total
+    eligible = [row for row in rows if row["pickRate"] >= RECOMMEND_MIN_PICK]
+    if not eligible:
+        return None
+    return max(eligible, key=lambda row: (row["winRate"] * row["pickRate"] + average * PRIOR)
+               / (row["pickRate"] + PRIOR))
+
+
+def attach_week_and_trend(output: dict[str, Any]) -> tuple[int, int]:
+    """Pool each lane's captures from the last WEEK_DAYS, and trend each row.
+
+    A single capture is one day of China's numbers, and between captures the
+    recommended core changed for ~70% of lanes while the most-played cores
+    barely moved: the top few are usually within a point of each other. So the
+    week is pooled -- win rate weighted by pick share, pick rate averaged over
+    the captures (a row absent from one counts 0 there) -- and the weekly pick
+    is the balance score on the pooled rows. `bestIn` counts the captures in
+    which a row was that day's pick, so one lucky day cannot pass for a habit.
+
+    Pooling weights each day by pick SHARE: the app gives no game counts, so
+    this assumes the days had similar volume.
+    """
+    snapshots = []
+    for path in sorted(HISTORY.glob("????-??-??.json")):
+        doc = load_json(path)
+        if isinstance(doc.get("champions"), dict):
+            snapshots.append(doc)
+    pooled_lanes = trended = 0
+    for slug, records in output["champions"].items():
+        for record in records:
+            # Every archived capture of this lane, oldest first, one per day.
+            by_day: dict[str, dict[str, Any]] = {}
+            for doc in snapshots:
+                for old in doc["champions"].get(slug, []):
+                    if old.get("lane") == record["lane"]:
+                        by_day[str(old.get("capturedAt"))[:10]] = old
+            by_day[str(record.get("capturedAt"))[:10]] = record
+            days = sorted(by_day)
+            latest = datetime.fromisoformat(days[-1])
+            week = [d for d in days if (latest - datetime.fromisoformat(d)).days < WEEK_DAYS]
+            for name in POOLED_TABS:
+                tab = record["tabs"].get(name)
+                if not tab:
+                    continue
+                # Trends live on the week rows only: the latest capture is
+                # part of the week, so its rows find theirs there, and a copy
+                # on both doubled the file to 3.5 MB.
+                history = [(d, {row_key(r): r for r in by_day[d]["tabs"].get(name, {}).get("rows", [])})
+                           for d in days[-TREND_POINTS:]]
+                captures = [(d, by_day[d]["tabs"].get(name, {}).get("rows", [])) for d in week]
+                captures = [(d, rows) for d, rows in captures if rows]
+                if len(captures) < 2:
+                    continue
+                daily_best = {d: row_key(best) for d, rows in captures if (best := _recommended(rows))}
+                acc: dict[str, dict[str, Any]] = {}
+                for d, rows in captures:
+                    for row in rows:
+                        a = acc.setdefault(row_key(row), {"entities": row["entities"], "wr": 0.0, "pick": 0.0, "seen": 0})
+                        a["wr"] += row["winRate"] * row["pickRate"]
+                        a["pick"] += row["pickRate"]
+                        a["seen"] += 1
+                pooled = []
+                for key, a in acc.items():
+                    pooled.append({
+                        "entities": a["entities"],
+                        "winRate": round(a["wr"] / a["pick"], 2) if a["pick"] else 0.0,
+                        "pickRate": round(a["pick"] / len(captures), 2),
+                        "seen": a["seen"],
+                        "bestIn": sum(1 for best in daily_best.values() if best == key),
+                        "trend": [[d[5:], rr[key]["winRate"], rr[key]["pickRate"]]
+                                  for d, rr in history if key in rr],
+                    })
+                trended += len(pooled)
+                pooled.sort(key=lambda row: -row["pickRate"])
+                for rank, row in enumerate(pooled, 1):
+                    row["rank"] = rank
+                best = _recommended(pooled)
+                tab["week"] = {
+                    "from": captures[0][0], "to": captures[-1][0], "captures": len(captures),
+                    "best": row_key(best) if best else None,
+                    "rows": pooled,
+                }
+            pooled_lanes += 1
+    return pooled_lanes, trended
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--archive-only", type=Path, default=None,
@@ -392,6 +494,8 @@ def main() -> None:
         print(f"Movement against the {run_date(previous['champions'])} snapshot: {marked} rows")
     else:
         print("No earlier snapshot: rows carry no movement yet")
+    lanes, rows = attach_week_and_trend(output)
+    print(f"Week and trend: {lanes} lanes, {rows} rows trended")
     OUTPUT.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(
         f"Wrote {OUTPUT.relative_to(ROOT)}: "

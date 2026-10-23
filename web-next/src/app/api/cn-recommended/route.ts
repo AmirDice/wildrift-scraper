@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getChampionLoadouts, type LoadoutTab } from "@/lib/cn-loadouts";
-import { recommendedRow } from "@/lib/loadout-score";
+import { getChampionLoadouts, recommendedLoadout, type LoadoutTab } from "@/lib/cn-loadouts";
 
 /**
  * GET /api/cn-recommended?champion=riven
@@ -15,7 +14,8 @@ export const runtime = "nodejs";
 type Entity = { name: string; icon: string; slug?: string };
 
 function pick(tab: LoadoutTab | undefined) {
-  const row = recommendedRow(tab?.rows ?? []);
+  // The weekly pick, and no boots while China's boots tab is stale.
+  const row = recommendedLoadout(tab);
   if (!row) return null;
   return {
     winRate: row.winRate,
